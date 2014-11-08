@@ -146,7 +146,8 @@ public abstract class USim {
         int bytesRead;
 
         bytesRead = fp.read(str);
-        String hexStr = str.toString();
+        String hexStr = new String(str);
+        //System.out.println("HEX:" + hexStr);
         return Integer.valueOf(hexStr, 16).intValue();
     }
 
@@ -163,14 +164,6 @@ public abstract class USim {
     private int fgetc(InputStream fp) throws IOException {
 
         return fp.read();
-        /*
-        byte byteBuf[] = new byte[1];
-        int bytesRead;
-
-        bytesRead = fp.read(byteBuf);
-        String s = new String(byteBuf);
-        return s.charAt(0);
-        */
     }
 
     private boolean feof(InputStream fp) throws IOException {
@@ -277,7 +270,7 @@ public abstract class USim {
             int addr;
             int b;
 
-            fgetc(fp);
+            fgetc(fp); // Skip the colon
             n = fread_byte(fp);
             addr = fread_word(fp);
             t = fread_byte(fp);
