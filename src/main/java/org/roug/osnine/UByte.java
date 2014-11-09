@@ -1,29 +1,29 @@
 package org.roug.osnine;
 
 /**
- * Word size register.
+ * Byte size register (unsigned).
  */
-public class Word extends Register {
+public class UByte extends Register {
 
     @Override
     public int get() {
-        return value & 0xffff;
+        return value & 0xff;
     }
 
     @Override
     public void set(int newValue) throws IllegalArgumentException {
-        if (newValue > 0xffff || newValue < -0x8000) {
-            throw new IllegalArgumentException("Value must fit in 16 bits.");
+        if (newValue > 0xff || newValue < -0x80) {
+            throw new IllegalArgumentException("Value must fit in 8 bits.");
         }
         value = newValue;
     }
 
     @Override
     public int getSigned() {
-        if (value < 0x8000) {
+        if (value < 0x80) {
             return value;
         } else {
-            return -((~value & 0x7fff) + 1);
+            return -((~value & 0x7f) + 1);
         }
     }
 }
