@@ -6,22 +6,12 @@ import java.nio.charset.Charset;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-public class LoaderTest extends USimMotorola {
-
-    public void execute() {
-    }
-
-    public void status() {
-    }
-
-    public void reset() {
-    }
-
+public class LoaderTest {
 
     @Test
     public void readJunkSRecord() throws IOException {
         byte input[] = { 'a','b' };
-        USimMotorolaTest tInstance = new USimMotorolaTest();
+        USimMotorola tInstance = new USimMotorola(0x400);
         tInstance.allocate_memory(0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(input);
@@ -42,7 +32,7 @@ public class LoaderTest extends USimMotorola {
             + "S5030004F8\n"
             + "S9030000FC\n";
         byte byteInput[] = input.getBytes(Charset.forName("US-ASCII"));
-        USimMotorolaTest tInstance = new USimMotorolaTest();
+        USimMotorola tInstance = new USimMotorola();
         tInstance.allocate_memory(0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
@@ -64,7 +54,7 @@ public class LoaderTest extends USimMotorola {
             + ":0600320000B29002003252\r\n"
             + ":00000001FF\n";
         byte byteInput[] = input.getBytes(Charset.forName("US-ASCII"));
-        USimMotorolaTest tInstance = new USimMotorolaTest();
+        USimMotorola tInstance = new USimMotorola();
         tInstance.allocate_memory(0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);

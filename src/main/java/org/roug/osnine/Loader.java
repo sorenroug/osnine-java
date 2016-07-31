@@ -6,7 +6,7 @@ import java.io.IOException;
 
 /**
  * Load data into memory from files.
-*/
+ */
 public final class Loader {
 
     private Loader() {

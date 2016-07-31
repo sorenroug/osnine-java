@@ -2,7 +2,7 @@ package org.roug.osnine;
 
 /**
  * Generic processor run state routines.
-*/
+ */
 public abstract class USim {
 
     public boolean  halted;  //!< Flag: is the CPU halted?
@@ -11,7 +11,7 @@ public abstract class USim {
 
 // Generic internal registers that we assume all CPUs have
 
-    public int        ir; //!< Instruction Register.
+    public UByte        ir; //!< Instruction Register.
     public int        pc; //!< Program Counter.
 
     /**
@@ -36,12 +36,22 @@ public abstract class USim {
     /**
      * Read 16-bit word.
      */
+    public abstract int read_word(Word offset);
+
+    /**
+     * Read 16-bit word.
+     */
     public abstract int read_word(int offset);
 
     /**
      * Write 16-bit word.
      */
-    public abstract void write_word(int offset, int val);
+    public abstract void write_word(int offset, Word val);
+
+    /**
+     * Write 16-bit word.
+     */
+    public abstract void write_word(Word offset, Word val);
 
     /**
      * Reset the simulator.
@@ -87,21 +97,23 @@ public abstract class USim {
     /**
      * Fetch one memory byte from program counter and increment program counter.
      */
-    public int fetch() {
+    public UByte fetch() {
         int val = read(pc);
         pc += 1;
+        //pc.set(pc.get() + 1);
 
-        return val;
+        return UByte.valueOf(val);
     }
 
     /**
      * Fetch two memory bytes from program counter.
      */
-    public int fetch_word() {
+    public Word fetch_word() {
         int val = read_word(pc);
         pc += 2;
+        //pc.set(pc.get() + 2);
 
-        return val;
+        return Word.valueOf(val);
     }
 
     /**
@@ -123,6 +135,36 @@ public abstract class USim {
      */
     public int read(int offset) {
         return memory[offset];
+    }
+
+    /**
+     * Single byte read from memory.
+     */
+    public int read(Word offset) {
+        return memory[offset.get()];
+    }
+
+    /**
+     * Single byte read from memory.
+     */
+    /*
+    public UByte read(int offset) {
+        return memory[offset];
+    }
+    */
+
+    /**
+     * Single byte write to memory.
+     */
+    public void write(int offset, UByte val) {
+        memory[offset] = val.intValue();
+    }
+
+    /**
+     * Single byte write to memory.
+     */
+    public void write(Word offset, UByte val) {
+        memory[offset.get()] = val.get();
     }
 
     /**

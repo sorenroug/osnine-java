@@ -1,9 +1,28 @@
 package org.roug.osnine;
 
 /**
- * Word size register.
+ * Word size register (i.e. 16 bit).
  */
 public class Word extends Register {
+
+    /**
+     * Constructor.
+     */
+    public Word() {
+        value = 0;
+    }
+
+    /**
+     * Constructor.
+     */
+    public Word(int i) {
+        value = i;
+    }
+
+
+    public int intValue() {
+        return value & 0xffff;
+    }
 
     @Override
     public int get() {
@@ -26,5 +45,22 @@ public class Word extends Register {
             return -((~value & 0x7fff) + 1);
         }
     }
+
+    public UByte ubyteValue() {
+        return UByte.valueOf(value);
+    }
+
+    public void inc() {
+        inc(1);
+    }
+
+    public void inc(int increment) {
+        value += increment;
+    }
+
+    public static Word valueOf(int i) {
+        return new Word(i);
+    }
+
 }
 

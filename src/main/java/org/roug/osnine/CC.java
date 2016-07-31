@@ -34,6 +34,9 @@ public class CC {
     } cc;
     */
 
+    /**
+     * Get all condition codes as one byte.
+     */
     public int getCC() {
         int combined = (bit_e << 7)
             | (bit_f << 6)

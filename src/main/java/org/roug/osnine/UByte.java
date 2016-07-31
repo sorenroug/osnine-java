@@ -5,8 +5,27 @@ package org.roug.osnine;
  */
 public class UByte extends Register {
 
+    /**
+     * Constructor.
+     */
+    public UByte() {
+        value = 0;
+    }
+
+    /**
+     * Constructor.
+     */
+    public UByte(int i) {
+        value = i & 0xff;
+    }
+
     @Override
     public int get() {
+        return value & 0xff;
+    }
+
+    @Override
+    public int intValue() {
         return value & 0xff;
     }
 
@@ -26,5 +45,10 @@ public class UByte extends Register {
             return -((~value & 0x7f) + 1);
         }
     }
+
+    public static UByte valueOf(int i) {
+        return new UByte(i);
+    }
+
 }
 

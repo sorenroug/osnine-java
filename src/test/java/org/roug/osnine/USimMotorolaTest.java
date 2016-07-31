@@ -1,30 +1,21 @@
 package org.roug.osnine;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-public class USimMotorolaTest extends USimMotorola {
-
-    public void execute() {
-    }
-
-    public void status() {
-    }
-
-    public void reset() {
-    }
+public class USimMotorolaTest {
 
     /**
      * Write 0xAA to address 0x100 and read it back.
      */
     @Test
     public void writeReadOneByte() {
-        USimMotorolaTest tInstance = new USimMotorolaTest();
+        USimMotorola tInstance = new USimMotorola();
         tInstance.allocate_memory(0x400);
-        tInstance.write(0x100, 0xAA);
+        UByte val = UByte.valueOf(0xAA);
+        tInstance.write(0x100, val);
         int result = tInstance.read(0x100);
         assertEquals(0xAA, result);
     }
@@ -34,9 +25,10 @@ public class USimMotorolaTest extends USimMotorola {
      */
     @Test
     public void writeReadOneWord() {
-        USimMotorolaTest tInstance = new USimMotorolaTest();
+        USimMotorola tInstance = new USimMotorola();
         tInstance.allocate_memory(0x400);
-        tInstance.write_word(0x100, 0xAACC);
+        Word val = Word.valueOf(0xAACC);
+        tInstance.write_word(0x100, val);
         int result = tInstance.read_word(0x100);
         assertEquals(0xAACC, result);
 
