@@ -3,7 +3,9 @@ package org.roug.osnine;
 /**
  * Word size register (i.e. 16 bit).
  */
-public class Word extends Register {
+public class Word {
+
+    private int value;
 
     /**
      * Constructor.
@@ -24,12 +26,10 @@ public class Word extends Register {
         return value & 0xffff;
     }
 
-    @Override
     public int get() {
         return value & 0xffff;
     }
 
-    @Override
     public void set(int newValue) throws IllegalArgumentException {
         if (newValue > 0xffff || newValue < -0x8000) {
             throw new IllegalArgumentException("Value must fit in 16 bits.");
@@ -37,7 +37,6 @@ public class Word extends Register {
         value = newValue;
     }
 
-    @Override
     public int getSigned() {
         if (value < 0x8000) {
             return value;
@@ -51,15 +50,27 @@ public class Word extends Register {
     }
 
     public void inc() {
-        inc(1);
+        add(1);
     }
 
-    public void inc(int increment) {
+    public void add(int increment) {
         value += increment;
     }
 
     public static Word valueOf(int i) {
         return new Word(i);
+    }
+
+    boolean btst(int n) {
+        return (value & (1 << n)) != 0;
+    }
+
+    void bset(int n) {
+	value |= (1 << n);
+    }
+
+    void bclr(int n) {
+	value &= ~(1 << n);
     }
 
 }

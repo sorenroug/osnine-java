@@ -5,14 +5,17 @@ package org.roug.osnine;
  */
 public abstract class USim {
 
-    public boolean  halted;  //!< Flag: is the CPU halted?
+    /** Flag: is the CPU halted? */
+    public boolean halted;
     /** Memory space. */
     private int[] memory;
 
 // Generic internal registers that we assume all CPUs have
 
-    public UByte        ir; //!< Instruction Register.
-    public int        pc; //!< Program Counter.
+    /** Instruction Register. */
+    public int ir;
+    /** Program Counter. */
+    public int pc;
 
     /**
      * Constructor.
@@ -29,7 +32,9 @@ public abstract class USim {
     }
 
     public void allocate_memory(int size) {
-        //TODO: Don't allow allocation of more than 65536 bytes
+        if (size < 0 || size > 65536) {
+            throw new IllegalArgumentException("Max allocation is 65536");
+        }
         memory = new int[size];
     }
 
@@ -97,23 +102,21 @@ public abstract class USim {
     /**
      * Fetch one memory byte from program counter and increment program counter.
      */
-    public UByte fetch() {
+    public int fetch() {
         int val = read(pc);
         pc += 1;
-        //pc.set(pc.get() + 1);
 
-        return UByte.valueOf(val);
+        return val;
     }
 
     /**
      * Fetch two memory bytes from program counter.
      */
-    public Word fetch_word() {
+    public int fetch_word() {
         int val = read_word(pc);
         pc += 2;
-        //pc.set(pc.get() + 2);
 
-        return Word.valueOf(val);
+        return val;
     }
 
     /**
