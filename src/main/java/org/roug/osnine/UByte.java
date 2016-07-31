@@ -18,7 +18,7 @@ public class UByte {
      * Constructor.
      */
     public UByte(int i) {
-        value = i & 0xff;
+        set(i);
     }
 
     public int get() {

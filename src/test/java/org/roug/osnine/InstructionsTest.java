@@ -57,6 +57,7 @@ public class InstructionsTest {
         assertEquals(0x89, myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc);
         assertEquals(7, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.bit_c);
     }
 
 

@@ -5,19 +5,34 @@ package org.roug.osnine;
  */
 public class CC {
    
+    /*
     private int all;    // Condition code register
+    */
 
     /** Entire. */
     public int bit_e;
+
     /** FIRQ disable. */
     public int bit_f;
+
     /** Half carry. */
     public int bit_h;
+
+    /** IRQ disable. */
     public int bit_i;
+
+    /** Negative. */
     public int bit_n;
+    
+    /** Zero. */
     public int bit_z;
+
+    /** Overflow. */
     public int bit_v;
+
+    /** Carry. */
     public int bit_c;
+
     /*
     union {
         struct {
@@ -50,9 +65,11 @@ public class CC {
 
     }
 
+/*
     public void setCC(int newValue) {
 //      all = newValue;
     }
+*/
 
     public void clearCC() {
         bit_e = 0;

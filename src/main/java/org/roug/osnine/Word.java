@@ -18,7 +18,7 @@ public class Word {
      * Constructor.
      */
     public Word(int i) {
-        value = i;
+        set(i);
     }
 
 
@@ -53,8 +53,14 @@ public class Word {
         add(1);
     }
 
+    /**
+     * Add value. Should it wrap?
+     */
     public void add(int increment) {
         value += increment;
+        if (value > 0xffff || value < -0x8000) {
+            throw new IllegalArgumentException("Value must fit in 16 bits.");
+        }
     }
 
     public static Word valueOf(int i) {
