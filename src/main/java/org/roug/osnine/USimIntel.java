@@ -48,11 +48,11 @@ public class USimIntel extends USim {
      * Write 16-bit word for little-endian (Intel type).
      */
     @Override
-    public void write_word(int offset, Word val)
+    public void write_word(int offset, int val)
     {
-        write(offset, val.ubyteValue());
+        write(offset, val);
         offset++;
-        write(offset, UByte.valueOf((val.get() >> 8)));
+        write(offset, (val >> 8));
     }
 
     /**

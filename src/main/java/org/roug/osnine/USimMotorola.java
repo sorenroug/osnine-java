@@ -47,10 +47,10 @@ public class USimMotorola extends USim {
      * Write 16-bit word for big-endian (Motorola type).
      */
     @Override
-    public void write_word(int offset, Word val) {
-        write(offset, UByte.valueOf((val.get() >> 8)));
+    public void write_word(int offset, int val) {
+        write(offset, (val >> 8));
         offset++;
-        write(offset, val.ubyteValue());
+        write(offset, val);
     }
 
     /**

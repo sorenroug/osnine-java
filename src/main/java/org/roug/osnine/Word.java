@@ -61,15 +61,15 @@ public class Word {
         return new Word(i);
     }
 
-    boolean btst(int n) {
-        return (value & (1 << n)) != 0;
+    public int btst(int n) {
+        return ((value & (1 << n)) != 0) ? 1 : 0;
     }
 
-    void bset(int n) {
+    public void bset(int n) {
 	value |= (1 << n);
     }
 
-    void bclr(int n) {
+    public void bclr(int n) {
 	value &= ~(1 << n);
     }
 

@@ -51,7 +51,7 @@ public abstract class USim {
     /**
      * Write 16-bit word.
      */
-    public abstract void write_word(int offset, Word val);
+    public abstract void write_word(int offset, int val);
 
     /**
      * Write 16-bit word.

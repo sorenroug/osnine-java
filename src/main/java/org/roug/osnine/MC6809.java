@@ -26,17 +26,22 @@ public class MC6809 extends USimMotorola {
 */
 
 
-    public Word u;       //!< Stack pointer U
-    public Word s;       //!< Stack pointer S
-    public Word x;       //!< Index register X
-    public Word y;       //!< Index register Y
+    /** Stack pointer U. */
+    public Word u = new Word();
+    public Word s = new Word();       //!< Stack pointer S
+    /** Index register X. */
+    public Word x = new Word();
+    /** Index register Y. */
+    public Word y = new Word();
+
     /** Direct Page register. */
     public UByte  dp = new UByte();
     public UByte a = new UByte();
     public UByte b = new UByte();
     public RegisterD d = new RegisterD(a, b);
 
-    private CC cc = new CC();
+    /** Condiction codes. */
+    public CC cc = new CC();
 
     /**
      * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
@@ -65,8 +70,7 @@ public class MC6809 extends USimMotorola {
     /**
      * Execute one instruction.
      */
-    public void execute()
-    {
+    public void execute() {
     //                   disasmPC();
         ir = fetch();
 
@@ -127,6 +131,320 @@ public class MC6809 extends USimMotorola {
                 break;
         }
 
+        // Select instruction
+        switch (ir) {
+            case 0x3a:
+                abx(); break;
+            case 0x89: case 0x99: case 0xa9: case 0xb9:
+                adca(); break;
+            case 0xc9: case 0xd9: case 0xe9: case 0xf9:
+                adcb(); break;
+/*
+            case 0x8b: case 0x9b: case 0xab: case 0xbb:
+                adda(); break;
+            case 0xcb: case 0xdb: case 0xeb: case 0xfb:
+                addb(); break;
+            case 0xc3: case 0xd3: case 0xe3: case 0xf3:
+                addd(); break;
+            case 0x84: case 0x94: case 0xa4: case 0xb4:
+                anda(); break;
+            case 0xc4: case 0xd4: case 0xe4: case 0xf4:
+                andb(); break;
+            case 0x1c:
+                andcc(); break;
+            case 0x47:
+                asra(); break;
+            case 0x57:
+                asrb(); break;
+            case 0x07: case 0x67: case 0x77:
+                asr(); break;
+            case 0x24:
+                bcc(); break;
+            case 0x25:
+                bcs(); break;
+            case 0x27:
+                beq(); break;
+            case 0x2c:
+                bge(); break;
+            case 0x2e:
+                bgt(); break;
+            case 0x22:
+                bhi(); break;
+            case 0x85: case 0x95: case 0xa5: case 0xb5:
+                bita(); break;
+            case 0xc5: case 0xd5: case 0xe5: case 0xf5:
+                bitb(); break;
+            case 0x2f:
+                ble(); break;
+            case 0x23:
+                bls(); break;
+            case 0x2d:
+                blt(); break;
+            case 0x2b:
+                bmi(); break;
+            case 0x26:
+                bne(); break;
+            case 0x2a:
+                bpl(); break;
+            case 0x20:
+                bra(); break;
+            case 0x16:
+                lbra(); break;
+            case 0x21:
+                brn(); break;
+            case 0x8d:
+                bsr(); break;
+            case 0x17:
+                lbsr(); break;
+            case 0x28:
+                bvc(); break;
+            case 0x29:
+                bvs(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x4f:
+            case 0x4f: case 0x4e:
+                clra(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x5f:
+            case 0x5f: case 0x5e:
+                clrb(); break;
+            case 0x0f: case 0x6f: case 0x7f:
+                clr(); break;
+            case 0x81: case 0x91: case 0xa1: case 0xb1:
+                cmpa(); break;
+            case 0xc1: case 0xd1: case 0xe1: case 0xf1:
+                cmpb(); break;
+            case 0x1083: case 0x1093: case 0x10a3: case 0x10b3:
+                cmpd(); break;
+            case 0x118c: case 0x119c: case 0x11ac: case 0x11bc:
+                cmps(); break;
+            case 0x8c: case 0x9c: case 0xac: case 0xbc:
+                cmpx(); break;
+            case 0x1183: case 0x1193: case 0x11a3: case 0x11b3:
+                cmpu(); break;
+            case 0x108c: case 0x109c: case 0x10ac: case 0x10bc:
+                cmpy(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x43:
+            case 0x43: case 0x42: case 0x1042:
+                coma(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x53:
+            case 0x53: case 0x52:
+                comb(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x03: case 0x63: case 0x73:
+            case 0x03: case 0x62: case 0x63: case 0x73:
+                com(); break;
+            case 0x19:
+                daa(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x4a:
+            case 0x4a: case 0x4b:
+                deca(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x5a:
+            case 0x5a: case 0x5b:
+                decb(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x0a: case 0x6a: case 0x7a:
+            case 0x0a: case 0x0b: case 0x6a: case 0x6b:
+            case 0x7a: case 0x7b:
+                dec(); break;
+            case 0x88: case 0x98: case 0xa8: case 0xb8:
+                eora(); break;
+            case 0xc8: case 0xd8: case 0xe8: case 0xf8:
+                eorb(); break;
+            case 0x1e:
+                exg(); break;
+            case 0x4c:
+                inca(); break;
+            case 0x5c:
+                incb(); break;
+            case 0x0c: case 0x6c: case 0x7c:
+                inc(); break;
+            case 0x0e: case 0x6e: case 0x7e:
+                jmp(); break;
+            case 0x9d: case 0xad: case 0xbd:
+                jsr(); break;
+            case 0x86: case 0x96: case 0xa6: case 0xb6:
+                lda(); break;
+            case 0xc6: case 0xd6: case 0xe6: case 0xf6:
+                ldb(); break;
+            case 0xcc: case 0xdc: case 0xec: case 0xfc:
+                ldd(); break;
+            case 0x10ce: case 0x10de: case 0x10ee: case 0x10fe:
+                lds(); break;
+            case 0xce: case 0xde: case 0xee: case 0xfe:
+                ldu(); break;
+            case 0x8e: case 0x9e: case 0xae: case 0xbe:
+                ldx(); break;
+            case 0x108e: case 0x109e: case 0x10ae: case 0x10be:
+                ldy(); break;
+            case 0x32:
+                leas(); break;
+            case 0x33:
+                leau(); break;
+            case 0x30:
+                leax(); break;
+            case 0x31:
+                leay(); break;
+            case 0x48:
+                lsla(); break;
+            case 0x58:
+                lslb(); break;
+            case 0x08: case 0x68: case 0x78:
+                lsl(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x44:
+            case 0x44: case 0x45:
+                lsra(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x54:
+            case 0x54: case 0x55:
+                lsrb(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x04: case 0x64: case 0x74:
+            case 0x04: case 0x05: case 0x64: case 0x65:
+            case 0x74: case 0x75:
+                lsr(); break;
+            case 0x3d:
+                mul(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x40:
+            case 0x40: case 0x41:
+                nega(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x50:
+            case 0x50: case 0x51:
+                negb(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x00: case 0x60: case 0x70:
+            case 0x00: case 0x01: case 0x60: case 0x61:
+            case 0x70: case 0x71:
+                neg(); break;
+            // BDA - Adding in undocumented 6809 instructions
+            // NEG/COM combination instruction for direct page
+            case 0x02:
+                if (cc.bit_c)
+                    com();
+                else
+                    neg();
+                break;
+            case 0x12:
+                nop(); break;
+            case 0x8a: case 0x9a: case 0xaa: case 0xba:
+                ora(); break;
+            case 0xca: case 0xda: case 0xea: case 0xfa:
+                orb(); break;
+            case 0x1a:
+                orcc(); break;
+            case 0x34:
+                pshs(); break;
+            case 0x36:
+                pshu(); break;
+            case 0x35:
+                puls(); break;
+            case 0x37:
+                pulu(); break;
+            // BDA - Adding in undocumented 6809 instructions
+            case 0x3e:
+                reset(); break;
+            case 0x49:
+                rola(); break;
+            case 0x59:
+                rolb(); break;
+            case 0x09: case 0x69: case 0x79:
+                rol(); break;
+            case 0x46:
+                rora(); break;
+            case 0x56:
+                rorb(); break;
+            case 0x06: case 0x66: case 0x76:
+                ror(); break;
+            case 0x3b:
+                rti(); break;
+            case 0x39:
+                rts(); break;
+            case 0x82: case 0x92: case 0xa2: case 0xb2:
+                sbca(); break;
+            case 0xc2: case 0xd2: case 0xe2: case 0xf2:
+                sbcb(); break;
+            case 0x1d:
+                sex(); break;
+            case 0x97: case 0xa7: case 0xb7:
+                sta(); break;
+            case 0xd7: case 0xe7: case 0xf7:
+                stb(); break;
+            case 0xdd: case 0xed: case 0xfd:
+                std(); break;
+            case 0x10df: case 0x10ef: case 0x10ff:
+                sts(); break;
+            case 0xdf: case 0xef: case 0xff:
+                stu(); break;
+            case 0x9f: case 0xaf: case 0xbf:
+                stx(); break;
+            case 0x109f: case 0x10af: case 0x10bf:
+                sty(); break;
+            case 0x80: case 0x90: case 0xa0: case 0xb0:
+                suba(); break;
+            case 0xc0: case 0xd0: case 0xe0: case 0xf0:
+                subb(); break;
+            case 0x83: case 0x93: case 0xa3: case 0xb3:
+                subd(); break;
+            case 0x3f:
+                swi(); break;
+            case 0x103f:
+                swi2(); break;
+            case 0x113f:
+                swi3(); break;
+            case 0x1f:
+                tfr(); break;
+            case 0x4d:
+                tsta(); break;
+            case 0x5d:
+                tstb(); break;
+            case 0x0d: case 0x6d: case 0x7d:
+                tst(); break;
+            case 0x1024:
+                lbcc(); break;
+            case 0x1025:
+                lbcs(); break;
+            case 0x1027:
+                lbeq(); break;
+            case 0x102c:
+                lbge(); break;
+            case 0x102e:
+                lbgt(); break;
+            case 0x1022:
+                lbhi(); break;
+            case 0x102f:
+                lble(); break;
+            case 0x1023:
+                lbls(); break;
+            case 0x102d:
+                lblt(); break;
+            case 0x102b:
+                lbmi(); break;
+            case 0x1026:
+                lbne(); break;
+            case 0x102a:
+                lbpl(); break;
+            case 0x1021:
+                lbrn(); break;
+            case 0x1028:
+                lbvc(); break;
+            case 0x1029:
+                lbvs(); break;
+*/
+            default:
+                // BDA - make invalid instructions a nop
+                // to distinquish between 6309
+    //          nop(); break;
+                invalid("instruction"); break;
+        }
+
+
     }
 
     public int getSignedByte(int value) {
@@ -167,8 +485,14 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    private int byterefreg(int r)
-    {
+    /**
+     * Get value of referenced 8-bit register.
+     * 0x08 = A
+     * 0x09 = B
+     * 0x0a = CC
+     * otherwise DP
+     */
+    private int byterefreg(int r) {
         if (r == 0x08) {
             return a.intValue();
         } else if (r == 0x09) {
@@ -387,6 +711,51 @@ public class MC6809 extends USimMotorola {
                 refreg(post).add(-2);
                 break;
         }
+    }
+
+    /**
+     * Add Accumulator B into index register X.
+     */
+    private void abx() {
+        x.add(b.intValue());
+    }
+
+    private void help_adc(UByte refB) {
+        int m = fetch_operand();
+
+        {
+            UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f) + cc.bit_c);
+            cc.bit_h = t.btst(4);      // Half carry
+        }
+
+        {
+            UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f) + cc.bit_c);
+            cc.bit_v = t.btst(7);      // Bit 7 carry in
+        }
+
+        {
+            Word t = Word.valueOf(refB.intValue() + m + cc.bit_c);
+            cc.bit_c = t.btst(8);      // Bit 7 carry out
+            refB.set(t.intValue() & 0xff);
+        }
+
+    //  cc.bit_v ^= cc.bit_c;
+        cc.bit_n = refB.btst(7);
+        cc.bit_z = refB.intValue() == 0 ? 1 : 0;
+    }
+
+    /**
+     * Add with carry into accumulator A.
+     */
+    private void adca() {
+        help_adc(a);
+    }
+
+    /**
+     * Add with carry into accumulator B.
+     */
+    private void adcb() {
+        help_adc(b);
     }
 
 }

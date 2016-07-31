@@ -55,8 +55,8 @@ public class UByte {
     /**
      * Bit test.
      */
-    public boolean btst(int n) {
-        return (value & (1 << n)) != 0;
+    public int btst(int n) {
+        return ((value & (1 << n)) != 0) ? 1 : 0;
     }
 
     public void bset(int n) {
