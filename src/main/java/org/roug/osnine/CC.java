@@ -3,11 +3,12 @@ package org.roug.osnine;
 /**
  * Condiction codes register.
  */
-public class CC {
+public class CC implements Register {
    
-    /*
+    enum ConditionBit { C, V, Z, N, I, H, F, E };
+
     private int all;    // Condition code register
-    */
+
 
     /** Entire. */
     public int bit_e;
@@ -52,7 +53,8 @@ public class CC {
     /**
      * Get all condition codes as one byte.
      */
-    public int getCC() {
+    @Override
+    public int get() {
         int combined = (bit_e << 7)
             | (bit_f << 6)
             | (bit_h << 5)
@@ -65,11 +67,30 @@ public class CC {
 
     }
 
-/*
-    public void setCC(int newValue) {
-//      all = newValue;
+    /**
+     * Get all condition codes as one byte.
+     */
+    @Override
+    public int getSigned() {
+        throw new UnsupportedOperationException("Signed value not supported");
     }
-*/
+
+    @Override
+    public int intValue() {
+        return get();
+    }
+
+    @Override
+    public void set(int newValue) {
+        bit_e = newValue & 0x80;
+        bit_f = newValue & 0x40;
+        bit_h = newValue & 0x20;
+        bit_i = newValue & 0x10;
+        bit_n = newValue & 0x08;
+        bit_z = newValue & 0x04;
+        bit_v = newValue & 0x02;
+        bit_c = newValue & 0x01;
+    }
 
     public void clearCC() {
         bit_e = 0;
@@ -83,22 +104,30 @@ public class CC {
     }
 
     //!< Entire
-/*
-    int get_bit_e() {
-        return all & 1;
+
+    /**
+     * Bit test.
+     */
+    //FIXME
+    @Override
+    public int btst(int n) {
+//      switch (n) {
+//      case ConditionBit.C.ordinal(): return bit_c;
+//      }        
+        return ((all & (1 << n)) != 0) ? 1 : 0;
     }
 
-    void set_bit_e(int newValue) {
-        all |= newValue;
+    //FIXME
+    @Override
+    public void bset(int n) {
+        all |= (1 << n);
     }
 
-    int get_bit_f() {
-        return all & (1 << 1);
+    //FIXME
+    @Override
+    public void bclr(int n) {
+        all &= ~(1 << n);
     }
 
-    void set_bit_f(int newValue) {
-        all |= (newValue << 1);
-    }
-*/
 }
 

@@ -15,7 +15,7 @@ public class CCTest {
         cc.bit_c = 1;
         
         assertEquals(1, cc.bit_c);
-        assertEquals(0x01, cc.getCC());
+        assertEquals(0x01, cc.get());
     }
 
 
@@ -29,7 +29,7 @@ public class CCTest {
         cc.bit_h = 1;
         
         assertEquals(1, cc.bit_h);
-        assertEquals(0x20, cc.getCC());
+        assertEquals(0x20, cc.get());
     }
 
 }

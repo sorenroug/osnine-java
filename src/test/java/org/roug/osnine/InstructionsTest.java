@@ -13,6 +13,9 @@ public class InstructionsTest {
 
     private MC6809 myTestCPU;
 
+    /**
+     * Load a short program into memory.
+     */
     private void loadProg(int[] instructions) {
         myTestCPU.write_word(0xfffe, LOCATION);
         int respc = myTestCPU.read_word(0xfffe);
@@ -23,6 +26,28 @@ public class InstructionsTest {
         }
         myTestCPU.reset();
         myTestCPU.cc.clearCC();
+    }
+
+    private void setCCABDPXYSU(int cc, int a, int b, int dp, int x, int y, int s, int u) {
+        myTestCPU.cc.set(cc);
+        myTestCPU.a.set(a);
+        myTestCPU.b.set(b);
+        myTestCPU.dp.set(dp);
+        myTestCPU.x.set(x);
+        myTestCPU.y.set(y);
+        myTestCPU.s.set(s);
+        myTestCPU.u.set(u);
+    }
+
+    private void verifyCCABDPXYSU(int cc, int a, int b, int dp, int x, int y, int s, int u) {
+        assertEquals(cc, myTestCPU.cc.intValue());
+        assertEquals(a, myTestCPU.a.intValue());
+        assertEquals(b, myTestCPU.b.intValue());
+        assertEquals(dp, myTestCPU.dp.intValue());
+        assertEquals(x, myTestCPU.x.intValue());
+        assertEquals(y, myTestCPU.y.intValue());
+        assertEquals(s, myTestCPU.s.intValue());
+        assertEquals(u, myTestCPU.u.intValue());
     }
 
     @Before
@@ -36,14 +61,16 @@ public class InstructionsTest {
             0x3a // ABX
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
-        myTestCPU.x.set(0x8006);
-        myTestCPU.b.set(0xCE);
+        setCCABDPXYSU(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
+//      myTestCPU.cc.bit_c = 0;
+//      myTestCPU.x.set(0x8006);
+//      myTestCPU.b.set(0xCE);
         myTestCPU.execute();
         assertEquals(0x3a, myTestCPU.ir);
         assertEquals(LOCATION + 1, myTestCPU.pc);
-        assertEquals(0x80D4, myTestCPU.x.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
+        verifyCCABDPXYSU(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
+//      assertEquals(0x80D4, myTestCPU.x.intValue());
+//      assertEquals(0, myTestCPU.cc.bit_c);
     }
 
 

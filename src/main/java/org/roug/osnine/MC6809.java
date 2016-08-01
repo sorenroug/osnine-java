@@ -498,7 +498,7 @@ public class MC6809 extends USimMotorola {
         } else if (r == 0x09) {
             return b.intValue();
         } else if (r == 0x0a) {
-            return cc.getCC();
+            return cc.intValue();
         } else {
             return dp.intValue();
         }
@@ -815,6 +815,34 @@ public class MC6809 extends USimMotorola {
     //  cc.bit_v ^= cc.bit_c;
         cc.bit_n = d.btst(15);
         cc.bit_z = d.intValue() == 0 ? 1 : 0;
+    }
+
+    private void help_and(UByte refB) {
+        refB.set(refB.intValue() & fetch_operand());
+        cc.bit_n = refB.btst(7);
+        cc.bit_z = refB.intValue() == 0 ? 1 : 0;
+        cc.bit_v = 0;
+    }
+
+    /**
+     * AND memory into accumulator A.
+     */
+    private void anda() {
+        help_and(a);
+    }
+
+    /**
+     * AND memory into accumulator B.
+     */
+    private void andb() {
+        help_and(b);
+    }
+
+    /**
+     * AND Immediate Data into Condition Code register.
+     */
+    private void andcc() {
+        cc.set(cc.intValue() & fetch());
     }
 
 }
