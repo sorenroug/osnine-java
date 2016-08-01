@@ -63,10 +63,12 @@ public class WordTest {
         assertEquals(501, reg.getSigned());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    //@Test(expected = IllegalArgumentException.class)
+    @Test
     public void setTooMuch() {
         Word reg = new Word();
         reg.set(66000);
+        assertEquals(464, reg.get());
     }
         
 }

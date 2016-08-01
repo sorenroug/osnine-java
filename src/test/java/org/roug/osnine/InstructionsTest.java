@@ -36,22 +36,25 @@ public class InstructionsTest {
             0x3a // ABX
         };
         loadProg(instructions);
-        myTestCPU.x.set(505);
-        myTestCPU.b.set(5);
+        myTestCPU.cc.bit_c = 0;
+        myTestCPU.x.set(0x8006);
+        myTestCPU.b.set(0xCE);
         myTestCPU.execute();
         assertEquals(0x3a, myTestCPU.ir);
         assertEquals(LOCATION + 1, myTestCPU.pc);
-        assertEquals(510, myTestCPU.x.intValue());
+        assertEquals(0x80D4, myTestCPU.x.intValue());
+        assertEquals(0, myTestCPU.cc.bit_c);
     }
 
 
     @Test
-    public void testADCA() {
+    public void testADCANoCarry() {
         int instructions[] = {
             0x89, // ADCA
-            0x02  // value 2
+            0x02  // value
         };
         loadProg(instructions);
+        myTestCPU.cc.bit_c = 0;
         myTestCPU.a.set(5);
         myTestCPU.execute();
         assertEquals(0x89, myTestCPU.ir);
@@ -61,4 +64,39 @@ public class InstructionsTest {
     }
 
 
+    @Test
+    public void testADCAWithCarry() {
+        int instructions[] = {
+            0x89, // ADCA
+            0x22  // value
+        };
+        loadProg(instructions);
+        myTestCPU.cc.bit_c = 1;
+        myTestCPU.a.set(0x14);
+        myTestCPU.execute();
+        assertEquals(0x89, myTestCPU.ir);
+        assertEquals(LOCATION + 2, myTestCPU.pc);
+        assertEquals(0x37, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.bit_c);
+    }
+
+    @Test
+    public void testADDDNoCarry() {
+        int instructions[] = {
+            0xC3, // ADCD
+            0x02, // value
+            0xB0  // value
+        };
+        loadProg(instructions);
+        myTestCPU.cc.bit_c = 0;
+        myTestCPU.b.set(0x04);
+        myTestCPU.a.set(0x05);
+        myTestCPU.execute();
+        assertEquals(0xC3, myTestCPU.ir);
+        assertEquals(LOCATION + 3, myTestCPU.pc);
+        assertEquals(0x06, myTestCPU.b.intValue());
+        assertEquals(0xB5, myTestCPU.a.intValue());
+        assertEquals(0x06B5, myTestCPU.d.intValue());
+        assertEquals(0, myTestCPU.cc.bit_c);
+    }
 }

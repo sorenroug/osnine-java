@@ -28,10 +28,10 @@ public class RegisterD implements Register {
     }
 
     @Override
-    public void set(int newValue) throws IllegalArgumentException {
-        if (newValue > 0xffff || newValue < 0x0) {
-            throw new IllegalArgumentException("Value must fit in 16 bits.");
-        }
+    public void set(int newValue) {
+//      if (newValue > 0xffff || newValue < 0x0) {
+//          throw new IllegalArgumentException("Value must fit in 16 bits.");
+//      }
         regA.set(newValue);
         regB.set(newValue >> 8);
     }

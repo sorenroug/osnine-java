@@ -32,11 +32,11 @@ public class UByte implements Register {
     }
 
     @Override
-    public void set(int newValue) throws IllegalArgumentException {
-        if (newValue > 0xff || newValue < -0x80) {
-            throw new IllegalArgumentException("Value must fit in 8 bits.");
-        }
-        value = newValue;
+    public void set(int newValue) {
+//      if (newValue > 0xff || newValue < -0x80) {
+//          throw new IllegalArgumentException("Value must fit in 8 bits.");
+//      }
+        value = newValue & 0xff;
     }
 
     @Override
@@ -54,6 +54,7 @@ public class UByte implements Register {
 
     public void add(int x) {
         value += x;
+        value = value & 0xff;
     }
 
     /**

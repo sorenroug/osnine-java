@@ -139,13 +139,13 @@ public class MC6809 extends USimMotorola {
                 adca(); break;
             case 0xc9: case 0xd9: case 0xe9: case 0xf9:
                 adcb(); break;
-/*
             case 0x8b: case 0x9b: case 0xab: case 0xbb:
                 adda(); break;
             case 0xcb: case 0xdb: case 0xeb: case 0xfb:
                 addb(); break;
             case 0xc3: case 0xd3: case 0xe3: case 0xf3:
                 addd(); break;
+/*
             case 0x84: case 0x94: case 0xa4: case 0xb4:
                 anda(); break;
             case 0xc4: case 0xd4: case 0xe4: case 0xf4:

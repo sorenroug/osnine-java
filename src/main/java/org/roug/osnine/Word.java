@@ -34,10 +34,10 @@ public class Word implements Register {
 
     @Override
     public void set(int newValue) throws IllegalArgumentException {
-        if (newValue > 0xffff || newValue < -0x8000) {
-            throw new IllegalArgumentException("Value must fit in 16 bits.");
-        }
-        value = newValue;
+//      if (newValue > 0xffff || newValue < -0x8000) {
+//          throw new IllegalArgumentException("Value must fit in 16 bits.");
+//      }
+        value = newValue & 0xffff;
     }
 
     @Override
@@ -62,9 +62,10 @@ public class Word implements Register {
      */
     public void add(int increment) {
         value += increment;
-        if (value > 0xffff || value < -0x8000) {
-            throw new IllegalArgumentException("Value must fit in 16 bits.");
-        }
+        value = value & 0xffff;
+//      if (value > 0xffff || value < -0x8000) {
+//          throw new IllegalArgumentException("Value must fit in 16 bits.");
+//      }
     }
 
     public static Word valueOf(int i) {
