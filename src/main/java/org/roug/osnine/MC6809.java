@@ -35,13 +35,13 @@ public class MC6809 extends USimMotorola {
     public Word y = new Word();
 
     /** Direct Page register. */
-    public UByte  dp = new UByte();
+    public UByte dp = new UByte();
     public UByte a = new UByte();
     public UByte b = new UByte();
     public RegisterD d = new RegisterD(a, b);
 
     /** Condiction codes. */
-    public CC cc = new CC();
+    public RegisterCC cc = new RegisterCC();
 
     /**
      * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
@@ -59,7 +59,7 @@ public class MC6809 extends USimMotorola {
     public void reset() {
         pc = read_word(0xfffe);
         dp.set(0x00);      /* Direct page register = 0x00 */
-        cc.clearCC();      /* Clear all flags */
+        cc.clear();      /* Clear all flags */
         cc.bit_i = 1;       /* IRQ disabled */
         cc.bit_f = 1;       /* FIRQ disabled */
     }
@@ -145,13 +145,13 @@ public class MC6809 extends USimMotorola {
                 addb(); break;
             case 0xc3: case 0xd3: case 0xe3: case 0xf3:
                 addd(); break;
-/*
             case 0x84: case 0x94: case 0xa4: case 0xb4:
                 anda(); break;
             case 0xc4: case 0xd4: case 0xe4: case 0xf4:
                 andb(); break;
             case 0x1c:
                 andcc(); break;
+/*
             case 0x47:
                 asra(); break;
             case 0x57:
@@ -713,6 +713,17 @@ public class MC6809 extends USimMotorola {
         }
     }
 
+    private void setBitZ(Register ref) {
+        cc.bit_z = ref.intValue() == 0 ? 1 : 0;
+    }
+
+    /**
+     * Set CC bit N if value is negative.
+     */
+    private void setBitN(Register ref) {
+        cc.bit_n = ref.btst(ref.WIDTH - 1);
+    }
+
     /**
      * Add Accumulator B into index register X.
      */
@@ -740,8 +751,9 @@ public class MC6809 extends USimMotorola {
         }
 
     //  cc.bit_v ^= cc.bit_c;
-        cc.bit_n = refB.btst(7);
-        cc.bit_z = refB.intValue() == 0 ? 1 : 0;
+        //cc.bit_n = refB.btst(7);
+        setBitN(refB);
+        setBitZ(refB);
     }
 
     /**
@@ -780,7 +792,7 @@ public class MC6809 extends USimMotorola {
 
     //  cc.bit_v ^= cc.bit_c;
         cc.bit_n = refB.btst(7);
-        cc.bit_z = refB.intValue() == 0 ? 1 : 0;
+        setBitZ(refB);
     }
 
     /**
@@ -814,13 +826,13 @@ public class MC6809 extends USimMotorola {
 
     //  cc.bit_v ^= cc.bit_c;
         cc.bit_n = d.btst(15);
-        cc.bit_z = d.intValue() == 0 ? 1 : 0;
+        setBitZ(d);
     }
 
     private void help_and(UByte refB) {
         refB.set(refB.intValue() & fetch_operand());
         cc.bit_n = refB.btst(7);
-        cc.bit_z = refB.intValue() == 0 ? 1 : 0;
+        setBitZ(refB);
         cc.bit_v = 0;
     }
 
@@ -843,6 +855,42 @@ public class MC6809 extends USimMotorola {
      */
     private void andcc() {
         cc.set(cc.intValue() & fetch());
+    }
+
+    private void help_asr(UByte refB) {   
+        cc.bit_c = refB.btst(0);
+        refB.set(refB.intValue() >> 1);    /* Shift word right */
+        if ((cc.bit_n = refB.btst(6)) != 0) {
+            refB.bset(7);
+        }
+        setBitZ(refB);
+    }
+
+    /**
+     * Arithmetic Shift Right accumulator A.
+     */
+    private void asra() {
+        help_asr(a);
+    }
+
+    /**
+     * Arithmetic Shift Right accumulator B.
+     */
+    private void asrb() {
+        help_asr(b);
+    }
+
+    /**
+     * Arithmetic Shift Right memory byte.
+     */
+    private void asr()
+    {
+        int    addr = fetch_effective_address();
+        int    m = read(addr);
+
+        UByte mbyte = UByte.valueOf(m);
+        help_asr(mbyte);
+        write(addr, mbyte);
     }
 
 }

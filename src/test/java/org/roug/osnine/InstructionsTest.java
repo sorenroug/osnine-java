@@ -25,7 +25,7 @@ public class InstructionsTest {
             myTestCPU.write(i + LOCATION, instructions[i]);
         }
         myTestCPU.reset();
-        myTestCPU.cc.clearCC();
+        myTestCPU.cc.clear();
     }
 
     private void setCCABDPXYSU(int cc, int a, int b, int dp, int x, int y, int s, int u) {

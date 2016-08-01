@@ -5,6 +5,8 @@ package org.roug.osnine;
  */
 public class Word implements Register {
 
+    public static final int WIDTH = 16;
+
     private int value;
 
     /**

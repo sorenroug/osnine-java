@@ -5,6 +5,8 @@ package org.roug.osnine;
  */
 public class RegisterD implements Register {
 
+    public static final int WIDTH = 16;
+
     private UByte regA;
     private UByte regB;
 

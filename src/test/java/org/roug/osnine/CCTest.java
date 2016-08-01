@@ -10,8 +10,8 @@ public class CCTest {
      */
     @Test
     public void setCarryBit() {
-        CC cc = new CC();
-        cc.clearCC();
+        RegisterCC cc = new RegisterCC();
+        cc.clear();
         cc.bit_c = 1;
         
         assertEquals(1, cc.bit_c);
@@ -24,8 +24,8 @@ public class CCTest {
      */
     @Test
     public void setHalfBit() {
-        CC cc = new CC();
-        cc.clearCC();
+        RegisterCC cc = new RegisterCC();
+        cc.clear();
         cc.bit_h = 1;
         
         assertEquals(1, cc.bit_h);

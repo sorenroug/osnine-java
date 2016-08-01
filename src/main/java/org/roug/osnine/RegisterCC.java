@@ -1,11 +1,11 @@
 package org.roug.osnine;
 
 /**
- * Condiction codes register.
+ * Condition codes register.
  */
-public class CC implements Register {
+public class RegisterCC implements Register {
    
-    enum ConditionBit { C, V, Z, N, I, H, F, E };
+    public static final int WIDTH = 8;
 
     private int all;    // Condition code register
 
@@ -92,7 +92,7 @@ public class CC implements Register {
         bit_c = newValue & 0x01;
     }
 
-    public void clearCC() {
+    public void clear() {
         bit_e = 0;
         bit_f = 0;
         bit_h = 0;
@@ -112,7 +112,7 @@ public class CC implements Register {
     @Override
     public int btst(int n) {
 //      switch (n) {
-//      case ConditionBit.C.ordinal(): return bit_c;
+//      case CC.C.ordinal(): return bit_c;
 //      }        
         return ((all & (1 << n)) != 0) ? 1 : 0;
     }

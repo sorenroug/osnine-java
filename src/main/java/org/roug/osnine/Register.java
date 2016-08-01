@@ -5,6 +5,8 @@ package org.roug.osnine;
  */
 public interface Register {
 
+    public static final int WIDTH = 8;
+
     int intValue();
 
     public int get();
