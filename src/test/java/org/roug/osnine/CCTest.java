@@ -12,9 +12,9 @@ public class CCTest {
     public void setCarryBit() {
         RegisterCC cc = new RegisterCC();
         cc.clear();
-        cc.bit_c = 1;
+        cc.setC(1);
         
-        assertEquals(1, cc.bit_c);
+        assertEquals(1, cc.getC());
         assertEquals(0x01, cc.get());
     }
 
@@ -26,9 +26,9 @@ public class CCTest {
     public void setHalfBit() {
         RegisterCC cc = new RegisterCC();
         cc.clear();
-        cc.bit_h = 1;
+        cc.setH(1);
         
-        assertEquals(1, cc.bit_h);
+        assertEquals(1, cc.getH());
         assertEquals(0x20, cc.get());
     }
 

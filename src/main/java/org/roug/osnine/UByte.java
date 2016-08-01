@@ -59,6 +59,11 @@ public class UByte implements Register {
         value = value & 0xff;
     }
 
+    @Override
+    public String toString() {
+        return Integer.valueOf(value).toString();
+    }
+
     /**
      * Bit test.
      */

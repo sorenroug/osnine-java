@@ -60,8 +60,8 @@ public class MC6809 extends USimMotorola {
         pc = read_word(0xfffe);
         dp.set(0x00);      /* Direct page register = 0x00 */
         cc.clear();      /* Clear all flags */
-        cc.bit_i = 1;       /* IRQ disabled */
-        cc.bit_f = 1;       /* FIRQ disabled */
+        cc.setI(1);       /* IRQ disabled */
+        cc.setF(1);       /* FIRQ disabled */
     }
 
     public void status() {
@@ -151,13 +151,13 @@ public class MC6809 extends USimMotorola {
                 andb(); break;
             case 0x1c:
                 andcc(); break;
-/*
             case 0x47:
                 asra(); break;
             case 0x57:
                 asrb(); break;
             case 0x07: case 0x67: case 0x77:
                 asr(); break;
+/*
             case 0x24:
                 bcc(); break;
             case 0x25:
@@ -326,7 +326,7 @@ public class MC6809 extends USimMotorola {
             // BDA - Adding in undocumented 6809 instructions
             // NEG/COM combination instruction for direct page
             case 0x02:
-                if (cc.bit_c)
+                if (cc.getC() == 1)
                     com();
                 else
                     neg();
@@ -714,14 +714,14 @@ public class MC6809 extends USimMotorola {
     }
 
     private void setBitZ(Register ref) {
-        cc.bit_z = ref.intValue() == 0 ? 1 : 0;
+        cc.setZ(ref.intValue() == 0 ? 1 : 0);
     }
 
     /**
      * Set CC bit N if value is negative.
      */
     private void setBitN(Register ref) {
-        cc.bit_n = ref.btst(ref.WIDTH - 1);
+        cc.setN(ref.btst(ref.WIDTH - 1));
     }
 
     /**
@@ -735,19 +735,19 @@ public class MC6809 extends USimMotorola {
         int m = fetch_operand();
 
         {
-            UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f) + cc.bit_c);
-            cc.bit_h = t.btst(4);      // Half carry
+            UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f) + cc.getC());
+            cc.setH(t.btst(4));      // Half carry
         }
 
         {
-            UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f) + cc.bit_c);
-            cc.bit_v = t.btst(7);      // Bit 7 carry in
+            UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f) + cc.getC());
+            cc.setV(t.btst(7));      // Bit 7 carry in
         }
 
         {
-            Word t = Word.valueOf(refB.intValue() + m + cc.bit_c);
-            cc.bit_c = t.btst(8);      // Bit 7 carry out
-            refB.set(t.intValue() & 0xff);
+            Word t = Word.valueOf(refB.intValue() + m + cc.getC());
+            cc.setC(t.btst(8));      // Bit 7 carry out
+            refB.set(t.intValue());
         }
 
     //  cc.bit_v ^= cc.bit_c;
@@ -776,22 +776,22 @@ public class MC6809 extends USimMotorola {
 
         {
             UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f));
-            cc.bit_h = t.btst(4);      // Half carry
+            cc.setH(t.btst(4));      // Half carry
         }
 
         {
             UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f));
-            cc.bit_v = t.btst(7);      // Bit 7 carry in
+            cc.setV(t.btst(7));      // Bit 7 carry in
         }
 
         {
             Word t = Word.valueOf(refB.intValue() + m);
-            cc.bit_c = t.btst(8);      // Bit 7 carry out
+            cc.setC(t.btst(8));      // Bit 7 carry out
             refB.set(t.intValue() & 0xff);
         }
 
     //  cc.bit_v ^= cc.bit_c;
-        cc.bit_n = refB.btst(7);
+        cc.setN(refB.btst(7));
         setBitZ(refB);
     }
 
@@ -819,21 +819,21 @@ public class MC6809 extends USimMotorola {
             int intD = d.intValue();
             Word t = Word.valueOf((intD & 0x7fff) + (m & 0x7fff));
             //cc.bit_v = btst(intD ^ m ^ t ^ (t >> 1), 15);
-            cc.bit_v = t.btst(15);      // Bit 15 carry in
-            cc.bit_c = t.btst(16);
+            cc.setV(t.btst(15));      // Bit 15 carry in
+            cc.setC(t.btst(16));
             d.set(t.intValue());
         }
 
     //  cc.bit_v ^= cc.bit_c;
-        cc.bit_n = d.btst(15);
+        cc.setN(d.btst(15));
         setBitZ(d);
     }
 
     private void help_and(UByte refB) {
         refB.set(refB.intValue() & fetch_operand());
-        cc.bit_n = refB.btst(7);
+        cc.setN(refB.btst(7));
         setBitZ(refB);
-        cc.bit_v = 0;
+        cc.setV(0);
     }
 
     /**
@@ -858,9 +858,10 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_asr(UByte refB) {   
-        cc.bit_c = refB.btst(0);
+        cc.setC(refB.btst(0));
         refB.set(refB.intValue() >> 1);    /* Shift word right */
-        if ((cc.bit_n = refB.btst(6)) != 0) {
+        cc.setN(refB.btst(6));
+        if (cc.getN() != 0) {
             refB.bset(7);
         }
         setBitZ(refB);
@@ -883,10 +884,9 @@ public class MC6809 extends USimMotorola {
     /**
      * Arithmetic Shift Right memory byte.
      */
-    private void asr()
-    {
-        int    addr = fetch_effective_address();
-        int    m = read(addr);
+    private void asr() {
+        int addr = fetch_effective_address();
+        int m = read(addr);
 
         UByte mbyte = UByte.valueOf(m);
         help_asr(mbyte);

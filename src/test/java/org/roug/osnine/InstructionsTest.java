@@ -62,15 +62,10 @@ public class InstructionsTest {
         };
         loadProg(instructions);
         setCCABDPXYSU(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
-//      myTestCPU.cc.bit_c = 0;
-//      myTestCPU.x.set(0x8006);
-//      myTestCPU.b.set(0xCE);
         myTestCPU.execute();
         assertEquals(0x3a, myTestCPU.ir);
         assertEquals(LOCATION + 1, myTestCPU.pc);
         verifyCCABDPXYSU(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
-//      assertEquals(0x80D4, myTestCPU.x.intValue());
-//      assertEquals(0, myTestCPU.cc.bit_c);
     }
 
 
@@ -81,13 +76,15 @@ public class InstructionsTest {
             0x02  // value
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
-        myTestCPU.a.set(5);
+        setCCABDPXYSU(0, 5, 0, 0, 0, 0, 0, 0);
+//      myTestCPU.cc.bit_c = 0;
+//      myTestCPU.a.set(5);
         myTestCPU.execute();
-        assertEquals(0x89, myTestCPU.ir);
+        assertEquals(instructions[0], myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc);
-        assertEquals(7, myTestCPU.a.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
+//      assertEquals(7, myTestCPU.a.intValue());
+//      assertEquals(0, myTestCPU.cc.bit_c);
+        verifyCCABDPXYSU(0, 7, 0, 0, 0, 0, 0, 0);
     }
 
 
@@ -101,7 +98,7 @@ public class InstructionsTest {
         myTestCPU.cc.bit_c = 1;
         myTestCPU.a.set(0x14);
         myTestCPU.execute();
-        assertEquals(0x89, myTestCPU.ir);
+        assertEquals(instructions[0], myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc);
         assertEquals(0x37, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.bit_c);
@@ -126,4 +123,25 @@ public class InstructionsTest {
         assertEquals(0x06B5, myTestCPU.d.intValue());
         assertEquals(0, myTestCPU.cc.bit_c);
     }
+
+    /**
+     * Shift a byte a 0x0402, because DP = 0x04.
+     */
+    @Test
+    public void testASRMemoryByte() {
+        int instructions[] = {
+            0x07, // ASR
+            0x02  // value
+        };
+        loadProg(instructions);
+        setCCABDPXYSU(0, 0, 0, 4, 0, 0, 0, 0);
+        myTestCPU.write(0x0402, 0xf1);
+        myTestCPU.execute();
+        assertEquals(instructions[0], myTestCPU.ir);
+        assertEquals(LOCATION + 2, myTestCPU.pc);
+        verifyCCABDPXYSU(9, 0, 0, 4, 0, 0, 0, 0);
+        int result = myTestCPU.read(0x0402);
+        assertEquals(0xf8, result);
+    }
+
 }

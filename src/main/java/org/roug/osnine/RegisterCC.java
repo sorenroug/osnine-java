@@ -129,5 +129,69 @@ public class RegisterCC implements Register {
         all &= ~(1 << n);
     }
 
+    public int getE() {
+        return bit_e;
+    }
+
+    public int getF() {
+        return bit_f;
+    }
+
+    public int getH() {
+        return bit_h;
+    }
+
+    public int getI() {
+        return bit_i;
+    }
+
+    public int getN() {
+        return bit_n;
+    }
+
+    public int getZ() {
+        return bit_z;
+    }
+
+    public int getV() {
+        return bit_v;
+    }
+
+    public int getC() {
+        return bit_c;
+    }
+
+
+    public void setE(int val) {
+        bit_e = val;
+    }
+
+    public void setF(int val) {
+        bit_f = val;
+    }
+
+    public void setH(int val) {
+        bit_h = val;
+    }
+
+    public void setI(int val) {
+        bit_i = val;
+    }
+
+    public void setN(int val) {
+        bit_n = val;
+    }
+
+    public void setZ(int val) {
+        bit_z = val;
+    }
+
+    public void setV(int val) {
+        bit_v = val;
+    }
+
+    public void setC(int val) {
+        bit_c = val;
+    }
 }
 
