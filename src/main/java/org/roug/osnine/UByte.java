@@ -3,7 +3,7 @@ package org.roug.osnine;
 /**
  * Byte size register (unsigned).
  */
-public class UByte {
+public class UByte implements Register {
 
     private int value;
 
@@ -21,14 +21,17 @@ public class UByte {
         set(i);
     }
 
+    @Override
     public int get() {
-        return value & 0xff;
+        return intValue();
     }
 
+    @Override
     public int intValue() {
         return value & 0xff;
     }
 
+    @Override
     public void set(int newValue) throws IllegalArgumentException {
         if (newValue > 0xff || newValue < -0x80) {
             throw new IllegalArgumentException("Value must fit in 8 bits.");
@@ -36,6 +39,7 @@ public class UByte {
         value = newValue;
     }
 
+    @Override
     public int getSigned() {
         if (value < 0x80) {
             return value;
@@ -55,14 +59,17 @@ public class UByte {
     /**
      * Bit test.
      */
+    @Override
     public int btst(int n) {
         return ((value & (1 << n)) != 0) ? 1 : 0;
     }
 
+    @Override
     public void bset(int n) {
         value |= (1 << n);
     }
 
+    @Override
     public void bclr(int n) {
         value &= ~(1 << n);
     }

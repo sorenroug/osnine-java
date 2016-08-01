@@ -758,4 +758,63 @@ public class MC6809 extends USimMotorola {
         help_adc(b);
     }
 
+
+    private void help_add(UByte refB) {
+        int m = fetch_operand();
+
+        {
+            UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f));
+            cc.bit_h = t.btst(4);      // Half carry
+        }
+
+        {
+            UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f));
+            cc.bit_v = t.btst(7);      // Bit 7 carry in
+        }
+
+        {
+            Word t = Word.valueOf(refB.intValue() + m);
+            cc.bit_c = t.btst(8);      // Bit 7 carry out
+            refB.set(t.intValue() & 0xff);
+        }
+
+    //  cc.bit_v ^= cc.bit_c;
+        cc.bit_n = refB.btst(7);
+        cc.bit_z = refB.intValue() == 0 ? 1 : 0;
+    }
+
+    /**
+     * Add memory into accumulator A.
+     */
+    private void adda() {
+        help_add(a);
+    }
+
+    /**
+     * Add memory into accumulator B.
+     */
+    private void addb() {
+        help_add(b);
+    }
+
+    /**
+     * Add memory into accumulator D.
+     */
+    private void addd() {
+        int m = fetch_word_operand();
+
+        {
+            int intD = d.intValue();
+            Word t = Word.valueOf((intD & 0x7fff) + (m & 0x7fff));
+            //cc.bit_v = btst(intD ^ m ^ t ^ (t >> 1), 15);
+            cc.bit_v = t.btst(15);      // Bit 15 carry in
+            cc.bit_c = t.btst(16);
+            d.set(t.intValue());
+        }
+
+    //  cc.bit_v ^= cc.bit_c;
+        cc.bit_n = d.btst(15);
+        cc.bit_z = d.intValue() == 0 ? 1 : 0;
+    }
+
 }

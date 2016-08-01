@@ -1,26 +1,26 @@
 package org.roug.osnine;
 
 /**
- * Condiction codes register.
+ * Register interface.
  */
-public class Register {
+public interface Register {
 
-    protected int value;
+    int intValue();
 
-    public int intValue() {
-        return value;
-    }
+    public int get();
 
-    public int get() {
-        return value;
-    }
+    public void set(int newValue);
 
-    public void set(int newValue) {
-        value = newValue;
-    }
+    public int getSigned();
 
-    public int getSigned() {
-        return value;
-    }
+    /**
+     * Bit test.
+     */
+    int btst(int n);
+
+    void bset(int n);
+
+    void bclr(int n);
+
 }
 
