@@ -1,13 +1,15 @@
 package org.roug.osnine;
 
 /**
- * Word size register (i.e. 16 bit).
+ * Word size register. (i.e. 16 bit).
  */
 public class Word implements Register {
 
     public static final int WIDTH = 16;
 
     private int value;
+
+    private String registerName = "";
 
     /**
      * Constructor.
@@ -19,10 +21,17 @@ public class Word implements Register {
     /**
      * Constructor.
      */
+    public Word(String name) {
+        value = 0;
+        registerName = name;
+    }
+
+    /**
+     * Constructor.
+     */
     public Word(int i) {
         set(i);
     }
-
 
     @Override
     public int intValue() {
@@ -89,5 +98,9 @@ public class Word implements Register {
 	value &= ~(1 << n);
     }
 
-}
+    @Override
+    public String toString() {
+        return "[" + registerName + "]:" + Integer.valueOf(value).toString();
+    }
 
+}

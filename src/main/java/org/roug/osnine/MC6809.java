@@ -9,7 +9,7 @@ public class MC6809 extends USimMotorola {
     public static final int inherent = 1;
     public static final int extended = 2;
     public static final int direct = 3;
-    public static final int indexed = 3;
+    public static final int indexed = 4;
 
     protected int mode;
 
@@ -27,21 +27,22 @@ public class MC6809 extends USimMotorola {
 
 
     /** Stack pointer U. */
-    public Word u = new Word();
-    public Word s = new Word();       //!< Stack pointer S
+    public final Word u = new Word("U");
+    /** Stack pointer S. */
+    public final Word s = new Word("S");
     /** Index register X. */
-    public Word x = new Word();
+    public final Word x = new Word("X");
     /** Index register Y. */
-    public Word y = new Word();
+    public final Word y = new Word("Y");
 
     /** Direct Page register. */
-    public UByte dp = new UByte();
-    public UByte a = new UByte();
-    public UByte b = new UByte();
-    public RegisterD d = new RegisterD(a, b);
+    public final UByte dp = new UByte("DP");
+    public final UByte a = new UByte("A");
+    public final UByte b = new UByte("B");
+    public final RegisterD d = new RegisterD(a, b);
 
     /** Condiction codes. */
-    public RegisterCC cc = new RegisterCC();
+    public final RegisterCC cc = new RegisterCC();
 
     /**
      * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
@@ -200,6 +201,7 @@ public class MC6809 extends USimMotorola {
                 bvc(); break;
             case 0x29:
                 bvs(); break;
+*/
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x4f:
             case 0x4f: case 0x4e:
@@ -210,6 +212,7 @@ public class MC6809 extends USimMotorola {
                 clrb(); break;
             case 0x0f: case 0x6f: case 0x7f:
                 clr(); break;
+/*
             case 0x81: case 0x91: case 0xa1: case 0xb1:
                 cmpa(); break;
             case 0xc1: case 0xd1: case 0xe1: case 0xf1:
@@ -1087,13 +1090,13 @@ public class MC6809 extends USimMotorola {
 
     private void clr() {
         int addr = fetch_effective_address();
-        UByte m = read(addr);
+        UByte m = UByte.valueOf(read(addr));
         help_clr(m);
         write(addr, m);
     }
 
     private void help_clr(UByte refB) {
-        cc.setN(0;
+        cc.setN(0);
         cc.setZ(1);
         cc.setV(0);
         cc.setC(0);
@@ -1436,14 +1439,14 @@ public class MC6809 extends USimMotorola {
             regB = t & 0xff;
         }
 
-        cc.bit_n = btst(regB, 7);
-        cc.bit_z = !regB;
+        setBitN(regB);
+        setBitZ(regB);
         cc.bit_c = (regB != 0);
     }
 */
     private void nop() {
     }
-/*
+
     private void ora() {
         help_or(a);
     }
@@ -1453,12 +1456,12 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_or(UByte regB) {
-        regB = regB | fetch_operand();
-        cc.bit_v = 0;
-        cc.bit_n = btst(regB, 7);
-        cc.bit_z = !regB;
+        regB.set(regB.intValue() | fetch_operand());
+        cc.setV(0);
+        setBitN(regB);
+        setBitZ(regB);
     }
-
+/*
     private void orcc() {
         cc.all |= fetch_operand();
     }
@@ -1612,9 +1615,9 @@ public class MC6809 extends USimMotorola {
     }
 
     private void sex() {
-        cc.bit_n = btst(b, 7);
-        a = cc.bit_n ? 255 : 0;
-        cc.bit_z = !a;
+        setBitN(b);
+        a.set(cc.isSetN ? 255 : 0);
+        setBitZ(a);
     }
 
     private void sta() {
@@ -1734,7 +1737,7 @@ public class MC6809 extends USimMotorola {
             return;
         }
     }
-
+*/
     private void tsta() {
         help_tst(a);
     }
@@ -1744,17 +1747,17 @@ public class MC6809 extends USimMotorola {
     }
 
     private void tst() {
-        Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        int addr = fetch_effective_address();
+        UByte m = UByte.valueOf(read(addr));
         help_tst(m);
     }
 
     private void help_tst(UByte dataB) {
-        cc.bit_v = 0;
-        cc.bit_n = dataB.btst(7);
+        cc.setV(0);
+        setBitN(dataB);
         setBitZ(dataB);
     }
-*/
+
     private void do_br(boolean test) {
         int offset = extend8(fetch_operand());
         if (test) {

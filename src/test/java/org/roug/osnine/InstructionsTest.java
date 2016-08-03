@@ -160,4 +160,66 @@ public class InstructionsTest {
         assertEquals(0xf8, result);
     }
 
+    /**
+     * Clear byte in extended mode.
+     */
+    @Test
+    public void CLRMemoryByteExtended() {
+        int instructions[] = {
+            0x7F, // CLR
+            0x0F,  // value
+            0x23  // value
+        };
+        loadProg(instructions);
+        setCC_A_B_DP_X_Y_S_U(0, 0, 0, 4, 0, 0, 0, 0);
+        myTestCPU.write(0x0F23, 0xE2);
+        myTestCPU.execute();
+        assertEquals(instructions[0], myTestCPU.ir);
+        assertEquals(LOCATION + 3, myTestCPU.pc);
+        chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 4, 0, 0, 0, 0);
+        int result = myTestCPU.read(0x0F23);
+        assertEquals(0, result);
+    }
+
+    /**
+     * Clear byte in direct mode with DP = 0x0B.
+     */
+    @Test
+    public void CLRMemoryByteDirect() {
+        int instructions[] = {
+            0x0F, // CLR
+            0x23  // value
+        };
+        loadProg(instructions);
+        setCC_A_B_DP_X_Y_S_U(0, 0, 0, 0x0B, 0, 0, 0, 0);
+        myTestCPU.write(0x0B23, 0xE2);
+        myTestCPU.execute();
+        assertEquals(instructions[0], myTestCPU.ir);
+        assertEquals(LOCATION + 2, myTestCPU.pc);
+        chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 0x0B, 0, 0, 0, 0);
+        int result = myTestCPU.read(0x0B23);
+        assertEquals(0, result);
+    }
+
+    /**
+     * Clear byte in indirect mode relative to Y and increment Y.
+     */
+    @Test
+    public void CLRMemoryByteIndexedYinc() {
+        int instructions[] = {
+            0x6F, // CLR
+            0xA0  // value
+        };
+        loadProg(instructions);
+        setCC_A_B_DP_X_Y_S_U(CC.Nmask, 0, 0, 0, 0, 0x899, 0, 0);
+        myTestCPU.write(0x0899, 0xE2);
+        myTestCPU.write(0x089A, 0x22);
+        myTestCPU.execute();
+        assertEquals(instructions[0], myTestCPU.ir);
+        assertEquals(LOCATION + 2, myTestCPU.pc);
+        chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 0, 0, 0x89A, 0, 0);
+        int result = myTestCPU.read(0x0899);
+        assertEquals(0, result);
+    }
+
 }

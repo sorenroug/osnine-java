@@ -9,11 +9,21 @@ public class UByte implements Register {
 
     private int value;
 
+    private String registerName = "";
+
     /**
      * Constructor.
      */
     public UByte() {
         value = 0;
+    }
+
+    /**
+     * Constructor.
+     */
+    public UByte(String name) {
+        value = 0;
+        registerName = name;
     }
 
     /**
@@ -61,7 +71,7 @@ public class UByte implements Register {
 
     @Override
     public String toString() {
-        return Integer.valueOf(value).toString();
+        return "[" + registerName + "]:" + Integer.valueOf(value).toString();
     }
 
     /**
