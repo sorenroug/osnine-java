@@ -25,10 +25,9 @@ public class InstructionsTest {
             myTestCPU.write(i + LOCATION, instructions[i]);
         }
         myTestCPU.reset();
-        myTestCPU.cc.clear();
     }
 
-    private void setCCABDPXYSU(int cc, int a, int b, int dp, int x, int y, int s, int u) {
+    private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         myTestCPU.cc.set(cc);
         myTestCPU.a.set(a);
         myTestCPU.b.set(b);
@@ -39,7 +38,7 @@ public class InstructionsTest {
         myTestCPU.u.set(u);
     }
 
-    private void verifyCCABDPXYSU(int cc, int a, int b, int dp, int x, int y, int s, int u) {
+    private void chkCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         assertEquals(cc, myTestCPU.cc.intValue());
         assertEquals(a, myTestCPU.a.intValue());
         assertEquals(b, myTestCPU.b.intValue());
@@ -61,11 +60,11 @@ public class InstructionsTest {
             0x3a // ABX
         };
         loadProg(instructions);
-        setCCABDPXYSU(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
+        setCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
         myTestCPU.execute();
         assertEquals(0x3a, myTestCPU.ir);
         assertEquals(LOCATION + 1, myTestCPU.pc);
-        verifyCCABDPXYSU(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
+        chkCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
     }
 
 
@@ -76,7 +75,7 @@ public class InstructionsTest {
             0x02  // value
         };
         loadProg(instructions);
-        setCCABDPXYSU(0, 5, 0, 0, 0, 0, 0, 0);
+        setCC_A_B_DP_X_Y_S_U(0, 5, 0, 0, 0, 0, 0, 0);
 //      myTestCPU.cc.bit_c = 0;
 //      myTestCPU.a.set(5);
         myTestCPU.execute();
@@ -84,7 +83,7 @@ public class InstructionsTest {
         assertEquals(LOCATION + 2, myTestCPU.pc);
 //      assertEquals(7, myTestCPU.a.intValue());
 //      assertEquals(0, myTestCPU.cc.bit_c);
-        verifyCCABDPXYSU(0, 7, 0, 0, 0, 0, 0, 0);
+        chkCC_A_B_DP_X_Y_S_U(0, 7, 0, 0, 0, 0, 0, 0);
     }
 
 
@@ -95,13 +94,30 @@ public class InstructionsTest {
             0x22  // value
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 1;
-        myTestCPU.a.set(0x14);
+        //myTestCPU.cc.bit_c = 1;
+        //myTestCPU.a.set(0x14);
+        setCC_A_B_DP_X_Y_S_U(CC.Cmask, 0x14, 0, 0, 0, 0, 0, 0);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc);
-        assertEquals(0x37, myTestCPU.a.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
+        chkCC_A_B_DP_X_Y_S_U(0, 0x37, 0, 0, 0, 0, 0, 0);
+        //assertEquals(0x37, myTestCPU.a.intValue());
+        //assertEquals(0, myTestCPU.cc.bit_c);
+    }
+
+    /*
+     * Test that half-carry is set.
+     */
+    @Test
+    public void testADCAWithHalfCarry() {
+        int instructions[] = {
+            0x89, // ADCA
+            0x2B  // value
+        };
+        loadProg(instructions);
+        setCC_A_B_DP_X_Y_S_U(CC.Cmask, 0x14, 0, 0, 0, 0, 0, 0);
+        myTestCPU.execute();
+        chkCC_A_B_DP_X_Y_S_U(CC.Hmask, 0x40, 0, 0, 0, 0, 0, 0);
     }
 
     @Test
@@ -134,12 +150,12 @@ public class InstructionsTest {
             0x02  // value
         };
         loadProg(instructions);
-        setCCABDPXYSU(0, 0, 0, 4, 0, 0, 0, 0);
+        setCC_A_B_DP_X_Y_S_U(0, 0, 0, 4, 0, 0, 0, 0);
         myTestCPU.write(0x0402, 0xf1);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc);
-        verifyCCABDPXYSU(9, 0, 0, 4, 0, 0, 0, 0);
+        chkCC_A_B_DP_X_Y_S_U(0x09, 0, 0, 4, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0402);
         assertEquals(0xf8, result);
     }

@@ -129,6 +129,38 @@ public class RegisterCC implements Register {
         all &= ~(1 << n);
     }
 
+    public boolean isSetE() {
+        return bit_e != 0;
+    }
+
+    public boolean isSetF() {
+        return bit_f != 0;
+    }
+
+    public boolean isSetH() {
+        return bit_h != 0;
+    }
+
+    public boolean isSetI() {
+        return bit_i != 0;
+    }
+
+    public boolean isSetN() {
+        return bit_n != 0;
+    }
+
+    public boolean isSetZ() {
+        return bit_z != 0;
+    }
+
+    public boolean isSetV() {
+        return bit_v != 0;
+    }
+
+    public boolean isSetC() {
+        return bit_c != 0;
+    }
+
     public int getE() {
         return bit_e;
     }

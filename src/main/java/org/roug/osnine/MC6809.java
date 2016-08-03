@@ -893,4 +893,880 @@ public class MC6809 extends USimMotorola {
         write(addr, mbyte);
     }
 
+
+    /**
+     * Branch on Carry Clear.
+     */
+    private void bcc() {
+        do_br(!cc.isSetC());
+    }
+
+    /**
+     * Long Branch on Carry Clear.
+     */
+    private void lbcc() {
+        do_lbr(!cc.isSetC());
+    }
+
+    /**
+     * Branch on Carry Set.
+     */
+    private void bcs() {
+        do_br(cc.isSetC());
+    }
+
+    /**
+     * Long Branch on Carry Set.
+     */
+    private void lbcs() {
+        do_lbr(cc.isSetC());
+    }
+
+    private void beq() {
+        do_br(cc.isSetZ());
+    }
+
+    private void lbeq() {
+        do_lbr(cc.isSetZ());
+    }
+
+    //FIXME: test logic
+    private void bge() {
+        //do_br(!(cc.bit_n ^ cc.bit_v));
+        do_br(cc.isSetN() == cc.isSetV());
+    }
+
+    //FIXME: test logic
+    private void lbge() {
+        //do_lbr(!(cc.bit_n ^ cc.bit_v));
+        do_lbr(cc.isSetN() == cc.isSetV());
+    }
+
+    //FIXME: test logic
+    private void bgt() {
+        //do_br(!(cc.bit_z | (cc.bit_n ^ cc.bit_v)));
+        do_br(!cc.isSetZ() && (cc.isSetN() == cc.isSetV()));
+    }
+
+    //FIXME: test logic
+    private void lbgt() {
+        //do_lbr(!(cc.bit_z | (cc.bit_n ^ cc.bit_v)));
+        do_lbr(!cc.isSetZ() && (cc.isSetN() == cc.isSetV()));
+    }
+
+
+    private void bhi() {
+        do_br(!(cc.isSetC() || cc.isSetZ()));
+    }
+
+    private void lbhi() {
+        do_lbr(!(cc.isSetC() || cc.isSetZ()));
+    }
+
+/*
+    private void bita() {
+        help_bit(a);
+    }
+
+    private void bitb() {
+        help_bit(b);
+    }
+
+    private void help_bit(UByte arg) {
+        UByte t = arg & fetch_operand();
+        cc.bit_n = btst(t, 7);
+        cc.bit_v = 0;
+        setBitZ(t);
+    }
+*/
+    private void ble() {
+        //do_br(cc.bit_z | (cc.bit_n ^ cc.bit_v));
+        do_br(cc.isSetZ() || (cc.isSetN() != cc.isSetV()));
+    }
+
+    private void lble() {
+        //do_lbr(cc.bit_z | (cc.bit_n ^ cc.bit_v));
+        do_lbr(cc.isSetZ() || (cc.isSetN() != cc.isSetV()));
+    }
+
+    private void bls() {
+        do_br(cc.isSetC() || cc.isSetZ());
+    }
+
+    private void lbls() {
+        do_lbr(cc.isSetC() || cc.isSetZ());
+    }
+
+    private void blt() {
+        //do_br(cc.bit_n ^ cc.bit_v);
+        do_br(cc.isSetN() != cc.isSetV());
+    }
+
+    private void lblt() {
+        //do_lbr(cc.bit_n ^ cc.bit_v);
+        do_lbr(cc.isSetN() != cc.isSetV());
+    }
+
+    private void bmi() {
+        do_br(cc.isSetN());
+    }
+
+    private void lbmi() {
+        do_lbr(cc.isSetN());
+    }
+
+    private void bne() {
+        do_br(!cc.isSetZ());
+    }
+
+    private void lbne() {
+        do_lbr(!cc.isSetZ());
+    }
+
+    private void bpl() {
+        do_br(!cc.isSetN());
+    }
+
+    private void lbpl() {
+        do_lbr(!cc.isSetN());
+    }
+
+    private void bra() {
+        do_br(true);
+    }
+
+    private void lbra() {
+        do_lbr(true);
+    }
+
+    private void brn() {
+        do_br(false);
+    }
+
+    private void lbrn() {
+        do_lbr(false);
+    }
+/*
+    private void bsr() {
+        UByte    relAddr = fetch();
+        write(--s, pc);
+        write(--s, (pc >> 8));
+        pc += extend8(relAddr);
+    }
+
+    private void lbsr() {
+        Word    relAddr = fetch_word();
+        write(--s, pc);
+        write(--s, (pc >> 8));
+        pc += relAddr;
+    }
+*/
+    private void bvc() {
+        do_br(!cc.isSetV());
+    }
+
+    private void lbvc() {
+        do_lbr(!cc.isSetV());
+    }
+
+    private void bvs() {
+        do_br(cc.isSetV());
+    }
+
+    private void lbvs() {
+        do_lbr(cc.isSetV());
+    }
+
+    private void clra() {
+        help_clr(a);
+    }
+
+    private void clrb() {
+        help_clr(b);
+    }
+
+    private void clr() {
+        int addr = fetch_effective_address();
+        UByte m = read(addr);
+        help_clr(m);
+        write(addr, m);
+    }
+
+    private void help_clr(UByte refB) {
+        cc.setN(0;
+        cc.setZ(1);
+        cc.setV(0);
+        cc.setC(0);
+        refB.set(0);
+    }
+/*
+    private void cmpa() {
+        help_cmp(a);
+    }
+
+    private void cmpb() {
+        help_cmp(b);
+    }
+
+    private void help_cmp(UByte x) {
+        UByte    m = fetch_operand();
+        int t = x - m;
+         
+        cc.bit_h = ((t & 0x0f) < (m & 0x0f)); // half-carry
+        cc.bit_v = btst((UByte)(x^m^t^(t>>1)), 7);
+        cc.bit_c = btst((Word)t, 8);
+         
+        cc.bit_n = btst((UByte)t, 7);
+        cc.bit_z = !t;
+    }
+
+    private void cmpd() {
+        help_cmp(d);
+    }
+
+    private void cmpx() {
+        help_cmp(x);
+    }
+
+    private void cmpy() {
+        help_cmp(y);
+    }
+
+    private void cmpu() {
+        help_cmp(u);
+    }
+
+    private void cmps() {
+        help_cmp(s);
+    }
+
+    private void help_cmp(Word x) {
+        int m = fetch_word_operand();
+        int t = x - m;
+         
+        cc.bit_v = btst((DWord)(x^m^t^(t>>1)), 15);
+        cc.bit_c = btst((DWord)t, 16);
+         
+        cc.bit_n = btst((DWord)t, 15);
+        cc.bit_z = !t;
+    }
+
+    private void coma() {
+        help_com(a);
+    }
+
+    private void comb() {
+        help_com(b);
+    }
+
+    private void com() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_com(m);
+        write(addr, m);
+    }
+
+    private void help_com(UByte x) {
+        x = ~x;
+        cc.bit_c = 1;
+        cc.bit_v = 0;
+        cc.bit_n = btst(x, 7);
+        cc.bit_z = !x;
+    }
+
+    private void daa() {
+        UByte    c = 0;
+        UByte    lsn = (a & 0x0f);
+        UByte    msn = (a & 0xf0) >> 4;
+
+        if (cc.bit_h || (lsn > 9)) {
+            c |= 0x06;
+        }
+
+        if (cc.bit_c ||
+            (msn > 9) ||
+            ((msn > 8) && (lsn > 9))) {
+            c |= 0x60;
+        }
+
+        {
+            Word    t = (Word)a + c;
+            cc.bit_c = btst(t, 8);
+            a = (UByte)t;
+        }
+
+        cc.bit_n = btst(a, 7);
+        cc.bit_z = !a;
+    }
+
+    private void deca() {
+        help_dec(a);
+    }
+
+    private void decb() {
+        help_dec(b);
+    }
+
+    private void dec() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_dec(m);
+        write(addr, m);
+    }
+
+    private void help_dec(UByte x) {
+        cc.bit_v = (x == 0x80);
+        x = x - 1;
+        cc.bit_n = btst(x, 7);
+        cc.bit_z = !x;
+    }
+
+    private void eora() {
+        help_eor(a);
+    }
+
+    private void eorb() {
+        help_eor(b);
+    }
+
+    private void help_eor(UByte x) {
+        x = x ^ fetch_operand();
+        cc.bit_v = 0;
+        cc.bit_n = btst(x, 7);
+        cc.bit_z = !x;
+    }
+
+    static void swap(UByte r1, UByte r2) {
+        UByte    t;
+        t = r1; r1 = r2; r2 = t;
+    }
+
+    static void swap(Word r1, Word r2) {
+        Word    t;
+        t = r1; r1 = r2; r2 = t;
+    }
+
+    private void exg() {
+        int r1, r2;
+        UByte    w = fetch();
+        r1 = (w & 0xf0) >> 4;
+        r2 = (w & 0x0f) >> 0;
+        if (r1 <= 5) {
+            if (r2 > 5) {
+                invalid("exchange register");
+                return;
+            }
+            swap(wordrefreg(r2), wordrefreg(r1));
+        } else if (r1 >= 8 && r2 <= 11) {
+            if (r2 < 8 || r2 > 11) {
+                invalid("exchange register");
+                return;
+            }
+            swap(byterefreg(r2), byterefreg(r1));
+        } else  {
+            invalid("exchange register");
+            return;
+        }
+    }
+
+    private void inca() {
+        help_inc(a);
+    }
+
+    private void incb() {
+        help_inc(b);
+    }
+
+    private void inc() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_inc(m);
+        write(addr, m);
+    }
+
+    private void help_inc(UByte x) {
+        cc.bit_v = (x == 0x7f);
+        x = x + 1;
+        cc.bit_n = btst(x, 7);
+        cc.bit_z = !x;
+    }
+
+    private void jmp() {
+        pc = fetch_effective_address();
+    }
+
+    private void jsr() {
+        Word    addr = fetch_effective_address();
+        write(--s, pc);
+        write(--s, pc >> 8);
+        pc = addr;
+    }
+
+    private void lda() {
+        help_ld(a);
+    }
+
+    private void ldb() {
+        help_ld(b);
+    }
+
+    private void help_ld(UByte regB) {
+        regB = fetch_operand();
+        cc.bit_n = btst(regB, 7);
+        cc.bit_v = 0;
+        cc.bit_z = !regB;
+    }
+
+    private void ldd() {
+        help_ld(d);
+    }
+
+    private void ldx() {
+        help_ld(x);
+    }
+
+    private void ldy() {
+        help_ld(y);
+    }
+
+    private void lds() {
+        help_ld(s);
+    }
+
+    private void ldu() {
+        help_ld(u);
+    }
+
+    private void help_ld(Word regW) {
+        int val = fetch_word_operand();
+        regW.set(val);
+        cc.bit_n = regW.btst(15);
+        cc.bit_v = 0;
+        setBitZ(refW);
+    }
+
+    private void leax() {
+        x = fetch_effective_address();
+        setBitZ(x);
+    }
+
+    private void leay() {
+        y = fetch_effective_address();
+        setBitZ(y);
+    }
+
+    private void leas() {
+        s = fetch_effective_address();
+    }
+
+    private void leau() {
+        u = fetch_effective_address();
+    }
+
+    private void lsla() {
+        help_lsl(a);
+    }
+
+    private void lslb() {
+        help_lsl(b);
+    }
+
+    private void lsl() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_lsl(m);
+        write(addr, m);
+    }
+
+    private void help_lsl(UByte regB) {
+        cc.bit_c = btst(regB, 7);
+        cc.bit_v = btst(regB, 7) ^ btst(regB, 6);
+        regB <<= 1;
+        cc.bit_n = btst(regB, 7);
+        cc.bit_z = !regB;
+    }
+
+    private void lsra() {
+        help_lsr(a);
+    }
+
+    private void lsrb() {
+        help_lsr(b);
+    }
+
+    private void lsr() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_lsr(m);
+        write(addr, m);
+    }
+
+    private void help_lsr(UByte regB) {
+        cc.bit_c = btst(regB, 0);
+        regB >>= 1;    // Shift word right
+        cc.bit_n = 0;
+        cc.bit_z = !regB;
+    }
+
+    private void mul() {
+        d = a * b;
+        cc.bit_c = btst(b, 7);
+        cc.bit_z = !d;
+    }
+
+    private void nega() {
+        help_neg(a);
+    }
+
+    private void negb() {
+        help_neg(b);
+    }
+
+    private void neg() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_neg(m);
+        write(addr, m);
+    }
+
+    private void help_neg(UByte regB) {
+        cc.bit_v = (regB == 0x80);
+        {
+            Word t = (Word)((~regB) & 0xff) + 1;
+            regB = t & 0xff;
+        }
+
+        cc.bit_n = btst(regB, 7);
+        cc.bit_z = !regB;
+        cc.bit_c = (regB != 0);
+    }
+*/
+    private void nop() {
+    }
+/*
+    private void ora() {
+        help_or(a);
+    }
+
+    private void orb() {
+        help_or(b);
+    }
+
+    private void help_or(UByte regB) {
+        regB = regB | fetch_operand();
+        cc.bit_v = 0;
+        cc.bit_n = btst(regB, 7);
+        cc.bit_z = !regB;
+    }
+
+    private void orcc() {
+        cc.all |= fetch_operand();
+    }
+
+    private void pshs() {
+        help_psh(fetch(), s, u);
+    }
+
+    private void pshu() {
+        help_psh(fetch(), u, s);
+    }
+
+    private void help_psh(UByte w, Word s, Word u) {
+        if (btst(w, 7)) {
+            write(--s, pc);
+            write(--s, (pc >> 8));
+        }
+        if (btst(w, 6)) {
+            write(--s, u);
+            write(--s, (u >> 8));
+        }
+        if (btst(w, 5)) {
+            write(--s, y);
+            write(--s, (y >> 8));
+        }
+        if (btst(w, 4)) {
+            write(--s, x);
+            write(--s, (x >> 8));
+        }
+        if (btst(w, 3)) write(--s, dp);
+        if (btst(w, 2)) write(--s, b);
+        if (btst(w, 1)) write(--s, a);
+        if (btst(w, 0)) write(--s, cc.all);
+    }
+*/
+    /**
+     * PULS: Pull Registers from Hardware Stack.
+     * The stack grows downwards, and this means that when you PULL, the
+     * stack pointer is increased.
+     */
+/*
+    private void puls() {
+        int w = fetch();
+        help_pul(w, s, u);
+    }
+
+    private void pulu() {
+        int w = fetch();
+        help_pul(w, u, s);
+    }
+
+    private void help_pul(UByte w, Word s, Word u) {
+        if (btst(w, 0)) cc.all = read(s++);
+        if (btst(w, 1)) a = read(s++);
+        if (btst(w, 2)) b = read(s++);
+        if (btst(w, 3)) dp = read(s++);
+        if (btst(w, 4)) {
+            x = read_word(s); s += 2;
+        }
+        if (btst(w, 5)) {
+            y = read_word(s); s += 2;
+        }
+        if (btst(w, 6)) {
+            u = read_word(s); s += 2;
+        }
+        if (btst(w, 7)) {
+            pc = read_word(s); s += 2;
+        }
+    }
+
+    private void rola() {
+        help_rol(a);
+    }
+
+    private void rolb() {
+        help_rol(b);
+    }
+
+    private void rol() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_rol(m);
+        write(addr, m);
+    }
+
+    private void help_rol(UByte regB) {
+        int oc = cc.bit_c;
+        cc.bit_v = btst(regB, 7) ^ btst(regB, 6);
+        cc.bit_c = btst(regB, 7);
+        regB = regB << 1;
+        if (oc) bset(regB, 0);
+        cc.bit_n = btst(regB, 7);
+        cc.bit_z = !regB;
+    }
+
+    private void rora() {
+        help_ror(a);
+    }
+
+    private void rorb() {
+        help_ror(b);
+    }
+
+    private void ror() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_ror(m);
+        write(addr, m);
+    }
+
+    private void help_ror(UByte regB) {
+        int oc = cc.bit_c;
+        cc.bit_c = btst(regB, 0);
+        regB = regB >> 1;
+        if (oc) bset(regB, 7);
+        cc.bit_n = btst(regB, 7);
+        cc.bit_z = !regB;
+    }
+
+    private void rti() {
+        help_pul(0x01, s, u);
+        if (cc.bit_e) {
+            help_pul(0xfe, s, u);
+        }
+    }
+
+    private void rts() {
+        pc = read_word(s);
+        s += 2;
+    }
+
+    private void sbca() {
+        help_sbc(a);
+    }
+
+    private void sbcb() {
+        help_sbc(b);
+    }
+
+    private void help_sbc(UByte regB) {
+        UByte    m = fetch_operand();
+        int t = regB - m - cc.bit_c;
+         
+        cc.bit_h = ((t & 0x0f) < (m & 0x0f)); // half-carry
+        cc.bit_v = btst((UByte)(regB^m^t^(t>>1)), 7);
+        cc.bit_c = btst((Word)t, 8);
+         
+        cc.bit_n = btst((UByte)t, 7);
+        cc.bit_z = !t;
+        regB = t & 0xff;
+    }
+
+    private void sex() {
+        cc.bit_n = btst(b, 7);
+        a = cc.bit_n ? 255 : 0;
+        cc.bit_z = !a;
+    }
+
+    private void sta() {
+        help_st(a);
+    }
+
+    private void stb() {
+        help_st(b);
+    }
+
+    private void help_st(UByte data) {
+        Word    addr = fetch_effective_address();
+        write(addr, data);
+        cc.bit_v = 0;
+        cc.bit_n = btst(data, 7);
+        cc.bit_z = !data;
+    }
+
+    private void std() {
+        help_st(d);
+    }
+
+    private void stx() {
+        help_st(x);
+    }
+
+    private void sty() {
+        help_st(y);
+    }
+
+    private void sts() {
+        help_st(s);
+    }
+
+    private void stu() {
+        help_st(u);
+    }
+
+    private void help_st(Word dataW) {
+        Word    addr = fetch_effective_address();
+        write_word(addr, dataW);
+        cc.bit_v = 0;
+        cc.bit_n = btst(dataW, 15);
+        cc.bit_z = !dataW;
+    }
+
+    private void suba() {
+        help_sub(a);
+    }
+
+    private void subb() {
+        help_sub(b);
+    }
+
+    private void help_sub(UByte regB) {
+        UByte    m = fetch_operand();
+        int t = regB - m;
+         
+        cc.bit_v = btst((UByte)(regB^m^t^(t>>1)), 7);
+        cc.bit_c = btst((Word)t, 8);
+         
+        cc.bit_n = btst((UByte)t, 7);
+        cc.bit_z = !t;
+        regB = t & 0xff;
+    }
+
+    private void subd() {
+        Word    m = fetch_word_operand();
+        int t = d - m;
+         
+        cc.bit_v = btst((DWord)(d^m^t^(t>>1)), 15);
+        cc.bit_c = btst((DWord)t, 16);
+         
+        cc.bit_n = btst((DWord)t, 15);
+        cc.bit_z = !t;
+        d = t &0xffff;
+    }
+
+    void swi() {
+        cc.bit_e = 1;
+        help_psh(0xff, s, u);
+        cc.bit_f = cc.bit_i = 1;
+        pc = read_word(0xfffa);
+    }
+
+    void swi2() {
+        cc.bit_e = 1;
+        help_psh(0xff, s, u);
+        pc = read_word(0xfff4);
+    }
+
+    void swi3() {
+        cc.bit_e = 1;
+        help_psh(0xff, s, u);
+        pc = read_word(0xfff2);
+    }
+
+    private void tfr() {
+        int r1, r2;
+        UByte    w = fetch();
+        r1 = (w & 0xf0) >> 4;
+        r2 = (w & 0x0f) >> 0;
+        if (r1 <= 5) {
+            if (r2 > 5) {
+                invalid("transfer register");
+                return;
+            }
+            wordrefreg(r2) = wordrefreg(r1);
+        } else if (r1 >= 8 && r2 <= 11) {
+            if (r2 < 8 || r2 > 11) {
+                invalid("transfer register");
+                return;
+            }
+            byterefreg(r2) = byterefreg(r1);
+        } else  {
+            invalid("transfer register");
+            return;
+        }
+    }
+
+    private void tsta() {
+        help_tst(a);
+    }
+
+    private void tstb() {
+        help_tst(b);
+    }
+
+    private void tst() {
+        Word    addr = fetch_effective_address();
+        UByte    m = read(addr);
+        help_tst(m);
+    }
+
+    private void help_tst(UByte dataB) {
+        cc.bit_v = 0;
+        cc.bit_n = dataB.btst(7);
+        setBitZ(dataB);
+    }
+*/
+    private void do_br(boolean test) {
+        int offset = extend8(fetch_operand());
+        if (test) {
+            pc += offset;
+        }
+    }
+
+    private void do_lbr(boolean test) {
+        int offset = fetch_word_operand();
+        if (test) {
+            pc += offset;
+        }
+    }
+
 }

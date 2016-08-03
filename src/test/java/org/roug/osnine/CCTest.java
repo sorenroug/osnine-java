@@ -32,4 +32,10 @@ public class CCTest {
         assertEquals(0x20, cc.get());
     }
 
+    @Test
+    public void maskValues() {
+        assertEquals(1, CC.Cmask);
+        assertEquals(8, CC.Nmask);
+        assertEquals(128, CC.Emask);
+    }
 }
