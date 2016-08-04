@@ -127,6 +127,7 @@ public abstract class USim {
                 msg == null ? msg : "",
                 pc, ir);
         halt();
+        throw new RuntimeException(msg);
     }
 
     //----------------------------------------------------------------------------

@@ -222,4 +222,83 @@ public class InstructionsTest {
         assertEquals(0, result);
     }
 
+    @Test
+    public void testBRAForward() {
+        int instructions[] = {
+            0x20, // BRA
+            17 // Jump forward 17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 + 17, myTestCPU.pc);
+    }
+
+    @Test
+    public void testBRABackward() {
+        int instructions[] = {
+            0x20, // BRA
+            170 // Jump backward 170 - 256 = 86 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 - 86, myTestCPU.pc);
+    }
+
+    /**
+     * Test indirect mode: CMPA ,Y+
+     * We're subtracting 0xff from 0xff and incrementing Y
+     */
+    @Test
+    public void testCMP() {
+        // Set up a byte to test at address 0x205
+        myTestCPU.write(0x205, 0xff);
+        // Set register Y to point to that location
+        myTestCPU.cc.clear();
+        myTestCPU.y.set(0x205);
+        myTestCPU.a.set(0xff);
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0xA1);
+        myTestCPU.write(0xB01, 0xA0);
+        myTestCPU.pc = 0xB00;
+        myTestCPU.execute();
+        assertEquals(0xB00 + 2, myTestCPU.pc);
+        chkCC_A_B_DP_X_Y_S_U(CC.Hmask + CC.Zmask, 0xff, 0, 0, 0, 0x206, 0, 0);
+        //assertEquals(0x206, myTestCPU.y);
+        //assertEquals(0, myTestCPU.cc.bit.n);
+        //assertEquals(1, myTestCPU.cc.bit.z);
+        //assertEquals(0, myTestCPU.cc.bit.v);
+        //assertEquals(0, myTestCPU.cc.bit.c);
+    }
+
+    /**
+     * Test the JSR - Jump to Subroutine - instruction.
+     * INDEXED mode:   JSR   D,Y
+     */
+/*
+    @Test
+    public void testJSR() {
+        // Set up a word to test at address 0x205
+        myTestCPU.write_word(0x205, 0x03ff);
+        // Set register D to five
+        myTestCPU.d.set(0x105);
+        // Set register Y to point to that location minus 5
+        myTestCPU.y.set(0x200);
+        // Set register S to point to 0x915
+        myTestCPU.s.set(0x915);
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0xAD);
+        myTestCPU.write(0xB01, 0xAB);
+        myTestCPU.write(0xB02, 0x11); // Junk
+        myTestCPU.write(0xB03, 0x22); // Junk
+        myTestCPU.pc = 0xB00;
+        myTestCPU.execute();
+        chkCC_A_B_DP_X_Y_S_U(0, 0x01, 0x05, 0, 0, 0x200, 0x913, 0);
+        assertEquals(0x200, myTestCPU.y);
+        assertEquals(0x105, myTestCPU.d);
+        assertEquals(0x913, myTestCPU.s);
+        assertEquals(0x305, myTestCPU.pc);
+    }
+*/
 }

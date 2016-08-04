@@ -3,7 +3,7 @@ package org.roug.osnine;
 /**
  * Word size register (i.e. 16 bit).
  */
-public class RegisterD implements Register {
+public class RegisterD extends Word implements Register {
 
     public static final int WIDTH = 16;
 

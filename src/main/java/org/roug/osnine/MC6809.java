@@ -158,7 +158,6 @@ public class MC6809 extends USimMotorola {
                 asrb(); break;
             case 0x07: case 0x67: case 0x77:
                 asr(); break;
-/*
             case 0x24:
                 bcc(); break;
             case 0x25:
@@ -171,10 +170,12 @@ public class MC6809 extends USimMotorola {
                 bgt(); break;
             case 0x22:
                 bhi(); break;
+/*
             case 0x85: case 0x95: case 0xa5: case 0xb5:
                 bita(); break;
             case 0xc5: case 0xd5: case 0xe5: case 0xf5:
                 bitb(); break;
+*/
             case 0x2f:
                 ble(); break;
             case 0x23:
@@ -193,6 +194,7 @@ public class MC6809 extends USimMotorola {
                 lbra(); break;
             case 0x21:
                 brn(); break;
+/*
             case 0x8d:
                 bsr(); break;
             case 0x17:
@@ -212,7 +214,6 @@ public class MC6809 extends USimMotorola {
                 clrb(); break;
             case 0x0f: case 0x6f: case 0x7f:
                 clr(); break;
-/*
             case 0x81: case 0x91: case 0xa1: case 0xb1:
                 cmpa(); break;
             case 0xc1: case 0xd1: case 0xe1: case 0xf1:
@@ -227,6 +228,7 @@ public class MC6809 extends USimMotorola {
                 cmpu(); break;
             case 0x108c: case 0x109c: case 0x10ac: case 0x10bc:
                 cmpy(); break;
+/*
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x43:
             case 0x43: case 0x42: case 0x1042:
@@ -716,6 +718,10 @@ public class MC6809 extends USimMotorola {
         }
     }
 
+    private int btst(int x, int n) {
+        return (x & (1 << n)) != 0 ? 1 : 0;
+    }
+
     private void setBitZ(Register ref) {
         cc.setZ(ref.intValue() == 0 ? 1 : 0);
     }
@@ -1102,7 +1108,7 @@ public class MC6809 extends USimMotorola {
         cc.setC(0);
         refB.set(0);
     }
-/*
+
     private void cmpa() {
         help_cmp(a);
     }
@@ -1111,16 +1117,22 @@ public class MC6809 extends USimMotorola {
         help_cmp(b);
     }
 
-    private void help_cmp(UByte x) {
-        UByte    m = fetch_operand();
-        int t = x - m;
+    private void help_cmp(UByte reg) {
+        int m = fetch_operand();
+        int t = reg.intValue() - m;
          
-        cc.bit_h = ((t & 0x0f) < (m & 0x0f)); // half-carry
-        cc.bit_v = btst((UByte)(x^m^t^(t>>1)), 7);
-        cc.bit_c = btst((Word)t, 8);
+        if ((t & 0x0f) < (m & 0x0f)) { // half-carry
+            cc.setH(1);
+        } else {
+            cc.setH(0);
+        }
+
+        int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
+        cc.setV(btst(tmp, 7));
+        cc.setC(btst(t, 8));
          
-        cc.bit_n = btst((UByte)t, 7);
-        cc.bit_z = !t;
+        cc.setN(btst(t, 7));
+        cc.setZ(t == 0 ? 1 : 0);
     }
 
     private void cmpd() {
@@ -1143,17 +1155,18 @@ public class MC6809 extends USimMotorola {
         help_cmp(s);
     }
 
-    private void help_cmp(Word x) {
+    private void help_cmp(Word reg) {
         int m = fetch_word_operand();
-        int t = x - m;
+        int t = reg.intValue() - m;
          
-        cc.bit_v = btst((DWord)(x^m^t^(t>>1)), 15);
-        cc.bit_c = btst((DWord)t, 16);
+        int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
+        cc.setV(btst(tmp, 15));
+        cc.setC(btst(t, 16));
          
-        cc.bit_n = btst((DWord)t, 15);
-        cc.bit_z = !t;
+        cc.setN(btst(t, 15));
+        cc.setZ(t == 0 ? 1 : 0);
     }
-
+/*
     private void coma() {
         help_com(a);
     }
@@ -1169,12 +1182,12 @@ public class MC6809 extends USimMotorola {
         write(addr, m);
     }
 
-    private void help_com(UByte x) {
-        x = ~x;
+    private void help_com(UByte tx) {
+        tx = ~tx;
         cc.bit_c = 1;
         cc.bit_v = 0;
-        cc.bit_n = btst(x, 7);
-        cc.bit_z = !x;
+        cc.bit_n = btst(tx, 7);
+        cc.bit_z = !tx;
     }
 
     private void daa() {
@@ -1299,7 +1312,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void jsr() {
-        Word    addr = fetch_effective_address();
+        int addr = fetch_effective_address();
         write(--s, pc);
         write(--s, pc >> 8);
         pc = addr;
@@ -1693,7 +1706,7 @@ public class MC6809 extends USimMotorola {
          
         cc.bit_n = btst((DWord)t, 15);
         cc.bit_z = !t;
-        d = t &0xffff;
+        d = t & 0xffff;
     }
 
     void swi() {
@@ -1762,6 +1775,7 @@ public class MC6809 extends USimMotorola {
         int offset = extend8(fetch_operand());
         if (test) {
             pc += offset;
+            pc &= Word.MAX;
         }
     }
 
@@ -1769,6 +1783,7 @@ public class MC6809 extends USimMotorola {
         int offset = fetch_word_operand();
         if (test) {
             pc += offset;
+            pc &= Word.MAX;
         }
     }
 
