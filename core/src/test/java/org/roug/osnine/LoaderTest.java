@@ -12,7 +12,7 @@ public class LoaderTest {
     public void readJunkSRecord() throws IOException {
         byte input[] = { 'a','b' };
         USimMotorola tInstance = new USimMotorola(0x400);
-        tInstance.allocate_memory(0x400);
+        tInstance.allocate_memory(0, 0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(input);
         Loader.load_srecord(is, tInstance);
@@ -33,7 +33,7 @@ public class LoaderTest {
             + "S9030000FC\n";
         byte byteInput[] = input.getBytes(Charset.forName("US-ASCII"));
         USimMotorola tInstance = new USimMotorola();
-        tInstance.allocate_memory(0x400);
+        tInstance.allocate_memory(0, 0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
         Loader.load_srecord(is, tInstance);
@@ -55,7 +55,7 @@ public class LoaderTest {
             + ":00000001FF\n";
         byte byteInput[] = input.getBytes(Charset.forName("US-ASCII"));
         USimMotorola tInstance = new USimMotorola();
-        tInstance.allocate_memory(0x400);
+        tInstance.allocate_memory(0, 0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
         Loader.load_intelhex(is, tInstance);

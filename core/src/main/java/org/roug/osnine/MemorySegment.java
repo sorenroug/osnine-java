@@ -1,17 +1,27 @@
 package org.roug.osnine;
 
-public interface MemorySegment {
+public abstract class MemorySegment {
 
-    void reset();
+    protected MemorySegment nextSegment = null;
+
+    public abstract void reset();
 
     /**
      * Single byte read from memory.
      */
-    int read(int addr);
+    public abstract int read(int addr);
 
     /**
      * Single byte write to memory.
      */
-    void write(int addr, int val);
+    public abstract void write(int addr, int val);
+
+    public void addMemorySegment(MemorySegment segment) {
+        if (nextSegment == null) {
+            nextSegment = segment;
+        } else {
+            nextSegment.addMemorySegment(segment);
+        }
+    }
 
 }

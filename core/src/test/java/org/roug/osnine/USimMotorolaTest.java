@@ -13,7 +13,7 @@ public class USimMotorolaTest {
     @Test
     public void writeReadOneByte() {
         USimMotorola tInstance = new USimMotorola();
-        tInstance.allocate_memory(0x400);
+        tInstance.allocate_memory(0, 0x400);
         //UByte val = UByte.valueOf(0xAA);
         tInstance.write(0x100, 0xAA);
         int result = tInstance.read(0x100);
@@ -26,7 +26,7 @@ public class USimMotorolaTest {
     @Test
     public void writeReadOneWord() {
         USimMotorola tInstance = new USimMotorola();
-        tInstance.allocate_memory(0x400);
+        tInstance.allocate_memory(0, 0x400);
         tInstance.write_word(0x100, 0xAACC);
         int result = tInstance.read_word(0x100);
         assertEquals(0xAACC, result);

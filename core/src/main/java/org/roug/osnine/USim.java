@@ -8,7 +8,7 @@ public abstract class USim {
     /** Flag: is the CPU halted? */
     public boolean halted;
     /** Memory space. */
-    private int[] memory;
+    private MemorySegment memory;
 
 // Generic internal registers that we assume all CPUs have
 
@@ -28,14 +28,20 @@ public abstract class USim {
      */
     public USim(int memorySize) {
         this();
-        allocate_memory(memorySize);
+        allocate_memory(0, memorySize);
     }
 
-    public void allocate_memory(int size) {
-        if (size < 0 || size > 65536) {
-            throw new IllegalArgumentException("Max allocation is 65536");
+    public void allocate_memory(int start, int memorySize) {
+        MemorySegment newMemory = new MemoryBank(start, memorySize);
+        addMemorySegment(newMemory);
+    }
+
+    public void addMemorySegment(MemorySegment newMemory) {
+        if (memory == null) {
+            memory = newMemory;
+        } else {
+            memory.addMemorySegment(newMemory);
         }
-        memory = new int[size];
     }
 
     /**
@@ -138,7 +144,7 @@ public abstract class USim {
      * Single byte read from memory.
      */
     public int read(int offset) {
-        return memory[offset & 0xffff];
+        return memory.read(offset & 0xffff);
     }
 
     /**
@@ -147,15 +153,6 @@ public abstract class USim {
     public int read(Word offset) {
         return read(offset.intValue());
     }
-
-    /**
-     * Single byte read from memory.
-     */
-    /*
-    public UByte read(int offset) {
-        return memory[offset];
-    }
-    */
 
     /**
      * Single byte write to memory.
@@ -176,7 +173,7 @@ public abstract class USim {
      * Single byte write to memory.
      */
     public void write(int offset, int val) {
-        memory[offset & 0xffff] = val & 0xff;
+        memory.write(offset & 0xffff, val);
     }
 
 }

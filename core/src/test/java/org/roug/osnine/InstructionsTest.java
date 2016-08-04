@@ -13,6 +13,11 @@ public class InstructionsTest {
 
     private MC6809 myTestCPU;
 
+    @Before
+    public void setUp() {
+        myTestCPU = new MC6809(8192);
+    }
+
     /**
      * Load a short program into memory.
      */
@@ -47,11 +52,6 @@ public class InstructionsTest {
         assertEquals(y, myTestCPU.y.intValue());
         assertEquals(s, myTestCPU.s.intValue());
         assertEquals(u, myTestCPU.u.intValue());
-    }
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809();
     }
 
     @Test

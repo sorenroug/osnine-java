@@ -46,8 +46,17 @@ public class MC6809 extends USimMotorola {
      * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
      */
     public MC6809() {
-        allocate_memory(0x10000);
+        super();
+        allocate_memory(0xfffe, 2);
         reset();
+    }
+
+    /**
+     * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
+     */
+    public MC6809(int memorySize) {
+        this();
+        allocate_memory(0, memorySize);
     }
 
     /**

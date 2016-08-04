@@ -1,13 +1,18 @@
 package org.roug.osnine;
 
-public class MemoryBank implements MemorySegment {
+public class MemoryBank extends MemorySegment {
 
     private int memorySize;
 
+    /** Location of first address. */
     private int offset;
 
     /** Memory space. */
     private int[] memory;
+
+    public MemoryBank(int size) {
+        this(0, size);
+    }
 
     public MemoryBank(int start, int size) {
         if (size < 0 || size > 65536) {
@@ -24,21 +29,26 @@ public class MemoryBank implements MemorySegment {
 
     @Override
     public int read(int addr) {
-        addr -= offset;
-        if (addr < 0 || addr >= memorySize) {
-            throw new IllegalArgumentException("Out of bounds");
+        if (addr < offset || addr >= offset + memorySize) {
+            if (nextSegment == null) {
+                throw new IllegalArgumentException("Out of bounds");
+            } else {
+                return nextSegment.read(addr);
+            }
         }
-        return memory[addr];
+        return memory[addr - offset];
     }
 
     @Override
     public void write(int addr, int val) {
-        addr -= offset;
-        if (addr < 0 || addr >= memorySize) {
-            throw new IllegalArgumentException("Out of bounds");
+        if (addr < offset || addr >= offset + memorySize) {
+            if (nextSegment == null) {
+                throw new IllegalArgumentException("Out of bounds");
+            } else {
+                nextSegment.write(addr, val);
+            }
+        } else {
+            memory[addr - offset] = val & 0xff;
         }
-        memory[addr] = val & 0xff;
     }
-
-
 }
