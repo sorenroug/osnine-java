@@ -160,6 +160,54 @@ public class InstructionsTest {
         assertEquals(0xf8, result);
     }
 
+    /**
+     * Don't branch because Z is on.
+     */
+    @Test
+    public void testBGTWithZ() {
+        int instructions[] = {
+            0x2E, // BGT
+            17 // Jump forward 17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.cc.set(CC.Zmask);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+    }
+
+    /**
+     * Branch because N and V are on.
+     */
+    @Test
+    public void testBGTWithNandV() {
+        int instructions[] = {
+            0x2E, // BGT
+            0x17 // Jump forward 0x17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.cc.set(CC.Nmask + CC.Vmask);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 + 0x17, myTestCPU.pc.intValue());
+    }
+
+    /**
+     * Branch because Z, N and V are off.
+     */
+    @Test
+    public void testBGTWithNandVoff() {
+        int instructions[] = {
+            0x2E, // BGT
+            0x17 // Jump forward 0x17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.cc.set(CC.Cmask);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 + 0x17, myTestCPU.pc.intValue());
+    }
+
     @Test
     public void testBRAForward() {
         int instructions[] = {
