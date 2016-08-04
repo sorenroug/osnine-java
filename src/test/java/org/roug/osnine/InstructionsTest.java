@@ -63,7 +63,7 @@ public class InstructionsTest {
         setCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
         myTestCPU.execute();
         assertEquals(0x3a, myTestCPU.ir);
-        assertEquals(LOCATION + 1, myTestCPU.pc);
+        assertEquals(LOCATION + 1, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
     }
 
@@ -80,7 +80,7 @@ public class InstructionsTest {
 //      myTestCPU.a.set(5);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc);
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
 //      assertEquals(7, myTestCPU.a.intValue());
 //      assertEquals(0, myTestCPU.cc.getC());
         chkCC_A_B_DP_X_Y_S_U(0, 7, 0, 0, 0, 0, 0, 0);
@@ -99,7 +99,7 @@ public class InstructionsTest {
         setCC_A_B_DP_X_Y_S_U(CC.Cmask, 0x14, 0, 0, 0, 0, 0, 0);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc);
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(0, 0x37, 0, 0, 0, 0, 0, 0);
         //assertEquals(0x37, myTestCPU.a.intValue());
         //assertEquals(0, myTestCPU.cc.getC());
@@ -133,7 +133,7 @@ public class InstructionsTest {
         myTestCPU.a.set(0x05);
         myTestCPU.execute();
         assertEquals(0xC3, myTestCPU.ir);
-        assertEquals(LOCATION + 3, myTestCPU.pc);
+        assertEquals(LOCATION + 3, myTestCPU.pc.intValue());
         assertEquals(0x06, myTestCPU.b.intValue());
         assertEquals(0xB5, myTestCPU.a.intValue());
         assertEquals(0x06B5, myTestCPU.d.intValue());
@@ -154,10 +154,34 @@ public class InstructionsTest {
         myTestCPU.write(0x0402, 0xf1);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc);
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(0x09, 0, 0, 4, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0402);
         assertEquals(0xf8, result);
+    }
+
+    @Test
+    public void testBRAForward() {
+        int instructions[] = {
+            0x20, // BRA
+            17 // Jump forward 17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 + 17, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBRABackward() {
+        int instructions[] = {
+            0x20, // BRA
+            170 // Jump backward 170 - 256 = 86 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 - 86, myTestCPU.pc.intValue());
     }
 
     /**
@@ -175,7 +199,7 @@ public class InstructionsTest {
         myTestCPU.write(0x0F23, 0xE2);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 3, myTestCPU.pc);
+        assertEquals(LOCATION + 3, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 4, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0F23);
         assertEquals(0, result);
@@ -195,7 +219,7 @@ public class InstructionsTest {
         myTestCPU.write(0x0B23, 0xE2);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc);
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 0x0B, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0B23);
         assertEquals(0, result);
@@ -216,34 +240,10 @@ public class InstructionsTest {
         myTestCPU.write(0x089A, 0x22);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc);
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 0, 0, 0x89A, 0, 0);
         int result = myTestCPU.read(0x0899);
         assertEquals(0, result);
-    }
-
-    @Test
-    public void testBRAForward() {
-        int instructions[] = {
-            0x20, // BRA
-            17 // Jump forward 17 bytes
-        };
-        loadProg(instructions);
-        myTestCPU.execute();
-        // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 + 17, myTestCPU.pc);
-    }
-
-    @Test
-    public void testBRABackward() {
-        int instructions[] = {
-            0x20, // BRA
-            170 // Jump backward 170 - 256 = 86 bytes
-        };
-        loadProg(instructions);
-        myTestCPU.execute();
-        // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 - 86, myTestCPU.pc);
     }
 
     /**
@@ -261,10 +261,34 @@ public class InstructionsTest {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xA1);
         myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB00 + 2, myTestCPU.pc);
+        assertEquals(0xB00 + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(CC.Hmask + CC.Zmask, 0xff, 0, 0, 0, 0x206, 0, 0);
+    }
+
+    @Test
+    public void testDAA() {
+        myTestCPU.write(0xB00, 0x19);
+        myTestCPU.cc.clear();
+        myTestCPU.a.set(0x7f);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x85, myTestCPU.a.intValue());
+        assertEquals(0x08, myTestCPU.cc.intValue());
+    }
+
+    @Test
+    public void testEXG() {
+        myTestCPU.write(0xB00, 0x1E);
+        myTestCPU.write(0xB01, 0x01);
+        myTestCPU.cc.clear();
+        myTestCPU.d.set(0x117f);
+        myTestCPU.x.set(0xff16);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xff16, myTestCPU.d.intValue());
+        assertEquals(0x117f, myTestCPU.x.intValue());
     }
 
     /**
@@ -286,14 +310,14 @@ public class InstructionsTest {
         myTestCPU.write(0xB01, 0xAB);
         myTestCPU.write(0xB02, 0x11); // Junk
         myTestCPU.write(0xB03, 0x22); // Junk
-        myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
         myTestCPU.cc.clear();
         myTestCPU.execute();
         chkCC_A_B_DP_X_Y_S_U(0, 0x05, 0x01, 0, 0, 0x200, 0x913, 0);
         assertEquals(0x200, myTestCPU.y.intValue());
         assertEquals(0x105, myTestCPU.d.intValue());
         assertEquals(0x913, myTestCPU.s.intValue());
-        assertEquals(0x305, myTestCPU.pc);
+        assertEquals(0x305, myTestCPU.pc.intValue());
     }
 
     /**
@@ -313,11 +337,11 @@ public class InstructionsTest {
 	myTestCPU.write(0xB00, 0xE6);
 	myTestCPU.write(0xB01, 0xE6);
         myTestCPU.cc.clear();
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x200, myTestCPU.s.intValue());
 	assertEquals(0xb3, myTestCPU.b.intValue());
-	assertEquals(0xB02, myTestCPU.pc);
+	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(1, myTestCPU.cc.getN());
 	assertEquals(0, myTestCPU.cc.getZ());
 	assertEquals(0, myTestCPU.cc.getV());
@@ -333,11 +357,11 @@ public class InstructionsTest {
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0xE6);
 	myTestCPU.write(0xB01, 0xE6);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x210, myTestCPU.s.intValue());
 	assertEquals(0x73, myTestCPU.b.intValue());
-	assertEquals(0xB02, myTestCPU.pc);
+	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(0, myTestCPU.cc.getN());
 	assertEquals(0, myTestCPU.cc.getZ());
 	assertEquals(0, myTestCPU.cc.getV());
@@ -359,11 +383,11 @@ public class InstructionsTest {
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0xEC);
 	myTestCPU.write(0xB01, 0x22);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x200, myTestCPU.y.intValue());
 	assertEquals(0xb3ff, myTestCPU.d.intValue());
-	assertEquals(0xB02, myTestCPU.pc);
+	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(1, myTestCPU.cc.getN());
 	assertEquals(0, myTestCPU.cc.getZ());
 	assertEquals(0, myTestCPU.cc.getV());
@@ -378,12 +402,12 @@ public class InstructionsTest {
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0xEC);
 	myTestCPU.write(0xB01, 0x3E);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x200, myTestCPU.y.intValue());
 	assertEquals(0x33ff, myTestCPU.d.intValue());
 	assertEquals(0x33, myTestCPU.b.intValue());
-	assertEquals(0xB02, myTestCPU.pc);
+	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(0, myTestCPU.cc.getN());
 	assertEquals(0, myTestCPU.cc.getZ());
 	assertEquals(0, myTestCPU.cc.getV());
@@ -398,11 +422,11 @@ public class InstructionsTest {
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0xEC);
 	myTestCPU.write(0xB01, 0xA3);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x200, myTestCPU.y.intValue());
 	assertEquals(0x31ff, myTestCPU.d.intValue());
-	assertEquals(0xB02, myTestCPU.pc);
+	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(0, myTestCPU.cc.getN());
 	assertEquals(0, myTestCPU.cc.getZ());
 	assertEquals(0, myTestCPU.cc.getV());
@@ -422,15 +446,15 @@ public class InstructionsTest {
 	loadProg(instructions);
 	myTestCPU.execute();
 	assertEquals(LOCATION + 4 - offset, myTestCPU.x.intValue());
-	assertEquals(LOCATION + 4, myTestCPU.pc);
+	assertEquals(LOCATION + 4, myTestCPU.pc.intValue());
 
 	// LEAX        <$93A,PCR
 	myTestCPU.write(0x0846, 0x30);
 	myTestCPU.write(0x0847, 0x8C);
 	myTestCPU.write(0x0848, 0xF1);
-	myTestCPU.pc = 0x0846;
+        myTestCPU.pc.set(0x0846);
 	myTestCPU.execute();
-	assertEquals(0x0849, myTestCPU.pc);
+	assertEquals(0x0849, myTestCPU.pc.intValue());
 	assertEquals(0x083a, myTestCPU.x.intValue());
     }
 
@@ -444,7 +468,7 @@ public class InstructionsTest {
         // Logical Shift Left of 0xff
         myTestCPU.cc.clear();
         myTestCPU.a.set(0xff);
-        myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xfe, myTestCPU.a.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
@@ -455,7 +479,7 @@ public class InstructionsTest {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(1);
         myTestCPU.a.set(1);
-        myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x02, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.intValue());
@@ -466,7 +490,7 @@ public class InstructionsTest {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
         myTestCPU.a.set(0xB8);
-        myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x70, myTestCPU.a.intValue());
         assertEquals(0x03, myTestCPU.cc.intValue());
@@ -483,21 +507,21 @@ public class InstructionsTest {
 	myTestCPU.write(0xB00, 0x40);
 	// Negate 0
 	myTestCPU.a.set(0);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0, myTestCPU.a.intValue());
 	assertEquals(0, myTestCPU.cc.getC());
 
 	// Negate 1
 	myTestCPU.a.set(1);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0xFF, myTestCPU.a.intValue());
 	assertEquals(1, myTestCPU.cc.getC());
 
 	// Negate 2
 	myTestCPU.a.set(2);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0xFE, myTestCPU.a.intValue());
 	assertEquals(1, myTestCPU.cc.getC());
@@ -524,10 +548,10 @@ public class InstructionsTest {
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0x35); // PUL
 	myTestCPU.write(0xB01, 0xA0); // PC,Y
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0xb140, myTestCPU.y.intValue());
-	assertEquals(0x04ff, myTestCPU.pc);
+	assertEquals(0x04ff, myTestCPU.pc.intValue());
 	assertEquals(0x0f, myTestCPU.cc.intValue());
     }
 
@@ -543,7 +567,7 @@ public class InstructionsTest {
 	// Test a = 0xff
 	myTestCPU.cc.clear();
 	myTestCPU.a.set(0xff);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0xff, myTestCPU.a.intValue());
 	assertEquals(1, myTestCPU.cc.getN());
@@ -554,7 +578,7 @@ public class InstructionsTest {
 	myTestCPU.cc.clear();
 	myTestCPU.cc.setV(1);
 	myTestCPU.a.set(0x01);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x01, myTestCPU.a.intValue());
 	assertEquals(0, myTestCPU.cc.intValue());
@@ -564,7 +588,7 @@ public class InstructionsTest {
 	// Test a = 0x00
 	myTestCPU.cc.clear();
 	myTestCPU.a.set(0x00);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0, myTestCPU.cc.getN());
 	assertEquals(1, myTestCPU.cc.getZ());
@@ -578,7 +602,7 @@ public class InstructionsTest {
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0x6d);
 	myTestCPU.write(0xB01, 0xa4);
-	myTestCPU.pc = 0xB00;
+        myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(1, myTestCPU.cc.getN());
 	assertEquals(0, myTestCPU.cc.getZ());

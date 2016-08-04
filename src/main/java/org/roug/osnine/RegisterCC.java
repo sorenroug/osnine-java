@@ -3,7 +3,7 @@ package org.roug.osnine;
 /**
  * Condition codes register.
  */
-public class RegisterCC implements Register {
+public class RegisterCC extends UByte implements Register {
    
     private int all;    // Condition code register
 

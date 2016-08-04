@@ -58,7 +58,7 @@ public class MC6809 extends USimMotorola {
      * two bytes in memory. Direct page register is set to 0.
      */
     public void reset() {
-        pc = read_word(0xfffe);
+        pc.set(read_word(0xfffe));
         dp.set(0x00);      /* Direct page register = 0x00 */
         cc.clear();      /* Clear all flags */
         cc.setI(1);       /* IRQ disabled */
@@ -192,12 +192,10 @@ public class MC6809 extends USimMotorola {
                 lbra(); break;
             case 0x21:
                 brn(); break;
-/*
             case 0x8d:
                 bsr(); break;
             case 0x17:
                 lbsr(); break;
-*/
             case 0x28:
                 bvc(); break;
             case 0x29:
@@ -238,7 +236,6 @@ public class MC6809 extends USimMotorola {
     //      case 0x03: case 0x63: case 0x73:
             case 0x03: case 0x62: case 0x63: case 0x73:
                 com(); break;
-/*
             case 0x19:
                 daa(); break;
             // BDA - Adding in undocumented 6809 instructions
@@ -266,7 +263,6 @@ public class MC6809 extends USimMotorola {
                 incb(); break;
             case 0x0c: case 0x6c: case 0x7c:
                 inc(); break;
-*/
             case 0x0e: case 0x6e: case 0x7e:
                 jmp(); break;
             case 0x9d: case 0xad: case 0xbd:
@@ -341,14 +337,12 @@ public class MC6809 extends USimMotorola {
                 ora(); break;
             case 0xca: case 0xda: case 0xea: case 0xfa:
                 orb(); break;
-/*
             case 0x1a:
                 orcc(); break;
             case 0x34:
                 pshs(); break;
             case 0x36:
                 pshu(); break;
-*/
             case 0x35:
                 puls(); break;
             case 0x37:
@@ -499,29 +493,29 @@ public class MC6809 extends USimMotorola {
      * 0x0a = CC
      * otherwise DP
      */
-    private int byterefreg(int r) {
+    private UByte byterefreg(int r) {
         if (r == 0x08) {
-            return a.intValue();
+            return a;
         } else if (r == 0x09) {
-            return b.intValue();
+            return b;
         } else if (r == 0x0a) {
-            return cc.intValue();
+            return cc;
         } else {
-            return dp.intValue();
+            return dp;
         }
     }
 
-    private int wordrefreg(int r) {
+    private Word wordrefreg(int r) {
         if (r == 0x00) {
-            return d.intValue();
+            return d;
         } else if (r == 0x01) {
-            return x.intValue();
+            return x;
         } else if (r == 0x02) {
-            return y.intValue();
+            return y;
         } else if (r == 0x03) {
-            return u.intValue();
+            return u;
         } else if (r == 0x04) {
-            return s.intValue();
+            return s;
         } else {
             return pc;
         }
@@ -651,12 +645,12 @@ public class MC6809 extends USimMotorola {
                 case 0x0c:   // Non-Indirect Constant 8-bit offset from PC
                 case 0x1c:   // Indirect Constant 8-bit offset from PC
                     uOffset = extend8(fetch());
-                    addr = pc + uOffset;
+                    addr = pc.intValue() + uOffset;
                     break;
                 case 0x0d:   // Non-Indirect Constant 16-bit offset from PC
                 case 0x1d:   // Indirect Constant 16-bit offset from PC
                     sOffset = getSignedWord(fetch_word());
-                    addr = pc + sOffset;
+                    addr = pc.intValue() + sOffset;
                     break;
                 case 0x1f:   // Extended indirect
                     addr = fetch_word();
@@ -1057,21 +1051,25 @@ public class MC6809 extends USimMotorola {
     private void lbrn() {
         do_lbr(false);
     }
-/*
+
     private void bsr() {
-        UByte    relAddr = fetch();
-        write(--s, pc);
-        write(--s, (pc >> 8));
-        pc += extend8(relAddr);
+        int relAddr = fetch();
+        s.add(-1);
+        write(s, pc.intValue());
+        s.add(-1);
+        write(s, (pc.intValue() >> 8));
+        pc.add(extend8(relAddr));
     }
 
     private void lbsr() {
-        Word    relAddr = fetch_word();
-        write(--s, pc);
-        write(--s, (pc >> 8));
-        pc += relAddr;
+        int relAddr = fetch_word();
+        s.add(-1);
+        write(s, pc.intValue());
+        s.add(-1);
+        write(s, (pc.intValue() >> 8));
+        pc.add(relAddr);
     }
-*/
+
     private void bvc() {
         do_br(!cc.isSetV());
     }
@@ -1191,30 +1189,30 @@ public class MC6809 extends USimMotorola {
         setBitN(tx);
         setBitZ(tx);
     }
-/*
-    private void daa() {
-        UByte    c = 0;
-        UByte    lsn = (a & 0x0f);
-        UByte    msn = (a & 0xf0) >> 4;
 
-        if (cc.bit_h || (lsn > 9)) {
+    private void daa() {
+        int c = 0;
+        int lsn = (a.intValue() & 0x0f);
+        int msn = (a.intValue() & 0xf0) >> 4;
+
+        if (cc.isSetH() || (lsn > 9)) {
             c |= 0x06;
         }
 
-        if (cc.bit_c ||
+        if (cc.isSetC() ||
             (msn > 9) ||
             ((msn > 8) && (lsn > 9))) {
             c |= 0x60;
         }
 
         {
-            Word    t = (Word)a + c;
-            cc.bit_c = btst(t, 8);
-            a = (UByte)t;
+            int t = a.intValue() + c;
+            cc.setC(btst(t, 8));
+            a.set(t);
         }
 
-        cc.bit_n = btst(a, 7);
-        cc.bit_z = !a;
+        setBitN(a);
+        setBitZ(a);
     }
 
     private void deca() {
@@ -1226,17 +1224,17 @@ public class MC6809 extends USimMotorola {
     }
 
     private void dec() {
-        Word    addr = fetch_effective_address();
+        int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
         help_dec(m);
         write(addr, m);
     }
 
     private void help_dec(UByte x) {
-        cc.bit_v = (x == 0x80);
-        x = x - 1;
-        cc.bit_n = btst(x, 7);
-        cc.bit_z = !x;
+        cc.setV(x.intValue() == 0x80);
+        x.set(x.intValue() - 1);
+        setBitN(x);
+        setBitZ(x);
     }
 
     private void eora() {
@@ -1248,25 +1246,29 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_eor(UByte x) {
-        x = x ^ fetch_operand();
-        cc.bit_v = 0;
-        cc.bit_n = btst(x, 7);
-        cc.bit_z = !x;
+        x.set(x.intValue() ^ fetch_operand());
+        cc.setV(0);
+        setBitN(x);
+        setBitZ(x);
     }
 
     static void swap(UByte r1, UByte r2) {
-        UByte    t;
-        t = r1; r1 = r2; r2 = t;
+        UByte t = new UByte();
+        t.set(r1.intValue());
+        r1.set(r2.intValue());
+        r2.set(t.intValue());
     }
 
     static void swap(Word r1, Word r2) {
-        Word    t;
-        t = r1; r1 = r2; r2 = t;
+        Word t = new Word();
+        t.set(r1.intValue());
+        r1.set(r2.intValue());
+        r2.set(t.intValue());
     }
 
     private void exg() {
         int r1, r2;
-        UByte    w = fetch();
+        int w = fetch();
         r1 = (w & 0xf0) >> 4;
         r2 = (w & 0x0f) >> 0;
         if (r1 <= 5) {
@@ -1296,30 +1298,30 @@ public class MC6809 extends USimMotorola {
     }
 
     private void inc() {
-        Word    addr = fetch_effective_address();
+        int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
         help_inc(m);
         write(addr, m);
     }
 
     private void help_inc(UByte x) {
-        cc.bit_v = (x == 0x7f);
-        x = x + 1;
-        cc.bit_n = btst(x, 7);
-        cc.bit_z = !x;
+        cc.setV(x.intValue() == 0x7f);
+        x.set(x.intValue() + 1);
+        setBitN(x);
+        setBitZ(x);
     }
-*/
+
     private void jmp() {
-        pc = fetch_effective_address();
+        pc.set(fetch_effective_address());
     }
 
     private void jsr() {
         int addr = fetch_effective_address();
         s.add(-1);
-        write(s, pc);
+        write(s, pc.intValue());
         s.add(-1);
-        write(s, pc >> 8);
-        pc = addr;
+        write(s, pc.intValue() >> 8);
+        pc.set(addr);
     }
 
     private void lda() {
@@ -1477,9 +1479,9 @@ public class MC6809 extends USimMotorola {
         setBitN(regB);
         setBitZ(regB);
     }
-/*
+
     private void orcc() {
-        cc.all |= fetch_operand();
+        cc.set(cc.intValue() | fetch_operand());
     }
 
     private void pshs() {
@@ -1490,29 +1492,49 @@ public class MC6809 extends USimMotorola {
         help_psh(fetch(), u, s);
     }
 
-    private void help_psh(UByte w, Word s, Word u) {
+    private void help_psh(int w, Word s, Word u) {
         if (btst(w, 7)) {
-            write(--s, pc);
-            write(--s, (pc >> 8));
+            s.add(-1);
+            write(s, pc.intValue());
+            s.add(-1);
+            write(s, (pc.intValue() >> 8));
         }
         if (btst(w, 6)) {
-            write(--s, u);
-            write(--s, (u >> 8));
+            s.add(-1);
+            write(s, u.intValue());
+            s.add(-1);
+            write(s, (u.intValue() >> 8));
         }
         if (btst(w, 5)) {
-            write(--s, y);
-            write(--s, (y >> 8));
+            s.add(-1);
+            write(s, y.intValue());
+            s.add(-1);
+            write(s, (y.intValue() >> 8));
         }
         if (btst(w, 4)) {
-            write(--s, x);
-            write(--s, (x >> 8));
+            s.add(-1);
+            write(s, x.intValue());
+            s.add(-1);
+            write(s, (x.intValue() >> 8));
         }
-        if (btst(w, 3)) write(--s, dp);
-        if (btst(w, 2)) write(--s, b);
-        if (btst(w, 1)) write(--s, a);
-        if (btst(w, 0)) write(--s, cc.all);
+        if (btst(w, 3)) {
+            s.add(-1);
+            write(s, dp.intValue());
+        }
+        if (btst(w, 2)) {
+            s.add(-1);
+            write(s, b.intValue());
+        }
+        if (btst(w, 1)) {
+            s.add(-1);
+            write(s, a.intValue());
+        }
+        if (btst(w, 0)) {
+            s.add(-1);
+            write(s, cc.intValue());
+        }
     }
-*/
+
     /**
      * PULS: Pull Registers from Hardware Stack.
      * The stack grows downwards, and this means that when you PULL, the
@@ -1559,11 +1581,11 @@ public class MC6809 extends USimMotorola {
             s.add(2);
         }
         if (btst(w, 7)) {
-            pc = read_word(s);
+            pc.set(read_word(s));
             s.add(2);
         }
     }
-/*
+
     private void rola() {
         help_rol(a);
     }
@@ -1573,20 +1595,22 @@ public class MC6809 extends USimMotorola {
     }
 
     private void rol() {
-        Word    addr = fetch_effective_address();
+        int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
         help_rol(m);
         write(addr, m);
     }
 
     private void help_rol(UByte regB) {
-        int oc = cc.bit_c;
-        cc.bit_v = btst(regB, 7) ^ btst(regB, 6);
-        cc.bit_c = btst(regB, 7);
-        regB = regB << 1;
-        if (oc) bset(regB, 0);
-        cc.bit_n = btst(regB, 7);
-        cc.bit_z = !regB;
+        boolean oc = cc.isSetC();
+        cc.setV(regB.btst(7) ^ regB.btst(6));
+        cc.setC(regB.btst(7));
+        regB.set(regB.intValue() << 1);
+        if (oc) {
+            regB.bset(0);
+        }
+        setBitN(regB);
+        setBitZ(regB);
     }
 
     private void rora() {
@@ -1598,33 +1622,35 @@ public class MC6809 extends USimMotorola {
     }
 
     private void ror() {
-        Word    addr = fetch_effective_address();
+        int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
         help_ror(m);
         write(addr, m);
     }
 
     private void help_ror(UByte regB) {
-        int oc = cc.bit_c;
-        cc.bit_c = btst(regB, 0);
-        regB = regB >> 1;
-        if (oc) bset(regB, 7);
-        cc.bit_n = btst(regB, 7);
-        cc.bit_z = !regB;
+        boolean oc = cc.isSetC();
+        cc.setC(regB.btst(0));
+        regB.set(regB.intValue() >> 1);
+        if (oc) {
+            regB.bset(7);
+        }
+        setBitN(regB);
+        setBitZ(regB);
     }
 
     private void rti() {
         help_pul(0x01, s, u);
-        if (cc.bit_e) {
+        if (cc.isSetE()) {
             help_pul(0xfe, s, u);
         }
     }
 
     private void rts() {
-        pc = read_word(s);
-        s += 2;
+        pc.set(read_word(s));
+        s.add(2);
     }
-
+/*
     private void sbca() {
         help_sbc(a);
     }
@@ -1634,7 +1660,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_sbc(UByte regB) {
-        UByte    m = fetch_operand();
+        int m = fetch_operand();
         int t = regB - m - cc.bit_c;
          
         cc.bit_h = ((t & 0x0f) < (m & 0x0f)); // half-carry
@@ -1732,19 +1758,19 @@ public class MC6809 extends USimMotorola {
         cc.bit_e = 1;
         help_psh(0xff, s, u);
         cc.bit_f = cc.bit_i = 1;
-        pc = read_word(0xfffa);
+        pc.set(read_word(0xfffa));
     }
 
     void swi2() {
         cc.bit_e = 1;
         help_psh(0xff, s, u);
-        pc = read_word(0xfff4);
+        pc.set(read_word(0xfff4));
     }
 
     void swi3() {
         cc.bit_e = 1;
         help_psh(0xff, s, u);
-        pc = read_word(0xfff2);
+        pc.set(read_word(0xfff2));
     }
 
     private void tfr() {
@@ -1793,16 +1819,14 @@ public class MC6809 extends USimMotorola {
     private void do_br(boolean test) {
         int offset = extend8(fetch_operand());
         if (test) {
-            pc += offset;
-            pc &= Word.MAX;
+            pc.add(offset);
         }
     }
 
     private void do_lbr(boolean test) {
         int offset = fetch_word_operand();
         if (test) {
-            pc += offset;
-            pc &= Word.MAX;
+            pc.add(offset);
         }
     }
 

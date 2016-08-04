@@ -15,7 +15,7 @@ public abstract class USim {
     /** Instruction Register. */
     public int ir;
     /** Program Counter. */
-    public int pc;
+    public final Word pc = new Word("PC");
 
     /**
      * Constructor.
@@ -103,8 +103,8 @@ public abstract class USim {
      * Fetch one memory byte from program counter and increment program counter.
      */
     public int fetch() {
-        int val = read(pc);
-        pc += 1;
+        int val = read(pc.intValue());
+        pc.add(1);
 
         return val;
     }
@@ -113,8 +113,8 @@ public abstract class USim {
      * Fetch two memory bytes from program counter.
      */
     public int fetch_word() {
-        int val = read_word(pc);
-        pc += 2;
+        int val = read_word(pc.intValue());
+        pc.add(2);
 
         return val;
     }
@@ -125,7 +125,7 @@ public abstract class USim {
     void invalid(final String msg) {
         System.err.format("\ninvalid %s : pc = [%04x], ir = [%04x]\r\n",
                 msg == null ? msg : "",
-                pc, ir);
+                pc.intValue(), ir);
         halt();
         throw new RuntimeException(msg);
     }
