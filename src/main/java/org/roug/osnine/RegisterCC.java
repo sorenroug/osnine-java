@@ -5,8 +5,6 @@ package org.roug.osnine;
  */
 public class RegisterCC implements Register {
    
-    public static final int WIDTH = 8;
-
     private int all;    // Condition code register
 
 
@@ -82,13 +80,13 @@ public class RegisterCC implements Register {
 
     @Override
     public void set(int newValue) {
-        bit_e = newValue & 0x80;
-        bit_f = newValue & 0x40;
-        bit_h = newValue & 0x20;
-        bit_i = newValue & 0x10;
-        bit_n = newValue & 0x08;
-        bit_z = newValue & 0x04;
-        bit_v = newValue & 0x02;
+        bit_e = (newValue & 0x80) >> 7;
+        bit_f = (newValue & 0x40) >> 6;
+        bit_h = (newValue & 0x20) >> 5;
+        bit_i = (newValue & 0x10) >> 4;
+        bit_n = (newValue & 0x08) >> 3;
+        bit_z = (newValue & 0x04) >> 2;
+        bit_v = (newValue & 0x02) >> 1;
         bit_c = newValue & 0x01;
     }
 
@@ -104,6 +102,11 @@ public class RegisterCC implements Register {
     }
 
     //!< Entire
+
+    @Override
+    public int getWidth() {
+        return 8;
+    }
 
     /**
      * Bit test.
@@ -224,6 +227,38 @@ public class RegisterCC implements Register {
 
     public void setC(int val) {
         bit_c = val;
+    }
+
+    public void setE(boolean val) {
+        bit_e = val ? 1 : 0;
+    }
+
+    public void setF(boolean val) {
+        bit_f = val ? 1 : 0;
+    }
+
+    public void setH(boolean val) {
+        bit_h = val ? 1 : 0;
+    }
+
+    public void setI(boolean val) {
+        bit_i = val ? 1 : 0;
+    }
+
+    public void setN(boolean val) {
+        bit_n = val ? 1 : 0;
+    }
+
+    public void setZ(boolean val) {
+        bit_z = val ? 1 : 0;
+    }
+
+    public void setV(boolean val) {
+        bit_v = val ? 1 : 0;
+    }
+
+    public void setC(boolean val) {
+        bit_c = val ? 1 : 0;
     }
 }
 

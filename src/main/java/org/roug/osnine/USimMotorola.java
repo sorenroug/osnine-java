@@ -24,9 +24,9 @@ public class USimMotorola extends USim {
      */
     @Override
     public int read_word(int offset) {
-        int tmp1 = read(offset);
+        int tmp1 = read(offset & 0xffff);
         offset++;
-        int tmp2 = read(offset);
+        int tmp2 = read(offset & 0xffff);
 
         return (tmp1 << 8) | tmp2;
     }
@@ -36,11 +36,7 @@ public class USimMotorola extends USim {
      */
     @Override
     public int read_word(Word offset) {
-        int tmp1 = read(offset);
-        offset.inc();
-        int tmp2 = read(offset);
-
-        return (tmp1 << 8) | tmp2;
+        return read_word(offset.intValue());
     }
 
     /**
@@ -48,9 +44,9 @@ public class USimMotorola extends USim {
      */
     @Override
     public void write_word(int offset, int val) {
-        write(offset, (val >> 8));
+        write(offset & 0xffff, (val >> 8));
         offset++;
-        write(offset, val);
+        write(offset & 0xffff, val);
     }
 
     /**
@@ -58,9 +54,7 @@ public class USimMotorola extends USim {
      */
     @Override
     public void write_word(Word offset, Word val) {
-        write(offset, UByte.valueOf((val.get() >> 8)));
-        offset.inc();
-        write(offset, val.ubyteValue());
+        write_word(offset.intValue(), val.intValue());
     }
 
     @Override

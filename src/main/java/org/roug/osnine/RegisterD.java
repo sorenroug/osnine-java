@@ -5,11 +5,10 @@ package org.roug.osnine;
  */
 public class RegisterD extends Word implements Register {
 
-    public static final int WIDTH = 16;
-
     private UByte regA;
     private UByte regB;
 
+    private String registerName = "D";
     /**
      * Constructor.
      */
@@ -49,6 +48,11 @@ public class RegisterD extends Word implements Register {
     }
 
     @Override
+    public int getWidth() {
+        return 16;
+    }
+
+    @Override
     public int btst(int n) {
         int value = intValue();
         return ((value & (1 << n)) != 0) ? 1 : 0;
@@ -66,6 +70,11 @@ public class RegisterD extends Word implements Register {
         int value = intValue();
         value &= ~(1 << n);
         set(value);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + registerName + "]:" + Integer.valueOf(intValue()).toString();
     }
 
 }

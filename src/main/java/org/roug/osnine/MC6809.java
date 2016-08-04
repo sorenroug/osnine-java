@@ -170,12 +170,10 @@ public class MC6809 extends USimMotorola {
                 bgt(); break;
             case 0x22:
                 bhi(); break;
-/*
             case 0x85: case 0x95: case 0xa5: case 0xb5:
                 bita(); break;
             case 0xc5: case 0xd5: case 0xe5: case 0xf5:
                 bitb(); break;
-*/
             case 0x2f:
                 ble(); break;
             case 0x23:
@@ -199,11 +197,11 @@ public class MC6809 extends USimMotorola {
                 bsr(); break;
             case 0x17:
                 lbsr(); break;
+*/
             case 0x28:
                 bvc(); break;
             case 0x29:
                 bvs(); break;
-*/
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x4f:
             case 0x4f: case 0x4e:
@@ -228,7 +226,6 @@ public class MC6809 extends USimMotorola {
                 cmpu(); break;
             case 0x108c: case 0x109c: case 0x10ac: case 0x10bc:
                 cmpy(); break;
-/*
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x43:
             case 0x43: case 0x42: case 0x1042:
@@ -241,6 +238,7 @@ public class MC6809 extends USimMotorola {
     //      case 0x03: case 0x63: case 0x73:
             case 0x03: case 0x62: case 0x63: case 0x73:
                 com(); break;
+/*
             case 0x19:
                 daa(); break;
             // BDA - Adding in undocumented 6809 instructions
@@ -268,6 +266,7 @@ public class MC6809 extends USimMotorola {
                 incb(); break;
             case 0x0c: case 0x6c: case 0x7c:
                 inc(); break;
+*/
             case 0x0e: case 0x6e: case 0x7e:
                 jmp(); break;
             case 0x9d: case 0xad: case 0xbd:
@@ -342,16 +341,19 @@ public class MC6809 extends USimMotorola {
                 ora(); break;
             case 0xca: case 0xda: case 0xea: case 0xfa:
                 orb(); break;
+/*
             case 0x1a:
                 orcc(); break;
             case 0x34:
                 pshs(); break;
             case 0x36:
                 pshu(); break;
+*/
             case 0x35:
                 puls(); break;
             case 0x37:
                 pulu(); break;
+/*
             // BDA - Adding in undocumented 6809 instructions
             case 0x3e:
                 reset(); break;
@@ -405,6 +407,7 @@ public class MC6809 extends USimMotorola {
                 swi3(); break;
             case 0x1f:
                 tfr(); break;
+*/
             case 0x4d:
                 tsta(); break;
             case 0x5d:
@@ -441,7 +444,6 @@ public class MC6809 extends USimMotorola {
                 lbvc(); break;
             case 0x1029:
                 lbvs(); break;
-*/
             default:
                 // BDA - make invalid instructions a nop
                 // to distinquish between 6309
@@ -718,19 +720,19 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    private int btst(int x, int n) {
-        return (x & (1 << n)) != 0 ? 1 : 0;
+    private boolean btst(int x, int n) {
+        return (x & (1 << n)) != 0;
     }
 
     private void setBitZ(Register ref) {
-        cc.setZ(ref.intValue() == 0 ? 1 : 0);
+        cc.setZ(ref.intValue() == 0);
     }
 
     /**
      * Set CC bit N if value is negative.
      */
     private void setBitN(Register ref) {
-        cc.setN(ref.btst(ref.WIDTH - 1));
+        cc.setN(ref.btst(ref.getWidth() - 1));
     }
 
     /**
@@ -972,7 +974,7 @@ public class MC6809 extends USimMotorola {
         do_lbr(!(cc.isSetC() || cc.isSetZ()));
     }
 
-/*
+
     private void bita() {
         help_bit(a);
     }
@@ -982,12 +984,12 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_bit(UByte arg) {
-        UByte t = arg & fetch_operand();
-        cc.bit_n = btst(t, 7);
-        cc.bit_v = 0;
+        UByte t = UByte.valueOf(arg.intValue() & fetch_operand());
+        setBitN(t);
+        cc.setV(0);
         setBitZ(t);
     }
-*/
+
     private void ble() {
         //do_br(cc.bit_z | (cc.bit_n ^ cc.bit_v));
         do_br(cc.isSetZ() || (cc.isSetN() != cc.isSetV()));
@@ -1166,7 +1168,7 @@ public class MC6809 extends USimMotorola {
         cc.setN(btst(t, 15));
         cc.setZ(t == 0 ? 1 : 0);
     }
-/*
+
     private void coma() {
         help_com(a);
     }
@@ -1176,20 +1178,20 @@ public class MC6809 extends USimMotorola {
     }
 
     private void com() {
-        Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        int addr = fetch_effective_address();
+        UByte m = UByte.valueOf(read(addr));
         help_com(m);
         write(addr, m);
     }
 
     private void help_com(UByte tx) {
-        tx = ~tx;
-        cc.bit_c = 1;
-        cc.bit_v = 0;
-        cc.bit_n = btst(tx, 7);
-        cc.bit_z = !tx;
+        tx.set(~tx.intValue());
+        cc.setC(1);
+        cc.setV(0);
+        setBitN(tx);
+        setBitZ(tx);
     }
-
+/*
     private void daa() {
         UByte    c = 0;
         UByte    lsn = (a & 0x0f);
@@ -1225,7 +1227,7 @@ public class MC6809 extends USimMotorola {
 
     private void dec() {
         Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        UByte m = UByte.valueOf(read(addr));
         help_dec(m);
         write(addr, m);
     }
@@ -1295,7 +1297,7 @@ public class MC6809 extends USimMotorola {
 
     private void inc() {
         Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        UByte m = UByte.valueOf(read(addr));
         help_inc(m);
         write(addr, m);
     }
@@ -1306,15 +1308,17 @@ public class MC6809 extends USimMotorola {
         cc.bit_n = btst(x, 7);
         cc.bit_z = !x;
     }
-
+*/
     private void jmp() {
         pc = fetch_effective_address();
     }
 
     private void jsr() {
         int addr = fetch_effective_address();
-        write(--s, pc);
-        write(--s, pc >> 8);
+        s.add(-1);
+        write(s, pc);
+        s.add(-1);
+        write(s, pc >> 8);
         pc = addr;
     }
 
@@ -1327,10 +1331,10 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_ld(UByte regB) {
-        regB = fetch_operand();
-        cc.bit_n = btst(regB, 7);
-        cc.bit_v = 0;
-        cc.bit_z = !regB;
+        regB.set(fetch_operand());
+        setBitN(regB);
+        cc.setV(0);
+        setBitZ(regB);
     }
 
     private void ldd() {
@@ -1354,29 +1358,28 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_ld(Word regW) {
-        int val = fetch_word_operand();
-        regW.set(val);
-        cc.bit_n = regW.btst(15);
-        cc.bit_v = 0;
-        setBitZ(refW);
+        regW.set(fetch_word_operand());
+        setBitN(regW);
+        cc.setV(0);
+        setBitZ(regW);
+    }
+
+    private void leas() {
+        s.set(fetch_effective_address());
+    }
+
+    private void leau() {
+        u.set(fetch_effective_address());
     }
 
     private void leax() {
-        x = fetch_effective_address();
+        x.set(fetch_effective_address());
         setBitZ(x);
     }
 
     private void leay() {
-        y = fetch_effective_address();
+        y.set(fetch_effective_address());
         setBitZ(y);
-    }
-
-    private void leas() {
-        s = fetch_effective_address();
-    }
-
-    private void leau() {
-        u = fetch_effective_address();
     }
 
     private void lsla() {
@@ -1388,18 +1391,18 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lsl() {
-        Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        int addr = fetch_effective_address();
+        UByte m = UByte.valueOf(read(addr));
         help_lsl(m);
         write(addr, m);
     }
 
     private void help_lsl(UByte regB) {
-        cc.bit_c = btst(regB, 7);
-        cc.bit_v = btst(regB, 7) ^ btst(regB, 6);
-        regB <<= 1;
-        cc.bit_n = btst(regB, 7);
-        cc.bit_z = !regB;
+        cc.setC(regB.btst(7));
+        cc.setV(regB.btst(7) ^ regB.btst(6));
+        regB.set(regB.intValue() << 1);
+        setBitN(regB);
+        setBitZ(regB);
     }
 
     private void lsra() {
@@ -1411,23 +1414,23 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lsr() {
-        Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        int addr = fetch_effective_address();
+        UByte m = UByte.valueOf(read(addr));
         help_lsr(m);
         write(addr, m);
     }
 
     private void help_lsr(UByte regB) {
-        cc.bit_c = btst(regB, 0);
-        regB >>= 1;    // Shift word right
-        cc.bit_n = 0;
-        cc.bit_z = !regB;
+        cc.setC(regB.btst(0));
+        regB.set(regB.intValue() >> 1); // Shift word right
+        cc.setN(0);
+        setBitZ(regB);
     }
 
     private void mul() {
-        d = a * b;
-        cc.bit_c = btst(b, 7);
-        cc.bit_z = !d;
+        d.set(a.intValue() * b.intValue());
+        cc.setC(b.btst(7));
+        setBitZ(d);
     }
 
     private void nega() {
@@ -1439,24 +1442,24 @@ public class MC6809 extends USimMotorola {
     }
 
     private void neg() {
-        Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        int addr = fetch_effective_address();
+        UByte m = UByte.valueOf(read(addr));
         help_neg(m);
         write(addr, m);
     }
 
     private void help_neg(UByte regB) {
-        cc.bit_v = (regB == 0x80);
+        cc.setV(regB.intValue() == 0x80);
         {
-            Word t = (Word)((~regB) & 0xff) + 1;
-            regB = t & 0xff;
+            int t = ((~regB.intValue()) & 0xff) + 1;
+            regB.set(t & 0xff);
         }
 
         setBitN(regB);
         setBitZ(regB);
-        cc.bit_c = (regB != 0);
+        cc.setC(regB.intValue() != 0);
     }
-*/
+
     private void nop() {
     }
 
@@ -1515,7 +1518,7 @@ public class MC6809 extends USimMotorola {
      * The stack grows downwards, and this means that when you PULL, the
      * stack pointer is increased.
      */
-/*
+
     private void puls() {
         int w = fetch();
         help_pul(w, s, u);
@@ -1526,25 +1529,41 @@ public class MC6809 extends USimMotorola {
         help_pul(w, u, s);
     }
 
-    private void help_pul(UByte w, Word s, Word u) {
-        if (btst(w, 0)) cc.all = read(s++);
-        if (btst(w, 1)) a = read(s++);
-        if (btst(w, 2)) b = read(s++);
-        if (btst(w, 3)) dp = read(s++);
+    private void help_pul(int w, Word s, Word u) {
+        if (btst(w, 0)) {
+            cc.set(read(s));
+            s.add(1);
+        }
+        if (btst(w, 1)) {
+            a.set(read(s));
+            s.add(1);
+        }
+        if (btst(w, 2)) {
+            b.set(read(s));
+            s.add(1);
+        }
+        if (btst(w, 3)) {
+            dp.set(read(s));
+            s.add(1);
+        }
         if (btst(w, 4)) {
-            x = read_word(s); s += 2;
+            x.set(read_word(s));
+            s.add(2);
         }
         if (btst(w, 5)) {
-            y = read_word(s); s += 2;
+            y.set(read_word(s));
+            s.add(2);
         }
         if (btst(w, 6)) {
-            u = read_word(s); s += 2;
+            u.set(read_word(s));
+            s.add(2);
         }
         if (btst(w, 7)) {
-            pc = read_word(s); s += 2;
+            pc = read_word(s);
+            s.add(2);
         }
     }
-
+/*
     private void rola() {
         help_rol(a);
     }
@@ -1555,7 +1574,7 @@ public class MC6809 extends USimMotorola {
 
     private void rol() {
         Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        UByte m = UByte.valueOf(read(addr));
         help_rol(m);
         write(addr, m);
     }
@@ -1580,7 +1599,7 @@ public class MC6809 extends USimMotorola {
 
     private void ror() {
         Word    addr = fetch_effective_address();
-        UByte    m = read(addr);
+        UByte m = UByte.valueOf(read(addr));
         help_ror(m);
         write(addr, m);
     }

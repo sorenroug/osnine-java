@@ -138,14 +138,14 @@ public abstract class USim {
      * Single byte read from memory.
      */
     public int read(int offset) {
-        return memory[offset];
+        return memory[offset & 0xffff];
     }
 
     /**
      * Single byte read from memory.
      */
     public int read(Word offset) {
-        return memory[offset.get()];
+        return read(offset.intValue());
     }
 
     /**
@@ -160,22 +160,23 @@ public abstract class USim {
     /**
      * Single byte write to memory.
      */
+    @Deprecated
     public void write(int offset, UByte val) {
-        memory[offset] = val.intValue();
+        write(offset, val.intValue());
     }
 
     /**
      * Single byte write to memory.
      */
-    public void write(Word offset, UByte val) {
-        memory[offset.get()] = val.get();
+    public void write(Word offset, int val) {
+        write(offset.intValue(), val);
     }
 
     /**
      * Single byte write to memory.
      */
     public void write(int offset, int val) {
-        memory[offset] = val & 0xff;
+        memory[offset & 0xffff] = val & 0xff;
     }
 
 }

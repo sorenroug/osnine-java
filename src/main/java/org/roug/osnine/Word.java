@@ -5,7 +5,6 @@ package org.roug.osnine;
  */
 public class Word implements Register {
 
-    public static final int WIDTH = 16;
     public static final int MAX = 0xffff;
 
     private int value;
@@ -36,7 +35,7 @@ public class Word implements Register {
 
     @Override
     public int intValue() {
-        return value & 0xffff;
+        return value & MAX;
     }
 
     @Override
@@ -46,10 +45,10 @@ public class Word implements Register {
 
     @Override
     public void set(int newValue) throws IllegalArgumentException {
-//      if (newValue > 0xffff || newValue < -0x8000) {
+//      if (newValue > MAX || newValue < -0x8000) {
 //          throw new IllegalArgumentException("Value must fit in 16 bits.");
 //      }
-        value = newValue & 0xffff;
+        value = newValue & MAX;
     }
 
     @Override
@@ -59,6 +58,11 @@ public class Word implements Register {
         } else {
             return -((~value & 0x7fff) + 1);
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return 16;
     }
 
     public UByte ubyteValue() {
@@ -74,8 +78,8 @@ public class Word implements Register {
      */
     public void add(int increment) {
         value += increment;
-        value = value & 0xffff;
-//      if (value > 0xffff || value < -0x8000) {
+        value = value & MAX;
+//      if (value > MAX || value < -0x8000) {
 //          throw new IllegalArgumentException("Value must fit in 16 bits.");
 //      }
     }
@@ -101,7 +105,7 @@ public class Word implements Register {
 
     @Override
     public String toString() {
-        return "[" + registerName + "]:" + Integer.valueOf(value).toString();
+        return "[" + registerName + "]:" + Integer.valueOf(intValue()).toString();
     }
 
 }

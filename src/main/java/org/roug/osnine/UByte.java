@@ -5,7 +5,7 @@ package org.roug.osnine;
  */
 public class UByte implements Register {
 
-    public static final int WIDTH = 8;
+    public static final int MAX = 0xff;
 
     private int value;
 
@@ -48,7 +48,7 @@ public class UByte implements Register {
 //      if (newValue > 0xff || newValue < -0x80) {
 //          throw new IllegalArgumentException("Value must fit in 8 bits.");
 //      }
-        value = newValue & 0xff;
+        value = newValue & MAX;
     }
 
     @Override
@@ -60,13 +60,18 @@ public class UByte implements Register {
         }
     }
 
+    @Override
+    public int getWidth() {
+        return 8;
+    }
+
     public static UByte valueOf(int i) {
         return new UByte(i);
     }
 
     public void add(int x) {
         value += x;
-        value = value & 0xff;
+        value = value & MAX;
     }
 
     @Override
