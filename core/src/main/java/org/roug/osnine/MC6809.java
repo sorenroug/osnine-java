@@ -47,7 +47,7 @@ public class MC6809 extends USimMotorola {
      */
     public MC6809() {
         super();
-        allocate_memory(0xfffe, 2);
+        allocate_memory(0xfff0, 16);
         reset();
     }
 

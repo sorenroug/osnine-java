@@ -232,6 +232,39 @@ public class InstructionsTest {
         assertEquals(LOCATION + 2 - 86, myTestCPU.pc.intValue());
     }
 
+    @Test
+    public void testBSRBackward() {
+        int instructions[] = {
+            0x8d, // BSR
+            170 // Jump backward 170 - 256 = 86 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.s.set(0x300);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 - 86, myTestCPU.pc.intValue());
+        assertEquals(0x2fe, myTestCPU.s.intValue());
+        assertEquals(0x22, myTestCPU.read(0x2ff));
+        assertEquals(0x1e, myTestCPU.read(0x2fe));
+    }
+
+    @Test
+    public void testLBSR() {
+        int instructions[] = {
+            0x17, // LBSR
+            0x03,
+            0x72
+        };
+        loadProg(instructions);
+        myTestCPU.s.set(0x300);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 3 + 0x0372, myTestCPU.pc.intValue());
+        assertEquals(0x2fe, myTestCPU.s.intValue());
+        assertEquals(0x23, myTestCPU.read(0x2ff));
+        assertEquals(0x1e, myTestCPU.read(0x2fe));
+    }
+
     /**
      * Clear byte in extended mode.
      */
@@ -601,6 +634,52 @@ public class InstructionsTest {
 	assertEquals(0xb140, myTestCPU.y.intValue());
 	assertEquals(0x04ff, myTestCPU.pc.intValue());
 	assertEquals(0x0f, myTestCPU.cc.intValue());
+    }
+
+    /**
+     * Test the LDB - Load into B - instruction.
+     */
+    @Test
+    public void testSUBB() {
+	// Test IMMEDIATE mode:   SUBB $202
+	//
+	// Set register A to the offset
+	myTestCPU.b.set(2);
+	// Two bytes of instruction
+	myTestCPU.write(0xB00, 0xc0);
+	myTestCPU.write(0xB01, 179);
+        myTestCPU.cc.clear();
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(79, myTestCPU.b.intValue());
+	assertEquals(0xB02, myTestCPU.pc.intValue());
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+	assertEquals(1, myTestCPU.cc.getC());
+    }
+
+    //@Test
+    public void testSUBBindexed() {
+	// Test INDEXED mode:   LDB   A,S where A is negative
+	//
+	// Set up a word to test at address 0x202
+	myTestCPU.write_word(0x202, 0x73ff);
+	// Set register A to the offset
+	myTestCPU.b.set(0xF2);
+	// Set register S to point to that location minus 2
+	myTestCPU.s.set(0x210);
+	// Two bytes of instruction
+	myTestCPU.write(0xB00, 0xE0);
+	myTestCPU.write(0xB01, 0xE6);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0x210, myTestCPU.s.intValue());
+	assertEquals(0x73, myTestCPU.b.intValue());
+	assertEquals(0xB02, myTestCPU.pc.intValue());
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
     }
 
     /**
