@@ -7,6 +7,7 @@ public abstract class USim {
 
     /** Flag: is the CPU halted? */
     public boolean halted;
+
     /** Memory space. */
     private MemorySegment memory;
 
@@ -72,7 +73,8 @@ public abstract class USim {
     /**
      * Output a status somehow.
      */
-    public abstract void status();
+    public void status() {
+    }
 
     /**
      * Execute one instruction.

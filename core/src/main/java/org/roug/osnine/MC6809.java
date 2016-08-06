@@ -2,27 +2,14 @@ package org.roug.osnine;
 
 public class MC6809 extends USimMotorola {
 
-    public static final int immediate = 0;
-    public static final int relative = 0;
-    public static final int inherent = 1;
-    public static final int extended = 2;
-    public static final int direct = 3;
-    public static final int indexed = 4;
+    private static final int IMMEDIATE = 0;
+    private static final int RELATIVE = 0;
+    private static final int INHERENT = 1;
+    private static final int EXTENDED = 2;
+    private static final int DIRECT = 3;
+    private static final int INDEXED = 4;
 
     protected int mode;
-
-/*
-    public enum Modes {
-                immediate(0),
-                relative(0),
-                inherent(1),
-                extended(2),
-                direct(3),
-                indexed(4)
-    }
-    protected Modes mode;
-*/
-
 
     /** Stack pointer U. */
     public final Word u = new Word("U");
@@ -35,12 +22,54 @@ public class MC6809 extends USimMotorola {
 
     /** Direct Page register. */
     public final UByte dp = new UByte("DP");
+    /** Accumulater A. */
     public final UByte a = new UByte("A");
+    /** Accumulater B. */
     public final UByte b = new UByte("B");
+    /** Accumulater D. Combined from A and B. */
     public final RegisterD d = new RegisterD(a, b);
 
     /** Condiction codes. */
     public final RegisterCC cc = new RegisterCC();
+
+    /** Prevent NMI handling. */
+    private boolean inhibitNMI;
+
+    /** Did the CPU receive an NMI? */
+    private boolean receivedNMI;
+
+    /** Did the CPU receive an FIRQ? */
+    private boolean receivedFIRQ;
+
+    /** Did the CPU receive an IRQ? */
+    private boolean receivedIRQ;
+
+    /**
+     * Accept an NMI signal.
+     */
+    public void signalNMI() {
+        if (!inhibitNMI) {
+            receivedNMI = true;
+        }
+    }
+
+    /**
+     * Accept an FIRQ signal.
+     */
+    public void signalFIRQ() {
+        if (!cc.isSetF()) {
+            receivedFIRQ = true;
+        }
+    }
+
+    /**
+     * Accept an IRQ signal.
+     */
+    public void signalIRQ() {
+        if (!cc.isSetI()) {
+            receivedIRQ = true;
+        }
+    }
 
     /**
      * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
@@ -52,7 +81,7 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
+     * Constructor: Allocate memory.
      */
     public MC6809(int memorySize) {
         this();
@@ -69,8 +98,12 @@ public class MC6809 extends USimMotorola {
         cc.clear();      // Clear all flags
         cc.setI(1);       // IRQ disabled
         cc.setF(1);       // FIRQ disabled
+        inhibitNMI = true;  // FIXME: Set to false the first time something is loaded into S.
     }
 
+    /**
+     * Print out status.
+     */
     public void status() {
     }
 
@@ -78,60 +111,60 @@ public class MC6809 extends USimMotorola {
      * Execute one instruction.
      */
     public void execute() {
-    //                   disasmPC();
+    //  disasmPC();
         ir = fetch();
 
         // Select addressing mode
         switch (ir & 0xf0) {
             case 0x00: case 0x90: case 0xd0:
-                mode = direct; break;
+                mode = DIRECT; break;
             case 0x20:
-                mode = relative; break;
+                mode = RELATIVE; break;
             case 0x30: case 0x40: case 0x50:
                 if (ir < 0x34) {
-                    mode = indexed;
+                    mode = INDEXED;
                 } else if (ir < 0x38) {
-                    mode = immediate;
+                    mode = IMMEDIATE;
                 } else {
-                    mode = inherent;
+                    mode = INHERENT;
                 }
                 break;
             case 0x60: case 0xa0: case 0xe0:
-                mode = indexed; break;
+                mode = INDEXED; break;
             case 0x70: case 0xb0: case 0xf0:
-                mode = extended; break;
+                mode = EXTENDED; break;
             case 0x80: case 0xc0:
                 if (ir == 0x8d) {
-                    mode = relative;
+                    mode = RELATIVE;
                 } else {
-                    mode = immediate;
+                    mode = IMMEDIATE;
                 }
                 break;
             case 0x10:
                 switch (ir & 0x0f) {
                     case 0x02: case 0x03: case 0x09:
                     case 0x0d: case 0x0e: case 0x0f:
-                        mode = inherent; break;
+                        mode = INHERENT; break;
                     case 0x06: case 0x07:
-                        mode = relative; break;
+                        mode = RELATIVE; break;
                     case 0x0a: case 0x0c:
-                        mode = immediate; break;
+                        mode = IMMEDIATE; break;
                     case 0x00: case 0x01:
                         ir <<= 8;
                         ir |= fetch();
                         switch (ir & 0xf0) {
                             case 0x20:
-                                mode = relative; break;
+                                mode = RELATIVE; break;
                             case 0x30:
-                                mode = inherent; break;
+                                mode = INHERENT; break;
                             case 0x80: case 0xc0:
-                                mode = immediate; break;
+                                mode = IMMEDIATE; break;
                             case 0x90: case 0xd0:
-                                mode = direct; break;
+                                mode = DIRECT; break;
                             case 0xa0: case 0xe0:
-                                mode = indexed; break;
+                                mode = INDEXED; break;
                             case 0xb0: case 0xf0:
-                                mode = extended; break;
+                                mode = EXTENDED; break;
                         }
                         break;
                 }
@@ -449,7 +482,18 @@ public class MC6809 extends USimMotorola {
                 invalid("instruction"); break;
         }
 
-
+        if (receivedNMI) {
+            nmi();
+            receivedNMI = false;
+        }
+        if (receivedFIRQ) {
+            firq();
+            receivedFIRQ = false;
+        }
+        if (receivedIRQ) {
+            irq();
+            receivedIRQ = false;
+        }
     }
 
     public int getSignedByte(int value) {
@@ -529,17 +573,17 @@ public class MC6809 extends USimMotorola {
         int ret = 0;
         int addr;
 
-        if (mode == immediate) {
+        if (mode == IMMEDIATE) {
             ret = fetch();
-        } else if (mode == relative) {
+        } else if (mode == RELATIVE) {
             ret = fetch();
-        } else if (mode == extended) {
+        } else if (mode == EXTENDED) {
             addr = fetch_word();
             ret = read(addr);
-        } else if (mode == direct) {
+        } else if (mode == DIRECT) {
             addr = (dp.intValue() << 8) | fetch();
             ret = read(addr);
-        } else if (mode == indexed) {
+        } else if (mode == INDEXED) {
             int post = fetch();
             do_predecrement(post);
             addr = do_effective_address(post);
@@ -556,17 +600,17 @@ public class MC6809 extends USimMotorola {
         int ret = 0;
         int addr;
 
-        if (mode == immediate) {
+        if (mode == IMMEDIATE) {
             ret = fetch_word();
-        } else if (mode == relative) {
+        } else if (mode == RELATIVE) {
             ret = fetch_word();
-        } else if (mode == extended) {
+        } else if (mode == EXTENDED) {
             addr = fetch_word();
             ret = read_word(addr);
-        } else if (mode == direct) {
+        } else if (mode == DIRECT) {
             addr = dp.intValue() << 8 | fetch();
             ret = read_word(addr);
-        } else if (mode == indexed) {
+        } else if (mode == INDEXED) {
             int post = fetch();
             do_predecrement(post);
             addr = do_effective_address(post);
@@ -582,11 +626,11 @@ public class MC6809 extends USimMotorola {
     private int fetch_effective_address() {
         int addr = 0;
 
-        if (mode == extended) {
+        if (mode == EXTENDED) {
             addr = fetch_word();
-        } else if (mode == direct) {
+        } else if (mode == DIRECT) {
             addr = dp.intValue() << 8 | fetch();
-        } else if (mode == indexed) {
+        } else if (mode == INDEXED) {
             int post = fetch();
             do_predecrement(post);
             addr = do_effective_address(post);
@@ -1288,6 +1332,34 @@ public class MC6809 extends USimMotorola {
         }
     }
 
+    /**
+     * Fast hardware interrupt (FIRQ).
+     * The <em>fast interrupt request</em> is similar to the IRQ, as it is maskable by
+     * setting the F bit in the condition code register to 1. When an FIRQ is
+     * received, only the PC and condition code register are saved on the hardware
+     * stack. The E bit is not set, because the entire machine state has not
+     * been saved. The PC for the FIRQ handler is fetched from locations
+     * FFF6:FFF7. Both the F and the I bits are set to 1 to prevent any more
+     * interrupts.
+     *
+     * The fast interrupt request executes much more quickly than the NMI
+     * or IRQ, because only three bytes are pushed onto the stack. The FIRQ
+     * takes ten cycles to execute. The NMI and IRQ require nineteen. The fast
+     * interrupt request is very useful when speed is essential, but the registers
+     * are not used extensively. If a reqister is used, it must first be pushed and
+     * then pulled, before execution of the RTI instruction. The RTI restores
+     * the condition code register and the PC of the interrupted program.
+     */
+    private void firq() {
+        if (cc.isSetF()) {
+            return;
+        }
+        help_psh(0x81, s, u);
+        cc.setF(1);
+        cc.setI(1);
+        pc.set(read_word(0xfff6));
+    }
+
     private void inca() {
         help_inc(a);
     }
@@ -1308,6 +1380,32 @@ public class MC6809 extends USimMotorola {
         x.set(x.intValue() + 1);
         setBitN(x);
         setBitZ(x);
+    }
+
+    /**
+     * Hardware interrupt (IRQ).
+     * When an IRQ occurs and the I bit is zero, the PC and all the registers
+     * (except S) are pushed onto the hardware stack. The PC of the IRQ
+     * handler is fetched from memory locations FFF8:FFF9. This process is
+     * the same for the NMI. The E bit in the condition register is set to 1,
+     * because the entire machine state is saved; the I bit is set to 1 to prevent
+     * any more IRQs. It is usually not necessary to be able to handle more than
+     * one IRQ at a time. However, the I bit may be cleared by the program and
+     * more IRQs accepted if necessary.
+     *
+     * The IRQ handler is terminated with an RTI instruction. This instruction
+     * restores all the registers from the stack and the PC of the interrupted
+     * program.
+     */
+    private void irq() {
+        if (cc.isSetI()) {
+            return;
+        }
+        cc.setE(1);
+        help_psh(0xff, s, u);
+        cc.setF(1);
+        cc.setI(1);
+        pc.set(read_word(0xfff8));
     }
 
     private void jmp() {
@@ -1461,6 +1559,31 @@ public class MC6809 extends USimMotorola {
         cc.setC(regB.intValue() != 0);
     }
 
+    /**
+     * The Non-Maskable Interrupt (NMI).
+     * The non-maskable interrup (NMI) cannot be inhibited by the
+     * programmer. It is always accepted by the 6809 upon completion of the
+     * current instruction, assuminig no bus request was received.
+     *
+     * The NMI causes the automatic push of the program counter and all
+     * other registers (except the S register) onto the hardware stack, S (If an
+     * NMI is received during a DMA/BREQ, it will set an internal NMI latch,
+     * and be processed at the end of the DMA/BREQ.) A new program counter
+     * is loaded from the data in memory locations FFFC and FFFD. The starting
+     * address of the NMI handler is stored with the high byte in FFFC and
+     * the low byte in FFFD.
+     */
+    private void nmi() {
+        cc.setE(1);
+        help_psh(0xff, s, u);
+        cc.setF(1);
+        cc.setI(1);
+        pc.set(read_word(0xfffc));
+    }
+
+    /**
+     * No operation.
+     */
     private void nop() {
     }
 
