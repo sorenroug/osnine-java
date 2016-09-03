@@ -26,7 +26,7 @@ public class MemorySegmentTest {
     }
 
     @Test
-    public void with6850() {
+    public void withConsole() {
         MC6809 cpu = new MC6809(8192);
         cpu.write(0xffff, 1);
         assertEquals(1, cpu.read(0xffff));
@@ -34,9 +34,9 @@ public class MemorySegmentTest {
         cpu.write(0x0400, 0x34);
         assertEquals(0x34, cpu.read(0x0400));
 
-        MC6850 uart = new MC6850(0xb000);
+        Console uart = new Console(0xb000);
         cpu.addMemorySegment(uart);
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 20; i++) {
             cpu.write(0xb000, 0x40);
         }
         cpu.write(0xb000, 0x0a);

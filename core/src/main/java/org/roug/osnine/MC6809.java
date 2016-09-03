@@ -105,6 +105,7 @@ public class MC6809 extends USimMotorola {
      * Print out status.
      */
     public void status() {
+        System.out.format("PC:%X A:%X B:%X\n", pc.intValue(), a.intValue(), b.intValue());
     }
 
     /**

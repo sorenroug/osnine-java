@@ -93,12 +93,12 @@ public final class Loader {
             addr = fread_word(fp);      // Address
             n -= 2;
             if (t == '0') {
-                //System.out.print("Loading: ");
+                System.out.print("Loading: ");
                 while (--n > 0) {
                     b = fread_byte(fp);
-                    //System.out.format("%c", b);
+                    System.out.format("%c", b);
                 }
-                //System.out.println();
+                System.out.println();
             } else if (t == '1') {
                 while (--n > 0) {
                     b = fread_byte(fp);

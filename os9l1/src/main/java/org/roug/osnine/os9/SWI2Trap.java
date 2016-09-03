@@ -1,19 +1,22 @@
-package org.roug.osnine;
+package org.roug.osnine.os9;
 
+import org.roug.osnine.MemorySegment;
 import java.io.IOException;
 
 /**
- * Simple debugging console.
- * When the CPU writes a byte to the location of the console the byte is
- * printed to STDOUT.
+ * Catch calls to SWI2.
+ * This is then used to perform an OS9 system call.
  */
-public class Console extends MemorySegment {
+public class SWI2Trap extends MemorySegment {
 
     /** Location of console in memory. */
     private int offset;
 
-    public Console(int start) {
-        this.offset = start;
+    private OS9 cpu;
+
+    public SWI2Trap(OS9 cpu) {
+        this.cpu = cpu;
+        this.offset = 0xfff4;
     }
 
     @Override
@@ -29,12 +32,7 @@ public class Console extends MemorySegment {
                 return nextSegment.read(addr);
             }
         }
-        try {
-            return System.in.read();
-        } catch (IOException e) {
-            System.exit(1);
-            return -1;
-        }
+        return 0;
     }
 
     @Override
@@ -46,8 +44,6 @@ public class Console extends MemorySegment {
                 nextSegment.write(addr, val);
             }
         }
-        System.out.write(val);
-        System.out.flush();
     }
 
 }

@@ -21,6 +21,7 @@
     <modules>
         <module>core</module>
         <module>dragon32</module>
+        <module>v6809</module>
     </modules>
 
     <build>

@@ -46,6 +46,14 @@ public abstract class USim {
     }
 
     /**
+     * Install a memory segment as the first item of the list of segments.
+     */
+    public void insertMemorySegment(MemorySegment newMemory) {
+        newMemory.nextSegment = memory;
+        memory = newMemory;
+    }
+
+    /**
      * Read 16-bit word.
      */
     public abstract int read_word(Word offset);
