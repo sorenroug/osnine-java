@@ -12,9 +12,9 @@ public class OS9 extends MC6809 {
 
     private static final int NumPaths = 16; // Whatever _NFILE is set to in os9's stdio.h
     private static final int DefIOSiz = 12;
-    private static final int MAX_DEVS = 64;
-    private static final int MAX_PIDS = 32;
-    private static final int BITMAP_START = 0x200; // Start of memory bitmap
+    public static final int MAX_DEVS = 64;
+    public static final int MAX_PIDS = 32;
+    public static final int BITMAP_START = 0x200; // Start of memory bitmap
 
     private PathDesc[] paths = new PathDesc[NumPaths];
     private String cxd; //!< Execution directory, typically /d0/CMDS
@@ -32,10 +32,8 @@ public class OS9 extends MC6809 {
      * 
      */
     public static void main(String[] args) throws Exception {
-        OS9 cpu = new OS9(0x10000);
+        OS9 cpu = new OS9();
 
-        SWI2Trap trap = new SWI2Trap(cpu);
-        cpu.insertMemorySegment(trap);
         MC6850 uart = new MC6850(0xb000);
         cpu.addMemorySegment(uart);
 
@@ -63,8 +61,18 @@ public class OS9 extends MC6809 {
         return result;
     }
 
-    public OS9(int memorySize) {
-        super(memorySize);
+    public OS9() {
+        super(0x10000);
+        SWI2Trap trap = new SWI2Trap(this);
+        this.insertMemorySegment(trap);
+        // Block reserved space in bitmap
+        x.set(BITMAP_START);
+        d.set(255);
+        y.set(1);
+        f_allbit();
+        x.set(0);
+        d.set(0);
+        y.set(0);
     }
 
     /**
@@ -235,14 +243,13 @@ public class OS9 extends MC6809 {
      *   - None
      */
     void f_allbit() {
-        int from, to;
-
-        from = d.intValue();
-        to = d.intValue() + y.intValue();
+        int from = d.intValue();
+        int to = d.intValue() + y.intValue();
+        int base = x.intValue();
         while (from < to) {
-            int addr = x.intValue() + (from / 8);
+            int addr = base + (from / 8);
             int oldVal = read(addr);
-            write(addr, oldVal | ~(0x80 >> (from % 8)));
+            write(addr, oldVal | (0x80 >> (from % 8)));
             from++;
         }
     }
@@ -259,10 +266,9 @@ public class OS9 extends MC6809 {
      *   - None
      */
     void f_delbit() {
-        int from, to;
-
-        from = d.intValue();
-        to = d.intValue() + y.intValue();
+        int from = d.intValue();
+        int to = d.intValue() + y.intValue();
+        int base = x.intValue();
         while (from < to) {
             int addr = x.intValue() + (from / 8);
             int oldVal = read(addr);
