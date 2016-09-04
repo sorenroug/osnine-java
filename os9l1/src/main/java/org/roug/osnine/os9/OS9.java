@@ -16,12 +16,19 @@ public class OS9 extends MC6809 {
     public static final int MAX_PIDS = 32;
     public static final int BITMAP_START = 0x200; // Start of memory bitmap
 
+    public static final int TOPMEM = 0xfa00;
+
+    public static final int MDIR_START = 0x300;
+
+    public static final int MDIR_END   = 0x400;
+
     private PathDesc[] paths = new PathDesc[NumPaths];
     private String cxd; //!< Execution directory, typically /d0/CMDS
     private String cwd; //!< Working directory
     private String sys_dev;  //!< System device - as known from init module
-    private int uppermem; //!< Absolute values
-    private int lowermem;
+    /** Top of RAM. */
+    private int topOfRealRAM; //!< Absolute values
+    private int bottomOfRAM = 0;
     private DevDrvr[] devices = new DevDrvr[MAX_DEVS]; //!< devices, typically /d0,/h0 etc.
     private int dev_end;
     private int pids[] = new int[MAX_PIDS]; //!< Mapping of Proces identifiers
@@ -61,15 +68,33 @@ public class OS9 extends MC6809 {
         return result;
     }
 
+    /**
+     * Constructor.
+     */
     public OS9() {
-        super(0x10000);
+        super(0xFF00);
+        topOfRealRAM = 0xFF00;
         SWI2Trap trap = new SWI2Trap(this);
         this.insertMemorySegment(trap);
-        // Block reserved space in bitmap
-        x.set(BITMAP_START);
-        d.set(255);
-        y.set(1);
+        // Sets the first 8 pages to allocated
+        d.set(0);
+        y.set(8);
         f_allbit();
+
+        // Block unavailable RAM in bitmap
+        x.set(BITMAP_START);
+        d.set(TOPMEM >> 8);
+        y.set((0x10000 - TOPMEM) / 8);
+        f_allbit();
+
+        // Set the top memory for the application
+        write_word(DPConst.D_MLIM, TOPMEM);
+
+        // Set location of module directory
+        write_word(DPConst.D_MDir, MDIR_START);
+        write_word(DPConst.D_MDirE, MDIR_END);
+
+        // Clear the registers
         x.set(0);
         d.set(0);
         y.set(0);
@@ -117,7 +142,7 @@ public class OS9 extends MC6809 {
         // address of the top of the process' data memory area.
         // 0x0b is first byte of permanent storage size
         // 0x02 is first byte of module size
-        uppermem = moduleAddr + ((read(moduleAddr + 0x0b) + 1) << 8)
+        int uppermem = moduleAddr + ((read(moduleAddr + 0x0b) + 1) << 8)
                               + ((read(moduleAddr + 0x02) + 1) << 8);
         y.set(uppermem);
         // Load the argument vector and set registers
@@ -155,9 +180,6 @@ public class OS9 extends MC6809 {
         }
     }
 
-    private void createProcess(int moduleStart, int allocatedMemory) {
-    //FIXME
-    }
 
 
     void f_load() {
@@ -202,12 +224,12 @@ public class OS9 extends MC6809 {
      */
     void f_mem() {
        if (d.intValue() == 0) {
-           y.set(uppermem);
-           d.set(uppermem - lowermem);
+           y.set(topOfRealRAM);
+           d.set(topOfRealRAM - bottomOfRAM);
        } else {
        // FIXME: check that the program requests less than what we have
-           y.set(uppermem);
-           d.set(uppermem - lowermem);
+           y.set(topOfRealRAM);
+           d.set(topOfRealRAM - bottomOfRAM);
        }
     }
 
@@ -484,6 +506,154 @@ public class OS9 extends MC6809 {
         cc.setC(1);
 	b.set(errcode);
 	return errcode;
+    }
+
+
+    /*
+    ************************************************************
+    *
+    *     Process Descriptor Definitions
+    *
+    DefIOSiz equ 12
+    NumPaths equ 16 Number of Local Paths
+
+     ORG 0
+
+    P$ID rmb 1 Process ID
+    P$PID rmb 1 Parent's ID
+    P$SID rmb 1 Sibling's ID
+    P$CID rmb 1 Child's ID
+    P$SP rmb 2 Stack ptr
+    P$CHAP rmb 1 process chapter number
+    P$ADDR rmb 1 user address beginning page number
+    P$PagCnt rmb 1 Memory Page Count
+    P$User rmb 2 User Index
+    P$Prior rmb 1 Priority
+    P$Age rmb 1 Age
+    P$State rmb 1 Status
+    P$Queue rmb 2 Queue Link (Process ptr)
+    P$IOQP rmb 1 Previous I/O Queue Link (Process ID)
+    P$IOQN rmb 1 Next     I/O Queue Link (Process ID)
+    P$PModul rmb 2 Primary Module
+    P$SWI rmb 2 SWI Entry Point
+    P$SWI2 rmb 2 SWI2 Entry Point
+    P$SWI3 rmb 2 SWI3 Entry Point
+    P$DIO rmb DefIOSiz default I/O ptrs
+    P$PATH rmb NumPaths I/O path table
+    P$Signal rmb 1 Signal Code
+    P$SigVec rmb 2 Signal Intercept Vector
+    P$SigDat rmb 2 Signal Intercept Data Address
+    */
+
+
+    /* ************************************
+     * Process management
+     ************************************** */
+
+    /**
+     * Initialise process table.
+     */
+    private void createProcess(int moduleStart, int allocatedMemory) {
+        int tmpx = x.intValue();
+        x.set(read_word(DPConst.D_PrcDBT));  // 73- Process descriptor block address
+        f_all64();                // Allocate the process descriptor
+        write_word(DPConst.D_PrcDBT, x.intValue());
+
+        int procAddr = y.intValue();
+        write_word(DPConst.D_AProcQ, procAddr);  // D_AProcQ -- Write proces to Active process queue
+        write_word(DPConst.D_WProcQ, 0);  // Write null to the Wait process queue
+        write_word(DPConst.D_SProcQ, 0);  // Write null to the Sleep process queue
+        write_word(DPConst.D_Proc, procAddr);    // 0x4B - 75 - Current Process descriptor address
+
+        write(procAddr + PDConst.p_ID,  1);      // Write process ID
+        write(procAddr + PDConst.p_PID,  0);     // Write process parent ID - What is the parent of #1?
+        write_word(procAddr + PDConst.p_SP, s.intValue());  // Write stack pointer
+    //    write(procAddr + PDConst.p_ADDR, dp.intValue());  // user address beginning page number
+        write(procAddr + PDConst.p_PagCnt, allocatedMemory >> 8);  // Memory allocation in pages (Upper half of acc D).
+        write(procAddr + PDConst.p_Prior,  100); // Write process priority
+        write_word(procAddr + PDConst.p_User, getuid());  // Write user id
+        write_word(procAddr + PDConst.p_PModul, moduleStart);  // Module start
+        x.set(tmpx);
+    }
+
+    /**
+     * Provide a fake UID as Java has to be able to run on many OS architectures.
+     */
+    private int getuid() {
+        return 500;
+    }
+
+    /**
+     * Change to next process.
+     * Look in the source for the PROCS command to see what pointers to change
+     */
+    void next_proc() {
+    }
+
+    /**
+     * F$AProc -  Enter Active Process Queue.
+     * This system mode service request inserts a process into the active
+     * process queue so that it may be scheduled for execution.
+     * All processes already in the active process queue are aged, and the
+     * age of the specified process is set to its priority. If the process
+     * is in system state, it is inserted after any other process's also in
+     * system state, but before any process in user state. If the process is
+     * in user state, it is inserted according to its age.
+     *
+     * This is a privileged system mode service request.
+     *
+     *  - INPUT:
+     *   - (X) = Address process descriptor.
+     *  - OUTPUT:
+     *   - None.
+     * @todo: unfinished.
+     */
+    public void f_aproc() {
+        addToActiveProcQ(x.intValue());
+    }
+
+    /**
+     * Add process descriptor to active process queue.
+     *
+     * @param processPtr - pointer to process structure.
+     * @todo: unfinished.
+     */
+    private void addToActiveProcQ(int processPtr) {
+        int currProcess, prevProcess;
+        int candAge, currAge;
+
+        candAge = read(processPtr + PDConst.p_Prior);
+        write(processPtr + PDConst.p_Age, candAge);
+        currProcess = read_word(DPConst.D_AProcQ);
+        while (currProcess != 0) { // Increase the age on all
+            currAge = read(currProcess + PDConst.p_Age);
+            if (currAge < 255) {
+                write(currProcess + PDConst.p_Age, currAge + 1);
+            }
+            currProcess = read_word(currProcess + PDConst.p_Queue);
+        }
+
+        currProcess = read_word(DPConst.D_AProcQ);
+        if (currProcess == 0) {
+            write_word(DPConst.D_AProcQ, processPtr); // There were no other processes.
+        } else {
+            if (candAge >= read(currProcess + PDConst.p_Age)) { // Put it first in the queue
+                write_word(DPConst.D_AProcQ, processPtr);
+                write_word(processPtr + PDConst.p_Queue, currProcess);
+            } else {                                      // All other cases
+                prevProcess = currProcess;
+                currProcess = read_word(currProcess + PDConst.p_Queue);
+                while (currProcess != 0) {
+                    currAge = read(currProcess + PDConst.p_Age);
+                    if (candAge >= currAge) {
+                        write_word(prevProcess + PDConst.p_Queue, processPtr);
+                        write_word(processPtr + PDConst.p_Queue, currProcess);
+                    }
+                    prevProcess = currProcess;
+                    currProcess = read_word(currProcess + PDConst.p_Queue);
+                }
+            }
+        }
     }
 
 }

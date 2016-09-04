@@ -23,12 +23,13 @@ public class OS9Test {
      * Request memory 8 times in increasing amounts.
      */
     @Test
-    public void testsrq() {
+    public void testF_SRQMEM() {
         // Location
-        int expectedU[] = {0xFD00, 0xF900, 0xF300, 0xEB00, 0xE100, 0xD500, 0xC700};
+        int expectedU[] = {0x0200, 0x0600, 0x0C00, 0x1400, 0x1E00, 0x2A00, 0x3800};
         // Amount reserved
         int expectedD[] = {0x0200, 0x0400, 0x0600, 0x0800, 0x0A00, 0x0C00, 0x0E00};
         OS9 tInstance = new OS9();
+        int topMem = tInstance.read_word(DPConst.D_MLIM);
         tInstance.x.set(0);
         tInstance.y.set(0);
         tInstance.a.set(0);
@@ -36,7 +37,7 @@ public class OS9Test {
 	for(int i = 1; i < 8; i++) {
 	    tInstance.d.set(i * 512);
 	    tInstance.f_srqmem();
-            assertEquals(expectedU[i - 1], tInstance.u.intValue());
+            assertEquals(expectedU[i - 1], topMem - tInstance.u.intValue());
             assertEquals(expectedD[i - 1], tInstance.d.intValue());
             assertEquals(0x0000, tInstance.x.intValue());
 	    //System.out.printf("X=%04x, U=%04x, D=%04x\n",tInstance.x.intValue(), tInstance.u.intValue(), tInstance.d.intValue());
@@ -91,7 +92,7 @@ public class OS9Test {
     }
 
     @Test
-    public void bitDeallocation() {   
+    public void testF_DELBIT() {   
         int result;
         OS9 tInstance = new OS9();
 	tInstance.x.set(tInstance.BITMAP_START);
@@ -111,4 +112,38 @@ public class OS9Test {
         assertEquals(0x3f, result);
 	//showbm(tInstance);
     }
+
+    /**
+     * Test the allocation of 64-byte process/path descriptors.
+     */
+    @Test
+    public void testF_ALL64() {
+	OS9 myTestOs = new OS9();
+
+	int expected_y[] = { 0xf940,  0xf980, 0xf9c0, 0xf800, 0xf840, 0xf880, 0xf8c0, 0xf700 };
+
+	myTestOs.x.set(0);
+	for(int i = 0; i < 8; i++) {
+	    myTestOs.f_all64();
+            assertEquals(0xf900, myTestOs.x.intValue());
+            assertEquals(expected_y[i], myTestOs.y.intValue());
+            assertEquals(i + 1, myTestOs.a.intValue());
+	    myTestOs.write(myTestOs.y.intValue(), 1);  // Make the page dirty
+	}
+    }
+
+    /**
+     * Add processes to the active process queue.
+     */
+    @Test
+    public void testF_APROC() {
+	OS9 myTestOs = new OS9();
+	myTestOs.x.set(0);
+	myTestOs.f_all64();
+	assertEquals(0xf900, myTestOs.x.intValue());
+	assertEquals(0xf940, myTestOs.y.intValue());
+	myTestOs.x.set(myTestOs.y.intValue());
+	myTestOs.f_aproc();
+    }
+
 }
