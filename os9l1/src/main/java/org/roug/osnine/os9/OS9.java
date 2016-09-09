@@ -656,4 +656,85 @@ public class OS9 extends MC6809 {
         }
     }
 
+    /**
+     * F$PRSNAM - Parse name.
+     * Names can have one to 29 characters. They must begin with an upper- or lower-case
+     * letter followed by any combination of the following character classes:
+     * uppercase letters [A-Z], lowercase letters [a-z], decimal digits [0-9],
+     * underscore (_) and period (.)
+     *  - INPUT:
+     *   - (X) = Address of the pathlist
+     *  - OUTPUT:
+     *   - (X) = Updated path the optional "/"
+     *   - (Y) = Address of the last character of the name + 1
+     *   - (B) = Length of the name
+     */
+    public void f_prsnam() {
+        int p;
+        int tmpX = x.intValue();
+
+        if (debug_syscall) {
+            System.err.printf("OS9::f_prsnam: X:%4X\n", tmpX);
+        }
+
+        if (read(tmpX) == '/' || Character.isLetterOrDigit(read(tmpX)) || read(tmpX) == '_' || read(tmpX) == '.') {
+            p = tmpX;
+
+            while (read(p) == '/')   // Skip slash(es)
+                p++;
+
+            x.set(p);
+
+            int m = read(p);
+            while (m == '_' || m == '.' || Character.isLetterOrDigit(m) ) {
+                p++;
+                m = read(p);
+            }
+            y.set(p);
+            b.set(y.intValue() - x.intValue());
+            if (debug_syscall) {
+                for (int i = 0; i < b.intValue(); i++)
+                    System.err.printf("%c", read(x.intValue() + i));
+                System.err.printf("\n");
+            }
+        } else {
+            // We are not pointing to a pathname
+            tmpX = x.intValue();
+            while (read(tmpX) == ' ' || read(tmpX) == '\t') {
+                tmpX++;
+            }
+            x.set(tmpX);
+            sys_error(ErrCodes.E_BNam);
+            if (debug_syscall)
+                System.err.printf("(whitespace)\n");
+        }
+    }
+
+    /**
+     * F$CMPNAM - Compare two names.
+     * Given the address and length of a string, and the address of a second
+     * string, compares them and indicates whether they match. Typically used
+     * in conjunction with "parsename".
+     * The second name must have the sign bit (bit 7) of the last character set.
+     * Assumes the match is case insensitive.
+     *  - INPUT:
+     *   - (X) = Address of the first name.
+     *   - (B) = Length of the first name.
+     *   - (Y) = Address of the second name.
+     *  - OUTPUT:
+     *   - (CC) = C bit clear if the strings match.
+     */
+    public void f_cmpnam() {
+	int strx = x.intValue();
+	int stry = y.intValue();
+
+	cc.setC(1);
+	for (;(read(strx) & 0x5f) == (read(stry) & 0x5f); strx++, stry++) {
+	    if (read(stry) > 0x7f || strx > (x.intValue() + b.intValue()))
+		cc.setC(0);
+	}
+    //  if ((read(strx) & 0x5f) - (read(stry) & 0x5f))
+    //      cc.setC(0);
+    }
+
 }

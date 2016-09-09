@@ -20,6 +20,101 @@ public class OS9Test {
     }
 
     /**
+     * Parse Hello world, the way the echo program sees it.
+     */
+    @Test
+    public void testF_CMPNAM() {
+        OS9 myTestOs = new OS9();
+
+	byte helloWorldX[] = { 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64 };
+	for (int i = 0; i < helloWorldX.length; i++) {
+	    myTestOs.write(i + 0x100, helloWorldX[i]);
+	}
+
+	// Hello world with bit 7 set on 'd'
+	byte hellowWorldY[] = { 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, -28 };  // -28 = 0xe4
+	for (int i = 0; i < hellowWorldY.length; i++) {
+	    myTestOs.write(i + 0x200, hellowWorldY[i]);
+	}
+
+	myTestOs.cc.setC(1);
+	myTestOs.x.set(0x100);
+	myTestOs.b.set(helloWorldX.length);
+	myTestOs.y.set(0x200);
+	myTestOs.f_cmpnam();
+	// Expected: X -> 'H', Y -> ' ' and B = Y-X
+	assertEquals(0x100, myTestOs.x.intValue());
+	assertEquals(0x200, myTestOs.y.intValue());
+	assertEquals(helloWorldX.length, myTestOs.b.intValue());
+	assertEquals(0, myTestOs.cc.getC());
+
+	// Test that "Hallo" is different from "Hellow World"
+	byte halloX[] = { 0x48, 0x61, 0x6c, 0x6c, 0x6f }; // Hallo
+	assertEquals(5, halloX.length);
+	for (int i = 0; i < halloX.length; i++) {
+	    myTestOs.write(i + 0x100, halloX[i]);
+	}
+	myTestOs.cc.setC(0);
+	myTestOs.b.set(halloX.length);
+	myTestOs.f_cmpnam();
+	assertEquals(1, myTestOs.cc.getC());
+    }
+
+    /**
+     * The example shown in the OS-9 System Programmer's Manual
+     */
+    @Test
+    public void testF_PRSNAM1() {
+        OS9 myTestOs = new OS9();
+	String pathname = "/D0/FILE";
+
+	loadProg(pathname, myTestOs);
+	myTestOs.x.set(0x100);
+	myTestOs.f_prsnam();
+	assertEquals(0x101, myTestOs.x.intValue() );
+	assertEquals(0x103, myTestOs.y.intValue() );
+	assertEquals(2, myTestOs.b.intValue() );
+    }
+
+    /**
+     * Parse Hello world, the way the echo program sees it.
+     */
+    @Test
+    public void testF_PRSNAM2() {
+        OS9 myTestOs = new OS9();
+	String pathname = "Hello world\r";
+
+	loadProg(pathname, myTestOs);
+	myTestOs.x.set(0x100);
+	myTestOs.f_prsnam();
+	// Expected: X -> 'H', Y -> ' ' and B = Y-X
+	assertEquals( 0x100, myTestOs.x.intValue() );
+	assertEquals( 0x105, myTestOs.y.intValue() );
+	assertEquals( 5, myTestOs.b.intValue() );
+
+	// Deal with the space. Must increment x with one
+	myTestOs.x.set(0x105);
+	myTestOs.f_prsnam();
+	assertEquals( 0x106, myTestOs.x.intValue() );
+	assertEquals( 0x105, myTestOs.y.intValue() );
+	assertEquals( ErrCodes.E_BNam, myTestOs.b.intValue() );
+	// Parse the 'world'
+	myTestOs.f_prsnam();
+	assertEquals( 0x106, myTestOs.x.intValue() );
+	assertEquals( 0x10B, myTestOs.y.intValue() );
+	assertEquals( 5, myTestOs.b.intValue() );
+    }
+
+    /**
+     * Load some data in to 0x100 and up.
+     */
+    private void loadProg(String instructions, OS9 myTestOs) {
+	for (int i = 0; i < instructions.length(); i++) {
+	    myTestOs.write(i + 0x100, instructions.codePointAt(i));
+	}
+    }
+
+    /**
      * Request memory 8 times in increasing amounts.
      */
     @Test
@@ -34,7 +129,7 @@ public class OS9Test {
         tInstance.y.set(0);
         tInstance.a.set(0);
         //showbm(tInstance);
-	for(int i = 1; i < 8; i++) {
+	for (int i = 1; i < 8; i++) {
 	    tInstance.d.set(i * 512);
 	    tInstance.f_srqmem();
             assertEquals(expectedU[i - 1], topMem - tInstance.u.intValue());
@@ -123,7 +218,7 @@ public class OS9Test {
 	int expected_y[] = { 0xf940,  0xf980, 0xf9c0, 0xf800, 0xf840, 0xf880, 0xf8c0, 0xf700 };
 
 	myTestOs.x.set(0);
-	for(int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) {
 	    myTestOs.f_all64();
             assertEquals(0xf900, myTestOs.x.intValue());
             assertEquals(expected_y[i], myTestOs.y.intValue());
@@ -144,6 +239,60 @@ public class OS9Test {
 	assertEquals(0xf940, myTestOs.y.intValue());
 	myTestOs.x.set(myTestOs.y.intValue());
 	myTestOs.f_aproc();
+    }
+
+    /**
+     * Test the search in a bitmap.
+     *
+     *  - INPUT:
+     *   - (X) = Beginning address of a bit map.
+     *   - (D) = Beginning bit number.
+     *   - (Y) = Bit count (free bit block size).
+     *   - (U) = End of bit map address.
+     *  - OUTPUT:
+     *   - (D) = Beginning bit number.
+     *   - (Y) = Bit count.
+     */
+    @Test
+    public void testF_SCHBIT() {
+	OS9 myTestOs = new OS9();
+	final int bmStart = 0x200;
+	final int bmEnd = 0x300;
+
+	// Initialise the bitmap to zeros
+	for (int i = bmStart; i < bmEnd; i++) {
+	    myTestOs.write(i, 0);
+	}
+	myTestOs.write(bmStart, 0xff); // mark some bytes as taken
+	myTestOs.x.set(bmStart);
+	myTestOs.u.set(bmEnd);
+	myTestOs.d.set(11); // Start a bit 11 
+	myTestOs.y.set(10); // We need 10 bits
+	myTestOs.f_schbit();
+	assertEquals(10,  myTestOs.y.intValue());
+	assertEquals(11,  myTestOs.d.intValue());
+	assertEquals(0, myTestOs.cc.getC());
+
+	myTestOs.d.set(5); // Start a bit 5 (already allocated)
+	myTestOs.y.set(10); // We need 10 bits
+	myTestOs.f_schbit();
+	assertEquals(10,  myTestOs.y.intValue());
+	assertEquals(8,  myTestOs.d.intValue());
+	assertEquals(0, myTestOs.cc.getC());
+
+	// Test error condition
+	// Allocate everything
+	for (int i = bmStart; i < bmEnd; i++) {
+	    myTestOs.write(i, 0xff);
+	}
+	myTestOs.write_word(bmStart+0x32, 0x0); // mark 16 bits free
+	myTestOs.write(bmStart+0x39, 0x0); // mark 8 bits free later
+	myTestOs.d.set(0); // Start a bit 0 (already allocated)
+	myTestOs.y.set(20); // We need 20 bits
+	myTestOs.f_schbit();
+	assertEquals(1, myTestOs.cc.getC());
+	assertEquals(400,  myTestOs.d.intValue());
+	assertEquals(16,  myTestOs.y.intValue()); // Largest available block is 16
     }
 
 }
