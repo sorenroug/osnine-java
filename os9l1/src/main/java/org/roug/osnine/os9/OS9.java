@@ -737,4 +737,16 @@ public class OS9 extends MC6809 {
     //      cc.setC(0);
     }
 
+    /**
+     * F$PERR - Print error message. We have included the text strings so it
+     * looks like you have used 'printerr'.
+     */
+    public void f_perr() {
+        String buf;
+	// According to sysman, a holds the path number to write to,
+	// but the shell never sets a.
+	buf = String.format("ERROR #%d %s\r\n", b.intValue(), ErrMsg.errmsg[b.intValue()]);
+	paths[2].write(buf.getBytes(), buf.length());
+    }
+
 }
