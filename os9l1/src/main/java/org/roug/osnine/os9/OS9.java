@@ -6,7 +6,8 @@ import org.roug.osnine.MC6809;
 import org.roug.osnine.MC6850;
 import org.roug.osnine.MemoryBank;
 import org.roug.osnine.RegisterCC;
-
+import java.util.Properties;
+import java.io.File;
 
 public class OS9 extends MC6809 {
 
@@ -31,7 +32,7 @@ public class OS9 extends MC6809 {
     private int bottomOfRAM = 0;
     private DevDrvr[] devices = new DevDrvr[MAX_DEVS]; //!< devices, typically /d0,/h0 etc.
     private int dev_end;
-    private int pids[] = new int[MAX_PIDS]; //!< Mapping of Proces identifiers
+    private int pids[] = new int[MAX_PIDS]; //!< Mapping of Process identifiers
     private int pid_end;
     private boolean debug_syscall;
 
@@ -52,6 +53,68 @@ public class OS9 extends MC6809 {
         cpu.loadmodule(parm);
         cpu.run();
         System.out.flush();
+    }
+
+    /**
+     * Load RC file.
+     * This function should read a configuration file in the user's home
+     * directory. It could be called directly from the constructor.
+     * The idea is to specify where /d0, /h0 is in the UNIX hierarchy.
+     */
+    private void loadrcfile() {
+    // Build a list of devices that map to a point in the UNIX filesystem
+        String homedir;
+        Properties props = new Properties();
+
+        if (System.getenv("OSNINEDIR") != null) {
+            homedir = System.getenv("OSNINEDIR");
+        } else {
+            homedir = System.getenv("HOME") + "/OS9";
+        }
+
+        dev_end = 0;
+        // Create a device called /term to match the UNIX controlling tty
+        devices[dev_end++] = new DevDrvTerm("/term","/dev/tty");
+        // Create pseudo disks offset at $HOME/OS9
+        // We create for all commonly used disks.
+        devices[dev_end++] = new DevUnix("/dd", homedir); // Default drive
+        devices[dev_end++] = new DevUnix("/h0", homedir);
+        devices[dev_end++] = new DevUnix("/d0", homedir);
+        devices[dev_end++] = new DevUnix("/d1", homedir);
+        // Create the pipe device
+        devices[dev_end++] = new DevPipe("/pipe","");
+        // Create devices for all UNIX directories we might be interested in
+        // This is so a UNIX path name is directly equivalent to an OS9 pathname.
+        // Used when we set the current working directory
+        mount_allunix();
+        /*
+        devices[dev_end++] = new DevUnix("/home", "/home");
+        devices[dev_end++] = new DevUnix("/usr", "/usr");
+        devices[dev_end++] = new DevUnix("/etc", "/etc");
+        */
+
+        // Set the current execution directory.
+        cxd = "/dd/CMDS";
+    }
+
+
+    /**
+     * Open the root directory in UNIX and mount all directories as
+     * OS9 devices.
+     */
+    void mount_allunix() {
+        File dirp = new File("/");
+        for (File dentp : dirp.listFiles()) {
+            if (dentp.isHidden())
+                continue;
+            if (dentp.isDirectory()) {
+                if (dev_end < MAX_DEVS )
+                    devices[dev_end++] = new DevUnix(dentp.toString(), dentp.toString());
+                else
+                    System.err.printf("Overflow: %s device not added as OS9 device\n", dentp.toString());
+            }
+        }
+        return ;
     }
 
     /**
@@ -76,13 +139,40 @@ public class OS9 extends MC6809 {
         topOfRealRAM = 0xFF00;
         SWI2Trap trap = new SWI2Trap(this);
         this.insertMemorySegment(trap);
+
+	DevDrvTerm tmpdev = new DevDrvTerm("/term", "/dev/tty");
+
+	debug_syscall = false;
+	for (int inx = 0; inx < NumPaths; inx++) {
+	    paths[inx] = null;
+	}
+	// Set up stdin, stdout and stderr.
+	paths[0] = tmpdev.open("/dev/tty", 1, false);
+	paths[1] = tmpdev.open("/dev/tty", 2, false);
+	paths[2] = tmpdev.open("/dev/tty", 2, false);
+
+	// Set the CWD to what we have in UNIX
+	//getcwd(cwd, 1024);
+	cwd = "/dd";
+
+	// Load the configuration file
+	loadrcfile();
+
+	init_mm();
+
+	// Setting the memory allocation bitmap SYSMAN 3.3
+        x.set(BITMAP_START);
+        d.set(0);
+	y.set(0x100);
+	f_delbit();  // Clear all bits in allocation bitmap
+
+
         // Sets the first 8 pages to allocated
         d.set(0);
         y.set(8);
         f_allbit();
 
         // Block unavailable RAM in bitmap
-        x.set(BITMAP_START);
         d.set(TOPMEM >> 8);
         y.set((0x10000 - TOPMEM) / 8);
         f_allbit();
@@ -180,11 +270,249 @@ public class OS9 extends MC6809 {
         }
     }
 
+    /**
+     * F$LINK - This system call causes OS-9 to search the module directory for a
+     * module having a name, language and type as given in the parameters.
+     * If found, the address of the module's header is returned in U, and
+     * the absolute address of the module's execution entry point is
+     * returned in Y (as a convenience: this and other information can be
+     * obtained from the module header). The module's link count' is
+     * incremented whenever a LINK references its name, thus keeping track
+     * of how many processes are using the module. If the module requested
+     * has an attribute byte indicating it is not sharable (meaning it is
+     * not reentrant) only one process may link to it at a time.
+     *  - INPUT:
+     *    - (X) = Address of module name string
+     *    - (A) = Language / type (0 = any language / type)
+     *  - OUTPUT:
+     *    - (X) = Advanced past module name
+     *    - (Y) = Module entry point address
+     *    - (U) = Address of module header
+     *    - (A) - Language / type
+     *    - (B) = Attributes / revision level
+     */
+    /*
+     * @todo: NOT FINISHED
+     */
+    void f_link() {
+        int mdirp, mcand, mname, maddr;
 
-
-    void f_load() {
-    //FIXME
+        if (debug_syscall) {
+            System.err.printf("OS9::f_link: x=%04X a=%02X\n", x.intValue(), a.intValue());
+        }
+        mcand = x.intValue();
+    //    f_prsnam();
+        for (mdirp = MDIR_START; mdirp < MDIR_END; mdirp += 4) {
+            maddr = read_word(mdirp);
+            if (maddr == 0)
+                continue;
+            mname = maddr + read(maddr + 4) * 256 + read(maddr + 5);
+            if (os9strcmp(mname, x.intValue()) == 0) {
+                int newcnt = read(mdirp + 2) + 1;
+                write(mdirp + 2, newcnt);
+                u.set(maddr);
+                x.set(y.intValue());
+                y.set(u.intValue() + read(u.intValue() + 0x09) * 256 + read(u.intValue() + 0x0a));
+                a.set(read(u.intValue() + 6));
+                b.set(read(u.intValue() + 7));
+                return;
+            }
+        }
+        sys_error(ErrCodes.E_MNF);
     }
+
+
+    /**
+     * F$LOAD - Load module(s) from a file.
+     *
+     * Opens a file specified by the pathlist, reads one or more memory
+     * modules from the file into memory, then closes the file. All modules
+     * loaded are added to the system module directory with a use count of 0,
+     * and the first module read is LINKed. The parameters returned are the same
+     * as the F$LINK call and apply only to the first module loaded.
+     *
+     * In order to be loaded, the file must have the "execute"
+     * permission and contain a module or modules that have a proper module
+     * header. The file will be loaded from the working execution directory
+     * unless a complete pathlist is given.
+     *
+     * If you load a file with two modules, both modules will be added to the
+     * module directory with a use count of 0. Then the first module will be
+     * LINKed giving it a use count of 1. Second time you load the same file,
+     * the first module will get a link count of 2, while the second will still
+     * have link count 0.
+     *  - INPUT:
+     *    - (X) = Address of pathlist (file name)
+     *    - (A) = Language / type (0 = any language / type)
+     *  - OUTPUT:
+     *    - (X) = Advanced past pathlist
+     *    - (Y) = Primary module entry point address
+     *    - (U) = Address of module header
+     *    - (A) - Language / type
+     *    - (B) = Attributes / revision level
+     */
+    public void f_load() {
+        StringBuffer upath = new StringBuffer();
+        byte modhead[] = new byte[14];
+        DevDrvr dev;
+        PathDesc fd;
+        int modname = 0;
+        int modsize = 0;
+        int langtype = 0;
+
+        getpath(x.intValue(), upath, true);
+        f_prsnam();
+
+        if (debug_syscall) {
+            System.err.printf("OS9::f_load: %s\n", upath.toString());
+        }
+
+        dev = find_device(upath.toString());
+        if (dev == null) {
+            sys_error(ErrCodes.E_MNF);
+            return;
+        }
+        fd = dev.open(upath.substring(dev.getMntPoint().length()), 5, false);
+        if (fd == null) {
+            sys_error(ErrCodes.E_PNNF);
+            return;
+        }
+
+        boolean first = true;
+        // Read 1 or more modules into memory
+        while (true) {
+            if (fd.read(modhead, 14) == -1)
+                break;
+            d.set(modsize = modhead[2] * 256 + modhead[3]); // Module size
+            f_srqmem();                      // Request memory of D size
+            copyBufferToMemory(modhead, u.intValue(), 14);   // copy the header
+            readIntoMemory(fd, u.intValue() + 14, modsize - 14); // Read the rest
+            add_to_mdir(u.intValue());
+            if (first) {
+                first = false;
+                modname = u.intValue() + modhead[4] * 256 + modhead[5];
+                langtype = modhead[6];
+            }
+        }
+        fd.close();
+        //if (fd.usecount == 0) delete fd;
+
+        x.set(modname);
+        a.set(langtype);  // (A) - Language / type
+        f_link();
+    }
+
+    /**
+     * Copy a byte buffer to memory.
+     */
+    private void copyBufferToMemory(byte[] buf, int startAddr, int len) {
+        for (int i = 0; i < len; i++) {
+            write(startAddr + i, buf[1]);
+        }
+    }
+
+    /**
+     * Read a specied number of bytes into memory.
+     */
+    private void readIntoMemory(PathDesc fd, int startAddr, int len) {
+        byte[] buf = new byte[len];
+        fd.read(buf, len);
+        copyBufferToMemory(buf, startAddr, len);
+    }
+
+    /**
+     * Add module to directory.
+     */
+    private void add_to_mdir(int modptr) {
+	int found = 0;
+
+	for (int mdirp = MDIR_START; mdirp < MDIR_END; mdirp += 4) {
+	    if (read_word(mdirp) == modptr) {
+		write(mdirp + 2, read(mdirp + 2) + 1);
+		found = 1;
+		break;
+	    }
+	}
+	// Module didn't exist already, so create it.
+	if (found == 0) {
+	    for (int mdirp = MDIR_START; mdirp < MDIR_END; mdirp += 4) {
+		if (read_word(mdirp) == 0) {
+		    write_word(mdirp, modptr);
+		    write(mdirp + 2, 0);
+		    break;
+		}
+	    }
+	}
+    }
+
+    /**
+     * getpath: get the path into a UNIX form, take into account the
+     * execution directory.
+     * @return value is the end of the path. You usually set register x to that.
+     */
+    private int getpath(int mem, StringBuffer unixPath, boolean xdir) {
+        int mp;
+
+        /*
+         * When you do a "load filename" in basic09, getpath gets
+         * called with leading spaces in filename
+         */
+        for (mp = mem; read(mp) == ' '; mp++)
+           ;
+
+        // If the path is absolute, prepend the offset into the UNIX fs
+        if (read(mp) == '/') {
+            unixPath.append("");
+        } else {
+            if (xdir)
+                unixPath.append(cxd);
+            else
+                unixPath.append(cwd);
+        }
+
+        for (; read(mp) != 0; mp++) {
+            if (read(mp) <= '-' || read(mp) == '<' || read(mp) == '>')
+                break;
+            unixPath.append(read(mp) & 0x7f);
+            if ((read(mp) & 0x80) == 0x80)
+                break;
+        }
+
+        // Skip past spaces
+        for (;read(mp) == ' '; mp++)
+           ;
+        return mp - mem;
+    }
+
+    /**
+     * Compare two OS9 case-insensitive strings. A string is terminated with
+     * highorder bit set, CR or NULL
+     */
+    int os9strcmp(int str1, int str2) {
+	for (;(read(str1) & 0x5f) == (read(str2) & 0x5f); str1++, str2++)
+	    if (read(str1) > 0x7f || read(str1) < 32)
+		return 0;
+	return (read(str1) & 0x5f) - (read(str2)& 0x5f);
+    }
+
+    /**
+     * Find the device driver that handles a file with that pathname.
+     */
+    private DevDrvr find_device(String path) {
+        String lcPath = path.toLowerCase();
+	for (int i = 0; i < MAX_DEVS; i++) {
+	    if (devices[i] != null) {
+                String mntPoint = devices[i].getMntPoint().toLowerCase();
+                if (lcPath.startsWith(mntPoint)) {
+                    return devices[i];
+                }
+            }
+        }
+	if (debug_syscall)
+            System.err.printf("No driver for %s\n", new String(path));
+	return null;
+    }
+
 
     /**
      * Memory housekeeping.

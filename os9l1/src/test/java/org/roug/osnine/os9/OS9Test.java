@@ -161,10 +161,14 @@ public class OS9Test {
         OS9 tInstance = new OS9();
 	tInstance.x.set(tInstance.BITMAP_START);
 	
-        tInstance.d.set(0);
+        // OS9 marks the first 8 pages as used - i.e. one byte
+        assertEquals(0xff, tInstance.read(tInstance.BITMAP_START));
+        assertEquals(0x00, tInstance.read(tInstance.BITMAP_START + 1));
+
+        tInstance.d.set(16);
 	tInstance.y.set(1);
 	tInstance.f_allbit();
-        result = tInstance.read(tInstance.BITMAP_START);
+        result = tInstance.read(tInstance.BITMAP_START + 16 / 8);
         //System.out.printf("Memory: %02x\n", result);
         assertEquals(0x80, result);
 
