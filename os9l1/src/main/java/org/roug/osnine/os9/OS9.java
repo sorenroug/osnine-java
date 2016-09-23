@@ -31,105 +31,12 @@ public class OS9 extends MC6809 {
     private int topOfRealRAM; //!< Absolute values
     private int bottomOfRAM = 0;
     private DevDrvr[] devices = new DevDrvr[MAX_DEVS]; //!< devices, typically /d0,/h0 etc.
-    private int dev_end;
+    private int dev_end = 0;
     private int pids[] = new int[MAX_PIDS]; //!< Mapping of Process identifiers
     private int pid_end;
     private boolean debug_syscall;
 
-    /**
-     * 
-     */
-    public static void main(String[] args) throws Exception {
-        OS9 cpu = new OS9();
 
-        MC6850 uart = new MC6850(0xb000);
-        cpu.addMemorySegment(uart);
-
-        cpu.setDebugCalls(1);
-        // Put the initial command into an unused area of the memory.
-        cpu.copytomemory(0xfe00, (args.length == 0) ? "shell" : args[0]);
-        cpu.x.set(0xfe00);
-        String parm = createParm(args);
-        cpu.loadmodule(parm);
-        cpu.run();
-        System.out.flush();
-    }
-
-    /**
-     * Load RC file.
-     * This function should read a configuration file in the user's home
-     * directory. It could be called directly from the constructor.
-     * The idea is to specify where /d0, /h0 is in the UNIX hierarchy.
-     */
-    private void loadrcfile() {
-    // Build a list of devices that map to a point in the UNIX filesystem
-        String homedir;
-        Properties props = new Properties();
-
-        if (System.getenv("OSNINEDIR") != null) {
-            homedir = System.getenv("OSNINEDIR");
-        } else {
-            homedir = System.getenv("HOME") + "/OS9";
-        }
-
-        dev_end = 0;
-        // Create a device called /term to match the UNIX controlling tty
-        devices[dev_end++] = new DevDrvTerm("/term","/dev/tty");
-        // Create pseudo disks offset at $HOME/OS9
-        // We create for all commonly used disks.
-        devices[dev_end++] = new DevUnix("/dd", homedir); // Default drive
-        devices[dev_end++] = new DevUnix("/h0", homedir);
-        devices[dev_end++] = new DevUnix("/d0", homedir);
-        devices[dev_end++] = new DevUnix("/d1", homedir);
-        // Create the pipe device
-        devices[dev_end++] = new DevPipe("/pipe","");
-        // Create devices for all UNIX directories we might be interested in
-        // This is so a UNIX path name is directly equivalent to an OS9 pathname.
-        // Used when we set the current working directory
-        mount_allunix();
-        /*
-        devices[dev_end++] = new DevUnix("/home", "/home");
-        devices[dev_end++] = new DevUnix("/usr", "/usr");
-        devices[dev_end++] = new DevUnix("/etc", "/etc");
-        */
-
-        // Set the current execution directory.
-        cxd = "/dd/CMDS";
-    }
-
-
-    /**
-     * Open the root directory in UNIX and mount all directories as
-     * OS9 devices.
-     */
-    void mount_allunix() {
-        File dirp = new File("/");
-        for (File dentp : dirp.listFiles()) {
-            if (dentp.isHidden())
-                continue;
-            if (dentp.isDirectory()) {
-                if (dev_end < MAX_DEVS )
-                    devices[dev_end++] = new DevUnix(dentp.toString(), dentp.toString());
-                else
-                    System.err.printf("Overflow: %s device not added as OS9 device\n", dentp.toString());
-            }
-        }
-        return ;
-    }
-
-    /**
-     * Construct the parameters from the arguments given to the application.
-     * Java has split the command line for us. We now have to put it back to one string.
-     */
-    private static String createParm(String[] args) {
-        String result = "";
-        for (int i = 1; i < args.length; i++) {
-            result = result + args[i];
-            if (i + 1 < args.length) result = result + " ";
-        }
-        result = result + "\r";
-        return result;
-    }
 
     /**
      * Constructor.
@@ -154,9 +61,7 @@ public class OS9 extends MC6809 {
 	// Set the CWD to what we have in UNIX
 	//getcwd(cwd, 1024);
 	cwd = "/dd";
-
-	// Load the configuration file
-	loadrcfile();
+        cxd = "/dd/CMDS";
 
 	init_mm();
 
@@ -194,7 +99,15 @@ public class OS9 extends MC6809 {
      * Stub.
      * 1 = print syscalls, 2 = print reads/writes
      */
-    private void setDebugCalls(int flag) {
+    public void setDebugCalls(int flag) {
+    }
+
+    public void setCWD(String directory) {
+        cwd = directory;
+    }
+
+    public void setCXD(String directory) {
+        cxd = directory;
     }
 
     /**
@@ -216,7 +129,7 @@ public class OS9 extends MC6809 {
      *  - INPUT:
      *    - (X) = Address of module name or file name
      */
-    private void loadmodule(String parm) {
+    public void loadmodule(String parm) {
         PathDesc fd;
         int moduleAddr;
         DevDrvr dev;
@@ -493,6 +406,14 @@ public class OS9 extends MC6809 {
 	    if (read(str1) > 0x7f || read(str1) < 32)
 		return 0;
 	return (read(str1) & 0x5f) - (read(str2)& 0x5f);
+    }
+
+    public void addDevice(DevDrvr device) {
+        if (dev_end < MAX_DEVS ) {
+            devices[dev_end++] = device;
+        } else {
+            System.err.printf("Overflow: %s device not added as OS9 device\n", device.toString());
+        }
     }
 
     /**

@@ -23,7 +23,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.roug.osnine.os9.OS9</mainClass>
+                            <mainClass>org.roug.osnine.os9.CmdLine</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
