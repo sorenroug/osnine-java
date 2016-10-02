@@ -44,8 +44,8 @@ public class OS9 extends MC6809 {
     public OS9() {
         super(0xFF00);
         topOfRealRAM = 0xFF00;
-        SWI2Trap trap = new SWI2Trap(this);
-        this.insertMemorySegment(trap);
+        //SWI2Trap trap = new SWI2Trap(this);
+        //this.insertMemorySegment(trap);
 
 	DevDrvTerm tmpdev = new DevDrvTerm("/term", "/dev/tty");
 
@@ -100,6 +100,16 @@ public class OS9 extends MC6809 {
      * 1 = print syscalls, 2 = print reads/writes
      */
     public void setDebugCalls(int flag) {
+        switch (flag) {
+        case 1:
+            debug_syscall = true;
+            break;
+        case 2:
+            debug_syscall = false;
+            break;
+        default:
+            debug_syscall = false;
+        }
     }
 
     public void setCWD(String directory) {
@@ -129,12 +139,15 @@ public class OS9 extends MC6809 {
      *  - INPUT:
      *    - (X) = Address of module name or file name
      */
-    public void loadmodule(String parm) {
+    public void loadmodule(String prg, String parm) {
         PathDesc fd;
         int moduleAddr;
         DevDrvr dev;
         int val;
         byte[] parmBytes;
+
+        copytomemory(0xfe00, prg);
+        x.set(0xfe00);
 
         f_load();
         moduleAddr = y.intValue();
@@ -996,6 +1009,153 @@ public class OS9 extends MC6809 {
 	// but the shell never sets a.
 	buf = String.format("ERROR #%d %s\r\n", b.intValue(), ErrMsg.errmsg[b.intValue()]);
 	paths[2].write(buf.getBytes(), buf.length());
+    }
+
+
+    /**
+     * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
+     */
+    void swi2() {
+            cc.setC(0);
+            switch(fetch()) {
+            case 0x00:
+                f_link();
+                break;
+            case 0x01:
+                f_load();
+                break;
+            case 0x02:
+//              f_unlink();
+                break;
+            case 0x03:
+//              f_fork();
+                break;
+            case 0x04:
+//              f_wait();
+                break;
+
+            case 0x05:
+//              f_chain();
+                break;
+
+            case 0x06:              // F$Exit
+//              f_exit();
+                break;
+            case 0x07:
+                f_mem();
+                break;
+            case 0x09:
+                if (debug_syscall)
+                    System.err.printf("OS9::Set intercept trap\n");
+                break;
+            case 0x0a:
+//              f_sleep();
+                break;
+            case 0x0c:
+//              f_id();
+                break;
+            case 0x0d:              // F$SPri
+                /* Ignore */
+                break;
+
+            case 0x0f:              // F$Perr
+                f_perr();
+                break;
+            case 0x10:              // F$Pnam
+                f_prsnam();
+                break;
+            case 0x12:              // F$SchBit
+                f_schbit();
+                break;
+            case 0x13:
+                f_allbit();           // F$ABit
+                break;
+            case 0x14:
+                f_delbit();           // F$DBit
+                break;
+            case 0x15:              // F$Time
+//              f_time();
+                break;
+
+            case 0x16:              // F$STim
+                /* Ignore */
+                break;
+
+            case 0x17:
+//              f_crc();
+                break;
+
+            /*
+            case 0x2c:             // F$AProc
+                f_aproc();
+                break;
+            */
+
+            case 0x82:
+//              i_dup();
+                break;
+
+            case 0x83:
+//              i_open(1);          // I$Crea
+                break;
+
+            case 0x84:              // I$Open
+//              i_open(0);
+                break;
+
+            case 0x85:
+//              i_mdir();
+                break;
+
+            case 0x86:
+//              i_chgdir();
+                break;
+
+            case 0x87:
+//              i_deletex(0);
+                break;
+
+            case 0x88:
+//              i_seek();
+                break;
+
+            case 0x89:
+//              i_read();
+                break;
+
+            case 0x8a:
+//              i_write();
+                break;
+
+            case 0x8b:
+//              i_rdln();
+                break;
+
+            case 0x8c:
+//              i_wrln();
+                break;
+
+            case 0x8d:
+//              i_getstt();
+                break;
+
+            case 0x8e:
+//              i_setstt();
+                break;
+
+            case 0x8f:
+//              i_close();
+                break;
+
+            case 0x90:
+//              i_deletex(1);
+                break;
+
+            default:
+                pc.set(pc.intValue() - 1);
+                System.err.printf("Uncaught SWI2 call request %x\r\n", read(pc.intValue()));
+                System.exit(0);
+            }
     }
 
 }

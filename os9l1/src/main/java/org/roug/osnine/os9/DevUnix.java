@@ -4,6 +4,7 @@ import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.util.Set;
 import java.util.TreeSet;
+import java.io.File;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.attribute.FileAttribute;
@@ -37,8 +38,15 @@ class DevUnix extends DevDrvr {
         Path unixPath;
         String umode = "r";
         PDUnix fd = null;
+        String relPath;
 
-        unixPath = Paths.get(unixDir, path);
+        if (path.startsWith("/")) {
+            relPath = path.substring(getMntPoint().length());
+        } else {
+            relPath = path;
+        }
+        unixPath = Paths.get(unixDir, relPath);
+        //System.out.println("COMBINED: " + unixPath);
         if (findpath(unixPath, !create) == null) {
             errorcode = 216;
             return null;
@@ -159,8 +167,43 @@ class DevUnix extends DevDrvr {
     return null;
     }
 
-    static String findpath(Path path, boolean mustexist) {
+    /**
+     * Find the UNIX file from the OS9 path. The OS9 path
+     * is case-insensive, so we have to check every directory.
+     *
+     * @param path - OS9 path.
+     * @param mustexist - ?
+     */
     //FIXME
+    static String findpath(Path path, boolean mustexist) {
+        String startFrom;
+        int alreadyMatched = 0;
+
+        path = path.normalize();
+        if (path.startsWith("/")) {
+            startFrom = "/";
+        } else {
+            startFrom = ".";
+        }
+        File newUnixFile = new File(startFrom);
+        int segmentCnt = path.getNameCount();
+        while (alreadyMatched < segmentCnt) {
+            boolean found = false;
+            for (File dirEntry : newUnixFile.listFiles()) {
+                String nextOS9Seg = path.getName(alreadyMatched).toString();
+                String nextUNXSeg = dirEntry.getName();
+                if (nextUNXSeg.equalsIgnoreCase(nextOS9Seg)) {
+                    alreadyMatched++;
+                    newUnixFile = new File(newUnixFile, nextUNXSeg);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return null;
+            }
+        }
+        return newUnixFile.toString();
     /*
         char *endp, *endseg, *begseg;
         char *dirp, *nseg;
@@ -194,7 +237,7 @@ class DevUnix extends DevDrvr {
             return null;
         return path;
     */
-    return null;
+
     }
 
 } 

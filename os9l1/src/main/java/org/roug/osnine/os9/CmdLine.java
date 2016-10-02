@@ -24,11 +24,8 @@ public class CmdLine {
 	// Load the configuration file
 	loadrcfile(cpu);
 
-        // Put the initial command into an unused area of the memory.
-        cpu.copytomemory(0xfe00, (args.length == 0) ? "shell" : args[0]);
-        cpu.x.set(0xfe00);
         String parm = createParm(args);
-        cpu.loadmodule(parm);
+        cpu.loadmodule((args.length == 0) ? "shell" : args[0], parm);
         cpu.run();
         System.out.flush();
     }

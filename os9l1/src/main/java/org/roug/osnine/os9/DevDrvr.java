@@ -15,6 +15,10 @@ public class DevDrvr {
 	mntpoint = mntpnt;
     }
 
+    public int getErrorCode() {
+        return errorcode;
+    }
+
     public String getMntPoint() {
         return mntpoint;
     }

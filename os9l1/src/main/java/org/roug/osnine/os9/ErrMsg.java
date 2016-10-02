@@ -2,7 +2,8 @@ package org.roug.osnine.os9;
 
 interface ErrMsg {
     public static final String[] errmsg = {
-        /* 0 */ "", "", "", "", "",   "", "", "", "", "",
+        /* 0 */ "- No error",
+                "", "", "", "", "", "", "", "", "",
         /* 10  */ "- Unrecognized Symbol",
         /* 11  */ "- Excessive Verbage (too many keywords or symbols)",
         /* 12  */ "- Illegal Statement Construction",
