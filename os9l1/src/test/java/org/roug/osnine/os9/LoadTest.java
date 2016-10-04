@@ -2,6 +2,7 @@ package org.roug.osnine.os9;
 
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 /**
@@ -18,6 +19,12 @@ public class LoadTest {
         String driveLocation = System.getProperty("outputDirectory");
         cpu.setDebugCalls(1);
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
+        cpu.setCXD("/dd");
+        assertFalse(cpu.cc.isSetC());
         cpu.loadmodule("dummymodule.mod", "\r");
+        if (cpu.cc.isSetC()) {
+            System.out.println(Util.getErrorMessage(cpu.b.intValue()));
+        }
+        assertFalse(cpu.cc.isSetC());
     }
 }

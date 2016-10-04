@@ -159,7 +159,7 @@ public class OS9 extends MC6809 {
         // 0x0b is first byte of permanent storage size
         // 0x02 is first byte of module size
         int uppermem = moduleAddr + ((read(moduleAddr + 0x0b) + 1) << 8)
-                              + ((read(moduleAddr + 0x02) + 1) << 8);
+                                  + ((read(moduleAddr + 0x02) + 1) << 8);
         y.set(uppermem);
         // Load the argument vector and set registers
         // parm is already terminated with \r
@@ -172,7 +172,7 @@ public class OS9 extends MC6809 {
         // Copy the parm value into memory
         parmBytes = parm.getBytes();
         int parmInx = 0;
-        for (int i = s.intValue(); i < y.intValue() ; i++) {
+        for (int i = s.intValue(); i < parmBytes.length ; i++) {
             write(i, (int)parmBytes[parmInx]);
             parmInx++;
         }
@@ -296,10 +296,17 @@ public class OS9 extends MC6809 {
         dev = find_device(upath.toString());
         if (dev == null) {
             sys_error(ErrCodes.E_MNF);
+            if (debug_syscall) {
+                System.err.println("OS9::f_load: unable to find device");
+            }
             return;
         }
-        fd = dev.open(upath.substring(dev.getMntPoint().length()), 5, false);
+        //fd = dev.open(upath.substring(dev.getMntPoint().length()), 5, false);
+        fd = dev.open(upath.toString(), 5, false);
         if (fd == null) {
+            if (debug_syscall) {
+                System.err.println("OS9::f_load: unable to open path");
+            }
             sys_error(ErrCodes.E_PNNF);
             return;
         }
@@ -333,7 +340,7 @@ public class OS9 extends MC6809 {
      */
     private void copyBufferToMemory(byte[] buf, int startAddr, int len) {
         for (int i = 0; i < len; i++) {
-            write(startAddr + i, buf[1]);
+            write(startAddr + i, buf[i]);
         }
     }
 
@@ -394,12 +401,13 @@ public class OS9 extends MC6809 {
                 unixPath.append(cxd);
             else
                 unixPath.append(cwd);
+            unixPath.append("/");
         }
 
         for (; read(mp) != 0; mp++) {
             if (read(mp) <= '-' || read(mp) == '<' || read(mp) == '>')
                 break;
-            unixPath.append(read(mp) & 0x7f);
+            unixPath.appendCodePoint(read(mp) & 0x7f);
             if ((read(mp) & 0x80) == 0x80)
                 break;
         }
@@ -645,6 +653,9 @@ public class OS9 extends MC6809 {
         org_x = x.intValue();
         org_y = y.intValue();
         org_d = (d.intValue() + 0xff) & 0xff00; // Round it up
+        if (debug_syscall) {
+            System.err.printf("OS9::f_srqmem: X:%4X\n", org_d);
+        }
         x.set(BITMAP_START);
         for (i = 255; i >= 0; i--) {
             if ((read(x.intValue() + (i / 8)) & (0x80 >> (i % 8))) != 0)

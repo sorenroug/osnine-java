@@ -46,7 +46,7 @@ class DevUnix extends DevDrvr {
             relPath = path;
         }
         unixPath = Paths.get(unixDir, relPath);
-        //System.out.println("COMBINED: " + unixPath);
+        System.err.println("COMBINED: " + unixPath);
         if (findpath(unixPath, !create) == null) {
             errorcode = 216;
             return null;
