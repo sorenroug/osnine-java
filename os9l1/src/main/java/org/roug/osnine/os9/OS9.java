@@ -1022,6 +1022,143 @@ public class OS9 extends MC6809 {
 	paths[2].write(buf.getBytes(), buf.length());
     }
 
+    /**
+     * F$EXIT - Exit running program.
+     */
+    public void f_exit() {
+	if (debug_syscall)
+	    System.err.printf("OS9::f_exit\n");
+
+	if (b.intValue() != 0)
+	    System.err.printf("Exit code %d\n", b);
+	System.exit(b.intValue());
+    }
+
+    /**
+     * I$DUP - Duplicate a path number.
+     *
+     * After a cursory inspection of the disassembled shell and having some
+     * trouble with basic09, I've come to the conclusion that System Manager's
+     * Manual is wrong. The new path number is returned in register a.
+     */
+    public void i_dup() {
+	int t;
+
+	if (debug_syscall)
+	    System.err.printf("OS9::i_dup: %d ", a);
+
+	for(t = 0; t < NumPaths; t++)
+	    if (paths[t] == null) {
+		paths[t] = paths[a.intValue()];
+		paths[a.intValue()].usecount++;
+		break;
+	    }
+	if (t == NumPaths) {
+	    sys_error(ErrCodes.E_PthFul);
+	    return;
+	}
+	a.set(t);
+	if (debug_syscall)
+	    System.err.printf("=> %d\n", a.intValue());
+    }
+
+    /**
+     * I$GETSTT - Get status of path number in register A.
+     * This system is a "wild card" call used to handle individual device parameters that:
+     *  a) are not uniform on all devices
+     *  b) are highly hardware dependent
+     *  c) need to be user-changable
+     * The exact operation of this call depends on the device driver and file manager
+     * associated with the path. A typical use is to determine a terminal's parameters
+     * for backspace character, delete character, echo on/off, null padding, paging, etc.
+     * It is commonly used in conjunction with the service request which is used to set
+     * the device operating parameters.
+     */
+    public void i_getstt() {
+	if (debug_syscall)
+	    System.err.printf("OS9::i_getstt: FD=%d opcode %d\n", a.intValue(), b.intValue());
+
+	paths[a.intValue()].errorcode = 0;
+	paths[a.intValue()].getstatus(this);
+    }
+
+
+    /**
+     * I$SETSTT - Set file/device status.
+     * This system is a "wild card" call used to handle individual device parameters that:
+     *  a) are not uniform on all devices
+     *  b) are highly hardware dependent
+     *  c) need to be user-changable
+     * The exact operation of this call depends on the device driver and file manager
+     * associated with the path. A typical use is to determine a terminal's parameters
+     * for backspace character, delete character, echo on/off, null padding, paging, etc.
+     * It is commonly used in conjunction with the service request which is used to read
+     * the device operating parameters.
+     */
+    public void i_setstt() {
+	if (debug_syscall)
+	    System.err.printf("OS9::i_setstt: FD=%d opcode %d\n", a.intValue(), b.intValue());
+	paths[a.intValue()].errorcode = 0;
+	paths[a.intValue()].setstatus(this);
+    }
+
+    /**
+     * I$MDir - Make a new directory.
+     * This is the only way a new directory file can be created. It will
+     * create and initialize a new directory as specified by the pathlist. The
+     * new directory file contains no entries, except for an entry for itself
+     * (".") and its parent directory (".."). The caller is made the owner of
+     * the directory. Does not return a path number because directory files are
+     * not "opened" by this request (use I$Open to do so). The new directory will
+     * automatically have its "directory" bit set in the access permission
+     * attributes. The remaining attributes are specified by the byte passed
+     * in the B register,
+     * @todo: mode bits
+     */
+    public void i_mdir() {
+	StringBuffer upath = new StringBuffer();
+	DevDrvr dev;
+
+	x.set(x.intValue() + getpath(x.intValue(), upath, false));
+
+	if (debug_syscall)
+	    System.err.printf("OS9::i_mdir: %s\n", upath.toString());
+
+	dev = find_device(upath.toString());
+	if (dev == null) {
+	    sys_error(ErrCodes.E_MNF);
+	    return;
+	}
+        //sys_error(dev.makdir(upath.substring(dev.getMntPoint().length()), 0777));
+	sys_error(dev.makdir(upath.toString(), 0777));
+	/* FIXME: mode bits */
+    }
+
+    /**
+     * I$ChgDir - Change directory.
+     * Contrary to what SYSMAN says, the output is that register x is updated past
+     * the path.
+     *
+     * FIXME: If the a &amp; 4 == 4 then set the exec dir bye changing the cxd
+     * string.
+     */
+    public void i_chgdir() {
+	StringBuffer upath = new StringBuffer();
+	String newcwd;
+	DevDrvr dev;
+
+        newcwd = cwd;
+	getpath(x.intValue(), upath, (a.intValue() & 4) == 4);
+	dev = find_device(newcwd); // TODO: this looks wrong
+	if (dev == null) {
+	    sys_error(ErrCodes.E_MNF);
+	    return;
+	}
+	if (sys_error(dev.chdir(newcwd)) == 0) {
+	    cwd = upath.toString();
+	}
+	System.err.printf("Changing dir to %s\n", upath.toString());
+    }
 
     /**
      * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
@@ -1050,7 +1187,7 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x06:              // F$Exit
-//              f_exit();
+                f_exit();
                 break;
             case 0x07:
                 f_mem();
@@ -1103,7 +1240,7 @@ public class OS9 extends MC6809 {
             */
 
             case 0x82:
-//              i_dup();
+                i_dup();
                 break;
 
             case 0x83:
@@ -1115,11 +1252,11 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x85:
-//              i_mdir();
+                i_mdir();
                 break;
 
             case 0x86:
-//              i_chgdir();
+                i_chgdir();
                 break;
 
             case 0x87:
@@ -1147,11 +1284,11 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x8d:
-//              i_getstt();
+                i_getstt();
                 break;
 
             case 0x8e:
-//              i_setstt();
+                i_setstt();
                 break;
 
             case 0x8f:
