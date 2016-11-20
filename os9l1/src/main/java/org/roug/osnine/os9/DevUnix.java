@@ -99,6 +99,7 @@ class DevUnix extends DevDrvr {
      * Delete a file.
      * @todo: return more meaningful error code
      */
+    @Override
     public int delfile(String path) {
         Path unixPath;
 

@@ -52,4 +52,13 @@ public class DevDrvr {
     int chdir(String path) {
 	return ErrCodes.E_BMode;
     }
+
+    /*
+     * Not possible
+     * 0 = OK, Not 0 means error code
+     */
+    int delfile(String path) {
+	return ErrCodes.E_BMode;
+    }
+
 }

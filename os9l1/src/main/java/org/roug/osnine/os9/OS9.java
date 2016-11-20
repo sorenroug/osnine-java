@@ -345,6 +345,16 @@ public class OS9 extends MC6809 {
     }
 
     /**
+     * Copy memory to byte buffer.
+     */
+    private byte[] copyMemoryToBuffer(int startAddr, int len) {
+        byte[] buf = new byte[len];
+        for (int i = 0; i < len; i++) {
+            buf[i] = (byte)read(startAddr + i);
+        }
+        return buf;
+    }
+    /**
      * Read a specied number of bytes into memory.
      */
     private void readIntoMemory(PathDesc fd, int startAddr, int len) {
@@ -1161,6 +1171,134 @@ public class OS9 extends MC6809 {
     }
 
     /**
+     * I$RdLn - Read a line.
+     */
+    public void i_rdln() {
+	int c;
+
+	if (debug_syscall)
+	    System.err.printf("OS9::i_rdln: FD=%d pos=%x len=%d ", a.intValue(), x.intValue() , y.intValue());
+
+        byte[] buf = new byte[y.intValue()];
+	c = paths[a.intValue()].readln(buf, y.intValue());
+	if (c == -1) {
+	    sys_error(paths[a.intValue()].errorcode);
+	    if (debug_syscall )
+		System.err.printf("error = %d\n", b.intValue());
+	    return;
+	}
+        copyBufferToMemory(buf, x.intValue(), c);
+	y.set(c);
+	if (debug_syscall)
+	    System.err.printf("ret = %d\n", y.intValue());
+    }
+
+    /**
+     * I$Read - Read some bytes.
+     */
+    public void i_read() {
+	int c;
+
+	if (debug_syscall)
+	    System.err.printf("OS9::i_read: FD=%d pos=0x%x len=#%d ", a.intValue(), x.intValue() , y.intValue());
+
+        byte[] buf = new byte[y.intValue()];
+	c = paths[a.intValue()].readln(buf, y.intValue());
+	if (c == -1) {
+	    sys_error(paths[a.intValue()].errorcode);
+	    if (debug_syscall)
+		System.err.printf("error = %d\n", b.intValue());
+	    return;
+	}
+        copyBufferToMemory(buf, x.intValue(), c);
+	y.set(c);
+	if (debug_syscall)
+	    System.err.printf("ret = %d\n", y.intValue());
+    }
+
+    /**
+     * I$WRLN - Write a line of text. The file descriptor is in register A.
+     */
+    public void i_wrln() {
+        byte[] buf;
+	if (debug_syscall) {
+	    System.err.printf("OS9::i_wrln: FD=%d y=%d x=%04x %c%c%c...\n", a.intValue(), y.intValue(), x.intValue(),
+	      read(x.intValue()), read(x.intValue()+1), read(x.intValue()+2));
+	}
+	paths[a.intValue()].errorcode = 0;
+        buf = copyMemoryToBuffer(x.intValue(), y.intValue());
+	y.set(paths[a.intValue()].writeln(buf, y.intValue())); // Return number of bytes written
+	sys_error(paths[a.intValue()].errorcode);
+    }
+
+    /**
+     * I$WRITE - Write some text. The file descriptor is in register A.
+     */
+    public void i_write() {
+        byte[] buf;
+	if (debug_syscall) {
+	    System.err.printf("OS9::i_write: FD=%d y=%d x=%04x %c%c%c...\n", a.intValue(), y.intValue(), x.intValue(),
+	      read(x.intValue()), read(x.intValue()+1), read(x.intValue()+2));
+	}
+	paths[a.intValue()].errorcode = 0;
+        buf = copyMemoryToBuffer(x.intValue(), y.intValue());
+	y.set(paths[a.intValue()].write(buf, y.intValue())); // Return number of bytes written
+	sys_error(paths[a.intValue()].errorcode);
+    }
+
+    /**
+     * I$Close - Close a file descriptor.
+     */
+    public void i_close() {
+	if (debug_syscall)
+	    System.err.printf("OS9::i_close: FD=%d\n", a.intValue());
+	if (paths[a.intValue()] == null) {
+	    sys_error(ErrCodes.E_BPNum);
+	    return;
+	}
+	paths[a.intValue()].close();
+
+	if (paths[a.intValue()].usecount == 0) {
+	    //delete paths[a.intValue()];
+        }
+	paths[a.intValue()] = null;
+    }
+
+    /**
+     * I$DELETEX - Delete a file.
+     * This service request deletes the file specified by the pathlist. The
+     * file must have write permission attributes (public write if not the
+     * owner), and reside on a multi-file mass storage device. Attempts to
+     * delete devices will result in error.
+     *
+     * @param xdir - whether to delete in current or execution directory.
+     */
+    public void i_deletex(int xdir) {
+	StringBuffer upath = new StringBuffer();
+	DevDrvr dev;
+
+        boolean xDir;
+        if (xdir != 0) {
+            xDir = (a.intValue() & 4) == 4;
+        } else {
+            xDir = false;
+        }
+
+	x.set(x.intValue() + getpath(x.intValue(), upath, xDir));
+
+        String unixPath = upath.toString();
+	if (debug_syscall)
+	    System.err.printf("OS9::i_deletex: %s\n", unixPath);
+
+	dev = find_device(unixPath);
+	if (dev != null) {
+	    sys_error(ErrCodes.E_MNF);
+	    return;
+	}
+	sys_error(dev.delfile(unixPath));
+    }
+
+    /**
      * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
      */
     void swi2() {
@@ -1260,7 +1398,7 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x87:
-//              i_deletex(0);
+                i_deletex(0);
                 break;
 
             case 0x88:
@@ -1268,19 +1406,19 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x89:
-//              i_read();
+                i_read();
                 break;
 
             case 0x8a:
-//              i_write();
+                i_write();
                 break;
 
             case 0x8b:
-//              i_rdln();
+                i_rdln();
                 break;
 
             case 0x8c:
-//              i_wrln();
+                i_wrln();
                 break;
 
             case 0x8d:
@@ -1292,11 +1430,11 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x8f:
-//              i_close();
+                i_close();
                 break;
 
             case 0x90:
-//              i_deletex(1);
+                i_deletex(1);
                 break;
 
             default:
