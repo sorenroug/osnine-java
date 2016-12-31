@@ -7,6 +7,7 @@ import org.roug.osnine.MC6850;
 import org.roug.osnine.MemoryBank;
 import org.roug.osnine.RegisterCC;
 import java.util.Properties;
+import java.util.Calendar;
 import java.io.File;
 
 public class OS9 extends MC6809 {
@@ -336,6 +337,37 @@ public class OS9 extends MC6809 {
     }
 
     /**
+     * F$UNLINK - Tells OS-9 that the module is no longer needed by the calling
+     * process. The module's link count is decremented, and the module is
+     * destroyed and its memory deallocated when the link count equals zero.
+     * The module will not be destroyed if in use by any other process(es)
+     * because its link count will be non-zero.
+     * INPUT:
+     * (U) = Address of module header
+     */
+    public void f_unlink() {
+	int mdirp, newcnt;
+
+	if (debug_syscall) {
+	    System.err.printf("OS9::f_unlink: u=%04X\n", u.intValue());
+        }
+
+	for (mdirp = MDIR_START; mdirp < MDIR_END; mdirp +=4) {
+	    if (read_word(mdirp) == u.intValue()) {
+		newcnt = read(mdirp + 2);
+		write(mdirp + 2, newcnt - 1);
+		if (newcnt <= 1) {
+		    write_word(mdirp, 0); // removes entry
+		    d.set(read_word(u.intValue() + 2)); // Module size
+		    f_srtmem();
+		}
+		return;
+	    }
+	}
+	sys_error(ErrCodes.E_MNF);
+    }
+
+    /**
      * Copy a byte buffer to memory.
      */
     private void copyBufferToMemory(byte[] buf, int startAddr, int len) {
@@ -577,6 +609,64 @@ public class OS9 extends MC6809 {
             write(addr, oldVal & ~(0x80 >> (from % 8)));
             from++;
         }
+    }
+
+    /**
+     * F$TIME - Get date and time.
+     */
+    public void f_time() {
+	if (debug_syscall)
+	    System.err.printf("OS9::f_time\n");
+	Calendar now = Calendar.getInstance();
+	write(x.intValue() + 0, now.get(Calendar.YEAR) % 100); // Two char year.
+	write(x.intValue() + 1, now.get(Calendar.MONTH));
+	write(x.intValue() + 2, now.get(Calendar.DAY_OF_MONTH));
+	write(x.intValue() + 3, now.get(Calendar.HOUR));
+	write(x.intValue() + 4, now.get(Calendar.MINUTE));
+	write(x.intValue() + 5, now.get(Calendar.SECOND));
+    }
+
+    private static final long CRC24_POLY = 0x800063L;
+
+
+    /**
+     * Compute CRC24 sum.
+     */
+    static long compute_crc(long crc, byte[] octets, int len) {
+	for (int j = 0; j < len; j++) {
+	    crc ^= (octets[j]) << 16;
+	    for (int i = 0; i < 8; i++) {
+		crc <<= 1;
+		if ((crc & 0x1000000) != 0)
+		    crc ^= CRC24_POLY;
+	    }
+	}
+	return crc & 0xffffffL;
+    }
+
+    /**
+     * F$CRC - This service request calculates the CRC (cyclic redundancy count)
+     * for use by compilers, assemblers, or other module generators. The CRC
+     * is calculated starting at the source address over "byte count" bytes,
+     * it is not necessary to cover an entire module in one call, since the
+     * CRC may be "accumulated" over several calls. The CRC accumulator can
+     * be any three byte memory location and must be initialized to $FFFFFF
+     * before the first F$CRC call.
+     */
+    public void f_crc() {
+        byte[] buf;
+	long tmpcrc;
+
+	tmpcrc = (read(u.intValue()) << 16) + (read(u.intValue() + 1) << 8) + read(u.intValue() + 2);
+
+	if (debug_syscall)
+	  System.err.printf("OS9::f_crc: X=%04x Y=%04x DP=%02x\nU=%04x start=%lx\n",
+		 x.intValue(), y.intValue(), dp.intValue(), u.intValue(), tmpcrc);
+        buf = copyMemoryToBuffer(x.intValue(), y.intValue());
+	tmpcrc = compute_crc(tmpcrc, buf, y.intValue());
+	write(u.intValue() + 0, (int)((tmpcrc >> 16) & 0xff));
+	write(u.intValue() + 1, (int)((tmpcrc >> 8) & 0xff));
+	write(u.intValue() + 2, (int)(tmpcrc & 0xff));
     }
 
     /**
@@ -1021,6 +1111,16 @@ public class OS9 extends MC6809 {
     }
 
     /**
+     * F$ID - Get user id.
+     */
+    public void f_id() {
+	if (debug_syscall)
+	    System.err.printf("OS9::f_id\n");
+	a.set(1);
+	y.set(getuid() & 0xffff);
+    }
+
+    /**
      * F$PERR - Print error message. We have included the text strings so it
      * looks like you have used 'printerr'.
      */
@@ -1299,6 +1399,15 @@ public class OS9 extends MC6809 {
     }
 
     /**
+     * I$SEEK - Seek in a random access file.
+     */
+    public void i_seek() {
+	if (debug_syscall)
+	    System.err.printf("OS9::i_seek: FD=%d pos=%04X%04X\n", a.intValue(), x.intValue(), u.intValue());
+	paths[a.intValue()].seek((x.intValue() << 16) + u.intValue());
+    }
+
+    /**
      * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
      */
     void swi2() {
@@ -1311,7 +1420,7 @@ public class OS9 extends MC6809 {
                 f_load();
                 break;
             case 0x02:
-//              f_unlink();
+                f_unlink();
                 break;
             case 0x03:
 //              f_fork();
@@ -1338,7 +1447,7 @@ public class OS9 extends MC6809 {
 //              f_sleep();
                 break;
             case 0x0c:
-//              f_id();
+                f_id();
                 break;
             case 0x0d:              // F$SPri
                 /* Ignore */
@@ -1360,7 +1469,7 @@ public class OS9 extends MC6809 {
                 f_delbit();           // F$DBit
                 break;
             case 0x15:              // F$Time
-//              f_time();
+                f_time();
                 break;
 
             case 0x16:              // F$STim
@@ -1368,7 +1477,7 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x17:
-//              f_crc();
+                f_crc();
                 break;
 
             /*
@@ -1402,7 +1511,7 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x88:
-//              i_seek();
+                i_seek();
                 break;
 
             case 0x89:
