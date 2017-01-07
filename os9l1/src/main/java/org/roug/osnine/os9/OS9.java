@@ -113,6 +113,16 @@ public class OS9 extends MC6809 {
         }
     }
 
+    private void debug(String format, Object... arguments) {
+        if (debug_syscall) {
+            System.err.printf(format,  arguments);
+        }
+    }
+
+    private void error(String format, Object... arguments) {
+        System.err.printf(format,  arguments);
+    }
+
     public void setCWD(String directory) {
         cwd = directory;
     }
@@ -181,20 +191,16 @@ public class OS9 extends MC6809 {
         // area, and the DP register will contain its page number.
         d.set(read_word(moduleAddr + 0x0b));
         f_srqmem(); // Request memory for data area. Returned in U
-        if (debug_syscall) {
-            System.err.printf("module size: %04X\n",  read_word((moduleAddr + 0x02)));
-            System.err.printf("execution offset: %04X\n",  read_word((moduleAddr + 0x09)));
-            System.err.printf("permanent storage size: %04X\n",  read_word((moduleAddr + 0x0b)));
-        }
+        debug("module size: %04X\n",  read_word((moduleAddr + 0x02)));
+        debug("execution offset: %04X\n",  read_word((moduleAddr + 0x09)));
+        debug("permanent storage size: %04X\n",  read_word((moduleAddr + 0x0b)));
         x.set(s.intValue());
         dp.set(u.intValue() >> 8);
         createProcess(moduleAddr, d.intValue());
         cc.setF(0);
         cc.setI(0);
-        if (debug_syscall) {
-            System.err.printf("loadmodule: PC:%04X U:%04X DP:%02X X:%04X Y:%04X S:%04X\n",
-                pc.intValue(), u.intValue(), dp.intValue(), x.intValue(), y.intValue(), s.intValue());
-        }
+        debug("loadmodule: PC:%04X U:%04X DP:%02X X:%04X Y:%04X S:%04X\n",
+            pc.intValue(), u.intValue(), dp.intValue(), x.intValue(), y.intValue(), s.intValue());
     }
 
     /**
@@ -224,9 +230,7 @@ public class OS9 extends MC6809 {
     void f_link() {
         int mdirp, mcand, mname, maddr;
 
-        if (debug_syscall) {
-            System.err.printf("OS9::f_link: x=%04X a=%02X\n", x.intValue(), a.intValue());
-        }
+        debug("OS9::f_link: x=%04X a=%02X\n", x.intValue(), a.intValue());
         mcand = x.intValue();
     //    f_prsnam();
         for (mdirp = MDIR_START; mdirp < MDIR_END; mdirp += 4) {
@@ -290,24 +294,18 @@ public class OS9 extends MC6809 {
         getpath(x.intValue(), upath, true);
         f_prsnam();
 
-        if (debug_syscall) {
-            System.err.printf("OS9::f_load: %s\n", upath.toString());
-        }
+        debug("OS9::f_load: %s\n", upath.toString());
 
         dev = find_device(upath.toString());
         if (dev == null) {
             sys_error(ErrCodes.E_MNF);
-            if (debug_syscall) {
-                System.err.println("OS9::f_load: unable to find device");
-            }
+            debug("OS9::f_load: unable to find device\n");
             return;
         }
         //fd = dev.open(upath.substring(dev.getMntPoint().length()), 5, false);
         fd = dev.open(upath.toString(), 5, false);
         if (fd == null) {
-            if (debug_syscall) {
-                System.err.println("OS9::f_load: unable to open path");
-            }
+            debug("OS9::f_load: unable to open path\n");
             sys_error(ErrCodes.E_PNNF);
             return;
         }
@@ -348,9 +346,7 @@ public class OS9 extends MC6809 {
     public void f_unlink() {
 	int mdirp, newcnt;
 
-	if (debug_syscall) {
-	    System.err.printf("OS9::f_unlink: u=%04X\n", u.intValue());
-        }
+        debug("OS9::f_unlink: u=%04X\n", u.intValue());
 
 	for (mdirp = MDIR_START; mdirp < MDIR_END; mdirp +=4) {
 	    if (read_word(mdirp) == u.intValue()) {
@@ -475,7 +471,7 @@ public class OS9 extends MC6809 {
         if (dev_end < MAX_DEVS ) {
             devices[dev_end++] = device;
         } else {
-            System.err.printf("Overflow: %s device not added as OS9 device\n", device.toString());
+            error("Overflow: %s device not added as OS9 device\n", device.toString());
         }
     }
 
@@ -492,8 +488,7 @@ public class OS9 extends MC6809 {
                 }
             }
         }
-	if (debug_syscall)
-            System.err.printf("No driver for %s\n", new String(path));
+        debug("No driver for %s\n", new String(path));
 	return null;
     }
 
@@ -615,8 +610,7 @@ public class OS9 extends MC6809 {
      * F$TIME - Get date and time.
      */
     public void f_time() {
-	if (debug_syscall)
-	    System.err.printf("OS9::f_time\n");
+        debug("OS9::f_time\n");
 	Calendar now = Calendar.getInstance();
 	write(x.intValue() + 0, now.get(Calendar.YEAR) % 100); // Two char year.
 	write(x.intValue() + 1, now.get(Calendar.MONTH));
@@ -659,8 +653,7 @@ public class OS9 extends MC6809 {
 
 	tmpcrc = (read(u.intValue()) << 16) + (read(u.intValue() + 1) << 8) + read(u.intValue() + 2);
 
-	if (debug_syscall)
-	  System.err.printf("OS9::f_crc: X=%04x Y=%04x DP=%02x\nU=%04x start=%lx\n",
+        debug("OS9::f_crc: X=%04x Y=%04x DP=%02x\nU=%04x start=%lx\n",
 		 x.intValue(), y.intValue(), dp.intValue(), u.intValue(), tmpcrc);
         buf = copyMemoryToBuffer(x.intValue(), y.intValue());
 	tmpcrc = compute_crc(tmpcrc, buf, y.intValue());
@@ -753,9 +746,7 @@ public class OS9 extends MC6809 {
         org_x = x.intValue();
         org_y = y.intValue();
         org_d = (d.intValue() + 0xff) & 0xff00; // Round it up
-        if (debug_syscall) {
-            System.err.printf("OS9::f_srqmem: X:%4X\n", org_d);
-        }
+        debug("OS9::f_srqmem: X:%4X\n", org_d);
         x.set(BITMAP_START);
         for (i = 255; i >= 0; i--) {
             if ((read(x.intValue() + (i / 8)) & (0x80 >> (i % 8))) != 0)
@@ -1046,9 +1037,7 @@ public class OS9 extends MC6809 {
         int p;
         int tmpX = x.intValue();
 
-        if (debug_syscall) {
-            System.err.printf("OS9::f_prsnam: X:%4X\n", tmpX);
-        }
+        debug("OS9::f_prsnam: X:%4X\n", tmpX);
 
         if (read(tmpX) == '/' || Character.isLetterOrDigit(read(tmpX)) || read(tmpX) == '_' || read(tmpX) == '.') {
             p = tmpX;
@@ -1065,11 +1054,9 @@ public class OS9 extends MC6809 {
             }
             y.set(p);
             b.set(y.intValue() - x.intValue());
-            if (debug_syscall) {
-                for (int i = 0; i < b.intValue(); i++)
-                    System.err.printf("%c", read(x.intValue() + i));
-                System.err.printf("\n");
-            }
+            for (int i = 0; i < b.intValue(); i++)
+                debug("%c", read(x.intValue() + i));
+            debug("\n");
         } else {
             // We are not pointing to a pathname
             tmpX = x.intValue();
@@ -1078,8 +1065,7 @@ public class OS9 extends MC6809 {
             }
             x.set(tmpX);
             sys_error(ErrCodes.E_BNam);
-            if (debug_syscall)
-                System.err.printf("(whitespace)\n");
+            debug("(whitespace)\n");
         }
     }
 
@@ -1114,8 +1100,7 @@ public class OS9 extends MC6809 {
      * F$ID - Get user id.
      */
     public void f_id() {
-	if (debug_syscall)
-	    System.err.printf("OS9::f_id\n");
+        debug("OS9::f_id\n");
 	a.set(1);
 	y.set(getuid() & 0xffff);
     }
@@ -1136,11 +1121,10 @@ public class OS9 extends MC6809 {
      * F$EXIT - Exit running program.
      */
     public void f_exit() {
-	if (debug_syscall)
-	    System.err.printf("OS9::f_exit\n");
+        debug("OS9::f_exit\n");
 
 	if (b.intValue() != 0)
-	    System.err.printf("Exit code %d\n", b);
+	    error("Exit code %d\n", b);
 	System.exit(b.intValue());
     }
 
@@ -1154,8 +1138,7 @@ public class OS9 extends MC6809 {
     public void i_dup() {
 	int t;
 
-	if (debug_syscall)
-	    System.err.printf("OS9::i_dup: %d ", a);
+        debug("OS9::i_dup: %d ", a);
 
 	for(t = 0; t < NumPaths; t++)
 	    if (paths[t] == null) {
@@ -1168,8 +1151,7 @@ public class OS9 extends MC6809 {
 	    return;
 	}
 	a.set(t);
-	if (debug_syscall)
-	    System.err.printf("=> %d\n", a.intValue());
+        debug("=> %d\n", a.intValue());
     }
 
     /**
@@ -1185,8 +1167,7 @@ public class OS9 extends MC6809 {
      * the device operating parameters.
      */
     public void i_getstt() {
-	if (debug_syscall)
-	    System.err.printf("OS9::i_getstt: FD=%d opcode %d\n", a.intValue(), b.intValue());
+        debug("OS9::i_getstt: FD=%d opcode %d\n", a.intValue(), b.intValue());
 
 	paths[a.intValue()].errorcode = 0;
 	paths[a.intValue()].getstatus(this);
@@ -1206,8 +1187,7 @@ public class OS9 extends MC6809 {
      * the device operating parameters.
      */
     public void i_setstt() {
-	if (debug_syscall)
-	    System.err.printf("OS9::i_setstt: FD=%d opcode %d\n", a.intValue(), b.intValue());
+        debug("OS9::i_setstt: FD=%d opcode %d\n", a.intValue(), b.intValue());
 	paths[a.intValue()].errorcode = 0;
 	paths[a.intValue()].setstatus(this);
     }
@@ -1231,8 +1211,7 @@ public class OS9 extends MC6809 {
 
 	x.set(x.intValue() + getpath(x.intValue(), upath, false));
 
-	if (debug_syscall)
-	    System.err.printf("OS9::i_mdir: %s\n", upath.toString());
+        debug("OS9::i_mdir: %s\n", upath.toString());
 
 	dev = find_device(upath.toString());
 	if (dev == null) {
@@ -1267,7 +1246,7 @@ public class OS9 extends MC6809 {
 	if (sys_error(dev.chdir(newcwd)) == 0) {
 	    cwd = upath.toString();
 	}
-	System.err.printf("Changing dir to %s\n", upath.toString());
+	debug("Changing dir to %s\n", upath.toString());
     }
 
     /**
@@ -1276,21 +1255,18 @@ public class OS9 extends MC6809 {
     public void i_rdln() {
 	int c;
 
-	if (debug_syscall)
-	    System.err.printf("OS9::i_rdln: FD=%d pos=%x len=%d ", a.intValue(), x.intValue() , y.intValue());
+        debug("OS9::i_rdln: FD=%d pos=%x len=%d ", a.intValue(), x.intValue() , y.intValue());
 
         byte[] buf = new byte[y.intValue()];
 	c = paths[a.intValue()].readln(buf, y.intValue());
 	if (c == -1) {
 	    sys_error(paths[a.intValue()].errorcode);
-	    if (debug_syscall )
-		System.err.printf("error = %d\n", b.intValue());
+            debug("error = %d\n", b.intValue());
 	    return;
 	}
         copyBufferToMemory(buf, x.intValue(), c);
 	y.set(c);
-	if (debug_syscall)
-	    System.err.printf("ret = %d\n", y.intValue());
+        debug("ret = %d\n", y.intValue());
     }
 
     /**
@@ -1299,21 +1275,18 @@ public class OS9 extends MC6809 {
     public void i_read() {
 	int c;
 
-	if (debug_syscall)
-	    System.err.printf("OS9::i_read: FD=%d pos=0x%x len=#%d ", a.intValue(), x.intValue() , y.intValue());
+        debug("OS9::i_read: FD=%d pos=0x%x len=#%d ", a.intValue(), x.intValue() , y.intValue());
 
         byte[] buf = new byte[y.intValue()];
 	c = paths[a.intValue()].readln(buf, y.intValue());
 	if (c == -1) {
 	    sys_error(paths[a.intValue()].errorcode);
-	    if (debug_syscall)
-		System.err.printf("error = %d\n", b.intValue());
+            debug("error = %d\n", b.intValue());
 	    return;
 	}
         copyBufferToMemory(buf, x.intValue(), c);
 	y.set(c);
-	if (debug_syscall)
-	    System.err.printf("ret = %d\n", y.intValue());
+        debug("ret = %d\n", y.intValue());
     }
 
     /**
@@ -1321,10 +1294,8 @@ public class OS9 extends MC6809 {
      */
     public void i_wrln() {
         byte[] buf;
-	if (debug_syscall) {
-	    System.err.printf("OS9::i_wrln: FD=%d y=%d x=%04x %c%c%c...\n", a.intValue(), y.intValue(), x.intValue(),
-	      read(x.intValue()), read(x.intValue()+1), read(x.intValue()+2));
-	}
+        debug("OS9::i_wrln: FD=%d y=%d x=%04x %c%c%c...\n", a.intValue(), y.intValue(), x.intValue(),
+                  read(x.intValue()), read(x.intValue()+1), read(x.intValue()+2));
 	paths[a.intValue()].errorcode = 0;
         buf = copyMemoryToBuffer(x.intValue(), y.intValue());
 	y.set(paths[a.intValue()].writeln(buf, y.intValue())); // Return number of bytes written
@@ -1336,10 +1307,8 @@ public class OS9 extends MC6809 {
      */
     public void i_write() {
         byte[] buf;
-	if (debug_syscall) {
-	    System.err.printf("OS9::i_write: FD=%d y=%d x=%04x %c%c%c...\n", a.intValue(), y.intValue(), x.intValue(),
+        debug("OS9::i_write: FD=%d y=%d x=%04x %c%c%c...\n", a.intValue(), y.intValue(), x.intValue(),
 	      read(x.intValue()), read(x.intValue()+1), read(x.intValue()+2));
-	}
 	paths[a.intValue()].errorcode = 0;
         buf = copyMemoryToBuffer(x.intValue(), y.intValue());
 	y.set(paths[a.intValue()].write(buf, y.intValue())); // Return number of bytes written
@@ -1350,8 +1319,7 @@ public class OS9 extends MC6809 {
      * I$Close - Close a file descriptor.
      */
     public void i_close() {
-	if (debug_syscall)
-	    System.err.printf("OS9::i_close: FD=%d\n", a.intValue());
+        debug("OS9::i_close: FD=%d\n", a.intValue());
 	if (paths[a.intValue()] == null) {
 	    sys_error(ErrCodes.E_BPNum);
 	    return;
@@ -1387,8 +1355,7 @@ public class OS9 extends MC6809 {
 	x.set(x.intValue() + getpath(x.intValue(), upath, xDir));
 
         String unixPath = upath.toString();
-	if (debug_syscall)
-	    System.err.printf("OS9::i_deletex: %s\n", unixPath);
+        debug("OS9::i_deletex: %s\n", unixPath);
 
 	dev = find_device(unixPath);
 	if (dev != null) {
@@ -1402,8 +1369,7 @@ public class OS9 extends MC6809 {
      * I$SEEK - Seek in a random access file.
      */
     public void i_seek() {
-	if (debug_syscall)
-	    System.err.printf("OS9::i_seek: FD=%d pos=%04X%04X\n", a.intValue(), x.intValue(), u.intValue());
+        debug("OS9::i_seek: FD=%d pos=%04X%04X\n", a.intValue(), x.intValue(), u.intValue());
 	paths[a.intValue()].seek((x.intValue() << 16) + u.intValue());
     }
 
@@ -1440,8 +1406,7 @@ public class OS9 extends MC6809 {
                 f_mem();
                 break;
             case 0x09:
-                if (debug_syscall)
-                    System.err.printf("OS9::Set intercept trap\n");
+                debug("OS9::Set intercept trap\n");
                 break;
             case 0x0a:
 //              f_sleep();
@@ -1480,11 +1445,9 @@ public class OS9 extends MC6809 {
                 f_crc();
                 break;
 
-            /*
             case 0x2c:             // F$AProc
                 f_aproc();
                 break;
-            */
 
             case 0x82:
                 i_dup();
@@ -1548,7 +1511,7 @@ public class OS9 extends MC6809 {
 
             default:
                 pc.set(pc.intValue() - 1);
-                System.err.printf("Uncaught SWI2 call request %x\r\n", read(pc.intValue()));
+                error("Uncaught SWI2 call request %x\r\n", read(pc.intValue()));
                 System.exit(0);
             }
     }
