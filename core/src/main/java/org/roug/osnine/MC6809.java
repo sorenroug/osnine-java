@@ -1876,7 +1876,7 @@ public class MC6809 extends USimMotorola {
         d.set(t);
     }
 
-    void swi() {
+    protected void swi() {
         cc.setE(1);
         help_psh(0xff, s, u);
         cc.setF(1);
@@ -1884,13 +1884,14 @@ public class MC6809 extends USimMotorola {
         pc.set(read_word(0xfffa));
     }
 
-    void swi2() {
+    protected void swi2() {
+        System.err.println("WRONG SWI2");
         cc.setE(1);
         help_psh(0xff, s, u);
         pc.set(read_word(0xfff4));
     }
 
-    void swi3() {
+    protected void swi3() {
         cc.setE(1);
         help_psh(0xff, s, u);
         pc.set(read_word(0xfff2));

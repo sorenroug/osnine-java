@@ -108,6 +108,16 @@ public abstract class USim {
         status();
     }
 
+    /**
+     * Run until illegal instrution is encountered and show status.
+     */
+    public void trace() {
+        halted = false;
+        while (!halted) {
+            execute();
+            status();
+        }
+    }
     /*
      * Set the halt flag.
      */

@@ -113,6 +113,12 @@ public class OS9 extends MC6809 {
         }
     }
 
+    public void status() {
+        if (debug_syscall) {
+            System.err.printf("PC: $%04X: $%02X\n",  pc.intValue(), ir);
+        }
+    }
+
     private void debug(String format, Object... arguments) {
         if (debug_syscall) {
             System.err.printf(format,  arguments);
@@ -134,6 +140,9 @@ public class OS9 extends MC6809 {
     private void debugMemory(int start, int length) {
         if (!debug_syscall) return;
         for (int i = 0; i < length; i++) {
+            if (i % 16 == 0) {
+                System.err.printf("%04X ", start + i);
+            }
             System.err.printf("%02X", read(start + i));
             if (i % 16 == 15 || i == length - 1) {
                 System.err.printf("\n");
@@ -1159,7 +1168,7 @@ public class OS9 extends MC6809 {
         debug("OS9::f_exit\n");
 
 	if (b.intValue() != 0)
-	    error("Exit code %d\n", b);
+	    error("Exit code %d\n", b.intValue());
 	System.exit(b.intValue());
     }
 
@@ -1411,9 +1420,11 @@ public class OS9 extends MC6809 {
     /**
      * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
      */
-    void swi2() {
+    protected void swi2() {
             cc.setC(0);
-            switch(fetch()) {
+            int opcode = fetch();
+            debug("SWI2 call. Opcode = $%02X\n", opcode);
+            switch(opcode) {
             case 0x00:
                 f_link();
                 break;
