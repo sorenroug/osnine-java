@@ -55,9 +55,9 @@ public class OS9 extends MC6809 {
 	    paths[inx] = null;
 	}
 	// Set up stdin, stdout and stderr.
-	paths[0] = tmpdev.open("/dev/tty", 1, false);
-	paths[1] = tmpdev.open("/dev/tty", 2, false);
-	paths[2] = tmpdev.open("/dev/tty", 2, false);
+	paths[0] = tmpdev.open("/dev/tty", AccessModes.READ, false);
+	paths[1] = tmpdev.open("/dev/tty", AccessModes.WRITE, false);
+	paths[2] = tmpdev.open("/dev/tty", AccessModes.WRITE, false);
 
 	// Set the CWD to what we have in UNIX
 	//getcwd(cwd, 1024);
@@ -151,6 +151,7 @@ public class OS9 extends MC6809 {
             }
         }
     }
+
     private void error(String format, Object... arguments) {
         System.err.printf(format,  arguments);
     }
@@ -1199,6 +1200,49 @@ public class OS9 extends MC6809 {
     }
 
     /**
+     * I$OPEN - Open a file.
+     * input  (X) = Address of pathlist
+     * input  (A) = Access mode (D S PE PW PR E W R)
+     * output (X) = Updated past pathlist (trailing spaces skipped)
+     * output (A) = Path number
+     */
+    public void i_open(boolean create) {
+	StringBuffer upath = new StringBuffer();
+        DevDrvr dev;
+        int tmpMode = a.intValue();
+
+        boolean xDir = (a.intValue() & 4) == 4;
+	x.set(x.intValue() + getpath(x.intValue(), upath, xDir));
+
+        debug("OS9::i_open: %s (%s) mode %03o", upath.toString(), create ? "create" : "open", tmpMode);
+
+	dev = find_device(upath.toString());
+	if (dev == null) {
+	    sys_error(ErrCodes.E_MNF);
+            return;
+        }
+
+        int i;
+        for(i = 0; i < NumPaths; i++) {
+            if (paths[i] == null) {
+                paths[i] = dev.open(upath.toString(), tmpMode, create);
+
+                if (paths[i] == null) {
+                    sys_error(ErrCodes.E_PNNF);
+                    return;
+                }
+                break;
+            }
+        }
+        if (i == NumPaths) {
+            sys_error(ErrCodes.E_PthFul);
+        }
+
+        debug("= %d\n", i);
+        a.set(i);
+    }
+
+    /**
      * I$GETSTT - Get status of path number in register A.
      * This system is a "wild card" call used to handle individual device parameters that:
      *  a) are not uniform on all devices
@@ -1500,11 +1544,11 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x83:
-//              i_open(1);          // I$Crea
+                i_open(true);          // I$Crea
                 break;
 
             case 0x84:              // I$Open
-//              i_open(0);
+                i_open(false);
                 break;
 
             case 0x85:
