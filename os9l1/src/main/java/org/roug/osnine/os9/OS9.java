@@ -119,6 +119,29 @@ public class OS9 extends MC6809 {
         }
     }
 
+    private void debugBuffer(byte buf[], int length) {
+        if (!debug_syscall) return;
+        for (int i = 0; i < length; i++ ) {
+            System.err.printf("%02X", buf[i]);
+            if (i % 16 == 15 || i == length - 1) {
+                System.err.printf("\n");
+            } else {
+                System.err.printf(":");
+            }
+        }
+    }
+
+    private void debugMemory(int start, int length) {
+        if (!debug_syscall) return;
+        for (int i = 0; i < length; i++) {
+            System.err.printf("%02X", read(start + i));
+            if (i % 16 == 15 || i == length - 1) {
+                System.err.printf("\n");
+            } else {
+                System.err.printf(":");
+            }
+        }
+    }
     private void error(String format, Object... arguments) {
         System.err.printf(format,  arguments);
     }
@@ -147,8 +170,9 @@ public class OS9 extends MC6809 {
     /**
      * Load a file into memory as a module including allocating a data area and
      * creating a process descriptor.
-     *  - INPUT:
-     *    - (X) = Address of module name or file name
+     *
+     * @param prg - name of program
+     * @param parm - parameters
      */
     public void loadmodule(String prg, String parm) {
         PathDesc fd;
@@ -160,8 +184,8 @@ public class OS9 extends MC6809 {
         copytomemory(0xfe00, prg);
         x.set(0xfe00);
 
-        f_load();
-        moduleAddr = y.intValue();
+        f_load(); // Returns entry point address in Y
+        moduleAddr = u.intValue();
 
         pc.set(moduleAddr + read_word(moduleAddr + 0x09)); // Set program counter
         // Get memory for the data area
@@ -177,6 +201,7 @@ public class OS9 extends MC6809 {
         // Sect. 8.2: If the creating process passed a parameter area, it will be located from
         // the value of the SP to the top of memory (Y), and the D register
         // will contain the parameter area size in bytes.
+        debug("Allocating parm space: %d\n", parm.length());
         d.set(parm.length());
         f_srqmem(); // Request memory for parm area. Returned in U
         s.set(y.intValue() - d.intValue());
@@ -190,10 +215,11 @@ public class OS9 extends MC6809 {
         // Sect. 8.2: The U register will have the lower bound of the data memory
         // area, and the DP register will contain its page number.
         d.set(read_word(moduleAddr + 0x0b));
+        debug("Allocating data space: $%04X\n", d.intValue());
         f_srqmem(); // Request memory for data area. Returned in U
-        debug("module size: %04X\n",  read_word((moduleAddr + 0x02)));
-        debug("execution offset: %04X\n",  read_word((moduleAddr + 0x09)));
-        debug("permanent storage size: %04X\n",  read_word((moduleAddr + 0x0b)));
+        debug("module size: $%04X\n",  read_word((moduleAddr + 0x02)));
+        debug("execution offset: $%04X\n",  read_word((moduleAddr + 0x09)));
+        debug("permanent storage size: $%04X\n",  read_word((moduleAddr + 0x0b)));
         x.set(s.intValue());
         dp.set(u.intValue() >> 8);
         createProcess(moduleAddr, d.intValue());
@@ -288,10 +314,10 @@ public class OS9 extends MC6809 {
         DevDrvr dev;
         PathDesc fd;
         int modname = 0;
-        int modsize = 0;
-        int langtype = 0;
+        int moduleSize = 0;
+        int langType = 0;
 
-        getpath(x.intValue(), upath, true);
+        getpath(x.intValue(), upath, true); // upath now contains the UNIX path to the file.
         f_prsnam();
 
         debug("OS9::f_load: %s\n", upath.toString());
@@ -315,22 +341,26 @@ public class OS9 extends MC6809 {
         while (true) {
             if (fd.read(modhead, 14) == -1)
                 break;
-            d.set(modsize = modhead[2] * 256 + modhead[3]); // Module size
-            f_srqmem();                      // Request memory of D size
+            //debugBuffer(modhead, 14);
+            moduleSize = (modhead[2] & 0xFF) * 256 + (modhead[3] & 0xFF);
+            d.set(moduleSize);
+            debug("Allocating module size: $%X #%d\n", d.intValue(), d.intValue());
+            f_srqmem();                      // Request memory of D size - returned in U
             copyBufferToMemory(modhead, u.intValue(), 14);   // copy the header
-            readIntoMemory(fd, u.intValue() + 14, modsize - 14); // Read the rest
+            readIntoMemory(fd, u.intValue() + 14, moduleSize - 14); // Read the rest
+            //debugMemory(u.intValue(), moduleSize);
             add_to_mdir(u.intValue());
             if (first) {
                 first = false;
-                modname = u.intValue() + modhead[4] * 256 + modhead[5];
-                langtype = modhead[6];
+                modname = u.intValue() + (modhead[4] & 0xFF) * 256 + (modhead[5] & 0xFF);
+                langType = modhead[6] & 0xFF;
             }
         }
         fd.close();
         //if (fd.usecount == 0) delete fd;
 
         x.set(modname);
-        a.set(langtype);  // (A) - Language / type
+        a.set(langType);  // (A) - Language / type
         f_link();
     }
 
@@ -419,6 +449,10 @@ public class OS9 extends MC6809 {
     /**
      * getpath: get the path into a UNIX form, take into account the
      * execution directory.
+     *
+     * @param mem - location in memory where the path is. Terminated by high-order bit.
+     * @param unixPath - buffer to store the result in. (side-effect)
+     * @param xdir - If set, then prefix execution directory on relative paths.
      * @return value is the end of the path. You usually set register x to that.
      */
     private int getpath(int mem, StringBuffer unixPath, boolean xdir) {
@@ -626,7 +660,7 @@ public class OS9 extends MC6809 {
     /**
      * Compute CRC24 sum.
      */
-    static long compute_crc(long crc, byte[] octets, int len) {
+    public static long compute_crc(long crc, byte[] octets, int len) {
 	for (int j = 0; j < len; j++) {
 	    crc ^= (octets[j]) << 16;
 	    for (int i = 0; i < 8; i++) {
@@ -761,6 +795,7 @@ public class OS9 extends MC6809 {
                 d.set(org_d);
                 x.set(org_x);
                 y.set(org_y);
+                debug("Found memory at %X\n", u.intValue());
                 return;
             }
         }

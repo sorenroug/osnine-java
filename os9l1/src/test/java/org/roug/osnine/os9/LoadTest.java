@@ -32,14 +32,14 @@ public class LoadTest {
      * Load module.
      */
     @Test
-    public void loadFree() {
+    public void loadMFree() {
         OS9 cpu = new OS9();
         String driveLocation = System.getProperty("outputDirectory");
         cpu.setDebugCalls(1);
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
         cpu.setCXD("/dd/cmds");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("free", "\r");
+        cpu.loadmodule("mfree", "\r");
         if (cpu.cc.isSetC()) {
             System.out.println(Util.getErrorMessage(cpu.b.intValue()));
         }
