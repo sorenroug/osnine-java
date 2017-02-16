@@ -56,8 +56,8 @@ public class OS9 extends MC6809 {
 	}
 	// Set up stdin, stdout and stderr.
 	paths[0] = tmpdev.open("/dev/tty", AccessModes.READ, false);
-	paths[1] = tmpdev.open("/dev/tty", AccessModes.WRITE, false);
-	paths[2] = tmpdev.open("/dev/tty", AccessModes.WRITE, false);
+	paths[1] = new PDStdOut(System.out);
+	paths[2] = new PDStdOut(System.err);
 
 	// Set the CWD to what we have in UNIX
 	//getcwd(cwd, 1024);
@@ -121,6 +121,7 @@ public class OS9 extends MC6809 {
 
     private void debug(String format, Object... arguments) {
         if (debug_syscall) {
+            System.err.print("DEBUG:");
             System.err.printf(format,  arguments);
         }
     }
@@ -1170,6 +1171,7 @@ public class OS9 extends MC6809 {
 
 	if (b.intValue() != 0)
 	    error("Exit code %d\n", b.intValue());
+        System.out.flush();
 	System.exit(b.intValue());
     }
 
@@ -1467,7 +1469,7 @@ public class OS9 extends MC6809 {
     protected void swi2() {
             cc.setC(0);
             int opcode = fetch();
-            debug("SWI2 call. Opcode = $%02X\n", opcode);
+            //debug("SWI2 call. Opcode = $%02X\n", opcode);
             switch(opcode) {
             case 0x00:
                 f_link();

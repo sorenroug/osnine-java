@@ -11,6 +11,11 @@ public class DevDrvr {
     private String mntpoint;
     int errorcode;
 
+    /**
+     * Constructor.
+     *
+     * @param mntpnt - the location in OS9 where the device is located. Usually /term.
+     */
     public DevDrvr(final String mntpnt) {
 	mntpoint = mntpnt;
     }
