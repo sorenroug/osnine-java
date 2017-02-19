@@ -1,15 +1,19 @@
 package org.roug.osnine.os9;
 
+import java.io.File;
 import java.io.InputStream;
-
+import java.util.Properties;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.MC6850;
 import org.roug.osnine.MemoryBank;
 import org.roug.osnine.RegisterCC;
-import java.util.Properties;
-import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class CmdLine {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmdLine.class);
 
     /**
      * 

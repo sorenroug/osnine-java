@@ -1,5 +1,5 @@
 #!/bin/sh
 java \
+  -Dorg.slf4j.simpleLogger.defaultLogLevel=debug \
   -jar target/osnine-os9-1.0-SNAPSHOT-jar-with-dependencies.jar \
   $@
-# -Dorg.slf4j.simpleLogger.defaultLogLevel=debug \

@@ -1,20 +1,24 @@
 package org.roug.osnine.os9;
 
-import java.io.RandomAccessFile;
-import java.io.FileNotFoundException;
-import java.util.Set;
-import java.util.TreeSet;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.Path;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
+import java.util.TreeSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DevUnix extends DevDrvr {
 
     private String unixDir;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DevUnix.class);
 
     /*********************************************************************
      * DevUnix methods
@@ -46,7 +50,7 @@ class DevUnix extends DevDrvr {
             relPath = path;
         }
         unixPath = Paths.get(unixDir, relPath);
-        System.err.println("COMBINED: " + unixPath);
+        LOGGER.debug("COMBINED: {}", unixPath);
         if (findpath(unixPath, !create) == null) {
             errorcode = 216;
             return null;
