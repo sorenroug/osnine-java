@@ -109,6 +109,7 @@ public class OS9 extends MC6809 {
         }
     }
 
+    @Override
     public void status() {
         LOGGER.debug(String.format("PC: $%04X: $%02X",  pc.intValue(), ir));
     }
@@ -187,7 +188,6 @@ public class OS9 extends MC6809 {
      */
     public void loadmodule(String prg, String parm) {
         int moduleAddr;
-        int val;
         byte[] parmBytes;
 
         copyStringToMemory(0xfe00, prg);
@@ -275,10 +275,9 @@ public class OS9 extends MC6809 {
      * @todo: NOT FINISHED
      */
     void f_link() {
-        int mdirp, mcand, mname, maddr;
+        int mdirp, mname, maddr;
 
         debug("OS9::f_link: x=%04X a=%02X", x.intValue(), a.intValue());
-        mcand = x.intValue();
     //    f_prsnam();
         for (mdirp = MDIR_START; mdirp < MDIR_END; mdirp += 4) {
             maddr = read_word(mdirp);
@@ -657,7 +656,6 @@ public class OS9 extends MC6809 {
     void f_delbit() {
         int from = d.intValue();
         int to = d.intValue() + y.intValue();
-        int base = x.intValue();
         while (from < to) {
             int addr = x.intValue() + (from / 8);
             int oldVal = read(addr);
@@ -779,7 +777,6 @@ public class OS9 extends MC6809 {
             d.set(candidateFrom);
             y.set(candidateLen);
         }
-        return;
     }
 
 
@@ -826,7 +823,6 @@ public class OS9 extends MC6809 {
             }
         }
         sys_error(ErrCodes.E_NoRam);
-        return;
     }
 
     /**
@@ -901,7 +897,6 @@ public class OS9 extends MC6809 {
         write(x.intValue() + a.intValue() / 4, u.intValue() >> 8); // Write MSB of x to page table;
         y.set((read(x.intValue() + a.intValue() / 4) << 8) + (a.intValue() % 4) * 64);
         u.set(org_u);
-        return;
     }
 
     /**
@@ -1496,6 +1491,7 @@ public class OS9 extends MC6809 {
     /**
      * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
      */
+    @Override
     protected void swi2() {
             cc.setC(0);
             int opcode = fetch();
