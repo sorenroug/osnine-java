@@ -46,4 +46,25 @@ public class LoadTest {
         assertFalse(cpu.cc.isSetC());
         //cpu.run();
     }
+
+    /**
+     * Load module and check argument.
+     */
+    @Test
+    public void loadDummyModWithArgs() {
+        OS9 cpu = new OS9();
+        String driveLocation = System.getProperty("outputDirectory");
+        cpu.setDebugCalls(1);
+        cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
+        cpu.setCXD("/dd");
+        assertFalse(cpu.cc.isSetC());
+        cpu.loadmodule("dummymodule.mod", "THIS IS THE ARGUMENT\r");
+        if (cpu.cc.isSetC()) {
+            System.out.println(Util.getErrorMessage(cpu.b.intValue()));
+        }
+        assertFalse(cpu.cc.isSetC());
+        int firstLetter = cpu.read(cpu.x.intValue());
+        assertEquals((int)'T', firstLetter);
+    }
+
 }

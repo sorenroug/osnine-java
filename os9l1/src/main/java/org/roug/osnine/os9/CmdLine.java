@@ -29,7 +29,8 @@ public class CmdLine {
 	loadrcfile(cpu);
 
         String parm = createParm(args);
-        cpu.loadmodule((args.length == 0) ? "shell" : args[0], parm);
+        String command = (args.length == 0) ? "shell" : args[0];
+        cpu.loadmodule(command, parm);
         cpu.run();
         System.out.flush();
     }
