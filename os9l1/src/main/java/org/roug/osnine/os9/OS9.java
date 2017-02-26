@@ -229,14 +229,14 @@ public class OS9 extends MC6809 {
         f_load(); // Returns entry point address in Y
         moduleAddr = u.intValue();
 
-        pc.set(moduleAddr + read_word(moduleAddr + 0x09)); // Set program counter
+        pc.set(moduleAddr + read_word(moduleAddr + ModuleConst.m_Exec)); // Set program counter
         // Get memory for the data area
         // Sect. 8.2: When the program is first entered, the Y register will have the
         // address of the top of the process' data memory area.
         // 0x0b is first byte of permanent storage size
         // 0x02 is first byte of module size
-        int uppermem = moduleAddr + ((read(moduleAddr + 0x0b) + 1) << BYTEWIDTH)
-                                  + ((read(moduleAddr + 0x02) + 1) << BYTEWIDTH);
+        int uppermem = moduleAddr + ((read(moduleAddr + ModuleConst.m_Mem) + 1) << BYTEWIDTH)
+                                  + ((read(moduleAddr + ModuleConst.m_Size) + 1) << BYTEWIDTH);
         y.set(uppermem);
         // Load the argument vector and set registers
         // parm is already terminated with \r
@@ -255,12 +255,12 @@ public class OS9 extends MC6809 {
         }
         // Sect. 8.2: The U register will have the lower bound of the data memory
         // area, and the DP register will contain its page number.
-        d.set(read_word(moduleAddr + 0x0b));
+        d.set(read_word(moduleAddr + ModuleConst.m_Mem));
         debug("Allocating data space: $%04X", d.intValue());
         f_srqmem(); // Request memory for data area. Returned in U
-        debug("module size: $%04X",  read_word((moduleAddr + 0x02)));
-        debug("execution offset: $%04X",  read_word((moduleAddr + 0x09)));
-        debug("permanent storage size: $%04X",  read_word((moduleAddr + 0x0b)));
+        debug("module size: $%04X",  read_word((moduleAddr + ModuleConst.m_Size)));
+        debug("execution offset: $%04X",  read_word((moduleAddr + ModuleConst.m_Exec)));
+        debug("permanent storage size: $%04X",  read_word((moduleAddr + ModuleConst.m_Mem)));
         x.set(s.intValue());
         dp.set(u.intValue() >> BYTEWIDTH);
         createInitialProcess(moduleAddr, d.intValue());
@@ -317,13 +317,13 @@ public class OS9 extends MC6809 {
             if (maddr == 0) {
                 continue;
             }
-            mname = maddr + read(maddr + 4) * 256 + read(maddr + 5);
+            mname = maddr + read(maddr + ModuleConst.m_Name) * 256 + read(maddr + ModuleConst.m_Name + 1);
             if (os9strcmp(mname, x.intValue()) == 0) {
                 int newcnt = read(mdirp + 2) + 1;
                 write(mdirp + 2, newcnt);
                 u.set(maddr);
                 x.set(y.intValue());
-                y.set(u.intValue() + read(u.intValue() + 0x09) * 256 + read(u.intValue() + 0x0a));
+                y.set(u.intValue() + read(u.intValue() + ModuleConst.m_Exec) * 256 + read(u.intValue() + ModuleConst.m_Exec + 1));
                 a.set(read(u.intValue() + 6));
                 b.set(read(u.intValue() + 7));
                 return;
@@ -407,7 +407,7 @@ public class OS9 extends MC6809 {
             if (fd.read(modhead, 14) == -1)
                 break;
             //debugBuffer(modhead, 14);
-            moduleSize = (modhead[2] & MASK8BITS) * 256 + (modhead[3] & MASK8BITS);
+            moduleSize = (modhead[ModuleConst.m_Size] & MASK8BITS) * 256 + (modhead[ModuleConst.m_Size + 1] & MASK8BITS);
             d.set(moduleSize);
             debug("Allocating module size: $%X #%d", d.intValue(), d.intValue());
             f_srqmem();                      // Request memory of D size - returned in U
@@ -417,8 +417,8 @@ public class OS9 extends MC6809 {
             add_to_mdir(u.intValue());
             if (first) {
                 first = false;
-                modname = u.intValue() + (modhead[4] & MASK8BITS) * 256 + (modhead[5] & MASK8BITS);
-                langType = modhead[6] & MASK8BITS;
+                modname = u.intValue() + (modhead[ModuleConst.m_Name] & MASK8BITS) * 256 + (modhead[ModuleConst.m_Name + 1] & MASK8BITS);
+                langType = modhead[ModuleConst.m_Type] & MASK8BITS;
             }
         }
         fd.close();
@@ -449,7 +449,7 @@ public class OS9 extends MC6809 {
                 write(mdirp + 2, newcnt - 1);
                 if (newcnt <= 1) {
                     write_word(mdirp, 0); // removes entry
-                    d.set(read_word(u.intValue() + 2)); // Module size
+                    d.set(read_word(u.intValue() + ModuleConst.m_Size)); // Module size
                     f_srtmem();
                 }
                 return;
