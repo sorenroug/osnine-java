@@ -35,6 +35,14 @@ public abstract class PathDesc {
 	return;
     }
 
+    public int getErrorCode() {
+        return errorcode;
+    }
+
+    public void setErrorCode(int code) {
+        errorcode = code;
+    }
+
     /**
      * Returns the number of bytes read or -1 on error
      */
