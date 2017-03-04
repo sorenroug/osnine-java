@@ -24,7 +24,7 @@ public class Console extends MemorySegment {
     public int read(int addr) {
         if (addr != offset) {
             if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.valueOf(addr).toString());
+                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
             } else {
                 return nextSegment.read(addr);
             }
@@ -41,7 +41,7 @@ public class Console extends MemorySegment {
     public void write(int addr, int val) {
         if (addr != offset) {
             if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.valueOf(addr).toString());
+                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
             } else {
                 nextSegment.write(addr, val);
             }

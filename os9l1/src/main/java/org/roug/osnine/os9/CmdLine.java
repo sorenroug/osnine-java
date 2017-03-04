@@ -30,7 +30,13 @@ public class CmdLine {
 
         String parm = createParm(args);
         String command = (args.length == 0) ? "shell" : args[0];
+        cpu.setInitialCWD("/dd");
+        cpu.setInitialCXD("/dd/CMDS");
         cpu.loadmodule(command, parm);
+        // Set up stdin, stdout and stderr.
+        cpu.setPathDesc(0, new PDStdIn(System.in));
+        cpu.setPathDesc(1, new PDStdOut(System.out));
+        cpu.setPathDesc(2, new PDStdOut(System.err));
         cpu.run();
         System.out.flush();
     }
@@ -73,7 +79,7 @@ public class CmdLine {
         */
 
         // Set the current execution directory.
-        cpu.setCXD("/dd/CMDS");
+        cpu.setInitialCXD("/dd/CMDS");
     }
 
 
@@ -103,7 +109,6 @@ public class CmdLine {
             result = result + args[i];
             if (i + 1 < args.length) result = result + " ";
         }
-        result = result + "\r";
         return result;
     }
 

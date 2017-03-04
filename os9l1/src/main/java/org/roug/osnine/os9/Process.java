@@ -5,19 +5,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Emulate a process in the OS9 operating system.
+ * This class could also hold a memory object to emulate memory management.
  */
 public class Process {
 
     private static final int NUM_PATHS = 16; // Whatever _NFILE is set to in os9's stdio.h
+
     private OS9 kernel;
 
-    int processId;
-    int parentProcessId;
+    private int processId;
+    private int parentProcessId;
 
     /** Address in memory holding process data. */
-    int procAddr;
+    private int procAddr;
 
-    /* Open paths. */
+    /** Open paths. */
     private PathDesc[] paths = new PathDesc[NUM_PATHS];
 
     /** Working directory. */
@@ -39,19 +41,22 @@ public class Process {
             setPathDesc(inx, null);
         }
 
-        if (parentProcessObj != null) {
-            setParentProcessId(parentProcessObj.getProcessId());
-        } else {
-            // No parent process.
-            setParentProcessId(0);
-        }
-
         int tmpx = kernel.x.intValue();
         kernel.x.set(kernel.read_word(DPConst.D_PrcDBT));  // 73- Process descriptor block address
         kernel.f_all64();                // Allocate the process descriptor
+        kernel.write_word(DPConst.D_PrcDBT, kernel.x.intValue());
         procAddr = kernel.y.intValue();
+        kernel.x.set(tmpx);
         setProcessId(kernel.getNextPID());
+        if (parentProcessObj == null) {
+            setParentProcessId(0); // No parent process.
+        } else {
+            setParentProcessId(parentProcessObj.getProcessId());
+        }
+    }
 
+    public int getProcessBlock() {
+        return procAddr;
     }
 
     public int getProcessId() {
@@ -68,12 +73,40 @@ public class Process {
         kernel.write(procAddr + PDConst.p_PID,  parentProcessId);
     }
 
+    public int getStackPointer() {
+        return kernel.read_word(procAddr + PDConst.p_SP);
+    }
+
+    public void setStackPointer(int stackPointer) {
+        kernel.write(procAddr + PDConst.p_SP,  stackPointer);
+    }
+
     void setPathDesc(int pathNum, PathDesc desc) {
         paths[pathNum] = desc;
     }
 
     void setUserId(int userid) {
         kernel.write_word(procAddr + PDConst.p_User, userid);  // Write user id
+    }
+
+    void setAllocatedPages(int allocatedPages) {
+        kernel.write(procAddr + PDConst.p_PagCnt, allocatedPages);  // Memory allocation in pages (Upper half of acc D).
+    }
+
+    void setPriority(int priority) {
+        kernel.write(procAddr + PDConst.p_Prior,  100); // Write process priority
+    }
+
+    void setModuleStart(int moduleStart)  {
+        kernel.write_word(procAddr + PDConst.p_PModul, moduleStart);  // Module start
+    }
+
+    public void setCWD(String directory) {
+        cwd = directory;
+    }
+
+    public void setCXD(String directory) {
+        cxd = directory;
     }
 
 }

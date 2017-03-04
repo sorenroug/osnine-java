@@ -19,9 +19,9 @@ public class LoadTest {
         String driveLocation = System.getProperty("outputDirectory");
         cpu.setDebugCalls(1);
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
-        cpu.setCXD("/dd");
+        cpu.setInitialCXD("/dd");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("dummymodule.mod", "\r");
+        cpu.loadmodule("dummymodule.mod");
         if (cpu.cc.isSetC()) {
             System.out.println(Util.getErrorMessage(cpu.b.intValue()));
         }
@@ -37,9 +37,9 @@ public class LoadTest {
         String driveLocation = System.getProperty("outputDirectory");
         cpu.setDebugCalls(1);
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
-        cpu.setCXD("/dd/cmds");
+        cpu.setInitialCXD("/dd/cmds");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("mfree", "\r");
+        cpu.loadmodule("mfree");
         if (cpu.cc.isSetC()) {
             System.out.println(Util.getErrorMessage(cpu.b.intValue()));
         }
@@ -56,9 +56,9 @@ public class LoadTest {
         String driveLocation = System.getProperty("outputDirectory");
         cpu.setDebugCalls(1);
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
-        cpu.setCXD("/dd");
+        cpu.setInitialCXD("/dd");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("dummymodule.mod", "THIS IS THE ARGUMENT\r");
+        cpu.loadmodule("dummymodule.mod", "THIS IS THE ARGUMENT");
         if (cpu.cc.isSetC()) {
             System.out.println(Util.getErrorMessage(cpu.b.intValue()));
         }
