@@ -1,5 +1,8 @@
 package org.roug.osnine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MC6809 extends USimMotorola {
 
     private static final int IMMEDIATE = 0;
@@ -10,6 +13,9 @@ public class MC6809 extends USimMotorola {
     private static final int INDEXED = 4;
 
     protected int mode;
+
+    /** Set to true to disassemble executed instruction. */
+    private boolean traceInstructions;
 
     /** Stack pointer U. */
     public final Word u = new Word("U");
@@ -44,6 +50,10 @@ public class MC6809 extends USimMotorola {
     /** Did the CPU receive an IRQ? */
     private boolean receivedIRQ;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MC6809.class);
+
+    private DisAssembler disAsm = null;
+
     /**
      * Accept an NMI signal.
      */
@@ -76,7 +86,12 @@ public class MC6809 extends USimMotorola {
      */
     public MC6809() {
         super();
-        allocate_memory(0xfff0, 16);
+        allocate_memory(0xfff0, 16);  // For interrupt vectors
+
+        String traceInset = System.getProperty("mc6809.trace", "false");
+        if ("true".equalsIgnoreCase(traceInset)) {
+            disAsm = new DisAssembler(this);
+        }
         reset();
     }
 
@@ -105,14 +120,16 @@ public class MC6809 extends USimMotorola {
      * Print out status.
      */
     public void status() {
-        System.out.format("PC:%X A:%X B:%X\n", pc.intValue(), a.intValue(), b.intValue());
+        LOGGER.debug("PC:{} A:{} B:{}", pc, a, b);
     }
 
     /**
      * Execute one instruction.
      */
     public void execute() {
-    //  disasmPC();
+        if (disAsm != null) {
+            disAsm.disasmPC();
+        }
         ir = fetch();
 
         // Select addressing mode
@@ -1885,7 +1902,7 @@ public class MC6809 extends USimMotorola {
     }
 
     protected void swi2() {
-        System.err.println("WRONG SWI2");
+        LOGGER.error("WRONG SWI2");
         cc.setE(1);
         help_psh(0xff, s, u);
         pc.set(read_word(0xfff4));

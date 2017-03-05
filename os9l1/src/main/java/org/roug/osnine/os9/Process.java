@@ -97,8 +97,11 @@ public class Process {
         kernel.write(procAddr + PDConst.p_Prior,  100); // Write process priority
     }
 
+    /**
+     * Set the address of the primary module.
+     */
     void setModuleStart(int moduleStart)  {
-        kernel.write_word(procAddr + PDConst.p_PModul, moduleStart);  // Module start
+        kernel.write_word(procAddr + PDConst.p_PModul, moduleStart);
     }
 
     public void setCWD(String directory) {

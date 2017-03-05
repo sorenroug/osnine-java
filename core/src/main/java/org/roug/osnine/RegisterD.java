@@ -2,25 +2,46 @@ package org.roug.osnine;
 
 /**
  * Word size register (i.e. 16 bit).
+ * The A and B accumulators are 8-bit registers, but for some instructions they
+ * can be used together to form the 16-bit D accumulator. Thus, the
+ * D accumulator is formed by using the B accumulator as the low byte, bits 0-7,
+ * and the A accumulator as the high byte, bits 8-15.
  */
 public class RegisterD extends Word implements Register {
 
-    private UByte regA;
-    private UByte regB;
+    private UByte regA; // High byte
+    private UByte regB; // Low byte
 
     private String registerName = "D";
+
+
+    /**
+     * Constructor.
+     */
+    public RegisterD() {
+        this(0);
+    }
+
+    /**
+     * Constructor.
+     */
+    public RegisterD(int value) {
+        this.regA = new UByte("A");
+        this.regB = new UByte("B");
+        set(value);
+    }
+
     /**
      * Constructor.
      */
     public RegisterD(UByte regA, UByte regB) {
         this.regA = regA;
         this.regB = regB;
-
     }
 
     @Override
     public int intValue() {
-        return regA.intValue() + (regB.intValue() << 8);
+        return regB.intValue() + (regA.intValue() << 8);
     }
 
     @Override
@@ -33,8 +54,8 @@ public class RegisterD extends Word implements Register {
 //      if (newValue > 0xffff || newValue < 0x0) {
 //          throw new IllegalArgumentException("Value must fit in 16 bits.");
 //      }
-        regA.set(newValue);
-        regB.set(newValue >> 8);
+        regB.set(newValue);
+        regA.set(newValue >> 8);
     }
 
     @Override
