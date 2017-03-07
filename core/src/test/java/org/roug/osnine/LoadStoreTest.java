@@ -182,6 +182,22 @@ public class LoadStoreTest {
 	assertEquals(0, myTestCPU.cc.getV());
     }
 
+    /**
+     * Test the LDS - Load into S - instruction.
+     */
+    @Test
+    public void testLDS() {
+        myTestCPU.s.set(0xA11);
+	myTestCPU.write(0xB00, 0x10); // LDS
+	myTestCPU.write(0xB01, 0xCE);
+	myTestCPU.write_word(0xB02, 0x1234);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0x1234, myTestCPU.s.intValue());
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+    }
 
     /**
      * Test the LDY - Load into Y - instruction.
@@ -215,7 +231,7 @@ public class LoadStoreTest {
 	myTestCPU.d.set(0x105);
 	// Set register Y to point to that location minus 5
 	myTestCPU.y.set(0x200);
-	// Two bytes of instruction
+	// Five bytes of instruction
 	myTestCPU.write(0xB00, 0x10); // LDY
 	myTestCPU.write(0xB01, 0xAE); // LDY
 	myTestCPU.write(0xB02, 0x9F);
@@ -227,4 +243,22 @@ public class LoadStoreTest {
 	assertEquals(0xB3FF, myTestCPU.y.intValue());
     }
 
+    /**
+     * Store S direct to 0x129F
+     */
+    @Test
+    public void testSTSdirect() {
+	// Set register DP to the offset
+	myTestCPU.dp.set(0x12);
+	myTestCPU.s.set(0x0AAA);
+	myTestCPU.write(0xB00, 0x10); // STS
+	myTestCPU.write(0xB01, 0xDF); // STS
+	myTestCPU.write(0xB02, 0x9F);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0x0AAA, myTestCPU.read_word(0x129F));
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+    }
 }

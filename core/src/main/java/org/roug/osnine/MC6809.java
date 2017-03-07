@@ -1902,7 +1902,6 @@ public class MC6809 extends USimMotorola {
     }
 
     protected void swi2() {
-        LOGGER.error("WRONG SWI2");
         cc.setE(1);
         help_psh(0xff, s, u);
         pc.set(read_word(0xfff4));

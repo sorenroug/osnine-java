@@ -1252,22 +1252,22 @@ public class OS9 extends MC6809 {
      * TODO: unfinished.
      */
     public void f_aproc() {
-        addToActiveProcQ(x.intValue());
+        addToActiveProcQ(x.intValue(), DPConst.D_AProcQ);
     }
 
     /**
-     * Add process descriptor to active process queue.
+     * Add process descriptor to process queue.
      *
      * @param processPtr - pointer to process structure.
      * TODO: unfinished.
      */
-    private void addToActiveProcQ(int processPtr) {
+    private void addToActiveProcQ(int processPtr, int queueAddr) {
         int currProcess, prevProcess;
         int candAge, currAge;
 
         candAge = read(processPtr + PDConst.p_Prior);
         write(processPtr + PDConst.p_Age, candAge);
-        currProcess = read_word(DPConst.D_AProcQ);
+        currProcess = read_word(queueAddr);
         while (currProcess != 0) { // Increase the age on all
             currAge = read(currProcess + PDConst.p_Age);
             if (currAge < 255) {
@@ -1276,12 +1276,12 @@ public class OS9 extends MC6809 {
             currProcess = read_word(currProcess + PDConst.p_Queue);
         }
 
-        currProcess = read_word(DPConst.D_AProcQ);
+        currProcess = read_word(queueAddr);
         if (currProcess == 0) {
-            write_word(DPConst.D_AProcQ, processPtr); // There were no other processes.
+            write_word(queueAddr, processPtr); // There were no other processes.
         } else {
             if (candAge >= read(currProcess + PDConst.p_Age)) { // Put it first in the queue
-                write_word(DPConst.D_AProcQ, processPtr);
+                write_word(queueAddr, processPtr);
                 write_word(processPtr + PDConst.p_Queue, currProcess);
             } else {                                      // All other cases
                 prevProcess = currProcess;
