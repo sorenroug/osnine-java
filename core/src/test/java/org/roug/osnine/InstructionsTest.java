@@ -776,6 +776,42 @@ public class InstructionsTest {
     //  assertEquals(1, myTestCPU.cc.getV());
     }
 
+    /**
+     * Test the LSR - Logical Shift Right instruction.
+     */
+    @Test
+    public void testLSR() {
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x44);
+        // Logical Shift Right of 0x3E
+        myTestCPU.cc.set(0x0F);
+        myTestCPU.a.set(0x3E);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x1F, myTestCPU.a.intValue());
+        assertEquals(0x02, myTestCPU.cc.intValue());
+
+        // Logical Shift Right of 1
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setV(1);
+        myTestCPU.a.set(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x00, myTestCPU.a.intValue());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getC());
+
+        // Logical Shift Right of 0xB8
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setV(0);
+        myTestCPU.a.set(0xB8);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x5C, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getC());
+    }
+
     @Test
     public void testMUL() {
 	myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
@@ -836,14 +872,79 @@ public class InstructionsTest {
 	assertEquals(0xB01, myTestCPU.pc.intValue());
     }
 
+
+    @Test
+    public void testORAimmediate() {
+        myTestCPU.a.set(0xDA);
+        myTestCPU.cc.set(0x43);
+        myTestCPU.write(0xB00, 0x8A);
+        myTestCPU.write(0xB01, 0x0F);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xDF, myTestCPU.a.intValue());
+        assertEquals(0x49, myTestCPU.cc.intValue());
+    }
+
+
+    @Test
+    public void testROLB() {
+        myTestCPU.b.set(0x89);
+        myTestCPU.cc.set(0x09);
+        myTestCPU.write(0xB00, 0x59);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertEquals(0x13, myTestCPU.b.intValue());
+        assertEquals(0x03, myTestCPU.cc.intValue());
+    }
+
+    @Test
+    public void testRORB() {
+        myTestCPU.b.set(0x89);
+        myTestCPU.cc.set(0x01);
+        myTestCPU.write(0xB00, 0x56);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertEquals(0xC4, myTestCPU.b.intValue());
+        assertEquals(0x09, myTestCPU.cc.intValue());
+    }
+
+    /**
+     * Test the subtraction with carry instruction.
+     */
+    @Test
+    public void testSBCB() {
+        myTestCPU.dp.set(0x05);
+	myTestCPU.b.set(0x35);
+        myTestCPU.cc.set(0x01);
+	myTestCPU.write(0x0503, 0x03);
+	// Two bytes of instruction
+	myTestCPU.write(0xB00, 0xD2);
+	myTestCPU.write(0xB01, 0x03);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0xB02, myTestCPU.pc.intValue());
+	assertEquals(0x31, myTestCPU.b.intValue());
+        assertEquals(0x20, myTestCPU.cc.intValue());
+    }
+
+    @Test
+    public void testSEX() {
+        myTestCPU.b.set(0xE6);
+        myTestCPU.write(0xB00, 0x1D);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertEquals(0xFFE6, myTestCPU.d.intValue());
+    }
+
     /**
      * Test the subtraction instruction.
      */
     @Test
     public void testSUBB() {
 	// Test IMMEDIATE mode:   SUBB $202
-	//
-	// Set register A to the offset
 	myTestCPU.b.set(2);
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0xc0);
