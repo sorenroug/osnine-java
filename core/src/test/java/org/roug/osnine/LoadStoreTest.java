@@ -261,4 +261,27 @@ public class LoadStoreTest {
 	assertEquals(0, myTestCPU.cc.getZ());
 	assertEquals(0, myTestCPU.cc.getV());
     }
+
+    /**
+     * Store B indexed to 0x03BB.
+     * STB [$F,X]
+     */
+    @Test
+    public void testSTBindexed() {
+	myTestCPU.b.set(0xE5);
+	myTestCPU.x.set(0x056A);
+	myTestCPU.write(0x0579, 0x03);
+	myTestCPU.write(0x057A, 0xBB);
+	myTestCPU.write(0x03BB, 0x02);
+	myTestCPU.write(0xB00, 0xE7); // STB
+	myTestCPU.write(0xB01, 0x98); // 10011000
+        myTestCPU.write(0xB02, 0x0F);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0xE5, myTestCPU.read(0x03BB));
+	assertEquals(1, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+    }
+
 }
