@@ -248,17 +248,25 @@ public class OS9 extends MC6809 {
         copyStringToMemory(0xfe00, prg);
         x.set(0xfe00);
 
-        f_load(); // Returns entry point address in Y
+        // Load module into memory - no allocation of head
+        f_load(); // Returns entry point address in Y and module header in U
         moduleAddr = u.intValue();
+        LOGGER.debug("f_load: {} {} {} {}", u, x, y, d);
 
 	// Set program counter
         pc.set(moduleAddr + read_word(moduleAddr + ModuleConst.m_Exec));
+
         // Get memory for the data area
+        // Sect. 8.2: The U register will have the lower bound of the data memory
+        // area, and the DP register will contain its page number.
+        d.set(read_word(moduleAddr + ModuleConst.m_Mem));
+        LOGGER.debug("Allocating data space: {}", d);
+        f_srqmem(); // Request memory for data area. Returned in U
         // Sect. 8.2: When the program is first entered, the Y register will
         // have the address of the top of the process' data memory area.
-        int uppermem = moduleAddr + ((read(moduleAddr + ModuleConst.m_Mem) + 1) << BYTEWIDTH)
-                                  + ((read(moduleAddr + ModuleConst.m_Size) + 1) << BYTEWIDTH);
+        int uppermem = u.intValue() + d.intValue();
         y.set(uppermem);
+        LOGGER.debug("Upper memory: {} := {}", y, uppermem);
         // Load the argument vector and set registers
         // parm is not terminated with \r
         // Sect. 8.2: If the creating process passed a parameter area, it will
@@ -266,24 +274,19 @@ public class OS9 extends MC6809 {
         // the D register will contain the parameter area size in bytes.
         //debug("Allocating parm space: %d", parm.length());
         d.set(parm.length());
-        //f_srqmem(); // Request memory for parm area. Returned in U
+        LOGGER.debug("Parm length: {}", d);
         s.set(y.intValue() - d.intValue());
+        LOGGER.debug("Stack addr for parameter area: {}", s);
         copyStringToMemory(s.intValue(), parm);
-        // Sect. 8.2: The U register will have the lower bound of the data memory
-        // area, and the DP register will contain its page number.
-        d.set(read_word(moduleAddr + ModuleConst.m_Mem));
-        debug("Allocating data space: $%04X", d.intValue());
-        f_srqmem(); // Request memory for data area. Returned in U
-        debug("module size: $%04X",  read_word((moduleAddr + ModuleConst.m_Size)));
-        debug("execution offset: $%04X",  read_word((moduleAddr + ModuleConst.m_Exec)));
-        debug("permanent storage size: $%04X",  read_word((moduleAddr + ModuleConst.m_Mem)));
+        debug("Module size: $%04X",  read_word((moduleAddr + ModuleConst.m_Size)));
+        debug("Execution offset: $%04X",  read_word((moduleAddr + ModuleConst.m_Exec)));
+        debug("Permanent storage size: $%04X",  read_word((moduleAddr + ModuleConst.m_Mem)));
         x.set(s.intValue());
         dp.set(u.intValue() >> BYTEWIDTH);
         createInitialProcess(moduleAddr, d.intValue());
         cc.setF(0);
         cc.setI(0);
-        debug("loadmodule: PC:%04X U:%04X DP:%02X X:%04X Y:%04X S:%04X",
-            pc.intValue(), u.intValue(), dp.intValue(), x.intValue(), y.intValue(), s.intValue());
+        LOGGER.debug("Loadmodule: {} {} {} {} {} {} {}", pc, u, dp, x, s, y, d);
     }
 
     /**
@@ -326,7 +329,7 @@ public class OS9 extends MC6809 {
     void f_link() {
         int mdirp, mname, moduleAddr;
 
-        debug("f_link: x=%04X a=%02X", x.intValue(), a.intValue());
+        LOGGER.debug("f_link: {} {}", x, a);
     //    f_prsnam();
         for (mdirp = MDIR_START; mdirp < MDIR_END; mdirp += 4) {
             moduleAddr = read_word(mdirp);
@@ -342,6 +345,7 @@ public class OS9 extends MC6809 {
                 y.set(moduleAddr + read_word(moduleAddr + ModuleConst.m_Exec));
                 a.set(read(moduleAddr + ModuleConst.m_Type));
                 b.set(read(moduleAddr + ModuleConst.m_Revs));
+                LOGGER.debug("f_link: {} {} {} {}", u, x, y, d);
                 return;
             }
         }
@@ -932,7 +936,7 @@ public class OS9 extends MC6809 {
         int org_x = x.intValue();
         int org_y = y.intValue();
         int org_d = (d.intValue() + 255) & 0xff00; // Round it up
-        debug("f_srqmem: D=%4X", org_d);
+        debug("f_srqmem: D=%04X", org_d);
         x.set(BITMAP_START);
         for (i = 255; i >= 0; i--) {
             if ((read(x.intValue() + (i / 8)) & (0x80 >> (i % 8))) != 0)
@@ -947,7 +951,7 @@ public class OS9 extends MC6809 {
                 d.set(org_d);
                 x.set(org_x);
                 y.set(org_y);
-                debug("Found memory at %X", u.intValue());
+                LOGGER.debug("Found memory at {}", u);
                 return;
             }
         }
@@ -1020,6 +1024,7 @@ public class OS9 extends MC6809 {
         org_u = u.intValue();
         org_a = a.intValue();
         d.set(1);          // Ask for one page
+        LOGGER.debug("f_all64: Allocating block");
         f_srqmem();
         a.set(org_a);
         if (x.intValue() == 0)

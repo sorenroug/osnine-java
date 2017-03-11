@@ -886,14 +886,11 @@ public class MC6809 extends USimMotorola {
     private void addd() {
         int m = fetch_word_operand();
 
-        {
-            int intD = d.intValue();
-            Word t = Word.valueOf((intD & 0x7fff) + (m & 0x7fff));
-            //cc.bit_v = btst(intD ^ m ^ t ^ (t >> 1), 15);
-            cc.setV(t.btst(15));      // Bit 15 carry in
-            cc.setC(t.btst(16));
-            d.set(t.intValue());
-        }
+        int newD = d.intValue() + m;
+        d.set(newD);
+        //cc.bit_v = btst(intD ^ m ^ t ^ (t >> 1), 15);
+        cc.setC(newD > 0xffff);
+        cc.setV(!cc.isSetC());      // Bit 15 carry in
 
     //  cc.bit_v ^= cc.bit_c;
         cc.setN(d.btst(15));

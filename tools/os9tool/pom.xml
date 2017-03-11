@@ -9,9 +9,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ident</artifactId>
+    <artifactId>os9tool</artifactId>
     <packaging>jar</packaging>
-    <name>Ident</name>
+    <name>OS9tool</name>
 
     <properties>
         <main.basedir>${project.basedir}/../..</main.basedir>
@@ -37,7 +37,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Ident</mainClass>
+                            <mainClass>OS9Tool</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -42,11 +42,15 @@ public class Process {
         }
 
         int tmpx = kernel.x.intValue();
+        int tmpy = kernel.y.intValue();
+        int tmpd = kernel.d.intValue();
         kernel.x.set(kernel.read_word(DPConst.D_PrcDBT));  // 73- Process descriptor block address
         kernel.f_all64();                // Allocate the process descriptor
         kernel.write_word(DPConst.D_PrcDBT, kernel.x.intValue());
         procAddr = kernel.y.intValue();
         kernel.x.set(tmpx);
+        kernel.y.set(tmpy);
+        kernel.d.set(tmpd);
         setProcessId(kernel.getNextPID());
         if (parentProcessObj == null) {
             setParentProcessId(0); // No parent process.
