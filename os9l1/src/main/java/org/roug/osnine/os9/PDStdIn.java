@@ -61,8 +61,10 @@ class PDStdIn extends PathDesc {
                 if (c[0] == NEW_LINE) // Do conversion
                     c[0] = CARRIAGE_RETURN;
                 buf[i] = c[0];
-                if (c[0] == CARRIAGE_RETURN)
+                if (c[0] == CARRIAGE_RETURN) {
+                    i++;
                     break;
+                }
             }
         } catch (IOException e) {
             errorcode = ErrCodes.E_EOF;
