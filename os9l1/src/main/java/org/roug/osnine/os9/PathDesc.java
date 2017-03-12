@@ -30,11 +30,6 @@ public abstract class PathDesc {
         this.driver = driver;
     }
 
-    public void getstatus(OS9 cpu) {
-	cpu.sys_error(ErrCodes.E_UnkSvc);
-	return;
-    }
-
     public int getErrorCode() {
         return errorcode;
     }
@@ -44,22 +39,9 @@ public abstract class PathDesc {
     }
 
     /**
-     * Returns the number of bytes read or -1 on error
+     * Returns the number of bytes read or -1 on error.
      */
     public abstract int read(byte[] buf, int size);
-    /*
-    public int read(byte[] buf, int size) {
-        int c;
-        try {
-            c = fp.read(buf, 0, size);
-        } catch (IOException e) {
-            errorcode = ErrCodes.E_EOF;
-            return -1;
-        }
-        return c;
-    }
-    */
-
 
     /**
      * Read a line from a open path. The carriage return is the last character.
@@ -69,36 +51,34 @@ public abstract class PathDesc {
      * @return - the number of bytes read or -1 on error.
      */
     public abstract int readln(byte[] buf, int size);
-    /*
-    public int readln(byte[] buf, int size) {
-        byte c;
-        int i;
-        try {
-            for (i = 0; i < size; i++) {
-                c = fp.readByte();
-                if (c == NEW_LINE) // Do conversion
-                    c = CARRIAGE_RETURN;
-                buf[i] = c;
-                if (c == CARRIAGE_RETURN)
-                    break;
-            }
-        } catch (IOException e) {
-            errorcode = ErrCodes.E_EOF;
-            return -1;
-        }
-        return i;
-    }
-    */
 
+    /**
+     * Write buffer to the file descriptor.
+     *
+     * @return The number of bytes written.
+     */
     public abstract int write(byte[] buf, int size);
 
+    /**
+     * Write buffer until CR is seen.
+     *
+     * @return The number of bytes written.
+     */
     public abstract int writeln(byte[] buf, int size);
+
+    public void getstatus(OS9 cpu) {
+	cpu.sys_error(ErrCodes.E_UnkSvc);
+	return;
+    }
 
     public void setstatus(OS9 cpu) {
 	cpu.sys_error(ErrCodes.E_UnkSvc);
 	return;
     }
 
+    /**
+     * Seek in file. If not overridden, then device is unable to.
+     */
     public int seek(int offset) {
 	return -1;
     }

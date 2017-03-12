@@ -52,7 +52,7 @@ class DevUnix extends DevDrvr {
         unixPath = Paths.get(unixDir, relPath);
         LOGGER.debug("COMBINED: {}", unixPath);
         if (findpath(unixPath, !create) == null) {
-            errorcode = 216;
+            errorcode = ErrCodes.E_PNNF;
             return null;
         }
         switch(mode & 3) {

@@ -614,10 +614,10 @@ public class OS9 extends MC6809 {
      * @param mem - location in memory where the path is. Terminated by
      * high-order bit.
      * @param unixPath - buffer to store the result in. (side-effect)
-     * @param xdir - If set, then prefix execution directory on relative paths.
+     * @param useXDir - If set, then prefix execution directory on relative paths.
      * @return value is the end of the path. You usually set register x to that.
      */
-    private int getpath(Register memReg, StringBuffer unixPath, boolean xdir) {
+    private int getpath(Register memReg, StringBuffer unixPath, boolean useXDir) {
         int mem = memReg.intValue();
         int mp;
 
@@ -632,7 +632,7 @@ public class OS9 extends MC6809 {
         if (read(mp) == '/') {
             unixPath.append("");
         } else {
-            if (xdir)
+            if (useXDir)
                 unixPath.append(initialCxd);
             else
                 unixPath.append(initialCwd);
@@ -1466,8 +1466,8 @@ public class OS9 extends MC6809 {
         DevDrvr dev;
         int tmpMode = a.intValue();
 
-        boolean xDir = (a.intValue() & 4) == 4;
-        x.set(x.intValue() + getpath(x, upath, xDir));
+        boolean useXDir = (a.intValue() & 4) == 4;
+        x.set(x.intValue() + getpath(x, upath, useXDir));
 
         debug("i_open: %s (%s) mode %03o", upath.toString(), create ? "create" : "open", tmpMode);
 
@@ -1705,14 +1705,14 @@ public class OS9 extends MC6809 {
         StringBuffer upath = new StringBuffer();
         DevDrvr dev;
 
-        boolean xDir;
+        boolean useXDir;
         if (xdir != 0) {
-            xDir = (a.intValue() & 4) == 4;
+            useXDir = (a.intValue() & 4) == 4;
         } else {
-            xDir = false;
+            useXDir = false;
         }
 
-        x.set(x.intValue() + getpath(x, upath, xDir));
+        x.set(x.intValue() + getpath(x, upath, useXDir));
 
         String unixPath = upath.toString();
         debug("i_deletex: %s", unixPath);

@@ -11,12 +11,15 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class PDUnix extends PathDesc {
 
     private File fileName;
     RandomAccessFile fp;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PDUnix.class);
     /**
      * Constructor.
      */
@@ -73,11 +76,14 @@ class PDUnix extends PathDesc {
         try {
             for (i = 0; i < size; i++) {
                 c = fp.readByte();
-                if (c == NEW_LINE) // Do conversion
+                if (c == NEW_LINE) {
                     c = CARRIAGE_RETURN;
+                }
                 buf[i] = c;
-                if (c == CARRIAGE_RETURN)
+                if (c == CARRIAGE_RETURN) {
+                    i++;
                     break;
+                }
             }
         } catch (IOException e) {
             errorcode = ErrCodes.E_EOF;
@@ -99,25 +105,10 @@ class PDUnix extends PathDesc {
             return -1;
         }
         return size;
-        /*
-        int inx;
-     
-        for (inx = 0; inx < size; inx++) {
-            if (fputc(buf[inx], fp) == -1) {
-                errorcode = ErrCodes.E_EOF;
-                break;
-            }
-        }
-        return inx;
-        */
-    /*
-     * Can I do this instead?
-        return fwrite((char*)buf,1, size, fp);
-     */
     }
 
-    /*
-     * Write buffer until CR is seen
+    /**
+     * Write buffer until CR is seen.
      * Only regular files here
      */
     @Override
@@ -125,10 +116,14 @@ class PDUnix extends PathDesc {
         int inx = 0;
      
 	try {
-	    for (inx = 0; inx < size;) {
-		fp.writeByte(buf[inx]);
-		if (buf[inx++] == CARRIAGE_RETURN)
+	    for (inx = 0; inx < size; inx++) {
+		if (buf[inx] == CARRIAGE_RETURN) {
+                    fp.writeByte(NEW_LINE);
+                    inx++;
 		    break;
+                } else {
+                    fp.writeByte(buf[inx]);
+                }
 	    }
         } catch (IOException e) {
             errorcode = ErrCodes.E_Write;
@@ -136,9 +131,6 @@ class PDUnix extends PathDesc {
 	return inx;
     }
 
-    /**
-     * Seek.
-     */
     @Override
     public int seek(int offset) {
         try {
@@ -152,8 +144,6 @@ class PDUnix extends PathDesc {
 
     @Override
     public void getstatus(OS9 cpu) {
-        //struct stat statbuf;
-     
         try {
             switch (cpu.b.intValue()) {
             case 0:  // Read/Write PD Options

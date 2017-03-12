@@ -89,8 +89,9 @@ class PDStdIn extends PathDesc {
      */
     @Override
     public int writeln(byte[] buf, int size) {
-        errorcode = ErrCodes.E_Write;
-        return -1;
+        //errorcode = ErrCodes.E_Write;
+        //return -1;
+        return size;
     }
 
     /**
