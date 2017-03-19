@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DevUnix extends DevDrvr {
+public class DevUnix extends DevDrvr {
 
     private String unixDir;
 

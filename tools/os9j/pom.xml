@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>roug.org.osnine</groupId>
+        <artifactId>tools</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>os9j</artifactId>
+    <packaging>jar</packaging>
+    <name>OS9j</name>
+
+    <properties>
+        <main.basedir>${project.basedir}/../..</main.basedir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>roug.org.osnine</groupId>
+            <artifactId>osnine-os9</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>CmdLine</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <id>copy files</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <loadproperties srcFile="${main.basedir}/${env}.properties" />
+                                <copy todir="${scripts.dir}" file="${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar"/>
+                                <copy todir="${scripts.dir}" overwrite="true">
+                                    <fileset dir="src/main/scripts"></fileset>
+                                    <filterchain>
+                                        <replacetokens>
+                                            <token key="JARFILE" value="${project.build.finalName}-jar-with-dependencies.jar" />
+                                        </replacetokens>
+                                    </filterchain>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+        </plugins>
+    </build>
+
+</project>

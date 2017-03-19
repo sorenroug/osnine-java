@@ -16,6 +16,7 @@ public class OS9 extends MC6809 {
     private static final int DefIOSiz = 12;
     private static final int MASK8BITS = 0xFF;
     private static final int BYTEWIDTH = 8;
+    private static final int PAGE_SIZE = 256;
 
     public static final int MAX_DEVS = 64;
     public static final int MAX_PIDS = 32;
@@ -118,7 +119,10 @@ public class OS9 extends MC6809 {
         y.set(0);
     }
 
-    void setPathDesc(int pathNum, PathDesc desc) {
+    /**
+     * Seed open paths of a process.
+     */
+    public void setPathDesc(int pathNum, PathDesc desc) {
         paths[pathNum] = desc;
     }
 
@@ -232,7 +236,17 @@ public class OS9 extends MC6809 {
      * @param prg - name of program
      */
     public void loadmodule(String prg) {
-        loadmodule(prg, "");
+        loadmodule(prg, "", 0);
+    }
+
+    /**
+     * Load a file into memory as a module including allocating a data area and
+     * creating a process descriptor.
+     *
+     * @param prg - name of program
+     */
+    public void loadmodule(String prg, String parm) {
+        loadmodule(prg, parm, 0);
     }
 
     /**
@@ -242,7 +256,7 @@ public class OS9 extends MC6809 {
      * @param prg - name of program
      * @param parm - parameters as a Java string.
      */
-    public void loadmodule(String prg, String parm) {
+    public void loadmodule(String prg, String parm, int memoryAllocation) {
         int moduleAddr;
 
         copyStringToMemory(0xfe00, prg);
@@ -253,37 +267,31 @@ public class OS9 extends MC6809 {
         moduleAddr = u.intValue();
         LOGGER.debug("f_load: {} {} {} {}", u, x, y, d);
 
+        debug("Module size: $%04X",  read_word((moduleAddr + ModuleConst.m_Size)));
+        debug("Execution offset: $%04X",  read_word((moduleAddr + ModuleConst.m_Exec)));
+        debug("Permanent storage size: $%04X",  read_word((moduleAddr + ModuleConst.m_Mem)));
+
 	// Set program counter
         pc.set(moduleAddr + read_word(moduleAddr + ModuleConst.m_Exec));
 
-        // Get memory for the data area
-        // Sect. 8.2: The U register will have the lower bound of the data memory
-        // area, and the DP register will contain its page number.
-        d.set(read_word(moduleAddr + ModuleConst.m_Mem));
-        LOGGER.debug("Allocating data space: {}", d);
-        f_srqmem(); // Request memory for data area. Returned in U
-        // Sect. 8.2: When the program is first entered, the Y register will
-        // have the address of the top of the process' data memory area.
-        int uppermem = u.intValue() + d.intValue();
-        y.set(uppermem);
-        LOGGER.debug("Upper memory: {} := {}", y, uppermem);
+        if (memoryAllocation == 0) {
+            memoryAllocation = read_word(moduleAddr + ModuleConst.m_Mem);
+        }
+        createInitialProcess(moduleAddr, memoryAllocation);
+
         // Load the argument vector and set registers
         // parm is not terminated with \r
         // Sect. 8.2: If the creating process passed a parameter area, it will
         // be located from the value of the SP to the top of memory (Y), and
         // the D register will contain the parameter area size in bytes.
-        //debug("Allocating parm space: %d", parm.length());
         d.set(parm.length());
         LOGGER.debug("Parm length: {}", d);
         s.set(y.intValue() - d.intValue());
         LOGGER.debug("Stack addr for parameter area: {}", s);
         copyStringToMemory(s.intValue(), parm);
-        debug("Module size: $%04X",  read_word((moduleAddr + ModuleConst.m_Size)));
-        debug("Execution offset: $%04X",  read_word((moduleAddr + ModuleConst.m_Exec)));
-        debug("Permanent storage size: $%04X",  read_word((moduleAddr + ModuleConst.m_Mem)));
+
         x.set(s.intValue());
         dp.set(u.intValue() >> BYTEWIDTH);
-        createInitialProcess(moduleAddr, d.intValue());
         cc.setF(0);
         cc.setI(0);
         LOGGER.debug("Loadmodule: {} {} {} {} {} {} {}", pc, u, dp, x, s, y, d);
@@ -553,7 +561,7 @@ public class OS9 extends MC6809 {
     }
 
     private int getWordFromBuffer(byte[] buf, int loc) {
-        return (buf[loc] & MASK8BITS) * 256 + (buf[loc + 1] & MASK8BITS);
+        return (buf[loc] & MASK8BITS) * PAGE_SIZE + (buf[loc + 1] & MASK8BITS);
     }
 
     /**
@@ -723,16 +731,112 @@ public class OS9 extends MC6809 {
      *   - (D) = Actual new memory area size in bytes.
      */
     void f_mem() {
-       if (d.intValue() == 0) {
-           y.set(topOfRealRAM);
-           d.set(topOfRealRAM - bottomOfRAM);
-       } else {
-       // FIXME: check that the program requests less than what we have
-           y.set(topOfRealRAM);
-           d.set(topOfRealRAM - bottomOfRAM);
-       }
+        Process currProc = getCurrentProcess();
+        int needPages = (d.intValue() + 255) / PAGE_SIZE;
+
+        if (d.intValue() == 0) {
+            int pages = currProc.getAllocatedPages();
+            int datapage = currProc.getUserAddress();
+            d.set(pages * PAGE_SIZE);
+            y.set((datapage + pages) * PAGE_SIZE);
+        } else {
+            int userAddress = currProc.getUserAddress();
+            int startPage;
+            if (userAddress == 0) { // Nothing allocated currently.
+                startPage = findPages(currProc, needPages);
+            } else {
+                startPage = expandPages(currProc, needPages);
+            }
+            if (startPage == 0) {
+                sys_error(ErrCodes.E_NoRam);
+            }
+        }
     }
 
+    /**
+     * Used when there is no allocation already.
+     * Side-effect: Marks bit in allocation table.
+     * Side-effect: Updates the process.
+     *  - OUTPUT:
+     *   - (Y) = Address of new memory area upper bound.
+     *   - (D) = Actual new memory area size in bytes.
+     * @return the starting location of the area in pages or 0.
+     */
+    private int findPages(Process currProc, int needPages) {
+        int foundPages = 0;
+
+        LOGGER.debug("findPages: {}", needPages);
+        for (int i = 0; i < 255; i++) {
+            if ((read(BITMAP_START + (i / 8)) & (0x80 >> (i % 8))) != 0) {
+                foundPages = 0;
+            } else {
+                foundPages++;
+            }
+
+            if (foundPages == needPages) {
+                int startPage = i - foundPages;
+                int org_x = x.intValue();
+                x.set(BITMAP_START);
+                d.set(startPage);
+                y.set(foundPages);
+                f_allbit();
+                currProc.setAllocatedPages(foundPages);
+                currProc.setUserAddress(startPage);
+                x.set(org_x);
+                d.set(foundPages * PAGE_SIZE);
+                y.set(i * PAGE_SIZE);
+                LOGGER.debug("findPages: {}", foundPages);
+                return startPage;
+            }
+        }
+        LOGGER.debug("findPages: nothing found");
+        return 0;
+    }
+
+    /**
+     * Used when there is an allocation already.
+     * Side-effect: Marks bit in allocation table.
+     * Side-effect: Updates the process.
+     *  - OUTPUT:
+     *   - (Y) = Address of new memory area upper bound.
+     *   - (D) = Actual new memory area size in bytes.
+     * @return the starting location of the area in pages or 0.
+     */
+    private int expandPages(Process currProc, int needPages) {
+        int foundPages = 0;
+        int userAddress = currProc.getUserAddress();
+        int hasPages = currProc.getAllocatedPages();
+        int expandFromPage = (userAddress / PAGE_SIZE) + needPages;
+        needPages -= hasPages;
+
+        LOGGER.debug("expandPages: {}", needPages);
+        for (int i = expandFromPage; i < 255; i++) {
+            if ((read(BITMAP_START + (i / 8)) & (0x80 >> (i % 8))) != 0) {
+                LOGGER.debug("expandPages: could not expand");
+                return 0;
+            } else {
+                foundPages++;
+            }
+
+            if (foundPages == needPages) {
+                int startPage = i - foundPages;
+                int org_x = x.intValue();
+                x.set(BITMAP_START);
+                d.set(startPage);
+                y.set(foundPages);
+                f_allbit();
+                currProc.setAllocatedPages(foundPages);
+                currProc.setUserAddress(startPage);
+                x.set(org_x);
+                d.set(foundPages * PAGE_SIZE);
+                y.set(i * PAGE_SIZE);
+                LOGGER.debug("expandPages: {}", foundPages);
+                return startPage;
+            }
+        }
+        LOGGER.debug("expandPages: nothing found");
+        return 0;
+    }
 
     /**
      * Mark pages of memory in bitmap. From and to are full addresses.
@@ -845,8 +949,7 @@ public class OS9 extends MC6809 {
 
         tmpcrc = (read(u.intValue()) << 16) + (read(u.intValue() + 1) << BYTEWIDTH) + read(u.intValue() + 2);
 
-        debug("f_crc: X=%04x Y=%04x DP=%02x\nU=%04x start=%lx",
-                 x.intValue(), y.intValue(), dp.intValue(), u.intValue(), tmpcrc);
+        LOGGER.debug("f_crc: {} {} {} {} start={}", x, y, dp, u, tmpcrc);
         buf = copyMemoryToBuffer(x, y);
         tmpcrc = compute_crc(tmpcrc, buf, y.intValue());
         write(u.intValue() + 0, (int) ((tmpcrc >> 16) & MASK8BITS));
@@ -930,23 +1033,23 @@ public class OS9 extends MC6809 {
      *   - (D) = Byte count rounded up to full page
      */
     void f_srqmem() {
-        int i, foundpages = 0;
-        int pages = (d.intValue() + 255) / 256;
+        int foundPages = 0;
+        int needPages = (d.intValue() + 255) / PAGE_SIZE;
 
         int org_x = x.intValue();
         int org_y = y.intValue();
         int org_d = (d.intValue() + 255) & 0xff00; // Round it up
         debug("f_srqmem: D=%04X", org_d);
         x.set(BITMAP_START);
-        for (i = 255; i >= 0; i--) {
+        for (int i = 255; i >= 0; i--) {
             if ((read(x.intValue() + (i / 8)) & (0x80 >> (i % 8))) != 0)
-                foundpages = 0;
+                foundPages = 0;
             else
-                foundpages++;
-            if (foundpages == pages) {
-                u.set(i * 256);
+                foundPages++;
+            if (foundPages == needPages) {
+                u.set(i * PAGE_SIZE);
                 d.set(i);
-                y.set(pages);
+                y.set(needPages);
                 f_allbit();
                 d.set(org_d);
                 x.set(org_x);
@@ -974,7 +1077,7 @@ public class OS9 extends MC6809 {
         org_y = y.intValue();
         org_d = d.intValue();
         x.set(BITMAP_START);
-        y.set((d.intValue() + 255) / 256);
+        y.set((d.intValue() + 255) / PAGE_SIZE);
         d.set(u.intValue() >> BYTEWIDTH);
         f_delbit();
         x.set(org_x);
@@ -1000,6 +1103,7 @@ public class OS9 extends MC6809 {
      *  - (A) = Block number
      *  - (X) = Base address of page table
      *  - (Y) = Address of block.
+     *  FIXME: Allocate from bottom of memory to allow processes to expand or allocate before 1st process.
      */
     void f_all64() {
         int org_u;
@@ -1029,8 +1133,10 @@ public class OS9 extends MC6809 {
         a.set(org_a);
         if (x.intValue() == 0)
             x.set(u.intValue());
-        write(x.intValue() + a.intValue() / 4, u.intValue() >> BYTEWIDTH); // Write MSB of x to page table;
-        y.set((read(x.intValue() + a.intValue() / 4) << BYTEWIDTH) + (a.intValue() % 4) * 64);
+        // Write MSB of x to page table;
+        write(x.intValue() + a.intValue() / 4, u.intValue() >> BYTEWIDTH);
+        y.set((read(x.intValue() + a.intValue() / 4) << BYTEWIDTH)
+                                + (a.intValue() % 4) * 64);
         u.set(org_u);
     }
 
@@ -1047,7 +1153,8 @@ public class OS9 extends MC6809 {
      * I don't really know what to do here.
      */
     void f_ret64() {
-        y.set((read(x.intValue() + a.intValue() / 4) << BYTEWIDTH) + (a.intValue() % 4) * 64);
+        y.set((read(x.intValue() + a.intValue() / 4) << BYTEWIDTH)
+                                + (a.intValue() % 4) * 64);
         if (y.intValue() == 0)  // No more blocks. Error.
             return;
         write(y, 0);   // Clear the dirty flag.
@@ -1111,34 +1218,31 @@ public class OS9 extends MC6809 {
      * D_Proc contains the current I/O process.
      *
      * @param moduleStart - The memory address of the module the process executes
-     * @param allocatedMemory - Memory allocation in pages
+     * @param memoryToAllocate - Memory allocation in pages
      */
-    private void createInitialProcess(int moduleStart, int allocatedMemory) {
-        //int tmpx = x.intValue();
-        //x.set(read_word(DPConst.D_PrcDBT));  // 73- Process descriptor block address
-        //f_all64();                // Allocate the process descriptor
-        //write_word(DPConst.D_PrcDBT, x.intValue());
-
-        //int procAddr = y.intValue();
-
+    private void createInitialProcess(int moduleStart, int memoryToAllocate) {
         Process p = new Process(this, null);
         int procId = p.getProcessId();
         processes[procId] = p;
         int procAddr = p.getProcessBlock();
-        //write(procAddr + PDConst.p_ID,  processId);      // Write process ID
-        //write(procAddr + PDConst.p_PID,  getParentProcID(0));     // Write process parent ID - What is the parent of #1?
-        //write_word(procAddr + PDConst.p_SP, s.intValue());  // Write stack pointer
         p.setStackPointer(s.intValue());
-    //    write(procAddr + PDConst.p_ADDR, dp.intValue());  // user address beginning page number
-        p.setAllocatedPages(allocatedMemory >> BYTEWIDTH);
+        p.setAllocatedPages(memoryToAllocate >> BYTEWIDTH);
         p.setPriority(100);
         p.setUserId(getuid());  // Write user id
         p.setModuleStart(moduleStart);
-        //write(procAddr + PDConst.p_PagCnt, allocatedMemory >> BYTEWIDTH);  // Memory allocation in pages (Upper half of acc D).
-        //write(procAddr + PDConst.p_Prior,  100); // Write process priority
-        //write_word(procAddr + PDConst.p_User, getuid());  // Write user id
-        //write_word(procAddr + PDConst.p_PModul, moduleStart);  // Module start
-        //x.set(tmpx);
+
+        // Get memory for the data area
+        // Sect. 8.2: The U register will have the lower bound of the data memory
+        // area, and the DP register will contain its page number.
+        d.set(memoryToAllocate);
+        LOGGER.debug("Allocating data space: {}", d);
+        //FIXME: Replace with f_mem - Create process first
+        f_srqmem(); // Request memory for data area. Returned in U
+        // Sect. 8.2: When the program is first entered, the Y register will
+        // have the address of the top of the process' data memory area.
+        int uppermem = u.intValue() + d.intValue();
+        y.set(uppermem);
+        LOGGER.debug("Upper memory: {}", y);
 
         write_word(DPConst.D_AProcQ, procAddr);  // D_AProcQ -- Write proces to Active process queue
         write_word(DPConst.D_WProcQ, 0);  // Write null to the Wait process queue
@@ -1150,9 +1254,9 @@ public class OS9 extends MC6809 {
      * Create a new process and link it into the active queue.
      *
      * @param moduleStart - The memory address of the module the process executes
-     * @param allocatedMemory - Memory allocation in pages
+     * @param memoryToAllocate - Memory allocation in pages
      */
-    private void createNewProcess(int moduleStart, int allocatedMemory, int parentProcAddr) {
+    private void createNewProcess(int moduleStart, int memoryToAllocate, int parentProcAddr) {
         int tmpx = x.intValue();
         x.set(read_word(DPConst.D_PrcDBT));  // 73- Process descriptor block address
         f_all64();                // Allocate the process descriptor
@@ -1165,7 +1269,7 @@ public class OS9 extends MC6809 {
         write(procAddr + PDConst.p_PID,  getParentProcID(parentProcAddr));
         write_word(procAddr + PDConst.p_SP, s.intValue());  // Write stack pointer
     //    write(procAddr + PDConst.p_ADDR, dp.intValue());  // user address beginning page number
-        write(procAddr + PDConst.p_PagCnt, allocatedMemory >> BYTEWIDTH);  // Memory allocation in pages (Upper half of acc D).
+        write(procAddr + PDConst.p_PagCnt, memoryToAllocate >> BYTEWIDTH);  // Memory allocation in pages (Upper half of acc D).
         write(procAddr + PDConst.p_Prior,  100); // Write process priority
         write_word(procAddr + PDConst.p_User, getuid());  // Write user id
         write_word(procAddr + PDConst.p_PModul, moduleStart);  // Module start
@@ -1202,7 +1306,8 @@ public class OS9 extends MC6809 {
     }
 
     /**
-     * Return the process id from the parent process block, or 0 if there is no parent.
+     * Return the process id from the parent process block, or 0 if there is
+     * no parent.
      */
     private int getParentProcID(int parentProcAddr) {
         if (parentProcAddr == 0) {
@@ -1323,7 +1428,8 @@ public class OS9 extends MC6809 {
 
         LOGGER.debug("f_prsnam: {}", x);
 
-        if (read(tmpX) == '/' || Character.isLetterOrDigit(read(tmpX)) || read(tmpX) == '_' || read(tmpX) == '.') {
+        if (read(tmpX) == '/' || Character.isLetterOrDigit(read(tmpX))
+                || read(tmpX) == '_' || read(tmpX) == '.') {
             p = tmpX;
 
             while (read(p) == '/') { // Skip slash(es)
@@ -1469,7 +1575,8 @@ public class OS9 extends MC6809 {
         boolean useXDir = (a.intValue() & 4) == 4;
         x.set(x.intValue() + getpath(x, upath, useXDir));
 
-        debug("i_open: %s (%s) mode %03o", upath.toString(), create ? "create" : "open", tmpMode);
+        debug("i_open: %s (%s) mode %03o", upath.toString(),
+                create ? "create" : "open", tmpMode);
 
         dev = find_device(upath.toString());
         if (dev == null) {
@@ -1658,7 +1765,7 @@ public class OS9 extends MC6809 {
      */
     public void i_wrln() {
         byte[] buf;
-        debug("i_wrln: FD=%d y=%d x=%04x %c%c%c...", a.intValue(), y.intValue(), x.intValue(),
+        debug("i_wrln: FD=%d Y=%d X=%04x %c%c%c...", a.intValue(), y.intValue(), x.intValue(),
                   read(x.intValue()), read(x.intValue() + 1), read(x.intValue() + 2));
         getPathDesc(a).setErrorCode(0);
         buf = copyMemoryToBuffer(x, y);
@@ -1671,7 +1778,7 @@ public class OS9 extends MC6809 {
      */
     public void i_write() {
         byte[] buf;
-        debug("i_write: FD=%d y=%d x=%04x %c%c%c...", a.intValue(), y.intValue(), x.intValue(),
+        debug("i_write: FD=%d Y=%d X=%04x %c%c%c...", a.intValue(), y.intValue(), x.intValue(),
               read(x.intValue()), read(x.intValue() + 1), read(x.intValue() + 2));
         getPathDesc(a).setErrorCode(0);
         buf = copyMemoryToBuffer(x, y);
@@ -1803,7 +1910,7 @@ public class OS9 extends MC6809 {
                 f_crc();
                 break;
 
-            case 0x2c:             // F$AProc
+            case 0x2c:
                 f_aproc();
                 break;
 
@@ -1812,10 +1919,10 @@ public class OS9 extends MC6809 {
                 break;
 
             case 0x83:
-                i_crea();          // I$Crea
+                i_crea();
                 break;
 
-            case 0x84:              // I$Open
+            case 0x84:
                 i_open();
                 break;
 

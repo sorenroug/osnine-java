@@ -4,7 +4,7 @@ import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 
-class DevDrvTerm extends DevDrvr {
+public class DevDrvTerm extends DevDrvr {
 
     /* The UNIX device it coresponds to -- like /dev/tty */
     private String device;

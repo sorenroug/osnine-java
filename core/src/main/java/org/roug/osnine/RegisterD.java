@@ -26,6 +26,7 @@ public class RegisterD extends Word implements Register {
      * Constructor.
      */
     public RegisterD(int value) {
+        super("D");
         this.regA = new UByte("A");
         this.regB = new UByte("B");
         set(value);
@@ -35,6 +36,7 @@ public class RegisterD extends Word implements Register {
      * Constructor.
      */
     public RegisterD(UByte regA, UByte regB) {
+        super("D");
         this.regA = regA;
         this.regB = regB;
     }
@@ -93,10 +95,11 @@ public class RegisterD extends Word implements Register {
         set(value);
     }
 
+/*
     @Override
     public String toString() {
-        return "[" + registerName + "]:" + Integer.toHexString(intValue());
+        return registerName + "=" + Integer.toHexString(intValue());
     }
-
+*/
 }
 

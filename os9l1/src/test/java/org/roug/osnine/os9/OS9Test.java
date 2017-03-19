@@ -2,6 +2,7 @@ package org.roug.osnine.os9;
 
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 /**
@@ -151,6 +152,27 @@ public class OS9Test {
 //      assertEquals(0xAA, result);
     }
 
+    /**
+     * Load module and increase memory.
+     */
+    @Test
+    public void extendDummyMod() {
+        OS9 cpu = new OS9();
+        String driveLocation = System.getProperty("outputDirectory");
+        cpu.setDebugCalls(1);
+        cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
+        cpu.setInitialCXD("/dd");
+        assertFalse(cpu.cc.isSetC());
+        cpu.loadmodule("dummymodule.mod");
+        cpu.d.set(0x0600);
+        cpu.f_mem();
+        assertEquals(0x0600, cpu.d.intValue());
+        assertFalse(cpu.cc.isSetC());
+        // Try to ask with D=0
+        cpu.d.set(0x0);
+        cpu.f_mem();
+        assertEquals(0x0600, cpu.d.intValue());
+    }
 
     /**
      * Test allocation.

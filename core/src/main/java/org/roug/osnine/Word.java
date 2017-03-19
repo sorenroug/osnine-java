@@ -105,7 +105,7 @@ public class Word implements Register {
 
     @Override
     public String toString() {
-        return "[" + registerName + "]:" + Integer.toHexString(intValue());
+        return registerName + "=" + Integer.toHexString(intValue());
     }
 
 }

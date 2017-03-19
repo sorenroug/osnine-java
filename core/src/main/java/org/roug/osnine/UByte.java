@@ -76,7 +76,7 @@ public class UByte implements Register {
 
     @Override
     public String toString() {
-        return "[" + registerName + "]:" + Integer.toHexString(value);
+        return registerName + "=" + Integer.toHexString(value);
     }
 
     /**

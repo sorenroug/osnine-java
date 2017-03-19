@@ -93,6 +93,24 @@ public class Process {
         kernel.write_word(procAddr + PDConst.p_User, userid);  // Write user id
     }
 
+    /**
+     * Guessing that this variable contains the address of the process data area.
+     */
+    int getUserAddress() {
+        return kernel.read(procAddr + PDConst.p_ADDR);
+    }
+
+    /**
+     * Guessing that this variable contains the address of the process data area.
+     */
+    void setUserAddress(int userAddress) {
+        kernel.write(procAddr + PDConst.p_ADDR, userAddress);
+    }
+
+    int getAllocatedPages() {
+        return kernel.read(procAddr + PDConst.p_PagCnt);
+    }
+
     void setAllocatedPages(int allocatedPages) {
         kernel.write(procAddr + PDConst.p_PagCnt, allocatedPages);  // Memory allocation in pages (Upper half of acc D).
     }

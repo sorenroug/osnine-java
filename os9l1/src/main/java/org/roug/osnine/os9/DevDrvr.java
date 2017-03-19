@@ -1,7 +1,7 @@
 package org.roug.osnine.os9;
 
 /**
- * The DevDrvr class is a base class for virtual devices
+ * The DevDrvr class is a base class for virtual devices.
  * The methods expect pathnames that are relative to the mount pount
  * and without leading slash.
  */

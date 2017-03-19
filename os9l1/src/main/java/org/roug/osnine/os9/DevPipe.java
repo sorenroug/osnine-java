@@ -5,7 +5,7 @@ import java.nio.channels.Pipe;
 /**
  * Implementation of OS9 pipes.
  */
-class DevPipe extends DevDrvr {
+public class DevPipe extends DevDrvr {
 
     public DevPipe(final String mntpnt, final String args) {
 	super(mntpnt);

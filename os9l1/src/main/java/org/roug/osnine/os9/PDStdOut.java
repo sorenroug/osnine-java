@@ -5,13 +5,17 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A path descriptor that wraps the Java stdout and stderr.
  */
-class PDStdOut extends PathDesc {
+public class PDStdOut extends PathDesc {
 
     PrintStream fp;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PDStdOut.class);
 
     public PDStdOut(PrintStream fp) {
         super();
@@ -34,6 +38,7 @@ class PDStdOut extends PathDesc {
 
     @Override
     public int read(byte[] buf, int size) {
+        LOGGER.warn("Reading binary from stdout");
         return -1;
     }
 
@@ -46,6 +51,7 @@ class PDStdOut extends PathDesc {
      */
     @Override
     public int readln(byte[] buf, int size) {
+        LOGGER.warn("Reading text from stdout");
         return -1;
     }
 

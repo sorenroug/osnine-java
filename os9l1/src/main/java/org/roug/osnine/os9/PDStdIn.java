@@ -5,10 +5,14 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class PDStdIn extends PathDesc {
+public class PDStdIn extends PathDesc {
 
-    InputStream fp;
+    private InputStream fp;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PDStdIn.class);
 
     public PDStdIn(InputStream ifp) {
         super();
@@ -80,6 +84,7 @@ class PDStdIn extends PathDesc {
     @Override
     public int write(byte[] buf, int size) {
         errorcode = ErrCodes.E_Write;
+        LOGGER.warn("Writing binary to stdin");
         return -1;
     }
 
@@ -91,7 +96,21 @@ class PDStdIn extends PathDesc {
     public int writeln(byte[] buf, int size) {
         //errorcode = ErrCodes.E_Write;
         //return -1;
-        return size;
+        int crLoc = findCR(buf, size);
+        LOGGER.warn("Writing to stdin: {}", new String(buf, 0, crLoc));
+        return Math.min(crLoc + 1, size);
+    }
+
+    /**
+     * Return the location of the carriage return (0-based) or max size.
+     */
+    private int findCR(byte[] buf, int maxsize) {
+        for (int i = 0; i < maxsize; i++) {
+            if (buf[i] == CARRIAGE_RETURN) {
+                return i;
+            }
+        }
+        return maxsize;
     }
 
     /**
