@@ -101,7 +101,7 @@ public class Process {
     }
 
     /**
-     * Guessing that this variable contains the address of the process data area.
+     * Guessing that this variable contains the address of the process data area in pages.
      */
     void setUserAddress(int userAddress) {
         kernel.write(procAddr + PDConst.p_ADDR, userAddress);

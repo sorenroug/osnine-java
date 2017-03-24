@@ -164,14 +164,27 @@ public class OS9Test {
         cpu.setInitialCXD("/dd");
         assertFalse(cpu.cc.isSetC());
         cpu.loadmodule("dummymodule.mod");
+        Process currProc = cpu.getCurrentProcess();
+        int userdata = currProc.getUserAddress();
+        assertEquals(0, userdata);
         cpu.d.set(0x0600);
         cpu.f_mem();
         assertEquals(0x0600, cpu.d.intValue());
         assertFalse(cpu.cc.isSetC());
+        userdata = currProc.getUserAddress();
+        assertFalse(userdata == 0);
+
         // Try to ask with D=0
         cpu.d.set(0x0);
         cpu.f_mem();
         assertEquals(0x0600, cpu.d.intValue());
+
+        // Extend to 0x0800
+        cpu.d.set(0x0800);
+        cpu.f_mem();
+        assertEquals(0x0800, cpu.d.intValue());
+        int newuserdata = currProc.getUserAddress();
+        assertEquals(userdata, newuserdata);
     }
 
     /**

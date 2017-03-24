@@ -731,6 +731,7 @@ public class OS9 extends MC6809 {
      *   - (D) = Actual new memory area size in bytes.
      */
     void f_mem() {
+        LOGGER.debug("f_mem: {}", d);
         Process currProc = getCurrentProcess();
         int needPages = (d.intValue() + 255) / PAGE_SIZE;
 
@@ -785,7 +786,7 @@ public class OS9 extends MC6809 {
                 x.set(org_x);
                 d.set(foundPages * PAGE_SIZE);
                 y.set(i * PAGE_SIZE);
-                LOGGER.debug("findPages: {}", foundPages);
+                LOGGER.debug("findPages: {} {} {}", foundPages, d, y);
                 return startPage;
             }
         }
@@ -806,10 +807,10 @@ public class OS9 extends MC6809 {
         int foundPages = 0;
         int userAddress = currProc.getUserAddress();
         int hasPages = currProc.getAllocatedPages();
-        int expandFromPage = (userAddress / PAGE_SIZE) + needPages;
+        int expandFromPage = userAddress + hasPages + 1;
         needPages -= hasPages;
 
-        LOGGER.debug("expandPages: {}", needPages);
+        LOGGER.debug("expandPages: user address: {} get {} from page {}", userAddress, needPages, expandFromPage);
         for (int i = expandFromPage; i < 255; i++) {
             if ((read(BITMAP_START + (i / 8)) & (0x80 >> (i % 8))) != 0) {
                 LOGGER.debug("expandPages: could not expand");
@@ -825,12 +826,12 @@ public class OS9 extends MC6809 {
                 d.set(startPage);
                 y.set(foundPages);
                 f_allbit();
-                currProc.setAllocatedPages(foundPages);
-                currProc.setUserAddress(startPage);
+                currProc.setAllocatedPages(hasPages + foundPages);
+                //currProc.setUserAddress(startPage);
                 x.set(org_x);
-                d.set(foundPages * PAGE_SIZE);
+                d.set((hasPages + foundPages) * PAGE_SIZE);
                 y.set(i * PAGE_SIZE);
-                LOGGER.debug("expandPages: {}", foundPages);
+                LOGGER.debug("expandPages: {} {} {}", foundPages, d, y);
                 return startPage;
             }
         }
