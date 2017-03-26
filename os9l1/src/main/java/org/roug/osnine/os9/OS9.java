@@ -729,6 +729,7 @@ public class OS9 extends MC6809 {
      *  - OUTPUT:
      *   - (Y) = Address of new memory area upper bound.
      *   - (D) = Actual new memory area size in bytes.
+     * FIXME: Must be able to shrink data space as well.
      */
     void f_mem() {
         LOGGER.debug("f_mem: {}", d);
@@ -918,6 +919,8 @@ public class OS9 extends MC6809 {
     }
 
     private static final long CRC24_POLY = 0x800063L;
+    public static final long CRC24_CHCK = 0x800FE3L;
+    public static final long CRC24_SEED = 0xFFFFFFL;
 
 
     /**
@@ -932,7 +935,7 @@ public class OS9 extends MC6809 {
                     crc ^= CRC24_POLY;
             }
         }
-        return crc & 0xffffffL;
+        return crc & CRC24_SEED;
     }
 
     /**
@@ -1226,6 +1229,7 @@ public class OS9 extends MC6809 {
         int procId = p.getProcessId();
         processes[procId] = p;
         int procAddr = p.getProcessBlock();
+        write_word(DPConst.D_Proc, procAddr);    // 0x4B - 75 - Current Process descriptor address
         p.setStackPointer(s.intValue());
         p.setAllocatedPages(memoryToAllocate >> BYTEWIDTH);
         p.setPriority(100);
@@ -1237,18 +1241,14 @@ public class OS9 extends MC6809 {
         // area, and the DP register will contain its page number.
         d.set(memoryToAllocate);
         LOGGER.debug("Allocating data space: {}", d);
-        //FIXME: Replace with f_mem - Create process first
-        f_srqmem(); // Request memory for data area. Returned in U
-        // Sect. 8.2: When the program is first entered, the Y register will
-        // have the address of the top of the process' data memory area.
-        int uppermem = u.intValue() + d.intValue();
-        y.set(uppermem);
+        f_mem(); //(Y) = Address of new memory area upper bound.
         LOGGER.debug("Upper memory: {}", y);
+        dp.set(p.getUserAddress());
+        u.set(dp.intValue() << BYTEWIDTH);
 
         write_word(DPConst.D_AProcQ, procAddr);  // D_AProcQ -- Write proces to Active process queue
         write_word(DPConst.D_WProcQ, 0);  // Write null to the Wait process queue
         write_word(DPConst.D_SProcQ, 0);  // Write null to the Sleep process queue
-        write_word(DPConst.D_Proc, procAddr);    // 0x4B - 75 - Current Process descriptor address
     }
 
     /**

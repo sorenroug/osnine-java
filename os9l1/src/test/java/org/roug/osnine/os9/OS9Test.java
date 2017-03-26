@@ -163,10 +163,16 @@ public class OS9Test {
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
         cpu.setInitialCXD("/dd");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("dummymodule.mod");
+        cpu.loadmodule("progmodule");
         Process currProc = cpu.getCurrentProcess();
         int userdata = currProc.getUserAddress();
-        assertEquals(0, userdata);
+        assertEquals(7, userdata);
+        // Try to ask with D=0
+        cpu.d.set(0x0);
+        cpu.f_mem();
+        assertEquals(0x0400, cpu.d.intValue());
+
+        // Extend to 0x600 bytes
         cpu.d.set(0x0600);
         cpu.f_mem();
         assertEquals(0x0600, cpu.d.intValue());

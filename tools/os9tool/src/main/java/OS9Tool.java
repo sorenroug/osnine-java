@@ -20,6 +20,8 @@ public class OS9Tool {
             Ident.main(extraArgs);
         } else if ("diskinfo".equals(subCommand)) {
             DiskInfo.main(extraArgs);
+        } else if ("createmodule".equals(subCommand)) {
+            CreateModule cm = new CreateModule(extraArgs);
         } else {
             usage("Unknown subcommand: " + subCommand);
         }

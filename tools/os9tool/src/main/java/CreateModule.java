@@ -8,13 +8,20 @@ import org.roug.osnine.os9.OS9;
  * This class takes a file and makes it into a memory module.
  * The default module type is Data.
  * Arguments:
- * -o output file
- * -t module type
+ * -a attributes
+ * -f input file
+ * -m memory requirement
  * -n module name
- * -x Execution offset
+ * -o output file
+ * -r revision number - default 0
+ * -t module type
+ * -x execution offset
  * -m memory requirement
  */
 public class CreateModule {
+
+    private final static String[] typeCodes = { "program", "subroutine", "multi", "data" };
+    private final static String[] langCodes = { "data", "object", "basic09", "pascal", "c", "cobol", "fortran" };
 
     /** List of unrecognized command line arguments. */
     private String[] extraArguments = new String[0];
@@ -24,7 +31,15 @@ public class CreateModule {
 
     private String moduleName = "NoName";
 
+    /** Module type: program, subroutine, multi or data module. */
     private int moduleType = 4;
+
+    /** Module language: data, object, basic09, pascal, C, COBOL or Fortran. */
+    private int moduleLang = 0;
+
+    private int moduleRevision = 1;
+
+    private int moduleAttributes = 0;
 
     /** Buffer to build module. Can max be 65536 bytes. */
     private byte[] module = new byte[0x10000];
@@ -49,20 +64,55 @@ public class CreateModule {
         long fileSize = 0L;
         FileInputStream inputStream = null;
 
-        OptionParser op = new OptionParser(args, "f:o:t:n:s:");
+        OptionParser op = new OptionParser(args, "a:e:f:l:m:n:o:r:s:t:x:");
 
         outputFilePath = op.getOptionArgument("o");
         if ("-".equals(outputFilePath)) {
             outputFilePath = null; // Linux convention
         }
 
+        String mArg = op.getOptionArgument("m");
+        if (mArg != null) {
+            memoryRequirement = Integer.decode(mArg);
+            moduleType = 1;
+            moduleLang = 1;
+            moduleAttributes |= 0x80;
+        }
+
+        String xArg = op.getOptionArgument("x");
+        if (xArg != null) {
+            executionOffset = Integer.decode(xArg);
+            moduleType = 1;
+            moduleLang = 1;
+            moduleAttributes |= 0x80;
+        }
+
         String tArg = op.getOptionArgument("t");
         if (tArg != null) {
-            moduleType = Integer.valueOf(tArg);
+            moduleType = Integer.decode(tArg);
         }
+
+        String lArg = op.getOptionArgument("l");
+        if (lArg != null) {
+            moduleLang = Integer.decode(lArg);
+        }
+
         String nArg = op.getOptionArgument("n");
         if (nArg != null) {
             moduleName = nArg;
+        }
+
+        String aArg = op.getOptionArgument("a");
+        if (aArg != null) {
+            if ("sharable".equalsIgnoreCase(aArg) || "reentrant".equalsIgnoreCase(aArg)) {
+                moduleAttributes |= 0x80;
+            } else {
+                try {
+                    moduleAttributes = Integer.decode(aArg).intValue();
+                } catch (NumberFormatException m) {
+                    throw new RuntimeException("Atribute value must be number 128 or 'sharable'");
+                }
+            }
         }
 
 //      extraArguments = op.getUnusedArguments();
@@ -71,8 +121,16 @@ public class CreateModule {
 //      }
         String inputFilePath = op.getOptionArgument("f");
         if (inputFilePath != null) {
-            inputStream = new FileInputStream(extraArguments[0]);
+            inputStream = new FileInputStream(inputFilePath);
             fileSize = inputStream.getChannel().size();
+        }
+
+        String rArg = op.getOptionArgument("r");
+        if (rArg != null) {
+            moduleRevision = Integer.decode(rArg);
+            if (moduleRevision < 0 || moduleRevision > 15) {
+                throw new RuntimeException("Revision must be from 0 to 15");
+            }
         }
 
         String sizeArg = op.getOptionArgument("s");
@@ -87,8 +145,8 @@ public class CreateModule {
 
         write_word(0, 0x87CD);
         write_word(2, calculateModuleSize((int) fileSize));
-        write_byte(6, moduleType << 4); // Type / language
-        write_byte(7, 0); // Attributes / revision
+        write_byte(6, moduleType << 4 | moduleLang);
+        write_byte(7, moduleAttributes | moduleRevision);
         writeParity();
         int moduleSize = 9;
         if (moduleType == 1) {

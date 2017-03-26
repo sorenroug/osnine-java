@@ -26,11 +26,11 @@ public class CRCTest {
      */
     @Test
     public void nullSize() {
-        long crc = 0xFFFFFFL;
+        long crc = OS9.CRC24_SEED;
         byte[] octets = { 0 };
         OS9 cpu = new OS9();
         long result = cpu.compute_crc(crc, octets, 0);
-        assertEquals(0xFFFFFFL, result);
+        assertEquals(OS9.CRC24_SEED, result);
     }
 
     /**
@@ -38,7 +38,7 @@ public class CRCTest {
      */
     @Test
     public void nullByte() {
-        long crc = 0xFFFFFFL;
+        long crc = OS9.CRC24_SEED;
         byte[] octets = { 0 };
         OS9 cpu = new OS9();
         long result = cpu.compute_crc(crc, octets, 1);
@@ -50,10 +50,10 @@ public class CRCTest {
      */
     @Test
     public void testD0() {
-        long crc = 0xFFFFFFL;
+        long crc = OS9.CRC24_SEED;
         OS9 cpu = new OS9();
         long result = cpu.compute_crc(crc, D0_OCTETS, D0_OCTETS.length);
-        assertEquals(0x800FE3L, result);
+        assertEquals(OS9.CRC24_CHCK, result);
     }
 
     /**
