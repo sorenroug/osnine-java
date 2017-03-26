@@ -34,6 +34,9 @@ public class CreateModule {
     /** Module type: program, subroutine, multi or data module. */
     private int moduleType = 4;
 
+    /** Module edition is placed behind the name of the module. */
+    private int moduleEdition = 0;
+
     /** Module language: data, object, basic09, pascal, C, COBOL or Fortran. */
     private int moduleLang = 0;
 
@@ -102,6 +105,11 @@ public class CreateModule {
             moduleName = nArg;
         }
 
+        String eArg = op.getOptionArgument("e");
+        if (eArg != null) {
+            moduleEdition = Integer.decode(eArg);
+        }
+
         String aArg = op.getOptionArgument("a");
         if (aArg != null) {
             if ("sharable".equalsIgnoreCase(aArg) || "reentrant".equalsIgnoreCase(aArg)) {
@@ -157,6 +165,8 @@ public class CreateModule {
         write_word(4, moduleSize); // Module name offset
         writeString(moduleSize, moduleName);
         moduleSize += moduleName.length();
+        write_byte(moduleSize, moduleEdition);
+        moduleSize++;
         if (inputStream != null) {
             inputStream.read(module, moduleSize, (int)fileSize);
             inputStream.close();

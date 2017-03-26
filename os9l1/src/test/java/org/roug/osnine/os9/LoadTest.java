@@ -21,7 +21,7 @@ public class LoadTest {
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
         cpu.setInitialCXD("/dd");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("dummymodule.mod");
+        cpu.loadmodule("progmodule");
         if (cpu.cc.isSetC()) {
             System.out.println(Util.getErrorMessage(cpu.b.intValue()));
         }
@@ -58,7 +58,7 @@ public class LoadTest {
         cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
         cpu.setInitialCXD("/dd");
         assertFalse(cpu.cc.isSetC());
-        cpu.loadmodule("dummymodule.mod", "THIS IS THE ARGUMENT");
+        cpu.loadmodule("progmodule", "THIS IS THE ARGUMENT");
         if (cpu.cc.isSetC()) {
             System.out.println(Util.getErrorMessage(cpu.b.intValue()));
         }

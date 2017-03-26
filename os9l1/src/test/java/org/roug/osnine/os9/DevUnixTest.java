@@ -17,7 +17,7 @@ public class DevUnixTest {
         String driveLocation = System.getProperty("outputDirectory");
         System.out.println(driveLocation);
         DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
-        PathDesc pd = dev.open("/dd/dummymodule.mod", AccessCodes.READ, false);
+        PathDesc pd = dev.open("/dd/datamodule", AccessCodes.READ, false);
         //System.out.println(Util.getErrorMessage(dev.getErrorCode()));
         assertNotNull(pd);
         byte[] buf = new byte[100];
