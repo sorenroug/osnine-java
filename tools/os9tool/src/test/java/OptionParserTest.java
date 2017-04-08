@@ -30,6 +30,21 @@ public class OptionParserTest {
     }
 
     @Test
+    public void unusedArguments2() throws IllegalArgumentException {
+        String[] args = {"-x", "--", "file1", "-y", "file2"};
+        OptionParser op = new OptionParser(args, "xyz");
+        assertEquals("", op.getOptionArgument("x"));
+        assertNull(op.getOptionArgument("y"));
+        assertNull(op.getOptionArgument("z"));
+
+        String[] unused = op.getUnusedArguments();
+        assertEquals("file1", unused[0]);
+        assertEquals("-y", unused[1]);
+        assertEquals("file2", unused[2]);
+        assertEquals(3, unused.length);
+    }
+
+    @Test
     public void unsetPlainOption() throws IllegalArgumentException {
         String[] args = {"-f", "-o", "argumentO"};
         OptionParser op = new OptionParser(args, "o:fu");

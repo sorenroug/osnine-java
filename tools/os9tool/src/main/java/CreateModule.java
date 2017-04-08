@@ -20,7 +20,7 @@ import org.roug.osnine.os9.OS9;
  */
 public class CreateModule {
 
-    private final static String[] typeCodes = { "program", "subroutine", "multi", "data" };
+    private final static String[] typeCodes = { "???", "program", "subroutine", "multi", "data" };
     private final static String[] langCodes = { "data", "object", "basic09", "pascal", "c", "cobol", "fortran" };
 
     /** List of unrecognized command line arguments. */

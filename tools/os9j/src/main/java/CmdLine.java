@@ -23,6 +23,15 @@ public class CmdLine {
      * 
      */
     public static void main(String[] args) throws Exception {
+        int memoryAlloc = 0;
+        OptionParser op = new OptionParser(args, "m:");
+
+        String memoryArg = op.getOptionArgument("m");
+        if (memoryArg != null) {
+            memoryAlloc = Integer.decode(memoryArg);
+        }
+        String[] extraArguments = op.getUnusedArguments();
+
         OS9 cpu = new OS9();
 
         MC6850 uart = new MC6850(0xb000);
@@ -32,11 +41,11 @@ public class CmdLine {
 	// Load the configuration file
 	loadrcfile(cpu);
 
-        String parm = createParm(args);
-        String command = (args.length == 0) ? "shell" : args[0];
+        String parm = createParm(extraArguments);
+        String command = (extraArguments.length == 0) ? "shell" : extraArguments[0];
         cpu.setInitialCWD("/h0");
         cpu.setInitialCXD("/dd/CMDS");
-        cpu.loadmodule(command, parm);
+        cpu.loadmodule(command, parm, memoryAlloc);
         // Set up stdin, stdout and stderr.
         cpu.setPathDesc(0, new PDStdIn(System.in));
         cpu.setPathDesc(1, new PDStdOut(System.out));
