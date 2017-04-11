@@ -24,18 +24,24 @@ public class CmdLine {
      */
     public static void main(String[] args) throws Exception {
         int memoryAlloc = 0;
-        OptionParser op = new OptionParser(args, "m:");
+        OptionParser op = new OptionParser(args, "m:ou");
 
         String memoryArg = op.getOptionArgument("m");
         if (memoryArg != null) {
             memoryAlloc = Integer.decode(memoryArg);
         }
+        if (op.getOptionFlag('o')) {
+            DevUnix.setUNIXSemantics(false);
+        }
+        if (op.getOptionFlag('u')) {
+            DevUnix.setUNIXSemantics(true);
+        }
         String[] extraArguments = op.getUnusedArguments();
 
         OS9 cpu = new OS9();
 
-        MC6850 uart = new MC6850(0xb000);
-        cpu.addMemorySegment(uart);
+//      MC6850 uart = new MC6850(0xb000);
+//      cpu.addMemorySegment(uart);
 
         cpu.setDebugCalls(1);
 	// Load the configuration file

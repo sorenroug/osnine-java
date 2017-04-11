@@ -6,6 +6,7 @@ import org.roug.osnine.Register;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 /**
  * Emulate the OS9 operating system.
  */
@@ -59,6 +60,8 @@ public class OS9 extends MC6809 {
     /* OS9 uses first free PID when assigning. */
     private int maxCurrentPID = 0;
 
+    private Method[] serviceCalls = new Method[256];
+
     /**
      * Constructor.
      */
@@ -67,6 +70,8 @@ public class OS9 extends MC6809 {
         topOfRealRAM = 0xFF00;
         //SWI2Trap trap = new SWI2Trap(this);
         //this.insertMemorySegment(trap);
+
+        //setupServiceCalls();
 
         debug_syscall = false;
         for (int inx = 0; inx < NUM_PATHS; inx++) {
@@ -277,7 +282,7 @@ public class OS9 extends MC6809 {
         if (memoryAllocation == 0) {
             memoryAllocation = read_word(moduleAddr + ModuleConst.m_Mem);
         }
-        createInitialProcess(moduleAddr, memoryAllocation);
+        Process p = createInitialProcess(moduleAddr, memoryAllocation);
 
         // Load the argument vector and set registers
         // parm is not terminated with \r
@@ -291,9 +296,12 @@ public class OS9 extends MC6809 {
         copyStringToMemory(s.intValue(), parm);
 
         x.set(s.intValue());
-        dp.set(u.intValue() >> BYTEWIDTH);
+        //dp.set(u.intValue() >> BYTEWIDTH);
         cc.setF(0);
         cc.setI(0);
+        write_word(DPConst.D_AProcQ, p.getProcessBlock());  // D_AProcQ -- Write proces to Active process queue
+        write_word(DPConst.D_WProcQ, 0);  // Write null to the Wait process queue
+        write_word(DPConst.D_SProcQ, 0);  // Write null to the Sleep process queue
         LOGGER.debug("Loadmodule: {} {} {} {} {} {} {}", pc, u, dp, x, s, y, d);
     }
 
@@ -310,6 +318,20 @@ public class OS9 extends MC6809 {
         write(addr + from.length(), '\r');
     }
 
+/*
+    private String copyMemoryToString(int addr, int length) {
+        return new String(memory, addr, length);
+//      StringBuffer resultBuf = new StringBuffer(length);
+//      int c;
+//      for (int i = 0; i < length; i++) {
+//          c = read(start + i);
+//          if (Character.isISOControl(c)) {
+//              resultBuf.append(String.toHexString(c));
+//          } else {
+//              resultBuf.append(c);
+//          }
+    }
+*/
     /**
      * F$LINK - This system call causes OS-9 to search the module directory for
      * a module having a name, language and type as given in the parameters.
@@ -648,10 +670,11 @@ public class OS9 extends MC6809 {
         }
 
         for (; read(mp) != 0; mp++) {
-            if (read(mp) <= '-' || read(mp) == '<' || read(mp) == '>')
+            int c = read(mp);
+            if (c <= '-' || c == '<' || c == '>' || c == 0xff || c == 0)
                 break;
-            unixPath.appendCodePoint(read(mp) & 0x7f);
-            if ((read(mp) & 0x80) == 0x80)
+            unixPath.appendCodePoint(c & 0x7f);
+            if ((c & 0x80) == 0x80)
                 break;
         }
 
@@ -918,6 +941,10 @@ public class OS9 extends MC6809 {
         write(x.intValue() + 5, now.get(Calendar.SECOND));
     }
 
+    public void f_stim() {
+        LOGGER.debug("f_stim");
+    }
+
     private static final long CRC24_POLY = 0x800063L;
     public static final long CRC24_CHCK = 0x800FE3L;
     public static final long CRC24_SEED = 0xFFFFFFL;
@@ -959,6 +986,15 @@ public class OS9 extends MC6809 {
         write(u.intValue() + 0, (int) ((tmpcrc >> 16) & MASK8BITS));
         write(u.intValue() + 1, (int) ((tmpcrc >> 8) & MASK8BITS));
         write(u.intValue() + 2, (int) (tmpcrc & MASK8BITS));
+    }
+
+    /**
+     * Set user - level II.
+     */
+    public void f_suser() {
+        LOGGER.debug("f_SUser {}", y);
+        Process currProc = getCurrentProcess();
+        currProc.setUserId(y.intValue());
     }
 
     /**
@@ -1224,7 +1260,7 @@ public class OS9 extends MC6809 {
      * @param moduleStart - The memory address of the module the process executes
      * @param memoryToAllocate - Memory allocation in pages
      */
-    private void createInitialProcess(int moduleStart, int memoryToAllocate) {
+    private Process createInitialProcess(int moduleStart, int memoryToAllocate) {
         Process p = new Process(this, null);
         int procId = p.getProcessId();
         processes[procId] = p;
@@ -1233,7 +1269,7 @@ public class OS9 extends MC6809 {
         p.setStackPointer(s.intValue());
         p.setAllocatedPages(memoryToAllocate >> BYTEWIDTH);
         p.setPriority(100);
-        p.setUserId(getuid());  // Write user id
+        p.setUserId(0);  // Write user id
         p.setModuleStart(moduleStart);
 
         // Get memory for the data area
@@ -1245,10 +1281,7 @@ public class OS9 extends MC6809 {
         LOGGER.debug("Upper memory: {}", y);
         dp.set(p.getUserAddress());
         u.set(dp.intValue() << BYTEWIDTH);
-
-        write_word(DPConst.D_AProcQ, procAddr);  // D_AProcQ -- Write proces to Active process queue
-        write_word(DPConst.D_WProcQ, 0);  // Write null to the Wait process queue
-        write_word(DPConst.D_SProcQ, 0);  // Write null to the Sleep process queue
+        return p;
     }
 
     /**
@@ -1487,12 +1520,18 @@ public class OS9 extends MC6809 {
     }
 
     /**
-     * F$ID - Get user id.
+     * F$ID - Get process ID / user ID.
+     *  - INPUT:
+     *   - None
+     *  - OUTPUT:
+     *   - (A) = Process ID
+     *   - (Y) = User ID
      */
     public void f_id() {
         LOGGER.debug("f_id");
-        a.set(1);
-        y.set(getuid() & 0xffff);
+        Process currProc = getCurrentProcess();
+        a.set(currProc.getProcessId());
+        y.set(currProc.getUserId());
     }
 
     /**
@@ -1767,7 +1806,8 @@ public class OS9 extends MC6809 {
     public void i_wrln() {
         byte[] buf;
         debug("i_wrln: FD=%d Y=%d X=%04x %c%c%c...", a.intValue(), y.intValue(), x.intValue(),
-                  read(x.intValue()), read(x.intValue() + 1), read(x.intValue() + 2));
+              read(x.intValue()), read(x.intValue() + 1), read(x.intValue() + 2));
+        //LOGGER.debug("i_wrln: {} {} {} {}", a, y, x, copyMemoryToString(x, Math.min(y, 20)));
         getPathDesc(a).setErrorCode(0);
         buf = copyMemoryToBuffer(x, y);
         y.set(getPathDesc(a).writeln(buf, y.intValue())); // Return number of bytes written
@@ -1841,6 +1881,32 @@ public class OS9 extends MC6809 {
         getPathDesc(a).seek((x.intValue() << 16) + u.intValue());
     }
 
+    private void not_implemented() {
+        pc.set(pc.intValue() - 1);
+        LOGGER.error("Uncaught SWI2 call request {}", Integer.toHexString(read(pc.intValue())));
+        System.exit(0);
+    }
+
+    /**
+     * An attempt to make a table of service vectors.
+     * These can then be called with
+     * serviceCalls[opcode].invoke(this);
+     */
+    private void setupServiceCalls() {
+        String[] serviceNames = { "f_link", "f_load", "f_unlink", "f_fork",
+            "f_wait", "f_chain", "f_exit", "f_mem", "not_implemented", "f_icpt"
+        };
+
+        int i = 0;
+        try {
+            for (i = 0; i < serviceNames.length; i++) {
+                serviceCalls[i] = OS9.class.getDeclaredMethod(serviceNames[i]);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Service call not found: {}", serviceNames[i]);
+        }
+    }
+
     /**
      * Software Interrupt 2 is used for system calls. Next byte after is the OPCODE.
      */
@@ -1905,10 +1971,13 @@ public class OS9 extends MC6809 {
                 f_time();
                 break;
             case 0x16:              // F$STim
-                /* Ignore */
+                f_stim();
                 break;
             case 0x17:
                 f_crc();
+                break;
+            case 0x1c:
+                f_suser();  // Level II
                 break;
 
             case 0x2c:

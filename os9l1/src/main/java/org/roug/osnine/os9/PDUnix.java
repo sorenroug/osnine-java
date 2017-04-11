@@ -20,13 +20,30 @@ class PDUnix extends PathDesc {
     RandomAccessFile fp;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PDUnix.class);
+
     /**
      * Constructor.
      */
-    public PDUnix(Path path, String mode) throws FileNotFoundException {
+    public PDUnix(Path path, int mode, boolean create) throws FileNotFoundException, IOException {
+        super();
+	boolean truncate = false;
+        String umode = "r";
+
+        switch(mode & 3) {
+        case 0:
+        case 1: umode="r";
+            break;
+        case 2: umode="rw";
+            truncate = true;
+            break;
+        case 3: umode = (create) ? "rw" : "rw";
+            break;
+        }
         fileName = new File(path.toString());
-        fp = new RandomAccessFile(fileName, mode);
-        usecount = 1;
+        fp = new RandomAccessFile(fileName, umode);
+        if (truncate) {
+            fp.setLength(0);
+        }
     }
 
     @Override
@@ -53,12 +70,17 @@ class PDUnix extends PathDesc {
     @Override
     public int read(byte[] buf, int size) {
         int c;
-        try { 
+        try {
             c = fp.read(buf, 0, size);
         } catch (IOException e) {
             errorcode = ErrCodes.E_EOF;
             return -1;
-        }   
+        }
+//      for (int i = 0; i < c; i++) {
+//          if (convertToUNIX() && buf[i] == NEW_LINE) {
+//              buf[i] = CARRIAGE_RETURN;
+//          }
+//      }
         return c;
     }
 
@@ -76,7 +98,7 @@ class PDUnix extends PathDesc {
         try {
             for (i = 0; i < size; i++) {
                 c = fp.readByte();
-                if (c == NEW_LINE) {
+                if (c == NEW_LINE && convertToUNIX()) {
                     c = CARRIAGE_RETURN;
                 }
                 buf[i] = c;
@@ -114,11 +136,11 @@ class PDUnix extends PathDesc {
     @Override
     public int writeln(byte[] buf, int size) {
         int inx = 0;
-     
+
 	try {
 	    for (inx = 0; inx < size; inx++) {
 		if (buf[inx] == CARRIAGE_RETURN) {
-                    fp.writeByte(NEW_LINE);
+                    fp.writeByte(convertToUNIX() ? NEW_LINE : CARRIAGE_RETURN);
                     inx++;
 		    break;
                 } else {
@@ -233,4 +255,8 @@ class PDUnix extends PathDesc {
 	return omode;
     }
 
+    private boolean convertToUNIX() {
+        return DevUnix.convertToUNIX();
+    }
 }
+

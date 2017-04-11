@@ -67,4 +67,26 @@ public class LoadTest {
         assertEquals((int)'T', firstLetter);
     }
 
+
+    /**
+     * Load module and increase memory.
+     */
+    @Test
+    public void loadWithMemAlloc() {
+        OS9 cpu = new OS9();
+        String driveLocation = System.getProperty("outputDirectory");
+        cpu.setDebugCalls(1);
+        cpu.addDevice(new DevUnix("/dd", driveLocation)); // Default drive
+        cpu.setInitialCXD("/dd");
+        assertFalse(cpu.cc.isSetC());
+        cpu.loadmodule("progmodule", "THIS", 0x1000);
+        Process currProc = cpu.getCurrentProcess();
+        int userdata = currProc.getUserAddress();
+        assertEquals(7, userdata);
+        // Try to ask with D=0
+        cpu.d.set(0x0);
+        cpu.f_mem();
+        assertEquals(0x1000, cpu.d.intValue());
+    }
+
 }

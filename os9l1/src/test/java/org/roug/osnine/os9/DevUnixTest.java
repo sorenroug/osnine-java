@@ -12,6 +12,9 @@ import org.junit.Before;
  */
 public class DevUnixTest {
 
+    /**
+     * Read 10 bytes and see if it is done correctly.
+     */
     @Test
     public void testRead() {
         String driveLocation = System.getProperty("outputDirectory");
@@ -29,20 +32,45 @@ public class DevUnixTest {
         assertEquals(0x00, buf[3]);
     }
 
-    //@Test
+    /**
+     * Create a new file.
+     */
+    @Test
     public void testCreate() {
+        int len = 0;
+        byte[] buf = new byte[20];
+
         String driveLocation = System.getProperty("outputDirectory");
         System.out.println(driveLocation);
         DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
+
         PathDesc pd = dev.open("/dd/newfile", AccessCodes.WRITE, true);
         //System.out.println(Util.getErrorMessage(dev.getErrorCode()));
         assertNotNull(pd);
-        byte[] buf = new byte[20];
         String helloWorld = "Hello World\n";
         System.arraycopy(helloWorld.getBytes(), 0, buf, 0, helloWorld.length());
-        int len = pd.write(buf, helloWorld.length());
+        len = pd.write(buf, helloWorld.length());
+        assertEquals(helloWorld.length(), len);
+        pd.close();
+
+        // Test that a open for write truncates
+        PathDesc pd1 = dev.open("/dd/newfile", AccessCodes.WRITE, true);
+        String hi = "Hi!\n";
+        System.arraycopy(hi.getBytes(), 0, buf, 0, hi.length());
+        len = pd1.write(buf, hi.length());
+        assertEquals(hi.length(), len);
+        pd1.close();
+
+        
+        PathDesc pd2 = dev.open("/dd/newfile", AccessCodes.READ, false);
+        len = pd2.read(buf, 20);
+        assertEquals(hi.length(), len);
+        pd2.close();
     }
 
+    /**
+     * Check case-sensitivity.
+     */
     @Test
     public void testGetPath() {
         File f = new File("/ETC/passwd");

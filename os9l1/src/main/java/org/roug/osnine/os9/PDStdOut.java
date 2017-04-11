@@ -80,6 +80,7 @@ public class PDStdOut extends PathDesc {
                 break;
             }
         }
+        fp.flush();
         return inx;
     }
 

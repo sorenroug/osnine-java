@@ -13,11 +13,14 @@ public abstract class PathDesc {
     static final byte CARRIAGE_RETURN = 0x0D;
     static final byte NEW_LINE = 0x0A;
 
+    /** Link to device driver. */
     protected DevDrvr driver;
+
     protected int usecount;
+
     protected int errorcode;
 
-    public PathDesc() {   
+    public PathDesc() {
 	usecount = 1;
     }
 

@@ -89,6 +89,10 @@ public class Process {
         paths[pathNum] = desc;
     }
 
+    int getUserId() {
+        return kernel.read_word(procAddr + PDConst.p_User);
+    }
+
     void setUserId(int userid) {
         kernel.write_word(procAddr + PDConst.p_User, userid);  // Write user id
     }

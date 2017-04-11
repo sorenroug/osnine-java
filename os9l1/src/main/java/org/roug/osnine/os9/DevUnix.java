@@ -14,19 +14,28 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Dev driver methods for UNIX file system.
+ * The methods expect pathnames that are relative to the mount pount
+ * and without leading slash.
+ */
 public class DevUnix extends DevDrvr {
 
+    /** Location in UNIX directory tree where the files are. */
     private String unixDir;
+
+    /** Whether to convert OS9 line endings to UNIX. */
+    private static boolean unixEOLs = true;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DevUnix.class);
 
-    /*********************************************************************
-     * DevUnix methods
-     *********************************************************************/
-    // The DevDrvr class is a base class for virtual devices
-    // The methods expect pathnames that are relative to the mount pount
-    // and without leading slash.
 
+    /**
+     * Constructor.
+     *
+     * @param mntpnt - Name of device in OS9
+     * @param args - Location in UNIX directory
+     */
     public DevUnix(final String mntpnt, final String args) {
         super(mntpnt);
         unixDir = args;
@@ -34,13 +43,11 @@ public class DevUnix extends DevDrvr {
 
     /**
      * Open a file.
-     * @todo: Go through the path to see if the path actually exists
-     * @todo: Open in other modes than read
+     * TODO: Go through the path to see if the path actually exists
      */
     @Override
     public PathDesc open(final String path, int mode, boolean create) {
         Path unixPath;
-        String umode = "r";
         PDUnix fd = null;
         String relPath;
 
@@ -50,39 +57,19 @@ public class DevUnix extends DevDrvr {
             relPath = path;
         }
         unixPath = Paths.get(unixDir, relPath);
-        LOGGER.debug("COMBINED: {}", unixPath);
+        LOGGER.debug("UNIX path: {}", unixPath);
         if (findpath(unixPath, !create) == null) {
             errorcode = ErrCodes.E_PNNF;
             return null;
         }
-        switch(mode & 3) {
-        case 0:
-        case 1: umode="r";
-            break;
-        case 2: umode="rw";
-            break;
-        case 3: umode = (create) ? "rw" : "rw";
-            break;
-        }
         try {
-            fd = new PDUnix(unixPath, umode);
+            fd = new PDUnix(unixPath, mode, create);
             fd.setDriver(this);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             errorcode = ErrCodes.E_BPNam;
         }
         return fd;
     }
-
-/*
-    public PathDesc open(RandomAccessFile unixfp) {
-        PDUnix fd = new PDUnix();
-        
-        fd.fp = unixfp;
-        fd.usecount = 1;
-        fd.driver = this;
-        return fd;
-    }
-*/
 
     @Override
     public int makdir(String path, int mode) {
@@ -101,7 +88,7 @@ public class DevUnix extends DevDrvr {
 
     /**
      * Delete a file.
-     * @todo: return more meaningful error code
+     * TODO: return more meaningful error code
      */
     @Override
     public int delfile(String path) {
@@ -120,7 +107,7 @@ public class DevUnix extends DevDrvr {
 
     /**
      * Change directory.
-     * @todo: Go through the path to see if the path actually exists
+     * TODO: Go through the path to see if the path actually exists
      */
     @Override
     public int chdir(String path) {
@@ -157,7 +144,7 @@ public class DevUnix extends DevDrvr {
     /*
         DIR *dirp;
         struct dirent *dp;
-     
+
         dirp = opendir(dir);
         while ((dp = readdir(dirp))) {
             if (strcasecmp(dp->d_name, segment) == 0)
@@ -192,8 +179,10 @@ public class DevUnix extends DevDrvr {
         }
         File newUnixFile = new File(startFrom);
         int segmentCnt = path.getNameCount();
+
+        boolean found = false;
         while (alreadyMatched < segmentCnt) {
-            boolean found = false;
+            found = false;
             for (File dirEntry : newUnixFile.listFiles()) {
                 String nextOS9Seg = path.getName(alreadyMatched).toString();
                 String nextUNXSeg = dirEntry.getName();
@@ -205,16 +194,23 @@ public class DevUnix extends DevDrvr {
                 }
             }
             if (!found) {
-                return null;
+                break;
             }
+        }
+        // Some intermediate segment is missing.
+        if (alreadyMatched < segmentCnt - 1) {
+            return null;
+        }
+        if (mustexist && !found) {
+            return null;
         }
         return newUnixFile.toString();
     /*
         char *endp, *endseg, *begseg;
         char *dirp, *nseg;
-     
+
         endp = path + strlen(path);
-     
+
         if (*path == '/') {
             dirp = "/";
             begseg = path + 1;
@@ -222,7 +218,7 @@ public class DevUnix extends DevDrvr {
             dirp = ".";
             begseg = path;
         }
-     
+
         do {
             endseg = strchr(begseg, '/');
             if (endseg == null)
@@ -245,4 +241,17 @@ public class DevUnix extends DevDrvr {
 
     }
 
-} 
+    /**
+     * Tell path descriptors to convert to UNIX line endings.
+     *
+     * @param useUNIX - If true then use UNIX.
+     */
+    public static void setUNIXSemantics(boolean useUNIX) {
+        unixEOLs = useUNIX;
+    }
+
+    public static boolean convertToUNIX() {
+        return unixEOLs;
+    }
+
+}
