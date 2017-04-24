@@ -15,9 +15,7 @@ public class MemoryBank extends MemorySegment {
     }
 
     public MemoryBank(int start, int size) {
-        if (size < 0 || size > 65536) {
-            throw new IllegalArgumentException("Max allocation is 65536");
-        }
+        super(start, start + size);
         this.offset = start;
         this.memorySize = size;
         memory = new int[size];
@@ -28,27 +26,12 @@ public class MemoryBank extends MemorySegment {
     }
 
     @Override
-    public int read(int addr) {
-        if (addr < offset || addr >= offset + memorySize) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
-            } else {
-                return nextSegment.read(addr);
-            }
-        }
+    protected int load(int addr) {
         return memory[addr - offset];
     }
 
     @Override
-    public void write(int addr, int val) {
-        if (addr < offset || addr >= offset + memorySize) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
-            } else {
-                nextSegment.write(addr, val);
-            }
-        } else {
-            memory[addr - offset] = val & 0xff;
-        }
+    protected void store(int addr, int val) {
+        memory[addr - offset] = val & 0xff;
     }
 }

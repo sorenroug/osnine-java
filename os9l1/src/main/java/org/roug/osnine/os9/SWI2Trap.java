@@ -14,7 +14,11 @@ public class SWI2Trap extends MemorySegment {
 
     private OS9 cpu;
 
+    /**
+     * Constructor.
+     */
     public SWI2Trap(OS9 cpu) {
+        super(0xfff4, 0xfff4);
         this.cpu = cpu;
         this.offset = 0xfff4;
     }
@@ -24,26 +28,12 @@ public class SWI2Trap extends MemorySegment {
     }
 
     @Override
-    public int read(int addr) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.valueOf(addr).toString());
-            } else {
-                return nextSegment.read(addr);
-            }
-        }
+    public int load(int addr) {
         return 0;
     }
 
     @Override
-    public void write(int addr, int val) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.valueOf(addr).toString());
-            } else {
-                nextSegment.write(addr, val);
-            }
-        }
+    public void store(int addr, int val) {
     }
 
 }

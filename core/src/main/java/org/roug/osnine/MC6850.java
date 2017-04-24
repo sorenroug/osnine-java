@@ -13,7 +13,11 @@ public class MC6850 extends MemorySegment {
     /** Location of ACIA in memory. */
     private int offset;
 
+    /**
+     * Constructor.
+     */
     public MC6850(int start) {
+        super(start, start);
         this.offset = start;
     }
 
@@ -22,14 +26,7 @@ public class MC6850 extends MemorySegment {
     }
 
     @Override
-    public int read(int addr) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds");
-            } else {
-                return nextSegment.read(addr);
-            }
-        }
+    protected int load(int addr) {
         try {
             return System.in.read();
         } catch (IOException e) {
@@ -39,14 +36,7 @@ public class MC6850 extends MemorySegment {
     }
 
     @Override
-    public void write(int addr, int val) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds");
-            } else {
-                nextSegment.write(addr, val);
-            }
-        }
+    protected void store(int addr, int val) {
         System.out.write(val);
     }
 

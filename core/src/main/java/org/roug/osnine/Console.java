@@ -12,7 +12,11 @@ public class Console extends MemorySegment {
     /** Location of console in memory. */
     private int offset;
 
+    /**
+     * Constructor.
+     */
     public Console(int start) {
+        super(start, start);
         this.offset = start;
     }
 
@@ -21,14 +25,7 @@ public class Console extends MemorySegment {
     }
 
     @Override
-    public int read(int addr) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
-            } else {
-                return nextSegment.read(addr);
-            }
-        }
+    protected int load(int addr) {
         try {
             return System.in.read();
         } catch (IOException e) {
@@ -38,14 +35,7 @@ public class Console extends MemorySegment {
     }
 
     @Override
-    public void write(int addr, int val) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
-            } else {
-                nextSegment.write(addr, val);
-            }
-        }
+    protected void store(int addr, int val) {
         System.out.write(val);
         System.out.flush();
     }

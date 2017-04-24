@@ -386,6 +386,14 @@ public class InstructionsTest {
         assertEquals(0x09, myTestCPU.cc.intValue());
     }
 
+    /**
+     * Decimal Addition Adjust.
+     * The Half-Carry flag is not affected by this instruction.
+     * The Negative flag is set equal to the new value of bit 7 in Accumulator A.
+     * The Zero flag is set if the new value of Accumulator A is zero; cleared otherwise.
+     * The affect this instruction has on the Overflow flag is undefined.
+     * The Carry flag is set if the BCD addition produced a carry; cleared otherwise.
+     */
     @Test
     public void testDAA() {
         myTestCPU.write(0xB00, 0x19);
@@ -394,7 +402,10 @@ public class InstructionsTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x85, myTestCPU.a.intValue());
-        assertEquals(0x08, myTestCPU.cc.intValue());
+	assertEquals(1, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+	assertEquals(0, myTestCPU.cc.getC());
     }
 
     /**
@@ -580,12 +591,17 @@ public class InstructionsTest {
 
     /**
      * Test the LSL - Logical Shift Left instruction.
+     *  H The affect on the Half-Carry flag is undefined for these instructions.
+     *  N The Negative flag is set equal to the new value of bit 7; previously bit 6.
+     *  Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
+     *  V The Overflow flag is set to the Exclusive-OR of the original values of bits 6 and 7.
+     *  C The Carry flag receives the value shifted out of bit 7.
      */
     @Test
     public void testLSL() {
         // Write instruction into memory
         myTestCPU.write(0xB00, 0x48);
-        // Logical Shift Left of 0xff
+        // Logical Shift Left of 0xff in register A
         myTestCPU.cc.clear();
         myTestCPU.a.set(0xff);
         myTestCPU.pc.set(0xB00);
@@ -615,7 +631,7 @@ public class InstructionsTest {
         assertEquals(0x70, myTestCPU.a.intValue());
         assertEquals(0x03, myTestCPU.cc.intValue());
     //  assertEquals(1, myTestCPU.cc.getC());
-    //  assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getV());
     }
 
     /**
@@ -624,24 +640,28 @@ public class InstructionsTest {
     @Test
     public void testLSR() {
         // Write instruction into memory
-        myTestCPU.write(0xB00, 0x44);
-        // Logical Shift Right of 0x3E
+        myTestCPU.write(0xB00, 0x44); // LSRA
+        // Logical Shift Right of 0x3E to 0x1F
         myTestCPU.cc.set(0x0F);
         myTestCPU.a.set(0x3E);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x1F, myTestCPU.a.intValue());
         assertEquals(0x02, myTestCPU.cc.intValue());
+        assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
 
         // Logical Shift Right of 1
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(1);
         myTestCPU.a.set(1);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x00, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
 
         // Logical Shift Right of 0xB8
         myTestCPU.cc.setC(0);
@@ -654,8 +674,15 @@ public class InstructionsTest {
         assertEquals(0, myTestCPU.cc.getC());
     }
 
+    /**
+     * Multiply 0x0C with 0x64. Result is 0x04B0.
+     * The Zero flag is set if the 16-bit result is zero; cleared otherwise.
+     * The Carry flag is set equal to the new value of bit 7 in Accumulator B.
+     */
     @Test
     public void testMUL() {
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setZ(1);
 	myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
 	myTestCPU.a.set(0x0C);
 	myTestCPU.b.set(0x64);
@@ -664,6 +691,29 @@ public class InstructionsTest {
 	assertEquals(0x04B0, myTestCPU.d.intValue());
 	assertEquals(0x04, myTestCPU.a.intValue());
 	assertEquals(0xB0, myTestCPU.b.intValue());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getC());
+    }
+
+    /**
+     * Multiply 0x0C with 0x00. Result is 0x0000.
+     * The Zero flag is set if the 16-bit result is zero; cleared otherwise.
+     * The Carry flag is set equal to the new value of bit 7 in Accumulator B.
+     */
+    @Test
+    public void testMUL0() {
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setZ(1);
+	myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
+	myTestCPU.a.set(0x0C);
+	myTestCPU.b.set(0x00);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0x0000, myTestCPU.d.intValue());
+	assertEquals(0x00, myTestCPU.a.intValue());
+	assertEquals(0x00, myTestCPU.b.intValue());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getC());
     }
 
     /**
@@ -728,28 +778,87 @@ public class InstructionsTest {
     }
 
 
+    /**
+     * Rotate 8-Bit Accumulator or Memory Byte Left through Carry.
+     * N The Negative flag is set equal to the new value of bit 7.
+     * Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
+     * V The Overflow flag is set equal to the exclusive-OR of the original values of bits 6 and 7.
+     * C The Carry flag receives the value shifted out of bit 7.
+     */ 
     @Test
     public void testROLB() {
+        myTestCPU.write(0xB00, 0x59); // ROLB
+
+        // Rotate 0x89 to 0x13.
         myTestCPU.b.set(0x89);
-        myTestCPU.cc.set(0x09);
-        myTestCPU.write(0xB00, 0x59);
+        myTestCPU.cc.clear();
+        myTestCPU.cc.setN(1);
+        myTestCPU.cc.setC(1);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0x13, myTestCPU.b.intValue());
         assertEquals(0x03, myTestCPU.cc.intValue());
+        assertEquals(1, myTestCPU.cc.getC());
+
+        // Logical Shift Left of 1 with carry set
+        myTestCPU.cc.setC(1);
+        myTestCPU.cc.setV(1);
+        myTestCPU.b.set(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x03, myTestCPU.b.intValue());
+        assertEquals(0, myTestCPU.cc.intValue());
+    //  assertEquals(0, myTestCPU.cc.getC());
+    //  assertEquals(0, myTestCPU.cc.getV());
+
+        // Rotate Left of 0xD8
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setV(0);
+        myTestCPU.b.set(0xD8);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xb0, myTestCPU.b.intValue());
+        assertEquals(0x09, myTestCPU.cc.intValue());
+        assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getN());
     }
 
+    /**
+     * Rotate 8-Bit Accumulator or Memory Byte Right through Carry
+     * N The Negative flag is set equal to the new value of bit 7 (original value of Carry).
+     * Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
+     * V The Overflow flag is not affected by these instructions.
+     * C The Carry flag receives the value shifted out of bit 0.
+     */
     @Test
     public void testRORB() {
+        myTestCPU.write(0xB00, 0x56); // RORB
+        // Rotate 0x89 with CC set to 0xC4
         myTestCPU.b.set(0x89);
-        myTestCPU.cc.set(0x01);
-        myTestCPU.write(0xB00, 0x56);
+        myTestCPU.cc.clear();
+        myTestCPU.cc.setC(1);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0xC4, myTestCPU.b.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
+	assertEquals(1, myTestCPU.cc.getN());
+	assertEquals(1, myTestCPU.cc.getC());
+
+        // Rotate 0x89 with CC clear to 0x44
+        myTestCPU.b.set(0x89);
+        myTestCPU.cc.clear();
+        myTestCPU.cc.setC(0);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertEquals(0x44, myTestCPU.b.intValue());
+        assertEquals(0x01, myTestCPU.cc.intValue());
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(1, myTestCPU.cc.getC());
     }
 
     /**

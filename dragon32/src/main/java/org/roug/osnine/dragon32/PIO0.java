@@ -49,6 +49,7 @@ public class PIO0 extends MemorySegment {
     private int offset;
 
     public PIO0(int start) {
+        super(start, start);
         this.offset = start;
     }
 
@@ -57,14 +58,7 @@ public class PIO0 extends MemorySegment {
     }
 
     @Override
-    public int read(int addr) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds");
-            } else {
-                return nextSegment.read(addr);
-            }
-        }
+    public int load(int addr) {
         try {
             return System.in.read();
         } catch (IOException e) {
@@ -74,14 +68,7 @@ public class PIO0 extends MemorySegment {
     }
 
     @Override
-    public void write(int addr, int val) {
-        if (addr != offset) {
-            if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds");
-            } else {
-                nextSegment.write(addr, val);
-            }
-        }
+    public void store(int addr, int val) {
         System.out.write(val);
     }
 
