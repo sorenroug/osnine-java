@@ -1401,12 +1401,13 @@ public class DisAssembler {
         int code;
 
         code = readMemory(cpu.pc.intValue());
-        output("%04X: ", cpu.pc.intValue());
-        opcodeSwitch(optable, code, cpu.pc.intValue(), "   ");
-        output("          |A=%02X|B=%02X|X=%04X|Y=%04X|U=%04X|S=%04X|\n",
+        output("|CC=%02X|A=%02X|B=%02X|X=%04X|Y=%04X|U=%04X|S=%04X|  ",
+            cpu.cc.intValue(),
             cpu.a.intValue(), cpu.b.intValue(),
             cpu.x.intValue(), cpu.y.intValue(),
             cpu.u.intValue(), cpu.s.intValue());
+        output("%04X: ", cpu.pc.intValue());
+        opcodeSwitch(optable, code, cpu.pc.intValue(), "   ");
     }
 
     /**

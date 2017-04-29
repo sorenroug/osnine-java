@@ -26,7 +26,7 @@ public class ParaVirtDisk extends MemorySegment {
     private int offset;
 
     /** Filename of disk image. */
-    private String diskFile;
+    private File diskFile;
 
     /** Open file pointer to disk image. */
     private RandomAccessFile diskFP;
@@ -42,7 +42,7 @@ public class ParaVirtDisk extends MemorySegment {
     /**
      * Constructor.
      */
-    public ParaVirtDisk(int start, String diskFile) throws FileNotFoundException {
+    public ParaVirtDisk(int start, File diskFile) throws FileNotFoundException {
         super(start, start + 2);
         this.offset = start;
         this.diskFile = diskFile;

@@ -46,6 +46,104 @@ public class BranchAndJumpTest {
         assertEquals(u, myTestCPU.u.intValue());
     }
 
+    @Test
+    public void testBCC() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x24); // BCC
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setC(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setC(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBGEForward() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x2C);  // BGE
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBGTForward() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x2E);  // BGT
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+    }
+
     /**
      * Don't branch because Z is on.
      */
@@ -92,6 +190,158 @@ public class BranchAndJumpTest {
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
         assertEquals(LOCATION + 2 + 0x17, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBHI() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x22);  // BHI
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setZ(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setC(1);
+        myTestCPU.cc.setZ(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setZ(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setC(1);
+        myTestCPU.cc.setZ(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBLE() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x2F); // BLE
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(1);
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBLS() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x23); // BLS
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setC(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(1);
+        myTestCPU.cc.setC(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setC(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setZ(1);
+        myTestCPU.cc.setC(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testBLT() {
+        final int PROGLOC = 0xB00;
+        final int UNBRANCHED = 0xB00 + 2;
+        final int BRANCHED = 0xB00 + 2 + 0x11;
+
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x2D); // BLT
+        myTestCPU.write(0xB01, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(0);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(1);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
     }
 
     @Test

@@ -925,7 +925,7 @@ public class MC6809 extends USimMotorola {
         cc.set(cc.intValue() & fetch());
     }
 
-    private void help_asr(UByte refB) {   
+    private void help_asr(UByte refB) {
         cc.setC(refB.btst(0));
         refB.set(refB.intValue() >> 1);    // Shift word right
         cc.setN(refB.btst(6));
@@ -998,9 +998,7 @@ public class MC6809 extends USimMotorola {
         do_lbr(cc.isSetZ());
     }
 
-    //FIXME: test logic
     private void bge() {
-        //do_br(!(cc.bit_n ^ cc.bit_v));
         do_br(cc.isSetN() == cc.isSetV());
     }
 
@@ -1011,7 +1009,6 @@ public class MC6809 extends USimMotorola {
     }
 
     private void bgt() {
-        //do_br(!(cc.bit_z | (cc.bit_n ^ cc.bit_v)));
         do_br(!cc.isSetZ() && (cc.isSetN() == cc.isSetV()));
     }
 
@@ -1047,7 +1044,6 @@ public class MC6809 extends USimMotorola {
     }
 
     private void ble() {
-        //do_br(cc.bit_z | (cc.bit_n ^ cc.bit_v));
         do_br(cc.isSetZ() || (cc.isSetN() != cc.isSetV()));
     }
 
@@ -1065,12 +1061,10 @@ public class MC6809 extends USimMotorola {
     }
 
     private void blt() {
-        //do_br(cc.bit_n ^ cc.bit_v);
         do_br(cc.isSetN() != cc.isSetV());
     }
 
     private void lblt() {
-        //do_lbr(cc.bit_n ^ cc.bit_v);
         do_lbr(cc.isSetN() != cc.isSetV());
     }
 
@@ -1182,13 +1176,13 @@ public class MC6809 extends USimMotorola {
     private void help_cmp(UByte reg) {
         int m = fetch_operand();
         int t = reg.intValue() - m;
-         
+
         cc.setH((t & 0x0f) < (m & 0x0f));
 
         int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
         cc.setV(btst(tmp, 7));
         cc.setC(btst(t, 8));
-         
+
         cc.setN(btst(t, 7));
         cc.setZ(t == 0 ? 1 : 0);
     }
@@ -1216,11 +1210,11 @@ public class MC6809 extends USimMotorola {
     private void help_cmp(Word reg) {
         int m = fetch_word_operand();
         int t = reg.intValue() - m;
-         
+
         int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
         cc.setV(btst(tmp, 15));
         cc.setC(btst(t, 16));
-         
+
         cc.setN(btst(t, 15));
         cc.setZ(t == 0 ? 1 : 0);
     }
@@ -1798,11 +1792,11 @@ public class MC6809 extends USimMotorola {
     private void help_sbc(UByte regB) {
         int m = fetch_operand();
         int t = regB.intValue() - m - cc.getC();
-         
+
         cc.setH(((t & 0x0f) < (m & 0x0f))); // half-carry
         cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
-         
+
         cc.setN(btst(t, 7));
         cc.setZ(t == 0);
         regB.set(t);
@@ -1869,10 +1863,10 @@ public class MC6809 extends USimMotorola {
     private void help_sub(UByte regB) {
         int m = fetch_operand();
         int t = regB.intValue() - m;
-         
+
         cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
-         
+
         cc.setN(btst(t, 7));
         cc.setZ(t == 0);
         regB.set(t);
@@ -1881,10 +1875,10 @@ public class MC6809 extends USimMotorola {
     private void subd() {
         int m = fetch_word_operand();
         int t = d.intValue() - m;
-         
+
         cc.setV(btst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
         cc.setC(btst(t, 16));
-         
+
         cc.setN(btst(t, 15));
         cc.setZ(t == 0);
         d.set(t);

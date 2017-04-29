@@ -71,181 +71,39 @@ public class InstructionsTest {
 
 
     @Test
-    public void testADCANoCarry() {
-        int instructions[] = {
-            0x89, // ADCA
-            0x02  // value
-        };
-        loadProg(instructions);
-        setCC_A_B_DP_X_Y_S_U(0, 5, 0, 0, 0, 0, 0, 0);
-//      myTestCPU.cc.bit_c = 0;
-//      myTestCPU.a.set(5);
-        myTestCPU.execute();
-        assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-//      assertEquals(7, myTestCPU.a.intValue());
-//      assertEquals(0, myTestCPU.cc.getC());
-        chkCC_A_B_DP_X_Y_S_U(0, 7, 0, 0, 0, 0, 0, 0);
-    }
-
-
-    @Test
-    public void testADCAWithCarry() {
-        int instructions[] = {
-            0x89, // ADCA
-            0x22  // value
-        };
-        loadProg(instructions);
-        //myTestCPU.cc.bit_c = 1;
-        //myTestCPU.a.set(0x14);
-        setCC_A_B_DP_X_Y_S_U(CC.Cmask, 0x14, 0, 0, 0, 0, 0, 0);
-        myTestCPU.execute();
-        assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-        chkCC_A_B_DP_X_Y_S_U(0, 0x37, 0, 0, 0, 0, 0, 0);
-        //assertEquals(0x37, myTestCPU.a.intValue());
-        //assertEquals(0, myTestCPU.cc.getC());
-    }
-
-    /*
-     * Test that half-carry is set.
-     */
-    @Test
-    public void testADCAWithHalfCarry() {
-        int instructions[] = {
-            0x89, // ADCA
-            0x2B  // value
-        };
-        loadProg(instructions);
-        setCC_A_B_DP_X_Y_S_U(CC.Cmask, 0x14, 0, 0, 0, 0, 0, 0);
-        myTestCPU.execute();
-        chkCC_A_B_DP_X_Y_S_U(CC.Hmask, 0x40, 0, 0, 0, 0, 0, 0);
-    }
-
-    /**
-     * Add 0x02 to A=0x04.
-     */
-    @Test
-    public void testADDANoCarry() {
-        int instructions[] = {
-            0x8B, // ADDA
-            0x02, // value
-        };
-        loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
-        myTestCPU.a.set(0x04);
-        myTestCPU.b.set(0x05);
-        myTestCPU.execute();
-        assertEquals(0x8B, myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-        assertEquals(0x06, myTestCPU.a.intValue());
-        assertEquals(0x05, myTestCPU.b.intValue());
-        assertFalse(myTestCPU.cc.isSetH());
-        assertFalse(myTestCPU.cc.isSetN());
-        assertFalse(myTestCPU.cc.isSetZ());
-        assertFalse(myTestCPU.cc.isSetV());
-        assertFalse(myTestCPU.cc.isSetC());
-    }
-
-    /**
-     * Add 0x02B0 to D=0x0405.
-     */
-    @Test
-    public void testADDDNoCarry() {
-        int instructions[] = {
-            0xC3, // ADDD
-            0x02, // value
-            0xB0  // value
-        };
-        loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
-        myTestCPU.a.set(0x04);
-        myTestCPU.b.set(0x05);
-        myTestCPU.execute();
-        assertEquals(0xC3, myTestCPU.ir);
-        assertEquals(LOCATION + 3, myTestCPU.pc.intValue());
-        assertEquals(0x06, myTestCPU.a.intValue());
-        assertEquals(0xB5, myTestCPU.b.intValue());
-        assertEquals(0x06B5, myTestCPU.d.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
-    }
-
-
-    /**
-     * Add value of SP=0x92FC to D=00C5.
-     */
-    @Test
-    public void testADDDstackpointer() {
-        int instructions[] = {
-            0xE3, // ADDD
-            0xE4  // ,SP
-        };
-        loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
-        myTestCPU.s.set(0x1202);
-        myTestCPU.a.set(0x00);
-        myTestCPU.b.set(0xC5);
-	myTestCPU.write_word(0x1202, 0x92FC);
-        myTestCPU.execute();
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-        assertEquals(0x93c1, myTestCPU.d.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
-    }
-
-    @Test
     public void testANDA() {
-	myTestCPU.a.set(0x8B);
-	myTestCPU.dp.set(0x0A);
-	myTestCPU.cc.set(0x32);
-	myTestCPU.write(0x0AEF, 0x0F);
-	myTestCPU.write(0x0B00, 0x94);
-	myTestCPU.write(0x0B01, 0xEF);
+        myTestCPU.a.set(0x8B);
+        myTestCPU.dp.set(0x0A);
+        myTestCPU.cc.set(0x32);
+        myTestCPU.write(0x0AEF, 0x0F);
+        myTestCPU.write(0x0B00, 0x94);
+        myTestCPU.write(0x0B01, 0xEF);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
+        myTestCPU.execute();
         assertEquals(0x0B, myTestCPU.a.intValue());
-	assertEquals(0x30, myTestCPU.cc.intValue());
+        assertEquals(0x30, myTestCPU.cc.intValue());
     }
 
     @Test
     public void testANDCC() {
-	myTestCPU.cc.set(0x79);
-	myTestCPU.write(0x0B00, 0x1C);
-	myTestCPU.write(0x0B01, 0xAF);
+        myTestCPU.cc.set(0x79);
+        myTestCPU.write(0x0B00, 0x1C);
+        myTestCPU.write(0x0B01, 0xAF);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x29, myTestCPU.cc.intValue());
-    }
-
-    /**
-     * Shift a byte a 0x0402, because DP = 0x04.
-     */
-    @Test
-    public void testASRMemoryByte() {
-        int instructions[] = {
-            0x07, // ASR
-            0x02  // value
-        };
-        loadProg(instructions);
-        setCC_A_B_DP_X_Y_S_U(0, 0, 0, 4, 0, 0, 0, 0);
-        myTestCPU.write(0x0402, 0xf1);
         myTestCPU.execute();
-        assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-        chkCC_A_B_DP_X_Y_S_U(0x09, 0, 0, 4, 0, 0, 0, 0);
-        int result = myTestCPU.read(0x0402);
-        assertEquals(0xf8, result);
+        assertEquals(0x29, myTestCPU.cc.intValue());
     }
 
     @Test
     public void testBITimm() {
-	myTestCPU.a.set(0x8B);
-	myTestCPU.cc.set(0x0F);
-	myTestCPU.write(0x0B00, 0x85);
-	myTestCPU.write(0x0B01, 0xAA);
+        myTestCPU.a.set(0x8B);
+        myTestCPU.cc.set(0x0F);
+        myTestCPU.write(0x0B00, 0x85);
+        myTestCPU.write(0x0B01, 0xAA);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x8B, myTestCPU.a.intValue());
-	assertEquals(0x09, myTestCPU.cc.intValue());
+        myTestCPU.execute();
+        assertEquals(0x8B, myTestCPU.a.intValue());
+        assertEquals(0x09, myTestCPU.cc.intValue());
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -328,28 +186,53 @@ public class InstructionsTest {
         myTestCPU.y.set(0x205);
         myTestCPU.a.set(0xff);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xA1);
+        myTestCPU.write(0xB00, 0xA1);  // CMPA indexed
         myTestCPU.write(0xB01, 0xA0);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xB00 + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(CC.Hmask + CC.Zmask, 0xff, 0, 0, 0, 0x206, 0, 0);
+
+        // B = 0xA0, CMPB with 0xA0
+        myTestCPU.cc.setN(1);
+        myTestCPU.cc.setZ(0);
+        myTestCPU.b.set(0xA0);
+        myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
+        myTestCPU.write(0xB01, 0xA0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
+
+        // B = 0x70, CMPB with 0xA0
+        myTestCPU.cc.clear();
+        myTestCPU.b.set(0x70);
+        myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
+        myTestCPU.write(0xB01, 0xA0);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
     @Test
     public void testCMP16ext() {
-	myTestCPU.x.set(0x5410);
-	myTestCPU.cc.set(0x23);
-	myTestCPU.write(0x0B33, 0x54);
-	myTestCPU.write(0x0B34, 0x10);
+        myTestCPU.x.set(0x5410);
+        myTestCPU.cc.set(0x23);
+        myTestCPU.write(0x0B33, 0x54);
+        myTestCPU.write(0x0B34, 0x10);
 
-	myTestCPU.write(0x0B00, 0xBC);
-	myTestCPU.write(0x0B01, 0x0B);
-	myTestCPU.write(0x0B02, 0x33);
+        myTestCPU.write(0x0B00, 0xBC);
+        myTestCPU.write(0x0B01, 0x0B);
+        myTestCPU.write(0x0B02, 0x33);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x5410, myTestCPU.x.intValue());
-	assertEquals(0x24, myTestCPU.cc.intValue());
+        myTestCPU.execute();
+        assertEquals(0x5410, myTestCPU.x.intValue());
+        assertEquals(0x24, myTestCPU.cc.intValue());
     }
 
     /**
@@ -358,18 +241,18 @@ public class InstructionsTest {
     @Test
     public void testCOMdirect() {
         myTestCPU.cc.clear();
-	myTestCPU.dp.set(0x02);
+        myTestCPU.dp.set(0x02);
         myTestCPU.write(0x0200, 0x07);
-	// Two bytes of instruction
-	myTestCPU.write(0xB00, 0x03); // COM
-	myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0x03); // COM
+        myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xF8, myTestCPU.read(0x0200));
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(1, myTestCPU.cc.getC());
+        myTestCPU.execute();
+        assertEquals(0xF8, myTestCPU.read(0x0200));
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
     /**
@@ -402,10 +285,10 @@ public class InstructionsTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x85, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
     }
 
     /**
@@ -419,30 +302,30 @@ public class InstructionsTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x31, myTestCPU.a.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
 
         // Test 0x80 - special case
         myTestCPU.a.set(0x80);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x7F, myTestCPU.a.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(1, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
 
         // Test 0x00 - special case
         myTestCPU.a.set(0x00);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
     }
 
     @Test
@@ -455,7 +338,7 @@ public class InstructionsTest {
         myTestCPU.write(0xB01, 0x28);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-	assertEquals(0x98, myTestCPU.read(0x12F8));
+        assertEquals(0x98, myTestCPU.read(0x12F8));
         assertEquals(0x6A, myTestCPU.a.intValue());
         assertEquals(0x01, myTestCPU.cc.intValue());
         assertEquals(0x12F0, myTestCPU.y.intValue());
@@ -493,43 +376,6 @@ public class InstructionsTest {
         assertEquals(0x117f, myTestCPU.x.intValue());
     }
 
-    /**
-     * Increment register A.
-     */
-    @Test
-    public void testINCA() {
-        myTestCPU.cc.clear();
-        myTestCPU.a.set(0x32);
-        myTestCPU.write(0xB00, 0x4C);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x33, myTestCPU.a.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
-
-        // Test 0x7F - special case
-        myTestCPU.a.set(0x7F);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x80, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(1, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
-
-        // Test 0xFF - special case
-        myTestCPU.a.set(0xFF);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x00, myTestCPU.a.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(1, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(0, myTestCPU.cc.getC());
-    }
-
 
     /**
      * Increase the stack register by two. (LEAS +$ 2,S.)
@@ -539,12 +385,12 @@ public class InstructionsTest {
     @Test
     public void testLEASinc2() {
         myTestCPU.s.set(0x900);
-	myTestCPU.write(0xB00, 0x32);  // LEAS
-	myTestCPU.write(0xB01, 0x62);  // SP + 2 (last 5 bits)
+        myTestCPU.write(0xB00, 0x32);  // LEAS
+        myTestCPU.write(0xB01, 0x62);  // SP + 2 (last 5 bits)
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB02, myTestCPU.pc.intValue());
-	assertEquals(0x902, myTestCPU.s.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(0x902, myTestCPU.s.intValue());
     }
 
     /**
@@ -555,124 +401,40 @@ public class InstructionsTest {
     @Test
     public void testLEASdec2() {
         myTestCPU.s.set(0x900);
-	myTestCPU.write(0xB00, 0x32);  // LEAS
-	myTestCPU.write(0xB01, 0x7E);  // SP + 2's complement of last 5 bits.
+        myTestCPU.write(0xB00, 0x32);  // LEAS
+        myTestCPU.write(0xB01, 0x7E);  // SP + 2's complement of last 5 bits.
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB02, myTestCPU.pc.intValue());
-	assertEquals(0x8FE, myTestCPU.s.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(0x8FE, myTestCPU.s.intValue());
     }
 
     @Test
     public void testLEAX_PCR() {
-	int instructions[] = {
-	    0x30, // LEAX        >$0013,PCR
-	    0x8D,
-	    0xFE,
-	    0x49
-	};
+        int instructions[] = {
+            0x30, // LEAX        >$0013,PCR
+            0x8D,
+            0xFE,
+            0x49
+        };
 
-	int offset = 0x10000 - 0xfe49;
-	// Negate 0
-	loadProg(instructions);
-	myTestCPU.execute();
-	assertEquals(LOCATION + 4 - offset, myTestCPU.x.intValue());
-	assertEquals(LOCATION + 4, myTestCPU.pc.intValue());
+        int offset = 0x10000 - 0xfe49;
+        // Negate 0
+        loadProg(instructions);
+        myTestCPU.execute();
+        assertEquals(LOCATION + 4 - offset, myTestCPU.x.intValue());
+        assertEquals(LOCATION + 4, myTestCPU.pc.intValue());
 
-	// LEAX        <$93A,PCR
-	myTestCPU.write(0x0846, 0x30);
-	myTestCPU.write(0x0847, 0x8C);
-	myTestCPU.write(0x0848, 0xF1);
+        // LEAX        <$93A,PCR
+        myTestCPU.write(0x0846, 0x30);
+        myTestCPU.write(0x0847, 0x8C);
+        myTestCPU.write(0x0848, 0xF1);
         myTestCPU.pc.set(0x0846);
-	myTestCPU.execute();
-	assertEquals(0x0849, myTestCPU.pc.intValue());
-	assertEquals(0x083a, myTestCPU.x.intValue());
+        myTestCPU.execute();
+        assertEquals(0x0849, myTestCPU.pc.intValue());
+        assertEquals(0x083a, myTestCPU.x.intValue());
     }
 
-    /**
-     * Test the LSL - Logical Shift Left instruction.
-     *  H The affect on the Half-Carry flag is undefined for these instructions.
-     *  N The Negative flag is set equal to the new value of bit 7; previously bit 6.
-     *  Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
-     *  V The Overflow flag is set to the Exclusive-OR of the original values of bits 6 and 7.
-     *  C The Carry flag receives the value shifted out of bit 7.
-     */
-    @Test
-    public void testLSL() {
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x48);
-        // Logical Shift Left of 0xff in register A
-        myTestCPU.cc.clear();
-        myTestCPU.a.set(0xff);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0xfe, myTestCPU.a.intValue());
-        assertEquals(0x09, myTestCPU.cc.intValue());
-    //  assertEquals(0, myTestCPU.cc.getV());
-    //  assertEquals(0, myTestCPU.cc.bit.n);
-
-        // Logical Shift Left of 1
-        myTestCPU.cc.setC(0);
-        myTestCPU.cc.setV(1);
-        myTestCPU.a.set(1);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x02, myTestCPU.a.intValue());
-        assertEquals(0, myTestCPU.cc.intValue());
-    //  assertEquals(0, myTestCPU.cc.getC());
-    //  assertEquals(0, myTestCPU.cc.getV());
-
-        // Logical Shift Left of 0xB8
-        myTestCPU.cc.setC(0);
-        myTestCPU.cc.setV(0);
-        myTestCPU.a.set(0xB8);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x70, myTestCPU.a.intValue());
-        assertEquals(0x03, myTestCPU.cc.intValue());
-    //  assertEquals(1, myTestCPU.cc.getC());
-        assertEquals(1, myTestCPU.cc.getV());
-    }
-
-    /**
-     * Test the LSR - Logical Shift Right instruction.
-     */
-    @Test
-    public void testLSR() {
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x44); // LSRA
-        // Logical Shift Right of 0x3E to 0x1F
-        myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(0x3E);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x1F, myTestCPU.a.intValue());
-        assertEquals(0x02, myTestCPU.cc.intValue());
-        assertEquals(0, myTestCPU.cc.getC());
-        assertEquals(0, myTestCPU.cc.getN());
-
-        // Logical Shift Right of 1
-        myTestCPU.cc.setC(0);
-        myTestCPU.cc.setV(1);
-        myTestCPU.cc.setN(1);
-        myTestCPU.a.set(1);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x00, myTestCPU.a.intValue());
-        assertEquals(1, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getC());
-        assertEquals(0, myTestCPU.cc.getN());
-
-        // Logical Shift Right of 0xB8
-        myTestCPU.cc.setC(0);
-        myTestCPU.cc.setV(0);
-        myTestCPU.a.set(0xB8);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x5C, myTestCPU.a.intValue());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getC());
-    }
 
     /**
      * Multiply 0x0C with 0x64. Result is 0x04B0.
@@ -683,14 +445,14 @@ public class InstructionsTest {
     public void testMUL() {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
-	myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
-	myTestCPU.a.set(0x0C);
-	myTestCPU.b.set(0x64);
+        myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
+        myTestCPU.a.set(0x0C);
+        myTestCPU.b.set(0x64);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x04B0, myTestCPU.d.intValue());
-	assertEquals(0x04, myTestCPU.a.intValue());
-	assertEquals(0xB0, myTestCPU.b.intValue());
+        myTestCPU.execute();
+        assertEquals(0x04B0, myTestCPU.d.intValue());
+        assertEquals(0x04, myTestCPU.a.intValue());
+        assertEquals(0xB0, myTestCPU.b.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getC());
     }
@@ -704,14 +466,14 @@ public class InstructionsTest {
     public void testMUL0() {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
-	myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
-	myTestCPU.a.set(0x0C);
-	myTestCPU.b.set(0x00);
+        myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
+        myTestCPU.a.set(0x0C);
+        myTestCPU.b.set(0x00);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x0000, myTestCPU.d.intValue());
-	assertEquals(0x00, myTestCPU.a.intValue());
-	assertEquals(0x00, myTestCPU.b.intValue());
+        myTestCPU.execute();
+        assertEquals(0x0000, myTestCPU.d.intValue());
+        assertEquals(0x00, myTestCPU.a.intValue());
+        assertEquals(0x00, myTestCPU.b.intValue());
         assertEquals(1, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getC());
     }
@@ -721,47 +483,47 @@ public class InstructionsTest {
      */
     @Test
     public void testNEG() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x40);
-	// Negate 0
-	myTestCPU.a.set(0);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x40);
+        // Negate 0
+        myTestCPU.a.set(0);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0, myTestCPU.a.intValue());
-	assertEquals(0, myTestCPU.cc.getC());
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.getC());
 
-	// Negate 1
-	myTestCPU.a.set(1);
+        // Negate 1
+        myTestCPU.a.set(1);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xFF, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getC());
+        myTestCPU.execute();
+        assertEquals(0xFF, myTestCPU.a.intValue());
+        assertEquals(1, myTestCPU.cc.getC());
 
-	// Negate 2
-	myTestCPU.a.set(2);
+        // Negate 2
+        myTestCPU.a.set(2);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xFE, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getC());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(0xFE, myTestCPU.a.intValue());
+        assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getV());
 
-	// Negate 0x80
-	myTestCPU.a.set(0x80);
+        // Negate 0x80
+        myTestCPU.a.set(0x80);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x80, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getC());
-	assertEquals(1, myTestCPU.cc.getV());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
+        myTestCPU.execute();
+        assertEquals(0x80, myTestCPU.a.intValue());
+        assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
     }
 
     @Test
     public void testNOP() {
         myTestCPU.write(0xB00, 0x12);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
     }
 
 
@@ -779,104 +541,21 @@ public class InstructionsTest {
 
 
     /**
-     * Rotate 8-Bit Accumulator or Memory Byte Left through Carry.
-     * N The Negative flag is set equal to the new value of bit 7.
-     * Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
-     * V The Overflow flag is set equal to the exclusive-OR of the original values of bits 6 and 7.
-     * C The Carry flag receives the value shifted out of bit 7.
-     */ 
-    @Test
-    public void testROLB() {
-        myTestCPU.write(0xB00, 0x59); // ROLB
-
-        // Rotate 0x89 to 0x13.
-        myTestCPU.b.set(0x89);
-        myTestCPU.cc.clear();
-        myTestCPU.cc.setN(1);
-        myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
-        assertEquals(0x13, myTestCPU.b.intValue());
-        assertEquals(0x03, myTestCPU.cc.intValue());
-        assertEquals(1, myTestCPU.cc.getC());
-
-        // Logical Shift Left of 1 with carry set
-        myTestCPU.cc.setC(1);
-        myTestCPU.cc.setV(1);
-        myTestCPU.b.set(1);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x03, myTestCPU.b.intValue());
-        assertEquals(0, myTestCPU.cc.intValue());
-    //  assertEquals(0, myTestCPU.cc.getC());
-    //  assertEquals(0, myTestCPU.cc.getV());
-
-        // Rotate Left of 0xD8
-        myTestCPU.cc.setC(0);
-        myTestCPU.cc.setV(0);
-        myTestCPU.b.set(0xD8);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0xb0, myTestCPU.b.intValue());
-        assertEquals(0x09, myTestCPU.cc.intValue());
-        assertEquals(1, myTestCPU.cc.getC());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getN());
-    }
-
-    /**
-     * Rotate 8-Bit Accumulator or Memory Byte Right through Carry
-     * N The Negative flag is set equal to the new value of bit 7 (original value of Carry).
-     * Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
-     * V The Overflow flag is not affected by these instructions.
-     * C The Carry flag receives the value shifted out of bit 0.
-     */
-    @Test
-    public void testRORB() {
-        myTestCPU.write(0xB00, 0x56); // RORB
-        // Rotate 0x89 with CC set to 0xC4
-        myTestCPU.b.set(0x89);
-        myTestCPU.cc.clear();
-        myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
-        assertEquals(0xC4, myTestCPU.b.intValue());
-        assertEquals(0x09, myTestCPU.cc.intValue());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(1, myTestCPU.cc.getC());
-
-        // Rotate 0x89 with CC clear to 0x44
-        myTestCPU.b.set(0x89);
-        myTestCPU.cc.clear();
-        myTestCPU.cc.setC(0);
-        myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
-        assertEquals(0x44, myTestCPU.b.intValue());
-        assertEquals(0x01, myTestCPU.cc.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(1, myTestCPU.cc.getC());
-    }
-
-    /**
      * Test the subtraction with carry instruction.
      */
     @Test
     public void testSBCB() {
         myTestCPU.dp.set(0x05);
-	myTestCPU.b.set(0x35);
+        myTestCPU.b.set(0x35);
         myTestCPU.cc.set(0x01);
-	myTestCPU.write(0x0503, 0x03);
-	// Two bytes of instruction
-	myTestCPU.write(0xB00, 0xD2);
-	myTestCPU.write(0xB01, 0x03);
+        myTestCPU.write(0x0503, 0x03);
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0xD2);
+        myTestCPU.write(0xB01, 0x03);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB02, myTestCPU.pc.intValue());
-	assertEquals(0x31, myTestCPU.b.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(0x31, myTestCPU.b.intValue());
         assertEquals(0x20, myTestCPU.cc.intValue());
     }
 
@@ -885,8 +564,8 @@ public class InstructionsTest {
         myTestCPU.b.set(0xE6);
         myTestCPU.write(0xB00, 0x1D);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0xFFE6, myTestCPU.d.intValue());
     }
 
@@ -895,43 +574,54 @@ public class InstructionsTest {
      */
     @Test
     public void testSUBB() {
-	// Test IMMEDIATE mode:   SUBB $202
-	myTestCPU.b.set(2);
-	// Two bytes of instruction
-	myTestCPU.write(0xB00, 0xc0);
-	myTestCPU.write(0xB01, 179);
+        // Test IMMEDIATE mode:   SUBB $202
+        myTestCPU.b.set(2);
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0xc0);
+        myTestCPU.write(0xB01, 179);
         myTestCPU.cc.clear();
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(79, myTestCPU.b.intValue());
-	assertEquals(0xB02, myTestCPU.pc.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
-	assertEquals(1, myTestCPU.cc.getC());
+        myTestCPU.execute();
+        assertEquals(79, myTestCPU.b.intValue());
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
-    //@Test
+    /**
+     * Test INDEXED mode:   SUBB   A,S where A is negative.
+     * B = 0x40
+     * A = 0xF2 = -14
+     * S = 0x210
+     * Read location at stack pointer (0x210) - 14 = 0x202. Value is 0x73.
+     * 0x40 - 0x73 = 0xCD
+     */
+    @Test
     public void testSUBBindexed() {
-	// Test INDEXED mode:   LDB   A,S where A is negative
-	//
-	// Set up a word to test at address 0x202
-	myTestCPU.write_word(0x202, 0x73ff);
-	// Set register A to the offset
-	myTestCPU.b.set(0xF2);
-	// Set register S to point to that location minus 2
-	myTestCPU.s.set(0x210);
-	// Two bytes of instruction
-	myTestCPU.write(0xB00, 0xE0);
-	myTestCPU.write(0xB01, 0xE6);
+        // Test INDEXED mode:   SUBB   A,S where A is negative
+        //
+        // Set up a word to test at address 0x202
+        myTestCPU.write_word(0x202, 0x73ff);
+        myTestCPU.b.set(0x40);
+        // Set register A to the offset = -14
+        myTestCPU.a.set(0xF2);
+        // Set register S to point to that location minus 2
+        myTestCPU.s.set(0x210);
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0xE0); // SUBB
+        myTestCPU.write(0xB01, 0xE6); // 11100110  A,S
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x210, myTestCPU.s.intValue());
-	assertEquals(0x73, myTestCPU.b.intValue());
-	assertEquals(0xB02, myTestCPU.pc.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(0x210, myTestCPU.s.intValue());
+        assertEquals(0xF2, myTestCPU.a.intValue());
+        assertEquals(0xCD, myTestCPU.b.intValue());
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
     /**
@@ -940,21 +630,21 @@ public class InstructionsTest {
      */
     @Test
     public void testSUBD() {
-	myTestCPU.a.set(0x77);
-	myTestCPU.b.set(0x02);
-	myTestCPU.dp.set(0x02);
+        myTestCPU.a.set(0x77);
+        myTestCPU.b.set(0x02);
+        myTestCPU.dp.set(0x02);
         myTestCPU.write(0x0200, 0x01);
         myTestCPU.write(0x0201, 0x23);
-	// Two bytes of instruction
-	myTestCPU.write(0xB00, 0x93); //SUBD
-	myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0x93); //SUBD
+        myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
         myTestCPU.cc.clear();
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x75, myTestCPU.a.intValue());
-	assertEquals(0xDF, myTestCPU.b.intValue());
-	assertEquals(0x75DF, myTestCPU.d.intValue());
-	assertEquals(0xB02, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0x75, myTestCPU.a.intValue());
+        assertEquals(0xDF, myTestCPU.b.intValue());
+        assertEquals(0x75DF, myTestCPU.d.intValue());
+        assertEquals(0xB02, myTestCPU.pc.intValue());
     }
 
     /**
@@ -963,67 +653,67 @@ public class InstructionsTest {
     @Test
     public void testSWI3() {
         myTestCPU.write_word(0xfff2, 0x0300);
-	myTestCPU.s.set(0x1000);
-	myTestCPU.write(0xB00, 0x11);
-	myTestCPU.write(0xB01, 0x3F);
+        myTestCPU.s.set(0x1000);
+        myTestCPU.write(0xB00, 0x11);
+        myTestCPU.write(0xB01, 0x3F);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x0300, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0x0300, myTestCPU.pc.intValue());
         assertEquals(0x1000 - 12, myTestCPU.s.intValue());
-	assertTrue(myTestCPU.cc.isSetE());
+        assertTrue(myTestCPU.cc.isSetE());
     }
 
     @Test
     public void testTFR_d_y() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x1F);
-	myTestCPU.write(0xB01, 0x02);
-	myTestCPU.cc.clear();
-	myTestCPU.d.set(0xABBA);
-	myTestCPU.y.set(0x0101);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x1F);
+        myTestCPU.write(0xB01, 0x02);
+        myTestCPU.cc.clear();
+        myTestCPU.d.set(0xABBA);
+        myTestCPU.y.set(0x0101);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB02, myTestCPU.pc.intValue());
-	assertEquals(0xABBA, myTestCPU.d.intValue());
-	assertEquals(0xABBA, myTestCPU.y.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(0xABBA, myTestCPU.d.intValue());
+        assertEquals(0xABBA, myTestCPU.y.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
     }
 
     @Test
     public void testTFR_s_pc() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x1F);
-	myTestCPU.write(0xB01, 0x45);
-	myTestCPU.cc.clear();
-	myTestCPU.s.set(0x1BB1);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x1F);
+        myTestCPU.write(0xB01, 0x45);
+        myTestCPU.cc.clear();
+        myTestCPU.s.set(0x1BB1);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x1BB1, myTestCPU.pc.intValue());
-	assertEquals(0x1BB1, myTestCPU.s.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(0x1BB1, myTestCPU.pc.intValue());
+        assertEquals(0x1BB1, myTestCPU.s.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
     }
 
     @Test
     public void testTFR_dp_cc() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x1F);
-	myTestCPU.write(0xB01, 0xBA);
-	myTestCPU.cc.clear();
-	myTestCPU.dp.set(0x1B);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x1F);
+        myTestCPU.write(0xB01, 0xBA);
+        myTestCPU.cc.clear();
+        myTestCPU.dp.set(0x1B);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x1B, myTestCPU.dp.intValue());
-	assertEquals(0x1B, myTestCPU.cc.intValue());
-	assertEquals(0, myTestCPU.cc.getH());
-	assertEquals(1, myTestCPU.cc.getI());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(1, myTestCPU.cc.getV());
-	assertEquals(1, myTestCPU.cc.getC());
+        myTestCPU.execute();
+        assertEquals(0x1B, myTestCPU.dp.intValue());
+        assertEquals(0x1B, myTestCPU.cc.intValue());
+        assertEquals(0, myTestCPU.cc.getH());
+        assertEquals(1, myTestCPU.cc.getI());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
     /**
@@ -1033,64 +723,64 @@ public class InstructionsTest {
      */
     @Test
     public void testTSTmemory() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x4D);
-	// Test a = 0xff
-	myTestCPU.cc.clear();
-	myTestCPU.a.set(0xff);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x4D);
+        // Test a = 0xff
+        myTestCPU.cc.clear();
+        myTestCPU.a.set(0xff);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xff, myTestCPU.a.intValue());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(0xff, myTestCPU.a.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
     }
 
     @Test
     public void testTSTacc01() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x4D);
-	//  Test a = 0x01 and V set
-	myTestCPU.cc.clear();
-	myTestCPU.cc.setV(1);
-	myTestCPU.a.set(0x01);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x4D);
+        //  Test a = 0x01 and V set
+        myTestCPU.cc.clear();
+        myTestCPU.cc.setV(1);
+        myTestCPU.a.set(0x01);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0x01, myTestCPU.a.intValue());
-	assertEquals(0, myTestCPU.cc.intValue());
+        myTestCPU.execute();
+        assertEquals(0x01, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
     }
 
     @Test
     public void testTSTacc00() {
-	// Write instruction into memory
-	myTestCPU.write(0xB00, 0x4D);
-	// Test a = 0x00
-	myTestCPU.cc.clear();
-	myTestCPU.a.set(0x00);
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x4D);
+        // Test a = 0x00
+        myTestCPU.cc.clear();
+        myTestCPU.a.set(0x00);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(1, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
     }
 
     @Test
     public void testTSTindirect() {
-	// Test indirect mode: TST ,Y
-	// Set up a byte to test at address 0x205
-	myTestCPU.write(0x205, 0xff);
-	// Set register Y to point to that location
-	myTestCPU.y.set(0x205);
-	// Two bytes of instruction
-	myTestCPU.write(0xB00, 0x6d);
-	myTestCPU.write(0xB01, 0xa4);
+        // Test indirect mode: TST ,Y
+        // Set up a byte to test at address 0x205
+        myTestCPU.write(0x205, 0xff);
+        // Set register Y to point to that location
+        myTestCPU.y.set(0x205);
+        // Two bytes of instruction
+        myTestCPU.write(0xB00, 0x6d);
+        myTestCPU.write(0xB01, 0xa4);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(0, myTestCPU.cc.getZ());
-	assertEquals(0, myTestCPU.cc.getV());
+        myTestCPU.execute();
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
     }
 
 }

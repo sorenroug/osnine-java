@@ -17,6 +17,24 @@ public class LoadStoreTest {
     }
 
 
+    /**
+     * Load 0 into A.
+     */
+    @Test
+    public void testLDAZero() {
+	myTestCPU.a.set(0x02);
+        myTestCPU.cc.setN(1);
+        myTestCPU.cc.setZ(0);
+	myTestCPU.write(0xB00, 0x86);
+	myTestCPU.write(0xB01, 0x00);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+	assertEquals(0x00, myTestCPU.a.intValue());
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(1, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+    }
+
     @Test
     public void testLDA_X_pos() {
 	// Test INDEXED INDIRECT mode:   LDA [$10,X]
