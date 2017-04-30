@@ -805,24 +805,16 @@ public class MC6809 extends USimMotorola {
     private void help_adc(UByte refB) {
         int m = fetch_operand();
 
-        {
-            UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f) + cc.getC());
-            cc.setH(t.btst(4));      // Half carry
-        }
+        int halfCarry = (refB.intValue() & 0x0f) + (m & 0x0f) + cc.getC();
+        cc.setH(btst(halfCarry, 4));         // Half carry
 
-        {
-            UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f) + cc.getC());
-            cc.setV(t.btst(7));      // Bit 7 carry in
-        }
+        int carryIn = (refB.intValue() & 0x7f) + (m & 0x7f) + cc.getC();
+        cc.setV(btst(carryIn, 7));      // Bit 7 carry in
+        int t = refB.intValue() + m + cc.getC();
+        cc.setC(btst(t, 8));         // Bit 7 carry out
+        cc.setV(cc.getV() != cc.getC());
+        refB.set(t);
 
-        {
-            Word t = Word.valueOf(refB.intValue() + m + cc.getC());
-            cc.setC(t.btst(8));      // Bit 7 carry out
-            refB.set(t.intValue());
-        }
-
-    //  cc.bit_v ^= cc.bit_c;
-        //cc.bit_n = refB.btst(7);
         setBitN(refB);
         setBitZ(refB);
     }
@@ -842,27 +834,48 @@ public class MC6809 extends USimMotorola {
     }
 
 
+    /**
+     * Add two 8-bit numbers.
+     * The rules for turning on the overflow flag in binary/integer math are two:
+
+     * 1. If the sum of two numbers with the sign bits off yields a result number
+     *    with the sign bit on, the "overflow" flag is turned on.
+
+     *    0100 + 0100 = 1000 (overflow flag is turned on)
+
+     * 2. If the sum of two numbers with the sign bits on yields a result number
+     *    with the sign bit off, the "overflow" flag is turned on.
+
+     *    1000 + 1000 = 0000 (overflow flag is turned on)
+
+     * Otherwise, the overflow flag is turned off.
+     * 0100 + 0001 = 0101 (overflow flag is turned off)
+     * 0110 + 1001 = 1111 (overflow flag is turned off)
+     * 1000 + 0001 = 1001 (overflow flag is turned off)
+     * 1100 + 1100 = 1000 (overflow flag is turned off)
+
+     * Note that you only need to look at the sign bits (leftmost) of the three
+     * numbers to decide if the overflow flag is turned on or off.
+
+     * If you are doing two's complement (signed) arithmetic, overflow flag on
+     * means the answer is wrong - you added two positive numbers and got a
+     * negative, or you added two negative numbers and got a positive.
+     */
     private void help_add(UByte refB) {
         int m = fetch_operand();
 
-        {
-            UByte t = UByte.valueOf((refB.intValue() & 0x0f) + (m & 0x0f));
-            cc.setH(t.btst(4));      // Half carry
-        }
+        int halfCarry = (refB.intValue() & 0x0f) + (m & 0x0f);
+        cc.setH(btst(halfCarry, 4));         // Half carry
 
-        {
-            UByte t = UByte.valueOf((refB.intValue() & 0x7f) + (m & 0x7f));
-            cc.setV(t.btst(7));      // Bit 7 carry in
-        }
+        int carryIn = (refB.intValue() & 0x7f) + (m & 0x7f);
+        cc.setV(btst(carryIn, 7));      // Bit 7 carry in
 
-        {
-            Word t = Word.valueOf(refB.intValue() + m);
-            cc.setC(t.btst(8));      // Bit 7 carry out
-            refB.set(t.intValue() & 0xff);
-        }
+        int t = refB.intValue() + m;
+        cc.setC(btst(t, 8));
+        cc.setV(cc.getV() != cc.getC());
+        refB.set(t);
 
-    //  cc.bit_v ^= cc.bit_c;
-        cc.setN(refB.btst(7));
+        setBitN(refB);
         setBitZ(refB);
     }
 
@@ -890,10 +903,10 @@ public class MC6809 extends USimMotorola {
         d.set(newD);
         //cc.bit_v = btst(intD ^ m ^ t ^ (t >> 1), 15);
         cc.setC(newD > 0xffff);
-        cc.setV(!cc.isSetC());      // Bit 15 carry in
-
-    //  cc.bit_v ^= cc.bit_c;
         cc.setN(d.btst(15));
+        //suspecious way to set V
+        //cc.setV(!cc.isSetC());      // Bit 15 carry in
+        cc.setV(cc.getN() != cc.getC());
         setBitZ(d);
     }
 
@@ -1179,12 +1192,12 @@ public class MC6809 extends USimMotorola {
 
         cc.setH((t & 0x0f) < (m & 0x0f));
 
-        int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
-        cc.setV(btst(tmp, 7));
+//      int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
+//      cc.setV(btst(tmp, 7));
         cc.setC(btst(t, 8));
-
         cc.setN(btst(t, 7));
-        cc.setZ(t == 0 ? 1 : 0);
+        cc.setV(cc.getN() != cc.getC());
+        cc.setZ(t == 0);
     }
 
     private void cmpd() {
@@ -1211,12 +1224,12 @@ public class MC6809 extends USimMotorola {
         int m = fetch_word_operand();
         int t = reg.intValue() - m;
 
-        int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
-        cc.setV(btst(tmp, 15));
+//      int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
+//      cc.setV(btst(tmp, 15));
         cc.setC(btst(t, 16));
-
         cc.setN(btst(t, 15));
-        cc.setZ(t == 0 ? 1 : 0);
+        cc.setV(cc.getN() != cc.getC());
+        cc.setZ(t == 0);
     }
 
     private void coma() {
@@ -1794,10 +1807,10 @@ public class MC6809 extends USimMotorola {
         int t = regB.intValue() - m - cc.getC();
 
         cc.setH(((t & 0x0f) < (m & 0x0f))); // half-carry
-        cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
+        //cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
-
         cc.setN(btst(t, 7));
+        cc.setV(cc.getN() != cc.getC());
         cc.setZ(t == 0);
         regB.set(t);
     }
@@ -1864,10 +1877,10 @@ public class MC6809 extends USimMotorola {
         int m = fetch_operand();
         int t = regB.intValue() - m;
 
-        cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
+        //cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
-
         cc.setN(btst(t, 7));
+        cc.setV(cc.getN() != cc.getC());
         cc.setZ(t == 0);
         regB.set(t);
     }
@@ -1876,10 +1889,10 @@ public class MC6809 extends USimMotorola {
         int m = fetch_word_operand();
         int t = d.intValue() - m;
 
-        cc.setV(btst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
+        //cc.setV(btst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
         cc.setC(btst(t, 16));
-
         cc.setN(btst(t, 15));
+        cc.setV(cc.getN() != cc.getC());
         cc.setZ(t == 0);
         d.set(t);
     }

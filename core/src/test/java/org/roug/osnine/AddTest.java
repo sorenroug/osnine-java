@@ -57,6 +57,24 @@ public class AddTest {
     }
 
 
+    /**
+     * Add Accumulator B into index register X.
+     * The ABX instruction was included in the 6809 instruction set for
+     * compatibility with the 6801 microprocessor.
+     */
+    @Test
+    public void testABX() throws IOException {
+        int instructions[] = {
+            0x3a // ABX
+        };
+        loadProg(instructions);
+        setCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
+        myTestCPU.execute();
+        assertEquals(0x3a, myTestCPU.ir);
+        assertEquals(LOCATION + 1, myTestCPU.pc.intValue());
+        chkCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
+    }
+
     @Test
     public void testADCANoCarry() {
         int instructions[] = {
@@ -109,6 +127,65 @@ public class AddTest {
         chkCC_A_B_DP_X_Y_S_U(CC.Hmask, 0x40, 0, 0, 0, 0, 0, 0);
     }
 
+    @Test
+    public void testADDB() {
+        // positive + positive with overflow
+        // B=0x40 + 0x41 becomes 0x81 or -127
+        myTestCPU.cc.clear();
+        myTestCPU.b.set(0x40);
+        myTestCPU.write(0xB00, 0xCB);
+        myTestCPU.write(0xB01, 0x41);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x81, myTestCPU.b.intValue());
+	assertEquals(1, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(1, myTestCPU.cc.getV());
+	assertEquals(0, myTestCPU.cc.getC());
+
+        // negative + negative
+        // B=0xFF + 0xFF becomes 0xFE or -2
+        myTestCPU.cc.clear();
+        myTestCPU.b.set(0xFF);
+        myTestCPU.write(0xB00, 0xCB);
+        myTestCPU.write(0xB01, 0xFF);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xFE, myTestCPU.b.intValue());
+	assertEquals(1, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+	assertEquals(1, myTestCPU.cc.getC());
+
+        // negative + negative with overflow
+        // B=0xC0 + 0xBF becomes 0x7F or 127
+        myTestCPU.cc.clear();
+        myTestCPU.b.set(0xC0);
+        myTestCPU.write(0xB00, 0xCB);
+        myTestCPU.write(0xB01, 0xBF);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x7F, myTestCPU.b.intValue());
+	assertEquals(0, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(1, myTestCPU.cc.getV());
+	assertEquals(1, myTestCPU.cc.getC());
+
+        // positive + negative with negative result
+        // B=0x02 + 0xFC becomes 0xFE or -2
+        myTestCPU.cc.clear();
+        myTestCPU.b.set(0x02);
+        myTestCPU.write(0xB00, 0xCB);
+        myTestCPU.write(0xB01, 0xFC);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xFE, myTestCPU.b.intValue());
+	assertEquals(1, myTestCPU.cc.getN());
+	assertEquals(0, myTestCPU.cc.getZ());
+	assertEquals(0, myTestCPU.cc.getV());
+	assertEquals(0, myTestCPU.cc.getC());
+    }
+
     /**
      * Add 0x02 to A=0x04.
      */
@@ -135,12 +212,12 @@ public class AddTest {
     }
 
     /**
-     * Add 0xFF to A=0x03.
      * The overflow (V) bit indicates signed two’s complement overflow, which occurs when the
      * sign bit differs from the carry bit after an arithmetic operation.
      */
     @Test
     public void testADDAWithCarry() {
+        // A=0x03 + 0xFF becomes 0x02
         int instructions[] = {
             0x8B, // ADDA
             0xFF, // value
@@ -151,7 +228,7 @@ public class AddTest {
         myTestCPU.execute();
         assertEquals(0x02, myTestCPU.a.intValue());
         assertFalse(myTestCPU.cc.isSetN());
-        assertTrue(myTestCPU.cc.isSetV());
+        assertFalse(myTestCPU.cc.isSetV());
         assertTrue(myTestCPU.cc.isSetC());
     }
 

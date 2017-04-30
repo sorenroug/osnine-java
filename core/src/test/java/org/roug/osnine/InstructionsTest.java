@@ -57,20 +57,6 @@ public class InstructionsTest {
     }
 
     @Test
-    public void testABX() throws IOException {
-        int instructions[] = {
-            0x3a // ABX
-        };
-        loadProg(instructions);
-        setCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x8006, 0, 0, 0);
-        myTestCPU.execute();
-        assertEquals(0x3a, myTestCPU.ir);
-        assertEquals(LOCATION + 1, myTestCPU.pc.intValue());
-        chkCC_A_B_DP_X_Y_S_U(0, 0, 0xCE, 0, 0x80D4, 0, 0, 0);
-    }
-
-
-    @Test
     public void testANDA() {
         myTestCPU.a.set(0x8B);
         myTestCPU.dp.set(0x0A);
@@ -173,67 +159,6 @@ public class InstructionsTest {
         assertEquals(0, result);
     }
 
-    /**
-     * Test indirect mode: CMPA ,Y+
-     * We're subtracting 0xff from 0xff and incrementing Y
-     */
-    @Test
-    public void testCMP() {
-        // Set up a byte to test at address 0x205
-        myTestCPU.write(0x205, 0xff);
-        myTestCPU.cc.clear();
-        // Set register Y to point to that location
-        myTestCPU.y.set(0x205);
-        myTestCPU.a.set(0xff);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xA1);  // CMPA indexed
-        myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0xB00 + 2, myTestCPU.pc.intValue());
-        chkCC_A_B_DP_X_Y_S_U(CC.Hmask + CC.Zmask, 0xff, 0, 0, 0, 0x206, 0, 0);
-
-        // B = 0xA0, CMPB with 0xA0
-        myTestCPU.cc.setN(1);
-        myTestCPU.cc.setZ(0);
-        myTestCPU.b.set(0xA0);
-        myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
-        myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0, myTestCPU.cc.getN());
-        assertEquals(1, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(0, myTestCPU.cc.getC());
-
-        // B = 0x70, CMPB with 0xA0
-        myTestCPU.cc.clear();
-        myTestCPU.b.set(0x70);
-        myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
-        myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(1, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
-        assertEquals(1, myTestCPU.cc.getC());
-    }
-
-    @Test
-    public void testCMP16ext() {
-        myTestCPU.x.set(0x5410);
-        myTestCPU.cc.set(0x23);
-        myTestCPU.write(0x0B33, 0x54);
-        myTestCPU.write(0x0B34, 0x10);
-
-        myTestCPU.write(0x0B00, 0xBC);
-        myTestCPU.write(0x0B01, 0x0B);
-        myTestCPU.write(0x0B02, 0x33);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x5410, myTestCPU.x.intValue());
-        assertEquals(0x24, myTestCPU.cc.intValue());
-    }
 
     /**
      * Complement a memory location.
@@ -285,43 +210,6 @@ public class InstructionsTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x85, myTestCPU.a.intValue());
-        assertEquals(1, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(0, myTestCPU.cc.getC());
-    }
-
-    /**
-     * Decrement register A.
-     */
-    @Test
-    public void testDECA() {
-        myTestCPU.cc.clear();
-        myTestCPU.a.set(0x32);
-        myTestCPU.write(0xB00, 0x4A);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x31, myTestCPU.a.intValue());
-        assertEquals(0, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(0, myTestCPU.cc.getC());
-
-        // Test 0x80 - special case
-        myTestCPU.a.set(0x80);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x7F, myTestCPU.a.intValue());
-        assertEquals(0, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
-        assertEquals(0, myTestCPU.cc.getC());
-
-        // Test 0x00 - special case
-        myTestCPU.a.set(0x00);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0xFF, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -540,24 +428,6 @@ public class InstructionsTest {
     }
 
 
-    /**
-     * Test the subtraction with carry instruction.
-     */
-    @Test
-    public void testSBCB() {
-        myTestCPU.dp.set(0x05);
-        myTestCPU.b.set(0x35);
-        myTestCPU.cc.set(0x01);
-        myTestCPU.write(0x0503, 0x03);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xD2);
-        myTestCPU.write(0xB01, 0x03);
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0xB02, myTestCPU.pc.intValue());
-        assertEquals(0x31, myTestCPU.b.intValue());
-        assertEquals(0x20, myTestCPU.cc.intValue());
-    }
 
     @Test
     public void testSEX() {
@@ -569,83 +439,6 @@ public class InstructionsTest {
         assertEquals(0xFFE6, myTestCPU.d.intValue());
     }
 
-    /**
-     * Test the subtraction instruction.
-     */
-    @Test
-    public void testSUBB() {
-        // Test IMMEDIATE mode:   SUBB $202
-        myTestCPU.b.set(2);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xc0);
-        myTestCPU.write(0xB01, 179);
-        myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(79, myTestCPU.b.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
-        assertEquals(0, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(1, myTestCPU.cc.getC());
-    }
-
-    /**
-     * Test INDEXED mode:   SUBB   A,S where A is negative.
-     * B = 0x40
-     * A = 0xF2 = -14
-     * S = 0x210
-     * Read location at stack pointer (0x210) - 14 = 0x202. Value is 0x73.
-     * 0x40 - 0x73 = 0xCD
-     */
-    @Test
-    public void testSUBBindexed() {
-        // Test INDEXED mode:   SUBB   A,S where A is negative
-        //
-        // Set up a word to test at address 0x202
-        myTestCPU.write_word(0x202, 0x73ff);
-        myTestCPU.b.set(0x40);
-        // Set register A to the offset = -14
-        myTestCPU.a.set(0xF2);
-        // Set register S to point to that location minus 2
-        myTestCPU.s.set(0x210);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xE0); // SUBB
-        myTestCPU.write(0xB01, 0xE6); // 11100110  A,S
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x210, myTestCPU.s.intValue());
-        assertEquals(0xF2, myTestCPU.a.intValue());
-        assertEquals(0xCD, myTestCPU.b.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
-        assertEquals(1, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(1, myTestCPU.cc.getC());
-    }
-
-    /**
-     * Test the subtraction instruction for D.
-     * We subtract the content of the DP + 0
-     */
-    @Test
-    public void testSUBD() {
-        myTestCPU.a.set(0x77);
-        myTestCPU.b.set(0x02);
-        myTestCPU.dp.set(0x02);
-        myTestCPU.write(0x0200, 0x01);
-        myTestCPU.write(0x0201, 0x23);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0x93); //SUBD
-        myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
-        myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
-        myTestCPU.execute();
-        assertEquals(0x75, myTestCPU.a.intValue());
-        assertEquals(0xDF, myTestCPU.b.intValue());
-        assertEquals(0x75DF, myTestCPU.d.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
-    }
 
     /**
      * Test SWI3.
