@@ -1807,10 +1807,9 @@ public class MC6809 extends USimMotorola {
         int t = regB.intValue() - m - cc.getC();
 
         cc.setH(((t & 0x0f) < (m & 0x0f))); // half-carry
-        //cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
+        cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
         cc.setN(btst(t, 7));
-        cc.setV(cc.getN() != cc.getC());
         cc.setZ(t == 0);
         regB.set(t);
     }
@@ -1877,10 +1876,10 @@ public class MC6809 extends USimMotorola {
         int m = fetch_operand();
         int t = regB.intValue() - m;
 
-        //cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
+        cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
         cc.setN(btst(t, 7));
-        cc.setV(cc.getN() != cc.getC());
+        //cc.setV(cc.getN() != cc.getC());
         cc.setZ(t == 0);
         regB.set(t);
     }

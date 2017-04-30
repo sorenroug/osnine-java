@@ -1408,6 +1408,7 @@ public class DisAssembler {
             cpu.u.intValue(), cpu.s.intValue());
         output("%04X: ", cpu.pc.intValue());
         opcodeSwitch(optable, code, cpu.pc.intValue(), "   ");
+        output("\n");
     }
 
     /**

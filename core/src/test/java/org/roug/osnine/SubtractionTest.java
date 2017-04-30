@@ -221,7 +221,7 @@ public class SubtractionTest {
         assertEquals(0x01, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
 
@@ -266,7 +266,7 @@ public class SubtractionTest {
         assertEquals(0x01, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
 
@@ -305,7 +305,7 @@ public class SubtractionTest {
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
 
@@ -340,7 +340,7 @@ public class SubtractionTest {
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getV());
         assertEquals(0, myTestCPU.cc.getC());
     }
 
@@ -372,6 +372,26 @@ public class SubtractionTest {
         assertEquals(0xF2, myTestCPU.a.intValue());
         assertEquals(0xCD, myTestCPU.b.intValue());
         assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
+    }
+
+    /**
+     * Example from Programming the 6809.
+     */
+    @Test
+    public void testSUBBcommaY() {
+        myTestCPU.b.set(0x03);
+        myTestCPU.y.set(0x0021);
+        myTestCPU.cc.set(0x44);
+        myTestCPU.write(0x21, 0x21);
+        myTestCPU.write(0xB00, 0xE0); // SUBB
+        myTestCPU.write(0xB01, 0xA4); // 10100100  ,Y
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xE2, myTestCPU.b.intValue());
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
