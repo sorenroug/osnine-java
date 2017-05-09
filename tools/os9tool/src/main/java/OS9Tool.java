@@ -5,7 +5,10 @@ public class OS9Tool {
 
     private static void usage(String msg) {
         System.err.println("Error: " + msg);
-        System.err.println("Usage: OS9Tool ident ...");
+        System.err.println("Usage: OS9Tool subcommand ...");
+        System.err.println("ident: Show information about OS9 module");
+        System.err.println("diskinfo: Show information about disk image");
+        System.err.println("createmodule: ");
         System.exit(2);
     }
 
