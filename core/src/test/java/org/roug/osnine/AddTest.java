@@ -196,7 +196,7 @@ public class AddTest {
             0x02, // value
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
+        myTestCPU.cc.setC(0);
         myTestCPU.a.set(0x04);
         myTestCPU.b.set(0x05);
         myTestCPU.execute();
@@ -223,7 +223,7 @@ public class AddTest {
             0xFF, // value
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
+        myTestCPU.cc.setC(0);
         myTestCPU.a.set(0x03);
         myTestCPU.execute();
         assertEquals(0x02, myTestCPU.a.intValue());
@@ -233,7 +233,8 @@ public class AddTest {
     }
 
     /**
-     * Add 0x02B0 to D=0x0405.
+     * Add 0x02B0 to D=0x0405 becomes 0x6B5.
+     * positive + positive = positive
      */
     @Test
     public void testADDDNoCarry() {
@@ -243,7 +244,7 @@ public class AddTest {
             0xB0  // value
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
+        myTestCPU.cc.setC(0);
         myTestCPU.a.set(0x04);
         myTestCPU.b.set(0x05);
         myTestCPU.execute();
@@ -252,12 +253,65 @@ public class AddTest {
         assertEquals(0x06, myTestCPU.a.intValue());
         assertEquals(0xB5, myTestCPU.b.intValue());
         assertEquals(0x06B5, myTestCPU.d.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
     }
 
+    /**
+     */
+    @Test
+    public void testADDD2() {
+        // Add 0xE2B0 to D=0x8405 becomes 0x66B5.
+        // negative + negative = positive + overflow
+        int instructions[] = {
+            0xC3, // ADDD
+            0xE2, // value
+            0xB0  // value
+        };
+        loadProg(instructions);
+        myTestCPU.cc.setC(0);
+        myTestCPU.d.set(0x8405);
+        myTestCPU.execute();
+        assertEquals(0x66B5, myTestCPU.d.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
+
+        // negative + negative = negative
+        // Add 0xE000 to D=0xD000 becomes 0xB000
+        myTestCPU.cc.clear();
+        myTestCPU.d.set(0xD000);
+        myTestCPU.write(0xB00, 0xC3);
+        myTestCPU.write_word(0xB01, 0xE000);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xB000, myTestCPU.d.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
+
+        // positive + positive = negative + overflow
+        // Add 0x7000 to D=0x7000 becomes 0xE000
+        myTestCPU.cc.clear();
+        myTestCPU.d.set(0x7000);
+        myTestCPU.write(0xB00, 0xC3);
+        myTestCPU.write_word(0xB01, 0x7000);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xE000, myTestCPU.d.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
+    }
 
     /**
-     * Add value of SP=0x92FC to D=00C5.
+     * Add value of SP=0x92FC to D=00C5 becomes 0x93C1.
+     * negative + positive = negative
      */
     @Test
     public void testADDDstackpointer() {
@@ -266,15 +320,18 @@ public class AddTest {
             0xE4  // ,SP
         };
         loadProg(instructions);
-        myTestCPU.cc.bit_c = 0;
+        myTestCPU.cc.setC(0);
         myTestCPU.s.set(0x1202);
         myTestCPU.a.set(0x00);
         myTestCPU.b.set(0xC5);
 	myTestCPU.write_word(0x1202, 0x92FC);
         myTestCPU.execute();
         assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-        assertEquals(0x93c1, myTestCPU.d.intValue());
-        assertEquals(0, myTestCPU.cc.bit_c);
+        assertEquals(0x93C1, myTestCPU.d.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
     }
 
     /**

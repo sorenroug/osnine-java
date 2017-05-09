@@ -10,21 +10,24 @@ import org.slf4j.LoggerFactory;
 
 public class PDStdIn extends PathDesc {
 
-    private InputStream fp;
+    /** Whether to convert OS9 line endings to UNIX. */
+    private static boolean unixEOLs = true;
+
+    private InputStream infp;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PDStdIn.class);
 
     public PDStdIn(InputStream ifp) {
         super();
         usecount++;
-        fp = ifp;
+        infp = ifp;
     }
 
     @Override
     public int close() {
         if (usecount == 1) {
             try {
-                fp.close();
+                infp.close();
             } catch (Exception e) {
             }
         }
@@ -36,7 +39,7 @@ public class PDStdIn extends PathDesc {
     public int read(byte[] buf, int size) {
         int c;
         try {
-            c = fp.read(buf, 0, size);
+            c = infp.read(buf, 0, size);
         } catch (IOException e) {
             errorcode = ErrCodes.E_EOF;
             return -1;
@@ -58,7 +61,7 @@ public class PDStdIn extends PathDesc {
 
         try {
             for (i = 0; i < size; i++) {
-                r = fp.read(c);
+                r = infp.read(c);
                 if (r == -1) {
                     return i;
                 }
@@ -156,4 +159,18 @@ public class PDStdIn extends PathDesc {
             break;
         }
     }
+
+    /**
+     * Tell path descriptors to convert to UNIX line endings.
+     *
+     * @param useUNIX - If true then use UNIX.
+     */
+    public static void setUNIXSemantics(boolean useUNIX) {
+        unixEOLs = useUNIX;
+    }
+
+    private boolean convertToUNIX() {
+        return unixEOLs;
+    }
+
 }

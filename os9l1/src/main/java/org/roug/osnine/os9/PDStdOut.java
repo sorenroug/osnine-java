@@ -1,5 +1,6 @@
 package org.roug.osnine.os9;
 
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.io.IOException;
@@ -13,7 +14,12 @@ import org.slf4j.LoggerFactory;
  */
 public class PDStdOut extends PathDesc {
 
+    /** Whether to convert OS9 line endings to UNIX. */
+    private static boolean unixEOLs = true;
+
     PrintStream fp;
+
+    private InputStream infp;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PDStdOut.class);
 
@@ -21,6 +27,7 @@ public class PDStdOut extends PathDesc {
         super();
         usecount++;
         this.fp = fp;
+        infp = System.in;
     }
 
 
@@ -38,8 +45,14 @@ public class PDStdOut extends PathDesc {
 
     @Override
     public int read(byte[] buf, int size) {
-        LOGGER.warn("Reading binary from stdout");
-        return -1;
+        int c;
+        try {
+            c = infp.read(buf, 0, size);
+        } catch (IOException e) {
+            errorcode = ErrCodes.E_EOF;
+            return -1;
+        }
+        return c;
     }
 
     /**
@@ -51,13 +64,32 @@ public class PDStdOut extends PathDesc {
      */
     @Override
     public int readln(byte[] buf, int size) {
-        LOGGER.warn("Reading text from stdout");
-        return -1;
+        byte c[] = new byte[1];
+        int i, r;
+
+        try {
+            for (i = 0; i < size; i++) {
+                r = infp.read(c);
+                if (r == -1) {
+                    return i;
+                }
+                if (c[0] == NEW_LINE) // Do conversion
+                    c[0] = CARRIAGE_RETURN;
+                buf[i] = c[0];
+                if (c[0] == CARRIAGE_RETURN) {
+                    i++;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            errorcode = ErrCodes.E_EOF;
+            return -1;
+        }
+        return i;
     }
 
     /**
      * Write buffer to terminal.
-     * FIXME: convert to \n here?
      */
     @Override
     public int write(byte[] buf, int size) {
@@ -73,11 +105,13 @@ public class PDStdOut extends PathDesc {
     public int writeln(byte[] buf, int size) {
         int inx = 0;
      
-        for (inx = 0; inx < size;) {
-            fp.write(buf[inx]);
-            if (buf[inx++] == CARRIAGE_RETURN) {
-                fp.write(NEW_LINE);
+        for (inx = 0; inx < size; inx++) {
+            if (buf[inx] == CARRIAGE_RETURN) {
+                fp.write(convertToUNIX() ? NEW_LINE : CARRIAGE_RETURN);
+                inx++;
                 break;
+            } else {
+                fp.write(buf[inx]);
             }
         }
         fp.flush();
@@ -127,4 +161,18 @@ public class PDStdOut extends PathDesc {
             break;
         }
     }
+
+    /**
+     * Tell path descriptors to convert to UNIX line endings.
+     *
+     * @param useUNIX - If true then use UNIX.
+     */
+    public static void setUNIXSemantics(boolean useUNIX) {
+        unixEOLs = useUNIX;
+    }
+
+    private boolean convertToUNIX() {
+        return unixEOLs;
+    }
+
 }

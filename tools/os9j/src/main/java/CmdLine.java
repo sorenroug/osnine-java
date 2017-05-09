@@ -24,14 +24,17 @@ public class CmdLine {
      */
     public static void main(String[] args) throws Exception {
         int memoryAlloc = 0;
-        OptionParser op = new OptionParser(args, "m:ou");
+        OptionParser op = new OptionParser(args, "m:ouO");
 
         String memoryArg = op.getOptionArgument("m");
         if (memoryArg != null) {
             memoryAlloc = Integer.decode(memoryArg);
         }
-        if (op.getOptionFlag('o')) {
+        if (op.getOptionFlag('o') || op.getOptionFlag('O')) {
             DevUnix.setUNIXSemantics(false);
+        }
+        if (op.getOptionFlag('O')) {
+            PDStdOut.setUNIXSemantics(false);
         }
         if (op.getOptionFlag('u')) {
             DevUnix.setUNIXSemantics(true);

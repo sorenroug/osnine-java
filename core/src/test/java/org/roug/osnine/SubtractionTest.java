@@ -90,6 +90,7 @@ public class SubtractionTest {
         assertEquals(0, myTestCPU.cc.getC());
 
         // B = 0x70, CMPB with 0xA0
+        // positive - negative = negative + overflow
         myTestCPU.cc.clear();
         myTestCPU.b.set(0x70);
         myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
@@ -98,7 +99,7 @@ public class SubtractionTest {
         myTestCPU.execute();
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
 
@@ -254,6 +255,7 @@ public class SubtractionTest {
     @Test
     public void testSUBA1() {
         // A=0x00 - 0xFF becomes 0x01
+        // positive - negative = positive
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -273,6 +275,7 @@ public class SubtractionTest {
     @Test
     public void testSUBA2() {
         // A=0x00 - 0x01 becomes 0xFF
+        // positive - positive = negative
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -292,9 +295,10 @@ public class SubtractionTest {
     /**
      * Test the subtraction instruction.
      * IMMEDIATE mode:   B=0x02 - 0xB3  becomes 0x4F
+     * positive - negative = positive
      */
     @Test
-    public void testSUBB() {
+    public void testSUBB1() {
         myTestCPU.b.set(0x02);
         myTestCPU.write(0xB00, 0xC0); // SUBB
         myTestCPU.write(0xB01, 0xB3);
@@ -309,6 +313,27 @@ public class SubtractionTest {
         assertEquals(1, myTestCPU.cc.getC());
     }
 
+    /**
+     * Test the subtraction instruction.
+     * IMMEDIATE mode:   B=0x02 - 0x81  becomes 0x81
+     * positive - negative = negative + overflow
+     */
+    @Test
+    public void testSUBB2() {
+        myTestCPU.b.set(0x02);
+        myTestCPU.write(0xB00, 0xC0); // SUBB
+        myTestCPU.write(0xB01, 0x81);
+        myTestCPU.cc.clear();
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x81, myTestCPU.b.intValue());
+        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
+    }
+
 
     /**
      * Test INDEXED mode:   SUBA   B,S where B is negative.
@@ -317,6 +342,7 @@ public class SubtractionTest {
      * S = 0x210
      * Read location at stack pointer (0x210) - 14 = 0x202. Value is 0x73.
      * 0x99 - 0x73 = 0x26
+     * negative - positive = positive + overflow
      * The overflow (V) bit indicates signed two’s complement overflow, which occurs when the
      * sign bit differs from the carry bit after an arithmetic operation.
      */
@@ -351,6 +377,7 @@ public class SubtractionTest {
      * S = 0x210
      * Read location at stack pointer (0x210) - 14 = 0x202. Value is 0x73.
      * 0x40 - 0x73 = 0xCD
+     * positive - positive = negative
      */
     @Test
     public void testSUBBindexed() {
@@ -380,6 +407,8 @@ public class SubtractionTest {
 
     /**
      * Example from Programming the 6809.
+     * 0x03 - 0x21 = 0xE2
+     * positive - positive = negative
      */
     @Test
     public void testSUBBcommaY() {
@@ -402,6 +431,7 @@ public class SubtractionTest {
      * Test the subtraction instruction for D.
      * We subtract the content of the DP + 0
      * D=0x7702 - addr(0200)=0x0123 becomes 0x75DF
+     * positive - positive = positive
      */
     @Test
     public void testSUBD1() {
@@ -431,6 +461,7 @@ public class SubtractionTest {
      * Test the subtraction instruction for D.
      * We subtract the content of the DP + 0
      * D=0x0705 - 0x0123 becomes 0x05E2
+     * positive - positive = positive
      */
     @Test
     public void testSUBD2() {
@@ -454,11 +485,11 @@ public class SubtractionTest {
      * Test the subtraction instruction for D.
      * We subtract the content of the DP + 0
      * D=0x0702 - 0xF123 becomes 0x15DF
+     * positive - negative = positive
      */
     @Test
     public void testSUBD3() {
         myTestCPU.d.set(0x0702);
-        // Two bytes of instruction
         myTestCPU.write(0xB00, 0x83); //SUBD
         myTestCPU.write_word(0xB01, 0xF123);
         myTestCPU.cc.clear();
@@ -468,9 +499,26 @@ public class SubtractionTest {
         assertEquals(0xB03, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
 
+    @Test
+    public void testSUBD4() {
+        // D=0x0800 - 0x8000 = 8800
+        // positive - negative = negative + overflow
+        myTestCPU.d.set(0x0800);
+        myTestCPU.write(0xB00, 0x83); //SUBD
+        myTestCPU.write_word(0xB01, 0x8000);
+        myTestCPU.cc.clear();
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x8800, myTestCPU.d.intValue());
+        assertEquals(0xB03, myTestCPU.pc.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
+    }
 
 }
