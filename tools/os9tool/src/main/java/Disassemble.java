@@ -27,18 +27,25 @@ public class Disassemble {
         return loadAddress;
     }
 
-    public Disassemble(String fileName) throws Exception {
-        MC6809 cpu = new MC6809(0xff00);
-        int startAddress = 0x100;
-        int endAddress = loadModule(cpu, fileName, 0x100);
-        DisAssembler disasm = new DisAssembler(cpu);
-        disasm.disasm(startAddress,endAddress);
-    }
-
     public static void main(String[] args) throws Exception {
-        if (args.length == 0) {
+        OptionParser op = new OptionParser(args, "s:");
+        int loadAddress = 0x100;
+        int startAddress = loadAddress;
+
+        String sArg = op.getOptionArgument("s");
+        if (sArg != null) {
+            startAddress = Integer.decode(sArg);
+        }
+
+        String[] extraArguments = op.getUnusedArguments();
+        if (extraArguments.length == 0) {
             usage("No file argument");
         }
-        Disassemble ident = new Disassemble(args[0]);
+        String fileName = extraArguments[0];
+
+        MC6809 cpu = new MC6809(0xff00);
+        int endAddress = loadModule(cpu, fileName, loadAddress);
+        DisAssembler disasm = new DisAssembler(cpu);
+        disasm.disasm(startAddress, endAddress);
     }
 }

@@ -12,3 +12,6 @@ RAM from its own location to find other modules.
 
 OS9 installs a few system calls and then calls OS9p2, which installs
 more system calls and attempts a link to IOMan.
+
+TODO:
+Implement the CWAI instruction. Implement IRQ 50 times a second (or 100?)

@@ -21,6 +21,8 @@ public class OS9Tool {
 
         if ("ident".equals(subCommand)) {
             Ident.main(extraArgs);
+        } else if ("disasm".equals(subCommand)) {
+            Disassemble.main(extraArgs);
         } else if ("diskinfo".equals(subCommand)) {
             DiskInfo.main(extraArgs);
         } else if ("createmodule".equals(subCommand)) {

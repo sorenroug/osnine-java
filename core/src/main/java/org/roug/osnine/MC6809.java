@@ -5,6 +5,14 @@ import org.slf4j.LoggerFactory;
 
 public class MC6809 extends USimMotorola {
 
+    public static final int SWI3_ADDR = 0xfff2;
+    public static final int SWI2_ADDR = 0xfff4;
+    public static final int FIRQ_ADDR = 0xfff6;
+    public static final int IRQ_ADDR = 0xfff8;
+    public static final int SWI_ADDR = 0xfffa;
+    public static final int NMI_ADDR = 0xfffc;
+    public static final int RESET_ADDR = 0xfffe;
+
     private static final int IMMEDIATE = 0;
     private static final int RELATIVE = 0;
     private static final int INHERENT = 1;
@@ -49,6 +57,8 @@ public class MC6809 extends USimMotorola {
 
     /** Did the CPU receive an IRQ? */
     private boolean receivedIRQ;
+
+    private boolean waitState = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MC6809.class);
 
@@ -108,7 +118,7 @@ public class MC6809 extends USimMotorola {
      * two bytes in memory. Direct page register is set to 0.
      */
     public void reset() {
-        pc.set(read_word(0xfffe));
+        pc.set(read_word(RESET_ADDR));
         dp.set(0x00);      // Direct page register = 0x00
         cc.clear();      // Clear all flags
         cc.setI(1);       // IRQ disabled
@@ -293,6 +303,8 @@ public class MC6809 extends USimMotorola {
     //      case 0x03: case 0x63: case 0x73:
             case 0x03: case 0x62: case 0x63: case 0x73:
                 com(); break;
+            case 0x3c:
+                cwai(); break;
             case 0x19:
                 daa(); break;
             // BDA - Adding in undocumented 6809 instructions
@@ -1255,6 +1267,24 @@ public class MC6809 extends USimMotorola {
         setBitZ(tx);
     }
 
+    /**
+     * Puts the registers on stack and waits for an interrupt.
+     * This makes the MPU react faster to interrupts.
+     * TODO: If the I-bit is set, then simulate a firq or nmi to get the
+     * cpu out of the sleep.
+     */
+    private void cwai() {
+        cc.set(cc.intValue() & fetch());
+        cc.setE(1);
+        help_psh(0xff, s, u);
+        // Simulate that the CPU gets an irq immediately afterwards.
+        waitState = true;
+        //irq();
+        while (!(receivedIRQ || receivedFIRQ || receivedNMI)) {
+            Thread.yield();
+        }
+    }
+
     private void daa() {
         int c = 0;
         int lsn = (a.intValue() & 0x0f);
@@ -1376,10 +1406,13 @@ public class MC6809 extends USimMotorola {
         if (cc.isSetF()) {
             return;
         }
-        help_psh(0x81, s, u);
+        if (!waitState) {
+            help_psh(0x81, s, u);
+        }
+        waitState = false;
         cc.setF(1);
         cc.setI(1);
-        pc.set(read_word(0xfff6));
+        pc.set(read_word(FIRQ_ADDR));
     }
 
     private void inca() {
@@ -1420,14 +1453,18 @@ public class MC6809 extends USimMotorola {
      * program.
      */
     private void irq() {
+        LOGGER.debug("IRQ received");
         if (cc.isSetI()) {
             return;
         }
         cc.setE(1);
-        help_psh(0xff, s, u);
+        if (!waitState) {
+            help_psh(0xff, s, u);
+        }
+        waitState = false;
         cc.setF(1);
         cc.setI(1);
-        pc.set(read_word(0xfff8));
+        pc.set(read_word(IRQ_ADDR));
     }
 
     private void jmp() {
@@ -1597,10 +1634,13 @@ public class MC6809 extends USimMotorola {
      */
     private void nmi() {
         cc.setE(1);
-        help_psh(0xff, s, u);
+        if (!waitState) {
+            help_psh(0xff, s, u);
+        }
+        waitState = false;
         cc.setF(1);
         cc.setI(1);
-        pc.set(read_word(0xfffc));
+        pc.set(read_word(NMI_ADDR));
     }
 
     /**
@@ -1905,19 +1945,19 @@ public class MC6809 extends USimMotorola {
         help_psh(0xff, s, u);
         cc.setF(1);
         cc.setI(1);
-        pc.set(read_word(0xfffa));
+        pc.set(read_word(SWI_ADDR));
     }
 
     protected void swi2() {
         cc.setE(1);
         help_psh(0xff, s, u);
-        pc.set(read_word(0xfff4));
+        pc.set(read_word(SWI2_ADDR));
     }
 
     protected void swi3() {
         cc.setE(1);
         help_psh(0xff, s, u);
-        pc.set(read_word(0xfff2));
+        pc.set(read_word(SWI3_ADDR));
     }
 
     private void tfr() {

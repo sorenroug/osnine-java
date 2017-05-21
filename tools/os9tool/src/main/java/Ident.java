@@ -56,9 +56,10 @@ public class Ident {
             printHex("Attr/rev", read_byte(pointer + 0x07));
             printHex("Hdr parity", read_byte(pointer + 0x08));
             printHex("CRC", read_triple(pointer + moduleSize - 3));
-            int moduleType = read_byte(pointer + 0x06) & 0xf0;
+            int moduleType = read_byte(pointer + 0x06);
             switch (moduleType) {
-            case 0x10: // Executable module
+            case 0x11: // Executable module
+            case 0xC1: // Executable system module
                 printHex("Execution offset", read_word(pointer + 0x09));
                 printHex("Storage size", read_word(pointer + 0x0B));
                 break;
@@ -71,7 +72,7 @@ public class Ident {
                 printString("Initial path", pointer + read_word(pointer + 0x12));
                 printString("Bootstrap module", pointer + read_word(pointer + 0x14));
                 break;
-            case 0xF0: // Device descriptor module
+            case 0xF1: // Device descriptor module
                 printString("File manager", pointer + read_word(pointer + 0x09));
                 printString("Device driver", pointer + read_word(pointer + 0x0B));
                 printHex("Mode byte", read_byte(pointer + 0x0D));

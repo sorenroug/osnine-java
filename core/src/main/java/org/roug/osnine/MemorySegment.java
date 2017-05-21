@@ -22,7 +22,15 @@ public abstract class MemorySegment {
     }
 
     public boolean inSegment(int addr) {
-        return (addr >= startAddress && addr <= endAddress);
+        return (addr >= startAddress && addr < endAddress);
+    }
+
+    public int getStartAddress() {
+        return startAddress;
+    }
+
+    public int getEndAddress() {
+        return endAddress;
     }
 
     public abstract void reset();
@@ -32,10 +40,14 @@ public abstract class MemorySegment {
      */
     protected abstract int load(int addr);
 
+    /**
+     * Read from memory. If there is no memory at that location then return 0.
+     * OS9 scans the entire memory space.
+     */
     public int read(int addr) {
         if (!inSegment(addr)) {
             if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
+                return 0;
             } else {
                 return nextSegment.read(addr);
             }
@@ -49,10 +61,13 @@ public abstract class MemorySegment {
      */
     protected abstract void store(int addr, int val);
 
+    /**
+     * Write a byte to memory. If there is no memory, ignore.
+     */
     public void write(int addr, int val) {
         if (!inSegment(addr)) {
             if (nextSegment == null) {
-                throw new IllegalArgumentException("Out of bounds: " + Integer.toString(addr));
+                return;
             } else {
                 nextSegment.write(addr, val);
             }

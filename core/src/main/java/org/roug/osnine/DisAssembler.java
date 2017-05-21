@@ -927,9 +927,9 @@ public class DisAssembler {
       "20", "21", "22", "23",
       "24", "25", "26", "27",
       "28 - F$SRqMem", "29 - F$SRtMem", "2A - F$IRQ", "2B - F$IOQu",
-      "2C - F$AProc",  "2D - F$NProc", "2E", "2F",
+      "2C - F$AProc",  "2D - F$NProc", "2E - F$VModul", "2F - F$Find64",
 
-      "30", "31", "32", "33",
+      "30 - F$All64", "31 - F$Ret64", "32 - F$SSVC", "33 -F$IODel",
       "34", "35", "36", "37",
       "38", "39", "3A", "3B",
       "3C", "3D", "3E", "3F",
@@ -939,7 +939,7 @@ public class DisAssembler {
       "48", "49", "4A", "4B",
       "4C", "4D", "4E", "4F",
 
-      "50", "51", "52", "53",
+      "50", "51 - F$DelRam", "52", "53",
       "54", "55", "56", "57",
       "58", "59", "5A", "5B",
       "5C", "5D", "5E", "5F",
@@ -954,8 +954,8 @@ public class DisAssembler {
       "78", "79", "7A", "7B",
       "7C", "7D", "7E", "7F",
 
-      "80 - I$Attach", "81 - I$Detach", "82 - I$Dup", "83",
-      "84", "85", "86", "87",
+      "80 - I$Attach", "81 - I$Detach", "82 - I$Dup", "83 - I$Create",
+      "84 - I$Open", "85 - I$MakDir", "86 - I$ChgDir", "87 - I$Delete",
       "88 - I$Seek", "89 - I$Read", "8A - I$Write", "8B - I$ReadLn",
       "8C - I$WritLn", "8D - I$GetStt", "8E - I$SetStt", "8F - I$Close",
 
@@ -971,10 +971,6 @@ public class DisAssembler {
 
 
     private final int  lastio = 32;
-
-    public DisAssembler(MC6809 cpu) {
-        this.cpu = cpu;
-    }
 
     int readMemory(int loc) {
         return cpu.read(loc);
@@ -1395,6 +1391,13 @@ public class DisAssembler {
     }
 
     /**
+     * Constructor.
+     */
+    public DisAssembler(MC6809 cpu) {
+        this.cpu = cpu;
+    }
+
+    /**
      * Diassemble one instruction.
      */
     void disasmPC() {
@@ -1414,7 +1417,7 @@ public class DisAssembler {
     /**
      * Disassemble a program.
      */
-    void disasm(int start, int end) {
+    public void disasm(int start, int end) {
         int programCounter;
         int code;
 

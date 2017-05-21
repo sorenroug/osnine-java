@@ -4,6 +4,7 @@ import java.util.Properties;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.MC6850;
 import org.roug.osnine.MemoryBank;
+import org.roug.osnine.OptionParser;
 import org.roug.osnine.os9.OS9;
 import org.roug.osnine.os9.PDStdIn;
 import org.roug.osnine.os9.PDStdOut;

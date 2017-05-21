@@ -1,3 +1,5 @@
+package org.roug.osnine;
+
 import java.util.HashMap;
 import java.util.ArrayList;
 

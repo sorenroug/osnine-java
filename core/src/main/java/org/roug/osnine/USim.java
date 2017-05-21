@@ -1,9 +1,15 @@
 package org.roug.osnine;
 
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+
 /**
  * Generic processor run state routines.
  */
 public abstract class USim {
+
+    private static final int MEM_TOP = 0xFFFF;
+    private static final int MEM_MAX = 0x10000;
 
     /** Flag: is the CPU halted? */
     public boolean halted;
@@ -37,6 +43,9 @@ public abstract class USim {
         addMemorySegment(newMemory);
     }
 
+    /**
+     * Install a memory segment as the last item of the list of segments.
+     */
     public void addMemorySegment(MemorySegment newMemory) {
         if (memory == null) {
             memory = newMemory;
@@ -145,6 +154,19 @@ public abstract class USim {
         return val;
     }
 
+    private void dumpCore() {
+        try {
+            FileOutputStream fOut = new FileOutputStream("core");
+            BufferedOutputStream bOut = new BufferedOutputStream(fOut, 0x1000);
+            for (int i = 0; i < MEM_MAX; i++) {
+                bOut.write(read(i));
+            }
+            bOut.flush();
+            fOut.close();
+        } catch (Exception e) {
+        }
+    }
+
     /**
      * Invalid operation encountered. Halt the processor.
      */
@@ -153,6 +175,7 @@ public abstract class USim {
                 msg == null ? msg : "",
                 pc.intValue(), ir);
         halt();
+        dumpCore();
         throw new RuntimeException(msg);
     }
 
@@ -164,7 +187,7 @@ public abstract class USim {
      * Single byte read from memory.
      */
     public int read(int offset) {
-        return memory.read(offset & 0xffff);
+        return memory.read(offset & MEM_TOP);
     }
 
     /**
@@ -193,7 +216,7 @@ public abstract class USim {
      * Single byte write to memory.
      */
     public void write(int offset, int val) {
-        memory.write(offset & 0xffff, val);
+        memory.write(offset & MEM_TOP, val);
     }
 
 }
