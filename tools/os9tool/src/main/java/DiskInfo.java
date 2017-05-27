@@ -4,7 +4,9 @@ import java.util.Arrays;
 
 public class DiskInfo {
 
-    private byte[] module = new byte[0x10000];
+    private final static int MAX_SIZE = 0x10000;
+
+    private byte[] module = new byte[MAX_SIZE];
 
     private static void usage(String msg) {
         System.err.println("Error: " + msg);
@@ -41,10 +43,27 @@ public class DiskInfo {
         System.out.format("%-20s: %d ($%X)\n", label, value, value);
     }
 
-    private void printString(String label, int location) {
-        // Get length
+    private String attrToString(int attribute) {
+        char[] attrBuf = "DSXWRXWR".toCharArray();
+
+        int mask = 128;
+        for (int b = 0; b < 8; b++) {
+            if ((attribute & mask) == 0) {
+                attrBuf[b] = '-';
+            }
+            mask >>= 1;
+        }
+        return String.valueOf(attrBuf) //+ " ($" + Integer.toHexString(attribute) + ")";
+    }
+
+
+    private void printString(String label, String value) {
+        System.out.format("%-20s: %s\n", label, value);
+    }
+
+    private String os9String(int location) {
         int length = 0;
-        for (int i = location; i < 0x10000; i++) {
+        for (int i = location; i < MAX_SIZE; i++) {
             if (module[i] <= 0) {
                 length = i - location + 1;
                 break;
@@ -53,12 +72,12 @@ public class DiskInfo {
         module[location + length - 1] &= 0x7f;
         String buf = new String(module, location, length);
         module[location + length - 1] |= 0x80;
-        System.out.format("%-20s: %s\n", label, buf);
+        return buf;
     }
 
     private void fileDescriptor(int sector) {
         int offset = sector * 256;
-        printHex("File attributes", read_byte(offset));
+        printString("File attributes", attrToString(read_byte(offset)));
         printHex("Owner", read_word(offset + 1));
         printDate("Last modified", read_byte(offset + 0x03), read_byte(offset + 0x04),
                 read_byte(offset + 0x05), read_byte(offset + 0x06),
@@ -75,7 +94,7 @@ public class DiskInfo {
         for (int i = 0; i < dirSize; i+= 32) {
             int usage = read_byte(offset + i);
             if (usage != 0) {
-                printString("Name", offset + i);
+                printString("Name", os9String(offset + i));
             }
         }
     }
@@ -101,7 +120,7 @@ public class DiskInfo {
         printDate("Created", read_byte(pointer + 0x1a), read_byte(pointer + 0x1b),
                 read_byte(pointer + 0x1c), read_byte(pointer + 0x1d),
                 read_byte(pointer + 0x1e));
-        printString("Name", pointer + 0x1f);
+        printString("Name", os9String(pointer + 0x1f));
 
         System.out.println("Root directory");
         fileDescriptor(read_triple(pointer + 0x08));
