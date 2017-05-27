@@ -23,7 +23,7 @@ public class MC6809 extends USimMotorola {
     protected int mode;
 
     /** Set to true to disassemble executed instruction. */
-    private boolean traceInstructions;
+    private boolean traceInstructions = false;
 
     /** Stack pointer U. */
     public final Word u = new Word("U");
@@ -100,9 +100,16 @@ public class MC6809 extends USimMotorola {
 
         String traceInset = System.getProperty("mc6809.trace", "false");
         if ("true".equalsIgnoreCase(traceInset)) {
-            disAsm = new DisAssembler(this);
+            setTraceInstructions(true);
         }
         reset();
+    }
+
+    private void setTraceInstructions(boolean value) {
+        traceInstructions = value;
+        if (disAsm == null && value) {
+            disAsm = new DisAssembler(this);
+        }
     }
 
     /**
@@ -137,7 +144,7 @@ public class MC6809 extends USimMotorola {
      * Execute one instruction.
      */
     public void execute() {
-        if (disAsm != null) {
+        if (traceInstructions) {
             disAsm.disasmPC();
         }
         ir = fetch();
@@ -1277,12 +1284,14 @@ public class MC6809 extends USimMotorola {
         cc.set(cc.intValue() & fetch());
         cc.setE(1);
         help_psh(0xff, s, u);
-        // Simulate that the CPU gets an irq immediately afterwards.
         waitState = true;
+        //setTraceInstructions(true);
+        LOGGER.debug("CWAI in {}", pc);
         //irq();
         while (!(receivedIRQ || receivedFIRQ || receivedNMI)) {
             Thread.yield();
         }
+        LOGGER.debug("CWAI exit {}", pc);
     }
 
     private void daa() {

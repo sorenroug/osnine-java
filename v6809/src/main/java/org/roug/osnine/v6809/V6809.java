@@ -31,7 +31,7 @@ class ClockTick extends TimerTask {
 public class V6809 {
 
     private static final int CLOCKDELAY = 500;  // milliseconds
-    private static final int CLOCKPERIOD = 500;  // milliseconds
+    private static final int CLOCKPERIOD = 100;  // milliseconds
 
     private static final Logger LOGGER = LoggerFactory.getLogger(V6809.class);
 

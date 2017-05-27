@@ -23,9 +23,12 @@ class LineReader implements Runnable {
         while (true) {
             try {
                 int receiveData = System.in.read();
+                if (receiveData == 10) receiveData = 13;
                 LOGGER.debug("Received {}", receiveData);
+                while (acia.isReceiveRegisterFull()) { // Wait until the CPU has taken the current byte
+                    Thread.yield();
+                }
                 acia.dataReceived(receiveData);
-                Thread.yield();
             } catch (Exception e) {
                 System.exit(2);
             }
@@ -106,11 +109,18 @@ public class SY6551 extends MemorySegment {
     }
 
     /**
+     * Is Receive register full?
+     */
+    boolean isReceiveRegisterFull() {
+        return (statusReg & RDRF) == RDRF;
+    }
+
+    /**
      * Get interrupted by reader thread and get the byte.
      */
     void dataReceived(int receiveData) {
         this.receiveData = receiveData;
-        statusReg |= (IRQ+CR3);   // We have set interrupt, Read register is full.
+        statusReg |= (IRQ+RDRF);   // We have set interrupt, Read register is full.
         cpu.signalIRQ();
         Thread.yield();
     }
@@ -118,8 +128,8 @@ public class SY6551 extends MemorySegment {
     void signalReadyForTransmit() {
         if (transmitIrqEnabled) {
             statusReg |= IRQ;   // We have set interrupt
-            cpu.signalIRQ();
-            Thread.yield();
+            cpu.signalIRQ();  // Probably ignored because OS9 is still in interrupt handler 
+            //Thread.yield();
         }
     }
 
@@ -179,10 +189,13 @@ public class SY6551 extends MemorySegment {
     /**
      * @return The contents of the status register.
      * In this implementation the transmit register can not be full.
+     * Therefore the IRQ is always on.
      */
     private int getStatusReg() throws IOException {
         int stat = statusReg;
-        statusReg &= ~0x80;    // Turn off interrupt flag
+//      if (!transmitIrqEnabled) {
+//          statusReg &= ~IRQ;    // Turn off interrupt flag
+//      }
         LOGGER.debug("StatusReg: {}", stat);
         return stat & 0xFF;
     }
@@ -205,7 +218,7 @@ public class SY6551 extends MemorySegment {
      */
     private int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        statusReg &= ~CR3;    // Turn of interrupt flag
+        statusReg &= ~RDRF;    // Turn of interrupt flag
         return receiveData;
     }
 
@@ -214,7 +227,7 @@ public class SY6551 extends MemorySegment {
         commandRegister = data;
 
         // Bit 1 controls receiver IRQ behavior
-        receiveIrqEnabled = (commandRegister & 0x02) == 0;
+        receiveIrqEnabled = (commandRegister & IRD) == 0;
         // Bits 2 & 3 controls transmit IRQ behavior
         transmitIrqEnabled = (commandRegister & TIC1) == 0 && (commandRegister & TIC0) != 0;
         // Send a IRQ immediately as the transmit register is empty.

@@ -53,7 +53,7 @@ public class DiskInfo {
             }
             mask >>= 1;
         }
-        return String.valueOf(attrBuf) //+ " ($" + Integer.toHexString(attribute) + ")";
+        return String.valueOf(attrBuf); //+ " ($" + Integer.toHexString(attribute) + ")";
     }
 
 
