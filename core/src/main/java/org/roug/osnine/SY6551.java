@@ -103,7 +103,7 @@ public class SY6551 extends MemorySegment {
     public SY6551(int start, MC6809 cpu) {
         super(start, start + 3);
         this.cpu = cpu;
-        Thread reader = new Thread(new LineReader(this));
+        Thread reader = new Thread(new LineReader(this), "acia6551");
         reader.setDaemon(true);
         reader.start();
     }

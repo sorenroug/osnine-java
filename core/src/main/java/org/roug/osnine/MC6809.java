@@ -67,28 +67,31 @@ public class MC6809 extends USimMotorola {
     /**
      * Accept an NMI signal.
      */
-    public void signalNMI() {
+    public synchronized void signalNMI() {
         if (!inhibitNMI) {
             receivedNMI = true;
+            notifyAll();
         }
     }
 
     /**
      * Accept an FIRQ signal.
      */
-    public void signalFIRQ() {
+    public synchronized void signalFIRQ() {
         if (!cc.isSetF()) {
             receivedFIRQ = true;
         }
+        notifyAll();
     }
 
     /**
      * Accept an IRQ signal.
      */
-    public void signalIRQ() {
+    public synchronized void signalIRQ() {
         if (!cc.isSetI()) {
             receivedIRQ = true;
         }
+        notifyAll();
     }
 
     /**
@@ -474,6 +477,8 @@ public class MC6809 extends USimMotorola {
                 swi2(); break;
             case 0x113f:
                 swi3(); break;
+            case 0x13:
+                sync(); break;
             case 0x1f:
                 tfr(); break;
             case 0x4d:
@@ -1274,6 +1279,16 @@ public class MC6809 extends USimMotorola {
         setBitZ(tx);
     }
 
+    private synchronized void waitForInterrupt() {
+        while (!(receivedIRQ || receivedFIRQ || receivedNMI)) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                LOGGER.error("Wait interrupted");
+            }
+        }
+    }
+
     /**
      * Puts the registers on stack and waits for an interrupt.
      * This makes the MPU react faster to interrupts.
@@ -1285,13 +1300,25 @@ public class MC6809 extends USimMotorola {
         cc.setE(1);
         help_psh(0xff, s, u);
         waitState = true;
-        //setTraceInstructions(true);
         LOGGER.debug("CWAI in {}", pc);
-        //irq();
-        while (!(receivedIRQ || receivedFIRQ || receivedNMI)) {
-            Thread.yield();
-        }
+        waitForInterrupt();
         LOGGER.debug("CWAI exit {}", pc);
+    }
+
+    /**
+     * Synchronize to external event.
+     * The processor halts and waits for an interrupt to occur.
+     * If the interrupt is masked then the processor continues with
+     * the instruction following the SYNC instruction.
+     * If the interrupt is enabled then a normal interrupt sequence begins
+     * after the SYNC instruction completes.
+     */
+    private synchronized void sync() {
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            LOGGER.error("Wait interrupted");
+        }
     }
 
     private void daa() {
