@@ -51,6 +51,7 @@ public class ParaVirtDiskTest {
             mb.store(base + ParaVirtDisk.BYTE_OPCODE, ParaVirtDisk.COPY_BYTE);
         }
 
+        // Store in LSN 1 (0-based)
         mb.store(base + ParaVirtDisk.BYTE_ADDR, 0);
         mb.store(base + ParaVirtDisk.BYTE_VALUE, 1);
         mb.store(base + ParaVirtDisk.BYTE_OPCODE, ParaVirtDisk.WRITE_BUFFER);

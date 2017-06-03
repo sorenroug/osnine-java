@@ -44,9 +44,9 @@ public class USimMotorola extends USim {
      */
     @Override
     public void write_word(int offset, int val) {
-        write(offset & 0xffff, (val >> 8));
+        write(offset & 0xffff, (val >> 8) & 0xFF);
         offset++;
-        write(offset & 0xffff, val);
+        write(offset & 0xffff, val & 0xFF);
     }
 
     /**

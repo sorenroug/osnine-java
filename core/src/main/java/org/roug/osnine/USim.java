@@ -216,7 +216,7 @@ public abstract class USim {
      * Single byte write to memory.
      */
     public void write(int offset, int val) {
-        memory.write(offset & MEM_TOP, val);
+        memory.write(offset & MEM_TOP, val & 0xFF);
     }
 
 }

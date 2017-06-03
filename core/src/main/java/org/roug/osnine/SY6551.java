@@ -19,7 +19,7 @@ class LineReader implements Runnable {
     }
 
     public void run() {
-        LOGGER.info("Reader thread started");
+        LOGGER.debug("Reader thread started");
         while (true) {
             try {
                 int receiveData = System.in.read();

@@ -64,6 +64,15 @@ public class MC6809 extends USimMotorola {
 
     private DisAssembler disAsm = null;
 
+/*
+    @Override
+    public void write(int offset, int val) {
+        super.write(offset, val);
+        if (offset == 0xff40) {
+            setTraceInstructions(true);
+        }
+    }
+*/
     /**
      * Accept an NMI signal.
      */
@@ -1300,9 +1309,7 @@ public class MC6809 extends USimMotorola {
         cc.setE(1);
         help_psh(0xff, s, u);
         waitState = true;
-        LOGGER.debug("CWAI in {}", pc);
         waitForInterrupt();
-        LOGGER.debug("CWAI exit {}", pc);
     }
 
     /**

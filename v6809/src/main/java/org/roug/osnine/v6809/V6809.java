@@ -1,14 +1,16 @@
 package org.roug.osnine.v6809;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.roug.osnine.SY6551;
 import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.OptionParser;
+import org.roug.osnine.ParaVirtDisk;
+import org.roug.osnine.SY6551;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,8 @@ class ClockTick extends TimerTask {
 public class V6809 {
 
     private static final int CLOCKDELAY = 500;  // milliseconds
-    private static final int CLOCKPERIOD = 100;  // milliseconds
+    /** On Dragon 32 the interrupt is 50 times a second. */
+    private static final int CLOCKPERIOD = 50;  // milliseconds
 
     private static final Logger LOGGER = LoggerFactory.getLogger(V6809.class);
 
@@ -124,6 +127,8 @@ public class V6809 {
 
         SY6551 console = new SY6551(0xff04, cpu);
         cpu.insertMemorySegment(console);
+        ParaVirtDisk disk = new ParaVirtDisk(0xff40, "OS9.dsk");
+        cpu.insertMemorySegment(disk);
 
         loadBytes(props);
         setVector(props, "reset", MC6809.RESET_ADDR);
