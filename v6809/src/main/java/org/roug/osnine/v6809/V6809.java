@@ -10,7 +10,7 @@ import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.OptionParser;
 import org.roug.osnine.ParaVirtDisk;
-import org.roug.osnine.SY6551;
+import org.roug.osnine.Acia6551Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +141,7 @@ public class V6809 {
         int memory = getIntProperty(props, "memory");
         cpu = new MC6809(memory);
 
-        SY6551 console = new SY6551(0xff04, cpu);
+        Acia6551Console console = new Acia6551Console(0xff04, cpu);
         cpu.insertMemorySegment(console);
         ParaVirtDisk disk = new ParaVirtDisk(0xff40, "OS9.dsk");
         cpu.insertMemorySegment(disk);

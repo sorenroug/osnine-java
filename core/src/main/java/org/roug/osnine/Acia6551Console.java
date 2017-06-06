@@ -12,9 +12,9 @@ class LineReader implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LineReader.class);
 
-    private SY6551 acia;
+    private Acia6551Console acia;
 
-    LineReader(SY6551 acia) {
+    LineReader(Acia6551Console acia) {
         this.acia = acia;
     }
 
@@ -37,13 +37,13 @@ class LineReader implements Runnable {
 }
 
 /**
+ * Emulate the 6551 with output to Stdout and input from Stdin.
  * The Dragon 64 and Dragon Alpha have a hardware serial port driven
  * by a Rockwell 6551, mapped from $FF04-$FF07.
- * FIXME: Incomplete.
  */
-public class SY6551 extends MemorySegment {
+public class Acia6551Console extends MemorySegment {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SY6551.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Acia6551Console.class);
 
     /** Register selection flags. One per mapped address. */
     private static final int DATA_REG = 0;
@@ -100,7 +100,7 @@ public class SY6551 extends MemorySegment {
     /**
      * Constructor.
      */
-    public SY6551(int start, MC6809 cpu) {
+    public Acia6551Console(int start, MC6809 cpu) {
         super(start, start + 3);
         this.cpu = cpu;
         Thread reader = new Thread(new LineReader(this), "acia6551");
