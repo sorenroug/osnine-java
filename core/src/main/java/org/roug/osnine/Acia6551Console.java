@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Thread to listen to incoming data.
  */
-class LineReader implements Runnable {
+class ConsoleReader implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LineReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleReader.class);
 
     private Acia6551Console acia;
 
-    LineReader(Acia6551Console acia) {
+    ConsoleReader(Acia6551Console acia) {
         this.acia = acia;
     }
 
@@ -103,7 +103,7 @@ public class Acia6551Console extends MemorySegment {
     public Acia6551Console(int start, MC6809 cpu) {
         super(start, start + 3);
         this.cpu = cpu;
-        Thread reader = new Thread(new LineReader(this), "acia6551");
+        Thread reader = new Thread(new ConsoleReader(this), "acia6551");
         reader.setDaemon(true);
         reader.start();
     }
