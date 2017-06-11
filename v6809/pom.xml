@@ -12,6 +12,12 @@
     <url>http://www.roug.org</url>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/assembler</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

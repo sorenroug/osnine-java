@@ -57,16 +57,6 @@ public class V6809 {
         return Integer.decode(props.getProperty(key)).intValue();
     }
 
-    /*
-    private static void setVector(Properties props, String key, int vectorAddress) throws Exception {
-        if (props.containsKey(key)) {
-            int val = Integer.decode(props.getProperty(key)).intValue();
-            cpu.write_word(vectorAddress, val);
-            LOGGER.debug("Address: {} set to {}", Integer.toHexString(vectorAddress), Integer.toHexString(val));
-        }
-    }
-    */
-
     private static int getVectorAddress(String key) {
         for (KnownVectors v : KnownVectors.values()) {
             if (key.equalsIgnoreCase(v.toString())) {
@@ -75,24 +65,6 @@ public class V6809 {
         }
         return Integer.decode(key);
     }
-
-    /*
-    private static void loadBytes(Properties props) {
-        for (String key : props.stringPropertyNames()) {
-            if (key.startsWith("byte.") || key.startsWith("word.")) {
-                String addrString = key.substring(5);
-                int vectorAddress = getVectorAddress(addrString);
-                int val = Integer.decode(props.getProperty(key)).intValue();
-                if (key.startsWith("byte.")) {
-                    cpu.write(vectorAddress, val);
-                } else if (key.startsWith("word.")) {
-                    cpu.write_word(vectorAddress, val);
-                }
-                LOGGER.debug("Address: {} set to {}", Integer.toHexString(vectorAddress), Integer.toHexString(val));
-            }
-        }
-    }
-    */
 
     /**
      * Load modules.
@@ -111,7 +83,12 @@ public class V6809 {
                 continue;
             }
             LOGGER.debug("Loading {} at {}", fileToLoad, Integer.toHexString(loadAddress));
-            FileInputStream moduleStream = new FileInputStream(fileToLoad);
+            InputStream moduleStream;
+            if (fileToLoad.contains("/")) {
+                moduleStream = new FileInputStream(fileToLoad);
+            } else {
+                moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
+            }
             int len = moduleStream.read(buf);
             for (int i = 0; i < len; i++) {
                 cpu.write(loadAddress + i, buf[i]);
