@@ -1,6 +1,6 @@
          nam t1
          use os9defs
-         use SCFDefs
+         use scfdefs
          ttl Device Descriptor for the Serial Port
 
 ***************

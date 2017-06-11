@@ -13,10 +13,6 @@ RAM from its own location to find other modules.
 OS9 installs a few system calls and then calls OS9p2, which installs
 more system calls and attempts a link to IOMan.
 
-TODO:
-Implement IRQ 50 times a second
-
-
 The OS9.dsk was created with
 
    os9 format disk.dsk -c1 -h1 -n"1.2 MB disk" -t80 -s48
