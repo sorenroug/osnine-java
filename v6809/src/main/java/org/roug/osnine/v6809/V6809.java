@@ -83,18 +83,20 @@ public class V6809 {
                 continue;
             }
             LOGGER.debug("Loading {} at {}", fileToLoad, Integer.toHexString(loadAddress));
+
             InputStream moduleStream;
             if (fileToLoad.contains("/")) {
                 moduleStream = new FileInputStream(fileToLoad);
             } else {
                 moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
             }
-            int len = moduleStream.read(buf);
-            for (int i = 0; i < len; i++) {
-                cpu.write(loadAddress + i, buf[i]);
+            int b = moduleStream.read();
+            while (b != -1) {
+                cpu.write(loadAddress, b);
+                loadAddress++;
+                b = moduleStream.read();
             }
             moduleStream.close();
-            loadAddress += len;
         }
         LOGGER.debug("End address: {}", Integer.toHexString(loadAddress));
         return loadAddress;
@@ -122,17 +124,6 @@ public class V6809 {
         cpu.insertMemorySegment(console);
         ParaVirtDisk disk = new ParaVirtDisk(0xff40, "OS9.dsk");
         cpu.insertMemorySegment(disk);
-
-        /*
-        loadBytes(props);
-        setVector(props, "reset", MC6809.RESET_ADDR);
-        setVector(props, "swi", MC6809.SWI_ADDR);
-        setVector(props, "swi1", MC6809.SWI_ADDR);
-        setVector(props, "irq", MC6809.IRQ_ADDR);
-        setVector(props, "firq", MC6809.FIRQ_ADDR);
-        setVector(props, "swi2", MC6809.SWI2_ADDR);
-        setVector(props, "swi3", MC6809.SWI3_ADDR);
-        */
 
         String segmentList = props.getProperty("load");
         String[] segments = segmentList.split("\\s+");
