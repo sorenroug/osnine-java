@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.roug.osnine.Acia6551Console;
+import org.roug.osnine.HWClock;
 import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.OptionParser;
 import org.roug.osnine.ParaVirtDisk;
-import org.roug.osnine.Acia6551Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,6 +121,8 @@ public class V6809 {
         int memory = getIntProperty(props, "memory");
         cpu = new MC6809(memory);
 
+        HWClock hwClock = new HWClock(0xff10);
+        cpu.insertMemorySegment(hwClock);
         Acia6551Console console = new Acia6551Console(0xff04, cpu);
         cpu.insertMemorySegment(console);
         ParaVirtDisk disk = new ParaVirtDisk(0xff40, "OS9.dsk");

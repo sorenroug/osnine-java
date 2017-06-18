@@ -16,9 +16,6 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   2
-u0002    rmb   2
-u0004    rmb   8
 size     equ   .
 
 name     fcs   /Boot/

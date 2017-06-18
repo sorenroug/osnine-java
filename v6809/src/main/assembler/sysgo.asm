@@ -8,6 +8,7 @@
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+hwclock  set   $FF10
          mod   eom,name,tylg,atrv,start,size
 stack    rmb   200
 size     equ   .
@@ -21,7 +22,7 @@ BootMsg  fcc   "                 OS-9 LEVEL ONE VERSION 1.2"
          fcb   C$CR,C$LF
          fcb   C$LF
 MsgEnd   equ   *
-L00C6    fcc   "Cmds"
+ExecDir  fcc   "Cmds"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
 Shell    fcc   "Shell"
@@ -59,9 +60,14 @@ CopyLoop lda   ,x+
          ldy   #MsgEnd-BootMsg
          lda   #$01
          os9   I$Write  
-         leax  >L00C6,pcr
+
+         ldx   #hwclock
+         os9   F$STime
+
+         leax  >ExecDir,pcr
          lda   #$04
          os9   I$ChgDir 
+
          leax  >Shell,pcr
          leau  >Startup,pcr
          ldd   #$0100
