@@ -1,0 +1,106 @@
+PROCEDURE maze
+    PRINT "WHAT ARE YOUR LENGTH AND WIDTH (E. G. 13,10)"; 
+    INPUT rows,cols
+    DIM W(25,23),V(25,23)
+    DIM D(10)
+
+    LET N9=rows*cols
+    FOR Q=1 TO rows
+      FOR Z=1 TO cols
+        LET W(Q,Z)=0
+        LET V(Q,Z)=0
+      NEXT Z
+    NEXT Q
+    LET B=0
+    LET F=INT(RND(0)*cols+1)
+    PRINT 
+    FOR C=1 TO cols
+      IF C=F THEN
+        PRINT ":  "; 
+      ELSE
+        PRINT ":--"; 
+      ENDIF
+    NEXT C
+    PRINT ":"
+    LET R=1
+    LET C=F
+    LET N=1
+    LET W(R,C)=N
+
+580 LET DX=0
+    IF C<>1 THEN
+      IF W(R,C-1)=0 THEN
+        LET DX=DX+1
+        LET D(DX)=1
+      ENDIF
+    ENDIF
+    IF C<>cols THEN
+      IF W(R,C+1)>0 THEN 750
+      LET DX=DX+1
+      LET D(DX)=2
+    ENDIF
+    IF R>1 THEN
+      IF W(R-1,C)=0 THEN
+        LET DX=DX+1
+        LET D(DX)=3
+      ENDIF
+    ENDIF
+750 IF R<rows THEN 780
+    IF B=1 THEN 820
+    GOTO 790
+780 IF W(R+1,C)>0 THEN 820
+790 LET DX=DX+1
+    LET D(DX)=4
+820 IF DX=0 THEN 1100
+    LET X=INT(DX*RND(0)+1)
+    IF D(X)=4 THEN 980
+    IF D(X)=3 THEN 940
+    IF D(X)=2 THEN 900
+    LET C=C-1
+    LET V(R,C)=2
+    GOTO 1040
+900 LET V(R,C)=V(R,C)+2
+910 LET C=C+1
+920 GOTO 1040
+940 LET R=R-1
+950 LET V(R,C)=1
+    GOTO 1040
+980  LET V(R,C)=V(R,C)+1
+     LET R=R+1
+     IF R<=rows THEN 1040
+     LET B=1
+     GOTO 1140
+1040 LET N=N+1
+     LET W(R,C)=N
+     IF N<N9 THEN 580
+     GOTO 1190
+
+1100 LET C=C+1
+     IF C<=cols THEN 1160
+     LET R=R+1
+     IF R<=rows THEN 1150
+1140 LET R=1
+1150 LET C=1
+1160 IF W(R,C)>0 THEN 580
+     GOTO 1100
+
+1190 FOR R=1 TO rows
+     PRINT "I"; 
+     FOR C=1 TO cols
+       IF V(R,C)<2 THEN
+         PRINT "  I"; 
+       ELSE
+         PRINT "   "; 
+       ENDIF
+     NEXT C
+     PRINT 
+     FOR C=1 TO cols
+       IF V(R,C)/2=INT(V(R,C)/2) THEN
+         PRINT ":--"; 
+       ELSE
+         PRINT ":  "; 
+       ENDIF
+     NEXT C
+     PRINT ":"
+     NEXT R
+     END 
