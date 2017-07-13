@@ -50,13 +50,13 @@ FOR I=1 TO 9
   READ C(I,1), C(I,2)
 NEXT I
 
-670 FOR I=1 TO 8 \ DMG(I)=0 \ NEXT I
+FOR I=1 TO 8 \ DMG(I)=0 \ NEXT I
 
 A1$="navsrslrsphatorshedamcomxxx"
 
 REM SETUP WHAT EXISTS IN GALAXY . . .
 REM K3= # KLINGONS  B3= # STARBASES  S3 = # STARS
-820 FOR I=1 TO 8
+FOR I=1 TO 8
   FOR J=1 TO 8
     K3=0
     Z(I,J)=0
@@ -137,8 +137,8 @@ NEXT I
   K(I).energy=0
 NEXT I
 Q$=Z$+Z$+Z$+Z$+Z$+Z$+Z$+LEFT$(Z$,17)
-REM POSITION ENTERPRISE IN QUADRANT, THEN PLACE "K3" KLINGONS, &
-REM "B3" STARBASES, & "S3" STARS ELSEWHERE.
+REM Position Enterprise in quadrant, then place "K3" klingons, &
+REM "B3" starbases, & "S3" stars elsewhere.
 RUN INSERTFEATURE(Q$, "<*>", S1, S2)
 IF K3>0 THEN
   FOR I=1 TO K3
@@ -277,8 +277,8 @@ FOR I=1 TO ENEED
   X=X+X1
   Y=Y+X2
   IF X<1 OR X>=9 OR Y<1 OR Y>=9 THEN 3500
-  S8=INT(X)*24+INT(Y)*3-26
-  EXITIF MID$(Q$,S8,2)<>"  " THEN
+  RUN CHECKFEATURE(Q$, "   ", INT(X), INT(Y), Z3)
+  EXITIF Z3=0 THEN
     X=INT(X-X1)
     Y=INT(Y-X2)
     PRINT "Warp engines shut down at ";
@@ -323,8 +323,8 @@ IF X5=TRUE THEN
   PRINT "Lt. Uhura reports message from starfleet command:"
   PRINT "  'Permission to attempt crossing of galactic perimeter"
   PRINT "  is hereby *DENIED*.  Shut down your engines.'"
-  PRINT "Chief engineer Scott reports  'warp engines shut down"
-  PRINT "  at sector ";FIX(S1);",";FIX(S2);"of quadrant";Q1;",";Q2;".'"
+  PRINT "Chief engineer Scott reports  'Warp engines shut down"
+  PRINT "  at sector ";FIX(S1);",";FIX(S2);" of quadrant ";Q1;",";Q2;".'"
   IF TIME > STARTDATE + DURATION THEN 6220
 ENDIF
 IF 8*Q1+Q2 = 8*Q4+Q5 THEN 3370
@@ -529,7 +529,7 @@ D3=D3+D4
 IF D3>=1 THEN D3=.9
 ENDIF
 PRINT "Technicians standing by to effect repairs to your ship;"
-PRINT "Estimated time to repair: ";.01*INT(100*D3);"STARDATES"
+PRINT "Estimated time to repair: ";.01*INT(100*D3);" stardates."
 INPUT "Will you authorize the repair order (y/n)",A$
 IF A$<>"y" THEN 1990
 FOR I=1 TO 8
@@ -775,10 +775,11 @@ RES = INT(RND(8)+1)
 END
 
 PROCEDURE INSERTFEATURE
+REM Insert in string array for quadrant
 PARAM Q$:STRING[192]
 PARAM A$:STRING
 PARAM Z1,Z2:REAL
-REM INSERT IN STRING ARRAY FOR QUADRANT
+DIM S8:INTEGER
 IF LEN(A$)<>3 THEN
   PRINT "ERROR"
   STOP
@@ -801,10 +802,10 @@ PARAM Q$:STRING[192]
 PARAM A$:STRING
 PARAM Z1,Z2:REAL
 PARAM Z3:INTEGER
-REM STRING COMPARISON IN QUADRANT ARRAY
-X1=INT(Z1+.5)
-X2=INT(Z2+.5)
-S8=(X2-1)*3+(X1-1)*24+1
+DIM X1,X2,S8:INTEGER
+X1=FIX(Z1)
+X2=FIX(Z2)
+S8=(X2-1)*3 + (X1-1)*24 + 1
 Z3=0
 IF MID$(Q$,S8,3)=A$ THEN
   Z3=1
@@ -860,18 +861,21 @@ PRINT "Distance = ";SQR(SQ(dY) + SQ(dX))
 END
 
 PROCEDURE QUADRANT
-REM RETURN QUADRANT NAME IN G2$ FROM Q1,Q2
-REM CALL WITH NAMEONLY=1 TO GET REGION NAME ONLY
+REM Return quadrant name in G2$ from Q1,Q2
+REM Call with NAMEONLY=1 to get region name only
 PARAM Q1,Q2:INTEGER
 PARAM NAMEONLY:INTEGER
 PARAM G2$:STRING
 
 IF Q2<=4 THEN
   ON Q1 GOSUB 40,50,60,70,80,90,100,110
-  GOTO 210
 ELSE
-  GOTO 120
+  ON Q1 GOSUB 130,140,150,160,170,180,190,200
 ENDIF
+IF NAMEONLY<>1 THEN
+  ON Q2 GOSUB 230,240,250,260,230,240,250,260
+ENDIF
+END
 
 40 G2$="ANTARES" \ RETURN
 50 G2$="RIGEL" \ RETURN
@@ -882,9 +886,6 @@ ENDIF
 100 G2$="SAGITTARIUS" \ RETURN
 110 G2$="POLLUX" \ RETURN
 
-120 ON Q1 GOSUB 130,140,150,160,170,180,190,200
-GOTO 210
-
 130 G2$="SIRIUS" \ RETURN
 140 G2$="DENEB" \ RETURN
 150 G2$="CAPELLA" \ RETURN
@@ -894,10 +895,6 @@ GOTO 210
 190 G2$="ARCTURUS" \ RETURN
 200 G2$="SPICA" \ RETURN
 
-210 IF NAMEONLY<>1 THEN
-  ON Q2 GOSUB 230,240,250,260,230,240,250,260
-ENDIF
-END
 230 G2$=G2$+" I" \ RETURN
 240 G2$=G2$+" II" \ RETURN
 250 G2$=G2$+" III" \ RETURN
