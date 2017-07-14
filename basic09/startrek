@@ -27,23 +27,27 @@ DIM G(8,8),C(9,2),N(3),Z(8,8):INTEGER
 DIM K(3):klingon_t
 DIM DMG(8), W1, TIME:REAL
 DIM Z3, S, P, ORGTORPS, E, ENEED, KLINGONS,STARTDATE,DURATION,STARBASES:INTEGER
-DIM K3,S3,B3,SB1,SB2,I,J:INTEGER
+DIM K3,S3,B3,S1,S2,SB1,SB2,I,J,RD:INTEGER
 DIM Q1,Q2,Q4,Q5:INTEGER
-DIM H8,DOCKED:BOOLEAN
+DIM D1,H8,DOCKED:BOOLEAN
 RUN RANDOMIZE
-TIME = INT(RND(1)*20+20)*100
+TIME = INT(RND(20)+20)*100
 STARTDATE=TIME
-DURATION=25 + INT(RND(1)*10)
+DURATION=25 + INT(RND(10))
 DOCKED=FALSE
 E=3000
 E0=E
-P=10 \ ORGTORPS=P \ S9=200 \ S=0 \ STARBASES=2
+P=10
+ORGTORPS=P
+S9=200
+S=0
+STARBASES=0
 KLINGONS=0 \ X$="" \ X0$=" is "
 
 RUN RAND8I(Q1)
 RUN RAND8I(Q2)
-RUN RAND8(S1)
-RUN RAND8(S2)
+RUN RAND8I(S1)
+RUN RAND8I(S2)
 
 DATA 0,1, -1,1, -1,0, -1,-1, 0,-1, 1,-1, 1,0, 1,1, 0,1
 FOR I=1 TO 9
@@ -62,23 +66,24 @@ FOR I=1 TO 8
     Z(I,J)=0
     T1=RND(1)
     IF T1>.98 THEN
-      K3=3
-      KLINGONS=KLINGONS+3
-      GOTO 980
+      K3=K3+1
+      KLINGONS=KLINGONS+1
     ENDIF
     IF T1>.95 THEN
-      K3=2 \ KLINGONS=KLINGONS+2
-      GOTO 980
+      K3=K3+1
+      KLINGONS=KLINGONS+1
     ENDIF
     IF T1>.80 THEN
-      K3=1 \ KLINGONS=KLINGONS+1
+      K3=K3+1
+      KLINGONS=KLINGONS+1
     ENDIF
-    980 B3=0
+    B3=0
     IF RND(1)>.96 THEN
-      B3=1 \ STARBASES=STARBASES+1
+      B3=1
+      STARBASES=STARBASES+1
     ENDIF
-    RUN RAND8(TMP)
-    G(I,J)=K3*100 + B3*10 + TMP
+    RUN RAND8I(S3)
+    G(I,J)=K3*100 + B3*10 + S3
   NEXT J
 NEXT I
 IF KLINGONS > DURATION THEN DURATION=KLINGONS+1 \ ENDIF
@@ -86,6 +91,7 @@ IF STARBASES<>0 THEN 1200
 IF G(Q1,Q2)<200 THEN
   G(Q1,Q2)=G(Q1,Q2)+120
   KLINGONS=KLINGONS+1
+  STARBASES=STARBASES+2
 ENDIF
 STARBASES=1
 G(Q1,Q2)=G(Q1,Q2)+10
@@ -103,14 +109,45 @@ PRINT "headquarters on stardate ";STARTDATE+DURATION;". This gives you ";DURATIO
 PRINT "days. There";X0$;STARBASES;" starbase";X$;" in the galaxy for"
 PRINT "resupplying your ship.'"
 PRINT
+GOSUB 2200
+GOSUB 6430
+
+1990 IF S+E>10 THEN
+  IF E>10 OR DMG(7)=0 THEN 2060
+ENDIF
+PRINT
+PRINT "** FATAL ERROR **   You've just stranded your ship in space."
+PRINT "You have insufficient maneuvering energy, and shield control"
+PRINT "is presently incapable of cross-circuiting to engine room!!"
+GOTO 6220
+
+2060 INPUT "Command ",A$
+FOR I=1 TO 9
+  IF LEFT$(A$,3) = MID$(A1$,3*I-2, 3) THEN
+    ON I GOSUB 2300,6430,4000,4260,4700,5530,5690,7290,6270
+    GOTO 1990
+  ENDIF
+NEXT I
+PRINT "Enter one of the following:"
+PRINT "  nav  (To set course)"
+PRINT "  srs  (For short range sensor scan)"
+PRINT "  lrs  (For long range sensor scan)"
+PRINT "  pha  (To fire phasers)"
+PRINT "  tor  (To fire photon torpedoes)"
+PRINT "  she  (To raise or lower shields)"
+PRINT "  dam  (For damage control reports)"
+PRINT "  com  (To call on library-computer)"
+PRINT "  xxx  (To resign your command)"
+PRINT
+GOTO 1990
 
 REM HERE ANY TIME NEW QUADRANT ENTERED
-1320 K3=0
+2200 K3=0
 B3=0
 S3=0
 D4=.5*RND(1)
 Z(Q1,Q2)=G(Q1,Q2)
-IF Q1<1 OR Q1>8 OR Q2<1 OR Q2>8 THEN 1600 \ REM HUH?
+IF Q1<1 OR Q1>8 OR Q2<1 OR Q2>8 THEN 2210 \ REM HUH?
 RUN QUADRANT(Q1, Q2, 0, G2$)
 PRINT
 IF STARTDATE<>TIME THEN
@@ -133,13 +170,13 @@ FOR I=1 TO 3
   K(I).sectx=0
   K(I).secty=0
 NEXT I
-1600 FOR I=1 TO 3
+2210 FOR I=1 TO 3
   K(I).energy=0
 NEXT I
 Q$=Z$+Z$+Z$+Z$+Z$+Z$+Z$+LEFT$(Z$,17)
 REM Position Enterprise in quadrant, then place "K3" klingons, &
 REM "B3" starbases, & "S3" stars elsewhere.
-RUN INSERTFEATURE(Q$, "<*>", S1, S2)
+RUN INSERTFEATURE(Q$, "<*>", INT(S1), INT(S2))
 IF K3>0 THEN
   FOR I=1 TO K3
     GOSUB 8590
@@ -159,41 +196,14 @@ FOR I=1 TO S3
   GOSUB 8590
   RUN INSERTFEATURE(Q$, " * ", R1, R2)
 NEXT I
-1980 GOSUB 6430
-1990 IF S+E>10 THEN
-  IF E>10 OR DMG(7)=0 THEN 2060
-ENDIF
-PRINT
-PRINT "** FATAL ERROR **   You've just stranded your ship in space."
-PRINT "You have insufficient maneuvering energy, and shield control"
-PRINT "is presently incapable of cross-circuiting to engine room!!"
-GOTO 6220
-
-2060 INPUT "Command ",A$
-FOR I=1 TO 9
-  IF LEFT$(A$,3) = MID$(A1$,3*I-2, 3) THEN
-    ON I GOTO 2300,1980,4000,4260,4700,5530,5690,7290,6270
-  ENDIF
-NEXT I
-PRINT "Enter one of the following:"
-PRINT "  nav  (To set course)"
-PRINT "  srs  (For short range sensor scan)"
-PRINT "  lrs  (For long range sensor scan)"
-PRINT "  pha  (To fire phasers)"
-PRINT "  tor  (To fire photon torpedoes)"
-PRINT "  she  (To raise or lower shields)"
-PRINT "  dam  (For damage control reports)"
-PRINT "  com  (To call on library-computer)"
-PRINT "  xxx  (To resign your command)"
-PRINT
-GOTO 1990
+RETURN
 
 REM COURSE CONTROL BEGINS HERE
 2300 INPUT "Course (0-9) ",C1
 IF C1=9 THEN C1=1 \ ENDIF
 IF C1<1 OR C1>9 THEN
   PRINT "   Lt. Sulu reports, 'Incorrect course data, sir!'"
-  GOTO 1990
+  RETURN
 ENDIF
 X$="8"
 IF DMG(1)<0 THEN X$="0.2" \ ENDIF
@@ -201,21 +211,25 @@ PRINT "Warp factor (0-";X$;"): ";
 INPUT W1
 IF DMG(1) < 0 AND W1 > .2 THEN
   PRINT "Warp engines are damaged.  Maxium speed = warp 0.2"
-  GOTO 1990
+  RETURN
 ENDIF
-IF W1 = 0 THEN 1990
+IF W1 = 0 THEN
+  RETURN
+ENDIF
 IF W1 < 0 OR W1 > 8 THEN
   PRINT "   Chief engineer scott reports 'The engines won't take warp ";W1;"!'"
-  GOTO 1990
+  RETURN
 ENDIF
 LET ENEED = FIX(W1 * 8)
 IF E-ENEED < 0 THEN
   PRINT "Engineering reports   'Insufficient energy available"
   PRINT "                       for maneuvering at warp ";W1;"!'"
-  IF S < ENEED-E OR DMG(7) < 0 THEN 1990
+  IF S < ENEED-E OR DMG(7) < 0 THEN
+    RETURN
+  ENDIF
   PRINT "Deflector control room acknowledges ";S;" units of energy"
   PRINT "                         presently deployed to shields."
-  GOTO 1990
+  RETURN
 ENDIF
 
 REM KLINGONS MOVE/FIRE ON MOVING STARSHIP . . .
@@ -229,7 +243,7 @@ IF K(I).energy <> 0 THEN
 ENDIF
 NEXT I
 GOSUB 6000
-D1=0
+D1=FALSE
 D6=W1
 IF W1 >= 1 THEN D6=1 \ ENDIF
 2770 FOR I=1 TO 8
@@ -240,32 +254,32 @@ IF W1 >= 1 THEN D6=1 \ ENDIF
     GOTO 2880
   ENDIF
   IF DMG(I)<0 THEN 2880
-  IF D1<>1 THEN
-    D1=1
+  IF D1=FALSE THEN
+    D1=TRUE
     PRINT "Damage control report:  ";
   ENDIF
   PRINT TAB(8);
-  R1=I
+  RD=I
   GOSUB 8790
   PRINT G2$;" repair completed."
 2880 NEXT I
-IF RND(1) > .2 THEN 3070
-RUN RAND8(R1)
-IF RND(1) >= .6 THEN 3000
-DMG(R1)=DMG(R1)-(RND(1)*5+1)
-PRINT "Damage control report:  ";
-GOSUB 8790
-PRINT G2$;" damaged"
-PRINT
-GOTO 3070
-3000 DMG(R1)=DMG(R1)+RND(1)*3+1
-PRINT "Damage control report:  ";
-GOSUB 8790
-PRINT G2$;" state of repair improved"
-PRINT
+
+IF RND(1) < .2 THEN
+  RUN RAND8I(RD)
+  PRINT "Damage control report:  ";
+  GOSUB 8790
+  IF RND(1) >= .6 THEN
+    DMG(RD)=DMG(RD)+RND(3)+1
+    PRINT G2$;" state of repair improved"
+  ELSE
+    DMG(RD)=DMG(RD)-(RND(5)+1)
+    PRINT G2$;" damaged"
+  ENDIF
+  PRINT
+ENDIF
 
 REM BEGIN MOVING STARSHIP
-3070 RUN INSERTFEATURE(Q$, "   ", INT(S1), INT(S2))
+RUN INSERTFEATURE(Q$, "   ", INT(S1), INT(S2))
 X=S1
 Y=S2
 C1I = INT(C1)
@@ -296,48 +310,46 @@ ENDIF
 TIME=TIME+T8
 IF TIME > STARTDATE + DURATION THEN 6220
 REM SEE IF DOCKED, THEN GET COMMAND
-GOTO 1980
+GOSUB 6430
+RETURN
 
 3500 REM EXCEEDED QUADRANT LIMITS
-X=8*Q1 + X + ENEED*X1
-Y=8*Q2 + Y + ENEED*X2
+X=8*Q1 + S1 + ENEED*X1
+Y=8*Q2 + S2 + ENEED*X2
 Q1=INT(X/8)
 Q2=INT(Y/8)
 S1=INT(X-Q1*8)
 S2=INT(Y-Q2*8)
-IF S1=0 THEN Q1=Q1-1 \ S1=8
-ENDIF
-IF S2=0 THEN Q2=Q2-1 \ S2=8
-ENDIF
+IF S1=0 THEN Q1=Q1-1 \ S1=8 \ ENDIF
+IF S2=0 THEN Q2=Q2-1 \ S2=8 \ ENDIF
 DIM X5:BOOLEAN
 X5=FALSE
-IF Q1<1 THEN X5=TRUE \ Q1=1 \ S1=1
-ENDIF
-IF Q1>8 THEN X5=TRUE \ Q1=8 \ S1=8
-ENDIF
-IF Q2<1 THEN X5=TRUE \ Q2=1 \ S2=1
-ENDIF
-IF Q2>8 THEN X5=TRUE \ Q2=8 \ S2=8
-ENDIF
+IF Q1<1 THEN X5=TRUE \ Q1=1 \ S1=1 \ ENDIF
+IF Q1>8 THEN X5=TRUE \ Q1=8 \ S1=8 \ ENDIF
+IF Q2<1 THEN X5=TRUE \ Q2=1 \ S2=1 \ ENDIF
+IF Q2>8 THEN X5=TRUE \ Q2=8 \ S2=8 \ ENDIF
 IF X5=TRUE THEN
   PRINT "Lt. Uhura reports message from starfleet command:"
   PRINT "  'Permission to attempt crossing of galactic perimeter"
   PRINT "  is hereby *DENIED*.  Shut down your engines.'"
   PRINT "Chief engineer Scott reports  'Warp engines shut down"
-  PRINT "  at sector ";FIX(S1);",";FIX(S2);" of quadrant ";Q1;",";Q2;".'"
+  PRINT "  at sector ";S1;",";S2;" of quadrant ";Q1;",";Q2;".'"
   IF TIME > STARTDATE + DURATION THEN 6220
 ENDIF
 IF 8*Q1+Q2 = 8*Q4+Q5 THEN 3370
 TIME=TIME+1
 GOSUB 3910
-GOTO 1320
+GOSUB 2200
+GOSUB 6430
+RETURN
 
 REM MANEUVER ENERGY S/R **
 3910 E=E-ENEED-10
 IF E>=0 THEN RETURN
 ENDIF
 PRINT "Shield control supplies energy to complete the maneuver."
-S=S+E \ E=0
+S=S+E
+E=0
 IF S<=0 THEN S=0
 ENDIF
 RETURN
@@ -345,7 +357,7 @@ RETURN
 REM LONG RANGE SENSOR SCAN CODE
 4000 IF DMG(3)<0 THEN
   PRINT "Long range sensors are inoperable"
-  GOTO 1990
+  RETURN
 ENDIF
 PRINT "Long range scan for quadrant ";Q1;",";Q2
 O1$="-------------------"
@@ -370,23 +382,23 @@ FOR I=Q1-1 TO Q1+1
   NEXT L
   PRINT ":" \ PRINT O1$
 NEXT I
-GOTO 1990
+RETURN
 
 REM PHASER CONTROL CODE BEGINS HERE
-4260 IF DMG(4)<0 THEN PRINT "Phasers inoperative" \ GOTO 1990
+4260 IF DMG(4)<0 THEN PRINT "Phasers inoperative" \ RETURN
 ENDIF
-IF K3>0 THEN 4330
+IF K3<=0 THEN
 4270 PRINT "Science officer Spock reports  'Sensors show no enemy ships"
-PRINT "                                in this quadrant'"
-GOTO 1990
-
-4330 IF DMG(8)<0 THEN PRINT "Computer failure hampers accuracy" \ ENDIF
+     PRINT "                                in this quadrant'"
+  RETURN
+ENDIF
+IF DMG(8)<0 THEN PRINT "Computer failure hampers accuracy" \ ENDIF
 PRINT "Phasers locked on target;  ";
 4360 PRINT "Energy available = ";E;" units"
 INPUT "Number of units to fire ",X
 IF X<=0 THEN
   PRINT "Phaser fire cancelled"
-  GOTO 1990
+  RETURN
 ENDIF
 IF E-X < 0 THEN 4360
 E=E-X
@@ -416,23 +428,23 @@ FOR I=1 TO 3
   ENDIF
 4670 NEXT I
 GOSUB 6000
-GOTO 1990
+RETURN
 
 REM PHOTON TORPEDO CODE BEGINS HERE
 4700 IF P<=0 THEN
   PRINT "All photon torpedoes expended"
-  GOTO 1990
+  RETURN
 ENDIF
 4730 IF DMG(5)<0 THEN
   PRINT "Photon tubes are not operational"
-  GOTO 1990
+  RETURN
 ENDIF
 4760 INPUT "Photon torpedo course (1-9)",C1
 IF C1=9 THEN C1=1
 ENDIF
 IF C1<1 OR C1>9 THEN
   PRINT "Ensign Chekov reports,  'Incorrect course data, sir!'"
-  GOTO 1990
+  RETURN
 ENDIF
 E=E-2
 P=P-1
@@ -450,7 +462,7 @@ REPEAT
   IF X3<1 OR X3>8 OR Y3<1 OR Y3>8 THEN
     PRINT "Torpedo missed"
     GOSUB 6000
-    GOTO 1990
+    RETURN
   ENDIF
   PRINT "               ";FIX(X3);",";FIX(Y3)
   RUN CHECKFEATURE(Q$, "   ", X3, Y3, Z3)
@@ -458,7 +470,8 @@ UNTIL Z3=0
 (* We have now hit something *)
 RUN CHECKFEATURE(Q$, "+K+", X3, Y3, Z3)
 IF Z3=1 THEN
-  PRINT "*** KLINGON DESTROYED ***" \ K3=K3-1
+  PRINT "*** KLINGON DESTROYED ***"
+  K3=K3-1
   KLINGONS=KLINGONS-1
   IF KLINGONS<=0 THEN 6370
   FOR I=1 TO 3
@@ -472,7 +485,7 @@ RUN CHECKFEATURE(Q$, " * ", X3, Y3, Z3)
 IF Z3=1 THEN
   PRINT "Star at ";FIX(X3);",";FIX(Y3);" absorbed torpedo energy."
   GOSUB 6000
-  GOTO 1990
+  RETURN
 ENDIF
 RUN CHECKFEATURE(Q$, ">!<", X3, Y3, Z3)
 IF Z3=0 THEN 4760
@@ -492,38 +505,44 @@ ENDIF
 G(Q1,Q2)=K3*100+B3*10+S3
 Z(Q1,Q2)=G(Q1,Q2)
 GOSUB 6000
-GOTO 1990
+RETURN
 
 5520 REM SHIELD CONTROL
 5530 IF DMG(7)<0 THEN
   PRINT "Shield control inoperable"
-  GOTO 1990
+  RETURN
 ENDIF
 5560 PRINT "Energy available = ";E+S;
 INPUT " Number of units to shields ",X
 IF X<0 OR S=X THEN
   PRINT "<SHIELDS UNCHANGED>"
-  GOTO 1990
+  RETURN
 ENDIF
 IF X > E+S THEN
   PRINT "Shield control reports  'This is not the federation treasury.'"
   PRINT "<SHIELDS UNCHANGED>"
-  GOTO 1990
+  RETURN
 ENDIF
 E=E+S-X
 S=X
 PRINT "Deflector control room report:"
-PRINT "  'Shields now at ";FIX(S);" units per your command.'" \ GOTO 1990
+PRINT "  'Shields now at ";FIX(S);" units per your command.'"
+RETURN
+
 REM DAMAGE CONTROL
 5690 IF DMG(6)>=0 THEN 5910
 PRINT "Damage control report not available"
-IF DOCKED=FALSE THEN 1990
+IF DOCKED=FALSE THEN
+  RETURN
+ENDIF
 5720 D3=0
 FOR I=1 TO 8
   IF DMG(I)<0 THEN D3=D3+.1
   ENDIF
 NEXT I
-IF D3=0 THEN 1990
+IF D3=0 THEN
+  RETURN
+ENDIF
 PRINT
 D3=D3+D4
 IF D3>=1 THEN D3=.9
@@ -531,20 +550,22 @@ ENDIF
 PRINT "Technicians standing by to effect repairs to your ship;"
 PRINT "Estimated time to repair: ";.01*INT(100*D3);" stardates."
 INPUT "Will you authorize the repair order (y/n)",A$
-IF A$<>"y" THEN 1990
+IF A$<>"y" THEN
+  RETURN
+ENDIF
 FOR I=1 TO 8
   IF DMG(I)<0 THEN DMG(I)=0
   ENDIF
 NEXT I
 TIME=TIME+D3+.1
 5910 PRINT \ PRINT "Device             State of repair"
-FOR R1=1 TO 8
+FOR RD=1 TO 8
 GOSUB 8790
-PRINT G2$;LEFT$(Z$,25-LEN(G2$));INT(DMG(R1)*100)*.01
-NEXT R1
+PRINT G2$;LEFT$(Z$,25-LEN(G2$));INT(DMG(RD)*100)*.01
+NEXT RD
 PRINT
 IF DOCKED=TRUE THEN 5720
-GOTO 1990
+RETURN
 
 REM KLINGONS SHOOTING
 6000 IF K3<=0 THEN RETURN
@@ -564,8 +585,8 @@ FOR I=1 TO 3
   PRINT "      <SHIELDS DOWN TO ";S;" UNITS>"
   IF H<20 THEN 6200
   IF RND(1)>.6 OR H/S <= .02 THEN 6200
-  RUN RAND8(R1)
-  DMG(R1)=DMG(R1)-H/S-.5*RND(1)
+  RUN RAND8I(RD)
+  DMG(RD)=DMG(RD)-H/S-.5*RND(1)
   GOSUB 8790
   PRINT "Damage control reports:"
   PRINT "    '";G2$;" damaged by the hit'"
@@ -596,11 +617,14 @@ GOTO 6290
 REM SHORT RANGE SENSOR SCAN & STARTUP SUBROUTINE
 6430 FOR I=S1-1 TO S1+1
   FOR J=S2-1 TO S2+1
-    IF INT(I+.5)<1 OR INT(I+.5)>8 OR INT(J+.5)<1 OR INT(J+.5)>8 THEN 6540
+    IF I<1 OR I>8 OR J<1 OR J>8 THEN 6540
     RUN CHECKFEATURE(Q$, ">!<", INT(I), INT(J), Z3)
     IF Z3=1 THEN
-      DOCKED=TRUE \ C$="DOCKED" \ E=E0 \ P=ORGTORPS
-      PRINT "Shields dropped for docking purposes" \ S=0
+      DOCKED=TRUE \ C$="DOCKED"
+      E=E0
+      P=ORGTORPS
+      PRINT "Shields dropped for docking purposes"
+      S=0
       GOTO 6720
     ENDIF
   6540 NEXT J
@@ -636,7 +660,7 @@ RETURN
 6850 PRINT USING "'     Stardate          ',R7.1",TIME \ RETURN
 6900 PRINT "     Condition          ";C$ \ RETURN
 6960 PRINT "     Quadrant           ";Q1;",";Q2 \ RETURN
-7020 PRINT "     Sector             ";FIX(S1);",";FIX(S2) \ RETURN
+7020 PRINT "     Sector             ";S1;",";S2 \ RETURN
 7070 PRINT "     Photon torpedoes   ";P \ RETURN
 7120 PRINT USING "'     Total energy      ',I6<",E+S \ RETURN
 7180 PRINT USING "'     Shields           ',I4<",S \ RETURN
@@ -645,11 +669,13 @@ RETURN
 REM LIBRARY COMPUTER CODE
 7290 IF DMG(8)<0 THEN
   PRINT "Computer disabled"
-  GOTO 1990
+  RETURN
 ENDIF
 LOOP
 INPUT "Computer active and awaiting command ",A
-IF A < 0 THEN 1990
+IF A < 0 THEN
+  RETURN
+ENDIF
 PRINT
 H8=TRUE
 ON A+1 GOTO 7540,7900,8070,8500,8150,7400
@@ -696,7 +722,7 @@ FOR I=1 TO 8
   PRINT O1$
 NEXT I
 PRINT
-GOTO 1990
+RETURN
 
 REM STATUS REPORT
 7900 PRINT "   Status report:"
@@ -722,28 +748,26 @@ PRINT "From enterprise to Klingon battle cruiser";X$
 H8=FALSE
 FOR I=1 TO 3
   IF K(I).energy > 0 THEN
-    W1=K(I).sectx
-    X=K(I).secty
     RUN DIRECTION(S1-K(I).sectx, S2-K(I).secty)
   ENDIF
 NEXT I
-GOTO 1990
+RETURN
 
 8150 PRINT "Direction/distance calculator:"
-PRINT "You are at quadrant ";Q1;",";Q2;" sector ";FIX(S1);",";FIX(S2)
+PRINT "You are at quadrant ";Q1;",";Q2;" sector ";S1;",";S2
 PRINT "Please enter"
 INPUT "  Initial coordinates (x,y) ",C1,A
 INPUT "  Final coordinates (x,y) ",W1,X
 RUN DIRECTION(C1-W1, A-X)
-GOTO 1990
+RETURN
 
 8500 IF B3<>0 THEN
   PRINT "From enterprise to starbase:"
-  RUN DIRECTION(S1-SB1, S2-SB2)
+  RUN DIRECTION(INT(S1-SB1), INT(S2-SB2))
 ELSE
   PRINT "Mr. Spock reports,  'Sensors show no starbases in this quadrant.'"
 ENDIF
-GOTO 1990
+RETURN
 
 8590 REM FIND EMPTY PLACE IN QUADRANT (FOR THINGS)
 REPEAT
@@ -754,7 +778,7 @@ UNTIL Z3=1
 RETURN
 
 REM PRINT S DEVICE NAME
-8790 ON R1 GOTO 8792,8794,8796,8798,8800,8802,8804,8806
+8790 ON RD GOTO 8792,8794,8796,8798,8800,8802,8804,8806
 8792 G2$="Warp engines" \ RETURN
 8794 G2$="Short range sensors" \ RETURN
 8796 G2$="Long range sensors" \ RETURN
