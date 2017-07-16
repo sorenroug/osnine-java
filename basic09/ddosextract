@@ -1,0 +1,98 @@
+PROCEDURE ddosextract
+    REM Extract a file from a Dragon Dos disk
+    INPUT "Name of disk to extract from? "; diskname$
+    INPUT "File name? "; fn$
+    RUN findintoc(diskname$, fn$, 1.)
+
+PROCEDURE findintoc
+    PARAM diskname:STRING
+    PARAM filename:STRING
+    PARAM sides:REAL
+    TYPE BLOCK = lsn:INTEGER;count:BYTE
+    TYPE dentry = flag:BYTE; name(11):BYTE; alloc(4):BLOCK; last:BYTE
+    DIM tocrec: dentry
+    DIM fd,outfd,i,j:INTEGER
+    DIM eodata,deleted,contentry,continued:INTEGER
+    DIM recnum,finish:INTEGER
+    DIM c,unused(6):BYTE
+    DIM dosname:STRING
+    DIM segments(20):BLOCK
+
+    OPEN #fd,diskname:READ
+    REM sides = 1.
+    sectors = 18
+    tocloc = sides * 16. * sectors * 256 + 512
+    SEEK #fd, tocloc
+    recnum = 0
+    REPEAT
+      GET #fd,tocrec
+      eodata = LAND(tocrec.flag, 8)
+      EXITIF eodata=8 THEN
+      ENDEXIT
+      deleted = LAND(tocrec.flag, 128)
+      IF deleted=128 THEN 100
+      contentry = LAND(tocrec.flag, 1)
+      IF contentry = 1 THEN 100
+      RUN createfn(tocrec.name, dosname)
+      IF dosname = filename THEN
+        FOR i = 1 TO 4
+          segments(i) = tocrec.alloc(i)
+        NEXT i
+        finish = tocrec.last
+      ENDIF
+      continued = LAND(tocrec.flag, 32)
+100   recnum = recnum + 1
+      IF MOD(recnum, 10) = 0 THEN
+        GET #fd,unused
+      ENDIF
+    UNTIL eodata=8
+
+    IF segments(1).lsn = 0 THEN
+      PRINT "*** File not found on disk"
+    ELSE
+      REM Write the file out
+      GOSUB 150
+    ENDIF
+    CLOSE #fd
+    END
+
+150 REM copyout
+    CREATE #outfd,filename:WRITE
+    FOR i = 1 to 4
+      EXITIF segments(i).lsn = 0 THEN ENDEXIT
+      SEEK #fd, (0. + segments(i).lsn) * 256
+      IF segments(i+1).lsn = 0 AND finish <> 0 THEN
+        howmany = finish
+      ELSE
+        howmany = 256
+      ENDIF
+      sectors = segments(i).count
+      GOSUB 200
+    NEXT i
+    CLOSE #outfd
+    RETURN
+
+200 FOR j = 1 to sectors
+      siz = 256
+      IF j = sectors THEN
+        siz = howmany
+      ENDIF
+      FOR k = 1 to siz
+        GET #fd,c
+        PUT #outfd,c
+      NEXT k
+    NEXT j
+    RETURN
+
+PROCEDURE createfn
+    PARAM s(11):BYTE
+    PARAM FN:STRING
+    DIM i:INTEGER
+    FN=""
+    FOR i = 1 to 11
+      IF i = 9 THEN
+        FN = FN + "."
+      ENDIF
+      IF s(i) = 0 THEN 10
+      FN = FN + CHR$(s(i))
+10  NEXT I

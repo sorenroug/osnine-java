@@ -1,0 +1,52 @@
+PROCEDURE ddoslist
+REM Read the table of content of a Dragon Dos disk
+INPUT "Disk name? "; fn$
+RUN listtoc(fn$, 1.)
+
+PROCEDURE listtoc
+    PARAM filename:STRING
+    PARAM sides:REAL
+    TYPE dentry = flag:BYTE; name:STRING[8]; ext:STRING[3]; alloc(3,4),last:BYTE
+    DIM tocrec: dentry
+    DIM fd:INTEGER
+    DIM eod,deleted,continued:INTEGER
+    DIM recnum:INTEGER
+    DIM unused(6):BYTE
+    OPEN #fd,filename:READ
+    REM sides = 1.
+    sectors = 18
+    tocloc = sides * 16. * sectors * 256 + 512
+    SEEK #fd, tocloc
+    recnum = 0
+    REPEAT
+      GET #fd,tocrec
+      RUN fixzeros(tocrec.name)
+      eod = LAND(tocrec.flag, 8)
+      deleted = LAND(tocrec.flag, 128)
+      contentry = LAND(tocrec.flag, 1)
+      EXITIF eod=8 THEN
+      ENDEXIT
+      IF contentry = 1 THEN 100
+      continued = LAND(tocrec.flag, 32)
+      PRINT tocrec.name; "."; tocrec.ext;
+      IF deleted=128 THEN PRINT "(deleted)";
+      ENDIF
+      REM IF continued=32 THEN PRINT "(continued)";
+      REM ENDIF
+      PRINT
+100   recnum = recnum + 1
+      IF MOD(recnum, 10) = 0 THEN
+        GET #fd,unused
+      ENDIF
+      UNTIL eod=8
+    CLOSE #fd
+    BYE
+
+PROCEDURE fixzeros
+    PARAM s(8):BYTE
+    DIM i:INTEGER
+    FOR i = 1 to 8
+      IF s(i) = 0 THEN
+        s(i) = 255
+      ENDIF
+    NEXT I

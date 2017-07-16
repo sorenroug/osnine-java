@@ -1,5 +1,4 @@
 PROCEDURE eliza
-2 REM S0REN ROUG
 PRINT CHR$(12)
 PRINT TAB(24); "Eliza"
 PRINT TAB(18); "Creative Computing"
@@ -60,6 +59,7 @@ IF c>0 THEN
 ENDIF 
 k=n1
 GOTO 570
+
 REM 
 390 REM take right part of string and conjugate it
 REM using the list of string to be swapped

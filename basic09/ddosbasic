@@ -1,0 +1,98 @@
+PROCEDURE ddosbasic
+DIM reserved(104):STRING[7]
+DIM funcs(41):STRING[7]
+DIM head(9):BYTE
+DIM i:INTEGER
+FOR i = 1 to 104
+   READ reserved(i)
+   REM PRINT USING "H3,':',S7",i+127,reserved(i)
+NEXT i
+FOR i = 1 to 41
+   READ funcs(i)
+   REM PRINT USING "H3,':',S7",i+127,funcs(i)
+NEXT i
+
+DIM fd:INTEGER
+DIM c,state:BYTE
+
+INPUT "File name? "; fn$
+OPEN #fd,fn$:READ
+state = 1
+REPEAT
+ON state GOSUB 100,200,300,400,500
+UNTIL EOF(#fd)
+BYE
+
+100 REM 9-byte header
+GET #fd,head
+IF head(1) <> $55 AND head(2) <> 1 THEN
+  PRINT #2,"This is not a DRAGON BASIC file"
+  BYE
+ENDIF
+state=2
+RETURN
+
+200 REM Next line
+GET #fd,i
+PRINT
+IF i = 0 THEN
+  state=5
+ELSE
+  state=3
+ENDIF
+RETURN
+
+300 REM Line number
+GET #fd,i
+PRINT i;" ";
+state=4
+RETURN
+
+400 REM Tokens
+GET #fd,c
+IF c = 0 THEN
+  state = 2
+  RETURN
+ENDIF
+IF c = 255 THEN
+  GET #fd,c
+  PRINT funcs(c-127);
+ELSE
+  IF c >= 128 THEN
+    PRINT reserved(c-127);
+  ELSE
+    PRINT CHR$(c);
+  ENDIF
+ENDIF
+RETURN
+
+500 REM end of data
+BYE
+
+REM Reserved words - Start at 0x80
+DATA "FOR", "GO", "REM", "'", "ELSE", "IF", "DATA", "PRINT", "ON"
+DATA "INPUT", "END", "NEXT", "DIM", "READ", "LET", "RUN", "RESTORE"
+DATA "RETURN", "STOP", "POKE", "CONT", "LIST", "CLEAR", "NEW", "DEF"
+DATA "CLOAD", "CSAVE", "OPEN", "CLOSE", "LLIST", "SET", "RESET", "CLS"
+DATA "MOTOR", "SOUND", "AUDIO", "EXEC", "SKIPF", "DEL", "EDIT", "TRON"
+DATA "TROFF", "LINE", "PCLS", "PSET", "PRESET", "SCREEN", "PCLEAR"
+DATA "COLOR", "CIRCLE", "PAINT", "GET", "PUT", "DRAW", "PCOPY", "PMODE"
+DATA "PLAY", "DLOAD", "RENUM", "TAB(", "TO", "SUB", "FN", "THEN", "NOT"
+DATA "STEP", "OFF", "+", "-", "*", "/", "^", "AND", "OR", ">", "=", "<"
+DATA "USING"
+
+REM Start from 0xCE
+DATA "AUTO", "BACKUP", "BEEP", "BOOT", "CHAIN", "COPY", "CREATE", "DIR"
+DATA "DRIVE", "DSKINIT", "FREAD", "FWRITE", "ERROR", "KILL", "LOAD", "MERGE"
+DATA "PROTECT", "WAIT", "RENAME", "SAVE", "SREAD", "SWRITE", "VERIFY", "FROM"
+DATA "FLREAD", "SWAP"
+
+REM Function tokens - all proceeded by 0xff to differentiate from operators
+REM Start at 0x80
+DATA "SGN", "INT", "ABS", "POS", "RND", "SQR", "LOG", "EXP", "SIN"
+DATA "COS", "TAN", "ATN", "PEEK", "LEN", "STR$", "VAL", "ASC", "CHR$"
+DATA "EOF", "JOYSTK", "FIX", "HEX$", "LEFT$", "RIGHT$", "MID$", "POINT"
+DATA "INKEY$", "MEM", "VARPTR", "INSTR", "TIMER", "PPOINT", "STRING$", "USR"
+REM Start at 0xA2
+DATA "LOF", "FREE", "ERL", "ERR", "HIMEM", "LOC", "FRE$"
+

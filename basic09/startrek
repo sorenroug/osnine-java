@@ -50,6 +50,7 @@ RUN RAND8I(S1)
 RUN RAND8I(S2)
 
 DATA 0,1, -1,1, -1,0, -1,-1, 0,-1, 1,-1, 1,0, 1,1, 0,1
+RESTORE
 FOR I=1 TO 9
   READ C(I,1), C(I,2)
 NEXT I
