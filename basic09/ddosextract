@@ -10,13 +10,15 @@ PROCEDURE findintoc
     PARAM sides:REAL
     TYPE BLOCK = lsn:INTEGER;count:BYTE
     TYPE dentry = flag:BYTE; name(11):BYTE; alloc(4):BLOCK; last:BYTE
+    TYPE centry = cflag:BYTE; calloc(7):BLOCK; cunused:INTEGER; clast:BYTE
     DIM tocrec: dentry
+    DIM crec: centry
     DIM fd,outfd,i,j:INTEGER
     DIM eodata,deleted,contentry,continued:INTEGER
-    DIM recnum,finish:INTEGER
-    DIM c,unused(6):BYTE
+    DIM recnum,finish,howmany:INTEGER
+    DIM cb,c,unused(6):BYTE
     DIM dosname:STRING
-    DIM segments(20):BLOCK
+    DIM segments(11):BLOCK
 
     OPEN #fd,diskname:READ
     REM sides = 1.
@@ -24,6 +26,7 @@ PROCEDURE findintoc
     tocloc = sides * 16. * sectors * 256 + 512
     SEEK #fd, tocloc
     recnum = 0
+    cb = -1
     REPEAT
       GET #fd,tocrec
       eodata = LAND(tocrec.flag, 8)
@@ -32,6 +35,13 @@ PROCEDURE findintoc
       deleted = LAND(tocrec.flag, 128)
       IF deleted=128 THEN 100
       contentry = LAND(tocrec.flag, 1)
+      IF contentry = 1 AND cb = recnum THEN
+        crec = tocrec
+        FOR i = 1 TO 7
+          segments(i+4) = crec.calloc(i)
+          finish = tocrec.last
+        NEXT i
+      ENDIF
       IF contentry = 1 THEN 100
       RUN createfn(tocrec.name, dosname)
       IF dosname = filename THEN
@@ -39,8 +49,10 @@ PROCEDURE findintoc
           segments(i) = tocrec.alloc(i)
         NEXT i
         finish = tocrec.last
+        IF LAND(tocrec.flag, 32) = 32 THEN
+          cb = tocrec.last
+        ENDIF
       ENDIF
-      continued = LAND(tocrec.flag, 32)
 100   recnum = recnum + 1
       IF MOD(recnum, 10) = 0 THEN
         GET #fd,unused
@@ -58,7 +70,7 @@ PROCEDURE findintoc
 
 150 REM copyout
     CREATE #outfd,filename:WRITE
-    FOR i = 1 to 4
+    FOR i = 1 to 11
       EXITIF segments(i).lsn = 0 THEN ENDEXIT
       SEEK #fd, (0. + segments(i).lsn) * 256
       IF segments(i+1).lsn = 0 AND finish <> 0 THEN
@@ -66,6 +78,7 @@ PROCEDURE findintoc
       ELSE
         howmany = 256
       ENDIF
+      PRINT USING "H5,H3", segments(i).lsn,howmany
       sectors = segments(i).count
       GOSUB 200
     NEXT i
