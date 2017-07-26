@@ -48,6 +48,10 @@ PROCEDURE findintoc
         FOR i = 1 TO 4
           segments(i) = tocrec.alloc(i)
         NEXT i
+        FOR i = 5 TO 11
+          segments(i).lsn = 0
+          segments(i).count = 0
+        NEXT i
         finish = tocrec.last
         IF LAND(tocrec.flag, 32) = 32 THEN
           cb = tocrec.last
@@ -59,26 +63,26 @@ PROCEDURE findintoc
       ENDIF
     UNTIL eodata=8
 
-    IF segments(1).lsn = 0 THEN
+    IF segments(1).count = 0 THEN
       PRINT "*** File not found on disk"
     ELSE
       REM Write the file out
       GOSUB 150
     ENDIF
     CLOSE #fd
-    END
+    BYE
 
 150 REM copyout
     CREATE #outfd,filename:WRITE
     FOR i = 1 to 11
-      EXITIF segments(i).lsn = 0 THEN ENDEXIT
+      EXITIF segments(i).count = 0 THEN ENDEXIT
       SEEK #fd, (0. + segments(i).lsn) * 256
       IF segments(i+1).lsn = 0 AND finish <> 0 THEN
         howmany = finish
       ELSE
         howmany = 256
       ENDIF
-      PRINT USING "H5,H3", segments(i).lsn,howmany
+      REM PRINT USING "H5,H3", segments(i).lsn,howmany
       sectors = segments(i).count
       GOSUB 200
     NEXT i

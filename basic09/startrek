@@ -440,7 +440,7 @@ ENDIF
   PRINT "Photon tubes are not operational"
   RETURN
 ENDIF
-4760 INPUT "Photon torpedo course (1-9)",C1
+4760 INPUT "Photon torpedo course (1-9) ",C1
 IF C1=9 THEN C1=1
 ENDIF
 IF C1<1 OR C1>9 THEN
@@ -550,7 +550,7 @@ IF D3>=1 THEN D3=.9
 ENDIF
 PRINT "Technicians standing by to effect repairs to your ship;"
 PRINT "Estimated time to repair: ";.01*INT(100*D3);" stardates."
-INPUT "Will you authorize the repair order (y/n)",A$
+INPUT "Will you authorize the repair order (y/n) ",A$
 IF A$<>"y" THEN
   RETURN
 ENDIF
@@ -604,7 +604,7 @@ PRINT "the end of your mission."
 IF STARBASES>0 THEN
   PRINT "The federation is in need of a new starship commander"
   PRINT "for a similar mission -- If there is a volunteer,"
-  INPUT "let him step forward and enter 'aye'",A$
+  INPUT "let him step forward and enter 'aye' ",A$
   IF A$="aye" THEN 10
 ENDIF
 END

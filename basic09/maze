@@ -45,26 +45,32 @@ PROCEDURE maze
         LET D(DX)=3
       ENDIF
     ENDIF
-750 IF R<rows THEN 780
-    IF B=1 THEN 820
-    GOTO 790
-780 IF W(R+1,C)>0 THEN 820
-790 LET DX=DX+1
+750 IF R<rows THEN
+      IF W(R+1,C)>0 THEN 820
+    ELSE
+      IF B=1 THEN 820
+    ENDIF
+    LET DX=DX+1
     LET D(DX)=4
 820 IF DX=0 THEN 1100
     LET X=INT(DX*RND(0)+1)
     IF D(X)=4 THEN 980
     IF D(X)=3 THEN 940
     IF D(X)=2 THEN 900
-    LET C=C-1
+
+    (* D(X) = 1 *)
+860 LET C=C-1
     LET V(R,C)=2
     GOTO 1040
+
 900 LET V(R,C)=V(R,C)+2
-910 LET C=C+1
-920 GOTO 1040
-940 LET R=R-1
-950 LET V(R,C)=1
+    LET C=C+1
     GOTO 1040
+
+940 LET R=R-1
+    LET V(R,C)=1
+    GOTO 1040
+
 980  LET V(R,C)=V(R,C)+1
      LET R=R+1
      IF R<=rows THEN 1040
@@ -85,22 +91,22 @@ PROCEDURE maze
      GOTO 1100
 
 1190 FOR R=1 TO rows
-     PRINT "I"; 
-     FOR C=1 TO cols
-       IF V(R,C)<2 THEN
-         PRINT "  I"; 
-       ELSE
-         PRINT "   "; 
-       ENDIF
-     NEXT C
-     PRINT 
-     FOR C=1 TO cols
-       IF V(R,C)/2=INT(V(R,C)/2) THEN
-         PRINT ":--"; 
-       ELSE
-         PRINT ":  "; 
-       ENDIF
-     NEXT C
-     PRINT ":"
+       PRINT "I"; 
+       FOR C=1 TO cols
+         IF V(R,C)<2 THEN
+           PRINT "  I"; 
+         ELSE
+           PRINT "   "; 
+         ENDIF
+       NEXT C
+       PRINT 
+       FOR C=1 TO cols
+         IF V(R,C)/2=INT(V(R,C)/2) THEN
+           PRINT ":--"; 
+         ELSE
+           PRINT ":  "; 
+         ENDIF
+       NEXT C
+       PRINT ":"
      NEXT R
      END 
