@@ -474,5 +474,34 @@ public class BranchAndJumpTest {
         assertEquals(0xB00 + 4, myTestCPU.pc.intValue());
     }
 
+    @Test
+    public void testLBCCForwards() {
+        myTestCPU.cc.setC(0);
+        myTestCPU.write_word(0xB00, 0x1024);
+        myTestCPU.write_word(0xB02, 0x03FF);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
+    }
 
+    @Test
+    public void testLBEQForwards() {
+        myTestCPU.cc.setZ(1);
+        myTestCPU.write_word(0xB00, 0x1027);
+        myTestCPU.write_word(0xB02, 0x03FF);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
+    }
+
+    @Test
+    public void testLBGEForwards() {
+        myTestCPU.cc.setN(1);
+        myTestCPU.cc.setV(1);
+        myTestCPU.write_word(0xB00, 0x102C);
+        myTestCPU.write_word(0xB02, 0x03FF);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
+    }
 }

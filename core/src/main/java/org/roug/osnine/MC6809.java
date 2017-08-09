@@ -52,11 +52,11 @@ public class MC6809 extends USimMotorola {
     /** Did the CPU receive an NMI? */
     private boolean receivedNMI;
 
-    /** Did the CPU receive an FIRQ? */
-    private boolean receivedFIRQ;
+    /** Active IRQ requests. */
+    private int activeIRQs;
 
-    /** Did the CPU receive an IRQ? */
-    private boolean receivedIRQ;
+    /** Active FIRQ requests. */
+    private int activeFIRQs;
 
     private boolean waitState = false;
 
@@ -86,21 +86,53 @@ public class MC6809 extends USimMotorola {
     /**
      * Accept an FIRQ signal.
      */
-    public synchronized void signalFIRQ() {
-        if (!cc.isSetF()) {
-            receivedFIRQ = true;
+    public synchronized void signalFIRQ(boolean state) {
+        if (state) {
+            activeFIRQs++;
+            notifyAll();
+        } else {
+           activeFIRQs--;
         }
-        notifyAll();
     }
 
     /**
-     * Accept an IRQ signal.
+     * Do we have active FIRQs and we're accepting FIRQs.
      */
-    public synchronized void signalIRQ() {
-        if (!cc.isSetI()) {
-            receivedIRQ = true;
+    private boolean isFIRQActive() {
+        return activeFIRQs > 0 && !cc.isSetF();
+    }
+
+    /**
+     * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
+     * pin, which means the device sends an interrupt request. The CPU must then
+     * check the devices and get the device to lower the signal again.
+     * In this implementation, the signals from several devices are ORed
+     * together to the same pin on the CPU. Since this can't easily be emulated,
+     * it is the responsibility of the device that it doesn't raise IRQ twice
+     * in a row.
+     * If IRQs are ignored when a device signals, then it must be received 
+     * when IRQs are accepted again (if the device hasn't lowered it).
+     *
+     * NOTE: The ORing logic should be move to a memory-bus class, so it can
+     * be replaced for different hardware emulations.
+     *
+     * @param state - true if IRQ is raised from the device, false if IRQ is
+     * lowered.
+     */
+    public synchronized void signalIRQ(boolean state) {
+        if (state) {
+            activeIRQs++;
+            notifyAll();
+        } else {
+           activeIRQs--;
         }
-        notifyAll();
+    }
+
+    /**
+     * Do we have active IRQs and we're accepting IRQs.
+     */
+    private boolean isIRQActive() {
+        return activeIRQs > 0 && !cc.isSetI();
     }
 
     /**
@@ -142,7 +174,8 @@ public class MC6809 extends USimMotorola {
         cc.clear();      // Clear all flags
         cc.setI(1);       // IRQ disabled
         cc.setF(1);       // FIRQ disabled
-        inhibitNMI = true;  // FIXME: Set to false the first time something is loaded into S.
+        inhibitNMI = true;  // FIXME: Set to false the first time something is
+                            // loaded into S. Could be done with a status bit in Word class.
     }
 
     /**
@@ -537,13 +570,11 @@ public class MC6809 extends USimMotorola {
             nmi();
             receivedNMI = false;
         }
-        if (receivedFIRQ) {
+        if (isFIRQActive()) {
             firq();
-            receivedFIRQ = false;
         }
-        if (receivedIRQ) {
+        if (isIRQActive()) {
             irq();
-            receivedIRQ = false;
         }
     }
 
@@ -1289,7 +1320,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private synchronized void waitForInterrupt() {
-        while (!(receivedIRQ || receivedFIRQ || receivedNMI)) {
+        while (!(isIRQActive() || isFIRQActive() || receivedNMI)) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -1328,6 +1359,9 @@ public class MC6809 extends USimMotorola {
         }
     }
 
+    /**
+     * Decimal Addition Ajust.
+     */
     private void daa() {
         int c = 0;
         int lsn = (a.intValue() & 0x0f);
@@ -1390,20 +1424,23 @@ public class MC6809 extends USimMotorola {
         setBitZ(x);
     }
 
-    static void swap(UByte r1, UByte r2) {
+    static private void swap(UByte r1, UByte r2) {
         UByte t = new UByte();
         t.set(r1.intValue());
         r1.set(r2.intValue());
         r2.set(t.intValue());
     }
 
-    static void swap(Word r1, Word r2) {
+    static private void swap(Word r1, Word r2) {
         Word t = new Word();
         t.set(r1.intValue());
         r1.set(r2.intValue());
         r2.set(t.intValue());
     }
 
+    /**
+     * Exchange registers.
+     */
     private void exg() {
         int r1, r2;
         int w = fetch();
@@ -1429,26 +1466,24 @@ public class MC6809 extends USimMotorola {
 
     /**
      * Fast hardware interrupt (FIRQ).
-     * The <em>fast interrupt request</em> is similar to the IRQ, as it is maskable by
-     * setting the F bit in the condition code register to 1. When an FIRQ is
-     * received, only the PC and condition code register are saved on the hardware
-     * stack. The E bit is not set, because the entire machine state has not
-     * been saved. The PC for the FIRQ handler is fetched from locations
-     * FFF6:FFF7. Both the F and the I bits are set to 1 to prevent any more
-     * interrupts.
+     * The <em>fast interrupt request</em> is similar to the IRQ, as it is
+     * maskable by setting the F bit in the condition code register to 1.
+     * When an FIRQ is received, only the PC and condition code register are
+     * saved on the hardware stack. The E bit is not set, because the entire
+     * machine state has not been saved. The PC for the FIRQ handler is fetched
+     * from locations FFF6:FFF7. Both the F and the I bits are set to 1 to
+     * prevent any more interrupts.
      *
      * The fast interrupt request executes much more quickly than the NMI
      * or IRQ, because only three bytes are pushed onto the stack. The FIRQ
      * takes ten cycles to execute. The NMI and IRQ require nineteen. The fast
-     * interrupt request is very useful when speed is essential, but the registers
-     * are not used extensively. If a reqister is used, it must first be pushed and
-     * then pulled, before execution of the RTI instruction. The RTI restores
-     * the condition code register and the PC of the interrupted program.
+     * interrupt request is very useful when speed is essential, but the
+     * registers are not used extensively. If a reqister is used, it must first
+     * be pushed and then pulled, before execution of the RTI instruction.
+     * The RTI restores the condition code register and the PC of the
+     * interrupted program.
      */
     private void firq() {
-        if (cc.isSetF()) {
-            return;
-        }
         if (!waitState) {
             help_psh(0x81, s, u);
         }
@@ -1486,10 +1521,10 @@ public class MC6809 extends USimMotorola {
      * (except S) are pushed onto the hardware stack. The PC of the IRQ
      * handler is fetched from memory locations FFF8:FFF9. This process is
      * the same for the NMI. The E bit in the condition register is set to 1,
-     * because the entire machine state is saved; the I bit is set to 1 to prevent
-     * any more IRQs. It is usually not necessary to be able to handle more than
-     * one IRQ at a time. However, the I bit may be cleared by the program and
-     * more IRQs accepted if necessary.
+     * because the entire machine state is saved; the I bit is set to 1 to
+     * prevent any more IRQs. It is usually not necessary to be able to handle
+     * more than one IRQ at a time. However, the I bit may be cleared by the
+     * program and more IRQs accepted if necessary.
      *
      * The IRQ handler is terminated with an RTI instruction. This instruction
      * restores all the registers from the stack and the PC of the interrupted

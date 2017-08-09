@@ -40,6 +40,7 @@ class ConsoleReader implements Runnable {
  * Emulate the 6551 with output to Stdout and input from Stdin.
  * The Dragon 64 and Dragon Alpha have a hardware serial port driven
  * by a Rockwell 6551, mapped from $FF04-$FF07.
+ * In this implementation the transmit register can not be full.
  */
 public class Acia6551Console extends MemorySegment {
 
@@ -92,7 +93,7 @@ public class Acia6551Console extends MemorySegment {
     boolean transmitIrqEnabled = false;
 
     /** In this implementation the transmit register can not be full. */
-    private int statusReg = 0x10;
+    private int statusReg = TDRE;
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private MC6809 cpu;
@@ -120,16 +121,32 @@ public class Acia6551Console extends MemorySegment {
      */
     void dataReceived(int receiveData) {
         this.receiveData = receiveData;
-        statusReg |= (IRQ+RDRF);   // We have set interrupt, Read register is full.
-        cpu.signalIRQ();
+        statusReg |= RDRF;   // We have set interrupt, Read register is full.
+        if (receiveIrqEnabled) {
+            raiseIRQ();
+        }
         Thread.yield();
+    }
+
+    private void raiseIRQ() {
+        if ((statusReg & IRQ) == 0) {
+            statusReg |= IRQ;
+            cpu.signalIRQ(true);
+        }
+    }
+
+    private void lowerIRQ() {
+        if ((statusReg & IRQ) == IRQ) {
+            statusReg &= ~IRQ;    // Turn off interrupt flag
+            cpu.signalIRQ(false);
+        }
     }
 
     void signalReadyForTransmit() {
         if (transmitIrqEnabled) {
-            statusReg |= IRQ;   // We have set interrupt
-            cpu.signalIRQ();  // Probably ignored because OS9 is still in interrupt handler 
-            //Thread.yield();
+            raiseIRQ();
+        } else {
+            lowerIRQ();
         }
     }
 
@@ -184,18 +201,15 @@ public class Acia6551Console extends MemorySegment {
         receiveData = 0;
         receiveIrqEnabled = false;
         transmitIrqEnabled = false;
+        lowerIRQ();
     }
 
     /**
      * @return The contents of the status register.
-     * In this implementation the transmit register can not be full.
-     * Therefore the IRQ is always on.
      */
     private int getStatusReg() throws IOException {
         int stat = statusReg;
-//      if (!transmitIrqEnabled) {
-//          statusReg &= ~IRQ;    // Turn off interrupt flag
-//      }
+        lowerIRQ();
         LOGGER.debug("StatusReg: {}", stat);
         return stat & 0xFF;
     }
@@ -251,6 +265,7 @@ public class Acia6551Console extends MemorySegment {
             reset();
         } else {
             // Mask the lower three bits to get the baud rate.
+            // Unused.
             int baudSelector = data & 0x0f;
         }
     }

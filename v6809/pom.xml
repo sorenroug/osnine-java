@@ -16,6 +16,9 @@
             <resource>
                 <directory>src/main/assembler</directory>
             </resource>
+            <resource>
+                <directory>src/main/microware</directory>
+            </resource>
         </resources>
 
         <plugins>

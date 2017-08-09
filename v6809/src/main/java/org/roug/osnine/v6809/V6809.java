@@ -27,7 +27,8 @@ class ClockTick extends TimerTask {
 
     public void run() {
         LOGGER.debug("IRQ sent");
-        cpu.signalIRQ(); // Execute a hardware interrupt
+        cpu.signalIRQ(true); // Execute a hardware interrupt
+        cpu.signalIRQ(false);
     }
 }
 
@@ -146,7 +147,7 @@ public class V6809 {
         }
         cpu.pc.set(start);
         LOGGER.debug("Starting at: {}", cpu.pc.intValue());
-        startClockTick(cpu);
+        //startClockTick(cpu);
         cpu.run();
         System.out.flush();
     }

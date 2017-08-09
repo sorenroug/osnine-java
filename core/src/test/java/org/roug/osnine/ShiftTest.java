@@ -181,8 +181,8 @@ public class ShiftTest {
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setC(1);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0x13, myTestCPU.b.intValue());
         assertEquals(0x03, myTestCPU.cc.intValue());
         assertEquals(1, myTestCPU.cc.getC());
@@ -227,24 +227,24 @@ public class ShiftTest {
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(1);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0xC4, myTestCPU.b.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
-	assertEquals(1, myTestCPU.cc.getN());
-	assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(1, myTestCPU.cc.getC());
 
         // Rotate 0x89 with CC clear to 0x44
         myTestCPU.b.set(0x89);
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(0);
         myTestCPU.pc.set(0xB00);
-	myTestCPU.execute();
-	assertEquals(0xB01, myTestCPU.pc.intValue());
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0x44, myTestCPU.b.intValue());
         assertEquals(0x01, myTestCPU.cc.intValue());
-	assertEquals(0, myTestCPU.cc.getN());
-	assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
 }
