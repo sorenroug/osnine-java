@@ -27,13 +27,6 @@ public class HWClock extends MemorySegment {
         super(start, start + 6);
     }
 
-    /*
-     * Why is there a public method in the abstract class?
-     */
-    @Override
-    public void reset() {
-    }
-
     @Override
     protected int load(int addr) {
         LocalDateTime ldt = LocalDateTime.now();

@@ -52,8 +52,7 @@ public class MC6850 extends MemorySegment {
         this.offset = start;
     }
 
-    @Override
-    public void reset() {
+    private void reset() {
         controlRegister = 0;         // Clear all control flags
         statusRegister = 0;         // Clear all status bits
 

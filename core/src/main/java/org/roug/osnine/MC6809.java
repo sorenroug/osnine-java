@@ -578,7 +578,7 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    public int getSignedByte(int value) {
+    private static int getSignedByte(int value) {
         if (value < 0x80) {
             return value;
         } else {
@@ -586,7 +586,7 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    public int getSignedWord(int value) {
+    private static int getSignedWord(int value) {
         if (value < 0x8000) {
             return value;
         } else {
@@ -1424,14 +1424,14 @@ public class MC6809 extends USimMotorola {
         setBitZ(x);
     }
 
-    static private void swap(UByte r1, UByte r2) {
+    private static void swap(UByte r1, UByte r2) {
         UByte t = new UByte();
         t.set(r1.intValue());
         r1.set(r2.intValue());
         r2.set(t.intValue());
     }
 
-    static private void swap(Word r1, Word r2) {
+    private static void swap(Word r1, Word r2) {
         Word t = new Word();
         t.set(r1.intValue());
         r1.set(r2.intValue());

@@ -194,8 +194,7 @@ public class Acia6551Console extends MemorySegment {
     /**
      * Writing a byte to the status register resets the chip.
      */
-    @Override
-    public void reset() {
+    private void reset() {
         LOGGER.debug("Reset");
         transmitData = 0;
         receiveData = 0;

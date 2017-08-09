@@ -9,19 +9,11 @@ import java.io.IOException;
  */
 public class Console extends MemorySegment {
 
-    /** Location of console in memory. */
-    private int offset;
-
     /**
      * Constructor.
      */
     public Console(int start) {
         super(start, start);
-        this.offset = start;
-    }
-
-    @Override
-    public void reset() {
     }
 
     @Override

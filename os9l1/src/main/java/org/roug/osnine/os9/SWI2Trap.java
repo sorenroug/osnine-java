@@ -9,9 +9,6 @@ import java.io.IOException;
  */
 public class SWI2Trap extends MemorySegment {
 
-    /** Location of console in memory. */
-    private int offset;
-
     private OS9 cpu;
 
     /**
@@ -20,11 +17,6 @@ public class SWI2Trap extends MemorySegment {
     public SWI2Trap(OS9 cpu) {
         super(0xfff4, 0xfff4);
         this.cpu = cpu;
-        this.offset = 0xfff4;
-    }
-
-    @Override
-    public void reset() {
     }
 
     @Override

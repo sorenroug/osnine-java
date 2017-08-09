@@ -43,9 +43,6 @@ public class ParaVirtDisk extends MemorySegment {
     public static final int READ_BYTE = 4;
     public static final int RESET_REGS = 5;
 
-    /** Location of chip in memory. */
-    private int offset;
-
     /** Filename of disk image. */
     private File diskFile;
 
@@ -75,14 +72,13 @@ public class ParaVirtDisk extends MemorySegment {
      */
     public ParaVirtDisk(int start, File diskFile) throws FileNotFoundException {
         super(start, start + 3);
-        this.offset = start;
         this.diskFile = diskFile;
         diskFP = new RandomAccessFile(diskFile, "rw");
     }
 
     @Override
     protected int load(int addr) {
-        switch (addr - offset) {
+        switch (addr - getStartAddress()) {
         case BYTE_OPCODE: // operation 
             return errorCode;
         case BYTE_ADDR: // buffer address
@@ -98,7 +94,7 @@ public class ParaVirtDisk extends MemorySegment {
     @Override
     protected void store(int addr, int val) {
         errorCode = 0;
-        switch (addr - offset) {
+        switch (addr - getStartAddress()) {
         case BYTE_VALUE:
             valueRegister = val & 0xFF;
             break;
@@ -138,8 +134,7 @@ public class ParaVirtDisk extends MemorySegment {
     /*
      * Why is there a public method in the abstract class?
      */
-    @Override
-    public void reset() {
+    private void reset() {
         bufferAddress = 0;
         valueRegister = 0;
         errorCode = 0;

@@ -45,16 +45,8 @@ import java.io.IOException;
  */
 public class PIO0 extends MemorySegment {
 
-    /** Location of UART. */
-    private int offset;
-
     public PIO0(int start) {
         super(start, start);
-        this.offset = start;
-    }
-
-    @Override
-    public void reset() {
     }
 
     @Override

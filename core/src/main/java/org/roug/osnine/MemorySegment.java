@@ -33,7 +33,7 @@ public abstract class MemorySegment {
         return endAddress;
     }
 
-    public abstract void reset();
+    //public abstract void reset();
 
     /**
      * Single byte read from memory.
