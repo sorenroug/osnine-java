@@ -1,0 +1,63 @@
+PROCEDURE tree
+10  REM ==========================
+    REM = (C) 1984 SQREN ROUG    =
+    REM = AFSKREVET FRA COMAL-80 =
+    REM = COMP. PARTNER  V.U.C   =
+    REM ==========================
+    BASE 0
+    DIM X,Y,F,MA:INTEGER
+    PRINT "This program draws a tree bye means of recursivity."
+    PRINT "The recursivity is simulated in this version."
+    PRINT
+    INPUT "Number of branch levels ";MA
+    DIM SI(9),NI(9),VE(9),DR(9),A1(9),A2(9):REAL
+    RUN GFX("Mode", 0, 1)
+    RUN GFX("Clear")
+    X=103
+    Y=1
+    RUN GFX("Move", X, Y)
+    F=0
+    SI(F)=50
+    NI(F)=0
+    VE(F)=1
+    DR(F)=2
+    QRT=PI/4.0
+    GOSUB 130
+    INPUT KEY$
+    RUN GFX("Quit")
+    END
+
+130 IF NI(F)>=MA THEN 230
+    A1(F) = SI(F) * COS(QRT*DR(F))
+    A2(F) = SI(F) * SIN(QRT*DR(F))
+
+    X = X+A1(F)
+    Y = Y+A2(F)
+    RUN GFX("Line", X, Y)
+    SI(F+1) = SI(F) * .6
+    NI(F+1) = NI(F)+1
+    VE(F+1) = VE(F)
+    DR(F+1) = DR(F)+VE(F)
+    F = F+1
+    GOSUB 130
+
+    X = X+A2(F) * VE(F)
+    Y = Y-A1(F) * VE(F)
+    RUN GFX("Line", X, Y)
+    SI(F+1) = SI(F) * .6
+    NI(F+1) = NI(F)+1
+    VE(F+1) = -VE(F)
+    DR(F+1) = DR(F)-VE(F)
+    F = F+1
+    GOSUB 130
+
+    X = X-A1(F)
+    Y = Y-A2(F)
+    RUN GFX("Line", X, Y)
+
+    X = X-A2(F) * VE(F)
+    Y = Y+A1(F) * VE(F)
+    RUN GFX("Line", X, Y)
+
+230 F = F-1
+    RETURN

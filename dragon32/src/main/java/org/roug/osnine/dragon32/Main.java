@@ -5,7 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.roug.osnine.MC6809;
-import org.roug.osnine.MC6850;
+import org.roug.osnine.Acia6551Console;
 import org.roug.osnine.MemoryBank;
 import org.roug.osnine.Loader;
 
@@ -52,7 +52,7 @@ public class Main {
         cpu.write(0xfffe, 0xb3);
         cpu.write(0xffff, 0xb4);
 
-        MC6850 uart = new MC6850(0xb000);
+        Acia6551Console uart = new Acia6551Console(0xb000, cpu);
         cpu.addMemorySegment(uart);
         //for (int i = 0; i < 60; i++) {
         //    cpu.write(0x0400 + i, 0x40);

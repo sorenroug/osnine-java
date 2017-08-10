@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 import org.roug.osnine.MC6809;
-import org.roug.osnine.MC6850;
 import org.roug.osnine.MemoryBank;
 import org.roug.osnine.OptionParser;
 import org.roug.osnine.os9.OS9;
@@ -43,9 +42,6 @@ public class CmdLine {
         String[] extraArguments = op.getUnusedArguments();
 
         OS9 cpu = new OS9();
-
-//      MC6850 uart = new MC6850(0xb000);
-//      cpu.addMemorySegment(uart);
 
         cpu.setDebugCalls(1);
 	// Load the configuration file

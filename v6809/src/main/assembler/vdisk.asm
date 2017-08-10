@@ -1,6 +1,6 @@
 *********************************************
 * VDisk - A driver for a virtual disk.
-* This complements the ParaVirtDisk.java in osnine-java.
+* This complements the VirtualDisk.java in osnine-java.
 * See Dragon/Books/os9/articles/os9software.article
 *
          nam VDisk

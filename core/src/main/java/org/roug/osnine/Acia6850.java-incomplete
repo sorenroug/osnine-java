@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
  *
  * At the bus interface, the ACIA appears as two addressable memory locations.
  */
-public class MC6850 extends MemorySegment {
+public class Acia6850 extends MemorySegment {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MC6850.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Acia6850.class);
 
     static final int STAT_REG = 0;
     static final int CTRL_REG = 0;
@@ -47,7 +47,7 @@ public class MC6850 extends MemorySegment {
     /**
      * Constructor.
      */
-    public MC6850(int start) {
+    public Acia6850(int start) {
         super(start, start + 1);
         this.offset = start;
     }

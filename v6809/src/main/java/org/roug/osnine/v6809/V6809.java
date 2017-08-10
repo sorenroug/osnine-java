@@ -11,7 +11,7 @@ import org.roug.osnine.HWClock;
 import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.OptionParser;
-import org.roug.osnine.ParaVirtDisk;
+import org.roug.osnine.VirtualDisk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +126,7 @@ public class V6809 {
         cpu.insertMemorySegment(hwClock);
         Acia6551Console console = new Acia6551Console(0xff04, cpu);
         cpu.insertMemorySegment(console);
-        ParaVirtDisk disk = new ParaVirtDisk(0xff40, "OS9.dsk");
+        VirtualDisk disk = new VirtualDisk(0xff40, "OS9.dsk");
         cpu.insertMemorySegment(disk);
 
         String segmentList = props.getProperty("load");

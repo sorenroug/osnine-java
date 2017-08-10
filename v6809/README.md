@@ -2,7 +2,7 @@
 =================================
 
 The v6809 is a cpu, that has some devices attached that can interact
-with the host computer.  The first device is a MC6850 UART that writes
+with the host computer.  The first device is a 6551 ACIA that writes
 to Java's System.out and reads from System.in.
 
 It can then be used to load OS9 kernel and modules into RAM and run.

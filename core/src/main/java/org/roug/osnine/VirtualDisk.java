@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Paravirtualized block device.
+ * Virtualized block device.
  * It requires a special OS9 device driver to work.
  * Operations:
  * To read a buffer do:
@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
  *  buffer into the valueRegister and increment the bufferRegister.
  *
  */
-public class ParaVirtDisk extends MemorySegment {
+public class VirtualDisk extends MemorySegment {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParaVirtDisk.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VirtualDisk.class);
 
     private static final int LSN_SIZE = 256;
     private static final int BYTE_SIZE = 256;
@@ -63,14 +63,14 @@ public class ParaVirtDisk extends MemorySegment {
     /**
      * Constructor.
      */
-    public ParaVirtDisk(int start, String fileName) throws FileNotFoundException {
+    public VirtualDisk(int start, String fileName) throws FileNotFoundException {
         this(start, new File(fileName));
     }
 
     /**
      * Constructor.
      */
-    public ParaVirtDisk(int start, File diskFile) throws FileNotFoundException {
+    public VirtualDisk(int start, File diskFile) throws FileNotFoundException {
         super(start, start + 3);
         this.diskFile = diskFile;
         diskFP = new RandomAccessFile(diskFile, "rw");
