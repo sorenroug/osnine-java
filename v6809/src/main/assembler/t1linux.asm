@@ -24,7 +24,7 @@ OptStrt  fcb DT.SCF SCF type device
          fcb 0 case=UPPER and lower
          fcb 1 backspace=BS,SP,BS
          fcb 0 delete=backspace over line
-         fcb true auto echo ON
+         fcb false      auto echo ON
          fcb true auto line feed ON
          fcb 0 number of NULLS after CR
          fcb false end of page pause OFF

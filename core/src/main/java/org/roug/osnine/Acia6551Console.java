@@ -23,6 +23,7 @@ class ConsoleReader implements Runnable {
         while (true) {
             try {
                 int receiveData = System.in.read();
+                if (receiveData == -1) receiveData = 0x1B;
                 if (receiveData == 10) receiveData = 13;
                 LOGGER.debug("Received {}", receiveData);
                 while (acia.isReceiveRegisterFull()) { // Wait until the CPU has taken the current byte

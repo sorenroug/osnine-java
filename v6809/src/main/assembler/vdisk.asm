@@ -21,7 +21,7 @@ DSKSTA   equ .
 
          mod DSKEND,DSKNAM,Drivr+Objct,Reent+Revision,DSKENT,DSKSTA
          fcb $FF        Mode byte
-DSKNAM   fcs /DDisk/
+DSKNAM   fcs /VDisk/
 
 OpReg    equ 0
 AddrReg  equ 1

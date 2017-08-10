@@ -2,6 +2,7 @@ package org.roug.osnine.os9;
 
 import java.io.IOException;
 import java.io.File;
+import java.nio.file.Path;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
@@ -21,6 +22,26 @@ public class DevUnixTest {
         System.out.println(driveLocation);
         DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
         PathDesc pd = dev.open("/dd/datamodule", AccessCodes.READ, false);
+        //System.out.println(Util.getErrorMessage(dev.getErrorCode()));
+        assertNotNull(pd);
+        byte[] buf = new byte[100];
+        int len = pd.read(buf, 10);
+        assertEquals(10, len);
+        assertEquals(0x87, buf[0] + 256);
+        assertEquals(0xCD, buf[1] + 256);
+        assertEquals(0x01, buf[2]);
+        assertEquals(0x00, buf[3]);
+    }
+
+    /**
+     * Read 10 bytes and see if it is done correctly.
+     */
+    @Test
+    public void openCaseInsensitive() {
+        String driveLocation = System.getProperty("outputDirectory");
+        System.out.println(driveLocation);
+        DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
+        PathDesc pd = dev.open("/dd/DataModule", AccessCodes.READ, false);
         //System.out.println(Util.getErrorMessage(dev.getErrorCode()));
         assertNotNull(pd);
         byte[] buf = new byte[100];
@@ -74,8 +95,19 @@ public class DevUnixTest {
     @Test
     public void testGetPath() {
         File f = new File("/ETC/passwd");
-        String path = DevUnix.findpath(f.toPath(), true);
+        Path path = DevUnix.findpath(f.toPath(), true);
         assertNotNull(path);
-        assertEquals("/etc/passwd", path);
+        assertEquals("/etc/passwd", path.toString());
+    }
+
+    /**
+     * Check case-sensitivity.
+     */
+    @Test
+    public void testGetPathLast() {
+        File f = new File("/ETC/PasswD");
+        Path path = DevUnix.findpath(f.toPath(), true);
+        assertNotNull(path);
+        assertEquals("/etc/passwd", path.toString());
     }
 }

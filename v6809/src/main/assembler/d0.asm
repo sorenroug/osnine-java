@@ -1,15 +1,6 @@
 ********************************************************************
-* progname - program module
+* disk device descriptor
 *
-* $Id: d0.asm,v 1.2 2002/04/21 21:46:22 roug Exp $
-*
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-*  -     Original Dragon Data distribution version
-*
-* $Log: d0.asm,v $
-*
-
          nam   D0
          ttl   40-track floppy disk device descriptor
 
@@ -42,6 +33,6 @@ name     equ   *
 mgrnam   equ   *
          fcs   /RBF/
 drvnam   equ   *
-         fcs   /DDisk/
+         fcs   /VDisk/
          emod
 eom      equ   *

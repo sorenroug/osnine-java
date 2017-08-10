@@ -58,12 +58,13 @@ public class DevUnix extends DevDrvr {
         }
         unixPath = Paths.get(unixDir, relPath);
         LOGGER.debug("UNIX path: {}", unixPath);
-        if (findpath(unixPath, !create) == null) {
+        Path realPath = findpath(unixPath, !create);
+        if (realPath == null) {
             errorcode = ErrCodes.E_PNNF;
             return null;
         }
         try {
-            fd = new PDUnix(unixPath, mode, create);
+            fd = new PDUnix(realPath, mode, create);
             fd.setDriver(this);
         } catch (Exception e) {
             errorcode = ErrCodes.E_BPNam;
@@ -167,7 +168,7 @@ public class DevUnix extends DevDrvr {
      * @param mustexist - ?
      */
     //FIXME
-    static String findpath(Path path, boolean mustexist) {
+    static Path findpath(Path path, boolean mustexist) {
         String startFrom;
         int alreadyMatched = 0;
 
@@ -204,7 +205,7 @@ public class DevUnix extends DevDrvr {
         if (mustexist && !found) {
             return null;
         }
-        return newUnixFile.toString();
+        return newUnixFile.toPath();
     /*
         char *endp, *endseg, *begseg;
         char *dirp, *nseg;
