@@ -43,9 +43,6 @@ public class VirtualDisk extends MemorySegment {
     public static final int READ_BYTE = 4;
     public static final int RESET_REGS = 5;
 
-    /** Filename of disk image. */
-    private File diskFile;
-
     /** Open file pointer to disk image. */
     private RandomAccessFile diskFP;
 
@@ -72,7 +69,6 @@ public class VirtualDisk extends MemorySegment {
      */
     public VirtualDisk(int start, File diskFile) throws FileNotFoundException {
         super(start, start + 3);
-        this.diskFile = diskFile;
         diskFP = new RandomAccessFile(diskFile, "rw");
     }
 

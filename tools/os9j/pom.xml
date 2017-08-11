@@ -15,6 +15,7 @@
 
     <properties>
         <main.basedir>${project.basedir}/../..</main.basedir>
+        <java_version>1.8</java_version>
     </properties>
 
     <dependencies>
@@ -51,36 +52,16 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.3</version>
-                <executions>
-                    <execution>
-                        <id>copy files</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <loadproperties srcFile="${main.basedir}/${env}.properties" />
-                                <copy todir="${scripts.dir}" file="${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar"/>
-                                <copy todir="${scripts.dir}" overwrite="true">
-                                    <fileset dir="src/main/scripts"></fileset>
-                                    <filterchain>
-                                        <replacetokens>
-                                            <token key="JARFILE" value="${project.build.finalName}-jar-with-dependencies.jar" />
-                                        </replacetokens>
-                                    </filterchain>
-                                </copy>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.8</version>
+                <configuration>
+                    <linkXref>false</linkXref>
+                    <sourceEncoding>utf-8</sourceEncoding>
+                    <targetJdk>${java_version}</targetJdk>
+                </configuration>
             </plugin>
-            -->
         </plugins>
     </build>
 

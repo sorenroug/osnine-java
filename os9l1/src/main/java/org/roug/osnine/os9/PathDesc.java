@@ -1,7 +1,5 @@
 package org.roug.osnine.os9;
 
-import java.io.IOException;
-
 /**
  * The file descriptor class contains the resources necessary for
  * the open file. It also has a pointer to the driver.
@@ -71,12 +69,10 @@ public abstract class PathDesc {
 
     public void getstatus(OS9 cpu) {
 	cpu.sys_error(ErrCodes.E_UnkSvc);
-	return;
     }
 
     public void setstatus(OS9 cpu) {
 	cpu.sys_error(ErrCodes.E_UnkSvc);
-	return;
     }
 
     /**

@@ -1,8 +1,6 @@
 package org.roug.osnine.os9;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -136,38 +134,12 @@ public class DevUnix extends DevDrvr {
     }
 
     /**
-     * Return the real file name of the segment or NULL.
-     * You can then append the segment to dir and try again
-     * Case insensitive.
-     */
-    static String findpathseg(String dir, String segment) {
-    //FIXME
-    /*
-        DIR *dirp;
-        struct dirent *dp;
-
-        dirp = opendir(dir);
-        while ((dp = readdir(dirp))) {
-            if (strcasecmp(dp->d_name, segment) == 0)
-                break;
-        }
-        closedir(dirp);
-        if (dp)
-            return dp->d_name;
-        else
-            return null;
-    */
-    return null;
-    }
-
-    /**
      * Find the UNIX file from the OS9 path. The OS9 path
      * is case-insensive, so we have to check every directory.
      *
      * @param path - OS9 path.
      * @param mustexist - ?
      */
-    //FIXME
     static Path findpath(Path path, boolean mustexist) {
         String startFrom;
         int alreadyMatched = 0;
@@ -206,40 +178,6 @@ public class DevUnix extends DevDrvr {
             return null;
         }
         return newUnixFile.toPath();
-    /*
-        char *endp, *endseg, *begseg;
-        char *dirp, *nseg;
-
-        endp = path + strlen(path);
-
-        if (*path == '/') {
-            dirp = "/";
-            begseg = path + 1;
-        } else {
-            dirp = ".";
-            begseg = path;
-        }
-
-        do {
-            endseg = strchr(begseg, '/');
-            if (endseg == null)
-                endseg = endp;
-            *endseg = 0;
-            nseg = findpathseg(dirp, begseg);
-            if (endseg != endp && !nseg)
-                return null;
-            if (nseg)
-                strcpy(begseg, nseg);
-            if (dirp == path)
-               begseg[-1] = '/';
-            dirp = path;
-            begseg = endseg +1;
-        } while (endseg != endp);
-        if (mustexist && !nseg)
-            return null;
-        return path;
-    */
-
     }
 
     /**

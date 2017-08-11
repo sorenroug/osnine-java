@@ -11,6 +11,11 @@
     <name>OS-Nine V6809</name>
     <url>http://www.roug.org</url>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java_version>1.8</java_version>
+    </properties>
+
     <build>
         <resources>
             <resource>
@@ -45,6 +50,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.8</version>
+                <configuration>
+                    <linkXref>false</linkXref>
+                    <sourceEncoding>utf-8</sourceEncoding>
+                    <targetJdk>${java_version}</targetJdk>
+                </configuration>
             </plugin>
         </plugins>
     </build>
