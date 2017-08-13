@@ -1,0 +1,39 @@
+PROCEDURE pialook
+  REM display PIA at address (T.F. Ritter)
+  REM made understandable by K. Kaplan
+
+  DIM address:INTEGER
+  INPUT "Enter PIA address:  "; address
+  RUN side(address)
+  RUN side(adress+2)
+  END
+
+PROCEDURE side
+  REM display side of PIA at address
+  PARAM address:INTEGER
+  DIM data:INTEGER
+
+  (* loop until control register input strobe
+  (* flag (bit 7) is set
+  REPEAT \ UNTIL LAND(PEEK(address+1),$80) <> 0
+  (* now read the data register
+  data := PEEK(address)
+  (* display data in binary
+  RUN prinbyte(data)
+  END
+
+PROCEDURE prinbyte
+  REM print a byte as binary
+  PARAM n: INTEGER
+  DIM i: INTEGER
+
+  n:= n*256
+  FOR i = 7 TO 0 STEP -1
+    IF n < 0 THEN PRINT "1";
+    ELSE PRINT "0";
+    ENDIF
+    n:= n + 1
+  NEXT i
+
+  PRINT
+  END

@@ -73,9 +73,21 @@ public class DevUnix extends DevDrvr {
     @Override
     public int makdir(String path, int mode) {
         Path unixPath;
+        String relPath;
 
-        unixPath = Paths.get(unixDir, path);
-
+        if (path.startsWith("/")) {
+            relPath = path.substring(getMntPoint().length());
+        } else {
+            relPath = path;
+        }
+        unixPath = Paths.get(unixDir, relPath);
+        LOGGER.debug("UNIX path: {}", unixPath);
+        Path realPath = findpath(unixPath, false);
+        LOGGER.debug("Real path: {}", realPath);
+        if (realPath == null) {
+            errorcode = ErrCodes.E_PNNF;
+            return errorcode;
+        }
         try {
             Files.createDirectory(unixPath, o2u_attr(mode));
         } catch (Exception e) {
@@ -92,9 +104,21 @@ public class DevUnix extends DevDrvr {
     @Override
     public int delfile(String path) {
         Path unixPath;
+        String relPath;
 
-        unixPath = Paths.get(unixDir, path);
-
+        if (path.startsWith("/")) {
+            relPath = path.substring(getMntPoint().length());
+        } else {
+            relPath = path;
+        }
+        unixPath = Paths.get(unixDir, relPath);
+        LOGGER.debug("UNIX path: {}", unixPath);
+        Path realPath = findpath(unixPath, true);
+        LOGGER.debug("Real path: {}", realPath);
+        if (realPath == null) {
+            errorcode = ErrCodes.E_PNNF;
+            return errorcode;
+        }
         try {
             Files.delete(unixPath);
         } catch (Exception e) {
@@ -170,12 +194,16 @@ public class DevUnix extends DevDrvr {
                 break;
             }
         }
+        LOGGER.debug("Found path: {}", newUnixFile);
         // Some intermediate segment is missing.
         if (alreadyMatched < segmentCnt - 1) {
             return null;
         }
         if (mustexist && !found) {
             return null;
+        }
+        if (!mustexist && !found) {
+            newUnixFile = new File(newUnixFile, path.toFile().getName());
         }
         return newUnixFile.toPath();
     }

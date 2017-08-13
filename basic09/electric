@@ -1,0 +1,61 @@
+PROCEDURE electric
+     REM re-programmed from "ELECTRIC"
+     REM by Dwyer and Critchfield
+     REM Basic and the Personal Computer (Addison-Wesley, 1978)
+     REM provides a pictorial representation of the
+     REM resultant electrical field around charged points
+     DIM a(10),b(10),c(10)
+     DIM x,y,i,j:INTEGER
+     xscale:=50./78.
+     yscale:=50./32.
+
+     INPUT "How many charges do you have? ",n
+     PRINT "The field of view is 0-50,0-50 (x,y)"
+     FOR i=1 TO n
+       PRINT "type in the x and y positions of charge ";
+       PRINT i;
+       INPUT a(i),b(i)
+     NEXT i
+     PRINT "type in the size of each charge:"
+     FOR i=1 TO n
+       PRINT "charge "; i;
+       INPUT c(i)
+     NEXT i
+
+     REM visit each screen position
+     FOR y=32 TO 0 STEP -1
+       FOR x=0 TO 78
+         REM compute field strength into v
+         GOSUB 10
+         z:=v*50.
+         REM map z to valid ASCII in b$
+         GOSUB 20
+         REM print char (proportional to field)
+         PRINT b$;
+       NEXT x
+       PRINT
+     NEXT y
+     END
+
+10   v=1.
+     FOR i=1 TO n
+       r:=SQRT(SQ(xscale*x-a(i))+SQ(yscale*y-b(i)))
+       EXITIF r=.0 THEN
+         v:=99999.
+       ENDEXIT
+       v:=v+c(i)/r
+     NEXT i
+     RETURN
+
+20   IF z<32 THEN b$:=" "
+     ELSE
+       IF z>57 THEN z:=z+8
+       ENDIF
+       IF z>90 THEN b$:="*"
+       ELSE
+         IF z>INT(z)+.5 THEN b$:=" "
+         ELSE b$:=CHR$(z)
+           ENDIF
+         ENDIF
+       ENDIF
+     RETURN

@@ -1,0 +1,34 @@
+PROCEDURE structst
+
+  REM example of intermixed array and record structures
+  REM note that structure d contains 200 real elements
+
+  TYPE a=one(2):REAL
+  TYPE b=two(10):a
+  TYPE c=three(10):b
+  DIM d,e:c
+
+  FOR i=1 TO 10
+    FOR j=1 TO 10
+      FOR k=1 TO 2
+        PRINT d.three(i).two(j).one(k)
+        d.three(i).two(j).one(k):=0.
+        PRINT e.three(i).two(j).one(k)
+        PRINT
+      NEXT k
+    NEXT j
+  NEXT i
+
+  REM this is a complete structure assignment
+  e:=d
+
+  FOR i=1 TO 10
+    FOR j=1 TO 10
+      FOR k=1 TO 2
+        PRINT e.three(i).two(j).one(k);
+      NEXT k
+      PRINT
+    NEXT j
+  NEXT i
+
+  END

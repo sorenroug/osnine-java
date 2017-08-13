@@ -60,6 +60,7 @@ public class DevUnixTest {
     public void testCreate() {
         int len = 0;
         byte[] buf = new byte[20];
+        String newFile = "/dd/newfile";
 
         String driveLocation = System.getProperty("outputDirectory");
         System.out.println(driveLocation);
@@ -87,6 +88,9 @@ public class DevUnixTest {
         len = pd2.read(buf, 20);
         assertEquals(hi.length(), len);
         pd2.close();
+
+        int delResult = dev.delfile("/dd/newfile");
+        assertEquals(0, delResult);
     }
 
     /**

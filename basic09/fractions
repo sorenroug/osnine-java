@@ -1,0 +1,19 @@
+PROCEDURE fractions
+  REM by T.F. Ritter
+  REM finds increasingly-close rational approximations
+  REM to the desired real value
+  DIM m:INTEGER
+
+  desired:=PI
+  last:=0
+
+  FOR m=1 TO 30000
+    n:=INT(.5+m*desired)
+    trial:=n/m
+    IF ABS(trial-desired) < ABS(last-desired) THEN
+      PRINT n; "/"; m; " = "; trial,
+      PRINT "difference = "; trial-desired;
+      PRINT
+      last:=trial
+    ENDIF
+  NEXT m

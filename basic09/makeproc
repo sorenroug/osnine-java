@@ -1,0 +1,102 @@
+     PROCEDURE MakeProc
+     (* Generates an OS-9 command file to apply a command *)
+     (* Such as copy, del, etc., to all files in a directory *)
+     (* or directory system.  Author: L. Crane *)
+
+     DIM DirPath,ProcPath,i,j,k:INTEGER
+     DIM CopyAll,CopyFile:BOOLEAN
+     DIM ProcName,FileName,ReInput,ReOutput,response:STRING
+     DIM SrcDir,DestDir,DirLine:STRING[80]
+     DIM Function,Options:STRING[60]
+     DIM ProcLine:STRING[160]
+
+     ProcName="CopyDir"
+     Function="Copy"
+     Options="#32k"
+     REPEAT
+       PRINT "Proc name ("; ProcName; ")";
+       INPUT response
+       IF response<>"" THEN
+         ProcName=TRIM$(response)
+       ENDIF
+
+       ON ERROR GOTO 100
+       SHELL "del "+ProcName
+100    ON ERROR
+       INPUT "Source Directory? ",SrcDir
+       SrcDir=TRIM$(SrcDir)
+       ON ERROR GOTO 200
+       SHELL "del procmaker...dir"
+200    ON ERROR
+       SHELL "dir "+SrcDir+" >procmaker...dir"
+       OPEN #DirPath,"procmaker...dir":READ
+       CREATE #ProcPath,ProcName:WRITE
+       PRINT "Function ("; Function; ")";
+       INPUT response
+       IF response<>"" THEN
+         Function=TRIM$(response)
+       ENDIF
+       INPUT "Redirect Input? ",response
+       IF response="y" OR response="Y" THEN
+	    ReInput="<" \ ELSE  \ReInput=""
+       ENDIF
+       INPUT "Redirect Output? ",response
+       IF response="y" OR response="Y" THEN
+	 ReOutput=">" \ ELSE  \ReOutput=""
+       ENDIF
+       PRINT "Options ("; Options; ")";
+       INPUT response
+       IF response<>"" THEN
+	 Options=TRIM$(response)
+       ENDIF
+       INPUT "Destination Directory? ",DestDir
+       DestDir=TRIM$(DestDir)
+       WRITE #ProcPath,"t"
+       WRITE #ProcPath,"TMode .1 -pause"
+       READ #DirPath,DirLine
+       INPUT "Use all files? ",response
+       CopyAll=response="y" OR response="Y"
+       WHILE NOT(EOF(#DirPath)) DO
+	 READ #DirPath,DirLine
+	 i=LEN(TRIM$(DirLine))
+	 IF i>0 THEN
+	   j=1
+	   REPEAT
+	     k=j
+	     WHILE j<=i AND MID$(DirLine,j,1)<>" " DO
+	       j=j+1
+	     ENDWHILE
+	     FileName=MID$(DirLine,k,j-k)
+	     IF NOT(CopyAll) THEN
+	       PRINT "Use "; FileName;
+	       INPUT response
+	       CopyFile=response="y" OR response="Y"
+	     ENDIF
+	     IF CopyAll OR CopyFile THEN
+	       ProcLine=Function+" "+ReInput+SrcDir+"/"+FileName
+	       IF DestDir<>"" THEN
+		 ProcLine=ProcLine+" "+ReOutput+DestDir+"/"+FileName
+	       ENDIF
+	       ProcLine=ProcLine+" "+Options
+	       WRITE #ProcPath,ProcLine
+	     ENDIF
+	     WHILE j<i AND MID$(DirLine,j,1)=" " DO
+	       j=j+1
+	     ENDWHILE
+	   UNTIL j>=i
+	 ENDIF
+       ENDWHILE
+       WRITE #ProcPath,"TMode .1 pause"
+       WRITE #ProcPath,"Dir e "+SrcDir
+       IF DestDir<>"" THEN
+	 WRITE #ProcPath,"Dir e "+DestDir
+       ENDIF
+       CLOSE #DirPath
+       CLOSE #ProcPath
+       SHELL "del procmaker...dir"
+       PRINT
+       INPUT "Another ? ",response
+     UNTIL response<>"Y" AND response<>"y"
+     IF response<>"B" AND response<>"b" THEN
+       BYE
+     ENDIF
