@@ -1,8 +1,15 @@
 PROCEDURE maze
-    PRINT "WHAT ARE YOUR LENGTH AND WIDTH (E. G. 13,10)"; 
-    INPUT rows,cols
-    DIM W(25,23),V(25,23)
-    DIM D(10)
+    DIM W(25,25),V(25,25):BYTE
+    DIM D(10),DX:BYTE
+    DIM rows,cols,C,R,F,Q,Z,N,N9:INTEGER
+    DIM B:BOOLEAN
+    LOOP
+      PRINT "WHAT ARE YOUR LENGTH AND WIDTH (E. G. 13,10)"; 
+      INPUT rows,cols
+      EXITIF rows>1 AND rows <= 25 AND cols>1 AND cols <= 25 THEN ENDEXIT
+      PRINT "MEANINGLESS DIMENSIONS.  TRY AGAIN."
+    ENDLOOP
+
 
     LET N9=rows*cols
     FOR Q=1 TO rows
@@ -11,17 +18,17 @@ PROCEDURE maze
         LET V(Q,Z)=0
       NEXT Z
     NEXT Q
-    LET B=0
-    LET F=INT(RND(0)*cols+1)
+    LET B=FALSE
+    LET F=INT(RND(cols)+1)
     PRINT 
     FOR C=1 TO cols
       IF C=F THEN
-        PRINT ":  "; 
+        PRINT ".  "; 
       ELSE
-        PRINT ":--"; 
+        PRINT ".--"; 
       ENDIF
     NEXT C
-    PRINT ":"
+    PRINT "."
     LET R=1
     LET C=F
     LET N=1
@@ -48,12 +55,12 @@ PROCEDURE maze
 750 IF R<rows THEN
       IF W(R+1,C)>0 THEN 820
     ELSE
-      IF B=1 THEN 820
+      IF B=TRUE THEN 820
     ENDIF
     LET DX=DX+1
     LET D(DX)=4
 820 IF DX=0 THEN 1100
-    LET X=INT(DX*RND(0)+1)
+    LET X=INT(RND(DX)+1)
     IF D(X)=4 THEN 980
     IF D(X)=3 THEN 940
     IF D(X)=2 THEN 900
@@ -74,20 +81,21 @@ PROCEDURE maze
 980  LET V(R,C)=V(R,C)+1
      LET R=R+1
      IF R<=rows THEN 1040
-     LET B=1
+     LET B=TRUE
      GOTO 1140
+
 1040 LET N=N+1
      LET W(R,C)=N
      IF N<N9 THEN 580
      GOTO 1190
 
 1100 LET C=C+1
-     IF C<=cols THEN 1160
+     IF C <= cols THEN 1160
      LET R=R+1
-     IF R<=rows THEN 1150
+     IF R <= rows THEN 1150
 1140 LET R=1
 1150 LET C=1
-1160 IF W(R,C)>0 THEN 580
+1160 IF W(R,C) > 0 THEN 580
      GOTO 1100
 
 1190 FOR R=1 TO rows
@@ -101,7 +109,7 @@ PROCEDURE maze
        NEXT C
        PRINT 
        FOR C=1 TO cols
-         IF V(R,C)/2=INT(V(R,C)/2) THEN
+         IF MOD(V(R,C),2) = 0 THEN
            PRINT ":--"; 
          ELSE
            PRINT ":  "; 

@@ -1,0 +1,32 @@
+PROCEDURE circles
+REM Draw concentric circles and save the images as NETPBM format
+
+RUN GFX("MODE",0,0)
+RUN GFX("CLEAR")
+DIM I,vdisp:INTEGER
+FOR I=5 TO 95 STEP 5
+  RUN GFX("CIRCLE",128,96,I)
+NEXT I
+RUN GFX("LINE",128,96,0,0)
+RUN GFX("GLOC",vdisp)
+INPUT A$
+RUN GFX("ALPHA")
+PRINT "Saving to circles.pbm"
+RUN savepbm(vdisp, "circles.pbm")
+RUN GFX("QUIT")
+END
+
+PROCEDURE savepbm
+PARAM bitmap:INTEGER
+PARAM filename:STRING[64]
+DIM i,outfd:INTEGER
+DIM v:BYTE
+CREATE #outfd,filename:WRITE
+PRINT #outfd,"P4"
+PRINT #outfd,"256 192"
+FOR i = 0 to 6143
+  v = LXOR(PEEK(bitmap+i), $FF)
+  PUT #outfd,v
+NEXT i
+CLOSE #outfd
+END

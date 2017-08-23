@@ -1,0 +1,119 @@
+PROCEDURE brlinje
+    REM Line of best fit
+    REM (Bedste rette linje)
+    REM Least squares regression
+    DIM N,Z:INTEGER
+    DIM X(50),Y(50):REAL
+    LOOP
+      INPUT "Number of points (max 50)";N
+      EXITIF N >= 2 THEN
+      ENDEXIT
+      PRINT "You must enter at least 2 points"
+    ENDLOOP
+    R=5
+    PRINT "Now enter the coordinates for ";N;" points:"
+    FOR Z=1 TO N
+      INPUT "X,Y ";X(Z),Y(Z)
+      R=R+1
+    NEXT Z
+    DIM AL,BE:REAL
+    RUN calcline(N, X, Y, AL, BE)
+    INPUT "Show as graph (y/n)? ";K$
+    IF K$ = "Y" OR K$ = "y" THEN
+      RUN plot(N, X, Y, AL, BE)
+    ENDIF
+
+PROCEDURE calcline
+    PARAM N:INTEGER
+    PARAM X(50),Y(50):REAL
+    PARAM AL,BE:REAL
+    DIM Z:INTEGER
+    Q1=0
+    Q2=0
+    Q3=0
+    Q4=0
+    Q5=0
+    FOR Z = 1 TO N
+      Q1 = Q1 + X(Z)
+      Q2 = Q2 + Y(Z)
+      Q3 = Q3 + X(Z) * Y(Z)
+      Q4 = Q4 + X(Z) * X(Z)
+      Q5 = Q5 + Y(Z) * Y(Z)
+    NEXT Z
+    W1 = Q1 / N
+    W2 = Q2 / N
+    IF (Q4 - N * SQ(W1)) = 0 THEN
+      PRINT "P2 - Vertical line"
+      STOP
+    ENDIF
+
+    AL = (Q3 - N * W1 * W2)/(Q4 - N * SQ(W1))
+    BE = W2 - AL * W1
+    T = Q3 - N * W1 * W2
+    NV = SQR(ABS((Q4 - N * SQ(W1)) * (Q5 - N * SQ(W1))))
+    IF NV = 0 THEN
+      PRINT "P3 - Vertical line"
+      STOP
+    ENDIF
+
+    R1 = ABS(T / NV)
+    PRINT "P1"
+    PRINT "Best straight line function:"
+    PRINT "Y="; AL; "*X+("; BE; ")"
+    PRINT "Correlation coefficient:"
+    PRINT "R=";R1
+    END
+
+PROCEDURE plot
+    PARAM N:INTEGER
+    PARAM X(50),Y(50):REAL
+    PARAM AL,BE:REAL
+    DIM O1,O2,P1,P2:INTEGER
+    O1 = -127
+    P1 = AL * -127 + BE
+    IF P1 < -95 THEN
+      O1 = (-95 - BE) / AL
+      P1 = -95
+    ENDIF
+    IF P1 > 95 THEN
+      O1 = (95 - BE) / AL
+      P1 = 95
+    ENDIF
+
+    O2 = 127
+    P2 = AL * 127 + BE
+    IF P2 < -95 THEN
+      O2 = (-95 - BE) / AL
+      P2 = -95
+    ENDIF
+    IF P2 > 95 THEN
+      O2 = (95 - BE) / AL
+      P2 = 95
+    ENDIF
+
+    RUN GFX("MODE",0,0)
+    RUN GFX("CLEAR")
+    DIM Z,X1,Y1:INTEGER
+    FOR Z=1 TO N
+      X1=X(Z) + 127
+      Y1=Y(Z) + 95
+      IF X1 > 0 AND X1 < 255 AND Y1 > 0 AND Y1 < 192 THEN
+        RUN GFX("LINE", X1, Y1-1, X1, Y1+1)
+        RUN GFX("LINE", X1-1, Y1, X1+1, Y1)
+      ENDIF
+    NEXT Z
+    RUN GFX("LINE",0,95, 255,95)
+    RUN GFX("LINE",127,0, 127,191)
+    DIM W,MX,MY:INTEGER
+    MX=37
+    MY=5
+    FOR W=1 TO 19
+      RUN GFX("LINE",MX,96, MX,93)
+      RUN GFX("LINE",126,MY, 128,MY)
+      MX=MX + 10
+      MY=MY + 10
+    NEXT W
+    RUN GFX("LINE",O1+127,P1+95, O2+127,P2+95)
+    INPUT K$
+    RUN GFX("QUIT")
+    END
