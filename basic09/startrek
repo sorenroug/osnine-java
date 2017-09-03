@@ -162,7 +162,7 @@ K3=INT(G(Q1,Q2)/100)
 B3=INT(G(Q1,Q2)/10) - 10*K3
 S3=G(Q1,Q2) - 100*K3 - 10*B3
 IF K3>0 THEN
-  PRINT "Combat area      Condition red"
+  PRINT "Combat area      Condition RED"
   IF S<=200 THEN
     PRINT "   Shields dangerously low"
   ENDIF
@@ -643,14 +643,14 @@ ENDIF
   PRINT
   RETURN
 ENDIF
-O1$="---1---2---3---4---5---6---7---8--"
+O1$="---1---2---3---4---5---6---7---8---"
 PRINT O1$
 FOR I=1 TO 8
-  PRINT FIX(I);
+  PRINT I;
   FOR J=(I-1)*24+1 TO (I-1)*24+22 STEP 3
     PRINT " ";MID$(Q$,J,3);
   NEXT J
-  PRINT
+  PRINT " ";I
 NEXT I
 PRINT O1$
 FOR I=1 TO 8
@@ -701,7 +701,7 @@ PRINT
 O1$="   ----- ----- ----- ----- ----- ----- ----- -----"
 PRINT O1$
 FOR I=1 TO 8
-  PRINT FIX(I);
+  PRINT I;
   IF H8 THEN
     FOR J=1 TO 8
       PRINT "   ";
