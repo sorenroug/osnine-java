@@ -1,0 +1,1 @@
+cc1 cputest.c instructions.c -f=cputest

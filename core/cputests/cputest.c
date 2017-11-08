@@ -7,18 +7,7 @@
  * at location 500. It expects the test to return with a RTS instruction.
  */
 #include <stdio.h>
-
-#ifdef __STDC__
-#include <stdlib.h>
-#else
-#define void int
-#endif
-#define MEMSIZE 1024
-
-struct registers {
-    char rg_cc,rg_a,rg_b,rg_dp;
-    unsigned rg_x,rg_y,rg_u;
-    } ;
+#include "cputest.h"
 
 char memory[MEMSIZE];
 struct registers initregs;
@@ -70,15 +59,6 @@ void assertDP(exp)
 {
     assertInt(exp, initregs.rg_dp, "DP");
 }
-
-#define CC_C 0
-#define CC_V 1
-#define CC_Z 2
-#define CC_N 3
-#define CC_I 4
-#define CC_H 5
-#define CC_F 6
-#define CC_E 7
 
 /**
  * Set the condition codes but don't turn off interrupts.
@@ -249,73 +229,6 @@ void writeDPloc(offset, value)
     unsigned dp = calcDP();
     int loc = (dpLoc << 8) - (unsigned)memory + offset;
     memory[loc] = value;
-}
-
-/* ------------- Tests --------------- */
-/**
- * Tests AND A with a value loaded from the direct page.
- */
-int testANDA()
-{
-    static char testins[] = {0x94, 0xEF, 0x39};
-
-    currtest = "testANDA";
-    setRegs(0x8B,0,0,0,0);
-    setCC(0x02);
-    setDP(dpLoc);
-    writeDPloc(0xEF, 0x0F);
-    copydata(CODESTRT, testins, sizeof testins);
-    /*printMem(0, 20);*/
-    runtest();
-    printf("Save_s content: %X\n", save_s);
-
-    assertRegs(0x0B,0,0,0,0);
-    assertCC(0, CC_C);
-    assertCC(0, CC_V);
-    assertDP(dpLoc);
-}
-
-/**
- * Tests negation of the A register.
- */
-int testNEG() {
-    static char testins[] = {0x40, 0x39};
-
-    currtest = "testNEG";
-    copydata(CODESTRT, testins, sizeof testins);
-    /* Negate 0 */
-    setRegs(0,0,0,0,0);
-    setCC(0);
-    runtest();
-    assertRegs(0,0,0,0,0);
-    assertCC(0, CC_C);
-    assertCC(0, CC_V);
-
-    /* Negate 1 */
-    setRegs(1,0,0,0,0);
-    setCC(0);
-    runtest();
-    assertRegs(0xFF,0,0,0,0);
-    assertCC(1, CC_C);
-    assertCC(0, CC_V);
-
-    /* Negate 2 */
-    setRegs(2,0,0,0,0);
-    setCC(0);
-    runtest();
-    assertRegs(0xFE,0,0,0,0);
-    assertCC(1, CC_C);
-    assertCC(0, CC_V);
-
-    /* Negate 0x80 */
-    setRegs(0x80,0,0,0,0);
-    setCC(0);
-    runtest();
-    assertRegs(0x80,0,0,0,0);
-    assertCC(1, CC_C);
-    assertCC(1, CC_V);
-    assertCC(0, CC_Z);
-    assertCC(1, CC_N);
 }
 
 /* Main routine */
