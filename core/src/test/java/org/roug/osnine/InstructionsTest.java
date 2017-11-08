@@ -402,8 +402,8 @@ public class InstructionsTest {
         assertEquals(0x80, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getC());
         assertEquals(1, myTestCPU.cc.getV());
-        assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getN());
     }
 
     @Test

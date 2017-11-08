@@ -13,39 +13,38 @@
 #else
 #define void int
 #endif
+#define MEMSIZE 1024
 
 struct registers {
     char rg_cc,rg_a,rg_b,rg_dp;
     unsigned rg_x,rg_y,rg_u;
     } ;
 
+char memory[MEMSIZE];
 struct registers initregs;
 
 char *currtest;
 
 
-#define MEMSIZE 1024
-#define CODELOC 0
+#define CODESTRT 0
 
 /* Small code segment to save registers and call test.
  */
 unsigned ctlmemory[50];
 
 unsigned save_s;
+unsigned dpLoc;
 
 /* Allocate enough memory to run the instructions in that allows
  * for jumps back and forth.
  */
-char memory[MEMSIZE];
 
-void setRegs(cc, a, b, dp, x, y, u)
-    char cc, a, b, dp;
+void setRegs(a, b, x, y, u)
+    char a, b;
     unsigned x, y, u;
 {
-    initregs.rg_cc = cc;
     initregs.rg_a = a;
     initregs.rg_b = b;
-    initregs.rg_dp = dp;
     initregs.rg_x = x;
     initregs.rg_y = y;
     initregs.rg_u = u;
@@ -60,14 +59,50 @@ void assertInt(exp, act, reg)
     }
 }
 
-void assertRegs(cc, a, b, dp, x, y, u)
-    char cc, a, b, dp;
+void setDP(dp)
+    char dp;
+{
+    initregs.rg_dp = dp;
+}
+
+void assertDP(exp)
+    char exp;
+{
+    assertInt(exp, initregs.rg_dp, "DP");
+}
+
+#define CC_C 0
+#define CC_V 1
+#define CC_Z 2
+#define CC_N 3
+#define CC_I 4
+#define CC_H 5
+#define CC_F 6
+#define CC_E 7
+
+/**
+ * Set the condition codes but don't turn off interrupts.
+ */
+void setCC(cc)
+    char cc;
+{
+    initregs.rg_cc = (cc & 0xAF);
+}
+
+void assertCC(exp, bit)
+    int exp, bit;
+{
+    static char names[] = "CVZNIHFE";
+    if ((initregs.rg_cc & (1 << bit)) != (exp << bit))
+        printf("%s:CC-%c expected %d\n", currtest, names[bit], exp);
+}
+
+void assertRegs(a, b, x, y, u)
+    char a, b;
     unsigned x, y, u;
 {
-    assertInt(cc, initregs.rg_cc, "CC");
     assertInt(a,  initregs.rg_a, "A");
     assertInt(b,  initregs.rg_b, "B");
-    assertInt(dp, initregs.rg_dp, "DP");
     assertInt(x,  initregs.rg_x, "X");
     assertInt(y,  initregs.rg_y, "Y");
     assertInt(u,  initregs.rg_u, "U");
@@ -75,19 +110,24 @@ void assertRegs(cc, a, b, dp, x, y, u)
 
 void printRegs()
 {
-    printf("CC=%X A=%X B=%X DP=%X\n", initregs.rg_cc, initregs.rg_a,
+    printf("CC=%X A=%X B=%X DP=%X\n",
+            initregs.rg_cc, initregs.rg_a,
             initregs.rg_b, initregs.rg_dp);
     printf("X=%x Y=%X U=%X\n", initregs.rg_x, initregs.rg_y, initregs.rg_u);
 }
 
-/* Copy the instructions to test */
+/**
+ * Copy the instructions to test.
+ * The instructions must begin at CODESTRT
+ * The instructions must end with an RTS
+ */
 void copydata(start, insv, insc)
     int start;
     char *insv;
     int insc;
 {
     register int i;
-    /* Insert test code */
+
     for (i = 0; i < insc; i++) {
         memory[start++] = insv[i];
     }
@@ -134,17 +174,9 @@ int setupCtl()
     /* Pull all registers */
     ctlmemory[start++] = 0x357F; /* PulS */
 
-    /* Reset SP to normal stack by loading content of save_s */
-    ctlmemory[start++] = 0x10FE; /* LDS */
-    ctlmemory[start++] = &save_s;
-
     /* Call subroutine */
     ctlmemory[start++] = 0x12BD; /* NOP + JSR */
-    ctlmemory[start++] = &memory[CODELOC];
-
-    /* Change SP to initregs */
-    ctlmemory[start++] = 0x10CE; /* LDS */
-    ctlmemory[start++] = ((unsigned)&initregs) + sizeof initregs;
+    ctlmemory[start++] = &memory[CODESTRT];
 
     /* Push registers back to initregs */
     ctlmemory[start++] = 0x347F; /* PshS */
@@ -161,12 +193,12 @@ int setupCtl()
     return start;
 }
 
-void printMem(size)
-    int size;
+void printMem(start, size)
+    int start, size;
 {
     register int i;
 
-    for (i = 0; i < size; i++) {
+    for (i = start; i < size; i++) {
         printf("%02X", memory[i]);
         if (i % 12 == 11) {
             printf("\n");
@@ -198,52 +230,104 @@ void printCtl(ctlsize)
     printf("\n");
 }
 
-int main()
-{
-    int ctlsize;
-    ctlsize = setupCtl();
-    /*
-    printCtl(ctlsize);
-    */
-
-    testANDA();
-
-}
-
 /**
  * Calculate a valid value for the DP register.
  */
 unsigned calcDP()
 {
-    return ((unsigned)memory >> 8) + 1;
+    register unsigned t = (unsigned)memory;
+    return (t >> 8) + ((t & 0xff) == 0 ? 1 : 0);
 }
 
+/**
+ * Write a value into the direct page.
+ */
 void writeDPloc(offset, value)
     int offset;
     char value;
 {
     unsigned dp = calcDP();
-    int loc = (dp << 8) - (unsigned)memory + offset;
+    int loc = (dpLoc << 8) - (unsigned)memory + offset;
     memory[loc] = value;
 }
 
+/* ------------- Tests --------------- */
+/**
+ * Tests AND A with a value loaded from the direct page.
+ */
 int testANDA()
 {
     static char testins[] = {0x94, 0xEF, 0x39};
-    unsigned mydp;
 
-    printf("Memory addr: %X\n", memory);
     currtest = "testANDA";
-    mydp = calcDP();
-    setRegs(0x32,0x8B,0,mydp,0,0,0);
+    setRegs(0x8B,0,0,0,0);
+    setCC(0x02);
+    setDP(dpLoc);
     writeDPloc(0xEF, 0x0F);
-    printRegs();
-    copydata(CODELOC, testins, sizeof testins);
-    /*printMem(20);*/
+    copydata(CODESTRT, testins, sizeof testins);
+    /*printMem(0, 20);*/
     runtest();
     printf("Save_s content: %X\n", save_s);
 
-    printRegs();
-    assertRegs(0x30,0x0B,0,mydp,0,0,0);
+    assertRegs(0x0B,0,0,0,0);
+    assertCC(0, CC_C);
+    assertCC(0, CC_V);
+    assertDP(dpLoc);
+}
+
+/**
+ * Tests negation of the A register.
+ */
+int testNEG() {
+    static char testins[] = {0x40, 0x39};
+
+    currtest = "testNEG";
+    copydata(CODESTRT, testins, sizeof testins);
+    /* Negate 0 */
+    setRegs(0,0,0,0,0);
+    setCC(0);
+    runtest();
+    assertRegs(0,0,0,0,0);
+    assertCC(0, CC_C);
+    assertCC(0, CC_V);
+
+    /* Negate 1 */
+    setRegs(1,0,0,0,0);
+    setCC(0);
+    runtest();
+    assertRegs(0xFF,0,0,0,0);
+    assertCC(1, CC_C);
+    assertCC(0, CC_V);
+
+    /* Negate 2 */
+    setRegs(2,0,0,0,0);
+    setCC(0);
+    runtest();
+    assertRegs(0xFE,0,0,0,0);
+    assertCC(1, CC_C);
+    assertCC(0, CC_V);
+
+    /* Negate 0x80 */
+    setRegs(0x80,0,0,0,0);
+    setCC(0);
+    runtest();
+    assertRegs(0x80,0,0,0,0);
+    assertCC(1, CC_C);
+    assertCC(1, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_N);
+}
+
+/* Main routine */
+int main()
+{
+    int ctlsize;
+    ctlsize = setupCtl();
+    dpLoc = calcDP();
+
+    printf("Memory addr: %X\n", memory);
+    testANDA();
+    testNEG();
+
 }
 
