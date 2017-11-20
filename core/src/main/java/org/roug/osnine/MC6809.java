@@ -1248,6 +1248,10 @@ public class MC6809 extends USimMotorola {
         help_cmp(b);
     }
 
+    /**
+     * Compare byte.
+     * The half-carry is undefined after this operation.
+     */
     private void help_cmp(UByte reg) {
         int m = fetch_operand();
         int t = reg.intValue() - m;
@@ -1920,6 +1924,10 @@ public class MC6809 extends USimMotorola {
         help_sbc(b);
     }
 
+    /**
+     * Subtract with carry.
+     * The half-carry is undefined after this operation.
+     */
     private void help_sbc(UByte regB) {
         int m = fetch_operand();
         int t = regB.intValue() - m - cc.getC();

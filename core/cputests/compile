@@ -1,1 +1,7 @@
-cc1 cputest.c instructions.c -f=cputest
+tmode .1 -pause
+cc1 -r instructions.c
+cc1 -r subtractions.c
+cc1 -r initregs.c
+cc1 -r cputest.c
+cc1 instructions.r cputest.r initregs.r -f=testinstructions
+cc1 subtractions.r cputest.r initregs.r -f=testsubtractions

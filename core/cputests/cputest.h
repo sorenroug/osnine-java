@@ -34,8 +34,14 @@ extern unsigned dpLoc;
 #define CC_F 6
 #define CC_E 7
 
+#define RTS 0x39
+
 extern void setRegs();
+extern void setA();
+extern void setB();
 extern void setCC();
+extern void setCCflag();
+extern char getDP();
 extern void setDP();
 extern void copydata();
 extern void writeDPloc();
@@ -43,3 +49,7 @@ extern void runtest();
 extern void assertRegs();
 extern void assertCC();
 extern void assertDP();
+extern void assertA();
+extern void assertB();
+extern unsigned setMem();
+extern int setupCtl();
