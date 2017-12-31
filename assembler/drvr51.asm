@@ -19,10 +19,14 @@ MAXROWS  equ   24
 LASTCOL  equ   50
 LASTROW  equ   23
 
+* Defines from kbvdio
+alphaSt  equ   $1D
+gfxalloc equ   $2C
+gfxaddr  equ   $2D
+
          mod   eom,name,tylg,atrv,start,size
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
+         rmb   2
+         rmb   1
 u0003    rmb   1
 u0004    rmb   1
 u0005    rmb   1
@@ -38,8 +42,8 @@ u000E    rmb   1
 u000F    rmb   8
 u0017    rmb   4
 u001B    rmb   2
-u001D    rmb   1
-u001E    rmb   1
+nextChar rmb   1
+lastChar rmb   1
 u001F    rmb   1
 u0020    rmb   2
 u0022    rmb   2
@@ -54,7 +58,7 @@ u002B    rmb   1
 u002C    rmb   1
 u002D    rmb   1
 u002E    rmb   1
-u002F    rmb   1
+ShftLock rmb   1
 u0030    rmb   1
 u0031    rmb   1
 u0032    rmb   1
@@ -88,19 +92,32 @@ start    equ   *
          lbra  SETSTA
          lbra  TERM
 
+* Init
+* The loader has overwritten the kbvdio driver with the drvr51 code,
+* so the kernel provides it with the static storage of kbvdio.
+* Init deallocates the screen buffer ($200 bytes) and allocates a new
+*
+* Entry:
+*    Y  = address of device descriptor
+*    U  = address of device static storage
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 INITDEV  pshs  u,a
-         ldu   <u001D,u
+         ldu   alphaSt,u    Return alpha buffer from kbvdio
          ldd   #$0200
          os9   F$SRtMem 
          ldu   $01,s
-         tst   <u002C,u
+         tst   gfxalloc,u
          beq   L0044
-         ldu   <u002D,u
+         ldu   gfxaddr,u    Return gfx buffer from kbvdio
          ldd   #$1800
          os9   F$SRtMem 
          ldu   $01,s
 L0044    ldb   #$81
-         leax  <u001D,u
+         leax  alphaSt,u
 L0049    clr   ,x+
          decb  
          bne   L0049
@@ -123,9 +140,9 @@ L0068    stx   <u0022,u
          lda   #$10
          sta   <u0037,u
          pshs  cc
-         orcc  #$50
-         leay  >L00AD,pcr
-         sty   >$0032
+         orcc  #IntMasks
+         leay  >AltIRQ,pcr
+         sty   >D.IRQ
          ldx   #$FF00
          lda   $03,x
          ora   #$01
@@ -140,33 +157,42 @@ L009C    puls  pc,u,a
 IsInit    fcb   0
 
 * TERM
+*
+* Entry:
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 TERM     pshs  cc
-         orcc  #$50
-         ldx   >$006B
-         stx   >$0032
+         orcc  #IntMasks
+         ldx   >D.AltIRQ
+         stx   >D.IRQ
          puls  cc
          clrb  
          rts   
 
-L00AD    ldu   >$006D
+AltIRQ   ldu   >D.KbdSta
          ldx   #$FF00
          lda   $03,x
          bmi   L00BB
-         jmp   [>$0038]
+         jmp   [>D.SvcIRQ]
 L00BB    lda   $02,x
-         lda   >$006F
+         lda   >D.DskTmr
          beq   L00CB
          deca  
-         sta   >$006F
+         sta   >D.DskTmr
          bne   L00CB
          sta   >$FF48
 L00CB    lbsr  L04E5
-         jmp   [>$006B]
+         jmp   [>D.AltIRQ]
+
 L00D2    pshs  x,b
          lda   u0004,u
          sta   u0005,u
          ldx   #$0000
-         os9   F$Sleep  
+         os9   F$Sleep    Sleep indefinitely
          ldx   <u004B
          ldb   <$36,x
          beq   L00EC
@@ -174,6 +200,7 @@ L00D2    pshs  x,b
          bhi   L00EC
          coma  
          puls  pc,x,a
+
 L00EC    puls  x,b
 *
 *
@@ -184,15 +211,15 @@ READ     tst   >IsInit,pcr
          bcs   L011C
 L00F9    leax  <u003A,u
          orcc  #$10
-         ldb   <u001D,u
-         cmpb  <u001E,u
+         ldb   <nextChar,u
+         cmpb  <lastChar,u
          beq   L00D2
          lda   b,x
          incb  
          cmpb  #$64
          bcs   L010E
          clrb  
-L010E    stb   <u001D,u
+L010E    stb   <nextChar,u
          andcc #$EE
          tst   u000E,u
          beq   L011C
@@ -219,7 +246,7 @@ L012C    ldb   <u001F,u
          clrb  
 L0139    rts   
 
-L013A    cmpa  #$20
+L013A    cmpa  #C$SPAC
          bcs   L0144
          cmpa  #$7F
          bcc   L0144
@@ -517,21 +544,21 @@ L035E    ldy   <u0022,u
 L037C    ldb   #LASTROW
          pshs  b
 L0380    ldb   #$10
-L0382    ldx   ,u
-         stx   ,y
-         ldx   u0002,u
+L0382    ldx   $00,u
+         stx   $00,y
+         ldx   $02,u
          stx   $02,y
-         ldx   u0004,u
+         ldx   $04,u
          stx   $04,y
-         ldx   u0006,u
+         ldx   $06,u
          stx   $06,y
-         ldx   u0008,u
+         ldx   $08,u
          stx   $08,y
-         ldx   u000A,u
+         ldx   $0A,u
          stx   $0A,y
-         ldx   u000C,u
+         ldx   $0C,u
          stx   $0C,y
-         ldx   u000E,u
+         ldx   $0E,u
          stx   $0E,y
          leay  a,y
          leau  a,u
@@ -682,34 +709,50 @@ L04AB    puls  b,a
 L04B9    dec   <u0032,u
          clrb  
          rts   
+
+* Getstat
 *
-*
-*
-GETSTA   cmpa  #$01
-         bne   L04D0
-         lda   <u001D,u
-         cmpa  <u001E,u
+* Input: U = Address of device static storage
+*        Y = Address of path descriptor
+*        A = Status code
+
+GETSTA   cmpa  #SS.Ready
+         bne   ASKEOF
+         lda   <nextChar,u
+         cmpa  <lastChar,u
          beq   L04CC
-L04CA    clrb  
+noerror  clrb  
          rts   
 L04CC    comb  
-         ldb   #E$NRDY     $F6
+         ldb   #E$NRDY
          rts   
 
-L04D0    cmpa  #$06
-         beq   L04CA
-         cmpa  #$02
+ASKEOF   cmpa  #SS.EOF
+         beq   noerror
+         cmpa  #SS.Size
          bne   SETSTA
-         ldx   $06,y
+         ldx   PD.RGS,y
          ldd   <u0022,u
-         std   $04,x
+         std   R$X,x
          clrb  
          rts   
 
+* SetStat
+*
+* Entry:
+*    A  = function code
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 
 SETSTA   comb  
-         ldb   #$D0
+         ldb   #E$UnkSvc
          rts   
+
 L04E5    tst   <u0032,u
          bne   L0512
          dec   <u0037,u
@@ -828,22 +871,24 @@ L05D6    stb   <u0027,u
          lbsr  L0667
          orb   ,s+
          stb   <u0029,u
-         leax  >L0820,pcr
+         leax  >NrmlMap,pcr
          lda   b,x
          tst   <u002E,u
          beq   L05FE
-         leax  >L0886,pcr
+         leax  >CtrlMap,pcr
          lda   b,x
          bra   L0609
+
 L05FE    tst   <u002D,u
          beq   L0612
-         leax  >L0853,pcr
+         leax  >ShftMap,pcr
          lda   b,x
-L0609    cmpa  #$1F
+L0609    cmpa  #$1F        * Shift lock pressed
          bne   L0621
-         com   <u002F,u
+         com   <ShftLock,u
          bra   L0665
-L0612    tst   <u002F,u
+
+L0612    tst   <ShftLock,u
          beq   L0621
          cmpa  #$61
          bcs   L0621
@@ -851,17 +896,18 @@ L0612    tst   <u002F,u
          bhi   L0621
          suba  #$20
 L0621    leax  <u003A,u
-         ldb   <u001E,u
+         ldb   <lastChar,u
          sta   b,x
          incb  
          cmpb  #$64
          bcs   L062F
          clrb  
-L062F    cmpb  <u001D,u
+L062F    cmpb  <nextChar,u
          bne   L0638
          inc   u000E,u
          bra   L063B
-L0638    stb   <u001E,u
+
+L0638    stb   <lastChar,u
 L063B    tsta  
          beq   L065A
          cmpa  u000D,u
@@ -1410,17 +1456,21 @@ GLYPHS   fcb  %00000000    * space
          fcb  %11111111
          fcb  %11110000
 
-L0820    fcc  "0123456789:;,-./"
-         fcc  "@abcdefghijklmnopqrstuvwxyz"
+NrmlMap  fcc  "0123456789:;,-./"
+         fcc  "@abcdefghijklmno"
+         fcc  "pqrstuvwxyz"
          fcb  $0C,$0A,$08,$09,$20,$0D,$00,$05
-L0853    fcc  /0!"#$%&'/
 
-L085B    fcc  /()*+<=>?|ABCDEFGHIJKLMNOPQRSTUVWXYZ/
-L087E    fcb   $1C,$1A,$18,$19,$20,$0D,$00,$03
-L0886    fcb   $1F,$7C,$00,$7E,$00,$00,$00,$5E,$5B,$5D,$00,$00,$7B,$5F,$7D,$5C
-         fcb   $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
-         fcb   $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A
-         fcb   $13,$12,$10,$11,$20,$0D,$00,$1B
+ShftMap  fcc  /0!"#$%&'()*+<=>?/
+         fcc  /|ABCDEFGHIJKLMNO/
+         fcc  /PQRSTUVWXYZ/
+         fcb  $1C,$1A,$18,$19,$20,$0D,$00,$03
+
+* Mappings when CTRL is pressed.
+CtrlMap  fcb  $1F,$7C,$00,$7E,$00,$00,$00,$5E,$5B,$5D,$00,$00,$7B,$5F,$7D,$5C
+         fcb  $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
+         fcb  $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A
+         fcb  $13,$12,$10,$11,$20,$0D,$00,$1B
 
          emod
 eom      equ   *

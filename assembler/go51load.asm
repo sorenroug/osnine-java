@@ -1,5 +1,5 @@
          nam   go51
-         ttl   program module       
+         ttl   Replace the KBVDIO driver with DRVR51
 
          ifp1
          use   os9defs
@@ -36,12 +36,15 @@ start    equ   *
          lbsr  LinkIt
          lbcs  EXIT
          stx   DrvrAddr,u   * Store addr of drvr51 module
-         ldd   $02,x
+         ldd   M$Size,x
          std   DrvrSize,u      * Store size of drvr51 module
          pshs  u,cc
-         orcc  #$50
-         ldx   >$006B      * D.AltIRQ
-         stx   >$0032      * D.IRQ
+         orcc  #IntMasks
+         ldx   >D.AltIRQ
+         stx   >D.IRQ
+
+* Copy the Drvr51 code over KBVDIO. This relies on the fact that
+* the size of Drvr51 (2236 bytes) is smaller than KBVDIO (2279 bytes)
          ldy   KbVdAddr,u
          ldx   DrvrSize,u
          ldu   DrvrAddr,u
@@ -69,9 +72,10 @@ L0054    lda   ,u+
          lbsr  UnLink
          ldx   KbVdAddr,u
          ldd   M$Name,x
-         leax  d,x        Point to module name of KBVDIO
+         leax  d,x        Point to module name of drvr51
          leay  >KbVdIO,pcr
          ldb   #$06       Length of KBVDIO name
+* Replace the module name.
 L008B    lda   ,y+
          sta   ,x+
          decb  
@@ -82,16 +86,16 @@ L008B    lda   ,y+
          os9   I$GetStt 
          bcs   EXIT
          clr   $01,x
-         lda   #$18
+         lda   #24
          sta   $08,x
          lda   #$01
          ldb   #SS.Opt
          os9   I$SetStt 
          bcs   EXIT
-         leax  >Term,pcr
+         leax  >Term,pcr     Link to term and set some options
          lda   #Devic+Objct
          pshs  u
-         os9   F$Link   
+         os9   F$Link       Returns module address in U
          tfr   u,x
          puls  u
          bcs   EXIT
@@ -100,7 +104,7 @@ L008B    lda   ,y+
          sta   IT.PAG,x      Modify TERM dev driver to 24 lines per page
          bsr   UnLink
          clrb  
-EXIT     os9   F$Exit   
+EXIT     os9   F$Exit
 
 * Link in name pointed to in Reg. X
 LinkIt   pshs  u

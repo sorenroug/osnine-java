@@ -14,4 +14,5 @@ RUN=java -jar ../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar
 go51: drvr51 go51load
 	cat go51load drvr51 >go51
 	chmod 755 $@
+	cmp go51 $(HOME)/OS9/CMDS/go51
 

@@ -45,6 +45,14 @@ void assertB(exp)
     assertInt(exp, initregs.rg_b, "B");
 }
 
+/*
+void setD(value)
+    unsigned value;
+{
+    initregs.rg_a = value >> 8;
+    initregs.rg_b = value & 0xFF;
+}
+*/
 void setDP()
 {
     initregs.rg_dp = (dpLoc >> 8);

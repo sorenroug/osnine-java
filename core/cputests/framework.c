@@ -181,6 +181,16 @@ void printCtl(ctlsize)
 }
 
 /**
+ * Read a value from the direct page.
+ */
+int readDPloc(offset)
+    int offset;
+{
+    int loc = dpLoc - (unsigned) memory + offset;
+    return (unsigned) memory[loc];
+}
+
+/**
  * Write a value into the direct page.
  */
 void writeDPloc(offset, value)
