@@ -18,6 +18,8 @@ extern char *currtest;
 
 #define CODESTRT 0
 
+#define runinst(funcname, inst) runcode(funcname, inst, sizeof inst)
+
 /* Small code segment to save registers and call test.
  */
 extern unsigned ctlmemory[50];
@@ -34,6 +36,8 @@ extern unsigned dpLoc;
 #define CC_F 6
 #define CC_E 7
 
+#define LDA 0x86
+#define LDB 0xC6
 #define RTS 0x39
 
 extern void setRegs();
@@ -43,10 +47,12 @@ extern void setCC();
 extern void setCCflag();
 extern char getDP();
 extern void setDP();
+extern void setX();
 extern void copydata();
 extern void writeDPloc();
 extern int readDPloc();
 extern void runtest();
+extern void runcode();
 extern void assertInt();
 extern void assertRegs();
 extern void assertCC();

@@ -13,42 +13,75 @@ static void ABX()
 
     setRegs(0,0xCE,0x8006,0,0);
     setCC(0x00);
-    copydata(CODESTRT, instructions, sizeof instructions);
-    runtest("ABX");
-    assertRegs(0,0xCE,0x80D4,0,0);
+    runinst("ABX1", instructions);
+    assertRegs(0, 0xCE, 0x80D4, 0,0);
     assertCC(0, CC_C);
     assertCC(0, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(0, CC_H);
+
+    setRegs(0,0xD6,0x7FFE,0,0);
+    setCC(0x07);
+    runinst("ABX2", instructions);
+    assertRegs(0, 0xCE, 0x80D4, 0,0);
+    assertCC(1, CC_C);
+    assertCC(1, CC_V);
+    assertCC(1, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(0, CC_H);
 }
 
 /**
- * 
+ * Add 2 to register A.
  */
 static void ADCANoC() {
     static char instructions[] = {0x89, 0x02, RTS};
 
     copydata(CODESTRT, instructions, sizeof instructions);
-    setRegs(5,0,0,0,0);
+    setA(5);
     setCC(0);
-    runtest("ADCANoC");
-    assertRegs(7,0,0,0,0);
+    runtest("ADCANoC1");
+    assertA(7);
     assertCC(0, CC_C);
     assertCC(0, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(0, CC_H);
+
+    /* Test half-carry $E + $2 = $10 */
+    setA(0x0E);
+    setCC(0);
+    runtest("ADCANoC2");
+    assertA(0x10);
+    assertCC(0, CC_C);
+    assertCC(0, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(1, CC_H);
 }
 
+/**
+ * Add $22 and carry to register A ($14).
+ */
 static void ADCAWiC() {
     static char instructions[] = {0x89, 0x22, RTS};
 
-    copydata(CODESTRT, instructions, sizeof instructions);
-    setRegs(0x14,0,0,0,0);
-    setCC(1);
-    runtest("ADCAWiC");
-    assertRegs(0x37,0,0,0,0);
+    setA(0x14);
+    setCC(0);
+    setCCflag(1, CC_C);
+    setCCflag(1, CC_H);
+    runinst("ADCAWiC", instructions);
+    assertA(0x37);
     assertCC(0, CC_C);
     assertCC(0, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(0, CC_H);
 }
 
 /*
- * Test that half-carry is set.
+ * Test that half-carry is set when adding with a carry.
  */
 static void ADCAWiHC() {
     static char instructions[] = {
@@ -56,11 +89,10 @@ static void ADCAWiHC() {
         0x2B,  /* value */
         RTS
     };
-    copydata(CODESTRT, instructions, sizeof instructions);
     setCCflag(1, CC_C);
-    setRegs(0x14, 0, 0, 0, 0);
-    runtest("ADCAWiHC");
-    assertRegs(0x40,0,0,0,0);
+    setA(0x14);
+    runinst("ADCAWiHC", instructions);
+    assertA(0x40);
     assertCC(0, CC_C);
     assertCC(1, CC_H);
 }
@@ -80,6 +112,7 @@ static void ADDB1() {
     assertCC(0, CC_Z);
     assertCC(1, CC_V);
     assertCC(0, CC_C);
+    assertCC(0, CC_H);
 }
 
 /**
@@ -145,8 +178,7 @@ static void ADDANoC() {
     setCC(0);
     setA(0x04);
     setB(0x05);
-    copydata(CODESTRT, instructions, sizeof instructions);
-    runtest("ADDANoC");
+    runinst("ADDANoC", instructions);
     assertA(0x06);
     assertB(0x05);
     assertCC(0, CC_H);
@@ -170,7 +202,7 @@ static void ADDAWiC() {
     setCC(0);
     setA(0x03);
     copydata(CODESTRT, instructions, sizeof instructions);
-    runtest("ADDAWiC");
+    runinst("ADDAWiC", instructions);
     assertA(0x02);
     assertCC(0, CC_N);
     assertCC(0, CC_V);
@@ -277,7 +309,7 @@ static void ADDD3() {
 /**
  * Increment register A.
  */
-static void INCA1() {
+static void INCA() {
     static char instructions[] = {
         0x4C, /* INCA */
         RTS
@@ -291,16 +323,8 @@ static void INCA1() {
     assertCC(0, CC_Z);
     assertCC(0, CC_V);
     assertCC(0, CC_C);
-}
 
-/**
- * Test 0x7F - special case
- */
-static void INCA2() {
-    static char instructions[] = {
-        0x4C, /* INCA */
-        RTS
-    };
+    /* Test 0x7F - special case */
     setCC(0);
     setA(0x7F);
     copydata(CODESTRT, instructions, sizeof instructions);
@@ -311,16 +335,8 @@ static void INCA2() {
     assertCC(1, CC_V);
     assertCC(0, CC_C);
 
-}
 
-/**
- * Test 0xFF - special case
- */
-static void INCA3() {
-    static char instructions[] = {
-        0x4C, /* INCA */
-        RTS
-    };
+    /* Test 0xFF - special case */
     setCC(0);
     setA(0xFF);
     copydata(CODESTRT, instructions, sizeof instructions);
@@ -349,8 +365,6 @@ int main()
     ADDD1();
     ADDD2();
     ADDD3();
-    INCA1();
-    INCA2();
-    INCA3();
+    INCA();
 }
 

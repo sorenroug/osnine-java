@@ -94,6 +94,15 @@ void jsrtest(startloc)
 #endif
 }
 
+void runcode(ctest, insv, insc)
+    char *ctest;
+    char *insv;
+    int insc;
+{
+    copydata(CODESTRT, insv, insc);
+    runtest(ctest);
+}
+
 void runtest(ctest)
     char *ctest;
 {
@@ -105,7 +114,7 @@ void runtest(ctest)
 int setupCtl()
 {
     int start;
-    printf("Memory addr: %X\n", memory);
+    /* printf("Memory addr: %X\n", memory); */
     dpLoc = calcDP();
 
     start = 0;
@@ -187,7 +196,7 @@ int readDPloc(offset)
     int offset;
 {
     int loc = dpLoc - (unsigned) memory + offset;
-    return (unsigned) memory[loc];
+    return memory[loc] & 0xFF;
 }
 
 /**

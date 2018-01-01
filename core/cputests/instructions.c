@@ -2,40 +2,51 @@
 #include "cputest.h"
 
 /**
- * Tests AND A with a value loaded from the direct page.
+ * Tests AND A with a value ($F) loaded from the direct page.
  */
-static int testANDA()
+static int ANDA()
 {
     static char testins[] = {0x94, 0xEF, RTS};
     char dp;
 
-    setRegs(0x8B,0,0,0,0);
+    setA(0x8B);
     setCC(0x02);
     setDP();
     dp = getDP();
     writeDPloc(0xEF, 0x0F);
-    copydata(CODESTRT, testins, sizeof testins);
-    /*printMem(0, 20);*/
-    runtest("testANDA");
-    printf("Save_s content: %X\n", save_s);
-
-    assertRegs(0x0B,0,0,0,0);
+    runinst("ANDA1", testins);
+    assertA(0x0B);
     assertCC(0, CC_C);
     assertCC(0, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
     assertDP(dp);
+    /* Test where result is 0 */
+    setA(0x10);
+    runtest("ANDA2");
+    assertA(0x00);
+    assertCC(1, CC_Z);
+    assertCC(0, CC_N);
+    /* Test where the result becomes negative. */
+    writeDPloc(0xEF, 0xF0);
+    setA(0xE0);
+    runtest("ANDA3");
+    assertA(0xE0);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_N);
 }
 
 /**
  * Tests negation of the A register.
  */
-static int testNEG() {
+static int NEG() {
     static char testins[] = {0x40, RTS};
 
     copydata(CODESTRT, testins, sizeof testins);
     /* Negate 0 */
     setRegs(0,0,0,0,0);
     setCC(0);
-    runtest("testNEG0");
+    runtest("NEG0");
     assertRegs(0,0,0,0,0);
     assertCC(0, CC_C);
     assertCC(0, CC_V);
@@ -43,7 +54,7 @@ static int testNEG() {
     /* Negate 1 */
     setRegs(1,0,0,0,0);
     setCC(0);
-    runtest("testNEG1");
+    runtest("NEG1");
     assertRegs(0xFF,0,0,0,0);
     assertCC(1, CC_C);
     assertCC(0, CC_V);
@@ -51,7 +62,7 @@ static int testNEG() {
     /* Negate 2 */
     setRegs(2,0,0,0,0);
     setCC(0);
-    runtest("testNEG2");
+    runtest("NEG2");
     assertRegs(0xFE,0,0,0,0);
     assertCC(1, CC_C);
     assertCC(0, CC_V);
@@ -59,7 +70,7 @@ static int testNEG() {
     /* Negate 0x80 */
     setRegs(0x80,0,0,0,0);
     setCC(0);
-    runtest("testNEG80");
+    runtest("NEG80");
     assertRegs(0x80,0,0,0,0);
     assertCC(1, CC_C);
     assertCC(1, CC_V);
@@ -88,13 +99,12 @@ static void COMA() {
     static char testins[] = {0x43, RTS};
     setCC(0);
     setA(0x74);
-    copydata(CODESTRT, testins, sizeof testins);
-    runtest("COMA");
+    runinst("COMA", testins);
     assertA(0x8B);
-    assertCC(1, CC_N);
-    assertCC(0, CC_Z);
-    assertCC(0, CC_V);
     assertCC(1, CC_C);
+    assertCC(0, CC_V);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_N);
 }
 
 /**
@@ -119,32 +129,59 @@ static void DAA() {
 }
 
 /**
+ * Exchange D and X.
+ */
+static void EXGdx() {
+    static char testins[] = {0x1E, 0x01, RTS};
+    setCC(0);
+    setA(0x11);
+    setB(0x7F);
+    setX(0xFF16);
+    runinst("EXGdx", testins);
+    assertA(0xFF);
+    assertB(0x16);
+    assertX(0x117F);
+}
+
+/**
  * Multiply 0x0C with 0x64. Result is 0x04B0.
  * The Zero flag is set if the 16-bit result is zero; cleared otherwise.
  * The Carry flag is set equal to the new value of bit 7 in Accumulator B.
  */
-static void testMUL() {
+static void MUL() {
     static char testins[] = {0x3D, RTS};
     setCCflag(0, CC_C);
     setCCflag(1, CC_Z);
     setA(0x0C);
     setB(0x64);
-    copydata(CODESTRT, testins, sizeof testins);
-    runtest("MUL");
+    runinst("MUL", testins);
     assertA(0x04);
     assertB(0xB0);
     assertCC(0, CC_Z);
     assertCC(1, CC_C);
+
+    setA(0x00);
+    setB(0x64);
+    runtest("MUL2");
+    assertA(0x00);
+    assertB(0x00);
+    assertCC(1, CC_Z);
+    assertCC(0, CC_C);
 }
 
-static void testSEX() {
+static void SEX() {
     static char testins[] = {0x1D, RTS};
     setA(0x02);
     setB(0xE6);
-    copydata(CODESTRT, testins, sizeof testins);
-    runtest("testSEX");
+    runinst("SEX1", testins);
     assertA(0xFF);
     assertB(0xE6);
+
+    setA(0x02);
+    setB(0x76);
+    runtest("SEX2");
+    assertA(0x00);
+    assertB(0x76);
 }
 
 /**
@@ -168,13 +205,14 @@ int main()
 {
     setupCtl();
 
-    testANDA();
-    testNEG();
+    ANDA();
+    NEG();
     BITimm();
     COMA();
     DAA();
-    testMUL();
-    testSEX();
+    EXGdx();
+    MUL();
+    SEX();
     TSTmemory();
 }
 

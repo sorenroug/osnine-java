@@ -92,10 +92,10 @@ public class ShiftTest {
         myTestCPU.write(0xB00, 0x48);
         // Logical Shift Left of 0xff in register A
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0xff);
+        myTestCPU.a.set(0xFF);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0xfe, myTestCPU.a.intValue());
+        assertEquals(0xFE, myTestCPU.a.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
     //  assertEquals(0, myTestCPU.cc.getV());
     //  assertEquals(0, myTestCPU.cc.bit.n);
