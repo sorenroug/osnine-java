@@ -74,7 +74,11 @@ public class SubtractionTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xB00 + 2, myTestCPU.pc.intValue());
-        chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0xff, 0, 0, 0, 0x206, 0, 0);
+        assertEquals(0x206, myTestCPU.y.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
 
         // B = 0xA0, CMPB with 0xA0
         myTestCPU.cc.setN(1);

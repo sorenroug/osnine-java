@@ -24,7 +24,7 @@ static void ABX()
     setRegs(0,0xD6,0x7FFE,0,0);
     setCC(0x07);
     runinst("ABX2", instructions);
-    assertRegs(0, 0xCE, 0x80D4, 0,0);
+    assertRegs(0, 0xD6, 0x80D4, 0,0);
     assertCC(1, CC_C);
     assertCC(1, CC_V);
     assertCC(1, CC_Z);

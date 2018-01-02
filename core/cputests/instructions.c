@@ -120,12 +120,73 @@ static void DAA() {
     setCC(0);
     setA(0x7F);
     copydata(CODESTRT, testins, sizeof testins);
-    runtest("DAA");
+    runtest("DAA1");
     assertA(0x85);
-    assertCC(1, CC_N);
-    assertCC(0, CC_Z);
-    assertCC(0, CC_V);
     assertCC(0, CC_C);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_N);
+    assertCC(0, CC_H);
+
+    setCC(0);
+    setA(0x0F);
+    runtest("DAA2");
+    assertA(0x15);
+    assertCC(0, CC_C);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(0, CC_H);
+
+    setCC(0);
+    setA(0x99);
+    runtest("DAA3");
+    assertA(0x99);
+    assertCC(0, CC_C);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_N);
+    assertCC(0, CC_H);
+
+    /* Perform DAA on LSN if half-carry is set */
+    setCC(0);
+    setCCflag(1, CC_H);
+    setA(0x40);
+    runtest("DAA4");
+    assertA(0x46);
+    assertCC(0, CC_C);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(1, CC_H);
+
+    /* Perform DAA on MSN if carry is set */
+    setCC(0);
+    setCCflag(1, CC_C);
+    setA(0x40);
+    runtest("DAA5");
+    assertA(0xA0);
+    assertCC(0, CC_C);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_N);
+    assertCC(0, CC_H);
+
+    /* Perform DAA of 9A */
+    setCC(0);
+    setCCflag(CC_N);
+    setA(0x9A);
+    runtest("DAA6");
+    assertA(0x00);
+    assertCC(1, CC_C);
+    assertCC(1, CC_Z);
+    assertCC(0, CC_N);
+    assertCC(0, CC_H);
+
+    /* Perform DAA of A2 */
+    setCC(0);
+    setCCflag(CC_N);
+    setA(0xA2);
+    runtest("DAA7");
+    assertA(0x02);
+    assertCC(1, CC_C);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_N);
 }
 
 /**
@@ -141,6 +202,36 @@ static void EXGdx() {
     assertA(0xFF);
     assertB(0x16);
     assertX(0x117F);
+}
+
+/**
+ * Transfers.
+ */
+static void TFR() {
+    /* Transfer Y to X */
+    static char instructions[] = {0x1F, 0x21, RTS};
+    instructions[1] = 0x21;
+    setCC(0);
+    setY(0x1234);
+    setX(0xFF16);
+    runinst("TFRyx", instructions);
+    assertY(0x1234);
+    assertX(0x1234);
+
+    /* Transfer A to X */
+    instructions[1] = 0x81;
+    setA(0x56);
+    setB(0x78);
+    runinst("TFRax", instructions);
+    assertX(0xFF56);
+
+    /* Transfer X to B */
+    instructions[1] = 0x19;
+    setX(0x6541);
+    setB(0x78);
+    runinst("TFRxb", instructions);
+    assertX(0x6541);
+    assertB(0x41);
 }
 
 /**
@@ -211,6 +302,7 @@ int main()
     COMA();
     DAA();
     EXGdx();
+    TFR();
     MUL();
     SEX();
     TSTmemory();

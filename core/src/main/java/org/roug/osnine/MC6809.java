@@ -616,26 +616,7 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    /**
-     * Get value of referenced 8-bit register.
-     * 0x08 = A
-     * 0x09 = B
-     * 0x0a = CC
-     * otherwise DP
-     */
-    private UByte byterefreg(int r) {
-        if (r == 0x08) {
-            return a;
-        } else if (r == 0x09) {
-            return b;
-        } else if (r == 0x0a) {
-            return cc;
-        } else {
-            return dp;
-        }
-    }
-
-    private Word wordrefreg(int r) {
+    private Register tfrrefreg(int r) {
         if (r == 0x00) {
             return d;
         } else if (r == 0x01) {
@@ -646,8 +627,45 @@ public class MC6809 extends USimMotorola {
             return u;
         } else if (r == 0x04) {
             return s;
-        } else {
+        } else if (r == 0x05) {
             return pc;
+        } else if (r == 0x08) {
+            return a;
+        } else if (r == 0x09) {
+            return b;
+        } else if (r == 0x0a) {
+            return cc;
+        } else if (r == 0x0B) {
+            return dp;
+        } else {
+            invalid("register");
+            return null;
+        }
+    }
+
+    private int refregvalue(int r) {
+        if (r == 0x00) {
+            return d.intValue();
+        } else if (r == 0x01) {
+            return x.intValue();
+        } else if (r == 0x02) {
+            return y.intValue();
+        } else if (r == 0x03) {
+            return u.intValue();
+        } else if (r == 0x04) {
+            return s.intValue();
+        } else if (r == 0x05) {
+            return pc.intValue();
+        } else if (r == 0x08) {
+            return a.intValue() | 0xFF00;
+        } else if (r == 0x09) {
+            return b.intValue() | 0xFF00;
+        } else if (r == 0x0A) {
+            return cc.intValue() | 0xFF00;
+        } else if (r == 0x0B) {
+            return dp.intValue() | 0xFF00;
+        } else {
+            return 0xFFFF;
         }
     }
 
@@ -1428,20 +1446,6 @@ public class MC6809 extends USimMotorola {
         setBitZ(x);
     }
 
-    private static void swap(UByte r1, UByte r2) {
-        UByte t = new UByte();
-        t.set(r1.intValue());
-        r1.set(r2.intValue());
-        r2.set(t.intValue());
-    }
-
-    private static void swap(Word r1, Word r2) {
-        Word t = new Word();
-        t.set(r1.intValue());
-        r1.set(r2.intValue());
-        r2.set(t.intValue());
-    }
-
     /**
      * Exchange registers.
      */
@@ -1450,22 +1454,9 @@ public class MC6809 extends USimMotorola {
         int w = fetch();
         r1 = (w & 0xf0) >> 4;
         r2 = (w & 0x0f) >> 0;
-        if (r1 <= 5) {
-            if (r2 > 5) {
-                invalid("exchange register");
-                return;
-            }
-            swap(wordrefreg(r2), wordrefreg(r1));
-        } else if (r1 >= 8 && r2 <= 11) {
-            if (r2 < 8 || r2 > 11) {
-                invalid("exchange register");
-                return;
-            }
-            swap(byterefreg(r2), byterefreg(r1));
-        } else  {
-            invalid("exchange register");
-            return;
-        }
+        int t = refregvalue(r2);
+        tfrrefreg(r2).set(refregvalue(r1));
+        tfrrefreg(r1).set(t);
     }
 
     /**
@@ -2050,22 +2041,7 @@ public class MC6809 extends USimMotorola {
         int w = fetch();
         int r1 = (w & 0xf0) >> 4;
         int r2 = (w & 0x0f) >> 0;
-        if (r1 <= 5) {
-            if (r2 > 5) {
-                invalid("transfer register");
-                return;
-            }
-            wordrefreg(r2).set(wordrefreg(r1).intValue());
-        } else if (r1 >= 8 && r2 <= 11) {
-            if (r2 < 8 || r2 > 11) {
-                invalid("transfer register");
-                return;
-            }
-            byterefreg(r2).set(byterefreg(r1).intValue());
-        } else  {
-            invalid("transfer register");
-            return;
-        }
+        tfrrefreg(r2).set(refregvalue(r1));
     }
 
     private void tsta() {

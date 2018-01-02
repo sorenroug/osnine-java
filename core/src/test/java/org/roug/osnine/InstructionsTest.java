@@ -264,6 +264,23 @@ public class InstructionsTest {
         assertEquals(0x117f, myTestCPU.x.intValue());
     }
 
+    /**
+     * Exchange A and X.
+     */
+    @Test
+    public void testEXGax() {
+        myTestCPU.write(0xB00, 0x1E);
+        myTestCPU.write(0xB01, 0x81);
+        myTestCPU.cc.clear();
+        myTestCPU.a.set(0x56);
+        myTestCPU.x.set(0x1234);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x34, myTestCPU.a.intValue());
+        assertEquals(0xFF56, myTestCPU.x.intValue());
+    }
+
+
 
     /**
      * Increase the stack register by two. (LEAS +$ 2,S.)
@@ -507,6 +524,32 @@ public class InstructionsTest {
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
+    }
+
+    @Test
+    public void testTFR_a_x() {
+        myTestCPU.write(0xB00, 0x1F);
+        myTestCPU.write(0xB01, 0x81);
+        myTestCPU.cc.clear();
+        myTestCPU.a.set(0x56);
+        myTestCPU.b.set(0x78);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x56, myTestCPU.a.intValue());
+        assertEquals(0xFF56, myTestCPU.x.intValue());
+    }
+
+    @Test
+    public void testTFR_x_b() {
+        myTestCPU.write(0xB00, 0x1F);
+        myTestCPU.write(0xB01, 0x19);
+        myTestCPU.cc.clear();
+        myTestCPU.x.set(0x6541);
+        myTestCPU.b.set(0x78);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x41, myTestCPU.b.intValue());
+        assertEquals(0x6541, myTestCPU.x.intValue());
     }
 
     /**
