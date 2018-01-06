@@ -788,7 +788,7 @@ public class MC6809 extends USimMotorola {
                 case 0x0b:   // Non-Indirect D-register offset
                 case 0x1b:   //  Indirect D-register offset
                     sOffset = refreg(post).getSigned();
-                    addr = getSignedWord(d.intValue() + sOffset);
+                    addr = (d.intValue() + sOffset) & 0xFFFF;
                     break;
                 case 0x0c:   // Non-Indirect Constant 8-bit offset from PC
                 case 0x1c:   // Indirect Constant 8-bit offset from PC

@@ -342,6 +342,35 @@ public class InstructionsTest {
 
 
     /**
+     * LEAX D,Y
+     */
+    @Test
+    public void Doffset() {
+        int instructions[] = {0x30, 0xAB};
+
+        loadProg(instructions);
+        myTestCPU.cc.clear();
+        myTestCPU.x.set(0xABCD);
+        myTestCPU.y.set(0x804F);
+        myTestCPU.a.set(0x80);
+        myTestCPU.b.set(0x01);
+        myTestCPU.execute();
+        assertEquals(0x50, myTestCPU.x.intValue());
+        assertEquals(0, myTestCPU.cc.getZ());
+
+        myTestCPU.cc.set(0x28);
+        myTestCPU.x.set(0x0EFA);
+        myTestCPU.y.set(0x0EF8);
+        myTestCPU.a.set(0xFF);
+        myTestCPU.b.set(0x82);
+        loadProg(instructions);
+        myTestCPU.execute();
+        assertEquals(0x0E7A, myTestCPU.x.intValue());
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+
+    /**
      * Multiply 0x0C with 0x64. Result is 0x04B0.
      * The Zero flag is set if the 16-bit result is zero; cleared otherwise.
      * The Carry flag is set equal to the new value of bit 7 in Accumulator B.
