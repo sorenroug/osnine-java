@@ -8,13 +8,15 @@
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   $05
+
 hwclock  set   $FF10
          mod   eom,name,tylg,atrv,start,size
 stack    rmb   200
 size     equ   .
 name     equ   *
          fcs   /SysGo/
-         fcb   $05 
+         fcb   edition
 BootMsg  fcc   "                 OS-9 LEVEL ONE VERSION 1.2"
          fcb   C$CR,C$LF
          fcc   "Copyright 1980 by Motorola Inc."
@@ -24,13 +26,13 @@ BootMsg  fcc   "                 OS-9 LEVEL ONE VERSION 1.2"
 MsgEnd   equ   *
 ExecDir  fcc   "Cmds"
          fcb   C$CR
-         fcc   ",,,,,,,,,,"
+         fcc   ",,,,,,,,,," room for patch
 Shell    fcc   "Shell"
          fcb   C$CR
-         fcc   ",,,,,,,,,,"
+         fcc   ",,,,,,,,,," room for patch
 Startup  fcc   "STARTUP -P"
          fcb   C$CR
-         fcc   ",,,,,,,,,,"
+         fcc   ",,,,,,,,,," room for patch
          
 BasicRst fcb   $55
          fcb   $00
@@ -45,12 +47,13 @@ BasicRst fcb   $55
          fcb   $7E
          fcb   $F0
          fcb   $02
+
 * SysGo entry point
 start    equ   *
          leax  >IcptRtn,pcr
          os9   F$Icpt   
-         leax  >BasicRst,pcr
-         ldu   #$0071
+         leax  >BasicRst,pcr  CC warmstart
+         ldu   #D.CBStrt
          ldb   #start-BasicRst
 CopyLoop lda   ,x+
          sta   ,u+
@@ -61,6 +64,7 @@ CopyLoop lda   ,x+
          lda   #$01
          os9   I$Write  
 
+* OS9p2 has looked for a module called "Clock" and initialised it.
          ldx   #hwclock
          os9   F$STime
 

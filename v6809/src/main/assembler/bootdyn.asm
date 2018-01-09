@@ -34,7 +34,6 @@ beginmod ldy   ,x                      get $87CD
          bra   beginmod
 
 calcdiff subd  #startmem
-*        std   ,s                      place bootfile size in A/B on stack
 * allocate memory from system. Input: d = size
 * Output: u = location, d = allocated size
          os9   F$SRqMem

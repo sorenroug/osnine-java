@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.roug.osnine.Acia6551Console;
 import org.roug.osnine.HWClock;
+import org.roug.osnine.IRQBeat;
 import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.OptionParser;
@@ -15,28 +14,7 @@ import org.roug.osnine.VirtualDisk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ClockTick extends TimerTask {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TimerTask.class);
-
-    private MC6809 cpu;
-
-    ClockTick(MC6809 cpu) {
-        this.cpu = cpu;
-    }
-
-    public void run() {
-        LOGGER.debug("IRQ sent");
-        cpu.signalIRQ(true); // Execute a hardware interrupt
-        cpu.signalIRQ(false);
-    }
-}
-
 public class V6809 {
-
-    private static final int CLOCKDELAY = 500;  // milliseconds
-    /** On Dragon 32 the interrupt is 50 times a second. */
-    private static final int CLOCKPERIOD = 20;  // milliseconds
 
     private static final Logger LOGGER = LoggerFactory.getLogger(V6809.class);
 
@@ -122,11 +100,19 @@ public class V6809 {
         int memory = getIntProperty(props, "memory");
         cpu = new MC6809(memory);
 
-        HWClock hwClock = new HWClock(0xff10);
+        IRQBeat heartBeat = new IRQBeat(0xff00, cpu);
+        cpu.insertMemorySegment(heartBeat);
+
+        HWClock hwClock = new HWClock(0xff10, cpu);
         cpu.insertMemorySegment(hwClock);
+
         Acia6551Console console = new Acia6551Console(0xff04, cpu);
         cpu.insertMemorySegment(console);
+
         VirtualDisk disk = new VirtualDisk(0xff40, "OS9.dsk");
+        cpu.insertMemorySegment(disk);
+
+        disk = new VirtualDisk(0xff44, "DISK2.dsk");
         cpu.insertMemorySegment(disk);
 
         String segmentList = props.getProperty("load");
@@ -138,7 +124,6 @@ public class V6809 {
 //          int endAddress = loadModules(files);
 //      }
 
-//      System.out.format("Starting at: %x\n", cpu.pc.intValue());
         int start = cpu.read_word(MC6809.RESET_ADDR);
         LOGGER.debug("Reset address: {}", cpu.read_word(MC6809.RESET_ADDR));
         cpu.reset();
@@ -147,15 +132,8 @@ public class V6809 {
         }
         cpu.pc.set(start);
         LOGGER.debug("Starting at: {}", cpu.pc.intValue());
-        //startClockTick(cpu);
         cpu.run();
         System.out.flush();
-    }
-
-    private static void startClockTick(MC6809 cpu) {
-        TimerTask tasknew = new ClockTick(cpu);
-        Timer timer = new Timer("clock", true);
-        timer.schedule(tasknew, CLOCKDELAY, CLOCKPERIOD);
     }
 
 

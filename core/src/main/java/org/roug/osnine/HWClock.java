@@ -20,15 +20,22 @@ public class HWClock extends MemorySegment {
     public static final int MINUTE_LOC = 4;
     public static final int SECOND_LOC = 5;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HWClock.class);
+
+    /** Reference to CPU for the purpose of sending IRQ. */
+    private MC6809 cpu;
+
     /**
      * Constructor.
      */
-    public HWClock(int start) {
+    public HWClock(int start, MC6809 cpu) {
         super(start, start + 6);
+        this.cpu = cpu;
     }
 
     @Override
     protected int load(int addr) {
+        LOGGER.debug("Reading {}", addr);
         LocalDateTime ldt = LocalDateTime.now();
         switch (addr - getStartAddress()) {
         case YEAR_LOC:
@@ -50,6 +57,7 @@ public class HWClock extends MemorySegment {
 
     @Override
     protected void store(int addr, int val) {
+        return;
     }
 
 }

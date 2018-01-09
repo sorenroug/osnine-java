@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Virtualized block device.
+ * Virtualized block device. Takes 3 bytes of memory.
  * It requires a special OS9 device driver to work.
  * Operations:
  * To read a buffer do:
