@@ -40,14 +40,24 @@ extern unsigned dpLoc;
 #define LDB 0xC6
 #define RTS 0x39
 
+#define setA(value)    initregs.rg_a = value
+#define assertA(exp)   assertInt(exp, initregs.rg_a & 0xFF, "A")
+#define setB(value)    initregs.rg_b = value
+#define assertB(exp)   assertInt(exp, initregs.rg_b & 0xFF, "B")
+#define setX(value)    initregs.rg_x = value
+#define assertX(exp)   assertInt(exp, initregs.rg_x, "X")
+#define setY(value)    initregs.rg_y = value
+#define assertY(exp)   assertInt(exp, initregs.rg_y, "Y")
+/**
+ * Set the condition codes but don't turn off interrupts.
+ */
+#define setCC(value)   initregs.rg_cc = (value & 0xAF)
+#define assertDP(exp)   assertInt(exp, initregs.rg_dp & 0xFF, "DP")
+
 extern void setRegs();
-extern void setA();
-extern void setB();
-extern void setCC();
 extern void setCCflag();
 extern char getDP();
 extern void setDP();
-extern void setX();
 extern void copydata();
 extern void writeDPloc();
 extern int readDPloc();
@@ -56,8 +66,5 @@ extern void runcode();
 extern void assertInt();
 extern void assertRegs();
 extern void assertCC();
-extern void assertDP();
-extern void assertA();
-extern void assertB();
 extern unsigned setMem();
 extern int setupCtl();
