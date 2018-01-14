@@ -3,7 +3,7 @@ package org.roug.osnine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MC6809 extends USimMotorola {
+public class MC6809 extends USimMotorola implements Bus6809 {
 
     public static final int SWI3_ADDR = 0xfff2;
     public static final int SWI2_ADDR = 0xfff4;

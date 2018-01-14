@@ -1,5 +1,6 @@
 package org.roug.osnine;
 
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +22,12 @@ public class HWClock extends MemorySegment {
     private static final Logger LOGGER = LoggerFactory.getLogger(HWClock.class);
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private MC6809 cpu;
+    private Bus6809 cpu;
 
     /**
      * Constructor.
      */
-    public HWClock(int start, MC6809 cpu) {
+    public HWClock(int start, Bus6809 cpu) {
         super(start, start + 6);
         this.cpu = cpu;
     }

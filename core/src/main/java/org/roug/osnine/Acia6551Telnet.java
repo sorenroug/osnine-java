@@ -182,12 +182,12 @@ public class Acia6551Telnet extends MemorySegment {
     private int statusReg = TDRE;
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private MC6809 cpu;
+    private Bus6809 cpu;
 
     /**
      * Constructor.
      */
-    public Acia6551Telnet(int start, MC6809 cpu) {
+    public Acia6551Telnet(int start, Bus6809 cpu) {
         super(start, start + 3);
         this.cpu = cpu;
         setDCD(false);

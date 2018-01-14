@@ -1,18 +1,145 @@
-         nam   drvr51
-         ttl   Driver for 51x24 character display
+         nam   go51
+         ttl   Replace the KBVDIO driver with DRVR51
 
+         ifp1
+         use   ../DEFS/os9defs
+         use   ../DEFS/scfdefs
+         endc
+tylg     set   Prgrm+Objct   
+atrv     set   ReEnt+rev
+rev      set   $01
+         mod   eom,name,tylg,atrv,start,size
+
+IT.UPC   equ   $13
+IT.PAG   equ   $1A
+
+KbVdAddr rmb   2
+DrvrAddr rmb   2
+DrvrSize rmb   2
+StatBuf  rmb   32
+
+size     equ   .
+name     equ   *
+         fcs   /go51/
+         fcb   $01 
+KbVdIO   fcs   /KBVDIO/
+Drvr51   fcs   /drvr51/
+TermStr  fcs   /term/
+
+start    equ   *
+         leax  >KbVdIO,pcr
+         lbsr  LinkIt
+         lbcs  EXIT
+         stx   KbVdAddr,u           * Store addr of KbVdIO
+         lbsr  UnLink
+         leax  >Drvr51,pcr
+         lbsr  LinkIt
+         lbcs  EXIT
+         stx   DrvrAddr,u   * Store addr of drvr51 module
+         ldd   M$Size,x
+         std   DrvrSize,u      * Store size of drvr51 module
+         pshs  u,cc
+         orcc  #IntMasks
+         ldx   >D.AltIRQ
+         stx   >D.IRQ
+
+* Copy the Drvr51 code over KBVDIO. This relies on the fact that
+* the size of Drvr51 (2236 bytes) is smaller than KBVDIO (2279 bytes)
+         ldy   KbVdAddr,u
+         ldx   DrvrSize,u
+         ldu   DrvrAddr,u
+L0054    lda   ,u+
+         sta   ,y+
+         leax  -$01,x
+         bne   L0054
+
+         ldx   #$FF00
+         lda   $01,x
+         ora   #$30
+         anda  #$F7
+         sta   $01,x
+         lda   $03,x
+         anda  #$F6
+         ora   #$30
+         sta   $03,x
+
+         ldx   #$FF20
+         lda   $03,x
+         ora   #$38
+         sta   $03,x
+         puls  u,cc
+         ldx   DrvrAddr,u
+         lbsr  UnLink
+         ldx   KbVdAddr,u
+         ldd   M$Name,x
+         leax  d,x        Point to module name of drvr51
+         leay  >KbVdIO,pcr
+         ldb   #$06       Length of KBVDIO name
+* Replace the module name.
+L008B    lda   ,y+
+         sta   ,x+
+         decb  
+         bne   L008B
+         lda   #$01
+         ldb   #SS.Opt
+         leax  StatBuf,u
+         os9   I$GetStt 
+         bcs   EXIT
+         clr   $01,x
+         lda   #24
+         sta   $08,x
+         lda   #$01
+         ldb   #SS.Opt
+         os9   I$SetStt 
+         bcs   EXIT
+         leax  >TermStr,pcr     Link to term and set some options
+         lda   #Devic+Objct
+         pshs  u
+         os9   F$Link       Returns module address in U
+         tfr   u,x
+         puls  u
+         bcs   EXIT
+         clr   IT.UPC,x      Modify TERM dev driver to lower case
+         lda   #24
+         sta   IT.PAG,x      Modify TERM dev driver to 24 lines per page
+         bsr   UnLink
+         clrb  
+EXIT     os9   F$Exit
+
+* Link in name pointed to in Reg. X
+LinkIt   pshs  u
+         lda   #Drivr+Objct
+         os9   F$Link   
+         tfr   u,x
+         puls  pc,u
+
+UnLink   pshs  u
+         tfr   x,u
+         os9   F$UnLink 
+         puls  pc,u
+
+         emod
+eom      equ   *
+         page
+
+
+
+
+
+*********************************
+* DRVR51 - Driver for 51x24 character display
+*
 * This is implemented on a 256x192 pixel display. 256 pixels allow for
 * each character to be 4 pixels wide with 1 pixel in between. And 7 pixels
 * tall with one pixel separation.
 * One pixel row takes 32 bytes
 
-         ifp1
-         use   os9defs
-         use   scfdefs
-         endc
-tylg     set   Drivr+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
+         nam   drvr51
+         ttl   Driver for 51x24 character display
+
+dtylg     set   Drivr+Objct   
+datrv     set   ReEnt+rev
+drev      set   $01
 PIA1A    equ   $FF20
 MAXCOLS  equ   51
 MAXROWS  equ   24
@@ -24,7 +151,7 @@ alphaSt  equ   $1D
 gfxalloc equ   $2C
 gfxaddr  equ   $2D
 
-         mod   eom,name,tylg,atrv,start,size
+         mod   deom,dname,dtylg,datrv,dstart,dsize
          rmb   2
          rmb   1
 u0003    rmb   1
@@ -79,12 +206,12 @@ u0055    rmb   9
 u0060    rmb   18
 u0080    rmb   46
 
-size     equ   .
+dsize     equ   .
          fcb   $03 
-name     equ   *
+dname     equ   *
          fcs   /drvr51/
          fcb   $01 
-start    equ   *
+dstart    equ   *
          lbra  INITDEV
          lbra  READ
          lbra  WRITE
@@ -1473,4 +1600,4 @@ CtrlMap  fcb  $1F,$7C,$00,$7E,$00,$00,$00,$5E,$5B,$5D,$00,$00,$7B,$5F,$7D,$5C
          fcb  $13,$12,$10,$11,$20,$0D,$00,$1B
 
          emod
-eom      equ   *
+deom      equ   *
