@@ -15,17 +15,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Run OS9 from the command line.
+ * Option flags:
+ *  -m {int} -- Memory allocation. Up to 60000.
+ *  -o       -- Set OS-9 line ending semantics for ReadLn
+ *  -O       -- Set OS-9 line ending semantics for WriteLn
+ *  -u       -- Set UNIX semantics
+ *  -h       -- Set UNIX directory for /dd
+ *  -x       -- Set execution directory. Must be under or same as /dd
+ *  --       -- Assume further options are for the OS-9 application.
+ */
 public class CmdLine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmdLine.class);
+
+    private static String homedir;
+
+    private static String execDir;
 
     /**
      * 
      */
     public static void main(String[] args) throws Exception {
         int memoryAlloc = 0;
-        OptionParser op = new OptionParser(args, "m:ouO");
+        OptionParser op = new OptionParser(args, "h:m:x:ouO");
 
+        homedir = op.getOptionArgument("h");
+        execDir = op.getOptionArgument("x");
         String memoryArg = op.getOptionArgument("m");
         if (memoryArg != null) {
             memoryAlloc = Integer.decode(memoryArg);
@@ -68,13 +85,14 @@ public class CmdLine {
      */
     private static void loadrcfile(OS9 cpu) {
     // Build a list of devices that map to a point in the UNIX filesystem
-        String homedir;
         Properties props = new Properties();
 
-        if (System.getenv("OSNINEDIR") != null) {
-            homedir = System.getenv("OSNINEDIR");
-        } else {
-            homedir = System.getenv("HOME") + "/OS9";
+        if (homedir == null) {
+            if (System.getenv("OSNINEDIR") != null) {
+                homedir = System.getenv("OSNINEDIR");
+            } else {
+                homedir = System.getenv("HOME") + "/OS9";
+            }
         }
 
         // Create a device called /term to match the UNIX controlling tty
@@ -99,7 +117,10 @@ public class CmdLine {
         */
 
         // Set the current execution directory.
-        cpu.setInitialCXD("/dd/CMDS");
+        if (execDir == null) {
+            execDir = "/dd/CMDS";
+        }
+        cpu.setInitialCXD(execDir);
     }
 
 
