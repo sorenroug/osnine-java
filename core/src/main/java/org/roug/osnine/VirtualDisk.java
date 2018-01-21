@@ -57,18 +57,23 @@ public class VirtualDisk extends MemorySegment {
     /** Buffer for sector to read/write */
     private byte[] buffer = new byte[LSN_SIZE];
 
-    /**
-     * Constructor.
-     */
-    public VirtualDisk(int start, String fileName) throws FileNotFoundException {
-        this(start, new File(fileName));
-    }
+    /** Reference to CPU for the purpose of sending IRQ. */
+    private Bus6809 cpu;
 
     /**
      * Constructor.
      */
-    public VirtualDisk(int start, File diskFile) throws FileNotFoundException {
+    public VirtualDisk(int start, Bus6809 cpu) {
         super(start, start + 3);
+        this.cpu = cpu;
+    }
+
+    public void setDisk(String fileName) throws FileNotFoundException {
+        File diskFile = new File(fileName);
+        setDisk(diskFile);
+    }
+
+    public void setDisk(File diskFile) throws FileNotFoundException {
         diskFP = new RandomAccessFile(diskFile, "rw");
     }
 
@@ -140,6 +145,10 @@ public class VirtualDisk extends MemorySegment {
      * Write the 256 byte buffer to logical sector address.
      */
     private void writeLSN() {
+        //if (diskFP == null) {
+        //    errorCode = 1;
+        //    return;
+        //}
         int lsn = bufferAddress * BYTE_SIZE + valueRegister;
         bufferAddress = 0;
         LOGGER.debug("Write sector {}", lsn);

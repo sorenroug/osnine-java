@@ -3,14 +3,17 @@ package org.roug.osnine.v6809;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Properties;
-import org.roug.osnine.Acia6551Console;
-import org.roug.osnine.HWClock;
-import org.roug.osnine.IRQBeat;
+//port org.roug.osnine.HWClock;
+//port org.roug.osnine.IRQBeat;
 import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
+import org.roug.osnine.MemorySegment;
+import org.roug.osnine.Bus6809;
 import org.roug.osnine.OptionParser;
-import org.roug.osnine.VirtualDisk;
+//port org.roug.osnine.VirtualDisk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,29 +103,11 @@ public class V6809 {
         int memory = getIntProperty(props, "memory");
         cpu = new MC6809(memory);
 
-        IRQBeat heartBeat = new IRQBeat(0xff00, cpu);
-        cpu.insertMemorySegment(heartBeat);
-
-        HWClock hwClock = new HWClock(0xff10, cpu);
-        cpu.insertMemorySegment(hwClock);
-
-        Acia6551Console console = new Acia6551Console(0xff04, cpu);
-        cpu.insertMemorySegment(console);
-
-        VirtualDisk disk = new VirtualDisk(0xff40, "OS9.dsk");
-        cpu.insertMemorySegment(disk);
-
-        disk = new VirtualDisk(0xff44, "DISK2.dsk");
-        cpu.insertMemorySegment(disk);
+        loadDevices(props);
 
         String segmentList = props.getProperty("load");
         String[] segments = segmentList.split("\\s+");
         int endAddress = loadModules(segments);
-
-//      for (String segment : segments) {
-//          String[] files = props.getProperty(segment).split("\\s+");
-//          int endAddress = loadModules(files);
-//      }
 
         int start = cpu.read_word(MC6809.RESET_ADDR);
         LOGGER.debug("Reset address: {}", cpu.read_word(MC6809.RESET_ADDR));
@@ -136,6 +121,45 @@ public class V6809 {
         System.out.flush();
     }
 
+
+    private static void loadDevices(Properties props) throws Exception {
+        String deviceList = props.getProperty("devices");
+        String[] devices = deviceList.split("\\s+");
+
+        for (String device : devices) {
+            loadOneDevice(props, device);
+        }
+    }
+
+    private static void loadOneDevice(Properties props, String device) throws Exception {
+        String deviceClsStr = props.getProperty(device + ".class");
+        int addr = getIntProperty(props, device + ".addr");
+        LOGGER.debug("Loading {} class {}", device, deviceClsStr);
+        Class newClass = Class.forName(deviceClsStr);
+        Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus6809.class);
+        MemorySegment deviceInstance = constructor.newInstance(addr, cpu);
+        cpu.insertMemorySegment(deviceInstance);
+        // Find additional setters.
+        String prefix = device + ".";
+        for (String key : props.stringPropertyNames()) {
+            if (key.startsWith(prefix)) {
+                if (key.equals(prefix + "class") || key.equals(prefix + "addr")) {
+                    continue;
+                }
+                String argument = props.getProperty(key);
+                String methodName = generateMethodName(key.substring(prefix.length()));
+                Method method = newClass.getMethod(methodName, String.class);
+                method.invoke(deviceInstance, argument);
+            }
+        }
+    }
+
+    private static String generateMethodName(String original) {
+        if (original == null || original.length() == 0) {
+            return original;
+        }
+        return "set" + original.substring(0, 1).toUpperCase() + original.substring(1);
+    }
 
     /**
      * Load a hexstring into memory.

@@ -17,14 +17,16 @@ public class VirtualDiskTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void oversizeMemoryBank() throws Exception {
-        VirtualDisk mb = new VirtualDisk(70000, diskPath("paravirtdisk"));
+        VirtualDisk mb = new VirtualDisk(70000, null);
+        mb.setDisk(diskPath("paravirtdisk"));
     }
 
     @Test
     public void addToBuffer() throws Exception {
         int base = 10000;
 
-        VirtualDisk mb = new VirtualDisk(base, diskPath("paravirtdisk"));
+        VirtualDisk mb = new VirtualDisk(base, null);
+        mb.setDisk(diskPath("paravirtdisk"));
         mb.store(base + VirtualDisk.BYTE_VALUE, 65);
         mb.store(base + VirtualDisk.BYTE_ADDR, 0);
         mb.store(base + VirtualDisk.BYTE_OPCODE, VirtualDisk.COPY_BYTE);
@@ -44,7 +46,8 @@ public class VirtualDiskTest {
     public void writeBuffer() throws Exception {
         int base = 10000;
 
-        VirtualDisk mb = new VirtualDisk(base, diskPath("virtdisk1"));
+        VirtualDisk mb = new VirtualDisk(base, null);
+        mb.setDisk(diskPath("virtdisk1"));
         for (int i = 0 ; i < 256; i++) {
             mb.store(base + VirtualDisk.BYTE_ADDR, i);
             mb.store(base + VirtualDisk.BYTE_VALUE, 64 + (i % 32));
