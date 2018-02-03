@@ -9,16 +9,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InstructionsTest {
+public class InstructionsTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
 
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
 
     /**
      * Load a short program into memory.
@@ -36,11 +30,11 @@ public class InstructionsTest {
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         myTestCPU.cc.set(cc);
-        myTestCPU.a.set(a);
-        myTestCPU.b.set(b);
+        setA(a);
+        setB(b);
         myTestCPU.dp.set(dp);
-        myTestCPU.x.set(x);
-        myTestCPU.y.set(y);
+        setX(x);
+        setY(y);
         myTestCPU.s.set(s);
         myTestCPU.u.set(u);
     }
@@ -58,7 +52,7 @@ public class InstructionsTest {
 
     @Test
     public void testANDA() {
-        myTestCPU.a.set(0x8B);
+        setA(0x8B);
         myTestCPU.dp.set(0x0A);
         myTestCPU.cc.set(0x32);
         myTestCPU.write(0x0AEF, 0x0F);
@@ -82,7 +76,7 @@ public class InstructionsTest {
 
     @Test
     public void testBITimm() {
-        myTestCPU.a.set(0x8B);
+        setA(0x8B);
         myTestCPU.cc.set(0x0F);
         myTestCPU.write(0x0B00, 0x85);
         myTestCPU.write(0x0B01, 0xAA);
@@ -186,7 +180,7 @@ public class InstructionsTest {
     @Test
     public void testCOMA() {
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x74);
+        setA(0x74);
         myTestCPU.write(0xB00, 0x43);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
@@ -206,7 +200,7 @@ public class InstructionsTest {
     public void testDAA() {
         myTestCPU.write(0xB00, 0x19);
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x7f);
+        setA(0x7f);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x85, myTestCPU.a.intValue());
@@ -218,8 +212,8 @@ public class InstructionsTest {
 
     @Test
     public void testEORAindexed() {
-        myTestCPU.y.set(0x12F0);
-        myTestCPU.a.set(0xF2);
+        setY(0x12F0);
+        setA(0xF2);
         myTestCPU.cc.set(0x03);
         myTestCPU.write(0x12F8, 0x98);
         myTestCPU.write(0xB00, 0xA8);
@@ -238,7 +232,7 @@ public class InstructionsTest {
     @Test
     public void testEXGadp() {
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x7f);
+        setA(0x7f);
         myTestCPU.dp.set(0xf6);
         myTestCPU.write(0xB00, 0x1E);
         myTestCPU.write(0xB01, 0x8B);
@@ -257,7 +251,7 @@ public class InstructionsTest {
         myTestCPU.write(0xB01, 0x01);
         myTestCPU.cc.clear();
         myTestCPU.d.set(0x117f);
-        myTestCPU.x.set(0xff16);
+        setX(0xff16);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xff16, myTestCPU.d.intValue());
@@ -272,8 +266,8 @@ public class InstructionsTest {
         myTestCPU.write(0xB00, 0x1E);
         myTestCPU.write(0xB01, 0x81);
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x56);
-        myTestCPU.x.set(0x1234);
+        setA(0x56);
+        setX(0x1234);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x34, myTestCPU.a.intValue());
@@ -350,19 +344,19 @@ public class InstructionsTest {
 
         loadProg(instructions);
         myTestCPU.cc.clear();
-        myTestCPU.x.set(0xABCD);
-        myTestCPU.y.set(0x804F);
-        myTestCPU.a.set(0x80);
-        myTestCPU.b.set(0x01);
+        setX(0xABCD);
+        setY(0x804F);
+        setA(0x80);
+        setB(0x01);
         myTestCPU.execute();
         assertEquals(0x50, myTestCPU.x.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
 
         myTestCPU.cc.set(0x28);
-        myTestCPU.x.set(0x0EFA);
-        myTestCPU.y.set(0x0EF8);
-        myTestCPU.a.set(0xFF);
-        myTestCPU.b.set(0x82);
+        setX(0x0EFA);
+        setY(0x0EF8);
+        setA(0xFF);
+        setB(0x82);
         loadProg(instructions);
         myTestCPU.execute();
         assertEquals(0x0E7A, myTestCPU.x.intValue());
@@ -380,8 +374,8 @@ public class InstructionsTest {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
         myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
-        myTestCPU.a.set(0x0C);
-        myTestCPU.b.set(0x64);
+        setA(0x0C);
+        setB(0x64);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x04B0, myTestCPU.d.intValue());
@@ -401,8 +395,8 @@ public class InstructionsTest {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
         myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
-        myTestCPU.a.set(0x0C);
-        myTestCPU.b.set(0x00);
+        setA(0x0C);
+        setB(0x00);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x0000, myTestCPU.d.intValue());
@@ -420,21 +414,21 @@ public class InstructionsTest {
         // Write instruction into memory
         myTestCPU.write(0xB00, 0x40);
         // Negate 0
-        myTestCPU.a.set(0);
+        setA(0);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getC());
 
         // Negate 1
-        myTestCPU.a.set(1);
+        setA(1);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getC());
 
         // Negate 2
-        myTestCPU.a.set(2);
+        setA(2);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xFE, myTestCPU.a.intValue());
@@ -442,7 +436,7 @@ public class InstructionsTest {
         assertEquals(0, myTestCPU.cc.getV());
 
         // Negate 0x80
-        myTestCPU.a.set(0x80);
+        setA(0x80);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x80, myTestCPU.a.intValue());
@@ -463,7 +457,7 @@ public class InstructionsTest {
 
     @Test
     public void testORAimmediate() {
-        myTestCPU.a.set(0xDA);
+        setA(0xDA);
         myTestCPU.cc.set(0x43);
         myTestCPU.write(0xB00, 0x8A);
         myTestCPU.write(0xB01, 0x0F);
@@ -477,7 +471,7 @@ public class InstructionsTest {
 
     @Test
     public void testSEX() {
-        myTestCPU.b.set(0xE6);
+        setB(0xE6);
         myTestCPU.write(0xB00, 0x1D);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
@@ -509,7 +503,7 @@ public class InstructionsTest {
         myTestCPU.write(0xB01, 0x02);
         myTestCPU.cc.clear();
         myTestCPU.d.set(0xABBA);
-        myTestCPU.y.set(0x0101);
+        setY(0x0101);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xB02, myTestCPU.pc.intValue());
@@ -560,8 +554,8 @@ public class InstructionsTest {
         myTestCPU.write(0xB00, 0x1F);
         myTestCPU.write(0xB01, 0x81);
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x56);
-        myTestCPU.b.set(0x78);
+        setA(0x56);
+        setB(0x78);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x56, myTestCPU.a.intValue());
@@ -573,8 +567,8 @@ public class InstructionsTest {
         myTestCPU.write(0xB00, 0x1F);
         myTestCPU.write(0xB01, 0x19);
         myTestCPU.cc.clear();
-        myTestCPU.x.set(0x6541);
-        myTestCPU.b.set(0x78);
+        setX(0x6541);
+        setB(0x78);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x41, myTestCPU.b.intValue());
@@ -592,7 +586,7 @@ public class InstructionsTest {
         myTestCPU.write(0xB00, 0x4D);
         // Test a = 0xff
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0xff);
+        setA(0xff);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xff, myTestCPU.a.intValue());
@@ -608,7 +602,7 @@ public class InstructionsTest {
         //  Test a = 0x01 and V set
         myTestCPU.cc.clear();
         myTestCPU.cc.setV(1);
-        myTestCPU.a.set(0x01);
+        setA(0x01);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x01, myTestCPU.a.intValue());
@@ -623,7 +617,7 @@ public class InstructionsTest {
         myTestCPU.write(0xB00, 0x4D);
         // Test a = 0x00
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x00);
+        setA(0x00);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getN());
@@ -637,7 +631,7 @@ public class InstructionsTest {
         // Set up a byte to test at address 0x205
         myTestCPU.write(0x205, 0xff);
         // Set register Y to point to that location
-        myTestCPU.y.set(0x205);
+        setY(0x205);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0x6d);
         myTestCPU.write(0xB01, 0xa4);

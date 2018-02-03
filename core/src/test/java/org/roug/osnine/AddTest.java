@@ -9,16 +9,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AddTest {
+public class AddTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
-
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
 
     /**
      * Load a short program into memory.
@@ -36,18 +29,18 @@ public class AddTest {
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         myTestCPU.cc.set(cc);
-        myTestCPU.a.set(a);
-        myTestCPU.b.set(b);
+        setA(a);
+        setB(b);
         myTestCPU.dp.set(dp);
-        myTestCPU.x.set(x);
-        myTestCPU.y.set(y);
+        setX(x);
+        setY(y);
         myTestCPU.s.set(s);
         myTestCPU.u.set(u);
     }
 
     private void chkCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         assertEquals(cc, myTestCPU.cc.intValue());
-        assertEquals(a, myTestCPU.a.intValue());
+        assertA(a);
         assertEquals(b, myTestCPU.b.intValue());
         assertEquals(dp, myTestCPU.dp.intValue());
         assertEquals(x, myTestCPU.x.intValue());
@@ -84,11 +77,11 @@ public class AddTest {
         loadProg(instructions);
         setCC_A_B_DP_X_Y_S_U(0, 5, 0, 0, 0, 0, 0, 0);
 //      myTestCPU.cc.bit_c = 0;
-//      myTestCPU.a.set(5);
+//      setA(5);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-//      assertEquals(7, myTestCPU.a.intValue());
+//      assertA(7);
 //      assertEquals(0, myTestCPU.cc.getC());
         chkCC_A_B_DP_X_Y_S_U(0, 7, 0, 0, 0, 0, 0, 0);
     }
@@ -102,13 +95,13 @@ public class AddTest {
         };
         loadProg(instructions);
         //myTestCPU.cc.bit_c = 1;
-        //myTestCPU.a.set(0x14);
+        //setA(0x14);
         setCC_A_B_DP_X_Y_S_U(CC.Cmask, 0x14, 0, 0, 0, 0, 0, 0);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
         chkCC_A_B_DP_X_Y_S_U(0, 0x37, 0, 0, 0, 0, 0, 0);
-        //assertEquals(0x37, myTestCPU.a.intValue());
+        //assertA(0x37);
         //assertEquals(0, myTestCPU.cc.getC());
     }
 
@@ -132,7 +125,7 @@ public class AddTest {
         // positive + positive with overflow
         // B=0x40 + 0x41 becomes 0x81 or -127
         myTestCPU.cc.clear();
-        myTestCPU.b.set(0x40);
+        setB(0x40);
         myTestCPU.write(0xB00, 0xCB);
         myTestCPU.write(0xB01, 0x41);
         myTestCPU.pc.set(0xB00);
@@ -146,7 +139,7 @@ public class AddTest {
         // negative + negative
         // B=0xFF + 0xFF becomes 0xFE or -2
         myTestCPU.cc.clear();
-        myTestCPU.b.set(0xFF);
+        setB(0xFF);
         myTestCPU.write(0xB00, 0xCB);
         myTestCPU.write(0xB01, 0xFF);
         myTestCPU.pc.set(0xB00);
@@ -160,7 +153,7 @@ public class AddTest {
         // negative + negative with overflow
         // B=0xC0 + 0xBF becomes 0x7F or 127
         myTestCPU.cc.clear();
-        myTestCPU.b.set(0xC0);
+        setB(0xC0);
         myTestCPU.write(0xB00, 0xCB);
         myTestCPU.write(0xB01, 0xBF);
         myTestCPU.pc.set(0xB00);
@@ -174,7 +167,7 @@ public class AddTest {
         // positive + negative with negative result
         // B=0x02 + 0xFC becomes 0xFE or -2
         myTestCPU.cc.clear();
-        myTestCPU.b.set(0x02);
+        setB(0x02);
         myTestCPU.write(0xB00, 0xCB);
         myTestCPU.write(0xB01, 0xFC);
         myTestCPU.pc.set(0xB00);
@@ -197,12 +190,12 @@ public class AddTest {
         };
         loadProg(instructions);
         myTestCPU.cc.setC(0);
-        myTestCPU.a.set(0x04);
-        myTestCPU.b.set(0x05);
+        setA(0x04);
+        setB(0x05);
         myTestCPU.execute();
         assertEquals(0x8B, myTestCPU.ir);
         assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
-        assertEquals(0x06, myTestCPU.a.intValue());
+        assertA(0x06);
         assertEquals(0x05, myTestCPU.b.intValue());
         assertFalse(myTestCPU.cc.isSetH());
         assertFalse(myTestCPU.cc.isSetN());
@@ -224,9 +217,9 @@ public class AddTest {
         };
         loadProg(instructions);
         myTestCPU.cc.setC(0);
-        myTestCPU.a.set(0x03);
+        setA(0x03);
         myTestCPU.execute();
-        assertEquals(0x02, myTestCPU.a.intValue());
+        assertA(0x02);
         assertFalse(myTestCPU.cc.isSetN());
         assertFalse(myTestCPU.cc.isSetV());
         assertTrue(myTestCPU.cc.isSetC());
@@ -245,12 +238,12 @@ public class AddTest {
         };
         loadProg(instructions);
         myTestCPU.cc.setC(0);
-        myTestCPU.a.set(0x04);
-        myTestCPU.b.set(0x05);
+        setA(0x04);
+        setB(0x05);
         myTestCPU.execute();
         assertEquals(0xC3, myTestCPU.ir);
         assertEquals(LOCATION + 3, myTestCPU.pc.intValue());
-        assertEquals(0x06, myTestCPU.a.intValue());
+        assertA(0x06);
         assertEquals(0xB5, myTestCPU.b.intValue());
         assertEquals(0x06B5, myTestCPU.d.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -322,8 +315,8 @@ public class AddTest {
         loadProg(instructions);
         myTestCPU.cc.setC(0);
         myTestCPU.s.set(0x1202);
-        myTestCPU.a.set(0x00);
-        myTestCPU.b.set(0xC5);
+        setA(0x00);
+        setB(0xC5);
         myTestCPU.write_word(0x1202, 0x92FC);
         myTestCPU.execute();
         assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
@@ -340,31 +333,31 @@ public class AddTest {
     @Test
     public void testINCA() {
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x32);
+        setA(0x32);
         myTestCPU.write(0xB00, 0x4C);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x33, myTestCPU.a.intValue());
+        assertA(0x33);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
         assertEquals(0, myTestCPU.cc.getC());
 
         // Test 0x7F - special case
-        myTestCPU.a.set(0x7F);
+        setA(0x7F);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x80, myTestCPU.a.intValue());
+        assertA(0x80);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getV());
         assertEquals(0, myTestCPU.cc.getC());
 
         // Test 0xFF - special case
-        myTestCPU.a.set(0xFF);
+        setA(0xFF);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x00, myTestCPU.a.intValue());
+        assertA(0x00);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(1, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());

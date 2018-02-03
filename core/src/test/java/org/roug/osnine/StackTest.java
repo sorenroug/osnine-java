@@ -7,15 +7,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-public class StackTest {
-
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
-
+public class StackTest extends Framework {
 
     /**
      * Test pushing all registers to the S stack.
@@ -26,11 +18,11 @@ public class StackTest {
 	myTestCPU.s.set(517);
         // Set the registers we want to push
 	myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
         myTestCPU.pc.set(0xB00);
@@ -40,8 +32,8 @@ public class StackTest {
 
 	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(0x0F, myTestCPU.cc.intValue());
-        assertEquals(0x01, myTestCPU.a.intValue());
-        assertEquals(0x02, myTestCPU.b.intValue());
+        assertA(0x01);
+        assertB(0x02);
         assertEquals(517 - 12, myTestCPU.s.intValue());
         assertEquals(0x02, myTestCPU.read(517 - 1)); // Check that PC-low is pushed.
         assertEquals(0x0B, myTestCPU.read(517 - 2)); // Check that PC-high is pushed.
@@ -66,11 +58,11 @@ public class StackTest {
 	myTestCPU.u.set(517);
         // Set the registers we want to push
 	myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(0x01);
-        myTestCPU.b.set(0x02);
+        setA(0x01);
+        setB(0x02);
         myTestCPU.dp.set(0x03);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.s.set(0x0809);
 
         myTestCPU.pc.set(0xB00);
@@ -80,8 +72,8 @@ public class StackTest {
 
 	assertEquals(0xB02, myTestCPU.pc.intValue());
 	assertEquals(0x0F, myTestCPU.cc.intValue());
-        assertEquals(1, myTestCPU.a.intValue());
-        assertEquals(2, myTestCPU.b.intValue());
+        assertA(1);
+        assertB(2);
         assertEquals(517 - 12, myTestCPU.u.intValue());
         assertEquals(0x02, myTestCPU.read(517 - 1)); // Check that PC-low is pushed.
         assertEquals(0x0B, myTestCPU.read(517 - 2)); // Check that PC-high is pushed.
@@ -112,7 +104,7 @@ public class StackTest {
 	myTestCPU.write_word(512 - 6, 0xa142); // Set up stored Y value
 	myTestCPU.write_word(512 - 4, 0xb140); // Set up stored U value
 	myTestCPU.write_word(512 - 2, 0x04ff); // Set up stored PC value
-	myTestCPU.y.set(0x1115); // Set Y to something benign
+	setY(0x1115); // Set Y to something benign
 	myTestCPU.s.set(500); // Set register S to point to 500
 	myTestCPU.cc.set(0x0f);
 	// Two bytes of instruction
@@ -121,11 +113,11 @@ public class StackTest {
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x00, myTestCPU.cc.intValue());
-	assertEquals(0x11, myTestCPU.a.intValue());
-	assertEquals(0x12, myTestCPU.b.intValue());
+        assertA(0x11);
+        assertB(0x12);
 	assertEquals(0x13, myTestCPU.dp.intValue());
-	assertEquals(0x9141, myTestCPU.x.intValue());
-	assertEquals(0xa142, myTestCPU.y.intValue());
+        assertX(0x9141);
+        assertY(0xA142);
 	assertEquals(0xb140, myTestCPU.u.intValue());
 	assertEquals(0x04ff, myTestCPU.pc.intValue());
     }
@@ -145,7 +137,7 @@ public class StackTest {
 	myTestCPU.write_word(512 - 6, 0xa142); // Set up stored Y value
 	myTestCPU.write_word(512 - 4, 0xb140); // Set up stored S value
 	myTestCPU.write_word(512 - 2, 0x04ff); // Set up stored PC value
-	myTestCPU.y.set(0x1115); // Set Y to something benign
+	setY(0x1115); // Set Y to something benign
 	myTestCPU.u.set(500); // Set register U to point to 500
 	myTestCPU.cc.set(0x0f);
 	// Two bytes of instruction
@@ -154,8 +146,8 @@ public class StackTest {
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x00, myTestCPU.cc.intValue());
-	assertEquals(0x11, myTestCPU.a.intValue());
-	assertEquals(0x12, myTestCPU.b.intValue());
+        assertA(0x11);
+        assertB(0x12);
 	assertEquals(0x13, myTestCPU.dp.intValue());
 	assertEquals(0x9141, myTestCPU.x.intValue());
 	assertEquals(0xa142, myTestCPU.y.intValue());
@@ -177,7 +169,7 @@ public class StackTest {
 	// Set up stored PC value at 0x207
 	myTestCPU.write_word(0x207, 0x04ff);
 	// Set Y to something benign
-	myTestCPU.y.set(0x1115);
+	setY(0x1115);
 	// Set register S to point to 0x205
 	myTestCPU.s.set(0x205);
 	myTestCPU.cc.set(0x0f);
