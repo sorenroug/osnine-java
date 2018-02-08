@@ -17,19 +17,21 @@ name     fcs   /IOMan/
 
 * IOMan is called from OS9p2
 IOManEnt equ   *
+* allocate device and polling tables
          ldx   D.Init
-         lda   $0C,x
-         ldb   #$09
+         lda   PollCnt,x
+         ldb   #POLSIZ
          mul   
          pshs  b,a
-         lda   $0D,x
-         ldb   #$09
+         lda   DevCnt,x
+         ldb   #DEVSIZ
          mul   
-         addd  ,s
-         addd  #$00FF
+         addd  0,s
+         addd  #$00FF                  bring up to next page
          clrb  
          os9   F$SRqMem 
          bcs   Crash
+* clear allocated mem
          leax  ,u
 L002E    clr   ,x+
          subd  #$0001
@@ -43,11 +45,13 @@ L002E    clr   ,x+
          bcs   Crash
          stx   D.PthDBT
          os9   F$Ret64  
-         leax  >L0571,pcr
+         leax  >DPoll,pcr
          stx   <D.Poll
+* install I/O system calls
          leay  <IOCalls,pcr
          os9   F$SSvc   
-         rts   
+         rts                           return to OS9p2
+
 Crash    jmp   [>$FFFE]
 
 IOCalls  fcb   $7F
@@ -76,7 +80,7 @@ IOCalls  fcb   $7F
 FIODel   ldx   R$X,u
          pshs  u,y,x
          ldu   D.Init
-         ldb   $0D,u
+         ldb   DevCnt,u
          pshs  b
          ldu   D.DevTbl
 L007C    lbsr  L00FB
@@ -152,12 +156,41 @@ L00FB    cmpx  $04,u
          comb  
 L010D    rts   
 
-UsrIODis fcb $00,$5F,$01,$75,$01,$8F,$01,$C6,$01,$C6,$01,$EF,$02,$0C,$02,$48
-         fcb $02,$DC,$02,$EA,$03,$07,$02,$EA,$03,$07,$03,$20,$02,$DC
-         fcb $03,$5A,$02,$4E
-SysIODis fcb $00,$3D,$01,$53,$01,$84,$01,$B7,$01,$B7,$01,$CD
-         fcb $01,$EA,$02,$26,$02,$BF,$02,$CD,$02,$EA,$02,$CD,$02,$EA,$03,$03
-         fcb $02,$BF,$03,$47,$02,$2C
+UsrIODis fdb   IAttach-UsrIODis
+         fdb   IDetach-UsrIODis
+         fdb   IDup-UsrIODis
+         fdb   IUsrCall-UsrIODis
+         fdb   IUsrCall-UsrIODis
+         fdb   IMakDir-UsrIODis
+         fdb   IChgDir-UsrIODis
+         fdb   IDelete-UsrIODis
+         fdb   UISeek-UsrIODis
+         fdb   UIRead-UsrIODis
+         fdb   UIWrite-UsrIODis
+         fdb   UIRead-UsrIODis
+         fdb   UIWrite-UsrIODis
+         fdb   UIGetStt-UsrIODis
+         fdb   UISeek-UsrIODis
+         fdb   UIClose-UsrIODis
+         fdb   IDeletX-UsrIODis
+
+SysIODis fdb   IAttach-SysIODis
+         fdb   IDetach-SysIODis
+         fdb   SIDup-SysIODis
+         fdb   ISysCall-SysIODis
+         fdb   ISysCall-SysIODis
+         fdb   IMakDir-SysIODis
+         fdb   IChgDir-SysIODis
+         fdb   IDelete-SysIODis
+         fdb   SISeek-SysIODis
+         fdb   SIRead-SysIODis
+         fdb   SIWrite-SysIODis
+         fdb   SIRead-SysIODis
+         fdb   SIWrite-SysIODis
+         fdb   SIGetStt-SysIODis
+         fdb   SISeek-SysIODis
+         fdb   SIClose-SysIODis
+         fdb   IDeletX-SysIODis
 
 UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch
@@ -184,7 +217,7 @@ L016F    clr   ,-s
          ldx   $04,u
          lda   #Devic+0
          os9   F$Link   
-         bcs   L01AA
+         bcs   EAttach
          stu   $04,s
          ldy   <$10,s
          stx   $04,y
@@ -194,7 +227,7 @@ L016F    clr   ,-s
          leax  d,u
          lda   #Drivr+0
          os9   F$Link   
-         bcs   L01AA
+         bcs   EAttach
          stu   ,s
          ldu   $04,s
          ldd   $09,u
@@ -202,7 +235,8 @@ L016F    clr   ,-s
          lda   #FlMgr+0
          os9   F$Link   
          bcc   L01B8
-L01AA    stb   <$11,s                  save fmgr addr on stack
+* error on attach, so detach
+EAttach  stb   <$11,s                  save fmgr addr on stack
          leau  ,s
          os9   I$Detach 
          leas  <$11,s                  clean up stack
@@ -211,8 +245,8 @@ L01AA    stb   <$11,s                  save fmgr addr on stack
 
 L01B8    stu   $06,s
          ldx   D.Init
-         ldb   $0D,x
-         lda   $0D,x
+         ldb   DevCnt,x
+         lda   DevCnt,x
          ldu   D.DevTbl
 L01C2    ldx   $04,u
          beq   L01F7
@@ -251,11 +285,11 @@ L0204    ldx   $04,u
          deca  
          bne   L0204
          ldb   #E$DevOvf               device table overflow
-         bra   L01AA
+         bra   EAttach
 L0211    ldb   #E$BMode                bad mode
-         bra   L01AA
-L0215    ldb   #$FA
-         bra   L01AA
+         bra   EAttach
+L0215    ldb   #E$DevBsy
+         bra   EAttach
 L0219    ldx   $02,s
          lbne  L0250
          stu   $0E,s
@@ -264,7 +298,7 @@ L0219    ldx   $02,s
          addd  #$00FF                  round up to next page
          clrb  
          os9   F$SRqMem 
-         lbcs  L01AA
+         lbcs  EAttach
          stu   $02,s
 L0232    clr   ,u+
          subd  #$0001
@@ -277,7 +311,7 @@ L0232    clr   ,u+
          ldx   ,s
          ldd   $09,x
          jsr   d,x
-         lbcs  L01AA
+         lbcs  EAttach
          ldu   $0E,s                   get dev entry
 L0250    ldb   #$08
 L0252    lda   b,s
@@ -300,10 +334,11 @@ L0259    ldx   $04,u
 L0277    inc   $08,u
          ldx   <$10,s
          stu   $08,x
-         leas  <$12,s
+         leas  <$12,s                  restore stack
          clrb  
          rts   
-         ldu   $08,u
+
+IDetach  ldu   R$U,u
          dec   $08,u
          ldx   $06,u
          ldy   ,u
@@ -318,7 +353,7 @@ L0277    inc   $08,u
 
 * user state I$Dup
 IDup     bsr   FindPath
-         bcs   L02BD
+         bcs   IDupRTS
          pshs  x,a
          lda   $01,u
          lda   a,x
@@ -329,11 +364,13 @@ IDup     bsr   FindPath
          sta   b,x
          rts   
 L02B2    puls  pc,x,a
-         lda   $01,u
-L02B6    lbsr  L0422
-         bcs   L02BD
+
+* system state I$Dup
+SIDup    lda   R$A,u
+L02B6    lbsr  FindPDsc
+         bcs   IDupRTS
          inc   $02,y
-L02BD    rts   
+IDupRTS  rts   
 
 * find next free path position in current proc
 FindPath ldx   D.Proc
@@ -366,7 +403,7 @@ ISysCall pshs  b
          bsr   L0364
          bcs   L02FB
          puls  b
-         lbsr  L04A1
+         lbsr  CallFMgr
          bcs   L030A
          lda   ,y
          sta   $01,u
@@ -379,7 +416,7 @@ IMakDir  pshs  b
 L0301    bsr   L0364
          bcs   L02FB
          puls  b
-         lbsr  L04A1
+         lbsr  CallFMgr
 L030A    pshs  b,cc
          ldu   $03,y
          os9   I$Detach 
@@ -395,7 +432,7 @@ IChgDir  pshs  b
          bsr   L0364
          bcs   L02FB
          puls  b
-         lbsr  L04A1
+         lbsr  CallFMgr
          bcs   L030A
          ldu   D.Proc
          ldb   $01,y
@@ -489,56 +526,68 @@ L03D5    lda   $01,u
          bcc   L03E6
          ldx   D.Proc
          leax  <$26,x
-         andcc #$FE
+         andcc #^Carry
          lda   a,x
          bne   L03E9
 L03E6    comb  
          ldb   #$C9
 L03E9    rts   
-         bsr   L03D5
-         bcc   L03F1
+
+UISeek   bsr   L03D5
+         bcc   GetPDsc
          rts   
-         lda   $01,u
-L03F1    bsr   L0422
-         lbcc  L04A1
+
+SISeek   lda   $01,u
+GetPDsc  bsr   FindPDsc
+         lbcc  CallFMgr
          rts   
-         bsr   L03D5
+
+UIRead   bsr   L03D5
          bcc   L03FF
          rts   
-         lda   $01,u
+SIRead   lda   $01,u
 L03FF    pshs  b
          ldb   #$05
-L0403    bsr   L0422
+L0403    bsr   FindPDsc
          bcs   L0412
          bitb  $01,y
          beq   L0410
          puls  b
-         lbra  L04A1
+         lbra  CallFMgr
 L0410    ldb   #$D7
 L0412    com   ,s+
          rts   
-         bsr   L03D5
+
+UIWrite  bsr   L03D5
          bcc   L041C
          rts   
-         lda   $01,u
+
+SIWrite  lda   $01,u
 L041C    pshs  b
          ldb   #$02
          bra   L0403
-L0422    pshs  x
+
+
+* find path descriptor of path passed in A
+* Exit:
+*   Y  = addr of path desc (if no error)
+FindPDsc pshs  x
          ldx   D.PthDBT
          os9   F$Find64 
          puls  x
          bcs   L03E6
 L042D    rts   
-         bsr   L03D5
+
+UIGetStt bsr   L03D5
          bcc   L0435
          rts   
-         lda   $01,u
+
+SIGetStt lda   $01,u
 L0435    pshs  b,a
          lda   $02,u
          sta   $01,s
          puls  a
-         bsr   L03F1
+         bsr   GetPDsc
          puls  a
          pshs  cc
          tsta  
@@ -560,20 +609,22 @@ L045E    ldx   $03,y
          ldd   $04,x
          leax  d,x
          bra   L044F
-         lbsr  L03D5
+
+UIClose  lbsr  L03D5
          bcs   L042D
          pshs  b
          ldb   $01,u
          clr   b,x
          puls  b
          bra   L0479
-         lda   $01,u
-L0479    bsr   L0422
+
+SIClose  lda   $01,u
+L0479    bsr   FindPDsc
          bcs   L042D
          dec   $02,y
          tst   $05,y
          bne   L0485
-         bsr   L04A1
+         bsr   CallFMgr
 L0485    tst   $02,y
          bne   L042D
          lbra  L030A
@@ -588,7 +639,10 @@ L0495    ldx   D.Proc
          bne   L048C
          stb   $05,y
 L04A0    rts   
-L04A1    pshs  u,y,x,b
+
+* B = entry point into FMgr
+* Y = path desc
+CallFMgr pshs  u,y,x,b
          bsr   L0495
          bcc   L04AB
          leas  $01,s
@@ -695,7 +749,9 @@ L056B    leas  $04,s
 L056D    comb  
          ldb   #$CA
          rts   
-L0571    ldy   D.PolTbl
+
+* IRQ polling routine
+DPoll    ldy   D.PolTbl
          ldx   D.Init
          ldb   $0C,x
          bra   L057F
@@ -787,7 +843,7 @@ L062B    rts
 
 ErrHead  fcc   /ERROR #/
 ErrNum   equ   *-ErrHead
-        fcb   $2F,$3A,$30,$0D
+         fcb   $2F,$3A,$30,$0D
 ErrLen   equ   *-ErrHead
 
 FPErr    ldx   D.Proc
@@ -818,52 +874,52 @@ L0655    dec   $08,s
 L066D    rts   
 
 FIOQu    ldy   D.Proc
-L0671    lda   <$11,y
+L0671    lda   <P$IOQN,y
          beq   L0695
-         cmpa  $01,u
+         cmpa  R$A,u
          bne   L068E
-         clr   <$11,y
+         clr   <P$IOQN,y
          ldx   D.PrcDBT
          os9   F$Find64 
          bcs   L06E3
-         clr   <$10,y
-         ldb   #$01
+         clr   <P$IOQP,y
+         ldb   #S$Wake
          os9   F$Send   
          bra   L069E
 L068E    ldx   D.PrcDBT
          os9   F$Find64 
          bcc   L0671
-L0695    lda   $01,u
+L0695    lda   R$A,u
 L0697    ldx   D.PrcDBT
          os9   F$Find64 
          bcs   L06E3
-L069E    lda   <$11,y
+L069E    lda   <P$IOQN,y
          bne   L0697
          ldx   D.Proc
          lda   ,x
-         sta   <$11,y
+         sta   <P$IOQN,y
          lda   ,y
-         sta   <$10,x
+         sta   <P$IOQP,x
          ldx   #$0000
          os9   F$Sleep  
          ldu   D.Proc
-         lda   <$10,u
+         lda   <P$IOQP,u
          beq   L06E0
          ldx   D.PrcDBT
          os9   F$Find64 
          bcs   L06E0
-         lda   <$11,y
+         lda   <P$IOQN,y
          beq   L06E0
-         lda   <$11,u
-         sta   <$11,y
+         lda   <P$IOQN,u
+         sta   <P$IOQN,y
          beq   L06E0
-         clr   <$11,u
+         clr   <P$IOQN,u
          ldx   D.PrcDBT
          os9   F$Find64 
          bcs   L06E0
-         lda   <$10,u
-         sta   <$10,y
-L06E0    clr   <$10,u
+         lda   <P$IOQP,u
+         sta   <P$IOQP,y
+L06E0    clr   <P$IOQP,u
 L06E3    rts   
          emod
 eom      equ   *
