@@ -49,8 +49,8 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
 
-    /** Did the CPU receive an NMI? */
-    private boolean receivedNMI;
+    /** Active NMI signals. */
+    private int activeNMIs;
 
     /** Active IRQ requests. */
     private int activeIRQs;
@@ -76,10 +76,14 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /**
      * Accept an NMI signal.
      */
-    public synchronized void signalNMI() {
-        if (!inhibitNMI) {
-            receivedNMI = true;
-            notifyAll();
+    public synchronized void signalNMI(boolean state) {
+        if (state) {
+            if (!inhibitNMI) {
+                activeNMIs++;
+                notifyAll();
+            }
+        } else {
+           activeNMIs--;
         }
     }
 
@@ -566,9 +570,8 @@ public class MC6809 extends USimMotorola implements Bus6809 {
                 invalid("instruction"); break;
         }
 
-        if (receivedNMI) {
+        if (isNMIActive()) {
             nmi();
-            receivedNMI = false;
         }
         if (isFIRQActive()) {
             firq();
@@ -1342,7 +1345,7 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     }
 
     private synchronized void waitForInterrupt() {
-        while (!(isIRQActive() || isFIRQActive() || receivedNMI)) {
+        while (!(isIRQActive() || isFIRQActive() || isNMIActive() )) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -1714,6 +1717,13 @@ public class MC6809 extends USimMotorola implements Bus6809 {
         cc.setF(1);
         cc.setI(1);
         pc.set(read_word(NMI_ADDR));
+    }
+
+    /**
+     * Do we have active FIRQs and we're accepting FIRQs.
+     */
+    private boolean isNMIActive() {
+        return activeNMIs > 0;
     }
 
     /**

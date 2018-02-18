@@ -1,5 +1,6 @@
          nam   IOMan
          ttl   os9 system module    
+* This is a disassembly of the IOMan edition 4 distributed with OS-9 for Dragon 64
 
          ifp1
          use   ../DEFS/os9defs

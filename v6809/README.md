@@ -1,11 +1,16 @@
-6809 CPU with virtualised devices
-=================================
+6809 CPU with configurable devices
+==================================
 
-The v6809 is a cpu, that has some devices attached that can interact
-with the host computer.  The first device is a 6551 ACIA that writes
-to Java's System.out and reads from System.in.
+The v6809 is an emulator that can be configured via a properties file.
+You can allocate RAM, load data into the memory and set up devices.
 
-It can then be used to load OS9 kernel and modules into RAM and run.
+Devices:
+* Acia6551Console writes to Java's System.out and reads from System.in
+* IRQBeat sends an IRQ interrupt every 20 milliseconds to the CPU.
+* HWClock makes it possible to get the date and time from the host of the emulator.
+* VirtualDisk interfaces a DSK image to the emulator as a floppy or harddisk.
+
+The v6809.properties file shows how it can be used to load the OS9 Level I kernel and modules into RAM and run.
 
 When OS9 and OS9p2 are loaded into $F000, then OS9 only scans upward in
 RAM from its own location to find other modules.

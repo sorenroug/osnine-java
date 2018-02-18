@@ -28,5 +28,8 @@ public interface Bus6809 {
 
     void signalIRQ(boolean state);
 
+    void signalFIRQ(boolean state);
+
+    void signalNMI(boolean state);
 }
 

@@ -1,5 +1,6 @@
 import java.io.FileInputStream;
 import java.util.Arrays;
+import org.roug.osnine.format.Format;
 
 public class OS9Tool {
 
@@ -27,6 +28,8 @@ public class OS9Tool {
             DiskInfo.main(extraArgs);
         } else if ("createmodule".equals(subCommand)) {
             CreateModule cm = new CreateModule(extraArgs);
+        } else if ("format".equals(subCommand)) {
+            Format cm = new Format(extraArgs);
         } else {
             usage("Unknown subcommand: " + subCommand);
         }

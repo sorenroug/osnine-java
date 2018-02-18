@@ -68,12 +68,15 @@ public class VirtualDisk extends MemorySegment {
         this.cpu = cpu;
     }
 
-    public void setDisk(String fileName) throws FileNotFoundException {
+    public void setDisk(String fileName) throws FileNotFoundException, IOException {
         File diskFile = new File(fileName);
         setDisk(diskFile);
     }
 
-    public void setDisk(File diskFile) throws FileNotFoundException {
+    public void setDisk(File diskFile) throws FileNotFoundException, IOException {
+        if (diskFP != null) {
+            diskFP.close();
+        }
         diskFP = new RandomAccessFile(diskFile, "rw");
     }
 
