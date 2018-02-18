@@ -21,23 +21,6 @@ import org.roug.osnine.os9.OS9;
 public class Format {
 
     private final static int MAX_SECTORS = 0xFFFFFF;
-    private final static int SAS_SIZE = 8;
-    private final static int DD_TOT = 0x00;
-    private final static int DD_TKS = 0x03;
-    private final static int DD_MAP = 0x04;
-    private final static int DD_BIT = 0x06;
-    private final static int DD_DIR = 0x08;
-    private final static int DD_OWN = 0x0B;
-    private final static int DD_ATT = 0x0D;
-    private final static int DD_DSK = 0x0E;
-    private final static int DD_FMT = 0x10;
-    private final static int DD_SPT = 0x11;
-    private final static int DD_RES = 0x13;
-    private final static int DD_BT  = 0x15;
-    private final static int DD_BSZ = 0x18;
-    private final static int DD_DAT = 0x1A;
-    private final static int DD_NAM = 0x1F;
-    private final static int DD_OPT = 0x3F;
 
     /** List of unrecognized command line arguments. */
     private String[] extraArguments = new String[0];
@@ -48,13 +31,13 @@ public class Format {
     private String diskName = "NoName";
 
     /** Number of reading heads. Two for floppy disks */
-    private int numHeads = 2;
+    private int numHeads = D0Descriptor.NUM_HEADS;
 
     /** Number of tracks on disk. */
-    private int diskTracks = 40;
+    private int diskTracks = D0Descriptor.DISK_TRACKS;
 
     /** Sectors per track. */
-    private int sectorsPerTrack = 18;
+    private int sectorsPerTrack = D0Descriptor.SECTORS_PER_TRACK;
 
     /** Number of sectors in a cluster bit. */
     private int clusterSize = 1;
@@ -174,7 +157,7 @@ public class Format {
         rootDir.addDirEntry("..", rootFDLsn.lsn);
         rootDir.addDirEntry(".", rootFDLsn.lsn);
         idSector.setRootDir(rootFDLsn.lsn);
-        Segment rootDirLSN = allocationMap.getSegment(SAS_SIZE - 1);
+        Segment rootDirLSN = allocationMap.getSegment(D0Descriptor.SAS_SIZE - 1);
         rootFD.addSegment(rootDirLSN);
 
         byte[] idBytes = idSector.getSector();
@@ -190,11 +173,11 @@ public class Format {
         outputStream.write(idBytes, 0 , idBytes.length);
         writtenSectors++;
 
-        for (int i = 0; i < SAS_SIZE - 1; i++) {
+        for (int i = 0; i < D0Descriptor.SAS_SIZE - 1; i++) {
             idBytes = rootDir.getSector(i);
             outputStream.write(idBytes, 0 , idBytes.length);
         }
-        writtenSectors += SAS_SIZE - 1;
+        writtenSectors += D0Descriptor.SAS_SIZE - 1;
 
         idBytes = new byte[256];
         for (int i = 0; i < 256; i++) {

@@ -8,22 +8,22 @@ import java.util.concurrent.ThreadLocalRandom;
 public class IdentificationSector {
 
     private final static int MAX_SECTORS = 0xFFFFFF;
-    private final static int DD_TOT = 0x00;
-    private final static int DD_TKS = 0x03;
-    private final static int DD_MAP = 0x04;
-    private final static int DD_BIT = 0x06;
-    private final static int DD_DIR = 0x08;
-    private final static int DD_OWN = 0x0B;
-    private final static int DD_ATT = 0x0D;
-    private final static int DD_DSK = 0x0E;
-    private final static int DD_FMT = 0x10;
-    private final static int DD_SPT = 0x11;
-    private final static int DD_RES = 0x13;
-    private final static int DD_BT  = 0x15;
-    private final static int DD_BSZ = 0x18;
-    private final static int DD_DAT = 0x1A;
-    private final static int DD_NAM = 0x1F;
-    private final static int DD_OPT = 0x3F;
+    public final static int DD_TOT = 0x00;
+    public final static int DD_TKS = 0x03;
+    public final static int DD_MAP = 0x04;
+    public final static int DD_BIT = 0x06;
+    public final static int DD_DIR = 0x08;
+    public final static int DD_OWN = 0x0B;
+    public final static int DD_ATT = 0x0D;
+    public final static int DD_DSK = 0x0E;
+    public final static int DD_FMT = 0x10;
+    public final static int DD_SPT = 0x11;
+    public final static int DD_RES = 0x13;
+    public final static int DD_BT  = 0x15;
+    public final static int DD_BSZ = 0x18;
+    public final static int DD_DAT = 0x1A;
+    public final static int DD_NAM = 0x1F;
+    public final static int DD_OPT = 0x3F;
 
     /** Number of reading heads. Two for floppy disks */
     private int numHeads = 2;
