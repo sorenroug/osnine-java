@@ -1,0 +1,12 @@
+t
+-x
+del edobjs.l
+* Create a library called edobjs.l
+merge >objs.1 docmd.r subst.r catsub.r ckglob.r matchs.r amatch.r omatch.r
+merge >objs.2 getnum.r doread.r dowrite.r egets.r getfn.r getlst.r getone.r
+merge >objs.3 gettxt.r getptr.r getrhs.r find.r ins.r join.r maksub.r move.r
+merge >objs.4 optpat.r set.r setbuf.r getpat.r unmkpat.r doprnt.r
+merge >objs.5 makepat.r dodash.r esc.r del.r doglob.r
+merge >objs.6 bitmap.r append.r deflt.r
+merge >edobjs.l objs.1 objs.2 objs.3 objs.4 objs.5 objs.6
+del objs.1 objs.2 objs.3 objs.4 objs.5 objs.6

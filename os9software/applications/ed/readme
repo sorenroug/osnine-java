@@ -1,0 +1,28 @@
+This is the 'ed' editor as known from Unix-like systems. The source
+comes from MINIX and was compiled with virtually no changes, except
+for adding small things like pflinit() etc.
+
+To compile the source files use 'makeobjs'. This script will
+compile each file to a linkable object-file. Then create the
+edobjs.l library with the script 'makelib'. Finally use 'makeed'
+to link the editor.
+
+If the c-compiler runs out of memory while compiling some of the
+larger source files, then try running the compile-command again
+outside the shell-scripts. Those shell-scripts take some space
+in RAM.
+
+The editor is linked with a memory size of 6 kbytes. Ed will use
+malloc to request memory for the text file, so if you run out of
+memory, you might get better performance by *lowering* the
+memory size.
+
+There is no user-guide. Use anyone from a UNIX-system, but beware
+that newer systems such as Linux has more commands in 'ed'. A
+quick hint is that there are two modes in 'ed'. The command mode
+and insert mode. You exit the editor from command mode by typing
+q<ret>. Sometimes it needs confirmation, and you simply repeat
+the q<ret>. You enter insert mode by typing i<ret> or a<ret> and
+you return to command mode with a single . on an empty line.
+
+Install ed by copying the ed file to your execution directory.

@@ -1529,7 +1529,7 @@ public class MC6809 extends USimMotorola implements Bus6809 {
      * program.
      */
     private void irq() {
-        LOGGER.debug("IRQ received");
+        //LOGGER.debug("IRQ received");
         if (cc.isSetI()) {
             return;
         }

@@ -1,0 +1,2 @@
+* This is the command you use to compile ed:
+cc1 -f=ed -l=edobjs.l -m=6k ed.r
