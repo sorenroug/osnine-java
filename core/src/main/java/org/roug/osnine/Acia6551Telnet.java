@@ -83,9 +83,10 @@ class LineReader implements Runnable {
             try {
                 int receiveData = is.read();
                 LOGGER.debug("Received {}", receiveData);
-                if (receiveData == 10) receiveData = 13;
+                if (receiveData == 10) continue;
                 acia.dataReceived(receiveData);
             } catch (Exception e) {
+                LOGGER.error("IOException", e);
                 return;
             }
         }
@@ -127,7 +128,7 @@ class LineWriter implements Runnable {
 }
 
 /**
- * Emulate the 6551 with output to Stdout and input from Stdin.
+ * Emulate the 6551 with output going to TCP port 2323.
  * The Dragon 64 and Dragon Alpha have a hardware serial port driven
  * by a Rockwell 6551, mapped from $FF04-$FF07.
  */
@@ -381,9 +382,10 @@ public class Acia6551Telnet extends MemorySegment {
      * Read the receiver data register.
      * RDRF goes to 0 when the processor reads the register.
      */
-    private int getReceivedValue() throws IOException {
+    private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
         statusReg &= ~RDRF;    // Receive register is empty now
+        notifyAll();
         return receiveData;
     }
 
