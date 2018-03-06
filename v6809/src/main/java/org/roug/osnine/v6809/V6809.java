@@ -73,6 +73,9 @@ public class V6809 {
             } else {
                 moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
             }
+            if (moduleStream == null) {
+                throw new IllegalArgumentException("File not found: " + fileToLoad);
+            }
             int b = moduleStream.read();
             while (b != -1) {
                 cpu.write(loadAddress, b);
