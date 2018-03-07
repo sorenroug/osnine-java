@@ -165,14 +165,6 @@ public class Acia6551Telnet extends MemorySegment {
         }
     }
 
-    private void signalReadyForTransmit() {
-        if (transmitIrqEnabled) {
-            raiseIRQ();
-        } else {
-            lowerIRQ();
-        }
-    }
-
     @Override
     protected int load(int addr) {
         try {
@@ -227,6 +219,7 @@ public class Acia6551Telnet extends MemorySegment {
 
     /**
      * Get the status register. This must not wait.
+     *
      * @return The contents of the status register.
      */
     private int getStatusReg() throws IOException {
@@ -247,7 +240,9 @@ public class Acia6551Telnet extends MemorySegment {
         while (!isTransmitRegisterEmpty()) {
             try {
                 wait();
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                LOGGER.info("InterruptedException in sendValue", e);
+            }
         }
         transmitData = val;
         statusReg &= ~TDRE;    // Transmit register is not empty now
@@ -269,20 +264,27 @@ public class Acia6551Telnet extends MemorySegment {
      * Set control flags.
      * Value 5 = IRQ for receive on, IRQ for transmit on.
      */
-    private void setCommandRegister(int data) {
+    private synchronized void setCommandRegister(int data) {
         LOGGER.debug("Set command (Reg #{}): {}", CMND_REG, data);
         commandRegister = data;
+        boolean activateIRQ = false;
 
         // Bit 1 controls receiver IRQ behavior
         receiveIrqEnabled = (commandRegister & IRD) == 0;
         if (receiveIrqEnabled && isReceiveRegisterFull()) {
-            statusReg |= IRQ;
+            activateIRQ = true;
         }
         // Bits 2 & 3 controls transmit IRQ behavior
         transmitIrqEnabled = (commandRegister & TIC1) == 0
                         && (commandRegister & TIC0) != 0;
         if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
-            signalReadyForTransmit();
+            activateIRQ = true;
+        }
+
+        if (activateIRQ) {
+            raiseIRQ();
+        } else {
+            lowerIRQ();
         }
 
     }
