@@ -68,24 +68,36 @@ public class Acia6551Telnet extends MemorySegment {
     public Acia6551Telnet(int start, Bus6809 cpu) {
         super(start, start + 3);
         this.cpu = cpu;
-        setDCD(false);
+        setDCD(false);  // There is no carrier
         Thread reader = new Thread(new Acceptor(this), "telnet");
         reader.setDaemon(true);
         reader.start();
     }
 
+    /**
+     * Set Data Carrier Detect. In telnet-based emulation this
+     * is set to high when a client has connected to the socket.
+     * When the client closes the connection, then the DCD goes to false.
+     * In the 6551, the bit is inverted. I.e. bit 5 in the status register
+     * is 1 when there is no carrier.
+     *
+     * @param detected - if there is a carrier
+     */
     void setDCD(boolean detected) {
         int oldStatus = statusReg;
         if (detected) {
-            statusReg &= ~DCD;
+            statusReg &= ~DCD;  // Set bit 5 to 0
         } else {
-            statusReg |= DCD;
+            statusReg |= DCD;   // Set bit 5 to 1
         }
         if (oldStatus != statusReg) {
             signalCPU();
         }
     }
 
+    /**
+     * Send interrupt to CPU if IRQ is enabled in the ACIA.
+     */
     private void signalCPU() {
         if (receiveIrqEnabled) {
             statusReg |= IRQ;
@@ -136,19 +148,20 @@ public class Acia6551Telnet extends MemorySegment {
      * Let the LineWriter wait for the next character.
      */
     synchronized int valueToTransmit() {
-        while (isTransmitRegisterEmpty()) {
-            try {
+        try {
+            while (isTransmitRegisterEmpty()) {
                 wait();
-            } catch (InterruptedException e) {
-                LOGGER.info("InterruptedException", e);
             }
+            statusReg |= TDRE;     // Transmit register is empty now
+            if (transmitIrqEnabled && getDCD()) {
+                raiseIRQ();
+            }
+            notifyAll();
+            return transmitData;
+        } catch (InterruptedException e) {
+            LOGGER.info("InterruptedException", e);
+            return 0;
         }
-        statusReg |= TDRE;     // Transmit register is empty now
-        if (transmitIrqEnabled && getDCD()) {
-            raiseIRQ();
-        }
-        notifyAll();
-        return transmitData;
     }
 
     private void raiseIRQ() {

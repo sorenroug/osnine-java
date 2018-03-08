@@ -54,6 +54,7 @@ class Acceptor implements Runnable {
                 clientOut = socket.getOutputStream();
                 clientIn = socket.getInputStream();
                 acia.setDCD(true);
+                resetModes();
 
                 Thread reader = new Thread(new LineReader(this), "acia-in");
                 reader.start();
@@ -61,7 +62,8 @@ class Acceptor implements Runnable {
                 Thread writer = new Thread(new LineWriter(this), "acia-out");
                 writer.start();
 
-                writer.join();
+                reader.join();
+                writer.interrupt();
                 socket.close();
                 clientIn.close();
                 clientOut.close();
@@ -73,6 +75,7 @@ class Acceptor implements Runnable {
             LOGGER.error("IOException", e);
             return;
         }
+        System.err.println("ACCEPTOR ended!");
     }
 
     void dataReceived(int val) {
@@ -159,6 +162,15 @@ class Acceptor implements Runnable {
             return modes[option];
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Reset the Telnet options to initial values.
+     */
+    private void resetModes() {
+        for (int i = 0; i < modes.length; i++) {
+            setMode(i, false);
         }
     }
 }
@@ -313,6 +325,9 @@ class LineReader implements Runnable {
             try {
                 int receiveData = handler.read();
                 LOGGER.debug("Received {}", receiveData);
+                if (receiveData == -1) {
+                    return;
+                }
                 state = state.handleCharacter(receiveData, handler);
             } catch (Exception e) {
                 LOGGER.error("Exception", e);
