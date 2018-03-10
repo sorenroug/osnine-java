@@ -1,6 +1,6 @@
 # Note: output from the assembler is created in the execution directory
 
-all: vdisk d0 d1 init boot_rom sysgo t1linux bootdyn hwclock
+all: vdisk d0 d1 init boot_rom sysgo sysgo_tsmon t1linux bootdyn hwclock TSMon
 
 .SUFFIXES: .asm
 

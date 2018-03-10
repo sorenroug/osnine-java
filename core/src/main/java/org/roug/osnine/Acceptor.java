@@ -64,6 +64,8 @@ class Acceptor implements Runnable {
 
                 reader.join();
                 writer.interrupt();
+                dataReceived(0x05);  // Send program abort
+                dataReceived(0x1B);  // Send end-of-file
                 socket.close();
                 clientIn.close();
                 clientOut.close();
@@ -75,7 +77,7 @@ class Acceptor implements Runnable {
             LOGGER.error("IOException", e);
             return;
         }
-        System.err.println("ACCEPTOR ended!");
+        LOGGER.info("Acceptor thread ended");
     }
 
     void dataReceived(int val) {
@@ -230,6 +232,7 @@ enum TelnetState {
                     handler.pleaseDo(receiveData);
                     return NORMAL;
                 default:        // Must respond to unsupported option
+                    LOGGER.info("Don't do: {}", receiveData);
                     handler.pleaseDont(receiveData);
                     return NORMAL;
             }
@@ -257,6 +260,7 @@ enum TelnetState {
                     handler.willDo(receiveData);
                     return NORMAL;
                 default:        // Must respond to unsupported option
+                    LOGGER.info("Wont do: {}", receiveData);
                     handler.wontDo(receiveData);
                     return NORMAL;
             }
@@ -273,6 +277,9 @@ enum TelnetState {
             }
         }
     };
+
+    private static final Logger LOGGER = 
+            LoggerFactory.getLogger(TelnetState.class);
 
     private static final int NULL_CHAR = 0;
     private static final int INTR_CHAR = 3;

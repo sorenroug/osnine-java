@@ -17,10 +17,7 @@ size     equ   .
 name     equ   *
          fcs   /SysGo/
          fcb   edition
-BootMsg  fcc   "                 OS-9 LEVEL ONE VERSION 1.2"
-         fcb   C$CR,C$LF
-         fcc   "Copyright 1980 by Motorola Inc."
-         fcc   " and Microware Systems Corp."
+BootMsg  fcc   "Booting"
          fcb   C$CR,C$LF
          fcb   C$LF
 MsgEnd   equ   *

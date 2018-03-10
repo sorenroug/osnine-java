@@ -115,14 +115,14 @@ public class Acia6551Telnet extends MemorySegment {
     /**
      * Is Receive register full?
      */
-    boolean isReceiveRegisterFull() {
+    private boolean isReceiveRegisterFull() {
         return (statusReg & RDRF) == RDRF;
     }
 
     /**
      * Is Transmit register empty?
      */
-    boolean isTransmitRegisterEmpty() {
+    private boolean isTransmitRegisterEmpty() {
         return (statusReg & TDRE) == TDRE;
     }
 
@@ -134,7 +134,9 @@ public class Acia6551Telnet extends MemorySegment {
         while (isReceiveRegisterFull()) {
             try {
                 wait();
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                LOGGER.info("InterruptedException", e);
+            }
         }
         receiveData = val;
         statusReg |= RDRF;   // We have set interrupt, Read register is full.
