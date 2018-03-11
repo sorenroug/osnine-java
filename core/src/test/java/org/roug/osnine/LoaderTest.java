@@ -8,14 +8,14 @@ import org.junit.Test;
 
 public class LoaderTest {
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void readJunkSRecord() throws IOException {
         byte input[] = { 'a','b' };
         USimMotorola tInstance = new USimMotorola(0x400);
         tInstance.allocate_memory(0, 0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(input);
-        Loader.load_srecord(is, tInstance);
+        Loader.loadSRecord(is, tInstance);
     }
 
     /**
@@ -36,7 +36,7 @@ public class LoaderTest {
         tInstance.allocate_memory(0, 0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
-        Loader.load_srecord(is, tInstance);
+        Loader.loadSRecord(is, tInstance);
 
         int result = tInstance.read(0x11);
         assertEquals(0x02, result);
@@ -58,7 +58,7 @@ public class LoaderTest {
         tInstance.allocate_memory(0, 0x400);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
-        Loader.load_intelhex(is, tInstance);
+        Loader.loadIntelHex(is, tInstance);
 
         int result = tInstance.read(0x01);
         assertEquals(0x32, result);

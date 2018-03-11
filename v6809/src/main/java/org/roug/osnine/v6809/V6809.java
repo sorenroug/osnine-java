@@ -6,14 +6,11 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Properties;
-//port org.roug.osnine.HWClock;
-//port org.roug.osnine.IRQBeat;
 import org.roug.osnine.Loader;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.MemorySegment;
 import org.roug.osnine.Bus6809;
 import org.roug.osnine.OptionParser;
-//port org.roug.osnine.VirtualDisk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +48,10 @@ public class V6809 {
 
     /**
      * Load modules.
+     * If the string starts with @ then it sets the address.
+     * If the string starts with $ then it is a long string of hex values.
+     * If the string starts with (srec) or (intel) then it expects the file
+     * to be Motorola S-record or Intel Hex format.
      */
     private static int loadModules(String[] files) throws Exception {
         int loadAddress = 0;
@@ -65,6 +66,15 @@ public class V6809 {
                 loadAddress = loadHexString(loadAddress, fileToLoad.substring(1));
                 continue;
             }
+            if (fileToLoad.toLowerCase().startsWith("(srec)")) {
+                loadAddress = Loader.loadSRecord(fileToLoad.substring(6), cpu);
+                continue;
+            }
+            if (fileToLoad.toLowerCase().startsWith("(intel)")) {
+                loadAddress = Loader.loadIntelHex(fileToLoad.substring(7), cpu);
+                continue;
+            }
+            //TODO Put the following into a method
             LOGGER.debug("Loading {} at {}", fileToLoad, Integer.toHexString(loadAddress));
 
             InputStream moduleStream;

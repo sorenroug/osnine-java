@@ -175,7 +175,7 @@ public abstract class USim {
                 msg == null ? msg : "",
                 pc.intValue(), ir);
         halt();
-        dumpCore();
+        //dumpCore();
         throw new RuntimeException(msg);
     }
 

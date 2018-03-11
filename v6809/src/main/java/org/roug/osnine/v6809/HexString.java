@@ -2,7 +2,7 @@
 /**
  * Load a hexstring into memory. Unused.
  */
-public class Loader {
+public class HexString {
 
     public static byte[] hexStringToByteArray(String input) {
 	int len = input.length();

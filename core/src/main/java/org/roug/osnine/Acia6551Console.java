@@ -6,46 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Thread to listen to incoming data.
- */
-class ConsoleReader implements Runnable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleReader.class);
-
-    private Acia6551Console acia;
-
-    ConsoleReader(Acia6551Console acia) {
-        this.acia = acia;
-    }
-
-    public void run() {
-        LOGGER.debug("Reader thread started");
-        while (true) {
-            try {
-                int receiveData = System.in.read();
-                if (receiveData == -1) receiveData = 0x1B;
-                if (receiveData == 10) receiveData = 13;
-                LOGGER.debug("Received {}", receiveData);
-                while (acia.isReceiveRegisterFull()) { // Wait until the CPU has taken the current byte
-                    Thread.yield();
-                }
-                acia.dataReceived(receiveData);
-            } catch (Exception e) {
-                System.exit(2);
-            }
-        }
-    }
-}
-
-/**
  * Emulate the 6551 with output to Stdout and input from Stdin.
  * The Dragon 64 and Dragon Alpha have a hardware serial port driven
  * by a Rockwell 6551, mapped from $FF04-$FF07.
  * In this implementation the transmit register can not be full.
  */
-public class Acia6551Console extends MemorySegment {
+public class Acia6551Console extends MemorySegment implements Acia {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Acia6551Console.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(Acia6551Console.class);
 
     /** Register selection flags. One per mapped address. */
     private static final int DATA_REG = 0;
@@ -113,14 +82,16 @@ public class Acia6551Console extends MemorySegment {
     /**
      * Is Receive register full?
      */
-    boolean isReceiveRegisterFull() {
+    @Override
+    public boolean isReceiveRegisterFull() {
         return (statusReg & RDRF) == RDRF;
     }
 
     /**
      * Get interrupted by reader thread and get the byte.
      */
-    void dataReceived(int receiveData) {
+    @Override
+    public void dataReceived(int receiveData) {
         this.receiveData = receiveData;
         statusReg |= RDRF;   // We have set interrupt, Read register is full.
         if (receiveIrqEnabled) {
@@ -232,7 +203,7 @@ public class Acia6551Console extends MemorySegment {
      */
     private int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        statusReg &= ~RDRF;    // Turn of interrupt flag
+        statusReg &= ~RDRF;
         return receiveData;
     }
 

@@ -21,7 +21,6 @@ public final class Loader {
 
         bytesRead = fp.read(str);
         String hexStr = new String(str);
-        //System.out.println("HEX:" + hexStr);
         return Integer.valueOf(hexStr, 16).intValue();
     }
 
@@ -36,7 +35,6 @@ public final class Loader {
     }
 
     private static int fgetc(InputStream fp) throws IOException {
-
         return fp.read();
     }
 
@@ -65,28 +63,31 @@ public final class Loader {
      * high-order 4 bits, and the second the low-order 4 bits of the
      * byte.
      */
-    public static void load_srecord(final String filename, USim cpu) throws IOException {
+    public static int loadSRecord(final String filename, USim cpu)
+                                    throws IOException {
         FileInputStream fp;
         fp = new FileInputStream(filename);
-        load_srecord(fp, cpu);
+        int addr = loadSRecord(fp, cpu);
         fp.close();
+        return addr;
     }
 
     /**
      * Load file in Motorola S-record format into memory.
      */
-    public static void load_srecord(InputStream fp, USim cpu) throws IOException {
+    public static int loadSRecord(InputStream fp, USim cpu)
+                                    throws IOException {
         boolean done = false;
+        int addr = 0;
 
         while (!done) {
             int n, t;
-            int addr;
             int b;
 
             while (fgetc(fp) != (int) 'S' && !feof(fp)) // Look for the S
                   ;
             if (feof(fp)) {
-                return;
+                throw new IllegalArgumentException("Not S-Record format");
             }
             t = fgetc(fp);          // Type
             n = fread_byte(fp);     // Length
@@ -113,13 +114,14 @@ public final class Loader {
             // Read and discard checksum byte
             fread_byte(fp);
         }
+        return addr;
     }
 
     /**
      * Load file in Intel Hex format into memory. The memory address
      * to load into is stored in the file.
-     * There are several Intel hex formats available. The most common format used
-     * is the 'Intel MCS-86 Hex Object'. This format uses the following
+     * There are several Intel hex formats available. The most common format
+     * used is the 'Intel MCS-86 Hex Object'. This format uses the following
      * structure.
      *
      * First char.     Start character
@@ -128,22 +130,24 @@ public final class Loader {
      * next two char.  Record type
      * last two char.  checksum
      */
-    public static void load_intelhex(final String filename, USim cpu) throws IOException {
+    public static int loadIntelHex(final String filename, USim cpu)
+                                throws IOException {
         FileInputStream fp;
         fp = new FileInputStream(filename);
-        load_intelhex(fp, cpu);
+        int addr = loadIntelHex(fp, cpu);
         fp.close();
+        return addr;
     }
 
     /**
      * Load file in Intel Hex format into memory.
      */
-    public static void load_intelhex(InputStream fp, USim cpu) throws IOException {
+    public static int loadIntelHex(InputStream fp, USim cpu) throws IOException {
         boolean done = false;
+        int addr = 0;
 
         while (!done) {
             int n, t;
-            int addr;
             int b;
 
             fgetc(fp); // Skip the colon
@@ -168,5 +172,6 @@ public final class Loader {
                 fgetc(fp);
             }
         }
+        return addr;
     }
 }

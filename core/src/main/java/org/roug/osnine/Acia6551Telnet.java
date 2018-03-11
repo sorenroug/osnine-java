@@ -271,6 +271,9 @@ public class Acia6551Telnet extends MemorySegment {
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
         statusReg &= ~RDRF;    // Receive register is empty now
+        if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
+            raiseIRQ();
+        }
         notifyAll();
         return receiveData;
     }

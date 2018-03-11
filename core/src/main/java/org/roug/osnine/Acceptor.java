@@ -65,7 +65,7 @@ class Acceptor implements Runnable {
                 reader.join();
                 writer.interrupt();
                 dataReceived(0x05);  // Send program abort
-                dataReceived(0x1B);  // Send end-of-file
+//              dataReceived(0x1B);  // Send end-of-file
                 socket.close();
                 clientIn.close();
                 clientOut.close();

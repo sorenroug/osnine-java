@@ -25,3 +25,12 @@ The OS9.dsk was created with
 
 The files in `src/main/microware` are downloaded from the disk images at
 http://archive.worldofdragon.org/archive/index.php and extracted.
+
+Telnet service
+--------------
+
+The v6809 can be configured to start to make a serial port available as
+a telnet port. This is set up in the telnet.properties file.
+
+In order to match assumptions of Linux users the end-of-file has been changed from ESC to CTRL-D,
+and the reprint-line has been changed from CTRL-D to CTRL-R. The Telnet service also launches the TSMon application.
