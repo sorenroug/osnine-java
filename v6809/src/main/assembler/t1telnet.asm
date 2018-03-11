@@ -30,14 +30,14 @@ OptStrt  fcb DT.SCF SCF type device
          fcb false end of page pause ON
          fcb 24 lines per page
          fcb C$BSP backspace key
-         fcb C$DEL delete line key
+         fcb $15 delete line key (ctrl-u - Linux convention)
          fcb C$CR end of record key
-         fcb $04 end of file key (ctrl-d) (Linux convention)
-         fcb $12 redisplay the line (ctrl-r) (Linux convention)
+         fcb $04 end of file key (ctrl-d - Linux convention)
+         fcb $12 redisplay the line (ctrl-r - Linux convention)
          fcb C$RPET repeat the line (ctrl-a)
-         fcb C$PAUS pause key
-         fcb C$INTR Keyboard Interrupt key
-         fcb C$QUIT Keyboard Quit key
+         fcb C$PAUS pause key (ctrl-w)
+         fcb C$INTR Keyboard Interrupt key (ctrl-c)
+         fcb C$QUIT Keyboard Quit key (ctrl-e)
          fcb C$BSP backspace echo character
          fcb C$BELL line overflow character
          fcb 0 no parity specified
