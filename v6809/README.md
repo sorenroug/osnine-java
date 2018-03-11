@@ -34,3 +34,8 @@ a telnet port. This is set up in the telnet.properties file.
 
 In order to match assumptions of Linux users the end-of-file has been changed from ESC to CTRL-D,
 and the reprint-line has been changed from CTRL-D to CTRL-R. The Telnet service also launches the TSMon application.
+
+Tiny BASIC
+----------
+
+The Tiny BASIC (tbasic) is included to show how the v6809 can be wired for other configurations. TBasic expects an MC6850 ACIA located at $C000. It doesn't use interrupts and wants end-of-line to CR+NL.

@@ -65,6 +65,8 @@ public class Acia6551Console extends MemorySegment implements Acia {
     /** In this implementation the transmit register can not be full. */
     private int statusReg = TDRE;
 
+    private char[] eolSequence = { '\015' };
+
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus6809 cpu;
 
@@ -82,9 +84,15 @@ public class Acia6551Console extends MemorySegment implements Acia {
     /**
      * Is Receive register full?
      */
-    @Override
-    public boolean isReceiveRegisterFull() {
+    private isReceiveRegisterFull() {
         return (statusReg & RDRF) == RDRF;
+    }
+
+    @Override
+    public void eolReceived() {
+        for (int i = 0; i < eolSequence.length; i++) {
+            dataReceived(eolSequence[i]);
+        }
     }
 
     /**
@@ -92,6 +100,9 @@ public class Acia6551Console extends MemorySegment implements Acia {
      */
     @Override
     public void dataReceived(int receiveData) {
+        while (isReceiveRegisterFull()) {
+            Thread.yield();
+        }
         this.receiveData = receiveData;
         statusReg |= RDRF;   // We have set interrupt, Read register is full.
         if (receiveIrqEnabled) {

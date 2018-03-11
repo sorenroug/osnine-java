@@ -5,14 +5,15 @@ package org.roug.osnine;
  * To be expanded with writes.
  */
 interface Acia {
-    /**
-     * Is Receive register full?
-     */
-    boolean isReceiveRegisterFull();
 
     /**
      * Get interrupted by reader thread and get the byte.
      */
     void dataReceived(int receiveData);
+
+    /**
+     * The other end sent EOL.
+     */
+    void eolReceived();
 }
 

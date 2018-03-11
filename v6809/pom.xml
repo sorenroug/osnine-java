@@ -30,6 +30,9 @@
             <resource>
                 <directory>src/main/microware</directory>
             </resource>
+            <resource>
+                <directory>src/main/tbasic</directory>
+            </resource>
         </resources>
 
         <plugins>

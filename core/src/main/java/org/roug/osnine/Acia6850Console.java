@@ -44,6 +44,8 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
     private int transmitData, receiveData, controlRegister, statusRegister;
 
+    private String eolSequence = "\015";
+
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus6809 cpu;
 
@@ -59,23 +61,38 @@ public class Acia6850Console extends MemorySegment implements Acia {
         reader.start();
     }
 
+    private void reset() {
+        controlRegister = 0;         // Clear all control flags
+        statusRegister = TDRE;         // Clear all status bits
+    }
+
     /**
      * Set the End-of-line sequence. In OS-9 this is 0x0D.
      */
-    public void setEOL(String hexSequence) {
+    public void setEol(String token) {
+        if ("nl".equalsIgnoreCase(token)) {
+            eolSequence = "\012";
+        } else {
+            if ("crnl".equalsIgnoreCase(token)) {
+                eolSequence = "\015\012";
+            } else {
+                eolSequence = "\015";
+            }
+        }
     }
 
     /**
      * Is Receive register full?
      */
-    @Override
-    public boolean isReceiveRegisterFull() {
+    private boolean isReceiveRegisterFull() {
         return (statusRegister & RDRF) == RDRF;
     }
 
-    private void reset() {
-        controlRegister = 0;         // Clear all control flags
-        statusRegister = TDRE;         // Clear all status bits
+    @Override
+    public void eolReceived() {
+        for (int i = 0; i < eolSequence.length(); i++) {
+            dataReceived(eolSequence.charAt(i));
+        }
     }
 
     /**
@@ -83,6 +100,9 @@ public class Acia6850Console extends MemorySegment implements Acia {
      */
     @Override
     public void dataReceived(int receiveData) {
+        while (isReceiveRegisterFull()) {
+            Thread.yield();
+        }
         this.receiveData = receiveData;
         statusRegister |= RDRF;   // We have set interrupt, Read register is full.
         if (receiveIrqEnabled) {
