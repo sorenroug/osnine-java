@@ -84,7 +84,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
     /**
      * Is Receive register full?
      */
-    private isReceiveRegisterFull() {
+    private boolean isReceiveRegisterFull() {
         return (statusReg & RDRF) == RDRF;
     }
 

@@ -8,10 +8,10 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Acceptor implements Runnable {
+class TelnetHandler implements Runnable {
 
     private static final Logger LOGGER = 
-            LoggerFactory.getLogger(Acceptor.class);
+            LoggerFactory.getLogger(TelnetHandler.class);
 
     private Acia6551Telnet acia;
 
@@ -32,7 +32,7 @@ class Acceptor implements Runnable {
     /**
      * Constructor.
      */
-    Acceptor(Acia6551Telnet acia) {
+    TelnetHandler(Acia6551Telnet acia) {
         this.acia = acia;
     }
 
@@ -40,7 +40,7 @@ class Acceptor implements Runnable {
         final int portNumber = 2323;
         ServerSocket serverSocket;
 
-        LOGGER.debug("Acceptor thread started");
+        LOGGER.debug("TelnetHandler thread started");
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (Exception e) {
@@ -77,7 +77,7 @@ class Acceptor implements Runnable {
             LOGGER.error("IOException", e);
             return;
         }
-        LOGGER.info("Acceptor thread ended");
+        LOGGER.info("TelnetHandler thread ended");
     }
 
     void dataReceived(int val) {
@@ -184,7 +184,7 @@ enum TelnetState {
 
     NORMAL {
         @Override
-        TelnetState handleCharacter(int receiveData, Acceptor handler)
+        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
                 throws IOException {
             switch (receiveData) {
                 case NULL_CHAR:
@@ -204,7 +204,7 @@ enum TelnetState {
 
     IAC {
         @Override
-        TelnetState handleCharacter(int receiveData, Acceptor handler)
+        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
                 throws IOException {
             switch (receiveData) {
                 case IP_CHAR:
@@ -225,7 +225,7 @@ enum TelnetState {
      */
     WILL {
         @Override
-        TelnetState handleCharacter(int receiveData, Acceptor handler)
+        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
                 throws IOException {
             switch (receiveData) {
                 case ECHO:
@@ -241,7 +241,7 @@ enum TelnetState {
 
     WONT {
         @Override
-        TelnetState handleCharacter(int receiveData, Acceptor handler)
+        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
                 throws IOException {
             switch (receiveData) {
                 default:        // Must respond to unsupported option
@@ -252,7 +252,7 @@ enum TelnetState {
 
     DO {
         @Override
-        TelnetState handleCharacter(int receiveData, Acceptor handler)
+        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
                 throws IOException {
             switch (receiveData) {
                 case SUPPRESS_GA:
@@ -269,7 +269,7 @@ enum TelnetState {
 
     DONT {
         @Override
-        TelnetState handleCharacter(int receiveData, Acceptor handler)
+        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
                 throws IOException {
             switch (receiveData) {
                 default:
@@ -300,7 +300,7 @@ enum TelnetState {
     static final int DONT_CHAR = 254;
     static final int IAC_CHAR = 255;  // Interpret as Command
 
-    abstract TelnetState handleCharacter(int receiveData, Acceptor handler)
+    abstract TelnetState handleCharacter(int receiveData, TelnetHandler handler)
             throws IOException;
 }
 
@@ -314,12 +314,12 @@ class LineReader implements Runnable {
 
     private TelnetState state = TelnetState.NORMAL;
 
-    private Acceptor handler;
+    private TelnetHandler handler;
 
     /**
      * Constructor.
      */
-    LineReader(Acceptor handler) throws IOException {
+    LineReader(TelnetHandler handler) throws IOException {
         this.handler = handler;
     }
 
@@ -352,12 +352,12 @@ class LineWriter implements Runnable {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(LineWriter.class);
 
-    private Acceptor handler;
+    private TelnetHandler handler;
 
     /**
      * Constructor.
      */
-    LineWriter(Acceptor handler) throws IOException {
+    LineWriter(TelnetHandler handler) throws IOException {
         this.handler = handler;
     }
 

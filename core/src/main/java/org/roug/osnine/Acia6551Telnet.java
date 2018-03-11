@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * The Dragon 64 and Dragon Alpha have a hardware serial port driven
  * by a Rockwell 6551, mapped from $FF04-$FF07.
  */
-public class Acia6551Telnet extends MemorySegment {
+public class Acia6551Telnet extends MemorySegment implements Acia {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(Acia6551Telnet.class);
@@ -57,6 +57,8 @@ public class Acia6551Telnet extends MemorySegment {
     boolean receiveIrqEnabled = false;
     boolean transmitIrqEnabled = false;
 
+    private char[] eolSequence = { '\015' };
+
     private int statusReg = TDRE;
 
     /** Reference to CPU for the purpose of sending IRQ. */
@@ -69,7 +71,7 @@ public class Acia6551Telnet extends MemorySegment {
         super(start, start + 3);
         this.cpu = cpu;
         setDCD(false);  // There is no carrier
-        Thread reader = new Thread(new Acceptor(this), "telnet");
+        Thread reader = new Thread(new TelnetHandler(this), "telnet");
         reader.setDaemon(true);
         reader.start();
     }
@@ -126,10 +128,17 @@ public class Acia6551Telnet extends MemorySegment {
         return (statusReg & TDRE) == TDRE;
     }
 
+    @Override
+    public void eolReceived() {
+        for (int i = 0; i < eolSequence.length; i++) {
+            dataReceived(eolSequence[i]);
+        }
+    }
+
     /**
      * Get interrupted by reader thread and get the byte.
      */
-    synchronized void dataReceived(int val) {
+    public synchronized void dataReceived(int val) {
         // Wait until the CPU has taken the current byte
         while (isReceiveRegisterFull()) {
             try {
