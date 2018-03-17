@@ -8,6 +8,12 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A service to handle telnet connections.
+ * It listens on port 2323. When a client connects, then it
+ * launches two threads. One for reading and one for writing.
+ * These threads then call the ACIA.
+ */
 class TelnetHandler implements Runnable {
 
     private static final Logger LOGGER = 
@@ -50,6 +56,7 @@ class TelnetHandler implements Runnable {
 
         try {
             while (true) {
+                LOGGER.info("Waiting for connection");
                 Socket socket = serverSocket.accept();
                 clientOut = socket.getOutputStream();
                 clientIn = socket.getInputStream();
@@ -64,11 +71,11 @@ class TelnetHandler implements Runnable {
 
                 reader.join();
                 writer.interrupt();
-                dataReceived(0x05);  // Send program abort
+//              dataReceived(0x05);  // Send program abort
 //              dataReceived(0x1B);  // Send end-of-file
-                socket.close();
                 clientIn.close();
                 clientOut.close();
+                socket.close();
                 acia.setDCD(false);
             }
         } catch (InterruptedException e) {
@@ -95,7 +102,7 @@ class TelnetHandler implements Runnable {
     /**
      * Send from ACIA out.
      */
-    int valueToTransmit() {
+    int valueToTransmit() throws InterruptedException {
         return acia.valueToTransmit();
     }
 
@@ -305,7 +312,10 @@ enum TelnetState {
 }
 
 /**
- * Thread to listen to incoming data.
+ * Thread to listen to incoming data from a telnet client.
+ * TODO. If it gets a read exception, then it shall tell the writer
+ * to stop and it shall end the thread.
+ * If it gets an InterruptedException then it shall just stop.
  */
 class LineReader implements Runnable {
 
@@ -333,6 +343,7 @@ class LineReader implements Runnable {
                 int receiveData = handler.read();
                 LOGGER.debug("Received {}", receiveData);
                 if (receiveData == -1) {
+                    LOGGER.info("Reader lost connection");
                     return;
                 }
                 state = state.handleCharacter(receiveData, handler);
@@ -346,6 +357,9 @@ class LineReader implements Runnable {
 
 /**
  * Thread to write to socket.
+ * TODO. If it gets a write exception, then it shall tell the reader
+ * to stop and it shall end the thread.
+ * If it gets an InterruptedException then it shall just stop.
  */
 class LineWriter implements Runnable {
 
@@ -376,7 +390,7 @@ class LineWriter implements Runnable {
                 handler.flush();
             }
         } catch (Exception e) {
-            LOGGER.error("Broken connection", e);
+            LOGGER.debug("Broken connection", e);
             return;
         }
     }

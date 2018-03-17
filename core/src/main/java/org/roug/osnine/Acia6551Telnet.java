@@ -158,8 +158,8 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
     /**
      * Let the LineWriter wait for the next character.
      */
-    synchronized int valueToTransmit() {
-        try {
+    synchronized int valueToTransmit() throws InterruptedException {
+//      try {
             while (isTransmitRegisterEmpty()) {
                 wait();
             }
@@ -169,10 +169,10 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
             }
             notifyAll();
             return transmitData;
-        } catch (InterruptedException e) {
-            LOGGER.info("InterruptedException", e);
-            return 0;
-        }
+//      } catch (InterruptedException e) {
+//          LOGGER.info("InterruptedException", e);
+//          return 0;
+//      }
     }
 
     private void raiseIRQ() {
