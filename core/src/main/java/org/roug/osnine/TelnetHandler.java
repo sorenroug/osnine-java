@@ -71,10 +71,8 @@ class TelnetHandler implements Runnable {
 
                 reader.join();
                 writer.interrupt();
-//              dataReceived(0x05);  // Send program abort
-//              dataReceived(0x1B);  // Send end-of-file
-                clientIn.close();
-                clientOut.close();
+//              clientIn.close();
+//              clientOut.close();
                 socket.close();
                 acia.setDCD(false);
             }
@@ -292,7 +290,7 @@ enum TelnetState {
     private static final int INTR_CHAR = 3;
     private static final int QUIT_CHAR = 5;
     private static final int NEWLINE_CHAR = 10;
-    private static final int DEL_CHAR = 127;   // VT100 send DEL and not BS
+    private static final int DEL_CHAR = 127;   // VT100 sends DEL and not BS
 
     static final int TRANSMIT_BINARY = 0;
     static final int ECHO = 1;
