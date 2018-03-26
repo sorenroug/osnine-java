@@ -3,6 +3,7 @@ package org.roug.osnine;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import org.slf4j.Logger;
@@ -19,6 +20,9 @@ class TelnetHandler implements Runnable {
     private static final Logger LOGGER = 
             LoggerFactory.getLogger(TelnetHandler.class);
 
+    /** Flag for active telnet session. */
+    private boolean activeSession;
+
     private Acia6551Telnet acia;
 
     private OutputStream clientOut;
@@ -34,6 +38,10 @@ class TelnetHandler implements Runnable {
         false,   // Status
         false,   // Timing mark
     };
+
+    private Thread reader, writer;
+
+    private Socket activeSocket;
 
     /**
      * Constructor.
@@ -53,36 +61,37 @@ class TelnetHandler implements Runnable {
             LOGGER.error("Unable to create listening socket");
             return;
         }
+        activeSession = false;
+        activeSocket = null;
 
         try {
             while (true) {
                 LOGGER.info("Waiting for connection");
                 Socket socket = serverSocket.accept();
+                if (activeSession) {
+                    OutputStreamWriter w = new OutputStreamWriter(socket.getOutputStream());
+                    w.write("\r\nAnother session is active\r\n\r\n");
+                    w.flush();
+                    socket.close();
+                    continue;
+                }
                 clientOut = socket.getOutputStream();
                 clientIn = socket.getInputStream();
+                activeSocket = socket;
+                activeSession = true;
                 acia.setDCD(true);
                 resetModes();
 
-                Thread reader = new Thread(new LineReader(this), "acia-in");
+                reader = new Thread(new LineReader(this), "acia-in");
                 reader.start();
 
-                Thread writer = new Thread(new LineWriter(this), "acia-out");
+                writer = new Thread(new LineWriter(this), "acia-out");
                 writer.start();
-
-                reader.join();
-                writer.interrupt();
-//              clientIn.close();
-//              clientOut.close();
-                socket.close();
-                acia.setDCD(false);
             }
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptException", e);
         } catch (IOException e) {
             LOGGER.error("IOException", e);
             return;
         }
-        LOGGER.info("TelnetHandler thread ended");
     }
 
     void dataReceived(int val) {
@@ -95,6 +104,7 @@ class TelnetHandler implements Runnable {
 
     void sendTelnetClient(int val) throws IOException {
         clientOut.write(val);
+        clientOut.flush();
     }
 
     /**
@@ -104,8 +114,25 @@ class TelnetHandler implements Runnable {
         return acia.valueToTransmit();
     }
 
-    void flush() throws IOException {
-        clientOut.flush();
+    void interruptReader() {
+        reader.interrupt();
+        endSession();
+    }
+
+    void interruptWriter() {
+        writer.interrupt();
+        endSession();
+    }
+
+    private void endSession() {
+        try {
+            activeSocket.close();
+        } catch (IOException e) {
+            LOGGER.error("IOException", e);
+        }
+        activeSocket = null;
+        activeSession = false;
+        acia.setDCD(false);
     }
 
     /**
@@ -311,7 +338,7 @@ enum TelnetState {
 
 /**
  * Thread to listen to incoming data from a telnet client.
- * TODO. If it gets a read exception, then it shall tell the writer
+ * If it gets a read exception, then it shall tell the writer
  * to stop and it shall end the thread.
  * If it gets an InterruptedException then it shall just stop.
  */
@@ -327,7 +354,7 @@ class LineReader implements Runnable {
     /**
      * Constructor.
      */
-    LineReader(TelnetHandler handler) throws IOException {
+    LineReader(TelnetHandler handler) {
         this.handler = handler;
     }
 
@@ -336,26 +363,31 @@ class LineReader implements Runnable {
      */
     public void run() {
         LOGGER.debug("Reader thread started");
-        while (true) {
-            try {
+        try {
+            while (true) {
                 int receiveData = handler.read();
+                if (Thread.interrupted())
+                    throw new InterruptedException();
                 LOGGER.debug("Received {}", receiveData);
                 if (receiveData == -1) {
                     LOGGER.info("Reader lost connection");
-                    return;
+                    handler.interruptWriter();
+                    break;
                 }
                 state = state.handleCharacter(receiveData, handler);
-            } catch (Exception e) {
-                LOGGER.error("Exception", e);
-                return;
             }
+        } catch (InterruptedException e) {
+            LOGGER.error("InterruptException", e);
+        } catch (Exception e) {
+            LOGGER.error("Exception", e);
+            handler.interruptWriter();
         }
     }
 }
 
 /**
  * Thread to write to socket.
- * TODO. If it gets a write exception, then it shall tell the reader
+ * If it gets a write exception, then it shall tell the reader
  * to stop and it shall end the thread.
  * If it gets an InterruptedException then it shall just stop.
  */
@@ -369,7 +401,7 @@ class LineWriter implements Runnable {
     /**
      * Constructor.
      */
-    LineWriter(TelnetHandler handler) throws IOException {
+    LineWriter(TelnetHandler handler) {
         this.handler = handler;
     }
 
@@ -385,11 +417,14 @@ class LineWriter implements Runnable {
             while (true) {
                 int val = handler.valueToTransmit();
                 handler.sendTelnetClient(val);
-                handler.flush();
+                if (Thread.interrupted())
+                    throw new InterruptedException();
             }
+        } catch (InterruptedException e) {
+            LOGGER.error("InterruptException");
         } catch (Exception e) {
-            LOGGER.debug("Broken connection", e);
-            return;
+            LOGGER.error("Broken connection", e);
+            handler.interruptReader();
         }
     }
 }

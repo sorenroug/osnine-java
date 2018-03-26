@@ -63,7 +63,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
     boolean transmitIrqEnabled = false;
 
     /** In this implementation the transmit register can not be full. */
-    private int statusReg = TDRE;
+    private int statusRegister = TDRE;
 
     private char[] eolSequence = { '\015' };
 
@@ -85,7 +85,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
      * Is Receive register full?
      */
     private boolean isReceiveRegisterFull() {
-        return (statusReg & RDRF) == RDRF;
+        return (statusRegister & RDRF) == RDRF;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
             Thread.yield();
         }
         this.receiveData = receiveData;
-        statusReg |= RDRF;   // We have set interrupt, Read register is full.
+        statusRegister |= RDRF;   // We have set interrupt, Read register is full.
         if (receiveIrqEnabled) {
             raiseIRQ();
         }
@@ -112,15 +112,15 @@ public class Acia6551Console extends MemorySegment implements Acia {
     }
 
     private void raiseIRQ() {
-        if ((statusReg & IRQ) == 0) {
-            statusReg |= IRQ;
+        if ((statusRegister & IRQ) == 0) {
+            statusRegister |= IRQ;
             cpu.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
-        if ((statusReg & IRQ) == IRQ) {
-            statusReg &= ~IRQ;    // Turn off interrupt flag
+        if ((statusRegister & IRQ) == IRQ) {
+            statusRegister &= ~IRQ;    // Turn off interrupt flag
             cpu.signalIRQ(false);
         }
     }
@@ -190,9 +190,9 @@ public class Acia6551Console extends MemorySegment implements Acia {
      * @return The contents of the status register.
      */
     private int getStatusReg() throws IOException {
-        int stat = statusReg;
+        int stat = statusRegister;
         lowerIRQ();
-        LOGGER.debug("StatusReg: {}", stat);
+        LOGGER.debug("StatusRegister: {}", stat);
         return stat & 0xFF;
     }
 
@@ -214,7 +214,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
      */
     private int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        statusReg &= ~RDRF;
+        statusRegister &= ~RDRF;
         return receiveData;
     }
 

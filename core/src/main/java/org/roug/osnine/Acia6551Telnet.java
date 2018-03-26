@@ -59,7 +59,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
 
     private char[] eolSequence = { '\015' };
 
-    private int statusReg = TDRE;
+    private int statusRegister = TDRE;
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus6809 cpu;
@@ -86,13 +86,13 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
      * @param detected - if there is a carrier
      */
     void setDCD(boolean detected) {
-        int oldStatus = statusReg;
+        int oldStatus = statusRegister;
         if (detected) {
-            statusReg &= ~DCD;  // Set bit 5 to 0
+            statusRegister &= ~DCD;  // Set bit 5 to 0
         } else {
-            statusReg |= DCD;   // Set bit 5 to 1
+            statusRegister |= DCD;   // Set bit 5 to 1
         }
-        if (oldStatus != statusReg) {
+        if (oldStatus != statusRegister) {
             signalCPU();
         }
     }
@@ -102,7 +102,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
      */
     private void signalCPU() {
         if (receiveIrqEnabled) {
-            statusReg |= IRQ;
+            statusRegister |= IRQ;
             cpu.signalIRQ(true);
         }
     }
@@ -111,21 +111,21 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
      * Get DCD status. Inverted in register.
      */
     boolean getDCD() {
-        return (statusReg & DCD) == 0;
+        return (statusRegister & DCD) == 0;
     }
 
     /**
      * Is Receive register full?
      */
     private boolean isReceiveRegisterFull() {
-        return (statusReg & RDRF) == RDRF;
+        return (statusRegister & RDRF) == RDRF;
     }
 
     /**
      * Is Transmit register empty?
      */
     private boolean isTransmitRegisterEmpty() {
-        return (statusReg & TDRE) == TDRE;
+        return (statusRegister & TDRE) == TDRE;
     }
 
     @Override
@@ -148,7 +148,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
             }
         }
         receiveData = val;
-        statusReg |= RDRF;   // We have set interrupt, Read register is full.
+        statusRegister |= RDRF;   // We have set interrupt, Read register is full.
         if (receiveIrqEnabled) {
             raiseIRQ();
         }
@@ -163,7 +163,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
             while (isTransmitRegisterEmpty()) {
                 wait();
             }
-            statusReg |= TDRE;     // Transmit register is empty now
+            statusRegister |= TDRE;     // Transmit register is empty now
             if (transmitIrqEnabled && getDCD()) {
                 raiseIRQ();
             }
@@ -176,15 +176,15 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
     }
 
     private void raiseIRQ() {
-        if ((statusReg & IRQ) == 0) {
-            statusReg |= IRQ;
+        if ((statusRegister & IRQ) == 0) {
+            statusRegister |= IRQ;
             cpu.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
-        if ((statusReg & IRQ) == IRQ) {
-            statusReg &= ~IRQ;    // Turn off interrupt flag
+        if ((statusRegister & IRQ) == IRQ) {
+            statusRegister &= ~IRQ;    // Turn off interrupt flag
             cpu.signalIRQ(false);
         }
     }
@@ -233,7 +233,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
      */
     private void reset() {
         LOGGER.debug("Reset");
-        statusReg = TDRE;
+        statusRegister = TDRE;
         transmitData = 0;
         receiveData = 0;
         receiveIrqEnabled = false;
@@ -247,9 +247,9 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
      * @return The contents of the status register.
      */
     private int getStatusReg() throws IOException {
-        int stat = statusReg;
+        int stat = statusRegister;
         lowerIRQ();
-        LOGGER.debug("StatusReg: {}", stat);
+        LOGGER.debug("StatusRegister: {}", stat);
         return stat & 0xFF;
     }
 
@@ -269,7 +269,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
             }
         }
         transmitData = val;
-        statusReg &= ~TDRE;    // Transmit register is not empty now
+        statusRegister &= ~TDRE;    // Transmit register is not empty now
         notifyAll();
     }
 
@@ -279,7 +279,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
      */
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        statusReg &= ~RDRF;    // Receive register is empty now
+        statusRegister &= ~RDRF;    // Receive register is empty now
         if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
             raiseIRQ();
         }
