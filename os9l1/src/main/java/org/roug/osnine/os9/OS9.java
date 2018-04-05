@@ -269,6 +269,9 @@ public class OS9 extends MC6809 {
 
         // Load module into memory - no allocation of head
         f_load(); // Returns entry point address in Y and module header in U
+        if (cc.isSetC()) {
+            throw new RuntimeException(String.format("Unable to load: %s %s", prg, parm));
+        }
         moduleAddr = u.intValue();
         LOGGER.debug("f_load: {} {} {} {}", u, x, y, d);
 

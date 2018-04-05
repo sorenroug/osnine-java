@@ -20,9 +20,6 @@ class TelnetHandler implements Runnable {
     private static final Logger LOGGER = 
             LoggerFactory.getLogger(TelnetHandler.class);
 
-    /** Flag for active telnet session. */
-    private boolean activeSession;
-
     private Acia6551Telnet acia;
 
     private OutputStream clientOut;
@@ -61,24 +58,23 @@ class TelnetHandler implements Runnable {
             LOGGER.error("Unable to create listening socket");
             return;
         }
-        activeSession = false;
         activeSocket = null;
 
         try {
             while (true) {
                 LOGGER.info("Waiting for connection");
                 Socket socket = serverSocket.accept();
-                if (activeSession) {
+                if (activeSocket != null) {
                     OutputStreamWriter w = new OutputStreamWriter(socket.getOutputStream());
                     w.write("\r\nAnother session is active\r\n\r\n");
                     w.flush();
                     socket.close();
                     continue;
                 }
+                socket.setKeepAlive(true);
                 clientOut = socket.getOutputStream();
                 clientIn = socket.getInputStream();
                 activeSocket = socket;
-                activeSession = true;
                 acia.setDCD(true);
                 resetModes();
 
@@ -124,14 +120,18 @@ class TelnetHandler implements Runnable {
         endSession();
     }
 
-    private void endSession() {
+    /**
+     * Close socket and end the active session.
+     */
+    private synchronized void endSession() {
         try {
-            activeSocket.close();
+            if (activeSocket != null) {
+                activeSocket.close();
+            }
         } catch (IOException e) {
             LOGGER.error("IOException", e);
         }
         activeSocket = null;
-        activeSession = false;
         acia.setDCD(false);
     }
 
