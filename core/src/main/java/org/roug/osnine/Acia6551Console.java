@@ -1,6 +1,5 @@
 package org.roug.osnine;
 
-import java.io.InputStream;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,9 +75,21 @@ public class Acia6551Console extends MemorySegment implements Acia {
     public Acia6551Console(int start, Bus6809 cpu) {
         super(start, start + 3);
         this.cpu = cpu;
+        setDCD(false);
         Thread reader = new Thread(new ConsoleReader(this), "acia6551");
         reader.setDaemon(true);
         reader.start();
+    }
+
+    /**
+     * Set Data Carrier Detect. This can't be false in Console-based emulation.
+     * In the 6551, the bit is inverted. I.e. bit 5 in the status register
+     * is 1 when there is no carrier.
+     *
+     * @param detected - if there is a carrier
+     */
+    void setDCD(boolean detected) {
+        // No action
     }
 
     /**
@@ -104,7 +115,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
             Thread.yield();
         }
         this.receiveData = receiveData;
-        statusRegister |= RDRF;   // We have set interrupt, Read register is full.
+        statusRegister |= RDRF;   // Read register is full.
         if (receiveIrqEnabled) {
             raiseIRQ();
         }
@@ -160,7 +171,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
         //LOGGER.debug("Store: {} <- {}", Integer.toHexString(addr), Integer.toHexString(val));
         switch (addr - getStartAddress()) {
         case DATA_REG:
-            sendVal(val);
+            sendValue(val);
             break;
         case STAT_REG:
             reset();
@@ -201,7 +212,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
      *
      * @param value - Character to send.
      */
-    private void sendVal(int val) {
+    private void sendValue(int val) {
         LOGGER.debug("Send value: {}", val);
         System.out.write(val);
         System.out.flush();
@@ -213,9 +224,10 @@ public class Acia6551Console extends MemorySegment implements Acia {
      * RDRE goes to 0 when the processor reads the register.
      */
     private int getReceivedValue() throws IOException {
-        LOGGER.debug("Received val: {}", receiveData);
+        int r = receiveData;  // Read before we turn RDRF off.
+        LOGGER.debug("Received val: {}", r);
         statusRegister &= ~RDRF;
-        return receiveData;
+        return r;
     }
 
     private void setCommandRegister(int data) {
@@ -250,6 +262,10 @@ public class Acia6551Console extends MemorySegment implements Acia {
             // Unused.
             int baudSelector = data & 0x0f;
         }
+    }
+
+    private boolean btst(int x, int n) {
+        return (x & n) != 0;
     }
 
 }

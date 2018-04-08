@@ -57,9 +57,9 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
     boolean receiveIrqEnabled = false;
     boolean transmitIrqEnabled = false;
 
-    private char[] eolSequence = { '\015' };
-
     private int statusRegister = TDRE;
+
+    private char[] eolSequence = { '\015' };
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus6809 cpu;
@@ -333,6 +333,7 @@ public class Acia6551Telnet extends MemorySegment implements Acia {
             reset();
         } else {
             // Mask the lower three bits to get the baud rate.
+            // Unused.
             int baudSelector = data & 0x0f;
         }
     }

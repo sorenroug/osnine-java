@@ -51,6 +51,9 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
     /**
      * Constructor.
+     * The ACIA appears as two addressable memory locations.
+     * The data register is addressed when register select is high.
+     * Status/Control register is addressed when the register select is low.
      */
     public Acia6850Console(int start, Bus6809 cpu) {
         super(start, start + 2);
@@ -104,7 +107,7 @@ public class Acia6850Console extends MemorySegment implements Acia {
             Thread.yield();
         }
         this.receiveData = receiveData;
-        statusRegister |= RDRF;   // We have set interrupt, Read register is full.
+        statusRegister |= RDRF;   // Read register is full.
         if (receiveIrqEnabled) {
             raiseIRQ();
         }
@@ -154,14 +157,10 @@ public class Acia6850Console extends MemorySegment implements Acia {
         LOGGER.debug("Store: {} <- {}", addr, val);
         switch(addr - getStartAddress()) {
         case TX_REG:
-            sendVal(val);
+            sendValue(val);
             break;
         default:
-            controlRegister = val;
-            // Check for master reset
-            if (btst(controlRegister, CR0) && btst(controlRegister, CR1)) {
-                reset();
-            }
+            setControlRegister(val);
         }
     }
 
@@ -173,10 +172,12 @@ public class Acia6850Console extends MemorySegment implements Acia {
         return statusRegister;
     }
 
-    private void sendVal(int val) {
+    private void sendValue(int val) {
         LOGGER.debug("Send value: {}", val);
-        statusRegister &= ~IRQ;   // Clear IRQ
-        statusRegister |= TDRE;   // Set TDRE to true
+        //statusRegister &= ~IRQ;   // Clear IRQ
+        clearStatusBit(IRQ);
+        //statusRegister |= TDRE;   // Set TDRE to true
+        setStatusBit(TDRE);
         System.out.write(val);
         System.out.flush();
         signalReadyForTransmit();
@@ -184,15 +185,49 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
     /**
      * Read the receiver data register.
-     * RDRE goes to 0 when the processor reads the register.
+     * RDRF goes to 0 when the processor reads the register.
+     * If IRQ is enabled then IRQ goes low.
      */
     private int getReceivedValue() throws IOException {
-        LOGGER.debug("Received val: {}", receiveData);
-        statusRegister &= ~RDRF;
-        return receiveData;
+        int r = receiveData;  // Read before we turn RDRF off.
+        LOGGER.debug("Received val: {}", r);
+        //statusRegister &= ~RDRF;
+        clearStatusBit(RDRF);
+        lowerIRQ();
+        return r;
     }
 
-    private boolean btst(int x, int n) {
+    /**
+     * Set the control register and associated state.
+     *
+     * @param data Data to write into the control register
+     */
+    private void setControlRegister(int data) {
+        LOGGER.debug("Set control (Reg #{}): {}", CTRL_REG, data);
+        controlRegister = data;
+        // Check for IRQ disable/enable
+        receiveIrqEnabled = isBitOn(controlRegister, CR7);
+
+        // Transmit IRQ is enabled if CR6 is 0 and CR5 is 1.
+        transmitIrqEnabled = !isBitOn(controlRegister, CR6)
+                            && isBitOn(controlRegister, CR5);
+        // Check for master reset
+        if (isBitOn(controlRegister, CR0) && isBitOn(controlRegister, CR1)) {
+            reset();
+        }
+        // Send a IRQ immediately as the transmit register is empty.
+        signalReadyForTransmit();
+    }
+
+    private static boolean isBitOn(int x, int n) {
         return (x & n) != 0;
+    }
+
+    private void setStatusBit(int n) {
+        statusRegister |= n;
+    }
+
+    private void clearStatusBit(int n) {
+        statusRegister &= ~n;
     }
 }

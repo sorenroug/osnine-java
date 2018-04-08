@@ -2,6 +2,7 @@ package org.roug.osnine.v6809;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -46,6 +47,20 @@ public class V6809 {
         return Integer.decode(key);
     }
 
+    private static InputStream openFile(String fileToLoad) throws FileNotFoundException {
+        InputStream moduleStream = null;
+
+        if (fileToLoad.contains("/")) {
+            moduleStream = new FileInputStream(fileToLoad);
+        } else {
+            moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
+        }
+        if (moduleStream == null) {
+            throw new FileNotFoundException("File not found: " + fileToLoad);
+        }
+        return moduleStream;
+    }
+
     /**
      * Load modules.
      * If the string starts with @ then it sets the address.
@@ -67,25 +82,21 @@ public class V6809 {
                 continue;
             }
             if (fileToLoad.toLowerCase().startsWith("(srec)")) {
-                loadAddress = Loader.loadSRecord(fileToLoad.substring(6), cpu);
+                InputStream moduleStream = openFile(fileToLoad.substring(6));
+                loadAddress = Loader.loadSRecord(moduleStream, cpu);
+                moduleStream.close();
                 continue;
             }
             if (fileToLoad.toLowerCase().startsWith("(intel)")) {
-                loadAddress = Loader.loadIntelHex(fileToLoad.substring(7), cpu);
+                InputStream moduleStream = openFile(fileToLoad.substring(7));
+                loadAddress = Loader.loadIntelHex(moduleStream, cpu);
+                moduleStream.close();
                 continue;
             }
             //TODO Put the following into a method
             LOGGER.debug("Loading {} at {}", fileToLoad, Integer.toHexString(loadAddress));
 
-            InputStream moduleStream;
-            if (fileToLoad.contains("/")) {
-                moduleStream = new FileInputStream(fileToLoad);
-            } else {
-                moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
-            }
-            if (moduleStream == null) {
-                throw new IllegalArgumentException("File not found: " + fileToLoad);
-            }
+            InputStream moduleStream = openFile(fileToLoad);
             int b = moduleStream.read();
             while (b != -1) {
                 cpu.write(loadAddress, b);
