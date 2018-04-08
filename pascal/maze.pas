@@ -106,7 +106,7 @@ procedure dimensions;
     until goodsize = true;
   end;
 
-(* Print top *)
+{ Print top of the maze with an opening. }
 procedure printtop;
   var
     col : integer;
@@ -120,7 +120,7 @@ procedure printtop;
     writeln('.');
   end;
 
-(* Print maze *)
+{ Print maze }
 procedure printmaze;
   var
     r, c : integer;
@@ -185,9 +185,12 @@ begin
   end;
   if c <> cols then
   begin
-    if w[r, c + 1] = true then goto 750;
-    dx := dx + 1;
-    d[dx] := Right
+    if w[r, c + 1] = false then
+    begin
+      dx := dx + 1;
+      d[dx] := Right
+    end
+    else goto 750;
   end;
   if r > 1 then
   begin

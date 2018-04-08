@@ -1,8 +1,10 @@
 PROCEDURE maze
-    DIM W(25,25),V(25,25):BYTE
+    DIM W(25,25):BOOLEAN
+    DIM V(25,25):BYTE
     DIM D(10),DX:BYTE
-    DIM rows,cols,C,R,F,Q,Z,N,N9:INTEGER
-    DIM B:BOOLEAN
+    DIM rows,cols,C,R,entry,Q,X,Z,cellinx,totcells:INTEGER
+    DIM bottom:BOOLEAN
+
     LOOP
       PRINT "WHAT ARE YOUR LENGTH AND WIDTH (E. G. 13,10)"; 
       INPUT rows,cols
@@ -10,19 +12,19 @@ PROCEDURE maze
       PRINT "MEANINGLESS DIMENSIONS.  TRY AGAIN."
     ENDLOOP
 
-
-    LET N9=rows*cols
+    LET totcells=rows*cols
     FOR Q=1 TO rows
       FOR Z=1 TO cols
-        LET W(Q,Z)=0
+        LET W(Q,Z)=FALSE
         LET V(Q,Z)=0
       NEXT Z
     NEXT Q
-    LET B=FALSE
-    LET F=INT(RND(cols)+1)
+    LET bottom=FALSE
+    LET entry=INT(RND(cols)+1)
     PRINT 
+    (* Print top *)
     FOR C=1 TO cols
-      IF C=F THEN
+      IF C=entry THEN
         PRINT ".  "; 
       ELSE
         PRINT ".--"; 
@@ -30,91 +32,95 @@ PROCEDURE maze
     NEXT C
     PRINT "."
     LET R=1
-    LET C=F
-    LET N=1
-    LET W(R,C)=N
+    LET C=entry
+    LET cellinx=1
+    LET W(R,C)=TRUE
 
+    REPEAT
 580 LET DX=0
     IF C<>1 THEN
-      IF W(R,C-1)=0 THEN
+      IF W(R,C-1) = FALSE THEN
         LET DX=DX+1
         LET D(DX)=1
       ENDIF
     ENDIF
     IF C<>cols THEN
-      IF W(R,C+1)>0 THEN 750
+      IF W(R,C+1) = TRUE THEN 750
       LET DX=DX+1
       LET D(DX)=2
     ENDIF
     IF R>1 THEN
-      IF W(R-1,C)=0 THEN
+      IF W(R-1,C) = FALSE THEN
         LET DX=DX+1
         LET D(DX)=3
       ENDIF
     ENDIF
 750 IF R<rows THEN
-      IF W(R+1,C)>0 THEN 820
+      IF W(R+1,C) = TRUE THEN 820
     ELSE
-      IF B=TRUE THEN 820
+      IF bottom=TRUE THEN 820
     ENDIF
     LET DX=DX+1
     LET D(DX)=4
-820 IF DX=0 THEN 1100
+820 IF DX=0 THEN
+      LOOP
+        LET C=C+1
+        IF C > cols THEN
+          LET R=R+1
+          IF R > rows THEN
+            LET R=1
+          ENDIF
+          LET C=1
+        ENDIF
+960     IF W(R,C) = TRUE THEN 580
+      ENDLOOP
+    ENDIF
     LET X=INT(RND(DX)+1)
-    IF D(X)=4 THEN 980
-    IF D(X)=3 THEN 940
-    IF D(X)=2 THEN 900
+    IF D(X)=4 THEN
+      LET V(R,C)=V(R,C)+1
+      LET R=R+1
+      IF R>rows THEN
+        LET bottom=TRUE
+        LET R=1
+        LET C=1
+        GOTO 960
+      ENDIF
+    ENDIF
+    IF D(X)=3 THEN
+      LET R=R-1
+      LET V(R,C)=1
+    ENDIF
+    IF D(X)=2 THEN
+      LET V(R,C)=V(R,C)+2
+      LET C=C+1
+    ENDIF
+    IF D(X)=1 THEN
+      LET C=C-1
+      LET V(R,C)=2
+    ENDIF
 
-    (* D(X) = 1 *)
-860 LET C=C-1
-    LET V(R,C)=2
-    GOTO 1040
+    LET cellinx=cellinx+1
+    LET W(R,C)=TRUE
+    UNTIL cellinx >= totcells
 
-900 LET V(R,C)=V(R,C)+2
-    LET C=C+1
-    GOTO 1040
-
-940 LET R=R-1
-    LET V(R,C)=1
-    GOTO 1040
-
-980  LET V(R,C)=V(R,C)+1
-     LET R=R+1
-     IF R<=rows THEN 1040
-     LET B=TRUE
-     GOTO 1140
-
-1040 LET N=N+1
-     LET W(R,C)=N
-     IF N<N9 THEN 580
-     GOTO 1190
-
-1100 LET C=C+1
-     IF C <= cols THEN 1160
-     LET R=R+1
-     IF R <= rows THEN 1150
-1140 LET R=1
-1150 LET C=1
-1160 IF W(R,C) > 0 THEN 580
-     GOTO 1100
-
-1190 FOR R=1 TO rows
-       PRINT "I"; 
-       FOR C=1 TO cols
-         IF V(R,C)<2 THEN
-           PRINT "  I"; 
-         ELSE
-           PRINT "   "; 
-         ENDIF
-       NEXT C
-       PRINT 
-       FOR C=1 TO cols
-         IF MOD(V(R,C),2) = 0 THEN
-           PRINT ":--"; 
-         ELSE
-           PRINT ":  "; 
-         ENDIF
-       NEXT C
-       PRINT ":"
-     NEXT R
-     END 
+    (* Print maze *)
+    FOR R=1 TO rows
+      PRINT "|"; 
+      FOR C=1 TO cols
+        IF V(R,C)<2 THEN
+          PRINT "  |"; 
+        ELSE
+          PRINT "   "; 
+        ENDIF
+      NEXT C
+      PRINT 
+      FOR C=1 TO cols
+        IF MOD(V(R,C),2) = 0 THEN
+          PRINT ":--"; 
+        ELSE
+          PRINT ":  "; 
+        ENDIF
+      NEXT C
+      PRINT ":"
+    NEXT R
+    END 
