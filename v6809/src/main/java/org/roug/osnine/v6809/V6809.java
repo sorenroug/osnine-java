@@ -21,6 +21,8 @@ public class V6809 {
 
     private static MC6809 cpu;
 
+    private static Bus6809 bus;
+
     private enum KnownVectors {
             reset(MC6809.RESET_ADDR),
             swi(MC6809.SWI_ADDR),
@@ -99,7 +101,7 @@ public class V6809 {
             InputStream moduleStream = openFile(fileToLoad);
             int b = moduleStream.read();
             while (b != -1) {
-                cpu.write(loadAddress, b);
+                bus.write(loadAddress, b);
                 loadAddress++;
                 b = moduleStream.read();
             }
@@ -126,6 +128,7 @@ public class V6809 {
 
         int memory = getIntProperty(props, "memory");
         cpu = new MC6809(memory);
+        bus = cpu.getBus();
 
         loadDevices(props);
 
@@ -161,8 +164,8 @@ public class V6809 {
         LOGGER.debug("Loading {} class {}", device, deviceClsStr);
         Class newClass = Class.forName(deviceClsStr);
         Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus6809.class);
-        MemorySegment deviceInstance = constructor.newInstance(addr, cpu);
-        cpu.insertMemorySegment(deviceInstance);
+        MemorySegment deviceInstance = constructor.newInstance(addr, bus);
+        bus.insertMemorySegment(deviceInstance);
         // Find additional setters.
         String prefix = device + ".";
         for (String key : props.stringPropertyNames()) {
@@ -199,14 +202,14 @@ public class V6809 {
 
 	int startOffset;
 	if (len % 2 != 0) {
-            cpu.write(loadAddress, Character.digit(input.charAt(0), 16));
+            bus.write(loadAddress, Character.digit(input.charAt(0), 16));
 	    startOffset = 1;
 	} else {
 	    startOffset = 0;
 	}
 
 	for (int i = startOffset; i < len; i += 2) {
-	    cpu.write(loadAddress + (i + 1) / 2,
+	    bus.write(loadAddress + (i + 1) / 2,
                     (Character.digit(input.charAt(i), 16) << 4)
 		    + Character.digit(input.charAt(i + 1), 16));
 	}

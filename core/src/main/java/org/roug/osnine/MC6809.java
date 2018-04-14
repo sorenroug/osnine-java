@@ -102,7 +102,7 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /**
      * Do we have active FIRQs and we're accepting FIRQs.
      */
-    private boolean isFIRQActive() {
+    public boolean isFIRQActive() {
         return activeFIRQs > 0 && !cc.isSetF();
     }
 
@@ -135,7 +135,7 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /**
      * Do we have active IRQs and we're accepting IRQs.
      */
-    private boolean isIRQActive() {
+    public boolean isIRQActive() {
         return activeIRQs > 0 && !cc.isSetI();
     }
 
@@ -166,6 +166,10 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     public MC6809(int memorySize) {
         this();
         allocate_memory(0, memorySize);
+    }
+
+    public Bus6809 getBus() {
+        return this;
     }
 
     /**
@@ -1722,7 +1726,7 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /**
      * Do we have active FIRQs and we're accepting FIRQs.
      */
-    private boolean isNMIActive() {
+    public boolean isNMIActive() {
         return activeNMIs > 0;
     }
 

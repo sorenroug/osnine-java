@@ -43,11 +43,11 @@ public class InterruptTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
-        myTestCPU.signalIRQ(true);
+        myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.pc.intValue());
 
-        myTestCPU.signalIRQ(false);
+        myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();
         assertEquals(0xB01, myTestCPU.pc.intValue());
         assertEquals(0x8F, myTestCPU.cc.intValue()); // Flag E is set by IRQ
@@ -90,10 +90,10 @@ public class InterruptTest {
         myTestCPU.write(0xB00, 0x3C); // CWAI
         myTestCPU.write(0xB01, 0x12); // value for CC AND
         myTestCPU.write(0xB02, 0x12); // NOP
-        myTestCPU.signalIRQ(true);
+        myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.pc.intValue());
-        myTestCPU.signalIRQ(false);
+        myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(0x82, myTestCPU.cc.intValue()); // Flag E is set by CWAI
@@ -122,7 +122,7 @@ public class InterruptTest {
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.write(0xB02, 0x12); // NOP
-        myTestCPU.signalIRQ(true);
+        myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
         assertEquals(0xB01, myTestCPU.pc.intValue());
         myTestCPU.cc.setI(false); // IRQ is still raised. Should trigger now
@@ -131,7 +131,7 @@ public class InterruptTest {
         myTestCPU.execute();
         assertEquals(0x1235, myTestCPU.pc.intValue());
         assertTrue(myTestCPU.cc.isSetI()); // Check that I-flag is true.
-        myTestCPU.signalIRQ(false);
+        myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();  // Get RTI
         assertFalse(myTestCPU.cc.isSetI()); // Check I-flag
     }
@@ -146,7 +146,7 @@ public class InterruptTest {
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.write(0xB02, 0x12); // NOP
-        myTestCPU.signalIRQ(true);
+        myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.pc.intValue());
         myTestCPU.execute();  // Get NOP
@@ -155,6 +155,6 @@ public class InterruptTest {
         myTestCPU.execute();  // Get RTI
         assertEquals(0x1234, myTestCPU.pc.intValue());
         myTestCPU.execute();  // Get NOP
-        myTestCPU.signalIRQ(false);
+        myTestCPU.getBus().signalIRQ(false);
     }
 }
