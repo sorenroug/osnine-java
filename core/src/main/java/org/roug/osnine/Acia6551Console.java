@@ -95,9 +95,11 @@ public class Acia6551Console extends MemorySegment implements Acia {
     /**
      * Is Receive register full?
      */
+    /*
     private boolean isReceiveRegisterFull() {
         return (statusRegister & RDRF) == RDRF;
     }
+    */
 
     @Override
     public void eolReceived() {
@@ -111,7 +113,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
      */
     @Override
     public void dataReceived(int receiveData) {
-        while (isReceiveRegisterFull()) {
+        while (isBitOn(statusRegister, RDRF)) {
             Thread.yield();
         }
         this.receiveData = receiveData;
@@ -168,7 +170,7 @@ public class Acia6551Console extends MemorySegment implements Acia {
 
     @Override
     protected void store(int addr, int val) {
-        //LOGGER.debug("Store: {} <- {}", Integer.toHexString(addr), Integer.toHexString(val));
+        //LOGGER.debug("Store: {} <- {}", addr, Integer.toHexString(val));
         switch (addr - getStartAddress()) {
         case DATA_REG:
             sendValue(val);
@@ -226,7 +228,8 @@ public class Acia6551Console extends MemorySegment implements Acia {
     private int getReceivedValue() throws IOException {
         int r = receiveData;  // Read before we turn RDRF off.
         LOGGER.debug("Received val: {}", r);
-        statusRegister &= ~RDRF;
+        //statusRegister &= ~RDRF;
+        clearStatusBit(RDRF);
         return r;
     }
 
@@ -237,7 +240,8 @@ public class Acia6551Console extends MemorySegment implements Acia {
         // Bit 1 controls receiver IRQ behavior
         receiveIrqEnabled = (commandRegister & IRD) == 0;
         // Bits 2 & 3 controls transmit IRQ behavior
-        transmitIrqEnabled = (commandRegister & TIC1) == 0 && (commandRegister & TIC0) != 0;
+        transmitIrqEnabled = (commandRegister & TIC1) == 0
+                          && (commandRegister & TIC0) != 0;
         // Send a IRQ immediately as the transmit register is empty.
         signalReadyForTransmit();
     }
@@ -264,8 +268,16 @@ public class Acia6551Console extends MemorySegment implements Acia {
         }
     }
 
-    private boolean btst(int x, int n) {
+    private static boolean isBitOn(int x, int n) {
         return (x & n) != 0;
+    }
+
+    private void setStatusBit(int n) {
+        statusRegister |= n;
+    }
+
+    private void clearStatusBit(int n) {
+        statusRegister &= ~n;
     }
 
 }

@@ -66,6 +66,7 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
     private void reset() {
         controlRegister = 0;         // Clear all control flags
+        lowerIRQ();
         statusRegister = TDRE;         // Clear all status bits
     }
 
@@ -107,7 +108,7 @@ public class Acia6850Console extends MemorySegment implements Acia {
             Thread.yield();
         }
         this.receiveData = receiveData;
-        statusRegister |= RDRF;   // Read register is full.
+        setStatusBit(RDRF);   // Read register is full.
         if (receiveIrqEnabled) {
             raiseIRQ();
         }
@@ -116,14 +117,14 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
     private void raiseIRQ() {
         if ((statusRegister & IRQ) == 0) {
-            statusRegister |= IRQ;
+            setStatusBit(IRQ);
             cpu.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
         if ((statusRegister & IRQ) == IRQ) {
-            statusRegister &= ~IRQ;    // Turn off interrupt flag
+            clearStatusBit(IRQ);
             cpu.signalIRQ(false);
         }
     }
@@ -174,9 +175,7 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
     private void sendValue(int val) {
         LOGGER.debug("Send value: {}", val);
-        //statusRegister &= ~IRQ;   // Clear IRQ
-        clearStatusBit(IRQ);
-        //statusRegister |= TDRE;   // Set TDRE to true
+        lowerIRQ();
         setStatusBit(TDRE);
         System.out.write(val);
         System.out.flush();
@@ -191,9 +190,8 @@ public class Acia6850Console extends MemorySegment implements Acia {
     private int getReceivedValue() throws IOException {
         int r = receiveData;  // Read before we turn RDRF off.
         LOGGER.debug("Received val: {}", r);
-        //statusRegister &= ~RDRF;
-        clearStatusBit(RDRF);
         lowerIRQ();
+        clearStatusBit(RDRF);
         return r;
     }
 
@@ -210,7 +208,7 @@ public class Acia6850Console extends MemorySegment implements Acia {
 
         // Transmit IRQ is enabled if CR6 is 0 and CR5 is 1.
         transmitIrqEnabled = !isBitOn(controlRegister, CR6)
-                            && isBitOn(controlRegister, CR5);
+                           && isBitOn(controlRegister, CR5);
         // Check for master reset
         if (isBitOn(controlRegister, CR0) && isBitOn(controlRegister, CR1)) {
             reset();
