@@ -8,9 +8,6 @@ import org.slf4j.LoggerFactory;
  */
 public class BusStraight implements Bus6809 {
 
-    private static final int MEM_TOP = 0xFFFF;
-    private static final int MEM_MAX = 0x10000;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(BusStraight.class);
 
     /** Memory space. */
@@ -43,14 +40,14 @@ public class BusStraight implements Bus6809 {
      * Single byte read from memory.
      */
     public int read(int offset) {
-        return memory.read(offset & MEM_TOP);
+        return memory.read(offset);
     }
 
     /**
      * Single byte write to memory.
      */
     public void write(int offset, int val) {
-        memory.write(offset & MEM_TOP, val & 0xFF);
+        memory.write(offset, val & 0xFF);
     }
 
     /**
@@ -72,16 +69,17 @@ public class BusStraight implements Bus6809 {
         return activeNMIs > 0;
     }
 
-
     /**
      * Accept an FIRQ signal.
      */
-    public synchronized void signalFIRQ(boolean state) {
-        if (state) {
-            activeFIRQs++;
-            notifyAll();
-        } else {
-            activeFIRQs--;
+    public void signalFIRQ(boolean state) {
+        synchronized(this) {
+            if (state) {
+                activeFIRQs++;
+                notifyAll();
+            } else {
+                activeFIRQs--;
+            }
         }
     }
 
@@ -111,12 +109,14 @@ public class BusStraight implements Bus6809 {
      * lowered.
      */
     @Override
-    public synchronized void signalIRQ(boolean state) {
-        if (state) {
-            activeIRQs++;
-            notifyAll();
-        } else {
-           activeIRQs--;
+    public void signalIRQ(boolean state) {
+        synchronized(this) {
+            if (state) {
+                activeIRQs++;
+                notifyAll();
+            } else {
+               activeIRQs--;
+            }
         }
     }
 
@@ -125,7 +125,9 @@ public class BusStraight implements Bus6809 {
      */
     @Override
     public boolean isIRQActive() {
-        return activeIRQs > 0;
+        synchronized(this) {
+            return activeIRQs > 0;
+        }
     }
 
     /**

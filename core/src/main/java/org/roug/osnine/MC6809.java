@@ -64,15 +64,6 @@ public class MC6809 extends USimMotorola implements Bus6809 {
 
     private DisAssembler disAsm = null;
 
-/*
-    @Override
-    public void write(int offset, int val) {
-        super.write(offset, val);
-        if (offset == 0xff40) {
-            setTraceInstructions(true);
-        }
-    }
-*/
     /**
      * Accept an NMI signal.
      */
@@ -582,14 +573,6 @@ public class MC6809 extends USimMotorola implements Bus6809 {
         }
         if (isIRQActive()) {
             irq();
-        }
-    }
-
-    private static int getSignedByte(int value) {
-        if (value < 0x80) {
-            return value;
-        } else {
-            return -((~value & 0x7f) + 1);
         }
     }
 
@@ -1724,7 +1707,7 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     }
 
     /**
-     * Do we have active FIRQs and we're accepting FIRQs.
+     * Do we have active NMIs and we're accepting NMIs.
      */
     public boolean isNMIActive() {
         return activeNMIs > 0;
