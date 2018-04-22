@@ -3,7 +3,7 @@ package org.roug.osnine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MC6809 extends USimMotorola implements Bus6809 {
+public class MC6809 extends USimMotorola {
 
     public static final int SWI3_ADDR = 0xfff2;
     public static final int SWI2_ADDR = 0xfff4;
@@ -49,15 +49,6 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
 
-    /** Active NMI signals. */
-    private int activeNMIs;
-
-    /** Active IRQ requests. */
-    private int activeIRQs;
-
-    /** Active FIRQ requests. */
-    private int activeFIRQs;
-
     private boolean waitState = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MC6809.class);
@@ -65,69 +56,17 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     private DisAssembler disAsm = null;
 
     /**
-     * Accept an NMI signal.
-     */
-    public synchronized void signalNMI(boolean state) {
-        if (state) {
-            if (!inhibitNMI) {
-                activeNMIs++;
-                notifyAll();
-            }
-        } else {
-           activeNMIs--;
-        }
-    }
-
-    /**
-     * Accept an FIRQ signal.
-     */
-    public synchronized void signalFIRQ(boolean state) {
-        if (state) {
-            activeFIRQs++;
-            notifyAll();
-        } else {
-           activeFIRQs--;
-        }
-    }
-
-    /**
      * Do we have active FIRQs and we're accepting FIRQs.
      */
-    public boolean isFIRQActive() {
-        return activeFIRQs > 0 && !cc.isSetF();
-    }
-
-    /**
-     * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
-     * pin, which means the device sends an interrupt request. The CPU must then
-     * check the devices and get the device to lower the signal again.
-     * In this implementation, the signals from several devices are ORed
-     * together to the same pin on the CPU. Since this can't easily be emulated,
-     * it is the responsibility of the device that it doesn't raise IRQ twice
-     * in a row.
-     * If IRQs are ignored when a device signals, then it must be received 
-     * when IRQs are accepted again (if the device hasn't lowered it).
-     *
-     * NOTE: The ORing logic should be move to a memory-bus class, so it can
-     * be replaced for different hardware emulations.
-     *
-     * @param state - true if IRQ is raised from the device, false if IRQ is
-     * lowered.
-     */
-    public synchronized void signalIRQ(boolean state) {
-        if (state) {
-            activeIRQs++;
-            notifyAll();
-        } else {
-           activeIRQs--;
-        }
+    private boolean isFIRQActive() {
+        return !cc.isSetF() && bus.isFIRQActive();
     }
 
     /**
      * Do we have active IRQs and we're accepting IRQs.
      */
-    public boolean isIRQActive() {
-        return activeIRQs > 0 && !cc.isSetI();
+    private boolean isIRQActive() {
+        return bus.isIRQActive() && !cc.isSetI();
     }
 
     /**
@@ -157,10 +96,6 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     public MC6809(int memorySize) {
         this();
         allocate_memory(0, memorySize);
-    }
-
-    public Bus6809 getBus() {
-        return this;
     }
 
     /**
@@ -1331,10 +1266,12 @@ public class MC6809 extends USimMotorola implements Bus6809 {
         setBitZ(tx);
     }
 
-    private synchronized void waitForInterrupt() {
+    private void waitForInterrupt() {
         while (!(isIRQActive() || isFIRQActive() || isNMIActive() )) {
             try {
-                wait();
+                synchronized(bus) {
+                    bus.wait();
+                }
             } catch (InterruptedException e) {
                 LOGGER.error("Wait interrupted");
             }
@@ -1363,9 +1300,11 @@ public class MC6809 extends USimMotorola implements Bus6809 {
      * If the interrupt is enabled then a normal interrupt sequence begins
      * after the SYNC instruction completes.
      */
-    private synchronized void sync() {
+    private void sync() {
         try {
-            wait();
+            synchronized(bus) {
+                bus.wait();
+            }
         } catch (InterruptedException e) {
             LOGGER.error("Wait interrupted");
         }
@@ -1709,8 +1648,8 @@ public class MC6809 extends USimMotorola implements Bus6809 {
     /**
      * Do we have active NMIs and we're accepting NMIs.
      */
-    public boolean isNMIActive() {
-        return activeNMIs > 0;
+    private boolean isNMIActive() {
+        return !inhibitNMI && bus.isNMIActive();
     }
 
     /**

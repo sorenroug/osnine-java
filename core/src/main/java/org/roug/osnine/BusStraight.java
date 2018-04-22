@@ -125,9 +125,7 @@ public class BusStraight implements Bus6809 {
      */
     @Override
     public boolean isIRQActive() {
-        synchronized(this) {
-            return activeIRQs > 0;
-        }
+        return activeIRQs > 0;
     }
 
     /**

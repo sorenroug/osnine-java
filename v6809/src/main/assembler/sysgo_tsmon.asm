@@ -17,45 +17,24 @@ size     equ   .
 name     equ   *
          fcs   /SysGo/
          fcb   edition
-BootMsg  fcc   "Booting"
+BootMsg  fcc   "BOOT"
          fcb   C$CR,C$LF
          fcb   C$LF
 MsgEnd   equ   *
 ExecDir  fcc   "Cmds"
          fcb   C$CR
-         fcc   ",,,,,,,,,," room for patch
+         fcc   ",,,,,," room for patch
 TSMon    fcc   "TSMon"
          fcb   C$CR
-         fcc   ",,,,,,,,,," room for patch
-TSMonArg fcc   "/T1"
-         fcb   C$CR
-         fcc   ",,,,,,,,,," room for patch
+         fcc   ",,,,,," room for patch
+TSMonArg fcb   C$CR
+         fcc   ",,,,,," room for patch
          
-BasicRst fcb   $55
-         fcb   $00
-         fcb   $74
-         fcb   $12
-         fcb   $7F
-         fcb   $FF
-         fcb   $03
-         fcb   $B7
-         fcb   $FF
-         fcb   $DF
-         fcb   $7E
-         fcb   $F0
-         fcb   $02
-
 * SysGo entry point
 start    equ   *
-         leax  >IcptRtn,pcr
+         leax  >IcptRtn,pcr     * Set up empty intercept
          os9   F$Icpt   
-         leax  >BasicRst,pcr  CC warmstart
-         ldu   #D.CBStrt
-         ldb   #start-BasicRst
-CopyLoop lda   ,x+
-         sta   ,u+
-         decb  
-         bne   CopyLoop
+
          leax  >BootMsg,pcr
          ldy   #MsgEnd-BootMsg
          lda   #$01
@@ -64,21 +43,15 @@ CopyLoop lda   ,x+
 * OS9p2 has looked for a module called "Clock" and initialised it.
          ldx   #hwclock
          os9   F$STime
-
+* Set the execution directory
          leax  >ExecDir,pcr
-         lda   #$04
+         lda   #$04      EXEC.
          os9   I$ChgDir 
 
-         leax  >TSMon,pcr
+FrkTSMon leax  >TSMon,pcr
          leau  >TSMonArg,pcr
          ldd   #$0100
-         ldy   #$0015
-         os9   F$Fork   
-         bcs   DeadEnd
-         os9   F$Wait   
-FrkTSMon leax  >TSMon,pcr
-         ldd   #$0100
-         ldy   #$0000
+         ldy   #start-TSMonArg   Parameter size
          os9   F$Fork   
          bcs   DeadEnd
          os9   F$Wait   

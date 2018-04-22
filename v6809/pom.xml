@@ -24,9 +24,11 @@
 
     <build>
         <resources>
+        <!--
             <resource>
                 <directory>src/main/assembler</directory>
             </resource>
+            -->
             <resource>
                 <directory>src/main/microware</directory>
             </resource>
@@ -70,6 +72,29 @@
                     <targetJdk>${java_version}</targetJdk>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <ant antfile="${basedir}/build.xml">
+                                    <target name="compile"/>
+                                </ant>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
