@@ -385,6 +385,22 @@ public class BranchAndJumpTest {
     }
 
     @Test
+    public void testBSRForward() {
+        int instructions[] = {
+            0x8d, // BSR
+            17 // Jump forward 17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.s.set(0x300);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertEquals(LOCATION + 2 + 17, myTestCPU.pc.intValue());
+        assertEquals(0x2fe, myTestCPU.s.intValue());
+        assertEquals(0x22, myTestCPU.read(0x2ff));
+        assertEquals(0x1e, myTestCPU.read(0x2fe));
+    }
+
+    @Test
     public void testLBSRbackward() {
         final int STACKADDR = 0x300;
         int instructions[] = {
