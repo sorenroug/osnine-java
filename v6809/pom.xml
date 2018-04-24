@@ -28,10 +28,10 @@
             <resource>
                 <directory>src/main/assembler</directory>
             </resource>
-            -->
             <resource>
                 <directory>src/main/microware</directory>
             </resource>
+            -->
             <resource>
                 <directory>src/main/tbasic</directory>
             </resource>
