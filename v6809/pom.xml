@@ -20,6 +20,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java_version>1.8</java_version>
+        <main.basedir>${project.basedir}/..</main.basedir>
     </properties>
 
     <build>
@@ -83,7 +84,8 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <target>
-                                <ant antfile="${basedir}/build.xml">
+                                <property name="main.basedir" value="${main.basedir}"/>
+                                <ant antfile="build.xml">
                                     <target name="compile"/>
                                 </ant>
                             </target>

@@ -1,21 +1,22 @@
 <project name="BuildModules" default="compile">
 
-    <property name="os9dir" value="src/main/assembler"/>
-    <property name="exedir" value="/home/roug/OS9/CMDS" />
+    <property name="homedir" value="src/main/assembler"/>
+    <property name="os9dir" value="${main.basedir}/os9software" />
     <property name="targetdir" value="target/classes" />
     <macrodef name="assemble">
         <attribute name="src" />
         <sequential>
             <echo message="Assembling: @{src}"/>
-            <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar" fork="true"
-                  dir="src/main/assembler">
+            <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    fork="true" dir="${homedir}">
+                <env key="OSNINEDIR" value="${os9dir}"/>
                 <arg value="-m"/>
                 <arg value="20000"/>
                 <arg value="asm"/>
                 <arg value="@{src}.asm"/>
                 <arg value="o=a.out"/>
             </java>
-            <move file="${exedir}/a.out" tofile="${targetdir}/@{src}" />
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
         </sequential>
     </macrodef>
 
@@ -46,23 +47,4 @@
         <assemble src="vdisk"/>
     </target>
 
-    <target name="Xcompile">
-        <mkdir dir="${targetdir}"/>
-        <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar" fork="true"
-              dir="src/main/assembler">
-        <!--
-            <env key="OSNINEDIR" value="${os9dir}"/>
-            -->
-            <arg value="-m"/>
-            <arg value="20000"/>
-            <!--
-            <arg value="-x"/>
-            <arg value="/dd"/>
-            -->
-            <arg value="asm"/>
-            <arg value="vdisk.asm"/>
-            <arg value="o=a.out"/>
-        </java>
-        <move file="${exedir}/a.out" tofile="${targetdir}/vdisk" />
-    </target>
 </project>

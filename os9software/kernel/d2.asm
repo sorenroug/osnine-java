@@ -14,7 +14,7 @@
          ttl   40-track floppy disk device descriptor
 
          ifp1
-         use   ../DEFS/os9defs
+         use   /d0/DEFS/os9defs
          endc
 tylg     set   Devic+Objct   
 atrv     set   ReEnt+rev

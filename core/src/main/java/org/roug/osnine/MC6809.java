@@ -158,12 +158,7 @@ public class MC6809 extends USimMotorola {
             case 0x70: case 0xb0: case 0xf0:
                 mode = EXTENDED; break;
             case 0x80: case 0xc0:
-                if (ir == 0x8d) {
-                    mode = RELATIVE;
-                } else {
-                    mode = IMMEDIATE;
-                }
-                break;
+                mode = IMMEDIATE; break;
             case 0x10:
                 switch (ir & 0x0f) {
                     case 0x02: case 0x03: case 0x09:
@@ -452,6 +447,7 @@ public class MC6809 extends USimMotorola {
                     invalid("instruction"); break;
             }
         } else {
+            // Could do a switch (ir & 0xCF) here. But watch out for bsr().
             switch (ir) {
                 case 0x89: case 0x99: case 0xa9: case 0xb9:
                     adca(); break;
@@ -481,9 +477,7 @@ public class MC6809 extends USimMotorola {
                     eora(); break;
                 case 0xc8: case 0xd8: case 0xe8: case 0xf8:
                     eorb(); break;
-                case 0x8d:
-                    bsr(); break;
-                case 0x9d: case 0xad: case 0xbd:
+                case 0x8d: case 0x9d: case 0xad: case 0xbd:
                     jsr(); break;
                 case 0x86: case 0x96: case 0xa6: case 0xb6:
                     lda(); break;
@@ -532,6 +526,14 @@ public class MC6809 extends USimMotorola {
         }
         if (isIRQActive()) {
             irq();
+        }
+    }
+
+    private static int getSignedByte(int value) {
+        if (value < 0x80) {
+            return value;
+        } else {
+            return -((~value & 0x7f) + 1);
         }
     }
 
@@ -659,8 +661,14 @@ public class MC6809 extends USimMotorola {
 
     private int fetch_effective_address() {
         int addr = 0;
+        int post;
 
         switch (mode) {
+            // Used as a mode for jsr() instead of bsr().
+            case IMMEDIATE:  // or RELATIVE
+                post = fetch();
+                addr = pc.intValue() + extend8(post);
+                break;
             case EXTENDED:
                 addr = fetch_word();
                 break;
@@ -668,7 +676,7 @@ public class MC6809 extends USimMotorola {
                 addr = dp.intValue() << 8 | fetch();
                 break;
             case INDEXED:
-                int post = fetch();
+                post = fetch();
                 do_predecrement(post);
                 addr = do_effective_address(post);
                 do_postincrement(post);
@@ -1138,6 +1146,7 @@ public class MC6809 extends USimMotorola {
         do_lbr(false);
     }
 
+/*
     private void bsr() {
         int relAddr = fetch();
         s.add(-1);
@@ -1146,7 +1155,7 @@ public class MC6809 extends USimMotorola {
         write(s, (pc.intValue() >> 8));
         pc.add(extend8(relAddr));
     }
-
+*/
     private void lbsr() {
         int relAddr = fetch_word();
         s.add(-1);
@@ -1485,6 +1494,10 @@ public class MC6809 extends USimMotorola {
         pc.set(fetch_effective_address());
     }
 
+    /**
+     * Jump to subroutine.
+     * Also used for bsr when mode is IMMEDIATE.
+     */
     private void jsr() {
         int addr = fetch_effective_address();
         s.add(-1);
