@@ -1,0 +1,340 @@
+<appendix xmlns="http://docbook.org/ns/docbook">
+<title>Example Assembly Language Programs</title>
+
+<section>
+<title>Assembly Language Programming Examples</title>
+<para>
+The following pages contain three assembly language programming
+examples. They are:
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>UpDn</term>
+        <listitem>
+          <para>-Program to convert input case to upper or lower.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PIA</term>
+        <listitem>
+          <para>-Paralle1 interface driver.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>P</term>
+        <listitem>
+          <para>-Para11el interface descriptor.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+<para>
+These programs are given only as examples of assembly language programs
+and should not be considered as current system software.
+</para>
+
+<example>
+<title>UpDn - Assembly Language Programming Example</title>
+<programlisting>
+       *
+       * this is a program to convert characters from
+       *    lower to upper case (by using the u option)
+       *    upper to lower case (by using no option)
+       * the method of passing the parameters through
+       *    os9 is used here (system calls)
+       * to use type
+       *  "updn u(opt for lower to upper) &lt;'input' >'output'"
+       *
+                           nam UpDn
+       * file include in assembly
+                           ifp1
+                           use /D0/defs/OS9defs
+                           endc
+       *
+       * OS-9 System Definition File Included
+       *
+                           opt   l
+                           ttl   Assembly Language Example
+       *
+       * module header macro
+       *
+  0000 87CD005C            mod   UDSIZ,UDNAM,TYPE,REVS,START,SIZE
+  000D 757064EE   UDNAM    fcs   /updn/      module name for memory
+  0011            TYPE     set   PRGRM+OBJCT mod type
+  0081            REVS     set   REENT+1     mod revision
+       *
+       * storage area for variables
+       *
+D 0000            TEMP     rmb   1          temp storage for read
+D 0001            UPRBND   rmb   1          storage for upperbound
+D 0002            LWRBND   rmb   1          storage for lowerbound
+D 0003                     rmb   250        storage for stack
+D OOFD                     rmb   200        storage for parameters
+D 01C5            SIZE     equ   .          end of data area
+       *
+       * actual code starts here
+       * x register is pointing to Start of parameter area
+       * y register is pointing to end of parameter area,
+       * this is how to get a parameter that is passed on
+       *    the command line and where to look for it
+       *
+  0011            START    equ   *          start of executable
+  0011 A680       SRCH     lda   ,x+        search parameter area
+  0013 84DF                anda  #$df       make upper case
+  0015 8155                cmpa  #U         see if a U was input
+  0017 2703                beq   UPPER      branch to set uppercase
+  0019 810D                cmpa  #$0d       see if a carriage return
+  001B 26F4                bne   SRCH       go get another char
+       *
+       * fall through to set upper to lower bounds
+       *
+  001D 8641                lda   #'A        get lower bound
+  001F 9702                sta   LWRBND     set it in storage area
+  0021 865A                lda   #'Z        get upper bound
+  0023 9701                sta   UPRBND     set it in storage area
+  0025 2008                bra   START1     go to start of code
+       *
+       * set lower to upper bounds
+       *
+  0027 8661       UPPER    lda   #'a        get lower bound
+  0029 9702                sta   LWRBND     set it in storage
+  002B 867A                lda   #'z        get upper bound
+  002D 9701                sta   UPRBND     set it in storage
+       *
+       * converting code
+       * this part uses the I$READ and
+       *    the I$WRIT system calls
+       * read the systems programmers manual
+       *    for information relating to them
+       *
+  002F 30C4       START1   leax  temp,u     get storage address
+  0031 8600                lda   #0         standard input
+  0033 108E0001            ldy   #$01       number of characters
+  0037 103F89     LOOP     os9   I$READ     do the read
+  003A 2515                bcs   EXIT       exit if error
+  003C D600                ldb   TEMP       get character read
+  003E D102                cmpb  LWRBND     test char bound
+  0040 2506                blo   WRITE      branch if out
+  0042 D101                cmpb  UPRBND     test char bound
+  0044 2202                bhi   WRITE      branch if out
+  0046 C820                eorb  #$20       flip case bit
+  0048 D700       WRITE    stb   TEMP       put it in storage
+  004A 4C                  inca             reg 'a' stand output
+  004B 103F8A              os9   I$WRIT     write the character
+  004E 4A                  deca             return to stand input
+  004F 24E6                bcc   LOOP       get char if no error
+  0051 C1D3       EXIT     cmpb  #E$EOF     is it an EOF error
+  0053 2601                bne   EXIT1      not eof, leave carry
+  0055 5F                  clrb             clear carry, no error
+  0056 103F06     EXIT1    os9   F$EXIT     error returned, exit
+  0059 260409              emod             last command
+  005C            UDSIZ    equ   *          size of program
+</programlisting>
+</example>
+
+<example>
+<title>PIA - OUTPUT Parallel Interface Driver</title>
+<programlisting>
+                           NAM   PIA
+
+                           ifpl
+                           use   /D0/defs/os9defs
+                           use   /D0/defs/scfdefs
+                           use   /D0/defs/systype
+                           endc
+
+                           ttl   OUTPUT Parallel Interface Driver
+
+       *************************
+       * Device Driver for PIA Port
+
+  0000 87CD00CD            mod   PIASIZ,PIAN,DRIVR+OBJCT, 
+                                          REENT+1,PIAENT,PIAMEM
+  000D 07                  fcb   EXEC.+UPDAT.
+  000E 5049C1     PIAN     fcs   "PIA"      MODULE NAME
+
+  0011 02                  fcb   2          revision number
+                           use   /D0/defs/copyright
+
+    ************************************************************
+    *                                                          *
+    *         (C) 1981 Microware Systems Corporation           *
+    *                                                          *
+    ************************************************************
+
+  0012 28432931            FCC   /(C)1981Microware/
+
+D 000F                     ORG   V.SCF      STATIC STORAGE
+D 000F            PIADDR   rmb   2          Pia True Port address
+D 0011            PIAMEM   equ   .          TOTAL STATIC STORAGE
+
+W 0022 160012     PIAENT   LBRA  PPINIT
+  0025 1600A0              LBRA  PPEXIT     read
+W 0028 160053              LBRA  PPWRIT
+  002B 16009A              LBRA  PPEXIT     get status
+  002E 160097              LBRA  PPEXIT     set status
+W 0031 16007A              LBRA  PPTERM
+
+  0034 00         PPMASK   fcb   0          FLIP (NONE)
+  0035 80                  fcb   $80        IRQ POLLING MASK
+  0036 04                  fcb   4          (low) PRIORITY
+
+       **********
+       * PPINIT - Initialize PIA
+
+       * Passed: (U)=Static storage
+       *         (Y)=Initial Device Descriptor
+
+  0037 A341       PPINIT   LDX   V.PORT,Y   get PIA port addr
+  0039 A6A811              LDA   M$OPT,Y    get option byte count
+  003C 8114                CMPA  #PD.PAR-PD.OPT pia side given?
+  003E 2515                BLO   PPIN15     ..No; default B-side
+  0040 E6A826              LDB   PD.PAR-PD.OPT+M$DTYP,Y
+  0043 E746                STB   V.TYPE,U   save pia type
+  0045 C101                CMPB  #a.side    A-side PIA?
+  0047 2604                BNE   PPIN10     ..No
+  0049 C63E                LDB   #$3E       A-side non auto-latch
+  004B 200C                BRA   PPIN20
+  004D C102       PPIN10   CMPB  #MP.L2     Southwest ACIA?
+  004F 2604                BNE   PPIN15     ..No
+  0051 860E                LDA   #$0E       setup SWTPC MP-L2 card
+  0053 A70E                STA   $0E,X      note: must be b.side
+  0055 3002       PPIN15   LEAX  2,X        Adjust address B-side
+  0057 C62F                LDB   #$2F       B-side is auto-latch
+  0059 6F01       PPIN20   CLR   1,X        reset PIA
+  005B AF4F                STX   PIADDR,U   save port address
+  005D 3414                PSHS  B,X        save ctl code, addr
+  005F 3001                LEAX  1,X
+  0061 1F10                TFR   X,D
+  0063 308DFFCD            LEAX  PPMASK,PCR
+  0067 318C4F              LEAY  &lt;PPIRQ,PCR addr of SERVICE ROUTINE
+  006A 103F2A              OS9   F$IRQ      ADD to IRQ POLLING TBL
+  006D 250D                BCS   PPIN90     ..Error; return it
+  006F 3514                PULS  B,X
+  0071 86FF                LDA   #$FF
+  0073 1A10                ORCC  #IRQM      disable interrupts
+  0075 ED84                STD   0,X        Initialize Pia
+  0077 A684       PPCLRQ   LDA   0,X        Clear IRQs
+  0079 1CEE                ANDCC #$FF-IRQM-CARRY enable intrpts
+  007B 39                  RTS              return
+
+  007C 3592 PPIN90         PULS  A,X,PC     Return (B)=error
+
+       **********
+       * PPWRIT - write one char to PIA
+
+       * Passed: (U)=Static Storage
+       *         (Y)=Path Descriptor
+       *         (A)=char to write to PIA
+       * Returns: CC,B set if Error
+
+  007E AE4F       PPWRIT   LDX   PIADDR,U   port addr
+  0080 E646                LDB   V.TYPE,U   get pia type
+  0082 1A10                ORCC  #IRQM      disable interrupts
+  0084 A784                STA   0,X        Write char to Pia
+  0086 C101                CMPB  #a.side    A-side port?
+  0088 2608                BNE   PPWR10     ..No; auto-latching
+  008A C637                LDB   #$37
+  008C E701                STB   1,X
+  008E C63F                LDB   #$3F
+  0090 E701                STB   1,X        latch A-side output
+  0092 8D34       PPWR10   BSR   PPEXIT     Delay shortly fast PIA
+  0094 6D01                TST   1,X        character already gone?
+  0096 2BDF                BMI   PPCLRQ     ..Yes; remove interrupt
+  0098 E644                LDB   V.BUSY,U
+  009A E745                STB   V.WAKE,U
+  009C 8E0000              LDX   #0
+  009F 1CEF                ANDCC #$FF-IRQM  enable interrupts
+  00A1 103F0A              OS9   F$SLEEP     wait for I/O to occur
+  00A4 5F                  clrb             clear carry
+  00A5 9E4B                ldx   D.PROC 
+  00A7 E68836              ldb   P$SIGN,X   Signal waiting?
+  00AA 2701                beq   PPWR90     ..No; return
+  00AC 43                  coma
+  00AD 39         PPWR90   RTS
+
+       **********
+       * PPTERM - Remove PIA from system
+
+  00AE AE4F       PPTERM   LDX   PIADDR,U
+  00B0 6F01                CLR   1,X        reset PIA
+  00B2 8E0000              LDX   #0         remove PIA
+  00B5 103F2A              OS9   F$IRQ      from polling tbl
+  00B8 39                  RTS
+
+       ***************
+       * PROCESS PIA INTERRUPT
+
+       * Passed: (A)=PIA Status Reg
+
+  00B9 AE4F       PPIRQ    LDX   PIADDR,U   PIA port addr
+  00BB 6D84                TST   0,X        remove interrupt
+  00BD A645                LDA   V.WAKE,U   User's Process ID
+  00BF 2707                BEQ   PPEXIT     ..No; return
+  00C1 C601                LDB   #S$WAKE    (wake up)
+  00C3 103F08              OS9   F$SEND
+  00C6 6F45                clr   V.WAKE,U
+  00C8 5F         PPEXIT   clrb
+  00C9 39                  RTS
+
+  00CA FDA2DE              emod
+  00CD            PIASIZ   equ   *
+</programlisting>
+</example>
+
+<example>
+<title>P - Device Descriptor for "P"</title>
+<programlisting>
+                          nam   P
+
+                          ifp1
+                          endc
+
+                          ttl   Device Descriptor for "P"
+      **************
+      *  PRINTER device module
+      *
+ 0000 87CD0035            mod   PRTEND,PRTNAM,DEVIC+OBJCT,
+                                             REENT+1,PRTMGR,PRTDRV
+ 000D 02                  fcb   WRITE.     mode
+ 000E FF                  fcb   $FF
+ 000F E040                fcb   A.P        port address
+ 0011 18                  fcb   PRTNAM-*-1 option byte count
+ 0012 00                  fcb   DT.SCF     Device Type: SCF
+
+      * Default path options
+
+ 0013 00                  fcb   0          case=UPPER and lower
+ 0014 00                  fcb   0          backspace=BS char only
+ 0015 01                  fcb   1          delete=CRLF 
+ 0016 00                  fcb   0          no auto echo
+ 0017 01                  fcb   1          auto line feed on
+ 0018 00                  fcb   0          no nulls after CR
+ 0019 00                  fcb   0          no page pause
+ 001A 42                  fcb   66         lines per page
+ 001B 08                  fcb   C$BSP      backspace char
+ 001C 18                  fcb   C$DEL      delete line char
+ 001D 0D                  fcb   C$CR       end of record char
+ 001E 00                  fcb   0          no end of file char
+ 001F 04                  fcb   C$RPRT     reprint line char
+ 0020 01                  fcb   C$RPET     dup last line char
+ 0021 17                  fcb   C$PAUS     pause char
+ 0022 00                  fcb   0          no abort character
+ 0023 00                  fcb   0          no interrupt character
+ 0024 5F                  fcb   '_         backspace echo char
+ 0025 07                  fcb   C$BELL     line overflow char
+ 0026 01                  fcb   PIASID     Printer Type
+ 0027 00                  fcb   0          undefined baud rate
+ 0028 0000                fdb   0          no echo device
+ 002A D0         PRTNAM   fcs   "P"        device name
+ 002B B0                  fcs   "0"        room for name patching
+ 002C 5343C6     PRTMGR   fcs   "SCF"      file manager
+ 002F 5049C1     PRTDRV   fcs   "PIA"      driver
+
+ 0032 A9B118              emod
+ 0035            PRTEND   EQU   *
+</programlisting>
+</example>
+
+</section>
+</appendix>

@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="asm" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <info>
+    <title>OS-9 Editor/Assembler/Debugger Manual</title>
+    <copyright>
+      <year>1980, 1984</year>
+      <holder>Microware Systems Corporation.</holder>
+    </copyright>
+    <legalnotice>
+      <para>All rights reserved.</para>
+      <para>
+This document and the software it describes are copyrighted products of
+Microware Systems Corporation. Reproduction by any means is strictly
+prohibited except by prior written permission from Microware Systems Corporation.
+</para>
+      <para>
+The information contained herein is believed to be accurate as of the date
+of publication, however Microware will not be liable for any damages,
+including indirect or consequential, resulting from reliance upon the
+software or this documentation.
+</para>
+    </legalnotice>
+    <revhistory>
+      <revision>
+        <revnumber>A</revnumber>
+        <date>January 1984</date>
+      </revision>
+    </revhistory>
+    <publisher>
+      <publishername>Microware Systems Corporation</publishername>
+      <address>
+Microware Systems Corporation
+<pob>P.O. Box 4865</pob>
+<city>Des Moines</city>, <state>Iowa</state> <postcode>50304</postcode> <country>U.S.A.</country>
+</address>
+    </publisher>
+    <subjectset>
+      <subject>
+        <subjectterm>assembler</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>6809</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>software</subjectterm>
+      </subject>
+    </subjectset>
+  </info>
+  <xi:include href="section1.xml"/>
+  <xi:include href="section2.xml"/>
+  <xi:include href="section3.xml"/>
+  <xi:include href="appendixa.xml"/>
+  <xi:include href="appendixb.xml"/>
+  <xi:include href="appendixc.xml"/>
+  <colophon>
+    <para>
+    This book is scanned from an OS-9 manual found on the Internet in 2017.
+    </para>
+  </colophon>
+</book>

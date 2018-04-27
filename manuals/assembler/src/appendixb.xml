@@ -1,0 +1,524 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <title>Quick Reference</title>
+  <section>
+    <title>Editor Quick Reference Summary</title>
+    <variablelist>
+      <varlistentry>
+        <term>. macro_name parameters</term>
+        <listitem>
+          <para>The "." command is used to execute a macro.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>! text</term>
+        <listitem>
+          <para>Comment.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>sp text</term>
+        <listitem>
+          <para>Insert the text line before the current edit pointer position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cr</term>
+        <listitem>
+          <para>Move edit the pointer to the next line and display it.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>+n</term>
+        <listitem>
+          <para>Move the edit pointer forward <replaceable>n</replaceable> lines and display.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>-n</term>
+        <listitem>
+          <para>Move the edit pointer backward <replaceable>n</replaceable> lines and display.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>+0</term>
+        <listitem>
+          <para>Move the edit pointer to the last character of the line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>-0</term>
+        <listitem>
+          <para>Move the edit pointer to the first character of the line and display it.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;n</term>
+        <listitem>
+          <para>Move the edit pointer forward <replaceable>n</replaceable> characters.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&lt;n</term>
+        <listitem>
+          <para>Move the edit pointer backward <replaceable>n</replaceable> characters.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>^</term>
+        <listitem>
+          <para>Move the edit pointer to the beginning of the text.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>/</term>
+        <listitem>
+          <para>Move the edit pointer to the end of the text.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>[commands] n</term>
+        <listitem>
+          <para>Repeat the sequence of commands between the two brackets <replaceable>n</replaceable> times.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>:</term>
+        <listitem>
+          <para>Skip to the end of the innermost loop or macro if the
+fail flag is off, otherwise turn the fail flag off and
+resume execution.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>An</term>
+        <listitem>
+          <para>Set the SEARCH/CHANGE anchor to column <replaceable>n</replaceable>, restricting
+searches and changes to strings starting in the <replaceable>n</replaceable>th column.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>A 0</term>
+        <listitem>
+          <para>Turn off the SEARCH / CHANGE anchor.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>B n</term>
+        <listitem>
+          <para>Make buffer <replaceable>n</replaceable> the primary buffer.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>C n str1 str2</term>
+        <listitem>
+          <para>Change the next <replaceable>n</replaceable> ocurrences of
+            <replaceable>str1</replaceable> to <replaceable>str2</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>D n</term>
+        <listitem>
+          <para>Delete <replaceable>n</replaceable> lines.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>E n str</term>
+        <listitem>
+          <para>Extend (add the string to the end of) the next <replaceable>n</replaceable> lines.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>G n</term>
+        <listitem>
+          <para>Get <replaceable>n</replaceable> lines from the secondary edit buffer starting &#xFB01;rom
+the top of the secondary buffer. The lines are inserted
+before the current position in the primary edit buffer.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>I n str</term>
+        <listitem>
+          <para>Insert a line containing <replaceable>n</replaceable>
+            copies of the <replaceable>str</replaceable> before the
+current edit pointer position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>K n</term>
+        <listitem>
+          <para>Kill <replaceable>n</replaceable> characters starting at the current edit pointer position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>L n</term>
+        <listitem>
+          <para>List (display) the next <replaceable>n</replaceable> lines from the current edit pointer position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>M n</term>
+        <listitem>
+          <para>Change workspace (memory) size to <replaceable>n</replaceable> bytes.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>P n</term>
+        <listitem>
+          <para>Put (move) <replaceable>n</replaceable> lines from the present edit position in the
+primary buffer to the present edit position in the secondary buffer.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Q</term>
+        <listitem>
+          <para>Quit editing and return to OS-9.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Q</term>
+        <listitem>
+          <para>Terminate macro definition and return to the "E:" prompt.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>R n</term>
+        <listitem>
+          <para>Read <replaceable>n</replaceable> lines from the buffer's input file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>S n str</term>
+        <listitem>
+          <para>Search for the next <replaceable>n</replaceable> ocurrences of <replaceable>str</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>T n</term>
+        <listitem>
+          <para>Tab to column number <replaceable>n</replaceable> of the present line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>U</term>
+        <listitem>
+          <para>Unextend (truncate) line at the current edit position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>V n</term>
+        <listitem>
+          <para>Turn verify mode (display text changes) off if <replaceable>n</replaceable> = 0, or
+on if <replaceable>n</replaceable> &lt;&gt; 0.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>W n</term>
+        <listitem>
+          <para>Write <replaceable>n</replaceable> lines to the buffer's output file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>X n</term>
+        <listitem>
+          <para>Display <replaceable>n</replaceable> lines of text that precede the edit position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.CHANGE n str1 str2</term>
+        <listitem>
+          <para>Similar to "C" command.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.DEL str</term>
+        <listitem>
+          <para>Delete the macro with the name specified by <replaceable>str</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.DIR</term>
+        <listitem>
+          <para>Display the editor's directory of buffers and macros.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.EOB</term>
+        <listitem>
+          <para>Test for end of buffer, if the edit pointer is at the
+end of the buffer succeed, otherwise fail.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.EOF</term>
+        <listitem>
+          <para>Test for end of file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.EOL</term>
+        <listitem>
+          <para>Test for end of line. If the edit pointer is at the end
+of the line, this command will succeed, otherwise fail.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.F</term>
+        <listitem>
+          <para>Exit innermost loop or macro and set the fail flag.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.LOAD str</term>
+        <listitem>
+          <para>Load macros from the path specified by "<replaceable>str</replaceable>".</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.MAC str</term>
+        <listitem>
+          <para>Open the macro specified by "<replaceable>str</replaceable>" for definition. If an
+empty string is given, a new macro will be created.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.NEOB</term>
+        <listitem>
+          <para>Test for not end of buffer.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.NEOF</term>
+        <listitem>
+          <para>Test for not end of file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.NEOL</term>
+        <listitem>
+          <para>Test for not end of line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.NEW</term>
+        <listitem>
+          <para>Write lines to the output file up to the current line,
+then try to read an equal amount from the input file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.NSTR str</term>
+        <listitem>
+          <para>Test if "<replaceable>str</replaceable>" does not match characters at the current
+edit position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.READ str</term>
+        <listitem>
+          <para>Open an file for reading, using "<replaceable>str</replaceable>" as the pathlist.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.S</term>
+        <listitem>
+          <para>Exit the innermost loop or macro and succeed.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.SAVE str1 str2</term>
+        <listitem>
+          <para>Save the macro(s) specified in "<replaceable>str1</replaceable>" on the file
+specified by the pathlist in <replaceable>str2</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.SEARCH n str</term>
+        <listitem>
+          <para>Similar to the "S" command.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.SHELL text</term>
+        <listitem>
+          <para>Call OS-9 shell to execute the command line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.SIZE</term>
+        <listitem>
+          <para>Display the size of memory used and the total amount of
+memory available in the workspace.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.STAR n</term>
+        <listitem>
+          <para>Test if <replaceable>n</replaceable> is equal to asterisk (infinity).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.STR str</term>
+        <listitem>
+          <para>Test if "<replaceable>str</replaceable>" matches the characters at the current edit
+position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.WRITE str</term>
+        <listitem>
+          <para>Open an file for writing using "<replaceable>str</replaceable>" as pathlist.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.ZERO n</term>
+        <listitem>
+          <para>Test <replaceable>n</replaceable> to see if it is zero.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Interactive Debugger Quick Reference</title>
+    <variablelist>
+      <varlistentry>
+        <term>[SPACE] expr</term>
+        <listitem>
+          <para>Evaluate expression and display result in hex and decimal</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>.</term>
+        <listitem>
+          <para>Print Dot address and contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>..</term>
+        <listitem>
+          <para>Restore last DOT, print address and contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>. expr</term>
+        <listitem>
+          <para>Set Dot to result, print address and contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>= expr</term>
+        <listitem>
+          <para>Set memory at Dot to result</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>-</term>
+        <listitem>
+          <para>Backup Dot, print address and contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>[RETURN]</term>
+        <listitem>
+          <para>Move Dot forward, print address and contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>:</term>
+        <listitem>
+          <para>Display all register contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>:reg</term>
+        <listitem>
+          <para>Display specific register contents</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>:reg expr</term>
+        <listitem>
+          <para>Set register to result</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>E text</term>
+        <listitem>
+          <para>Prepare for execution</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>G</term>
+        <listitem>
+          <para>Go to program</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>G expr</term>
+        <listitem>
+          <para>Go to program at result address</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>L text</term>
+        <listitem>
+          <para>Link to module named, print address</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>B</term>
+        <listitem>
+          <para>Display all breakpoints</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>B expr</term>
+        <listitem>
+          <para>Set breakpoint at result address</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>K</term>
+        <listitem>
+          <para>Kill all breakpoints</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>K expr</term>
+        <listitem>
+          <para>Kill breakpoint at result address</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>M expr1 expr2</term>
+        <listitem>
+          <para>Dump memory</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>C expr1 expr2</term>
+        <listitem>
+          <para>Clear and test memory</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>S expr1 expr2</term>
+        <listitem>
+          <para>Search memory for pattern</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>$ test</term>
+        <listitem>
+          <para>Run Shell command line</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Q</term>
+        <listitem>
+          <para>Quit debugging</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</appendix>

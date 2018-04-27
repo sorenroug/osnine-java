@@ -1,0 +1,382 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <title>Error Messages</title>
+  <section>
+    <title>Text Editor Error Messages</title>
+    <variablelist>
+      <?dbfo list-presentation="blocks"?>
+      <varlistentry>
+        <term>BAD MACRO NAME</term>
+        <listitem>
+          <para>This error is caused by trying to close a macro definition, when the
+first line in the macro does not start with a legal macro name. The
+editor will allow you to close definition of a macro after you have given
+it a legal name. See the section on macro names.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BAD NUMBER</term>
+        <listitem>
+          <para>An illegal numeric parameter has been entered. This is usually caused by
+entering a number that is larger than 65535.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BAD VAR NAME</term>
+        <listitem>
+          <para>This error is caused by specifying a variable name that is illegal.
+Usually the variable name has been omitted, or you inadvertently included
+a "$" or "\#" character in the commands parameter list.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BRACKET MISMATCH</term>
+        <listitem>
+          <para>This is caused by either having one too many left or right brackets (they
+must be used in pairs to repeat a command sequence). This error may also
+be caused by nesting the brackets too deeply.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BREAK</term>
+        <listitem>
+          <para>This message is printed when you type a
+(<keycombo action="simul"><keycap>CONTROL</keycap><keycap>C</keycap></keycombo>)
+or (<keycombo action="simul"><keycap>CONTROL</keycap><keycap>Q</keycap></keycombo>) to
+interrupt whatever the editor is doing. After printing the error
+message, the editor will return to command entry mode. It is important
+to remember that the printout of edit command results may not be
+synchronized with the actual operation of a command.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DUPL MACRO</term>
+        <listitem>
+          <para>This error is caused by trying to close a macro definition when there is
+another macro with the same name. The problem may be solved by renaming
+the macro before trying to close its definition.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>END OF FILE</term>
+        <listitem>
+          <para>This means that there is no more text remaining in the input file that is being read.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>END OF TEXT</term>
+        <listitem>
+          <para>This means that you have reached the end of the edit buffer. This is used only as a reminder.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>FILE CLOSED</term>
+        <listitem>
+          <para>This means that you tried to write to a file that was
+never opened. You should either specify a write file when starting up
+the editer from OS-9, or open an output file using the ".WRITE" pseudo macro.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MACRO IS OPEN</term>
+        <listitem>
+          <para>You must first close the macro definition before using
+the command that caused this error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MISSING DELIM</term>
+        <listitem>
+          <para>The editor could not find a matching delimiter to complete the string
+that you specified. A string must be completely specified on a single line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>NOT FOUND</term>
+        <listitem>
+          <para>The editor can not find the string or macro that was specified in a command parameter.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>UNDEFINED VAR</term>
+        <listitem>
+          <para>This error occurs when you try to use a variable that was not specified
+in the macros definition parameter list. A variable parameter may be
+used only in the macro in which it is declared. See the section of this
+manual on macros.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>WHAT ??</term>
+        <listitem>
+          <para>The editor did not understand a command that you typed. This is usually
+caused by entering a command that does not exist (misspelling its name).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>WORKSPACE FULL</term>
+        <listitem>
+          <para>This error is caused by entering a command that tried to insert more text
+into the buffer than there was room for. The.problem may be solved by
+increasing the workspace size using the "M" command, or by removing some
+text from the edit buffers.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Assembler Error Messages</title>
+    <variablelist spacing="compact">
+      <?dbfo list-presentation="blocks"?>
+      <varlistentry>
+        <term>BAD LABEL</term>
+        <listitem>
+          <para>The statement's label has an illegal character or does not start with A-Z or a-z.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BAD INSTR</term>
+        <listitem>
+          <para>The assembler did not recognize the instruction given in the source statement.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ADDRESS MODE</term>
+        <listitem>
+          <para>The addressing mode specified is not legal for the instruction.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>OUT OF RANGE</term>
+        <listitem>
+          <para>The destination (label) of the branch is too far to use a short branch
+instruction (e.g. the a 16-bit offset using a LBRA-type instruction must
+be used).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>REG NAM</term>
+        <listitem>
+          <para>The register name required is missing or misspelled.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>REG SIZES</term>
+        <listitem>
+          <para>The registers specified in a TFR or EXG instruction were of different
+lengths (e.g., 8 bit vs. 16 bit).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INDEX REG</term>
+        <listitem>
+          <para>The name of an index register is required by the instruction but none was found.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>] MISSING</term>
+        <listitem>
+          <para>A closing bracket was omitted (indirect addressing).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CONST DEF</term>
+        <listitem>
+          <para>The instruction requires a constant or an expression which is missing or in error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LABEL NOT ALLOWED</term>
+        <listitem>
+          <para>This type of statement cannot have a label.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>NEEDS LABEL</term>
+        <listitem>
+          <para>The statement is required to have a label.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>IN NUMBER</term>
+        <listitem>
+          <para>A constant number (decimal, hex or binary) is too large or had an illegal character.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DIV BY 0</term>
+        <listitem>
+          <para>A division with a zero divisor was attempted within an expression.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MULT OVERFL</term>
+        <listitem>
+          <para>The result of a multiplication is greater than 65535 (two bytes).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>EXPR SYNTAX</term>
+        <listitem>
+          <para>The arithmetic instruction is illegally constructed or is missing an
+operand following an operator.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PARENS</term>
+        <listitem>
+          <para>There is an unequal number of left and right parentheses in the expression.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RESULT&gt;255</term>
+        <listitem>
+          <para>The result of the expression is too large to be represented in the one-byte value used by the instruction.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>REDEFINED NAME</term>
+        <listitem>
+          <para>The label was defined previously in the program.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>UNDEFINED NAME</term>
+        <listitem>
+          <para>The symbolic name was never defined in the program.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PHASING</term>
+        <listitem>
+          <para>The statement's label had a different address during the first assembly
+pass. This usually happens when an instruction changes addressing modes
+and thus its length after the first pass because its operand becomes
+defined <emphasis>after</emphasis> the source line is processed. Usually the error occurs on
+all labels following the offending source line.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MEMORY FULL</term>
+        <listitem>
+          <para>The symbol table became full - more memory is required to assemble the program.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>OPT LIST</term>
+        <listitem>
+          <para>An illegal or missing option in the assembler command line or in an OPT statement.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INPUT PATH</term>
+        <listitem>
+          <para>A read error occured on the input path.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>OBJECT PATH</term>
+        <listitem>
+          <para>A write error occured on the object file path.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CAN'T OPEN PATH</term>
+        <listitem>
+          <para>The file cannot be opened (source file) or created (object file).</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Interactive Debugger Error Codes</title>
+    <variablelist spacing="compact">
+      <?dbfo list-presentation="blocks"?>
+      <varlistentry>
+        <term>0 ILLEGAL CONSTANT</term>
+        <listitem>
+          <para>The expression included a constant that had an illegal character or was
+too large ( &gt; 65535 ).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>1 DIVIDE BY ZERO</term>
+        <listitem>
+          <para>A division was attempted using a divisor of zero.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>2 MULTIPLICATION OVERFLOW</term>
+        <listitem>
+          <para>The product of the multiplication was greater then 65535.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>3 OPERAND MISSING</term>
+        <listitem>
+          <para>An operator was not followed by a legal operand.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>4 RIGHT PARENTHESIS</term>
+        <listitem>
+          <para>Right paren is expression missing: misnested parentheses.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>5 RIGHT BRACKET MISSING</term>
+        <listitem>
+          <para>Misnested brackets.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>6 RIGHT CARAT MISSING</term>
+        <listitem>
+          <para>Misnested byte-indirect ( &lt; and &gt; ).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>7 INCORRECT REGISTER</term>
+        <listitem>
+          <para>Misspelled, missing or illegal register name followed the colon.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>8 BYTE OVERFLOW</term>
+        <listitem>
+          <para>Attempted to store a value greater than 255 in a byte-sized destination.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>9 COMMAND ERROR _</term>
+        <listitem>
+          <para>Misspelled, missing or illegal command.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>10 NO CHANGE</term>
+        <listitem>
+          <para>The memory location did not match the value assigned to it.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>11 BREAKPOINT TABLE FULL</term>
+        <listitem>
+          <para>The maximum number of twelve breakpoints already exist.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>12 BREAKPOINT NOT FOUND</term>
+        <listitem>
+          <para>No breakpoint exists at the address specified.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>13 ILLEGAL SWI</term>
+        <listitem>
+          <para>A SWI instruction was encountered in the user program at an address other than a breakpoint.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</appendix>

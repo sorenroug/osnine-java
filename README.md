@@ -6,7 +6,7 @@ be configured at runtime with a range of memory mapped devices.
 Devices:
 * Acia6551Console emulates a Roswell 6551 UART. It writes to Java's System.out and reads from System.in.
 * Acia6551Telnet is another UART emulator. It opens a socket on port 2323, which the user can `telnet` to.
-* Acia6850Console emulates a Motorola 6850 UART. This one is incomplete. IRQs don't work yet.
+* Acia6850Console emulates a Motorola 6850 UART.
 * IRQBeat sends an IRQ interrupt every 20 milliseconds to the CPU.
 * HWClock makes it possible to get the date and time from the host of the emulator.
 * VirtualDisk interfaces a DSK image to the emulator as a floppy or harddisk.

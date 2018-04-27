@@ -1,0 +1,2546 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Assembler</title>
+  <section>
+    <title>Introduction</title>
+    <para>
+The actual machine instructions executed by a computer are sequences
+of binary numbers that are difficult and inconvenient for people to deal
+with directly. Creating a machine language program of any length by hand
+is tedious, error prone, and time consuming, making it an almost
+impossible task. <emphasis>Assembly language</emphasis> bridges the gap between computers
+and people who must write machine-language programs. In assembly
+language, descriptive mnemonics (abbreviations) for each machine
+instruction are used which are much easier to learn, read, and remember
+are used instead of numerical codes. The assembler also lets the
+programmer assign <emphasis>symbolic names</emphasis> to memory addresses and constant values.
+The Assembler also has many other features to make assembly language
+programming easier.
+</para>
+    <para>
+This assembler was designed expressly for the modular, multi-tasking
+environment of the OS-9 Operating System, and incorporates built-in
+functions for calling OS-9, generating memory modules, encouraging the
+creation of position-independent-code, and maintaining separate program
+and data sections. It has also been optimized for use by OS-9 high-level
+language compilers such as Pascal and C, and can be used on either OS-9
+Level One or OS-9 Level Two systems.
+</para>
+    <para>
+Another noteworthy characteristic of this assembler is its extremely
+fast assembly speed which is attributable to its tree-structured symbol
+table organization. The tree structure dramatically reduces symbol table
+searching, which is the most time-consuming operation performed by an assembler.
+</para>
+    <para>
+This manual describes how to use the OS-9 Assembler and basic
+programming techniques for the OS-9 environment. It is not intended to.
+be a comprehensive course on assembly language programming or the 6809
+instruction set. If you are not familiar with these topics, you should
+consult the Motorola 6809 programming manuals and one of the many
+excellent assembly-language programming books available at libraries or bookstores.
+</para>
+  </section>
+  <section>
+    <title>Installation</title>
+    <para>
+The OS-9 Assembler uses the following files:
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>asm</term>
+        <listitem>
+          <para>the assembler program</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DEFS</term>
+        <listitem>
+          <para>a directory containing OS-9 common system-wide definition files. These files are:</para>
+          <simplelist type="vert">
+            <member>OS9Defs</member>
+            <member>SysType</member>
+            <member>SCFDefs</member>
+            <member>RBFDefs</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para>
+The file "ASM" should be located in the "CMDS" directory of your system
+disk. "DEFS" should be present in the root directory.
+</para>
+  </section>
+  <section>
+    <title>Assembly Language Program Development</title>
+    <para>
+Writing and testing of assembly language programs involves an
+edit/assemble/test cycle. In detail, the individual steps are:
+</para>
+    <orderedlist>
+      <listitem>
+        <para>Create a source program file using the text editor.</para>
+      </listitem>
+      <listitem>
+        <para>Run the assembler to translate the source file to a machine object (machine language) file.</para>
+      </listitem>
+      <listitem>
+        <para>If the assembler reported errors, use the text editor to correct the source file, then go to step 2.</para>
+      </listitem>
+      <listitem>
+        <para>Run and test the program. The OS-9 Interactive Debugger is frequently used for testing.</para>
+      </listitem>
+      <listitem>
+        <para>If the program has bugs, use the text editor to correct the source file, then go to step 2.</para>
+      </listitem>
+      <listitem>
+        <para>Document the program and you are done!</para>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section xml:id="opmodes">
+    <title>Operational Modes</title>
+    <para>
+The OS-9 Assembler has a number of features specifically designed to
+conveniently develop machine language programs for the OS-9 environment.
+These features include: special assembler directive statements for
+generating OS-9 memory modules, identification of 6809 addressing modes
+that are not usually permitted in OS-9 programs, and separate data and
+program address counters.
+</para>
+    <para>
+The assembler has two operating modes: "normal", and "Motorola-compatible".
+</para>
+    <para>
+In normal mode, the features mentioned above are active. In the
+Motorola-compatible mode, the assembler works the same way as a standard
+6809 "absolute" assembler (without separate program and data counters).
+This mode exists so that the assembler can be used to generate programs
+for 6809 computers that are not equipped with OS-9.
+</para>
+    <para>
+The assembler. will be in the normal mode unless the "m" option is
+used in the command line or in an OPT statement. Similarly, the "-m"
+option will return the assembler to the normal mode (modes can be freely
+switched to achieve special effects).
+</para>
+    <para>
+The assembler performs two "passes" (complete scans) over the source
+file. During each pass, input lines are read and processed one at a time.
+During the first pass, the symbol table is created. Most error messages,
+the prOgram listing, and the object code are generated during the
+second pass.
+</para>
+  </section>
+  <section>
+    <title>Running the Assembler</title>
+    <para>
+The assembler is a command program that can be run from the OS-9
+<command>Shell</command>, from a Shell procedure file, or from another program. The disk
+file and memory module names are "asm".
+The basic format of a command line to run the assembler is:
+<synopsis>
+asm filename [option(s)] [#memsize] [ &gt;listing ]
+</synopsis>
+
+Brackets enclose optional things, thus the only items absolutely required
+are the "asm" command name, and "filename" which is the source text file
+name (or more correctly, pathlist). A typical command line looks like
+this:
+
+<screen>
+OS9: asm prog5 l s -c #12k &gt;/p <keycap>RETURN</keycap>
+</screen>
+
+In. this example, the source program is read from the file "prog5". The
+source file name can be followed by an <emphasis>option list</emphasis>, which allows you to
+control various factors such as whether or not a listing or object file
+is to be generated, control the listing format, etc. The option list
+consists of one or more option abbreviations separated by spaces or
+commas. An option is turned on by its presence in the list, or a minus
+followed by an option abbreviation acts to turn the function off. If an
+option is not expressly given, the assembler will assume a <emphasis>default</emphasis>
+condition for. it. Also, command line options can be overridden by OPT
+statements within the source program (see the OPT statement description
+for more information). In the example above, the options "l" and "s" are
+turned on, and "c" is turned off.
+</para>
+    <para>
+The optional "#memsize" item is actually processed by the <command>Shell</command> to
+specify how much data area memory the assembler is assigned. If memory
+is not specified, the assembler will be assigned 4K bytes of memory in
+its data area. Most of this space is used to store the symbol table.
+Any additional memory requested by this option allows the symbol table to
+be larger. Large programs generally use more symbols, so their memory
+requirements are correspondingly larger. If the assembler generates a
+"Symbol Table Full" error message, this option should be used to increase
+the assembler's memory size. In the previous example, 12K bytes of
+memory is specified.
+</para>
+    <para>
+The final item, "&gt;listing", allows the program listing generated by
+the assembler (on the standard output path) to be optionally redirected
+to another pathlist, which may be an output device such as a printer, a
+disk file, or a pipe to another program. Like the memory size option,
+output redirection is handled by the <command>Shell</command> and not the assembler itself.
+If this item is omitted from the command line, the output will appear on
+your terminal display. In the above example, the listing output was
+directed to a device called "p", which is the name of the printer on most
+OS-9 systems.
+</para>
+    <para>
+Below are examples of various forms of command lines and detailed
+explanations of their output. There are also other options available so
+many variations of the command line are possible. The examples listed
+here illustrate the most commonly used forms.
+</para>
+    <synopsis>
+asm disk_crash
+</synopsis>
+    <para>
+This command line will assemble the file <filename>disk_crash</filename>.
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>There will be:</term>
+        <listitem>
+          <simplelist>
+            <member>no listing created.</member>
+            <member>no object file created.</member>
+            <member>errors reported to standard error path.</member>
+            <member>4k memory for symbols (default).</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <synopsis>
+asm work.rec o #16k
+</synopsis>
+    <para>
+This command line will assemble the file <filename>work.rec</filename>.
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>There will be:</term>
+        <listitem>
+          <simplelist>
+            <member>no listing created.</member>
+            <member>an object file created with the name "work.rec" in the current commands dir.</member>
+            <member>errors reported to standard output path.</member>
+            <member>16k of memory for symbols.</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <synopsis>
+asm tyco o=/d0/cmds/tyco.obj l #16k
+</synopsis>
+    <para>
+This command line will assemble the file <filename>tyco</filename>.
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>There will be:</term>
+        <listitem>
+          <simplelist>
+            <member>a listing directed at standard output.</member>
+            <member>an object file created with the name "tyco" in the /d0/cmds directory.</member>
+            <member>errors reported to the listing path.</member>
+            <member>16k of memory for symbols.</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <synopsis>
+asm it_works o,l #16k &gt;/p
+</synopsis>
+    <para>
+This command line will assemble the file <filename>it_works</filename>.
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>There will be:</term>
+        <listitem>
+          <simplelist>
+            <member>a listing directed at /p.</member>
+            <member>an object file created with the name "it_works" in the current commands dir.</member>
+            <member>errors reported to the listing path.</member>
+            <member>16k of memory for symbols.</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <synopsis>
+asm rent_a_duck 1,5,w72,d25 #10k
+</synopsis>
+    <para>
+This command line will assemble the file <filename>rent_a_duck</filename>.
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>There will be:</term>
+        <listitem>
+          <simplelist>
+            <member>a listing directed to standard output.</member>
+            <member>no object file created.</member>
+            <member>errors reported to the listing path.</member>
+            <member>10k of memory for symbols.</member>
+            <member>a symbol table created.</member>
+            <member>listing will have 25 line pages.</member>
+            <member>listing will have 72 column lines.</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <synopsis>
+asm /term i l o=/d0/progs/woof
+</synopsis>
+    <para>
+This command line will assemble input from the terminal.
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>There will be:</term>
+        <listitem>
+          <simplelist>
+            <member>a listing directed at standard output.</member>
+            <member>an object file created with the name woof in the /d0/progs directory.</member>
+            <member>errors reported to the listing path.</member>
+            <member>4k of memory for symbols (asm default).</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Source Program Format and Syntax</title>
+    <section>
+      <title>Assembler Source Files</title>
+      <para>
+The Assembler reads its input from an input file (path) which
+contains variable-length lines of text. Input files may be created and
+edited by the OS-9 Text Editor described in Section 1, or any other
+standard text editor.
+</para>
+      <para>
+The maximum length of the input line is 120 characters. Each line
+contains assembler statements as explained in this manual. Every line is
+terminated by a [RETURN] character.
+</para>
+    </section>
+    <section>
+      <title>Source Statement Fields</title>
+      <para>
+Each input line is a text string terminated by a [RETURN]. The line
+can have from one to four "fields":
+</para>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para>an optional label field</para>
+        </listitem>
+        <listitem>
+          <para>an operation field</para>
+        </listitem>
+        <listitem>
+          <para>an operand field (for some operations)</para>
+        </listitem>
+        <listitem>
+          <para>an optional comment field</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+There are also special cases: if the first character of a line is an
+asterisk, the entire line is treated as a comment which is printed in the
+listing but not otherwise processed. Blank lines are ignored but are
+included in the listing.
+</para>
+      <section>
+        <title>Label Field</title>
+        <para>
+The label field begins in the first character position of the line.
+Labels are usually optional (instructions), but there are exceptions.
+They are required by some statements (i.e. EQU and SET), or not allowed
+on others (assembler directives such as SPC, TTL, etc.). The first
+character .of the line must be a space if the line does not contain a
+label.
+</para>
+        <para>
+The label must be a legal symbolic name consisting of from one to
+eight uppercase or lowercase characters, decimal digits, or the
+characters "$", "_", or ".", however the first character must be a
+letter (see Sect. 3.3). Labels (and names in general) must be unique,
+i.e., they cannot be defined more than once in a program (except when
+used with the "SET" directive).
+</para>
+        <para>
+Label names are stored in the symbol table with an associated 16-bit
+value, which is normally the program counter address before code is
+generated for the line. In other words, instructions and most
+constant-definition statements associate the label name with the value of.the
+program address of the first object code byte generated for the line.
+</para>
+        <para>
+An exception to this rule is that labels on SET and EQU statements
+are given the value of the result of evaluation of the operand field. In
+other words, these statements allow any value to be associated with a
+symbolic name. Likewise, labels on RMB statements are given the value of
+the data address counter when in normal assembler mode, or the value of
+the program address counter when in Motorola-compatible mode.
+</para>
+      </section>
+      <section>
+        <title>Operation Field</title>
+        <para>
+This field specifies the machine language instruction or assembler
+directive statement mnemonic name. It immediately follows and is
+separated from the label field by one or more spaces.
+</para>
+        <para>
+Some instructions must include a register name which is part of the
+operation field (i.e., LDA, LDD, LDU). In these instructions the
+register name must be part of the name and <emphasis>cannot</emphasis> be separated by spaces
+as in older 6800-type assemblers. The assembler accepts instruction
+mnemonic names in either uppercase or lowercase characters.
+</para>
+        <para>
+Instructions cause one to five bytes of object code to be generated
+depending on the specific instruction and addressing mode. Some
+assembler directive statements (such as FCB, FCC) also cause object code
+to be generated.
+</para>
+      </section>
+      <section>
+        <title>Operand Field</title>
+        <para>
+The operand field follows, and must be separated by, at least one
+space from the instruction field. Some instructions don't use an operand
+field; other instructions and assembler directives require an operand
+field to specify an addressing mode, operand address, parameters, etc.
+The sections describing the instructions and assembler directives explain
+the format for operand(s), if any.
+</para>
+      </section>
+      <section>
+        <title>Comment Field</title>
+        <para>
+The last field of the source statement is the optional comment field
+which can be used to include a descriptive comment in the source
+statement. This field is not processed other than being copied to the
+program listing.
+</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>Expressions</title>
+    <para>
+Operands of many instructions and assembler directives can include
+arithmetic expressions in various places. The assembler can evaluate
+expressions of almost any complexity using a form similar to the
+algebraic notation used in programming languages such as BASIC and FORTRAN.
+</para>
+    <para>
+Expressions consists of <emphasis>operands</emphasis>, which are symbolic names or
+constants, and <emphasis>operators</emphasis>, which specify an arithmetic or logical
+function. A11 assembler arithmetic uses two-byte (internally, 16 bit
+binary) signed or unsigned integers in the range of 0 to 65535 for
+unsigned numbers, or -32768 to +32767 for signed numbers.
+</para>
+    <para>
+In some cases, expressions are expected to evaluate to a value which
+must fit in one byte (such as 8-bit register instructions), and therefore
+must be in the range of 0 to 255 for unsigned values and -128 to 127 for
+signed values. In these cases, if the result of an expression is outside
+of this range an error message will be given.
+</para>
+    <para>
+Expressions are evaluated from left-to-right using the algebraic
+order of operations (i.e. multip1ications and divisions are performed
+before additions and subtractions). Parentheses can be used to alter the
+natural order of evaluation.
+</para>
+    <section>
+      <title>Operands</title>
+      <para>
+The following items may be used as operands within an expression:
+</para>
+      <section>
+        <title>Decimal Numbers</title>
+        <para>
+Can have an optional minus sign and one to five digits, for example:
+</para>
+        <simplelist type="horiz" columns="5">
+          <member>100</member>
+          <member>-32761</member>
+          <member>12</member>
+          <member>5</member>
+          <member>-1</member>
+        </simplelist>
+      </section>
+      <section>
+        <title>Hexadecimal Numbers</title>
+        <para>
+
+Consist of a dollar sign ("$") followed by one to four hexadecimal
+characters (0-9, A-F or a-f), for example:
+</para>
+        <simplelist type="horiz" columns="3">
+          <member>$EC00</member>
+          <member>$100</member>
+          <member>$3</member>
+        </simplelist>
+      </section>
+      <section>
+        <title>Binary Numbers</title>
+        <para>
+Consist of a percent sign ("%") followed by one to sixteen binary digits
+(0 or 1), for example:
+</para>
+        <simplelist type="horiz" columns="3">
+          <member>%0101</member>
+          <member>%1111000011110000</member>
+          <member>%10101010</member>
+        </simplelist>
+      </section>
+      <section>
+        <title>Character Constants</title>
+        <para>
+Consist of single quote ("'") followed by any printable ASCII character.
+For example:
+</para>
+        <simplelist type="horiz" columns="4">
+          <member>'X</member>
+          <member>'c</member>
+          <member>'5</member>
+          <member>'c</member>
+        </simplelist>
+      </section>
+      <section>
+        <title>Symbolic Names</title>
+        <para>
+
+Names are defined by EQU or SET statements, or by use as a label. They
+consist of one to eight characters: upper and lower case alpha
+(A-Z, a-z), digits (0-9), and special characters _, ., or $
+(underscore, period or dollar sign), the first character of which cannot be a digit.
+See Page 2-12 for more information.
+</para>
+      </section>
+      <section>
+        <title>Program Instruction Counter</title>
+        <para>
+The asterisk ("*") represents the program instruction counter value as of
+the beginning of the line.
+</para>
+      </section>
+      <section>
+        <title>Program Data Counter</title>
+        <para>
+The period (".") represents the data storage counter value as of the
+beginning of the line. It is not used in Motorola-compatible mode.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>Arithmetic and Logical Operators</title>
+      <para>
+Operators used in expressions operate on one operand (negative and
+not) or on two operands (all others). The table below shows the
+available operators, listed in the order they are evaIUated ralative.to
+each other, e.g, logical OR operations are performed before
+multiplications. Operators listed on the same line have identical
+precedence and are processed from left to right when they occur in the
+same expression.
+</para>
+      <table frame="none" rowsep="0" colsep="0">
+        <title>Operators By Order of Evaluation</title>
+        <tgroup cols="3">
+          <colspec colwidth="2.0in"/>
+          <colspec colwidth="2.0in"/>
+          <colspec colwidth="2.0in"/>
+          <tbody>
+            <row>
+              <entry>- negative</entry>
+              <entry>^ logical NOT</entry>
+              <entry>(highest)</entry>
+            </row>
+            <row>
+              <entry>&amp; logical AND</entry>
+              <entry>! logical OR</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>* multiplication</entry>
+              <entry>/ division</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>+ addition</entry>
+              <entry>- subtraction</entry>
+              <entry>(lowest)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para>
+Logical operations are performed bitwise, i.e., the logical function
+is performed bit-by-bit on each bit of the operands.
+</para>
+      <para>
+Division and multiplication functions assume <emphasis>unsigned</emphasis> operands, but
+subtraction and addition work on signed (2's complement) or unsigned
+numbers. Division by zero or multiplication resulting in a product
+larger than 65536 have undefined results and are reported as errors.
+</para>
+    </section>
+    <section>
+      <title>Symbolic Names</title>
+      <para>
+A symbolic name consists of from one to eight uppercase or lowercase
+characters, decimal digits, or the characters "$", "_", or ".".
+However, the first character must be a letter. The following are
+examples of <emphasis>legal</emphasis> symbol names:
+</para>
+      <simplelist type="horiz" columns="4">
+        <member>HERE</member>
+        <member>there</member>
+        <member>SPL030</member>
+        <member>VX_GH</member>
+        <member>abc.def</member>
+        <member>Q1020.1</member>
+        <member>L.123.x</member>
+        <member>t$integer</member>
+      </simplelist>
+      <para>
+These are examples of illegal symbol names with reasons why they are illegal:
+</para>
+      <simplelist type="vert">
+        <member>2move - does not start with a letter</member>
+        <member>main.backup - more than 8 characters</member>
+        <member>lb1#123 - # is not a legal name character</member>
+      </simplelist>
+      <para>
+Names are defined when first used as a label on an instruction or
+directive statement. They must be defined exactly one time in the
+program (except SET labels: see SET statement description). If a name is
+redefined (used as a label more than once) an error message is printed on
+subsequent definition(s). Multiple forward references (i.e. a definition
+using currently undefined names) are not allowed.
+</para>
+      <para>
+Symbolic names are stored with their associated type and value in an
+assembler data structure called the "symbol table", which uses most of
+the assembler's data memory space. Using the default memory size of 4K
+there is room in the symbol table for approximately 200 names. The <command>shell</command>
+optional memory size modifier can be used to give the assembler a larger
+memory space. Each entry in the table requires 15 bytes, so each
+additional 4K of memory adds space for about 273 additional names. For
+example, the command line:
+<screen>
+asm sourcefile #16K
+</screen>
+gives the symbol table enough space for a little over a thousand names.
+If the "S" option is selected, the assembler will generate an
+alphabetical listing of all symbol names, types, and values which is
+printed at the end of the assembly.
+</para>
+    </section>
+    <section>
+      <title>Instruction Addressing Modes</title>
+      <para>
+One of the 6809's features is that its instruction set has a large
+variety of addressing modes. Each group of similar instructibns can be
+used with specific addressing modes, which are usually specified in the
+assembler source statement operand field. The assembler will generate an
+error message if an addressing mode is specified which cannot be legally
+used with the specific instruction.
+</para>
+      <section>
+        <title>Inherent Addressing</title>
+        <para>
+Certain instructions don't need operands (SYNC, SWI, etc.), or
+implicitly specify operands (MUL, ABX, etc.), therefore no operand field
+is needed.
+</para>
+      </section>
+      <section>
+        <title>Accumulator Addressing</title>
+        <para>
+Some instructions have the A or B accumulators as operands.
+Examples:
+</para>
+        <programlisting>
+CLRA
+ASLB
+INCA
+</programlisting>
+      </section>
+      <section>
+        <title>Immediate Addressing</title>
+        <para>
+In immediate addressing, the operand bytes are the actual value used
+by the instruction. Instructions that use 8-bit registers must have
+operand expressions that evaluate to 0 to 255 (unsigned) or -128 to 127
+(signed), or an error will be reported. The syntax is:
+</para>
+        <synopsis>
+instr #expression
+</synopsis>
+        <para>
+Examples:
+</para>
+        <programlisting>
+LDD #$1F00
+ldb #bufsiz+2
+ORCC #$FF-CBIT
+</programlisting>
+      </section>
+      <section>
+        <title>Relative Addressing</title>
+        <para>
+This addressing mode is used by branch-type instructions such as
+BCC, BEQ, LBNE, BSR, LBSR, etc. The operand field is an expression which
+is the "destination" of the instruction, which is almost always a name
+used as a statement label somewhere in the program. The assembler
+computes an 8 or 16-bit program counter offset to the destinatiOn which
+is made part of the instruction. The destination of short branch-type
+instructions must be in the range of -126 to +129 bytes of the
+instruction address or an error message will be generated. Long branch-type
+instructions can reference any destination. If a long branch
+instruction references a destination that would be within the range of a
+smaller and faster short branch instruction a "W" warning symbol will be
+placed in the listing line's information field. All instructions using
+relative addressing are inherently position-independent code.
+</para>
+        <para>
+Examples:
+</para>
+        <programlisting>
+BCS  LOOP
+LBNE LABEL5
+LBSR START+3
+BLT  COUNT
+</programlisting>
+      </section>
+      <section>
+        <title>Extended and Extended Indirect Addressing</title>
+        <para>
+Extended addressing uses the second and third bytes of the
+instruction as the absolute address of- the operand. Data section
+addresses of OS-9 programs are assigned when the program is actually
+executed, so absolute memory addresses are not known before the program
+is run. Therefore this addressing mode is not normally used in OS-9
+programs. The assembler will print an informational warning flag, "W",
+if this addressing mode is specified.
+</para>
+        <para>
+Extended Indirect addressing is similar to extended addressing
+except that the address part of the machine instruction is used as the
+address of a memory location containing the address of the operand.
+Because this mode also uses absolute addresses, it is not frequently used
+in OS-9 for the reasons given above, and is also flagged with a warning
+by the assembler. This addressing mode is selected by enclosing the
+address expression in brackets.
+</para>
+        <para>
+Examples:
+</para>
+        <programlisting>
+ADDA $1C48     <lineannotation>extended addressing</lineannotation>
+ADDA [$D58A]   <lineannotation>extended indirect addressing</lineannotation>
+LDB START      <lineannotation>extended addressing</lineannotation>
+stb [end]      <lineannotation>extended indirect addressing</lineannotation>
+</programlisting>
+      </section>
+      <section>
+        <title>Direct Addressing</title>
+        <para>
+Direct addressing uses the second byte of the instruction as the
+least significant byte of the operand's address. The most significant
+byte is obtained from the MPU's dicect page register. This addressing
+mode is preferred for accessing most variables in OS-9 programs because
+OS-9 automatically assigns unique direct pages to each task at run-time,
+and also because this mode produces short, fast instructions. The syntax
+for extended and direct addressing has the same form:
+</para>
+        <synopsis>
+instr <replaceable>&lt;addr expr&gt;</replaceable>
+</synopsis>
+        <para>
+The assembler automatically selects direct addressing mode if the
+high-order byte of the address matches it's internal "direct page". This
+"direct page" is not the same as the run-time direct page register: it is
+strictly an assembly-time value. It is ordinarily set to zero and can be
+changed with the SETDP directive.
+</para>
+        <para>
+You can force the assembler to use direct addressing by using the
+"&lt;" symbol just before the address expression, or extended addressing by
+using the "&gt;" symbol in the same manner.
+</para>
+        <para>
+Examples:
+</para>
+        <programlisting>
+lda temp          <lineannotation>(assembler selects mode)</lineannotation>
+LDD &gt;PIA+1     <lineannotation>(forces extended addressing)</lineannotation>
+ldx &lt;count     <lineannotation>(forces direct addressing)</lineannotation>
+STD [pointer]     <lineannotation>(extended indirect)</lineannotation>
+</programlisting>
+      </section>
+      <section>
+        <title>Register Addressing</title>
+        <para>
+Some instructions operate on various MPU registers, which are
+referred to by a one or two letter name. In these instructions, the
+operand field specifies one or more register names. The names can he
+uppercase or lowercase. The register names are:
+</para>
+        <informaltable frame="none" colsep="0" rowsep="0">
+          <tgroup cols="2">
+            <colspec colwidth="1.0in"/>
+            <colspec colwidth="5.0in"/>
+            <tbody>
+              <row>
+                <entry>A</entry>
+                <entry>accumulator A (8 bits)</entry>
+              </row>
+              <row>
+                <entry>B</entry>
+                <entry>accumulator B (8 bits)</entry>
+              </row>
+              <row>
+                <entry>D</entry>
+                <entry>accumulator A:B concatenated (16 bits)</entry>
+              </row>
+              <row>
+                <entry>DP</entry>
+                <entry>direct page register (8 bits)</entry>
+              </row>
+              <row>
+                <entry>CC</entry>
+                <entry>condition codes register (8 bits)</entry>
+              </row>
+              <row>
+                <entry>X</entry>
+                <entry>index register X (16 bits)</entry>
+              </row>
+              <row>
+                <entry>Y</entry>
+                <entry>index register Y (16 bits)</entry>
+              </row>
+              <row>
+                <entry>S</entry>
+                <entry>stack pointer register (16 bits)</entry>
+              </row>
+              <row>
+                <entry>U</entry>
+                <entry>user stack pointer register (16 bits)</entry>
+              </row>
+              <row>
+                <entry>PC</entry>
+                <entry>program counter register (16 bits)</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>
+The EXG and TFR instructions have the form:
+<synopsis>
+instr reg,reg
+</synopsis>
+
+The registers given must be of the same size (either 8 or 16 bits) or the
+assembler will report an error.
+</para>
+        <para>
+The PSHS, PSHU, PULS, and PULU instructions accept a list of one or
+more register names. Even though the assembler will accept register
+names in any order, the MPU stacks and unstacks them in a specific order.
+</para>
+        <para>
+The syntax for these instructions is:
+
+<synopsis>
+instr reg {,reg}
+</synopsis>
+
+Examples:
+
+<programlisting>
+TFR X,Y
+EXG A,DP
+pshs a,b,x,dp
+PULU d,x,pc
+</programlisting>
+
+</para>
+      </section>
+    </section>
+    <section>
+      <title>Overview of Indexed Addressing Modes</title>
+      <para>
+One of the highlights of the 6809's architecture is the wide variety
+of indexed addressing modes (23 varieties). Indexed addressing is
+analogous to "register indirect", meaning that an indexable register
+(X, Y, U, S, or PC) is used as the basic address of the instruction's
+operand. The different varieties of indexed addressing use the specified
+register v contents which may be unchanged, temporary modified, or
+permanently modified, depending on the exact mode used.
+</para>
+      <para>
+All indexed modes must specify an index register, either X, Y, U, or
+SP. The PC register is used with the program-counter relative mode only.
+Any of the indexed addressing modes can be made "indirect" by enclosing
+the operand field in brackets to cause the effective address generated by
+the addressing mode to be used as the address of a pointer to the
+operand, rather than as the address of the operand.
+</para>
+      <section>
+        <title>Constant Offset Indexed</title>
+        <para>
+This mode uses an optional signed (two's complement) offset which is
+temporarily added ao the register's value to form the operand's effective
+address. The offset can be any number, or zero in which case the
+register's unaltered contents is used as the effective address. The
+assembler automatically picks the shortest of four possible varieties
+that can represent the offset. Therefore it is important to make sure
+that any symbolic name used in the offset expression has been previously
+defined, or the assembler will generate longer code than necessary or
+produce phasing errors.
+The syntax for constant offset indexed instructions is:
+<synopsis>
+instr ,reg              <lineannotation>zero offset</lineannotation>
+instr offset,reg        <lineannotation>constant offset</lineannotation>
+instr [,reg]            <lineannotation>zero offset indirect</lineannotation>
+instr [offset,reg]      <lineannotation>constant-offset indirect</lineannotation>
+</synopsis>
+Examples:
+
+<programlisting>
+lda ,x               <lineannotation>no offset</lineannotation>
+lda 0,x              <lineannotation>no offset</lineannotation>
+ldx 100,x            <lineannotation>offset of 100</lineannotation>
+Ldb COUNT,S          <lineannotation>offset of COUNT</lineannotation>
+ldd temp+2,y         <lineannotation>offset of temp+2</lineannotation>
+leax -2,y            <lineannotation>offset of -2</lineannotation>
+clr [PIA,X]          <lineannotation>indirect mode</lineannotation>
+</programlisting>
+
+</para>
+      </section>
+      <section>
+        <title>Program Counter Relative Indexed</title>
+        <para>
+This addressing mode is similar to constant-offset indexed except
+that the program counter register (PC or PCR) is used as an index
+register, and the assembler computes the offset differently. Instead of
+using the offset expression directly, the expression is assumed to refer
+to the address of the operand. The assembler calculates the required
+offset from the current program counter location to the operand's address
+and uses the resulting value as the offset. There are two forms.of this
+instruction: one -using an 8-bit offset and the other using a 16-bit
+offset; The assembler will use the 16-bit form unless you force the
+short form by preceding the operand field with a "&lt;" character.
+</para>
+        <para>
+The syntax for program-counter relative indexed is:
+
+<synopsis>
+instr addr,PC         <lineannotation>program counter relative</lineannotation>
+instr addr,PCR        <lineannotation>program counter relative</lineannotation>
+instr [addr,PCR]      <lineannotation>program counter relative indirect</lineannotation>
+instr [addr,PC]       <lineannotation>program counter relative indirect</lineannotation>
+</synopsis>
+
+This addressing mode is important in OS-9 programs because it
+permits addresses of constants and constant tables to be accessed using
+position-independent-code as required by OS-9.
+</para>
+        <para>
+Examples:
+</para>
+        <programlisting>
+ldd     temp,pcr
+LDD     temp,pc         <lineannotation>same as instruction above</lineannotation>
+leax    table,pcr
+jsr     addr,pcr        <lineannotation>same as "lbsr addr"</lineannotation>
+CLR     [control+4,PCR] <lineannotation>dangerous; uses absolute address</lineannotation>
+                        <lineannotation>at "control+4,PCR" as effective</lineannotation>
+                        <lineannotation>address for clear</lineannotation>
+</programlisting>
+      </section>
+      <section>
+        <title>Accumulator Offset Indexed</title>
+        <para>
+In this mode the contents of the A, B, or D accumulators is
+temporarily added to the specified index register to form the address of
+the operand. This addition is signed two's complement. If the A or B
+accumulators are specified, the sign bit is "extended" to form the 16 bit
+value which is added to the index register. Meaning that if the most
+significant bit of the accumulator is set, the high order byte of the
+offset will be $FF. <emphasis>BEWARE:</emphasis> this is a commonly overlooked characteristic
+that can produce unexpected results! Using the D register avoids this
+because it gives all 16 bits. The syntax for accumulator-offset indexed is:
+
+<synopsis>
+instr A,reg
+instr B,reg
+instr D,reg
+</synopsis>
+
+Examples:
+<programlisting>
+LDX B,Y
+LEAY D,X
+ROL [B,U]
+</programlisting>
+
+</para>
+      </section>
+      <section>
+        <title>Auto-Increment and Auto-Decrement Indexed</title>
+        <para>
+These addressing modes use the specified index register as the
+effective address of the operand, while permanently adding or subtracting
+one or two from the register. In auto-increment mode, the increment is
+performed AFTER the register is used. In auto-decrement mode, the
+decrement is performed BEFORE the register is used. This is consistent
+with the way 6809 stack pointers operate in PSH and PUL instructions. If
+indirect addressing is used, the decrement and increment are performed
+before the effective address is used as a pointer to the operand.
+</para>
+        <para>
+SINGLE AUTO-INCREMENT AND SINGLE AUTO-DECREMENT ARE NOT PERMITTED WHEN
+INDIRECT ADDRESSING IS SELECTED.
+</para>
+        <para>
+Syntax for auto-increment and auto-decrement indexed addressing is:
+</para>
+        <synopsis>
+inst: ,-reg       <lineannotation>single auto-decrement</lineannotation>
+instr ,--reg      <lineannotation>double auto-decrement</lineannotation>
+inst: ,reg+       <lineannotation>single auto-increment</lineannotation>
+instr ,reg++      <lineannotation>double auto-increment</lineannotation>
+instr [,reg--]    <lineannotation>double auto-decrement indirect</lineannotation>
+instr [,reg++]    <lineannotation>double auto-increment indirect</lineannotation>
+</synopsis>
+        <para>
+Examples:
+</para>
+        <programlisting>
+clr ,x++
+LDX ,--Y
+lda ,s+   <lineannotation>is the same as puls a (except CCR is affected)</lineannotation>
+sta ,-s   <lineannotation>is the same as pshs a (except CCR is affected)</lineannotation>
+ldd [,s++]
+</programlisting>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>Assembler Directive Statements</title>
+    <para>
+In addition to the 6809 instruction mnemonic statements, the
+assembler includes a number of directive statements which perform a
+variety of functions which can be loosely categorized as follows:
+</para>
+    <variablelist>
+      <?dbfo list-presentation="blocks"?>
+      <varlistentry>
+        <term>Assembly Control</term>
+        <listitem>
+          <para>
+Statements such as IF, OPT, END, USE, etc., are used to control
+the operation of the assembler itself but do not directly affect
+object code generation.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Storage Declarations</term>
+        <listitem>
+          <para>
+The ORG and RMB statements are used to assign variable (data area)
+storage for the assembly language program,
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Symbolic Name Declarations</term>
+        <listitem>
+          <para>
+The EQU and SET statehents are used to assign value to assembler symbolic names.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Constant Declarations</term>
+        <listitem>
+          <para>
+The FCB, FDB, FCC, and FCS statements are used to insert constant
+values in the assembler program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Operating System Functions</term>
+        <listitem>
+          <para>
+The MOD/EMOD and OS9 statements are used to create system-required
+object code for memory modules and system call, respectively.
+</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para>
+Each assembler directive statement is described in detail in the
+following pages.
+</para>
+    <section>
+      <title>END Statement</title>
+      <para>
+Indicates the end of a program. Its use is optional since END will
+be assumed upon an end-of-file condition on the source file. END
+statements may not have labels.
+</para>
+    </section>
+    <section>
+      <title>EQU and SET Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>EQU &lt;expression&gt;
+SET &lt;expression&gt;</literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+These statements are used to assign a value to a symbolic name (the
+label) and thus require labels. The value assigned to the symbol is the
+value of the operand, which may be an expression, a name, or a constant.
+</para>
+      <para>
+The difference between the EQU and SET statements is that:
+</para>
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para>
+Symbols defined by EQU statements can be defined only once in the program.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Symbols defined by SET statements can be redefined again by subsequent SET statements.
+</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+In EQU statements the label name must not have been used previously,
+and the operand cannot include a name that has not yet been defined
+(i.e., it cannot contain as-yet undefined names whose definitions also
+use undefined names). Good programming practice, however, dictates that
+all equates should be at the beginning of the program to allow the
+assembler to generate the most Compact code by selecting direct
+addressing wherever possible.
+</para>
+      <para>
+EQU is normally used to define program symbolic constants, especially
+those used in conjunction with instructions. SET is usually used
+for symbols used to control the assembler operations, especially
+conditional assembly and listing control.
+
+Example:
+
+<programlisting>
+TRUE    equ $FF
+FALSE   equ 0
+SUBSET  set TRUE
+        ifne SUBSET
+        use subset.defs
+        else
+        use full.defs
+        endc
+SUBSET  set FALSE
+</programlisting>
+
+</para>
+    </section>
+    <section>
+      <title>FCB and FDB Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>FCB &lt;expression&gt; {, &lt;expression&gt;}
+FDB &lt;expression&gt; {, &lt;expression&gt;}</literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+The Form Constant Byte and Form Double Byte directives generate
+sequences of single (FCB) and double (FDB) constants within the program.
+The operand is a list of one or more expressions which are-evaluated and
+output as constants. If more than one constant is to be generated, the
+expressions are separated by commas.
+</para>
+      <para>
+FCB will report an error if an expression has a value of more than
+255 or less that -128 (the largest number representable by a byte). If
+FDB evaluates an expression with an absolute value of less than 256 the
+high order-byte will be zero.
+</para>
+      <para>
+Examples:
+</para>
+      <programlisting>
+FCB 1,20,'A
+fcb index/2+1,0,0,1
+FDB 1,10,100,1000,10000
+fdb $F900,$FA00,$FB00,$FC00
+</programlisting>
+    </section>
+    <section>
+      <title>FCC and FCS Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>FCC &lt;delim&gt; string &lt;delim&gt;
+FCS &lt;delim&gt; string &lt;delim&gt;</literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+These directives generate a series of bytes corresponding to a
+string of one or more characters operand. The output bytes are the
+literal numeric value of each ASCII character in the string. FCS is the
+same as FCC except the most significant bit (the sign bit) of the last
+character in the string is set, which is a common OS-9 programming
+technique to indicate the end of a text string without using additional storage.
+</para>
+      <para>
+The character string must be enclosed by delimiters before the first
+character and after the last character. The characters that can be used
+as delimiters are:
+<programlisting>
+! " # $ % &amp; ' ( ) * + , - . /
+</programlisting>
+
+Both delimiters must be the same character and cannot be included in the
+string itself. Examples:
+
+<programlisting>
+FCC /most programmers are strange people/
+FCS ,0123456789,
+fcc $z$
+</programlisting>
+
+</para>
+    </section>
+    <section>
+      <title>IF, ELSE, and ENDC Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>IFxx &lt;expression&gt;
+   &lt;statements&gt;
+[ ELSE ]
+   &lt;statements&gt;
+ENDC</literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+</para>
+      <para>
+An important feature of the Assembler is its <emphasis>conditional assembly</emphasis>
+capability to selectively assemble or not assemble one or more parts of a
+program depending on a variable or computed value. Thus, a single source
+file can be used to selectively generate multiple versions of a program.
+</para>
+      <para>
+Conditional compilation uses statements similar to the branching
+statements found in high level languages such as Pascal and Basic. The
+generic IF statement is the basis of this capability. It has as an
+operand a symbolic name or an expression. A comparison is made with the
+result: if the result of the comparison is true, statement following the
+IF statement will be processed. If the result of the comparison is
+false, the following statements will not be processed until an ENDC (or
+ELSE) statement is encountered. Hence, the ENDC statement is used to
+mark the end of a conditionally assembled program section. Here is an
+example that uses the IFEQ statement which tests for equality of its
+operand with zero:
+</para>
+      <programlisting>
+IFEQ SWITCH
+ldd #0         <lineannotation>assembled only if SWITCH = 0</lineannotation>
+leax 1,x
+ENDC
+</programlisting>
+      <para>
+The ELSE statement allows the IF statement to explicitly select one
+of two program sections to assemble depending on the truth of the IF
+statement. Statements following the ELSE statement are processed only if
+the result of the comparison was false. For example:
+</para>
+      <programlisting>
+IFEQ SWITCH
+ldd #0          <lineannotation>assembled only if SWITCH = 0</lineannotation>
+leax 1,x
+ELSE
+ldd #1          <lineannotation>assembled only if SWITCH is not = 0</lineannotation>
+leax -1,x
+ENDC
+</programlisting>
+      <para>
+Multiple IF statements may be used, and "nested" within other IF
+statements if desired. They cannot, however, have labels.
+</para>
+      <para>
+There are several kinds of IF statements, each performing a
+different comparison. They are:
+</para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.0in"/>
+          <colspec colwidth="5.0in"/>
+          <tbody>
+            <row>
+              <entry>IFEQ</entry>
+              <entry>True if operand equals zero</entry>
+            </row>
+            <row>
+              <entry>IFNE</entry>
+              <entry>True if operand does not equal zero</entry>
+            </row>
+            <row>
+              <entry>IFLT</entry>
+              <entry>True if operand is less than zero</entry>
+            </row>
+            <row>
+              <entry>IFLE</entry>
+              <entry>True if operand is less than or equal to zero</entry>
+            </row>
+            <row>
+              <entry>IFGT</entry>
+              <entry>True if operand is greater than zero</entry>
+            </row>
+            <row>
+              <entry>IFGE</entry>
+              <entry>True if operand is greater than or equal to zero</entry>
+            </row>
+            <row>
+              <entry>IFP1</entry>
+              <entry>True only during first assembler pass (no operand)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+The IF statements that test for less than or greater than can be
+used to test the relative value of two symbols if they are subtracted in
+the operand expression, for example,
+</para>
+      <para>
+IFLE MAX-MIN
+</para>
+      <para>
+will be true if MIN is <emphasis>greater</emphasis> than MAX. Note the reversal of logic due
+to the fact that this statement literally means
+</para>
+      <para>
+IF MAX-MIN &lt;= 0
+</para>
+      <para>
+The IFP1 statement causes subsequent statements to be processed
+during pass 1, but skipped during pass 2. It is useful because it allows
+program sections which contain only symbolic definitions to be processed
+only once during the assembly. The first pass is the only pass during
+which they are actually processed because they do not generate actual
+object code output. The <filename class="headerfile">OS9Defs</filename> file is an example of a rather large
+section of such definitions. For example, the following statement is
+used at the beginning of many source files.
+</para>
+      <programlisting>
+IFP1
+use /d0/defs/OS9Defs
+ENDC
+</programlisting>
+    </section>
+    <section>
+      <title>MOD and EMOD Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>MOD <replaceable>size,nameoff,typelang,attrrev {,execoff,memsize}</replaceable>
+EMOD</literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+These instructions provide a convenient means of creating OS-9
+memory modules and their associated module headers and CRC check values.
+A detailed discussion of the module and module header format can be found
+in the <citetitle pubwork="book">System Programmer's Manual</citetitle>. Programs can be loaded into memory by
+OS-9 only if they are in module header format.
+</para>
+      <para>
+The MOD statement is used at the beginning of an OS-9 module. Its
+function is to create a standard OS-9 module header and to initialize a
+CRC (cyclical redundancy check) value which will be automatically
+computed by the assembler as the program is processed by the assembler.
+</para>
+      <para>
+The MOD statement must have an operand list of exactly four or
+exactly six expressions separated by commas. Each operand cortesponds,
+in order, to the elements of a module header. The exact operation of the
+MOD statement is as follows:
+</para>
+      <orderedlist>
+        <listitem>
+          <para>The assembler's program address counter and data address counters
+are reset to zero (same as ORG 0), and the internal CRC and vertical
+parity generators are initialized.</para>
+        </listitem>
+        <listitem>
+          <para>The sync codes $87 and $CD are generated as object code.</para>
+        </listitem>
+        <listitem>
+          <para>
+The first four expressions in the operand list are evaluated and
+output as object code. They are:
+</para>
+          <orderedlist numeration="loweralpha">
+            <listitem>
+              <para>module size (two bytes)</para>
+            </listitem>
+            <listitem>
+              <para>module name offset (two bytes)</para>
+            </listitem>
+            <listitem>
+              <para>type/language byte (one byte)</para>
+            </listitem>
+            <listitem>
+              <para>attribute/revision byte (one byte)</para>
+            </listitem>
+          </orderedlist>
+        </listitem>
+        <listitem>
+          <para>
+The "header parity" byte is automatically computed by the
+assembler from the previous bytes and generated as object code.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+If the two optional additional operands are present, they are
+evaluated and generated as object code. They are:
+</para>
+          <orderedlist numeration="loweralpha" continuation="continues">
+            <listitem>
+              <para>execution offset</para>
+            </listitem>
+            <listitem>
+              <para>permanent storage size</para>
+            </listitem>
+          </orderedlist>
+        </listitem>
+      </orderedlist>
+      <para>
+Note that some of the expressions in the operand list are one byte long,
+and others are two bytes.
+</para>
+      <para>
+Because the origin of the object program is zero, all labels used in
+the program are inherently relative to the beginning of the module; this
+is perfect for the module name and execution address offsets. The code
+in the body of the module follows. As subsequent lines are assembled,
+the internal CRC generator continuously updates the module's CRC value.
+The EMOD statement (which has no operand) is used to terminate the
+module. It outputs the correct 3-byte CRC generated over the entire
+module.
+</para>
+      <para>
+IMPORTANT NOTE: The MOD and EMOD statements will not work correctly if
+the assembler is in "Motorola-compatible" mode unless you do not use RMB
+or ORG statements after the MOD and before the EMOD.
+</para>
+      <para>
+The following example illustrates the basic techniques of creating a
+module using MOD and EMOD statements.
+</para>
+      <example>
+        <title>Sample Program Illustrating Use Of MOD and EMOD Directives</title>
+        <programlisting>
+* Repeat Utility - Copy one line of standard input to standard output
+* Module Header Declaration
+
+type   set PRGRM+OBJCT  (these are defined in OS9DEFS)
+revs   set REENT+1      (this is defined in OS9DEFS)
+       MOD pgmlen,name,type,revs,start,memsiz
+       fcb 1            edition number (optional)
+name   FCS /repeat/      module name string
+
+* symbolic definitions
+
+STDIN  equ 0            standard input path
+STDOUT equ 1            standard output path
+LINLEN equ 80           maximum line length
+
+* data storage declarations
+
+buffer RMB 80
+stack  RMB 250
+memsiz EQU .            data storage size is final "." value
+
+* Program instructions
+
+start  equ *
+
+       lda #STDIN       load input path number
+       ldy #LINLEN      load max input count
+       leax buffer,u    get buffer address
+       os9 i$readln     call OS-9 to read line
+       bcs exit         abort if error
+
+       lda #STDOUT      load output path number
+       leax buffer,u    get buffer address
+       os9 i$writln     call OS-9 to write line
+       bcs exit         abort if error
+       clrb             return not error code
+exit   os9 F$EXIT       return to 059
+
+       emod             end module
+
+pgmlen EQU *  program size is addr of last byte +1
+</programlisting>
+      </example>
+    </section>
+    <section>
+      <title>NAM and TTL Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>NAM <replaceable>string</replaceable>
+TTL <replaceable>string</replaceable></literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+These statements allow the user to define or redefine a program hame
+and listing title line which will be printed on the first line of each
+listing page's header. These statements cannot have label or comment
+fields.
+</para>
+      <para>
+The program name is printed on the left side of the second line-of
+each listing page, followed by a dash, then by the title line. The name
+and title may be changed as often as desired.
+</para>
+      <para>
+Examples:
+</para>
+      <programlisting>
+nam Datac
+ttl Data acquisition System
+</programlisting>
+    </section>
+    <section>
+      <title>OPT Statement</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>OPT <replaceable>&lt;option&gt;</replaceable></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+OPT allows any of several assembler control options to be set or
+reset. The operand of the OPT statement is one of the characters that
+represent the various options. If the option name is preceded by a minus
+sign, the option is turned off, otherwise it is turned on. Two
+exceptions are the "D" and "W" options which must be followed by a
+number. This statement must not have label or comment fields.
+</para>
+      <para>
+The options and default (initial) states are:
+</para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.0in"/>
+          <colspec colwidth="5.0in"/>
+          <tbody>
+            <row>
+              <entry>C</entry>
+              <entry>Conditionals On: print conditional assembly statements in listing. (C)</entry>
+            </row>
+            <row>
+              <entry>D<replaceable>num</replaceable></entry>
+              <entry>Page Depth: set the number of lines per listing page
+including headings and blank lines. (D66)</entry>
+            </row>
+            <row>
+              <entry>E</entry>
+              <entry>Error Messages On: print error messages in listing.
+Errors can be detected when this option is off by
+presence of an "E" in a statement's informational
+field. (E)</entry>
+            </row>
+            <row>
+              <entry>F</entry>
+              <entry>Use Form Feed: Use a form feed for page eject instead of line feeds. (-F)</entry>
+            </row>
+            <row>
+              <entry>G</entry>
+              <entry>Generate All Constant Lines: Prints all lines of code
+generated by directives. Otherwise only the
+first line is printed. (-G)</entry>
+            </row>
+            <row>
+              <entry>L</entry>
+              <entry>Listing On: Causes formatted assembly listing to be
+generated. If off, only error messages printed. (-L)</entry>
+            </row>
+            <row>
+              <entry>M</entry>
+              <entry>Turn on Motorola-compatible mode. For further information refer to <xref linkend="opmodes"/>
+              and <xref linkend="setdp"/>. (-M)</entry>
+            </row>
+            <row>
+              <entry>N</entry>
+              <entry>Narrow listing: generate listing in a non-columnized,
+compressed format for better presentation on narrow
+video display devices. (-N)</entry>
+            </row>
+            <row>
+              <entry>O[=<replaceable>filename</replaceable>]</entry>
+              <entry>
+                <para>Generate object code file: (-O)
+If no filename is given, an object file having the
+same name as the input file will be created in the
+current <emphasis>execution</emphasis> directory.
+</para>
+                <para>
+If a single name is given, the object file having
+that name will be created, but still in the current
+execution directory.
+</para>
+                <para>
+If a full <emphasis>pathlist</emphasis> is given, it will be used as the
+name specification of the device, directory(s), and file to create.
+              </para>
+              </entry>
+            </row>
+            <row>
+              <entry>S</entry>
+              <entry>
+                <para>Generate Symbol Table: Prints the entire contents of the
+symbol table at the end of the assembly listing. Prints
+each name, its value and a type code character:
+</para>
+                <simplelist type="vert">
+                  <member>D = data variable (RMB definitions)</member>
+                  <member>E = equate label (EQU)</member>
+                  <member>L = program label</member>
+                  <member>S = set label</member>
+                  <member>U = undefined name</member>
+                </simplelist>
+                <para>
+The table is printed across the page in alphabetical order. (-S)
+</para>
+              </entry>
+            </row>
+            <row>
+              <entry>W<replaceable>num</replaceable></entry>
+              <entry>Set Page Width: defines the maximum length of each
+listing line. Lines are truncated if they exceed
+this number. The comment field starts at column 50
+so a number less than this may cause important parts
+of the listing to be lost. (W80)
+</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+Examples:
+<programlisting>
+opt l
+opt w72
+opt s
+</programlisting>
+
+</para>
+    </section>
+    <section>
+      <title>OS9 Statement</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>OS9 <replaceable>&lt;expression&gt;</replaceable></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+This statement is a convenient way to generate OS-9 system calls.
+It has an operand which is a byte value to be used as the request code.
+The output is equivalent to the instruction sequence:
+</para>
+      <programlisting>
+SWI2
+FCB operand
+</programlisting>
+      <para>
+A file called "<filename class="headerfile">OS9Defs</filename>",
+which is distributed with each copy of OS-9,
+contains standard definitions of the symbolic names of all the OS-9
+service requests. These names are commonly used in conjuction with the
+OS9 statement to improve the readability, portability, and
+maintainability of assembly language software.
+</para>
+      <para>
+Examples:
+</para>
+      <programlisting>
+OS9 I$READ           <lineannotation>(call OS-9 "READ" service request)</lineannotation>
+os9 F$EXIT           <lineannotation>(call OS-9 "EXIT" service request)</lineannotation>
+</programlisting>
+    </section>
+    <section>
+      <title>ORG Statement</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>ORG <replaceable>&lt;expression&gt;</replaceable></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+Changes the value of the assembler's data location counter (normal
+mode) or the instruction location counter (Motorola- compatible mode).
+The expression is evaluated and the appropriate counter is set to the
+value of the result. ORG statements cannot have labels.
+</para>
+      <para>
+Note: OS-9 does NOT use "load records" that specify absolute
+addresses of the generated object code: the object code is assumed to be
+a contiguous memory module. Therefore, programs assembled using the
+Motorola-compatible mode that alter the instruction address counter will
+not load correctly.
+</para>
+      <para>
+Examples:
+</para>
+      <programlisting>
+ORG  DATAMEM
+ORG  .+200
+</programlisting>
+    </section>
+    <section>
+      <title>PAG and SPC Statements</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>
+              <literallayout>PAG[E]
+SPC <replaceable>&lt;expression&gt;</replaceable></literallayout>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+These statements are used to improve the readability of program
+listings. They are not themselves printed, and cannot have labels.
+</para>
+      <para>
+The PAG statement causes the assembler to begin a new page of the
+listing. The alternate form of PAG is PAGE for Motorola compatibility.
+</para>
+      <para>
+The SPC directive puts blank lines in the listing. The number of
+blank lines to be generated is determined by the value of the operand,
+which can be an expression, constant, name. If no operand is used a
+single blank line is generated.
+</para>
+    </section>
+    <section xml:id="setdp">
+      <title>SETDP Statement</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>SETDP <replaceable>&lt;expression&gt;</replaceable></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+Assigns a value to the assembler's internal direct page counter,
+which is used to automatically select direct versus extended addressing.
+The direct page counter does not necessarily correspond to the program's
+actual direct page register during execution.
+</para>
+      <para>
+The default value of the counter is zero, and should NOT be changed
+in OS-9 programs: this statement is intended for use with the "Motorola-compatible"
+mode only. SETDP statements cannot have labels.
+</para>
+    </section>
+    <section>
+      <title>USE Statement</title>
+      <variablelist spacing="compact">
+        <varlistentry>
+          <term>SYNTAX:</term>
+          <listitem>
+            <para>USE <replaceable>pathlist</replaceable></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+Causes the assembler to temporarily stop reading the current input
+file. It then requests OS-9 to open another file/device specified by the
+pathlist, from which input lines are read until an end-of-file occurs.
+At that point, the latest file is closed, and the assembler resumes
+reading the previous file from the statement following the USE statement.
+</para>
+      <para>
+USE statements can be nested (e.g., a file being read due to a USE
+statement can also perform USE statements) up to the number of simultaneously
+open files the operating system will allow (usually 13, not
+including the standard I/O paths). Some useful applications of the USE
+statement are to accept read input from the keyboard during assembly of a
+disk file (as in USE /TERM); and including library definitions or
+subroutines into other programs. USE statements cannot have labels.
+</para>
+    </section>
+  </section>
+  <section>
+    <title>Assembly Language Programming Techniques</title>
+    <para>
+For programs to run correctly in the OS-9 environment, they must be
+written following these two key rules:
+</para>
+    <orderedlist>
+      <listitem>
+        <para>
+Programs <emphasis>must</emphasis> be position-independent-code (PIC).
+</para>
+      </listitem>
+      <listitem>
+        <para>
+All memory locations modified by the program (variables and data
+structures) must be located in a data memory area whose location is
+assigned by OS-9 at run-time.
+</para>
+      </listitem>
+    </orderedlist>
+    <para>
+The reason for these rules is simple: OS-9 dynamically assigns memory
+space <emphasis>at the time the program is run</emphasis>. You have no control over which
+specific addresses are assigned at a load area for the program, or where
+the program's variables are assigned. Because of the powerful 6809
+instruction set and addressing modes, these rules do not force you into
+writing tricky or complex programs; rather, they require that programs be
+written a specific way. When you do this, you enjoy the advantages of
+having reentrant and highly portable programs.
+</para>
+    <para>
+Your programs will usually fall into one of three categories:
+</para>
+    <orderedlist>
+      <listitem>
+        <para>
+A subroutine or subroutine package: You must write your subroutines
+in position-independent code. Data sections are usually a matter of
+coordination with the calling program, and OS-9 usually plays no direct
+role in this.
+</para>
+      </listitem>
+      <listitem>
+        <para>
+A program to be executed as an individual process (commands are of
+this type). You must use position independent code, and receive data
+area parameters that delineate the memory space assigned when run.
+</para>
+      </listitem>
+      <listitem>
+        <para>
+Programs to be run on another, non-OS-9 computer. Have fun!
+Anything goes!
+</para>
+      </listitem>
+    </orderedlist>
+    <section>
+      <title>Program Sections and Data Sections</title>
+      <para>
+If your program is to be run as a process (by means of the OS-9
+<command>shell</command>, fork system call, or execute system call), OS-9 will assign two
+separate and distinct memory areas. The program object code is loaded
+into one memory space in the form of a memory module. The other space is
+for variables and data structures. The program's module header specifies
+the minimum permissible size for each of these area. The distinction
+between these two spaces is extremely important. It is also why the
+assembler has two memory address counters: the data address counter is
+for the data area and the instruction address counter is for the program
+area. THE VALUES OF THE COUNTERS ARE NEVER ABSOLUTE ADDRESSES. They are
+addresses relative to the beginning of an OS-9-assigned address.
+</para>
+    </section>
+    <section>
+      <title>Program Area</title>
+      <para>
+This area is a single, continuously-allocated memory space, where the
+program is loaded by OS-9. In order for OS-9 to be able to load the
+program, it must be in memory module format.
+The <citetitle pubwork="book">OS-9 System Programmer's Manual</citetitle>
+contains a detailed description of what memory
+modules are and how they work. This manual assumes you are familiar with
+them. Programs generated by this assembler can consist of one or more
+memory modules. They are all written to the same file and will be loaded
+together by OS-9. In assembly language source programs, modules usually
+begin with a MOD directive and end with a EMOD directive to take care of
+the header and module CRC generation for you.
+</para>
+      <para>
+The program area should never be modified by the program itself;
+especially if the program is to be reentrant and/or placed in ROM. It
+can (and should) contain constants and constant tables, as long as they
+are not altered by the program.
+</para>
+    </section>
+    <section>
+      <title>Writing Position Independent Code</title>
+      <para>
+You do not know the actual absolute address of anything in the
+program until it is actually run. The 6809 position-independent
+addressing modes are based on "program counter relative addressing".
+This addressing mode is used by all branch and lbng branch instructions.
+</para>
+      <itemizedlist>
+        <listitem>
+          <para>
+Use BRA and LBRA instead of JMP; use BSR and LBSR instead of JSR extended or JSR direct mode instructions (JSR indexed is OK).
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Use program-counter-relative (PCR) indexed addressing mode (usable by all load, store, arithmetic and logical instructions) to access constants declared in FCB, FDB, FCC, and FCS statements.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Don't use immediate addressing to load a register with an absolute address (instruction label name): use PCR indexed addressing instead.
+</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+Many well-written programs use constant tables of addresses (often
+called dispatch tables or pointer tables). For the program to be PIC,
+these tables cannot contain absolute addresses. The correct technique is
+to create tables of addresses relative to some arbitrary location. The
+routines that use the tables read the table entries, then add them to the
+absolute address of the arbitrary location. The sum is the run-time
+absolute address. The absolute address of the "arbitrary location" is
+determined Using PCR instructions (typically LEA). The choice of the
+common address is arbitrary, but two places may have specific advantages:
+the beginning address of the table (an index register probably will
+contain this address anyway); and the first byte of the module.
+</para>
+      <para>
+Making table entries relative to the start of the module is
+especially handy because the value of the assembler's instruction address
+counter is also relative to the beginning address of the module.
+Here's an example of a routine that jumps to one of several subroutines whose
+relative addresses are contained in a table. The routine is passed a
+number in the B accumulator to be used as an index to select the routine.
+</para>
+      <programlisting>
+begin  mod a,b,c,d,e,f <lineannotation>start of module</lineannotation>
+
+   <lineannotation>(various instructions)</lineannotation>
+
+dispat leax table,pcr  <lineannotation>get the absolute address of the table</lineannotation>
+       aslb            <lineannotation>multiply index by 2 (two bytes/entry)</lineannotation>
+       ldd  b,x        <lineannotation>get contents of table entry</lineannotation>
+       leax begin,pcr  <lineannotation>get beginning address of module</lineannotation>
+       jmp  d,x        <lineannotation>add relative address and go...</lineannotation>
+
+table  fdb  routine1
+       fdb  routine2
+       fdb  routine3
+       fdb  routine4
+</programlisting>
+      <para>
+The example below does the exact same thing, but the entries are relative
+to the beginning of the table instead of the beginning of the module:
+</para>
+      <programlisting>
+dispat leax table,pcr  <lineannotation>get the absolute address of the table</lineannotation>
+       aslb            <lineannotation>multiply index by two</lineannotation>
+       ldd b,x         <lineannotation>get routine offset</lineannotation>
+       jmp d,x         <lineannotation>add and go ...</lineannotation>
+
+table  fdb routinel-table
+       fdb routine2-table
+       fdb routine3-table
+       fdb routine4-table
+</programlisting>
+      <para>
+Note that this technique has fewer instructions (and is faster) because
+we already had the reference address in a register, thereby eliminating
+a LEAX instruction.
+</para>
+      <para>
+The same technique is useful for accessing character strings,
+constants, complex data types, etc.
+</para>
+    </section>
+    <section>
+      <title>Accessing The Data Area</title>
+      <para>
+The size of the data area is specified by the "minimum.permanent
+storage size" entry of the module header. Of course it is possible for a
+program to optionally receive more than this minimum. Remember that OS-9
+allocates memory in exact multiples of 256-byte pages, and all processes
+get at least one page. The data area must have enough room for all the
+program's variables and data structures, plus a stack (at least 250
+bytes) and space to receive parameters in, if any are passed.
+</para>
+      <para>
+When the process is invoked by OS-9, the bounds of the data area are
+passed to the process in the MPU registers: U will contain the beginning
+address and Y the ending address. The SP register is set to the ending
+address+l, unless parameters were passed. The direct page register will
+be set to the page number of the beginning page.
+</para>
+      <para>
+In the assembly language source program, storage in the data area is
+assigned using the RMB directive which uses the separate data address
+counter. It is good practice (but not mandatory) to declare all
+variables .and structures at the beginning of the program. Smaller,
+frequently used variables should be declared first. They will usually
+all fit in the first page, meaning they can be accessed using short, fast
+direct page addressing instructions. Larger items should follow. These
+can be addressed in one of two ways:
+</para>
+      <orderedlist>
+        <listitem>
+          <para>
+If the U register is maintained throughout the program, constant-offset-indexed addressing can be used.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Part of the program's initialization routine can compute the
+actual addresses of the data structures and store these addresses in
+pointer locations in the direct page. The addresses can be obtained
+later using direct-page addressing mode instrhctions.
+</para>
+        </listitem>
+      </orderedlist>
+      <para>
+Important note: you cannot use program-counter relative addressing to
+obtain addresses of objects in the data section due to the fact that the
+memory addresses assigned to the program section and the address section
+are not a fixed distance apart. Of course, immediate and extended
+addressing are also not generally usable.
+</para>
+      <para>
+An example that illustrates the U-relative technique is shown on the
+following page.
+</para>
+      <example>
+        <title>Example of Data Area Access</title>
+        <programlisting><lineannotation>* declare variables</lineannotation>
+temp    rmb 1
+buf1    rmb 400
+buf2    rmb 400
+buf3    rmb 400
+
+<lineannotation>* clear each 400-byte buffer</lineannotation>
+        leax buf1,u     <lineannotation>get address of buf1</lineannotation>
+        bsr clrbuf
+        leax buf2,u     <lineannotation>get address of buf2</lineannotation>
+        bsr clrbuf
+        leax buf3,u     <lineannotation>get address of buf3</lineannotation>
+        bsr clrbuf
+
+<lineannotation>* clear buffer subroutine</lineannotation>
+<lineannotation>* X = address of buffer</lineannotation>
+clrbuf  ldd  #400       <lineannotation>D = byte count</lineannotation>
+cloop   clr  ,x+        <lineannotation>clear byte and advance pointer</lineannotation>
+        subd #1         <lineannotation>decrement count</lineannotation>
+        bne  cloop      <lineannotation>loop if no done yet</lineannotation>
+        rts
+</programlisting>
+      </example>
+    </section>
+    <section>
+      <title>Additional Comments</title>
+      <para>
+This information is given as a minimal reference only. The 6809 has
+many powerful instructions that can do the same things other ways while
+still retaining PIC and reentrant characteristics. The LEA and TFR
+instructions can be quite useful, and all the indexed addressing modes are helpful.
+For more information refer to the <citetitle pubwork="book">OS-9 System Programmer's Manual</citetitle>.
+</para>
+    </section>
+  </section>
+  <section>
+    <title>Using the DEFS Files</title>
+    <para>
+There are many common symbolic names that occur in almost every OS-9
+assembly language program. For example, each system call has a name such
+as "I$READ". Although you can include definitions using EQU statements
+in each program for only those system names it uses, it is generally more
+convenient to utilize the system definitions files supplied with OS-9
+which are generally referred to as the "DEFS files". They are so named
+because they are included in a directory called "DEFS".
+</para>
+    <para>
+Using the DEFS files also minimizes chances of error and improves
+the maintainability of your programs. In the event a future release of
+OS-9 redefines a system data structure, for example, you need only to
+reassemble your original program with the DEFS files for the new release.
+</para>
+    <para>
+In addition to definitions of names of system calls, error codes,
+memory module formats, etc., the DEFS files also have convenience
+definitions for ASCII characters, condition code register bits, register
+names, etc.
+</para>
+    <para>
+The DEFS files are not sacred - you should feel free to add your own
+definitions when and where. you want. You should note your additions,
+however, so they can be carried easily to future release editions.
+</para>
+    <para>
+To include the main DEFS file in your program, include the following
+assembler statement at the beginning of your program:
+</para>
+    <programlisting>
+USE /D0/DEFS/OS9DEFS
+</programlisting>
+    <para>
+This tells the assembler to include this file with your source code when
+assembling the file. It is recommended to use conditionals (IFP1) with
+the USE statement to speed up assembly and to prevent the <filename class="headerfile">OS9Defs</filename> file
+from being printed out in your listing every time.
+</para>
+    <para>
+There are individual DEFS files that generally correspond to the
+part of the system you are dealing with. For example, definitions used
+by the SCF file manager-related functions are contained in a file called
+"<filename class="headerfile">SCFDefs</filename>".
+You would include this file in your program if you were
+writing an SCF-type device driver. In the following pages, each of the
+major DEFS files is discussed in detail to assist you in selecting
+appropriate files to include with each of your programs.
+</para>
+    <para>
+NOTE: The actual names of DEFS files may vary from the generic names.
+given in this manual according to the level and release number of your
+system. For example, your "os9defs" file may actually be named
+"os9defs.lii" on a Level II system, etc.
+</para>
+    <section>
+      <title>The OS9Defs File</title>
+      <para>
+The most commonly used DEFS is the <filename class="headerfile">OS9Defs</filename> file which contains
+general system wide definitions. This file contains:
+</para>
+      <simplelist type="vert">
+        <member>System Service Request Code Definitions</member>
+        <member>Signal Codes</member>
+        <member>Status Codes For Getstat/Setstat</member>
+        <member>Direct Page Variables</member>
+        <member>Table Sizes</member>
+        <member>Module Format &amp; Offsets</member>
+        <member>Module Field Definitions</member>
+        <member>Module Type/Language Masks &amp; Definitions</member>
+        <member>Module Attributes/Revision Masks &amp; Definitions</member>
+        <member>Process Descriptor Format &amp; Offsets</member>
+        <member>Process Status Flags</member>
+        <member>OS-9 System Entry Vectors</member>
+        <member>Path Descriptor Offsets</member>
+        <member>File Access Modes</member>
+        <member>Pathlist Special Symbols</member>
+        <member>File Manager Entry Offsets</member>
+        <member>Device Driver Entry Offsets</member>
+        <member>Device Table Format &amp; Offsets</member>
+        <member>Device Static Storage Offsets</member>
+        <member>Interrupt Polling Table Format &amp; Offsets</member>
+        <member>Register Offsets on Stack</member>
+        <member>Condition Codes</member>
+        <member>System Error Codes</member>
+        <member>I/O Error Codes</member>
+      </simplelist>
+      <bridgehead renderas="sect5">System Service Request Code Definitions</bridgehead>
+      <para>
+The main purpose of the DEFS files is to define all the OS-9 system
+calls with their associated values. This is the main purpose of the
+<filename class="headerfile">OS9Defs</filename> file.
+It enables you to use the system request name in an OS9 call.
+All OS-9 service request codes are listed (i.e., user, system and I/O function requests);
+</para>
+      <bridgehead renderas="sect5">Signal Codes</bridgehead>
+      <para>
+This group of labels define the four signals defined and used by
+OS-9 with their associated values. User defined signals should be added here.
+</para>
+      <bridgehead renderas="sect5">Status Codes For Getstat/Setstat</bridgehead>
+      <para>
+When using the OS-9 system calls I$SETSTT and I$GETSTT there exist
+predefined status call functions. Those supported by OS-9 file managers
+and device drivers are listed in this area with their values. These
+labels are then available to be used for loading the 'B' register before
+the call is made.
+</para>
+      <bridgehead renderas="sect5">Direct Page Variables</bridgehead>
+      <para>
+These labels define the offsets into page 0 of OS-9 system
+variables. Zero page variables are used by OS-9 for interrupt vectors,
+table addresses, process queues and internal memory information. It is
+<emphasis>strongly</emphasis> recommended that you don't use the page 0 variables in your programs.
+These variables are not physically accessable to user programs in Level II.
+They are given in <filename class="headerfile">OS9Defs</filename>
+for those who might need to write
+special drivers and interrupt handlers, or need to do system debugging.
+Improper use of these variables can cause unexpected and perhaps fatal
+system operation.
+</para>
+      <bridgehead renderas="sect5">Table Sizes</bridgehead>
+      <para>
+These equates define the size of the table used under the OS-9
+operating system. This information is used internally to OS-9 and its
+value is in defining the size of this table.
+</para>
+      <bridgehead renderas="sect5">Module Format &amp; Offsets</bridgehead>
+      <para>
+These labels define the offsets into a module header of all OS-9
+compatible modules. Module offsets can be used by programmers to find
+information in a module (i.e. module size, name, type, language etc.).
+This area has the Universal Module offsets and the offsets for specific
+module types. This is due to the fact that descriptors, drivers,
+programs and file managers have a different module format.
+</para>
+      <bridgehead renderas="sect5">Module Field Definitions</bridgehead>
+      <bridgehead renderas="sect5">Module Type/Language Masks &amp; Offsets</bridgehead>
+      <bridgehead renderas="sect5">Module Attributes/Revision Masks and Offsets</bridgehead>
+      <para>
+This is the area where the different bits of information that go
+into a module header are defined to be of use to those who need to decode.
+a module header and possibly modify one. Since the Assembler generates a
+module header for you using the 'mod' and 'emod' statements, the value of
+this area will be when you do need to read a header. Masks are defined
+in this area for the type, language, attribute, and revisiOn bytes for
+accurate and understandable masking. Also, the different values for each
+field are listed here for making comparisons.
+</para>
+      <bridgehead renderas="sect5">Process Descriptor Format</bridgehead>
+      <bridgehead renderas="sect5">Process Status Flags</bridgehead>
+      <para>
+In this area are the definitions and offsets for the process
+descriptor and the status flag values. Again, for most programmers, this
+information will be of little programming use. This information will be
+primarily of educational value for those who are interested in the
+internal workings of OS-9. The process descriptor is the table of
+information describing a process. The status flags are the definitions
+for the flags used by OS-9 to mark a process for different states (i.e.
+dead, sleeping etc.).
+</para>
+      <bridgehead renderas="sect5">OS-9 System Entry Vectors</bridgehead>
+      <para>
+OS-9 system entry points are defined in this area of <filename class="headerfile">OS9Defs</filename>. These
+are the vector addresses for the different types of interrupts. These
+are pseudo vectors, not the actual hardware vector points. For more
+information, see the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      <bridgehead renderas="sect5">Path Descriptor Offsets</bridgehead>
+      <para>
+The offsets for OS-9 path descriptors.are defined in this area.
+Path descriptors are created by OS-9 for every path opened in the system.
+This is again information used mainly by the system and will be of little
+value to most users except to garner an understanding of OS-9.
+</para>
+      <bridgehead renderas="sect5">File Access Modes</bridgehead>
+      <para>
+These are the definitions for the file access modes under OS-9. The
+definitions will mainly be used for I$CREATE and I$OPEN system calls
+which require the file attributes to be set at the time of the call.
+See the <citetitle pubwork="book">System Programmer's Manual</citetitle>
+and the <citetitle pubwork="book">User's Guide</citetitle> for more information.
+</para>
+      <bridgehead renderas="sect5">Pathlist Special Symbols</bridgehead>
+      <para>
+This area lists the definitions of special pathlist characters.
+These will be used by those programmers who need to parse.out a pathlist.
+This would be a good area to add special characters that you frequently
+use in your programs.
+</para>
+      <bridgehead renderas="sect5">File Manager Entry Offsets</bridgehead>
+      <para>
+All file managers on an OS-9 system have the entry offsets defined
+in this area. Programmers who plan on writing their own file manager
+will need to provide these entry offsets. Those who have no ambition to
+write a file manager will most likely have no use for these offsets.
+</para>
+      <bridgehead renderas="sect5">Device Driver Entry Offsets</bridgehead>
+      <para>
+Like file managers, all drivers have their own set of entry offsets.
+Programmers will need to provide these offsets at the beginning of their
+drivers. Once again, refer to the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      <bridgehead renderas="sect5">Device Table Format</bridgehead>
+      <para>
+OS-9 keeps an entry in a table for every active device in the
+system. The form of the table entry is defined in this area. This
+information is used internally to the operating system. The format is
+provided here for those who are curious as to the operation of OS-9. The
+<citetitle pubwork="book">System Programmer's Manual</citetitle> contains a discussion on how OS-9 handles I/O.
+</para>
+      <bridgehead renderas="sect5">Device Static Storage Offsets</bridgehead>
+      <para>
+Every active device also has associated with it a static storage
+area that contains information about the device and is filled in when the
+device is activated. The actual filling in of the parameters is done by
+three sources; IOMAN, the file manager, and the device driver. The
+offsets listed in this area are filled in by IOMAN. For more information
+on the rest of these offsets, look in
+<filename class="headerfile">SCFDefs</filename>,
+<filename class="headerfile">RBFDefs</filename>, your driver
+sources, and the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      <bridgehead renderas="sect5">Interrupt Polling Table Format</bridgehead>
+      <para>
+The polling table is formed from entries having the structure
+defined here. It contains all the information the interrupt service
+routine needs to handle interrupts generated by active devices. This
+information is used internally by OS-9 and is, in general, of no programming value.
+The <citetitle pubwork="book">System Programmer's Manual</citetitle> has more information
+on interrupt servicing.
+</para>
+      <bridgehead renderas="sect5">Register Offsets on Stack</bridgehead>
+      <para>
+Any time the 6809 cpu gets an interrupt of the form NMI, IRQ, SWI, SWI2 (an
+OS-9 system call), or SWI3, the registers are pushed on the stack.
+The offset to those registers are defined in this area of <filename class="headerfile">OS9Defs</filename>. This
+information will be of particular value to those who write drivers and
+need to get the I$GETSTT or I$SETSTT codes. These could also be used to
+pass parameters on the stack to different procedures in a program.
+</para>
+      <bridgehead renderas="sect5">Condition Code Bits</bridgehead>
+      <para>
+Every program written will at some point need to twiddle with the
+condition code bits. In order to make the programs more legible there
+are defined in this area the values for each condition code. By using
+these masks one can set or reset the bits as needed. It is good
+programming practice to use these labels in your code.
+</para>
+      <bridgehead renderas="sect5">System Error Codes</bridgehead>
+      <bridgehead renderas="sect5">I/O Error Codes</bridgehead>
+      <para>
+The final entry in <filename class="headerfile">OS9Defs</filename> is the error code definitions. These
+labels define all the errors returned by OS-9 and the I/O handlers. If
+your programs have any form of error trapping you will need to compare
+the error to a-known error definition in order to determine what should
+occur. It is in this area where they are defined. For information on
+what a specific error code means when it is returned, refer to the
+<citetitle pubwork="book">User's Guide</citetitle>
+and the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+    </section>
+    <section>
+      <title>The SCFDefs File</title>
+      <para>
+Another DEFS file included is <filename class="headerfile">SCFDefs</filename>. This file contains the
+definitions pertaining to the sequential file manager and sequential file
+devices. Specifically it contains:
+</para>
+      <simplelist type="vert">
+        <member>Static Storage Requirements</member>
+        <member>Character Definitions</member>
+        <member>File Descriptor Offsets</member>
+      </simplelist>
+      <para><filename class="headerfile">SCFDefs</filename> will be used when writing drivers for sequential devices and
+managers. It is also the area to add your own SCF-type definitions.
+</para>
+      <section>
+        <title>Static Storage Requirements</title>
+        <para>
+This area defines the offsets to the static storage required by SCF
+devices. This area continues from V.USER defined in <filename class="headerfile">OS9Defs</filename>.
+SCF devices must reserve this space for the SCF manager; The storage
+reserved after this group is determined by the driver.
+For information on SCF static storage refer to the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      </section>
+      <section>
+        <title>Character Definitions</title>
+        <para>
+Certain SCF devices will at some time need to filter special
+characters. These could be X-ON or X-OFF characters for example. This
+is the area where these symbols are defined. This would be a good area
+to add your own SCF special characters.
+</para>
+      </section>
+      <section>
+        <title>File Descriptor Offsets</title>
+        <para>
+The last entry in <filename class="headerfile">SCFDefs</filename> is the file descriptor offsets for SCF
+devices. The actual total storage is declared in <filename class="headerfile">OS9Defs</filename> under the entry
+called Path Descriptor Offsets. Both SCF and RBF have their own
+definitions of the PD.FST and PD.OPT fields. This area is where SCF's
+definitions are located. Refer to the <citetitle pubwork="book">System Programmer's Manual</citetitle> for
+more information on descriptors.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>The RBFDefs File</title>
+      <para><filename class="headerfile">RBFDefs</filename> is the parallel to
+<filename class="headerfile">SCFDefs</filename> but for random block file
+managers and devices. This file includes:
+</para>
+      <simplelist type="vert">
+        <member>Random Block Path Descriptor Format</member>
+        <member>State Flags</member>
+        <member>Device Descriptor Format</member>
+        <member>File Descriptor Format</member>
+        <member>Segment List Entry Format</member>
+        <member>Directory Entry Format</member>
+        <member>Static Storage</member>
+      </simplelist>
+      <para>
+This DEFS file will be used when writing random block device drivers
+and managers. This is also the area to add your own RBF type definitions.
+</para>
+      <section>
+        <title>Random Block Path Descriptor Format</title>
+        <para>
+This entry defines the file descriptor offsets for R8? devices.
+The actual total storage is declared in <filename class="headerfile">OS9Defs</filename> under the entry called
+Path Descriptor Offsets. Both SCF and RBF have their own definitions of
+the PD.FST and PD.OPT fields. This is where RBF's definitions are
+located. Refer to the <citetitle pubwork="book">System Programmer's Manual</citetitle> for more information on
+descriptors.
+</para>
+      </section>
+      <section>
+        <title>State Flags</title>
+        <para>
+The flags defined here are used internally by OS-9 to mark the state
+of the disk buffer. These are of little programming value but are
+supplied for those who are interested in the workings of the operating
+system. For more information on file handling read the
+<citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      </section>
+      <section>
+        <title>Device Descriptor Format</title>
+        <para>
+This is the format of what goes into sector zero of an RBF device
+and is what RBF uses to find the actual physical information on the
+device. This information is used to fill in the drive table by OS-9.
+RBF devices differ from SCF type devices in that the actual device
+information is kept on the media. The device descriptor in memory is
+then mainly used by the format program. Refer to the
+<citetitle pubwork="book">System Programmer's Manual</citetitle> for more information on the subject.
+</para>
+      </section>
+      <section>
+        <title>File Descriptor Format</title>
+        <para>
+The format defined here is kept on disk and contains information
+about the file (i.e. size, segment list, owner etc.). The information is
+read in by RBF and is used when accessing a file. Any time the file is
+modified this sector is modified. Again this information is provided for
+those who are curious as to the structure of RBF device files. For more
+information read the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      </section>
+      <section>
+        <title>Segment List Entry Format</title>
+        <para>
+The segment list is the area that tells the sector extensions of a
+file. The actual list is composed of the beginning sector and the size
+(in number of sectors) of each segment of the file. Files that are
+extended have another segment added to the segment list in the file
+descriptor sector above. This information is of little programming value
+to most users. Refer to the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      </section>
+      <section>
+        <title>Directory Entry Format</title>
+        <para>
+Every file in a directory has an entry of the format described here.
+Only two pieces of information exist here, the file name and the file
+descriptor sector address. For information on directories, again refer
+to the <citetitle pubwork="book">System Programmer's Manual</citetitle>.
+</para>
+      </section>
+      <section>
+        <title>Static Storage</title>
+        <para>
+The final entry in <filename class="headerfile">RBFDefs</filename> is the static storage requirement for the
+drive tables. The drive tables are allocated by the driver and have a
+size and format of that shown here. They begin at DRVBEG and continue to
+DRVMEM. Also V.NDRV is allocated before the tables and defines the
+number of drives and therefore the number of tables used by a driver.
+The rest of the static storage is defined in <filename class="headerfile">OS9Defs</filename> and in the driver.
+This information will be used by those programmer's who need to write
+their own RBF device driver.
+The <citetitle pubwork="book">System Programmer's Manual</citetitle> has more
+information on the subject.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>The SysType File</title>
+      <para>
+The <filename class="headerfile">SysType</filename> file is a file that describes the physical (hardware-dependent)
+parameters of the various types of OS-9-based systems.
+Some of those parameters are:
+</para>
+      <simplelist type="vert">
+        <member>CPU Type Definitions</member>
+        <member>Memory Management Unit Definitions</member>
+        <member>CPU Speed Definitions</member>
+        <member>Disk Controller Definitions</member>
+        <member>Clock Module Definitions</member>
+        <member>PIA Type Definitions</member>
+        <member>System Type Definitions</member>
+        <member>Disk Port Address</member>
+        <member>Disk Definition</member>
+        <member>Disk Parameters</member>
+        <member>Clock Port</member>
+        <member>I/O Port</member>
+      </simplelist>
+      <para>
+This DEFS file is relatively straightforward. The main use of this
+file will be with those who are writing or modifying their drivers.
+All the necessary physical information is supplied here, and no discussion is needed.
+</para>
+    </section>
+  </section>
+</chapter>
