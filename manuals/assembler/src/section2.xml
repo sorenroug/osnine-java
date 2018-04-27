@@ -34,7 +34,7 @@ searching, which is the most time-consuming operation performed by an assembler.
 </para>
     <para>
 This manual describes how to use the OS-9 Assembler and basic
-programming techniques for the OS-9 environment. It is not intended to.
+programming techniques for the OS-9 environment. It is not intended to
 be a comprehensive course on assembly language programming or the 6809
 instruction set. If you are not familiar with these topics, you should
 consult the Motorola 6809 programming manuals and one of the many
@@ -128,7 +128,7 @@ switched to achieve special effects).
 The assembler performs two "passes" (complete scans) over the source
 file. During each pass, input lines are read and processed one at a time.
 During the first pass, the symbol table is created. Most error messages,
-the prOgram listing, and the object code are generated during the
+the program listing, and the object code are generated during the
 second pass.
 </para>
   </section>
@@ -702,7 +702,7 @@ This addressing mode is used by branch-type instructions such as
 BCC, BEQ, LBNE, BSR, LBSR, etc. The operand field is an expression which
 is the "destination" of the instruction, which is almost always a name
 used as a statement label somewhere in the program. The assembler
-computes an 8 or 16-bit program counter offset to the destinatiOn which
+computes an 8 or 16-bit program counter offset to the destination which
 is made part of the instruction. The destination of short branch-type
 instructions must be in the range of -126 to +129 bytes of the
 instruction address or an error message will be generated. Long branch-type
@@ -2253,7 +2253,7 @@ into a module header are defined to be of use to those who need to decode.
 a module header and possibly modify one. Since the Assembler generates a
 module header for you using the 'mod' and 'emod' statements, the value of
 this area will be when you do need to read a header. Masks are defined
-in this area for the type, language, attribute, and revisiOn bytes for
+in this area for the type, language, attribute, and revision bytes for
 accurate and understandable masking. Also, the different values for each
 field are listed here for making comparisons.
 </para>
