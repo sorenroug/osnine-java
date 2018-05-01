@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+<title>RunB</title>
+<para>
+RunB is the the <productname>BASIC09</productname> run-time package.
+It is similar to <productname>BASIC09</productname> with
+the following exceptions: RunB is about half the size of <productname>BASIC09</productname> and no
+file editing or debugging can be done. The main purpose of RunB is to
+save space and to execute packed modules. It should be noted that RunB
+will only execute packed modules. Another feature of RunB is that
+CONTROL-C and CONTROL-Q can be trapped by ON ERROR GOTO where
+<productname>BASIC09</productname> can't.
+</para>
+<para>
+When the name of a packed module is typed at the OS-9 prompt,
+Shell will determine that the module is packed <productname>BASIC09</productname> I-code.
+Shell then loads and forks RunB, and RunB will link to and execute the named
+program. To run packed modules in this way, RunB must be in the commands directory.
+</para>
+<para>
+Packed modules can be executed without RunB, but <productname>BASIC09</productname> will have
+to be used and more space will be required.
+</para>
+
+</appendix>
