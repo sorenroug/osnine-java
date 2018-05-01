@@ -15,6 +15,7 @@
 
     <modules>
         <module>assembler</module>
+        <module>pascal</module>
     </modules>
 
     <properties>

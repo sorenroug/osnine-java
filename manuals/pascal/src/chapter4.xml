@@ -1,0 +1,247 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>PascalT: The Native Code Translator</title>
+<abstract>
+<para>SYNOPSIS: The native code translator is an optional third step in
+the Pascal development process. The translator takes a compiled P-code
+program and converts it to 6809 assembly language source code ("native
+code"). The assembly language program generated is functionally identical
+to the P-code version of the program.</para>
+</abstract>
+
+<sect1>
+<title>About the Native Code Translator</title>
+<para>As mentioned in the introduction to this manual, an unusual characteristic of the OS-9 Pascal system is its ability to execute Pascal programs in P-code, native code, or both at the same time. "PascalT" is the program used to convert P-code versions of programs to native code (6809 machine language).</para>
+<para>The <emphasis>advantages</emphasis> of using PascalT to translate P-code to native code are:</para>
+<itemizedlist spacing="compact">
+    <listitem><para>native code is typically 5 times faster than the P-code version of the same program.</para></listitem>
+    <listitem><para>native code is ROMable and reentrant (can be executed by two or more tasks at the same time).</para></listitem>
+    <listitem><para>the memory space otherwise occupied by the P-code interpreter is available for other use.</para></listitem>
+    <listitem><para>the assembler source code output can be edited by hand.</para></listitem>
+</itemizedlist>
+
+<para>The <emphasis>disadvantages</emphasis> of native code programs are:</para>
+<itemizedlist spacing="compact">
+    <listitem><para>native code is usually larger than the P-code version.</para></listitem>
+    <listitem><para>virtual code swapping supported by PascalS is not available.</para></listitem>
+    <listitem><para>the translation step takes additional time</para></listitem>
+</itemizedlist>
+
+<para>Between one and three lines of assembly language source code will be
+generated for each byte of P-code translated. It works out to about 2.3
+bytes of native code for each byte of P-code if string constants aren't
+counted. The extra memory can be offset somewhat by the availability of
+memory space otherwise occupied by the P-code interpreter. Since the
+compiler always reports the total bytes of P-code generated for each
+procedure and for the whole program at the end of every compilation,
+you can estimate how many lines of assembler source text and bytes of
+object code will be generated.</para>
+<para>Since a large assembler source code output file may be generated,
+make sure the disk has enough free space to hold it before you
+begin translation. You may wish to create separate system and working
+diskettes containing only PascalT and the required files (<filename>PascalT.PRUN</filename>,
+<filename>PascalT.MODL</filename>, <filename>PascalS</filename>, <filename>Support</filename>,
+<filename>PascalErrs</filename>, and <filename>Asm</filename>, plus minimal
+OS-9 commands in the commands directory, and
+<filename>Pascaldefs</filename> in the working directory).</para>
+</sect1>
+
+<sect1>
+<title>Running the Translator</title>
+<para>PascalT is written in Pascal and is furnished in two parts:</para>
+<para>PascalT.PRUN is the main translator program in P-code</para>
+<para>PascalT.MODL contains the native code routines needed by the translator.</para>
+<para>The "PRUN" file name suffix is a reminder that PascalT is a P-code file. Because PascalT is quite large, it must be run using PascalS, the virtual code swapping P-code interpreter. Here is an example OS-9 command line that starts the translator.</para>
+<screen>
+PASCALS pascalt.prun #15K
+</screen>
+<para>which calls PascalS to run the translator program, "pascalt.prun", using 15K bytes of memory for swap buffers. The size of the swap buffer memory given to PASCALS directly affects how fast PascalT runs. The memory given to PascalS should be made as large as your system will allow, preferably 15K or more. The auxiliary file "PascalT.MODL" is automatically loaded by PascalT without any action required by the user.</para>
+<para>PascalT can be used in two ways: to translate a complete Pascal program, or to translate individual Pascal procedures one at a time. The second capability can be quite useful because Pascal applications can be developed that have some procedures in P-code and other (usually speed-critical) procedures in native code.</para>
+</sect1>
+
+<sect1>
+<title>Run-time Environment</title>
+<para>The run-time environment is described in detail in Chapter 10.</para>
+</sect1>
+
+<sect1>
+<title>Communicating With PascalT</title>
+<para>The first pact of running PascalT involves some dialogue with the user. When PascalT starts up, its first question will be:</para>
+<screen>
+Enter the name of the pcode file to be translated:
+</screen>
+<para>You should respond by entering the name of the P-code file you
+wish to translate followed by a <keycap>ENTER</keycap>. If you
+just respond with <keycap>ENTER</keycap>, PascalT will use the default file name, "PCODEF".</para>
+<para>PascalT first checks the P-code file to make sure that it was compiled without error and that it has not been altered since compilation. If the file does not pass these tests, one of the following error messages will be generated:</para>
+<para>*Can't translate the pcode file because the file has K compile error(s).</para>
+<para>*Can't translate the pcode file because the pcode file has been altered.</para>
+<para>The next question you will be asked is:</para>
+<screen>
+Enter the name of the 6809 assembler language file to be produced:
+</screen>
+<para>The name you enter in response will be used as the file name of the text file created by PascalT to hold the assembler language output. If you only press the <keycap>ENTER</keycap> key, PascalT will use the default file name "PCODEFASM". If the file specified already exists, it will be deleted, and a new file having the same name will be created.</para>
+<para>Assuming all has gone well so far, the next question will be:</para>
+<screen>
+Translate all procedures? (Y or N):
+</screen>
+<para>You must respond with a single letter 'y' or 'n', in upper or lower case. You are being asked whether you wish to translate all procedures of a complete program, or if you wish to individually translate only certain individual procedures within the P-code file. A "y" response is the simplest, from the user's point of view, because all subsequent processing is completely automatic. An "n" response leads to a more complex and lengthy process that requires you to have a more in-depth understanding of the OS-9 Pascal System. A separate section of this chapter is devoted to each option.</para>
+</sect1>
+
+<sect1>
+<title>Translating Complete Programs</title>
+<para>If the response to the 'translate all' prompt, as described in the beginning of this chapter, is a 'y', the whole P-code file will be translated into native code.</para>
+
+<para>The translator can't always determine exactly how much memory the native code program will require. The memory depends on how your program works. For example, a highly recursive program requires much more memory. Therefore, the translator arrives at an estimate, and gives you the opportunity to override the estimate if you so desire. The translator displays a table showing the local and extended stack size totals from the procedure table as well as any compile time overrides for local, extended, and minimum heap sizes. You will then be asked to supply values for the local, extended, and minimum heap allocations. To use the automatically calculated values, press <keycap>ENTER</keycap> in response to each question, or alternatively, enter a specific override value, which will be checked to ensure that it is within allowable limits.</para>
+<para>Once the memory allocation questions have been answered, you will be prompted to:</para>
+<screen>
+Enter a name to be used as the module name:
+</screen>
+<para>Here you will enter the name that you want the final output tile to be called. If you press the <keycap>ENTER</keycap> key, the name of the program in the P-code file is taken from the first 8 characters of the name on the 'PROGRAM' line in the original source program.</para>
+<para>You are also asked if you want line numbers in the P-code file to be translated with:</para>
+
+<screen>Translate line numbers in P-code file? (Y or N):</screen>
+
+<para>Inclusion of line numbers in the output file can only be accomplished if you included source line numbers in your P-code file via either a parameter or compile option as discussed in chapter 2 of this manual. If you respond "Y", any included line numbers will produce native code to inform the run time error reporting system of the last known line number (see the chapter on run time error handling). If you respond 'n', then any included line numbers simply produce a comment in the assembly language source program.</para>
+</sect1>
+
+<sect1>
+<title>Translating Individual Procedures</title>
+<para>If the response to the 'translate all' prompt, as described in the beginning of this chapter, is a 'n' (no), the translator enters a mode that allows you to specifically name which procedures within the Pascal program are to be translated. This function is most commonly used:</para>
+<itemizedlist>
+<listitem><para>when you wish to create a program that mixes some P-code procedures and some native code procedures, or</para></listitem>
+<listitem><para>when you wish to translate individual "library" procedures of commonly used procedures for general use by P-code or native-code programs</para></listitem>
+</itemizedlist>
+<para>One restriction is that the main program "outer block" cannot, be translated in this mode - you must translate it using the "translate all" option. Translating the outer block into native code requires many more considerations and much more processing than other procedures. However, it may call any number of external procedures which were translated individually.</para>
+<para>The first prompt given in the individual translation mode is:</para>
+
+<screen>Produce external definition file? (Y or N):</screen>
+
+<para>The external definition file contains information about linkage requirements of each procedure and is used by the PascalE linkage editor in a later step when individual procedures are combined into a complete program. The usual response to this question is "Y" for yes. If you respond with 'n', you must manually create the external. definition file required by the PascalE utility program.</para>
+<para>If you responded with "Y", the next prompt will ask for the name of the external definition file to be produced with:</para>
+
+<screen>Enter the name of the external definition file to be produced.</screen>
+
+<para>If you simply hit the <keycap>ENTER</keycap> key, the default filename "PCODEINFO" will be used.</para>
+<para>The next step is to give the translator a list of the procedures you wish translated. The procedure numbers are obtained from the procedure table given at the end of the compiler listing. The procedure numbers are requested by the prompt:</para>
+
+<screen>Enter a list of procedure numbers to translate.
+A zero value will terminate the list.</screen>
+
+<para>A negative value will back out a previously selected entry. You respond by entering a series of procedure numbers separated by spaces or carriage returns. You signify the end of the list of procedure numbers by entering the number "0" (remember that procedure 0 - the outer block - cannot be translated in this mode). If a procedure number was erroneously entered, simply enter the negative of the procedure number to remove it from the list. Each procedure number is checked to see that it really exists in the P-code file and, if not, the following error message is given:</para>
+
+<screen>Value N is out of range.
+Absolute value must be between 1 and X inclusive.
+Reenter.</screen>
+
+<para>where N is the bad procedure number and X is the highest allowed procedure number for the selected P-code file. If more than one procedure number was entered on a line, only those which were out of range are ignored, the others are accepted. If the selected procedure does not exist in P-code form, that is, if it was declared to be an external procedure, which means that it must already exist in native code form, the following error message is given:</para>
+
+<screen>Can't translate procedure N because it is an external routine.</screen>
+
+<para>where N is the bad procedure number. For either of these last two error messages,, you do not have to remove procedure 'n', because it was not accepted in the first place.</para>
+<para>After the procedure number list has been completed, the list of accepted procedure numbers is displayed for verification, followed by the question:</para>
+
+<screen>Is this list correct? (Y or N):</screen>
+
+<para>If you respond with a "N" answer, you will be given an opportunity to correct the procedure list. Otherwise, the actual translation process will begin.</para>
+<para>After the desired procedures are selected, source statements to produce a standard OS-9 memory module header are written to the assembler source file. The module header is given a hexadecimal value of 21 for the module type, indicating a machine language subroutine module (see the OS-9 system manual for a discussion of module formats and headers). The module data size is set to zero. For each procedure selected, a long branch instruction is inserted as the first code in the module. Each branch destination is to the startup code for a procedure. The branches are built in order of their actual procedure numbers, not in the order that they were selected.</para>
+<para>If you requested an external definition file, you will be prompted for a pathname to be used for the external module name with:</para>
+
+<screen>Enter a pathlist to be used as the external module pathlist
+and module name.</screen>
+
+<para>If the <keycap>ENTER</keycap> key is pressed, then the first 8 characters of the name on the 'PROGRAM' line in the original source program are used. Otherwise, the last name in the fully qualified path name is used as the module name, and the fully qualified path name is used to build the module path name in the external definition file. See the section on PascalE for more information on the the module path name.</para>
+<para>If you are not having the translator build an external definitions file for you, the above prompt will be:</para>
+
+<screen>Enter a name to be used as the module name:</screen>
+
+<para>If the <keycap>ENTER</keycap> key is pressed, the first 8 characters of the name on the 'PROGRAM' line in the original source program are used. In both cases, the name is used as the module name in the assembly language source file being produced.</para>
+<para>You are also asked if you want line numbers in the P-code file to be translated with:</para>
+
+<screen>Translate line numbers in P-code file? (Y or N):</screen>
+
+<para>Inclusion of line numbers in the output file can only be accomplished if you included source line numbers in your P-code file via either a parameter or compile option as discussed in chapter 2 of this manual. If you respond "Y", any included line numbers will produce native- code to inform the run time error reporting system of the last known line number (see the chapter on run time error handling). If you respond 'n', then any included line numbers simply produce a comment in the assembly language source program.</para>
+<para>After one or more of the procedures have been translated and assembled, you will have to recompile the original source program to take advantage of the native code routines. The Pascal procedures that now have translated equivalents should be removed from the program and replaced with EXTERNAL procedure declarations. After the Pascal program has been recompiled, you need only update the P-code file with the PASCALE program, which puts into the P-code file all the information about the native code modules. The result is a program which uses both P-code and native code procedures.</para>
+</sect1>
+
+<sect1>
+<title>Assembling Translated Procedures</title>
+<para>The output from the translator is an assembly language source code
+text file, which must be assembled using the OS-9 assembler. Procedures
+are translated one by one, with optimization being performed as each line
+of assembler source code is produced. There are many reduction rules
+used to optimize the native code procedures for both memory and speed
+efficiency. The resulting file can then be assembled by the standard OS-9
+assembler. The file <filename>PASCALDEFS</filename> must be in the data directory during the
+assembly process. You can, if needed, edit the assembler source file
+with a text editor to further optimize the code, but you must be very
+careful to retain the overall structure and function of the module. The
+source code must always adhere to the complete memory and register usage
+conventions as described in the chapter on writing procedures in native
+code. An example of calling the assembler (using the default assembler
+output file name) is:</para>
+<screen>
+ASM PCODEFASM #20k
+</screen>
+
+<para>Of course, any of the assembler options can be selected as well,
+especially the "<option>L</option>" option to produce a listing and the
+"<option>O=</option>" option to override the default output file name. In
+general, it is a good practice to make sure that the output filename
+is the same as the module name. The "<option>O</option>" option or
+"<option>O=</option>" option must be specified if you wish to create an
+executable output file from the assembler. Using the assembler without
+either form of "<option>O</option>" option is useful to make sure the
+assembly is error free before actually assembling to create an executable
+file.</para>
+<para>The output of the assembler in the above example is a native code
+module a file in the execution ("CMDS") directory that is also called
+"PCODEFASM". If the <filename>PCODEFASM</filename> file contained only external modules from
+a partially translated program, they are now ready to be linked to the
+recompiled P-code program using PascalE. If the <filename>PCODEFASM</filename> file contained
+a fully translated program, it may now be run. See the section below on
+Running Native Code Programs.</para>
+<para>Pascal programs that are translated to native code do have runtime error checking, but when errors occur it is not easy to determine at what line of which procedure the error occurred as reported by the P-code interpreters. Also, the P-code interpreter run time options "<option>l</option>", "<option>e</option>", and "<option>s</option>" have no meaning when running native code programs. You should only translate procedures or programs into native code after you are sure that they are fully functional and have been completely tested using one of the interpreters.</para>
+</sect1>
+
+<sect1>
+<title>Running Native Code Programs</title>
+<para>This section describes how to execute a Pascal program which has been totally translated to native code using PascalT. These programs are executed directly from the OS-9 Shell. The Shell command line format to run a native code Pascal program is:</para>
+
+<screen>
+program &lt;input &gt;output &gt;&gt;syserr [Run-Time Options] [:Params]
+</screen>
+
+<para>Items enclosed in "[" and "]" are optional.</para>
+<para>Where:</para>
+<para>"program" is the pathname of the native code program which is to be executed. The module must have been created using PascalT and the OS-9 Assembler as described previously. It may reside in the system current execution directory, or it can be preloaded into memory using the OS-9 "load" command.</para>
+<para>"input" is the pathname to be associated with the standard file
+'INPUT'. The file will be opened for read access only, and it must
+already exist when the program begins. If the path name is given, it
+must be immediately preceded by the "&lt;" character. If the input path
+is not redirected, any program reference to the standard file INPUT will
+default to the standard input path, usually the terminal.</para>
+<para>"output" is the pathname to be associated with the standard file
+'OUTPUT'. The file will be opened for read and write (i.e. update)
+access, and, if the file does not already exist, it will be created. If
+the pathname is given, it must be immediately preceded by the "&gt;"
+character. If the output path is not redirected, any reference to the
+standard file OUTPUT will default to the standard output path, usually
+the terminal.</para>
+<para>"syserr" is the pathname to be associated with the standard
+file 'SYSERR', a predefined text file provided as an OS-9 Pascal
+extension. The file will be opened for read and write (i.e. update)
+access, and, if the file does not already exist, it will be created. If
+the pathname is given, it must be immediately preceded by the "&gt;&gt;"
+characters. If the syserr path is not redirected, any program reference
+to the standard file SYSERR will default to the standard error path,
+usually the terminal.</para>
+<para>"Run-Time Options" is a list of zero or more run time options which generally define memory allocation sizes, and/or they enable generation of the memory statistics report. The only two options which have any affect for programs which run totally as native code are the '<option>h</option>' and '<option>i</option>' options. See Chapter 11 for details.</para>
+<para>"Params" is a character string of up to 80 characters which
+will be made available to the running program in a predefined array
+called 'SYSPARAM'. This works in a manner compatible with the P-code
+interpreters.</para>
+<para>The variable stack space size of native code programs is estimated by PascalT and the size value is put into the program's memory module header. The OS-9 Shell "<option>#</option>" memory size option can optionally be used to override the default size. Highly recursive programs, or programs that use large dynamic arrays, should be given additional memory using this option.</para>
+<para>Native code programs that have EXTERNAL declarations assume that the procedures involved are separate memory modules, so PascalT generates code to automatically perform the OS-9 "link" and "load" functions in order to access them.</para>
+<para>The "Support" run-time package module must either be preloaded in memory or must be present in the system's current execution directory in order to run any native code program. The "PascalErrs" file must also be present if full text error messages are desired.</para>
+</sect1>
+</chapter>

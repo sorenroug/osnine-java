@@ -1,0 +1,228 @@
+<appendix xmlns="http://docbook.org/ns/docbook">
+<title>Pascal Syntax</title>
+
+<para>The following information describes the syntax of the Pascal language. The "Backus-Naur Formalism" will be used to describe the correct structure of Pascal statements. The following symbols are meta-symbols, symbols that describe other symbols, belonging to BNF, but they are not part of the Pascal language.</para>
+<informalexample>
+<para>{ } - Curly brackets indicate possible repetition of the enclosed symbols.</para>
+<para>| - Or</para>
+</informalexample>
+
+<para>&lt;program&gt; ::= &lt;program heading&gt; &lt;block&gt; .</para>
+
+<para>&lt;program heading&gt; ::= PROGRAM &lt;identifier&gt; ( &lt;file identifier&gt; { , &lt;file identifier&gt; } );</para>
+
+<para>&lt;file identifier ::= &lt;identifier&gt;</para>
+
+<para>&lt;identifier&gt; ::= &lt;letter&gt; { &lt;letter or digit&gt; | '_' }</para>
+
+<para>&lt;letter or digit&gt; ::= &lt;letter&gt; | &lt;digit&gt;</para>
+
+<para>&lt;block&gt; ::= &lt;label declaration part&gt; &lt;constant definition part&gt; &lt;type definition part&gt; &lt;variable declaration part&gt; &lt;procedure and function declaration part&gt; &lt;statement part&gt;</para>
+
+<para>&lt;label declaration part&gt; ::= &lt;empty&gt; | LABEL &lt;label&gt; { , &lt;label&gt;} ;</para>
+
+<para>&lt;label&gt; ::= &lt;unsigned integer&gt;</para>
+
+<para>&lt;constant definition part&gt; ::= &lt;empty&gt; | CONST &lt;constant definition&gt; { ; &lt;constant definition&gt;} ;</para>
+
+<para>&lt;constant definition&gt; ::= &lt;identifier&gt; = &lt;constant&gt;</para>
+
+<para>&lt;constant&gt; ::= &lt;unsigned number&gt; | &lt;sign&gt; &lt;unsigned number&gt; | &lt;constant identifier&gt; j &lt;sign&gt; &lt;constant identifier&gt; | &lt;string&gt;</para>
+
+<para>&lt;unsigned number&gt; ::= &lt;unsigned integer&gt; | &lt;unsigned real&gt; | &lt;unsigned hexinteger&gt;</para>
+
+<para>&lt;unsigned integer&gt; ::= &lt;digit&gt; { '_' &lt;digit&gt; | &lt;digit&gt;}</para>
+
+<para>&lt;unsigned hexinteger&gt; ::= $ &lt;hexdigit&gt; { '_' &lt;hexdigit&gt; | &lt;hexdigit&gt; }</para>
+
+<para>&lt;unsigned real&gt; ::= &lt;unsigned integer&gt; . &lt;digit&gt; { &lt;digit&gt;} | &lt;unsigned integer&gt; . &lt;digit&gt; { &lt;digit&gt;} E &lt;scale factor&gt; | &lt;unsigned integer&gt; E &lt;scale factor&gt;</para>
+
+<para>&lt;scale factor&gt; ::= &lt;unsigned integer&gt; | &lt;sign&gt; &lt;unsigned integer&gt;</para>
+
+<para>&lt;sign&gt; ::= + | -</para>
+
+<para>&lt;constant identifier&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;string&gt; ::= ' &lt;character&gt; { &lt;character&gt;} '</para>
+
+<para>&lt;type definition part&gt; ::= &lt;empty&gt; | TYPE &lt;type definition&gt; {; &lt;type definition&gt;} ;</para>
+
+<para>&lt;type definition&gt; ::= &lt;identifier&gt; = &lt;type&gt;</para>
+
+<para>&lt;type&gt; ::= &lt;simple type&gt; | &lt;structured type&gt; | &lt;pointer type&gt;</para>
+
+<para>&lt;simple type&gt; ::= &lt;scalar type&gt; | &lt;subrange type&gt; | &lt;type identifier&gt;</para>
+
+<para>&lt;scalar type&gt; ::= ( &lt;identifier&gt; { , &lt;identifier&gt;} )</para>
+
+<para>&lt;subrange type&gt; ::= &lt;constant&gt; .. &lt;constant&gt;</para>
+
+<para>&lt;type identifier&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;structured type&gt; ::= &lt;unpacked structured type&gt; | PACKED &lt;unpacked structured type&gt;</para>
+
+<para>&lt;unpacked structured type&gt; ::= &lt;array type&gt; | &lt;record type&gt; &lt;set type&gt; | &lt;file type&gt;</para>
+
+<para>&lt;array type&gt; ::= ARRAY [ &lt;index type&gt; { , &lt;index type&gt;} ] OF &lt;component type&gt;</para>
+
+<para>&lt;index type&gt; ::= &lt;simple type&gt;</para>
+
+<para>&lt;component type&gt; ::= &lt;type&gt;</para>
+
+<para>&lt;record type&gt; ::= RECORD &lt;field list&gt; END</para>
+
+<para>&lt;field list&gt; ::= &lt;fixed part&gt; | &lt;fixed part&gt; ; &lt;variant part&gt; | &lt;variant part&gt;</para>
+
+<para>&lt;fixed part&gt; ::= &lt;record section&gt; { ; &lt;record section&gt;}</para>
+
+<para>&lt;record section&gt; ::= &lt;field identifier&gt; { , &lt;field identifier&gt;} : &lt;type&gt; | &lt;empty&gt;</para>
+
+<para>&lt;variant part&gt; ::= CASE &lt;tag field&gt; &lt;type identifier&gt; OF &lt;variant&gt; { ; &lt;variant&gt;}</para>
+
+<para>&lt;tag field&gt; ::= &lt;field identifier&gt; ; | &lt;empty&gt;</para>
+
+<para>&lt;variant&gt; ::= &lt;case label list&gt; : ( &lt;field list&gt; | &lt;empty&gt;</para>
+
+<para>&lt;case label list&gt; ::= &lt;case label&gt; { , &lt;case label&gt;}</para>
+
+<para>&lt;case label&gt; ::= &lt;constant&gt;</para>
+
+<para>&lt;set type&gt; ::= SET OF &lt;base type&gt;</para>
+
+<para>&lt;base type&gt; ::= &lt;simple type&gt;</para>
+
+<para>&lt;file type&gt; ::= FILE OF &lt;type&gt;</para>
+
+<para>&lt;pointer type&gt; ::= ^ &lt;type identifier&gt;</para>
+
+<para>&lt;variable declaration part&gt; ::= &lt;empty&gt; | VAR &lt;variable declaration&gt; { ; &lt;variable declaration&gt;} ;</para>
+
+<para>&lt;variable declaration ::= &lt;identifier&gt; { , &lt;identifier&gt;} : &lt;type&gt;</para>
+
+<para>&lt;procedure and function declaration part&gt; ::= { &lt;procedure or function declaration&gt; ;}</para>
+
+<para>&lt;procedure or function declaration&gt; ::= &lt;procedure declaration&gt; | &lt;function declaration&gt;</para>
+
+<para>&lt;procedure declaration&gt; ::= &lt;procedure heading&gt; &lt;block&gt;</para>
+
+<para>&lt;procedure heading&gt; ::= PROCEDURE &lt;identifier&gt; ; | PROCEDURE &lt;identifier&gt; ( &lt;formal parameter section&gt; { ; &lt;formal parameter section&gt;} ) ;</para>
+
+<para>&lt;formal parameter section&gt; ::= &lt;parameter group&gt; | VAR &lt;parameter group&gt;</para>
+
+<para>&lt;parameter group&gt; ::= &lt;identifier&gt; { , &lt;identifier&gt;} : &lt;type identifier&gt;</para>
+
+<para>&lt;function declaration&gt; ::= &lt;function heading&gt; &lt;block&gt;</para>
+
+<para>&lt;function heading&gt; ::= FUNCTION &lt;identifier&gt; : &lt;result type&gt; ; | FUNCTION &lt;identifier&gt; ( &lt;formal parameter section&gt;} ) : &lt;result type&gt; ;</para>
+
+<para>&lt;result type&gt; ::= &lt;type identifier&gt;</para>
+
+<para>&lt;statement part&gt; ::= &lt;compound statement&gt;</para>
+
+<para>&lt;statement&gt; ::= &lt;unlabelled statement&gt; | &lt;label&gt; : &lt;unlabelled statement&gt;</para>
+
+<para>&lt;unlabelled statement&gt; ::= &lt;simple statement&gt; | &lt;structured statement&gt;</para>
+
+<para>&lt;simple statement&gt; ::= &lt;assignment statement&gt; | &lt;procedure statement&gt; | &lt;go to statement&gt; | &lt;empty statement&gt;</para>
+
+<para>&lt;assignment statement&gt; ::= &lt;variable&gt; := &lt;expression&gt; | &lt;function identifier&gt; := &lt;expression&gt;</para>
+
+<para>&lt;variable&gt; ::= &lt;entire variable&gt; | &lt;component variable&gt; | &lt;referenced variable&gt;</para>
+
+<para>&lt;entire variable&gt; ::= &lt;variable identifier&gt;</para>
+
+<para>&lt;variable identifier&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;component variable&gt; ::= &lt;indexed variable&gt; | &lt;field designator&gt; | &lt;file buffer&gt;</para>
+
+<para>&lt;indexed variable&gt; ::= &lt;array variable&gt; [ &lt;expression&gt; { , &lt;expression&gt;} ]</para>
+
+<para>&lt;array variable&gt; ::= &lt;variable&gt;</para>
+
+<para>&lt;field designator&gt; ::= &lt;record variable&gt; . &lt;field identifier&gt;</para>
+
+<para>&lt;record variable&gt; ::= &lt;variable&gt;</para>
+
+<para>&lt;field identifier&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;file buffer&gt; ::= &lt;file variable&gt; ^</para>
+
+<para>&lt;file variable&gt; ::= &lt;variable&gt;</para>
+
+<para>&lt;referenced variable&gt; ::= &lt;pointer variable&gt; ^</para>
+
+<para>&lt;pointer variable&gt; ::= &lt;variable&gt;</para>
+
+<para>&lt;expression&gt; ::= &lt;simple expression&gt; | &lt;simple expression&gt; &lt;relational operator&gt; &lt;simple expression&gt;</para>
+
+<para>&lt;relational operator&gt; ::= = | &lt;&gt; | &lt; | &lt;= | &gt;= | &gt; | IN</para>
+
+<para>&lt;simple expression&gt; ::= &lt;term&gt; | &lt;sign&gt; &lt;term&gt; | &lt;simple expression&gt; &lt;adding operator&gt; &lt;term&gt;</para>
+
+<para>&lt;adding operator&gt; ::= + | - | OR | | | #</para>
+
+<para>&lt;term&gt; ::= &lt;factor&gt; | &lt;term&gt; &lt;multiplying operator&gt; &lt;factor&gt;</para>
+
+<para>&lt;multiplying operator&gt; ::= * | / | DIV | MOD | AND | &amp;</para>
+
+<para>&lt;factor&gt; ::= &lt;variable&gt; | &lt;unsigned constant&gt; | ( &lt;expression&gt; ) &lt;function designator&gt; | &lt;set&gt; | NOT &lt;factor&gt;</para>
+
+<para>&lt;unsigned constant&gt; ::= &lt;unsigned number&gt; | &lt;string&gt; | &lt;constant identifier&gt; | NIL</para>
+
+<para>&lt;function designator&gt; ::= &lt;function identifier&gt; | &lt;function identifier&gt; ( &lt;actual parameter&gt; { , &lt;actual parameter&gt;} )</para>
+
+<para>&lt;function identifier&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;set&gt; ::= [ &lt;element list&gt; ]</para>
+
+<para>&lt;element list&gt; ::= &lt;element&gt; { , &lt;element&gt; } | &lt;empty&gt;</para>
+
+<para>&lt;element&gt; ::= &lt;expression&gt; | &lt;expression&gt; | &lt;expression&gt; .. &lt;expression&gt;</para>
+
+<para>&lt;procedure statement&gt; ::= &lt;procedure identifier&gt; | &lt;procedure identifier&gt; ( &lt;actual parameter&gt; { , &lt;actual parameter&gt;} )</para>
+
+<para>&lt;procedure identifier&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;actual parameter&gt; ::= &lt;expression&gt; | &lt;variable&gt; | &lt;procedure identifier&gt; | &lt;function identifier&gt;</para>
+
+<para>&lt;go to statement&gt; ::= GOTO &lt;label&gt;</para>
+
+<para>&lt;empty statement&gt; ::= &lt;empty&gt;</para>
+
+<para>&lt;empty&gt; ::=</para>
+
+<para>&lt;structured statement&gt; ::= &lt;compound statement&gt; | &lt;conditional statement&gt; | &lt;repetitive statement&gt; | &lt;with statement&gt;</para>
+
+<para>&lt;compound statement&gt; ::= BEGIN &lt;statement&gt; { ; &lt;statement&gt;} END</para>
+
+<para>&lt;conditional statement&gt; ::= &lt;if statement&gt; | &lt;case statement&gt;</para>
+
+<para>&lt;if statement&gt; ::= IF &lt;expression&gt; THEN &lt;statement&gt; | IF &lt;expression&gt; THEN &lt;statement&gt; ELSE &lt;statement&gt;</para>
+
+<para>&lt;case statement&gt; ::= CASE &lt;expression&gt; OF &lt;case list element&gt; { ; &lt;case list element&gt;} END</para>
+
+<para>&lt;case list element&gt; ::= &lt;case label list&gt; : &lt;statement&gt; | &lt;empty&gt;</para>
+
+<para>&lt;case label list&gt; ::= &lt;case label&gt; { , &lt;case label&gt; } | OTHERWISE</para>
+
+<para>&lt;repetitive statement&gt; ::= &lt;while statement&gt; | &lt;repeat statement&gt; | &lt;for statement&gt;</para>
+
+<para>&lt;while statement&gt; ::= WHILE &lt;expression&gt; DO &lt;statement&gt;</para>
+
+<para>&lt;repeat statement&gt; ::= REPEAT &lt;statement&gt; {; &lt;statement&gt;} UNTIL &lt;expression&gt;</para>
+
+<para>&lt;for statement&gt; ::= FOR &lt;control variable&gt; := &lt;for list&gt; DO &lt;statement&gt;</para>
+
+<para>&lt;for list&gt; ::= &lt;initial value&gt; TO &lt;final value&gt; | &lt;initial value&gt; DOWNTO &lt;final value&gt;</para>
+
+<para>&lt;control variable&gt; ::= &lt;identifier&gt;</para>
+
+<para>&lt;initial value&gt; ::= &lt;expression&gt;</para>
+
+<para>&lt;final value&gt; ::= &lt;expression&gt;</para>
+
+<para>&lt;with statement&gt; ::= WITH &lt;record variable list&gt; DO &lt;statement&gt;</para>
+
+<para>&lt;record variable list&gt; ::= &lt;record variable&gt; { , &lt;record variable&gt;}</para>
+
+</appendix>

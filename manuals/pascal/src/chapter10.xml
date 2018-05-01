@@ -1,0 +1,234 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>The Run-time Environment</title>
+
+<abstract>
+<para>SYNOPSIS: This section describes what happens inside the system while P-code or native code Pascal programs are running, including memory allocation, run-time options, and error handling.</para>
+</abstract>
+
+<sect1>
+<title>What Happens When Programs Are Run</title>
+
+<para>There are two ways to run Pascal programs: P-code programs are run
+using either the PascalN or PascalS P-code interpreters (See Chapter 3),
+or programs translated to native code by PascalT can be run directly
+from OS-9 Shell command lines (See Chapter 4).</para>
+<para>As programs are executed, many operations are performed "behind
+the scenes" by either the P-code interpreter and/or the Pascal
+support package. This includes allocation of memory when procedures
+and functions are invoked, processing when errors occur, etc. Even
+though these functions are usually so automatic that novice programmers
+need not have an understanding of how they work, more sophisticated
+programs should be designed with consideration towards these factors,
+This is especially true of programs that use either Pascal-generated or
+hand-coded native code.</para>
+</sect1>
+
+<sect1>
+<title>Pascal Memory Utilization</title>
+
+<para>The requirements of the Pascal language require a fairly
+sophisticated scheme for management of data memory. An example is the
+recursive nature of functions and procedures that require allocation
+of separate variable storage areas for each procedure or function
+invocation. A good understanding of how Pascal utilizes memory can be
+valuable to advanced programmers in order to use all of the options and
+capabilities of OS-9 Pascal.</para>
+<para>When a P-code interpreter or a compiled native code Pascal program
+is run, OS-9 allocates to the task a contiguous block of RAM memory
+for its working storage. This area is called a "data area", and is for
+exclusive use of the Pascal task. There is a certain minimum size for
+the data area coded into the Pascal program's memory module header which
+can be explicitly expanded using the OS-9 Shell's "<option>#</option>"
+memory size option.</para>
+<para>Pascal further internally subdivides the data area into several
+sections. Most of the space is used for variables declared in the Pascal
+program, but some space is also required for the Pascal runtime system
+internal use. If a P-code interpreter is being used, part of the data
+area must be used to hold the P-code or swap buffers for P-code; if the
+program is compiled native code, the machine language instructions are
+contained in a standard OS-9 "memory module" which is located outside
+the data area in a separate memory area. For this reason it is more
+efficient for two users running exactly the same Pascal program to do so
+using native code which can be shared. P-code programs cannot be shared
+so a separate copy must be loaded for each user.</para>
+<para>The main subdivisions of the Pascal data area are:</para>
+<orderedlist numeration="arabic">
+<listitem><para>HEAP MEMORY: Memory used for dynamic data structures using the NEW, MARK, and RELEASE standard procedures.</para></listitem>
+<listitem><para>STANDARD I/O BUFFERS AND FCBs: data structured needed for the three predefined files INPUT, OUTPUT, and SYSERR.</para></listitem>
+<listitem><para>GLOBAL VARIABLES: storage for the main program ("outer block") variables (local and extended stack).</para></listitem>
+<listitem><para>LOCAL VARIABLE STACK: this stack is used to dynamically allocate variable storage (local and extended stack) for procedures as they are called during program execution.</para></listitem>
+<listitem><para>P-CODE BUFFER: If a P-code interpreter is being used, this section holds the P-code for all procedures (PascalN), or swap buffers for P-code (PascalS). Native code programs don't have this section because the program is elsewhere.</para></listitem>
+<listitem><para>DIRECT PAGE: This section is used for internal working variables of the Support package routines.</para></listitem>
+</orderedlist>
+
+<example>
+<title>Pascal Data Area Utilization Map</title>
+<screen>
+            +---------------------------+
+            |                           |
+high memory |       HEAP MEMORY         |  Used by NEW, MARK,
+            | (Can be extended upward)  |  and RELEASE calls
+            |                           |
+            +---------------------------+
+            |                           |
+            |    STANDARD I/O BUFFERS   |  Buffers and FCBs for
+            |   AND FILE CONTROL BLOCKS |  INPUT, OUTPUT, SYSERR
+            |                           |
+            +---------------------------+
+            |                           |
+            |     GLOBAL VARIABLES      |  Variable storage for
+            |                           |  main procedure
+            |                           |
+            +---------------------------+
+            |                           |
+            |      LOCAL VARIABLE       |  Variable storage for
+            |          STACK            |  all other procedures
+            |                           |  (dynamically allocated)
+            +---------------------------+
+            |                           |
+            |  PASCALN P-CODE AREA, or  |  Program storage; this
+            |  PASCALS SWAP BUFFERS     |  area nonexistent for
+            |                           |  native code programs
+            +---------------------------+
+            |                           |
+            |        DIRECT PAGE        |  SUPPORT package working
+            |                           |  storage
+low address +---------------------------+
+</screen>
+</example>
+
+<para>The diagram above shows the various sections of the Pascal data area. Usage of some sections is fairly self-explanatory, however, three sections are of particular interest to the programmer because they are used for program, variable storage. The are the HEAP, GLOBAL VARIABLE, and LOCAL VARIABLE sections and are discussed in some detail in the following pages.</para>
+</sect1>
+
+<sect1>
+<title>Global and Local Variable Storage</title>
+
+<para>All Pascal variables must be declared in a VAR statement, and
+storage for these variables is assigned in the GLOBAL VARIABLE and LOCAL
+VARIABLE STACK sections of the Pascal data area.</para>
+<para>Variables declared in the main program (Procedure 0 or "outer
+block") are global in scope with respect to all other procedures and are
+thus called "Global Variables". Addresses of global variables are assigned
+to specific locations within the GLOBAL VARIABLE section. Because the
+main procedure cannot call itself, only one set of variable locations
+is required, i.e., dynamic allocation is not required.</para>
+<para>Variables declared within all other procedures (Procedures 1..N)
+are local, meaning they are only known within the procedure in which they
+are declared and other procedures that it may call. To further complicate
+matters, Pascal permits "recursive" procedure calls where procedures
+can call themselves but with unique variables in each call. For these
+reasons, Pascal must use a stack to dynamically allocate storage to
+procedures when they are called, and deallocate storage when they exit
+to their caller. The stack comprises the LOCAL VARIABLE STACK section
+of the Pascal Data space.</para>
+</sect1>
+
+<sect1>
+<title>Local and Extended Stacks</title>
+
+<para>In addition to storage for variables for each procedure invocation,
+storage may also be needed for temporary working variables such as for
+holding intermediate results during evaluation of expressions. These
+temporary variables are automatically defined and managed by the
+compiler and are of no concern to the programmer except for the fact
+they do require memory space and must be taken into account when manually
+figuring and assigning memory space.</para>
+<para>Variables declared in the program are Kept on the "local
+stack". Compiler-created temporary variables are kept on the "extended
+stack". Both stacks are located in the section of the Pascal data area
+called the "LOCAL VARIABLE STACK". The main procedure (Procedure 0) also
+may need an extended stack, but since it has its own global variable
+section part of it is reserved for the main procedure's extended
+stack.</para>
+<para>While a program is running, variable storage is assigned from the
+stack when procedures are called and returned to the stack when they
+are exited. It is possible that the stack(s) may fill up so that another
+procedure invocation is not possible. The P-code interpreters check the
+stack size before each procedure invocation in order to make sure that
+sufficient stack space is available. Native code programs also include
+stack-checking code unless you specifically instruct otherwise.</para>
+
+<para>If the stack becomes too full to perform another procedure call,
+a fatal error occurs and the program is aborted. You must then use
+the "<option>l</option>" and/or "<option>e</option>" run-time options
+to increase the size of the local stack and/or the extended stack as
+necessary. Because procedure calling depends on program flow which can
+be almost random at times, it may be impossible for you (or the compiler)
+to accurately predict worst-case requirements.</para>
+<para>When a program is compiled, the procedure table printed at the
+end of the listing gives the exact number of bytes of storage required
+for each procedure's LOCAL variables and extended STACK (See Chapter
+2). Therefore, the sum of the local stack and extended stack required by
+a procedure is the total amount of storage it requires (per call) within
+the local variable stack. The compiler sets the default size of the local
+variable stack section to a estimate based on these statistics. You
+can optionally use the "<option>l</option>" and "<option>e</option>"
+run-time options (See Chapter 11) to manually alter the size of the local
+variable stack area. For example, you might need to increase the size
+in the case of highly recursive programs where the compiler's estimate
+was too small, or if economical use of memory is crucial you may want
+to manually compute worst-case requirements in order to reduce the size
+of the compiler's too-generous estimate.</para>
+<para>Each call to a procedure requires a block of memory called a "stack
+frame" to be allocated. A stack frame consists of the memory required to
+hold the local and extended stacks for a procedure plus an additional
+7 bytes to hold a "stack mark". Each local variable is assigned some
+number of bytes of memory depending on its structure. Characters and
+boolean type variables are assigned 1 byte each. Integers are assigned
+2 bytes each. Real variables are assigned 5 bytes each. Arrays are
+usually assigned multiples of these quantities. For example, an array
+of 6 integers requires 6 times 2 bytes or 12 bytes of storage. Records
+are assigned storage according to their overall structure. A record that
+contains a real variable, an integer variable, and a boolean variable
+would require 5+241 bytes or 8 bytes of storage. Arrays of records
+require number-of-elements times record-size bytes of storage. Records
+which are allocated as local variables and which contain variants are
+allocated enough storage to contain the largest possible combination
+of variants.</para>
+<para>If more than one variable is declared in a single declaration statement, the variables are allocated right to left. For the declaration:</para>
+
+<programlisting>
+i, j, k: integer;
+</programlisting>
+
+<para>the variable "k" is first assigned to the next lower 2 bytes of storage, then "j" is assigned to the next 2 lower bytes, then "i" to the next 2 lower bytes.</para>
+</sect1>
+
+<sect1>
+<title>Heap Storage</title>
+
+<para>Heap storage is for variables that are dynamically assigned,
+and it is managed via the standard procedures NEW, HARK, and RELEASE
+(These are described in Chapter 7). Only programs using these calls
+require HEAP section space; otherwise the size of this section may be
+zero. The run-time "<option>h</option>"  option can be used to set the
+size (See Chapter 11).</para>
+<para>MARK and RELEASE calls provide a way for saving and resetting the
+top of heap pointer. In particular, you can use MARK to save the current
+top of heap pointer, allocate several variables in heap via calls to NEW,
+and then use RELEASE to reset the top of heap pointer to what it was,
+so that the next call to NEW will reuse the heap space allocated since
+the last MARK call. This allows you to reuse heap memory over and over
+after a group of one or more variables is no longer needed.</para>
+<para>Each call to NEW requests that some number of bytes of storage
+in the heap area be set aside for creating a variable, and the address
+of that assignment is returned to the pointer argument used in the NEW
+call. If the variable being allocated is a record with variants, the
+call to NEW must describe the specific values of all applicable variants
+to be used in computing the size of the record to actually allocate. In
+other words, a record type could be declared which requires 53 bytes of
+storage for some combination of variant values and requires 49 bytes for
+a different combination. If a variable was declared in local memory with
+this record type, the variable would be assigned 53 bytes of storage
+but by allocating the variable in the heap area copies of the variable
+can be created which use either 49 or 53 bytes.</para>
+<para>If the amount of heap section space initially allocated is too
+small to handle a NEW call, Pascal will call OS-9 to request that the
+data area be given additional memory in order to expand the heap section
+space. If OS-9 can't do this for any reason, a fatal error occurs. When a
+RELEASE call gives the additional space back, Pascal automatically calls
+OS-9 to return the memory. The "<option>r</option>" run-time option
+(See Chapter 11) can be used to inhibit automatic return of addition
+memory if it is anticipated that it will be needed again later.</para>
+</sect1>
+</chapter>

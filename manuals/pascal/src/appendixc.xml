@@ -1,0 +1,182 @@
+<appendix xmlns="http://docbook.org/ns/docbook">
+<title>Quick Reference</title>
+
+<table frame="none" colsep="0" rowsep="0">
+<title>Pascal Keywords</title>
+<tgroup cols="4">
+   <colspec colwidth="1.5in" colname="c1"/>
+   <colspec colwidth="1.5in" colname="c2"/>
+   <colspec colwidth="1.5in" colname="c3"/>
+   <colspec colwidth="1.5in" colname="c4"/>
+   <tbody>
+        <row>
+            <entry>AND</entry><entry>END</entry><entry>MOD</entry><entry>SET</entry>
+        </row>
+        <row>
+            <entry>ARRAY</entry><entry>FILE</entry><entry>NIL</entry><entry>THEM</entry>
+        </row>
+        <row>
+            <entry>BEGIN</entry><entry>FOR</entry><entry>NOT</entry><entry>TO</entry>
+        </row>
+        <row>
+            <entry>CASE</entry><entry>FUNCTION</entry><entry>OF</entry><entry>TYPE</entry>
+        </row>
+        <row>
+            <entry>CONST</entry><entry>GOTO</entry><entry>OR</entry><entry>UNTIL</entry>
+        </row>
+        <row>
+            <entry>DIV</entry><entry>IF</entry><entry>OTHERWISE</entry><entry>VAR</entry>
+        </row>
+        <row>
+            <entry>DO</entry><entry>IN</entry><entry>PROCEDURE</entry><entry>WHILE</entry>
+        </row>
+        <row>
+            <entry>ELSE</entry><entry>LABEL</entry><entry>PROGRAM</entry><entry>WITH</entry>
+        </row>
+    </tbody>
+</tgroup>
+</table>
+
+<table frame="none" colsep="0" rowsep="0">
+<title>Standard Procedures</title>
+<tgroup cols="1">
+   <colspec colwidth="5in" colname="c1"/>
+   <tbody>
+    <row><entry>FIELDPUT(variable-name, start-bit, length, value:integer)</entry></row>
+    <row><entry>ISOMOD(logical-value:boolean)</entry></row>
+    <row><entry>MARK(variable-name:pointer-type)</entry></row>
+    <row><entry>RELEASE(variable-name:pointer-type)</entry></row>
+    <row><entry>NEW(variable-name:pointer-type)</entry></row>
+    <row><entry>MATHABORT(logical-value:boolean)</entry></row>
+    <row><entry>RIGHTJUST(logical-value:boolean)</entry></row>
+    <row><entry>SYSTIME(year, month, day, hour, minute, second:integer)</entry></row>
+  </tbody>
+</tgroup>
+</table>
+
+
+<table frame="none" colsep="0" rowsep="0">
+<title>Standard Functions</title>
+<tgroup cols="1">
+   <colspec colwidth="5in" colname="c1"/>
+   <tbody>
+    <row><entry>ABS(expression:integer-or-real):same-type-as-argument</entry></row>
+    <row><entry>ADDRESS(variable-reference):integer</entry></row>
+    <row><entry>AFRAC(expression:real):real</entry></row>
+    <row><entry>AINT(expression:real) :real</entry></row>
+    <row><entry>ARCTAN( expression:integer-or-real):real</entry></row>
+    <row><entry>CHR(expression:integer): char</entry></row>
+    <row><entry>CNVTREAL(string-or-char-array):real</entry></row>
+    <row><entry>COS(expression:integer-or-real):real</entry></row>
+    <row><entry>EXP(expression:integer-or-real):real</entry></row>
+    <row><entry>FIELDGET(expression, start-bit, length:integer):integer</entry></row>
+    <row><entry>LN(expression:integer-or-real):real</entry></row>
+    <row><entry>MATHRESULT: integer</entry></row>
+    <row><entry>ODD(expression:integer):boolean</entry></row>
+    <row><entry>ORD(ordinal-type-value):integer</entry></row>
+    <row><entry>PRED(ordinal-type-value):same-type-as-argument</entry></row>
+    <row><entry>ROUND(expression:real)::integer</entry></row>
+    <row><entry>SHELL(string-or~char-array):integer</entry></row>
+    <row><entry>SIN(expression:integer-or-real):real</entry></row>
+    <row><entry>SIZEOF(variable-or-type-name):integer</entry></row>
+    <row><entry>SQR(expression:integer-or-real):same-type-as-argument</entry></row>
+    <row><entry>SQRT(expression:integer-or-real):real</entry></row>
+    <row><entry>SUCC(ordinal-type-value>):same-type-as-argument</entry></row>
+    <row><entry>TRUNC(expression:real):integer</entry></row>
+  </tbody>
+</tgroup>
+</table>
+
+
+<table frame="none" colsep="0" rowsep="0">
+<title>Standard I/O Procedures</title>
+<tgroup cols="1">
+   <colspec colwidth="5in" colname="c1"/>
+   <tbody>
+    <row><entry>APPEND(text-filename {,external-filename {,open-mode}})</entry></row>
+    <row><entry>CLOSE(filename)</entry></row>
+    <row><entry>GET(file-variable)</entry></row>
+    <row><entry>PUT(file-variable)</entry></row>
+    <row><entry>GETINFO(filename, 32-byte-structure)</entry></row>
+    <row><entry>PUTINFO(filename, 32-byte-structure)</entry></row>
+    <row><entry>IOABORT(filename, logical-value)</entry></row>
+    <row><entry>OVERPRINT(text-filename)</entry></row>
+    <row><entry>PAGE(text-filename)</entry></row>
+    <row><entry>PROMPT(text-filename)</entry></row>
+    <row><entry>READ({file-variable,} read-parameter-list)</entry></row>
+    <row><entry>READLN({text-filename,} read-parameter-list)</entry></row>
+    <row><entry>REPOSITION(file-variable, record-number)</entry></row>
+    <row><entry>RESET(file-variable {,external-filename {,open-mode}})</entry></row>
+    <row><entry>REWRITE(file-variable {,external-filename {,open-mode}})</entry></row>
+    <row><entry>SEEKEOF(file-variable)</entry></row>
+    <row><entry>SHORTIO(file-variable, record-length)</entry></row>
+    <row><entry>SYSREPORT({text-filename,} integer-value)</entry></row>
+    <row><entry>UPDATE(file-variable {,external-filename {,open-mode}})</entry></row>
+    <row><entry>WRITE({file-variable,} write-parameter-list)</entry></row>
+    <row><entry>WRITEEOF(file-variable)</entry></row>
+    <row><entry>WRITELN({text-filename,} write-parameter-list)</entry></row>
+  </tbody>
+</tgroup>
+</table>
+
+<table frame="none" colsep="0" rowsep="0">
+<title>Standard I/O Functions</title>
+<tgroup cols="1">
+   <colspec colwidth="5in" colname="c1"/>
+   <tbody>
+    <row><entry>EOF({filename}):boolean</entry></row>
+    <row><entry>EOLN({filename}):boolean</entry></row>
+    <row><entry>FILESIZE(file-variable):real</entry></row>
+    <row><entry>GETCHAR(filename):char</entry></row>
+    <row><entry>INTERACTIVE(text-filename):boolean</entry></row>
+    <row><entry>IOREADY(filename):boolean</entry></row>
+    <row><entry>IORESULT(filename):integer</entry></row>
+    <row><entry>LINELENGTH(filename):integer</entry></row>
+    <row><entry>OPENED(filename):boolean</entry></row>
+    <row><entry>POSITION(file-variable):real</entry></row>
+  </tbody>
+</tgroup>
+</table>
+
+
+<table frame="none" colsep="0" rowsep="0">
+<title>PASCAL OPERATORS</title>
+<tgroup cols="2">
+   <colspec colwidth="2.5in" colname="c1"/>
+   <colspec colwidth="2.5in" colname="c2"/>
+   <thead>
+     <row>
+       <entry>Arithmetic Operators</entry><entry>Boolean Operators</entry>
+     </row>
+   </thead>
+   <tbody>
+     <row>
+       <entry><simplelist>
+<member>+ (unary), - (unary)</member>
+<member>*, /, &amp;, DIV, MOD</member>
+<member>+, -, !, #</member>
+</simplelist></entry>
+       <entry><simplelist>
+<member>NOT</member>
+<member>OR</member>
+<member>AND</member></simplelist></entry>
+      </row>
+   </tbody>
+</tgroup>
+<tgroup cols="2">
+   <colspec colwidth="2.5in" colname="c1"/>
+   <colspec colwidth="2.5in" colname="c2"/>
+   <thead>
+     <row>
+       <entry>Relational Operators</entry><entry>Set Operators</entry>
+     </row>
+   </thead>
+   <tbody>
+     <row>
+       <entry>=, &lt;&gt;, &lt;, &gt;, &lt;=, &gt;=, IN</entry>
+       <entry>*, +, -</entry>
+    </row>
+  </tbody>
+</tgroup>
+</table>
+</appendix>

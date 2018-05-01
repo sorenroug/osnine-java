@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Writing Assembly Language Procedures</title>
+  <abstract>
+    <para>SYNOPSIS: This section gives the general information you need to manually write external procedures (i.e. Pascal PROCEDURES and FUNCTIONS) in assembly language. This chapter can also help you understand the type of native code produced by PascalT, the native code translator. This section assumes you understand 6809 assembly language, assembly language programming under OS-9, and Pascal memory utilization as discussed in Chapter 10.</para>
+  </abstract>
+  <sect1>
+    <title>Variable Space: Stack Frames and Stack Marks</title>
+    <para>All variable storage used by a procedure invocation is allocated in a section of the Pascal stack called a "stack frame". A stack frame consists of the following three components: a stack mark, local variables, and the extended stack. Any parameters which are to be passed to a procedure are part of the calling procedure's extended stack. Suppose that procedure Q is declared as:</para>
+    <programlisting>
+FUNCTION Q(i: real; var j: real; ch: char): integer;
+</programlisting>
+    <para>Then to call Q, the calling procedure must do the following in the order given:</para>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>Reserve 2 bytes on the stack to hold the integer result of Q.</para>
+      </listitem>
+      <listitem>
+        <para>Push the 5 byte value of variable 'i' onto the stack.</para>
+      </listitem>
+      <listitem>
+        <para>Push the 2 byte address of variable 'j' onto the stack.</para>
+      </listitem>
+      <listitem>
+        <para>Push the 1 byte value of variable 'ch' onto the stack.</para>
+      </listitem>
+      <listitem>
+        <para>Load register B with Q's procedure number.</para>
+      </listitem>
+      <listitem>
+        <para>Build the first 2 bytes of the 7 byte stack mark by pushing onto the stack the address of the next higher (lexically) local data area.</para>
+      </listitem>
+      <listitem>
+        <para>Build the second 2 bytes of the 7 byte stack mark by executing a long branch to subroutine (LBSR) instruction to procedure Q.</para>
+      </listitem>
+    </orderedlist>
+    <para>Upon entry into procedure Q, the stack looks like figure 1 and the B register contains the called procedure's number.</para>
+    <figure>
+      <title>Stack Contents After Calling Procedure Q.</title>
+      <screen>
+             +--------------------------------------+
+high memory  ! integer result area (LSB)            !
+             +--------------------------------------+
+             ! integer result area (MSB)            !
+             +--------------------------------------+
+             ! value of variable 'i' (LSB)          !
+             +--------------------------------------+
+             ! value of variable 'i' (2nd LSB)      !
+             +--------------------------------------+
+             ! value of variable 'i' (3rd LSB)      !
+             +--------------------------------------+
+             ! value of variable 'i' (4th LSB)      !
+             +--------------------------------------+
+             ! value of variable 'i' (MSB)          !
+             +--------------------------------------+
+             ! value of variable 'j' (LSB)          !
+             +--------------------------------------+
+             ! value of variable 'j' (MSB)          !
+             +--------------------------------------+
+             ! value of variable 'ch'               !
+             +--------------------------------------+
+             ! address of next higher local data    !
+             !     area (LSB)                       !
+             +--------------------------------------+
+             ! address of next higher local data    !
+             !     area (MSB)                       !
+             +--------------------------------------+
+             ! return address (LSB)                 !
+             +--------------------------------------+
+ low memory  ! return address (MSB)                 !
+             +--------------------------------------+
+</screen>
+    </figure>
+    <para>Procedure Q then completes the 7 byte stack mark and does other setup with the code shown in figure 2.</para>
+    <figure>
+      <title>Procedure Entry Code.</title>
+      <programlisting>
+PROCQ  LDA   PROCN          <lineannotation>LOAD WITH CALLING PROCEDURE</lineannotation>
+*                           <lineannotation>NUMBER</lineannotation>
+       STB   PROCN          <lineannotation>SAVE CALLED PROCEDURE NO.</lineannotation>
+       PSHS  A              <lineannotation>PUSH CALLING PROCEDURE NO.</lineannotation>
+       PSHS  U              <lineannotation>SAVE CURRENT COPY OP U-REG</lineannotation>
+       LEAU  ,S             <lineannotation>NEW VALUE OP U-REG</lineannotation>
+       LEAX  -locsize,S     <lineannotation>X REG POINTS TO REQUIRED</lineannotation>
+*                           <lineannotation>BOTTOM OF STACK</lineannotation>
+       PSHS  X              <lineannotation>PUSH PARAM FOR SUBR CALL</lineannotation>
+       LDD   #extsize       <lineannotation>LOAD D-REG WITH EXTENDED</lineannotation>
+*                           <lineannotation>STACK SIZE</lineannotation>
+       LDX   SUPJTBL        <lineannotation>GET SUPPORT PACKAGE ADDR</lineannotation>
+       JSR   STACKCHK,X     <lineannotation>..DO STACK CHECK AND UPDATE</lineannotation>
+*                           <lineannotation>THE STACK POINTER</lineannotation>
+       LDD   DHOLD          <lineannotation>GET CURRENT VALUE OF DHOLD</lineannotation>
+       PSHS  D              <lineannotation>SAVE COPY ON STACK</lineannotation>
+</programlisting>
+    </figure>
+    <para>The code shown in figure 2 is virtually identical for every procedure entry. The only change from procedure to procedure is the label for the first line, the value of 'locsize', and the value of 'extsize'. There are 3 variables stored in page zero (i.e. in the base page) which must be used or maintained by every procedure. The variable PROCN is the one byte current procedure number. This variable must at all times indicate the procedure number as shown in the procedure table of the currently executing procedure. The variable SUPJTBL contains an absolute memory address of a known point within the support package. If the X register of the 6809 is loaded with this value, a 'JSR subr,X' instruction, where 'subr' is the name of a support package subroutine as defined in the PASCALDEFS file, will cause the proper subroutine call to be made for any support subroutine. Variable DHOLD contains a 16 bit value which must be saved locally on every procedure entry and restored on every procedure exit. The value of 'locsize' is, of course, the size as shown in the procedure table list for the procedure's local stack size.</para>
+    <para>After executing the code in figure 2, the 7 byte stack mark is completed. The form and contents of a stack mark is shown in figure 3. Figure 4 shows the form and contents of the stack and where the U and S registers point after a call is made to a procedure and the procedure entry code has been executed.</para>
+    <figure>
+      <title>Format and Contents of a Stack Mark.</title>
+      <screen>
+            +---+
+high memory ! 6*! address of next higher      *indicates the
+            !   ! local data area (LSB)        relative offset
+            +---+                              within the 7 byte
+            ! 5 ! address of next higher       stack mark.
+            !   ! local data area (MSB)
+            +---+
+            ! 4 ! return address (LSB)
+            +---+
+            ! 3 ! return address (MSB)
+            +---+
+            ! 2 ! calling procedure number
+            +---+
+            ! 1 ! saved copy of U register (LSB)
+            +---+
+ low memory ! 0 ! saved copy of U register (MSB)
+            +---+
+</screen>
+    </figure>
+    <figure>
+      <title>Stack Contents During Procedure Execution.</title>
+      <screen>
+            +--------------------------------------------------+
+high memory ! result area (only if a function is being called) !
+            +--------------------------------------------------+
+            ! passed parameters (if any)     !
+            +--------------------------------+
+            ! stack mark                     !  --+
+U-reg =&gt;    +--------------------------------+    !
+            ! local variables (if any)       !    -- stack frame
+            +--------------------------------+    !
+            ! copy of DHOLD                  !    !
+S-reg =&gt;    +--------------------------------+    !
+ low memory ! available working stack        !  --+
+            +--------------------------------+
+</screen>
+    </figure>
+    <para>References to most data is made via the U register. Passed parameters and the function result area are at a positive displacement from U, while local variables are at a negative displacement from U. The last parameter passed is stored beginning at '7,U' displacement for its most significant byte. The first local variable is stored at '-1,U' displacement for its least significant byte. To access data in lexically higher levels of procedures, that is in calling procedures, you need to do a 'basex' operation. A basex is done by climbing up the stack marks to find the address of the appropriate procedure's local data area. The address of the local data of the immediately calling procedure can be found in the 5th and 6th bytes of the current stack mark, as shown in figure 3. If you wanted to access a 2 byte variable which is at a displacement of -17 in the calling procedure's local data area, the following code would be used:</para>
+    <programlisting>
+        LDX   5,0      <lineannotation>BASEX UP 1 LEVEL</lineannotation>
+        LDD   -17,X    <lineannotation>GET 2B FROM CALLING PROC'S AREA</lineannotation>
+</programlisting>
+    <para>Similarly, to access data from a procedure which is lexically two levels higher (i.e. the procedure which called the procedure which called the current procedure), two basex operations must be performed.</para>
+    <programlisting>
+        LDX   5,U      <lineannotation>BASEX UP 1 LEVEL</lineannotation>
+        LDX   5,X      <lineannotation>BASEX UP 1 MORE LEVEL</lineannotation>
+        LDD  -displacement,X  <lineannotation>GET 2B OF DATA</lineannotation>
+</programlisting>
+    <para>To access data in the global area, that is data declared in the outer block, does not require basex operations to get to the proper level - the Y register always points to the top of global area. At a zero or positive displacement from Y is the system area which contains several pointers, buffers, work areas, and heap memory. At a negative displacement from Y is the outer block's local data - the global data area. Figure 5 shows the register contents and usage for procedures executing in an OS-9 Pascal environment.</para>
+    <figure>
+      <title>Register Usage in an OS-9 Pascal Environment.</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.0in" align="center" colname="c1" colsep="1"/>
+          <colspec colwidth="4.5in" colname="c2"/>
+          <thead>
+            <row rowsep="1">
+              <entry>Register</entry>
+              <entry>Use</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>A</entry>
+              <entry>Available.</entry>
+            </row>
+            <row>
+              <entry>B</entry>
+              <entry>Available.</entry>
+            </row>
+            <row>
+              <entry>X</entry>
+              <entry>Available, also used for basex and general indexing operations.</entry>
+            </row>
+            <row>
+              <entry>Y</entry>
+              <entry>Points to the top of global, also the 1st byte of the system area.</entry>
+            </row>
+            <row>
+              <entry>U</entry>
+              <entry>Points to the top of local, also the 1st byte of the current stack mark.</entry>
+            </row>
+            <row>
+              <entry>S</entry>
+              <entry>Points to the current top of stack.  Stacks are built going downward in memory.</entry>
+            </row>
+            <row>
+              <entry>DP</entry>
+              <entry>Points to the page zero data area.  This area should never by used by a user program or procedure for its own data - the OS-9 Pascal support package manages this area.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </figure>
+    <para>The Y, U, S, and DP registers should normally never be used other than as shown in figure 5. If they are altered at any time, they must be restored before any calls are made to subroutine or before the procedure exits or calls any other procedure.</para>
+  </sect1>
+  <sect1>
+    <title>Calling Other Pascal Procedures</title>
+    <para>To call another Pascal procedure the following steps must be performed in the order shown:</para>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>Reserve any required stack space to hold the result if a function is being called.</para>
+      </listitem>
+      <listitem>
+        <para>Push any required parameter values and/or addresses onto the stack.</para>
+      </listitem>
+      <listitem>
+        <para>Build the first 2 bytes of the 7 byte stack mark by pushing onto the stack the address of the next higher (lexically) local data area.</para>
+      </listitem>
+      <listitem>
+        <para>If the procedure to be called is also known to exist in native code within the current module, load the B register with the number 255, otherwise, load the B register with the called procedure's number.</para>
+      </listitem>
+      <listitem>
+        <para>If the called procedure is not a native code procedure in the current module, jump to the interpreter's dispatch routine via:</para>
+        <programlisting>
+LDX DISPATCH
+JSR ,X
+</programlisting>
+        <para>where DISPATCH is a page zero variable defined in the <filename>PASCALDEFS</filename> file. To call procedures which are also native code within the same module as the calling procedure simply use the branch to subroutine (e.g. LBSR) instruction to go to the procedure's entry code.</para>
+      </listitem>
+    </orderedlist>
+    <para>Finally, to exit from a procedure use the code shown below.</para>
+    <figure>
+      <title>Procedure Exit Code.</title>
+      <programlisting>
+        PULS  D          <lineannotation>RESTORE THE SAVED COPY OF DHOLD</lineannotation>
+        STD   DHOLD
+        LEAS  ,U         <lineannotation>POINT S TO BOTTOM OF STACK MARK</lineannotation>
+        PULS  U          <lineannotation>RESTORE CALLER'S U REG</lineannotation>
+        PULS  A,X        <lineannotation>GET CALLING PROC NO. &amp; RETURN ADR</lineannotation>
+        STA   PROCN      <lineannotation>RESTORE CURRENT PROCEDURE NUMBER</lineannotation>
+        LEAS  2+paramsize,S  <lineannotation>REMOVE LAST 2 BYTES OF THE</lineannotation>
+*                        <lineannotation>STACKMARK AND ANY PASSED PARAMS</lineannotation>
+*                        <lineannotation>FROM THE STACK</lineannotation>
+        JMP   ,X         <lineannotation>..RETURN TO CALLING PROCEDURE</lineannotation>
+</programlisting>
+    </figure>
+  </sect1>
+</chapter>

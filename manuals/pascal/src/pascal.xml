@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="pascal" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <info>
+    <title>OS-9 Pascal V2.0 User's Manual</title>
+    <titleabbrev>OS-9 Pascal User's Manual</titleabbrev>
+    <edition>F</edition>
+    <pubdate>July, 1984</pubdate>
+    <copyright>
+      <year>1984</year>
+      <holder>Microware Systems Corporation</holder>
+    </copyright>
+    <legalnotice>
+      <para>All rights reserved.</para>
+      <para>This manual, the OS-9 Pascal Compiler program, and any information contained herein is the property of Microware Systems Corporation. Reproduction by any means electrical or otherwise is strictly prohibited except by prior written permission from Microware Systems Corporation.
+</para>
+      <para>The information container herein is believed to be accurate as of the date of publication, however, Microware will not be liable for any damages, including indirect or consequential, resulting from reliance upon the OS-9 Pascal Compiler program or this documentation.</para>
+    </legalnotice>
+    <releaseinfo>
+Revision F
+</releaseinfo>
+    <revhistory>
+      <revision>
+        <revnumber>F</revnumber>
+        <date>July, 1984</date>
+      </revision>
+    </revhistory>
+    <publisher>
+      <publishername>Microware Systems Corporation</publishername>
+      <address>
+Microware Systems Corporation
+<street>6835 Grand Avenue</street>
+<city>Des Moines</city>, <state>Iowa</state> <postcode>500312</postcode> <country>U.S.A.</country>
+Telephone <phone>515-279-8844</phone>
+Software Support <phone>515-279-8898</phone>
+Telex <phone>910-520-2535</phone>
+</address>
+    </publisher>
+    <subjectset>
+      <subject>
+        <subjectterm>&gt;pascal</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;program</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;file</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;error</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;manual</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;compiler</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;code</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;procedure</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;standard</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;variable</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;message descriptions</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;source program</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;native code</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;pascal compiler</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;standard procedure</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;error number</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;pascal language</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;abort flag</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;error message</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>&gt;manual error</subjectterm>
+      </subject>
+    </subjectset>
+  </info>
+  <xi:include href="chapter1.xml"/>
+  <xi:include href="chapter2.xml"/>
+  <xi:include href="chapter3.xml"/>
+  <xi:include href="chapter4.xml"/>
+  <xi:include href="chapter5.xml"/>
+  <xi:include href="chapter6.xml"/>
+  <xi:include href="chapter7.xml"/>
+  <xi:include href="chapter8.xml"/>
+  <xi:include href="chapter9.xml"/>
+  <xi:include href="chapter10.xml"/>
+  <xi:include href="chapter11.xml"/>
+  <xi:include href="chapter12.xml"/>
+  <xi:include href="chapter13.xml"/>
+  <xi:include href="chapter14.xml"/>
+  <xi:include href="appendixa.xml"/>
+  <!--
+<xi:include href="appendixb.xml"/>
+-->
+  <xi:include href="syntax.xml"/>
+  <xi:include href="appendixc.xml"/>
+</book>

@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Conformance with ISO Standards</title>
+  <para>OS-9 Pascal Version 2.0 has some differences from the ISO7185.1 Level 0 language specification. Many of these are the result of enhancements made to this version of Pascal to improve its performance and to add programmer conveniences. If portability of programs written in OS-9 Pascal to other systems is important, these features should not be used. A complete list of deviations from the standard is given below:</para>
+  <orderedlist numeration="arabic">
+    <listitem>
+      <para>CASE Statements can have an OTHERWISE option. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>Identifiers and numeric constants in the source program can contain underscore characters. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>The procedure directive EXTERNAL is permitted. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>Character strings can be up to 100 characters in length (Standard is not specific).</para>
+    </listitem>
+    <listitem>
+      <para>Source statements can be up to 110 characters in length. (Standard is not specific).</para>
+    </listitem>
+    <listitem>
+      <para>PROCEDUREs and FUNCTIONS cannot be passed by name; FILEs cannot be passed by value.</para>
+    </listitem>
+    <listitem>
+      <para>The attribute PACKED is ignored due to 6809 memory addressing. Variables are always allocated such that they are packed to the byte level. Packing at the bit level is not done. The standard procedures PACK and UNPACK are not implemented.</para>
+    </listitem>
+    <listitem>
+      <para>Set constants can be built using the subrange form "A..B" where "A" and "B" are constant members of the set being formed. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>A list of file names in the PROGRAM statement is not required, but if supplied, it is checked for correctness. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>DISPOSE (an ISO Level 1 feature) is not implemented.</para>
+    </listitem>
+    <listitem>
+      <para>Constants in the constant list of a case statement can have the form "A..B" which designates the list of values from A through B inclusive. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>Vectors, one dimensional arrays with character elements, can be indexed using the "expression FOR constant" form. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>GOTO statements may not reference a label outside the current procedure.</para>
+    </listitem>
+    <listitem>
+      <para>Standard procedures and run time options are provided to select either ISO Standard or Wirth/Jensen methods for string justification and the MOD algorithm.</para>
+    </listitem>
+    <listitem>
+      <para>Input and output operations are performed slightly differently for interactive or mass storage files. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>Each variable declared to be a file type has associated with it a file control block which is automatically initialized when the code block begins execution. The file itself is not automatically opened unless it is one of the three standard files: INPUT, OUTPUT, or SYSERR. When a block of code is exited, all files defined within that block are automatically closed.</para>
+    </listitem>
+    <listitem>
+      <para>A large number of standard functions and procedures have been added to the standard library. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>REALs use a five byte (9 1/2 decimal digit) format. (Standard defines this as implementation dependent; some Pascals have less precision).</para>
+    </listitem>
+    <listitem>
+      <para>Bit-by-bit boolean operators are included in OS-9 Pascal.</para>
+    </listitem>
+    <listitem>
+      <para>GOTO's are allowed in CASE, REPEAT, WHILE, IF, and FOR statements. (Non-standard enhancement).</para>
+    </listitem>
+    <listitem>
+      <para>Undefined or uninitialized variables and fields may be referenced without error.</para>
+    </listitem>
+    <listitem>
+      <para>A variable created by the variant form of NEW may be used as an operand in an expression.</para>
+    </listitem>
+    <listitem>
+      <para>PROCEDURE or FUNCTION declarations may be nested to 15 levels.</para>
+    </listitem>
+    <listitem>
+      <para>A variant field is allowed to be an actual variable parameter.</para>
+    </listitem>
+    <listitem>
+      <para>A file buffer variable may be passed as an actual variable parameter to a procedure which changes the current file position.</para>
+    </listitem>
+    <listitem>
+      <para>The EOLN standard function may be called for a file which has EOF set to true without error.</para>
+    </listitem>
+    <listitem>
+      <para>Record structures and arrays may not contain files.</para>
+    </listitem>
+    <listitem>
+      <para>The compiler does not issue warnings for out of bounds subrange conditional tests. This may generate code areas that will never be executed.</para>
+    </listitem>
+  </orderedlist>
+</chapter>

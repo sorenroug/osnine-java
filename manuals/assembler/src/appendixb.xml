@@ -5,37 +5,37 @@
     <title>Editor Quick Reference Summary</title>
     <variablelist>
       <varlistentry>
-        <term>. macro_name parameters</term>
+        <term>. <replaceable>macro_name</replaceable> <replaceable>parameters</replaceable></term>
         <listitem>
           <para>The "." command is used to execute a macro.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>! text</term>
+        <term>! <replaceable>text</replaceable></term>
         <listitem>
           <para>Comment.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>sp text</term>
+        <term><keycap>SPACE</keycap> <replaceable>text</replaceable></term>
         <listitem>
           <para>Insert the text line before the current edit pointer position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>cr</term>
+        <term><keycap>RETURN</keycap></term>
         <listitem>
           <para>Move edit the pointer to the next line and display it.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>+n</term>
+        <term>+<replaceable>n</replaceable></term>
         <listitem>
           <para>Move the edit pointer forward <replaceable>n</replaceable> lines and display.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>-n</term>
+        <term>-<replaceable>n</replaceable></term>
         <listitem>
           <para>Move the edit pointer backward <replaceable>n</replaceable> lines and display.</para>
         </listitem>
@@ -53,13 +53,13 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>&gt;n</term>
+        <term>&gt;<replaceable>n</replaceable></term>
         <listitem>
           <para>Move the edit pointer forward <replaceable>n</replaceable> characters.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>&lt;n</term>
+        <term>&lt;<replaceable>n</replaceable></term>
         <listitem>
           <para>Move the edit pointer backward <replaceable>n</replaceable> characters.</para>
         </listitem>
@@ -77,7 +77,7 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>[commands] n</term>
+        <term>[commands] <replaceable>n</replaceable></term>
         <listitem>
           <para>Repeat the sequence of commands between the two brackets <replaceable>n</replaceable> times.</para>
         </listitem>
@@ -91,7 +91,7 @@ resume execution.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>An</term>
+        <term>A<replaceable>n</replaceable></term>
         <listitem>
           <para>Set the SEARCH/CHANGE anchor to column <replaceable>n</replaceable>, restricting
 searches and changes to strings starting in the <replaceable>n</replaceable>th column.</para>
@@ -104,40 +104,40 @@ searches and changes to strings starting in the <replaceable>n</replaceable>th c
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>B n</term>
+        <term>B <replaceable>n</replaceable></term>
         <listitem>
           <para>Make buffer <replaceable>n</replaceable> the primary buffer.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>C n str1 str2</term>
+        <term>C <replaceable>n</replaceable> <replaceable>str1</replaceable> <replaceable>str2</replaceable></term>
         <listitem>
-          <para>Change the next <replaceable>n</replaceable> ocurrences of
+          <para>Change the next <replaceable>n</replaceable> occurrences of
             <replaceable>str1</replaceable> to <replaceable>str2</replaceable>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>D n</term>
+        <term>D <replaceable>n</replaceable></term>
         <listitem>
           <para>Delete <replaceable>n</replaceable> lines.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>E n str</term>
+        <term>E <replaceable>n</replaceable> <replaceable>str</replaceable></term>
         <listitem>
           <para>Extend (add the string to the end of) the next <replaceable>n</replaceable> lines.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>G n</term>
+        <term>G <replaceable>n</replaceable></term>
         <listitem>
-          <para>Get <replaceable>n</replaceable> lines from the secondary edit buffer starting &#xFB01;rom
-the top of the secondary buffer. The lines are inserted
-before the current position in the primary edit buffer.</para>
+          <para>Get <replaceable>n</replaceable> lines from the secondary edit buffer starting from
+the top of the secondary buffer.
+The lines are inserted before the current position in the primary edit buffer.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>I n str</term>
+        <term>I <replaceable>n</replaceable> <replaceable>str</replaceable></term>
         <listitem>
           <para>Insert a line containing <replaceable>n</replaceable>
             copies of the <replaceable>str</replaceable> before the
@@ -145,25 +145,25 @@ current edit pointer position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>K n</term>
+        <term>K <replaceable>n</replaceable></term>
         <listitem>
           <para>Kill <replaceable>n</replaceable> characters starting at the current edit pointer position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>L n</term>
+        <term>L <replaceable>n</replaceable></term>
         <listitem>
           <para>List (display) the next <replaceable>n</replaceable> lines from the current edit pointer position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>M n</term>
+        <term>M <replaceable>n</replaceable></term>
         <listitem>
           <para>Change workspace (memory) size to <replaceable>n</replaceable> bytes.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>P n</term>
+        <term>P <replaceable>n</replaceable></term>
         <listitem>
           <para>Put (move) <replaceable>n</replaceable> lines from the present edit position in the
 primary buffer to the present edit position in the secondary buffer.</para>
@@ -182,19 +182,19 @@ primary buffer to the present edit position in the secondary buffer.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>R n</term>
+        <term>R <replaceable>n</replaceable></term>
         <listitem>
           <para>Read <replaceable>n</replaceable> lines from the buffer's input file.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>S n str</term>
+        <term>S <replaceable>n</replaceable> <replaceable>str</replaceable></term>
         <listitem>
-          <para>Search for the next <replaceable>n</replaceable> ocurrences of <replaceable>str</replaceable>.</para>
+          <para>Search for the next <replaceable>n</replaceable> occurrences of <replaceable>str</replaceable>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>T n</term>
+        <term>T <replaceable>n</replaceable></term>
         <listitem>
           <para>Tab to column number <replaceable>n</replaceable> of the present line.</para>
         </listitem>
@@ -206,32 +206,32 @@ primary buffer to the present edit position in the secondary buffer.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>V n</term>
+        <term>V <replaceable>n</replaceable></term>
         <listitem>
           <para>Turn verify mode (display text changes) off if <replaceable>n</replaceable> = 0, or
 on if <replaceable>n</replaceable> &lt;&gt; 0.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>W n</term>
+        <term>W <replaceable>n</replaceable></term>
         <listitem>
           <para>Write <replaceable>n</replaceable> lines to the buffer's output file.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>X n</term>
+        <term>X <replaceable>n</replaceable></term>
         <listitem>
           <para>Display <replaceable>n</replaceable> lines of text that precede the edit position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.CHANGE n str1 str2</term>
+        <term>.CHANGE <replaceable>n</replaceable> <replaceable>str1</replaceable> <replaceable>str2</replaceable></term>
         <listitem>
           <para>Similar to "C" command.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.DEL str</term>
+        <term>.DEL <replaceable>str</replaceable></term>
         <listitem>
           <para>Delete the macro with the name specified by <replaceable>str</replaceable>.</para>
         </listitem>
@@ -269,13 +269,13 @@ of the line, this command will succeed, otherwise fail.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.LOAD str</term>
+        <term>.LOAD <replaceable>str</replaceable></term>
         <listitem>
           <para>Load macros from the path specified by "<replaceable>str</replaceable>".</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.MAC str</term>
+        <term>.MAC <replaceable>str</replaceable></term>
         <listitem>
           <para>Open the macro specified by "<replaceable>str</replaceable>" for definition. If an
 empty string is given, a new macro will be created.</para>
@@ -307,14 +307,14 @@ then try to read an equal amount from the input file.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.NSTR str</term>
+        <term>.NSTR <replaceable>str</replaceable></term>
         <listitem>
           <para>Test if "<replaceable>str</replaceable>" does not match characters at the current
 edit position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.READ str</term>
+        <term>.READ <replaceable>str</replaceable></term>
         <listitem>
           <para>Open an file for reading, using "<replaceable>str</replaceable>" as the pathlist.</para>
         </listitem>
@@ -326,20 +326,20 @@ edit position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.SAVE str1 str2</term>
+        <term>.SAVE <replaceable>str1</replaceable> <replaceable>str2</replaceable></term>
         <listitem>
           <para>Save the macro(s) specified in "<replaceable>str1</replaceable>" on the file
 specified by the pathlist in <replaceable>str2</replaceable>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.SEARCH n str</term>
+        <term>.SEARCH <replaceable>n</replaceable> <replaceable>str</replaceable></term>
         <listitem>
           <para>Similar to the "S" command.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.SHELL text</term>
+        <term>.SHELL <replaceable>text</replaceable></term>
         <listitem>
           <para>Call OS-9 shell to execute the command line.</para>
         </listitem>
@@ -352,26 +352,26 @@ memory available in the workspace.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.STAR n</term>
+        <term>.STAR <replaceable>n</replaceable></term>
         <listitem>
           <para>Test if <replaceable>n</replaceable> is equal to asterisk (infinity).</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.STR str</term>
+        <term>.STR <replaceable>str</replaceable></term>
         <listitem>
           <para>Test if "<replaceable>str</replaceable>" matches the characters at the current edit
 position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.WRITE str</term>
+        <term>.WRITE <replaceable>str</replaceable></term>
         <listitem>
           <para>Open an file for writing using "<replaceable>str</replaceable>" as pathlist.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>.ZERO n</term>
+        <term>.ZERO <replaceable>n</replaceable></term>
         <listitem>
           <para>Test <replaceable>n</replaceable> to see if it is zero.</para>
         </listitem>
@@ -382,7 +382,7 @@ position.</para>
     <title>Interactive Debugger Quick Reference</title>
     <variablelist>
       <varlistentry>
-        <term>[SPACE] expr</term>
+        <term><keycap>SPACE</keycap> <replaceable>expr</replaceable></term>
         <listitem>
           <para>Evaluate expression and display result in hex and decimal</para>
         </listitem>
@@ -400,13 +400,13 @@ position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>. expr</term>
+        <term>. <replaceable>expr</replaceable></term>
         <listitem>
           <para>Set Dot to result, print address and contents</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>= expr</term>
+        <term>= <replaceable>expr</replaceable></term>
         <listitem>
           <para>Set memory at Dot to result</para>
         </listitem>
@@ -436,13 +436,13 @@ position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>:reg expr</term>
+        <term>:reg <replaceable>expr</replaceable></term>
         <listitem>
           <para>Set register to result</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>E text</term>
+        <term>E <replaceable>text</replaceable></term>
         <listitem>
           <para>Prepare for execution</para>
         </listitem>
@@ -454,13 +454,13 @@ position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>G expr</term>
+        <term>G <replaceable>expr</replaceable></term>
         <listitem>
           <para>Go to program at result address</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>L text</term>
+        <term>L <replaceable>text</replaceable></term>
         <listitem>
           <para>Link to module named, print address</para>
         </listitem>
@@ -472,7 +472,7 @@ position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>B expr</term>
+        <term>B <replaceable>expr</replaceable></term>
         <listitem>
           <para>Set breakpoint at result address</para>
         </listitem>
@@ -484,31 +484,31 @@ position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>K expr</term>
+        <term>K <replaceable>expr</replaceable></term>
         <listitem>
           <para>Kill breakpoint at result address</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>M expr1 expr2</term>
+        <term>M <replaceable>expr1</replaceable> <replaceable>expr2</replaceable></term>
         <listitem>
           <para>Dump memory</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>C expr1 expr2</term>
+        <term>C <replaceable>expr1</replaceable> <replaceable>expr2</replaceable></term>
         <listitem>
           <para>Clear and test memory</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>S expr1 expr2</term>
+        <term>S <replaceable>expr1</replaceable> <replaceable>expr2</replaceable></term>
         <listitem>
           <para>Search memory for pattern</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>$ test</term>
+        <term>$ <replaceable>text</replaceable></term>
         <listitem>
           <para>Run Shell command line</para>
         </listitem>

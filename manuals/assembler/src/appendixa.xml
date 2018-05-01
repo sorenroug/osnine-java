@@ -74,7 +74,7 @@ the macro before trying to close its definition.</para>
         <listitem>
           <para>This means that you tried to write to a file that was
 never opened. You should either specify a write file when starting up
-the editer from OS-9, or open an output file using the ".WRITE" pseudo macro.</para>
+the editor from OS-9, or open an output file using the ".WRITE" pseudo macro.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -271,13 +271,13 @@ all labels following the offending source line.</para>
       <varlistentry>
         <term>INPUT PATH</term>
         <listitem>
-          <para>A read error occured on the input path.</para>
+          <para>A read error occurred on the input path.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>OBJECT PATH</term>
         <listitem>
-          <para>A write error occured on the object file path.</para>
+          <para>A write error occurred on the object file path.</para>
         </listitem>
       </varlistentry>
       <varlistentry>

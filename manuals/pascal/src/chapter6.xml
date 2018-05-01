@@ -1,0 +1,772 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>A Pascal Language Summary</title>
+  <abstract>
+    <para>SYNOPSIS: This section is a summary of the rules used to construct Pascal programs. As mentioned in the Introduction, this manual is not intended to serve as a comprehensive language reference, so the main purpose of this chapter is to provide an overview of ISO standard Pascal plus characteristics and features of OS-9 Pascal that are system dependent. See Appendix B for a detailed Backus-Naur Form description of the language.</para>
+  </abstract>
+  <sect1>
+    <title>Alternate Character Sets</title>
+    <para>The standard alternate character set is supported by OS-9 Pascal. This allows use of comments, arrays, and pointers on systems with limited character sets. The following table shows the allowable alternate characters:</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="3">
+        <colspec colwidth="1in" colname="c1"/>
+        <colspec colwidth="1in" colname="c2"/>
+        <colspec colwidth="3in" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Standard</entry>
+            <entry>Alternate</entry>
+            <entry>Usage</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>{</entry>
+            <entry>(*</entry>
+            <entry>Begin comment</entry>
+          </row>
+          <row>
+            <entry>}</entry>
+            <entry>*)</entry>
+            <entry>Close comment</entry>
+          </row>
+          <row>
+            <entry>[</entry>
+            <entry>(.</entry>
+            <entry>Begin array range/element</entry>
+          </row>
+          <row>
+            <entry>]</entry>
+            <entry>.)</entry>
+            <entry>Close array range/element</entry>
+          </row>
+          <row>
+            <entry>^</entry>
+            <entry>@</entry>
+            <entry>Pointer character</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </sect1>
+  <sect1>
+    <title>Notation Used in Descriptions</title>
+    <para>In order to give concise descriptions, this manual uses a simple notation system to show how parts of Pascal are used. The rules of this system are:</para>
+    <itemizedlist spacing="compact">
+      <listitem>
+        <para>Pascal keywords are capitalized.</para>
+      </listitem>
+      <listitem>
+        <para>Things that the programmer specifies (such as expressions, variable names, definitions, etc). are shown in lower-case.</para>
+      </listitem>
+      <listitem>
+        <para>Things that may optionally appear <emphasis>once</emphasis> are enclosed by brackets [ ] .</para>
+      </listitem>
+      <listitem>
+        <para>Things that may optionally appear <emphasis>one or more</emphasis> times are enclosed by braces { }</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+  <sect1>
+    <title>Source Program Format</title>
+    <para>The Pascal compiler uses source files which can be prepared
+    using any text editor. Input lines can be up to 127 characters long,
+    but only the first 110 characters are processed. Each input line is
+    terminated by a carriage return (ENTER) character. No distinction
+    is made between upper case and lower case letters except within
+    string constants.</para>
+  </sect1>
+  <sect1>
+    <title>Identifier Names</title>
+    <para>Identifiers are names given to Pascal variables, types, procedure and function names, etc. Identifiers can be of any length, but only the first eight characters are significant, i.e./ used for matching and to determine uniqueness. They include any combination of the following characters:</para>
+    <simplelist type="horiz" columns="4">
+      <member>A..Z</member>
+      <member>a..z</member>
+      <member>0..9</member>
+      <member>_</member>
+    </simplelist>
+    <para>Note: Use of the underscore character is a nonstandard OS-9 Pascal extension.</para>
+    <para>The first character of an identifier must be an upper or lower case letter (A..Z or a..z) and upper and lower case letters always match.  Here are some examples of Pascal identifiers:</para>
+    <screen>
+x
+sum
+COUNT
+Part20
+
+Last_Year     matches   last_year
+COUNTER_200   matches   COUNTER_400  (first 8 chars, match)
+
+5Days         ILLEGAL - can't begin with digit
+_temp         ILLEGAL - can't begin with "_"
+</screen>
+  </sect1>
+  <sect1>
+    <title>General Program Organization</title>
+    <para>A Pascal program starts with the "PROGRAM" statement followed by various optional declarations, then program statements. A general outline of program organization is shown below.</para>
+    <example>
+      <title>General Pascal Program Organization</title>
+      <programlisting>
+PROGRAM name(files)
+
+LABEL  &lt;label declarations&gt;
+CONST  &lt;constant declarations&gt;
+TYPE   &lt;type declarations&gt;
+VAR    &lt;global variable declarations&gt;
+
+PROCEDURE and/or FUNCTION subprograms
+
+BEGIN
+  &lt;main program statement&gt;
+END.
+</programlisting>
+    </example>
+    <para>The main program is called the "outer block", because it is executed first when the Pascal program is run. In simple programs, all the work may be done by the main program statements in the outer block, however, very frequently much of the work is done by subprograms called "procedures" and "functions". These subprograms can contain their own internal ("local") variable, type, label, and similar declarations, and have a similar organization as the outer block including the possibility of having additional subprogram definitions within themselves. All declarations and names declared within subprograms are only "known" within that subprogram or additional subprograms it may contain.</para>
+  </sect1>
+  <sect1>
+    <title>The PROGRAM Statement</title>
+    <para>The PROGRAM statement must be the first statement of the program. It states the program name and may optionally include names of files (I/O paths) used within the program. Unlike some other Pascal compilers, OS-9 Pascal does not require that files be declared in the PROGRAM statement, however, if you do so they will be checked for correctness.  Some examples:</para>
+    <programlisting>PROGRAM test</programlisting>
+    <programlisting>PROGRAM sort(infile,outfile,scratchfile)</programlisting>
+  </sect1>
+  <sect1>
+    <title>Comments and Blank Statements</title>
+    <para>Comments consist of text which begin with either a "{" or a "(*" character sequence and end with either a "}" or a "*)" character sequence. They are ignored by the compiler and may appear anywhere in a program. Comments may also extend over multiple lines.  For example:</para>
+    <programlisting>
+                { This is a comment }
+
+                (* This is also a comment *)
+                { So
+                  is
+                  this } { This will also be a comment *)
+</programlisting>
+    <para>Blank lines may also be used freely to improve program readability.</para>
+  </sect1>
+  <sect1>
+    <title>Indentation of Lexical Levels</title>
+    <para>It is traditional and considered good programming style (but is not mandatory) to indent statements in Pascal programs so that "lexical levels" of control structures (loops, compound statements, etc.) are clearly visible. Indenting makes the program logic much easier to read and understand. The compiler assists you by printing the lexical level of each statement on the compiler listing.</para>
+  </sect1>
+  <sect1>
+    <title>LABEL Declarations and GOTO Statements</title>
+    <para>"Labels" are used to indicate places in the program GOTO
+    statements transfer control to. Frequent use of GOTO statements
+    is unnecessary in Pascal because of the wide variety of structured
+    control statements. Excessive use of GOTOs can result in programs
+    that are hard to read, test, and maintain. Use of GOTOs can be
+    justified in a few special cases, such as error handling.</para>
+    <para>Each line number used in the program must be declared in the LABEL statement before it is used. Each label must be a unique number in the range of 0 to 9999. GOTO statements cannot transfer control  to a  statement outside the current procedure.  Here is an example of its use:</para>
+    <programlisting>
+PROGRAM label_demo;
+LABEL 10,20;
+VAR x,temp:INTEGER;
+BEGIN
+  ioabort(input,false);
+  FOR x := 1 TO 100
+    DO BEGIN
+      readln(temp);
+      IF ioresult(input) &lt;&gt; 0 THEN GOTO 10;  {end if input error}
+      writeln('The square root of',temp,' is ',sqrt(temp));
+    END;
+  GOTO 20;
+10: writeln('input error!!!');
+20: END.
+</programlisting>
+    <para>IOABORT and IORESULT will be discussed in Chapter 8.</para>
+  </sect1>
+  <sect1>
+    <title>CONSTANT Declarations and Constants</title>
+    <para>The CONST statement allows a name to be given to a constant value. Although constant numbers and strings may be used in the program without prior declaration, the CONST facility is useful for defining numbers that may have to be changed in future or different versions of the program, and also increase program readability.</para>
+    <para>The CONST keyword can be followed by any number of definitions of numeric or string constants.  Each definition has the form:</para>
+    <para>&lt;identifier&gt; = &lt;constant&gt; ;</para>
+    <para>Numeric constants may be preceded by "+" or "-" signs. The constant definitions end when another Pascal keyword is encountered. Here is an example program segment  illustrating  use:</para>
+    <para>CONST Pi = 3.1415926;</para>
+    <para>HighLimit = 22.5;</para>
+    <para>Title = 'Test Result Summary';</para>
+    <para>EndLine = $0D;</para>
+  </sect1>
+  <sect1>
+    <title>Numeric Constants</title>
+    <para>Numeric constants can be of integer or real types. Any numeric
+    constant can contain an underscore after the first character. Integers
+    are whole numbers in the range -32768 to +32767. OS-9 Pascal will
+    also accept integer constants in hexadecimal notation using  a "$"
+    followed by one to four hexadecimal digits (0-9, A-F). Real numbers
+    are numbers that include decimal points and/or the exponential "E"
+    notation. Real numbers have a range of approximately 2.9*10^39 to
+    1.7*10^38 with about 9 1/2 significant digits. Here are some examples
+    of numeric constants.</para>
+    <para><literallayout>
+    -5           legal integer constant -5
+    9999         legal integer constant 9999
+    9_999        legal integer constant 9999
+    $1DF         legal integer constant - hexadecimal 1DF
+    $1df         legal integer constant - hexadecimal 1DF
+
+    _612         ILLEGAL - can't start with "_"
+    120000       ILLEGAL integer - too big
+    $1C49A2      ILLEGAL integer - too big
+
+    1.45         legal real constant   1.45
+    .0303        legal real constant   .0303
+    15E44        legal real constant   15*10^44
+    1.234e-12    legal real constant   1.234 * 10^-12
+    1_000_000.   legal real constant   1000000.
+
+    _100_000     ILLEGAL - can't start with "_"
+    5._56        ILLEGAL - can't start with "_" even after "."
+</literallayout></para>
+  </sect1>
+  <sect1>
+    <title>String  Constants</title>
+    <para>String constants are sequences of up to 100 characters enclosed within single quote characters.  Here are some examples:</para>
+    <para><literallayout>
+    'X'
+    '5'             note: character "5" NOT numeric value 5!
+    'abcdefg'
+    'strings can have embedded spaces'
+    'PAGE 10'
+</literallayout></para>
+    <para>The single quote character used to enclose strings may itself be contained within the string if two are used. Each pair of adjacent single quotes has the literal value of one single quote character. Some examples:</para>
+    <para>'Joe''s Grill'    has the actual value of:   Joe's Grill</para>
+    <para>'AABB''''DDEE'    has the actual value of:    AABB''DDEE</para>
+    <para>String constants are considered to be of type ARRAY[1..N] of char. Type checking is performed when making assignments to variables. If a string constant is assigned to an array with a lower bound other than 1, an  error  will be reported.</para>
+  </sect1>
+  <sect1>
+    <title>Type and Variable Declarations</title>
+    <para>The TYPE and VAR statements are used to describe and declare variable storage, respectively. One of Pascal's outstanding features is its support for variables, arrays, sets, files, and record structures which can be composed on a number of basic "built-in" data types or user-defined data types. The subject of variable declarations in Pascal is quite complex and beyond the scope of this manual, however, the information that follows describes characteristics of OS-9 Pascal that are specific to its particular implementation of the language.</para>
+    <formalpara>
+      <title>Hierarchy of OS-9 Pascal Data Types</title>
+      <para>
+      <literallayout>
+Pointers
+
+Structured Types:
+   ARRAY
+   RECORD
+   FILE
+   SET
+
+Simple types:
+   REAL
+   Ordinal Types (subranges permitted):
+       CHAR
+       INTEGER
+       BOOLEAN
+       Enumerated (user-specified)
+</literallayout>
+</para>
+    </formalpara>
+    <para>The amount of actual memory space required for each simple variable, array element, or record element of the simple types are: CHAR and BOOLEAN, one byte; INTEGER, two bytes; REAL, five bytes.</para>
+    <sect2>
+      <title>Arrays:</title>
+      <para>Arrays may be multi-dimensional and can be of any simple or user defined type. A new type definition can be included in the array declaration. Index values must be of an ordinal type, OS-9 Pascal permits the character sequences "(. .)" to be used as array subscripts in addition to the standard brackets "[ ]".</para>
+    </sect2>
+    <sect2>
+      <title>Sets:</title>
+      <para>May have up to 256 members each. OS-9 Pascal has extended the syntax for constructing set constants. If the constant is to contain a series of successive elements, they can be specified using the form 'low..high' as in:</para>
+      <programlisting>workday := [Sunday, Tuesday..Friday];</programlisting>
+    </sect2>
+    <sect2>
+      <title>PACKED Structures:</title>
+      <para>Because the 6809 microprocessor uses byte addressed memory, all arrays, structures, etc., are inherently "packed" (except bit-level BOOLEAN). The PACKED attribute keyword is properly scanned for correctness by the compiler but has no actual effect on the program.</para>
+    </sect2>
+    <sect2>
+      <title>FILE Types:</title>
+      <para>Each variable declared as a FILE type is associated with a 16-byte control block which is automatically initialized when the code block making the definition is executed, however, the file itself is not automatically opened (except for the standard I/O paths). When the block of code is exited, all files are automatically closed. FILE types cannot be passed by value in subprogram calls.</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Procedure And Function Declarations</title>
+    <para>Procedures and functions may be declared within the main program, or within other functions or procedures. Declarations are almost identical to the PROGRAM declaration except for the keywords used (PROCEDURE or FUNCTION), and the ability to include a "formal parameter list" which is used to receive or return data to calling procedures. Otherwise, the body of a function or procedure is the same as the main program and may include "local" declarations for constants, labels, variables, etc, as well as executable statements.</para>
+    <formalpara>
+      <title>Procedure General Format</title>
+      <para>
+      <programlisting>
+PROCEDURE name(parameter-list);
+LABEL label declarations
+CONST constant declarations
+TYPE type declarations
+VAR local variable declarations
+PROCEDURE or FUNCTION subprogram declarations
+BEGIN
+  procedure-statement
+END.
+</programlisting>
+</para>
+    </formalpara>
+    <formalpara>
+      <title>Function General Format</title>
+      <para>
+      <programlisting>
+FUNCTION  name(parameter-list) : result-type;
+LABEL label declarations
+CONST constant declarations
+TYPE type declarations
+VAR local variable declarations
+PROCEDURE or FUNCTION subprogram declarations
+BEGIN
+  function-statement
+  {Note assignment to function name in body of function}
+  name := result-type-value
+END.
+</programlisting>
+</para>
+    </formalpara>
+    <para>PROCEDURES are called as statements in a program to perform some operation. FUNCTIONS are called from within expressions and return some value. The format of the parameter list declaration is similar to a VAR declaration and can specify a number of simple or complex variables of any type.</para>
+    <para>Pascal includes a large number of "standard functions" which are built-in functions that perform commonly used operations such as evaluation sines, cosines, exponentials, etc. Standard functions are also comprise a  large part  of  Pascal's  input  and output capabilities.</para>
+    <para>OS-9 Pascal recognizes two special subprogram declarations: FORWARD and EXTERNAL. FORWARD is used to tell the compiler about the existence of a procedure in advance (e.g., before it is actually declared). FORWARD may be required if the procedure(s) involved are referenced in procedures declared ahead of the procedure. For example:</para>
+    <programlisting>
+PROGRAM forward_example;
+  <lineannotation>(declarations)</lineannotation>
+PROCEDURE second(c,d:INTEGER); FORWARD;
+PROCEDURE first;
+  BEGIN
+    a := 1;
+    b := 2;
+    second (a,b);           <lineannotation>(call to FORWARD procedure)</lineannotation>
+  END;
+PROCEDURE second            <lineannotation>(Second now declared param. list</lineannotation>
+  BEGIN                     <lineannotation>is NOT repeated)</lineannotation>
+    writeln(c);
+    writeln(d);
+  END;
+BEGIN
+  first;
+END.
+</programlisting>
+    <para>The EXTERNAL procedure directive tells Pascal that the procedure declared is for an external, assembly language procedure created by the native code translator (PascalT) or hand-written in 6809 assembly language. After compilation of the program, the PascalE editor is used to link all external procedures to the main program.  For more information see Chapter 5. Here is an example:</para>
+    <programlisting>
+PROGRAM main;
+  VAR a,b,c: INTEGER;
+  <lineannotation>(variable declarations)</lineannotation>
+  PROCEDURE my_extern(x,y,z:INTEGER); EXTERNAL;
+  BEGIN
+    <lineannotation>(statements)</lineannotation>
+    my_extern(a,b,c);             <lineannotation>(call to external)</lineannotation>
+  END.
+</programlisting>
+    <para>Function  and procedure calls in OS-9 Pascal exactly follow the ISO standard with the exception of the following minor differences:</para>
+    <orderedlist numeration="arabic" spacing="compact">
+      <listitem>
+        <para>PROCEDURE and FUNCTION types cannot be passed by name to other procedures or functions.</para>
+      </listitem>
+      <listitem>
+        <para>FILE types cannot by passed by value.</para>
+      </listitem>
+      <listitem>
+        <para>The EXTERNAL procedure directive is <emphasis>not</emphasis> defined in the ISO specification, however, it is commonly found in sophisticated  Pascal compilers that permit separate compilation of subprograms or calls to assembly language subprograms.</para>
+      </listitem>
+    </orderedlist>
+  </sect1>
+  <sect1>
+    <title>Assignment Statements and Expressions</title>
+    <para>The simple assignment statement evaluates an expression and assigns the result to a variable.  For example:</para>
+    <programlisting>
+result := temp+5;
+
+x := sum MOD base;
+
+val := (total/count)+ adj
+
+answer := (last &gt;first) AND NOT correct
+</programlisting>
+    <para>In general, the variable in which the result is stored may be a simple type, a specific element of an array, a function ,or a specific element of a record structure. The type of the variable and the type of the expression result must match (except integers and reals), or an error will be reported by the compiler. Automatic type conversion is performed when real and integer types are mixed within an expression.</para>
+    <para>Expressions are made up of "operands" (data) and "operators". Operands may be constants, variables, array or record elements, set members, pointers, etc. Numeric operands may have their sign specified by use of the + or - single argument operators (which are different than add and subtract operators).</para>
+    <para>The operators are evaluated in precedence (priority) order. If several operators of the same priority appear consecutively, they are evaluated from left to right. The normal precedence may be overridden by grouping of subexpressions in parentheses. The operators and data types that may be used are given in the table on the next page in order of <emphasis>group</emphasis> precedence.</para>
+    <para>A number of standard functions that perform mathematical and logical functions are also available - see Chapter 7.</para>
+  </sect1>
+  <sect1>
+    <title>Pascal Operators</title>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4">
+        <colspec colwidth="0.7in" colname="c1"/>
+        <colspec colwidth="1.5in" colname="c2"/>
+        <colspec colwidth="1.5in" colname="c3"/>
+        <colspec colwidth="2in" colname="c4"/>
+        <thead>
+          <row>
+            <entry>Operator</entry>
+            <entry>Function</entry>
+            <entry>Argument Type</entry>
+            <entry>Result Type</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry namest="c1" nameend="c4">ARITHMETIC OPERATORS</entry>
+          </row>
+          <row>
+            <entry>+ (unary)</entry>
+            <entry>Identity</entry>
+            <entry>integer, real</entry>
+            <entry>same as operand</entry>
+          </row>
+          <row>
+            <entry>- (unary)</entry>
+            <entry>Sign inversion</entry>
+            <entry>integer, real</entry>
+            <entry>same as operand</entry>
+          </row>
+          <row>
+            <entry>*</entry>
+            <entry>Multiplication</entry>
+            <entry>integer, real</entry>
+            <entry>int, real (Note 1)</entry>
+          </row>
+          <row>
+            <entry>/</entry>
+            <entry>Division</entry>
+            <entry>integer, real</entry>
+            <entry>real</entry>
+          </row>
+          <row>
+            <entry>&amp;</entry>
+            <entry>bit-by-bit AND</entry>
+            <entry>integer</entry>
+            <entry>integer (Note 7)</entry>
+          </row>
+          <row>
+            <entry>DIV</entry>
+            <entry>Int. division</entry>
+            <entry>integer</entry>
+            <entry>integer (Note 2)</entry>
+          </row>
+          <row>
+            <entry>MOD</entry>
+            <entry>Modulo</entry>
+            <entry>integer</entry>
+            <entry>integer (Note 6)</entry>
+          </row>
+          <row>
+            <entry>+</entry>
+            <entry>Addition</entry>
+            <entry>integer, real</entry>
+            <entry>int, real (Note 1)</entry>
+          </row>
+          <row>
+            <entry>-</entry>
+            <entry>Subtraction</entry>
+            <entry>integer, real</entry>
+            <entry>int, real (Note 1)</entry>
+          </row>
+          <row>
+            <entry>!</entry>
+            <entry>bit-by-bit OR</entry>
+            <entry>integer</entry>
+            <entry>integer (Note 7)</entry>
+          </row>
+          <row>
+            <entry>#</entry>
+            <entry>bit-by-bit XOR</entry>
+            <entry>integer</entry>
+            <entry>integer (Note 7)</entry>
+          </row>
+          <row>
+            <entry namest="c1" nameend="c4">BOOLEAN OPERATORS</entry>
+          </row>
+          <row>
+            <entry>NOT</entry>
+            <entry>logical negate</entry>
+            <entry>boolean</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>OR</entry>
+            <entry>logical "or"</entry>
+            <entry>boolean</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>AND</entry>
+            <entry>logical "and"</entry>
+            <entry>boolean</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry namest="c1" nameend="c4">RELATIONAL OPERATORS</entry>
+          </row>
+          <row>
+            <entry>=</entry>
+            <entry>Equivalence</entry>
+            <entry>Note 3</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>&lt;&gt;</entry>
+            <entry>Not equal</entry>
+            <entry>Note 3</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>&lt;</entry>
+            <entry>Less Than</entry>
+            <entry>any simple, str.</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>&gt;</entry>
+            <entry>Greater Than</entry>
+            <entry>any simple, str.</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>&lt;=</entry>
+            <entry>Less or Equal</entry>
+            <entry>Note 4</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>&gt;=</entry>
+            <entry>Greater or Equ.</entry>
+            <entry>Note 4</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry>IN</entry>
+            <entry>Membership</entry>
+            <entry>Note 5</entry>
+            <entry>boolean</entry>
+          </row>
+          <row>
+            <entry namest="c1" nameend="c4">SET OPERATORS</entry>
+          </row>
+          <row>
+            <entry>*</entry>
+            <entry>Intersection</entry>
+            <entry>set</entry>
+            <entry>same as operands</entry>
+          </row>
+          <row>
+            <entry>+</entry>
+            <entry>Set Union</entry>
+            <entry>set</entry>
+            <entry>same as operands</entry>
+          </row>
+          <row>
+            <entry>-</entry>
+            <entry>Set Difference</entry>
+            <entry>set</entry>
+            <entry>same as operands</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>Note 1: The result is integer if both operands are integers, otherwise the result is real.</para>
+    <para>Note 2: The result is truncated division (remainder is discarded).</para>
+    <para>Note 3: Arguments can be any simple, string, pointer, or canonical set type.</para>
+    <para>Note 4: Arguments can be any simple, string, or set type.</para>
+    <para>Note 5: The left operand must be ordinal type T; the right operand must be set type.</para>
+    <para>Note 6: The MOD statement differs between the Wirth/Jensen and the ISO specifications. The ISOMOD standard procedure can be used to specify the desired method. (See Chapter 7)</para>
+    <para>Note 7: Bit-by-bit logical operators are non-standard extensions to OS-9 Pascal which are not included in the ISO specification.</para>
+  </sect1>
+  <sect1>
+    <title>Extensions to the Assignment Statement</title>
+    <para>OS-9 Pascal includes enhancements to the assignment statement that are not part of the ISO standard. These extensions permit "implied loops" to be incorporated into single assignment statements that involve assignments of sets or one-dimensional arrays (vectors).</para>
+    <para>Set constants can be built using the subrange form "A..B" where "A" and "B" are constant members of the set being formed. The form denotes a list of elements from A through B inclusive. The ordinal position of A in the set must be before the ordinal position of B. An example is:</para>
+    <programlisting>
+PROGRAM setdemo;
+TYPE
+   days = (sunday, monday, tuesday, wednesday,
+           thursday, friday, saturday);
+VAR
+   workday,
+   weekend: SET OF days;
+BEGIN
+weekend := [sunday, saturday];
+workday := [monday..friday];
+END.
+</programlisting>
+    <para>One dimensional arrays (vectors) with character elements can be indexed using the "expression FOR constant" form. Where "expression" yields an integer "first-index" value and "constant" yields an integer number-of-elements value. If the character array is multidimensional, this form can only be used to index the last dimension.  For example:</para>
+    <programlisting>
+PROGRAM chardemo;
+VAR
+   a,b: ARRAY [1..26] OF CHAR;
+   i,j : integer;
+BEGIN
+a:='abcdefghijklmnopqrstuvwxyz';
+b[1 FOR 26] := a[1 FOR 26]; {copy array a to array b}
+END.
+</programlisting>
+  </sect1>
+  <sect1>
+    <title>Compound Statements</title>
+    <para>Groups of statements may be collected together and syntactically treated as a single statement. The statements are enclosed with BEGIN and END as shown below:</para>
+    <programlisting>
+BEGIN
+  x := y*44.5;
+  z := x/2.0;
+END;
+</programlisting>
+    <para>The main body of a Pascal program or subprogram is technically defined as a single "statement", so a compound statement is used to enclose the program statements. In this case, the closing END is followed by a period instead of a semicolon. OS-9 Pascal does not require the final END statement - if it is missing when the end of the source file is reached, END will be assumed.</para>
+    <para>The body of Pascal loops are also syntactically single "statements", so BEGIN and END are used to include multiple statements in the body of the loop.  For example:</para>
+    <programlisting>
+WHILE y &lt; 12 DO
+  BEGIN
+    t := t+d[y];
+    y := y+i;
+  END;
+</programlisting>
+  </sect1>
+  <sect1>
+    <title>Looping and Conditional Statements</title>
+    <sect2>
+      <title>The IF-THEN-ELSE Statement</title>
+      <para>The IF-THEN statement is Pascal's basic decision making statement. The decision is based on the result of a boolean expression; if the result is true, the statement(s) following THEN are executed, otherwise the statements after the ELSE statements are executed.  The ELSE part is optional.  For example:</para>
+      <programlisting>
+IF x &lt; Pi
+  THEN writeln('x is smaller than pi');
+(next statement)
+
+IF x &lt; PI
+  THEN writeln('x  is smaller than pi')
+  ELSE writeln('x is larger or equal to pi');
+(next statement)
+</programlisting>
+      <para>Compound statements can be used within IF-THEN statements, and multiple IF-THEN statements can be nested.  Some examples:</para>
+      <programlisting>
+IF count &lt; required
+  THEN writeln('there are too few units')
+  ELSE IF count &gt; too_many
+    THEN BEGIN
+      hit_max := TRUE;
+      writeln("there are too many units');
+    END
+    ELSE WRITELN('there are the correct number of units');
+</programlisting>
+    </sect2>
+    <sect2>
+      <title>The CASE statement</title>
+      <para>The CASE statement uses the value of an expression (that gives an ordinal result) to select one of a numbered list of statements to execute. For example:</para>
+      <programlisting>
+CASE val OF
+  1: writeln('value is one');
+  2: writeln('value is two');
+  3: writeln('value is three');
+  4: writeln('value is four'};
+END;
+</programlisting>
+      <para>OS-9 Pascal has extended the syntax for case statements in two very useful ways. First, an 'OTHERWISE' selection is provided. If the 'OTHERWISE' selection is not used and a case statement is executed with the value of the selecting variable not appearing in the selection list, a run time case error is caused, and the program is aborted. The 'OTHERWISE' option allows a convenient method for specifying "don't care" or catch-all processing within a case statement. Also for a single case selection, if multiple successive values are part of the same selection, you can use the form 'low..high' as part of the specification. The next example demonstrates the use of both of these enhancements.</para>
+      <programlisting>
+CASE nextchar OF
+   'a'..'z'   : processletter;
+   '0'..'9'   : processdigit;
+   '$',' '   : processspecial;
+   OTHERWISE : processother;
+   END;
+</programlisting>
+      <para>Constants in the constant list of a case statement can have the form "A.,B" which designates the list of values from A through B inclusive. The ordinal value of A must be less than the ordinal value of B.  For example:</para>
+      <programlisting>
+PROGRAM casedemo;
+TYPE
+   days = (sunday, monday, tuesday, wednesday,
+           thursday, friday, saturday);
+VAR
+   s : days;
+BEGIN
+s := monday;
+CASE s OF
+   monday..friday : writeln(' WEEK DAY ');
+   OTHERWISE      : writeln('  WEEKEND ');
+   END { CASE }
+END.
+</programlisting>
+    </sect2>
+    <sect2>
+      <title>The REPEAT Statement</title>
+      <para>The REPEAT statement creates a loop where the exit test is performed at the end of the loop. The test expression must yield a boolean type result. The body of the loop is always executed once. The REPEAT statement is different than other loops in that is does not require a BEGIN.. end compound statement because the UNTIL keyword serves to define the end of the loop. The general form for REPEAT statements are:</para>
+      <programlisting>
+REPEAT
+  (statements)
+UNTIL boolean-expression;
+</programlisting>
+      <para>For example:</para>
+      <programlisting>
+count :=0;
+REPEAT
+  writeln('input a number');
+  readln(num);
+  sum :=sum+num;
+  count := count+1;
+UNTIL count = 10;
+writeln('the average value is",sum/10);
+</programlisting>
+    </sect2>
+    <sect2>
+      <title>The WHILE-DO Statement</title>
+      <para>The WHILE-DO statement creates a loop where the exit test is performed at the beginning of the loop. The test expression must yield a boolean type result. If the first test is false, the loop body is never executed. If more than one statement is to be used in the body, a compound statement must be used. The general form for WHILE-DO statements is</para>
+      <programlisting>
+WHILE boolean-expression DO
+  (statement)
+</programlisting>
+      <para>For example:</para>
+      <programlisting>
+done := FALSE;
+count :=0;
+WHILE NOT done
+  DO BEGIN
+    readln(data[count]);
+    IF data[count] = 0 THEN  done := TRUE;
+    count:=count+1;
+  END;
+</programlisting>
+    </sect2>
+    <sect2>
+      <title>The  FOR  Statement</title>
+      <para>This statement creates a loop that uses a specified variable to automatically count iterations of the loop. The two forms of this statement are:</para>
+      <programlisting>FOR variable := start-expr TO end-expr DO statement;</programlisting>
+      <programlisting>FOR variable := start-expr DOWNTO end-expr DO statement;</programlisting>
+      <para>The control variable must be an ordinal type (CHAR, INTEGER, etc.) thus, REAL variables cannot be used. The variable must be a simple variable (not an array, structure element, or parameter) declared in the declaration part of the same program or subprogram in which it is used. It can be used within expressions but cannot be altered by program statements in the body of the loop.</para>
+      <para>When the FOR statement is first executed, the starting and ending expressions are evaluated. Both must be of a compatible type as the counting variable. The variable is set to the result of the starting expression and the loop body is executed. Each time through the loop the counting variable is increased by one (or decreased by one if the DOWNTO form was used). The loop terminates when the counting variable reaches the value of the end-expression.</para>
+      <para>An example:</para>
+      <programlisting>
+PROGRAM fibonacci;
+{ print first ten numbers of the fibonacci series }
+VAR counter,sum: INTEGER;
+BEGIN
+ sum := 0;
+ FOR counter := 1 TO 10
+   DO BEGIN
+     sum := sum+counter; {'counter' used but not changed }
+     writeln(sum);
+   END;
+ END.
+</programlisting>
+    </sect2>
+    <sect2>
+      <title>The WITH-DO Statement</title>
+      <para>This statement provides a convenient way for different elements of the same record to be accessed in a single statement. The syntax of the WITH statement is:</para>
+      <programlisting>
+WITH &lt;record identifier&gt; DO
+   &lt;statement&gt;
+</programlisting>
+      <para>Within the statement (which may, of course, be a compound statement), the field names of the record structure are given without the record name. The record name is supplied by the compiler from the name immediately following the WITH keyword* This statement not only saves typing, but it allows the compiler to produce better compiled code by reducing the number of times record addresses must be computed.  Here is an example of its use:</para>
+      <programlisting>
+TYPE
+  person =
+    RECORD
+      name : ARRAY [1..25] OF CHAR;
+      age : INTEGER;
+      can_vote : BOOLEAN;
+    END;
+VAR
+  index : INTEGER;
+  people : ARRAY[1..3] OF person;
+
+BEGIN
+  people[1].name := 'Alan Jones               ';
+  people[2].name := 'Betty Baker              ';
+  people[3].name := 'David Miller             ';
+  people[1].age := 14;
+  people[2].age := 35;
+  people[3].age := 17;
+
+FOR index := 1 to 3 DO
+  WITH people[index] DO
+    BEGIN
+      can_vote := age &gt;= 18;
+      IF can_vote THEN writeln(name,' is old enough to vote')
+    END;
+END.
+</programlisting>
+    </sect2>
+  </sect1>
+</chapter>

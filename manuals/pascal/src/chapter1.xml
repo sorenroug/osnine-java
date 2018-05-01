@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>An Overview of the Pascal System</title>
+  <sect1>
+    <title>About OS-9 Pascal</title>
+    <para>In the last few years, the Pascal language has become one of the most popular computer programming languages. Although it was originally developed as an aid in teaching computer science, it has found wide use in almost every imaginable computer application for good reason. The Pascal language gives programmers an almost perfect medium for concise expression of solutions to complex problems.</para>
+    <para>The internal operation of a language as powerful as Pascal must be relatively complex, and running Pascal programs can be quite demanding of the computer. Therefore, microcomputer versions of Pascal traditionally have been quite limited and much slower than their big computer cousins. The gap has been narrowed considerably in OS-9 Pascal because of two factors. The first factor is the 6809 microprocessor, which was specifically designed to efficiently execute high-level languages such as Pascal. The second factor is the part of OS-9 Pascal called "PascalS", which allows the Pascal system to utilize disk space as "virtual memory". Being able to utilize disk space as "virtual memory" means that you can run Pascal programs that are much larger than the actual memory size. Indeed, a Pascal compiler as complete as the OS-9 Pascal compiler would otherwise be too big to fit in your computer's memory.</para>
+    <para>One other unusual characteristic of OS-9 Pascal is its ability to compile and run programs in either "P-code" or "native code" forms. "P-codes" are instructions particularly created for an ideal, imaginary "Pascal Computer". The 6809 can't directly execute P-code instructions, so a program called a "P-code interpreter" is used to simulate the ideal "Pascal Computer". Most microcomputer versions of Pascal use the P-code concept because it simplifies the design of the compiler and makes most efficient use of a limited amount of memory. Another plus for P-code is that while programs are running, the P-code interpreter can perform thorough error checks and can give excellent diagnostic messages.</para>
+    <para>Using P-code, the execution speed of programs is relatively slow compared to true machine language. Each P-code instruction causes actual machine language instructions to be run in the interpreter program (which are "overhead" and not actually needed to carry out the original Pascal program). OS-9 Pascal provides a unique solution to this problem by means of a program called a "native code translator". The native code translator takes a P-code program and translates it to 6809 assembly language (machine language) source code. Both the P-code and the native code forms of the program work exactly the same way - except that the native code version will run from four to ten times faster! And because the output of the translator is a text file that is processed by the standard OS-9 assembler, you can examine or manually edit it if you wish.</para>
+    <para>Why even bother with P-code? One reason is that very big programs will only fit in your computer in P-code form. While P-code is not as fast as native code, in many cases speed is not an important enough factor to bother with the optional translation step. Perhaps the main value of P-code is its use in program debugging because the P-code interpreter has more comprehensive error checking and diagnostics. Typically, OS-9 Pascal users debug programs in P-code form and translate to native code as a final step.</para>
+    <para>The steps in creating and testing a program in OS-9 Pascal are listed below:</para>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>Create the Pascal source program using a text editor.</para>
+      </listitem>
+      <listitem>
+        <para>Compile the program to P-code using the compiler.</para>
+      </listitem>
+      <listitem>
+        <para>If there are compilation errors, edit the Pascal source file and go back to step 2.</para>
+      </listitem>
+      <listitem>
+        <para>Run the program using the P-code interpreter.</para>
+      </listitem>
+      <listitem>
+        <para>If there are run-time errors or program errors, edit the Pascal source file and go back to step 2.</para>
+      </listitem>
+      <listitem>
+        <para>(Optional) Translate the P-code program to native code, then run the assembler with the native code source file.</para>
+      </listitem>
+    </orderedlist>
+  </sect1>
+  <sect1>
+    <title>Do You Know Pascal?</title>
+    <para>Either you already know Pascal, or you don't.</para>
+    <para>If you already know Pascal, you will be pleased to discover that OS-9 Pascal is a very thorough implementation of the language according to ISO Standard 7185.1 Level 0 with exceptions and extensions documented in Chapter 14 of this manual. The compiler behaves as the Wirth and Jensen "bible" says it should. You will discover that a number of very useful additional library functions that are not included in the ISO specification have been added to OS-9 Pascal. Also, some unnecessarily restrictive Pascal syntax requirements have been relaxed.</para>
+    <para>If you don't already know Pascal, you have some studying to do. Fortunately, Pascal was originally designed for teaching programming, so it is easy to learn in stages. Unfortunately, a course in Pascal programming is beyond the scope of this manual. The books listed on the next page are recommended as reference and self-study source books. They are generally available at, or through, many larger bookstores, or they can be ordered directly from the publishers.</para>
+  </sect1>
+  <sect1>
+    <title>Suggested ISO Pascal Source Books</title>
+    <para><citetitle pubwork="book">Programming in Pascal, Revised Edition</citetitle> by Peter Grogono,
+    Addison-Wesley Publishing Co., Reading, Mass., 1980</para>
+    <para>This book presents a good self-study course on Pascal for beginners. It is based on the ISO Pascal Standard which is important for compatibility with OS-9 Pascal. There are a large number of similar volumes or bookstore shelves, including many good self-study courses. Make sure any such book you may select is based on "Wirth/Jensen" or "ISO Standard" Pascal - but NOT the "UCSD Pascal" dialect, or you may have trouble running example programs exactly as given.</para>
+    <para><citetitle pubwork="book">Pascal User Manual and Report</citetitle> by Kathleen Jensen and Niklaus Wirth,
+    Springer-Verlag, New York, 1974</para>
+    <para>This book is the "bible", written by the creators of the language itself. The first part of the book is a "user manual" that shows how Pascal programs are constructed. The second part is a "report" giving a concise description of Pascal's syntax. An invaluable reference work. When expert Pascal programmers argue over trivial points, this book is consulted to settle matters.</para>
+    <para><citetitle pubwork="book">Standard Pascal User Reference Manual</citetitle> by Doug Cooper,
+    W.W. Norton &amp; Co., New York, 1983</para>
+    <para>The ISO Pascal Standard document was written by and for computer scientists; therefore, it is almost impossible to read or understand. This book does an admirable job of translating the ISO specification for those "with only human powers of understanding", as Mr. Cooper puts it. Fortunately, the result is still technically accurate. You may find this to be a better reference than the Wirth/Jensen classic.</para>
+  </sect1>
+  <sect1>
+    <title>Requirements and Information</title>
+  <variablelist>
+    <varlistentry>
+      <term>Requirements:</term>
+      <listitem>
+        <simplelist><member>64K Color Computer</member><member>2 disk drives</member><member>2 OS-9 Pascal distribution disk</member></simplelist>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+    <para>Before using your Pascal, it is important to create a BACKUP of your two OS-9 distribution disks. The original disks should then be stored in a safe place. To protect the information that you store on diskette, make backups of your working disks frequently.</para>
+    <para>The steps two take to create backup disks are as follows:</para>
+    <orderedlist>
+        <listitem>
+    <para>FORMAT a new disk.</para>
+    <para>Place a disk in drive 1 and type FORMAT /D1. The format utility will print a ready prompt. Type 'y' and the disk will be formatted.</para>
+</listitem>
+    <listitem>
+    <para>BACKUP the disk.</para>
+    <para>For a two drive backup, place the source disk in drive 0, a formatted disk in drive 1, and then type BACKUP. The backup utility will prompt for any input.</para>
+</listitem>
+</orderedlist>
+    <para>Each Pascal disk is a Minimum System Configured disk. Only necessary OS-9 commands have been placed on the disks. When creating backup Pascal disks you may add or delete commands if space allows.</para>
+    </sect1>
+  <sect1>
+    <title>The Parts of the Pascal System and Installation</title>
+    <para>Your copy of the OS-9 Pascal system will consist of two diskettes. Before you use Pascal, you must copy these files onto your system disk and a working disk (or directory).</para>
+    <para>You should create a special system disk for working with Pascal that has only the minimum set of commonly used OS-9 commands (such as COPY, DEL, DIR, etc.) and omits those commands not frequently used when working with Pascal (such as FORMAT, DCHECK, OS9GEN, etc.). The two diskettes containing OS-9 Pascal are already setup as minimal system disks and may used as examples.</para>
+    <para>To use your special system disks, simply boot you system with your normal system disk then insert you special system disk in drive 0 and type CHX /D0/CMDS which will now use the CMDS directory on the special system disk as your new execution directory. You should then use the CHD command to change your current data directory to the directory in which you wish to create source files. The OS-9 Pascal disk number 1 contains all programs required to compile and execute pascal programs using one of the interpreters.</para>
+    <para>The table below lists the files included in the OS-9 Pascal System. The type code indicates the type of data stored on the file: M=6809 machine language, P=Pcode, and T=text. Each file must be copied from the distribution disk to either your system's execution ("CMDS") directory or to a directory or disk reserved for Pascal use, thus the last column shows where the file is to be copied. Directory names with asterisks indicate that the use of the file is optional if disk space is limited.</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4">
+        <colspec colwidth="1.1in" colname="c1"/>
+        <colspec colwidth="2in" colname="c2"/>
+        <colspec colwidth="0.4in" colname="c3"/>
+        <colspec colwidth="0.7in" colname="c4"/>
+        <thead>
+          <row>
+            <entry>File Name</entry>
+            <entry>Function</entry>
+            <entry>Type</entry>
+            <entry>Directory</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Pascal</entry>
+            <entry>Pascal compiler program</entry>
+            <entry>M</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>Pascal_Compiler</entry>
+            <entry>Pascal compiler pcode file</entry>
+            <entry>P</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalErrs</entry>
+            <entry>Text file of error messages</entry>
+            <entry>T</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalN</entry>
+            <entry>Normal pcode interpreter</entry>
+            <entry>M</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalS</entry>
+            <entry>Swapping pcode interpreter</entry>
+            <entry>M</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalT.PRUN</entry>
+            <entry>Native code translator pcode file</entry>
+            <entry>P</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalT.MODL</entry>
+            <entry>Native code external routines used by PascalT.PRUN</entry>
+            <entry>M</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalE</entry>
+            <entry>External routine mapping program.</entry>
+            <entry>M</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>PascalDefs</entry>
+            <entry>assembly language equates for native code programs.</entry>
+            <entry>T</entry>
+            <entry>PASCAL</entry>
+          </row>
+          <row>
+            <entry>Support</entry>
+            <entry>Full support package module.</entry>
+            <entry>M</entry>
+            <entry>CMDS</entry>
+          </row>
+          <row>
+            <entry>Support1</entry>
+            <entry>Support package module without SIN, COS, LN, EXP, ATAN, and SQRT</entry>
+            <entry>M</entry>
+            <entry>CMDS*</entry>
+          </row>
+          <row>
+            <entry>Support2</entry>
+            <entry>Same as Support1 except without real numbers, AFRAC, AINT, FILESIZE, CNVTREAL, SEEKEOF, real READ/WRITE</entry>
+            <entry>M</entry>
+            <entry>CMDS*</entry>
+          </row>
+          <row>
+            <entry>DumpReal</entry>
+            <entry>Sample source program</entry>
+            <entry>T</entry>
+            <entry>PASCAL</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <formalpara>
+      <title>Pascal</title>
+      <para>"PASCAL" is the native code portion of the compiler which prepares for execution using "Pascal_Compiler", which is the main body of the compiler in P-code form. Chapter 2 of this manual describes how to run the "Pascal" program.</para>
+    </formalpara>
+    <formalpara>
+      <title>PascalErrs</title>
+      <para>PascalErrs is a text file containing error message strings. The compiler, P-code interpreters, and Support use the text file "PascalErrs" to generate full English error messages- See page 3-3 for more information.</para>
+    </formalpara>
+    <formalpara>
+      <title>PascalN and PascalS</title>
+      <para>PascalN and PascalS are the P-code interpreters. "PascalN" is the "normal" {and faster) interpreter used to run compiled P-code programs. "PascalS" is a swapping interpreter that uses a temporary disk file to simulate program and data memory so very large programs can be run. Because of its size, the native code translator is run by PascalS. PascalS can also be used to run user programs. See Chapter 3 for details.</para>
+    </formalpara>
+    <formalpara>
+      <title>PascalT.PRDN and PascalT.MODL</title>
+      <para>"PascalT.PRUN" is the native code translator program which is run using the PascalS swapping P-code interpreter. PascalT.PRUN is a large P-code program that uses some machine language procedures to improve its translation speed which it automatically loads from the file PascalT.MODL.  See Chapter 4 for details.</para>
+    </formalpara>
+    <formalpara>
+      <title>PascalE</title>
+      <para>"PascalE" is an linkage editor program used to link into a single program separately compiled procedures having EXTERNAL declarations. See Chapter 5 for details.</para>
+    </formalpara>
+    <formalpara>
+      <title>PascalDefs</title>
+      <para>PascalDefs is a text file containing assembly language source code definitions required when assembling programs produced by the native code translator.</para>
+    </formalpara>
+    <formalpara>
+      <title>Support, Support1, and Support2</title>
+      <para>"Support" (10k) is a machine language module containing library routines commonly used by all components of the OS-9 Pascal system. It includes subroutines for floating point arithmetic functions, input/output operations, the operating system interface, etc. It is used by PascalS, PascalN, and native code programs generated by the translator. "Support1" (8k) and "Support2" (6k) are stripped down versions of "Support" that can be used to save memory if certain library functions (such as transcendental functions) are not required by specific applications.</para>
+    </formalpara>
+  </sect1>
+</chapter>

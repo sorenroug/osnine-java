@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Input/Output Functions and Procedures</title>
+  
+  <para>Pascal I/O operations are based on use of standard procedures and functions which are part of the standard library. Since any given computer can have a variety of different input and output hardware devices, the built-in I/O functions must be non-specific and the ISO standard reflects this. Because the OS-9 operating system allows access to all I/O files and devices using essentially the same calling methods, Pascal programs can read or write any system I/O device or file.</para>
+  <para>Pascal's I/O handling facilities (or lack thereof) and the way they work are commonly cited as a significant flaw in an otherwise superbly designed language. In order to overcome these traditional limitations, the OS-9 Pascal standard library includes highly intelligent I/O functions and an extensive variety of additional (and non-standard) functions so that Pascal programs can fully utilize the computer's I/O facilities including interactive and random-access I/O.</para>
+  <para>Files are used to perform all I/O to terminals, printers, disk files, etc., and in general, standard I/O functions will work with any I/O device. This type of operation works well with the device-independent design of the OS-9 operating system, i.e., a Pascal "file" is analogous to an OS-9 "path".</para>
+  <para>Pascal recognizes two categories of file objects: TEXT files ("textfiles") and the structured FILE type. Textfiles are what their name implies: text in the form of characters organized into lines terminated by an end-of-line character. The basic and most commonly used I/O functions operate on textfiles. Both TEXT variables  and FILE-type variables are declared in the program or subprogram variable declaration section (except predefined files discussed on the next page).</para>
+  <para>In the standard I/O procedure descriptions that are given in the following pages, each procedure's name is followed by a list of expected parameters. You can usually tell which class of I/O the function applies to by the description of the first identifier in the list as follows:</para>
+  <para>"text-filename" means the function must be used with textfiles</para>
+  <para>"file-variable" means the function must be used with structured file types</para>
+  <para>"filename" means the function can be used with either of the above types</para>
+  <para>Procedures that use one or more parameters called "external-filenames" directly accept a standard OS-9 file name. The OS-9 filename must be passed as a string constant or a character array. File names stored in a character array must be terminated by a character which OS-9 will recognize as the end of a valid path name such as a space or carriage return (ENTER) character.</para>
+  <sect1>
+    <title>Predefined Standard I/O Files</title>
+    <para>Three file names, INPUT, OUTPUT, and SYSERR, are predefined as textfiles. They cannot be redefined in a program. Output records can be any length, and input records can be up to 127 characters long. These three files correspond to the three OS-9 standard I/O paths, and may be redirected when the program is run by means of the OS-9 Shell "&lt;" "&gt;" and "&gt;&gt;" operators.</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="3">
+        <colspec colwidth="0.8in" colname="c1"/>
+        <colspec colwidth="0.5in" colname="c2"/>
+        <colspec colwidth="2in" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Name</entry>
+            <entry>OS-9 Path #</entry>
+            <entry>Attributes</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>INPUT</entry>
+            <entry>0</entry>
+            <entry>Input only (user keyboard)</entry>
+          </row>
+          <row>
+            <entry>OUTPUT</entry>
+            <entry>1</entry>
+            <entry>Input or output (user display)</entry>
+          </row>
+          <row>
+            <entry>SYSERR</entry>
+            <entry>2</entry>
+            <entry>Input or output (user display)</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <note>
+      <para>The "SYSERR" predefined file is a non-standard extension to OS-9 Pascal.</para>
+    </note>
+  </sect1>
+  <sect1>
+    <title>Differences Between Interactive And Mass-storage Files</title>
+    <para>There are important differences between the processing of files which are directed to interactive (SCF) type files such as terminals, versus mass-storage (RBF) type files. When WRITEs are issued to an SCF-type device, the OS-9 Pascal support system will remove any trailing blanks from the line. This is usually highly desirable for reducing the amount of time it takes to write a line to a terminal, and is the way you would expect I/O to occur. A similar function occurs when a fixed length file is directed to an SCF device and a GET is issued. In this case, after the carriage return character (ENTER) is given, the remainder of the fixed length record is padded with space characters, enabling you to declare a file to be a fixed length array of characters and to read records in a "user friendly" manner. The GETCHAR function permits single, unedited input characters to be read. The IOREADY function can be used to test if a character has been typed and is waiting to be read. These two functions are invaluable for writing menu-driven screen-oriented programs.</para>
+    <para>The biggest difference between the processing for RBF versus SCF type devices lies in the fact that buffers are not loaded until needed for SCF type files. For RBF type files, J/0 is handled as described in the language specification - the buffer for a file is loaded with the contents of the first record as soon as the file is opened and EOLN and EOF status is available immediately. For SCF type files, since records are not loaded into the buffer until they are needed, the EOLN and EOF status of the file may be slightly different then expected. The reason for the differences in the handling of the two types of file devices is to provide a more "natural" type of file handling. For example, if the buffer for an SCF type device was loaded as soon as the file was opened, it would be difficult to issue a prompt to the terminal to tell the user what was being expected for input - the user would have to type in his first input line before he could see what it was he was supposed to be entering.</para>
+    <para>Fortunately there are only two major considerations that you need to be aware of to properly handle the difference in processing between the two device types. First, you need to know the differences concerning EOLN and EOF signaling. Since, when the file is first opened for an SCF type device, the buffer is not preloaded, it is not possible for either EOLN or EOF to be set. The system can't tell, of course, if the user is going to hit the carriage return (ENTER) or end of file keys until you actually read the first record, which is not true for RBF type devices since the first record is pre-loaded as soon as the file is opened, and the support system can easily determine if either the EOLN or EOF condition exist for the first record in the file, A similar problem occurs whenever a READLN call is made against an SCF type file. READLN will clear out the current buffer and set EOLN to false, but again, the next record is not actually read until it is needed, so EOLN and possibly EOF cannot be detected until after the next record is actually read. When READLN is issued against an RBF type file the current buffer is cleared and the next record is immediately loaded from the disk file - thus EOLN and EOF is immediately Known for the next record.</para>
+    <para>The second consideration is simply a programming method which eliminates most of the processing problems which arise from the differences in handling between the two file types. Whenever a new line is to be processed simply code the statement:</para>
+    <programlisting>
+IF interactive(filename) THEN get(filename);
+</programlisting>
+    <para>which simply says that if the file "filename" is an interactive (i.e. SCF type) device, then get the next record. If "filename" is an RBF type device, the buffers are automatically preloaded as needed, and the statement will not do the "GET" operation. If, however, the file is an SCF type device, issuing the "GET" call will cause the buffer to be immediately loaded so that EOLN and EOF will be correctly set. Remember, only issue this call when the next line is to be processed, like immediately after the file is opened and the first line is needed, or after EOLN has been detected for a record and READLN has been issued to clear the current buffer.</para>
+  </sect1>
+  <sect1>
+    <title>Standard I/O Procedures</title>
+    <variablelist>
+    <?dbfo list-presentation="blocks"?>
+      <varlistentry>
+        <term>Procedure APPEND(text-filename {,external-filename {,open-mode}})*</term>
+        <listitem>
+          <para>APPEND identical to RESET described below except that it can only be applied to variable length record (i.e. text] files. Only PUTs and WRITEs will be allowed, and new records are automatically appended to the end of the current text file. Records currently in the file are not destroyed as with REWRITE. For a description of "open-mode", see the RESET/REWRITE Procedure description.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure CLOSE(filename)*</term>
+        <listitem>
+          <para>CLOSE performs an explicit close of the designated file. All files except the three predefined files are always implicitly closed upon exit of the block in which they were declared. No error is generated if the file is already closed.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure GET(file-variable)</term>
+        <term>Procedure PUT(file-variable)</term>
+        <listitem>
+          <para>GET advances the file pointer to the next component of the file (i.e., read a record from the file). PUT appends the value of the file variable to the file (i.e. adds a record to the file). If the end of file is reached upon a GET, EOF is set to true and the value of the data read is undefined. Although the ISO specification says that the file pointer must be at the end-of-file for PUT to work, OS-9 Pascal allows records to be read or written in any order (see the REPOSITION standard procedure).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure GETINFO(filename, 32-byte-structure)*</term>
+        <term>Procedure PUTINFO(filename, 32-byte-structure)*</term>
+        <listitem>
+          <para>These procedures read or write a copy of the 32 byte option area in the OS-9 path descriptor that defines line input editing and control character definitions. The second argument must be the name of an identifier which has a size of 32 bytes. Use these calls with great caution as their misuse could produce strange results. Refer to the <citetitle pubwork="book">OS-9 Technical Information</citetitle> manual for a description of the option area.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure IOABORT(filename, logical-value)*</term>
+        <listitem>
+          <para>If the logical value is FALSE, nonfatal I/O errors associated with the filename will not abort program execution. After each I/O call you should use the IORESULT function to check results until an IOABORT call is again given with a TRUE value. If an I/O error occurs for a file which has disabled its I/O abort flag and a previous error number has not been cleared via a call to IORESULT, only the previous error information is kept, the new error is number is lost (See 12-4).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure OVERPRINT(text-filename)*</term>
+        <listitem>
+          <para>Outputs a carriage return without a linefeed.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure PAGE(text-filename)</term>
+        <listitem>
+          <para>PAGE is similar to WRITELN except that a page eject (form feed) is generated, so output appears on the next physical page. Operation is somewhat hardware dependent in that the output device must recognize the form feed character.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure PROMPT(text-filename)*</term>
+        <listitem>
+          <para>PROMPT causes the current text buffer to be immediately forced out without either carriage return or linefeed characters.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure READ({file-variable,} read-parameter-list)</term>
+        <term>Procedure WRITE({file-variable,} write-parameter-list)</term>
+        <listitem>
+          <para>These procedures permit one or more variables to be read from or written to a file without the need to manipulate the file variable for each item to be read or written. As with the primitives GET and PUT, records may be accessed in sequential or random order. The parameter list must be a list of variable names (READ), or a list of variable names, expressions, and formatting directives (WRITE).</para>
+          <para>NOTE: A special nonstandard characteristic of WRITE using formatted output is the case of the ":w:d" format directive for REAL numbers. If "d" is zero, the number is printed in "integer" format without a decimal point and trailing zeros.</para>
+           </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure READLN({text-filename,} read-parameter-list)</term>
+        <term>Procedure WRITELN({text-filename,} write-parameter-list]</term>
+        <listitem>
+          <para>These procedures permit one or more variables to be read from or written to a (sequential) textfile. A parameter list identifies the name(s) of the variable(s) to be read or written. The parameter list must be a list of variable names (for READLN), or a list of variable names, expressions, and formatting directives (WRITELN).</para>
+            <para>NOTE: A special nonstandard characteristic of WRITELN using formatted output is the case of the ":w:d" format directive for REAL numbers. If "d" is zero the number is printed in "integer" format without a decimal point and trailing zeros.</para>
+          </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure REPOSITION(file-variable, record-number)*</term>
+        <listitem>
+          <para>Repositions the file pointer to a specific fixed length record within the specified file. To update records in random order, for each record perform the following steps: REPOSITION to the record, GET the record, REPOSITION back to the record, PUT the record. The record-number parameter can be either an integer or real value expression or variable name.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure RESET(file-variable {,external-filename {,open-mode}})</term>
+        <term>Procedure REWRITE(file-variable {,external-filename {,open-mode}})</term>
+        <listitem>
+          <para>RESET repositions the file pointer to the beginning of
+          the file so it can be reread from its beginning, e.g., the
+          file is rewound. REWRITE is similar except all data is erased
+          (and the file becomes empty) so it may be rewritten.</para>
+          <para>An optional second argument (which must be a string
+          constant or an ARRAY OF CHAR) can be used to specify an
+          external OS-9 filename. If the second argument is not given,
+          the external file name defaults to the identifier used to name
+          the file in the program. If RESET or REWRITE is used against a
+          file that is already open, the action depends on whether or not
+          a second argument is given; if no argument is supplied, the file
+          is rewound and the file is marked as input or output only. If
+          the second argument is given, the current file is closed and
+          the file name given is opened and marked as input or output
+          only. If the file referenced in a REWRITE call already exists,
+          it will be effectively deleted before it is opened.</para>
+          <para>An optional third argument (which must be an integer
+          expression) is used to determine the attributes for creation
+          of the file and the access mode for the file. When a file is
+          created, the 8 low order bits are used to determine the file's
+          attribute byte. The 8 high order bits are used to determine
+          the file's access mode when the file is initially opened. If
+          this argument is missing a default of $0303 will be assumed
+          (user Read/Write file attribute byte, Read/Write permitted
+          to the file) . For additional information on attribute and
+          access byte contents, see sections on I$Create and I$Open
+          system calls in the <citetitle pubwork="book">OS-9 Technical Information</citetitle> manual.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure SEEKEOF(file-variable)*</term>
+        <listitem>
+          <para>SEEKEOF sets up the file control block so that the next write or put operation will add records to the end of the file. A READ or GET would return an end of file condition.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure SHORTIO(file-variable, record-length)*</term>
+        <listitem>
+          <para>SHORTIO sets the record length in the file control block to the value of the integer variable or expression 'record-length'. The next PUT/GET operation can then write/read a short record. After the PUT/GET operation is performed the record length in the control block for the file will be reset to the length declared for the file in the source program. SHORTIO is usually used after a GET is performed on the file and a 'short record' error is returned. By executing the following statements:</para>
+          <para>SHORTIO(filex, LINELENGTH(filex)); PUT(filex);</para>
+          <para>after the file has been correctly positioned (see REPOSITION, described above) you can rewrite the short record back to the file without getting record length errors and without extending the length of the short record. You cannot set the record length to a negative number or to a number larger than the declared record length with this procedure. See Chapter 9 for more detail on SHORTIO.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure SYSREPORT({text-filename,} integer-value)*</term>
+        <listitem>
+          <para>SYSREPORT is used for automatic standard error reporting. It searches within the file PASCALERRS (which must be in the current execution directory) for the record (error message) number passed in the integer parameters. The first record of the file is record 1 for this procedure only. The text of the error message is then written to the referenced text file. If the text file name is not given, along with the following comma, the standard file "SYSERR" is assumed. This routine allows you to append your own messages to the PASCALERRS file and have an easy method of generating messages. The text of the message is not automatically forced out to the text file, you will generally have to complete the error reporting sequence with a PROMPT(text-filename) or WRITELN(text-filename) call. This allows you to further append information to the error message with WRITE calls, if necessary.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure UPDATE(file-variable {,external-filename {,open-mode}})*</term>
+        <listitem>
+          <para>UPDATE is identical to RESET and REWRITE described above except that it can't be applied to variable record length (i.e. text) files, and the buffer is not loaded with the first record when the file is first opened. Both GETs and PUTs will be allowed as long as a series of only GETs or a series of only PUTS is done. If you want to do one or more GETs followed by one or more PUTs, or vice-versa, you need to call REPOSITION in between the two types of calls. Any records currently in the file are not destroyed as with REWRITE. For a description of "open-mode" see the RESET/REWRITE Procedure description.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure WRITEEOF(file-variable)*</term>
+        <listitem>
+          <para>WRITEEOF sets the file's EOF mark to the current position in the file. Note that issuing a REWRITE to a file automatically marks the file as empty. WRITEEOF allows marking any valid record number in a fixed length record file as the last record in the file. Any records which were previously written beyond the current record position are lost.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </sect1>
+  <sect1>
+    <title>Standard I/O Functions</title>
+    <variablelist>
+    <?dbfo list-presentation="blocks"?>
+      <varlistentry>
+        <term>Function EOF{(filename)}: boolean</term>
+        <listitem>
+          <para>EOF returns TRUE if the file current position is at end-of-file, FALSE otherwise.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function EOLN{(filename)}: boolean</term>
+        <listitem>
+          <para>EOLN returns TRUE if the current file position points to an end-of-line character in the file's buffer. EOLN can only be used with textfiles.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function FILESIZE(file-variable): real*</term>
+        <listitem>
+          <para>FILESIZE returns the number of whole records currently in a fixed length record file. FILESIZE does not provide an indication if the last record in a file is only a partial record due to improper file creation.  Any attempt to GET a partial record will cause an error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function GETCHAR(filename): char*</term>
+        <listitem>
+          <para>GETCHAR returns a single binary byte from the input buffer if available, otherwise waits for a character to be entered. GETCHAR is very useful for single keystroke menu selected, reading nonstandard I/O devices, etc.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function INTERACTIVE(text-filename): boolean*</term>
+        <listitem>
+          <para>INTERACTIVE returns TRUE if the file is an interactive (i.e. SCF) device, FALSE otherwise. There are several differences in the way that I/O is handled for interactive devices. You may want to code your program to properly handle both cases. Interactive input files do not pre-load the file buffer when the file is opened.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function IOREADY(filename): boolean*</term>
+        <listitem>
+          <para>Returns TRUE if there is at least one character in the OS-9 input buffer; FALSE otherwise. Useful for detecting if a key has been pressed on an interactive device. A subsequent input function must be used to actually read the data.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function IORESULT(filename): integer*</term>
+        <listitem>
+          <para>Returns the error code result of the last operation
+          performed on the file (see IOABORT above).  If no error
+          occurred since the last IORESULT call, zero is returned.
+          Error numbers less than 100 are Pascal errors while others are OS-9
+          errors. Each call to IORESULT returns the current error number
+          and then resets the current error number to zero. If any I/O
+          operation needs to return an error number and finds that an
+          error number has been already saved (i.e. not cleared by a
+          call to IORESULT), the previously saved number is kept and
+          the new error number is lost.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function LINELENGTH(filename): integer*</term>
+        <listitem>
+          <para>Returns the length of the record currently in the buffer. This is the length of the last record read or the current length of the record which is about to be written.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function OPENED(filename): boolean*</term>
+        <listitem>
+          <para>Returns TRUE if the file is currently opened, FALSE otherwise.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Function POSITION(file-variable): real*</term>
+        <listitem>
+          <para>Returns the record number of the next record to be read or written (i.e. the current file position pointer).</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </sect1>
+</chapter>

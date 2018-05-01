@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+<title>Pascal Syntax</title>
+
+<para>The following information describes the syntax of the Pascal language. The "Backus-Naur Formalism" will be used to describe the correct structure of Pascal statements. The following symbols are meta-symbols, symbols that describe other symbols, belonging to BNF, but they are not part of the Pascal language.</para>
+<informalexample>
+<para>{ } - Curly brackets indicate possible repetition of the enclosed symbols.</para>
+<para>| - Or</para>
+</informalexample>
+
+<productionset>
+
+<production xml:id="program"><lhs>program</lhs> <rhs><nonterminal def="#program_heading">program-heading</nonterminal> <nonterminal def="#block">block</nonterminal> "."</rhs></production>
+
+<production xml:id="program_heading"><lhs>program-heading</lhs> <rhs>PROGRAM <nonterminal def="#identifier">identifier</nonterminal> "(" <nonterminal def="#file_identifier">file-identifier</nonterminal> { "," <nonterminal def="#file_identifier">file-identifier</nonterminal> } ")" ";"</rhs></production>
+
+<production xml:id="file_identifier"><lhs>file-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="identifier"><lhs>identifier</lhs> <rhs><nonterminal def="#letter">letter</nonterminal> { <nonterminal def="#letter_or_digit">letter-or-digit</nonterminal> | "_" }</rhs></production>
+
+<production xml:id="letter_or_digit"><lhs>letter-or-digit</lhs> <rhs><nonterminal def="#letter">letter</nonterminal> | <nonterminal def="#digit">digit</nonterminal></rhs></production>
+
+<production xml:id="block"><lhs>block</lhs> <rhs><nonterminal def="#label_declaration_part">label-declaration-part</nonterminal> <nonterminal def="#constant_definition_part">constant-definition-part</nonterminal> <nonterminal def="#type_definition_part">type-definition-part</nonterminal> <nonterminal def="#variable_declaration_part">variable-declaration-part</nonterminal> <nonterminal def="#procedure_and_function_declaration_part">procedure-and-function-declaration-part</nonterminal> <nonterminal def="#statement_part">statement-part</nonterminal></rhs></production>
+
+<production xml:id="label_declaration_part"><lhs>label-declaration-part</lhs> <rhs><nonterminal def="#empty">empty</nonterminal> | LABEL <nonterminal def="#label">label</nonterminal> { "," <nonterminal def="#label">label</nonterminal>} ";" </rhs></production>
+
+<production xml:id="label"><lhs>label</lhs> <rhs><nonterminal def="#unsigned_integer">unsigned-integer</nonterminal></rhs></production>
+
+<production xml:id="constant_definition_part"><lhs>constant-definition-part</lhs> <rhs><nonterminal def="#empty">empty</nonterminal> | CONST <nonterminal def="#constant_definition">constant-definition</nonterminal> { ";" <nonterminal def="#constant_definition">constant-definition</nonterminal>} ";"</rhs></production>
+
+<production xml:id="constant_definition"><lhs>constant-definition</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal> = <nonterminal def="#constant">constant</nonterminal></rhs></production>
+
+<production xml:id="constant"><lhs>constant</lhs> <rhs><nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#constant_identifier">constant-identifier</nonterminal> j <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#constant_identifier">constant-identifier</nonterminal> | <nonterminal def="#string">string</nonterminal></rhs></production>
+
+<production xml:id="unsigned_number"><lhs>unsigned-number</lhs> <rhs><nonterminal def="#unsigned_integer">unsigned-integer</nonterminal> | <nonterminal def="#unsigned_real">unsigned-real</nonterminal> | <nonterminal def="#unsigned_hexinteger">unsigned-hexinteger</nonterminal></rhs></production>
+
+<production xml:id="unsigned_integer"><lhs>unsigned-integer</lhs> <rhs><nonterminal def="#digit">digit</nonterminal> { "_" <nonterminal def="#digit">digit</nonterminal> | <nonterminal def="#digit">digit</nonterminal>}</rhs></production>
+
+<production xml:id="unsigned_hexinteger"><lhs>unsigned-hexinteger</lhs> <rhs>"$" <nonterminal def="#hexdigit">hexdigit</nonterminal> { "_" <nonterminal def="#hexdigit">hexdigit</nonterminal> | <nonterminal def="#hexdigit">hexdigit</nonterminal> } </rhs></production>
+
+<production xml:id="unsigned_real"><lhs>unsigned-real</lhs> <rhs><nonterminal def="#unsigned_integer">unsigned-integer</nonterminal> . <nonterminal def="#digit">digit</nonterminal> { <nonterminal def="#digit">digit</nonterminal>} | <nonterminal def="#unsigned_integer">unsigned-integer</nonterminal> . <nonterminal def="#digit">digit</nonterminal> { <nonterminal def="#digit">digit</nonterminal>} E <nonterminal def="#scale_factor">scale-factor</nonterminal> | <nonterminal def="#unsigned_integer">unsigned-integer</nonterminal> E <nonterminal def="#scale_factor">scale-factor</nonterminal></rhs></production>
+
+<production xml:id="scale_factor"><lhs>scale-factor</lhs> <rhs><nonterminal def="#unsigned_integer">unsigned-integer</nonterminal> | <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#unsigned_integer">unsigned-integer</nonterminal></rhs></production>
+
+<production xml:id="sign"><lhs>sign</lhs> <rhs>"+" | "-"</rhs></production>
+
+<production xml:id="constant_identifier"><lhs>constant-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="string"><lhs>string</lhs> <rhs>"'" <nonterminal def="#character">character</nonterminal> { <nonterminal def="#character">character</nonterminal>} "'"</rhs></production>
+
+<production xml:id="type_definition_part"><lhs>type-definition-part</lhs> <rhs><nonterminal def="#empty">empty</nonterminal> | TYPE <nonterminal def="#type_definition">type-definition</nonterminal> {";" <nonterminal def="#type_definition">type-definition</nonterminal>} ";"</rhs></production>
+
+<production xml:id="type_definition"><lhs>type-definition</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal> = <nonterminal def="#type">type</nonterminal></rhs></production>
+
+<production xml:id="type"><lhs>type</lhs> <rhs><nonterminal def="#simple_type">simple-type</nonterminal> | <nonterminal def="#structured_type">structured-type</nonterminal> | <nonterminal def="#pointer_type">pointer-type</nonterminal></rhs></production>
+
+<production xml:id="simple_type"><lhs>simple-type</lhs> <rhs><nonterminal def="#scalar_type">scalar-type</nonterminal> | <nonterminal def="#subrange_type">subrange-type</nonterminal> | <nonterminal def="#type_identifier">type-identifier</nonterminal></rhs></production>
+
+<production xml:id="scalar_type"><lhs>scalar-type</lhs> <rhs>( <nonterminal def="#identifier">identifier</nonterminal> { "," <nonterminal def="#identifier">identifier</nonterminal>} )</rhs></production>
+
+<production xml:id="subrange_type"><lhs>subrange-type</lhs> <rhs><nonterminal def="#constant">constant</nonterminal> ".." <nonterminal def="#constant">constant</nonterminal></rhs></production>
+
+<production xml:id="type_identifier"><lhs>type-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="structured_type"><lhs>structured-type</lhs> <rhs><nonterminal def="#unpacked_structured_type">unpacked-structured-type</nonterminal> | PACKED <nonterminal def="#unpacked_structured_type">unpacked-structured-type</nonterminal></rhs></production>
+
+<production xml:id="unpacked_structured_type"><lhs>unpacked-structured-type</lhs> <rhs><nonterminal def="#array_type">array-type</nonterminal> | <nonterminal def="#record_type">record-type</nonterminal> <nonterminal def="#set_type">set-type</nonterminal> | <nonterminal def="#file_type">file-type</nonterminal></rhs></production>
+
+<production xml:id="array_type"><lhs>array-type</lhs> <rhs>ARRAY "[" <nonterminal def="#index_type">index-type</nonterminal> { "," <nonterminal def="#index_type">index-type</nonterminal>} "]" OF <nonterminal def="#component_type">component-type</nonterminal></rhs></production>
+
+<production xml:id="index_type"><lhs>index-type</lhs> <rhs><nonterminal def="#simple_type">simple-type</nonterminal></rhs></production>
+
+<production xml:id="component_type"><lhs>component-type</lhs> <rhs><nonterminal def="#type">type</nonterminal></rhs></production>
+
+<production xml:id="record_type"><lhs>record-type</lhs> <rhs>RECORD <nonterminal def="#field_list">field-list</nonterminal> END</rhs></production>
+
+<production xml:id="field_list"><lhs>field-list</lhs> <rhs><nonterminal def="#fixed_part">fixed-part</nonterminal> | <nonterminal def="#fixed_part">fixed-part</nonterminal> ";" <nonterminal def="#variant_part">variant-part</nonterminal> | <nonterminal def="#variant_part">variant-part</nonterminal></rhs></production>
+
+<production xml:id="fixed_part"><lhs>fixed-part</lhs> <rhs><nonterminal def="#record_section">record-section</nonterminal> { ";" <nonterminal def="#record_section">record-section</nonterminal>}</rhs></production>
+
+<production xml:id="record_section"><lhs>record-section</lhs> <rhs><nonterminal def="#field_identifier">field-identifier</nonterminal> { "," <nonterminal def="#field_identifier">field-identifier</nonterminal>} ":" <nonterminal def="#type">type</nonterminal> | <nonterminal def="#empty">empty</nonterminal></rhs></production>
+
+<production xml:id="variant_part"><lhs>variant-part</lhs> <rhs>CASE <nonterminal def="#tag_field">tag-field</nonterminal> <nonterminal def="#type_identifier">type-identifier</nonterminal> OF <nonterminal def="#variant">variant</nonterminal> { ";" <nonterminal def="#variant">variant</nonterminal>}</rhs></production>
+
+<production xml:id="tag_field"><lhs>tag-field</lhs> <rhs><nonterminal def="#field_identifier">field-identifier</nonterminal> ":" | <nonterminal def="#empty">empty</nonterminal></rhs></production>
+
+<production xml:id="variant"><lhs>variant</lhs> <rhs><nonterminal def="#case_label_list">case-label-list</nonterminal> ":" ( <nonterminal def="#field_list">field-list</nonterminal> | <nonterminal def="#empty">empty</nonterminal></rhs></production>
+
+<!--
+<production xml:id="case_label_list"><lhs>case-label-list</lhs> <rhs><nonterminal def="#case_label">case-label</nonterminal> { "," <nonterminal def="#case_label">case-label</nonterminal>}</rhs></production>
+-->
+<production xml:id="case_label"><lhs>case-label</lhs> <rhs><nonterminal def="#constant">constant</nonterminal></rhs></production>
+
+<production xml:id="set_type"><lhs>set-type</lhs> <rhs>SET OF <nonterminal def="#base_type">base-type</nonterminal></rhs></production>
+
+<production xml:id="base_type"><lhs>base-type</lhs> <rhs><nonterminal def="#simple_type">simple-type</nonterminal></rhs></production>
+
+<production xml:id="file_type"><lhs>file-type</lhs> <rhs>FILE OF <nonterminal def="#type">type</nonterminal></rhs></production>
+
+<production xml:id="pointer_type"><lhs>pointer-type</lhs> <rhs>"^" <nonterminal def="#type_identifier">type-identifier</nonterminal></rhs></production>
+
+<production xml:id="variable_declaration_part"><lhs>variable-declaration-part</lhs> <rhs><nonterminal def="#empty">empty</nonterminal> | VAR <nonterminal def="#variable_declaration">variable-declaration</nonterminal> { ";" <nonterminal def="#variable_declaration">variable-declaration</nonterminal>} ";"</rhs></production>
+
+<production xml:id="variable_declaration"><lhs>variable-declaration</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal> { "," <nonterminal def="#identifier">identifier</nonterminal>} ":" <nonterminal def="#type">type</nonterminal></rhs></production>
+
+<production xml:id="procedure_and_function_declaration_part"><lhs>procedure-and-function-declaration-part</lhs> <rhs>{ <nonterminal def="#procedure_or_function_declaration">procedure-or-function-declaration</nonterminal> ";"}</rhs></production>
+
+<production xml:id="procedure_or_function_declaration"><lhs>procedure-or-function-declaration</lhs> <rhs><nonterminal def="#procedure_declaration">procedure-declaration</nonterminal> | <nonterminal def="#function_declaration">function-declaration</nonterminal></rhs></production>
+
+<production xml:id="procedure_declaration"><lhs>procedure-declaration</lhs> <rhs><nonterminal def="#procedure_heading">procedure-heading</nonterminal> <nonterminal def="#block">block</nonterminal></rhs></production>
+
+<production xml:id="procedure_heading"><lhs>procedure-heading</lhs> <rhs>PROCEDURE <nonterminal def="#identifier">identifier</nonterminal> ";" | PROCEDURE <nonterminal def="#identifier">identifier</nonterminal> ( <nonterminal def="#formal_parameter_section">formal-parameter-section</nonterminal> { ";" <nonterminal def="#formal_parameter_section">formal-parameter-section</nonterminal>} ) ";"</rhs></production>
+
+<production xml:id="formal_parameter_section"><lhs>formal-parameter-section</lhs> <rhs><nonterminal def="#parameter_group">parameter-group</nonterminal> | VAR <nonterminal def="#parameter_group">parameter-group</nonterminal></rhs></production>
+
+<production xml:id="parameter_group"><lhs>parameter-group</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal> { "," <nonterminal def="#identifier">identifier</nonterminal>} ":" <nonterminal def="#type_identifier">type-identifier</nonterminal></rhs></production>
+
+<production xml:id="function_declaration"><lhs>function-declaration</lhs> <rhs><nonterminal def="#function_heading">function-heading</nonterminal> <nonterminal def="#block">block</nonterminal></rhs></production>
+
+<production xml:id="function_heading"><lhs>function-heading</lhs> <rhs>FUNCTION <nonterminal def="#identifier">identifier</nonterminal> ":" <nonterminal def="#result_type">result-type</nonterminal> ";" | FUNCTION <nonterminal def="#identifier">identifier</nonterminal> ( <nonterminal def="#formal_parameter_section">formal-parameter-section</nonterminal>} ) ":" <nonterminal def="#result_type">result-type</nonterminal> ";"</rhs></production>
+
+<production xml:id="result_type"><lhs>result-type</lhs> <rhs><nonterminal def="#type_identifier">type-identifier</nonterminal></rhs></production>
+
+<production xml:id="statement_part"><lhs>statement-part</lhs> <rhs><nonterminal def="#compound_statement">compound-statement</nonterminal></rhs></production>
+
+<production xml:id="statement"><lhs>statement</lhs> <rhs><nonterminal def="#unlabelled_statement">unlabelled-statement</nonterminal> | <nonterminal def="#label">label</nonterminal> ":" <nonterminal def="#unlabelled_statement">unlabelled-statement</nonterminal></rhs></production>
+
+<production xml:id="unlabelled_statement"><lhs>unlabelled-statement</lhs> <rhs><nonterminal def="#simple_statement">simple-statement</nonterminal> | <nonterminal def="#structured_statement">structured-statement</nonterminal></rhs></production>
+
+<production xml:id="simple_statement"><lhs>simple-statement</lhs> <rhs><nonterminal def="#assignment_statement">assignment-statement</nonterminal> | <nonterminal def="#procedure_statement">procedure-statement</nonterminal> | <nonterminal def="#go_to_statement">go-to-statement</nonterminal> | <nonterminal def="#empty_statement">empty-statement</nonterminal></rhs></production>
+
+<production xml:id="assignment_statement"><lhs>assignment-statement</lhs> <rhs><nonterminal def="#variable">variable</nonterminal> := <nonterminal def="#expression">expression</nonterminal> | <nonterminal def="#function_identifier">function-identifier</nonterminal> := <nonterminal def="#expression">expression</nonterminal></rhs></production>
+
+<production xml:id="variable"><lhs>variable</lhs> <rhs><nonterminal def="#entire_variable">entire-variable</nonterminal> | <nonterminal def="#component_variable">component-variable</nonterminal> | <nonterminal def="#referenced_variable">referenced-variable</nonterminal></rhs></production>
+
+<production xml:id="entire_variable"><lhs>entire-variable</lhs> <rhs><nonterminal def="#variable_identifier">variable-identifier</nonterminal></rhs></production>
+
+<production xml:id="variable_identifier"><lhs>variable-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="component_variable"><lhs>component-variable</lhs> <rhs><nonterminal def="#indexed_variable">indexed-variable</nonterminal> | <nonterminal def="#field_designator">field-designator</nonterminal> | <nonterminal def="#file_buffer">file-buffer</nonterminal></rhs></production>
+
+<production xml:id="indexed_variable"><lhs>indexed-variable</lhs> <rhs><nonterminal def="#array_variable">array-variable</nonterminal> "[" <nonterminal def="#expression">expression</nonterminal> { "," <nonterminal def="#expression">expression</nonterminal>} "]"</rhs></production>
+
+<production xml:id="array_variable"><lhs>array-variable</lhs> <rhs><nonterminal def="#variable">variable</nonterminal></rhs></production>
+
+<production xml:id="field_designator"><lhs>field-designator</lhs> <rhs><nonterminal def="#record_variable">record-variable</nonterminal> . <nonterminal def="#field_identifier">field-identifier</nonterminal></rhs></production>
+
+<production xml:id="record_variable"><lhs>record-variable</lhs> <rhs><nonterminal def="#variable">variable</nonterminal></rhs></production>
+
+<production xml:id="field_identifier"><lhs>field-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="file_buffer"><lhs>file-buffer</lhs> <rhs><nonterminal def="#file_variable">file-variable</nonterminal> "^"</rhs></production>
+
+<production xml:id="file_variable"><lhs>file-variable</lhs> <rhs><nonterminal def="#variable">variable</nonterminal></rhs></production>
+
+<production xml:id="referenced_variable"><lhs>referenced-variable</lhs> <rhs><nonterminal def="#pointer_variable">pointer-variable</nonterminal> "^"</rhs></production>
+
+<production xml:id="pointer_variable"><lhs>pointer-variable</lhs> <rhs><nonterminal def="#variable">variable</nonterminal></rhs></production>
+
+<production xml:id="expression"><lhs>expression</lhs> <rhs><nonterminal def="#simple_expression">simple-expression</nonterminal> | <nonterminal def="#simple_expression">simple-expression</nonterminal> <nonterminal def="#relational_operator">relational-operator</nonterminal> <nonterminal def="#simple_expression">simple-expression</nonterminal></rhs></production>
+
+<production xml:id="relational_operator"><lhs>relational-operator</lhs> <rhs>"=" | "&lt;&gt;" | "&lt;" | "&lt;=" | "&gt;=" | "&gt;" | IN</rhs></production>
+
+<production xml:id="simple_expression"><lhs>simple-expression</lhs> <rhs><nonterminal def="#term">term</nonterminal> | <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#term">term</nonterminal> | <nonterminal def="#simple_expression">simple-expression</nonterminal> <nonterminal def="#adding_operator">adding-operator</nonterminal> <nonterminal def="#term">term</nonterminal></rhs></production>
+
+<production xml:id="adding_operator"><lhs>adding-operator</lhs> <rhs>"+" | "-" | OR | "|" | "#"</rhs></production>
+
+<production xml:id="term"><lhs>term</lhs> <rhs><nonterminal def="#factor">factor</nonterminal> | <nonterminal def="#term">term</nonterminal> <nonterminal def="#multiplying_operator">multiplying-operator</nonterminal> <nonterminal def="#factor">factor</nonterminal></rhs></production>
+
+<production xml:id="multiplying_operator"><lhs>multiplying-operator</lhs> <rhs>"*" | "/" | DIV | MOD | AND | "&amp;"</rhs></production>
+
+<production xml:id="factor"><lhs>factor</lhs> <rhs><nonterminal def="#variable">variable</nonterminal> | <nonterminal def="#unsigned_constant">unsigned-constant</nonterminal> | ( <nonterminal def="#expression">expression</nonterminal> ) <nonterminal def="#function_designator">function-designator</nonterminal> | <nonterminal def="#set">set</nonterminal> | NOT <nonterminal def="#factor">factor</nonterminal></rhs></production>
+
+<production xml:id="unsigned_constant"><lhs>unsigned-constant</lhs> <rhs><nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#string">string</nonterminal> | <nonterminal def="#constant_identifier">constant-identifier</nonterminal> | NIL</rhs></production>
+
+<production xml:id="function_designator"><lhs>function-designator</lhs> <rhs><nonterminal def="#function_identifier">function-identifier</nonterminal> | <nonterminal def="#function_identifier">function-identifier</nonterminal> ( <nonterminal def="#actual_parameter">actual-parameter</nonterminal> { "," <nonterminal def="#actual_parameter">actual-parameter</nonterminal>} )</rhs></production>
+
+<production xml:id="function_identifier"><lhs>function-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="set"><lhs>set</lhs> <rhs>"[" <nonterminal def="#element_list">element-list</nonterminal> "]"</rhs></production>
+
+<production xml:id="element_list"><lhs>element-list</lhs> <rhs><nonterminal def="#element">element</nonterminal> { "," <nonterminal def="#element">element</nonterminal> } | <nonterminal def="#empty">empty</nonterminal></rhs></production>
+
+<production xml:id="element"><lhs>element</lhs> <rhs><nonterminal def="#expression">expression</nonterminal> | <nonterminal def="#expression">expression</nonterminal> | <nonterminal def="#expression">expression</nonterminal> ".." <nonterminal def="#expression">expression</nonterminal></rhs></production>
+
+<production xml:id="procedure_statement"><lhs>procedure-statement</lhs> <rhs><nonterminal def="#procedure_identifier">procedure-identifier</nonterminal> | <nonterminal def="#procedure_identifier">procedure-identifier</nonterminal> ( <nonterminal def="#actual_parameter">actual-parameter</nonterminal> { "," <nonterminal def="#actual_parameter">actual-parameter</nonterminal>} )</rhs></production>
+
+<production xml:id="procedure_identifier"><lhs>procedure-identifier</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="actual_parameter"><lhs>actual-parameter</lhs> <rhs><nonterminal def="#expression">expression</nonterminal> | <nonterminal def="#variable">variable</nonterminal> | <nonterminal def="#procedure_identifier">procedure-identifier</nonterminal> | <nonterminal def="function_identifier">function-identifier</nonterminal></rhs></production>
+
+<production xml:id="go_to_statement"><lhs>go-to-statement</lhs> <rhs>GOTO <nonterminal def="#label">label</nonterminal></rhs></production>
+
+<production xml:id="empty_statement"><lhs>empty-statement</lhs> <rhs><nonterminal def="#empty">empty</nonterminal></rhs></production>
+
+<production xml:id="empty"><lhs>empty</lhs> <rhs></rhs></production>
+
+<production xml:id="structured_statement"><lhs>structured-statement</lhs> <rhs><nonterminal def="#compound_statement">compound-statement</nonterminal> | <nonterminal def="#conditional_statement">conditional-statement</nonterminal> | <nonterminal def="#repetitive_statement">repetitive-statement</nonterminal> | <nonterminal def="#with_statement">with-statement</nonterminal></rhs></production>
+
+<production xml:id="compound_statement"><lhs>compound-statement</lhs> <rhs>BEGIN <nonterminal def="#statement">statement</nonterminal> { ";" <nonterminal def="#statement">statement</nonterminal>} END</rhs></production>
+
+<production xml:id="conditional_statement"><lhs>conditional-statement</lhs> <rhs><nonterminal def="#if_statement">if-statement</nonterminal> | <nonterminal def="#case_statement">case-statement</nonterminal></rhs></production>
+
+<production xml:id="if_statement"><lhs>if-statement</lhs> <rhs>IF <nonterminal def="#expression">expression</nonterminal> THEN <nonterminal def="#statement">statement</nonterminal> | IF <nonterminal def="#expression">expression</nonterminal> THEN <nonterminal def="#statement">statement</nonterminal> ELSE <nonterminal def="#statement">statement</nonterminal></rhs></production>
+
+<production xml:id="case_statement"><lhs>case-statement</lhs> <rhs>CASE <nonterminal def="#expression">expression</nonterminal> OF <nonterminal def="#case_list_element">case-list-element</nonterminal> { ";" <nonterminal def="#case_list_element">case-list-element</nonterminal>} END</rhs></production>
+
+<production xml:id="case_list_element"><lhs>case-list-element</lhs> <rhs><nonterminal def="#case_label_list">case-label-list</nonterminal> ":" <nonterminal def="#statement">statement</nonterminal> | <nonterminal def="#empty">empty</nonterminal></rhs></production>
+
+<production xml:id="case_label_list"><lhs>case-label-list</lhs> <rhs><nonterminal def="#case_label">case-label</nonterminal> { "," <nonterminal def="#case_label">case-label</nonterminal> } | OTHERWISE</rhs></production>
+
+<production xml:id="repetitive_statement"><lhs>repetitive-statement</lhs> <rhs><nonterminal def="#while_statement">while-statement</nonterminal> | <nonterminal def="#repeat_statement">repeat-statement</nonterminal> | <nonterminal def="#for_statement">for-statement</nonterminal></rhs></production>
+
+<production xml:id="while_statement"><lhs>while-statement</lhs> <rhs>WHILE <nonterminal def="#expression">expression</nonterminal> DO <nonterminal def="#statement">statement</nonterminal></rhs></production>
+
+<production xml:id="repeat_statement"><lhs>repeat-statement</lhs> <rhs>REPEAT <nonterminal def="#statement">statement</nonterminal> { ";" <nonterminal def="#statement">statement</nonterminal>} UNTIL <nonterminal def="#expression">expression</nonterminal></rhs></production>
+
+<production xml:id="for_statement"><lhs>for-statement</lhs> <rhs>FOR <nonterminal def="#control_variable">control-variable</nonterminal> := <nonterminal def="#for_list">for-list</nonterminal> DO <nonterminal def="#statement">statement</nonterminal></rhs></production>
+
+<production xml:id="for_list"><lhs>for-list</lhs> <rhs><nonterminal def="#initial_value">initial-value</nonterminal> TO <nonterminal def="#final_value">final-value</nonterminal> | <nonterminal def="#initial_value">initial-value</nonterminal> DOWNTO <nonterminal def="#final_value">final-value</nonterminal></rhs></production>
+
+<production xml:id="control_variable"><lhs>control-variable</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal></rhs></production>
+
+<production xml:id="initial_value"><lhs>initial-value</lhs> <rhs><nonterminal def="#expression">expression</nonterminal></rhs></production>
+
+<production xml:id="final_value"><lhs>final-value</lhs> <rhs><nonterminal def="#expression">expression</nonterminal></rhs></production>
+
+<production xml:id="with_statement"><lhs>with-statement</lhs> <rhs>WITH <nonterminal def="#record_variable_list">record-variable-list</nonterminal> DO <nonterminal def="#statement">statement</nonterminal></rhs></production>
+
+<production xml:id="record_variable_list"><lhs>record-variable-list</lhs> <rhs><nonterminal def="#record_variable">record-variable</nonterminal> { "," <nonterminal def="#record_variable">record-variable</nonterminal>}</rhs></production>
+
+<production xml:id="letter"><lhs>letter</lhs> <rhs>"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"</rhs></production>
+
+<production xml:id="hexdigit"><lhs>hexdigit</lhs> <rhs><nonterminal def="#digit">digit</nonterminal> | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" | "e" | "f"</rhs></production>
+
+<production xml:id="digit"><lhs>digit</lhs> <rhs>"0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"</rhs></production>
+
+<production xml:id="character"><lhs>character</lhs> <rhs>Any-ASCII-character-except-quote | "''"</rhs></production>
+
+</productionset>
+    <!--
+    <constraintdef xml:id="div0">
+      <title>Division by zero</title>
+Division by zero is an error.
+
+</constraintdef>
+-->
+</appendix>

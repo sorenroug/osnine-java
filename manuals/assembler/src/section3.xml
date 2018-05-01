@@ -74,7 +74,7 @@ customization for the screen size of specific computers.
     <para>
 A powerful feature of the Interactive Debugger is its integral
 expression interpreter, which permits you to type in simple or complex
-expressions wherever an input value is called for in 'a command.
+expressions wherever an input value is called for in a command.
 Expressions used by the Interactive Debugger are similar to those used
 with high-level languages such as BASIC, except there are some extra
 operators and operands that are unique to the debugger.
@@ -296,7 +296,7 @@ modes:
 </para>
       <variablelist spacing="compact">
         <varlistentry>
-          <term>&lt; expt &gt;</term>
+          <term>&lt; expr &gt;</term>
           <listitem>
             <para>
 returns the value of a memory <emphasis>byte</emphasis> using the value of "expr" as an address
@@ -521,7 +521,7 @@ or all registers, or to change a specific register's contents.
 The "registers" affected by these commands, are actually stored
 copies in memory ("images") of the register values of_the.program under
 test. They are stored on the stack when the program is stopped by a
-breakpoint or other interrupt. Tha value shown for the stack pointer
+breakpoint or other interrupt. The value shown for the stack pointer
 register is the address ,of the stack where the register values are
 stored. Before the program under test is first executed, the register
 images must be made valid using the "E" command.
@@ -608,7 +608,7 @@ you will not see them in memory.
       <para>
 When a SWI is executed it interrupts.the program and saves the
 register contents .on the stack so they can be examined or changed using
-the ":" cbmmand. Because SWIs operate by temporarily replacing an
+the ":" command. Because SWIs operate by temporarily replacing an
 instruction opcode, there are three restrictions on their use:
 </para>
       <orderedlist>
@@ -800,8 +800,8 @@ DB:
         <title>Clear and Test Memory Command</title>
         <para>
 The "C" command followed by TWO expressions simultaneously performs
-a' "walking bit" memory test and clears all memory between the two
-evaluated addresses. The first expression gives the starting addtess,
+a "walking bit" memory test and clears all memory between the two
+evaluated addresses. The first expression gives the starting address,
 and the second the ending address (which must be higher). If any byte(s)
 fail the test, its address is displayed. Of course, only RAM memory can
 be tested and cleared.
@@ -833,7 +833,7 @@ on the left, followed by the contents of the subsequent memory locations.
 On the far right is the ASCII representation of the same memory
 locations. Those locations containing nondisplayable characters have
 periods in their place. The high order bit is ignored for the display of
-ascii characters. For example:
+ASCII characters. For example:
 </para>
         <screen>
 DB:m f100 f17f <keycap>RETURN</keycap>

@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>"PASCAL" - The Pascal Compiler</title>
+  <para>SYNOPSIS: The function   of  the compiler is to convert a Pascal "source"  program file  to   a P-code file that may be executed using one  of  the interpreters.   Running the compiler is always the first step in preparing a Pascal   program regardless of whether you intend to produce a P-code program   or a native code program.</para>
+  <sect1>
+    <title>The Compiler Command Line</title>
+    <para>The command line consists of the command "Pascal", The source file is read from the standard input path, so the OS-9 Shell redirection operator "&lt;" is used to redirect input of the compiler to the file desired. A typical command used to call the compiler looks like this:</para>
+    <screen>PASCAL  &lt;myprogram  #28k</screen>
+    <para>The PASCAL command compiles a program on a file called "myprogram". The OS-9 Shell memory size option is used to give the compiler 28K bytes of working memory. The compiler will display a program listing on the terminal display (the standard output path) and write the corresponding P-code program on a file called "PCODEF".</para>
+    <para>After the compilation has finished, the normal P-code interpreter called "PascalN" can be used to run the program on the PCODEF file.  For example:</para>
+    <screen>PASCALN PCODEF</screen>
+    <para>Compiling and running Pascal programs is often as simple as this. On the other hand, the Pascal compiler is a very sophisticated program that has many user-controllable features that you may want to use as a matter of preference, or for special reasons related to the program you are developing. This chapter is devoted to a detailed description of the compiler's many optional features.  For more information on PascalN, See Chapter 3.</para>
+  </sect1>
+  <sect1>
+    <title>The Pascal Program Source File</title>
+    <para>The source file containing the program to be compiled is prepared using the system text editor on your minimum configuration OS-9 disk, or the sample program furnished with the OS-9 Pascal System can be used to familiarize yourself with how the compiler works. The source file generally resides in the "PASCAL" working directory or disk.</para>
+    <para>In preparing your source program, keep the following rules in mind:</para>
+    <itemizedlist mark="mdash">
+      <listitem>
+        <para>Only the first 110 characters on a line will be recognized.</para>
+      </listitem>
+      <listitem>
+        <para>String constants (sequences of 2 or more characters between single quote marks) can have up to 100 characters.</para>
+      </listitem>
+      <listitem>
+        <para>The program itself can contain up to 254 procedures including procedures declared as EXTERNAL.</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+  <sect1>
+    <title>A Detailed Description of Compiler Command Lines</title>
+    <para>The compiler is called using a command line of the form:</para>
+    <screen>PASCAL &lt;sourcefile &gt;listfile &gt;&gt;statfile  #memsize : parameters</screen>
+    <para>Note that PASCAL uses OS-9's standard I/O paths for normal input and output operations which may be redirected to or from any file or device.</para>
+    <para>The source file is read from the standard input path ("&lt;sourcefile").  Normally, this is a disk file.</para>
+    <para>The compiler listing is written to the standard output path ("&gt;listfile"). If the listing output is not redirected, the listing will be displayed on the user's terminal. At the end of the listing, the compiler will display a procedure table. Also, if routine errors are detected during compilation, the source line causing the error and the appropriate error message(s) will be shown on this path. You can, however, via either a compiler option or a parameter (see below), inhibit the listing of the source program while it is being compiled.</para>
+    <para>The standard error/status path ("&gt;&gt;/statfile") is used for
+    compilation statistics and severe error messages. If no redirection
+    of this path is specified, messages will be displayed on the user's
+    terminal. Severe  error  messages report conditions which prevent
+    the compiler from operating, such as insufficient memory or OS-9
+    file errors. "Normal"  error  messages are displayed on the listing
+    path described above. Compilation statistics show figures for various
+    types of memory usage which can be used to improve compiler throughput
+    for the particular program being compiled.</para>
+    <para>The "#memsize" specification determines how much memory the
+    compiler is given by OS-9. The larger this number is, the faster
+    the compiler will run. Therefore, you should use the largest amount
+    possible on your system. The amount of memory is best determined by
+    experimentation. Most OS-9 systems allow the amount to be at least
+    60 to 80 pages (15K to 20K). If you receive an "ERROR 207" message
+    from OS-9 after you attempt to run Pascal, it means that the memory
+    size you specified was too large.</para>
+    <para>Here are some sample command lines:</para>
+    <screen>
+pascal &lt;fibonacci &gt;/p &gt;&gt;/p #18K
+pascal &lt;invert &gt;/p : d50 t
+</screen>
+  </sect1>
+  <sect1>
+    <title>Command Line Parameters</title>
+    <para>A list of one or more parameters for the compiler can optionally be included in the command line. If parameters are used, they must be preceded by the ":" character. The parameters allow global control over program listing functions and over certain code generation options. They also allow redirection of the P-code file produced by the compiler and/or of the compiler work, which can be useful in a multi-user environment.</para>
+    <para>Spaces or commas can be used to separate parameters, but the total number of characters in the parameter list must be less than or equal to 80, including all space and comma characters. Upper and lower case letters are considered to be equivalent. The options allowed, their form, and  their  effect are as follows:</para>
+    <variablelist>
+      <varlistentry>
+        <term>O=&lt;pathname&gt;</term>
+        <listitem>
+          <para>"<option>O</option>" will change the name of the PCODEF file produced by the compiler to "pathname".</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>T=&lt;pathname&gt;</term>
+        <listitem>
+          <para>"<option>T</option>" will change the name of the PROCTAB file produced by the compiler to "pathname".</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>T</term>
+        <listitem>
+          <para>"<option>T</option>", used by itself, will inhibit the printing of symbol table dumps. "<option>T</option>" is a global inhibit and overrides any symbol table dump options provided within the source program {see the section on compiler options below).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>L</term>
+        <listitem>
+          <para>"<option>L</option>" inhibits the source program listing. "<option>L</option>" is a global inhibit and overrides any listing options provided within the source program (see the section on compiler options below).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>F</term>
+        <listitem>
+          <para>"F" will inhibit the use of a form feed character to advance to a new page. Instead, carriage return/line feed combinations will be used to space to a new page. The compiler always begins printing at the  current  position of the listing device and always issues a new page sequence at the end of every compilation.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>D&lt;number&gt;</term>
+        <listitem>
+          <para>"D" followed by a number greater than 11 will set the page length to that number. Nine lines of source text less than this number will be printed on each page. Three of the nine lines are occupied by the heading for each page, and at the end of each page, six blank lines are printed . If not overridden, the default page length is 66. If the number given is less than 12, it  will  be ignored, and 12 will be assumed. If the number given is greater than 160, it will be ignored, and 160 will be assumed.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>D</term>
+        <listitem>
+          <para>"<option>D</option>" by itself inhibits the generation of run time range checks for array indexing, memory references via pointers, and assignments to Boolean, set, or subrange type variables. "<option>D</option>" is a global inhibit and overrides any range check options provided within the source program (see the section on compiler options below and the Debug section of Chapter 9).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>W&lt;number&gt;</term>
+        <listitem>
+          <para>"<option>W</option>" followed by a number greater than 16 will set the maximum line width to that number. Note that "<option>W</option>"  affects the listing of source text lines &#x2014; the three lines of heading for each page have their own minimum length which may be longer than this value. Source text lines which would require a longer line to be totally listed are simply truncated for listing purposes. Each line of source text is preceded by a 16 character header (see the section below on reading the compilation listing), so that a line width of 17, the minimum allowed, would result in only the first character of every source line being listed. If not overridden, the default line width is 79. If the number given is less than 17, the number will be ignored, and 17 will be assumed. If the number given is greater than 160, the number will be ignored, and 160 will be assumed.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>N</term>
+        <listitem>
+          <para>"<option>N</option>" will inhibit the inclusion of source line numbers in the P-code file. "<option>N</option>" is a global inhibit and overrides any line number options provided within the source program (see the section on compiler options below). Inclusion of line numbers will cause run-time error reporting to report source line numbers as an aid in program debugging. Line numbers require three bytes of P-code for nearly every statement in the source program, and program execution is slowed slightly. Therefore, this option should be given when compiling "final" versions of programs when no further debugging is anticipated.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </sect1>
+  <sect1>
+    <title>Compile-Time Options</title>
+    <para>Compile-time options may be included inside Pascal source programs. They are used to enable or disable various compile time modes or to override certain memory allocation default values. These options use a form similar to comment lines:</para>
+    <para><code>(*$  optionlist  *)</code>    or     <code>{$  optionlist  }</code></para>
+    <para>when either of these forms is encountered by the compiler, the text inside the comment is processed as a list of one or more compile-time options. If the compiler fails to find proper syntax, then the whole string is treated simply as another normal comment, and no message is given. More than one option can be specified within a single comment as long as each has the proper syntax and are separated by a comma and optional spaces. For example, if three good option specifications were found within the comment and then some sequence of characters was found which wasn't recognized as a valid option specification, the three preceding specifications are properly kept and the remainder of the comment is ignored. Upper and lower case letters are considered equivalent. The options, their form, and their function are as follows:</para>
+    <para>Here are some examples:</para>
+    <screen>
+(*$l-           Turn off listing *)
+(*$l+,T+        Enable listing and symbol table dump*)
+{$l10000, e1000 Increase size of local and extended
+                stacks}
+{$S20480        Request 20K for swap buffers for
+                PascalS}
+            </screen>
+    <para><option>l+</option>  *Enables program listing.</para>
+    <para><option>l-</option>  Disables program listing.</para>
+    <para><option>l</option> Followed by a number overrides the compiled program's local stack size calculation. See Chapter 10 for more information.</para>
+    <para><option>e</option> Followed by a number overrides the compiled program's extended stack size calculation. See Chapter 10 for further more information.</para>
+    <para><option>h</option> Followed by a number overrides the compiled program's minimum heap size calculation. The compiler always calculates the minimum heap size to be zero bytes unless overridden. See Chanter 10 for more information.</para>
+    <para><option>s</option> Followed by a number overrides the compiled program's default swap size calculation. The compiler always calculates the minimum swap size to be 2K bytes unless overridden. This value, as with the other size  values  just  described,  only  affects memory allocation for the running of the compiled version of this program - it does not in any way affect the process of compiling the source program. Also, if any memory size option is given more than once, only the last specification is kept.  See Chapter 10 for more information.</para>
+    <para><option>d+</option> *Enables generation of run time range checks for array indexing, memory references  via  pointers, and assignments to Boolean, set, or subrange type variables. Case statements are always checked. The "d" option is also referred to as the "Debug Option". See Chapter 9 for more information on the Debug Option.</para>
+    <para><option>d-</option>  Disables generation of run time  range  checks described above.</para>
+    <para><option>n+</option> *Enables inclusion of source line numbers in the P-code file.</para>
+    <para><option>n-</option>  Disables  inclusion  of source  line  numbers in the P-code file.</para>
+    <para><option>t+</option>   Enables  the generation of symbol table dumps.</para>
+    <para><option>t-</option>  *Disables the generation of symbol table dumps.</para>
+    <para>Default Values:</para>
+    <para>At the start of compilation the default option settings are: <option>l+</option>, <option>d+</option>, <option>n+</option>, and <option>t-</option>. The default values are marked with an '*' in the descriptions above.</para>
+    <para>NOTE: When using the <option>l</option>, <option>e</option>, <option>h</option>, and <option>h</option> compile time options it is necessary to specify the size in single bytes. The compile-time options do not recognize 'K' bytes.</para>
+  </sect1>
+  <sect1>
+    <title>Compiler Listing Formatting Directives</title>
+    <para>The $PAGE, $TITLE, and $SUBTITLE directives can be included in Pascal source programs to create better organized titles and compiler listings. These directives must always start in the first column of the source line. The directive statements are not printed in the listing.</para>
+    <sect2>
+    <title>$PAGE</title>
+    <para>$PAGE causes a page eject in the compiler listing. When $PAGE is encountered, the rest of the line is ignored, and a page eject is queued. Note that a page eject is not performed immediately and will not be until a line of source text is encountered which must be listed. As a result, several $PAGE (also $TITLE and $SUBTITLE) requests can occur one after another, and only a single page eject will occur when a line of normal source text is finally found.</para>
+    </sect2>
+    <sect2>
+    <title>$TITLE and $SUBTITLE</title>
+    <para>The "$TITLE" directive specifies a program title line which is printed in the first line of the heading of every listing page. "$TITLE" may be followed by any text string to be used as a title. Title strings longer than 50 characters are truncated. "$SUBTITLE" is used to define a subtitle string and may have up to 60 characters. These directives can be used as often as desired to change the current page headings. Normally, a program will have a single title option at the very beginning of the source text, and subtitles will typically be used to name each major program section such as the global data declarations, each main procedure, etc.</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>A Sample Compilation Listing</title>
+    <para>As an aid in describing how to interpret the compilation listing, a small source program is shown below (Figure 1) ,  and the corresponding compilation listing is shown on next page (Figure 2). The program is designed to demonstrate most of the features of a compilation listing and deliberately includes errors. Refer to these two examples for the discussion that follows.</para>
+    <figure>
+      <title>Sample Source Program</title>
+      <programlisting>
+$TITLE DumpReal
+$SUBTITLE Global Definitions
+PROGRAM dumpreal;
+VAR
+    badvar: ^anotherbadvar;
+    i : integer;
+    hexc: ARRAY[0..15] OF char;
+    trix : RECORD
+            CASE boolean OF
+                true :(r: real);
+                false:(c: ARRAY[1..5] OF char)
+            END;
+$subtitle Procedure PROCWITHERRORS
+PROCEDURE procwitherrors;
+BEGIN
+    this demonstrates what error messages
+    look like;
+    END;
+$Subtitle Procedure HEXVAL
+PROCEDURE hexval(ch: char);
+    BEGIN
+    write(hexc[ord(ch) div 16], hexc[ord(ch) mod 16])
+    END;
+$SUBtitle M A I N L I N E
+BEGIN
+hexc:='0123456789ABCDEF';
+WHILE true DO
+    BEGIN
+    write('Enter real number: '); prompt;
+    readln(trix.r);
+    FOR i:=1 to 5 DO
+        BEGIN
+        hexval(trix.c[i]);
+        write(' ');
+        END;
+    writeln;
+    END
+END.
+</programlisting>
+    </figure>
+    <para>With the program in  figure  1 was compiled to produce the listing that follows using the command line:</para>
+    <screen>PASCAL &lt;DumpReal #20K</screen>
+    <para>The  command  line  initiates  compilation  of the program on a file called "DumpReal" giving  20K bytes of memory to the compiler.</para>
+    <figure>
+      <title>Sample Compilation Listing</title>
+      <programlisting>
+ Page   1  84/07/25 13:11:43  OS-9 Pascal - RS Version 02.00.00  DumpReal
+ STMT  PLOC LEV     Global Definitions
+-----+------+--+---------1---------2---------3---------4---------5---------6
+    3     0D  0 PROGRAM dumpreal;
+    3     0D  0 VAR
+    5     0D  0    badvar:  A anotherbadvar;
+    6    -2D  0    i : integer;
+    7    -4D  0    hexc : ARRAY[1..16] OF char;
+    8   -20D  0    trix  : RECORD
+    9   -20D  1            CASE boolean OF
+   10   -20D  2               true :(r: real);
+   11   -20D  2               false:(c: ARRAY[1..5] OF char)
+   12   -20D  2            END;
+</programlisting>
+    </figure>
+
+<programlisting>
+ Page   2  84/07/25 13:11:43  OS-9 Pascal - RS Version 02.00.00  DumpReal
+ STMT  PLOC LEV     Procedure PROCWITHERRORS
+-----+------+--+---------1---------2---------3---------4---------5---------6
+   14   -25D  0 PROCEDURE procwitherrors;
+         ****   ^104,117
+104: Identifier is not declared.
+117: Unsatisfied forward reference.
+*ERROR,  The following type-id's were assumed to be forward declared.
+ANOTHERR
+   15     0D  1 BEGIN
+   16     3   2    this demonstrates what error messages
+         ****         ^104         ^59  *SEE: 14
+ 59: Variable expected.
+104: Identifier is not declared.
+   17     8   2    look  like ;
+         ****               ^51  *SEE: 16
+ 51: ':=' expected.
+   18   11   2    END;
+</programlisting>
+
+<programlisting>
+ Page   3  84/07/25 13:11:43  OS-9 Pascal - RS Version 02.00.00  DumpReal
+ STMT  PLOC LEV    Procedure HEXVAL
+-----+------+--+---------1---------2---------3---------4---------5---------6
+   20     6   1 PROCEDURE hexvalfch: char);
+   21     9   1    BEGIN
+   22     3   2    write(hexc[(ord(ch) div 16)+1], hexc[(ord(ch) mod 16)+1])
+   23    54   2    END;
+</programlisting>
+
+<programlisting>
+ Page   4  84/07/25 13:11:43  OS-9 Pascal - RS Version 02.00.00  DumpReal
+ STMT  PLOC LEV     M A I N L I N E
+-----+------+--+---------1---------2---------3---------4---------5---------6
+   25     6   1 BEGIN
+   26     9   1 hexc:='0123456789ABCDEF':
+   27    15   1 WHILE true DO
+   28    23   2    BEGIN
+   29    26   2    write('Enter real number: '); prompt;
+   30    40   2    readln(trix.r);
+   31    51   2    FOR i:=1 to 5 DO
+   32    68   3       BEGIN
+   33    71   3       hexval(trix.c[i]);
+   34    90   3       write(' ');
+   35    99   3       END;
+   36   116   2    writeln;
+   37   122   2    END
+   38   125   2 END.
+</programlisting>
+
+<programlisting>
+ Page   5  84/07/25 13:11:43  OS-9 Pascal - RS Version 02.00.00  DumpReal
+ STMT  PLOC LEV     M A I N L I N E
+-----+------+--+---------1---------2---------3---------4---------5---------6
+PROC NAME       PSEC  PSIZE  LOCAL  STACK   CSEC  CSIZE
+   0 DUMPREAL      3    130     27     15      4     37
+   1 PROCWITH      1     12      0      7      2      0
+   2 HEXVAL        2     55      0     13      3      0
+                        197     27     35            37
+
+38 Lines of source code compiled with 5 errors found, see: 17
+
+
+ Actual Heap = 2661
+Actual Stack = 3706
+ Free Memory = 9581
+</programlisting>
+  </sect1>
+  <sect1>
+    <title>Listing Page Headings</title>
+    <para>A three line page header is printed at the top of every listing page. The word "Page" is followed by a page number, which is followed by the current system date and time. The date and time is read only once at the beginning of a compilation, and this single time stamp is used for the heading of each page thereafter. To the right of the time stamp is the release level. Always be sure that the release level corresponds to the user manual or other reference documents that you may be using.</para>
+    <para>To the right of the release level is the program title string which was specified by a $TITLE directive in the program (see page 2-8). Note how the title string in figure 2 is derived from the title directive in  figure  1.</para>
+    <para>The second line of  figure  2 is typical of the form of every page heading. The column titled, 'STMT', refers to the sequence number of the corresponding source line. Note that the first statement number is 3, because line numbers 1 and 2 of the source text in figure 1 contain title and subtitle options respectively which are never themselves printed.</para>
+    <para>The next column titled 'PLOC' refers either to the variable (data) location counter or to the P-code (program) location counter, depending  on whether  the  corresponding source line is a variable declaration statement or an executable program statement.</para>
+    <para>Source statement line number 6, for instance, shows that
+    the data location counter is currently at -2 when the line is
+    being compiled. The number is negative because storage is assigned
+    backwards from the stack pointer. Since the line  indicates the
+    global variable 'i'  is being defined, and it is an integer which
+    requires 2 bytes of storage, 'i' will be assigned to location -4 in
+    the global stack. Likewise, for line 7 of the program, the current
+    data location counter is at -4 from the assignment of variable 'i'
+    on the preceding line. The variable 'hexc' is being defined which is
+    a 16 element character array. Since character type elements require 1
+    byte of storage, each 'hexc' requires 16 bytes of storage total; thus,
+    'hexc' will be assigned to location -20. To find where the variable
+    'trix' is assigned, look at the listing for source statement 14;
+    'trix' is assigned to location -25. See Chapter 10 for more
+    information on Pascal memory management.</para>
+    <para>Pcode is assembled beginning at location zero for every
+    procedure. The 'write' call in line 22 then begins assembling
+    at P-code location 0 for the procedure. For source line 23 you
+    see that the termination code for the procedure begins at P-code
+    location 42. The importance of showing the P-code location is
+    for understanding the  run  time  error  messages.   When an error
+    occurs during the execution of a program, the procedure which caused
+    the error and, if it is known, the P-code location  within  the
+    procedure is reported. You can then easily find where within your
+    program that the run time error actually occurred. Numbers under the
+    'PLOC' column, which contain data location counter values, are always
+    followed by the letter 'D', and P-code location counter values are
+    always followed by a space character.</para>
+    <para>The next column titled 'LEV' represents the compiler's 'lexical'
+    level. The lexical level shows the nesting of control structures
+    (loops, etc.) within the program and is helpful for finding unbalanced
+    compound statements and declarations. Generally, those statements
+    which have the same lexical level number are at the save level
+    of nesting during the compilation scan of your program. Since the
+    compiler always prints the image of a line of source program before
+    it begins its scan of that line, the lexical numbers can sometimes
+    lag behind what you might think they should actually be. Due to the
+    number and complexity of conditions which cause the level number to
+    be incremented and decremented, the best advice is to simply look
+    at the numbers on your listings and gain a feel for how they move
+    up and down.</para>
+    <para>A few spaces to the right of the title 'LEV', on the second header line, is the subtitle string. This is defined by the "$SUBTITLE" directive - see page 2-8.</para>
+    <para>The  third  line of each page heading is used to mark column boundaries as a  visual  aid. After the first 16 characters, which marks the required prefix of every line of source listing, is a scale showing the position of every 10th column of source text. If a parameter is used to define a short line width, then only that part of the scale which contains complete groups of 10 characters is shown. For example, if the line width is set to 72 characters, then the scale will show 7 groups of 10 characters.</para>
+  </sect1>
+  <sect1>
+    <title>Output Files Created by the Compiler</title>
+    <para>The Pascal compiler automatically creates two files during the compilation phase.  They are:</para>
+    <para>PCODEF - the compiled P-code version of the Pascal program</para>
+    <para>PROCTAB - a compiler work file used to minimize memory requirements.</para>
+    <para>Unless command line parameters are used to specify alternate file names, the compiler will create files having these names in the current working data directory (usually the "PASCAL" directory or disk). You may delete the PROCTAB file any time after a compilation is completed if you wish, because it has no use outside of a compilation execution. When the compiler begins execution, it automatically deletes old PCODEF and PROCTAB files if they already exist. The deletion will normally not cause problems provided you either copy or rename any PCODEF files you want to keep after you have successfully compiled and tested a program.</para>
+  </sect1>
+  <sect1>
+    <title>Error Messages in Program Listings</title>
+    <para>There are two types of error messages. The first of which is
+    shown in figure 2 after the listing of source line 14. The compiler
+    displays a line beginning with four asterisks followed by an up arrow
+    which indicates within a character position or two where the compiler
+    was scanning when it realized that an error had occurred. Following
+    the up arrow, the compiler prints the error number(s) for the
+    error(s) found. On the following line(s) the compiler will print
+    the full English  error  message text if it is able to open the
+    file <filename>PascalERRS</filename>. This particular error also
+    generated the second type of  error  message. Specifically, the
+    message shown indicates that at this point in scanning the source
+    program, the compiler realized that the identifier called 'ANOTHERB'
+    (actually the identifier is ANOTHERBADVAR, but the compiler recognizes
+    only the first 8 characters of any identifier name) was previously
+    declared to be a forward reference to an identifier which was not
+    found by the time it was required to be found.</para>
+    <para>A more complete example of an error message is shown following
+    the listing of source line 16. Here two errors were discovered
+    for the source line, and the up arrows and error numbers appear as
+    described above. Also, since this was not the first error message for
+    the program, the text '*SEE: 14* is added as a programmer aid. The
+    'SEE' tells you that the last  error  message previous to this current
+    message occurred after the listing of source line 14. If you look at
+    the end of figure  2,  you can see a message indicating that 4 errors
+    were found in the source program, and that the last message appeared
+    after the listing of source line 17. The  error message after source
+    line 17 points you to the previous error message and that message
+    points you to its preceding  error  message and so forth. You can
+    quickly find all the  error  messages in your program without going
+    through the whole listing. Error messages of the second type always
+    occur with error messages of the first type, so you will be able to
+    find all  error  messages by following the backward list.</para>
+
+    <para>Up to 9 error messages will be reported for any one line of
+    source code. If more than 9 errors are found, a message is triggered
+    that indicates that too many errors were found for the line. Sometimes
+    one  error  will trigger other errors in the program. For example,
+    if a variable declaration is being scanned and the reserved word
+    'PROCEDURE' is encountered, the compiler may get temporarily
+    confused as to what it should really be scanning and multiple
+    errors may be triggered as the compiler attempts to get on track
+    again. Therefore, correcting one error may get  rid  of several
+    other  error  messages.</para>
+    <para>If the listing of the source program is inhibited by compiler option(s),  only  source  lines having errors and the corresponding error messages will be listed to let you perform "error checking" of long  source programs without having to print the entire program.</para>
+  </sect1>
+  <sect1>
+    <title>The Compilation Statistics Report</title>
+    <para>The compilation statistics report is displayed after the last procedure. It shows memory usage by the compiler and is not related to memory requirements of the program compiled. The information in the report allows experienced programmers to optionally adjust the compiler's memory usage to decrease memory requirements or to permit the compiler to handle extremely large programs.</para>
+  </sect1>
+  <sect1>
+    <title>The Procedure Statistics Table</title>
+    <para>The  procedure  statistics  table  is  always displayed after a compilation.  It is not affected by the line width parameter option. The  procedure  table gives important information about the   program and variable storage requirements of each procedure compiled   and is helpful when interpreting any run time error messages. The procedure statistics table looks like the following example.</para>
+    <screen>
+PROC NAME       PSEC  PSIZE  LOCAL  STACK   CSEC  CSIZE
+   0 DUMPREAL      3    130     27     15      4     37
+   1 PROCWITH      1     12      0      7      2      0
+   2 HEXVAL        2     55      0     13      3      0
+                        197     27     35            37
+</screen>
+    <para>The information presented in each column is:</para>
+    <para>PROC is the procedure number assigned by the compiler. When runtime  errors  occur, they will be identified by this number. Procedure number zero always refers to the outer code block - the main program itself.</para>
+    <para>NAME is the first eight characters of the procedure name.</para>
+    <para>PSEC is the sector number within the P-code file where the P-code for each procedure begins. The PSEC value is used for compiler maintenance and is not of concern to the average programmer.</para>
+    <para>PSIZE gives the number of bytes of P-code instructions generated for the procedure. If a program is to be run with the PascalN interpreter, the total of the PSIZE column and the total of the CSIZE  column (see below) given on the last line of the procedure table is the number of bytes of memory that will be required to store the program.</para>
+    <para>CSEC is the starting sector of the string constant block of the P-code file,  CSEC is also used for compiler maintenance.</para>
+    <para>CSIZE is the length (in bytes) of string constants used by the procedure. A string constant is any sequence of 2 or more characters enclosed within two single quote marks.</para>
+    <para>LOCAL and STACK columns give the number of bytes that the compiler has calculated will be required for each procedure's variable storage (e.g., local and extended stack size). See Chapter 10 on Pascal Storage Management  for more information on how this data is used.</para>
+  </sect1>
+</chapter>

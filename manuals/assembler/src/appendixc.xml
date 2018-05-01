@@ -17,13 +17,13 @@ examples. They are:
       <varlistentry>
         <term>PIA</term>
         <listitem>
-          <para>-Paralle1 interface driver.</para>
+          <para>-Parallel interface driver.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>P</term>
         <listitem>
-          <para>-Para11el interface descriptor.</para>
+          <para>-Parallel interface descriptor.</para>
         </listitem>
       </varlistentry>
     </variablelist>

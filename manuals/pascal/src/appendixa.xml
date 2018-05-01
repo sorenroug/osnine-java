@@ -1,0 +1,1589 @@
+<appendix xmlns="http://docbook.org/ns/docbook">
+<title>Error Message Descriptions</title>
+
+    <para>Following is the text of OS-9 Pascal error messages. Most messages consist of a number, followed by a colon, followed by a description. Those messages which have a number followed by an asterisk instead of a colon should not occur in Version 02.00.00 of the compiler but should not be changed either. Following the text of many of the error messages is a brief description of what the compiler was scanning or looking for which caused the error to occur, this will in many cases aid the user in correcting his program. in a few instances, further information is also given which indicates the most likely error and/or correction associated with the message.</para>
+
+<variablelist spacing="compact">
+<?dbfo list-presentation="blocks"?>
+<varlistentry>
+  <term>1: Simple type expected.</term>
+  <listitem>
+    <para>*When looking for a simple type, a valid starting token could not be found, i.e. a left parenthesis, plus sign, minus sign, integer constant, real constant, string constant, or an identifier.</para>
+    <para>*When looking for a simple type, an identifier was found which has no valid type information yet determined.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>2: Identifier expected.</term>
+  <listitem>
+    <para>When scanning an enumeration declaration, the identifier found was not an identifier as part of the required identifier list.</para>
+    <para>When scanning a field list within a record, a comma was found, but the token after was not an identifier.</para>
+    <para>*With a record declaration, CASE was found, but the token after is not an identifier.</para>
+    <para>When scanning a type declaration, up arrow was found, but the token after is not an identifier.</para>
+    <para>When scanning CONST declarations, expected to find an identifier being declared.</para>
+    <para>When scanning TYPE declarations, expected to find an identifier being declared.</para>
+    <para>When scanning VAR declarations, expected to find an identifier begin declared.</para>
+    <para>When scanning a procedure or function parameter list, found PROCEDURE or FUNCTION, but the token after is not an identifier.</para>
+    <para>When scanning a function declaration, ":" was found, but it was not followed identifier naming the type of result.</para>
+    <para>When scanning a procedure or function parameter list, found a list of identifiers followed by a colon, but the token after is not an identifier naming type of identifier(s).</para>
+    <para>*PROCEDURE or FUNCTION is not followed by an identifier giving routine name.</para>
+    <para>*A period is found indicating reference to a field within a record, but the period is not followed by an identifier naming the field.</para>
+    <para>When scanning a parameter list, expected to find an identifier naming a parameter.</para>
+    <para>*A procedure or function is being passed by name, compiler restriction does not allow this.</para>
+    <para>*FOR is not followed by an identifier naming the control variable.</para>
+    <para>*WITH is not followed by an identifier naming the record.</para>
+    <para>*PROGRAM is not followed by an identifier naming the program.</para>
+    <para>When scanning the list of file names after PROGRAM, an identifier naming a file was expected.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-An extra comma was found in a list.</para>
+    <para>-A reserved word is used as a variable name.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>3: PROGRAM expected.</term>
+  <listitem>
+    <para>*PROGRAM must be the first token in a program outside of any preceding comments.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>4: Right parenthesis expected.</term>
+  <listitem>
+    <para>*Expected a right parenthesis here to balance a previous left parenthesis.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>5: Colon expected.</term>
+  <listitem>
+    <para>When scanning a field list within a record declaration, expected a colon to terminate list.</para>
+    <para>When scanning a case selection either in a statement or in a record declaration, expected a colon to terminate selection list.</para>
+    <para>When scanning VAR declarations, expected a colon to terminate a list of identifiers being declared.</para>
+    <para>*Label number preceding a statement is not terminated by a colon.</para>
+    <para>When scanning a function declaration, expected a colon terminator to introduce the function type result.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>6: Unexpected symbol found.</term>
+  <listitem>
+    <para>*Token scanned is not a valid next token for the type of scanning being performed. This is a sort of catch all error for whenever the scanned token doesn't fall within the set of tokens that the scanner knows how to handle next. Frequently, this error is preceded by other the error numbers, in this case, the error usually means that due to the other errors for this line the scanner has lost track of what should be happening next in the sentence. If there are no preceding errors for this sentence, then the token is simply invalid for syntax of the statement at this point.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-A semicolon precedes ELSE in an IF</para>
+    <para>-This or previous statement is missing a required semicolon;</para>
+    <para>-An extra END is encountered.</para>
+    <para>-DO is used instead of BEGIN.</para>
+    <para>-Spaces are used within an identifier name.</para>
+    <para>-A keyword has been misspelled.</para>
+    <para>-A comment is malformed.</para>
+    <para>-A string or character constant is malformed.</para>
+    <para>-A malformed double character operator is found such as =&gt; instead of &gt;= or = instead of := or one or more spaces or end of lines occurs between the first and second character.</para>
+    <para>-A comma is missing between elements in a list.</para>
+    <para>-An equal sign is used instead of a colon for declaring a record within a record.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>7: Parameter list expected.</term>
+  <listitem>
+    <para>When scanning a procedure or function declaration, an unexpected token was found which is not a left parenthesis which would introduce a parameter list, or the token is not one which would validly terminate the declaration.</para>
+    <para>When scanning a statement, found a call to a procedure or function which requires a parameter list, but no list is found. When scanning a parameter list, found a semicolon which separates parameter items, but the next token is not a valid parameter list item.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>8: OF expected.</term>
+  <listitem>
+    <para>*Within a record declaration, CASE followed by a tagfield is not followed by OF.</para>
+    <para>*While scanning a type declaration, ARRAY followed by bounds is not followed by OF.</para>
+    <para>*While scanning a type declaration, SET is not followed by OF.</para>
+    <para>*While scanning a type declaration, FILE is not followed by OF.</para>
+    <para>*While scanning a statement, CASE followed by a boolean expression is not followed by OF.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>9: Left parenthesis expected.</term>
+  <listitem>
+    <para>When scanning a record declaration with a CASE part, a selection is found followed by a colon but is not followed by a left parenthesis which introduces the fields for the selection(s).</para>
+    <para>When scanning a statement, a procedure or function call is found which requires a parameter list, but no left parenthesis was found which introduces the parameter list.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>10: Type expected.</term>
+  <listitem>
+    <para>*A type declaration was expected and an identifier was found for which no type information is known.</para>
+    <para>*A type declaration was expected and did not find a valid first token, i.e. an up arrow, PACKED, ARRAY, RECORD, SET, FILE, a left parenthesis, a plus sign, a minus sign, an integer constant, a real constant, a string constant, or an identifier.</para>
+    <para>When scanning a type declaration, found PACKED not followed by ARRAY, RECORD, SET, or FILE.</para>
+    <para>When scanning a function declaration, found a colon introducing the result type, but no type or an unknown type is found following the colon.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-Using a reserved word as a variable name.</para>
+    <para>-Using a colon instead of equal sign in a type declaration.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>11: Left bracket expected.</term>
+  <listitem>
+    <para>When scanning a type declaration/ found ARRAY but not a left bracket introducing the array bounds.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>12: Right bracket expected.</term>
+  <listitem>
+    <para>*Expected a right bracket to match a previously found left bracket.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>13: END expected.</term>
+  <listitem>
+    <para>When scanning a type declaration, found RECORD but not terminating END.</para>
+    <para>When scanning a case statement, cannot find terminating END.</para>
+    <para>*BEGIN is missing its terminating END.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>14: Semicolon expected.</term>
+  <listitem>
+    <para>*Looking for a semicolon terminator and didn't find one here.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>15: Integer expected.</term>
+  <listitem>
+    <para>When scanning a label declaration, expected an integer label number.</para>
+    <para>When scanning a WRITE or WRITELN call, found a colon introducing width or number of decimal places constraint which is not followed by an integer.</para>
+    <para>*Argument of ORD call or CHR call is not appropriate integer.</para>
+    <para>*Second and third parameter of FIELDGET call is not an integer expression.</para>
+    <para>*Second, third, and fourth parameter of FIELDPUT call is not an integer expression.</para>
+    <para>*Argument of SYSERR is not an integer expression.</para>
+    <para>*GOTO is not followed by an integer label number.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>16: Equal sign expected.</term>
+  <listitem>
+    <para>When scanning a CONST declaration, identifier is not followed by an equal sign.</para>
+    <para>When scanning a type declaration, identifier is not followed by an equal sign.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>17: BEGIN expected.</term>
+  <listitem>
+    <para>*A declaration part was scanned which is not part of an empty outer block, but the declaration part is not followed by BEGIN.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>18: Invalid declaration part.</term>
+  <listitem>
+    <para>*A declaration part was scanned, but it is not followed by BEGIN or a program terminating period.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>19: Field list expected.</term>
+  <listitem>
+    <para>When scanning a record declaration, RECORD is not followed by an identifier introducing a field list or CASE.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>20: Comma expected.</term>
+  <listitem>
+    <para>*For this procedure or function call another parameter is expected, and the separating comma is not found.</para>
+    <para>When scanning the list of file names following PROGRAM, the last file name is not followed by a comma or eight parenthesis.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>21: Program terminating period expected here.</term>
+  <listitem>
+    <para>*Last token in a Pascal program must be a period after the final END.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>22: Invalid ASCII character.</term>
+  <listitem>
+    <para>*A character was found in the program text outside of a string constant which is numerically less than a space character or numerically greater than a tilde character.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>23: Expected a hex digit.</term>
+  <listitem>
+    <para>When scanning a hexadecimal number, found the dollar sign which indicates
+    the start of a hexadecimal number, but the current character being scanned should
+    be and is not a hexadecimal digit (O through 9, 'A' through 'F', or 'a' through 'f').</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>24: Double period expected.</term>
+  <listitem>
+    <para>*Subrange simple type is being scanned, a double period is expected to separate low range from high range.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>25: *COMPILER ERROR* Standard procedure number unknown.</term>
+  <listitem>
+    <para>*A code generator routine in the compiler was passed an invalid number. Check system for memory problems first, then check for disk problems, then try using a fresh version of the compiler from a backup copy of the disk. If problem still persists, consult your nearest Radio Shack store.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>26: Comma or colon expected.</term>
+  <listitem>
+    <para>When scanning a record declaration, found a fieldlist, but the next token in not a comma to separate identifiers or a colon to terminate identifier list.</para>
+    <para>When scanning a parameter list, found a list of identifiers, but the next token is not a comma to separate identifiers or a colon to terminate identifier list.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>27: Constant is out of range.</term>
+  <listitem>
+    <para>*Compile time check of allowable range for constant shows that the constant is out of range.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>28: Identifier, VAR, PROCEDURE, or FUNCTION expected.</term>
+  <listitem>
+    <para>When scanning a procedure or function parameter list, didn't find a valid next token.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>29: PROCEDURE or FUNCTION not allowed here (compiler restriction).</term>
+  <listitem>
+    <para>When scanning a procedure or function parameter list, found attempt to pass a procedure or function by name, this version of the compiler does not allow this.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>30: Error in real constant, digit expected.</term>
+  <listitem>
+    <para>*A string of digits was found followed by a period (but not a double period), but no digit was found after the period, this is an invalid real number according to the language spec. You may need to put a zero after the period.</para>
+    <para>* A real number was found which ends with an "e" or "E" followed by an optional sign but not followed by a digit. After the "E" must come an integer exponent value.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>31: String constant must be contained on a single source line.</term>
+  <listitem>
+    <para>*An opening single quote character was found which indicates the start of a string constant, but the matching ending single quote character was not found on the same line of source. All strings must be fully contained on a single line.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>32: Integer constant exceeds range.</term>
+  <listitem>
+    <para>*An integer constant was scanned which has a value greater than 32767.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>33: Too many nested scopes of identifiers (compiler restriction).</term>
+  <listitem>
+    <para>When scanning a type declaration, found RECORD, but the symbol table cannot be further nested.</para>
+    <para>When scanning a procedure or function declaration, the symbol table cannot be further nested.</para>
+    <para>When scanning a WITH statement, the symbol table cannot be further nested.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>34: Too many nested procedures and/or functions (compiler restriction).</term>
+  <listitem>
+    <para>*PROCEDURE or FUNCTION found, but the symbol table cannot be further nested.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>35: Invalid scope of name due to previous use.</term>
+  <listitem>
+    <para>*The name in question has been previously used within the same block. An example of this is if a name was used as a constant in the outer program and the constant referenced within a subprocedure. Then a new type was declared using the same name as a member of a subrange type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>36: Too many errors detected for this source line.</term>
+  <listitem>
+    <para>*Ten or more errors were detected during the scanning of this source line. All errors past the ninth are ignored. Usually when this many errors are detected for a single line of source, it is because some other error has triggered secondary errors.
+    If this is the case, correcting the primary error will get rid of the secondary errors.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>37: Division by zero attempted.</term>
+  <listitem>
+    <para>*Either a compile time or run time process determined that a division by zero is being attempted.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>38: Constant value must be greater than zero.</term>
+  <listitem>
+    <para>*An array reference using the &lt;expression&gt; FOR &lt;count&gt; language extension is scanned but &lt;count&gt; is zero or negative - it must be greater than or equal to one.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>39: Element expression is out of range.</term>
+  <listitem>
+    <para>*An element of a set was scanned which is found to have a value less than zero or greater than 255.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>40; SHORTIO called with record size out of range.</term>
+  <listitem>
+    <para>*Program called the standard procedure SHORTIO, but the value of the record size parameter is less than zero, or greater than the declared record size of the file. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>41: FILESIZE called with file not open.</term>
+  <listitem>
+    <para>*Program called the standard procedure FILESIZE, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>42: OS-9 error on FILESIZE call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program called the standard procedure FILESIZE, and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>43: Undefined FORWARD procedures or functions found.</term>
+  <listitem>
+    <para>*A procedure or function was declared with the attribute FORWARD, but the body of the procedure or function was not found by the time is was required to be found.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>44: Unimplemented file function in support package.</term>
+  <listitem>
+    <para>*You are running a program using either the "Support1" or "Support2" support modules which contain subsets of the full support module, and one of the missing support routines is needed. Cause the correct support module to be used as described in the implementation guide, and rerun the program.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>45: IOABORT called with TRUE argument value, previous error not cleared.</term>
+  <listitem>
+    <para>*Once IOABORT has been called with a FALSE value, the IO errors must be cleared by a call to IORESULT. The result buffer must be cleared before attempting to call IOABORT with a TRUE value.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>46: Case selector is out of range of base type.</term>
+  <listitem>
+    <para>*Within a TYPE declaration a variant record entry has been declared with a value number which is not in range of the record case determinator type. An example is to declare a record with a variant record whose selector is a subrange. One of the possible record formats then uses a label which is out of the selector variable's subrange.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>47: Label not in range of 0 thru 9999.</term>
+  <listitem>
+    <para>A label has been declared which is not in the range of 0 thru 9999.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>48: Can't use NIL in a CONST declaration.</term>
+  <listitem>
+    <para>NIL is a reserved word which is used in reference to pointers bat does not have a value which may be assigned within a CONST declaration.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>49: Defined function is not assigned a value.</term>
+  <listitem>
+    <para>When a function is declared, the name of the function must be the target of an assignment within the body of the function. All functions must return a value.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>50: Constant expected.</term>
+  <listitem>
+    <para>*Looking for a constant, but did not find a valid token to start a constant, i.e. a plus sign / minus sign, integer constant, real constant, string constant, or an identifier.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-Three periods in a row are found where a double period is intended.</para>
+    <para>-Finding a list when an array index specification is needed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>51: ':=' expected.</term>
+  <listitem>
+    <para>*A statement is being scanned, an identifier was found which is not a procedure or function name, therefore, it must be an assignment statement, but the next token is not ':='.</para>
+    <para>*A FOR statement is begin scanned, FOR was followed by an identifier name but was not further followed by ':='.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-An equal sign is found where := is intended.</para>
+    <para>-An identifier is misspelled.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>52: THEN expected.</term>
+  <listitem>
+    <para>*An IF statement is being scanned. IF was followed by a boolean expression but the next token is not THEN.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>53: UNTIL expected.</term>
+  <listitem>
+    <para>*A repeat statement is being scanned, REPEAT followed by a statement list was found, but the terminating UNTIL was not found.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>54: DO expected.</term>
+  <listitem>
+    <para>*A WHILE statement is being scanned. WHILE was followed by a boolean expression but the next token is not DO.</para>
+    <para>*A FOR statement is being scanned. FOR &lt;ident&gt;:=&lt;expr&gt;</para>
+    <para>TO/DOWNTO &lt;expr&gt; was found, but the next token is not DO.</para>
+    <para>*A WITH statement is being scanned. WITH was followed by an identifier, but the next token is not DO.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>55: TO or DOWNTO expected.</term>
+  <listitem>
+    <para>*A FOR statement is begin scanned. FOR &lt;ident&gt;:=&lt;expr&gt; was found, but the next token is not TO or DOWNTO.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>56: Duplicate identifier in PROGRAM statement parameters.</term>
+  <listitem>
+    <para>Within the PROGRAM statement parameters list an identifier has been used more than once.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>57: Field width parameter negative.</term>
+  <listitem>
+    <para>When printing variables using WRITE or WRITELN a field width parameter may be used to specify the number of columns in which to print the variable. The width parameter may not be negative.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>58: Factor expected.</term>
+  <listitem>
+    <para>*Looking for a factor but didn't find a valid first token, i.e.</para>
+    <para>an integer constant, real constant, string constant, identifier, left parenthesis, Left bracket, or NOT.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-A real constant is intended but there are no digits before the decimal point.</para>
+    <para>-A malformed string constant is found.</para>
+    <para>-A malformed double character operator is found (see error message 6 for examples).</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>59: Variable expected.</term>
+  <listitem>
+    <para>When scanning a sentence, a variable reference followed by up arrow, period, or left bracket was expected.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>60: Attempted to load or store the value of an address.</term>
+  <listitem>
+    <para>*While attempting to generate a pcode instruction, a form of object reference was found which would require the loading or storing of an address as a value.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>61: Expected a file name.</term>
+  <listitem>
+    <para>*A procedure or function call is being scanned which requires as a parameter the name of a file here.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>62: Invalid ordering of declaration parts.</term>
+  <listitem>
+    <para>Declarations are required to be in the standard order of LABEL, CONST, TYPE, VAR, and PROCEDURES or FUNCTIONS.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>63: OS-9 error on file close, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program has either implicitly or explicitly closed a file and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>64: Read called with EOF true.</term>
+  <listitem>
+    <para>*Program called the standard procedure READ, but the file pointer is at EOF. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>65: Read called with file not in inspection mode.</term>
+  <listitem>
+    <para>*Program called the standard procedure READ, but the file is opened for output only. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>66: Read called with file not open.</term>
+  <listitem>
+    <para>*Program called the standard procedure READ, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>67: OS-9 error on file read. OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program is attempting to read a file, but OS-9 detected an error. The I/O abort flag is enabled, so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>68: GET attempted on short record.</term>
+  <listitem>
+    <para>*A GET is issued against a file of fixed length records, but the record found does not contain enough characters. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>69: GET called with EOF true.</term>
+  <listitem>
+    <para>*Program called the standard procedure GET, but the file pointer is at EOF, and the preceding operation to the file was not a call to REPOSITION. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>70: GET called with file not in inspection mode.</term>
+  <listitem>
+    <para>*Program called the standard procedure GET, but the file is opened for output only. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>71: GET called with file not open.</term>
+  <listitem>
+    <para>*Program called the standard procedure GET, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>72: Multiple decimal points encountered during READ of real number.</term>
+  <listitem>
+    <para>*Program called the standard procedure READ to get a real number, but two decimal points were found. If the I/O abort flag is enabled for the file, the program will abort. Check the format of the data being read for bad characters or missing terminator (i.e. a space) between numbers.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>73: Digit expected during READ or real number.</term>
+  <listitem>
+    <para>*Program called the standard procedure READ to yet a real number, but at some point a digit was required and not found. Check the format of the data being read for bad characters or for a number with no digits before 'E' or no digits after 'E' with its optional sign.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>74: Floating point overflow during READ of real number.</term>
+  <listitem>
+    <para>*Program called the standard procedure READ to get a real number, but the number is too large (bigger than approximately 1E37).</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>75: WRITEEOF called with record number out of range.</term>
+  <listitem>
+    <para>*Program called the standard procedure WRITEEOF, but the current record number is too big (bigger than approximately 2**31).</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>76: OS-9 error on WRITEEOF call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program called standard procedure WRITEEOF, and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>77: WRITEEOF called with file in inspection mode.</term>
+  <listitem>
+    <para>*Program called the standard procedure WRITEEOF, but the file is opened for input only. if the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>78: Invalid character found for READ of integer.</term>
+  <listitem>
+    <para>*Program called standard procedure READ to read an integer and an unrecognizable character was found (i.e. not an optional leading plus or minus sign followed by a string of digits). If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>79: Integer overflow for READ of integer.</term>
+  <listitem>
+    <para>*Program called standard procedure READ to read an integer, but the number is too large (i.e. not in the closed interval [-32768, +32767]. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>80: SEEKEOF called with invalid file size.</term>
+  <listitem>
+    <para>*Program called standard procedure SEEKEOF, but the file size in bytes is not an integral multiple of the record length for the file. That is, the file does not contain proper fixed length records as the last record in the file is too short. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>81: OS-9 error on SEEKEOF call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program called standard procedure SEEKEOF and OS-9 detected an error. The I/O abort flag is enabled so the program aborts, and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>82: SEEKEOF called with file not open.</term>
+  <listitem>
+    <para>*Program called standard procedure SEEKEOF, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>83: OS-9 error on file seek, OS-9 error number follows.</term>
+  <listitem>
+    <para>*program called standard procedure REPOSITION and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>84: REPOSITION called with record number out of range.</term>
+  <listitem>
+    <para>*Program called standard procedure REPOSITION, but the destination record number does not exist in the file. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>85: GETINFO or PUTINFO called with file not open.</term>
+  <listitem>
+    <para>*Program called standard procedure GETINFO or PUTINFO, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>86: REPOSITION called with file not open.</term>
+  <listitem>
+    <para>*Program called standard procedure REPOSITION, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>87: OS-9 error on GETINFO or PUTINFO call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program called standard procedure GETINFO or PUTINFO and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 euro: is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>88: POSITION called with file not open.</term>
+  <listitem>
+    <para>*Program called standard function POSITION, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>89: WRITEEOF called with file not open.</term>
+  <listitem>
+    <para>*Program called standard procedure WRITEEOF, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>90* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>91: INTERACTIVE called with file not open.</term>
+  <listitem>
+    <para>*Program called standard procedure INTERACTIVE, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>92: OS-9 error on file write, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program is attempting to write a file but OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>93: PUT called with EOF false.</term>
+  <listitem>
+    <para>*Program called standard procedure PUT but the file pointer is not currently at EOF and the preceding operation to the file was not a call to REPOSITION. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>94: PUT called with file not in generate mode.</term>
+  <listitem>
+    <para>*Program called the standard procedure PUT, but the file is opened for input only. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>95: PUT called with file not open.</term>
+  <listitem>
+    <para>*Program called the standard procedure PUT, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>96: OS-9 error on status call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program has either explicitly or implicitly done a get or put status system call and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>97: SHORTIO called with file not open.</term>
+  <listitem>
+    <para>*Program called standard procedure SHORTIO, but the file has not been opened. If the I/O abort flag is enabled for the file, the program will abort.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>98: OS-9 error on file open, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program has either explicitly or implicitly attempted to open a file, and OS-9 detected an error. The I/O abort flag is enabled / so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>99: OS-9 error on file rewind, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program has implicitly attempted to rewind a file, i.e. it has issued a RESET, REWRITE, or UPDATE call to a file which is already opened and did not supply a new file name, and OS-9 detected an error. The I/O abort flag is enabled so the program aborts and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>100: String or character array expected.</term>
+  <listitem>
+    <para>*The following standard procedures require a string or character array as their second arguments: RESET, REWRITE, UPDATE.</para>
+    <para>*The following standard procedures require a string or character array as their argument: SHELL, CNVTREAL.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>101: Identifier is already declared.</term>
+  <listitem>
+    <para>*A new name is being declared, but the name already has been declared.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-An identifier is misspelled.</para>
+    <para>-An identifier is being used both as a simple type and as an enumeration identifier.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>102: Low bound exceeds high bound.</term>
+  <listitem>
+    <para>When scanning a subrange and the low bound of the range is found to be numerically higher than the high bound.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>103: Identifier is not of the appropriate class.</term>
+  <listitem>
+    <para>*The identifier named is does not have valid attributes for use here.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-A string or character constant is malformed.</para>
+    <para>-Previous errors were found in the declaration of the identifier.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>104: Identifier is not declared.</term>
+  <listitem>
+    <para>*The identifier found has not been previously defined and this is not a forward pointer declaration.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-An identifier is misspelled.</para>
+    <para>-A keyword is being used as an identifier name.</para>
+    <para>-A string or character constant is malformed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>105: Sign is not allowed here.</term>
+  <listitem>
+    <para>*When looking for a constant, a sign followed by an identifier name was found, but the identifier is not equivalent to a real or integer constant.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>106: A number is expected.</term>
+  <listitem>
+    <para>*When looking for a constant, a non-string was found which does not resolve to a numeric value.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>107: Incompatible subrange types.</term>
+  <listitem>
+    <para>When scanning a simple type, found a subrange* but the token to the right of the '..' is not compatible with the token to the left.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>108: FILE is not allowed here.</term>
+  <listitem>
+    <para>When scanning a type declaration, found a pointer to a file. Pointers to files are invalid.</para>
+    <para>When scanning a type declaration, found FILE OF FILE. Files of file are invalid.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>109: Type must not be real.</term>
+  <listitem>
+    <para>When scanning a subrange declaration,found a real range constraint. Only integer ranges are allowed.</para>
+    <para>When scanning a case discriminant (tagfield identifier), found a real-type identifier.</para>
+    <para>When scanning array declaration, found ARRAY [ REAL ].</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>110: Tagfield must be a scalar or subrange.</term>
+  <listitem>
+    <para>When scanning a case discriminant (tagfield) identifier, found an identifier which was not a scalar-type or subrange-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>111: Incompatible with tagfield type.</term>
+  <listitem>
+    <para>When scanning a case selection list, the type of the selection value is Incompatible with the type of the case discriminant (tagfield).</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>112: Unimplemented Support Package function.</term>
+  <listitem>
+    <para>*The version of the Support Package which is in memory is not the version required for running this program. For example, your program may require floating point arithmetic, and the version of the Support Package which was either found in memory or which was loaded into memory does not support floating point arithmetic. There are three versions of the support package supplied. Either you should unlink the version of Support which is currently loaded in memory and load the required version before re-running this program or, if Support is not currently loaded into memory, you should cause the required version of the support package to have the file name "SUPPORT" in the current execution directory before re-running this program.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>113: Index type must be a scalar or a subrange.</term>
+  <listitem>
+    <para>When scanning an array bounds declaration, the type of the bound given is not a scalar-type or a subrange-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>114: Base type must not be real.</term>
+  <listitem>
+    <para>When scanning a set type declaration, found SET OF REAL.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>115: Base type must be a scalar or a subrange.</term>
+  <listitem>
+    <para>When scanning a set type declaration, the type of the set being declared is not a scalar-type or a subrange-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>116: Error in type of standard procedure parameter.</term>
+  <listitem>
+    <para>When scanning a call of a standard routine, the parameter found is not a valid type. See the user manual section on standard functions and procedures for a description of valid parameters.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>117: Unsatisfied forward reference.</term>
+  <listitem>
+    <para>*The list of identifiers following were previously declared to be forward but their actual declarations were not found.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>118: Machine code calls pcode but pcode doesn't exist.</term>
+  <listitem>
+    <para>*A native code routine erroneously calls a routine that is supposed to exist in pcode form but the pcode routine cannot be found.</para>
+    <para>**Usually this error is caused by partially translating a program, making changes to the program, and then doing a full translation on the program. During the first translation a routine was called by one of the translated routines which existed in pcode form. During the second translation the referenced routine was also converted to machine code but the first module still thinks it exists in pcode form.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>119: Procedure was declared FORWARD, repetition of parameter list not allowed.</term>
+  <listitem>
+    <para>When scanning a procedure declaration and found a left parenthesis which introduces a parameter list but the routine was previously declared as forward and the previous declaration is the only place the the parameter list can be declared.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>120: Function result type must be a scalar, a subrange, or a pointer.</term>
+  <listitem>
+    <para>When scanning a function declaration and a colon was found introducing a type for the function result but the token following the colon is not a scalar-type or a subrange-type, or a pointer-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>121: FILE parameter cannot be passed by value.</term>
+  <listitem>
+    <para>When scanning a procedure or function parameter list and encountered attempt to pass a file by value, files can only be passed by name.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>122: Function was declared forward, repetition of parameter list is not allowed.</term>
+  <listitem>
+    <para>When scanning a function declaration and encountered a left parenthesis which introduces a parameter list but the function was previously declared as forward and the previous declaration is the only place that the parameter list can appear.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>123: Missing result type in FUNCTION declaration.</term>
+  <listitem>
+    <para>When scanning a function declaration and did not find a colon which introduces the result type of the function.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>124: F-format allowed for real values only.</term>
+  <listitem>
+    <para>When scanning parameter list for WRITE or WRITELN call and found extraneous colon introducing a decimal width constraint but such a constraint is valid only for printing a real value and the item being printed is not real-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>125: Not enough parameters given.</term>
+  <listitem>
+    <para>When scanning a call to READ or WRITE and no parameters are given, either give a file name and/or a list of items or use READLN or WRITELN.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>126: Number of parameters does not agree with the declaration.</term>
+  <listitem>
+    <para>When scanning a procedure or function call and the number of parameters given does not agree with the declaration. For user routines look at the previous declaration. For standard routines see the section in the user manual describing standard procedures and functions.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>127: Pcode file was produced by wrong series of compiler.</term>
+  <listitem>
+    <para>*The pcode file was produced by a compiler who's release level was not compatible with the current support package or interpreter. In general Pascal programs should be run with the support packages and/or interpreters which were the current versions when the program was compiled.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>128: Result type of parameter function does not agree with its declaration.</term>
+  <listitem>
+    <para>when scanning a procedure or function call and the parameter being passed is a function which does not have the correct result type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>129: Operands are of Incompatible types.</term>
+  <listitem>
+    <para>*Left argument of IN operator is not compatible with the right argument.</para>
+    <para>*Left argument of a relational operator is not compatible with the right argument.</para>
+    <para>*Left argument of the ':=' operator is not compatible with the right argument.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-Attempting to assign a real result to an integer (use TRUNC or ROUND).</para>
+    <para>-Using a slash character instead of DIV.</para>
+    <para>-Using a string constant which is not the exact size required.</para>
+    <para>-An identifier is misspelled.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>130: Expression must be a SET type.</term>
+  <listitem>
+    <para>*Right argument of IN operator must be a set~type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>131: Only equality and inequality test allowed for this type of operand.</term>
+  <listitem>
+    <para>*The following object types may be compared only as equal or not equal: pointer-type, record-type, and non-character array-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>132: Strict inclusion test not allowed.</term>
+  <listitem>
+    <para>*Between sets only the following relationals are allowed: '&lt;=*, '&gt;=', '=' f -&lt;&gt;-.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>133: Comparison of file types is not allowed.</term>
+  <listitem>
+    <para>*No relational operators can be applied to file names.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>134: Illegal type of operand(s).</term>
+  <listitem>
+    <para>*Asterisk can only be used to multiply integers and/or reals or to intersect sets.</para>
+    <para>*Slash can only be used to divide integers and/or reals.</para>
+    <para>*DIV can only be used to divide integers.</para>
+    <para>*MOD can only be used to divide integers.</para>
+    <para>*AND can only be used to disjunct booleans.</para>
+    <para>*OR can only be used to conjunct booleans.</para>
+    <para>*Plus can only be used as a unary sign for reals or integers or to add reals and/or integers or to union sets.</para>
+    <para>*Minus can only be used as a unary sign for reals or: integers or to subtract reals and/or integers or to intersect sets.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-Errors were encountered in the previous declaration of the identifier.</para>
+    <para>-Malformed double character operator (see error message 6 for examples).</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>135: Type of operand must be BOOLEAN.</term>
+  <listitem>
+    <para>*Expression after NOT must be boolean type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>136: Element type of a set must be a scalar or a subrange.</term>
+  <listitem>
+    <para>*After a left bracket introducing a set construction was found, a token is found which is not a scalar or subrange and thus cannot be a member of a set.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>137: Element type is not compatible with the set.</term>
+  <listitem>
+    <para>*An element of a set was scanned but the element is not a member of the base set.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>138: Attempt to index a non-array variable.</term>
+  <listitem>
+    <para>*A left bracket was scanned introducing an indexing expression but the item to the left of the left bracket is not an array-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>139: Index type is not compatible with the declaration.</term>
+  <listitem>
+    <para>*Scanned an index expression but the type of the expression is not compatible with the array object being indexed.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-Errors detected during previous declaration of identifier.</para>
+    <para>-Identifier is misspelled.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>140: Attempt to select a field of a non-record variable.</term>
+  <listitem>
+    <para>*A period wan scanned introducing a field reference but the item to the left of the period is not a record-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>141: Type of variable must be a FILE or a POINTER.</term>
+  <listitem>
+    <para>*An up arrow was scanned introducing a pointer reference but the item to the left of the up arrow is not a file-type or a pointer-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>142: Illegal parameter substitution.</term>
+  <listitem>
+    <para>When scanning a procedure or function call and the parameter scanned does not have the same type as declared in the function/procedure declaration. For user routines, see the previous declaration. For standard routines, see the section in the user manual describing standard procedures and functions.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>143: Illegal type of control loop variable, must be a scalar or subrange.</term>
+  <listitem>
+    <para>*Scanning a FOR statement and the identifier following FOR is not scalar-type or subrange-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>144: Illegal type of expression.</term>
+  <listitem>
+    <para>*Scanning a case statement and the expression following CASE is not a non-real scalar-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>145: Type conflict.</term>
+  <listitem>
+    <para>*Scanning a FOR statement, found FOR &lt;ident&gt;:=&lt;expr&gt; and possibly TO/DOWNTO &lt;expr&gt; but &lt;expr&gt; is not compatible with the type of &lt;ident&gt;.</para>
+    <para>**Possible common programming errors which might trigger this message include:</para>
+    <para>-Errors detected during previous declaration of identifier.</para>
+    <para>-Identifier is misspelled.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>146: Assignment of files is not allowed.</term>
+  <listitem>
+    <para>*Item to the left of ':=' in an assignment statement cannot be file-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>147: Case selection type is incompatible with selecting expression.</term>
+  <listitem>
+    <para>*Scanning a case statement, found a selection value but the type of the value is not compatible with the type of the expression following CASE.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>148: Subrange bounds must be scalar.</term>
+  <listitem>
+    <para>*Scanning a subrange simple type and a string is found.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>149: Index type must not be INTEGER.</term>
+  <listitem>
+    <para>*Scanning a type declaration and found ARRAY [ INTEGER ].</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>150: Assignment to a standard function is not allowed.</term>
+  <listitem>
+    <para>*Scanning an assignment statement and object to the left of ':=' is a name of a standard function.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>151: Assignment to a formal function is not allowed.</term>
+  <listitem>
+    <para>*Attempt to assign a value to a formal &lt;ident&gt; which is a function name.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>152: No such field in this record.</term>
+  <listitem>
+    <para>*Scanned a period which introduces an identifier which is a field name within a record but the identifier does not name a valid field name within the referenced record, check spelling of identifier or previous declaration of record.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>153: Set range error.</term>
+  <listitem>
+    <para>It is possible to have different sets which are, for example, both integer subranges. These sets may have overlapping areas in which subsets of one may be assigned to the second set. The Set range error will be produced if a set is being assigned a value out of its subrange.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>154: Actual parameter must be a variable name.</term>
+  <listitem>
+    <para>*Scanning a procedure or function call and the parameter being scanned must be passed by name but the token found is not a variable name.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>155: Control variable must not be declared at an intermediate level.</term>
+  <listitem>
+    <para>*Scanning a FOR statement and the identifier of the control variable is not declared local to this block. Pascal language specification says that the control variable of a FOR statement must not be a formal parameter or be a variable declared at a different level than the block containing the FOR statement.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>156: Multidefined case label.</term>
+  <listitem>
+    <para>*Scanning a case statement and a case selection or OTHERWISE appears more than once.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>157: Too many cases in case statement (compiler restriction).</term>
+  <listitem>
+    <para>*Scanning a case statement and found more than 1000 selections.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>158: Missing corresponding variant declaration.</term>
+  <listitem>
+    <para>*Scanning call to standard procedure NEW and token after a comma does not name a valid value of a variant. Check spelling of token, correct nesting of variant specifications for this call, or previous record declaration.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>159: Real or string tagfields are not allowed.</term>
+  <listitem>
+    <para>*Scanning call to standard procedure NEW and token after a comma is real-type or string-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>160: Previous declaration was not FORWARD.</term>
+  <listitem>
+    <para>*Scanning a procedure or function declaration but routine has been previously declared and did not have FORWARD attribute.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>161: Attempt to declare FORWARD again.</term>
+  <listitem>
+    <para>*Scanning a procedure or function declaration and found FORWARD or EXTERNAL but routine has been previously declared with one of these attributes.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>162: Parameter must be a valid variant value.</term>
+  <listitem>
+    <para>*Scanning call to standard procedure NEW and token after a comma is not a valid tagfield-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>163: Null string not allowed.</term>
+  <listitem>
+    <para>Strings are defined to be a string of 2 or more characters enclosed within a pair of single quotes.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>164: Lexical separation error, number terminated with a letter.</term>
+  <listitem>
+    <para>Found a number which was terminated by an alphabetic letter. Letters are not proper terminators for a number.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>165: Label is already defined.</term>
+  <listitem>
+    <para>*Scanning a statement, found a label preceding the statement but this label has already been encountered in this block.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>166: Label is already declared.</term>
+  <listitem>
+    <para>*Scanning a LABEL declaration and label number scanned has already been declared a label in this block.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>167: Undeclared label.</term>
+  <listitem>
+    <para>*Scanning a GOTO statement and label number scanned is unknown in this block.</para>
+    <para>*Scanning a statement, found a label preceding the statement but this label has not been declared in a LABEL declaration for this block.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>168: Undefined label.</term>
+  <listitem>
+    <para>*The label number(s) following were declared in a LABEL declaration for this block but were never encountered.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>169: Error in base set.</term>
+  <listitem>
+    <para>*Scanning a type declaration, found SET OF INTEGER, integer sets not allowed - use SET OF CHAR or SET OF subrange-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>170* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>171: Standard file was redeclared.</term>
+  <listitem>
+    <para>*Scanning a VAR declaration which is file-type and found attempt to redefine files INPUT, OUTPUT, or SYSERR.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>172: Unknown or recursive type reference.</term>
+  <listitem>
+    <para>An unknown type has been referenced within a type or a type has used itself within its own type definition.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>173: External procedure or function is expected.</term>
+  <listitem>
+    <para>*Scanning a procedure or function parameter list and found an unknown identifier which is assumed to be an external procedure or function name but no external declaration has been found. Check spelling of identifier or declare the external routine or declare the identifier in a TYPE declaration.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>174: For control variable cannot be assigned a value.</term>
+  <listitem>
+    <para>The control variable for a FOR loop can not be the target of an assignment statement within the body of the for loop.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>175* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>176* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>177: Assignment to function identifier is not allowed here.</term>
+  <listitem>
+    <para>*Scanning an assignment statement and object of assignment is the name of a function but the function declaration is not this block. Assignments to function names can only be made inside the block which declares the function.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>178: Record variant is already defined.</term>
+  <listitem>
+    <para>*Scanning a record declaration and within a CASE a selection has been scanned which has already been selected.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>179: Unimplemented language feature.</term>
+  <listitem>
+    <para>*Scanning a PACK or UNPACK statement. These routines are not implemented in this compiler.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>180* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>181* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>182: OS-9 error on get heap call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program called standard procedure NEW and OS-9 detected an error (usually not enough memory). Program aborts and displays OS-9 error. Check to see that memory is not fragmented when program begins execution or use the runtime "<option>h</option>" option to assure than enough heap memory will be available during program execution. This error typically indicates that either not enough heap area memory is available to start with due to too large a need of heap memory or due to multi-tasking activity or that heap memory which may have been available previously has since been returned to the system and is not available now. This latter cause can be eliminated by using the "<option>r</option>" or retain-heap run time option.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>183: Integer divide by zero.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>184: Integer multiply overflow.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>185: Address multiply overflow.</term>
+  <listitem>
+    <para>*During computation of an address (typically do to array indexing or accessing a field within a record), an address greater than 65535 was generated. Probably the best method for pinpointing the cause of this error is to use the compile time debug option (<option>D+</option>) or more precisely don't disable it anywhere in your source code since it is enabled by default. With the debug option it is likely that the addressing error will show up as a range or indexing error and the runtime diagnostic will pinpoint the pcode location causing the problem.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>186: Restore-heap range error.</term>
+  <listitem>
+    <para>*Program called standard procedure RELEASE, but the argument would attempt to restore the top of heap pointer to some value which is outside of the range of the current actual heap.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>187: Stack overflow.</term>
+  <listitem>
+    <para>*Not enough local and/or estimated stack was allocated to run the program. This error typically means that the compiler's "best guess" of run-time stack memory requirements is wrong or that you have given overrides for the compiler generated values which are insufficient. The compiler cannot foresee the actual runtime routine calling structure and recursion activity, but its guess is in very many cases adequate. You may, however, from time to time need to use run time option overrides using the "<option>l</option>" option to override the local stack requirement assignment and the "<option>e</option>" option to override the estimated or working stack requirement. The required values can be deduced from the procedure table information which is printed at the end of each compilation if you know the actual nature of the run time routine activity, otherwise a "best guess" can be used and the run time option "<option>i</option>" can be invoked to get actual program statistics which show your override allocation, the actual needs of the program up to its termination point, and the amount of memory free that was overallocated.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>188: MOD error, right argument is negative.</term>
+  <listitem>
+    <para>*Program used the MOD operator and has selected or defaulted to use the ISO version of the MOD function which cannot have a negative right argument. If a negative right argument is needed insert a "ISOMODE(false);" statement before the use of the MOD operator.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>189: Pointer variable is expected.</term>
+  <listitem>
+    <para>*Scanning a call to standard procedure NEW and first parameter is not pointer-type.</para>
+    <para>*Scanning a call to standard procedure MARK or RELEASE and first parameter is not pointer-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>190: Invalid PCODE instruction.</term>
+  <listitem>
+    <para>*The interpreter has detected a bad pcode instruction. Check system memory for errors then check the disk drive for errors. If the problem still persists, recompile the program to generate a new pcode file. If the problem still persists and you have not knowingly modified the pcode file, contact your nearest Radio Shack store.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>191: Call-user-procedure range error.</term>
+  <listitem>
+    <para>*The interpreter has detected a bad reference to one of your procedures in the pcode file. Check the system as per error 190.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>192: Pointer range error.</term>
+  <listitem>
+    <para>*Program is attempting to reference memory via a pointer, and the pointer does not point to a valid memory address. Check that the pointer has been properly initialized in your program. This error is caused by your program either not initializing the pointer correctly or setting it to an incorrect value via "trick" programming or non-standard programming.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>193: Subscript or range error.</term>
+  <listitem>
+    <para>*An array is being indexed, and one of the index expressions is out of range for one of the array indices, or a value is being assigned to a subrange variable and the value is out of range.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>194: Case error.</term>
+  <listitem>
+    <para>*A CASE statement is being executed, but the value of the case determinant does not exist as a selection anywhere for this statement, and the case selection OTHERWISE was not used.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>195: Call-standard-procedure range error.</term>
+  <listitem>
+    <para>*An interpreter has detected an invalid reference to a standard procedure in the pcode file. Check system integrity as per error 190.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>196* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>197: CHR function range error.</term>
+  <listitem>
+    <para>*Program is calling standard procedure CHR, but the value of the argument is not in the closed interval [0, 255] and thus cannot be mapped into a character.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>198* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+<!--
+  <term>198: IN function range error</term>
+  <listitem>
+    <para>*Program is attempting to determine if a value is a member of a set, but the value
+    does not exist for the range of the set - in particular the value is less than zero of greater than 255.</para>
+  </listitem>
+-->
+</varlistentry>
+<varlistentry>
+  <term>199: Integer overflow on add, subtract, or negate.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>200: Invalid Pascal option specification.</term>
+  <listitem>
+    <para>*A run time option specification is unrecognizable.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>201: Pascal option has a value greater than 65535.</term>
+  <listitem>
+    <para>*The value for a run time option parameter is too big.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>202: Local or Extended default stack requirement greater than 65535.</term>
+  <listitem>
+    <para>*The value for a run time option for "l" or "e" is too big.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>203: OS-9 file error during processing of PCODE file, OS-9 error number follows.</term>
+  <listitem>
+    <para>*While attempting to open, close, or access the pcode file, an OS-9 error was detected. The program is aborted and the OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>204: Invalid number of procedures in PCODE file, bad PCODE file.</term>
+  <listitem>
+    <para>*An interpreter has found an invalid pcode file header. Check system integrity as per error 190.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>205: Compile-time errors detected in PCODE file, cannot run program.</term>
+  <listitem>
+    <para>*An attempt is being made to run a pcode file for which the compiler has detected errors. DO NOT ATTEMPT TO RUN THIS PCODE FILE! as in all likelihood it could crash your system.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>206: Not enough memory to run program.</term>
+  <listitem>
+    <para>*There is not enough memory available at this time on your system to meet the needs for local, estimated, global, and heap requirements. Check to see if memory is fragmented. If running in a multi-tasking environment, it may be that other task activity is temporarily using memory which may be available later which might then allow you to run. If possible, use or adjust the run time option overrides to adjust the runtime memory requirements.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>207: Ran out of swap buffers.</term>
+  <listitem>
+    <para>*While running a Pascal program via one of the interpreter products, there were not enough swap buffers allocated. This situation occurs when a routine is currently running which requires several buffers to be locked since they contain string constant information which may be needed by a buffer containing program code. As a result, the code swapper finds that another swap buffer is required for processing, but a 1 1 available buffers are locked. To cure this, either allocate more swap buffers when running the program, run the program via a non-swapping interpreter, or rewrite the program so that fewer and/or smaller string constants are used in the routine which caused the fault.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>208: Floating point overflow.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>209: Floating point divide by zero.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>210: Expected a boolean expression.</term>
+  <listitem>
+    <para>*Scanning a call to one of the following standard procedures or functions which requires a boolean expression for this parameter: IOABORT, ISOMOD, RIGHTJUST, MATHABORT.</para>
+    <para>*Scanning an IF statement and did not find a boolean expression following IF.</para>
+    <para>*Scanning a REPEAT statement and did not find a boolean expression following UNTIL.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>211: Cannot issue CLOSE to SYSERR file.</term>
+  <listitem>
+    <para>*Scanning a call the standard procedure CLOSE, and the file name being referenced is the SYSERR file. This file must never be closed as it is used as the path for reporting run time errors.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>212: A text file is not allowed here.</term>
+  <listitem>
+    <para>*Scanning a call to one of the following standard procedures which cannot operate on a text-type file: REPOSITION, POSITION, or FILESIZE.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>213: Must be a 32 element character array.</term>
+  <listitem>
+    <para>*Scanning a call to the standard procedure GETINFO or PUTINFO, and the second parameter is not a 32 element character array.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>214: Procedure or function names may not be passed as parameters (compiler restriction).</term>
+  <listitem>
+    <para>*An attempt is being made to pass a procedure or function by name. This compiler only allows functions to be passed by value.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>215: Integer type variable name expected.</term>
+  <listitem>
+    <para>*Scanning a standard procedure call , and the parameter scanned is not the name of an integer which is to contain the result from this call.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>216: Must be type real or integer.</term>
+  <listitem>
+    <para>*Scanning a call to the standard procedure ABS or SQR, and the argument is not integer-type or real-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>217: Must be type real.</term>
+  <listitem>
+    <para>*Scanning a call to the standard procedure REPOSITION, and the second parameter is not real-type.</para>
+    <para>*Scanning a call to the standard procedure TRUNC or ROUND, and the argument is not real-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>218: Scalar expected.</term>
+  <listitem>
+    <para>*Scanning a call to the standard procedure PRED or SUCC, and the argument is not scalar-type.</para>
+    <para>*Scanning a FOR statement and found FOR &lt;ident&gt;:=&lt;expr&gt; and possible TO/DOWNTO &lt;expr&gt; but &lt;expr&gt; is not scalar-type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>219: GOTO's may not lead out of enclosing proc/func (compiler restriction).</term>
+  <listitem>
+    <para>*Scanning a GOTO statement, and the label found is located in a different block than that containing the GOTO.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>220: Square root of negative number.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>221: Range error on floating point fix.</term>
+  <listitem>
+    <para>*Program is explicitly or implicitly attempting to fix a floating point number, and it can't fit in the 16 or 32 bit integer destination without loss of significance.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>222: OS-9 error during processing of EXTERNAL tables, OS-9 error number follows.</term>
+  <listitem>
+    <para>*During program initialization, an EXTERNAL procedure could not be loaded because the module does not exist as specified in the external tables, or the external tables are not properly formatted.</para>
+    <para>**Use the PASCALE utility to properly format the external tables.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>223: Nonexistent procedure called from an EXTERNAL procedure.</term>
+  <listitem>
+    <para>*During program execution, an EXTERNAL procedure attempted to call a procedure which does not exist in the current program.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>224: Multiple decimal points encountered during CNVTREAL processing.</term>
+  <listitem>
+    <para>*Program called the standard procedure CNVTREAL to convert a string of characters into a real number, but two decimal points were found. See error 72 for further information.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>225: Digit expected during CNVTREAL processing.</term>
+  <listitem>
+    <para>*Program called the standard procedure CNVTREAL to convert a string of characters into a real number, but at some point a digit was required and not found. See error 73 for further information.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>226: Floating point overflow during CNVTREAL processing.</term>
+  <listitem>
+    <para>*Program called the standard procedure CNVTREAL to convert a string of characters into a real number, but the number is too large. See error 74 for further information.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>227: Pcode file has been altered! Cannot run program.</term>
+  <listitem>
+    <para>*The pcode file that you are trying to run with one of the OS-9 Pascal interpreter products is either not a valid pcode file or has been altered in some way since the compiler produced the file. If you have simply given the wrong file name, just reenter the command with the correct pcode file name. If, however, the pcode file has been altered then do not run the file. The OS-9 Pascal program products try very hard to ensure that the pcode file has not been altered before they will process the file. If you attempt to circumvent this safety feature, it is quite likely that the integrity of the running system will be destroyed - usually with catastrophic results.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>228: OS-9 error on restore heap call, OS-9 error number follows.</term>
+  <listitem>
+    <para>*Program called standard procedure RELEASE and OS-9 detected an error. Program aborts and OS-9 error is displayed.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>229: LN of a zero number.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>230: Must be a text file type.</term>
+  <listitem>
+    <para>*The following standard procedures can only operate on text files: READ, READLN, WRITE, WRITELN, INTERACTIVE, PAGE, OVERPRINT, SYSREPORT, and PROMPT.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>231: User scalar types not implemented for reading or writing.</term>
+  <listitem>
+    <para>*Attempt to read or write user scalar types using one of the following standard procedures: READ, READLN, WRITE, or WRITELN.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>232: Set has too many elements (compiler restriction).</term>
+  <listitem>
+    <para>*Scanning a set declaration, found a definition which requires a lower ordinal limit of less than zero or a higher ordinal limit of greater than 255. This version of the compiler allows sets of up to 256 elements.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>233: Too many procedures declared (compiler restriction).</term>
+  <listitem>
+    <para>*An attempt is being made to define more than 254 procedures within a program block.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>234: Integer value expected.</term>
+  <listitem>
+    <para>*An array reference using the &lt;expression&gt; FOR &lt;count&gt; language extensions is scanned but &lt;expression&gt; is not an integer type.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>235* *</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>236: Type indicator is not defined for this object.</term>
+  <listitem>
+    <para>*Trying to determine the object type for a load or store pcode instruction, and a file-type, tagfield-type, or variant-type was found which cannot be handled.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>237: variant or tagfield is not allowed here.</term>
+  <listitem>
+    <para>*The identifier scanned is either a variant-type or tagfield-type, neither of which is allowed here.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>238: Period, BEGIN, PROCEDURE, OR FUNCTION expected.</term>
+  <listitem>
+    <para>*After having scanned a function or procedure body a period (end of source program), PROCEDURE or FUNCTION (define another routine), or BEGIN (begin an outer block) is expected.</para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>239: LN of a negative number.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>240: EXP of a number greater than 88.0296919.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <term>241: SIN of a number greater than 102942.13 or less than minus 102942.13.</term>
+  <listitem>
+    <simpara></simpara>
+  </listitem>
+</varlistentry>
+
+</variablelist>
+</appendix>

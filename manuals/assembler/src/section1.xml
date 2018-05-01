@@ -34,7 +34,7 @@ in your system's CMDS (execution) directory. To run the editor type:
 OS9: edit <keycap>RETURN</keycap>
 </screen>
 
-The editor should load and start. When it prints the "E: " prompt, it is ready to accept a oommand.
+The editor should load and start. When it prints the "E: " prompt, it is ready to accept a command.
 The first command to learn is how to quit editing (return to OS-9). To quit, type a "Q" followed by a carriage
 return as follows:
 
@@ -519,7 +519,7 @@ to character-oriented commands.
       <varlistentry>
         <term>FUNCTION:</term>
         <listitem>
-          <para>Change the next <replaceable>n</replaceable> occurence of <replaceable>str1</replaceable> to <replaceable>str2</replaceable></para>
+          <para>Change the next <replaceable>n</replaceable> occurrence of <replaceable>str1</replaceable> to <replaceable>str2</replaceable></para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -540,7 +540,7 @@ or until the count "<replaceable>n</replaceable>" is reached, whichever occurs f
       <para>
 The "C" command leaves the edit pointer positioned at pointing to the
 beginning of the last line changed. The ".CHANGE" built-in macro will
-leave the edit pointer positioned just past the modified string. 'If
+leave the edit pointer positioned just past the modified string. If
 "<replaceable>str1</replaceable>" is not found, the edit pointer will not be affected. Some typical
 examples of its use are:
 </para>
@@ -552,9 +552,9 @@ examples of its use are:
         <member>C*! seek and find ! seek and found !</member>
       </simplelist>
 <para>
-The first example changes the next occurence of "this" to "that". The
-second example changes the next two occurence of "in" to "out". The last
-example changes all occurences of " seek and find " to " seek and found "
+The first example changes the next occurrence of "this" to "that". The
+second example changes the next two occurrence of "in" to "out". The last
+example changes all occurrences of " seek and find " to " seek and found "
 that are between the edit pointer and end of text.
 </para>
     </section>
@@ -629,7 +629,7 @@ line. The deleted lines are displayed. Some examples are:
       </simplelist>
       <para>
 The first example deletes the current line and displays it. The second
-example deletes the' current line and the next three lines. The last
+example deletes the current line and the next three lines. The last
 example deletes all the lines from the current line to the end of_the
 edit buffer.
 </para>
@@ -697,7 +697,7 @@ next two lines; the edit pointer would be moved past these lines.
    </variablelist>
 
    <para>
-This command is used to unextend (truncate) a line at the cUrrent edit
+This command is used to unextend (truncate) a line at the current edit
 position. The characters in the line from the current edit pointer
 position to the end of the line are chopped off. The "&gt;" or "&lt;" commands
 (see page 1-14) are usually used to position the pointer prior to use of
@@ -734,7 +734,7 @@ this command. For example:
 This command is used to insert complete text lines. The lines are
 inserted before the current edit position, and the edit pointer will be
 positioned following the newly entered line. Therefore, many lines can
-be automatically entered in order. The new lines will be inserted hejgxe
+be automatically entered in order. The new lines will be inserted <emphasis>before</emphasis>
 the line pointed to by the edit pointer prior to entry of the new lines.
 For example:
 <screen>
@@ -1271,7 +1271,7 @@ copied, the editor will be terminated and control returned to the Shell.
       <varlistentry>
         <term>FUNCTION:</term>
         <listitem>
-          <para>Search for the next <replaceable>n</replaceable> occurence of <replaceable>str</replaceable></para>
+          <para>Search for the next <replaceable>n</replaceable> occurrence of <replaceable>str</replaceable></para>
         </listitem>
       </varlistentry>
    </variablelist>
@@ -1301,9 +1301,9 @@ examples of its use are:
         <member>.SEARCH*/seek and find/</member>
       </simplelist>
 <para>
-The first example searches for the next occurence of "my string". The
-second example searches for the next three occurence of "strung out".
-The last example searches for all occurence of "seek and find" that are
+The first example searches for the next occurrence of "my string". The
+second example searches for the next three occurrence of "strung out".
+The last example searches for all occurrence of "seek and find" that are
 between the edit pointer and the end of text.
 </para>
     </section>
@@ -1337,7 +1337,7 @@ string only if it begins in column number <replaceable>n</replaceable>.
 For example, if you want to find a string that you know begins in column number one (such as an
 assembly language label), but don't want to find it if it begins in any
 other column, you should set the anchor to column one before using the
-search command to find it to allow you to skip any occurence of the
+search command to find it to allow you to skip any occurrence of the
 string that do not start in column one. Some typical examples of its use are:
 </para>
       <simplelist type="horiz" columns="3">
@@ -1656,7 +1656,7 @@ edit position. For example:
 <member>R*</member>
 </simplelist>
 <para>
-The first example reads ten lines of text from the inpit file, and the
+The first example reads ten lines of text from the input file, and the
 second example reads all remaining lines. If there is no more text in a
 file, the "*END OF FILE*" warning message will be displayed.
 
@@ -1716,7 +1716,7 @@ MACROS:
 </screen>
 Under the heading BUFFERS is a list of all current edit buffers. The
 current primary buffer is marked with an asterisk (Buffer #1 in the
-example above). The current sec0ndary buffer is marked with a dollar
+example above). The current secondary buffer is marked with a dollar
 sign (Buffer #0 in the example above). All other buffers are listed but
 otherwise unmarked (such as Buffer #50 above).
 </para>
@@ -1864,7 +1864,7 @@ will be executed 12 times or until the string in the search can't be found.
 [ S/This line should be removed/ -1 D ] 12
 </screen>
 If a loop is typed in as a command for immediate execution, it must
-fit in one complete line. If a loop is coutained within a macro, it can
+fit in one complete line. If a loop is contained within a macro, it can
 extend across multiple lines. Loops can be nested within each other.
 </para>
     </section>
@@ -1953,14 +1953,14 @@ will fail and "* FAIL *" will be printed:
 </screen>
 In the command line above, the first part is ".EOL V0 -0 V .F", which
 tests if the edit pointer is at the end of the line. If it is, verify
-mode is turned off to prevent the "-0" frcm displaying the line, and then
+mode is turned off to prevent the "-0" from displaying the line, and then
 it is turned back on and the ".F" causes the loop to be terminated. If
 the edit pointer is not at the end of the line, the ".STR" command will
 see if "find it" is at the current edit position. If it is, the "-0 .S"
 commands will be executed to cause the edit pointer to be moved back to
 the beginning of the line, the line displayed, and the loop terminated.
 Otherwise the "&gt;" command is executed which moves the edit pointer to the
-next 'position in' the line. Note that it is enclosed in brackets to
+next position in the line. Note that it is enclosed in brackets to
 prevent it from failing and terminating the main loop if the end of the
 buffer is reached.
 </para>
@@ -2249,7 +2249,7 @@ Some example string variables are:
       </simplelist>
       <para>
 An example of an entire edit macro is given below. It will do the
-same thing as the "S" command: search for the next "<replaceable>n</replaceable>" ocurrences of a
+same thing as the "S" command: search for the next "<replaceable>n</replaceable>" occurrences of a
 string. The first line of the macro is the macro header; it declares the
 macro's name to be "FIND_LN" and also specifies that the macro needs one
 numeric parameter "#N" and one string parameter "$STR". The entire body

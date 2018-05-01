@@ -442,7 +442,7 @@ algebraic notation used in programming languages such as BASIC and FORTRAN.
     <para>
 Expressions consists of <emphasis>operands</emphasis>, which are symbolic names or
 constants, and <emphasis>operators</emphasis>, which specify an arithmetic or logical
-function. A11 assembler arithmetic uses two-byte (internally, 16 bit
+function. All assembler arithmetic uses two-byte (internally, 16 bit
 binary) signed or unsigned integers in the range of 0 to 65535 for
 unsigned numbers, or -32768 to +32767 for signed numbers.
 </para>
@@ -455,7 +455,7 @@ of this range an error message will be given.
 </para>
     <para>
 Expressions are evaluated from left-to-right using the algebraic
-order of operations (i.e. multip1ications and divisions are performed
+order of operations (i.e. multiplications and divisions are performed
 before additions and subtractions). Parentheses can be used to alter the
 natural order of evaluation.
 </para>
@@ -546,7 +546,7 @@ beginning of the line. It is not used in Motorola-compatible mode.
       <para>
 Operators used in expressions operate on one operand (negative and
 not) or on two operands (all others). The table below shows the
-available operators, listed in the order they are evaIUated ralative.to
+available operators, listed in the order they are evaluated relative.to
 each other, e.g, logical OR operations are performed before
 multiplications. Operators listed on the same line have identical
 precedence and are processed from left to right when they occur in the
@@ -649,7 +649,7 @@ printed at the end of the assembly.
       <title>Instruction Addressing Modes</title>
       <para>
 One of the 6809's features is that its instruction set has a large
-variety of addressing modes. Each group of similar instructibns can be
+variety of addressing modes. Each group of similar instructions can be
 used with specific addressing modes, which are usually specified in the
 assembler source statement operand field. The assembler will generate an
 error message if an addressing mode is specified which cannot be legally
@@ -757,7 +757,7 @@ stb [end]      <lineannotation>extended indirect addressing</lineannotation>
         <para>
 Direct addressing uses the second byte of the instruction as the
 least significant byte of the operand's address. The most significant
-byte is obtained from the MPU's dicect page register. This addressing
+byte is obtained from the MPU's direct page register. This addressing
 mode is preferred for accessing most variables in OS-9 programs because
 OS-9 automatically assigns unique direct pages to each task at run-time,
 and also because this mode produces short, fast instructions. The syntax
@@ -900,7 +900,7 @@ operand, rather than as the address of the operand.
         <title>Constant Offset Indexed</title>
         <para>
 This mode uses an optional signed (two's complement) offset which is
-temporarily added ao the register's value to form the operand's effective
+temporarily added to the register's value to form the operand's effective
 address. The offset can be any number, or zero in which case the
 register's unaltered contents is used as the effective address. The
 assembler automatically picks the shortest of four possible varieties
@@ -1070,7 +1070,7 @@ storage for the assembly language program,
         <term>Symbolic Name Declarations</term>
         <listitem>
           <para>
-The EQU and SET statehents are used to assign value to assembler symbolic names.
+The EQU and SET statements are used to assign value to assembler symbolic names.
 </para>
         </listitem>
       </varlistentry>
@@ -1406,7 +1406,7 @@ computed by the assembler as the program is processed by the assembler.
 </para>
       <para>
 The MOD statement must have an operand list of exactly four or
-exactly six expressions separated by commas. Each operand cortesponds,
+exactly six expressions separated by commas. Each operand corresponds,
 in order, to the elements of a module header. The exact operation of the
 MOD statement is as follows:
 </para>
@@ -1544,7 +1544,7 @@ TTL <replaceable>string</replaceable></literallayout>
         </varlistentry>
       </variablelist>
       <para>
-These statements allow the user to define or redefine a program hame
+These statements allow the user to define or redefine a program name
 and listing title line which will be printed on the first line of each
 listing page's header. These statements cannot have label or comment
 fields.
@@ -1713,7 +1713,7 @@ FCB operand
 A file called "<filename class="headerfile">OS9Defs</filename>",
 which is distributed with each copy of OS-9,
 contains standard definitions of the symbolic names of all the OS-9
-service requests. These names are commonly used in conjuction with the
+service requests. These names are commonly used in conjunction with the
 OS9 statement to improve the readability, portability, and
 maintainability of assembly language software.
 </para>
@@ -1934,7 +1934,7 @@ are not altered by the program.
 You do not know the actual absolute address of anything in the
 program until it is actually run. The 6809 position-independent
 addressing modes are based on "program counter relative addressing".
-This addressing mode is used by all branch and lbng branch instructions.
+This addressing mode is used by all branch and long branch instructions.
 </para>
       <itemizedlist>
         <listitem>
@@ -2054,7 +2054,7 @@ If the U register is maintained throughout the program, constant-offset-indexed 
 Part of the program's initialization routine can compute the
 actual addresses of the data structures and store these addresses in
 pointer locations in the direct page. The addresses can be obtained
-later using direct-page addressing mode instrhctions.
+later using direct-page addressing mode instructions.
 </para>
         </listitem>
       </orderedlist>
@@ -2222,7 +2222,7 @@ These labels define the offsets into page 0 of OS-9 system
 variables. Zero page variables are used by OS-9 for interrupt vectors,
 table addresses, process queues and internal memory information. It is
 <emphasis>strongly</emphasis> recommended that you don't use the page 0 variables in your programs.
-These variables are not physically accessable to user programs in Level II.
+These variables are not physically accessible to user programs in Level II.
 They are given in <filename class="headerfile">OS9Defs</filename>
 for those who might need to write
 special drivers and interrupt handlers, or need to do system debugging.
@@ -2342,7 +2342,7 @@ on interrupt servicing.
 </para>
       <bridgehead renderas="sect5">Register Offsets on Stack</bridgehead>
       <para>
-Any time the 6809 cpu gets an interrupt of the form NMI, IRQ, SWI, SWI2 (an
+Any time the 6809 CPU gets an interrupt of the form NMI, IRQ, SWI, SWI2 (an
 OS-9 system call), or SWI3, the registers are pushed on the stack.
 The offset to those registers are defined in this area of <filename class="headerfile">OS9Defs</filename>. This
 information will be of particular value to those who write drivers and
@@ -2438,7 +2438,7 @@ and managers. This is also the area to add your own RBF type definitions.
       <section>
         <title>Random Block Path Descriptor Format</title>
         <para>
-This entry defines the file descriptor offsets for R8? devices.
+This entry defines the file descriptor offsets for RBF devices.
 The actual total storage is declared in <filename class="headerfile">OS9Defs</filename> under the entry called
 Path Descriptor Offsets. Both SCF and RBF have their own definitions of
 the PD.FST and PD.OPT fields. This is where RBF's definitions are
