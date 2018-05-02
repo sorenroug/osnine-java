@@ -157,7 +157,7 @@ Colour Sets 3 and 4 are not available on PAL video system
 </note>
 <bridgehead renderas="sect2">MODE</bridgehead>
 <cmdsynopsis>
-<command>RUN GFX("Mode",<replaceable>format</replaceable>, <replaceable>colour</replaceable>)</command>
+<command>RUN GFX("Mode",<replaceable>format</replaceable>,<replaceable>colour</replaceable>)</command>
 </cmdsynopsis>
 <para>
 MODE switches the screen from alphanumeric to graphics display mode,
@@ -182,7 +182,7 @@ foreground colour is red.
 </para>
 <bridgehead renderas="sect2">MOVE</bridgehead>
 <cmdsynopsis>
-<command>RUN GFX("Move",<replaceable>x</replaceable>, <replaceable>y</replaceable>)</command>
+<command>RUN GFX("Move",<replaceable>x</replaceable>,<replaceable>y</replaceable>)</command>
 </cmdsynopsis>
 <para>
 MOVE positions the (invisible) graphics cursor to the specified
@@ -212,8 +212,8 @@ black in two-colour format).
 </para>
 <bridgehead renderas="sect2">POINT</bridgehead>
 <cmdsynopsis>
-<command>RUN GFX("Point",<replaceable>x</replaceable>, <replaceable>y</replaceable>) or</command><sbr/>
-<command>RUN GFX("Point",<replaceable>x</replaceable>, <replaceable>y</replaceable>, <replaceable>colour</replaceable>)</command>
+<command>RUN GFX("Point",<replaceable>x</replaceable>,<replaceable>y</replaceable>) or</command><sbr/>
+<command>RUN GFX("Point",<replaceable>x</replaceable>,<replaceable>y</replaceable>,<replaceable>colour</replaceable>)</command>
 </cmdsynopsis>
 <para>
 POINT moves the graphics cursor to the specified X.Y coordinate and
@@ -239,19 +239,19 @@ The current graphics cursor is reset to (0,0).
 </para>
 <bridgehead renderas="sect2">LINE</bridgehead>
 <cmdsynopsis>
-<command>RUN GFX("Line",<replaceable>x2</replaceable>, <replaceable>y2</replaceable>)</command><sbr/>
-<command>RUN GFX("Line",<replaceable>x2</replaceable>, <replaceable>y2</replaceable>, <replaceable>colour</replaceable>)</command><sbr/>
-<command>RUN GFX("Line",<replaceable>x1</replaceable>, <replaceable>y1</replaceable>, <replaceable>x2</replaceable>, <replaceable>y2</replaceable>)</command><sbr/>
-<command>RUN GFX("Line",<replaceable>x1</replaceable>, <replaceable>y1</replaceable>, <replaceable>x2</replaceable>, <replaceable>y2</replaceable>, <replaceable>colour</replaceable>)</command>
+<command>RUN GFX("Line",<replaceable>x2</replaceable>,<replaceable>y2</replaceable>)</command><sbr/>
+<command>RUN GFX("Line",<replaceable>x2</replaceable>,<replaceable>y2</replaceable>,<replaceable>colour</replaceable>)</command><sbr/>
+<command>RUN GFX("Line",<replaceable>x1</replaceable>,<replaceable>y1</replaceable>,<replaceable>x2</replaceable>,<replaceable>y2</replaceable>)</command><sbr/>
+<command>RUN GFX("Line",<replaceable>x1</replaceable>,<replaceable>y1</replaceable>,<replaceable>x2</replaceable>,<replaceable>y2</replaceable>,<replaceable>colour</replaceable>)</command>
 </cmdsynopsis>
 <para>
-LINE draw lines in various ways. If one coordinate is given, the
+LINE draws lines in various ways. If one coordinate is given, the
 line will be drawn from the current graphics cursor position to the
 coordinates specified. If two sets of coordinates are given, they
 are used as the start and end points of the line. The line will be
 drawn in the current foreground colour unless a new colour is given
 as a parameter. After the line is drawn the graphics cursor will be
-positioned at <replaceable>x2</replaceable>, <replaceable>y2</replaceable>. For example
+positioned at <replaceable>x2</replaceable>,<replaceable>y2</replaceable>. For example
 <programlisting>
 RUN GFX("Line",0,0,0,192)
 </programlisting>
@@ -264,9 +264,9 @@ draws a blue line (4-colour mode) to point 24,65.
 <bridgehead renderas="sect2">CIRCLE</bridgehead>
 <cmdsynopsis>
 <command>RUN GFX("Circle",<replaceable>radius</replaceable>)</command><sbr/>
-<command>RUN GFX("Circle",<replaceable>radius</replaceable>, <replaceable>colour</replaceable>)</command><sbr/>
-<command>RUN GFX("Circle",<replaceable>x</replaceable>, <replaceable>y</replaceable>, <replaceable>radius</replaceable>)</command><sbr/>
-<command>RUN GFX("Circle",<replaceable>x</replaceable>, <replaceable>y</replaceable>, <replaceable>radius</replaceable>, <replaceable>colour</replaceable>)</command>
+<command>RUN GFX("Circle",<replaceable>radius</replaceable>,<replaceable>colour</replaceable>)</command><sbr/>
+<command>RUN GFX("Circle",<replaceable>x</replaceable>,<replaceable>y</replaceable>,<replaceable>radius</replaceable>)</command><sbr/>
+<command>RUN GFX("Circle",<replaceable>x</replaceable>,<replaceable>y</replaceable>,<replaceable>radius</replaceable>,<replaceable>colour</replaceable>)</command>
 </cmdsynopsis>
 <para>
 CIRCLE draws a circle of the given radius. The current graphics
@@ -305,7 +305,7 @@ Module.
 <bridgehead renderas="sect2">GCOLR</bridgehead>
 <cmdsynopsis>
 <command>RUN GFX("Gcolr",<replaceable>colour</replaceable>)</command><sbr/>
-<command>RUN GFX("Gcolr",<replaceable>x</replaceable>, <replaceable>y</replaceable>, <replaceable>colour</replaceable>)</command>
+<command>RUN GFX("Gcolr",<replaceable>x</replaceable>,<replaceable>y</replaceable>,<replaceable>colour</replaceable>)</command>
 </cmdsynopsis>
 <para>
 GCOLR is used to read the colour of the pixel at the current
@@ -315,7 +315,7 @@ colour code is returned.
 </para>
 <bridgehead renderas="sect2">JOYSTK</bridgehead>
 <cmdsynopsis>
-<command>RUN GFX("Joystk",<replaceable>stick</replaceable>, <replaceable>fire</replaceable>, <replaceable>x</replaceable>, <replaceable>y</replaceable>)</command>
+<command>RUN GFX("Joystk",<replaceable>stick</replaceable>,<replaceable>fire</replaceable>,<replaceable>x</replaceable>,<replaceable>y</replaceable>)</command>
 </cmdsynopsis>
 <para>
 JOYSTK returns the status of the specified joystick's Fire button,

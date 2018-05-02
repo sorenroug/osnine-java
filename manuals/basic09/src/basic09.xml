@@ -946,9 +946,9 @@ is used.
 <sect1>
 <title>System Mode Commands</title>
 <para>
-<cmdsynopsis>
+<synopsis>
 <command>$ [<replaceable>text</replaceable>]   ("Shell" Command)</command>
-</cmdsynopsis>
+</synopsis>
 This command calls the OS-9 Shell command interpreter to process an OS-9
 command or to run another program. Running the OS-9 command does not
 cause <productname>BASIC09</productname> or its workspace to be disturbed.
@@ -981,16 +981,18 @@ B: $basic09 fourier(20)&amp;      Starts <emphasis>another</emphasis> concurrent
 </screen>
 </informalexample>
 </para>
-<cmdsynopsis><command>BYE (or ESCAPE character)</command>
-</cmdsynopsis>
+<synopsis>
+<command>BYE (or ESCAPE character)</command>
+</synopsis>
 <para>
 Exits <productname>BASIC09</productname> and returns to OS-9 or the program that called <productname>BASIC09</productname>.
 Any procedures in the workspace are lost if not previously saved. The
 escape key (technically speaking, an end-of-file character condition on
 <productname>BASIC09</productname>'s standard input path) does the same thing.
 </para>
-<cmdsynopsis><command>CHD <replaceable>pathlist</replaceable> or CHX <replaceable>pathlist</replaceable></command>
-</cmdsynopsis>
+<synopsis>
+<command>CHD <replaceable>pathlist</replaceable> or CHX <replaceable>pathlist</replaceable></command>
+</synopsis>
 
 <para>
 Changes the current OS-9 user Data 
@@ -1009,8 +1011,9 @@ CHD /d1/joe/games
 
 
 </para>
-<cmdsynopsis><command>DIR [<replaceable>pathlist</replaceable>]</command>
-</cmdsynopsis>
+<synopsis>
+<command>DIR <optional><replaceable>pathlist</replaceable></optional></command>
+</synopsis>
 <para>
 Displays the name, size, and variable storage requirement of each
 procedure presently in the workspace. The current working procedure has
@@ -1027,11 +1030,10 @@ Note: This command should not be confused with the OS-9 "DIR" command.
 They have completely different functions.
 </para>
 
-<cmdsynopsis>
+<synopsis>
 <command>EDIT [<replaceable>procname</replaceable>]</command>
-<sbr/>
 <command>E [<replaceable>procname</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 Exits command mode and enters the text editor/compiler mode. If the specified
 procedure does not exist, a new one is created. See the Chapter 4 for a
@@ -1047,11 +1049,10 @@ EDIT printreport
 </informalexample>
 
 </para>
-<cmdsynopsis>
+<synopsis>
 <command>KILL [<replaceable>procname</replaceable> {,<replaceable>procname</replaceable>}]</command>
-<sbr/>
 <command>KILL*</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 Erases the procedure(s) specified. KILL* clears the
 entire workspace. The process may take some time if there are many
@@ -1068,11 +1069,10 @@ kill prog1, prog2, prog7
 </informalexample>
 </para>
 
-<cmdsynopsis>
+<synopsis>
 <command>LIST [<replaceable>procname</replaceable> {,<replaceable>procname</replaceable>}] [> <replaceable>pathlist</replaceable>]</command>
-<sbr/>
 <command>LIST* [<replaceable>pathlist</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 Prints a formatted "pretty printed" listing of one or more procedures.
 The listing includes
@@ -1107,9 +1107,9 @@ list prog5 >temp
 
 </para>
 
-<cmdsynopsis>
+<synopsis>
 <command>LOAD <replaceable>pathlist</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 <para>
 Loads all procedures from the specified file into the workspace. As
 procedures are loaded, their names are displayed. If any of the procedures
@@ -1135,11 +1135,10 @@ load quadratics
 </informalexample>
 
 </para>
-<cmdsynopsis>
+<synopsis>
 <command>MEM</command>
-<sbr/>
 <command>MEM [<replaceable>number</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 MEM used without a number displays the present total workspace size in
 (decimal) bytes. If a number is given, <productname>BASIC09</productname> asks OS-9 to expand or
@@ -1159,11 +1158,10 @@ MEM 18000
 </informalexample>
 
 </para>
-<cmdsynopsis>
+<synopsis>
 <command>PACK [<replaceable>procname</replaceable> {,<replaceable>procname</replaceable>}] [> <replaceable>pathlist</replaceable>]</command>
-<sbr/>
 <command>PACK* [<replaceable>pathlist</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 This command
 causes an extra compiler pass on the procedure(s) specified, which
@@ -1223,9 +1221,9 @@ pack* packedfile
 </informalexample>
 </para>
 
-<cmdsynopsis>
+<synopsis>
 <command>RENAME <replaceable>procname</replaceable>,<replaceable>new procname</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 <para>
 
 Changes the name of a procedure. Can be used to allow two
@@ -1241,9 +1239,9 @@ rename thisproc thatproc
 </informalexample>
 </para>
 
-<cmdsynopsis>
+<synopsis>
 <command>RUN [<replaceable>procname</replaceable> [ ( <replaceable>expr</replaceable> , {<replaceable>expr</replaceable>} ) ]]</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 Runs the procedure specified. Technically speaking, <productname>BASIC09</productname> then
 leaves Command mode and enters Execution mode.
@@ -1278,11 +1276,10 @@ run power($32, sin(pi/2))
 </informalexample>
 </para>
 
-<cmdsynopsis>
-<command>SAVE [<replaceable>procname</replaceable> { <replaceable>procname</replaceable>} [> <replaceable>pathlist</replaceable>]]</command>
-<sbr/>
+<synopsis>
+<command>SAVE [<replaceable>procname</replaceable> {<replaceable>procname</replaceable>} [> <replaceable>pathlist</replaceable>]]</command>
 <command>SAVE* [<replaceable>pathlist</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 <para>
 Writes the procedure(s) (or all procedures) to an output
 file or device in source format. SAVE is similar to the LIST command
@@ -1548,8 +1545,8 @@ is not found) and print it. The line may be deleted using the "d" command.
 The "r" renumber command will uniformly resequence all numbered lines and
 lines that refer to numbered lines. Its formats are:
 <programlisting>
-r [ <replaceable>beg line #</replaceable>  [,<replaceable>incr</replaceable> ] ] <keycap>RETURN</keycap>
-r*[ <replaceable>beg line #</replaceable>  [,<replaceable>incr</replaceable> ] ] <keycap>RETURN</keycap>
+r [ <replaceable>beg line #</replaceable> [,<replaceable>incr</replaceable> ] ] <keycap>RETURN</keycap>
+r*[ <replaceable>beg line #</replaceable> [,<replaceable>incr</replaceable> ] ] <keycap>RETURN</keycap>
 </programlisting>
 
 The first format renumbers the program starting at the current line and
@@ -1914,15 +1911,15 @@ or executed one source line at a time.
 </para></sect1>
 <sect1><title>Debug Mode Commands</title>
 <para>
-<cmdsynopsis>
+<synopsis>
 <command>$ <replaceable>text</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 Calls OS-9's Shell command interpreter to run a program or OS-9
 command. Exactly the same as the System Mode "$" command.
 
-<cmdsynopsis>
+<synopsis>
 <command>BREAK <replaceable>proc name</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 Sets up a "breakpoint" at the procedure named. This command is used
 when procedures call each other, and provides a way to re-enter Debug
 Mode when returning to a specific procedure.
@@ -1968,39 +1965,38 @@ that have not yet been run.
 </listitem>
 </orderedlist>
 
-<cmdsynopsis>
+<synopsis>
 <command>CONT</command>
-</cmdsynopsis>
+</synopsis>
 The command causes program execution to continue at the next
 statement. It may resume
 programs suspended by Control-C, PAUSE statements, BREAK command
 breakpoints, or after non-fatal run-time errors.
 
-<cmdsynopsis>
+<synopsis>
 <command>DEG</command>
-<sbr/>
 <command>RAD</command>
-</cmdsynopsis>
+</synopsis>
 These commands select either degrees or radians as the angle unit
 measure used by trigonometric functions. These commands only affect
 the procedure currently being debugged or run.
 
-<cmdsynopsis>
+<synopsis>
 <command>DIR [<replaceable>path</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 Displays the workspace procedure directory in exactly the same way as the
 System Mode DIR command.
 
-<cmdsynopsis>
+<synopsis>
 <command>END or Q</command>
-</cmdsynopsis>
+</synopsis>
 Terminates execution of all procedures and exits Debug Mode by
 returning to System Mode. Any open paths are closed at this point.
 
 
-<cmdsynopsis>
+<synopsis>
 <command>LET <replaceable>var</replaceable> := <replaceable>expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This command is essentially the same as the <productname>BASIC09</productname> LET program statement,
 which allows the value of a procedure variable to be set to a new value
 using the result of the evaluated expression. The variable names used
@@ -2009,17 +2005,17 @@ otherwise, an error is generated. LET does not work on user-defined
 data structures.
 
 
-<cmdsynopsis>
+<synopsis>
 <command>LIST</command>
-</cmdsynopsis>
+</synopsis>
 Displays a formatted source listing of the suspended procedure with I-code
 addresses. An asterisk is printed to the left of the statement where
 the procedure is suspended. Only list the current procedure may be listed.
 
 
-<cmdsynopsis>
+<synopsis>
 <command>PRINT [#<replaceable>expr</replaceable>,] [USING <replaceable>expr</replaceable>,] <replaceable>expr list</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This is exactly the same as the <productname>BASIC09</productname> PRINT statement and can be used
 to examine the present value of variables in the suspended program. All
 variable names must be the same as in the original program, and no
@@ -2027,9 +2023,9 @@ new variable names can be used. User-defined data structures cannot
 be printed.
 
 
-<cmdsynopsis>
+<synopsis>
 <command>STATE</command>
-</cmdsynopsis>
+</synopsis>
 
 
 
@@ -2049,9 +2045,9 @@ CALLED BY PROGRAM
 </informalexample>
 
 
-<cmdsynopsis>
+<synopsis>
 <command>STEP [<replaceable>number</replaceable>]   or   <keycap>RETURN</keycap></command>
-</cmdsynopsis>
+</synopsis>
 This command allows the suspended procedure to be executed one or
 more source statements at a time.
 For example, "STEP 5" would execute the equivalent of the next 5 source
@@ -2068,11 +2064,10 @@ just once. For example, in FOR...NEXT loops the FOR statement is executed
 once, so the statement that appears to be the top of the loop is actually
 the one following the "FOR" statement.
 
-<cmdsynopsis>
+<synopsis>
 <command>TRON</command>
-<sbr/>
 <command>TROFF</command>
-</cmdsynopsis>
+</synopsis>
 These commands turn the suspended procedure's trace mode on and off. In
 trace mode, the compiled code of each equivalent statement line is
 reconstructed to source statements and displayed before the statement
@@ -2633,10 +2628,10 @@ for strings. For example:
 
 <informalexample>
 <programlisting>
-RUN inverse(x)                              passes x by reference. 
-RUN inverse(x+0)                            passes x by value. 
-RUN translate(word$)                        passes word$ by reference. 
-RUN translate(word$+"")                     passes word$ by value.
+RUN inverse(x)                           <lineannotation>passes x by reference.</lineannotation>
+RUN inverse(x+0)                         <lineannotation>passes x by value.</lineannotation>
+RUN translate(word$)                     <lineannotation>passes word$ by reference.</lineannotation>
+RUN translate(word$+"")                  <lineannotation>passes word$ by value.</lineannotation>
 </programlisting>
 </informalexample>
 </para>
@@ -3358,15 +3353,12 @@ Assignment statements are used for computing or initializing of variables.
 <sect2><title>LET Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>[LET] <replaceable>var</replaceable> := <replaceable>expr</replaceable></command>
-<sbr/>
 <command>[LET] <replaceable>var</replaceable> = <replaceable>expr</replaceable></command>
-<sbr/>
 <command>[LET] <replaceable>struct</replaceable> := <replaceable>struct</replaceable></command>
-<sbr/>
 <command>[LET] <replaceable>struct</replaceable> = <replaceable>struct</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 
 </para>
 <para>
@@ -3416,9 +3408,9 @@ matrix(2).coefficient(n+2) := matrix(1).coefficient(n)
 <para>
 
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>POKE <replaceable>integer expr</replaceable> , <replaceable>byte expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement allows a program to store data at a specific memory
 address. The first expression is used as the absolute address to store
 the type BYTE result of the second expression. This statement can alter
@@ -3459,9 +3451,9 @@ programming style.
 <para>
 Syntax:
 
-<cmdsynopsis>
+<synopsis>
 <command>IF <replaceable>bool expr</replaceable> THEN <replaceable>line #</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This form of the if statement causes execution to be transferred
 to the statement having the line number specified if the
 result of the expression is TRUE, otherwise the next sequential
@@ -3474,13 +3466,11 @@ IF payment &lt; balance then 400
 <sect2><title>IF Statement: Type 2</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>IF <replaceable>bool expr</replaceable> THEN <replaceable>statements</replaceable></command>
-<sbr/>
 <command>[ ELSE <replaceable>statements</replaceable> ]</command>
-<sbr/>
 <command>ENDIF</command>
-</cmdsynopsis>
+</synopsis>
 This kind of IF structure evaluates the expression to a BOOLEAN
 value. If the result is TRUE the statement(s) immediately following
 the THEN are executed. If an ELSE clause exists, statements between
@@ -3514,11 +3504,10 @@ ENDIF
 <sect2><title>FOR/NEXT Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>FOR <replaceable>var</replaceable> = <replaceable>expr</replaceable> TO <replaceable>expr</replaceable> [ STEP <replaceable>expr</replaceable> ]</command>
-<sbr/>
 <command>NEXT <replaceable>var</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 Creates a loop that usually executes a specified number of times
 while automatically increasing or decreasing a specified counter variable.
 The first expression is evaluated and the result is stored in <replaceable>var</replaceable> which
@@ -3560,11 +3549,10 @@ NEXT x
 <sect2><title>WHILE..DO Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>WHILE <replaceable>bool expr</replaceable> DO</command>
-<sbr/>
 <command>ENDWHILE</command>
-</cmdsynopsis>
+</synopsis>
 This is a loop construct with the test at the "top" of the loop.
 Statements within the loop are executed as long as <replaceable>bool expr</replaceable> is TRUE.
 The body of the loop will not be executed if the
@@ -3604,11 +3592,10 @@ PRINT word$
 <sect2><title>REPEAT..UNTIL Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>REPEAT</command>
-<sbr/>
 <command>UNTIL <replaceable>bool expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This is a loop that has its test at the bottom of the loop. The
 statement(s) within the loop are executed until the result of <replaceable>bool expr</replaceable> is
 TRUE. The body of the loop is always executed at least one time.
@@ -3637,17 +3624,15 @@ PRINT "The factorial is "; temp
 <sect2><title>LOOP and ENDLOOP/EXITIF and ENDEXIT Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>LOOP</command>
-<sbr/>
 <command>ENDLOOP</command>
-</cmdsynopsis>
+</synopsis>
 
-<cmdsynopsis>
+<synopsis>
 <command>EXITIF <replaceable>bool expr</replaceable> THEN <replaceable>statements</replaceable></command>
-<sbr/>
 <command>ENDEXIT</command>
-</cmdsynopsis>
+</synopsis>
 These related types of statements can be used to construct
 loops with test(s) located anywhere in the body of the loop.
 The LOOP and ENDLOOP statements define the body of the loop.
@@ -3699,9 +3684,9 @@ ENDLOOP
 <sect2><title>GOTO Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>GOTO <replaceable>line #</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 The GOTO unconditionally transfers execution flow to the line having the
 specified number. Note that the line number is a constant, not an expression
 or a variable.
@@ -3718,11 +3703,10 @@ GOTO 1000
 <sect2><title>GOSUB/RETURN Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>GOSUB <replaceable>line #</replaceable></command>
-<sbr/>
 <command>RETURN</command>
-</cmdsynopsis>
+</synopsis>
 The GOSUB statement
  transfers program execution to a subroutine starting at the specified
 line number. The subroutine is executed until a RETURN statement is
@@ -3752,11 +3736,10 @@ Example:
 <sect2><title>ON GOTO/GOSUB Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>ON <replaceable>int expr</replaceable> GOTO <replaceable>line #</replaceable> {,<replaceable>line #</replaceable>}</command>
-<sbr/>
 <command>ON <replaceable>int expr</replaceable> GOSUB <replaceable>line #</replaceable> {,<replaceable>line #</replaceable>}</command>
-</cmdsynopsis>
+</synopsis>
 These statements evaluate an integer expression and use the result to select
 a corresponding line number from an ordered list. Control is then
 transferred to that line number unconditionally in ON GOTO statements or
@@ -3809,9 +3792,9 @@ Example:
 <sect2><title>ON ERROR GOTO Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>ON ERROR [ GOTO <replaceable>line #</replaceable> ]</command>
-</cmdsynopsis>
+</synopsis>
 This statement sets a "trap" that transfers control to the line
 number given when a non-fatal run-time error occurs. If no ON ERROR GOTO has
 been executed in a procedure before an error occurs, the procedure will stop
@@ -3861,11 +3844,10 @@ shells, or affect the current execution of the procedure.
 <sect2><title>RUN Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
-<command>RUN <replaceable>proc name</replaceable> [ ( <replaceable>param</replaceable> {,<replaceable>param</replaceable>} ) ]</command>
-<sbr/>
-<command>RUN <replaceable>string var</replaceable> [ ( <replaceable>param</replaceable> {,<replaceable>param</replaceable>} ) ]</command>
-</cmdsynopsis>
+<synopsis>
+<command>RUN <replaceable>proc name</replaceable> [ (<replaceable>param</replaceable> {,<replaceable>param</replaceable>}) ]</command>
+<command>RUN <replaceable>string var</replaceable> [ (<replaceable>param</replaceable> {,<replaceable>param</replaceable>}) ]</command>
+</synopsis>
 This statement
  calls a procedure by name; when that procedure ends, control will pass
 to the next statement after the RUN. It is most often used to call a
@@ -3979,9 +3961,9 @@ END
 <sect2><title>KILL Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
   <command>KILL <replaceable>str expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 
 This statement is used to
 "unlink" an external procedure, possibly returning system memory,
@@ -4021,9 +4003,9 @@ KILL test$
 <sect2><title>CHAIN Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>CHAIN <replaceable>str expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 The CHAIN statement
  performs an OS-9 "chain" operation on the SHELL, passing the specified
 string as an argument. This causes <productname>BASIC09</productname> to be exited, unlinked,
@@ -4066,9 +4048,9 @@ CHAIN "Dir; Echo *** Copying Directory ***; ex basic09 copydir"
 <sect2><title>SHELL Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>SHELL <replaceable>str expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement
 allows <productname>BASIC09</productname> programs to run any OS-9 command or program.
 This gives access to virtually any OS-9 function including
@@ -4113,9 +4095,9 @@ SHELL file$ + " -p >/p &amp;"       batch procedure file
 <sect2><title>END Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>END [<replaceable>output list</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 This statement ends execution of the procedure and returns to the calling procedure,
 or to <productname>BASIC09</productname> command mode if it was the highest level procedure. If an
 output list is given, it also works the same as the PRINT statement.
@@ -4136,9 +4118,9 @@ END "I have finished execution"
 <sect2><title>STOP Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>STOP [<replaceable>output list</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 This statement
 immediately terminates execution of all procedures and returns to the
 command mode. If an output list is given it also works like a
@@ -4147,9 +4129,9 @@ PRINT statement.
 <sect2><title>BYE Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>BYE</command>
-</cmdsynopsis>
+</synopsis>
 
 This statement
 ends execution of the procedure and terminates <productname>BASIC09</productname>. Any open files
@@ -4166,9 +4148,9 @@ It should only be used if the program has been saved before it is tested!
 <sect2><title>ERROR Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>ERROR(<replaceable>integer expr</replaceable>)</command>
-</cmdsynopsis>
+</synopsis>
 This statement
 generates an error having the error code specified by the result of
 evaluation of the expression. ERROR is often used for testing error routines.
@@ -4177,9 +4159,9 @@ For details on error handling see the ON ERROR GOTO statement description.
 <sect2><title>PAUSE Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>PAUSE [<replaceable>output list</replaceable>]</command>
-</cmdsynopsis>
+</synopsis>
 PAUSE suspends execution of the procedure and causes <productname>BASIC09</productname> to enter
 Debug Mode. If an output list is given it also works like a PRINT
 statement.
@@ -4204,11 +4186,10 @@ PAUSE "now outside main loop"
 <sect2><title>CHD and CHX Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>CHD <replaceable>str expr</replaceable></command>
-<sbr/>
 <command>CHX <replaceable>str expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 These statements
 change the current default Data or Execution directory,
 respectively. The string must specify the pathlist of a file
@@ -4219,11 +4200,10 @@ the <citetitle pubwork="book">OS-9 User's Guide</citetitle>.
 <sect2><title>DEG and RAD Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>DEG</command>
-<sbr/>
 <command>RAD</command>
-</cmdsynopsis>
+</synopsis>
 These statements
 set the procedure's state flag to assume angles stated in
 degrees or radians in SIN, COS, TAN, ACS, ASN, and ATN functions.
@@ -4233,11 +4213,10 @@ is radians.
 <sect2><title>BASE 0 and BASE 1 Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>BASE 0</command>
-<sbr/>
 <command>BASE 1</command>
-</cmdsynopsis>
+</synopsis>
 
 These statements indicate whether a particular procedure's lowest array
 or data structure index (subscript) is zero or one. The
@@ -4248,11 +4227,10 @@ is always index one.
 <sect2><title>TRON and TROFF Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>TRON</command>
-<sbr/>
 <command>TROFF</command>
-</cmdsynopsis>
+</synopsis>
 These statements turn the trace mode on or off, and are useful for debugging.
 When trace mode is turned on, each statement is decompiled and printed
 before execution. Also, the result of each expression evaluation is printed as
@@ -4261,11 +4239,10 @@ it occurs.
 <sect2><title>Comment Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>REM <replaceable>chars</replaceable></command>
-<sbr/>
 <command>(* <replaceable>chars</replaceable> [ *) ]</command>
-</cmdsynopsis>
+</synopsis>
 These statements are used to put comments in programs. The second form
 of the statement is for compatibility with PASCAL programs. Comments
 are retained in the I-code but are removed by the PACK compile command.
@@ -4329,20 +4306,15 @@ Therefore, TYPE is only used in programs that use complex data structures.
 <sect2><title>DIM Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>DIM <replaceable>decl seq</replaceable> {; <replaceable>decl seq</replaceable>}</command>
-<sbr/>
 <command><replaceable>decl seq</replaceable> := <replaceable>decl</replaceable> {, <replaceable>decl</replaceable>} [: <replaceable>type</replaceable> ]</command>
-<sbr/>
 <command><replaceable>decl</replaceable> := <replaceable>name</replaceable> [ <replaceable>subscript</replaceable> ]</command>
-<sbr/>
 <command><replaceable>subscr</replaceable> := ( <replaceable>const</replaceable> [,<replaceable>const</replaceable> [,<replaceable>const</replaceable>]] )</command>
-<sbr/>
 <command><replaceable>type</replaceable> := BYTE | INTEGER | REAL | BOOLEAN |
  STRING | STRING <replaceable>max len</replaceable> | <replaceable>user defined type</replaceable></command>
-<sbr/>
 <command><replaceable>user def</replaceable> := user defined by TYPE statement</command>
-</cmdsynopsis>
+</synopsis>
 The DIM statement is used to declare simple variables,
 arrays, or complex data structures of the five
 atomic types or any user-defined type. During compilation, <productname>BASIC09</productname> assigns
@@ -4484,20 +4456,15 @@ character in the string to the corresponding element of the byte array.
 <para>
 Syntax:
 
-<cmdsynopsis>
+<synopsis>
 <command>TYPE <replaceable>type decl</replaceable> {; <replaceable>type decl</replaceable>}</command>
-<sbr/>
 <command><replaceable>type decl</replaceable> := <replaceable>field name</replaceable> . <replaceable>decl</replaceable> : <replaceable>type</replaceable>}</command>
-<sbr/>
 <command><replaceable>decl</replaceable> := <replaceable>name</replaceable> [, <replaceable>subscript</replaceable> ]</command>
-<sbr/>
 <command><replaceable>subscript</replaceable> := ( <replaceable>const</replaceable> [,<replaceable>const</replaceable> [,<replaceable>const</replaceable>]] )</command>
-<sbr/>
 <command><replaceable>type</replaceable> := BYTE | INTEGER | REAL | BOOLEAN |
  STRING | STRING [<replaceable>max len</replaceable>] | <replaceable>user defined</replaceable></command>
-<sbr/>
 <command><replaceable>user defined</replaceable> := user defined by TYPE statement</command>
-</cmdsynopsis>
+</synopsis>
 
 This statement is used to define new data types. New data types are
 defined as a "vector" (a one-dimensional array) of previously
@@ -4724,9 +4691,9 @@ unusual ways by advanced programmers to achieve certain special effects.
 <sect2><title>INPUT Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>INPUT [#<replaceable>int expr</replaceable>,] ["<replaceable>prompt</replaceable>",] <replaceable>input list</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement accepts input during the execution of a program. The
 input is normally read from the standard input device (terminal)
 unless an optional path number is given. When the INPUT statement
@@ -4789,15 +4756,12 @@ in <xref linkend="sample-programs"/>.
 <sect2><title>PRINT Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>PRINT <replaceable>output list</replaceable></command>
-<sbr/>
 <command>PRINT #<replaceable>int expr</replaceable>, <replaceable>output list</replaceable></command>
-<sbr/>
 <command>PRINT USING <replaceable>str expr</replaceable>, <replaceable>output list</replaceable></command>
-<sbr/>
 <command>PRINT #<replaceable>int expr</replaceable>, USING <replaceable>str expr</replaceable>, <replaceable>output list</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement outputs the values of the items given in the output list
 to the standard output device (path #1, the terminal) unless another
 path number is specified.
@@ -4858,13 +4822,11 @@ PRINT
 <sect2><title>OPEN Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>OPEN #<replaceable>int var</replaceable>,"<replaceable>str expr</replaceable>" [ : <replaceable>access mode</replaceable> ]</command>
-<sbr/>
 <command><replaceable>access mode</replaceable> := <replaceable>mode</replaceable> ! <replaceable>mode</replaceable> + <replaceable>access mode</replaceable></command>
-<sbr/>
 <command><replaceable>mode</replaceable> := READ ! WRITE ! UPDATE ! EXEC ! DIR</command>
-</cmdsynopsis>
+</synopsis>
 This statement issues a request to OS-9 to open an I/O path to an existing
 file or device.  The STRING expression is evaluated and passed to OS-9 as
 the descriptive pathlist.The variable name specified must be DIMensioned
@@ -4908,13 +4870,11 @@ OPEN #path,name$:WRITE+EXEC
 <sect2><title>CREATE Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>CREATE #<replaceable>int var</replaceable>,"<replaceable>str expr</replaceable>" [ : <replaceable>access mode</replaceable> ]</command>
-<sbr/>
 <command><replaceable>access mode</replaceable> := <replaceable>mode</replaceable> ! <replaceable>mode</replaceable> + <replaceable>access mode</replaceable></command>
-<sbr/>
 <command><replaceable>mode</replaceable> := WRITE ! UPDATE ! EXEC</command>
-</cmdsynopsis>
+</synopsis>
 The CREATE statement is used to create a new file on a multifile mass storage
 device such as disk or tape. If the device is not of multifile type,
 this statement works like an "OPEN" statement.
@@ -4950,9 +4910,9 @@ CREATE #outpath,name$:UPDATE+EXEC
 <sect2><title>CLOSE Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>CLOSE #<replaceable>int expr</replaceable> {,#<replaceable>int expr</replaceable>}</command>
-</cmdsynopsis>
+</synopsis>
 The CLOSE statement notifies OS-9 that one or more I/O paths are no longer
 needed. The paths are specified by their number(s). If the path closed
 used a non-sharable device (such as a printer), the device is released
@@ -4984,9 +4944,9 @@ OPEN #path,"/TERM"  \(* Permanently redirects Std Input *)
 <sect2><title>DELETE Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>DELETE <replaceable>str expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement is used to delete a mass storage file. The file's name
 is removed from the directory and all its storage is deallocated, so any
 data on the file is permanently lost. The string expression is evaluated
@@ -5014,9 +4974,9 @@ DELETE "/D2/"+name$      (deletes file named "/D2/file55")
 <sect2><title>SEEK Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>SEEK #<replaceable>int expr num</replaceable>,<replaceable>real expr</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 SEEK changes the file pointer address of a mass storage file,
 which is the address of the next data byte(s) that are to be read or
 written next. Therefore, this statement is essential for random access
@@ -5059,9 +5019,9 @@ SEEK #inventory,(part_num - 1) * SIZE(inv_rcd)
 <sect2><title>WRITE Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>WRITE #<replaceable>int expr</replaceable>,<replaceable>output list</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement writes data in ASCII character format on a file/device. The
 first expression specifies the number of a path that was previously
 opened by a OPEN or CREATE statement in WRITE or UPDATE mode.
@@ -5094,9 +5054,9 @@ WRITE #xfile,LEFT$(A$,n),count/2
 <sect2><title>READ Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>READ #<replaceable>int expr num</replaceable>,<replaceable>input list</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 This statement causes input data in ASCII character format to be read
 from a file or device.  The first expression specifies a path number.
 The path number which must have been previously opened by an OPEN or CREATE
@@ -5138,11 +5098,10 @@ See the DATA statement section for details.
 <sect2><title>GET/PUT Statement</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>GET #<replaceable>expr</replaceable>,<replaceable>struct name</replaceable></command>
-<sbr/>
 <command>PUT #<replaceable>expr</replaceable>,<replaceable>struct name</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 The GET and PUT statements read and write fixed-size binary data records
 to files or devices. These are the primary I/O statements
 used for random access input and output.
@@ -5309,13 +5268,11 @@ move any amount of data, organized any way you want.
 <sect2><title>DATA/READ/RESTORE Statements</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>READ <replaceable>input list</replaceable></command>
-<sbr/>
-<command>DATA <replaceable>expr</replaceable> , { <replaceable>expr</replaceable> }</command>
-<sbr/>
+<command>DATA <replaceable>expr</replaceable>, {<replaceable>expr</replaceable>}</command>
 <command>RESTORE [ <replaceable>line number</replaceable> ]</command>
-</cmdsynopsis>
+</synopsis>
 These statements provide an efficient way to build constant tables
 within a program.  DATA statements provide values, the READ statement
 assign the values to variables, and RESTORE statements can be used to
@@ -5369,9 +5326,9 @@ Examples:
 and other applications where formatted output is required. The
 output editing uses the PRINT USING statement which has the following
 syntax:
-<cmdsynopsis>
+<synopsis>
 <command>PRINT [<replaceable>expr#</replaceable>,] USING <replaceable>str expr</replaceable> , <replaceable>output list</replaceable></command>
-</cmdsynopsis>
+</synopsis>
 The optional path number expression can be used to specify the path
 number of any output file or device. If it is omitted, the output is
 written to the standard output path (usually the terminal).
@@ -5467,9 +5424,9 @@ The abbreviations and symbols used in the syntax specifications are:
 <sect2><title>Real Format</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>Rw.fj</command>
-</cmdsynopsis>
+</synopsis>
 This format can be used for numbers of types REAL, INTEGER, or
 BYTE. The total field width specification must include two overhead
 positions for the sign and decimal point. The "f" specifies how many
@@ -5522,9 +5479,9 @@ PRINT USING "R5.1","9999999"            *****
 <sect2><title>Exponential Format</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>Ew.fj</command>
-</cmdsynopsis>
+</synopsis>
 This format prints numbers of types REAL, INTEGER, or BYTE
 in the scientific notation format using a mantissa and decimal exponent.
 The syntax and behavior of this format is similar to the REAL format
@@ -5547,9 +5504,9 @@ PRINT USING "E12.6>",-0.001234            -1.234000E-3
 <sect2><title>Integer Format</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>Iwj</command>
-</cmdsynopsis>
+</synopsis>
 This format is used to display numbers of types INTEGER or BYTE,
 and REAL numbers that are within range for automatic type conversion.
 The "w" field width must allow for one position overhead for the sign.
@@ -5590,9 +5547,9 @@ PRINT USING "I4^",10             010
 <sect2><title>Hexadecimal Format</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>Hwj</command>
-</cmdsynopsis>
+</synopsis>
 This format can be used to display the internal binary representation
 of ANY data type, using hexadecimal characters. The "w" field width
 specification determines the number of hexadecimal characters to
@@ -5664,9 +5621,9 @@ PRINT USING "H8","ABC"             414243
 <sect2><title>String Format</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>Swj</command>
-</cmdsynopsis>
+</synopsis>
 This format is used to display string data of any length. The "w" field
 width specifies the total field size. If the string to be displayed is
 shorter than the field size, it is padded with spaces according to the
@@ -5710,9 +5667,9 @@ PRINT USING "S8^","HELLO"             HELLO
 <sect2><title>Boolean Format</title>
 <para>
 Syntax:
-<cmdsynopsis>
+<synopsis>
 <command>Bwj</command>
-</cmdsynopsis>
+</synopsis>
 This format is used to display Boolean data. The result of the Boolean
 expression is converted to the strings "TRUE" and "FALSE".
 The specification is otherwise identical to the STRING format.
