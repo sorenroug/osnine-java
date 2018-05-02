@@ -1,0 +1,785 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>The OS-9 Unified Input/Output System</title>
+
+<para>
+OS-9 Level I and Level II provides a unified system-wide hardware
+independent I/O system for user programs and OS-9 itself. All I/O
+service requests (system calls) are received by the kernel and passed to
+the Input/Output Manager (IOMAN) module for processing. IOMAN performs
+some processing (such as allocating data structures for the I/O path) and
+then calls the file managers which in turn call the device drivers to do
+much of the actual work. File manager, device driver, and device
+descriptor modules are standard memory modules that can be loaded into
+memory and used while the system is running.
+</para>
+<para>
+The structural organization of I/O related modules in an OS-9 system
+is hierarchical, as shown on page 2-1.
+</para>
+
+<sect1>
+<title>The Input/Output Manager (IOMAN)</title>
+
+<para>The Input/Output Manager (IOMAN) module provides the first level
+of service for I/O system calls by routing data on I/O paths from/to
+processes to/from the appropriate file managers and device drivers.
+It maintains two important internal OS-9 data structures: the device
+table and the path table. This module is used in all OS-9
+systems and should never be modified.</para>
+
+<para>
+When a path is opened, IOMAN attempts to link to a memory module
+having the device name given (or implied) in the pathlist. The module to
+be linked to is the device's descriptor, which contains the names of the
+device driver and file manager for the device. The information in the
+device descriptor is saved by IOMAN so subsequent system calls can be
+routed to these modules.
+</para>
+</sect1>
+
+<sect1>
+<title>File Managers</title>
+
+<para>
+OS-9 systems can have any number of File Manager modules. The
+function of a file manager is to process the raw data stream to or
+from device drivers for a similar class of devices to conform to the
+OS-9 standard I/O and file structure, removing as many unique device
+operational characteristics as possible from I/O operations. File
+managers are also responsible for mass storage allocation and directory
+processing if applicable to the class of devices they service.
+</para>
+
+<para>File managers usually buffer the data stream and issue requests to
+the kernel for dynamic allocation of buffer memory. They may also
+monitor and process the data stream, for example, adding line feed
+characters after carriage return characters.
+</para>
+
+<para>The file managers are reentrant, and one file manager may be used
+for an entire class of devices having similar operational
+characteristics.
+</para>
+
+<para>
+The three standard OS-9 file managers are:
+</para>
+
+<para>RBF: The Random Block File Manager which operates random-access,
+block-structured devices such as disk systems, bubble memories, etc.</para>
+
+<para>SCF: Sequential Character File Manager which is used with
+single-character-oriented devices such as
+CRT or hardcopy terminals, printers, modems etc.</para>
+<para>
+PIPEMAN: Pipe File Manager which supports interprocess communication via <quote>pipes</quote>.
+</para>
+
+<sect2>
+<title>Anatomy Of a File Manager</title>
+<para>
+Every file manager must have a branch table in exactly the following
+format. Routines that are not used by the file manager should branch to
+an error routine which sets the carry and loads B with an appropriate
+error code before returning. Routines returning' without error must
+insure the carry is clear.
+</para>
+<programlisting>
+* All routines are entered with:
+*  (Y) Path Descriptor ptr
+*  (U) Caller's register stack pointer
+
+EntryPt equ *
+        lbra Create
+        lbra Open
+        lbra MakDir
+        lbra ChgDir
+        lbra Delete
+        lbra Seek
+        lbra Read
+        lbra Write
+        lbra ReadLn
+        lbra WriteLn
+        lbra GetStat
+        lbra PutStat
+        lbra Close
+</programlisting>
+
+<bridgehead renderas="sect4">
+Open, Create
+</bridgehead>
+<para>
+Open and Create are responsible for opening or creating a file on a
+particular device which typically involves allocating any- buffers
+required, initializing path descriptor variables, and parsing the path
+name. If the file manager controls multi-file devices (RBF), directory
+searching is performed to find or create the specified file.
+</para>
+<bridgehead renderas="sect4">
+Makdir
+</bridgehead>
+<para>
+Makdir creates a directory file on multi-file devices. Makdir is
+neither preceded by a Create nor followed by a Close. File managers that
+are incapable of supporting directories need to return carry set with an
+appropriate error code in (B).
+</para>
+<bridgehead renderas="sect4">
+ChgDir
+</bridgehead>
+<para>
+On multi-file devices, ChgDir searches for a file which must be a
+directory file. If the directory is found, the address of the directory
+(up to four bytes) are saved in the caller's process descriptor at
+P$DIO+2 (data directory) or P$DIO+8 (execution directory).
+</para>
+<para>
+In the case of RBF, the address of the directory's file descriptor is
+saved. Open/Create begins searching in this directory when the caller's
+pathlist does not begin with a "/" character. File managers that do not
+support directories should return the carry set and an appropriate error
+code in (B).
+</para>
+<bridgehead renderas="sect4">
+Delete
+</bridgehead>
+<para>
+Multi-file device managers usually do a directory search that is
+similar to Open and, once found, remove the file name from the directory.
+Any media that was in use by the file is returned to unused status. In
+the case of RBF, space is returned and marked as available in the free
+cluster bit map on the disk. File managers that do not support multi-
+file devices simply return an error.
+</para>
+<bridgehead renderas="sect4">
+Seek
+</bridgehead>
+<para>
+File managers that support random access devices use Seek to position
+file pointers of the already open path to the byte specified. Typically,
+this is a logical movement. No error is produced at the time of the seek
+if the position is beyond the current "end of file". File managers that
+do not support random access should do nothing. It is conceivable that
+an SCF-type manager could use seek to perform cursor positioning.
+</para>
+<bridgehead renderas="sect4">
+Read
+</bridgehead>
+<para>
+Read is responsible for returning the number of bytes requested to the
+user's data buffer, and should return an EOF error if there is no data
+available. Read must be capable -of copying pure binary data, and
+generally performs no editing on the data. 'Generally, the file manager
+will call the device driver to actually read the data into a buffer, and
+then copy data from the buffer into the user's data area to keep file
+managers device independent.
+</para>
+<bridgehead renderas="sect4">
+Write
+</bridgehead>
+<para>
+The Write request, like Read, must be capable of recording pure binary
+data without alteration. Usually, the routines for read and write are
+almost identical with the exception that Write uses the device driver's
+output routine instead of the input routine. RBF and similar random
+access devices that use fixed-length records (sectors) must often pre-
+read a sector before writing it unless the entire sector is being
+written. Writing past the end of file on a device should expand the file
+with new data.
+</para>
+<bridgehead renderas="sect4">
+ReadLn
+</bridgehead>
+<para>
+ReadLn differs from Read in two respects. First, ReadLn is expected
+to terminate when the first end-of-line characater (carriage return) is
+encountered. ReadLn should also perform any input editing that is
+appropriate for the device. In the case of SCF, editing involves
+handling backspace, line deletion, removing the high-order bit from
+characters, etc.
+</para>
+<bridgehead renderas="sect4">
+Writeln
+</bridgehead>
+<para>
+Writeln is the counterpart of ReadLn. It should call the device
+driver to transfer data up to and including the first (if any) carriage
+return encountered. Appropriate output editing may also be performed.
+For example, SCF outputs a line feed and carriage return character and
+nulls if appropriate for the device, as well as pausing at the end of a
+screen page.
+</para>
+<bridgehead renderas="sect4">
+GetStat, PutStat
+</bridgehead>
+<para>
+The GetStat (Get Status) and PutStat (Put Status) system calls are
+wild card calls designed to provide a method of accessing features of a
+device (or file manager) that are not generally device independent. The
+file manager may perform some specific function such as setting the size
+of a file to a given value. Status calls that are "unknown" should be
+passed on to the driver to provide a further means of device dependence.
+For example, a PutStat call to format a disk track may behave differently
+on different types of disk controllers.
+</para>
+<bridgehead renderas="sect4">
+Close
+</bridgehead>
+<para>
+Close is responsible for insuring that any output to a device is
+completed (writing out the last buffer if necessary), and releasing any
+buffer space allocated in an open or create. It should not execute the
+device driver's terminate routine, but may do specific end-of-file
+processing if desired, such as writing end-of-file records on tapes or
+form feeds to printers.
+</para>
+</sect2>
+
+<sect2>
+<title>Interfacing to the Device Driver</title>
+<para>
+Strictly speaking, device drivers must conform to the general format
+presented in this manual. However, IOMAN uses only the "Init" and
+"Terminate" entry points. Other entry points need only be compatible
+with the file manager for which the driver is written. For example, the
+Read entry point of an SCF driver is expected to return one byte from the
+device. On the other hand, RBF expects Read to return an entire sector.
+</para>
+<para>
+The following code is extracted from the SCF file manager to
+illustrate how a file manager might call one of it's drivers.
+</para>
+
+<programlisting>
+***************
+*  IOEXEC
+*    Execute Device's Read/Write routine
+
+*  Passed: (A)=output char (write)
+*          (X)=Device Table entry ptr
+*          (Y)=Path Descriptor ptr
+*          (U)=offset of routine (DSRead, D$Write)
+* Returns: (A)=Input char (read)
+*          (B)=error code, CC set if error
+* Destroys B,CC
+
+IOEXEC pshs a,x,y,u save registers
+       ldu V$STAT,x get static storage for driver
+       ldx V$DRIV,x get driver module address
+       ldd M$EXEC,X and offset of execution entries
+       addd 5,s offset by read/write
+       leax d,x absolute entry address
+       lda ,s+ restore char (for write)
+       jsr 0,x execute driver read/write
+       puls x,y,u,pc return (A)=char, (B)=error
+
+       emod Module CRC
+Size equ * size of Sequential File Manager
+</programlisting>
+
+</sect2>
+</sect1>
+
+<sect1>
+<title>Device Driver Modules</title>
+<para>
+The device driver modules are subroutine packages that perform basic,
+low-level I/O transfers to or from a specific type of I/O device hardware
+controller. These modules are reentrant so one copy of the module can
+simultaneously run several different devices which use identical I/O
+controllers. For example, the device driver for 6850 serial interfaces
+is-called "ACIA" and can communicate to any number of serial terminals.
+</para>
+<para>
+Device driver modules use a standard module header and are given a
+module type of "device driver" (code $E0). The execution offset address
+in the module header points to a branch table that has a minimum of six
+(three byte) entries. Each entry is typically a LBRA to the
+corresponding subroutine. The File Managers call specific routines in the
+device driver through this table, passing a pointer to a "path
+descriptor" and the hardware control register address in the MPU
+registers. The branch table looks like:
+</para>
+<literallayout>
+  +0 = Device Initialization Routine
+  +3 = Read From Device
+  +6 = Write to Device
+  +9 = Get Device Status
+ +$C = Set Device Status
+ +$F = Device Termination Routine
+</literallayout>
+
+<para>
+For a complete description of the parameters passed to these
+subroutines see the file manager descriptions.
+</para>
+<para>
+See the following page for a diagram of device driver format.
+</para>
+
+<informalfigure>
+<screen>
+                DEVICE DRIVER MODULE FORMAT
+
+
+Relative               Usage                 Check Range
+Address
+
+        +------------------------------+  ---+--------+---
+ $00    |                              |     |        |
+        +--    Sync Bytes ($87CD)    --+     |        |
+ $01    |                              |     |        |
+        +------------------------------+     |        |
+ $02    |                              |     |        |
+        +--   Module Size (bytes)    --+     |        |
+ $03    |                              |     |        |
+        +------------------------------+     |        |
+ $04    |                              |     |        |
+        +--   Module Name Offset     --+   header     |
+ $05    |                              |   parity     |
+        +------------------------------+     |        |
+ $06    |     Type     |   Language    |     |        |
+        +------------------------------+     |        |
+ $07    |  Attributes  |   Revision    |     |        |
+        +------------------------------+  ---+--    module
+ $08    |     Header Parity Check      |             CRC
+        +------------------------------+              |
+ $09    |                              |              |
+        +--     Execution Offset     --+              |
+ $0A    |                              |              |
+        +------------------------------+              |
+ $0B    |                              |              |
+        +--  Permanent Storage Size  --+              |
+ $0C    |                              |              |
+        +------------------------------+              |
+ $0D    |        Mode Byte             |              |
+        +------------------------------+              |
+        |                              |              |
+        |       Module Body            |              |
+        |                              |              |
+        +------------------------------+              |
+        |                              |              |
+        |       CRC Check Value        |              |
+        |                              |              |
+        +------------------------------+  ------------+---
+</screen>
+</informalfigure>
+
+<para>
+$D Mode Byte - (D S PE PW PR E W R)
+</para>
+
+<sect2>
+<title>OS-9 Interacting with Real World Devices</title>
+<para>
+Device drivers are often in the position of waiting for hardware to
+accomplish a task or waiting for a user to enter or receive data. These
+Situations can occur when an SCF device driver receives a read and no
+data is available, or when a write is received and there is no buffer
+space available. '
+</para>
+<para>
+Any driver operating under OS-9 should release the current process
+from running (via F$Sleep) to allow other processes to continue using the
+CPU time when it encounters a conflict of the type described above. The
+most efficient way for the driver to come out of the sleep and resume
+processing data is by interrupts (IRQs). It is possible for the driver
+to sleep for a number of system clock ticks and then check the device or
+buffer for ready. The drawbacks to this technique are:
+</para>
+
+<orderedlist  numeration="arabic">
+<listitem><para> - It requires the system clock to always be active.</para></listitem>
+<listitem><para> - It may take 2 clock ticks, or maybe even 20 ticks for the
+device to become ready, which leaves the programmer with a dilemma. If
+the programmer chooses to sleep for 2 ticks, he or she wastes CPU time
+awakening and checking for device ready. If the driver sleeps 20 ticks,
+it does not have good response time.</para></listitem>
+</orderedlist>
+
+<para>
+An interrupt system allows the hardware to report to the CPU and the
+device drivers when the device has finished some operation. Using
+interrupts to advantage, a device driver may set up interrupt handling to
+occur when a character is sent/reed, a disk operation is complete, or
+whatever. The OS-9 environment is set up for ease of interrupt
+processing. There is a flexible built-in polling system facility for
+pausing a process, and awakening the process. Microware has developed a
+technique for device drivers to follow in order to process interrupts.
+</para>
+<para>
+Step 1: Init routine places the driver local IRQSVC routine in
+the IRQ polling sequence via an F$IRQ system call.
+</para>
+<programlisting>
+     ldd V.Port,u get address to poll
+     leax IRQPOLL,pcr point to IRQ packet
+     leay IRQSERVC,pcr point to IRQ service routine
+     OS9 F$IRQ add dev to poll sequence
+     bcs Error abnormal exit if error
+</programlisting>
+<para>
+Step 2: Whenever a driver program must wait for the hardware, it
+should call a sleep routine. The sleep routine will copy V.Busy to
+V.Wake, then it will go to sleep for some period of time.
+</para>
+<para>
+Step 3: When the driver program "awakens", it will check whether
+it awakened because of an interrupt or a signal sent from some other
+process. The usual way to accomplish the check is with the V.Wake
+storage byte. The V.Busy byte is maintained by the file manager to be
+the process ID of the process using the driver. When V.Busy is copied
+into V.Wake, then V.Wake becomes a flag byte and an information byte. A
+non-zero Wake byte indicates there is a process awaiting an interrupt.
+The value in the Wake byte indicates what process should be awakened by
+the sending of a wakeup signal. The following code will indicate a
+technique to accomplish this:
+</para>
+<programlisting>
+          lda V.Busy,u get proc ID
+          sta V.Wake,u arrange for wakeup
+          andcc #^IntMasks clear the way for interrupts
+Sleep50   ldx #0 or any tick time desired.
+          OS9 F$Sleep await an IRQ
+          ldx D.Proc get process desc ptr (if signal test)
+          ldb PSSignal,x is signal present? (if signal test)
+          bne SigTest bra if so (if signal test)
+          tst V.Wake,u IRQ occur?
+          bne SleepSO bra if not
+</programlisting>
+<para>
+Note that the code labelled <quote>if signal test</quote> is only necessary if the
+driver wishes to return to the caller if a signal is sent without waiting
+for the device to finish. Also note that IRQs (and FIRQs) must be masked
+between the time a command is given to the device and the moving of
+V.Busy to V.Wake. If they are not masked, it is possible for the device
+IRQ to occur and the IRQSERVC routine to become confused as to sending a
+wakeup signal or not.
+</para>
+<para>
+Step 4: When the device issues an interrupt, the routine address
+given in the F$IRQ will be called. This routine is called as if it were
+a portion of the interrupt handler in the system. The interrupts are
+masked, the routine should be as short as possible, and the routine
+should return to the caller via RTS, since the system poller has called
+it via JSR and will do the RTI when done. The IRQSERVC routine may want
+to verify that an interrupt has occurred for the device. It will need to
+clear the interrupt and retrieve any data in the device. Then the V.Wake
+byte is used to communicate back to the main driver routine. If V.Wake
+is non-zero, it should be cleared (indicating a true device interrupt),
+and its contents used as the process ID for and F$Send system call
+sending a wakeup signal to the process. Some sample code follows:
+</para>
+
+<programlisting>
+          ldx V.Port,u <lineannotation>get device address</lineannotation>
+          tst ???? <lineannotation>is it real interrupt from this device?</lineannotation>
+          bne IRQSVC9O <lineannotation>bra to error if not</lineannotation>
+          lda Data,x <lineannotation>get data from device</lineannotation>
+          sta 0,y <lineannotation>store data in buffer (simplified example)</lineannotation>
+          lda V.Wake,u <lineannotation>get process ID</lineannotation>
+          beg IRQSVC8O <lineannotation>bra if none</lineannotation>
+          clr V.Wake,u <lineannotation>clear it as flag to main routine</lineannotation>
+          ldb #S$Wake <lineannotation>get wakeup signal</lineannotation>
+          OS9 F$Send <lineannotation>send signal to driver</lineannotation>
+IRQSVC8O  clrb <lineannotation>clear the carry bit (this indicates all is well)</lineannotation>
+          rts
+IRQSVC90  comb <lineannotation>set the carry bit (this indicates bad IRQ call)</lineannotation>
+          rts
+</programlisting>
+
+</sect2>
+<sect2>
+<title>SUSPEND STATE - A New Feature for LII V1.2</title>
+<para>
+With the advent of OS-9 Level II Version 1.2 there is a new
+possibility for device drivers when working with IRQs which involves the
+use of the suspend bit in the process state byte. The scheduler has been
+changed to ignore any process in the active queue which has the suspend
+state bit set. The main advantage of this method over the previous
+method is the elimination of the F$Send system call during the interrupt
+handling. Since the process is already in the active queue, it need not
+be moved from one queue to another. The device driver IRQSERVC routine
+can now clear the suspend bit in the process state in order to "wakeup"
+the suspended main driver. Sample routines for the sleep and IRQSERVC
+calls follow:
+</para>
+<para>
+<programlisting>
+          lda D.Proc <lineannotation>get process ptr</lineannotation>
+          sta V.Wake,u <lineannotation>prep for re-awakening</lineannotation>
+
+          <lineannotation>enable device to IRQ, give command, etc.</lineannotation>
+
+          bra Cmd50 <lineannotation>enter suspend loop</lineannotation>
+
+   Cmd30  ldx D.Proc <lineannotation>get ptr to process desc</lineannotation>
+          lda P$State,x <lineannotation>get state flag</lineannotation>
+          ora #Suspend <lineannotation>put proc in suspend state</lineannotation>
+          sta P$State,x <lineannotation>save it in proc desc</lineannotation>
+          andcc #^IntMasks <lineannotation>unmask interrupts</lineannotation>
+          ldx #1 <lineannotation>give up time slice</lineannotation>
+          OS9 F$Sleep <lineannotation>suspend (in active queue)</lineannotation>
+   Cmd50  orcc #IntMasks <lineannotation>mask interrupts while changing state</lineannotation>
+          ldx D.Proc <lineannotation>get proc desc addr (if signal test)</lineannotation>
+          lda P$Signal,x <lineannotation>get signal (if signal test)</lineannotation>
+          beq SigProc <lineannotation>bra if.signal to be handled</lineannotation>
+          lda V.Wake,u <lineannotation>true interrupt?</lineannotation>
+          bne Cmd30 <lineannotation>bra if not</lineannotation>
+          andcc #^IntMasks <lineannotation>assure interrupts unmasked</lineannotation>
+</programlisting>
+</para>
+<para>
+Note D.Proc is a pointer to the process descriptor of the current
+process. These descriptors are always allocated on 256 byte page
+boundaries. Thus, having the high order byte of the address is adequate
+to locate the descriptor. D.Proc is put in V.Wake as a dual value, in
+one instance it is a flag byte indicating a process is indeed suspended,
+and in the other instance it is a pointer to the process descriptor so
+the IRQSERVC routine can clear the suspend bit. It is necessary to have
+the interrupts masked from the time the device is enabled until the
+suspend bit has been set to insure that the IRQSERVC routine will not
+think it has cleared the suspend bit before it is even set. Then when
+the bit is set, the process could go into permanent suspension. The
+IRQSERVC routine sample follows:
+</para>
+
+<programlisting>
+         ldy V.Port,u get dev addr
+         tst V.Wake,u is process awaiting IRQ?
+         beq IRQSVCER no exit
+
+         clear device interrupt
+         exit if IRQ not from this device
+
+         lda V.Wake,u get process ptr
+         clrb
+         stb V.Wake,u clear proc waiting flag
+         tfr d,x get process descriptor ptr
+         lda F$State,x get state flag
+         anda #^Suspend clear suspend state
+         sta P$State,x save it
+         clrb clear carry bit
+         rts
+
+IRQSVCER comb set carry bit
+         rts
+</programlisting>
+</sect2>
+</sect1>
+
+<sect1>
+<title>Device Descriptor Modules</title>
+
+<para>Device descriptor modules are small, non-executable modules that
+provide information that associates a specific I/O device with its
+logical name, hardware controller address(es), device driver name,
+file manager name, and initialization parameters.</para>
+
+<para>Recall that device drivers and file managers both operate on
+general classes of devices, not specific I/O ports. The
+device descriptor modules tailor their functions to a specific I/O
+device. One device descriptor module must exist for each I/O device
+in the system.</para>
+
+<para>The name of the module is the name the device is known by to the
+system and user (i.e. it is the device name given in pathlists). Its
+format consists of a standard module header that has a type <quote>device
+descriptor</quote> (code $F). The rest of the device descriptor header
+consists of:</para>
+
+<informaltable frame="none" colsep="0" rowsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.2in" align="right"/>
+<colspec colwidth="5in"/>
+<tbody>
+<row>
+<entry>$9,$A =</entry>
+<entry>File manager name string relative address.</entry>
+</row>
+<row>
+<entry>$B,$C =</entry>
+<entry>Device driver name string relative address</entry>
+</row>
+<row>
+<entry>$D =</entry>
+<entry>Mode/Capabilities. (D S PE PW PR E W R)</entry>
+</row>
+<row>
+<entry>$E,$F,$10 =</entry>
+<entry>Device controller absolute physical (24-bit) address</entry>
+</row>
+<row>
+<entry>$11 =</entry>
+<entry>Number of bytes ( <quote>n</quote> bytes in initialization
+table)</entry>
+</row>
+<row>
+<entry>$12,$12+n =</entry>
+<entry>Initialization table</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>The initialization table is copied into the <quote>option section</quote>
+of the path descriptor when a path to the device is opened. The
+values in this table may be used to define the operating parameters
+that are changeable by the OS9 <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/> service requests.
+For example, a terminal's initialization parameters define which
+control characters are used for backspace, delete, etc. The maximum
+size of initialization table which may be used is 32 bytes. If the
+table is less than 32 bytes long, the remaining values in the path
+descriptor will be set to zero.</para>
+
+
+
+<informalfigure>
+<screen>
+MODULE     DEVICE DESCRIPTOR MODULE FORMAT
+OFFSET
+
+           +-----------------------------+  ---+--------+---
+  $0       |                             |     |        |
+           +--   Sync Bytes ($87CD)    --+     |        |
+  $1       |                             |     |        |
+           +-----------------------------+     |        |
+  $2       |                             |     |        |
+           +--   Module Size           --+     |        |
+  $3       |                             |     |        |
+           +-----------------------------+     |        |
+  $4       |                             |     |        |
+           +-- Offset to Module Name   --+   header     |
+  $5       |                             |   parity     |
+           +-----------------------------+     |        |
+  $6       | $F (TYPE)   |  $1 (LANG)    |     |        |
+           +-----------------------------+     |        |
+  $7       | Attributes  |   Revision    |     |        |
+           +-----------------------------+  ---+--    module
+  $8       |  Header Parity Check        |             CRC
+           +-----------------------------+              |
+  $9       |                             |              |
+           +--  Offset to File Manager --+              |
+  $A       |         Name String         |              |
+           +-----------------------------+              |
+  $B       |                             |              |
+           +-- Offset to Device Driver --+              |
+  $C       |         Name String         |              |
+           +-----------------------------+              |
+  $D       |        Mode Byte            |              |
+           +-----------------------------+              |
+  $E       |                             |              |
+           +--    Device Controller    --+              |
+  $F       | Absolute Physical Address   |              |
+           +--       (24 bit)          --+              |
+ $10       |                             |              |
+           +-----------------------------+              |
+ $11       |  Initialization Table Size  |              |
+           +-----------------------------+              |
+$12,$12+N  |                             |              |
+           |  (Initialization Table)     |              |
+           |                             |              |
+           +-----------------------------+              |
+           |    (Name Strings etc)       |              |
+           +-----------------------------+              |
+           |      CRC Check Value        |              |
+           +-----------------------------+  ------------+---
+</screen>
+</informalfigure>
+</sect1>
+
+<sect1>
+<title>Path Descriptors</title>
+
+<para>Every open path is represented by a data structure called a path
+descriptor (<quote>PD</quote>). It contains the information required by
+the file managers and device drivers to perform I/O functions. Path
+descriptors are exactly 64 bytes long and are dynamically allocated
+and deallocated by IOMAN as paths are opened and closed.</para>
+
+<para>PDs are <emphasis>internal</emphasis> data structures that are not normally referenced
+from user or applications programs. In fact, it is almost impossible
+to locate a path's PD when OS-9 is in user mode. The description of
+PDs is mostly of interest to, and presented here for those
+programmers who need to write custom file managers, device drivers,
+or other extensions to OS-9.</para>
+
+<para>PDs have three sections: the first 10-byte section is defined
+universally for all file managers and device drivers, as shown below.</para>
+
+<table frame="none" colsep="0" rowsep="0">
+<title>Universal Path Descriptor Definitions</title>
+<tgroup cols="4">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in" align="right"/>
+<colspec colwidth="4in"/>
+<thead>
+<row rowsep="1">
+<entry>Name</entry>
+<entry>Addr</entry>
+<entry>Size</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>PD.PD</entry><entry>$00</entry><entry>1</entry>
+<entry>Path number</entry>
+</row>
+<row>
+<entry>PD.MOD</entry><entry>$01</entry><entry>1</entry>
+<entry>Access mode: 1=read 2=write 3=update</entry>
+</row>
+<row>
+<entry>PD.CNT</entry><entry>$02</entry><entry>1</entry>
+<entry>Number of paths using this PD</entry>
+</row>
+<row>
+<entry>PD.DEV</entry><entry>$03</entry><entry>2</entry>
+<entry>Address of associated device table entry</entry>
+</row>
+<row>
+<entry>PD.CPR</entry><entry>$05</entry><entry>1</entry>
+<entry>Requester's process ID</entry>
+</row>
+<row>
+<entry>PD.RGS</entry><entry>$06</entry><entry>2</entry>
+<entry>Caller's MPU register stack address</entry>
+</row>
+<row>
+<entry>PD.BUF</entry><entry>$08</entry><entry>2</entry>
+<entry>Address of 236-byte data buffer (if used)</entry>
+</row>
+<row>
+<entry>PD.FST</entry><entry>$0A</entry><entry>22</entry>
+<entry>Defined by file manager</entry>
+</row>
+<row>
+<entry>PD.OPT</entry><entry>$20</entry><entry>32</entry>
+<entry>Reserved for GETSTAT/SETSTAT options</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+
+<para>The 22-byte section called <quote>PD.FST</quote> is reserved for and
+defined by each type of file manager for file pointers, permanent
+variables, etc.</para>
+
+<para>The 32-byte section called <quote>PD.OPT</quote> is used as an
+<quote>option</quote> area for dynamically-alterable operating
+parameters for the file or device. These variables are initialized at
+the time the path is opened by copying the initialization table
+contained in the device descriptor module, and can be altered later
+by user programs by means of the <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/> system calls.</para>
+
+<para>
+<quote>PD.OPT</quote> and <quote>PD.FST</quote> sections are defined for each file manager in
+the assembly language equate file (OS9 <filename>SCFDefs</filename> for SCF and OS9 <filename>RBFDefs</filename> for RBF).
+</para>
+</sect1>
+</chapter>

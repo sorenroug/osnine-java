@@ -1,0 +1,1839 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Random Block File Manager</title>
+  <para>
+The Random Block File Manager (RBF) is a file manager module that
+supports random-access, block-oriented mass storage devices such as disk
+systems, bubble memory systems, and high-performance tape systems. RBP
+can handle any number or type of such systems simultaneously. RBF is a
+reentrant subroutine package called by IOMAN for I/O service requests to
+random-access devices. It is responsible for maintaining the logical and
+physical file structures.
+</para>
+  <para>
+In the course of normal operation, RBF requests allocation and
+deallocation of 256 byte data buffers; usually one is required for each
+open file. When physical I/O functions are necessary, RBF directly calls
+the subroutines in the associated device drivers. All data transfers are
+performed using 256 byte data blocks. RBF does not directly deal with
+physical addresses such as tracks, cylinders, etc. Instead, it passes to
+device driver modules address parameters using a standard address called
+a "logical sector number", or "LSN". LSNs are integers in the range of 0
+to n-1, where n is the maximum number of sectors on the media. The
+driver is responsible for translating the logical sector number to actual
+cylinder/track/sector values.
+</para>
+  <para>
+Because RBF is designed to support a wide range of devices having
+different performance and storage capacity, it is highly parameter
+driven. The physical parameters it uses are stored on the media itself.
+On disk systems, this information is written on the first few sectors of
+track number zero. The device drivers also use this information,
+particularly the physical parameters stored on sector 0. These
+parameters are written by the "format" program that initializes and tests
+the media.
+</para>
+  <sect1>
+    <title>Logical And Physical Disk Organization</title>
+    <para>
+All mass storage volumes (disk media) used by OS-9 utilize the first
+few sectors of the volume to store basic identification, file structure,
+and storage allocation information.
+</para>
+    <para>
+Logical sector zero (LSN 0) is called the <emphasis>Identification Sector</emphasis>
+and contains a description of the physical and logical format of the volume.
+</para>
+    <para>
+Logical sector one (LSN 1) is the beginning of an allocation map which
+indicates which disk sectors are free and available for use in new or
+expanded files. The allocation bit map may be up to 256 sectors for high
+volume media.
+</para>
+    <para>
+The volume's root directory usually starts at logical sector two or it
+will start at the logical sector following the allocation map. It's
+logical sector number is given in the information LSN 0 (DD.Dir).
+</para>
+    <sect2 xml:id="ident-sector">
+      <title>Identification Sector</title>
+      <para>
+Logical sector number zero contains a description of the physical and
+logical characteristics of the volume which are established by the
+"<command>format</command>" command program when the media is initialized. The table below
+gives the OS-9 mnemonic name, byte address, size, and description of each
+value stored in this sector.
+</para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="4">
+          <colspec colwidth="1.2in"/>
+          <colspec colwidth="0.6in"/>
+          <colspec colwidth="0.6in" align="right"/>
+          <colspec colwidth="2.6in"/>
+          <thead>
+            <row rowsep="1">
+              <entry>Name</entry>
+              <entry>Addr</entry>
+              <entry>Size</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>DD.TOT</entry>
+              <entry>$00</entry>
+              <entry>3</entry>
+              <entry>Total number of sectors on media</entry>
+            </row>
+            <row>
+              <entry>DD.TKS</entry>
+              <entry>$03</entry>
+              <entry>1</entry>
+              <entry>Number of sectors per track</entry>
+            </row>
+            <row>
+              <entry>DD.MAP</entry>
+              <entry>$04</entry>
+              <entry>2</entry>
+              <entry>Number of bytes in allocation map</entry>
+            </row>
+            <row>
+              <entry>DD.BIT</entry>
+              <entry>$06</entry>
+              <entry>2</entry>
+              <entry>Number of sectors per cluster</entry>
+            </row>
+            <row>
+              <entry>DD.DIR</entry>
+              <entry>$08</entry>
+              <entry>3</entry>
+              <entry>FD sector of root directory</entry>
+            </row>
+            <row>
+              <entry>DD.OWN</entry>
+              <entry>$0B</entry>
+              <entry>2</entry>
+              <entry>Owner's user number</entry>
+            </row>
+            <row>
+              <entry>DD.ATT</entry>
+              <entry>$0D</entry>
+              <entry>1</entry>
+              <entry>Disk attributes</entry>
+            </row>
+            <row>
+              <entry>DD.DSK</entry>
+              <entry>$0E</entry>
+              <entry>2</entry>
+              <entry>Disk identification (for internal use)</entry>
+            </row>
+            <row>
+              <entry>DD.FMT</entry>
+              <entry>$10</entry>
+              <entry>1</entry>
+              <entry>Disk format: density, number of sides</entry>
+            </row>
+            <row>
+              <entry>DD.SPT</entry>
+              <entry>$11</entry>
+              <entry>2</entry>
+              <entry>Number of sectors per track</entry>
+            </row>
+            <row>
+              <entry>DD.RES</entry>
+              <entry>$13</entry>
+              <entry>2</entry>
+              <entry>Reserved for future use</entry>
+            </row>
+            <row>
+              <entry>DD.BT</entry>
+              <entry>$15</entry>
+              <entry>3</entry>
+              <entry>Starting sector of bootstrap file</entry>
+            </row>
+            <row>
+              <entry>DD.BSZ</entry>
+              <entry>$18</entry>
+              <entry>2</entry>
+              <entry>Size of bootstrap file (in bytes)</entry>
+            </row>
+            <row>
+              <entry>DD.DAT</entry>
+              <entry>$1A</entry>
+              <entry>5</entry>
+              <entry>Time of creation: Y:M:D:H:M</entry>
+            </row>
+            <row>
+              <entry>DD.NAM</entry>
+              <entry>$1F</entry>
+              <entry>32</entry>
+              <entry>Volume name</entry>
+            </row>
+            <row>
+              <entry>DD.OPT</entry>
+              <entry>$3F</entry>
+              <entry>32</entry>
+              <entry>Path descriptor options</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </sect2>
+    <sect2 xml:id="lsn1">
+      <title>Disk Allocation Map</title>
+      <para>
+Logical sector one of the disk, and possibly more sectors, is used for
+the "disk allocation map" that specifies which clusters on the disk are
+available for allocation of file storage space. The size of the
+allocation map can be up to a maximum of 256 sectors decided by the
+Format utility. Format sets the size of the bitmap depending on disk
+size and sectors per cluster. DD.MAP specifies the number of bytes that
+are actually used in the map.
+</para>
+      <para>
+Each bit in the map corresponds to a cluster of sectors on the disk.
+The number of sectors per cluster is Specified by the "DD.BIT" variable
+in the identification sector, and is always an integral power of two,
+i.e., 1, 2, 4, 8, 16, etc. Multiple sector bitmaps allow the number of
+sectors per cluster to be as small as possible for high volume media.
+Each bit is cleared if the corresponding cluster is available for
+allocation, or set if the sector is already allocated, non-existent, or
+physically defective. The bitmap is initially created by the "format"
+utility program.
+</para>
+    </sect2>
+    <sect2>
+      <title>File Descriptor Sectors</title>
+      <para>
+The first sector of every file is called a "file descriptor", which
+contains the logical and physical description of the file. The table
+below describes the contents of the descriptor.
+</para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="4">
+          <colspec colwidth="0.8in"/>
+          <colspec colwidth="0.6in"/>
+          <colspec colwidth="0.6in" align="right"/>
+          <colspec colwidth="3in"/>
+          <thead>
+            <row rowsep="1">
+              <entry>Name</entry>
+              <entry>Addr</entry>
+              <entry>Size</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>FD.ATT</entry>
+              <entry>$0</entry>
+              <entry>1</entry>
+              <entry>File Attributes: D S PE PW PR E W R</entry>
+            </row>
+            <row>
+              <entry>FD.OWN</entry>
+              <entry>$1</entry>
+              <entry>2</entry>
+              <entry>Owner's User ID</entry>
+            </row>
+            <row>
+              <entry>FD.DAT</entry>
+              <entry>$3</entry>
+              <entry>5</entry>
+              <entry>Date Last Modified: Y M D H M</entry>
+            </row>
+            <row>
+              <entry>FD.LNK</entry>
+              <entry>$8</entry>
+              <entry>1</entry>
+              <entry>Link Count</entry>
+            </row>
+            <row>
+              <entry>FD.SIZ</entry>
+              <entry>$9</entry>
+              <entry>4</entry>
+              <entry>File Size (number of bytes)</entry>
+            </row>
+            <row>
+              <entry>FD.Creat</entry>
+              <entry>$D</entry>
+              <entry>3</entry>
+              <entry>Date Created: Y M D</entry>
+            </row>
+            <row>
+              <entry>FD.SEG</entry>
+              <entry>$10</entry>
+              <entry>240</entry>
+              <entry>Segment List: see below</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+The attribute byte contains the file permission bits. Bit 7 is set to
+indicate a directory file, bit 6 indicates a "nonsharable" file, bit 5 is
+public execute, bit 4 is public write, etc.
+</para>
+      <para>
+The segment list consists of up to 48 five byte entries that have the
+size and address of each block of storage that comprise the file in
+logical order. Each entry has a three byte logical sector number that
+specifies the beginning of the block, and a two byte block size (in
+sectors). The entry following the last segment must be zero.
+</para>
+      <para>
+When a file is created, it initially has no data segments allocated to
+it. Write operations past the current end-of-file (the first write is
+always past the end-of-file) cause additional sectors to be allocated to
+the file. If the file has no segments, it is given an initial segment
+having the number of sectors specified by the minimum allocation entry in
+the device descriptor (IT.SAS), or the number of sectors requested,
+whichever is greater than the minimum. Subsequent expansions of the file
+are also generally made in minimum allocation increments. An attempt is
+made to expand the last segment used wherever possible rather than adding
+a new segment. When the file is closed, unused sectors in the last
+segment are truncated and returned to the free pool.
+</para>
+      <para>
+A note about disk allocation: OS-9 attempts to minimize the number of
+storage segments used in a file. In fact, many files will only have one
+segment in which case no extra read operations are needed to randomly
+access any byte on the file. Files can have multiple segments if the
+free space of the disk becomes very fragmented, or if a file is
+repeatedly closed, then opened and expanded at some later time. Multiple
+segments can be avoided by writing a byte at the highest address to be
+used on a file before writing any other data.
+</para>
+    </sect2>
+    <sect2>
+      <title>Directory Files</title>
+      <para>
+Disk directories are files that have the "D" attribute set. Directory
+files contain an integral number of directory entries, each of which can
+hold the name and LSN of a regular file or directory file.
+</para>
+      <para>
+Each directory entry is 32 bytes long, consisting of 29 bytes for the
+file name followed by a three byte logical sector number of the file's
+descriptor sector. The file name is left-justified in the field with the
+sign bit of the last character set. Unused entries have a zero byte in
+the first file name character position.
+</para>
+      <para>
+Every mass-storage media must have a master directory called the "root
+directory". The beginning logical sector number of this directory is
+stored in the identification sector, as previously described.
+</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>RBF Definitions of the Path Descriptor</title>
+    <para>
+The table below describes the usage of the file-manager-reserved 
+section of path descriptors used by RBF.
+</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4">
+        <colspec colwidth="1in" colname="c1"/>
+        <colspec colwidth="0.6in"/>
+        <colspec colwidth="0.6in" align="right"/>
+        <colspec colwidth="2.8in" colname="c4"/>
+        <spanspec spanname="all" namest="c1" nameend="c4"/>
+        <thead>
+          <row rowsep="1">
+            <entry>Name</entry>
+            <entry>Addr</entry>
+            <entry>Size</entry>
+            <entry>Description</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry spanname="all">Universal Section (same for all file managers)</entry>
+          </row>
+          <row>
+            <entry>PD.PD</entry>
+            <entry>$00</entry>
+            <entry>1</entry>
+            <entry>Path number</entry>
+          </row>
+          <row>
+            <entry>PD.MOD</entry>
+            <entry>$01</entry>
+            <entry>1</entry>
+            <entry>Mode (read/write/update)</entry>
+          </row>
+          <row>
+            <entry>PD.CNT</entry>
+            <entry>$02</entry>
+            <entry>1</entry>
+            <entry>Number of open images</entry>
+          </row>
+          <row>
+            <entry>PD.DEV</entry>
+            <entry>$03</entry>
+            <entry>2</entry>
+            <entry>Address of device table entry</entry>
+          </row>
+          <row>
+            <entry>PD.CPR</entry>
+            <entry>$05</entry>
+            <entry>1</entry>
+            <entry>Current process ID</entry>
+          </row>
+          <row>
+            <entry>PD.RGS</entry>
+            <entry>$06</entry>
+            <entry>2</entry>
+            <entry>Address of callers register stack</entry>
+          </row>
+          <row>
+            <entry>PD.BUF</entry>
+            <entry>$08</entry>
+            <entry>2</entry>
+            <entry>Buffer address</entry>
+          </row>
+          <row>
+            <entry spanname="all">RBF Path Descriptor Definitions</entry>
+          </row>
+          <row>
+            <entry>PD.SMF</entry>
+            <entry>$0A</entry>
+            <entry>1</entry>
+            <entry>State flags (see next page)</entry>
+          </row>
+          <row>
+            <entry>PD.CP</entry>
+            <entry>$0B</entry>
+            <entry>4</entry>
+            <entry>Current logical file position (byte addr)</entry>
+          </row>
+          <row>
+            <entry>PD.SIZ</entry>
+            <entry>$0F</entry>
+            <entry>4</entry>
+            <entry>File size</entry>
+          </row>
+          <row>
+            <entry>PD.SBL</entry>
+            <entry>$13</entry>
+            <entry>3</entry>
+            <entry>Segment beginning logical sector number</entry>
+          </row>
+          <row>
+            <entry>PD.SBP</entry>
+            <entry>$16</entry>
+            <entry>3</entry>
+            <entry>Segment beginning physical sector number</entry>
+          </row>
+          <row>
+            <entry>PD.SSZ</entry>
+            <entry>$19</entry>
+            <entry>2</entry>
+            <entry>Segment size</entry>
+          </row>
+          <row>
+            <entry>PD.DSK</entry>
+            <entry>$15</entry>
+            <entry>2</entry>
+            <entry>Disk ID (for internal use only)</entry>
+          </row>
+          <row>
+            <entry>PD.DTB</entry>
+            <entry>$lD</entry>
+            <entry>2</entry>
+            <entry>Address of drive table</entry>
+          </row>
+          <row>
+            <entry spanname="all">RBF Option Section Definitions (Copied from device descriptor)</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry>$20</entry>
+            <entry>1</entry>
+            <entry>Device class 0=SCF 1=NSF 2=PIPE 3=SBF</entry>
+          </row>
+          <row>
+            <entry>PD.DRV</entry>
+            <entry>$21</entry>
+            <entry>1</entry>
+            <entry>Drive number (0..N)</entry>
+          </row>
+          <row>
+            <entry>PD.STP</entry>
+            <entry>$22</entry>
+            <entry>1</entry>
+            <entry>Step rate</entry>
+          </row>
+          <row>
+            <entry>PD.TYP</entry>
+            <entry>$23</entry>
+            <entry>1</entry>
+            <entry>Device type</entry>
+          </row>
+          <row>
+            <entry>PD.DNS</entry>
+            <entry>$24</entry>
+            <entry>1</entry>
+            <entry>Density capability</entry>
+          </row>
+          <row>
+            <entry>PD.CYL</entry>
+            <entry>$25</entry>
+            <entry>2</entry>
+            <entry>Number of cylinders (tracks)</entry>
+          </row>
+          <row>
+            <entry>PD.SID</entry>
+            <entry>$27</entry>
+            <entry>1</entry>
+            <entry>Number of sides (surfaces)</entry>
+          </row>
+          <row>
+            <entry>PD.VFY</entry>
+            <entry>$28</entry>
+            <entry>1</entry>
+            <entry>0 = verify disk writes</entry>
+          </row>
+          <row>
+            <entry>PD.SCT</entry>
+            <entry>$29</entry>
+            <entry>2</entry>
+            <entry>Default number of sectors/track</entry>
+          </row>
+          <row>
+            <entry>PD.T0S</entry>
+            <entry>$2B</entry>
+            <entry>2</entry>
+            <entry>Default number of sectors/track (track 0)</entry>
+          </row>
+          <row>
+            <entry>PD.ILV</entry>
+            <entry>$2D</entry>
+            <entry>1</entry>
+            <entry>Sector interleave factor</entry>
+          </row>
+          <row>
+            <entry>PD.SAS</entry>
+            <entry>$2E</entry>
+            <entry>1</entry>
+            <entry>Segment allocation size</entry>
+          </row>
+          <row>
+            <entry spanname="all">(the following values are <emphasis>not</emphasis> copied from the device descriptor)</entry>
+          </row>
+          <row>
+            <entry>PD.ATT</entry>
+            <entry>$33</entry>
+            <entry>1</entry>
+            <entry>File attributes (D S PE PW PR E W R)</entry>
+          </row>
+          <row>
+            <entry>PD.FD</entry>
+            <entry>$34</entry>
+            <entry>3</entry>
+            <entry>File descriptor PSN (physical sector #)</entry>
+          </row>
+          <row>
+            <entry>PD.DFD</entry>
+            <entry>$37</entry>
+            <entry>3</entry>
+            <entry>Directory file descriptor PSN</entry>
+          </row>
+          <row>
+            <entry>PD.DCP</entry>
+            <entry>$3A</entry>
+            <entry>4</entry>
+            <entry>File's directory entry pointer</entry>
+          </row>
+          <row>
+            <entry>PD.DVT</entry>
+            <entry>$3E</entry>
+            <entry>2</entry>
+            <entry>Address of device table entry</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>
+State Flag (PD.SMF): the bits of this byte are defined as: 
+</para>
+    <literallayout>
+bit 0 = set if current buffer has been altered
+bit 1 = set if current sector is in buffer
+bit 2 = set if descriptor sector in buffer
+</literallayout>
+    <para>The first section of the path descriptor is universal for all file
+managers, the second and third sections are defined by RBF and
+RBF-type device drivers. The option section of the path descriptor
+contains many device operating parameters which may be read and/or
+written by the OS9 <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/> service requests and is initialized by IOMAN which
+copies the initialization table of the device descriptor into the option
+section of the path descriptor when a path to a device is opened. Any
+values not determined by this table will default to zero.</para>
+  </sect1>
+  <sect1>
+    <title>RBF Device Descriptor Modules</title>
+    <para>
+This section describes the definitions and use of the initialization
+table contained in device descriptor modules for RBF-type devices.
+</para>
+    <para>This section describes the definitions and use of the
+initialization table contained in device descriptor modules for
+RBF-type devices.</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4">
+        <colspec colwidth="1in"/>
+        <colspec colwidth="0.7in"/>
+        <colspec colwidth="0.7in"/>
+        <colspec colwidth="4in"/>
+        <thead>
+          <row>
+            <entry>Module Offset</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>0-$11</entry>
+            <entry/>
+            <entry/>
+            <entry>Standard Device Descriptor Module Header</entry>
+          </row>
+          <row>
+            <entry>$12</entry>
+            <entry>IT.DTP</entry>
+            <entry>RMB 1</entry>
+            <entry>device type (0=SCF 1=RBF 2=PIPE 3=SBF)</entry>
+          </row>
+          <row>
+            <entry>$13</entry>
+            <entry>IT.DRV</entry>
+            <entry>RMB 1</entry>
+            <entry>drive number</entry>
+          </row>
+          <row>
+            <entry>$14</entry>
+            <entry>IT.STP</entry>
+            <entry>RMB 1</entry>
+            <entry>step rate</entry>
+          </row>
+          <row>
+            <entry>$15</entry>
+            <entry>IT.TYP</entry>
+            <entry>RMB 1</entry>
+            <entry>device type (See RBF path descriptor)</entry>
+          </row>
+          <row>
+            <entry>$16</entry>
+            <entry>IT.DNS</entry>
+            <entry>RMB 1</entry>
+            <entry>media density (0 - SINGLE, 1-DOUBLE)</entry>
+          </row>
+          <row>
+            <entry>$17</entry>
+            <entry>IT.CYL</entry>
+            <entry>RMB 2</entry>
+            <entry>number of cylinders (TRACKS)</entry>
+          </row>
+          <row>
+            <entry>$19</entry>
+            <entry>IT.SID</entry>
+            <entry>RMB 1</entry>
+            <entry>number of surfaces (SIDES)</entry>
+          </row>
+          <row>
+            <entry>$1A</entry>
+            <entry>IT.VFY</entry>
+            <entry>RMB 1</entry>
+            <entry>0 = verify disk writes 1 = no verify</entry>
+          </row>
+          <row>
+            <entry>$1B</entry>
+            <entry>IT.SCT</entry>
+            <entry>RMB 2</entry>
+            <entry>Default Sectors/Track</entry>
+          </row>
+          <row>
+            <entry>$1D</entry>
+            <entry>IT.T0S</entry>
+            <entry>RMB 2</entry>
+            <entry>Default Sectors/Track (Track 0)</entry>
+          </row>
+          <row>
+            <entry>$1F</entry>
+            <entry>IT.ILV</entry>
+            <entry>RMB 1</entry>
+            <entry>sector interleave factor</entry>
+          </row>
+          <row>
+            <entry>$20</entry>
+            <entry>IT.SAS</entry>
+            <entry>RMB 1</entry>
+            <entry>segment allocation size</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>
+IT.DRV - This location is used to associate a one byte integer
+with each drive that a controller will handle. The drives for each
+controller should be numbered 0 to n-1, where n is the maximum number
+of drives the controller can handle.</para>
+    <para>IT.STP - (Floppy disks) This location sets the head stepping rate
+that will be used with a drive. The step rate should be set to the
+fastest value that the drive is capable of to reduce access time. The
+actual values stored depended on the specific disk controller and
+disk driver module used. Below are the values which are used by the
+popular Western Digital floppy disk controller IC:</para>
+    <informaltable frame="all">
+      <tgroup cols="5">
+        <colspec colwidth="1in" colname="q1" align="center"/>
+        <colspec colwidth="1in" colname="q2" align="right"/>
+        <colspec colwidth="1in" colname="q3" align="right"/>
+        <colspec colwidth="1in" colname="q4" align="right"/>
+        <colspec colwidth="1in" colname="q5" align="right"/>
+        <spanspec spanname="x1" namest="q2" nameend="q3"/>
+        <spanspec spanname="x2" namest="q4" nameend="q5"/>
+        <thead>
+          <row>
+            <entry>Step Code</entry>
+            <entry spanname="x1" align="center">FD1771</entry>
+            <entry spanname="x2" align="center">FD179X Family</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>5"</entry>
+            <entry>8"</entry>
+            <entry>5"</entry>
+            <entry>8"</entry>
+          </row>
+          <row>
+            <entry>0</entry>
+            <entry>40ms</entry>
+            <entry>20ms</entry>
+            <entry>30ms</entry>
+            <entry>15ms</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>20ms</entry>
+            <entry>10ms</entry>
+            <entry>20ms</entry>
+            <entry>10ms</entry>
+          </row>
+          <row>
+            <entry>2</entry>
+            <entry>12ms</entry>
+            <entry>6ms</entry>
+            <entry>12ms</entry>
+            <entry>6ms</entry>
+          </row>
+          <row>
+            <entry>3</entry>
+            <entry>12ms</entry>
+            <entry>6ms</entry>
+            <entry>6ms</entry>
+            <entry>3ms</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <literallayout>
+IT.TYP - Device type (All types)
+    bit 0 -- 0 = 5" floppy disk
+             1 = 8" floppy disk
+    bit 6 -- 0 = Standard OS-9 format
+             1 = Non-standard format
+    bit 7 -- 0 = Floppy disk
+             1 = Hard disk
+
+IT.DNS - Density capabilities (Floppy disk only)
+    bit 0 -- 0 = Single bit density (FM)
+             1 = Double bit density (MFM)
+
+    bit 1 -- 0 = Single track density (5", 48 TPI)
+             1 = Double track density (5", 96 TPI)
+</literallayout>
+    <para>IT.SAS - This value specifies the minimum number of sectors to
+be allocated at any one time.</para>
+  </sect1>
+  <sect1>
+    <title>RBF-type Device Drivers</title>
+    <para>An RBF type device driver module contains a package of subroutines
+that perform sector oriented I/O to or from a specific hardware
+controller. These modules are usually reentrant so that one copy of
+the module can simultaneously run several different devices that use
+identical I/O controllers. IOMAN will allocate a static storage area
+for each device (which may control several drives). The size of the
+storage area is given in the device driver module header. Some of
+this storage area will be used by IOMAN and RBF. The device driver
+is free to use the remainder in any manner. Static storage is
+used as follows: 
+</para>
+    <table frame="none" colsep="0" rowsep="0">
+      <title>Static Storage Definitions</title>
+      <tgroup cols="4">
+        <colspec colwidth="0.6in" colname="c1"/>
+        <colspec colwidth="0.7in" colname="c2"/>
+        <colspec colwidth="1.2in" colname="c3"/>
+        <colspec colwidth="2.5in" colname="c4"/>
+        <spanspec spanname="x1" namest="c1" nameend="c2"/>
+        <spanspec spanname="x2" namest="c3" nameend="c4"/>
+        <thead>
+          <row>
+            <entry spanname="x1">OFFSET</entry>
+            <entry spanname="x2">ORG 0</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>0</entry>
+            <entry>V.PAGE</entry>
+            <entry>RMB 1</entry>
+            <entry>port extended address (A20 - A16)</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>V.PORT </entry>
+            <entry>RMB 2</entry>
+            <entry>device base address</entry>
+          </row>
+          <row>
+            <entry>3</entry>
+            <entry>V.LPRC</entry>
+            <entry>RMB 1</entry>
+            <entry>last active process id</entry>
+          </row>
+          <row>
+            <entry>4</entry>
+            <entry>V.BUSY</entry>
+            <entry>RMB 1</entry>
+            <entry>active process id (0 = NOT BUSY)</entry>
+          </row>
+          <row>
+            <entry>5</entry>
+            <entry>V.WAKE</entry>
+            <entry>RMB 1</entry>
+            <entry>process id to reawaken</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry>V.USER</entry>
+            <entry>EQU .</entry>
+            <entry>end of OS9 definitions</entry>
+          </row>
+          <row>
+            <entry>6</entry>
+            <entry>V.NDRV</entry>
+            <entry>RMB 1</entry>
+            <entry>number of drives</entry>
+          </row>
+          <row>
+            <entry>7</entry>
+            <entry/>
+            <entry>RMB 8</entry>
+            <entry>reserved</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry>DRVBEG</entry>
+            <entry>EQU .</entry>
+            <entry>beginning of drive tables</entry>
+          </row>
+          <row>
+            <entry>F</entry>
+            <entry>TABLES</entry>
+            <entry>RMB DRVMEM*N</entry>
+            <entry>reserve n drive tables</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry>FREE</entry>
+            <entry>EQU .</entry>
+            <entry>free for driver to use</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <note>
+      <para>V.PAGE through V.USER are predefined in the
+<filename>OS9DEFS</filename> file.
+V.NDRV, DRVBEG, DRVMEM are predefined in the <filename>RBFDEFS</filename>
+file.</para>
+    </note>
+    <para>V.PAGE, V.PORT These three bytes are defined by IOMAN as the 24-bit
+device address.</para>
+    <para>V.LPRC contains the process ID of the last process
+to use the device. Not used by RBF-type device drivers.</para>
+    <para>V.BUSY contains the process ID of the process
+currently using the device. Defined by RBF.</para>
+    <para>V.WAKE contains the process-ID of any process that
+is waiting for the device to complete I/O (0 = NO PROCESS WAITING).
+Defined by device driver.</para>
+    <para>V.NDRV contains the number of drives that the
+controller can use that is defined by the device driver as the maximum
+number of drives that the controller can work with. RBF will
+assume that there is a drive table for each drive. Also see the
+driver INIT routine in this section.</para>
+    <para>TABLES This area contains one table for each drive that the
+controller will handle (RBF will assume that there are as many
+tables as indicated by V.NDRV). Some time after the driver INIT
+routine has been called, RBF will issue a request for the driver
+to read the identification sector (logical sector zero) from a drive.
+At this time the driver will initialize the corresponding drive table
+by copying the first part of the identification sector (up to
+DD.SIZ) into it, Also see the
+<quote><link linkend="ident-sector">Identification Sector</link></quote> section of
+this manual. The format of each drive table is as given below:</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4">
+        <colspec colwidth="0.6in" colname="c1"/>
+        <colspec colwidth="0.7in" colname="c2"/>
+        <colspec colwidth="1.2in" colname="c3"/>
+        <colspec colwidth="2.5in" colname="c4"/>
+        <spanspec spanname="x1" namest="c1" nameend="c2"/>
+        <spanspec spanname="x2" namest="c3" nameend="c4"/>
+        <thead>
+          <row>
+            <entry spanname="x1">Offset</entry>
+            <entry spanname="x2">ORG 0</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>$00</entry>
+            <entry>DD.TOT</entry>
+            <entry>RMB 3</entry>
+            <entry>total number of sectors on media</entry>
+          </row>
+          <row>
+            <entry>$03</entry>
+            <entry>DD.TKS</entry>
+            <entry>RMB 1</entry>
+            <entry>track size in sectors</entry>
+          </row>
+          <row>
+            <entry>$04</entry>
+            <entry>DD.MAP</entry>
+            <entry>RMB 2</entry>
+            <entry># bytes in allocation map</entry>
+          </row>
+          <row>
+            <entry>$06</entry>
+            <entry>DD.BIT</entry>
+            <entry>RMB 2</entry>
+            <entry>number of sectors per bit (CLUSTER SIZE)</entry>
+          </row>
+          <row>
+            <entry>$08</entry>
+            <entry>DD.DIR</entry>
+            <entry>RMB 3</entry>
+            <entry>address of root directory</entry>
+          </row>
+          <row>
+            <entry>$0B</entry>
+            <entry>DD.OWN</entry>
+            <entry>RMB 2</entry>
+            <entry>owner user number</entry>
+          </row>
+          <row>
+            <entry>$0D</entry>
+            <entry>DD.ATT</entry>
+            <entry>RMB 1</entry>
+            <entry>disk attributes</entry>
+          </row>
+          <row>
+            <entry>$0E</entry>
+            <entry>DD.DSK</entry>
+            <entry>RMB 2</entry>
+            <entry>disk id</entry>
+          </row>
+          <row>
+            <entry>$10</entry>
+            <entry>DD.FMT</entry>
+            <entry>RMB 1</entry>
+            <entry>media format</entry>
+          </row>
+          <row>
+            <entry>$11</entry>
+            <entry>DD.SPT</entry>
+            <entry>RMB 2</entry>
+            <entry>sectors/track</entry>
+          </row>
+          <row>
+            <entry>$13</entry>
+            <entry>DD.RES</entry>
+            <entry>RMB 2</entry>
+            <entry>reserved for future use</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry>DD.SIZ</entry>
+            <entry>EQU .</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>$15</entry>
+            <entry>V.TRAK</entry>
+            <entry>RMB 2</entry>
+            <entry>current Track Number</entry>
+          </row>
+          <row>
+            <entry>$17</entry>
+            <entry>V.BMB</entry>
+            <entry>RMB 1</entry>
+            <entry>bit-map use flag</entry>
+          </row>
+          <row>
+            <entry>$18</entry>
+            <entry>V.FileHd</entry>
+            <entry>RMB 2</entry>
+            <entry>open file list for this drive</entry>
+          </row>
+          <row>
+            <entry>$1A</entry>
+            <entry>V.DiskID</entry>
+            <entry>RMB 2</entry>
+            <entry>disk id</entry>
+          </row>
+          <row>
+            <entry>$1C</entry>
+            <entry>V.BMapSz</entry>
+            <entry>RMB 1</entry>
+            <entry>bitmap size</entry>
+          </row>
+          <row>
+            <entry>$1D</entry>
+            <entry>V.MapSct</entry>
+            <entry>RMB 1</entry>
+            <entry>lowest reasonable bit map sector</entry>
+          </row>
+          <row>
+            <entry>$1E</entry>
+            <entry/>
+            <entry>RMB 8</entry>
+            <entry>reserved</entry>
+          </row>
+          <row>
+            <entry>$26</entry>
+            <entry>DRVMEM</entry>
+            <entry>EQU .</entry>
+            <entry>size of each drive table</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>DD.TOT location contains the total number of sectors contained on the disk.</para>
+    <para>DD.TKS location contains the track size (in sectors).</para>
+    <para>DD.MAP location contains the number of bytes in the disk allocation bit map.</para>
+    <para>DD.BIT location contains the number of sectors that each bit
+represents in the disk allocation bit map.</para>
+    <para>DD.DIR location contains the logical sector number of the disk root directory.</para>
+    <para>DD.OWN contains the disk owner's user number.</para>
+    <para>DD.ATT contains the disk access permission attributes as defined
+below:</para>
+    <literallayout>
+BIT 7 - D (DIRECTORY IF SET)
+BIT 6 - S (SHARABLE IF SET)
+BIT 5 - PX (PUBLIC EXECUTE IF SET)
+BIT 4 - PW (PUBLIC WRITE IF SET)
+BIT 3 - PR (PUBLIC READ IF SET)
+BIT 2 - X (EXECUTE IF SET)
+BIT 1 - W (WRITE IF SET).
+BIT 0 - R (READ IF SET)
+</literallayout>
+    <para>
+DD.DSK contains a pseudo random number which is
+used to identify a disk so that OS-9 may detect when a disk is
+removed from the drive and another inserted in its place.</para>
+    <para>DD.FMT DISK FORMAT:</para>
+    <literallayout>
+BIT B0 - SIDE
+    0 = SINGLE SIDED
+    1 = DOUBLE SIDED
+
+BIT B1 - DENSITY
+    0 = SINGLE DENSITY
+    1 = DOUBLE DENSITY
+
+BIT B2 - TRACK DENSITY
+    0 = SINGLE (48 TPI)
+    1= DOUBLE (96 TPI)
+</literallayout>
+    <para>DD.SPT Number of sectors per track (track zero may use a different
+value, specified by IT.T0S in the device descriptor).</para>
+    <para>DD.RES RESERVED FOR FUTURE USE</para>
+    <para>V.TRAK contains the current track which the head is
+on and is updated by the driver.</para>
+    <para>V.BMB is used by RBF to indicate whether or not
+the disk allocation bit map is currently in use (0 = not in use). The
+disk driver routines must not alter this location.</para>
+  </sect1>
+  <sect1>
+    <title>RBF Device Drivers</title>
+    <para>As with all device drivers, RBF-type device drivers use a
+standard executable memory module format with a module type of
+<quote>device driver</quote> (CODE $E). The execution offset address in
+the module header points to a branch table that has six three byte
+entries. Each entry is typically a LBRA to the corresponding
+subroutine. The branch table is defined as follows:
+</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4">
+        <colspec colwidth="0.8in"/>
+        <colspec colwidth="0.8in"/>
+        <colspec colwidth="0.8in"/>
+        <colspec colwidth="1.6in"/>
+        <tbody>
+          <row>
+            <entry morerows="5">ENTRY</entry>
+            <entry>LBRA</entry>
+            <entry>INIT</entry>
+            <entry>initialize drive</entry>
+          </row>
+          <row>
+            <entry>LBRA</entry>
+            <entry>READ</entry>
+            <entry>read sector</entry>
+          </row>
+          <row>
+            <entry>LBRA</entry>
+            <entry>WRITE</entry>
+            <entry>write sector</entry>
+          </row>
+          <row>
+            <entry>LBRA</entry>
+            <entry>GETSTA</entry>
+            <entry>get status</entry>
+          </row>
+          <row>
+            <entry>LBRA</entry>
+            <entry>SETSTA</entry>
+            <entry>set status</entry>
+          </row>
+          <row>
+            <entry>LBRA</entry>
+            <entry>TERM</entry>
+            <entry>terminate device</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>Each subroutine should exit with the condition code register C bit
+cleared if no error occurred. Otherwise the C bit should be set and
+an appropriate error code returned in the B register. Below is a
+description of each subroutine, its input parameters, and its output
+parameters.</para>
+    <sect2>
+      <title>NAME: INIT</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>INIT</entry>
+            </row>
+            <row>
+              <entry>INPUT:</entry>
+              <entry>
+                <literallayout>
+(Y) = address of the device descriptor module
+(U) = address of device static storage
+</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>OUTPUT:</entry>
+              <entry>NONE</entry>
+            </row>
+            <row>
+              <entry>ERROR OUTPUT:</entry>
+              <entry>
+                <literallayout>(CC) = C BIT SET
+(B) = ERROR CODE</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>INITIALIZE DEVICE AND ITS STATIC STORAGE AREA</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <orderedlist numeration="arabic">
+        <listitem>
+          <para>If disk writes are verified, use the
+        <xref linkend="f.srqmem"/> service request
+	to allocate a 256 byte buffer area where a sector may be read back
+	and verified after a write. In Level Two the buffer can be declared in
+static storage.</para>
+        </listitem>
+        <listitem>
+          <para>Initialize the device permanent storage. For floppy disk
+	controller typically this consists of initializing V.NDRV to the
+	number of drives that the controller will work with, initializing
+	DD.TOT in the drive table to a non-zero value so that sector zero
+	may be read or written to, and initializing V.TRAK to $FF so that
+	the first seek will find track zero.</para>
+        </listitem>
+        <listitem>
+          <para>Place the IRQ service routine on the IRQ polling list by
+	using the OS9 <xref linkend="f.irq"/> service request.</para>
+        </listitem>
+        <listitem>
+          <para>Initialize the device control registers (enable interrupts if
+	necessary).</para>
+        </listitem>
+      </orderedlist>
+      <note>
+        <para>Prior to being called, the device permanent storage will be
+    cleared (set to zero) except for V.PAGE and V.PORT which will contain
+    the 24 bit device address. The driver should initialize each drive
+    table appropriately for the type of disk the driver expects to be
+    used on the corresponding drive.</para>
+      </note>
+    </sect2>
+    <sect2>
+      <title>NAME: READ</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>READ</entry>
+            </row>
+            <row>
+              <entry>INPUT:</entry>
+              <entry>
+                <literallayout>
+(B) = msb of disk logical sector number
+(X) = lsb's of disk logical sector number
+(Y) = address of the path descriptor
+(U) = address of the device static storage
+</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>OUTPUT:</entry>
+              <entry>sector is returned in the sector buffer</entry>
+            </row>
+            <row>
+              <entry>ERROR OUTPUT:</entry>
+              <entry>
+                <literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>Read a 256 byte sector</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+Read a sector from the disk and place it in the sector buffer
+(256 byte). Below are the things that the disk driver must do:</para>
+      <para>1. Get the sector buffer address from PD.BUF in the path descriptor.</para>
+      <para>2. Get the drive number from PD.DRV in the path descriptor.</para>
+      <para>3. Compute the physical disk address from the logical sector number.</para>
+      <para>4. Initiate the read operation.</para>
+      <para>5. Copy V.BUSY to V.WAKE, then go to sleep and wait for the I/O to
+complete (the IRQ service routine is responsible for sending a wake
+up signal). After awakening, test V.WAKE to see if it is clear, if
+not, go back to sleep.</para>
+      <para>If the disk controller can not be interrupt driven it will be
+necessary to perform programmed I/O.</para>
+      <para>NOTE 1: Whenever logical sector zero is read, the first part
+of this sector must be copied into the proper drive table (get the
+drive number from PD.DRV in the path descriptor). The number of bytes
+to copy is DD.SIZ.</para>
+    </sect2>
+    <sect2>
+      <title>NAME: WRITE</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>WRITE</entry>
+            </row>
+            <row>
+              <entry>INPUT:</entry>
+              <entry>
+                <literallayout>
+(B) = msb of disk logical sector number
+(X) = lsb's of disk logical sector number
+(Y) = address of the path descriptor
+(U) = address of the device static storage
+</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>OUTPUT:</entry>
+              <entry>The sector buffer is written out to disk</entry>
+            </row>
+            <row>
+              <entry>ERROR OUTPUT:</entry>
+              <entry>
+                <literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>Write a sector</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>Write the sector buffer (256 bytes) to the disk. Below are the
+things that a disk driver must do:</para>
+      <para>1. Get the sector buffer address from PD.BUF in the path
+descriptor.</para>
+      <para>2. Get the drive number from PD.DRV in the path descriptor.</para>
+      <para>3. Compute the physical disk address from the logical sector number.</para>
+      <para>4. Initiate the write operation.</para>
+      <para>5. Copy V.BUSY to V.WAKE, then go to sleep and wait for the I/O
+to complete (the IRQ service routine is responsible for sending the
+wakeup signal). After awakening, test V.WAKE to see if it is clear,
+if it is not, then go back to sleep. If the disk controller can not
+be interrupt-driven, it will be necessary to perform a programmed I/O
+transfer.</para>
+      <para>6. If PD.VFY in the path descriptor is equal to zero, read the sector
+back in and verify that it was written correctly. It is recommended that
+the compare loop be as short as possible to keep the necessary sector
+interleave value to a minimum.
+</para>
+      <para>NOTE 1: If disk writes are to be verified, the INIT routine must
+request the buffer where the sector may be placed when it is read
+back in. Do not copy sector zero into the drive table when it is read
+back to be verified.</para>
+    </sect2>
+    <sect2>
+      <title>NAME: GETSTA PUTSTA</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>GETSTA/PUTSTA</entry>
+            </row>
+            <row>
+              <entry>INPUT:</entry>
+              <entry>
+                <literallayout>(U) = address of the device static storage area
+(Y) = address of the path descriptor
+FUNCTION CODE SHOULD BE RETRIEVED FROM RSB ON THE USER STACK.
+</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>OUTPUT:</entry>
+              <entry>(DEPENDS UPON THE FUNCTION CODE)</entry>
+            </row>
+            <row>
+              <entry>ERROR OUTPUT:</entry>
+              <entry>
+                <literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>GET/SET DEVICE STATUS</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>These routines are wild card calls used to get (set) the device's
+operating parameters as specified for the OS9 <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/>
+service requests.</para>
+      <para>It may be necessary to examine or change the register stack which
+contains the values of MPU registers at the time of the
+<xref linkend="i.getstt"/> or
+<xref linkend="i.setstt"/> service request. The address of the register stack may be
+found in PD.RGS, which is located in the path descriptor, . The
+following offsets may be used to access any particular value in the
+register stack:</para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="5">
+          <colspec colwidth="0.6in"/>
+          <colspec colwidth="0.8in"/>
+          <colspec colwidth="0.5in"/>
+          <colspec colwidth="0.3in" colname="c4"/>
+          <colspec colwidth="2.5in" colname="c5"/>
+          <thead>
+            <row>
+              <entry>OFFSET</entry>
+              <entry align="left" nameend="c4">MNEMONIC</entry>
+              <entry namest="c5">MPU REGISTER</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>$0</entry>
+              <entry>R$CC</entry>
+              <entry>RMB</entry>
+              <entry>1</entry>
+              <entry>CONDITION CODE REGISTER</entry>
+            </row>
+            <row>
+              <entry>$1</entry>
+              <entry>R$D</entry>
+              <entry>EQU</entry>
+              <entry>.</entry>
+              <entry>D REGISTER</entry>
+            </row>
+            <row>
+              <entry>$1</entry>
+              <entry>R$A</entry>
+              <entry>RMB</entry>
+              <entry>1</entry>
+              <entry>A REGISTER</entry>
+            </row>
+            <row>
+              <entry>$2</entry>
+              <entry>R$B</entry>
+              <entry>RMB</entry>
+              <entry>1</entry>
+              <entry>B REGISTER</entry>
+            </row>
+            <row>
+              <entry>$3</entry>
+              <entry>R$DP</entry>
+              <entry>RMB</entry>
+              <entry>1</entry>
+              <entry>DP REGISTER</entry>
+            </row>
+            <row>
+              <entry>$4</entry>
+              <entry>R$X</entry>
+              <entry>RMB</entry>
+              <entry>2</entry>
+              <entry>X REGISTER</entry>
+            </row>
+            <row>
+              <entry>$6</entry>
+              <entry>R$Y</entry>
+              <entry>RMB</entry>
+              <entry>2</entry>
+              <entry>Y REGISTER</entry>
+            </row>
+            <row>
+              <entry>$8</entry>
+              <entry>R$U</entry>
+              <entry>RMB</entry>
+              <entry>2</entry>
+              <entry>U REGISTER</entry>
+            </row>
+            <row>
+              <entry>$A</entry>
+              <entry>R$PC</entry>
+              <entry>RMB</entry>
+              <entry>2</entry>
+              <entry>PROGRAM COUNTER</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </sect2>
+    <sect2>
+      <title>NAME: TERM</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>TERM</entry>
+            </row>
+            <row>
+              <entry>INPUT:</entry>
+              <entry>(U) = address of device static storage area</entry>
+            </row>
+            <row>
+              <entry>OUTPUT:</entry>
+              <entry>NONE</entry>
+            </row>
+            <row>
+              <entry>ERROR OUTPUT:</entry>
+              <entry>
+                <literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>TERMINATE DEVICE</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>This routine is called when a device is no longer in use in the
+system, which is defined to be when the link count of its device
+descriptor module becomes zero). The TERM routine must:</para>
+      <para>1. Wait until any pending I/O has completed.</para>
+      <para>2. Disable the device interrupts.</para>
+      <para>3. Remove the device from the IRQ polling list.</para>
+      <para>4. If the INIT routine reserved a 256 byte buffer for verifying
+disk writes, return the memory with the <xref linkend="f.mem"/> service request.</para>
+    </sect2>
+    <sect2>
+      <title>NAME: IRQ service routine</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>IRQ service routine</entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>Service device interrupts</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+Although this routine is not included in the device driver
+module branch table and is not called directly by RBF, it is a
+key routine in interrupt-driven device drivers. Its function is to:</para>
+      <para>1. Service device interrupts.</para>
+      <para>2. When the I/O is complete, the IRQ service routine should send
+a wake up signal to the process whose process ID is in V.WAKE</para>
+      <para>Also clear V.WAKE as a flag to the mainline program that the IRQ
+has indeed occurred.</para>
+      <para>NOTE: When the IRQ service routine finishes servicing an interrupt
+it must clear the array and exit with an RTS instruction.</para>
+    </sect2>
+    <sect2>
+      <title>NAME: BOOT (Bootstrap Module)</title>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.4in"/>
+          <colspec colwidth="3.0in"/>
+          <tbody>
+            <row>
+              <entry>NAME:</entry>
+              <entry>BOOT (Bootstrap Module)</entry>
+            </row>
+            <row>
+              <entry>INPUT:</entry>
+              <entry>None.</entry>
+            </row>
+            <row>
+              <entry>OUTPUT:</entry>
+              <entry>
+                <literallayout>(D) = Size of the boot file (in bytes)
+(X) = Address of where the boot file was loaded in memory</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>ERROR OUTPUT:</entry>
+              <entry>
+                <literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout>
+              </entry>
+            </row>
+            <row>
+              <entry>FUNCTION:</entry>
+              <entry>LOAD THE BOOT FILE INTO MEMORY FROM MASS-STORAGE</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>NOTE: The BOOT module is <emphasis>not</emphasis> part of the disk driver. It is a
+separate module which is normally co-resident with the <quote>OS9P2</quote> module
+in the system firmware.</para>
+      <para>
+The bootstrap module contains one subroutine that loads the
+bootstrap file and some related information into memory, it uses the
+standard executable module format with a module type of <quote>system</quote>
+(code $C). The execution offset in the module header contains the
+offset to the entry point of this subroutine.</para>
+      <para>It obtains the starting sector number and size of the
+<filename>OS9Boot</filename>
+file from the identification sector (LSN 0). OS-9 is called to
+allocate a memory area large enough for the boot file, and then it
+loads the boot file into this memory area.</para>
+      <para>1. Read the identification sector (sector zero) from the disk.
+BOOT must pick its own buffer area. The identification sector
+contains the values for DD.BT (the 24 bit logical sector number of
+the bootstrap file), and DD.BSZ (the size of the bootstrap file in
+bytes). For a full description of the identification sector.
+See <xref linkend="lsn1"/>.</para>
+      <para>2. After reading the identification sector into the buffer, get
+the 24 bit logical sector number of the bootstrap file from DD.BT.</para>
+      <para>3. Get the size (in bytes) of the bootstrap file from DD.BSZ. The
+boot is contained in one logically contiguous block beginning at the
+logical sector specified in DD.BT and extending for (DD.BSZ/256+1)
+sectors.</para>
+      <para>4. Use the OS9 <xref linkend="f.srqmem"/> service request to
+request the memory area where the boot file will be loaded into.</para>
+      <para>5. Read the boot file into this memory area.</para>
+      <para>6. Return the size of the boot file and its location.</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>RBF Record Locking</title>
+    <para>
+Record locking is a general term that refers to mechanisms that are
+designed to preserve the integrity of files that can be accesses by more
+than one user or process. The OS-9 implementation of record locking is
+designed to be as invisible as possible to application programs so
+existing programs do not have to be rewritten to take advantage of record
+facilities, and most new programs may be written without special concern
+for multi-user activity.
+</para>
+    <para>
+Simply stated, record locking involves recognizing when a process is
+trying to read a record that is currently being modified by another
+process, and if the record is "locked out", deferring the read until the
+record is "safe". This scheme is referred to as conflict detection and
+prevention. RBF record locking also takes care of non-sharable file
+locking and deadlock detection.
+</para>
+    <sect2>
+      <title>Record Locking and Unlocking</title>
+      <para>
+Conflict detection must determine when a record is in the process of
+being updated. RBF edition 16 and above provides true record locking on
+a byte basis. Earlier versions of RBF locked out all sectors in the
+particular record's area. A typical record update sequence is:
+</para>
+      <screen>
+OS9 I$Read   program reads record    RECORD IS LOCKED
+   .
+   .         program updates record
+   .
+OS9 I$Seek   reposition to record
+OS9 I$Write  record is rewritten     RECORD IS RELEASED
+</screen>
+      <para>
+When a file is opened in update mode, ANY read will cause the record
+read to be locked out because RBF can not determine in advance if the
+record will be updated. The record will stay locked out until the next
+Read, Write, or Close occurs. Reading files that are opened in read or
+execute modes does not cause record locking to occur because records can
+not be updated in these two modes.
+</para>
+      <para>
+A subtle but nasty problem exists for programs that interrogate a data
+base and occasionally update its data. When a user looks up a particular
+record, the record could be locked out indefinately if the user neglects
+to release it. The problem is characteristic of record locking systems
+and can be avoided by careful programming.
+</para>
+      <para>
+It should be noted that only one portion of a file may be locked out
+one time. If an application requires more than one record to be locked
+out, multiple paths to the same file may be opened each having its own
+record locked out. RBF will notice that the same process owns both paths
+and will keep them from locking each other out.
+</para>
+    </sect2>
+    <sect2>
+      <title>Non-sharable Files</title>
+      <para>
+File Locking may be considered a special case of record locking, in
+which the entire file is considered unsafe to be used by more than one
+user. Sometimes (although rarely), it is necessary to create a file
+that can never be accessed by more than one user at a time by setting
+the non-sharable(S) bit in the file's attribute byte. The bit can be set
+by using an option when the file is created, or later using the Attr
+utility. Once the non-sharable bit has been set, only one user may open
+the file at a time. If other users attempt to open the file, an error
+(#253) will be returned.
+</para>
+      <para>
+More commonly, a file will need to be declared non-sharable only
+during the execution of a specific program by opening the file with the
+non-sharable bit set in the mode. An example would be when the file is
+being sorted. With the non-sharable bit set, the file will be treated
+exactly as though it had a non-sharable attribute. If the file has
+already been opened by another process, an error (#253) will be returned.
+</para>
+      <para>
+A feature of non-sharable files is that they may be duplicated using
+the I$Dupe system call so that they may be inherited, and therefore
+accessible to more.than one process at a time. Non-sharable means only
+that the file may be opened once at a time. It is usually a very bad
+idea to have two processes actively use any disk file through the same
+(inherited) path.
+</para>
+    </sect2>
+    <sect2>
+      <title>End of File Lock</title>
+      <para>
+A special case of record locking occurs when a user reads or writes
+data at the end of file. The user is said to have "EOF Lock" and will
+keep the end of file locked out until a read or write is performed that
+is not at the end of the file. EOF Lock is the only case that a write
+call automatically causes any of the file to be locked out. It was done
+to avoid problems that could otherwise occur when two users want to
+simultaneously extend a file.
+</para>
+      <para>
+An interesting and extremely useful side effect occurs when a program
+creates a file for sequential output. As soon as the file is created,
+EOF Lock is gained, and no other process will be able to "pass" the
+writer in processing the file. For example, if an assembly listing is
+redirected to a disk file, a spooler utility might open and begin
+listing the file before the assembler has -written even the first line of
+output. Record locking will always keep the spooler 'one step behind'
+the assembler, making the listing come out as desired.
+</para>
+    </sect2>
+    <sect2>
+      <title>DeadLock Detection</title>
+      <para>
+A deadly embrace, or deadlock, occurs (typically) when two processes
+attempt to gain control of two or more disk areas at the same time. If
+each process gets one area (locking out the other process), both
+processes will be stuck permanently, waiting for a segment that can
+never become free. This situation is a general problem that is not
+restricted to any particular record locking scheme or operating system.
+</para>
+      <para>
+When a deadly embrace is found by RBF, a deadlock error (#254) is
+returned to the process that caused the deadlock to be detected. It is
+easy to create programs that, when ran together, generate lots of
+deadlock errors. The easiest way to avoid them is to access records of
+shared files in the same sequences in processes that may be run
+simultaneously.
+</para>
+      <para>
+When a deadlock error does occur, it is not sufficient for a program
+to re-try the operation "in error". If all processes used this strategy,
+none would ever succeed. It is necessary for at least one process to
+release it's control over a requested segment for any to proceed by
+aborting.
+</para>
+    </sect2>
+    <sect2>
+      <title>Specific Details for Particular I/O Functions</title>
+      <bridgehead renderas="sect4">Open/Create</bridgehead>
+      <para>
+The most important rule to follow when opening files is do not open a
+file for update if you only intend to read from it. Files open for read
+only will not cause records to be locked out, and they will generally
+help the system to run faster. If files are routinely opened for update
+on a multi-user system, users may sometimes become record locked for
+extended periods of time, When this occurs, users sometimes think the
+system has died, and exhibit panic behavior.
+</para>
+      <para>
+File permission checking occurs for all files encountered in the
+specified pathlist. Permission checking means that if you do not have
+permission to read a directory, you may not access any files in that
+directory.
+</para>
+      <para>
+The special "@" file should be used in update mode with extreme care.
+To keep system overhead low, record locking routines only check for
+conflicts on paths opened for the same file. The "@" file is considered
+different from any other file, and therefore will only conform to record
+lockouts with other users of the "@" file. Writing via the "@" file (to
+patch crashed disks, for example) should only be done in single-user
+mode. The '@' file has been included as a convenience only; it likely
+that problems will eventually occur if it is used in update mode
+regularly.
+</para>
+      <bridgehead renderas="sect4">Read/ReadLine</bridgehead>
+      <para>
+Read and ReadLine cause records to be locked out only if the file is
+open in update mode. The locked out area includes all bytes starting
+with the current file pointer and extending for the number of bytes
+</para>
+      <para>
+requested. Thus, if a ReadLine call is made for 256 bytes, exactly 256
+bytes will be locked out, regardless of how many bytes are actually read
+before a carriage return is encountered. EOF Lock will be gained if the
+bytecount requested also includes the current end of file.
+</para>
+      <para>
+A segment will remain locked out until any of the following occur:
+another read is performed, a write is performed, the file is closed, or
+a record lock SetStat is issued. Releasing a record does not normally
+release EOF Lock. Any Read or Write of zero bytes will release any
+record lock, EOF lock, or File Lock.
+</para>
+      <bridgehead renderas="sect4">Write/WriteLine</bridgehead>
+      <para>
+Write calls always release any record that has been locked out. In
+addition, a write of zero bytes releases EOF Lock and File Lock if they
+have been gained. Writing usually does not lock out any portion of the
+file unless it occurs at end of file when it will gain EOF Lock.
+</para>
+      <bridgehead renderas="sect4">Close</bridgehead>
+      <para>
+When RBF expands a file it expands it in increments of at least the
+'segment allocation size' (IT.SAS in device descriptor) sectors long so
+that usually more space than is required is allocated. At the time the
+file is closed, the excess space is trimmed and returned to free space.
+This strategy does not work very well for random-access data bases that
+expand frequently by only a few records. The segment list rapidly fills
+up with small segments. A provision has been added to prevent this from
+being a problem.
+</para>
+      <para>
+If the file (open in write or update mode) is closed when it is not at
+end of file, the file will not be trimmed. In order to be effective,
+all programs that deal with the file in write or update mode must
+insure that they do not close the file while at end of file, or the file
+will lose any excess space it may have. The easiest way to insure this,
+is to do a seek(0) before closing the file. This method was chosen
+since random access files will frequently be at some other place than end
+of file, and sequential files are almost always at end of file when
+closed.
+</para>
+      <bridgehead renderas="sect4">Seek</bridgehead>
+      <para>
+The seek call has no effect on record locking with the minor exception
+noted above in close. In particular, seek does not remove any record
+locks.
+</para>
+      <bridgehead renderas="sect4">Makdir</bridgehead>
+      <para>
+Makdir creates its files in non-sharable mode. Since file attributes
+are checked at each pathlist element (see open/create), makdir will
+return an error if it cannot gain non-sharable access to any directory
+specified. It can be a bit annoying sometimes, but it helps prevent
+certain recursive programs from getting out of control.
+</para>
+      <bridgehead renderas="sect4">Del</bridgehead>
+      <para>
+The delete begins by opening the file for write in non-sharable mode.
+If the file is open, an error (#253) is returned, and the file is NOT
+deleted. All sorts of problems occur when this is not enforced.
+</para>
+      <bridgehead renderas="sect4">SetStatus</bridgehead>
+      <para>
+Two new setstat codes have been added for the convenience of record
+locking. They are SS.Lock, for locking or releasing part of a file; and
+SS.Ticks, for setting the length of time a program is willing to wait for
+a locked record. See the I$SETSTT documentation for a description of the
+codes.
+</para>
+    </sect2>
+  </sect1>
+</chapter>

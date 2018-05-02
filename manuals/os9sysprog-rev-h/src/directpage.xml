@@ -1,0 +1,419 @@
+<appendix xml:id="directpage" xmlns="http://docbook.org/ns/docbook">
+<title>Direct Page variables</title>
+
+<table frame="none" colsep="0" rowsep="0">
+  <title>OS-9 Level I Direct Page variables</title>
+  <tgroup cols="4">
+    <colspec colwidth="1.5in"/>
+    <colspec colwidth="1in"/>
+    <colspec colwidth="0.7in"/>
+    <colspec colwidth="5in"/>
+    <thead>
+      <row rowsep="1">
+        <entry>Name</entry>
+        <entry>Offset</entry>
+        <entry>Size</entry>
+        <entry>Description</entry>
+      </row>
+    </thead>
+    <tbody>
+      <row xml:id="d1.fmbm" xreflabel="D.FMBM">
+        <entry>D.FMBM</entry>
+        <entry>$20</entry>
+        <entry>4</entry>
+        <entry>Free memory bit map pointers</entry>
+      </row>
+      <row>
+        <entry>D.MLIM</entry>
+        <entry>$24</entry>
+        <entry>2</entry>
+        <entry>Memory limit</entry>
+      </row>
+      <row>
+        <entry>D.ModDir</entry>
+        <entry>$26</entry>
+        <entry>4</entry>
+        <entry>Module directory</entry>
+      </row>
+      <row>
+        <entry>D.Init</entry>
+        <entry>$2A</entry>
+        <entry>2</entry>
+        <entry>Rom base address</entry>
+      </row>
+      <row>
+        <entry>D.SWI3</entry>
+        <entry>$2C</entry>
+        <entry>2</entry>
+        <entry>Swi3 vector</entry>
+      </row>
+      <row>
+        <entry>D.SWI2</entry>
+        <entry>$2E</entry>
+        <entry>2</entry>
+        <entry>Swi2 vector</entry>
+      </row>
+      <row>
+        <entry>D.FIRQ</entry>
+        <entry>$30</entry>
+        <entry>2</entry>
+        <entry>Firq vector</entry>
+      </row>
+      <row>
+        <entry>D.IRQ</entry>
+        <entry>$32</entry>
+        <entry>2</entry>
+        <entry>Irq vector</entry>
+      </row>
+      <row>
+        <entry>D.SWI</entry>
+        <entry>$34</entry>
+        <entry>2</entry>
+        <entry>Swi vector</entry>
+      </row>
+      <row>
+        <entry>D.NMI</entry>
+        <entry>$36</entry>
+        <entry>2</entry>
+        <entry>Nmi vector</entry>
+      </row>
+      <row>
+        <entry>D.SvcIRQ</entry>
+        <entry>$38</entry>
+        <entry>2</entry>
+        <entry>Interrupt service entry</entry>
+      </row>
+      <row>
+        <entry>D.Poll</entry>
+        <entry>$3A</entry>
+        <entry>2</entry>
+        <entry>Interrupt polling routine</entry>
+      </row>
+      <row>
+        <entry>D.UsrIRQ</entry>
+        <entry>$3C</entry>
+        <entry>2</entry>
+        <entry>User irq routine</entry>
+      </row>
+      <row>
+        <entry>D.SysIRQ</entry>
+        <entry>$3E</entry>
+        <entry>2</entry>
+        <entry>System irq routine</entry>
+      </row>
+      <row>
+        <entry>D.UsrSvc</entry>
+        <entry>$40</entry>
+        <entry>2</entry>
+        <entry>User service request routine</entry>
+      </row>
+      <row>
+        <entry>D.SysSvc</entry>
+        <entry>$42</entry>
+        <entry>2</entry>
+        <entry>System service request routine</entry>
+      </row>
+      <row>
+        <entry>D.UsrDis</entry>
+        <entry>$44</entry>
+        <entry>2</entry>
+        <entry>User service request dispatch table</entry>
+      </row>
+      <row>
+        <entry>D.SysDis</entry>
+        <entry>$46</entry>
+        <entry>2</entry>
+        <entry>System service reuest dispatch table</entry>
+      </row>
+      <row>
+        <entry>D.Slice</entry>
+        <entry>$48</entry>
+        <entry>1</entry>
+        <entry>Process time slice count</entry>
+      </row>
+      <row>
+        <entry>D.PrcDBT</entry>
+        <entry>$49</entry>
+        <entry>2</entry>
+        <entry>Process descriptor block address</entry>
+      </row>
+      <row xml:id="d1.proc" xreflabel="D.Proc">
+        <entry>D.Proc</entry>
+        <entry>$4B</entry>
+        <entry>2</entry>
+        <entry>Process descriptor address</entry>
+      </row>
+      <row>
+        <entry>D.AProcQ</entry>
+        <entry>$4D</entry>
+        <entry>2</entry>
+        <entry>Active process queue</entry>
+      </row>
+      <row>
+        <entry>D.WProcQ</entry>
+        <entry>$4F</entry>
+        <entry>2</entry>
+        <entry>Waiting process queue</entry>
+      </row>
+      <row>
+        <entry>D.SProcQ</entry>
+        <entry>$51</entry>
+        <entry>2</entry>
+        <entry>Sleeping process queue</entry>
+      </row>
+      <row>
+        <entry>D.Time</entry>
+        <entry>$53</entry>
+        <entry>6</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Year</entry>
+        <entry>$53</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Month</entry>
+        <entry>$54</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Day</entry>
+        <entry>$55</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Hour</entry>
+        <entry>$56</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Min</entry>
+        <entry>$57</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Sec</entry>
+        <entry>$58</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.Tick</entry>
+        <entry>$59</entry>
+        <entry>1</entry>
+        <entry/>
+      </row>
+      <row>
+        <entry>D.TSec</entry>
+        <entry>$5A</entry>
+        <entry>1</entry>
+        <entry>Ticks / second</entry>
+      </row>
+      <row>
+        <entry>D.TSlice</entry>
+        <entry>$5B</entry>
+        <entry>1</entry>
+        <entry>Ticks / time-slice</entry>
+      </row>
+      <row>
+        <entry>D.IOML</entry>
+        <entry>$5C</entry>
+        <entry>2</entry>
+        <entry>I/O mgr free memory low bound</entry>
+      </row>
+      <row>
+        <entry>D.IOMH</entry>
+        <entry>$5E</entry>
+        <entry>2</entry>
+        <entry>I/O mgr free memory hi  bound</entry>
+      </row>
+      <row>
+        <entry>D.DevTbl</entry>
+        <entry>$60</entry>
+        <entry>2</entry>
+        <entry>Device driver table addr</entry>
+      </row>
+      <row>
+        <entry>D.PolTbl</entry>
+        <entry>$62</entry>
+        <entry>2</entry>
+        <entry>Irq polling table addr</entry>
+      </row>
+      <row>
+        <entry>D.PthDBT</entry>
+        <entry>$64</entry>
+        <entry>2</entry>
+        <entry>Path descriptor block table addr</entry>
+      </row>
+      <row>
+        <entry>D.BTLO</entry>
+        <entry>$66</entry>
+        <entry>2</entry>
+        <entry>Bootstrap low address</entry>
+      </row>
+      <row>
+        <entry>D.BTHI</entry>
+        <entry>$68</entry>
+        <entry>2</entry>
+        <entry>Bootstrap hi address</entry>
+      </row>
+      <row>
+        <entry>D.DMAReq</entry>
+        <entry>$6A</entry>
+        <entry>1</entry>
+        <entry>DMA in use flag</entry>
+      </row>
+      <row>
+        <entry>D.AltIRQ</entry>
+        <entry>$6B</entry>
+        <entry>2</entry>
+        <entry>Alternate IRQ vector (CC)</entry>
+      </row>
+      <row>
+        <entry>D.KbdSta</entry>
+        <entry>$6D</entry>
+        <entry>2</entry>
+        <entry>Keyboard scanner static storage (CC)</entry>
+      </row>
+      <row>
+        <entry>D.DskTmr</entry>
+        <entry>$6F</entry>
+        <entry>2</entry>
+        <entry>Disk Motor Timer (CC)</entry>
+      </row>
+      <row>
+        <entry>D.CBStrt</entry>
+        <entry>$71</entry>
+        <entry>16</entry>
+        <entry>Reserved for CC warmstart ($71)</entry>
+      </row>
+      <row>
+        <entry>D.Clock</entry>
+        <entry>$81</entry>
+        <entry>2</entry>
+        <entry>Address of Clock Tick Routine (CC)</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</table>
+<table frame="none" colsep="0" rowsep="0">
+  <title>OS-9 Level II Direct Page variables</title>
+  <tgroup cols="4">
+    <colspec colwidth="1.5in" colname="c1"/>
+    <colspec colwidth="1in"/>
+    <colspec colwidth="0.7in"/>
+    <colspec colwidth="5in" colname="c4"/>
+    <spanspec spanname="all" namest="c1" nameend="c4"/>
+    <thead>
+      <row rowsep="1">
+        <entry>Name</entry>
+        <entry>Offset</entry>
+        <entry>Size</entry>
+        <entry>Description</entry>
+      </row>
+    </thead>
+    <tbody>
+<row><entry>D.Tasks</entry><entry>$20</entry><entry>2</entry><entry>Task User Table</entry></row>
+<row><entry>D.TmpDAT</entry><entry>$22</entry><entry>2</entry><entry>Temporary DAT Image stack</entry></row>
+<row><entry>D.Init</entry><entry>$24</entry><entry>2</entry><entry>Initialization Module ptr</entry></row>
+<row><entry>D.Poll</entry><entry>$26</entry><entry>2</entry><entry>Interrupt Polling Routine ptr</entry></row>
+<row><entry>D.Time</entry><entry>$28</entry><entry>6</entry><entry>System Time</entry></row>
+<row><entry>D.Year</entry><entry>$28</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Month</entry><entry>$29</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Day</entry><entry>$2A</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Hour</entry><entry>$2B</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Min</entry><entry>$2C</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Sec</entry><entry>$2D</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Tick</entry><entry>$2E</entry><entry>1</entry><entry></entry></row>
+<row><entry>D.Slice</entry><entry>$2F</entry><entry>1</entry><entry>current slice remaining</entry></row>
+<row><entry>D.TSlice</entry><entry>$30</entry><entry>1</entry><entry>Ticks per Slice</entry></row>
+<row><entry>D.Boot</entry><entry>$31</entry><entry>1</entry><entry>Bootstrap attempted flag</entry></row>
+<row><entry>D.MotOn</entry><entry>$32</entry><entry>1</entry><entry>Floppy Disk Motor-On time out</entry></row>
+<row><entry>D.ErrCod</entry><entry>$33</entry><entry>1</entry><entry>Reset Error Code</entry></row>
+<row><entry>D.Daywk</entry><entry>$34</entry><entry>1</entry><entry>day of week, com-trol clock</entry></row>
+<row><entry>D.TkCnt</entry><entry>$35</entry><entry>1</entry><entry>Tick Counter</entry></row>
+<row><entry>D.BtPtr</entry><entry>$36</entry><entry>2</entry><entry>Address of Boot in System Address space</entry></row>
+<row><entry>D.BtSz</entry><entry>$38</entry><entry>2</entry><entry>Size of Boot </entry></row>
+<row><entry>D.BlkMap</entry><entry>$40</entry><entry>4</entry><entry>Memory Block Map ptr</entry></row>
+<row><entry>D.ModDir</entry><entry>$44</entry><entry>4</entry><entry>Module Directory ptrs</entry></row>
+<row><entry>D.PrcDBT</entry><entry>$48</entry><entry>2</entry><entry>Process Descriptor Block Table ptr</entry></row>
+<row><entry>D.SysPrc</entry><entry>$4A</entry><entry>2</entry><entry>System Process Descriptor ptr</entry></row>
+<row><entry>D.SysDAT</entry><entry>$4C</entry><entry>2</entry><entry>System DAT Image ptr</entry></row>
+<row><entry>D.SysMem</entry><entry>$4E</entry><entry>2</entry><entry>System Memory Map ptr</entry></row>
+<row><entry>D.Proc</entry><entry>$50</entry><entry>2</entry><entry>Current Process ptr</entry></row>
+<row><entry>D.AProcQ</entry><entry>$52</entry><entry>2</entry><entry>Active Process Queue</entry></row>
+<row><entry>D.WProcQ</entry><entry>$54</entry><entry>2</entry><entry>Waiting Process Queue</entry></row>
+<row><entry>D.SProcQ</entry><entry>$56</entry><entry>2</entry><entry>Sleeping Process Queue</entry></row>
+<row><entry>D.ModEnd</entry><entry>$58</entry><entry>2</entry><entry>Module Directory end ptr</entry></row>
+<row><entry>D.ModDAT</entry><entry>$5A</entry><entry>2</entry><entry>Module Dir DAT image end ptr</entry></row>
+<row><entry>D.CldRes</entry><entry>$5C</entry><entry>2</entry><entry>Cold Restart vector</entry></row>
+<row><entry>D.Crash</entry><entry>$6B</entry><entry>6</entry><entry>Pointer to CC Crash Routine</entry></row>
+<row><entry>D.CBStrt</entry><entry>$71</entry><entry>$B</entry><entry>Reserved for CC warmstart ($71)</entry></row>
+<row><entry>D.DevTbl</entry><entry>$80</entry><entry>2</entry><entry>I/O Device Table</entry></row>
+<row><entry>D.PolTbl</entry><entry>$82</entry><entry>2</entry><entry>I/O Polling Table</entry></row>
+<row><entry>        </entry><entry>$84</entry><entry>4</entry><entry>reserved</entry></row>
+<row><entry>D.PthDBT</entry><entry>$88</entry><entry>2</entry><entry>Path Descriptor Block Table ptr</entry></row>
+<row><entry>D.DMAReq</entry><entry>$8A</entry><entry>1</entry><entry>DMA Request flag</entry></row>
+<row><entry spanname="all">This area is used for the CoCo Hardware Registers</entry></row>
+<row><entry>D.HINIT</entry><entry>$90</entry><entry>1</entry><entry>GIME INIT0 register (hardware setup $FF90)</entry></row>
+<row><entry>D.TINIT</entry><entry>$91</entry><entry>1</entry><entry>GIME INIT1 register (timer/task register $FF91)</entry></row>
+<row><entry>D.IRQER</entry><entry>$92</entry><entry>1</entry><entry>Interrupt enable register ($FF92)</entry></row>
+<row><entry>D.FRQER</entry><entry>$93</entry><entry>1</entry><entry>Fast Interrupt enable register ($FF93)</entry></row>
+<row><entry>D.TIMMS</entry><entry>$94</entry><entry>1</entry><entry>Timer most significant nibble ($FF94)</entry></row>
+<row><entry>D.TIMLS</entry><entry>$95</entry><entry>1</entry><entry>Timer least significant byte ($FF95)</entry></row>
+<row><entry>D.RESV1</entry><entry>$96</entry><entry>1</entry><entry>two reserved registers ($FF96)</entry></row>
+<row><entry>D.RESV2</entry><entry>$97</entry><entry>1</entry><entry>                       ($FF97)</entry></row>
+<row><entry>D.VIDMD</entry><entry>$98</entry><entry>1</entry><entry>video mode register ($FF98)</entry></row>
+<row><entry>D.VIDRS</entry><entry>$99</entry><entry>1</entry><entry>video resolution register ($FF99)</entry></row>
+<row><entry>D.BORDR</entry><entry>$9A</entry><entry>1</entry><entry>border register ($FF9A)</entry></row>
+<row><entry>D.RESV3</entry><entry>$9B</entry><entry>1</entry><entry>reserved register ($FF9B)</entry></row>
+<row><entry>D.VOFF2</entry><entry>$9C</entry><entry>1</entry><entry>vertical scroll/offset 2 register ($FF9C)</entry></row>
+<row><entry>D.VOFF1</entry><entry>$9D</entry><entry>1</entry><entry>vertical offset 1 register ($FF9D)</entry></row>
+<row><entry>D.VOFF0</entry><entry>$9E</entry><entry>1</entry><entry>vertical offset 0 register ($FF9E)</entry></row>
+<row><entry>D.HOFF0</entry><entry>$9F</entry><entry>1</entry><entry>horizontal offset 0 register ($FF9F)</entry></row>
+<row><entry>D.Speed</entry><entry>$A0</entry><entry>1</entry><entry>Speed of COCO CPU 0=slow,1=fast</entry></row>
+<row><entry>D.TskIPt</entry><entry>$A1</entry><entry>2</entry><entry>Task image Pointer table (CC)</entry></row>
+<row><entry>D.MemSz</entry><entry>$A3</entry><entry>1</entry><entry>128/512K memory flag (CC)</entry></row>
+<row><entry>D.SSTskN</entry><entry>$A4</entry><entry>1</entry><entry>System State Task Number (COCO)</entry></row>
+<row><entry>D.CCMem</entry><entry>$A5</entry><entry>2</entry><entry>Pointer to beginning of CC Memory</entry></row>
+<row><entry>D.CCStk</entry><entry>$A7</entry><entry>2</entry><entry>Pointer to top of CC Memory</entry></row>
+<row><entry>D.Flip0</entry><entry>$A9</entry><entry>2</entry><entry>Change to Task 0</entry></row>
+<row><entry>D.Flip1</entry><entry>$AB</entry><entry>2</entry><entry>Change to reserved Task 1</entry></row>
+<row><entry>D.VIRQ</entry><entry>$AD</entry><entry>2</entry><entry>VIRQ Polling routine</entry></row>
+<row><entry>D.IRQS</entry><entry>$AF</entry><entry>1</entry><entry>IRQ shadow register (CC Temporary)</entry></row>
+<row><entry>D.CLTb</entry><entry>$B0</entry><entry>2</entry><entry>VIRQ Table address</entry></row>
+<row><entry>D.AltIRQ</entry><entry>$B2</entry><entry>2</entry><entry>Alternate IRQ Vector (CC)</entry></row>
+<row><entry>D.SysSvc</entry><entry>$C0</entry><entry>2</entry><entry>System Service Routine entry</entry></row>
+<row><entry>D.SysDis</entry><entry>$C2</entry><entry>2</entry><entry>System Service Dispatch Table ptr</entry></row>
+<row><entry>D.SysIRQ</entry><entry>$C4</entry><entry>2</entry><entry>System IRQ Routine entry</entry></row>
+<row><entry>D.UsrSvc</entry><entry>$C6</entry><entry>2</entry><entry>User Service Routine entry</entry></row>
+<row><entry>D.UsrDis</entry><entry>$C8</entry><entry>2</entry><entry>User Service Dispatch Table ptr</entry></row>
+<row><entry>D.UsrIRQ</entry><entry>$CA</entry><entry>2</entry><entry>User IRQ Routine entry</entry></row>
+<row><entry>D.SysStk</entry><entry>$CC</entry><entry>2</entry><entry>System stack</entry></row>
+<row><entry>D.SvcIRQ</entry><entry>$CE</entry><entry>2</entry><entry>In-System IRQ service</entry></row>
+<row><entry>D.SysTsk</entry><entry>$CF</entry><entry>1</entry><entry>System Task number</entry></row>
+<row><entry>D.Clock</entry><entry>$E0</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.XSWI3</entry><entry>$E2</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.XSWI2</entry><entry>$E4</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.XFIRQ</entry><entry>$E6</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.XIRQ</entry><entry>$E8</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.XSWI</entry><entry>$EA</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.XNMI</entry><entry>$EC</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.ErrRst</entry><entry>$EE</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.SWI3</entry><entry>$F2</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.SWI2</entry><entry>$F4</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.FIRQ</entry><entry>$F6</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.IRQ</entry><entry>$F8</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.SWI</entry><entry>$FA</entry><entry>2</entry><entry></entry></row>
+<row><entry>D.NMI</entry><entry>$FC</entry><entry>2</entry><entry></entry></row>
+    </tbody>
+  </tgroup>
+</table>
+
+</appendix>

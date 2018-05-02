@@ -1,0 +1,137 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Basic System Organization</title>
+<para>
+OS-9 is a modular operating system that has been designed so that each
+module provides specific functions. The modularity of OS-9 allows
+modules to be included in the system or deleted when OS-9 is configured
+on a specific computer depending on the functions that the operating
+system is to perform. For example, a small, ROM based control computer
+does not need the disk related OS-9 modules.
+</para>
+<figure>
+<title>OS-9 Component Module Organization</title>
+<screen>
+                     +-----------------------+
+    +----------+     !                       !     +----------+
+    !          !     !                       !     !          !
+    !   INIT   ! - - !     OS-9 KERNEL       ! - - !  Clock   !
+    !          !     !   (OS9P1, OS9P2)      !     !          !
+    +----------+     !                       !     +----------+
+                     +-----------------------+
+                                 !
+                                 !
+                     +-----------------------+
+                     !                       !
+                     ! Input/Output Manager  !
+                     !       (IOMAN)         !
+                     !                       !
+                     +-----------------------+
+                        |        |        |
+             |----------|        |        |---------|
+       .-----------.       .-----------.      .------------.
+       |           |       |           |      |            |
+       | Disk File |       | Pipe File |      | Char. File |
+       |  Manager  |       |  Manager  |      |  Manager   |
+       |   (RBF)   |       | (Pipeman) |      |   (SBF)    |
+       |           |       |           |      |            |
+       '-----------'       '-----------'      '------------'
+       |          |              |             |           |
+       |          |              |             |           |
+  .--------.  .--------.    .--------.    .--------.  .--------.
+  |        |  |        |    |        |    |        |  |        |
+  |  Disk  |  |  Disk  |    |  Pipe  |    |  ACIA  |  |  PIA   |
+  | Driver |  | Driver |    | Driver |    | Driver |  | Driver |
+  |        |  |        |    | (Piper)|    |        |  |        |
+  '--------'  '--------'    '--------'    '--------'  '--------'
+   |     |     |     |           |         |     |     |     |
+   |     |     |     |           |         |     |     |     |
+ .---. .---. .---. .---.    .--------.   .---. .---. .---. .---.
+ |D0 | |D1 | |D2 | |D3 |    |  Pipe  |   |T1 | |T2 | |P1 | |P2 |
+ '---' '---' '---' '---'    '--------'   '---' '---' '---' '---'
+RBF Device Descriptors     Pipe Descr.    SCF Device Descriptors
+</screen>
+</figure>
+<para>
+Notice that the diagram on the previous page clearly shows OS-9's
+multilevel organization.
+</para>
+
+
+<bridgehead renderas="sect5">
+Level 1 - Kernal and Clock Module
+</bridgehead>
+<para>
+
+The first level contains the KERNEL, CLOCK MODULE, and INIT. The
+kernel provide basic system services such as multitasking, memory
+management, and links all other system modules. The CLOCK module is a
+software handler for the specific real-time-clock hardware. INIT is an
+initialization table used by the kernel during system startup. It
+specifies initial table sizes, initial system device names, etc.
+</para>
+
+
+<bridgehead renderas="sect5">
+Level 2 - Input/Output Manager (IOMAN)
+</bridgehead>
+<para>
+The second level is the Input/Output Manager (IOMAN). It provides
+common processing to all I/O operations. The I/0 Manager is required if
+any OS-supported I/0 is to be performed.
+</para>
+
+
+<bridgehead renderas="sect5">
+Level 3 - File Manager Level (RBF, SCF, and Pipeman)
+</bridgehead>
+<para>
+The third level is the File Manager level. File managers perform I/O
+request processing for similar classes of I/O devices. The Random Block
+File Manager (RBF) processes all disk-type device functions, and the
+Sequential Character File Manager (SCF) handles all non-mass storage
+devices that basically operate a character at a time, such as terminals
+and printers. The user can add additional File Managers to handle
+classes of devices not covered by SCF or RBF. Another file manager
+called PIPEMAN supports the "pipe" interprocess communication method that
+uses memory buffers for data transfer instead of mass storage files.
+</para>
+
+
+<bridgehead renderas="sect5">
+Level 4 - Device Drivers
+</bridgehead>
+<para>
+The fourth level is the Device Driver Level. Device drivers handle
+basic physical I/O functions for specific I/O controller hardware.
+Standard OS-9 systems are typically supplied with a disk driver, an ACIA
+driver for terminals and serial printers, and a PIA driver for parallel
+printers. Many users add. customized drivers of their own design or
+purchase drivers from a hardware vendor.
+</para>
+
+
+<bridgehead renderas="sect5">
+Level 5 - Device Descriptors
+</bridgehead>
+<para>
+The fifth level is the Device Descriptor Level. These modules are
+small tables that associate specific I/O ports with their logical names,
+and the port's device driver and file manager. They also contain the
+physical address of the port and initialization data. By use of device
+descriptors, only one copy of each driver is required for each specific
+type of I/O controller regardless of how many controllers the system
+uses.
+</para>
+<para>
+One important component not shown is the <application>Shell</application>, which is the command
+interpreter. It is technically a program and not part of the operating
+system itself and is described fully in the <citetitle pubwork="book">OS-9 User's Manual</citetitle>.
+</para>
+<para>
+Even though all modules can be resident in ROM, generally only the
+KERNEL and INIT modules are ROMed in disk-based systems. All other
+modules are loaded into RAM during system startup by a disk bootstrap
+module called BOOT (not shown on diagram) which is also resident in ROM.
+</para>
+
+</chapter>

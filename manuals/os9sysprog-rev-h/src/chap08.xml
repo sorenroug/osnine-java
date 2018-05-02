@@ -1,0 +1,111 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>The Pipe File Manager</title>
+
+<para>
+The Pipe File Manager (Pipeman) handles control of processes that use
+paths to pipes. Pipes allow concurrently executing processes to
+communicate data by allowing the output of one process (the writer) to be
+read as input to a second process (the reader). The writer sends it's
+output to standard output which is usually the terminal screen. The
+reader read input from standard input. When the "2" operator is used,
+Pipeman handles reading and writing to the pipe. Pipeman allocates a
+path descriptor and a 256 byte data buffer that the processes will
+read/write to/from. Pipeman also controls which process has centrol of
+the pipe (either a reader or a writer).
+See the <citetitle pubwork="book">OS-9 Operating System User's Manual</citetitle> for more information on pipes.
+</para>
+<para>
+Pipeman has the standard file manager branch table at its entry point:
+</para>
+
+<programlisting>
+PipeEnt  lbra Create
+         lbra Open
+         lbra MakDir
+         lbra ChgDir
+         lbra Delete
+         lbra Seek
+         lbra PRead
+         lbra PWrite
+         lbra PRdLn
+         lbra PWrLn
+         lbra Getstat
+         lbra Putstat
+         lbra Close
+</programlisting>
+<para>
+For pipes, the MakDir, ChgDir, Delete, and Seek are illegal service
+routines and will return <xref linkend="e.unksvc"/> (unknown service request). Getstat and
+Putstat are "no action service routines" and will return with no error.
+</para>
+<para>
+Create and Open are the same routine. They set up the 256 byte data
+buffer and save several addresses in the path descriptor.
+</para>
+<para>
+Close checks to see if any process is reading or writing through the
+pipe. If not, the buffer is returned.
+</para>
+<para>
+PRead, PRdLn, PWrite, PWrLn read/write data to/from the buffer.
+</para>
+<para>
+The <quote>!</quote> operator tells <application>shell</application> that processes wish to communicate via a
+pipe. Example: OS9: proc1 ! proc2. In this example, <application>shell</application> will fork
+proc1 with the stdout path to a pipe and will fork proc2 with the stdin
+path from a pipe. <application>Shell</application> can also handle a series of processes using
+pipes, such as proc1 ! proc2 ! proc3 ! proc4. The outline on the next
+page shows how to set up pipes between two process.
+</para>
+
+<sect1>
+<title>Outlines of Establishing a Pipe Between Two Processes in a Machine Language Program</title>
+
+<example>
+<title>Example: Establishing a Pipe Between Two Processes</title>
+<screen>
+Open /pipe  save path in variable x
+Dup path #1 save stdout in variable y
+Close #1    make path available
+Dup x       puts pipe in stdout (Dup uses lowest avail.)
+Fork proc1  fork process 1
+Close #1    make path available
+Dup y       restores stdout
+Close y     make path available
+Dup path #0 save stdin in y
+Close #0    make path available
+Dup x       puts pipe in stdin
+Fork 2      fork process 2
+Close #0    make path available
+Dup y       restore stdin
+Close x     no longer needed
+Close y     no longer needed
+</screen>
+</example>
+
+<para>
+The following example shows how an application program could spawn
+another process with the stdin and stdout of the process routed to a pipe.
+</para>
+
+<example>
+<title>Example 2: Forking a process with standard paths to the pipe.</title>
+<screen>
+Open /pipe1  save path in variable a
+Open /pipe2  save path in variable b
+Dup 0        save stdin in variable x
+Dup 1        save stdout in variable y
+Close 0      make path available
+Close 1      make path available
+Dup a        make pipel stdin
+Dup b        make pipe2 stdout
+Fork new process
+Close 0      make path available
+Close 1      make path available
+Dup x        restore stdin
+Dup y        restore stdout
+Return a&amp;b   return pipe path numbers to caller
+</screen>
+</example>
+</sect1>
+</chapter>

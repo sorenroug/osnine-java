@@ -1,0 +1,2397 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Level Two System Service Requests</title>
+  <!-- page-192.png -->
+  <sect1>
+    <title>Level Two System Service Requests</title>
+    <sect2 xml:id="f.allimg" xreflabel="F$AllImg">
+      <title>F$AllImg - Allocate Image RAM blocks</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$AllImg</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 3A</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(A) = Beginning block number</member>
+                <member>(B) = Number of blocks</member>
+                <member>(X) = Process Descriptor pointer</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.memful"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: ALLIMG allocates RAM blocks for process DAT image. The blocks
+may not be contiguous. This call is used to allocate data area for a
+process.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.BlkMap</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.allprc" xreflabel="F$AllPrc">
+      <title>F$AllPrc - Allocate Image RAM blocks</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$AllPrc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 4B</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>None</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(U) = Process Descriptor pointer</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.prcful"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: ALLPROC allocates and initializes a BIZ-byte process
+descriptor. The address of the descriptor is kept in the process
+descriptor table. Initialization consists of clearing the first 256
+bytes of the descriptor, setting up the state as system state, and
+marking as unallocated as much of the DAT image as the system allows
+(typically 60 - 64k).
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.PrcDBT</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$SrqMem</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.allram" xreflabel="F$AllRAM">
+      <title>F$AllRAM - Allocate  RAM blocks</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$AllRAM</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 39</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(B) = Number of blocks</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.noram"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: ALLRAM searches the Memory Block map for the desired number of contiguous free RAM blocks.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.BlkMap</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.alltsk" xreflabel="F$AllTsk">
+      <title>F$AllTsk - Allocate process Task number</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$AllTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 3F</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(X) = Process Descriptor pointer</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.notask"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: ALLTSK determines if a task number is assigned to the given
+process. Otherwise, a task number is newly allocated, and the DAT image
+is copied into the DAT hardware.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Tasks, D.SysTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F.ResTsk, F.SetTsk*</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.boot" xreflabel="F$Boot">
+      <title>F$Boot - Bootstrap system</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$Boot</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 35</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>None</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: BOOT links the module named "Boot" or as specified in the INIT
+module; calls linked module; and expects the return of a pointer and size
+of an area which is then searched for new modules.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Boot, D.Init, D.SysDAT</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>
+              <simplelist type="inline">
+                <member>F$Link</member>
+                <member>Entry point of Boot Module</member>
+                <member>F$VModul</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.btmem" xreflabel="F$BtMem">
+      <title>F$BtMem - Bootstrap Memory request</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$BtMem</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 36</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(D) = Byte count requested.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(D) = Byte count granted.</member>
+                <member>(U) = Pointer to memory allocated.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.memful"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: BTMEM allocates requested memory (rounded up to nearest block)
+as contiguous memory in the system's address space.
+</para>
+      <para>
+With the release of version 1.2 of Level Two, this system call is not
+needed. It is equated to F$SrqMem.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.clrblk" xreflabel="F$ClrBlk">
+      <title>F$ClrBlk - Clear specific Block</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$ClrBlk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 50</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Number of blocks</member>
+              <member>(U) = Address of first block</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para><xref linkend="e.iba"/> if the address is invalid, or if clearing area where the stack is residing.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: CLRBLK marks blocks in process DAT image as unallocated.
+Thus, the blocks become free for the process to use for other data or
+program area.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.cpymem" xreflabel="F$CpyMem">
+      <title>F$CpyMem - Copy external Memory</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$CpyMem</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 18</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(D) = DAT image ptr.</member>
+              <member>(X) = Offset in block to begin copy</member>
+              <member>(Y) = Byte count</member>
+              <member>(U) = Caller's destination buffer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: CPYMEM reads external memory into the user's buffer for
+inspection. Any memory in the system may be viewed in this way. CpyMem
+assumes X to be the address of the 64k space described by the DAT image
+given. only the part of the DAT image which corresponds to the area
+specified needs to be set up.
+</para>
+      <para>
+Examples: If the entire DAT image of a process is passed, then X =
+address in the process space. If a partial DAT image is passed (upper
+half), then X = offset from beginning of DAT image ($8000).
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.TmpDAT, D.Procc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$LDDDXY*, F$LDAXY*, F$STABX*</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.datlog" xreflabel="F$DATLog">
+      <title>F$DATLog - Convert DAT block/offset to Logical Addr</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$DATLog</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 44</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = DAT image offset</member>
+              <member>(X) = Block offset</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(X) = Logical address</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: DATLOG converts a DAT image block number and block offset to
+its equivalent logical address.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+      <screen>
+        +                   +
+        |                   |
+        |                   |
+        --------------------- Input:  B = 2
+        |                   |         X = $0329
+        |    2000 - 2FFF    |
+        |                   |
+        ---------------------
+        |                   | Output: X = $2329
+        |    1000 - 1FFF    |
+        |                   |
+        ---------------------
+        |                   |
+        |       0 - FFF     |
+        ---------------------
+</screen>
+    </sect2>
+    <sect2 xml:id="f.delimg" xreflabel="F$DelImg">
+      <title>F$DelImg - Deallocate Image RAM blocks</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$DelImg</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 3B</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Beginning block number</member>
+              <member>(B) = Block count</member>
+              <member>(X) = Process descriptor pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: DELIMG deallocates memory from the process' address space.
+This call frees the RAM for system use and frees the DAT image for the
+process. It's main use is to allow the system to clean up after process
+death.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.BlkMap</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.delprc" xreflabel="F$DelPrc">
+      <title>F$DelPrc - Deallocate Process descriptor</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$DelPrc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 4C</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(A) = Process ID</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: DELPRC returns process descriptor memory to a free memory pool.
+Used for process clean up after death.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.PrcDBT</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$DelTsk*, F$SrtMem</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.delram" xreflabel="F$DelRam">
+      <title>F$DelRam - Deallocate RAM blocks</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$DelRam</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 51</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Number of blocks</member>
+              <member>(X) = Starting block number</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: DELRAM clears the block's "RAM in use flag" in the system
+memory block map. DelRam assumes the blocks are not associated with any
+DAT image.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.BlkMap</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.deltsk" xreflabel="F$DelTsk">
+      <title>F$DelTsk - Deallocate process Task number</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$DelTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 40</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(X) = Process descriptor pointer</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: DELTSK releases the Task number in use by the process whose
+descriptor pointer is passed.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.SysTsk, D.Tasks</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F.RelTsk</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.elink" xreflabel="F$ELink">
+      <title>F$ELink - Link using module directory Entry</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$ELink</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 4D</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Module type</member>
+              <member>(X) = Pointer to module directory entry</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(U) = Module header address</member>
+              <member>(Y) = Module entry point</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para><xref linkend="e.modbsy"/>, <xref linkend="e.memful"/></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: ELINK performs a "Link" given a pointer to a module directory
+entry. Note that this call differs from F$Link in that a pointer to the
+module directory entry is supplied rather than a pointer to a module
+name.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F.FreeHB*, F.SetImg*, F.DATLog*, F.LDDDXY*</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.fmodul" xreflabel="F$FModul">
+      <title>F$FModul - Find Module directory entry</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$FModul</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 4B</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Module type</member>
+              <member>(X) = Pointer to name string</member>
+              <member>(Y) = DAT image pointer (for name)</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) Module type</member>
+              <member>(B) = Module revision</member>
+              <member>(X) = Updated past name string</member>
+              <member>(U) = Module directory entry pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para><xref linkend="e.mnf"/>, <xref linkend="e.bnam"/>.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: FMODUL returns a pointer to the module directory entry for
+the first module whose name and type matches the given name and type. A
+module type of zero passed to FModul will find any module.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.ModDir, D.ModEnd</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F.LDAXY*, F.DATLOg*, F.PrsNam, F.LDDDXY*, F.ChkNam*</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.freehb" xreflabel="F$FreeHB">
+      <title>F$FreeHB - Get Free High block</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$FreeHB</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 3E</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Block count</member>
+              <member>(Y) = DAT image pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(A) = Beginning block number</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.memful"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: FREEHB searches the DAT image for the highest set of
+contiguous free blocks of the given size. FreeHB returns the block
+number of the beginning memory address of the free blocks.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.freelb" xreflabel="F$FreeLB">
+      <title>F$FreeLB - Get Free Low block</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$FreeLB</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 3D</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Block count</member>
+              <member>(Y) = DAT image pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(A) = Beginning block number</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.memful"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: FREELB searches the DAT image for the lowest set of contiguous
+free blocks of the given size.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.gblkmp" xreflabel="F$GBlkMp">
+      <title>F$GBlkMp - Get system Block Map copy</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 P$GBlkMp</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 19</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(X) = 1024 byte buffer Pointer</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(D) = Number of bytes per block (MMU block size dependent)</member>
+              <member>(Y) = Size of system's memory block map</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: GBLKMAP copies the system's memory block map into the user's
+buffer for inspection. F$GBlkMp is used by Mfree to find how much free
+memory exists.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.BlkMap, D.SysTsk, D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$Move</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.gmoddr" xreflabel="F$GModDr">
+      <title>F$GModDr - Get Module Directory copy</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$GModDr</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 1A</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(X) = 2048 byte buffer pointer</member>
+              <member>(Y) = end of copied module dir</member>
+              <member>(U) = Start address of Module Directory in the system</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: GMODDR copies the system's module directory into the user's
+buffer for inspection. F$GModDr is used by Mdir to look at the module
+directory.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.ModDir, D.ModEnd, D.SysTsk, D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$Move.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.gprdsc" xreflabel="F$GPrDsc">
+      <title>F$GPrDsc - Get Process Descriptor copy</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$GPrDsc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 18</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Requested process ID</member>
+              <member>(X) = 512 byte buffer pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: GPRDSC copies a process descriptor into the calling process'
+buffer for inspection. There is no way to change data in a process-
+descriptor. F$GPrDsc is used by the Procs utility to gain information
+about each existing process.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc, D.SysTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$GProcP</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.gprocp" xreflabel="F$GProcP">
+      <title>F$GProcP - Get Process Pointer</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$GProCP</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 37</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(A) = Process ID</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(B) = Pointer to process descriptor</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.bprcid"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: GPROCP translates a process ID number to the address of its
+process descriptor in the system address space. Process descriptors
+exist only in the system task address space. Therefore, the address
+returned must refer to system address space.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.PrcDBT</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.ldabx" xreflabel="F$LDABX">
+      <title>F$LDABX - Load A from 0,X in task B</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$LDABX</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 49</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Task Number</member>
+              <member>(X) = Data pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(A) = Data byte ato,X in task's address space</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: One byte is returned from the logical address in (X) in the
+given task's address space. LDABX is typically used to get one byte from
+the current process's memory in a system state routine.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.ldaxy" xreflabel="F$LDAXY">
+      <title>F$LDAXY - Load A [X, [Y]]</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$LDAXY</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 46</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(X) = Block Offset</member>
+              <member>(Y) = DAT image pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(A) = Data byte at (X) offset of (Y)</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: LDAXY returns one data byte in the memory block specified by
+the DAT image in (Y), offset by (X). LDAXY assumes the DAT image pointer
+is to the actual block desired and that X is only an offset within the
+DAT block. Example: X must be less than the size of the block or
+invalid data will be returned. However, no error check is made for the
+situation.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.ldddxy" xreflabel="F$LDDDXY">
+      <title>F$LDDDXY - Load D [D+X],[Y]]</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$LDDDXY</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 48</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(D) = Offset to the offset within DAT image</member>
+              <member>(X) = Offset within DAT image</member>
+              <member>(Y) = DAT image pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(D) = bytes addressed by [D+X,Y]</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: Loads two bytes from the address space described by the DAT
+image pointed to by (Y). The bytes are loaded from the address D+X in
+the address space.
+</para>
+      <para>
+Offsets must be set up to be oriented relative to the first block pointed
+to the DAT image pointer. If the DAT image pointer is to the entire DAT,
+then D+X should equal the process address for data. If the DAT image is
+not the entire image (full 64k), then D+X must be adjusted relative to
+DAT image beginning.
+</para>
+      <para>
+The use of D+X allows keeping a local pointer within a block, yet
+offsetting into the DAT image to a block number is specified.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F.LDAXY*</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.mapblk" xreflabel="F$MapBlk">
+      <title>F$MapBlk - Map specific block</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$MapBlk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 4F</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(B) = Number of blocks</member>
+              <member>(X) = Beginning block number</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(U) = Address of first block</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para>
+              <xref linkend="e.iba"/>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: MAPBLK maps specified block(s) into unallocated blocks of
+process space. Blocks are mapped in from the top down. In other words,
+new blocks are mapped into the highest address available in the address
+space. See F$ClrBlk for information on "unmapping".
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$FreeHB, F$SetImg</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.move" xreflabel="F$Move">
+      <title>F$Move - Move Data (low bound first)</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$Move</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 38</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Source Task Number</member>
+              <member>(B) = Destination Task Number</member>
+              <member>(X) = Source pointer</member>
+              <member>(Y) = Byte count</member>
+              <member>(U) = Destination pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: MOVE moves data bytes from one address space to another,
+usually from system to user or vice versa.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.reltsk" xreflabel="F$RelTsk">
+      <title>F$RelTsk - Release Task number</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$RelTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 43</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(B) = Task number</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: RELTSK releases the specified DAT task number, which makes the
+task's DAT hardware available for another user.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.SysTsk, D.Tasks</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.restsk" xreflabel="F$ResTsk">
+      <title>F$ResTsk - Reserve Task number</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$ResTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 42</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>(B) = Task number</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: RESTSK finds free DAT task number, reserves it, and returns
+the task number to the caller. The caller then (generally) assigns the
+new task number to a process.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.SysTsk, D.Tasks</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.setimg" xreflabel="F$SetImg">
+      <title>F$SetImg - Set Process DAT Image</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$SetImg</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 3C</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Beginning image block number</member>
+              <member>(B) = Block count</member>
+              <member>(X) = Process descriptor pointer</member>
+              <member>(U) = New image pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: SETIMG copies DAT image, or a portion of the DAT image, into
+the process descriptor. At the same time it sets an image change flag in
+the process descriptor which guarantees that as process returns from the
+system call, the hardware will be updated to match the new process DAT
+image.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.settsk" xreflabel="F$SetTsk">
+      <title>F$SetTsk - Set process Task DAT registers</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$SetTsk</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 41</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(X) = Process descriptor pointer</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: SETTSK sets the process task hardware DAT registers and clears
+the image change flag in the process descriptor as well as writing the
+data into the hardware.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.slink" xreflabel="F$Slink">
+      <title>F$Slink - System Link</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$SLink</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 34</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Module type</member>
+              <member>(X) = Module name string pointer</member>
+              <member>(Y) = Name string DAT image pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Module type</member>
+              <member>(B) = Module revision</member>
+              <member>(X) = Updated name string pointer</member>
+              <member>(Y) = Module entry point</member>
+              <member>(U) = Module pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(CC) = C bit set.</member>
+              <member>(B) = Appropriate error code.</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>POSSIBLE ERRORS:</term>
+          <listitem>
+            <para><xref linkend="e.modbsy"/>, <xref linkend="e.memful"/></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: SLINK links a module whose name is outside the current
+(system) process' address space into the address space. F$SLink is used
+by the I/O system to get the modules specified by the device name in a
+user call (I$Create, I$Open, etc.) linked into the system's address
+space.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>
+          <simplelist type="inline"><member>F.FModul</member><member>F.FreeHB*</member><member>F.SetImg*</member><member>F.DATLog*</member><member>F.LDDXY*</member></simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.stabx" xreflabel="F$STABX">
+      <title>F$STABX - Store A at 0,X in task B</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$STABX</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 4A</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Data byte to store in task's address space</member>
+              <member>(B) = Task number</member>
+              <member>(X) = Logical address in task's address space to store</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: This is similar to the assembly instruction "STA 0,X", except
+that (X) refers to an address in the given task's address space rather
+than the current address space.
+</para>
+      <note>
+        <para>This is a privileged system mode service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.suser" xreflabel="F$SUser">
+      <title>F$SUser - Set User ID number</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$SUser</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 1C</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p1</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <para>(Y) = Desired user ID number</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: SUSER alters the current user ID to that specified, without
+error checking and without regard to ID number of caller.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
+      </note>
+    </sect2>
+    <sect2 xml:id="f.unload" xreflabel="F$UnLoad">
+      <title>F$UnLoad - Unlink module by name</title>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>ASSEMBLER CALL:</term>
+          <listitem>
+            <para>OS9 F$UnLoad</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MACHINE CODE:</term>
+          <listitem>
+            <para>103F 1D</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INPUT:</term>
+          <listitem>
+            <simplelist>
+              <member>(A) = Module type</member>
+              <member>(X) = Module name pointer</member>
+            </simplelist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>OUTPUT:</term>
+          <listitem>
+            <para>None.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ERROR OUTPUT:</term>
+          <listitem>
+            <para>
+              <simplelist>
+                <member>(CC) = C bit set.</member>
+                <member>(B) = Appropriate error code.</member>
+              </simplelist>
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+FUNCTION: Locates the module in the module directory, decrements its
+link count, and removes it from the directory if the count reaches zero.
+Note that this call differs from F$UnLink in that the pointer to the
+module name is supplied rather that the address of the module header.
+</para>
+      <variablelist role="factsheet">
+        <varlistentry>
+          <term>DATA:</term>
+          <listitem>
+            <para>D.Proc, D.SysDAT, D.BlkMap, D.ModDir, D.ModEnd</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SYSTEM CALLS:</term>
+          <listitem>
+            <para>F$FModul, F$IODel</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <note>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
+      </note>
+    </sect2>
+  </sect1>
+</chapter>

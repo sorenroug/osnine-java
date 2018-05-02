@@ -1,0 +1,340 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Assembly Language Programming Techniques</title>
+<!-- page-104.png -->
+<para>There are four key rules for programmers writing OS-9 assembly
+language programs:</para>
+<orderedlist  numeration="arabic">
+	<listitem><para>All programs <emphasis>must</emphasis> use position-independent-code (PIC). OS-9
+	selects load addresses based on available memory at run-time. There
+	is no way to force a program to be loaded at a specific address.</para></listitem>
+	<listitem><para>All programs must use the standard OS-9 memory module formats
+	or they cannot be loaded and run. Programs must not use
+	self-modifying code. Programs must not change anything in a memory
+	module or use any part of it for variables.</para></listitem>
+	<listitem><para>Storage for all variables and data structures must be within a
+	data area which is assigned by OS-9 at run-time, and is separate
+	from the program memory module.</para></listitem>
+	<listitem><para>All input and output operations should be made using OS-9
+	service request calls.</para></listitem>
+</orderedlist>
+
+<para>Fortunately, the 6809's versatile addressing modes make the rules
+above easy to follow,. The OS-9 Assembler also helps because it has
+special capabilities to assist the programmer in creating programs
+and memory modules for the OS-9 execution environment.</para>
+
+<sect1>
+<title>How to Write Position-Independent Code</title>
+
+<para>The 6809 instruction set was optimized to allow efficient use of
+Position Independent Code (PIC). The basic technique is to always use
+PC-relative addressing; for example BRA, LBRA, BSR and LBSR. Get
+addresses of constants and tables using LEA instructions instead of
+load immediate instructions. If you use dispatch tables, use tables
+of RELATIVE, not absolute, addresses.</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<thead>
+<row rowsep="1">
+<entry>INCORRECT</entry>
+<entry>CORRECT</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>LDX #CONSTANT</entry>
+<entry>LEAX CONSTANT,PCR</entry>
+</row>
+<row>
+<entry>JSR SUBR</entry>
+<entry>BSR SUBR or LBSR SUBR</entry>
+</row>
+<row>
+<entry>JMP LABEL</entry>
+<entry>BRA LABEL or LBRA LABEL</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect1>
+
+<sect1>
+<title>Addressing Variables and Data Structures</title>
+
+<para>Programs executed as processes (by <xref linkend="f.fork"/> and
+<xref linkend="f.chain"/> system calls or
+by the <application>Shell</application>) are assigned a RAM memory area for variables, stacks,
+and data structures at execution-time. The addresses cannot be
+determined or specified ahead of time. However, a minimum size for
+this area is specified in the program's module header. Again, thanks
+to the 6809's full compliment of addressing modes this presents no
+problem to the OS-9 programmer.</para>
+
+<para>When the program is first entered, the Y register will have the
+address of the top of the process' data memory area. If the creating
+process passed a parameter area, it will be located from the value of
+the SP to the top of memory (Y), and the D register will contain the
+parameter area size in bytes. If the new process was called by the
+<application>shell</application>, the parameter area will contain
+the part of the <application>shell</application> command
+line that includes the argument (parameter) text. The U register will
+have the lower bound of the data memory area, and the DP register
+will contain its page number.</para>
+
+<para>The most important rule is to <emphasis>not use extended addressing!</emphasis>
+Indexed and direct page addressing should be used exclusively to access data
+area values and structures. Do not use program-counter relative
+addressing to find addresses in the data area, but do use it to refer
+to addresses within the program area.</para>
+
+<para>The most efficient way to handle tables, buffers, stacks, etc., is
+to have the program's initialization routine compute their absolute
+addresses using the data area bounds passed by OS-9 in the registers.
+These addresses can then be saved in the direct page where they can
+be loaded into registers quickly, using short instructions. This
+technique has advantages: it is faster than extended addressing, and
+the program is inherently reentrant.</para>
+</sect1>
+
+<sect1>
+<title>Stack Requirements</title>
+
+<para>Because OS-9 uses interrupts extensively, and also because many
+reentrant 6809 programs use the MPU stack for local variable storage,
+a generous stack should be maintained at all times. The recommended
+minimum is approximately 200 bytes.</para>
+</sect1>
+
+<sect1>
+<title>Interrupt Masks</title>
+
+<para>User programs should keep the condition codes register F (FIRQ
+mask) and I (IRQ mask) bits off. They can be set during critical
+program sequences to avoid task-switching or interrupts, but this
+time should be kept to a minimum. If they are set for longer than a
+tick period, system timekeeping accuracy may be affected. Also, some
+Level Two systems will abort programs having a set IRQ mask.</para>
+</sect1>
+
+<sect1>
+<title>Using Standard I/O Paths</title>
+
+<para>Programs should be written to use standard I/O paths wherever
+practical. Usually, this involves I/O calls that are intended to
+communicate to the user's terminal, or any other case where the OS-9
+redirected I/O capability is desirable.</para>
+
+<para>All three standard I/O paths will already be open when the program
+is entered (they are inherited from the parent process). Programs
+should <emphasis>not</emphasis> close these paths except under very special
+circumstances.</para>
+
+<para>Standard I/O paths are always assigned path numbers zero, one, and
+two, as shown below:</para>
+
+<para>Path 0 - Standard Input. Analogous to the keyboard or other main
+data input source.</para>
+
+<para>Path 1 - Standard Output. Analogous to the terminal display or other
+main data output destination.</para>
+
+<para>Path 2 - Standard Error/Status. This path is provided so output
+messages which are not part of the actual program output can be kept
+separate. Many times paths 1 and 2 will be directed to the same
+device.</para>
+</sect1>
+
+<sect1>
+<title>Writing Interrupt-driven Device Drivers</title>
+
+<para>OS-9 programs do not use interrupts directly. Any interrupt-driven
+function should be implemented as a device driver module
+which should handle all interrupt-related functions. When it is
+necessary for a program to be synchronized to an interrupt-causing
+event, a driver can send a semaphore to a program (or the reverse)
+using OS-9's <emphasis>signal</emphasis> facilities.</para>
+
+<para>It is important to understand that interrupt service routines are
+asynchronous and somewhat nebulous in that they are not distinct
+processes. They are in effect subroutines called by OS-9 when an
+interrupt occurs.</para>
+
+<para>Therefore, all interrupt-driven device drivers have two basic
+parts: the <quote>mainline</quote> subroutines that execute as part of the calling
+process, and a separate interrupt service routine.</para>
+
+<para><emphasis>The two routines are asynchronous and therefore must use signals
+for communications and coordination.</emphasis></para>
+
+<para>The INIT initialization subroutine within the driver package
+should allocate static storage for the service routine, get the
+service routine address, and execute the <xref linkend="f.irq"/> system call to add it
+to the IRQ polling table.</para>
+
+<para>When a device driver routine does something that will result in an
+interrupt, it should immediately execute a <xref linkend="f.sleep"/>
+service request.
+This results in the process' deactivation. When the interrupt in
+question occurs, its service routine is executed after some random
+interval. It should then do the minimal amount of processing
+required, and send a <quote>wakeup</quote> signal to its associated process using
+the <xref linkend="f.send"/> service request. It may also put some data in its static
+storage (I/O data and status) which is shared with its associated
+<quote>sleeping</quote> process.</para>
+
+<para>Some time later, the device driver <quote>mainline</quote> routine is awakened
+by the signal, and can process the data or status returned by the
+interrupt service routine.</para>
+</sect1>
+
+<sect1>
+<title>A Sample Program</title>
+
+<para>The OS-9 <command>list</command> utility and <quote>Inkey</quote> program is shown on this
+and the following pages as an example of assembly language programming.</para>
+
+<example>
+<title>List Utility</title>
+<programlisting>
+Microware OS-9 Assembler 2.1    01/04/82 23:39:37         Page 001
+LIST - File List Utility
+
+
+     *****
+     *  LIST UTILITY COMMAND
+     *  Syntax: list &lt;pathname&gt; 
+     *  COPIES INPUT FROM SPECIFIED FILE TO STANDARD OUTPUT 
+
+0000 87CD004E           mod LSTEND,LSTNAM,PRGRM+OBJCT,
+                            REENT+1,LSTENT,LSTMEM
+000D 4C6973F4   LSTNAM   fcs   "List"
+
+     * STATIC STORAGE OFFSETS 
+     *
+00C8            BUFSIZ   equ   200        size of input buffer
+0000                     ORG   0
+0000            IPATH    rmb   1          input path number
+0001            PRMPTR   rmb   2          parameter pointer
+0003            BUFFER   rmb   BUFSIZ     allocate line buffer
+00CB                     rmb   200        allocate stack
+0193                     rmb   200        room for parameter list
+025B            LSTMEM   EQU   .
+
+0011 9F01       LSTENT   stx   PRMPTR     save parameter ptr
+0013 8601                lda   #READ.     select read access mode
+0015 103F84              os9   I$Open     open input file
+0018 252E                bcs   LIST50     exit if error
+001A 9700                sta   IPATH      save input path number
+001C 9F01                stx   PRMPTR     save updated param ptr
+
+001E 9600       LIST20   lda   IPATH      load input path number
+0020 3043                leax  BUFFER,U   load buffer pointer
+0022 10BE0C88            ldy   #BUFSIZ    maximum bytes to read
+0026 103F8B              os9   I$ReadLn   read line of input
+0029 2509                bcs   LIST30     exit if error
+002B 8601                lda   #1         load std. out. path #
+002D 103F8C              os9   I$WritLn   output line
+0030 24EC                bcc   LIST20     Repeat if no error
+0032 2014                bra   LIST50     exit if error
+
+0034 C1D3       LIST30   cmpb  #E$EOF     at end of file?
+0036 2610                bne   LIST50     branch if not
+0038 9600                lda   IPATH      load input path number
+003A 103F8F              os9   I$Close    close input path
+003D 2509                bcs   LIST50     ..exit if error
+003F 9E01                ldx   PRMPTR     restore parameter ptr
+0041 A684                lda   0,X
+0043 810D                cmpa  #$0D       End of parameter line?
+0045 26CA                bne   LSTENT     ..no; list next file
+0047 5F                  clrb
+0048 103F06     LIST50   os9   F$Exit     ... terminate
+
+004B 95BB58              emod             Module CRC
+
+004E            LSTEND   EQU   *
+</programlisting>
+</example>
+
+<example>
+<title>Basic09 InKey Subroutine</title>
+<programlisting>
+***************
+* INKEY - a subroutine for BASIC09
+*    Author: Robert Doggett
+
+* Calling syntax:
+*    RUN InKey(StrVar)
+*    RUN InKey(Path,StrVar)
+
+*    Inkey determines if a key has been typed on the given path
+* (Standard Input if not specified), and if so, returns the next
+* character in the string variable.  If no key has been
+* typed a null string is returned.  If a path is specified, it may
+* be either type BYTE or INTEGER.  StrVar may be declared as a
+* BYTE variable, if preferred. If this is done, a value of 255
+* indicates that no data is ready.
+
+  0038            E$Param  equ   56     Basic09's "Parameter Error"
+  0021             TYPE     set   SBRTN+OBJCT
+  0081             REVS     set   REENT+1
+  0000 87CD005F             mod   InKeyEnd,InKeyNam,TYPE,
+                                  REVS,InKeyEnt,0
+  000D 496E6B65    InKeyNam fcs   "Inkey"
+  0012 02                   fcb   2          edition two
+
+D 0000                      org   0          Parameters
+D 0000             Return   rmb   2          Return addr of caller
+D 0002             PCount   rmb   2          Number of params
+D 0004             Param1   rmb   2          after 1st param addr
+D 0006             Length1  rmb   2          size
+D 0008             Param2   rmb   2          2nd param addr
+D 000A             Length2  rmb   2          size
+
+  0013 3064        InKeyEnt leax  Param1,S
+  0015 EC62                 ldd   PCount,S   Get parameter count
+  0017 10830001             cmpd  #1         just one parameter?
+  001B 2717                 beq   InKey20    ..Yes; path (A)=0
+  001F 10830002             cmpd  #2         Two parameters?
+  0021 2635                 bne   ParamErr   No, abort
+  0023 ECF804               ldd   [Param1,S] Get path number
+  0026 AE66                 ldx   Length1,S
+  0028 301F                 leax  -1,X       byte available?
+  002A 2706                 beq   InKey10    ..Yes; (A)=Path number
+  002C 301F                 leax  -1,X       Integer?
+  002E 2628                 bne   ParamErr   ..No; abort
+  0030 1F98                 tfr   B,A
+  0032 3068        InKey10  leax  Param2,S
+  0034 EE02        InKey20  ldu   2,X        length of string
+  0036 AE84                 ldx   0,X        addr of string
+  0038 C6FF                 ldb   #$FF
+  003A E784                 stb   0,X        Init to null str
+  003C 11830002             cmpu  #2         Two-byte string?
+  0040 2502                 blo   InKey30    ..No
+  0042 E701                 stb   1,X       put terminator in 2nd b
+  0044 C601        InKey30  ldb   #SS.Ready
+  0046 103F8D               OS9   I$GetStt   Is any data ready?
+  0049 2508                 bcs   InKey90    ..No; exit
+  004B 108E0001             ldy   #1
+  004F 103F89               OS9   I$Read     Read one byte
+  0052 39                   rts              return error status
+  
+  0053 C1F6        InKey90  cmpb  #E$NotRdy
+  0055 2603                 bne   InKeyErr
+  0057 39                   rts              (carry clear)
+  
+  0058 C638        ParamErr ldb   #E$Param   Parameter Error
+  005A 43          InKeyErr coma
+  005B 39                   rts
+  
+  005C 70F3D5               emod
+  005F             InKeyEnd equ   *
+
+  00000 error(s)
+  00000 warning(s)
+  $005F 00095 program bytes generated
+  $000C 00012 data bytes allocated
+  $2410 09232 bytes used for symbols
+</programlisting>
+</example>
+</sect1>
+</chapter>
