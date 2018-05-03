@@ -1,0 +1,16 @@
+
+kernel:
+  image: sorenroug/v6809:latest
+  user: nobody
+  environment:
+    TZ: Europe/Copenhagen
+    JAVA_OPTS: |
+      -Dorg.slf4j.simpleLogger.log.org.roug.osnine.Acia6551Telnet=debug
+      -Dorg.slf4j.simpleLogger.showDateTime=true
+      -Dorg.slf4j.simpleLogger.showLogName=false
+      -Dorg.slf4j.simpleLogger.showShortLogName=true
+  volumes:
+  - /exports/V6809:/var/local
+  ports:
+  - 23:2323
+
