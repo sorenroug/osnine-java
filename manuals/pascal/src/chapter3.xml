@@ -44,7 +44,7 @@ pascals pcode_filename
     opened by the P-code interpreter for use by your Pascal program. If
     the command line that called the interpreter did not redirect I/O,
     the default paths used are usually the user's terminal.</para>
-    <para>The standard file, INPUT, is opened for reading, the standard file, OUTPUT, is opened for writing, and the standard file, SYSERR, is opened in update (read and write} mode. These files can be used for interactive input/output or to access mass storage files. Some examples of calling the interpreters with I/O redirection are:</para>
+    <para>The standard file, INPUT, is opened for reading, the standard file, OUTPUT, is opened for writing, and the standard file, SYSERR, is opened in update (read and write) mode. These files can be used for interactive input/output or to access mass storage files. Some examples of calling the interpreters with I/O redirection are:</para>
     <screen>pascals  &lt;/d0/user5/indata s20k &gt;/P</screen>
     <screen>pascaln  &lt;/t2 &gt;/t2 &gt;&gt;/t2 L10000   E4000</screen>
     <screen>pascals  &gt;/dl/reports/printfile   S10k E1000</screen>
