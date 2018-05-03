@@ -1,0 +1,23 @@
+<refentry xml:id="irqs" xmlns="http://docbook.org/ns/docbook">
+<refnamediv>
+<refname>IRQS</refname>
+<refpurpose>Show interrupt polling table</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>irqs</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+<command>Irqs</command> displays a list of the system's IRQ polling table.  The IRQ polling table contains a
+list of the service routines for each interrupt handler known by the system.
+</para>
+<para>
+The <command>irqs</command> display header lists the system name, the OS-9 version number, the maximum
+number of devices allowed in the device table, and the maximum number of entries in the IRQ table.
+</para>
+</refsect1>
+</refentry>

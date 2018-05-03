@@ -1,0 +1,153 @@
+<chapter xmlns="http://docbook.org/ns/docbook"
+        xmlns:xi="http://www.w3.org/2001/XInclude">
+<title>System Command Descriptions</title>
+<para>
+This section contains descriptions for each of the command
+programs that are supplied with OS-9. These programs are usually
+called using the shell, but can be called from most other OS-9
+family programs such as BASIC09, Interactive Debugger, Macro Text
+Editor, etc. Unless otherwise noted, these programs are designed to
+run as individual processes.
+</para>
+<warning>
+<para>
+Although many OS-9 commands may work on Level One or Level
+Two systems, there are differences. Take care not to mix command
+files from Level One systems on Level Two, or the reverse.
+</para>
+</warning>
+<section>
+<title>Formal Syntax Notation</title>
+<para>
+Each command description includes a syntax definition which
+describes how the  command sentence can be constructed. These are
+symbolic descriptions that use the following notation:
+</para>
+
+<informaltable frame="none" colsep="0" rowsep="0">
+<tgroup cols="2">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
+<tbody>
+<row>
+    <entry>[ ]</entry>
+    <entry>= Brackets indicate that the enclosed item(s) are optional.</entry>
+</row>
+<row>
+    <entry>{ }</entry>
+    <entry>= Braces indicate that the enclosed item(s) can be
+    either omitted or repeated multiple times.</entry>
+</row>
+<row>
+    <entry><replaceable>path</replaceable></entry>
+    <entry>= Represents any legal pathlist.</entry>
+</row>
+<row>
+    <entry><replaceable>devname</replaceable></entry>
+    <entry>= Represents any legal device name.</entry>
+</row>
+<row>
+    <entry><replaceable>nodname</replaceable></entry>
+    <entry>= Represents any legal memory module name.</entry>
+</row>
+<row>
+    <entry><replaceable>procID</replaceable></entry>
+    <entry>= Represents a process number.</entry>
+</row>
+<row>
+    <entry><replaceable>opts</replaceable></entry>
+    <entry>= One or more options defined in the command description.</entry>
+</row>
+<row>
+    <entry><replaceable>arglist</replaceable></entry>
+    <entry>= a list of arguments (parameters).</entry>
+</row>
+<row>
+    <entry><replaceable>text</replaceable></entry>
+    <entry>= a character string terminated by end-of-line.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+NOTE: The syntax of the commands given does not include the shell's
+built in options such as alternate memory size, I/O redirection,
+etc. This is because the shell will filter its options out of the
+command line before it is passed to the program being called.
+</para>
+</section>
+
+<section>
+<title>Commands</title>
+
+<xi:include href="refentry-asm.xml"/>
+<xi:include href="refentry-attr.xml"/>
+<xi:include href="refentry-backup.xml"/>
+<xi:include href="refentry-basic09.xml"/>
+<xi:include href="refentry-binex.xml"/>
+<xi:include href="refentry-build.xml"/>
+<xi:include href="refentry-cc.xml"/>
+<xi:include href="refentry-chd.xml"/>
+<xi:include href="refentry-cmp.xml"/>
+<xi:include href="refentry-cobbler.xml"/>
+<xi:include href="refentry-config.xml"/>
+<xi:include href="refentry-copy.xml"/>
+<xi:include href="refentry-cputype.xml"/>
+<xi:include href="refentry-date.xml"/>
+<xi:include href="refentry-dcheck.xml"/>
+<xi:include href="refentry-debug.xml"/>
+<xi:include href="refentry-ded.xml"/>
+<xi:include href="refentry-del.xml"/>
+<xi:include href="refentry-deldir.xml"/>
+<xi:include href="refentry-devs.xml"/>
+<xi:include href="refentry-dir.xml"/>
+<xi:include href="refentry-disasm.xml"/>
+<xi:include href="refentry-display.xml"/>
+<xi:include href="refentry-dmode.xml"/>
+<xi:include href="refentry-dsave.xml"/>
+<xi:include href="refentry-dump.xml"/>
+<xi:include href="refentry-echo.xml"/>
+<xi:include href="refentry-edit.xml"/>
+<xi:include href="refentry-ex.xml"/>
+<xi:include href="refentry-exbin.xml"/>
+<xi:include href="refentry-exmode.xml"/>
+<xi:include href="refentry-format.xml"/>
+<xi:include href="refentry-free.xml"/>
+<xi:include href="refentry-go51.xml"/>
+<xi:include href="refentry-help.xml"/>
+<xi:include href="refentry-ident.xml"/>
+<xi:include href="refentry-iniz.xml"/>
+<xi:include href="refentry-irqs.xml"/>
+<xi:include href="refentry-kill.xml"/>
+<xi:include href="refentry-link.xml"/>
+<xi:include href="refentry-list.xml"/>
+<xi:include href="refentry-load.xml"/>
+<xi:include href="refentry-login.xml"/>
+<xi:include href="refentry-makdir.xml"/>
+<xi:include href="refentry-mdir.xml"/>
+<xi:include href="refentry-merge.xml"/>
+<xi:include href="refentry-mfree.xml"/>
+<xi:include href="refentry-os9gen.xml"/>
+<xi:include href="refentry-printerr.xml"/>
+<xi:include href="refentry-procs.xml"/>
+<xi:include href="refentry-pwd.xml"/>
+<xi:include href="refentry-rename.xml"/>
+<xi:include href="refentry-runb.xml"/>
+<xi:include href="refentry-save.xml"/>
+<xi:include href="refentry-setime.xml"/>
+<xi:include href="refentry-setpr.xml"/>
+<xi:include href="refentry-shell.xml"/>
+<xi:include href="refentry-sleep.xml"/>
+<xi:include href="refentry-smap.xml"/>
+<xi:include href="refentry-tee.xml"/>
+<xi:include href="refentry-tmode.xml"/>
+<xi:include href="refentry-tsmon.xml"/>
+<xi:include href="refentry-tuneport.xml"/>
+<xi:include href="refentry-unlink.xml"/>
+<xi:include href="refentry-verify.xml"/>
+<xi:include href="refentry-wcreate.xml"/>
+<xi:include href="refentry-xmode.xml"/>
+
+</section>
+</chapter>

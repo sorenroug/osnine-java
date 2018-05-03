@@ -11,9 +11,9 @@
   </parent>
 
   <groupId>roug.org.osnine</groupId>
-  <artifactId>pascal</artifactId>
+  <artifactId>os9guide</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <name>OS-9 Pascal User's Manual</name>
+  <name>OS-9 Operating System User's Guide</name>
   <packaging>pom</packaging>
 
   <properties>
@@ -56,7 +56,7 @@
         <version>2.0.17</version>
         <executions>
           <execution>
-            <id>pascal</id>
+            <id>os9guide</id>
             <phase>pre-site</phase>
             <goals>
               <goal>generate-pdf</goal>
@@ -67,7 +67,7 @@
               <draftMode>no</draftMode>
               <sourceDirectory>${basedir}/src</sourceDirectory>
               <foCustomization>src/style.xslt</foCustomization>
-              <includes>pascal.xml</includes>
+              <includes>os9guide-book.xml</includes>
             </configuration>
           </execution>
         </executions>

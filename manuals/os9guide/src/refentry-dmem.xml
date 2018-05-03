@@ -1,0 +1,23 @@
+<refentry xml:id="dmem" xmlns="http://docbook.org/ns/docbook">
+<refnamediv>
+<refname>DMEM</refname>
+<refpurpose>Display Memory</refpurpose>
+<refclass>OS-9 Level Two</refclass>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>dmem</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Displays memory under OS-9 Level Two.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+</screen>
+</refsect1>
+</refentry>

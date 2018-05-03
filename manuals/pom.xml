@@ -14,9 +14,11 @@
     <name>Manuals and other documentation</name>
 
     <modules>
+        <module>os9guide</module>
         <module>assembler</module>
         <module>pascal</module>
         <module>basic09</module>
+        <module>os9sysprog-rev-h</module>
     </modules>
 
     <properties>

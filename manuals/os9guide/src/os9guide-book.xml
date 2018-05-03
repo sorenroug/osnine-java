@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<book xmlns="http://docbook.org/ns/docbook"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    version="5.0"
+    xml:id="os9guide" xml:lang="en"
+    xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+
+<bookinfo xmlns="http://docbook.org/ns/docbook">
+ <title>OS-9 Operating System User's Guide</title>
+ <subtitle>For Use with OS-9 Level One and OS-9 Level Two</subtitle>
+
+<copyright>
+  <year>2003</year>
+  <holder>The CoCo/Dragon Community</holder>
+</copyright>
+
+ <legalnotice>
+  <para>All Rights Reserved.</para>
+ </legalnotice>
+
+<revhistory>
+  <revision>
+    <revnumber>Org.</revnumber>
+    <date>1983</date>
+    <revremark>Original OS-9 Level One Guide</revremark>
+  </revision>
+  <revision>
+    <revnumber>A</revnumber>
+    <date>March 2003</date>
+    <revremark>Updated with the changes made by Boisy Pitre</revremark>
+  </revision>
+</revhistory>
+
+</bookinfo>
+
+<xi:include href="preface-intro.xml"/>
+<xi:include href="chap1.xml"/>
+<xi:include href="chap2.xml"/>
+<xi:include href="chap3.xml"/>
+<xi:include href="chap4.xml"/>
+<xi:include href="chap5.xml"/>
+<xi:include href="chap6.xml"/>
+<xi:include href="chap7.xml"/>
+<xi:include href="appendix-errorcodes.xml"/>
+<xi:include href="appendix-display.xml"/>
+<xi:include href="appendix-keys.xml"/>
+<xi:include href="appendix-go51.xml"/>
+<xi:include href="appendix-acia51.xml"/>
+</book>

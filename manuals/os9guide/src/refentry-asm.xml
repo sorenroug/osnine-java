@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<refentry xmlns="http://docbook.org/ns/docbook" xml:id="asm">
+  <refnamediv>
+    <refname>ASM</refname>
+    <refpurpose>Assembler</refpurpose>
+    <refclass>Editor/Assembler/Debugger</refclass>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>asm</command>
+      <arg choice="plain">
+        <replaceable>filename</replaceable>
+      </arg>
+      <arg choice="opt">
+        <option>o=</option>
+        <replaceable>outfile</replaceable>
+      </arg>
+      <arg choice="opt">&gt;list</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>Description</title>
+    <para>
+Standard OS-9 Assembler. If no <quote>o</quote> option is given, then
+the assembler only checks syntax. If the output file provided is not
+a full path then it is created in the execution directory.
+</para>
+  </refsect1>
+  <refsect1>
+    <title>Examples</title>
+    <screen>
+asm #10k helloworld.a o=helloworld
+</screen>
+  </refsect1>
+</refentry>
