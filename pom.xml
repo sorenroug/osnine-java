@@ -20,9 +20,9 @@
 
     <modules>
         <module>core</module>
-        <module>v6809</module>
         <module>os9l1</module>
         <module>tools</module>
+        <module>v6809</module>
         <module>manuals</module>
     </modules>
 

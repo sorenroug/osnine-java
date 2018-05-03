@@ -43,7 +43,6 @@
         <assemble src="t1telnet"/>
         <assemble src="t1console"/>
         <assemble src="t1con6850"/>
-        <assemble src="TSMon"/>
         <assemble src="vdisk"/>
     </target>
 
