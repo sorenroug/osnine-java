@@ -20,6 +20,13 @@ public class USimMotorola extends USim {
     }
 
     /**
+     * Constructor.
+     */
+    public USimMotorola(Bus6809 bus) {
+        super(bus);
+    }
+
+    /**
      * Read 16-bit word for big-endian (Motorola type).
      */
     @Override

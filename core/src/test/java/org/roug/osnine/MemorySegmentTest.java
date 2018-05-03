@@ -42,16 +42,43 @@ public class MemorySegmentTest {
         cpu.write(0xb000, 0x0a);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void oversizeMemoryBank() {
-        MemoryBank mb = new MemoryBank(70000);
-    }
+//  @Test(expected = IllegalArgumentException.class)
+//  public void oversizeMemoryBank() {
+//      MemoryBank mb = new MemoryBank(70000);
+//  }
 
     //@Test(expected = IllegalArgumentException.class)
     @Test
     public void illegalRead() {
         MemoryBank mb = new MemoryBank(10000, 1024);
         mb.write(900, 65);
+    }
+
+    /**
+     * Create bus manually and connect it to the CPU.
+     */
+    @Test
+    public void manualBus() {
+        Bus6809 bus = new BusStraight();
+        MemorySegment newMemory = new MemoryBank(0, 0x10000);
+        bus.addMemorySegment(newMemory);
+
+        MC6809 cpu = new MC6809(bus);
+        cpu.write(0xffff, 1);
+        assertEquals(1, cpu.read(0xffff));
+    }
+
+
+    /**
+     * Create bus manually and add no memory.
+     */
+    @Test(expected = NullPointerException.class)
+    public void noMemory() {
+        Bus6809 bus = new BusStraight();
+
+        MC6809 cpu = new MC6809(bus);
+        cpu.write(0xffff, 1);
+        assertEquals(1, cpu.read(0xffff));
     }
 
 }

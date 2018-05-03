@@ -110,6 +110,19 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
+     * Constructor: Assigned bus.
+     */
+    public MC6809(Bus6809 bus) {
+        super(bus);
+
+        String traceInset = System.getProperty("mc6809.trace", "false");
+        if ("true".equalsIgnoreCase(traceInset)) {
+            setTraceInstructions(true);
+        }
+        reset();
+    }
+
+    /**
      * Reset the simulator. Program counter is set to the content for the top
      * two bytes in memory. Direct page register is set to 0.
      */

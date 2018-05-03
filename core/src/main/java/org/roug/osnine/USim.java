@@ -3,6 +3,9 @@ package org.roug.osnine;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Generic processor run state routines.
  */
@@ -10,6 +13,8 @@ public abstract class USim {
 
     private static final int MEM_TOP = 0xFFFF;
     private static final int MEM_MAX = 0x10000;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(USim.class);
 
     /** Flag: is the CPU halted? */
     public boolean halted;
@@ -21,6 +26,7 @@ public abstract class USim {
 
     /** Instruction Register. */
     public int ir;
+
     /** Program Counter. */
     public final Word pc = new Word("PC");
 
@@ -31,8 +37,11 @@ public abstract class USim {
         bus = new BusStraight();
     }
 
-    public Bus6809 getBus() {
-        return bus;
+    /**
+     * Constructor.
+     */
+    public USim(Bus6809 bus) {
+        this.bus = bus;
     }
 
     /**
@@ -46,6 +55,10 @@ public abstract class USim {
     void allocate_memory(int start, int memorySize) {
         MemorySegment newMemory = new MemoryBank(start, memorySize);
         bus.addMemorySegment(newMemory);
+    }
+
+    public Bus6809 getBus() {
+        return bus;
     }
 
     /**
@@ -171,9 +184,10 @@ public abstract class USim {
      * Invalid operation encountered. Halt the processor.
      */
     void invalid(final String msg) {
-        System.err.format("\ninvalid %s : pc = [%04x], ir = [%04x]\r\n",
-                msg == null ? msg : "",
-                pc.intValue(), ir);
+        LOGGER.error("invalid {} : pc = [{}], ir = [{}]",
+                msg != null ? msg : "",
+                Integer.toHexString(pc.intValue()),
+                Integer.toHexString(ir));
         halt();
         //dumpCore();
         throw new RuntimeException(msg);

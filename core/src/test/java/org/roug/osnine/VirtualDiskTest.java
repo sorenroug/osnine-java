@@ -15,7 +15,7 @@ public class VirtualDiskTest {
         return new File(dir, fileName);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void oversizeMemoryBank() throws Exception {
         VirtualDisk mb = new VirtualDisk(70000, null);
         mb.setDisk(diskPath("paravirtdisk"));

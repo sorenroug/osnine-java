@@ -492,9 +492,19 @@ public class InstructionsTest extends Framework {
     }
 
 
+    @Test
+    public void testSEXlow() {
+        setA(0xEE);
+        setB(0x76);
+        myTestCPU.write(0xB00, 0x1D);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertEquals(0x0076, myTestCPU.d.intValue());
+    }
 
     @Test
-    public void testSEX() {
+    public void testSEXhigh() {
         setB(0xE6);
         myTestCPU.write(0xB00, 0x1D);
         myTestCPU.pc.set(0xB00);

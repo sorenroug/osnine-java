@@ -14,9 +14,6 @@ public abstract class MemorySegment {
      * Constructor.
      */
     public MemorySegment(int startAddress, int endAddress) {
-        if (startAddress < 0 || endAddress > 65536) {
-            throw new IllegalArgumentException("Max address is 65536");
-        }
         this.startAddress = startAddress;
         this.endAddress = endAddress;
     }
