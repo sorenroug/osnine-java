@@ -302,4 +302,77 @@ public class LoadStoreTest {
         assertEquals(0, myTestCPU.cc.getV());
     }
 
+    /**
+     * Store A relative/immediate (illegal instruction)
+     * STA 0x20
+     */
+    @Test(expected = RuntimeException.class)
+    public void testSTAillegal() {
+        myTestCPU.a.set(0xE5);
+        myTestCPU.write(0xB00, 0x87); // illegal
+        myTestCPU.write(0xB01, 0x20);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+    /**
+     * Store B relative/immediate (illegal instruction)
+     * STB 0x20
+     */
+    @Test(expected = RuntimeException.class)
+    public void testSTBillegal() {
+        myTestCPU.b.set(0xE5);
+        myTestCPU.write(0xB00, 0xC7); // illegal
+        myTestCPU.write(0xB01, 0x20);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+    /**
+     * Store D relative/immediate (illegal instruction)
+     * STD 0x20
+     */
+    @Test(expected = RuntimeException.class)
+    public void testSTDillegal() {
+        myTestCPU.b.set(0xE5);
+        myTestCPU.write(0xB00, 0xCD); // illegal
+        myTestCPU.write(0xB01, 0x20);
+        myTestCPU.write(0xB02, 0x20);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+    /**
+     * Store S relative/immediate (illegal instruction)
+     * STS 0x2020
+     */
+    @Test(expected = RuntimeException.class)
+    public void testSTSillegal() {
+        myTestCPU.s.set(0x01E5);
+        myTestCPU.write(0xB00, 0x10); // illegal
+        myTestCPU.write(0xB01, 0xCF);
+        myTestCPU.write(0xB02, 0x20);
+        myTestCPU.write(0xB03, 0x20);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+    /**
+     * Store X relative/immediate (illegal instruction)
+     * STX 0x20
+     */
+    @Test(expected = RuntimeException.class)
+    public void testSTXillegal() {
+        myTestCPU.b.set(0xE5);
+        myTestCPU.write(0xB00, 0x8F); // illegal
+        myTestCPU.write(0xB01, 0x20);
+        myTestCPU.write(0xB02, 0x20);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
 }

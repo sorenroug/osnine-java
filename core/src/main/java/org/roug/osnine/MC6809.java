@@ -45,7 +45,7 @@ public class MC6809 extends USimMotorola {
     /** Accumulater B. */
     public final UByte b = new UByte("B");
     /** Accumulater D. Combined from A and B. */
-    public final RegisterD d = new RegisterD(a, b);
+    public final RegisterBytePair d = new RegisterBytePair(a, b);
 
     /** Condiction codes. */
     public final RegisterCC cc = new RegisterCC();
@@ -192,330 +192,13 @@ public class MC6809 extends USimMotorola {
 
         // Select instruction
         if (ir < 0x80) {
-            switch (ir) {
-                case 0x3a:
-                    abx(); break;
-                case 0x1c:
-                    andcc(); break;
-                case 0x47:
-                    asra(); break;
-                case 0x57:
-                    asrb(); break;
-                case 0x07: case 0x67: case 0x77:
-                    asr(); break;
-                case 0x24:
-                    bcc(); break;
-                case 0x25:
-                    bcs(); break;
-                case 0x27:
-                    beq(); break;
-                case 0x2c:
-                    bge(); break;
-                case 0x2e:
-                    bgt(); break;
-                case 0x22:
-                    bhi(); break;
-                case 0x2f:
-                    ble(); break;
-                case 0x23:
-                    bls(); break;
-                case 0x2d:
-                    blt(); break;
-                case 0x2b:
-                    bmi(); break;
-                case 0x26:
-                    bne(); break;
-                case 0x2a:
-                    bpl(); break;
-                case 0x20:
-                    bra(); break;
-                case 0x16:
-                    lbra(); break;
-                case 0x21:
-                    brn(); break;
-                case 0x17:
-                    lbsr(); break;
-                case 0x28:
-                    bvc(); break;
-                case 0x29:
-                    bvs(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x4f:
-                case 0x4f: case 0x4e:
-                    clra(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x5f:
-                case 0x5f: case 0x5e:
-                    clrb(); break;
-                case 0x0f: case 0x6f: case 0x7f:
-                    clr(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x43:
-                case 0x43: case 0x42:
-                    coma(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x53:
-                case 0x53: case 0x52:
-                    comb(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x03: case 0x63: case 0x73:
-                case 0x03: case 0x62: case 0x63: case 0x73:
-                    com(); break;
-                case 0x3c:
-                    cwai(); break;
-                case 0x19:
-                    daa(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x4a:
-                case 0x4a: case 0x4b:
-                    deca(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x5a:
-                case 0x5a: case 0x5b:
-                    decb(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x0a: case 0x6a: case 0x7a:
-                case 0x0a: case 0x0b: case 0x6a: case 0x6b:
-                case 0x7a: case 0x7b:
-                    dec(); break;
-                case 0x1e:
-                    exg(); break;
-                case 0x4c:
-                    inca(); break;
-                case 0x5c:
-                    incb(); break;
-                case 0x0c: case 0x6c: case 0x7c:
-                    inc(); break;
-                case 0x0e: case 0x6e: case 0x7e:
-                    jmp(); break;
-                case 0x32:
-                    leas(); break;
-                case 0x33:
-                    leau(); break;
-                case 0x30:
-                    leax(); break;
-                case 0x31:
-                    leay(); break;
-                case 0x48:
-                    lsla(); break;
-                case 0x58:
-                    lslb(); break;
-                case 0x08: case 0x68: case 0x78:
-                    lsl(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x44:
-                case 0x44: case 0x45:
-                    lsra(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x54:
-                case 0x54: case 0x55:
-                    lsrb(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x04: case 0x64: case 0x74:
-                case 0x04: case 0x05: case 0x64: case 0x65:
-                case 0x74: case 0x75:
-                    lsr(); break;
-                case 0x3d:
-                    mul(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x40:
-                case 0x40: case 0x41:
-                    nega(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x50:
-                case 0x50: case 0x51:
-                    negb(); break;
-                // BDA - Adding in undocumented 6809 instructions
-        //      case 0x00: case 0x60: case 0x70:
-                case 0x00: case 0x01: case 0x60: case 0x61:
-                case 0x70: case 0x71:
-                    neg(); break;
-                // BDA - Adding in undocumented 6809 instructions
-                // NEG/COM combination instruction for direct page
-                case 0x02:
-                    if (cc.getC() == 1)
-                        com();
-                    else
-                        neg();
-                    break;
-                case 0x12:
-                    nop(); break;
-                case 0x1a:
-                    orcc(); break;
-                case 0x34:
-                    pshs(); break;
-                case 0x36:
-                    pshu(); break;
-                case 0x35:
-                    puls(); break;
-                case 0x37:
-                    pulu(); break;
-                // BDA - Adding in undocumented 6809 instructions
-                case 0x3e:
-                    reset(); break;
-                case 0x49:
-                    rola(); break;
-                case 0x59:
-                    rolb(); break;
-                case 0x09: case 0x69: case 0x79:
-                    rol(); break;
-                case 0x46:
-                    rora(); break;
-                case 0x56:
-                    rorb(); break;
-                case 0x06: case 0x66: case 0x76:
-                    ror(); break;
-                case 0x3b:
-                    rti(); break;
-                case 0x39:
-                    rts(); break;
-                case 0x1d:
-                    sex(); break;
-                case 0x3f:
-                    swi(); break;
-                case 0x13:
-                    sync(); break;
-                case 0x1f:
-                    tfr(); break;
-                case 0x4d:
-                    tsta(); break;
-                case 0x5d:
-                    tstb(); break;
-                case 0x0d: case 0x6d: case 0x7d:
-                    tst(); break;
-                default:
-                    invalid("instruction"); break;
-            }
+            executeUnder80();
         } else if (ir >= 0x1080) {
-            switch (ir) {
-                case 0x1083: case 0x1093: case 0x10a3: case 0x10b3:
-                    cmpd(); break;
-                case 0x118c: case 0x119c: case 0x11ac: case 0x11bc:
-                    cmps(); break;
-                case 0x1183: case 0x1193: case 0x11a3: case 0x11b3:
-                    cmpu(); break;
-                case 0x108c: case 0x109c: case 0x10ac: case 0x10bc:
-                    cmpy(); break;
-                case 0x10ce: case 0x10de: case 0x10ee: case 0x10fe:
-                    lds(); break;
-                case 0x108e: case 0x109e: case 0x10ae: case 0x10be:
-                    ldy(); break;
-                case 0x10df: case 0x10ef: case 0x10ff:
-                    sts(); break;
-                case 0x109f: case 0x10af: case 0x10bf:
-                    sty(); break;
-                case 0x113f:
-                    swi3(); break;
-                default:
-                    invalid("instruction"); break;
-            }
+            execute1080();
         } else if (ir >= 0x1000) {
-            switch (ir) {
-                case 0x1024:
-                    lbcc(); break;
-                case 0x1025:
-                    lbcs(); break;
-                case 0x1027:
-                    lbeq(); break;
-                case 0x102c:
-                    lbge(); break;
-                case 0x102e:
-                    lbgt(); break;
-                case 0x1022:
-                    lbhi(); break;
-                case 0x102f:
-                    lble(); break;
-                case 0x1023:
-                    lbls(); break;
-                case 0x102d:
-                    lblt(); break;
-                case 0x102b:
-                    lbmi(); break;
-                case 0x1026:
-                    lbne(); break;
-                case 0x102a:
-                    lbpl(); break;
-                case 0x1021:
-                    lbrn(); break;
-                case 0x1028:
-                    lbvc(); break;
-                case 0x1029:
-                    lbvs(); break;
-                case 0x103f:
-                    swi2(); break;
-                default:
-                    invalid("instruction"); break;
-            }
+            execute1000();
         } else {
-            // Could do a switch (ir & 0xCF) here. But watch out for bsr().
-            switch (ir) {
-                case 0x89: case 0x99: case 0xa9: case 0xb9:
-                    adca(); break;
-                case 0xc9: case 0xd9: case 0xe9: case 0xf9:
-                    adcb(); break;
-                case 0x8b: case 0x9b: case 0xab: case 0xbb:
-                    adda(); break;
-                case 0xcb: case 0xdb: case 0xeb: case 0xfb:
-                    addb(); break;
-                case 0xc3: case 0xd3: case 0xe3: case 0xf3:
-                    addd(); break;
-                case 0x84: case 0x94: case 0xa4: case 0xb4:
-                    anda(); break;
-                case 0xc4: case 0xd4: case 0xe4: case 0xf4:
-                    andb(); break;
-                case 0x85: case 0x95: case 0xa5: case 0xb5:
-                    bita(); break;
-                case 0xc5: case 0xd5: case 0xe5: case 0xf5:
-                    bitb(); break;
-                case 0x81: case 0x91: case 0xa1: case 0xb1:
-                    cmpa(); break;
-                case 0xc1: case 0xd1: case 0xe1: case 0xf1:
-                    cmpb(); break;
-                case 0x8c: case 0x9c: case 0xac: case 0xbc:
-                    cmpx(); break;
-                case 0x88: case 0x98: case 0xa8: case 0xb8:
-                    eora(); break;
-                case 0xc8: case 0xd8: case 0xe8: case 0xf8:
-                    eorb(); break;
-                case 0x8d: case 0x9d: case 0xad: case 0xbd:
-                    jsr(); break;
-                case 0x86: case 0x96: case 0xa6: case 0xb6:
-                    lda(); break;
-                case 0xc6: case 0xd6: case 0xe6: case 0xf6:
-                    ldb(); break;
-                case 0xcc: case 0xdc: case 0xec: case 0xfc:
-                    ldd(); break;
-                case 0xce: case 0xde: case 0xee: case 0xfe:
-                    ldu(); break;
-                case 0x8e: case 0x9e: case 0xae: case 0xbe:
-                    ldx(); break;
-                case 0x8a: case 0x9a: case 0xaa: case 0xba:
-                    ora(); break;
-                case 0xca: case 0xda: case 0xea: case 0xfa:
-                    orb(); break;
-                case 0x82: case 0x92: case 0xa2: case 0xb2:
-                    sbca(); break;
-                case 0xc2: case 0xd2: case 0xe2: case 0xf2:
-                    sbcb(); break;
-                case 0x97: case 0xa7: case 0xb7:
-                    sta(); break;
-                case 0xd7: case 0xe7: case 0xf7:
-                    stb(); break;
-                case 0xdd: case 0xed: case 0xfd:
-                    std(); break;
-                case 0xdf: case 0xef: case 0xff:
-                    stu(); break;
-                case 0x9f: case 0xaf: case 0xbf:
-                    stx(); break;
-                case 0x80: case 0x90: case 0xa0: case 0xb0:
-                    suba(); break;
-                case 0xc0: case 0xd0: case 0xe0: case 0xf0:
-                    subb(); break;
-                case 0x83: case 0x93: case 0xa3: case 0xb3:
-                    subd(); break;
-                default:
-                    invalid("instruction"); break;
-            }
+            execute80toFF();
         }
 
         if (isNMIActive()) {
@@ -529,19 +212,346 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    private static int getSignedByte(int value) {
-        if (value < 0x80) {
-            return value;
-        } else {
-            return -((~value & 0x7f) + 1);
+    /**
+     * Execute instructions with opcodes under 0x80.
+     */
+    private void executeUnder80() {
+        switch (ir) {
+            case 0x3a:
+                abx(); break;
+            case 0x1c:
+                andcc(); break;
+            case 0x47:
+                help_asr(a); break;
+            case 0x57:
+                help_asr(b); break;
+            case 0x07: case 0x67: case 0x77:
+                asr(); break;
+            case 0x24:
+                bcc(); break;
+            case 0x25:
+                bcs(); break;
+            case 0x27:
+                beq(); break;
+            case 0x2c:
+                bge(); break;
+            case 0x2e:
+                bgt(); break;
+            case 0x22:
+                bhi(); break;
+            case 0x2f:
+                ble(); break;
+            case 0x23:
+                bls(); break;
+            case 0x2d:
+                blt(); break;
+            case 0x2b:
+                bmi(); break;
+            case 0x26:
+                bne(); break;
+            case 0x2a:
+                bpl(); break;
+            case 0x20:
+                bra(); break;
+            case 0x16:
+                lbra(); break;
+            case 0x21:
+                brn(); break;
+            case 0x17:
+                lbsr(); break;
+            case 0x28:
+                bvc(); break;
+            case 0x29:
+                bvs(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x4f:
+            case 0x4f: case 0x4e:
+                help_clr(a); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x5f:
+            case 0x5f: case 0x5e:
+                help_clr(b); break;
+            case 0x0f: case 0x6f: case 0x7f:
+                clr(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x43:
+            case 0x43: case 0x42:
+                help_com(a); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x53:
+            case 0x53: case 0x52:
+                help_com(b); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x03: case 0x63: case 0x73:
+            case 0x03: case 0x62: case 0x63: case 0x73:
+                com(); break;
+            case 0x3c:
+                cwai(); break;
+            case 0x19:
+                daa(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x4a:
+            case 0x4a: case 0x4b:
+                help_dec(a); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x5a:
+            case 0x5a: case 0x5b:
+                help_dec(b); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x0a: case 0x6a: case 0x7a:
+            case 0x0a: case 0x0b: case 0x6a: case 0x6b:
+            case 0x7a: case 0x7b:
+                dec(); break;
+            case 0x1e:
+                exg(); break;
+            case 0x4c:
+                help_inc(a); break;
+            case 0x5c:
+                help_inc(b); break;
+            case 0x0c: case 0x6c: case 0x7c:
+                inc(); break;
+            case 0x0e: case 0x6e: case 0x7e:
+                jmp(); break;
+            case 0x32:
+                leas(); break;
+            case 0x33:
+                leau(); break;
+            case 0x30:
+                leax(); break;
+            case 0x31:
+                leay(); break;
+            case 0x48:
+                help_lsl(a); break;
+            case 0x58:
+                help_lsl(b); break;
+            case 0x08: case 0x68: case 0x78:
+                lsl(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x44:
+            case 0x44: case 0x45:
+                help_lsr(a); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x54:
+            case 0x54: case 0x55:
+                help_lsr(b); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x04: case 0x64: case 0x74:
+            case 0x04: case 0x05: case 0x64: case 0x65:
+            case 0x74: case 0x75:
+                lsr(); break;
+            case 0x3d:
+                mul(); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x40:
+            case 0x40: case 0x41:
+                help_neg(a); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x50:
+            case 0x50: case 0x51:
+                help_neg(b); break;
+            // BDA - Adding in undocumented 6809 instructions
+    //      case 0x00: case 0x60: case 0x70:
+            case 0x00: case 0x01: case 0x60: case 0x61:
+            case 0x70: case 0x71:
+                neg(); break;
+            // BDA - Adding in undocumented 6809 instructions
+            // NEG/COM combination instruction for direct page
+            case 0x02:
+                if (cc.getC() == 1)
+                    com();
+                else
+                    neg();
+                break;
+            case 0x12:
+                nop(); break;
+            case 0x1a:
+                orcc(); break;
+            case 0x34:
+                pshs(); break;
+            case 0x36:
+                pshu(); break;
+            case 0x35:
+                puls(); break;
+            case 0x37:
+                pulu(); break;
+            // BDA - Adding in undocumented 6809 instructions
+            case 0x3e:
+                reset(); break;
+            case 0x49:
+                help_rol(a); break;
+            case 0x59:
+                help_rol(b); break;
+            case 0x09: case 0x69: case 0x79:
+                rol(); break;
+            case 0x46:
+                help_ror(a); break;
+            case 0x56:
+                help_ror(b); break;
+            case 0x06: case 0x66: case 0x76:
+                ror(); break;
+            case 0x3b:
+                rti(); break;
+            case 0x39:
+                rts(); break;
+            case 0x1d:
+                sex(); break;
+            case 0x3f:
+                swi(); break;
+            case 0x13:
+                sync(); break;
+            case 0x1f:
+                tfr(); break;
+            case 0x4d:
+                help_tst(a); break;
+            case 0x5d:
+                help_tst(b); break;
+            case 0x0d: case 0x6d: case 0x7d:
+                tst(); break;
+            default:
+                invalid("instruction"); break;
         }
     }
 
-    private static int getSignedWord(int value) {
-        if (value < 0x8000) {
-            return value;
-        } else {
-            return -((~value & 0x7fff) + 1);
+    /**
+     * Execute instructions with opcodes between 0x80 to 0xFF.
+     */
+    private void execute80toFF() {
+        // Could do a switch (ir & 0xCF) here. But watch out for bsr().
+        switch (ir) {
+            case 0x89: case 0x99: case 0xa9: case 0xb9:
+                help_adc(a); break;
+            case 0xc9: case 0xd9: case 0xe9: case 0xf9:
+                help_adc(b); break;
+            case 0x8b: case 0x9b: case 0xab: case 0xbb:
+                help_add(a); break;
+            case 0xcb: case 0xdb: case 0xeb: case 0xfb:
+                help_add(b); break;
+            case 0xc3: case 0xd3: case 0xe3: case 0xf3:
+                addd(); break;
+            case 0x84: case 0x94: case 0xa4: case 0xb4:
+                help_and(a); break;
+            case 0xc4: case 0xd4: case 0xe4: case 0xf4:
+                help_and(b); break;
+            case 0x85: case 0x95: case 0xa5: case 0xb5:
+                help_bit(a); break;
+            case 0xc5: case 0xd5: case 0xe5: case 0xf5:
+                help_bit(b); break;
+            case 0x81: case 0x91: case 0xa1: case 0xb1:
+                help_cmp(a); break;
+            case 0xc1: case 0xd1: case 0xe1: case 0xf1:
+                help_cmp(b); break;
+            case 0x8c: case 0x9c: case 0xac: case 0xbc:
+                help_cmp(x); break;
+            case 0x88: case 0x98: case 0xa8: case 0xb8:
+                help_eor(a); break;
+            case 0xc8: case 0xd8: case 0xe8: case 0xf8:
+                help_eor(b); break;
+            case 0x8d:
+                bsr(); break;
+            case 0x9d: case 0xad: case 0xbd:
+                jsr(); break;
+            case 0x86: case 0x96: case 0xa6: case 0xb6:
+                help_ld(a); break;
+            case 0xc6: case 0xd6: case 0xe6: case 0xf6:
+                help_ld(b); break;
+            case 0xcc: case 0xdc: case 0xec: case 0xfc:
+                help_ld(d); break;
+            case 0xce: case 0xde: case 0xee: case 0xfe:
+                help_ld(u); break;
+            case 0x8e: case 0x9e: case 0xae: case 0xbe:
+                help_ld(x); break;
+            case 0x8a: case 0x9a: case 0xaa: case 0xba:
+                help_or(a); break;
+            case 0xca: case 0xda: case 0xea: case 0xfa:
+                help_or(b); break;
+            case 0x82: case 0x92: case 0xa2: case 0xb2:
+                help_sbc(a); break;
+            case 0xc2: case 0xd2: case 0xe2: case 0xf2:
+                help_sbc(b); break;
+            case 0x97: case 0xa7: case 0xb7:
+                help_st(a); break;
+            case 0xd7: case 0xe7: case 0xf7:
+                help_st(b); break;
+            case 0xdd: case 0xed: case 0xfd:
+                help_st(d); break;
+            case 0xdf: case 0xef: case 0xff:
+                help_st(u); break;
+            case 0x9f: case 0xaf: case 0xbf:
+                help_st(x); break;
+            case 0x80: case 0x90: case 0xa0: case 0xb0:
+                help_sub(a); break;
+            case 0xc0: case 0xd0: case 0xe0: case 0xf0:
+                help_sub(b); break;
+            case 0x83: case 0x93: case 0xa3: case 0xb3:
+                subd(); break;
+            default:
+                invalid("instruction"); break;
+        }
+    }
+
+    private void execute1000() {
+        switch (ir) {
+            case 0x1024:
+                lbcc(); break;
+            case 0x1025:
+                lbcs(); break;
+            case 0x1027:
+                lbeq(); break;
+            case 0x102c:
+                lbge(); break;
+            case 0x102e:
+                lbgt(); break;
+            case 0x1022:
+                lbhi(); break;
+            case 0x102f:
+                lble(); break;
+            case 0x1023:
+                lbls(); break;
+            case 0x102d:
+                lblt(); break;
+            case 0x102b:
+                lbmi(); break;
+            case 0x1026:
+                lbne(); break;
+            case 0x102a:
+                lbpl(); break;
+            case 0x1021:
+                lbrn(); break;
+            case 0x1028:
+                lbvc(); break;
+            case 0x1029:
+                lbvs(); break;
+            case 0x103f:
+                swi2(); break;
+            default:
+                invalid("instruction"); break;
+        }
+    }
+
+    private void execute1080() {
+        switch (ir) {
+            case 0x1083: case 0x1093: case 0x10a3: case 0x10b3:
+                help_cmp(d); break;
+            case 0x118c: case 0x119c: case 0x11ac: case 0x11bc:
+                help_cmp(s); break;
+            case 0x1183: case 0x1193: case 0x11a3: case 0x11b3:
+                help_cmp(u); break;
+            case 0x108c: case 0x109c: case 0x10ac: case 0x10bc:
+                help_cmp(y); break;
+            case 0x10ce: case 0x10de: case 0x10ee: case 0x10fe:
+                help_ld(s);
+                inhibitNMI = false;
+                break;
+            case 0x108e: case 0x109e: case 0x10ae: case 0x10be:
+                help_ld(y); break;
+            case 0x10df: case 0x10ef: case 0x10ff:
+                help_st(s); break;
+            case 0x109f: case 0x10af: case 0x10bf:
+                help_st(y); break;
+            case 0x113f:
+                swi3(); break;
+            default:
+                invalid("instruction"); break;
         }
     }
 
@@ -665,10 +675,10 @@ public class MC6809 extends USimMotorola {
 
         switch (mode) {
             // Used as a mode for jsr() instead of bsr().
-            case IMMEDIATE:  // or RELATIVE
-                post = fetch();
-                addr = pc.intValue() + extend8(post);
-                break;
+//          case IMMEDIATE:
+//              post = fetch();
+//              addr = pc.intValue() + extend8(post);
+//              break;
             case EXTENDED:
                 addr = fetch_word();
                 break;
@@ -779,6 +789,22 @@ public class MC6809 extends USimMotorola {
         }
     }
 
+    private static int getSignedByte(int value) {
+        if (value < 0x80) {
+            return value;
+        } else {
+            return -((~value & 0x7f) + 1);
+        }
+    }
+
+    private static int getSignedWord(int value) {
+        if (value < 0x8000) {
+            return value;
+        } else {
+            return -((~value & 0x7fff) + 1);
+        }
+    }
+
     private void do_postincrement(int post) {
         switch (post & 0x9f) {
             case 0x80:
@@ -829,6 +855,9 @@ public class MC6809 extends USimMotorola {
         x.add(b.intValue());
     }
 
+    /**
+     * Add with carry into accumulator.
+     */
     private void help_adc(UByte refB) {
         int m = fetch_operand();
 
@@ -845,21 +874,6 @@ public class MC6809 extends USimMotorola {
         setBitN(refB);
         setBitZ(refB);
     }
-
-    /**
-     * Add with carry into accumulator A.
-     */
-    private void adca() {
-        help_adc(a);
-    }
-
-    /**
-     * Add with carry into accumulator B.
-     */
-    private void adcb() {
-        help_adc(b);
-    }
-
 
     /**
      * Add two 8-bit numbers.
@@ -907,20 +921,6 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Add memory into accumulator A.
-     */
-    private void adda() {
-        help_add(a);
-    }
-
-    /**
-     * Add memory into accumulator B.
-     */
-    private void addb() {
-        help_add(b);
-    }
-
-    /**
      * Add memory into accumulator D.
      */
     private void addd() {
@@ -935,25 +935,14 @@ public class MC6809 extends USimMotorola {
         setBitZ(d);
     }
 
+    /**
+     * Add memory into accumulator.
+     */
     private void help_and(UByte refB) {
         refB.set(refB.intValue() & fetch_operand());
         cc.setN(refB.btst(7));
         setBitZ(refB);
         cc.setV(0);
-    }
-
-    /**
-     * AND memory into accumulator A.
-     */
-    private void anda() {
-        help_and(a);
-    }
-
-    /**
-     * AND memory into accumulator B.
-     */
-    private void andb() {
-        help_and(b);
     }
 
     /**
@@ -963,6 +952,9 @@ public class MC6809 extends USimMotorola {
         cc.set(cc.intValue() & fetch());
     }
 
+    /**
+     * Arithmetic Shift Right.
+     */
     private void help_asr(UByte refB) {
         cc.setC(refB.btst(0));
         refB.set(refB.intValue() >> 1);    // Shift word right
@@ -971,20 +963,6 @@ public class MC6809 extends USimMotorola {
             refB.bset(7);
         }
         setBitZ(refB);
-    }
-
-    /**
-     * Arithmetic Shift Right accumulator A.
-     */
-    private void asra() {
-        help_asr(a);
-    }
-
-    /**
-     * Arithmetic Shift Right accumulator B.
-     */
-    private void asrb() {
-        help_asr(b);
     }
 
     /**
@@ -1040,9 +1018,7 @@ public class MC6809 extends USimMotorola {
         do_br(cc.isSetN() == cc.isSetV());
     }
 
-    //FIXME: test logic
     private void lbge() {
-        //do_lbr(!(cc.bit_n ^ cc.bit_v));
         do_lbr(cc.isSetN() == cc.isSetV());
     }
 
@@ -1050,9 +1026,7 @@ public class MC6809 extends USimMotorola {
         do_br(!cc.isSetZ() && (cc.isSetN() == cc.isSetV()));
     }
 
-    //FIXME: test logic
     private void lbgt() {
-        //do_lbr(!(cc.bit_z | (cc.bit_n ^ cc.bit_v)));
         do_lbr(!cc.isSetZ() && (cc.isSetN() == cc.isSetV()));
     }
 
@@ -1066,14 +1040,6 @@ public class MC6809 extends USimMotorola {
     }
 
 
-    private void bita() {
-        help_bit(a);
-    }
-
-    private void bitb() {
-        help_bit(b);
-    }
-
     private void help_bit(UByte arg) {
         UByte t = UByte.valueOf(arg.intValue() & fetch_operand());
         setBitN(t);
@@ -1086,7 +1052,6 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lble() {
-        //do_lbr(cc.bit_z | (cc.bit_n ^ cc.bit_v));
         do_lbr(cc.isSetZ() || (cc.isSetN() != cc.isSetV()));
     }
 
@@ -1146,7 +1111,6 @@ public class MC6809 extends USimMotorola {
         do_lbr(false);
     }
 
-/*
     private void bsr() {
         int relAddr = fetch();
         s.add(-1);
@@ -1155,7 +1119,7 @@ public class MC6809 extends USimMotorola {
         write(s, (pc.intValue() >> 8));
         pc.add(extend8(relAddr));
     }
-*/
+
     private void lbsr() {
         int relAddr = fetch_word();
         s.add(-1);
@@ -1181,14 +1145,6 @@ public class MC6809 extends USimMotorola {
         do_lbr(cc.isSetV());
     }
 
-    private void clra() {
-        help_clr(a);
-    }
-
-    private void clrb() {
-        help_clr(b);
-    }
-
     private void clr() {
         int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
@@ -1202,14 +1158,6 @@ public class MC6809 extends USimMotorola {
         cc.setV(0);
         cc.setC(0);
         refB.set(0);
-    }
-
-    private void cmpa() {
-        help_cmp(a);
-    }
-
-    private void cmpb() {
-        help_cmp(b);
     }
 
     /**
@@ -1230,26 +1178,6 @@ public class MC6809 extends USimMotorola {
         cc.setZ(t == 0);
     }
 
-    private void cmpd() {
-        help_cmp(d);
-    }
-
-    private void cmpx() {
-        help_cmp(x);
-    }
-
-    private void cmpy() {
-        help_cmp(y);
-    }
-
-    private void cmpu() {
-        help_cmp(u);
-    }
-
-    private void cmps() {
-        help_cmp(s);
-    }
-
     private void help_cmp(Word reg) {
         int m = fetch_word_operand();
         int t = reg.intValue() - m;
@@ -1262,14 +1190,6 @@ public class MC6809 extends USimMotorola {
         cc.setV(cc.getV() != cc.getC());
         cc.setN(btst(t, 15));
         cc.setZ(t == 0);
-    }
-
-    private void coma() {
-        help_com(a);
-    }
-
-    private void comb() {
-        help_com(b);
     }
 
     private void com() {
@@ -1359,14 +1279,6 @@ public class MC6809 extends USimMotorola {
         setBitZ(a);
     }
 
-    private void deca() {
-        help_dec(a);
-    }
-
-    private void decb() {
-        help_dec(b);
-    }
-
     private void dec() {
         int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
@@ -1379,14 +1291,6 @@ public class MC6809 extends USimMotorola {
         x.set(x.intValue() - 1);
         setBitN(x);
         setBitZ(x);
-    }
-
-    private void eora() {
-        help_eor(a);
-    }
-
-    private void eorb() {
-        help_eor(b);
     }
 
     private void help_eor(UByte x) {
@@ -1436,14 +1340,6 @@ public class MC6809 extends USimMotorola {
         cc.setF(1);
         cc.setI(1);
         pc.set(read_word(FIRQ_ADDR));
-    }
-
-    private void inca() {
-        help_inc(a);
-    }
-
-    private void incb() {
-        help_inc(b);
     }
 
     private void inc() {
@@ -1507,40 +1403,11 @@ public class MC6809 extends USimMotorola {
         pc.set(addr);
     }
 
-    private void lda() {
-        help_ld(a);
-    }
-
-    private void ldb() {
-        help_ld(b);
-    }
-
     private void help_ld(UByte regB) {
         regB.set(fetch_operand());
         setBitN(regB);
         cc.setV(0);
         setBitZ(regB);
-    }
-
-    private void ldd() {
-        help_ld(d);
-    }
-
-    private void ldx() {
-        help_ld(x);
-    }
-
-    private void ldy() {
-        help_ld(y);
-    }
-
-    private void lds() {
-        help_ld(s);
-        inhibitNMI = false;
-    }
-
-    private void ldu() {
-        help_ld(u);
     }
 
     private void help_ld(Word regW) {
@@ -1569,14 +1436,6 @@ public class MC6809 extends USimMotorola {
         setBitZ(y);
     }
 
-    private void lsla() {
-        help_lsl(a);
-    }
-
-    private void lslb() {
-        help_lsl(b);
-    }
-
     private void lsl() {
         int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
@@ -1590,14 +1449,6 @@ public class MC6809 extends USimMotorola {
         regB.set(regB.intValue() << 1);
         setBitN(regB);
         setBitZ(regB);
-    }
-
-    private void lsra() {
-        help_lsr(a);
-    }
-
-    private void lsrb() {
-        help_lsr(b);
     }
 
     private void lsr() {
@@ -1618,14 +1469,6 @@ public class MC6809 extends USimMotorola {
         d.set(a.intValue() * b.intValue());
         cc.setC(b.btst(7));
         setBitZ(d);
-    }
-
-    private void nega() {
-        help_neg(a);
-    }
-
-    private void negb() {
-        help_neg(b);
     }
 
     private void neg() {
@@ -1676,14 +1519,6 @@ public class MC6809 extends USimMotorola {
      * No operation.
      */
     private void nop() {
-    }
-
-    private void ora() {
-        help_or(a);
-    }
-
-    private void orb() {
-        help_or(b);
     }
 
     private void help_or(UByte byteLoc) {
@@ -1799,14 +1634,6 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    private void rola() {
-        help_rol(a);
-    }
-
-    private void rolb() {
-        help_rol(b);
-    }
-
     private void rol() {
         int addr = fetch_effective_address();
         UByte m = UByte.valueOf(read(addr));
@@ -1824,14 +1651,6 @@ public class MC6809 extends USimMotorola {
         }
         setBitN(byteLoc);
         setBitZ(byteLoc);
-    }
-
-    private void rora() {
-        help_ror(a);
-    }
-
-    private void rorb() {
-        help_ror(b);
     }
 
     private void ror() {
@@ -1864,14 +1683,6 @@ public class MC6809 extends USimMotorola {
         s.add(2);
     }
 
-    private void sbca() {
-        help_sbc(a);
-    }
-
-    private void sbcb() {
-        help_sbc(b);
-    }
-
     /**
      * Subtract with carry.
      * The half-carry is undefined after this operation.
@@ -1897,14 +1708,6 @@ public class MC6809 extends USimMotorola {
         setBitZ(a);
     }
 
-    private void sta() {
-        help_st(a);
-    }
-
-    private void stb() {
-        help_st(b);
-    }
-
     private void help_st(UByte data) {
         int addr = fetch_effective_address();
         write(addr, data);
@@ -1913,40 +1716,12 @@ public class MC6809 extends USimMotorola {
         setBitZ(data);
     }
 
-    private void std() {
-        help_st(d);
-    }
-
-    private void stx() {
-        help_st(x);
-    }
-
-    private void sty() {
-        help_st(y);
-    }
-
-    private void sts() {
-        help_st(s);
-    }
-
-    private void stu() {
-        help_st(u);
-    }
-
     private void help_st(Word dataW) {
         int addr = fetch_effective_address();
         write_word(addr, dataW.intValue());
         cc.setV(0);
         setBitN(dataW);
         setBitZ(dataW);
-    }
-
-    private void suba() {
-        help_sub(a);
-    }
-
-    private void subb() {
-        help_sub(b);
     }
 
     private void help_sub(UByte byteLoc) {
@@ -2002,14 +1777,6 @@ public class MC6809 extends USimMotorola {
         int r1 = (w & 0xf0) >> 4;
         int r2 = (w & 0x0f) >> 0;
         tfrrefreg(r2).set(refregvalue(r1));
-    }
-
-    private void tsta() {
-        help_tst(a);
-    }
-
-    private void tstb() {
-        help_tst(b);
     }
 
     private void tst() {

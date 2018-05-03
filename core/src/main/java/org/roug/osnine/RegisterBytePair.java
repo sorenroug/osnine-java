@@ -7,7 +7,7 @@ package org.roug.osnine;
  * D accumulator is formed by using the B accumulator as the low byte, bits 0-7,
  * and the A accumulator as the high byte, bits 8-15.
  */
-public class RegisterD extends Word implements Register {
+public class RegisterBytePair extends Word implements Register {
 
     private UByte regA; // High byte
     private UByte regB; // Low byte
@@ -18,14 +18,14 @@ public class RegisterD extends Word implements Register {
     /**
      * Constructor.
      */
-    public RegisterD() {
+    public RegisterBytePair() {
         this(0);
     }
 
     /**
      * Constructor.
      */
-    public RegisterD(int value) {
+    public RegisterBytePair(int value) {
         super("D");
         this.regA = new UByte("A");
         this.regB = new UByte("B");
@@ -35,7 +35,7 @@ public class RegisterD extends Word implements Register {
     /**
      * Constructor.
      */
-    public RegisterD(UByte regA, UByte regB) {
+    public RegisterBytePair(UByte regA, UByte regB) {
         super("D");
         this.regA = regA;
         this.regB = regB;

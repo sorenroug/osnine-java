@@ -50,6 +50,30 @@ public class InstructionsTest extends Framework {
         assertEquals(u, myTestCPU.u.intValue());
     }
 
+    /**
+     * Test illegal instruction 0x38.
+     */
+    @Test(expected = RuntimeException.class)
+    public void testIllegal38() {
+        myTestCPU.b.set(0xE5);
+        myTestCPU.write(0xB00, 0x38); // illegal
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+    /**
+     * Test illegal instruction 0x18.
+     */
+    @Test(expected = RuntimeException.class)
+    public void testIllegal18() {
+        myTestCPU.b.set(0xE5);
+        myTestCPU.write(0xB00, 0x18); // illegal
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0, myTestCPU.cc.getZ());
+    }
+
     @Test
     public void testANDA() {
         setA(0x8B);

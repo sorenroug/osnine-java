@@ -3,7 +3,7 @@ package org.roug.osnine;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-public class RegisterDTest {
+public class RegisterBytePairTest {
 
     /**
      * Insert 0x6789 and expect 0x67 in the high byte = Reg A.
@@ -12,7 +12,7 @@ public class RegisterDTest {
     public void getAccumulators() {
         UByte regA = new UByte("A");
         UByte regB = new UByte("B");
-        RegisterD regD = new RegisterD(regA, regB);
+        RegisterBytePair regD = new RegisterBytePair(regA, regB);
         regD.set(0x6789);
         
         assertEquals(0x6789, regD.intValue());
@@ -27,7 +27,7 @@ public class RegisterDTest {
     public void changeAccumulators() {
         UByte regA = new UByte("A");
         UByte regB = new UByte("B");
-        RegisterD regD = new RegisterD(regA, regB);
+        RegisterBytePair regD = new RegisterBytePair(regA, regB);
         regD.set(0x6789);
         
         assertEquals(0x6789, regD.intValue());
@@ -42,7 +42,7 @@ public class RegisterDTest {
      */
     @Test
     public void get255() {
-        RegisterD reg = new RegisterD();
+        RegisterBytePair reg = new RegisterBytePair();
         reg.set(255);
         
         assertEquals(255, reg.get());
@@ -55,7 +55,7 @@ public class RegisterDTest {
      */
     @Test
     public void getMinus2() {
-        RegisterD reg = new RegisterD();
+        RegisterBytePair reg = new RegisterBytePair();
         reg.set(65534);
         
         assertEquals(65534, reg.get());
@@ -67,7 +67,7 @@ public class RegisterDTest {
      */
     @Test
     public void getMinus32768() {
-        RegisterD reg = new RegisterD();
+        RegisterBytePair reg = new RegisterBytePair();
         reg.set(32768);
         
         assertEquals(32768, reg.get());
@@ -79,7 +79,7 @@ public class RegisterDTest {
      */
     @Test
     public void getPlus32767() {
-        RegisterD reg = new RegisterD();
+        RegisterBytePair reg = new RegisterBytePair();
         reg.set(32767);
         
         assertEquals(32767, reg.get());
@@ -89,7 +89,7 @@ public class RegisterDTest {
     //@Test(expected = IllegalArgumentException.class)
     @Test
     public void setTooMuch() {
-        RegisterD reg = new RegisterD();
+        RegisterBytePair reg = new RegisterBytePair();
         reg.set(66000);
         assertEquals(464, reg.get());
     }
