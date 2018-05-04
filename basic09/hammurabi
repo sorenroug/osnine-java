@@ -19,15 +19,15 @@ PROCEDURE hammurabi
     YIELD=3
     ACRES=HARVEST/YIELD
     INCREASE=5
-    Q=1
+    PLAGUE=1
     DIED=0
 215 PRINT
     PRINT
     PRINT "Hamurabi:  I beg to report to you,"
     YEAR=YEAR+1
     PRINT "in year ";YEAR;", ";DIED;" people starved, ";INCREASE;" came to the city,"
-    POPULATION=POPULATION+INCREASE
-    IF Q <= 0 THEN
+    POPULATION = POPULATION + INCREASE
+    IF PLAGUE <= 0 THEN
       POPULATION = POPULATION / 2
       PRINT "a horrible plague struck!  Half the people died."
     ENDIF
@@ -71,14 +71,14 @@ PROCEDURE hammurabi
 400 PRINT
     LOOP
       PRINT "How many bushels do you wish to feed your people";
-      INPUT Q
-      IF Q < 0 THEN 850
+      INPUT FOOD
+      IF FOOD < 0 THEN 850
       REM *** TRYING TO USE MORE GRAIN THAN IS IN SILOS?
-      EXITIF Q <= STORED THEN ENDEXIT
+      EXITIF FOOD <= STORED THEN ENDEXIT
       GOSUB 710
     ENDLOOP
 
-    STORED = STORED - Q
+    STORED = STORED - FOOD
     C = 1
     PRINT
 440 PRINT "How many acres do you wish to plant with seed";
@@ -118,24 +118,24 @@ PROCEDURE hammurabi
     REM *** LET'S HAVE SOME BABIES
     INCREASE = INT(C * (20 * ACRES + STORED) / POPULATION / 100 + 1)
     REM *** HOW MANY PEOPLE HAD FULL TUMMIES?
-    C=INT(Q / 20)
+    FEDPPL =INT(FOOD / 20)
     REM *** HORRORS, A 15% CHANCE OF PLAGUE
-    Q = INT(10 * (2 * RND(1) - .3))
-    IF POPULATION < C THEN
+    PLAGUE = INT(10 * (2 * RND(1) - .3))
+    IF POPULATION < FEDPPL THEN
       DIED = 0
-      GOTO 215
+    ELSE
+      REM *** STARVE ENOUGH FOR IMPEACHMENT?
+      DIED = POPULATION - FEDPPL
+      IF DIED > .45 * POPULATION THEN
+        PRINT
+        PRINT "You starved ";DIED;" people in one year!!!"
+        GOSUB 560
+        GOTO 990
+      ENDIF
+      DIEDAVG=((YEAR-1) * DIEDAVG + DIED * 100 / POPULATION) / YEAR
+      POPULATION=FEDPPL
+      DIEDTOT = DIEDTOT + DIED
     ENDIF
-    REM *** STARVE ENOUGH FOR IMPEACHMENT?
-    DIED = POPULATION - C
-    IF DIED > .45 * POPULATION THEN
-      PRINT
-      PRINT "You starved ";DIED;" people in one year!!!"
-      GOSUB 560
-      GOTO 990
-    ENDIF
-    DIEDAVG=((YEAR-1)* DIEDAVG + DIED * 100 / POPULATION) / YEAR
-    POPULATION=C
-    DIEDTOT = DIEDTOT + DIED
     GOTO 215
 
 560 PRINT "Due to this extreme mismanagement you have not only"
