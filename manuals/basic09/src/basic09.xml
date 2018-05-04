@@ -188,15 +188,13 @@ was developed at the same time as the 6809 under the auspices of the
 architects of the 6809. The project covered
 almost two years, and incorporated the results of research in such areas as
 interactive compilation, fast floating point arithmetic algorithms, storage
-management, high-level symbolic debugging, and structured language
-design. These innovations give <productname>BASIC09</productname> its speed, power, and
-unique flavor.
+management, high-level symbolic debugging, and structured language design.
+These innovations give <productname>BASIC09</productname> its speed, power, and unique flavor.
 </para><para>
 <productname>BASIC09</productname> was commissioned by Motorola, Inc., Austin, Texas,
 and developed by Microware Systems Corporation, Des Moines, Iowa.
-Principal designers of <productname>BASIC09</productname> were Larry Crane, Robert
-Doggett, Ken Kaplan, and Terry Ritter. The first release was in February,
-1980.
+Principal designers of <productname>BASIC09</productname> were Larry Crane, Robert Doggett,
+Ken Kaplan, and Terry Ritter. The first release was in February, 1980.
 </para><para>
 Excellent feedback, thoughtful suggestions, and carefully documented bug
 reports from <productname>BASIC09</productname> users all over the world have been
@@ -1823,8 +1821,6 @@ cases 3 and 4, you will enter DEBUG mode.
 </para></sect1>
 <sect1><title>Execution Mode: Technically Speaking</title>
 <para>
-
-
 The RUN statement is simple and normally you do not need to know what
 is happening inside <productname>BASIC09</productname> when you use it. The technical description of
 execution mode that follows is given for the benefit of advanced
@@ -3064,7 +3060,7 @@ Angles can be either degrees or radians (see DEG/RAD statement descriptions).
 </row>
 <row>
 <entry>ACS(<replaceable>num</replaceable>)</entry>
-<entry>trigonometric arcosine of <replaceable>num</replaceable></entry>
+<entry>trigonometric arccosine of <replaceable>num</replaceable></entry>
 </row>
 <row>
 <entry>ATN(<replaceable>num</replaceable>)</entry>
@@ -3105,14 +3101,10 @@ the decimal point of a REAL <replaceable>num</replaceable></entry>
 <entry>square root of <replaceable>num</replaceable>; same as SQR.</entry>
 </row>
 <row>
-<entry morerows="2">RND(<replaceable>num</replaceable>)</entry>
-<entry>if <replaceable>num</replaceable> = 0, returns random x, 0 &lt;= x &lt; 1.</entry>
-</row>
-<row>
-<entry>if <replaceable>num</replaceable> > 0, returns random x, 0 &lt;= x &lt; <replaceable>num</replaceable>.</entry>
-</row>
-<row>
-<entry>if <replaceable>num</replaceable> &lt; 0, use ABS(<replaceable>num</replaceable>) as new random number seed.</entry>
+<entry>RND(<replaceable>num</replaceable>)</entry>
+<entry><literallayout>if <replaceable>num</replaceable> = 0, returns random x, 0 &lt;= x &lt; 1.
+if <replaceable>num</replaceable> > 0, returns random x, 0 &lt;= x &lt; <replaceable>num</replaceable>.
+if <replaceable>num</replaceable> &lt; 0, use ABS(<replaceable>num</replaceable>) as new random number seed.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -3198,8 +3190,8 @@ The following functions can return results of type <emphasis role="bold">INTEGER
 </informaltable>
 
 The following functions perform bit-by-bit logical operations on integer
-or byte data types and return integer results. They should <emphasis>not</emphasis> be confused
-with the BOOLEAN-type operators.
+or byte data types and return <emphasis role="bold">INTEGER</emphasis> results.
+They should <emphasis>not</emphasis> be confused with the BOOLEAN-type operators.
 
 <informaltable frame="none" colsep="0" rowsep="0">
 <tgroup cols="2">
@@ -3256,6 +3248,12 @@ character position <replaceable>int1</replaceable>.</entry>
 <entry>STR$(<replaceable>num</replaceable>)</entry>
 <entry>converts numeric type <replaceable>num</replaceable> to displayable characters of type
 STRING representing the number converted.</entry>
+</row>
+<row>
+<entry>TAB(<replaceable>num</replaceable>)</entry>
+<entry>returns the correct number of spaces to cause the next item to start
+in the print column specified by <replaceable>num</replaceable>. If the
+output line is already past the desired tab position, the TAB returns an empty string.</entry>
 </row>
 <row>
 <entry>TRIM$(<replaceable>str</replaceable>)</entry>
@@ -3855,8 +3853,8 @@ procedure inside the workspace, but it can also be used to call a previously
 compiled (by the PACK command) procedure or a 6809 machine language
 procedure outside the
 workspace. The name can be optionally taken from a string variable.
-</para></sect2>
-<sect2><title>Parameter Passing</title>
+</para>
+<sect3><title>Parameter Passing</title>
 <para>
 The RUN statement
  can include a list of parameters enclosed in parentheses to be passed to
@@ -3880,8 +3878,8 @@ passed by "reference", i.e., the address of that storage
 is sent to the called procedure and thus the value in that storage may be
 changed by the receiving procedure. These changes are reflected in the
 calling procedure.
-</para></sect2>
-<sect2><title>Calling External Procedures</title>
+</para></sect3>
+<sect3><title>Calling External Procedures</title>
 <para>
 If the procedure named by RUN can't be found in the workspace, <productname>BASIC09</productname>
 will check to see if it was loaded by OS-9 outside the workspace. If it isn't
@@ -3957,7 +3955,8 @@ END
 </programlisting>
 </informalexample>
 
-</para></sect2>
+</para></sect3>
+</sect2>
 <sect2><title>KILL Statement</title>
 <para>
 Syntax:
@@ -4163,8 +4162,7 @@ Syntax:
 <command>PAUSE [<replaceable>output list</replaceable>]</command>
 </synopsis>
 PAUSE suspends execution of the procedure and causes <productname>BASIC09</productname> to enter
-Debug Mode. If an output list is given it also works like a PRINT
-statement.
+Debug Mode. If an output list is given it also works like a PRINT statement.
 <programlisting>
 <replaceable>output</replaceable> BREAK IN PROCEDURE <replaceable>procedure name</replaceable>
 </programlisting>
@@ -4724,8 +4722,7 @@ is displayed, followed by a new prompt. The entire input line must
 then be reentered.
 </para>
 <para>
-The INPUT statement
-uses OS-9's line input function (READLN) which performs line
+The INPUT statement uses OS-9's line input function (READLN) which performs line
 editing such as backspace, delete, end-of-file, etc. To perform input
 WITHOUT editing (i.e., to read pure binary data), use the GET statement.
 </para>
@@ -4779,19 +4776,18 @@ the line. If the line is terminated by a semicolon, the usual carriage
 return following the output line is inhibited.
 </para>
 <para>
-The "TAB(expr)" function can be used as an item in the output list, which
-outputs the correct number of spaces to cause the next item to start
+The "TAB(<replaceable>expr</replaceable>)" function can be used as an item in the output list,
+which outputs the correct number of spaces to cause the next item to start
 in the print column specified by the result of the expression. If the
 output line is already past the desired tab position, the TAB is ignored.
 A related function, "POS", can be used in the program to determine
 the output position at any given time. The output columns are numbered
-from one to a maximum of 255. The size of <productname>BASIC09</productname>'s output buffer varies
-according to stack size at the moment.  A practical value is at least
-512 characters.
+from one to a maximum of 255.
+The size of <productname>BASIC09</productname>'s output buffer varies according to stack size at the moment.
+A practical value is at least 512 characters.
 </para>
 <para>
-The PRINT USING form of this statement is described at the end of
-this chapter.
+The PRINT USING form of this statement is described at the end of this chapter.
 </para>
 <para>
 Examples:
@@ -5685,15 +5681,15 @@ freely. The control formats are
 <colspec colwidth="0.5in"/>
 <tbody>
 <row>
-<entry>Tn</entry>
-<entry>Tab to column n</entry>
+<entry>T<replaceable>n</replaceable></entry>
+<entry>Tab to column <replaceable>n</replaceable></entry>
 </row>
 <row>
-<entry>Xn</entry>
-<entry>Space n columns</entry>
+<entry>X<replaceable>n</replaceable></entry>
+<entry>Space <replaceable>n</replaceable> columns</entry>
 </row>
 <row>
-<entry>'str'</entry>
+<entry>'<replaceable>str</replaceable>'</entry>
 <entry>Include constant string. The string must not include single or
 double quotes, backslash or carriage return characters.</entry>
 </row>
