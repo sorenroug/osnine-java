@@ -4,10 +4,15 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Load data into memory from files.
  */
 public final class Loader {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
     private Loader() {
     }
@@ -17,10 +22,11 @@ public final class Loader {
     //----------------------------------------------------------------------------
     static int fread_byte(InputStream fp) throws IOException {
         byte str[] = new byte[2];
-        int bytesRead;
 
-        bytesRead = fp.read(str);
+        str[0] = (byte)fp.read();  // High nibble
+        str[1] = (byte)fp.read();  // Low nibble
         String hexStr = new String(str);
+        LOGGER.trace("{}", hexStr);
         return Integer.valueOf(hexStr, 16).intValue();
     }
 
@@ -94,12 +100,9 @@ public final class Loader {
             addr = fread_word(fp);      // Address
             n -= 2;
             if (t == '0') {
-                System.out.print("Loading: ");
                 while (--n > 0) {
                     b = fread_byte(fp);
-                    System.out.format("%c", b);
                 }
-                System.out.println();
             } else if (t == '1') {
                 while (--n > 0) {
                     b = fread_byte(fp);

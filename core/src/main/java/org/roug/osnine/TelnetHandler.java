@@ -20,11 +20,13 @@ class TelnetHandler implements Runnable {
     private static final Logger LOGGER = 
             LoggerFactory.getLogger(TelnetHandler.class);
 
-    private Acia6551Telnet acia;
+    private Acia acia;
 
     private OutputStream clientOut;
 
     private InputStream clientIn;
+
+    private int listeners;
 
     private boolean[] modes = {
         false,   // Transmit binary
@@ -43,7 +45,7 @@ class TelnetHandler implements Runnable {
     /**
      * Constructor.
      */
-    TelnetHandler(Acia6551Telnet acia) {
+    TelnetHandler(Acia acia) {
         this.acia = acia;
     }
 
@@ -83,6 +85,7 @@ class TelnetHandler implements Runnable {
 
                 writer = new Thread(new LineWriter(this), "acia-out");
                 writer.start();
+                listeners = 2;
             }
         } catch (IOException e) {
             LOGGER.error("IOException", e);
@@ -90,8 +93,15 @@ class TelnetHandler implements Runnable {
         }
     }
 
+    /**
+     * Send the received data to the ACIA.
+     */
     void dataReceived(int val) {
         acia.dataReceived(val);
+    }
+
+    void eolReceived() {
+        acia.eolReceived();
     }
 
     int read() throws IOException {
@@ -121,18 +131,21 @@ class TelnetHandler implements Runnable {
     }
 
     /**
-     * Close socket and end the active session.
+     * If this is the last listener then close socket and end the active session.
      */
-    private synchronized void endSession() {
-        try {
-            if (activeSocket != null) {
-                activeSocket.close();
+    synchronized void endSession() {
+        listeners--;
+        if (listeners == 0) {
+            try {
+                if (activeSocket != null) {
+                    activeSocket.close();
+                }
+            } catch (IOException e) {
+                LOGGER.error("IOException", e);
             }
-        } catch (IOException e) {
-            LOGGER.error("IOException", e);
+            activeSocket = null;
+            acia.setDCD(false);
         }
-        activeSocket = null;
-        acia.setDCD(false);
     }
 
     /**
@@ -227,6 +240,9 @@ enum TelnetState {
                 case DEL_CHAR:
                     handler.dataReceived(8);
                     return NORMAL;
+                case CR_CHAR:
+                    handler.eolReceived();
+                    return NORMAL;
                 default:
                     handler.dataReceived(receiveData);
                     return NORMAL;
@@ -317,6 +333,7 @@ enum TelnetState {
     private static final int INTR_CHAR = 3;
     private static final int QUIT_CHAR = 5;
     private static final int NEWLINE_CHAR = 10;
+    private static final int CR_CHAR = 13;
     private static final int DEL_CHAR = 127;   // VT100 sends DEL and not BS
 
     static final int TRANSMIT_BINARY = 0;
@@ -378,6 +395,7 @@ class LineReader implements Runnable {
             }
         } catch (InterruptedException e) {
             LOGGER.error("InterruptException", e);
+            handler.endSession();
         } catch (Exception e) {
             LOGGER.error("Exception", e);
             handler.interruptWriter();
@@ -422,6 +440,7 @@ class LineWriter implements Runnable {
             }
         } catch (InterruptedException e) {
             LOGGER.error("InterruptException");
+            handler.endSession();
         } catch (Exception e) {
             LOGGER.error("Broken connection", e);
             handler.interruptReader();

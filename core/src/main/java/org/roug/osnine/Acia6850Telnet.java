@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  *
  * At the bus interface, the ACIA appears as two addressable memory locations.
  */
-public class Acia6850Console extends Acia6850 {
+public class Acia6850Telnet extends Acia6850 {
 
     /**
      * Constructor.
@@ -20,9 +20,9 @@ public class Acia6850Console extends Acia6850 {
      * The data register is addressed when register select is high.
      * Status/Control register is addressed when the register select is low.
      */
-    public Acia6850Console(int start, Bus6809 cpu) {
+    public Acia6850Telnet(int start, Bus6809 cpu) {
         super(start, cpu);
-        Thread reader = new Thread(new ConsoleHandler(this), "acia6850");
+        Thread reader = new Thread(new TelnetHandler(this), "acia6850");
         reader.setDaemon(true);
         reader.start();
     }
