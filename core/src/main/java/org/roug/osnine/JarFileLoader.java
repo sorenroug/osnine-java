@@ -1,4 +1,4 @@
-package org.roug.osnine.v6809;
+package org.roug.osnine;
 
 import java.net.URI;
 import java.net.URL;

@@ -49,7 +49,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.roug.osnine.v6809.V6809</mainClass>
+                            <mainClass>org.roug.osnine.V6809</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

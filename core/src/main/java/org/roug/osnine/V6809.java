@@ -1,4 +1,4 @@
-package org.roug.osnine.v6809;
+package org.roug.osnine;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,11 +7,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Properties;
-import org.roug.osnine.Loader;
-import org.roug.osnine.MC6809;
-import org.roug.osnine.MemorySegment;
-import org.roug.osnine.Bus6809;
-import org.roug.osnine.OptionParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
