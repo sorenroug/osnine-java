@@ -96,13 +96,6 @@ public class Acia6850 extends MemorySegment implements Acia {
     }
 
     /**
-     * Get DCD status. Inverted in register.
-     */
-    boolean getDCD() {
-        return (statusRegister & DCD) == 0;
-    }
-
-    /**
      * Let the LineWriter wait for the next character.
      */
     @Override
@@ -256,17 +249,6 @@ public class Acia6850 extends MemorySegment implements Acia {
         notifyAll();
     }
 
-    /*
-    private void sendValue(int val) {
-        LOGGER.debug("Send value: {}", val);
-        lowerIRQ();
-        setStatusBit(TDRE);
-        System.out.write(val);
-        System.out.flush();
-        signalReadyForTransmit();
-    }
-    */
-
     /**
      * Read the receiver data register.
      * RDRF goes to 0 when the processor reads the register.
@@ -274,7 +256,7 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        if (transmitIrqEnabled && !isTransmitRegisterEmpty()) {
+        if (!hasDCD() || transmitIrqEnabled && !isTransmitRegisterEmpty()) {
             lowerIRQ();
         }
         int r = receiveData;  // Read before we turn RDRF off.
@@ -283,15 +265,13 @@ public class Acia6850 extends MemorySegment implements Acia {
         return r;
     }
 
-/*
-    private int getReceivedValue() throws IOException {
-        int r = receiveData;  // Read before we turn RDRF off.
-        LOGGER.debug("Received val: {}", r);
-        lowerIRQ();
-        clearStatusBit(RDRF);
-        return r;
+    /**
+     * Get DCD status. Inverted in register.
+     */
+    private boolean hasDCD() {
+        return (statusRegister & DCD) == 0;
     }
-*/
+
     /**
      * Set the control register and associated state.
      *
