@@ -112,7 +112,7 @@ public class MC6809 extends USimMotorola {
     /**
      * Constructor: Assigned bus.
      */
-    public MC6809(Bus6809 bus) {
+    public MC6809(Bus8Motorola bus) {
         super(bus);
 
         String traceInset = System.getProperty("mc6809.trace", "false");

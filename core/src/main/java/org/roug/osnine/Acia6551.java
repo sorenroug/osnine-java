@@ -62,14 +62,14 @@ public class Acia6551 extends MemorySegment implements Acia {
     private String eolSequence = "\015";
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus6809 cpu;
+    private Bus8Motorola bus;
 
     /**
      * Constructor.
      */
-    public Acia6551(int start, Bus6809 cpu) {
+    public Acia6551(int start, Bus8Motorola bus) {
         super(start, start + 3);
-        this.cpu = cpu;
+        this.bus = bus;
         setDCD(false);  // There is no carrier
     }
 
@@ -101,7 +101,7 @@ public class Acia6551 extends MemorySegment implements Acia {
     private void signalCPU() {
         if (receiveIrqEnabled) {
             statusRegister |= IRQ;
-            cpu.signalIRQ(true);
+            bus.signalIRQ(true);
         }
     }
 
@@ -188,14 +188,14 @@ public class Acia6551 extends MemorySegment implements Acia {
     private void raiseIRQ() {
         if ((statusRegister & IRQ) == 0) {
             statusRegister |= IRQ;
-            cpu.signalIRQ(true);
+            bus.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
         if ((statusRegister & IRQ) == IRQ) {
             statusRegister &= ~IRQ;    // Turn off interrupt flag
-            cpu.signalIRQ(false);
+            bus.signalIRQ(false);
         }
     }
 

@@ -22,14 +22,14 @@ public class HWClock extends MemorySegment {
     private static final Logger LOGGER = LoggerFactory.getLogger(HWClock.class);
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus6809 cpu;
+    private Bus8Motorola bus;
 
     /**
      * Constructor.
      */
-    public HWClock(int start, Bus6809 cpu) {
+    public HWClock(int start, Bus8Motorola bus) {
         super(start, start + 6);
-        this.cpu = cpu;
+        this.bus = bus;
     }
 
     @Override

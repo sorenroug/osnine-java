@@ -59,7 +59,7 @@ public class MemorySegmentTest {
      */
     @Test
     public void manualBus() {
-        Bus6809 bus = new BusStraight();
+        Bus8Motorola bus = new BusStraight();
         MemorySegment newMemory = new RAMMemory(0, 0x10000);
         bus.addMemorySegment(newMemory);
 
@@ -74,7 +74,7 @@ public class MemorySegmentTest {
      */
     @Test(expected = NullPointerException.class)
     public void noMemory() {
-        Bus6809 bus = new BusStraight();
+        Bus8Motorola bus = new BusStraight();
 
         MC6809 cpu = new MC6809(bus);
         cpu.write(0xffff, 1);

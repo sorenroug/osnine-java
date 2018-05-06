@@ -16,7 +16,7 @@ public class V6809 {
 
     private static MC6809 cpu;
 
-    private static Bus6809 bus;
+    private static Bus8Motorola bus;
 
     private enum KnownVectors {
             reset(MC6809.RESET_ADDR),
@@ -158,7 +158,7 @@ public class V6809 {
         int addr = getIntProperty(props, device + ".addr");
         LOGGER.debug("Loading {} class {}", device, deviceClsStr);
         Class newClass = Class.forName(deviceClsStr);
-        Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus6809.class);
+        Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus8Motorola.class);
         MemorySegment deviceInstance = constructor.newInstance(addr, bus);
         bus.insertMemorySegment(deviceInstance);
         // Find additional setters.

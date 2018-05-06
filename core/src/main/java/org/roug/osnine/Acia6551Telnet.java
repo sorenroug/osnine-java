@@ -14,8 +14,8 @@ public class Acia6551Telnet extends Acia6551 {
     /**
      * Constructor.
      */
-    public Acia6551Telnet(int start, Bus6809 cpu) {
-        super(start, cpu);
+    public Acia6551Telnet(int start, Bus8Motorola bus) {
+        super(start, bus);
         Thread reader = new Thread(new TelnetHandler(this), "telnet");
         reader.setDaemon(true);
         reader.start();

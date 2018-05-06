@@ -22,7 +22,7 @@ public class USimMotorola extends USim {
     /**
      * Constructor.
      */
-    public USimMotorola(Bus6809 bus) {
+    public USimMotorola(Bus8Motorola bus) {
         super(bus);
     }
 

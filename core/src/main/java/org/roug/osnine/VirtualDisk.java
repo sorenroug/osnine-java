@@ -58,14 +58,14 @@ public class VirtualDisk extends MemorySegment {
     private byte[] buffer = new byte[LSN_SIZE];
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus6809 cpu;
+    private Bus8Motorola bus;
 
     /**
      * Constructor.
      */
-    public VirtualDisk(int start, Bus6809 cpu) {
+    public VirtualDisk(int start, Bus8Motorola bus) {
         super(start, start + 3);
-        this.cpu = cpu;
+        this.bus = bus;
     }
 
     public void setDisk(String fileName) throws FileNotFoundException, IOException {

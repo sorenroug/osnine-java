@@ -20,7 +20,7 @@ public abstract class USim {
     public boolean halted;
 
     /** Reference to the memory bus. */
-    protected Bus6809 bus;
+    protected Bus8Motorola bus;
 
 // Generic internal registers that we assume all CPUs have
 
@@ -40,7 +40,7 @@ public abstract class USim {
     /**
      * Constructor.
      */
-    public USim(Bus6809 bus) {
+    public USim(Bus8Motorola bus) {
         this.bus = bus;
     }
 
@@ -57,7 +57,7 @@ public abstract class USim {
         bus.addMemorySegment(newMemory);
     }
 
-    public Bus6809 getBus() {
+    public Bus8Motorola getBus() {
         return bus;
     }
 

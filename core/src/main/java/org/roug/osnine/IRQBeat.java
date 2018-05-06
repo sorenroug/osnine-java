@@ -11,17 +11,17 @@ class ClockTick extends TimerTask {
 
     private boolean activeIRQ;
 
-    private Bus6809 cpu;
+    private Bus8Motorola bus;
 
-    ClockTick(Bus6809 cpu) {
+    ClockTick(Bus8Motorola bus) {
         activeIRQ = false;
-        this.cpu = cpu;
+        this.bus = bus;
     }
 
     public void run() {
         //LOGGER.debug("IRQ sent");
         activeIRQ = true;
-        cpu.signalIRQ(true); // Execute a hardware interrupt
+        bus.signalIRQ(true); // Execute a hardware interrupt
     }
 
     boolean isActiveIRQ() {
@@ -47,17 +47,17 @@ public class IRQBeat extends MemorySegment {
     private static final Logger LOGGER = LoggerFactory.getLogger(IRQBeat.class);
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus6809 cpu;
+    private Bus8Motorola bus;
 
     private ClockTick clocktask;
 
     /**
      * Constructor.
      */
-    public IRQBeat(int start, Bus6809 cpu) {
+    public IRQBeat(int start, Bus8Motorola bus) {
         super(start, start + 1);
         LOGGER.debug("Initialise heartbeat");
-        this.cpu = cpu;
+        this.bus = bus;
     }
 
     // Return 1 if IRQ is enabled and turn it off.
@@ -66,7 +66,7 @@ public class IRQBeat extends MemorySegment {
         //LOGGER.debug("Check");
         if (clocktask != null && clocktask.isActiveIRQ()) {
             clocktask.setActiveIRQ(false);
-            cpu.signalIRQ(false);
+            bus.signalIRQ(false);
             return 1; // There was an IRQ
         } else {
             return 0;
@@ -77,7 +77,7 @@ public class IRQBeat extends MemorySegment {
     protected void store(int addr, int val) {
         LOGGER.debug("Starting heartbeat every {} milliseconds", val);
         if (clocktask == null) {
-            clocktask = new ClockTick(cpu);
+            clocktask = new ClockTick(bus);
             Timer timer = new Timer("clock", true);
             timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
         }

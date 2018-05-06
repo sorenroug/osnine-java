@@ -20,8 +20,8 @@ public class Acia6850Console extends Acia6850 {
      * The data register is addressed when register select is high.
      * Status/Control register is addressed when the register select is low.
      */
-    public Acia6850Console(int start, Bus6809 cpu) {
-        super(start, cpu);
+    public Acia6850Console(int start, Bus8Motorola bus) {
+        super(start, bus);
         Thread reader = new Thread(new ConsoleHandler(this), "acia6850");
         reader.setDaemon(true);
         reader.start();

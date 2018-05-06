@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Straight-through bus with no memory management unit.
  */
-public class BusStraight implements Bus6809 {
+public class BusStraight implements Bus8Motorola {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusStraight.class);
 

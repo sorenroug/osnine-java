@@ -52,7 +52,7 @@ public class Acia6850 extends MemorySegment implements Acia {
     private String eolSequence = "\015";
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus6809 cpu;
+    private Bus8Motorola bus;
 
     /**
      * Constructor.
@@ -60,9 +60,9 @@ public class Acia6850 extends MemorySegment implements Acia {
      * The data register is addressed when register select is high.
      * Status/Control register is addressed when the register select is low.
      */
-    public Acia6850(int start, Bus6809 cpu) {
+    public Acia6850(int start, Bus8Motorola bus) {
         super(start, start + 2);
-        this.cpu = cpu;
+        this.bus = bus;
         reset();
         setDCD(false);  // There is no carrier
     }
@@ -171,14 +171,14 @@ public class Acia6850 extends MemorySegment implements Acia {
     private void raiseIRQ() {
         if ((statusRegister & IRQ) == 0) {
             setStatusBit(IRQ);
-            cpu.signalIRQ(true);
+            bus.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
         if ((statusRegister & IRQ) == IRQ) {
             clearStatusBit(IRQ);
-            cpu.signalIRQ(false);
+            bus.signalIRQ(false);
         }
     }
 

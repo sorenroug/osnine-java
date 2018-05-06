@@ -1,10 +1,9 @@
 package org.roug.osnine;
 
 /**
- * Bus in a computer. Links CPU, memory and devices together.
- * How is the CPU attached to this?
+ * Bus in a computer - Motorola-style. Links CPU, memory and devices together.
  */
-public interface Bus6809 {
+public interface Bus8Motorola {
 
     /**
      * Single byte read from memory.
