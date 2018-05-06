@@ -165,7 +165,7 @@ public class Acia6551 extends MemorySegment implements Acia {
      * Let the LineWriter wait for the next character.
      */
     @Override
-    public synchronized int valueToTransmit() throws InterruptedException {
+    public synchronized int waitForValueToTransmit() throws InterruptedException {
         while (isTransmitRegisterEmpty()) {
             wait();
         }

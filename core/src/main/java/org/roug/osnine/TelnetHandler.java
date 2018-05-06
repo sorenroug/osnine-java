@@ -116,8 +116,8 @@ class TelnetHandler implements Runnable {
     /**
      * Send from ACIA out.
      */
-    int valueToTransmit() throws InterruptedException {
-        return acia.valueToTransmit();
+    int waitForValueToTransmit() throws InterruptedException {
+        return acia.waitForValueToTransmit();
     }
 
     void interruptReader() {
@@ -433,7 +433,7 @@ class LineWriter implements Runnable {
             handler.willDo(TelnetState.SUPPRESS_GA);
             handler.willDo(TelnetState.ECHO);
             while (true) {
-                int val = handler.valueToTransmit();
+                int val = handler.waitForValueToTransmit();
                 handler.sendTelnetClient(val);
                 if (Thread.interrupted())
                     throw new InterruptedException();

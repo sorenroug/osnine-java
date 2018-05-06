@@ -26,7 +26,7 @@ class ConsoleHandler implements Runnable {
         LOGGER.debug("ConsoleHandler thread started");
         try {
             acia.setDCD(true);
-            Thread reader = new Thread(new ConReader(this), "con-in");
+            Thread reader = new Thread(new ConsoleReader(this), "con-in");
             reader.start();
             Thread writer = new Thread(new ConsoleWriter(this), "con-out");
             writer.start();
@@ -61,8 +61,8 @@ class ConsoleHandler implements Runnable {
     /**
      * Send from ACIA out.
      */
-    int valueToTransmit() throws InterruptedException {
-        return acia.valueToTransmit();
+    int waitForValueToTransmit() throws InterruptedException {
+        return acia.waitForValueToTransmit();
     }
 
 
@@ -73,17 +73,17 @@ class ConsoleHandler implements Runnable {
  * If it gets a read exception, then it shall tell the writer
  * to stop and it shall end the thread.
  */
-class ConReader implements Runnable {
+class ConsoleReader implements Runnable {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ConReader.class);
+            LoggerFactory.getLogger(ConsoleReader.class);
 
     private ConsoleHandler handler;
 
     /**
      * Constructor.
      */
-    ConReader(ConsoleHandler handler) {
+    ConsoleReader(ConsoleHandler handler) {
         this.handler = handler;
     }
 
@@ -98,9 +98,8 @@ class ConReader implements Runnable {
                 if (Thread.interrupted())
                     throw new InterruptedException();
                 LOGGER.debug("Received {}", receiveData);
-                if (receiveData == -1) {
-                    LOGGER.info("Reader lost connection");
-                    break;
+                if (receiveData == -1) {  // EOF typed on console
+                    System.exit(0);
                 }
                 if (receiveData == 10) {
                     handler.eolReceived();
@@ -143,7 +142,7 @@ class ConsoleWriter implements Runnable {
         LOGGER.debug("Writer thread started");
         try {
             while (true) {
-                int val = handler.valueToTransmit();
+                int val = handler.waitForValueToTransmit();
                 handler.sendToConsole(val);
                 if (Thread.interrupted())
                     throw new InterruptedException();
@@ -155,5 +154,4 @@ class ConsoleWriter implements Runnable {
         }
     }
 }
-
 

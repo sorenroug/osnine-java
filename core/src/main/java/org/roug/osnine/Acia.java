@@ -14,7 +14,7 @@ interface Acia {
     /**
      * Let the I/O Writer thread wait for the next character.
      */
-    int valueToTransmit() throws InterruptedException;
+    int waitForValueToTransmit() throws InterruptedException;
 
     /**
      * Set Data Carrier Detect. In telnet-based emulation this
