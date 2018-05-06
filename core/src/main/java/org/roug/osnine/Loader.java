@@ -20,7 +20,7 @@ public final class Loader {
     //----------------------------------------------------------------------------
     // Processor loading routines
     //----------------------------------------------------------------------------
-    static int fread_byte(InputStream fp) throws IOException {
+    private static int fread_byte(InputStream fp) throws IOException {
         byte str[] = new byte[2];
 
         str[0] = (byte)fp.read();  // High nibble
@@ -30,7 +30,7 @@ public final class Loader {
         return Integer.valueOf(hexStr, 16).intValue();
     }
 
-    static int fread_word(InputStream fp) throws IOException {
+    private static int fread_word(InputStream fp) throws IOException {
         int ret;
 
         ret = fread_byte(fp);

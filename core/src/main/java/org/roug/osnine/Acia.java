@@ -1,18 +1,18 @@
 package org.roug.osnine;
 
 /**
- * Interface from Reader to Acia chip.
- * To be expanded with writes.
+ * Interface from I/O system to Acia chip.
+ * The I/O can be the Java console or a GUI emulating a terminal.
  */
 interface Acia {
 
     /**
-     * Get interrupted by reader thread and get the byte.
+     * Get interrupted by I/O Reader thread and get the byte.
      */
     void dataReceived(int receiveData);
 
     /**
-     * Let the Writer thread wait for the next character.
+     * Let the I/O Writer thread wait for the next character.
      */
     int valueToTransmit() throws InterruptedException;
 
@@ -28,7 +28,8 @@ interface Acia {
     void setDCD(boolean detected);
 
     /**
-     * The other end sent EOL.
+     * The other end sent EOL. The emulated software might expect CR,
+     * NL or CR+NL.
      */
     void eolReceived();
 }

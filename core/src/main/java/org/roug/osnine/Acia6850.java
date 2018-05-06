@@ -64,6 +64,7 @@ public class Acia6850 extends MemorySegment implements Acia {
         super(start, start + 2);
         this.cpu = cpu;
         reset();
+        setDCD(false);  // There is no carrier
     }
 
     private void reset() {
@@ -81,14 +82,15 @@ public class Acia6850 extends MemorySegment implements Acia {
      *
      * @param detected - if there is a carrier
      */
+    @Override
     public void setDCD(boolean detected) {
-        int oldStatus = statusRegister;
+        int oldStatus = statusRegister & DCD;
         if (detected) {
             statusRegister &= ~DCD;  // Set bit 2 to 0
         } else {
             statusRegister |= DCD;   // Set bit 2 to 1
-            if (oldStatus != statusRegister) {
-                signalCPU();
+            if (receiveIrqEnabled && oldStatus == 0) {
+                raiseIRQ();
             }
         }
     }
@@ -101,25 +103,16 @@ public class Acia6850 extends MemorySegment implements Acia {
     }
 
     /**
-     * Send interrupt to CPU if IRQ is enabled in the ACIA.
-     */
-    private void signalCPU() {
-        if (receiveIrqEnabled) {
-            statusRegister |= IRQ;
-            cpu.signalIRQ(true);
-        }
-    }
-
-    /**
      * Let the LineWriter wait for the next character.
      */
+    @Override
     public synchronized int valueToTransmit() throws InterruptedException {
         while (isTransmitRegisterEmpty()) {
             wait();
         }
         int t = transmitData;
         statusRegister |= TDRE;     // Transmit register is empty now
-        if (transmitIrqEnabled && getDCD()) {
+        if (transmitIrqEnabled) {
             raiseIRQ();
         }
         notifyAll();
@@ -248,6 +241,9 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     private synchronized void sendValue(int val) {
         LOGGER.debug("Send value: {}", val);
+        if (receiveIrqEnabled && !isReceiveRegisterFull()) {
+            lowerIRQ();
+        }
         while (!isTransmitRegisterEmpty()) {
             try {
                 wait();
@@ -278,11 +274,11 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
+        if (transmitIrqEnabled && !isTransmitRegisterEmpty()) {
+            lowerIRQ();
+        }
         int r = receiveData;  // Read before we turn RDRF off.
         statusRegister &= ~RDRF;    // Receive register is empty now
-        if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
-            raiseIRQ();
-        }
         notifyAll();
         return r;
     }
@@ -301,21 +297,31 @@ public class Acia6850 extends MemorySegment implements Acia {
      *
      * @param data Data to write into the control register
      */
-    private void setControlRegister(int data) {
+    private synchronized void setControlRegister(int data) {
         LOGGER.debug("Set control (Reg #{}): {}", CTRL_REG, data);
         controlRegister = data;
+        boolean activateIRQ = false;
         // Check for IRQ disable/enable
-        receiveIrqEnabled = isBitOn(controlRegister, CR7);
+        receiveIrqEnabled = isBitOn(data, CR7);
+        if (receiveIrqEnabled && isReceiveRegisterFull()) {
+            activateIRQ = true;
+        }
 
         // Transmit IRQ is enabled if CR6 is 0 and CR5 is 1.
-        transmitIrqEnabled = !isBitOn(controlRegister, CR6)
-                           && isBitOn(controlRegister, CR5);
+        transmitIrqEnabled = !isBitOn(data, CR6)
+                           && isBitOn(data, CR5);
         // Check for master reset
-        if (isBitOn(controlRegister, CR0) && isBitOn(controlRegister, CR1)) {
+        if (isBitOn(data, CR0) && isBitOn(data, CR1)) {
             reset();
         }
-        // Send a IRQ immediately as the transmit register is empty.
-        signalReadyForTransmit();
+        if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
+            activateIRQ = true;
+        }
+        if (activateIRQ) {
+            raiseIRQ();
+        } else {
+            lowerIRQ();
+        }
     }
 
     private static boolean isBitOn(int x, int n) {
