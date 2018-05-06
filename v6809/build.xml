@@ -39,10 +39,11 @@
         <assemble src="Piper"/>
         <assemble src="RBF"/>
         <assemble src="SCF"/>
-        <assemble src="Shell"/>
+        <!--<assemble src="Shell"/> -->
+        <assemble src="t1con51"/>
         <assemble src="t1telnet"/>
-        <assemble src="t1console"/>
         <assemble src="t1con6850"/>
+        <assemble src="t1tn6850"/>
         <assemble src="vdisk"/>
     </target>
 
