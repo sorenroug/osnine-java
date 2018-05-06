@@ -106,13 +106,6 @@ public class Acia6551 extends MemorySegment implements Acia {
     }
 
     /**
-     * Get DCD status. Inverted in register.
-     */
-    boolean getDCD() {
-        return (statusRegister & DCD) == 0;
-    }
-
-    /**
      * Set the End-of-line sequence. In OS-9 this is 0x0D.
      */
     public void setEol(String token) {
@@ -178,11 +171,18 @@ public class Acia6551 extends MemorySegment implements Acia {
         }
         int t = transmitData;
         statusRegister |= TDRE;     // Transmit register is empty now
-        if (transmitIrqEnabled && getDCD()) {
+        if (transmitIrqEnabled && hasDCD()) {
             raiseIRQ();
         }
         notifyAll();
         return t;
+    }
+
+    /**
+     * Get DCD status. Inverted in register.
+     */
+    private boolean hasDCD() {
+        return (statusRegister & DCD) == 0;
     }
 
     private void raiseIRQ() {
