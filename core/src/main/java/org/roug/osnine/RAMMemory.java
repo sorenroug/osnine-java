@@ -1,6 +1,6 @@
 package org.roug.osnine;
 
-public class MemoryBank extends MemorySegment {
+public class RAMMemory extends MemorySegment {
 
     private int memorySize;
 
@@ -10,14 +10,14 @@ public class MemoryBank extends MemorySegment {
     /**
      * Constructor.
      */
-    public MemoryBank(int size) {
+    public RAMMemory(int size) {
         this(0, size);
     }
 
     /**
      * Constructor.
      */
-    public MemoryBank(int start, int size) {
+    public RAMMemory(int start, int size) {
         super(start, start + size);
         this.memorySize = size;
         memory = new int[size];
