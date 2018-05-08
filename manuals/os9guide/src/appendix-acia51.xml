@@ -14,9 +14,9 @@ ACIA51 - Serial Device Driver
 <para>
 To load this module into the kernel enter the following command line:
 </para>
-<literallayout>
+<screen>
 LOAD /D0/CMDS/ACIA51
-</literallayout>
+</screen>
 
 <section>
 <title>Serial Printer Implementation</title>
@@ -25,15 +25,15 @@ For those with a serial printer, you can use the serial port
 in the redirection of a program's output path by including the
 following modifier at the end of a command line:
 </para>
-<literallayout>
+<programlisting>
 &gt;/P1
-</literallayout>
+</programlisting>
 <para>
 The baud rate of the serial port may be changed as follows:
 </para>
-<literallayout>
+<screen>
 XMODE /P1 BAUD=3
-</literallayout>
+</screen>
 <para>
 This will change the baud rate to 1200 characters per second.
 For a detailed description of the baud rate see the XMODE
@@ -48,22 +48,21 @@ OS-9, together using the serial port, redirection of the input
 or output paths is possible using the following modifier at
 the end of a command line:
 </para>
-<literallayout>
-&gt;/T1 - for an output path
-</literallayout>
-<literallayout>
-&lt;/T1 - for an input path
-</literallayout>
+<programlisting>
+&gt;/T1 <lineannotation>- for an output path</lineannotation>
+
+&lt;/T1 <lineannotation>- for an input path</lineannotation>
+</programlisting>
 <para>
 To pass a file of data between the two computers, one must be
 configured for input from the serial port and the other
 configured for output:
 </para>
 <literallayout>
-Computer 1,        BUILD TEXT &lt;/T1 - input to port
+Computer 1,        <code>BUILD TEXT &lt;/T1</code> - input to port
 </literallayout>
 <literallayout>
-Computer 2,        BUILD &lt;TEXT /T1 - output to port
+Computer 2,        <code>BUILD &lt;TEXT /T1</code> - output to port
 </literallayout>
 <para>
 Using the above example, the text file on computer 2 will be
@@ -82,7 +81,7 @@ To create a log-off sequence after such a transfer, use the DISPLAY
 command as follows:
 </para>
 <literallayout>
-Computer 1,        BUILD &lt;TEXT /T1 ; DISPLAY 0A 0D &gt;/T1
+Computer 1,        <code>BUILD &lt;TEXT /T1 ; DISPLAY 0A 0D &gt;/T1</code>
 </literallayout>
 </section>
 </appendix>

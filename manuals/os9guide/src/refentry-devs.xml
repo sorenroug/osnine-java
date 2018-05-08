@@ -48,7 +48,7 @@ Each line in the devs display contains five fields:
 </informaltable>
 <note>
 <para>
-Each time a user executes a chd to an RBF device, the use count of that device
+Each time a user executes a <command>chd</command> to an RBF device, the use count of that device
 is incremented by one.  Consequently, the Links field may be artificially high.
 </para>
 </note>

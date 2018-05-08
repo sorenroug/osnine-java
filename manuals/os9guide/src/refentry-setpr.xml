@@ -33,7 +33,7 @@ For more information see: <xref linkend="sec5.1"/>, <command>procs</command>
 </refsect1>
 <refsect1><title>Examples</title>
 <literallayout>
-setpr 8 250       (change process #8 priority to 250)
+setpr 8 250       <lineannotation>(change process #8 priority to 250)</lineannotation>
 </literallayout>
 
 <screen>

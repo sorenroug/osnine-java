@@ -34,13 +34,13 @@ For more information see: <xref linkend="sec3.3"/>, <xref linkend="sec3.4"/>,
 </para>
 </refsect1>
 <refsect1><title>Examples</title>
-<literallayout>
+<screen>
 makdir /d1/STEVE/PROJECT
 
 makdir DATAFILES
 
 makdir ../SAVEFILES
-</literallayout>
+</screen>
 </refsect1>
 </refentry>
 

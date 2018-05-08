@@ -35,7 +35,7 @@ very useful for building a customized boot file.
 <listitem>
 <para>
 will link to module in memory - if not found,will load module from exec
-directory and then link to it...after disassembly, it will attempt to
+directory and then link to it... after disassembly, it will attempt to
 unlink the module.
 </para>
 </listitem>
@@ -64,17 +64,17 @@ x = look for module in execution directory.
 </varlistentry>
 </variablelist>
 <para>
-<emphasis>Any</emphasis> combination of options is allowed (upper or lower case) but they *must*
+<emphasis>Any</emphasis> combination of options is allowed (upper or lower case) but they <emphasis>must</emphasis>
 immediately follow the '-' and there must be no spaces separating the options.
 </para>
 </refsect1>
 <refsect1><title>OS-9 Level I Users</title>
 <para>
 By changing relative address $17 from $64 to $30 will cause the output
-source to reference /d0/defs instead of /dd/defs
+source to reference /d0/defs instead of /dd/defs.
 </para><para>
-also,if you are not using a driver which supports level II display codes,
-you *MUST* change relative address $15 from 01 to 00 to avoid problems
+Also, if you are not using a driver which supports Level II display codes,
+you <emphasis>must</emphasis> change relative address $15 from 01 to 00 to avoid problems
 in the event of an error message being printed out.
 </para>
 </refsect1>

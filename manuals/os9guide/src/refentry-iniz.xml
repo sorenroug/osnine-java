@@ -8,7 +8,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>iniz</command>
-<arg choice="opt">
+<arg choice="plain">
   <option>devicename [...]</option>
 </arg>
 </cmdsynopsis>
@@ -48,9 +48,9 @@ memory fragmentation).
 </refsect1>
 <refsect1>
 <title>Example:</title>
-<literallayout>
-	INIZ P T2 [ENTER]
-</literallayout>
+<screen>
+INIZ P T2 <keycap>ENTER</keycap>
+</screen>
 <para>
 initializes the P (printer) and T2 (terminal 2) devices.
 </para>

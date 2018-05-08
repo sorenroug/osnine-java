@@ -14,7 +14,7 @@
 <sbr/>
 <group>
 <arg choice="plain">/wX</arg>
-<arg choice="opt">-s=type</arg>
+<arg choice="opt">-s=<replaceable>type</replaceable></arg>
 <arg choice="plain"><replaceable>xpos</replaceable></arg>
 <arg choice="plain"><replaceable>ypos</replaceable></arg>
 <arg choice="plain"><replaceable>xsiz</replaceable></arg>

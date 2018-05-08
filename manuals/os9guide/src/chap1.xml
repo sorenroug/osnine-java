@@ -81,7 +81,7 @@ you may have a corrupted system disk. Hopefully you did make a backup!</para></l
 For now, the only special keys on the keyboard of interest are
 the <keycap>SHIFT</keycap> key which works like a typewriter shift key; the <keycap>ENTER</keycap> key
 which you always use after typing a command or response to OS-9; and
-the &lt;- left arrow key which you can use to erase typing mistakes.
+the <keycap>&#8592;</keycap> left arrow key which you can use to erase typing mistakes.
 </para>
 <para>
 Your main disk drive is known to to OS-9 as &quot;/D0&quot; and is often
@@ -237,13 +237,13 @@ MAY ERASE your System Disk.
 <para>
 When you are asked for a disk name, type any letter, then <keycap>ENTER</keycap>.
 The name you give is not important. If you have only one drive,
-replace the system disk after the FORMAT program has finished. If
-the FORMAT program reported any errors, try again. Disks used for
+replace the system disk after the <command>format</command> program has finished. If
+the <command>format</command> program reported any errors, try again. Disks used for
 backups can't have any errors. You're now ready to run the <command>backup</command>
 program.
 </para>
 <para>
-It takes several minutes for the FORMAT program to run. During
+It takes several minutes for the <command>format</command> program to run. During
 its second phase the hexadecimal number of each track will be
 displayed as it is checked for bad sectors. If any are found an
 error message for each bad sector is given.

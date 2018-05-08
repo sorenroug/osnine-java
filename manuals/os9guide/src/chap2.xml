@@ -178,7 +178,7 @@ dir sys
 </screen>
 <para>
 It is also possible to specify both a directory name parameter and
-the e  option, such as:
+the <option>e</option> option, such as:
 </para>
 <screen>
 dir sys -e
@@ -304,8 +304,8 @@ which is normally &quot;locked&quot;. The keyboard's shift lock may be
 reversed by depressing the control key and <keycap>0</keycap> keys
 simultaneously. The shift lock only affects the letter (A-Z) keys.
 When the keyboard is locked, these keys generate upper case letters,
-and lower case only if the <keycap>SHIFT</keycap> key is depressed. When the
-keyboard is unlocked, the reverse is true, e.g., lower case letters
+and lower case only if the <keycap>SHIFT</keycap> key is depressed.
+When the keyboard is unlocked, the reverse is true, e.g., lower case letters
 are generated unless the <keycap>SHIFT</keycap> key is depressed at the same time as
 a letter key.
 </para>
@@ -396,8 +396,8 @@ recognized.
   </listitem>
 </varlistentry>
 <varlistentry>
-  <term><keycap>LEFT ARROW</keycap> (OR <keycombo action="simul">
-  <keycap>CONTROL</keycap> <keycap>H</keycap></keycombo>)</term>
+  <term><keycap>&#8592;</keycap>
+  (or <keycombo action="simul"> <keycap>CONTROL</keycap><keycap>H</keycap></keycombo>)</term>
   <listitem>
 <para>
 Backspace - erase previous character
@@ -406,7 +406,7 @@ Backspace - erase previous character
 </varlistentry>
 <varlistentry>
   <term><keycombo action="simul">
-    <keycap>SHIFT</keycap> <keycap>LEFT ARROW</keycap></keycombo> (or <keycombo action="simul">
+    <keycap>SHIFT</keycap> <keycap>&#8592;</keycap></keycombo> (or <keycombo action="simul">
   <keycap>CONTROL</keycap> <keycap>X</keycap></keycombo>)</term>
   <listitem>
 <para>

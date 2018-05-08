@@ -1203,9 +1203,9 @@ the byte address divided by 256 (integer division).
 As an example, the following command will give a complete "dump" of every data byte on disk device "d0":
 </para>
 <informalexample>
-<para>
+<screen>
 dump /d0@
-</para>
+</screen>
 </informalexample>
 
 </section>

@@ -195,12 +195,12 @@ tmode pag=24 pause bsl -echo bsp=8 bsl=C
 NOTE: If you use <command>tmode</command> in a procedure file, it will be necessary to
 specify one of the standard output paths (.1 or .2) since the
 shell's standard input path will have been redirected to the disk
-file (<command>Tmode</command> can be used on an SCFMAN-type devices only).
+file (<command>Tmode</command> can be used on an SCF-type devices only).
 
 Example:
 </para>
 <screen>
-tmode .1 pag=24          (set lines/page on standard output)
+tmode .1 pag=24          <lineannotation>(set lines/page on standard output)</lineannotation>
 </screen>
 </refsect1>
 </refentry>

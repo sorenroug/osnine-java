@@ -166,7 +166,7 @@ graphics mode command is used. It causes the graphics screen to be
 displayed and sets a current display format and color. The <emphasis>first</emphasis>
 time the DISPLAY GRAPHICS command is given, a 6144 byte display
 memory is allocated by OS-9, so there must be at least this much
-continuous free memory available (the OS-9 <command>MFREE</command> command can be
+continuous free memory available (the OS-9 <command>mfree</command> command can be
 used to check free memory). This memory is retained until the END
 GRAPHICS command is given, even if the program that initiated
 Graphics mode finishes, so it important that the END GRAPHICS

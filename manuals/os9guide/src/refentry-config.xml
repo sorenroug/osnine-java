@@ -51,11 +51,11 @@ particular device.  Press <keycap>S</keycap> once to display an X to the right o
 selected device.  Press <keycap>S</keycap> again to erase the X.  The device is selected
 only when the "X" appears.  Information about each device is available with
 a special help command.  To display the information on the current device
-(the device indicated by the right arrow <keycap>-&gt;</keycap>), press <keycap>H</keycap>.
+(the device indicated by the right arrow <keycap>&#8594;</keycap>), press <keycap>H</keycap>.
 </para>
 <para>
-If there are more than ten devices in a CONFIG menu, use <keycap>-&gt;</keycap> to move ahead
-page-by-page and <keycap>&lt;-</keycap> to move back.
+If there are more than ten devices in a CONFIG menu, use <keycap>&#8594;</keycap> to move ahead
+page-by-page and <keycap>&#8592;</keycap> to move back.
 </para>
 <para>
 The devices you can select are:
@@ -213,7 +213,7 @@ wish to include on your system diskette.  You have the following choices:
 <screen>
     [N]o Commands, Stop Now - Do not add any commands
     [B]asic Command Set - Adds the basic OS-9 commands
-    [F]ull COmmand Set - Add all OS-9 commands
+    [F]ull Command Set - Add all OS-9 commands
     [I]ndividually Select - Select desired commands one by one
     [?] Receive Help - Get help on the command set
 </screen>
@@ -231,12 +231,10 @@ commands) to your new diskette.  This selection does not copy the following:
 </para>
 <orderedlist numeration="arabic">
 <listitem><para>
-Assembly language development tools, asm, debug, and edit and the
-DEFS directory
+Assembly language development tools, asm, debug, and edit and the DEFS directory
 </para></listitem>
 <listitem><para>
-Timesharing utilities, tsmon, login, and the SYS/motd and
-SYS/password files
+Timesharing utilities, tsmon, login, and the SYS/motd and SYS/password files
 </para></listitem>
 <listitem><para>
 The system maintenance utilites, such as dsave, dcheck, and cobbler
@@ -268,17 +266,17 @@ well as in the boot file creation procedure, depends on the number of options
 you select.
 </para>
 <para>
-It would be quicker and easier to use BACKUP to create a system disk, use
+It would be quicker and easier to use <command>backup</command> to create a system disk, use
 <command>config</command> to create a new bootfile, then delete unwanted commands.  However,
 this process causes fragmentation of diskette space.  Fragmentation results
 in slower diskette access, and free memory is broken into segments that
-might not be large enough for some OS-9 operations.  <command>Config</command> causes no
-fragmentation.
+might not be large enough for some OS-9 operations.
+<command>Config</command> causes no fragmentation.
 </para>
 <para>
 The MODULES directory of the CONFIG/BOOT diskette contains all the device
-drivers and descriptors supported by OS-9.  The filename extension
-describes the type of file, as noted in the following table:
+drivers and descriptors supported by OS-9.
+The filename extension describes the type of file, as noted in the following table:
 </para>
 <informaltable frame="none" colsep="0" rowsep="0">
 <tgroup cols="2">
