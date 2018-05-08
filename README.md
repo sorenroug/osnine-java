@@ -18,11 +18,18 @@ Each device has a corresponding OS-9 device driver.
 The MC6809 was an 8-bit CPU with some 16-bit features from Motorola
 introduced in the late 70-ies.  OS-9 was sold as a business operating
 system that enabled word processing, spreadsheets and various programming
-languages.  By today's standards it is inadequate. It only handles 7
+languages.  By today's standards it is obsolete. It only handles 7
 bit ASCII and it is not year 2000 aware.
 
 ## Build instructions
 
+This project uses Maven. You can get the software from https://maven.apache.org/.
+To build the software type:
 ```
 mvn install
 ```
+To create the PDF editions of the manuals type:
+```
+mvn pre-site
+```
+Visit the sub-directories to learn how to use the tools.
