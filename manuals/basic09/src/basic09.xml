@@ -3110,7 +3110,7 @@ if <replaceable>num</replaceable> &lt; 0, use ABS(<replaceable>num</replaceable>
 </tgroup>
 </informaltable>
 
-The following functions can return <emphasis>any numeric type</emphasis>, depending on the
+The following functions can return <emphasis role="bold">any numeric type</emphasis>, depending on the
 type of the input parameter(s).
 
 <informaltable frame="none" colsep="0" rowsep="0">
