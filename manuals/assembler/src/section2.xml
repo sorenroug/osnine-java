@@ -2030,18 +2030,18 @@ bytes) and space to receive parameters in, if any are passed.
 When the process is invoked by OS-9, the bounds of the data area are
 passed to the process in the MPU registers: U will contain the beginning
 address and Y the ending address. The SP register is set to the ending
-address+l, unless parameters were passed. The direct page register will
+address+1, unless parameters were passed. The direct page register will
 be set to the page number of the beginning page.
 </para>
       <para>
 In the assembly language source program, storage in the data area is
 assigned using the RMB directive which uses the separate data address
 counter. It is good practice (but not mandatory) to declare all
-variables .and structures at the beginning of the program. Smaller,
-frequently used variables should be declared first. They will usually
+variables and structures at the beginning of the program.
+Smaller, frequently used variables should be declared first. They will usually
 all fit in the first page, meaning they can be accessed using short, fast
-direct page addressing instructions. Larger items should follow. These
-can be addressed in one of two ways:
+direct page addressing instructions. Larger items should follow.
+These can be addressed in one of two ways:
 </para>
       <orderedlist>
         <listitem>
