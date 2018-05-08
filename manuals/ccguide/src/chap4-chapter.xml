@@ -1,0 +1,94 @@
+<chapter xmlns="http://docbook.org/ns/docbook"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+<title>C Standard Library</title>
+<para>
+The Standard Library contains functions which fall into two
+classes: high-level I/O and convenience.
+</para>
+<para>
+The high-level I/O functions provide facilities that are
+normally considered part of the definition of other languages; for
+example, the FORMAT "statement" of Fortran. In addition, automatic
+buffering of I/O channels improves the speed of file access because
+fewer system calls are necessary.
+</para>
+<para>
+The high-level I/O functions should not be confused with the
+low-level system calls with similar names. Nor should "file
+pointers" be confused with "path numbers". The standard library
+functions maintain a structure for each file open that holds status
+information and a pointer into the files buffer, A user program
+uses a pointer to this structure as the "identity" of the file
+(which is provided by "fopen()"), and passes it to the various
+I/O functions. The I/O functions will make the low-level system
+calls when necessary.
+</para>
+<para>
+<emphasis>Using a file pointer in a system call, or a path number in a
+Standard Library call</emphasis>, is a common mistake among beginners to C and,
+if made, will be sure to <emphasis>crash your program.</emphasis>
+</para>
+<para>
+The convenience functions include facilities for copying,
+comparing, and concatenating strings, converting numbers to strings,
+and doing the extra work in accessing system information such as the
+time.
+</para>
+<para>
+In the page which follow, the functions available are
+described in terms of what they do and the parameters they expect.
+The "USAGE" section shows the name of the function and the type
+returned (if not int). The declaration of arguments are shown as
+they would be written in the function definition to indicate the
+types expected by the function. If it is necessary to include a
+file before the function can be used, it is shown in the "USAGE"
+section by "#include &lt;filename&gt;".
+</para>
+<para>
+Most of the header files that are required to be included, must
+reside in the "DEFS" directory on the default system drive. If the
+file is included in the source program using angle bracket
+delimiters instead of the usual double quotes, the compiler will
+append this path name to the file name. For example, "#include &lt;stdio.h&gt;"
+is equivalent to "#include &lt;/d0/defs/stdio.h&gt;", if "/d0" is
+the path name of the default system drive.
+</para>
+<para>
+<emphasis>Please note</emphasis> that if the type of the value returned by a
+function is not INT, you should make a pre-declaration in your
+program before calling it. For example, if you wish to use
+"atof()", you should pre-declare by having "double atof();"
+somewhere in your program before a call to it. Some functions
+which have associated header files in the DEFS directory that
+should be included, will be pre-declared for you in the header. An
+example of this is "ftell()" which is pre-declared in "stdio.h". If
+you are in any doubt, read the header file.
+</para>
+
+<xi:include href="refentry-atof.xml" />
+<xi:include href="refentry-fclose.xml" />
+<xi:include href="refentry-feof.xml" />
+<xi:include href="refentry-findstr.xml" />
+<xi:include href="refentry-fopen.xml" />
+<xi:include href="refentry-fread.xml" />
+<xi:include href="refentry-fseek.xml" />
+<xi:include href="refentry-getc.xml" />
+<xi:include href="refentry-gets.xml" />
+<xi:include href="refentry-isalpha.xml" />
+<xi:include href="refentry-l3tol.xml" />
+<xi:include href="refentry-longjmp.xml" />
+<xi:include href="refentry-malloc.xml" />
+<xi:include href="refentry-mktemp.xml" />
+<xi:include href="refentry-printf.xml" />
+<xi:include href="refentry-putc.xml" />
+<xi:include href="refentry-puts.xml" />
+<xi:include href="refentry-qsort.xml" />
+<xi:include href="refentry-scanf.xml" />
+<xi:include href="refentry-setbuf.xml" />
+<xi:include href="refentry-sleep.xml" />
+<xi:include href="refentry-strcat.xml" />
+<xi:include href="refentry-system.xml" />
+<xi:include href="refentry-toupper.xml" />
+<xi:include href="refentry-ungetc.xml" />
+
+</chapter>

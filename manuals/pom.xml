@@ -16,6 +16,7 @@
     <modules>
         <module>os9guide</module>
         <module>assembler</module>
+        <module>ccguide</module>
         <module>pascal</module>
         <module>basic09</module>
         <module>os9sysprog-rev-h</module>
