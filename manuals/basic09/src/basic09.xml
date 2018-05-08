@@ -2295,9 +2295,8 @@ will automatically use the REAL data type.
 <sect2><title>Type BYTE</title>
 <para>
 BYTE variables hold integer values in the range 0 through 255
-(unsigned 8-bit data) which are
-stored as a single byte. BYTE values are always converted to another type
-(16-bit integer
+(unsigned 8-bit data) which are stored as a single byte.
+BYTE values are always converted to another type (16-bit integer
 values and/or real values) for computation, thus they have no speed
 advantage over other numeric types. However, BYTE variables require
 only half of the storage used by integers, and an 1/5 of that used by reals.
@@ -2396,22 +2395,22 @@ truncate the string on the right and no error is generated.
 <para>
 Normally the internal representation of the string is hidden. A string
 is stored in a fixed-size storage area and is represented by a sequence
-of bytes terminated by the value zero or by the maximum length allocated
-to the STRING variable. Any remaining "unused" storage after the zero
+of bytes terminated by the value 255 or by the maximum length allocated
+to the STRING variable. Any remaining "unused" storage after the 255
 byte allows the stored string to expand and contract during execution.
 
 The example below shows the internal storage of a variable dimensioned as
 STRING[6] and assigned a value of "SAM". Notice the byte at +3 contains
-the zero string terminator, and the two following bytes are not used.
+the 255 string terminator, and the two following bytes are not used.
 <informalfigure>
 <screen>
       +--------+--------+--------+--------+--------+--------+
-      |   S    |    A   |    M   |   00   |        |        |
+      |   S    |    A   |    M   |  255   |        |        |
       +--------+--------+--------+--------+--------+--------+
 byte:     +0       +1       +2       +3       +4       +5
 </screen>
 </informalfigure>
-If the value "ROBERT" is assigned to the variable, the zero byte terminator
+If the value "ROBERT" is assigned to the variable, the 255 byte terminator
 is not needed because the STRING fills the storage exactly:
 <informalfigure>
 <screen>
