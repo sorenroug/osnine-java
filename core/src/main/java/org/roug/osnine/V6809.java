@@ -159,16 +159,22 @@ public class V6809 {
     private static void loadOneDevice(Properties props, String device) throws Exception {
         String deviceClsStr = props.getProperty(device + ".class");
         int addr = getIntProperty(props, device + ".addr");
+        String deviceArgString = props.getProperty(device + ".args");
+        String[] argsList = new String[0];
+        if (deviceArgString != null) {
+            argsList = deviceArgString.split("\\s+");
+        }
         LOGGER.debug("Loading {} class {}", device, deviceClsStr);
         Class newClass = Class.forName(deviceClsStr);
-        Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus8Motorola.class);
-        MemorySegment deviceInstance = constructor.newInstance(addr, bus);
+        Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus8Motorola.class, String[].class);
+        MemorySegment deviceInstance = constructor.newInstance(addr, bus, argsList);
         bus.insertMemorySegment(deviceInstance);
         // Find additional setters.
         String prefix = device + ".";
         for (String key : props.stringPropertyNames()) {
             if (key.startsWith(prefix)) {
-                if (key.equals(prefix + "class") || key.equals(prefix + "addr")) {
+                if (key.equals(prefix + "class") || key.equals(prefix + "addr")
+                        || key.equals(prefix + "args")) {
                     continue;
                 }
                 String argument = props.getProperty(key);

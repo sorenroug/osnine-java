@@ -27,7 +27,7 @@ public class HWClock extends MemorySegment {
     /**
      * Constructor.
      */
-    public HWClock(int start, Bus8Motorola bus) {
+    public HWClock(int start, Bus8Motorola bus, String... args) {
         super(start, start + 6);
         this.bus = bus;
     }

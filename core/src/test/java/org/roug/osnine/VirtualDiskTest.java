@@ -8,6 +8,7 @@ import org.junit.Test;
 public class VirtualDiskTest {
 
     private File virtdisk;
+    private BusStraight bus = new BusStraight();
 
     private File diskPath(String fileName) {
         String dir = System.getProperty("storage.dir");
@@ -17,7 +18,7 @@ public class VirtualDiskTest {
 
     @Test
     public void oversizeMemoryBank() throws Exception {
-        VirtualDisk mb = new VirtualDisk(70000, null);
+        VirtualDisk mb = new VirtualDisk(70000, bus);
         mb.setDisk(diskPath("paravirtdisk"));
     }
 
@@ -25,7 +26,7 @@ public class VirtualDiskTest {
     public void addToBuffer() throws Exception {
         int base = 10000;
 
-        VirtualDisk mb = new VirtualDisk(base, null);
+        VirtualDisk mb = new VirtualDisk(base, bus);
         mb.setDisk(diskPath("paravirtdisk"));
         mb.store(base + VirtualDisk.BYTE_VALUE, 65);
         mb.store(base + VirtualDisk.BYTE_ADDR, 0);
@@ -46,7 +47,7 @@ public class VirtualDiskTest {
     public void writeBuffer() throws Exception {
         int base = 10000;
 
-        VirtualDisk mb = new VirtualDisk(base, null);
+        VirtualDisk mb = new VirtualDisk(base, bus);
         mb.setDisk(diskPath("virtdisk1"));
         for (int i = 0 ; i < 256; i++) {
             mb.store(base + VirtualDisk.BYTE_ADDR, i);

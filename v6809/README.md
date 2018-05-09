@@ -32,6 +32,12 @@ This can be put into a script. To try some of the other properties files, you gi
 
     java -jar target/osnine-v6809-1.0-SNAPSHOT-jar-with-dependencies.jar -c tn6850.properties
 
+Syntax of properties file
+-------------------------
+The `memory` value is the amount of memory from address 0 you want to give the application. The value can be given in octal, decimal or hex using 'C' syntax.
+
+The `start` sets the initial value of the CPU's Program Counter.
+
 Telnet service
 --------------
 

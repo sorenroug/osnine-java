@@ -1,6 +1,7 @@
 package org.roug.osnine;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,11 +61,33 @@ public class Acia6850 extends MemorySegment implements Acia {
      * The data register is addressed when register select is high.
      * Status/Control register is addressed when the register select is low.
      */
-    public Acia6850(int start, Bus8Motorola bus) {
+    public Acia6850(int start, Bus8Motorola bus, String... args) {
         super(start, start + 2);
         this.bus = bus;
         reset();
         setDCD(false);  // There is no carrier
+        loadUI(args[0]);
+    }
+
+    /**
+     * Load the class that implements the user interface.
+     *
+     * @param guiClassStr the name of the Java class as a string.
+     */
+    private void loadUI(String guiClassStr) {
+        LOGGER.info("Loading class {}", guiClassStr);
+        try {
+            Class newClass = Class.forName(guiClassStr);
+            Constructor<Runnable> constructor = newClass.getConstructor(Acia.class);
+            Runnable threadInstance = constructor.newInstance(this);
+
+            Thread reader = new Thread(threadInstance, "acia6551");
+            reader.setDaemon(true);
+            reader.start();
+        } catch (Exception e) {
+            LOGGER.error("Load failure", e);
+            System.exit(1);
+        }
     }
 
     private void reset() {

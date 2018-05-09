@@ -54,7 +54,7 @@ public class IRQBeat extends MemorySegment {
     /**
      * Constructor.
      */
-    public IRQBeat(int start, Bus8Motorola bus) {
+    public IRQBeat(int start, Bus8Motorola bus, String... args) {
         super(start, start + 1);
         LOGGER.debug("Initialise heartbeat");
         this.bus = bus;

@@ -63,17 +63,23 @@ public class VirtualDisk extends MemorySegment {
     /**
      * Constructor.
      */
-    public VirtualDisk(int start, Bus8Motorola bus) {
+    public VirtualDisk(int start, Bus8Motorola bus, String... args)
+                    throws FileNotFoundException, IOException {
         super(start, start + 3);
         this.bus = bus;
+        if (args.length > 0) {
+            setDisk(args[0]);
+        }
     }
 
-    public void setDisk(String fileName) throws FileNotFoundException, IOException {
+    public void setDisk(String fileName)
+                    throws FileNotFoundException, IOException {
         File diskFile = new File(fileName);
         setDisk(diskFile);
     }
 
-    public void setDisk(File diskFile) throws FileNotFoundException, IOException {
+    public void setDisk(File diskFile)
+                    throws FileNotFoundException, IOException {
         if (diskFP != null) {
             diskFP.close();
         }
