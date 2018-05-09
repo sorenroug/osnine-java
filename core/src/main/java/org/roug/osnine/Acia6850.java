@@ -75,7 +75,7 @@ public class Acia6850 extends MemorySegment implements Acia {
      * @param guiClassStr the name of the Java class as a string.
      */
     private void loadUI(String guiClassStr) {
-        LOGGER.info("Loading class {}", guiClassStr);
+        LOGGER.debug("Loading class {}", guiClassStr);
         try {
             Class newClass = Class.forName(guiClassStr);
             Constructor<Runnable> constructor = newClass.getConstructor(Acia.class);
