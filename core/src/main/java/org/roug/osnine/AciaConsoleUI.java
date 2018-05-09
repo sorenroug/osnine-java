@@ -6,24 +6,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Thread to listen to incoming data.
+ * Console User Interface for Acia chips.
  */
-class ConsoleHandler implements Runnable {
+public class AciaConsoleUI implements Runnable {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ConsoleHandler.class);
+            LoggerFactory.getLogger(AciaConsoleUI.class);
 
     private Acia acia;
 
     /**
      * Constructor.
      */
-    ConsoleHandler(Acia acia) {
+    public AciaConsoleUI(Acia acia) {
         this.acia = acia;
     }
 
     public void run() {
-        LOGGER.debug("ConsoleHandler thread started");
+        LOGGER.debug("AciaConsoleUI thread started");
         try {
             acia.setDCD(true);
             Thread reader = new Thread(new ConsoleReader(this), "con-in");
@@ -78,12 +78,12 @@ class ConsoleReader implements Runnable {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ConsoleReader.class);
 
-    private ConsoleHandler handler;
+    private AciaConsoleUI handler;
 
     /**
      * Constructor.
      */
-    ConsoleReader(ConsoleHandler handler) {
+    ConsoleReader(AciaConsoleUI handler) {
         this.handler = handler;
     }
 
@@ -126,12 +126,12 @@ class ConsoleWriter implements Runnable {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ConsoleWriter.class);
 
-    private ConsoleHandler handler;
+    private AciaConsoleUI handler;
 
     /**
      * Constructor.
      */
-    ConsoleWriter(ConsoleHandler handler) {
+    ConsoleWriter(AciaConsoleUI handler) {
         this.handler = handler;
     }
 

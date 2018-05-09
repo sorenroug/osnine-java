@@ -22,7 +22,7 @@ public class Acia6850Console extends Acia6850 {
      */
     public Acia6850Console(int start, Bus8Motorola bus) {
         super(start, bus);
-        Thread reader = new Thread(new ConsoleHandler(this), "acia6850");
+        Thread reader = new Thread(new AciaConsoleUI(this), "acia6850");
         reader.setDaemon(true);
         reader.start();
     }

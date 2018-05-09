@@ -4,7 +4,7 @@ package org.roug.osnine;
  * Interface from I/O system to Acia chip.
  * The I/O can be the Java console or a GUI emulating a terminal.
  */
-interface Acia {
+public interface Acia {
 
     /**
      * Get interrupted by I/O Reader thread and get the byte.

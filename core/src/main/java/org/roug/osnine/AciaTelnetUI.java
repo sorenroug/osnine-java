@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
  * launches two threads. One for reading and one for writing.
  * These threads then call the ACIA.
  */
-class TelnetHandler implements Runnable {
+public class AciaTelnetUI implements Runnable {
 
     private static final Logger LOGGER = 
-            LoggerFactory.getLogger(TelnetHandler.class);
+            LoggerFactory.getLogger(AciaTelnetUI.class);
 
     private Acia acia;
 
@@ -45,7 +45,7 @@ class TelnetHandler implements Runnable {
     /**
      * Constructor.
      */
-    TelnetHandler(Acia acia) {
+    public AciaTelnetUI(Acia acia) {
         this.acia = acia;
     }
 
@@ -53,7 +53,7 @@ class TelnetHandler implements Runnable {
         final int portNumber = 2323;
         ServerSocket serverSocket;
 
-        LOGGER.debug("TelnetHandler thread started");
+        LOGGER.debug("AciaTelnetUI thread started");
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (Exception e) {
@@ -229,7 +229,7 @@ enum TelnetState {
 
     NORMAL {
         @Override
-        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
                 case NULL_CHAR:
@@ -252,7 +252,7 @@ enum TelnetState {
 
     IAC {
         @Override
-        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
                 case IP_CHAR:
@@ -273,7 +273,7 @@ enum TelnetState {
      */
     WILL {
         @Override
-        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
                 case ECHO:
@@ -289,7 +289,7 @@ enum TelnetState {
 
     WONT {
         @Override
-        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
                 default:        // Must respond to unsupported option
@@ -300,7 +300,7 @@ enum TelnetState {
 
     DO {
         @Override
-        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
                 case SUPPRESS_GA:
@@ -317,7 +317,7 @@ enum TelnetState {
 
     DONT {
         @Override
-        TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
                 default:
@@ -349,7 +349,7 @@ enum TelnetState {
     static final int DONT_CHAR = 254;
     static final int IAC_CHAR = 255;  // Interpret as Command
 
-    abstract TelnetState handleCharacter(int receiveData, TelnetHandler handler)
+    abstract TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
             throws IOException;
 }
 
@@ -366,12 +366,12 @@ class LineReader implements Runnable {
 
     private TelnetState state = TelnetState.NORMAL;
 
-    private TelnetHandler handler;
+    private AciaTelnetUI handler;
 
     /**
      * Constructor.
      */
-    LineReader(TelnetHandler handler) {
+    LineReader(AciaTelnetUI handler) {
         this.handler = handler;
     }
 
@@ -414,12 +414,12 @@ class LineWriter implements Runnable {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(LineWriter.class);
 
-    private TelnetHandler handler;
+    private AciaTelnetUI handler;
 
     /**
      * Constructor.
      */
-    LineWriter(TelnetHandler handler) {
+    LineWriter(AciaTelnetUI handler) {
         this.handler = handler;
     }
 

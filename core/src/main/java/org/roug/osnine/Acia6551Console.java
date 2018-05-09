@@ -15,7 +15,7 @@ public class Acia6551Console extends Acia6551 {
     public Acia6551Console(int start, Bus8Motorola bus) {
         super(start, bus);
         setDCD(false);  // There is no carrier
-        Thread reader = new Thread(new ConsoleHandler(this), "console");
+        Thread reader = new Thread(new AciaConsoleUI(this), "acia6551");
         reader.setDaemon(true);
         reader.start();
     }

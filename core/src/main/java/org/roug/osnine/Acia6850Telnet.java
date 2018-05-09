@@ -22,7 +22,7 @@ public class Acia6850Telnet extends Acia6850 {
      */
     public Acia6850Telnet(int start, Bus8Motorola bus) {
         super(start, bus);
-        Thread reader = new Thread(new TelnetHandler(this), "acia6850");
+        Thread reader = new Thread(new AciaTelnetUI(this), "acia6850");
         reader.setDaemon(true);
         reader.start();
     }

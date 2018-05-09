@@ -121,6 +121,9 @@ public class V6809 {
         props.load(propertiesStream);
         propertiesStream.close();
 
+        String extraJars = props.getProperty("classpath");
+        JarFileLoader.addPaths(extraJars);
+
         int memory = getIntProperty(props, "memory");
         cpu = new MC6809(memory);
         bus = cpu.getBus();
