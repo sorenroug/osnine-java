@@ -17,11 +17,20 @@ public interface Register {
 
     /**
      * Bit test.
+     * @param n bit (0-7) to test.
      */
     int btst(int n);
 
+    /**
+     * Bit set.
+     * @param n bit (0-7) to set.
+     */
     void bset(int n);
 
+    /**
+     * Bit clear.
+     * @param n bit (0-7) to clear.
+     */
     void bclr(int n);
 
 }

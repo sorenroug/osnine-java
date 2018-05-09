@@ -126,6 +126,8 @@ public class OS9 extends MC6809 {
 
     /**
      * Seed open paths of a process.
+     * @param pathNum path number
+     * @param desc path descriptor
      */
     public void setPathDesc(int pathNum, PathDesc desc) {
         paths[pathNum] = desc;

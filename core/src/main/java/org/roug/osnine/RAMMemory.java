@@ -1,5 +1,8 @@
 package org.roug.osnine;
 
+/**
+ * RAM segment.
+ */
 public class RAMMemory extends MemorySegment {
 
     private int memorySize;

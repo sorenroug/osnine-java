@@ -20,6 +20,7 @@ public class UByte implements Register {
 
     /**
      * Constructor.
+     * @param name Name of register for debugging
      */
     public UByte(String name) {
         value = 0;
@@ -28,6 +29,7 @@ public class UByte implements Register {
 
     /**
      * Constructor.
+     * @param i Initial value
      */
     public UByte(int i) {
         set(i);

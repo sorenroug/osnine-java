@@ -32,6 +32,7 @@ public abstract class USim {
 
     /**
      * Constructor.
+     * Creates its own bus.
      */
     public USim() {
         bus = new BusStraight();
@@ -39,6 +40,7 @@ public abstract class USim {
 
     /**
      * Constructor.
+     * @param bus The memory bus that the CPU is attached to
      */
     public USim(Bus8Motorola bus) {
         this.bus = bus;
@@ -46,6 +48,8 @@ public abstract class USim {
 
     /**
      * Constructor.
+     * If used then create a bus and allocate memory.
+     * @param memorySize Let the emulator allocate this much memory
      */
     public USim(int memorySize) {
         this();
@@ -57,12 +61,16 @@ public abstract class USim {
         bus.addMemorySegment(newMemory);
     }
 
+    /**
+     * Get the memory bus.
+     */
     public Bus8Motorola getBus() {
         return bus;
     }
 
     /**
      * Install a memory segment as the last item of the list of segments.
+     * @param newMemory Memory segment to add
      */
     public void addMemorySegment(MemorySegment newMemory) {
         bus.addMemorySegment(newMemory);
@@ -70,6 +78,7 @@ public abstract class USim {
 
     /**
      * Install a memory segment as the first item of the list of segments.
+     * @param newMemory Memory segment to insert
      */
     public void insertMemorySegment(MemorySegment newMemory) {
         bus.insertMemorySegment(newMemory);
@@ -77,21 +86,27 @@ public abstract class USim {
 
     /**
      * Read 16-bit word.
+     * @param offset Location in memory to read
      */
     public abstract int read_word(Word offset);
 
     /**
      * Read 16-bit word.
+     * @param offset Location in memory to read
      */
     public abstract int read_word(int offset);
 
     /**
      * Write 16-bit word.
+     * @param offset Location in memory to write
+     * @param val Value to write
      */
     public abstract void write_word(int offset, int val);
 
     /**
      * Write 16-bit word.
+     * @param offset Location in memory to write
+     * @param val Value to write
      */
     public abstract void write_word(Word offset, Word val);
 
@@ -182,6 +197,7 @@ public abstract class USim {
 
     /**
      * Invalid operation encountered. Halt the processor.
+     * @param msg Message to write out
      */
     void invalid(final String msg) {
         LOGGER.error("invalid {} : pc = [{}], ir = [{}]",
@@ -199,6 +215,7 @@ public abstract class USim {
 
     /**
      * Single byte read from memory.
+     * @param offset Location in memory to read
      */
     public int read(int offset) {
         return bus.read(offset & MEM_TOP);
@@ -206,6 +223,7 @@ public abstract class USim {
 
     /**
      * Single byte read from memory.
+     * @param offset Location in memory to read
      */
     public int read(Word offset) {
         return read(offset.intValue());
@@ -213,6 +231,8 @@ public abstract class USim {
 
     /**
      * Single byte write to memory.
+     * @param offset Location in memory to write
+     * @param val Value to write
      */
     @Deprecated
     public void write(int offset, UByte val) {
@@ -221,6 +241,8 @@ public abstract class USim {
 
     /**
      * Single byte write to memory.
+     * @param offset Location in memory to write
+     * @param val Value to write
      */
     public void write(Word offset, int val) {
         write(offset.intValue(), val);
@@ -228,6 +250,8 @@ public abstract class USim {
 
     /**
      * Single byte write to memory.
+     * @param offset Location in memory to write
+     * @param val Value to write
      */
     public void write(int offset, int val) {
         bus.write(offset & MEM_TOP, val & 0xFF);

@@ -75,6 +75,7 @@ public class Word implements Register {
 
     /**
      * Add value. Should it wrap?
+     * @param increment The value to add
      */
     public void add(int increment) {
         value += increment;

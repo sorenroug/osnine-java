@@ -1,5 +1,8 @@
 package org.roug.osnine;
 
+/**
+ * Disassebles 6809 code one instruction at a time.
+ */
 public class DisAssembler {
 
     class Opcode {

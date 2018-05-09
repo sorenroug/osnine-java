@@ -24,6 +24,7 @@ public class RegisterBytePair extends Word implements Register {
 
     /**
      * Constructor.
+     * @param value initial value
      */
     public RegisterBytePair(int value) {
         super("D");
@@ -34,6 +35,8 @@ public class RegisterBytePair extends Word implements Register {
 
     /**
      * Constructor.
+     * @param regA The high byte
+     * @param regB The low byte
      */
     public RegisterBytePair(UByte regA, UByte regB) {
         super("D");

@@ -10,6 +10,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Emulator for 6809 CPU that is configured from properties file.
+ */
 public class V6809 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(V6809.class);

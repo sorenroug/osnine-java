@@ -7,6 +7,10 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
 
+/**
+ * Utility class to load external Java packages.
+ * The class to use must thereafter be loaded and initialised with forName().
+ */
 public final class JarFileLoader {
 
     /**

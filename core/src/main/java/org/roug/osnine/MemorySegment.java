@@ -1,5 +1,8 @@
 package org.roug.osnine;
 
+/**
+ * Abstract class for any type of memory - ROM, RAM or device.
+ */
 public abstract class MemorySegment {
 
     /** First address where the segment reacts. */
