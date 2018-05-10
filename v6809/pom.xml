@@ -33,9 +33,6 @@
                 <directory>src/main/microware</directory>
             </resource>
             -->
-            <resource>
-                <directory>src/main/tbasic</directory>
-            </resource>
         </resources>
 
         <plugins>
@@ -62,16 +59,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.8</version>
-                <configuration>
-                    <linkXref>false</linkXref>
-                    <sourceEncoding>utf-8</sourceEncoding>
-                    <targetJdk>${java_version}</targetJdk>
-                </configuration>
             </plugin>
 
             <plugin>

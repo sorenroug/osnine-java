@@ -5,7 +5,7 @@ The v6809 is an emulator that can be configured via a properties file.
 You can allocate RAM, load data into the memory and set up devices.
 
 Devices:
-* Acia6551Console writes to Java's System.out and reads from System.in
+* Acia6551 writes to Java's System.out and reads from System.in
 * IRQBeat sends an IRQ interrupt every 20 milliseconds to the CPU.
 * HWClock makes it possible to get the date and time from the host of the emulator.
 * VirtualDisk interfaces a DSK image to the emulator as a floppy or harddisk.
@@ -45,11 +45,6 @@ The v6809 can be configured to start to make a serial port available as a telnet
 
 In order to match assumptions of Linux users the end-of-file has been changed from ESC to CTRL-D,
 and the reprint-line has been changed from CTRL-D to CTRL-R. The Telnet service also launches the Login command because now it is a multi-user system.
-
-Tiny BASIC
-----------
-
-The Tiny BASIC (tbasic) is included to show how the v6809 can be wired for other configurations. TBasic expects an MC6850 ACIA located at $C000. It doesn't use interrupts and wants end-of-line to be CR+NL.
 
 Docker image
 ------------
