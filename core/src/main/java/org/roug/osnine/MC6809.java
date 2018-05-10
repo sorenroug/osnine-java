@@ -87,8 +87,7 @@ public class MC6809 extends USimMotorola {
         super();
         allocate_memory(0xfff0, 16);  // For interrupt vectors
 
-        String traceInset = System.getProperty("mc6809.trace", "false");
-        if ("true".equalsIgnoreCase(traceInset)) {
+        if (LOGGER.isTraceEnabled()) {
             setTraceInstructions(true);
         }
         reset();
@@ -115,8 +114,7 @@ public class MC6809 extends USimMotorola {
     public MC6809(Bus8Motorola bus) {
         super(bus);
 
-        String traceInset = System.getProperty("mc6809.trace", "false");
-        if ("true".equalsIgnoreCase(traceInset)) {
+        if (LOGGER.isTraceEnabled()) {
             setTraceInstructions(true);
         }
         reset();

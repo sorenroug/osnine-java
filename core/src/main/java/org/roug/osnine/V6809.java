@@ -34,7 +34,8 @@ public class V6809 {
             KnownVectors() {}
     }
 
-    private static int getIntProperty(Properties props, String key) throws Exception {
+    private static int getIntProperty(Properties props, String key)
+                    throws Exception {
         return Integer.decode(props.getProperty(key)).intValue();
     }
 
@@ -47,13 +48,22 @@ public class V6809 {
         return Integer.decode(key);
     }
 
-    private static InputStream openFile(String fileToLoad) throws FileNotFoundException {
+    /**
+     * Open a file to load into RAM.
+     * Used to look in the JAR file if the file name doesn't contain a slash.
+     * @param fileToLoad Name of file to load
+     * @return Opened file
+     * @throws FileNotFoundException if there is no file
+     */
+    private static InputStream openFile(String fileToLoad)
+                            throws FileNotFoundException {
         InputStream moduleStream = null;
 
         if (fileToLoad.contains("/")) {
             moduleStream = new FileInputStream(fileToLoad);
         } else {
-            moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
+//          moduleStream = V6809.class.getResourceAsStream("/" + fileToLoad);
+            moduleStream = new FileInputStream(fileToLoad);
         }
         if (moduleStream == null) {
             throw new FileNotFoundException("File not found: " + fileToLoad);
@@ -150,6 +160,10 @@ public class V6809 {
     }
 
 
+    /**
+     * Look for a property called 'devices' and install each one.
+     * @param props The properties hashmap
+     */
     private static void loadDevices(Properties props) throws Exception {
         String deviceList = props.getProperty("devices");
         String[] devices = deviceList.split("\\s+");
@@ -159,7 +173,17 @@ public class V6809 {
         }
     }
 
-    private static void loadOneDevice(Properties props, String device) throws Exception {
+    /**
+     * Installs a device. Looks for the Java class to load and the address
+     * in RAM to install it at.
+     * Also looks for additional arguments to provide to the constructor method
+     * of the device. Finally looks for additional attributes that can be set
+     * on the object.
+     * @param props The properties hashmap
+     * @param device The name of the device
+     */
+    private static void loadOneDevice(Properties props, String device)
+                                throws Exception {
         String deviceClsStr = props.getProperty(device + ".class");
         int addr = getIntProperty(props, device + ".addr");
         String deviceArgString = props.getProperty(device + ".args");
@@ -169,7 +193,8 @@ public class V6809 {
         }
         LOGGER.debug("Loading {} class {}", device, deviceClsStr);
         Class newClass = Class.forName(deviceClsStr);
-        Constructor<MemorySegment> constructor = newClass.getConstructor(Integer.TYPE, Bus8Motorola.class, String[].class);
+        Constructor<MemorySegment> constructor = newClass.getConstructor(
+                        Integer.TYPE, Bus8Motorola.class, String[].class);
         MemorySegment deviceInstance = constructor.newInstance(addr, bus, argsList);
         bus.insertMemorySegment(deviceInstance);
         // Find additional setters.
@@ -188,6 +213,9 @@ public class V6809 {
         }
     }
 
+    /**
+     * Generates the name of a setter.
+     */
     private static String generateMethodName(String original) {
         if (original == null || original.length() == 0) {
             return original;

@@ -1,0 +1,6 @@
+#!/bin/sh
+java -Dorg.slf4j.simpleLogger.log.org.roug.osnine.Acia6850Console=debug \
+     -Dorg.slf4j.simpleLogger.showDateTime=true \
+     -Dorg.slf4j.simpleLogger.showLogName=false \
+     -Dorg.slf4j.simpleLogger.showShortLogName=true \
+  -jar target/osnine-v6809-1.0-SNAPSHOT-jar-with-dependencies.jar -c mc6850.properties
