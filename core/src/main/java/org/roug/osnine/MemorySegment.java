@@ -15,6 +15,15 @@ public abstract class MemorySegment {
 
     /**
      * Constructor.
+     * Sets the end address to the start address.
+     */
+    public MemorySegment(int startAddress) {
+        this.startAddress = startAddress;
+        this.endAddress = startAddress;
+    }
+
+    /**
+     * Constructor.
      */
     public MemorySegment(int startAddress, int endAddress) {
         this.startAddress = startAddress;
@@ -29,11 +38,23 @@ public abstract class MemorySegment {
         return startAddress;
     }
 
+    /**
+     * Set the start address of the segment.
+     */
+    public void setStartAddress(int address) {
+        startAddress = address;
+    }
+
     public int getEndAddress() {
         return endAddress;
     }
 
-    //public abstract void reset();
+    /**
+     * Set the end address of the segment.
+     */
+    public void setEndAddress(int address) {
+        endAddress = address;
+    }
 
     /**
      * Single byte read from memory.
@@ -42,7 +63,6 @@ public abstract class MemorySegment {
 
     /**
      * Read from memory. If there is no memory at that location then return 0.
-     * OS9 scans the entire memory space.
      */
     public int read(int addr) {
         if (!inSegment(addr)) {

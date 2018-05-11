@@ -50,7 +50,8 @@ public class MemorySegmentTest {
     //@Test(expected = IllegalArgumentException.class)
     @Test
     public void illegalRead() {
-        RAMMemory mb = new RAMMemory(10000, 1024);
+        Bus8Motorola bus = new BusStraight();
+        RAMMemory mb = new RAMMemory(10000, bus, "1024");
         mb.write(900, 65);
     }
 
@@ -60,7 +61,7 @@ public class MemorySegmentTest {
     @Test
     public void manualBus() {
         Bus8Motorola bus = new BusStraight();
-        MemorySegment newMemory = new RAMMemory(0, 0x10000);
+        MemorySegment newMemory = new RAMMemory(0, bus, "0x10000");
         bus.addMemorySegment(newMemory);
 
         MC6809 cpu = new MC6809(bus);

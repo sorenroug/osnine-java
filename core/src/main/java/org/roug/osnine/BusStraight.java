@@ -136,7 +136,7 @@ public class BusStraight implements Bus8Motorola {
 
 
     private void allocate_memory(int start, int memorySize) {
-        MemorySegment newMemory = new RAMMemory(start, memorySize);
+        MemorySegment newMemory = new RAMMemory(start, this, Integer.toString(memorySize));
         addMemorySegment(newMemory);
     }
 

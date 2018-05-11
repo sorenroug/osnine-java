@@ -119,7 +119,9 @@ public class AciaGraphicalUI implements Runnable {
     void sendToGUI(int val) throws IOException {
         int caretPos = textArea.getCaretPosition();
         String newchar = Character.toString ((char) val);
-        //logCharacter(val, newchar);
+        if (LOGGER.isDebugEnabled()) {
+            logCharacter(val, newchar);
+        }
 
         switch (val) {
         case 7:
@@ -131,8 +133,11 @@ public class AciaGraphicalUI implements Runnable {
         case 12:    // Form feed - clear screen
             textArea.setText("");
             break;
+        case 0:  // Ignore NULLs
+        case 3:  // Ignore ETX - End of Text
         case 13: // Ignore carriage returns
         case 14: // Ignore command to go to alpha mode.
+        case 127:
             break;
         default:
             int l = textArea.getDocument().getLength();

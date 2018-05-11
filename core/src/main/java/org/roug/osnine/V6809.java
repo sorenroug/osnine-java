@@ -23,6 +23,7 @@ public class V6809 {
 
     private enum KnownVectors {
             reset(MC6809.RESET_ADDR),
+            nmi(MC6809.NMI_ADDR),
             swi(MC6809.SWI_ADDR),
             swi1(MC6809.SWI_ADDR),
             irq(MC6809.IRQ_ADDR),
@@ -137,11 +138,11 @@ public class V6809 {
         String extraJars = props.getProperty("classpath");
         JarFileLoader.addPaths(extraJars);
 
-        int memory = getIntProperty(props, "memory");
-        cpu = new MC6809(memory);
-        bus = cpu.getBus();
+        bus = new BusStraight();
 
         loadDevices(props);
+
+        cpu = new MC6809(bus);
 
         String segmentList = props.getProperty("load");
         String[] segments = segmentList.split("\\s+");

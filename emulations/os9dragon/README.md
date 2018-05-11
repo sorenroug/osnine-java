@@ -1,19 +1,10 @@
-6809 CPU with configurable devices
-==================================
-
-The v6809 is an emulator that can be configured via a properties file.
-You can allocate RAM, load data into the memory and set up devices.
+# OS-9 with Dragon 64 kernel
 
 The v6809.properties file shows how it can be used to load the OS9 Level I kernel and modules into RAM and run. Java has the problem that the System in and out is always in line-mode. It means that Java echoes you keyboard entries back you and presents an entire line to the emulator. Ctrl-C also has the effect to stop the emulation rather than send the key stroke to the emulator. This is the reason there is a telnet service option.
 
 When OS9 and OS9p2 are loaded into $F000, then OS9 only scans upward in RAM from its own location to find other modules.
 
 OS9 installs a few system calls and then calls OS9p2, which installs more system calls and attempts a link to IOMan.
-
-The OS9.dsk was created with
-
-   os9 format disk.dsk -c1 -h1 -n"1.2 MB disk" -t80 -s48
-   os9 format disk.dsk -c1 -h2 -n"50 MB disk" -t1024 -s96
 
 How to run
 ----------
@@ -25,12 +16,6 @@ After you have done the `mvn install`, you can modify the `v6809.properties` in 
 This can be put into a script. To try some of the other properties files, you give it as an argument, like:
 
     ./v6809 -c tn6850.properties
-
-Syntax of properties file
--------------------------
-The `memory` value is the amount of memory from address 0 you want to give the application. The value can be given in octal, decimal or hex using 'C' syntax.
-
-The `start` sets the initial value of the CPU's Program Counter.
 
 Graphical User Interface
 ------------------------

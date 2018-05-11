@@ -12,16 +12,12 @@ public class RAMMemory extends MemorySegment {
 
     /**
      * Constructor.
+     * The size of the RAM segment is the first argument.
      */
-    public RAMMemory(int size) {
-        this(0, size);
-    }
-
-    /**
-     * Constructor.
-     */
-    public RAMMemory(int start, int size) {
-        super(start, start + size);
+    public RAMMemory(int start, Bus8Motorola bus, String... args) {
+        super(start);
+        int size = Integer.decode(args[0]).intValue();
+        setEndAddress(start + size);
         this.memorySize = size;
         memory = new int[size];
     }

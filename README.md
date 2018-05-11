@@ -2,6 +2,7 @@
 
 The purpose of this project is to create an 6809 emulator that can
 be configured at runtime with a range of memory mapped devices.
+You can allocate RAM, load data into the memory and set up devices.
 
 Devices:
 * Acia6551 emulates a Roswell 6551 UART.
