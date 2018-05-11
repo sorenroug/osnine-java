@@ -45,7 +45,7 @@ public class MC6809 extends USimMotorola {
     /** Accumulater B. */
     public final UByte b = new UByte("B");
     /** Accumulater D. Combined from A and B. */
-    public final RegisterBytePair d = new RegisterBytePair(a, b);
+    public final RegisterBytePair d = new RegisterBytePair("D", a, b);
 
     /** Condiction codes. */
     public final RegisterCC cc = new RegisterCC();

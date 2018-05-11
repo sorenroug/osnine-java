@@ -9,10 +9,12 @@ package org.roug.osnine;
  */
 public class RegisterBytePair extends Word implements Register {
 
-    private UByte regA; // High byte
-    private UByte regB; // Low byte
+    /** High byte of register pair. */
+    private UByte regHigh;
+    /** Low byte of register pair. */
+    private UByte regLow;
 
-    private String registerName = "D";
+    private String registerName = "";
 
 
     /**
@@ -27,26 +29,37 @@ public class RegisterBytePair extends Word implements Register {
      * @param value initial value
      */
     public RegisterBytePair(int value) {
-        super("D");
-        this.regA = new UByte("A");
-        this.regB = new UByte("B");
+        super("");
+        this.regHigh = new UByte("High");
+        this.regLow = new UByte("Low");
         set(value);
     }
 
     /**
      * Constructor.
-     * @param regA The high byte
-     * @param regB The low byte
+     * @param regHigh The high byte
+     * @param regLow The low byte
      */
-    public RegisterBytePair(UByte regA, UByte regB) {
-        super("D");
-        this.regA = regA;
-        this.regB = regB;
+    public RegisterBytePair(UByte regHigh, UByte regLow) {
+        super("");
+        this.regHigh = regHigh;
+        this.regLow = regLow;
+    }
+
+    /**
+     * Constructor.
+     * @param regHigh The high byte
+     * @param regLow The low byte
+     */
+    public RegisterBytePair(String registerName, UByte regHigh, UByte regLow) {
+        super(registerName);
+        this.regHigh = regHigh;
+        this.regLow = regLow;
     }
 
     @Override
     public int intValue() {
-        return regB.intValue() + (regA.intValue() << 8);
+        return regLow.intValue() + (regHigh.intValue() << 8);
     }
 
     @Override
@@ -59,8 +72,8 @@ public class RegisterBytePair extends Word implements Register {
 //      if (newValue > 0xffff || newValue < 0x0) {
 //          throw new IllegalArgumentException("Value must fit in 16 bits.");
 //      }
-        regB.set(newValue);
-        regA.set(newValue >> 8);
+        regLow.set(newValue);
+        regHigh.set(newValue >> 8);
     }
 
     @Override
