@@ -1,0 +1,15 @@
+PROCEDURE savepbm
+REM Procedure to save a 256x192 graphics screen from a Dragon 64 in PBM format
+REM Size of bitmap is 6144 bytes
+PARAM bitmap(3072):INTEGER
+PARAM filename:STRING[64]
+DIM i,v,outfd:INTEGER
+
+CREATE #outfd,filename:WRITE
+PRINT #outfd,"P4"
+PRINT #outfd,"256 192"
+FOR i=1 TO 3072
+v=LXOR(bitmap(i),$FFFF)
+PUT #outfd,v
+NEXT i
+CLOSE #outfd

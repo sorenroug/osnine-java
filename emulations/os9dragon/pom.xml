@@ -23,14 +23,6 @@
     </properties>
 
     <build>
-    <!--
-        <resources>
-            <resource>
-                <directory>src/scripts</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
--->
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
