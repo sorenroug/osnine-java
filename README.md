@@ -22,6 +22,8 @@ system that enabled word processing, spreadsheets and various programming
 languages.  By today's standards it is obsolete. It only handles 7
 bit ASCII and it is not year 2000 aware.
 
+![Image of terminal](/images/terminal.png)
+
 ## Build instructions
 
 This project uses Maven. You can get the software from https://maven.apache.org/.
