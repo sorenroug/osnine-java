@@ -160,6 +160,24 @@ public class SubtractionTest {
         assertEquals(0, myTestCPU.cc.getC());
     }
 
+    /**
+     * Decrement memory location.
+     */
+    @Test
+    public void testDEC() {
+        myTestCPU.cc.clear();
+        myTestCPU.write(0xB10, 0x7F);
+        myTestCPU.write(0xB00, 0x7A);
+        myTestCPU.write_word(0xB01, 0xB10);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x7E, myTestCPU.read(0x0B10));
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
+    }
+
 
     /**
      * Test the subtraction with carry instruction.

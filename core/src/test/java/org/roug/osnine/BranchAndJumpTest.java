@@ -520,4 +520,13 @@ public class BranchAndJumpTest {
 	myTestCPU.execute();
         assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
     }
+
+    @Test
+    public void testJMPExtended() {
+        myTestCPU.write(0xB00, 0x7E); // JMP
+        myTestCPU.write_word(0xB01, 0x102C);
+        myTestCPU.pc.set(0xB00);
+	myTestCPU.execute();
+        assertEquals(0x102C, myTestCPU.pc.intValue());
+    }
 }

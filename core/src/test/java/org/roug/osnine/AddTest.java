@@ -364,5 +364,23 @@ public class AddTest extends Framework {
         assertEquals(0, myTestCPU.cc.getC());
     }
 
+    /**
+     * Increment memory location.
+     */
+    @Test
+    public void testINC() {
+        myTestCPU.cc.clear();
+        myTestCPU.write(0xB10, 0x7F);
+        myTestCPU.write(0xB00, 0x7C);
+        myTestCPU.write_word(0xB01, 0xB10);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x80, myTestCPU.read(0x0B10));
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
+    }
+
 
 }

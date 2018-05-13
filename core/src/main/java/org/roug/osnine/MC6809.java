@@ -50,7 +50,7 @@ public class MC6809 extends USimMotorola {
     /** Condiction codes. */
     public final RegisterCC cc = new RegisterCC();
 
-    private MemoryProxy tmpReg = new MemoryProxy();
+    private MemoryProxy memReg = new MemoryProxy();
 
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
@@ -982,7 +982,7 @@ public class MC6809 extends USimMotorola {
      * Arithmetic Shift Right memory byte.
      */
     private void asr() {
-	help_asr(tmpReg.fetch());
+        help_asr(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      int m = read(addr);
 //      UByte mbyte = UByte.valueOf(m);
@@ -1159,7 +1159,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void clr() {
-	help_clr(tmpReg.fetch());
+        help_clr(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_clr(m);
@@ -1207,7 +1207,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void com() {
-	help_com(tmpReg.fetch());
+        help_com(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_com(m);
@@ -1295,7 +1295,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void dec() {
-	help_dec(tmpReg.fetch());
+        help_dec(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_dec(m);
@@ -1359,7 +1359,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void inc() {
-	help_inc(tmpReg.fetch());
+        help_inc(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_inc(m);
@@ -1454,7 +1454,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lsl() {
-	help_lsl(tmpReg.fetch());
+        help_lsl(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_lsl(m);
@@ -1470,7 +1470,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lsr() {
-	help_lsr(tmpReg.fetch());
+        help_lsr(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_lsr(m);
@@ -1491,7 +1491,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void neg() {
-	help_neg(tmpReg.fetch());
+        help_neg(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_neg(m);
@@ -1655,7 +1655,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void rol() {
-	help_rol(tmpReg.fetch());
+        help_rol(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_rol(m);
@@ -1675,7 +1675,7 @@ public class MC6809 extends USimMotorola {
     }
 
     private void ror() {
-	help_ror(tmpReg.fetch());
+        help_ror(memReg.fetch());
 //      int addr = fetch_effective_address();
 //      UByte m = UByte.valueOf(read(addr));
 //      help_ror(m);
@@ -1802,9 +1802,10 @@ public class MC6809 extends USimMotorola {
     }
 
     private void tst() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_tst(m);
+        help_tst(memReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_tst(m);
     }
 
     private void help_tst(UByte dataB) {
@@ -1832,102 +1833,101 @@ public class MC6809 extends USimMotorola {
      */
     private class MemoryProxy extends UByte {
 
-	public static final int MAX = 0xff;
+        public static final int MAX = 0xff;
 
-	private int addr;
+        private int addr;
 
-	/**
-	 * Constructor.
-	 */
-	public MemoryProxy() {
-	    addr = 0;
-	}
+        /**
+         * Constructor.
+         */
+        public MemoryProxy() {
+            addr = 0;
+        }
 
-	/**
-	 * Constructor.
-	 * @param name Name of register for debugging
-	 */
-	public MemoryProxy(String name) {
-	    addr = 0;
-	}
+        /**
+         * Constructor.
+         * @param name Name of register for debugging
+         */
+        public MemoryProxy(String name) {
+            addr = 0;
+        }
 
-	/**
-	 * Constructor.
-	 * @param i Initial addr
-	 */
-	public MemoryProxy(int i) {
-	    addr = i;
-	}
+        /**
+         * Constructor.
+         * @param i Initial addr
+         */
+        public MemoryProxy(int i) {
+            addr = i;
+        }
 
-	public MemoryProxy fetch() {
-	    addr = fetch_effective_address();
-	    return this;
-	}
+        public MemoryProxy fetch() {
+            addr = fetch_effective_address();
+            return this;
+        }
 
-	@Override
-	public int get() {
-	    return intValue();
-	}
+        @Override
+        public int get() {
+            return intValue();
+        }
 
-	@Override
-	public int intValue() {
-	    return read(addr) & 0xff;
-	}
+        @Override
+        public int intValue() {
+            return read(addr) & 0xff;
+        }
 
-	@Override
-	public void set(int newValue) {
-	    write(addr, newValue & MAX);
-	}
+        /**
+         * Write the value through to the memory location.
+         */
+        @Override
+        public void set(int newValue) {
+            write(addr, newValue & MAX);
+        }
 
-	@Override
-	public int getSigned() {
+        @Override
+        public int getSigned() {
             int value = read(addr);
-	    if (value < 0x80) {
-		return value;
-	    } else {
-		return -((~value & 0x7f) + 1);
-	    }
-	}
+            if (value < 0x80) {
+                return value;
+            } else {
+                return -((~value & 0x7f) + 1);
+            }
+        }
 
-	@Override
-	public int getWidth() {
-	    return 8;
-	}
+        @Override
+        public int getWidth() {
+            return 8;
+        }
 
-//	public static UByte valueOf(int i) {
-//	    return new UByte(i);
-//	}
+//      public void add(int x) {
+//          int value = read(addr);
+//          value += x;
+//          write(addr, value & MAX);
+//      }
 
-	public void add(int x) {
+        @Override
+        public String toString() {
+            return "Location=" + Integer.toHexString(addr);
+        }
+
+        /**
+         * Bit test.
+         */
+        @Override
+        public int btst(int n) {
+            return ((read(addr) & (1 << n)) != 0) ? 1 : 0;
+        }
+
+        @Override
+        public void bset(int n) {
             int value = read(addr);
-	    value += x;
-	    write(addr, value & MAX);
-	}
+            write(addr, value |= (1 << n));
+        }
 
-	@Override
-	public String toString() {
-	    return "Location=" + Integer.toHexString(addr);
-	}
-
-	/**
-	 * Bit test.
-	 */
-	@Override
-	public int btst(int n) {
-	    return ((read(addr) & (1 << n)) != 0) ? 1 : 0;
-	}
-
-	@Override
-	public void bset(int n) {
+        @Override
+        public void bclr(int n) {
             int value = read(addr);
-	    write(addr, value |= (1 << n));
-	}
-
-	@Override
-	public void bclr(int n) {
-            int value = read(addr);
-	    write(addr, value & ~(1 << n));
-	}
+            write(addr, value & ~(1 << n));
+        }
 
     }
 

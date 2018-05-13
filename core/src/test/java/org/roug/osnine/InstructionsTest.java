@@ -663,14 +663,15 @@ public class InstructionsTest extends Framework {
     public void testTSTindirect() {
         // Test indirect mode: TST ,Y
         // Set up a byte to test at address 0x205
-        myTestCPU.write(0x205, 0xff);
+        myTestCPU.write(0x205, 0xFF);
         // Set register Y to point to that location
         setY(0x205);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0x6d);
-        myTestCPU.write(0xB01, 0xa4);
+        myTestCPU.write(0xB00, 0x6D);
+        myTestCPU.write(0xB01, 0xA4);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
+        assertEquals(0xFF, myTestCPU.read(0x0205));
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());

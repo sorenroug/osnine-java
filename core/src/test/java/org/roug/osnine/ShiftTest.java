@@ -165,6 +165,26 @@ public class ShiftTest {
 
 
     /**
+     * Shift a byte at 0x0402, because DP = 0x04.
+     */
+    @Test
+    public void testLSRMemoryByte() {
+        int instructions[] = {
+            0x04, // LSR
+            0x02  // value
+        };
+        loadProg(instructions);
+        setCC_A_B_DP_X_Y_S_U(0, 0, 0, 4, 0, 0, 0, 0);
+        myTestCPU.write(0x0402, 0xf1);
+        myTestCPU.execute();
+        assertEquals(instructions[0], myTestCPU.ir);
+        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+        chkCC_A_B_DP_X_Y_S_U(0x01, 0, 0, 4, 0, 0, 0, 0);
+        int result = myTestCPU.read(0x0402);
+        assertEquals(0x78, result);
+    }
+
+    /**
      * Rotate 8-Bit Accumulator or Memory Byte Left through Carry.
      * N The Negative flag is set equal to the new value of bit 7.
      * Z The Zero flag is set if the new 8-bit value is zero; cleared otherwise.
