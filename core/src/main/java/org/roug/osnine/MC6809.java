@@ -50,6 +50,8 @@ public class MC6809 extends USimMotorola {
     /** Condiction codes. */
     public final RegisterCC cc = new RegisterCC();
 
+    private MemoryProxy tmpReg = new MemoryProxy();
+
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
 
@@ -980,12 +982,12 @@ public class MC6809 extends USimMotorola {
      * Arithmetic Shift Right memory byte.
      */
     private void asr() {
-        int addr = fetch_effective_address();
-        int m = read(addr);
-
-        UByte mbyte = UByte.valueOf(m);
-        help_asr(mbyte);
-        write(addr, mbyte);
+	help_asr(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      int m = read(addr);
+//      UByte mbyte = UByte.valueOf(m);
+//      help_asr(mbyte);
+//      write(addr, mbyte);
     }
 
 
@@ -1157,10 +1159,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void clr() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_clr(m);
-        write(addr, m);
+	help_clr(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_clr(m);
+//      write(addr, m);
     }
 
     private void help_clr(UByte refB) {
@@ -1204,10 +1207,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void com() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_com(m);
-        write(addr, m);
+	help_com(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_com(m);
+//      write(addr, m);
     }
 
     private void help_com(UByte tx) {
@@ -1291,10 +1295,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void dec() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_dec(m);
-        write(addr, m);
+	help_dec(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_dec(m);
+//      write(addr, m);
     }
 
     private void help_dec(UByte x) {
@@ -1354,10 +1359,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void inc() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_inc(m);
-        write(addr, m);
+	help_inc(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_inc(m);
+//      write(addr, m);
     }
 
     private void help_inc(UByte x) {
@@ -1448,10 +1454,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lsl() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_lsl(m);
-        write(addr, m);
+	help_lsl(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_lsl(m);
+//      write(addr, m);
     }
 
     private void help_lsl(UByte regB) {
@@ -1463,10 +1470,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void lsr() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_lsr(m);
-        write(addr, m);
+	help_lsr(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_lsr(m);
+//      write(addr, m);
     }
 
     private void help_lsr(UByte byteLoc) {
@@ -1483,10 +1491,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void neg() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_neg(m);
-        write(addr, m);
+	help_neg(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_neg(m);
+//      write(addr, m);
     }
 
     private void help_neg(UByte byteLoc) {
@@ -1646,10 +1655,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void rol() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_rol(m);
-        write(addr, m);
+	help_rol(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_rol(m);
+//      write(addr, m);
     }
 
     private void help_rol(UByte byteLoc) {
@@ -1665,10 +1675,11 @@ public class MC6809 extends USimMotorola {
     }
 
     private void ror() {
-        int addr = fetch_effective_address();
-        UByte m = UByte.valueOf(read(addr));
-        help_ror(m);
-        write(addr, m);
+	help_ror(tmpReg.fetch());
+//      int addr = fetch_effective_address();
+//      UByte m = UByte.valueOf(read(addr));
+//      help_ror(m);
+//      write(addr, m);
     }
 
     private void help_ror(UByte regB) {
@@ -1815,5 +1826,110 @@ public class MC6809 extends USimMotorola {
             pc.add(offset);
         }
     }
+
+    /**
+     * Treat a memory location as a register.
+     */
+    private class MemoryProxy extends UByte {
+
+	public static final int MAX = 0xff;
+
+	private int addr;
+
+	/**
+	 * Constructor.
+	 */
+	public MemoryProxy() {
+	    addr = 0;
+	}
+
+	/**
+	 * Constructor.
+	 * @param name Name of register for debugging
+	 */
+	public MemoryProxy(String name) {
+	    addr = 0;
+	}
+
+	/**
+	 * Constructor.
+	 * @param i Initial addr
+	 */
+	public MemoryProxy(int i) {
+	    addr = i;
+	}
+
+	public MemoryProxy fetch() {
+	    addr = fetch_effective_address();
+	    return this;
+	}
+
+	@Override
+	public int get() {
+	    return intValue();
+	}
+
+	@Override
+	public int intValue() {
+	    return read(addr) & 0xff;
+	}
+
+	@Override
+	public void set(int newValue) {
+	    write(addr, newValue & MAX);
+	}
+
+	@Override
+	public int getSigned() {
+            int value = read(addr);
+	    if (value < 0x80) {
+		return value;
+	    } else {
+		return -((~value & 0x7f) + 1);
+	    }
+	}
+
+	@Override
+	public int getWidth() {
+	    return 8;
+	}
+
+//	public static UByte valueOf(int i) {
+//	    return new UByte(i);
+//	}
+
+	public void add(int x) {
+            int value = read(addr);
+	    value += x;
+	    write(addr, value & MAX);
+	}
+
+	@Override
+	public String toString() {
+	    return "Location=" + Integer.toHexString(addr);
+	}
+
+	/**
+	 * Bit test.
+	 */
+	@Override
+	public int btst(int n) {
+	    return ((read(addr) & (1 << n)) != 0) ? 1 : 0;
+	}
+
+	@Override
+	public void bset(int n) {
+            int value = read(addr);
+	    write(addr, value |= (1 << n));
+	}
+
+	@Override
+	public void bclr(int n) {
+            int value = read(addr);
+	    write(addr, value & ~(1 << n));
+	}
+
+    }
+
 
 }
