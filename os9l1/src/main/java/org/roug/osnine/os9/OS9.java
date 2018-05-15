@@ -178,7 +178,7 @@ public class OS9 extends MC6809 {
      * @param length - the amount of bytes to output.
      */
     private void debugBuffer(byte[] buf, int length) {
-        StringBuffer resultBuf = new StringBuffer();
+        StringBuilder resultBuf = new StringBuilder();
         for (int i = 0; i < length; i++) {
             resultBuf.append(String.format("%02X", buf[i]));
             if (i % 16 == 15 || i == length - 1) {
@@ -191,7 +191,7 @@ public class OS9 extends MC6809 {
     }
 
     private void debugMemory(int start, int length) {
-        StringBuffer resultBuf = new StringBuffer();
+        StringBuilder resultBuf = new StringBuilder();
         for (int i = 0; i < length; i++) {
             if (i % 16 == 0) {
                 resultBuf.append(String.format("%04X ", start + i));
@@ -326,7 +326,7 @@ public class OS9 extends MC6809 {
 /*
     private String copyMemoryToString(int addr, int length) {
         return new String(memory, addr, length);
-//      StringBuffer resultBuf = new StringBuffer(length);
+//      StringBuilder resultBuf = new StringBuilder(length);
 //      int c;
 //      for (int i = 0; i < length; i++) {
 //          c = read(start + i);
@@ -429,7 +429,7 @@ public class OS9 extends MC6809 {
      *    - (B) = Attributes / revision level
      */
     public void f_load() {
-        StringBuffer upath = new StringBuffer();
+        StringBuilder upath = new StringBuilder();
         byte[] modhead = new byte[14];
         DevDrvr dev;
         PathDesc fd;
@@ -652,7 +652,7 @@ public class OS9 extends MC6809 {
      * @param useXDir - If set, then prefix execution directory on relative paths.
      * @return value is the end of the path. You usually set register x to that.
      */
-    private int getpath(Register memReg, StringBuffer unixPath, boolean useXDir) {
+    private int getpath(Register memReg, StringBuilder unixPath, boolean useXDir) {
         int mem = memReg.intValue();
         int mp;
 
@@ -1613,7 +1613,7 @@ public class OS9 extends MC6809 {
     }
 
     private void openOrCreate(boolean create) {
-        StringBuffer upath = new StringBuffer();
+        StringBuilder upath = new StringBuilder();
         DevDrvr dev;
         int tmpMode = a.intValue();
 
@@ -1701,7 +1701,7 @@ public class OS9 extends MC6809 {
      * TODO: mode bits
      */
     public void i_mdir() {
-        StringBuffer upath = new StringBuffer();
+        StringBuilder upath = new StringBuilder();
         DevDrvr dev;
 
         x.set(x.intValue() + getpath(x, upath, false));
@@ -1727,7 +1727,7 @@ public class OS9 extends MC6809 {
      * string.
      */
     public void i_chgdir() {
-        StringBuffer upath = new StringBuffer();
+        StringBuilder upath = new StringBuilder();
         String newcwd;
         DevDrvr dev;
 
@@ -1855,7 +1855,7 @@ public class OS9 extends MC6809 {
      * @param xdir - whether to delete in current or execution directory.
      */
     public void i_deletex(int xdir) {
-        StringBuffer upath = new StringBuffer();
+        StringBuilder upath = new StringBuilder();
         DevDrvr dev;
 
         boolean useXDir;
