@@ -257,9 +257,7 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     private synchronized void sendValue(int val) {
         LOGGER.debug("Send value: {}", val);
-        if (receiveIrqEnabled && !isReceiveRegisterFull()) {
-            lowerIRQ();
-        }
+        lowerIRQ();
         while (!isTransmitRegisterEmpty()) {
             try {
                 wait();
@@ -279,9 +277,7 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        if (!hasDCD() || transmitIrqEnabled && !isTransmitRegisterEmpty()) {
-            lowerIRQ();
-        }
+        lowerIRQ();
         int r = receiveData;  // Read before we turn RDRF off.
         statusRegister &= ~RDRF;    // Receive register is empty now
         notifyAll();
