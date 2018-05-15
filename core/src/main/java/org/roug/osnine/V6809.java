@@ -94,13 +94,13 @@ public class V6809 {
             }
             if (fileToLoad.toLowerCase().startsWith("(srec)")) {
                 InputStream moduleStream = openFile(fileToLoad.substring(6));
-                loadAddress = Loader.loadSRecord(moduleStream, cpu);
+                loadAddress = Loader.loadSRecord(moduleStream, bus);
                 moduleStream.close();
                 continue;
             }
             if (fileToLoad.toLowerCase().startsWith("(intel)")) {
                 InputStream moduleStream = openFile(fileToLoad.substring(7));
-                loadAddress = Loader.loadIntelHex(moduleStream, cpu);
+                loadAddress = Loader.loadIntelHex(moduleStream, bus);
                 moduleStream.close();
                 continue;
             }

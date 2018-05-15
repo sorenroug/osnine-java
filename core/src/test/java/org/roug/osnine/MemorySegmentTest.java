@@ -44,14 +44,14 @@ public class MemorySegmentTest {
 
 //  @Test(expected = IllegalArgumentException.class)
 //  public void oversizeMemoryBank() {
-//      RAMMemory mb = new RAMMemory(70000);
+//      RandomAccessMemory mb = new RandomAccessMemory(70000);
 //  }
 
     //@Test(expected = IllegalArgumentException.class)
     @Test
     public void illegalRead() {
         Bus8Motorola bus = new BusStraight();
-        RAMMemory mb = new RAMMemory(10000, bus, "1024");
+        RandomAccessMemory mb = new RandomAccessMemory(10000, bus, "1024");
         mb.write(900, 65);
     }
 
@@ -61,7 +61,7 @@ public class MemorySegmentTest {
     @Test
     public void manualBus() {
         Bus8Motorola bus = new BusStraight();
-        MemorySegment newMemory = new RAMMemory(0, bus, "0x10000");
+        MemorySegment newMemory = new RandomAccessMemory(0, bus, "0x10000");
         bus.addMemorySegment(newMemory);
 
         MC6809 cpu = new MC6809(bus);

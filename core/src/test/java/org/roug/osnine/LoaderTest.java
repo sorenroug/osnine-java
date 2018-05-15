@@ -11,8 +11,10 @@ public class LoaderTest {
     @Test(expected = IllegalArgumentException.class)
     public void readJunkSRecord() throws IOException {
         byte input[] = { 'a','b' };
-        USimMotorola tInstance = new USimMotorola(0x400);
-        tInstance.allocate_memory(0, 0x400);
+        BusStraight tInstance = new BusStraight(0x400);
+        //tInstance.allocate_memory(0, 0x400);
+        MemorySegment newMemory = new RandomAccessMemory(0, tInstance, "0x400");
+        tInstance.addMemorySegment(newMemory);
 
         ByteArrayInputStream is = new ByteArrayInputStream(input);
         Loader.loadSRecord(is, tInstance);
@@ -32,8 +34,9 @@ public class LoaderTest {
             + "S5030004F8\n"
             + "S9030000FC\n";
         byte byteInput[] = input.getBytes(Charset.forName("US-ASCII"));
-        USimMotorola tInstance = new USimMotorola();
-        tInstance.allocate_memory(0, 0x400);
+        BusStraight tInstance = new BusStraight();
+        MemorySegment newMemory = new RandomAccessMemory(0, tInstance, "0x400");
+        tInstance.addMemorySegment(newMemory);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
         Loader.loadSRecord(is, tInstance);
@@ -54,8 +57,9 @@ public class LoaderTest {
             + ":0600320000B29002003252\r\n"
             + ":00000001FF\n";
         byte byteInput[] = input.getBytes(Charset.forName("US-ASCII"));
-        USimMotorola tInstance = new USimMotorola();
-        tInstance.allocate_memory(0, 0x400);
+        BusStraight tInstance = new BusStraight();
+        MemorySegment newMemory = new RandomAccessMemory(0, tInstance, "0x400");
+        tInstance.addMemorySegment(newMemory);
 
         ByteArrayInputStream is = new ByteArrayInputStream(byteInput);
         Loader.loadIntelHex(is, tInstance);

@@ -137,6 +137,23 @@ public class InstructionsTest extends Framework {
     }
 
     /**
+     * Clear accumulator.
+     */
+    @Test
+    public void CLRAccA() {
+        setA(0x8B);
+        myTestCPU.cc.set(0x0F);
+        myTestCPU.write(0x0B00, 0x4F);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x0, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(0, myTestCPU.cc.getC());
+    }
+
+    /**
      * Clear byte in direct mode with DP = 0x0B.
      */
     @Test

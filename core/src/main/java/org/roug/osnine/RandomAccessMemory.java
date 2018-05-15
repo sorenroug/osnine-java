@@ -3,7 +3,7 @@ package org.roug.osnine;
 /**
  * RAM segment.
  */
-public class RAMMemory extends MemorySegment {
+public class RandomAccessMemory extends MemorySegment {
 
     private int memorySize;
 
@@ -14,7 +14,7 @@ public class RAMMemory extends MemorySegment {
      * Constructor.
      * The size of the RAM segment is the first argument.
      */
-    public RAMMemory(int start, Bus8Motorola bus, String... args) {
+    public RandomAccessMemory(int start, Bus8Motorola bus, String... args) {
         super(start);
         int size = Integer.decode(args[0]).intValue();
         setEndAddress(start + size);

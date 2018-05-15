@@ -434,6 +434,7 @@ LA5C9     BEQ  LA5C4          RETURN IF END OF LINE
           JMP  LB277          SYNTAX ERROR IF ANY MORE CHARACTERS 
 * IRQ SERVICE                      
 BIRQSV                         
+          LBSR  LADEB          CHECK FOR KEYBOARD BREAK
 LA9C5     RTI  RETURN FROM INTERRUPT  
                                
 * SET CARRY IF NUMERIC - RETURN WITH                      

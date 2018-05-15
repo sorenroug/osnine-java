@@ -57,7 +57,7 @@ public abstract class USim {
     }
 
     void allocate_memory(int start, int memorySize) {
-        MemorySegment newMemory = new RAMMemory(start, bus, Integer.toString(memorySize));
+        MemorySegment newMemory = new RandomAccessMemory(start, bus, Integer.toString(memorySize));
         bus.addMemorySegment(newMemory);
     }
 

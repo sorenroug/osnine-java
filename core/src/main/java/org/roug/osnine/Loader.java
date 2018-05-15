@@ -17,9 +17,9 @@ public final class Loader {
     private Loader() {
     }
 
-    //----------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     // Processor loading routines
-    //----------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     private static int fread_byte(InputStream fp) throws IOException {
         byte str[] = new byte[2];
 
@@ -69,11 +69,11 @@ public final class Loader {
      * high-order 4 bits, and the second the low-order 4 bits of the
      * byte.
      */
-    public static int loadSRecord(final String filename, USim cpu)
+    public static int loadSRecord(final String filename, Bus8Motorola bus)
                                     throws IOException {
         FileInputStream fp;
         fp = new FileInputStream(filename);
-        int addr = loadSRecord(fp, cpu);
+        int addr = loadSRecord(fp, bus);
         fp.close();
         return addr;
     }
@@ -81,7 +81,7 @@ public final class Loader {
     /**
      * Load file in Motorola S-record format into memory.
      */
-    public static int loadSRecord(InputStream fp, USim cpu)
+    public static int loadSRecord(InputStream fp, Bus8Motorola bus)
                                     throws IOException {
         boolean done = false;
         int addr = 0;
@@ -106,12 +106,12 @@ public final class Loader {
             } else if (t == '1') {
                 while (--n > 0) {
                     b = fread_byte(fp);
-                    cpu.write(addr, b);
+                    bus.write(addr, b);
                     addr++;
                 }
 
             } else if (t == '9') {
-                cpu.pc.set(addr);
+                //cpu.pc.set(addr);
                 done = true;
             }
             // Read and discard checksum byte
@@ -133,11 +133,11 @@ public final class Loader {
      * next two char.  Record type
      * last two char.  checksum
      */
-    public static int loadIntelHex(final String filename, USim cpu)
+    public static int loadIntelHex(final String filename, Bus8Motorola bus)
                                 throws IOException {
         FileInputStream fp;
         fp = new FileInputStream(filename);
-        int addr = loadIntelHex(fp, cpu);
+        int addr = loadIntelHex(fp, bus);
         fp.close();
         return addr;
     }
@@ -145,7 +145,8 @@ public final class Loader {
     /**
      * Load file in Intel Hex format into memory.
      */
-    public static int loadIntelHex(InputStream fp, USim cpu) throws IOException {
+    public static int loadIntelHex(InputStream fp, Bus8Motorola bus)
+                                throws IOException {
         boolean done = false;
         int addr = 0;
 
@@ -160,12 +161,12 @@ public final class Loader {
             if (t == 0x00) {
                 while (n > 0) {
                     b = fread_byte(fp);
-                    cpu.write(addr, b);
+                    bus.write(addr, b);
                     addr++;
                     n--;
                 }
             } else if (t == 0x01) {
-                cpu.pc.set(addr);
+                //cpu.pc.set(addr);
                 done = true;
             }
             // Read and discard checksum byte

@@ -226,7 +226,7 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Execute instructions with opcodes under 0x80.
+     * Execute instructions with opcodes below 0x80.
      */
     private void executeUnder80() {
         switch (ir) {
@@ -239,7 +239,7 @@ public class MC6809 extends USimMotorola {
             case 0x57:
                 help_asr(b); break;
             case 0x07: case 0x67: case 0x77:
-                asr(); break;
+                help_asr(memReg.fetch()); break;
             case 0x24:
                 bcc(); break;
             case 0x25:
@@ -285,7 +285,7 @@ public class MC6809 extends USimMotorola {
             case 0x5f: case 0x5e:
                 help_clr(b); break;
             case 0x0f: case 0x6f: case 0x7f:
-                clr(); break;
+                help_clr(memReg.fetch()); break;
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x43:
             case 0x43: case 0x42:
@@ -297,7 +297,7 @@ public class MC6809 extends USimMotorola {
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x03: case 0x63: case 0x73:
             case 0x03: case 0x62: case 0x63: case 0x73:
-                com(); break;
+                help_com(memReg.fetch()); break;
             case 0x3c:
                 cwai(); break;
             case 0x19:
@@ -314,7 +314,7 @@ public class MC6809 extends USimMotorola {
     //      case 0x0a: case 0x6a: case 0x7a:
             case 0x0a: case 0x0b: case 0x6a: case 0x6b:
             case 0x7a: case 0x7b:
-                dec(); break;
+                help_dec(memReg.fetch()); break;
             case 0x1e:
                 exg(); break;
             case 0x4c:
@@ -322,7 +322,7 @@ public class MC6809 extends USimMotorola {
             case 0x5c:
                 help_inc(b); break;
             case 0x0c: case 0x6c: case 0x7c:
-                inc(); break;
+                help_inc(memReg.fetch()); break;
             case 0x0e: case 0x6e: case 0x7e:
                 jmp(); break;
             case 0x32:
@@ -338,7 +338,7 @@ public class MC6809 extends USimMotorola {
             case 0x58:
                 help_lsl(b); break;
             case 0x08: case 0x68: case 0x78:
-                lsl(); break;
+                help_lsl(memReg.fetch()); break;
             // BDA - Adding in undocumented 6809 instructions
     //      case 0x44:
             case 0x44: case 0x45:
@@ -351,7 +351,7 @@ public class MC6809 extends USimMotorola {
     //      case 0x04: case 0x64: case 0x74:
             case 0x04: case 0x05: case 0x64: case 0x65:
             case 0x74: case 0x75:
-                lsr(); break;
+                help_lsr(memReg.fetch()); break;
             case 0x3d:
                 mul(); break;
             // BDA - Adding in undocumented 6809 instructions
@@ -366,14 +366,14 @@ public class MC6809 extends USimMotorola {
     //      case 0x00: case 0x60: case 0x70:
             case 0x00: case 0x01: case 0x60: case 0x61:
             case 0x70: case 0x71:
-                neg(); break;
+                help_neg(memReg.fetch()); break;
             // BDA - Adding in undocumented 6809 instructions
             // NEG/COM combination instruction for direct page
             case 0x02:
                 if (cc.getC() == 1)
-                    com();
+                    help_com(memReg.fetch());
                 else
-                    neg();
+                    help_neg(memReg.fetch());
                 break;
             case 0x12:
                 nop(); break;
@@ -395,13 +395,13 @@ public class MC6809 extends USimMotorola {
             case 0x59:
                 help_rol(b); break;
             case 0x09: case 0x69: case 0x79:
-                rol(); break;
+                help_rol(memReg.fetch()); break;
             case 0x46:
                 help_ror(a); break;
             case 0x56:
                 help_ror(b); break;
             case 0x06: case 0x66: case 0x76:
-                ror(); break;
+                help_ror(memReg.fetch()); break;
             case 0x3b:
                 rti(); break;
             case 0x39:
@@ -419,7 +419,7 @@ public class MC6809 extends USimMotorola {
             case 0x5d:
                 help_tst(b); break;
             case 0x0d: case 0x6d: case 0x7d:
-                tst(); break;
+                help_tst(memReg.fetch()); break;
             default:
                 invalid("instruction"); break;
         }
@@ -979,19 +979,6 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Arithmetic Shift Right memory byte.
-     */
-    private void asr() {
-        help_asr(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      int m = read(addr);
-//      UByte mbyte = UByte.valueOf(m);
-//      help_asr(mbyte);
-//      write(addr, mbyte);
-    }
-
-
-    /**
      * Branch on Carry Clear.
      */
     private void bcc() {
@@ -1158,14 +1145,6 @@ public class MC6809 extends USimMotorola {
         do_lbr(cc.isSetV());
     }
 
-    private void clr() {
-        help_clr(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_clr(m);
-//      write(addr, m);
-    }
-
     private void help_clr(UByte refB) {
         cc.setN(0);
         cc.setZ(1);
@@ -1204,14 +1183,6 @@ public class MC6809 extends USimMotorola {
         cc.setV(cc.getV() != cc.getC());
         cc.setN(btst(t, 15));
         cc.setZ(t == 0);
-    }
-
-    private void com() {
-        help_com(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_com(m);
-//      write(addr, m);
     }
 
     private void help_com(UByte tx) {
@@ -1294,14 +1265,6 @@ public class MC6809 extends USimMotorola {
         setBitZ(a);
     }
 
-    private void dec() {
-        help_dec(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_dec(m);
-//      write(addr, m);
-    }
-
     private void help_dec(UByte x) {
         cc.setV(x.intValue() == 0x80);
         x.set(x.intValue() - 1);
@@ -1356,14 +1319,6 @@ public class MC6809 extends USimMotorola {
         cc.setF(1);
         cc.setI(1);
         pc.set(read_word(FIRQ_ADDR));
-    }
-
-    private void inc() {
-        help_inc(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_inc(m);
-//      write(addr, m);
     }
 
     private void help_inc(UByte x) {
@@ -1453,28 +1408,12 @@ public class MC6809 extends USimMotorola {
         setBitZ(y);
     }
 
-    private void lsl() {
-        help_lsl(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_lsl(m);
-//      write(addr, m);
-    }
-
     private void help_lsl(UByte regB) {
         cc.setC(regB.btst(7));
         cc.setV(regB.btst(7) ^ regB.btst(6));
         regB.set(regB.intValue() << 1);
         setBitN(regB);
         setBitZ(regB);
-    }
-
-    private void lsr() {
-        help_lsr(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_lsr(m);
-//      write(addr, m);
     }
 
     private void help_lsr(UByte byteLoc) {
@@ -1488,14 +1427,6 @@ public class MC6809 extends USimMotorola {
         d.set(a.intValue() * b.intValue());
         cc.setC(b.btst(7));
         setBitZ(d);
-    }
-
-    private void neg() {
-        help_neg(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_neg(m);
-//      write(addr, m);
     }
 
     private void help_neg(UByte byteLoc) {
@@ -1654,14 +1585,6 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    private void rol() {
-        help_rol(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_rol(m);
-//      write(addr, m);
-    }
-
     private void help_rol(UByte byteLoc) {
         boolean oc = cc.isSetC();
         cc.setV(byteLoc.btst(7) ^ byteLoc.btst(6));
@@ -1672,14 +1595,6 @@ public class MC6809 extends USimMotorola {
         }
         setBitN(byteLoc);
         setBitZ(byteLoc);
-    }
-
-    private void ror() {
-        help_ror(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_ror(m);
-//      write(addr, m);
     }
 
     private void help_ror(UByte regB) {
@@ -1799,13 +1714,6 @@ public class MC6809 extends USimMotorola {
         int r1 = (w & 0xf0) >> 4;
         int r2 = (w & 0x0f) >> 0;
         tfrrefreg(r2).set(refregvalue(r1));
-    }
-
-    private void tst() {
-        help_tst(memReg.fetch());
-//      int addr = fetch_effective_address();
-//      UByte m = UByte.valueOf(read(addr));
-//      help_tst(m);
     }
 
     private void help_tst(UByte dataB) {

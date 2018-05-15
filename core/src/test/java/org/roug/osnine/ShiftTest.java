@@ -58,6 +58,49 @@ public class ShiftTest {
 
 
     /**
+     * Test the ASR - Arithmic Shift Right instruction.
+     */
+    @Test
+    public void testASR() {
+        // Write instruction into memory
+        myTestCPU.write(0xB00, 0x47); // ASRA
+        // Logical Shift Right of 0x3E to 0x1F
+        myTestCPU.cc.set(0x0F);
+        myTestCPU.a.set(0x3E);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x1F, myTestCPU.a.intValue());
+        assertEquals(0x02, myTestCPU.cc.intValue());
+        assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
+
+        // Arithmic Shift Right of 1
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setN(1);
+        myTestCPU.b.set(1);
+        myTestCPU.write(0xB00, 0x57); // ASRB
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x1F, myTestCPU.a.intValue());
+        assertEquals(0x00, myTestCPU.b.intValue());
+        assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getC());
+        assertEquals(0, myTestCPU.cc.getN());
+
+        // Arithmic Shift Right of 0xB8
+        myTestCPU.cc.setC(0);
+        myTestCPU.cc.setV(0);
+        myTestCPU.b.set(0xB8);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xDC, myTestCPU.b.intValue());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getC());
+        assertEquals(1, myTestCPU.cc.getN());
+    }
+
+    /**
      * Shift a byte a 0x0402, because DP = 0x04.
      */
     @Test
