@@ -31,7 +31,7 @@ the standard input path is affected.
 </para>
 <para>
 NOTE: If this command is used in a shell procedure file, the
-option &quot;.<replaceable>path num</replaceable>&quot; must be used to specify one of the standard
+option &quot;.<replaceable>pathnum</replaceable>&quot; must be used to specify one of the standard
 output paths (0, 1 or 2) to change the terminal's operating
 characteristics. The change will remain in effect until the path is
 closed. To effect a permanent change to a device characteristic,
@@ -171,14 +171,12 @@ of character in hexadecimal.</entry>
 <row>
 <entry>quit=h</entry>
 <entry>Quit character (normally <keycombo action="simul"><keycap>Control</keycap>
-<keycap>E</keycap></keycombo>). Numeric value
-of character in hexadecimal.</entry>
+<keycap>E</keycap></keycombo>). Numeric value of character in hexadecimal.</entry>
 </row>
 <row>
 <entry>baud=d</entry>
 <entry>Set baud rate for software-controllable interface. Numeric
-code for baud rate: 0=110 1=300 2=600 3=1200 4=2400 5=4800
-6=9600 7=19200</entry>
+code for baud rate: 0=110 1=300 2=600 3=1200 4=2400 5=4800 6=9600 7=19200</entry>
 </row>
 </tbody>
 </tgroup>
@@ -187,7 +185,7 @@ code for baud rate: 0=110 1=300 2=600 3=1200 4=2400 5=4800
 </refsect1>
 <refsect1><title>Examples</title>
 <screen>
-tmode -upc lf null=4 bselF pause
+tmode -upc lf null=4 bse=1F pause
 
 tmode pag=24 pause bsl -echo bsp=8 bsl=C
 </screen>
