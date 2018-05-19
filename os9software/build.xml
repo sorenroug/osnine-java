@@ -1,0 +1,50 @@
+<project name="BuildModules" default="compile">
+
+    <property name="homedir" value="kernel"/>
+    <property name="os9dir" value="${project.basedir}" />
+    <property name="targetdir" value="target" />
+
+    <macrodef name="assemble">
+        <attribute name="src" />
+        <sequential>
+            <echo message="Assembling: @{src}"/>
+            <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    fork="true" dir="${homedir}">
+                <env key="OSNINEDIR" value="${os9dir}"/>
+                <arg value="-m"/>
+                <arg value="20000"/>
+                <arg value="asm"/>
+                <arg value="@{src}.asm"/>
+                <arg value="o=a.out"/>
+            </java>
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+        </sequential>
+    </macrodef>
+
+    <target name="compile">
+        <mkdir dir="${targetdir}"/>
+        <assemble src="Acia51"/>
+        <assemble src="Acia_v2"/>
+        <assemble src="Acia_v4"/>
+        <assemble src="BootDyn"/>
+        <assemble src="D0_vdisk"/>
+        <assemble src="D1_vdisk"/>
+        <assemble src="HWClock"/>
+        <assemble src="IOMan_v4"/>
+        <assemble src="KbVdIO"/>
+        <assemble src="OS9p1_d64"/>
+        <assemble src="OS9p1_gimix"/>
+        <assemble src="OS9p1_swtc"/>
+        <assemble src="OS9p2"/>
+        <assemble src="OS9p2_v5"/>
+        <assemble src="Pipe"/>
+        <assemble src="PipeMan"/>
+        <assemble src="Piper"/>
+        <assemble src="RBF"/>
+        <assemble src="SCF"/>
+        <assemble src="SysGo"/>
+        <assemble src="SysGo_login"/>
+        <assemble src="VDisk"/>
+    </target>
+
+</project>

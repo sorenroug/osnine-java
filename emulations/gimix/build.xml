@@ -1,0 +1,38 @@
+<project name="BuildModules" default="compile">
+
+    <property name="homedir" value="."/>
+    <property name="os9dir" value="${main.basedir}/os9software" />
+    <property name="targetdir" value="target" />
+    <macrodef name="assemble">
+        <attribute name="src" />
+        <sequential>
+            <echo message="Assembling: @{src}"/>
+            <java jar="../../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    fork="true" dir="${homedir}">
+                <env key="OSNINEDIR" value="${os9dir}"/>
+                <arg value="-m"/>
+                <arg value="20000"/>
+                <arg value="asm"/>
+                <arg value="@{src}.asm"/>
+                <arg value="o=a.out"/>
+            </java>
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+        </sequential>
+    </macrodef>
+
+    <target name="compile">
+        <mkdir dir="${targetdir}"/>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/"
+            files="Acia_v2 BootDyn IOMan_v4 SCF RBF Acia_v2 HWClock OS9p1_gimix PipeMan Piper Pipe
+            VDisk D0_vdisk D1_vdisk SysGo"
+          />
+        </copy>
+        <assemble src="D0_vdisk"/>
+        <assemble src="OS9p2"/>
+        <assemble src="Init"/>
+        <assemble src="Term"/>
+    </target>
+
+</project>
+
