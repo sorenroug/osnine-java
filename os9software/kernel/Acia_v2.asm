@@ -12,21 +12,13 @@
 
  use defsfile
 
-***************
-* Edition History
-
-*  #   date    Comments
-* -- -------- ----------------------------------------------------
-*  3 83/02/11  Add X-ON/X-OFF generation code
-*  4 83/03/10  Getstat Ready returns (B)=bytecount
-
-Edition equ 4 Current Edition
+Edition equ 2 Current Edition
 
 ***************
 * Interrupt-driven Acia Device Driver
 
-INPSIZ set 80 input  buffer size (<=256)
-OUTSIZ set 140 output buffer size (<=256)
+INPSIZ set 100 input  buffer size (<=256)
+OUTSIZ set 40 output buffer size (<=256)
 
 IRQReq set %10000000 Interrupt Request
 PARITY set %01000000 parity  error bit
@@ -40,17 +32,19 @@ IRQOUT equ %00100000 output IRQ enable
 
 INPERR set PARITY+OVERUN+FRAME+NOTCTS+DCDLST
 
+***************
+* Module Header
+ mod ACIEND,ACINAM,DRIVR+OBJCT,REENT+1,ACIENT,ACIMEM
+
 **********
 * Static storage offsets
 *
  org V.SCF room for scf variables
 INXTI rmb 1 input  buffer next-in  ptr
 INXTO rmb 1 input  buffer next-out ptr
-INCNT rmb 1 input char count
 ONXTI rmb 1 output buffer next-in  ptr
 ONXTO rmb 1 output buffer next-out ptr
 HALTED rmb 1 output IRQ's disabled when non-zero
-INHALT rmb 1 input halted
 INPBUF rmb INPSIZ input  buffer
 OUTBUF rmb OUTSIZ output buffer
 ACIMEM equ . Total static storage requirement
@@ -59,9 +53,6 @@ ACIMEM equ . Total static storage requirement
 H.XOFF equ 1 V.XOFF char has been received; awaiting V.XON
 H.EMPTY equ 2 Output buffer is empty
 
-***************
-* Module Header
- mod ACIEND,ACINAM,DRIVR+OBJCT,REENT+1,ACIENT,ACIMEM
  fcb UPDAT.
 ACINAM fcs "ACIA"
 
@@ -90,8 +81,11 @@ INIT ldx V.PORT,U I/o port address
  ldb #H.EMPTY
  stb HALTED,U output IRQ's disabled; buffer empty
  lda M$OPT,Y option byte count
+         cmpa  #$19
+ bcs INIT05
+ lda M$OPT,Y option byte count
 INIT05 cmpa #PD.PAR-PD.OPT acia control value given?
- blo INIT10 ..no; default $15
+ bcs INIT10 ..no; default $15
  ldb PD.PAR-PD.OPT+M$DTYP,Y
  bne INIT20
 INIT10 ldb #$15 default acia control
@@ -100,13 +94,11 @@ INIT20 stb V.TYPE,U save device type
  lda 1,X
  lda 1,X remove any interrupts
  tst 0,X interrupt gone?
- bmi ErrNtRdy ..No; abort
+ lbmi ErrNtRdy ..No; abort
  clra
  clrb
  std INXTI,U Initialize buffer ptrs
  std ONXTI,U
- sta INHALT,U flag input not halted
- sta INCNT,U clear in char count
  ldd V.PORT,U
  leax ACMASK,PCR
  leay ACIRQ,PCR address of interrupt service routine
@@ -129,25 +121,13 @@ INIT9 rts
 *     or   CC=Set, B=Error code if error
 *
 READ00 bsr ACSLEP
-READ lda INHALT,U is input halted?
- ble Read.a branch if not
- ldb INCNT,U get input character count
- cmpb #10 less than 10 chars in buffer?
- bhi Read.a branch if not
- ldb V.XON,U get X-ON char
- orb #Sign set sign bit
- stb INHALT,U flag input resume
- ldb V.TYPE,U get control value
- orb #IRQIN!IRQOUT enable input & output IRQs
- stb [V.PORT,U] set control register
-Read.a ldb INXTO,U (input buffer) next-out ptr
+READ ldb INXTO,U (input buffer) next-out ptr
  leax INPBUF,U address of input buffer
  orcc #IntMasks calm interrupts
  cmpb INXTI,U any data available?
  beq READ00
  abx
  lda 0,X the char
- dec INCNT,U decrement char count
  incb ADVANCE Next-out ptr
  cmpb #INPSIZ-1 end of circular buffer?
  bls READ10 ..no
@@ -161,10 +141,6 @@ READ10 stb INXTO,U save updated buffer ptr
  comb return carry set
  ldb #E$Read signal read error
 READ90 andcc #^IntMasks enable IRQ requests
- rts
-
-ErrNtRdy comb
- ldb #E$NotRdy
  rts
 
 **********
@@ -186,10 +162,7 @@ ACSLEP pshs D,X
  beq ACSL90 ..no; return
  cmpb #S$Intrpt Deadly signal?
  bls ACSLER ..yes; return error
-ACSL90 clra clear carry
- lda P$State,X check process state flags
- bita #Condem has process died?
- bne ACSLER ..Yes; return error
+ACSL90 clrb clear carry
  puls D,X,PC return
 
 ACSLER leas 6,S Exit to caller's caller
@@ -240,15 +213,17 @@ Write90 clrb (return carry clear)
 * returns: varies
 GETSTA cmpa #SS.Ready Ready status?
  bne GETS10 ..no
- ldb INCNT,U get input character count
- beq ErrNtRdy ..No; return not ready error
- ldx PD.RGS,Y
- stb R$B,X return bytecount to caller (!)
-STATUS99 clrb
+ lda   INXTO,U
+ suba  INXTI,U get input character count
+ bne   Write90
+
+ErrNtRdy comb
+ ldb #E$NotRdy
  rts
 
 GETS10 cmpa #SS.EOF End of file?
  beq Write90 ..yes; return carry clear
+
 
 PUTSTA comb return carry set
  ldb #E$UnkSvc Unknown service code
@@ -261,7 +236,7 @@ PUTSTA comb return carry set
 * Passed: (U)=Static Storage
 * returns: Nothing
 *
-TRMN00 lbsr ACSLEP wait for I/O activity
+TRMN00 bsr ACSLEP wait for I/O activity
 TRMNAT ldx D.Proc
  lda P$ID,X
  sta V.BUSY,U
@@ -295,25 +270,7 @@ ACIRQ ldx V.PORT,U get port address
  bne InIRQ ..yes; go get it
 * Fall Through to Do output
 
-****************
-* OutIRQ
-*   output to Acia Interrupt Routine
-*
-* Passed: (A)=Acia Status Register Contents
-*         (X)=Acia port address
-*         (U)=Static Storage address
-
-OutIRQ lda INHALT,U send X-ON or X-OFF?
- bpl OutI.a branch if not
- anda #^Sign clear sign bit
- sta 1,X send character
- eora V.XON,U get zero if X-ON
- sta INHALT,U mark it sent
- lda HALTED,U is output halted?
- bne OutIRQ3 branch if so
- clrb clear carry
- rts
-OutI.a leay OUTBUF,U output buffer ptr
+ leay OUTBUF,U output buffer ptr
  ldb ONXTO,U (output) next-out ptr
  cmpb ONXTI,U output buffer already empty?
  beq OutIRQ2 ..yes; disable output IRQ, return
@@ -327,19 +284,18 @@ OutIRQ1 stb ONXTO,U save updated next-out ptr
  sta 1,X Write the char
  cmpb ONXTI,U last char in output buffer?
  bne WAKEUP ..no
-OutIRQ2 lda HALTED,U
- ora #H.EMPTY
- sta HALTED,U
-OutIRQ3 ldb V.TYPE,U
+OutIRQ2 ldb V.TYPE,U
  orb #IRQIN disable output IRQs
  stb 0,X
+ lda HALTED,U
+ ora #H.EMPTY
+ sta HALTED,U
 
 WAKEUP ldb #S$Wake Wake up signal
  lda V.Wake,U Owner waiting?
 Wake10 beq Wake90 ..no; return
- clr V.Wake,U
-SendSig OS9 F$Send send signal
-Wake90 clrb return carry clear
+ OS9 F$Send send signal
+Wake90 clr V.Wake,U
  rts
 
 ***************
@@ -354,16 +310,18 @@ Wake90 clrb return carry clear
 *
 InIRQ lda 1,X Read input char
  beq InIRQ1 ..NULL, impossible Ctl Chr
- cmpa V.INTR,U keyboard Interrupt?
- beq InAbort ..Yes
- cmpa V.QUIT,U keyboard Quit?
- beq InQuit ..Yes
- cmpa V.PCHR,U keyboard Pause?
- beq InPause ..Yes
- cmpa V.XON,U X-ON continue?
- beq InXON ..Yes
- cmpa V.XOFF,U X-OFF Immediate Pause request?
+ tfr a,b
+         andb  #$7F
+ cmpb V.XOFF,U X-OFF Immediate Pause request?
  beq InXOFF ..Yes
+ cmpb V.XON,U X-ON continue?
+ beq InXON ..Yes
+ cmpb V.INTR,U keyboard Interrupt?
+ beq InAbort ..Yes
+ cmpb V.QUIT,U keyboard Quit?
+ beq InQuit ..Yes
+ cmpb V.PCHR,U keyboard Pause?
+ beq InPause ..Yes
 
 InIRQ1 leax INPBUF,U input buffer
  ldb INXTI,U (input) next-in ptr
@@ -381,23 +339,16 @@ InIRQ2 cmpb INXTO,U input overrun?
  bra WAKEUP throw away character
 
 InIRQ30 stb INXTI,U update next-in ptr
- inc INCNT,U
-
-InIRQ4 lda V.XOFF,U get X-OFF char
- beq WAKEUP branch if not enabled
- ldb INCNT,U get input count
- cmpb #INPSIZ-10 is buffer almost full?
- blo WAKEUP bra if not
- ldb INHALT,U have we sent XOFF?
- bne WAKEUP yes then don't send it again
- anda #^Sign insure sign clear
- sta V.XOFF,U
- ora #Sign set sign bit
- sta INHALT,U flag input halt
- ldb V.TYPE,U get control value
- orb #IRQIN!IRQOUT enable input & output IRQs
- stb [V.PORT,U]
  bra WAKEUP
+InAbort ldb #S$Intrpt keyboard INTERRUPT signal
+ bra InQuit10
+
+InQuit ldb #S$Abort Abort signal
+InQuit10 pshs A save input char
+ lda V.LPRC,U last process id
+ bsr Wake10 Send error signal
+ puls A restore input char
+ bra InIRQ1 buffer char, exit
 
 ***************
 * Control character routines
@@ -407,15 +358,15 @@ InPause ldx V.DEV2,U get echo device static ptr
  sta V.PAUS,X request pause
  bra InIRQ1 buffer char, exit
 
-InAbort ldb #S$Intrpt keyboard INTERRUPT signal
- bra InQuit10
-
-InQuit ldb #S$Abort Abort signal
-InQuit10 pshs A save input char
- lda V.LPRC,U last process id
- lbsr Wake10 Send error signal
- puls A restore input char
- bra InIRQ1 buffer char, exit
+InXOFF lda HALTED,U
+ bne InXOFF10 ..already halted, continue
+ ldb V.TYPE,U get acia control code
+ orb #IRQIN enable only input IRQs
+ stb 0,X
+InXOFF10 ora #H.XOFF
+ sta HALTED,U restrict output
+ clrb
+ rts
 
 InXON lda HALTED,U
  anda #^H.XOFF
@@ -425,16 +376,6 @@ InXON lda HALTED,U
  ora #IRQIN!IRQOUT enable input & output IRQs
  sta 0,X
 InXON99 clrb
- rts
-
-InXOFF lda HALTED,U
- bne InXOFF10 ..already halted, continue
- ldb V.TYPE,U get acia control code
- orb #IRQIN enable only input IRQs
- stb 0,X
-InXOFF10 ora #H.XOFF
- sta HALTED,U restrict output
- clrb
  rts
 
  emod Module Crc
