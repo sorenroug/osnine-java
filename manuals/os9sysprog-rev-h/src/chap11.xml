@@ -4819,7 +4819,7 @@ called.
       <para>
 FUNCTION: This service request deletes the file specified by the
 pathlist. The caller must have non-sharable write access to the file or
-an error will result (i.e The file may not be open by any process).
+an error will result (i.e. The file may not be open by any process).
 Attempts to delete non-multifile devices will result in an error.
 </para>
   <variablelist role="factsheet">

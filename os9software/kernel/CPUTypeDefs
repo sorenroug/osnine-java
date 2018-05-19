@@ -1,0 +1,23 @@
+*
+*     CPU Type Definitions
+*
+         org 1
+Gimix rmb 1
+SSB rmb 1
+Kodak rmb 1
+MotGED rmb 1
+Primal rmb 1
+Helix rmb 1
+Positron rmb 1
+Profitel rmb 1
+Gimix2 rmb 1
+EXORSR rmb 1
+SWTC   rmb 1
+MM19   rmb 1
+S09   rmb 1
+PERCOM   rmb 1
+CMS9609   rmb 1
+CMS9619   rmb 1
+Elektra   rmb 1
+Digalog   rmb 1
+SAT96   rmb 1
