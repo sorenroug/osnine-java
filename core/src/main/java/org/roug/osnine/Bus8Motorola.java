@@ -16,6 +16,11 @@ public interface Bus8Motorola {
     void write(int offset, int val);
 
     /**
+     * Single byte write to memory.
+     */
+    void forceWrite(int offset, int val);
+
+    /**
      * Install a memory segment as the last item of the list of segments.
      */
     void addMemorySegment(MemorySegment newMemory);

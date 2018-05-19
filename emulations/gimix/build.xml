@@ -24,14 +24,14 @@
         <mkdir dir="${targetdir}"/>
         <copy todir="${targetdir}">
           <filelist dir="../../os9software/target/"
-            files="Acia_v2 BootDyn IOMan_v4 SCF RBF Acia_v2 HWClock OS9p1_gimix PipeMan Piper Pipe
+            files="Acia_v2 Acia_v4 BootDyn IOMan_v4 SCF RBF Acia_v2 OS9p1_gimix OS9p2 OS9p2_v5 PipeMan Piper Pipe
             VDisk D0_vdisk D1_vdisk SysGo"
           />
         </copy>
         <assemble src="D0_vdisk"/>
-        <assemble src="OS9p2"/>
         <assemble src="Init"/>
         <assemble src="Term"/>
+        <assemble src="HWClock"/>
     </target>
 
 </project>

@@ -106,7 +106,7 @@ public final class Loader {
             } else if (t == '1') {
                 while (--n > 0) {
                     b = fread_byte(fp);
-                    bus.write(addr, b);
+                    bus.forceWrite(addr, b);
                     addr++;
                 }
 
@@ -161,7 +161,7 @@ public final class Loader {
             if (t == 0x00) {
                 while (n > 0) {
                     b = fread_byte(fp);
-                    bus.write(addr, b);
+                    bus.forceWrite(addr, b);
                     addr++;
                     n--;
                 }

@@ -39,6 +39,7 @@ public class BusStraight implements Bus8Motorola {
     /**
      * Single byte read from memory.
      */
+    @Override
     public int read(int offset) {
         return memory.read(offset);
     }
@@ -46,13 +47,23 @@ public class BusStraight implements Bus8Motorola {
     /**
      * Single byte write to memory.
      */
+    @Override
     public void write(int offset, int val) {
         memory.write(offset, val & 0xFF);
     }
 
     /**
+     * Single byte force write to memory.
+     */
+    @Override
+    public void forceWrite(int offset, int val) {
+        memory.forceWrite(offset, val & 0xFF);
+    }
+
+    /**
      * Accept an NMI signal.
      */
+    @Override
     public synchronized void signalNMI(boolean state) {
         if (state) {
             activeNMIs++;
@@ -65,6 +76,7 @@ public class BusStraight implements Bus8Motorola {
     /**
      * Do we have active NMIs?
      */
+    @Override
     public boolean isNMIActive() {
         return activeNMIs > 0;
     }
@@ -72,6 +84,7 @@ public class BusStraight implements Bus8Motorola {
     /**
      * Accept an FIRQ signal.
      */
+    @Override
     public void signalFIRQ(boolean state) {
         synchronized(this) {
             if (state) {

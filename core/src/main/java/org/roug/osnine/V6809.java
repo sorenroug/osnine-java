@@ -110,7 +110,7 @@ public class V6809 {
             InputStream moduleStream = openFile(fileToLoad);
             int b = moduleStream.read();
             while (b != -1) {
-                bus.write(loadAddress, b);
+                bus.forceWrite(loadAddress, b);
                 loadAddress++;
                 b = moduleStream.read();
             }
@@ -238,14 +238,14 @@ public class V6809 {
 
 	int startOffset;
 	if (len % 2 != 0) {
-            bus.write(loadAddress, Character.digit(input.charAt(0), 16));
+            bus.forceWrite(loadAddress, Character.digit(input.charAt(0), 16));
 	    startOffset = 1;
 	} else {
 	    startOffset = 0;
 	}
 
 	for (int i = startOffset; i < len; i += 2) {
-	    bus.write(loadAddress + (i + 1) / 2,
+	    bus.forceWrite(loadAddress + (i + 1) / 2,
                     (Character.digit(input.charAt(i), 16) << 4)
 		    + Character.digit(input.charAt(i + 1), 16));
 	}

@@ -31,4 +31,5 @@ public class RandomAccessMemory extends MemorySegment {
     protected void store(int addr, int val) {
         memory[addr - getStartAddress()] = val & 0xff;
     }
+
 }

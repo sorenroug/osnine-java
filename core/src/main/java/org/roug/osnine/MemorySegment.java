@@ -96,6 +96,29 @@ public abstract class MemorySegment {
         }
     }
 
+    /**
+     * Single byte write to memory.
+     */
+    protected void burn(int addr, int val) {
+        store(addr, val);
+    }
+
+
+    /**
+     * Forcefully write a byte to memory. If there is no memory, ignore.
+     */
+    public void forceWrite(int addr, int val) {
+        if (!inSegment(addr)) {
+            if (nextSegment == null) {
+                return;
+            } else {
+                nextSegment.forceWrite(addr, val);
+            }
+        } else {
+            burn(addr, val);
+        }
+    }
+
     public void addMemorySegment(MemorySegment segment) {
         if (nextSegment == null) {
             nextSegment = segment;
