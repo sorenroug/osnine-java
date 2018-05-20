@@ -31,9 +31,20 @@ Revs set REENT+1
  mod OS9End,OS9Nam,Type,Revs,OS9Ent,0
 OS9Nam fcs /OS9p2/
 
- fcb 5 Edition number
-
- fcc   /(C)1981Microware/
+********************
+*
+*     Edition History
+*
+* Edition  6 -  changes to Send routine, fixing timed sleep
+*  82/09/10     wake up bug  LAC
+*
+* Edition  7 -  changes made to "boot" subroutine, keeping the
+*               integrity of U (a ptr to D.Base)  WGP
+*
+* Edition  8 -  Change made to setime system call enabling it to
+*               call the init routine of the clock module  WGP
+*
+ fcb 8 Edition number
 
  ttl Service Routine initialization table
  page
@@ -442,7 +453,30 @@ SEND40 stb P$Signal,Y Save signal
  ldx #D.SProcQ-P$Queue Fake process ptr
  bra SEND55
 SEND50 cmpx 1,S Is this destination process?
- beq   SEND65 branch if it is
+*
+*** Ed. 6 changes follow
+*
+ bne SEND55 branch if not
+ lda P$State,x get process state
+ bita #TimSleep is process in timed sleep?
+ beq SEND65 branch if not
+ ldu P$SP,x get process stack ptr
+ ldd R$X,u get remaining time
+ beq SEND65 branch if none
+ ldu P$Queue,x get next process in queue
+ beq SEND65 branch if none
+ pshs d save remaining time
+ lda P$State,u get process state
+ bita #TimSleep is it in timed sleep?
+ puls d retrieve remaining time
+ beq SEND65 branch if not
+ ldu P$SP,u get process stack ptr
+ addd R$X,u add remaining time
+ std R$X,u update it
+ bra SEND65
+*
+*** end of Ed. 6 changes
+*
 SEND55 leay 0,X Copy process ptr
  ldx P$Queue,Y More in queue?
  bne SEND50 Branch if so
@@ -624,10 +658,13 @@ SSWI10 comb
  rts
 
 
+
 **********
 *
 * Subroutine Settime
 *
+
+ClockNam fcs "Clock"
 
 SetTime ldx R$X,U get date ptr
  ldd 0,X get year & month
@@ -636,8 +673,13 @@ SetTime ldx R$X,U get date ptr
  std D.DAY
  ldd 4,X get minute & second
  std D.MIN
- clrb  
- rts   
+ lda #SYSTM+OBJCT
+ leax <ClockNam,PCR
+ OS9 F$Link link to clock module
+ bcs SeTime99
+ jmp 0,Y execute clock's initialization
+ clrb
+SeTime99 rts
  page
 ***************
 * Findpd
@@ -768,6 +810,7 @@ ALCPD9 puls X,U,PC Return carry clear
 ALCPDR leas 3,S Return not enough memory error
  puls X,U,PC Return
 
+
 ***************
 * Rtrn64
 *   Return Path Descriptor To Free Status
@@ -835,11 +878,11 @@ IOLink leax IOSTR,PCR Get ioman name ptr
  OS9 F$LINK
  rts
 
-BOOT ldx D.Init
+BOOT pshs U save D.Init ptr
  comb set carry
- ldd BOOTSTR,X Get default device string
+ ldd BOOTSTR,U Get default device string
  beq BOOTXX Can't boot without device
- leax D,X Get name ptr
+ leax D,U Get name ptr
  lda #SYSTM+OBJCT get type
  OS9 F$LINK find bootstrap module
  bcs BOOTXX Can't boot without module
@@ -860,8 +903,36 @@ BOOT10 ldd 0,X get module beginning
 BOOT20 leax 1,X Try next
 BOOT30 cmpx D.BTHI End of boot?
  bcs BOOT10 Branch if not
-BOOTXX rts   
+BOOTXX puls U,PC Restore ptr and return
 
 
  emod
 OS9End equ *
+
+
+
+ ttl Configuration Module
+ page
+*****
+*
+* Configuration Module
+*
+Type set SYSTM
+ mod ConEnd,ConNam,Type,Revs
+ fcb 0 no extended memory
+ fdb $F800 High free memory bound
+ fcb 12 Entries in interrupt polling table
+ fcb 12 Entries in device table
+ fdb ModNam Initial module name
+ fdb DirNam Default directory name
+ fdb TermNam Standard i/o device name
+ fdb BootNam Bootstrap module name
+ConNam fcs "Init"
+ModNam fcs "SysGo"
+DirNam fcs "/D0"
+TermNam fcs "/Term"
+BootNam fcs "Boot"
+ emod
+ConEnd equ *
+
+ end
