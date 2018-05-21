@@ -22,29 +22,24 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="Acia51"/>
-        <assemble src="Acia6850"/>
-        <assemble src="bootdyn"/>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/"
+            files="Acia_v4 Acia51 BootDyn IOMan_v4 SCF RBF OS9p1_d64 OS9p2 PipeMan Piper Pipe VDisk"
+          />
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="." files="OS9.dsk WORK.dsk"/>
+        </copy>
         <assemble src="d0"/>
         <assemble src="d1"/>
         <assemble src="hwclock"/>
         <assemble src="init"/>
-        <assemble src="IOMan4"/>
-        <assemble src="OS9p1_D64"/>
-        <assemble src="OS9p2"/>
         <assemble src="sysgo"/>
         <assemble src="sysgo_tsmon"/>
-        <assemble src="Pipe"/>
-        <assemble src="PipeMan"/>
-        <assemble src="Piper"/>
-        <assemble src="RBF"/>
-        <assemble src="SCF"/>
-        <!--<assemble src="Shell"/> -->
         <assemble src="t1con51"/>
         <assemble src="t1telnet"/>
         <assemble src="t1con6850"/>
         <assemble src="t1tn6850"/>
-        <assemble src="vdisk"/>
     </target>
 
 </project>

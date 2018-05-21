@@ -35,13 +35,14 @@
         <assemble src="OS9p1_d64"/>
         <assemble src="OS9p1_gimix"/>
         <assemble src="OS9p1_swtc"/>
-        <assemble src="OS9p2"/>
+        <assemble src="OS9p2"/> <!-- version 9 -->
         <assemble src="OS9p2_v5"/>
         <assemble src="Pipe"/>
         <assemble src="PipeMan"/>
         <assemble src="Piper"/>
-        <assemble src="RBF"/>
-        <assemble src="SCF"/>
+        <assemble src="RBF"/> <!-- version 7 -->
+        <assemble src="SCF_v7"/>
+        <assemble src="SCF"/> <!-- version 8 -->
         <assemble src="SysGo"/>
         <assemble src="SysGo_login"/>
         <assemble src="VDisk"/>

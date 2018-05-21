@@ -63,7 +63,7 @@ public class IRQBeat extends MemorySegment {
     // Return 1 if IRQ is enabled and turn it off.
     @Override
     protected int load(int addr) {
-        //LOGGER.debug("Check");
+        LOGGER.debug("Check");
         if (clocktask != null && clocktask.isActiveIRQ()) {
             clocktask.setActiveIRQ(false);
             bus.signalIRQ(false);

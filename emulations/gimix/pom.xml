@@ -14,7 +14,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>OS-9 with Dragon 64 kernel</name>
+    <name>OS-9 with GIMIX ROM</name>
     <url>http://www.roug.org</url>
 
     <properties>

@@ -4,27 +4,7 @@
  * The modules will be created as files in the current working directory.
  */
 #include <stdio.h>
-#ifdef __STDC__
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-
-/* Executable memory module */
-typedef struct {
-        u_int16_t       m_sync,         /* sync bytes ($87cd) */
-                        m_size,         /* module size */
-                        m_name;         /* offset to module name */
-        u_int8_t        m_tylan,        /* type & language */
-                        m_attrev,       /* attributes & revision */
-                        m_parity;       /* header parity */
-
-        u_int16_t        m_exec,         /* offset to execution start */
-                        m_store;        /* initial storage size */
-} mod_exec;
-
-#else
 #include <module.h>
-#endif
 
 
 int main(argc,argv)
