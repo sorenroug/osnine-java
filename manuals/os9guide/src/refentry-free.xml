@@ -22,7 +22,7 @@ multifile device. <command>Free</command> also displays the disk's name, creatio
 date, and cluster size.
 </para>
 <para>
-Data sectors are allocated in groups called &quot;clusters&quot;. The number
+Data sectors are allocated in groups called <quote>clusters</quote>. The number
 of sectors per cluster depends on the storage capacity and physical
 characteristics of the specific device. This means that small
 amounts of free space may not be divisible into as many files. For

@@ -37,7 +37,7 @@ disk file and the printer:
 asm pgm.src l ! tee pgm.list &gt;/printer
 </screen>
 <para>
-The example below &quot;broadcasts&quot; a message to four terminals:
+The example below <quote>broadcasts</quote> a message to four terminals:
 </para>
 <screen>
 echo WARNING System down in 10 minutes ! tee /t1 /t2 /t3 /t4

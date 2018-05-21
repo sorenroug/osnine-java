@@ -16,7 +16,7 @@
 This command is used to build short text files by copying the
 standard input path into the file specified by
 <replaceable>path</replaceable>. <command>Build</command> creates a file according to the pathlist parameter,
-then displays a &quot;?&quot;
+then displays a <quote>?</quote>
 prompt to request an input line. Each line entered is written to
 the output path (file). Entering a line consisting of a carriage
 return only causes <command>build</command> to terminate.
@@ -34,7 +34,7 @@ The standard input path may also be redirected to a file. Below is
 an example:
 </para>
 <screen>
-build &lt;mytext /T2      (copies file &quot;mytext&quot; to terminal T2)
+build &lt;mytext /T2      (copies file <quote>mytext</quote> to terminal T2)
 
 
 OS9: build newfile

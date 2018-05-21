@@ -15,13 +15,13 @@
 
 <refsect1><title>Description</title>
 <para>
-This command puts the user's process to &quot;sleep&quot; for a number of
+This command puts the user's process to <quote>sleep</quote> for a number of
 clock ticks. It is generally used to generate time delays or to
-&quot;break up&quot; CPU-intensive jobs. The duration of a tick is 16.66
+<quote>break up</quote> CPU-intensive jobs. The duration of a tick is 16.66
 milliseconds.
 </para>
 <para>
-A tick count of 1 causes the process to &quot;give up&quot; its current time
+A tick count of 1 causes the process to <quote>give up</quote> its current time
 slide. A tick count of zero causes the process to sleep
 indefinitely (usually awakened by a signal)
 

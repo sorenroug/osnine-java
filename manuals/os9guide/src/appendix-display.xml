@@ -9,14 +9,14 @@ alphanumeric, semigraphic, and graphics modes. There are many
 built-in functions to control the display, which are activated by
 used of various ASCII control characters. Thus, these functions are
 available for use by software written in any language using standard
-output statements (such as &quot;PRINT&quot; in BASIC). The Basic09
+output statements (such as <quote>PRINT</quote> in BASIC). The Basic09
 language has a Graphics Interface Module that can automatically
 generate these codes using Basic09 RUN statements.
 </para>
 <para>
 The display system has two display modes: Alphanumeric
-(&quot;Alpha&quot;) mode and Graphics mode. The Alphanumeric mode also
-includes &quot;semigraphic&quot; box-graphics. The computer's display
+(<quote>Alpha</quote>) mode and Graphics mode. The Alphanumeric mode also
+includes <quote>semigraphic</quote> box-graphics. The computer's display
 system uses a separate - memory area for each display mode so
 operations on the Alpha display do not affect the Graphics display,
 and visa-versa. Either display can be selected under software
@@ -75,7 +75,7 @@ device driver module called <quote>CCIO</quote> or <quote>KBVDIO</quote>.
 <section>
 <title>Alpha Mode Display</title>
 <para>
-This is the &quot;standard&quot; operational mode. It is used to display
+This is the <quote>standard</quote> operational mode. It is used to display
 alphanumeric characters and semigraphic box graphics, and simulates
 the operation of a typical computer terminal with functions for
 scrolling, cursor positioning, clear screen, line delete, etc.
@@ -84,7 +84,7 @@ scrolling, cursor positioning, clear screen, line delete, etc.
 Each 8-bit character is assumed to be an ASCII character and is
 displayed if its high order bit (sign bit) is cleared. Lower case
 letters are displayed in reverse video. If the high order bit of
-the character is set it is assumed to be a &quot;Semigraphic 6&quot; graphics
+the character is set it is assumed to be a <quote>Semigraphic 6</quote> graphics
 box. See the computer manual for an explanation of semigraphics
 functions.
 </para>
@@ -409,7 +409,7 @@ moved to the end point of the line.</entry>
 <row>
 <entry>23</entry>
 <entry>ERASE LINE - same as DRAW LINE except the line is
-&quot;drawn&quot; in the current background color, thus erasing
+<quote>drawn</quote> in the current background color, thus erasing
 the line.</entry>
 </row>
 <row>
@@ -423,7 +423,7 @@ moved to the point set.</entry>
 <row>
 <entry>25</entry>
 <entry>ERASE POINT - same as DRAW POINT except the point is
-&quot;drawn&quot; in the current background color, thus erasing
+<quote>drawn</quote> in the current background color, thus erasing
 the point.</entry>
 </row>
 <row>

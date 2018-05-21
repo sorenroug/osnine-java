@@ -32,17 +32,17 @@ indicate the module edition.
 </para>
 <para>
 <command>Ident</command> will display all modules contained in a disk file. If the
-&quot;-m&quot; option appears, <replaceable>path</replaceable> is assumed to be a module in memory.
+<quote>-m</quote> option appears, <replaceable>path</replaceable> is assumed to be a module in memory.
 </para>
 <para>
-If the &quot;-v&quot; option is specified, the module CRC is not verified.
+If the <quote>-v</quote> option is specified, the module CRC is not verified.
 </para>
 <para>
-The &quot;-x&quot; option implies the pathlist begins in the execution
+The <quote>-x</quote> option implies the pathlist begins in the execution
 directory.
 </para>
 <para>
-The &quot;-s&quot; option causes <command>ident</command> to display the. following module
+The <quote>-s</quote> option causes <command>ident</command> to display the. following module
 information on a single line:
 </para>
 <simplelist>
@@ -56,8 +56,8 @@ Type/Language byte
 Module CRC
 </member>
 <member>
-A &quot;.&quot; if the CRC verifies correctly, &quot;?&quot; if incorrect.
-(<command>Ident</command> will leave this field blank if the &quot;-v&quot; option appears.)
+A <quote>.</quote> if the CRC verifies correctly, <quote>?</quote> if incorrect.
+(<command>Ident</command> will leave this field blank if the <quote>-v</quote> option appears.)
 </member>
 <member>
 Module name
@@ -105,7 +105,7 @@ OS9: ident /d0/os9boot -s
     ^  ^     ^    ^ ^
     |  |     |    | |
     |  |     |    | Module name
-    |  |     |    CRC check &quot; &quot; if -v, &quot;.&quot; if OK, &quot;?&quot; if bad
+    |  |     |    CRC check <quote> </quote> if -v, <quote>.</quote> if OK, <quote>?</quote> if bad
     |  |     CRC value
     |  Type/Language byte
     Edition byte (first byte after name)

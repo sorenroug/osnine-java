@@ -28,7 +28,7 @@ PRINTER P       PipeMan Piper
 Mdir
 </screen>
 <para>
-If the &quot;e&quot; option is given, a full listing of the physical address,
+If the <quote>e</quote> option is given, a full listing of the physical address,
 size, type, revision level, reentant attribute, user count, and name
 of each module is displayed. All numbers shown are in hexadecimal.
 </para>

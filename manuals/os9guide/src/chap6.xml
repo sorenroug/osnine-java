@@ -4,7 +4,7 @@
 Disk-based OS-9 systems use a system disk to load many parts of
 the operating system during the system startup and to provide files
 frequently used during normal system operations. Therefore, the
-system disk is generally kept in disk drive zero (&quot;/D0&quot;) when the
+system disk is generally kept in disk drive zero (<quote>/D0</quote>) when the
 system is running.
 </para>
 <para>
@@ -25,7 +25,7 @@ initial data directory.
 
 <para>
 The file called <filename>OS9Boot</filename> loaded into RAM memory by the
-&quot;bootstrap&quot; routine located in the OS-9 firmware. It includes file
+<quote>bootstrap</quote> routine located in the OS-9 firmware. It includes file
 managers, device drivers and descriptors, and any other modules
 which are permanently resident in memory. A typical Microware OS-9
 distribution disk's <filename>OS9Boot</filename> file contains the following modules:
@@ -216,7 +216,7 @@ The directory <filename class="directory">/d0/CMDS</filename> is the system-wide
 directory, which is normally shared by all users as their working
 execution directory. If <command>shell</command> is not part of the
 <filename>OS9Boot</filename> file, it must be present in this directory. The system
-startup process &quot;sysgo&quot; makes <filename class="directory">CMDS</filename> the initial execution directory.
+startup process <quote>sysgo</quote> makes <filename class="directory">CMDS</filename> the initial execution directory.
 </para>
 </section>
 
@@ -227,7 +227,7 @@ startup process &quot;sysgo&quot; makes <filename class="directory">CMDS</filena
 The directory <filename class="directory">/d0/DEFS</filename> is a directory that contains assembly
 language source code files which contain common system-wide symbolic
 definitions, and are normally included in assembly language programs
-by means of the OS-9 Assembler &quot;use&quot; directive. The presence and
+by means of the OS-9 Assembler <quote>use</quote> directive. The presence and
 use of this directory is optional, but highly recommended for any
 system used for assembly language programs. The files commonly
 contained in this directory are:

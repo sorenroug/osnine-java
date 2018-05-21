@@ -15,10 +15,10 @@
 
 <refsect1><title>Description</title>
 <para>
-This command is used to &quot;lock&quot; a previously loaded module into
+This command is used to <quote>lock</quote> a previously loaded module into
 memory. The link count of the module specified is incremented by one
-each time it is &quot;linked&quot;. The <command>unlink</command> command is
-used to &quot;unlock&quot;
+each time it is <quote>linked</quote>. The <command>unlink</command> command is
+used to <quote>unlock</quote>
 the module when it is no longer needed.
 </para>
 <para>

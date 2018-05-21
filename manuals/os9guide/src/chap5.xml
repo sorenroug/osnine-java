@@ -12,9 +12,9 @@ entertainment.
 </para>
 <para>
 OS-9 uses this capability all the time for internal functions.
-The simple way for you to do so is by putting a &quot;&amp;&quot; character at the
+The simple way for you to do so is by putting a <quote>&amp;</quote> character at the
 end of a command line which causes the shell to run your command as
-a &quot;background task&quot;.
+a <quote>background task</quote>.
 </para>
 <para>
 The information presented in this chapter is intended to give you
@@ -62,13 +62,13 @@ to share CPU time with all other active processes. Timeslicing is
 implemented using both hardware and software functions. The
 system's CPU is interrupted by a real time clock many (60 in the
 Color Computer) times each second. This basic time interval is
-called a &quot;tick&quot;, hence, the interval between ticks is a time slice.
+called a <quote>tick</quote>, hence, the interval between ticks is a time slice.
 This technique is called timeslicing because each second of CPU time
 is sliced up to be shared among several processes. This happens so
 rapidly that to a human observer all processes appear to execute
 continuously, unless the computer becomes overloaded with processing. If this
 happens, a noticeable delay in response to terminal
-input may occur, or &quot;batch&quot; programs may take much longer to run
+input may occur, or <quote>batch</quote> programs may take much longer to run
 than they ordinarily do. At any occurrence of a tick, OS-9 can suspend
 execution of one program and begin execution of another. The
 starting and stopping of programs is done in a manner that does not
@@ -97,7 +97,7 @@ Process CPU Share = -------------------
 
 <para>
 The CPU time allocation system automatically assigns programs one
-of three &quot;states&quot; that describe their current status. Process
+of three <quote>states</quote> that describe their current status. Process
 states are also important for coordinating process execution. A
 process may be in one and only one state at any instant, although
 state changes may be frequent. The states are:
@@ -120,7 +120,7 @@ state during the time a command program it has initiated is running.
 <para>
 <emphasis>SLEEPING:</emphasis>
 processes suspended by self-request for a specified time
-interval or until receipt of a &quot;signal&quot;. Signals are internal
+interval or until receipt of a <quote>signal</quote>. Signals are internal
 messages used to coordinate concurrent processes. This is the
 typical state of programs which are waiting for input/output
 operations.
@@ -139,7 +139,7 @@ change to the active state.
 <para>
 The sequence of operations required to create a new process and
 initially allocate its resources (especially memory) are
-automatically performed by OS-9's &quot;fork&quot; function. If for any
+automatically performed by OS-9's <quote>fork</quote> function. If for any
 reason any part of the sequence cannot be performed the fork is
 aborted and the prospective parent is passed an appropriate error
 code. The most frequent reason for failure is unavailablity of
@@ -150,14 +150,14 @@ available.
 </para>
 <para>
 When a process creates a new process, the creator is called the
-&quot;parent process&quot;, and the newly created process is called the &quot;child
-process&quot;. The new child can itself become a parent by creating yet
+<quote>parent process</quote>, and the newly created process is called the <quote>child
+process</quote>. The new child can itself become a parent by creating yet
 another process. If a parent process creates more than one child
-process, the children are called &quot;siblings&quot; with respect to each
+process, the children are called <quote>siblings</quote> with respect to each
 other. If the parent/child relationship of all processes in the
 system is examined, a hierarchical lineage becomes evident. In
 fact, this hierarchy is a tree structure that resembles a family
-tree. The &quot;family&quot; concept makes it easy to describe relationships
+tree. The <quote>family</quote> concept makes it easy to describe relationships
 between processes, and so it is used extensively in descriptions of
 OS-9's multiprogramming operations.
 </para>
@@ -181,14 +181,14 @@ The shell, passes command line parameters this way.
 </para></listitem>
 </itemizedlist>
 <para>
-The new process also &quot;inherits&quot; copies of certain of its parent's
+The new process also <quote>inherits</quote> copies of certain of its parent's
 properties. These are:
 </para>
 <itemizedlist mark="square">
 <listitem><para>
 A USER NUMBER which is used by the file security system and
 is used to identify all processes belonging to a specific user
-(this is not the same as the &quot;process ID&quot;, which identifies a
+(this is not the same as the <quote>process ID</quote>, which identifies a
 specific process) . This number is usually obtained from the
 system password file when a user logs on. The system manager
 always is user number zero.
@@ -216,9 +216,9 @@ ID number.
 </para></listitem>
 <listitem><para>
 MEMORY: enough memory required for the new process to run.
-Level Two systems give each process a unique &quot;address space&quot;.
+Level Two systems give each process a unique <quote>address space</quote>.
 In Level One systems, all processes share the single address
-space. A &quot;data area&quot;, used for the program's parameters,
+space. A <quote>data area</quote>, used for the program's parameters,
 variables, and stack is allocated for the process' exclusive
 use. A second memory area may also be required to load the
 program (primary module) if it is not resident in memory.
@@ -293,12 +293,12 @@ upward for data areas, as shown below:
 
 <para>
 When performing a fork operation, OS-9's first step is to attempt
-to locate the requested program module by searching the &quot;module
-directory&quot;, which has the address of every module present in memory.
+to locate the requested program module by searching the <quote>module
+directory</quote>, which has the address of every module present in memory.
 The 6809 instruction set supports a type of program called
-&quot;reentrant code&quot; which means the exact same &quot;copy&quot; of a program can
+<quote>reentrant code</quote> which means the exact same <quote>copy</quote> of a program can
 be shared by two or more different processes simultaneously without
-affecting each other, provided that each &quot;incarnation&quot; of the
+affecting each other, provided that each <quote>incarnation</quote> of the
 program has am independent memory area for its variables.
 </para>
 <para>
@@ -318,7 +318,7 @@ name is used as a pathlist (file name) and an attempt is made to
 load the program from mass storage.
 </para>
 <para>
-Every program module has a &quot;module header&quot; that describes the
+Every program module has a <quote>module header</quote> that describes the
 program and its memory requirements. OS-9 uses this to determine
 how much memory for variable storage should be allocated to the
 process (it can be given more memory by specifying an optional
@@ -347,7 +347,7 @@ as described above, loading the module from the specified file,
 verifying the CRC, and when attempting to add the valid module to
 the module directory, noticing that the module is already known, the
 load merely increments the known module's link count (the number of
-processes using the module.) The load command can be used to &quot;lock
+processes using the module.) The load command can be used to <quote>lock</quote>
 a program into memory. This can be useful if the same program is to
 be used frequently because the program will be kept in memory
 continuously, instead of being loaded repeatedly.
@@ -395,8 +395,8 @@ unlinked module to crash.
 <para>
 Another important aspect of program loading is the ability to
 have two or more programs resident in memory at the same time. This
-is possible because all OS-9 program modules are &quot;position-independent
-code&quot;, or &quot;PIC&quot;. PIC programs do not have to be loaded into
+is possible because all OS-9 program modules are <quote>position-independent
+code</quote>, or <quote>PIC</quote>. PIC programs do not have to be loaded into
 specific, predetermined memory addresses to work correctly, and can
 therefore be loaded at different memory addresses at different
 times. PIC programs require special types of machine language instructions
@@ -424,14 +424,14 @@ Even though PIC programs can be initially loaded at any address
 where free memory is available, program modules cannot be relocated
 dynamically afterwards, e.g., once a program is loaded it must
 remain at the address at which it was originally loaded (however
-Level Two systems can &quot;load&quot; (map) memory resident programs at
+Level Two systems can <quote>load</quote> (map) memory resident programs at
 different addresses in each process' address space). This characteristic
 can lead to a sometimes troublesome phenomenon called
-&quot;memory fragmentation&quot;. When programs are loaded, they are assigned
+<quote>memory fragmentation</quote>. When programs are loaded, they are assigned
 the first sufficiently large block of memory at the highest address
 possible in the address space. If a number of program modules are
 loaded, and subsequently one or more modules which are located in
-between other modules are &quot;unlinked&quot;, several fragments of free
+between other modules are <quote>unlinked</quote>, several fragments of free
 memory space will exist. The sum of the sizes of the free memory
 space may be quite large, but because they are scattered, not enough
 space will exist in a single block to load a program module larger

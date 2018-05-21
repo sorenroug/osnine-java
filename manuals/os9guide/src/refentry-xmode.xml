@@ -65,15 +65,15 @@ backspace-space-backspace sequence (default).</entry>
 </row>
 <row>
 <entry>bsl</entry>
-<entry>Backspace over line: lines are &quot;deleted&quot; by sending
+<entry>Backspace over line: lines are <quote>deleted</quote> by sending
 backspace-space-backspace sequences to erase the same
 line (for video terminals) (default).</entry>
 </row>
 <row>
 <entry>-bsl</entry>
-<entry>No backspace over line: lines are &quot;deleted&quot; by printing
+<entry>No backspace over line: lines are <quote>deleted</quote> by printing
 a new line  sequence (for hard-copy terminals).
-echo Input characters &quot;echoed&quot; back to terminal (default)</entry>
+echo Input characters <quote>echoed</quote> back to terminal (default)</entry>
 </row>
 <row>
 <entry>-echo</entry>
@@ -91,7 +91,7 @@ terminal on input and output carriage returns (default).</entry>
 <row>
 <entry>pause</entry>
 <entry>Screen pause on: output suspended upon full screen. See
-&quot;pag&quot; parameter for definition of screen size. Output
+<quote>pag</quote> parameter for definition of screen size. Output
 can be resumed by typing any key.</entry>
 </row>
 <row>
@@ -107,7 +107,7 @@ The number is decimal, default = 0.</entry>
 <row>
 <entry>pag=n</entry>
 <entry>Set video display page length to n (decimal) lines.
-Used for &quot;pause&quot; mode, see above.</entry>
+Used for <quote>pause</quote> mode, see above.</entry>
 </row>
 <row>
 <entry>bsp=h</entry>

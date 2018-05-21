@@ -39,13 +39,13 @@ explore the possibilities on your own.
 <para>
 The shell is a program that reads and processes command lines one
 at a time from its input path (usually your keyboard). Each line is
-first scanned (or &quot;parsed&quot;) in order to identify and process any of
+first scanned (or <quote>parsed</quote>) in order to identify and process any of
 the following parts which may be present:
 </para>
 
 <itemizedlist mark="square">
 <listitem><para>
-A program, procedure file, or built-in command name (&quot;verbs&quot;)
+A program, procedure file, or built-in command name (<quote>verbs</quote>)
 </para></listitem>
 <listitem><para>
 Parameters to be passed to the program
@@ -62,7 +62,7 @@ identified, the shell processes modifiers (if any). Any other text
 not yet processed is assumed to be parameters and passed to the program called.
 </para>
 <para>
-Unless the verb is a &quot;built-in command&quot;, the shell will run the
+Unless the verb is a <quote>built-in command</quote>, the shell will run the
 program named as a new process (task). It then deactivates itself
 until the program called eventually terminates, at which time it
 gets another input line, then the process is repeated. This happens
@@ -110,7 +110,7 @@ instead of its (smaller) default amount.</entry>
 
 <para>
 The verb must be the first name in the command line. After it
-has been scanned, the shell first checks if it is a &quot;built-in&quot;
+has been scanned, the shell first checks if it is a <quote>built-in</quote>
 command. If it is, it is immediately executed. Otherwise, the shell
 assumes it is a program name and attempts to locate and execute it.
 </para>
@@ -137,8 +137,8 @@ program's module header. A module header is part of all executable
 programs and holds the program's name, size, memory requirements,
 etc. Sometimes it is desirable to increase this default
 memory size. Memory can be assigned in 256-byte pages using the
-modifier &quot;#n&quot; where n is the decimal number of pages, or in 1024
-byte increments using the modifier &quot;#nK&quot;. The two examples below
+modifier <quote>#n</quote> where n is the decimal number of pages, or in 1024
+byte increments using the modifier <quote>#nK</quote>. The two examples below
 behave identically:
 </para>
 <screen>
@@ -151,10 +151,10 @@ OS9: copy #2K file1 file2    <lineannotation>(gives 2*1024 = 2048 bytes)</linean
 <title>I/O Redirection Modifiers</title>
 <para>
 The second kind of modifier is used to redirect the program's
-&quot;standard I/O paths&quot; to alternate files or devices. Well-written
+<quote>standard I/O paths</quote> to alternate files or devices. Well-written
 OS-9 programs use these paths for routine I/O. Because the programs
 do not use specific file or device names, it is fairly simple to
-&quot;redirect&quot; the I/O to any file or device without altering the
+<quote>redirect</quote> the I/O to any file or device without altering the
 program itself. Programs which normally receive input from a
 terminal or send output to a terminal use one or more of the
 standard I/O paths as defined below:
@@ -171,7 +171,7 @@ data from the program to the terminal's display.
 STANDARD ERROR OUTPUT PATH: This path is used to output
 routine status messages such as prompts and errors to the
 terminal's display (defaults to the same device as the
-standard output path). NOTE: The name &quot;error output&quot; is
+standard output path). NOTE: The name <quote>error output</quote> is
 sometimes misleading since many other kinds of messages besides
 errors are sent on this path.
 </para>
@@ -262,7 +262,7 @@ Programs are executed sequentially when each is entered on a
 separate line. More than one program can be specified on a single
 shell command line by separating each
 <replaceable>program name</replaceable> <replaceable>parameters</replaceable>
-from the next one with a &quot;;&quot; character. For example:
+from the next one with a <quote>;</quote> character. For example:
 </para>
 <screen>
 OS9: copy myfile /d1/newfile ; dir &gt;/p
@@ -273,8 +273,8 @@ This command line will first execute the <command>copy</command> command and the
 </para>
 <para>
 If an error is returned by any program, subsequent commands on
-the same line are not executed (regardless of the state of the &quot;x&quot;
-option), otherwise, &quot;;&quot; and &quot;return&quot; are identical
+the same line are not executed (regardless of the state of the <quote>x</quote>
+option), otherwise, <quote>;</quote> and <quote>return</quote> are identical
 separators.
 </para>
 <para>
@@ -288,7 +288,7 @@ OS9: dir &gt;/d1/myfile ; list temp &gt;/p; del temp
 <para>
 All programs executed sequentially are in fact separate, child
 processes of the shell. After initiating execution of a
-program to be executed sequentially, the shell enters the &quot;wait&quot;
+program to be executed sequentially, the shell enters the <quote>wait</quote>
 state until execution of the called program terminates.
 </para>
 </section>
@@ -296,7 +296,7 @@ state until execution of the called program terminates.
 <section xml:id="sec4.3.2">
 <title>Concurrent Execution</title>
 <para>
-The second kind of separator is the &quot;&amp;&quot; which implies concurrent
+The second kind of separator is the <quote>&amp;</quote> which implies concurrent
 execution, meaning that the program is run (as a separate, child
 process), but the shell does not wait for it to complete
 before processing the next command.
@@ -318,9 +318,9 @@ OS9:
 <para>
 This command line will cause shell to start the <command>dir</command> command
 executing, print the process ID number (&amp;007), and then immediately
-display the &quot;OS9:&quot; prompt and wait for another command to be
+display the <quote>OS9:</quote> prompt and wait for another command to be
 entered. Meanwhile the <command>dir</command> command will be busy sending a directory
-listing to the printer. You can display a &quot;status summary&quot; of all
+listing to the printer. You can display a <quote>status summary</quote> of all
 processes you have created by using the <command>procs</command> command. Below is
 another example:
 </para>
@@ -331,22 +331,22 @@ OS9: dir &gt;/p&amp; list file1&amp; copy file1 file2 ; del temp
 
 </para>
 <para>
-Because they were followed by &quot;&amp;&quot; separators, the <command>dir</command>,
+Because they were followed by <quote>&amp;</quote> separators, the <command>dir</command>,
 <command>list</command>, and
 <command>copy</command> programs will run concurrently,
 but the <command>del</command> program will not
 run until the <command>copy</command> program has terminated because sequential
-execution (&quot;;&quot;) was specified.
+execution (<quote>;</quote>) was specified.
 </para>
 </section>
 
 <section xml:id="sec4.3.3">
 <title>Pipes and Filters</title>
 <para>
-The third kind of separator is the &quot;!&quot; character which is used to
-construct &quot;pipelines&quot;. Pipelines consist of two or more concurrent
+The third kind of separator is the <quote>!</quote> character which is used to
+construct <quote>pipelines</quote>. Pipelines consist of two or more concurrent
 programs whose standard input and/or output paths connect to each
-other using &quot;pipes&quot;.
+other using <quote>pipes</quote>.
 </para>
 <para>
 Pipes are the primary means-by which data is transferred from
@@ -355,8 +355,8 @@ first-out buffers that behave like mass-storage files.
 </para>
 <para>
 I/O transfers using pipes are automatically buffered and
-synchronized. A single pipe may have several &quot;readers&quot; and several
-&quot;writers&quot;. Multiple writers send, and multiple readers accept, data
+synchronized. A single pipe may have several <quote>readers</quote> and several
+<quote>writers</quote>. Multiple writers send, and multiple readers accept, data
 to/from the pipe on a first-come, first-serve basis. An end-of-file
 will occur if an attempt is made to read from a pipe but there are
 no writers available to send data. Conversely, a write error will
@@ -364,10 +364,10 @@ occur if an attempt is made to write to a pipe having no readers.
 </para>
 <para>
 Pipelines are created by the shell when an input line having one
-or more &quot;!&quot; separators is processed. For each &quot;!&quot;, the standard
-output of the program named to the left of the &quot;!&quot; is redirected via
+or more <quote>!</quote> separators is processed. For each <quote>!</quote>, the standard
+output of the program named to the left of the <quote>!</quote> is redirected via
 a pipe to the standard input of the program named to the right of
-the &quot;!&quot;. Individual pipes are created for each &quot;!&quot; present.
+the <quote>!</quote>. Individual pipes are created for each <quote>!</quote> present.
 For example:
 </para>
 <screen>
@@ -383,15 +383,15 @@ standard output redirected to the printer.
 <para>
 All programs in a pipeline are executed concurrently. The pipes
 automatically synchronize the programs so the output of one never
-&quot;gets ahead&quot; of the input request of the next program in the
+<quote>gets ahead</quote> of the input request of the next program in the
 pipeline. This implies that data cannot flow through a pipeline any
 faster than the slowest program can process it. Some of the most
 useful applications of pipelines are jobs like character set
 conversion, print file formatting, data compression/decompression,
 etc. Programs which are designed to process data as components of a
-pipeline are often called &quot;filters&quot;.
+pipeline are often called <quote>filters</quote>.
 The <command>tee</command> command, which uses
-pipes to allow data to be simultaneously &quot;broadcast&quot; from a single
+pipes to allow data to be simultaneously <quote>broadcast</quote> from a single
 input path to several output paths, is a useful filter.
 </para>
 </section>
@@ -412,9 +412,9 @@ gives the same result as:
 <screen>
 OS9: dir /d0 &gt;/p; dir /d1 &gt;/p
 </screen>
-except for the subtle difference that the printer is &quot;kept&quot;
+except for the subtle difference that the printer is <quote>kept</quote>
 continuously in the first example; in the second case another user
-could &quot;steal&quot; the printer in between the <command>dir</command> commands.
+could <quote>steal</quote> the printer in between the <command>dir</command> commands.
 </para>
 <para>
 Command grouping can be used to cause a group of programs to be
@@ -453,7 +453,7 @@ names of commands or option switches that are built-in the shell.
 These commands are executed without loading a program and creating a
 new process, and generally affect how the shell operates. They can
 be used at the beginning of a line, or following any program
-separator (&quot;;&quot;, &quot;&amp;&quot;, or &quot;!&quot;).
+separator (<quote>;</quote>, <quote>&amp;</quote>, or <quote>!</quote>).
 Two or more adjacent built-in
 commands can be separated by spaces or commas.
 </para>
@@ -488,7 +488,7 @@ its place.</entry>
 </row>
 <row>
 <entry>* <replaceable>text</replaceable></entry>
-<entry>comment: &quot;text&quot; is not processed.</entry>
+<entry>comment: <quote>text</quote> is not processed.</entry>
 </row>
 <row>
 <entry><command>kill</command> <replaceable>Proc ID</replaceable></entry>
@@ -550,13 +550,13 @@ data to the standard error path.
 <para>
 The shell can start up another process also running the shell by
 means of the <command>shell</command> command. If the standard input path is
-redirected to a mass storage file, the new &quot;incarnation&quot; of the
+redirected to a mass storage file, the new <quote>incarnation</quote> of the
 shell can accept and execute command lines from the file instead of
 a terminal keyboard. The text file to be processed is
-called a &quot;procedure file&quot;. It contains one or more command lines
+called a <quote>procedure file</quote>. It contains one or more command lines
 that are identical to command lines that are manually entered from
-the keyboard. This technique is sometimes called &quot;batch&quot; or
-&quot;background&quot; processing.
+the keyboard. This technique is sometimes called <quote>batch</quote> or
+<quote>background</quote> processing.
 </para>
 <para>
 If the <replaceable>program name</replaceable> specified on a shell command line can not be
@@ -568,9 +568,9 @@ shell will automatically execute it as a procedure file.
 Execution of procedure files have a number of valuable
 applications. It can eliminate repetitive manual entry of commonly-used
 sequences of commands. It can allow the computer to execute a
-lengthy series of programs &quot;in the background&quot; while the computer is
-unattended or while the user is running other programs &quot;in the
-foreground&quot;.
+lengthy series of programs <quote>in the background</quote> while the computer is
+unattended or while the user is running other programs <quote>in the
+foreground</quote>.
 </para>
 <para>
 In addition to redirecting the shell's standard input to a
@@ -590,7 +590,7 @@ OS9: procfile
 </screen>
 <para>
 Both do exactly the same thing: execute the commands of the file
-<filename>procfile</filename>. To run the procedure file in a &quot;background&quot; mode you
+<filename>procfile</filename>. To run the procedure file in a <quote>background</quote> mode you
 simply add the ampersand operator:
 </para>
 <screen>
@@ -607,10 +607,10 @@ redirection of each shell's output to files:
 OS9: proc1 T &gt;&gt;stat1&amp; proc2 T &gt;&gt;stat2&amp;
 </screen>
 <para>
-Note that the built-in command &quot;T&quot; (copy input lines to error
+Note that the built-in command <quote>T</quote> (copy input lines to error
 output) was used above. They make the output file contain a record
-of all lines executed, but without useless &quot;OS9&quot; prompts intermixed.
-The &quot;-x&quot; built-in command can be used if you do
+of all lines executed, but without useless <quote>OS9</quote> prompts intermixed.
+The <quote>-x</quote> built-in command can be used if you do
 <emphasis>not</emphasis> want processing
 to stop if an error occurs. Note that the built-in commands only
 affect the shell that executes them, and not any others that may
@@ -634,10 +634,10 @@ system-wide.
 </para>
 <para>
 Programs called by the shell can return an error code in the CPU's
-&quot;B&quot; register (otherwise B should be cleared) upon termination. This
+<quote>B</quote> register (otherwise B should be cleared) upon termination. This
 type of error, as well as errors detected by the shell itself, will
 cause an error message to be displayed and processing of the command
-line or procedure file to be terminated unless the &quot;-x&quot; built-in
+line or procedure file to be terminated unless the <quote>-x</quote> built-in
 command has been previously executed.
 </para>
 </section>
@@ -709,7 +709,7 @@ please see the <command>login</command> command description.
 <para>
 The example above deserves special attention. Note that the
 <command>setime</command> command has its input redirected to the system console
-&quot;term&quot;, which is necessary because it would otherwise attempt to
+<quote>term</quote>, which is necessary because it would otherwise attempt to
 read the time information from its current standard input path,
 which is the procedure file and not the keyboard.
 </para>

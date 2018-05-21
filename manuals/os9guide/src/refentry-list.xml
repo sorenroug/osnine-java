@@ -38,7 +38,7 @@ list /d0/startup &gt;/P &amp;        <lineannotation>(output is redirected to pr
 list /D1/user5/document /d0/myfile /d0/Bob/text
 
 list /TERM &gt;/p                    <lineannotation>(copy keyboard to printer - use</lineannotation>
-                                       <lineannotation>&quot;escape&quot; key to terminate input)</lineannotation>
+                                       <lineannotation><quote>escape</quote> key to terminate input)</lineannotation>
 
 OS9: build animals
 ? cat

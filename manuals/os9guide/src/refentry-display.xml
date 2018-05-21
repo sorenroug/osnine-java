@@ -30,7 +30,7 @@ cursor and screen control codes) to terminals and other I/O devices.
 display 0C 1F 02 7F
 
 
-display 15 &gt;/p      (sends &quot;form feed&quot; to printer)
+display 15 &gt;/p      (sends <quote>form feed</quote> to printer)
 
 OS9: display 41 42 43 44 45 46
 ABCDEF

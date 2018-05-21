@@ -16,9 +16,9 @@
 <refsect1><title>Description</title>
 <para>
 Displays a list of processes running on the system. Normally only
-processes having the user's ID are listed, but if the &quot;-e&quot; option is
+processes having the user's ID are listed, but if the <quote>-e</quote> option is
 given, processes of all users are listed. The display is a
-&quot;snapshot&quot; taken at the instant the command is executed: processes
+<quote>snapshot</quote> taken at the instant the command is executed: processes
 can switch states rapidly, usually many times per second.
 </para>
 <para>

@@ -15,7 +15,7 @@
 
 <refsect1><title>Description</title>
 <para>
-This shell &quot;built in&quot; command sends an &quot;abort&quot; signal to the
+This shell <quote>built in</quote> command sends an <quote>abort</quote> signal to the
 process having the process ID number specified. The process to be
 aborted must have the same user ID as the user that executed the
 command. The <command>procs</command> command can be used to obtain the process ID

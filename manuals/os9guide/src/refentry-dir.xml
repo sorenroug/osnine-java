@@ -24,14 +24,14 @@
 Displays a formatted list of files names in a directory file on. the
 standard output path. If no parameters are given, the current
 <emphasis>data</emphasis>
-directory is shown. If the &quot;x&quot; option is given, the current
+directory is shown. If the <quote>x</quote> option is given, the current
 <emphasis>execution</emphasis>
 directory is shown. If a pathlist of a directory file is
 given, it is shown.
 
 </para>
 <para>
-If the &quot;e&quot; option is included, each file's entire description is
+If the <quote>e</quote> option is included, each file's entire description is
 displayed: size, address, owner, permissions, date and time of last
 modification.
 

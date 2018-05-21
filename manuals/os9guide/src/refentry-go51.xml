@@ -20,7 +20,7 @@ can be incorporated into OS-9 with the command:
 GO51
 </screen>
 This command replaces the normal text screen driver with one that
-uses high resolution graphics to &quot;draw&quot; the characters. As there
+uses high resolution graphics to <quote>draw</quote> the characters. As there
 are fewer pixels (dots) per character in this mode more characters
 can be displayed on the screen, albeit with some loss of character
 definition.

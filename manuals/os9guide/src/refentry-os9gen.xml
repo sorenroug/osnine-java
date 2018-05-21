@@ -59,8 +59,8 @@ For more information see: <xref linkend="sec6"/>,
 </refsect1>
 <refsect1><title>Examples</title>
 <para>
-To manually install a boot file on device &quot;d1&quot; which is an exact
-copy of the <filename>OS9Boot</filename> file on device &quot;d0&quot;:
+To manually install a boot file on device <quote>d1</quote> which is an exact
+copy of the <filename>OS9Boot</filename> file on device <quote>d0</quote>:
 </para>
 <screen>
 OS9: os9gen /d1          <lineannotation>(run OS9Gen)</lineannotation>
@@ -68,8 +68,8 @@ OS9: os9gen /d1          <lineannotation>(run OS9Gen)</lineannotation>
 [ESCAPE]                 <lineannotation>(enter end-of-file)</lineannotation>
 </screen>
 <para>
-To manually install a boot file on device &quot;d1&quot; which is a copy of
-the <filename>OS9Boot</filename> file on device &quot;d0&quot; with the addition of
+To manually install a boot file on device <quote>d1</quote> which is a copy of
+the <filename>OS9Boot</filename> file on device <quote>d0</quote> with the addition of
 modules stored in the files <filename>/d0/tape.driver</filename> and <filename>/d2/video.driver</filename>:
 </para>
 <screen>

@@ -46,7 +46,7 @@ After a few seconds of disk activity you should
 see a screen with the words <quote>OS9 BOOT</quote>.</para></listitem>
 
 <listitem><para>OS-9 will then begin
-its &quot;bootstrap&quot; loading process, which
+its <quote>bootstrap</quote> loading process, which
 involves ten to twenty seconds of disk activity. When the system
 startup has finished, a message followed by the shell prompt will be
 displayed.</para></listitem>
@@ -70,7 +70,7 @@ repeatedly fails your OS-9 diskette may be bad.</para></listitem>
 <listitem><para>If your <emphasis>Color Computer</emphasis> doesn't seem to understand the DOS command,
 your controller has DOS 1.0.  You will need to upgrade to DOS 1.1.</para></listitem>
 
-<listitem><para>If the &quot;OS9 BOOT&quot; message is displayed but nothing else happens,
+<listitem><para>If the <quote>OS9 BOOT</quote> message is displayed but nothing else happens,
 you may have a corrupted system disk. Hopefully you did make a backup!</para></listitem>
 </itemizedlist>
 </section>
@@ -84,11 +84,11 @@ which you always use after typing a command or response to OS-9; and
 the <keycap>&#8592;</keycap> left arrow key which you can use to erase typing mistakes.
 </para>
 <para>
-Your main disk drive is known to to OS-9 as &quot;/D0&quot; and is often
-called &quot;drive zero&quot;. If you have a second disk drive (drive one),
-OS-9 recognizes it as &quot;/D1&quot;. Why would anybody put a &quot;/&quot; in a name?
+Your main disk drive is known to to OS-9 as <quote>/D0</quote> and is often
+called <quote>drive zero</quote>. If you have a second disk drive (drive one),
+OS-9 recognizes it as <quote>/D1</quote>. Why would anybody put a <quote>/</quote> in a name?
 Because all input and output devices have names like files, and
-names that start with &quot;/&quot; are always device names.
+names that start with <quote>/</quote> are always device names.
 </para>
 </section>
 
@@ -110,13 +110,13 @@ for you to type in a command.
 </para>
 <para>
 Now you're ready to try some commands. A good first command to
-try is <command>dir</command> (for &quot;<emphasis>dir</emphasis>ectory&quot;).
+try is <command>dir</command> (for <quote><emphasis>dir</emphasis>ectory</quote>).
 This will display a list of the files
 on the System Disk. Just type:
 <screen>
 dir
 </screen>
-followed by a &quot;return&quot;. OS-9 should respond with a listing of file
+followed by a <quote>return</quote>. OS-9 should respond with a listing of file
 names which should look something like this:
 <screen>
  OS9Boot     startup     CMDS      SYS      DEFS
@@ -125,7 +125,7 @@ The file <filename>OS9Boot</filename> contains the OS-9 program in 6809 machine
 language, which was loaded into memory during the bootstrap operation.
 </para>
 <para>
-The file <filename>startup</filename> is a &quot;command file&quot; which is automatically run
+The file <filename>startup</filename> is a <quote>command file</quote> which is automatically run
 when the system starts up, and has the commands that printed the
 welcoming message and asked for the time. Later, You may want to
 replace this startup file with your own customized version after you
@@ -137,7 +137,7 @@ list startup
 As you can see, the <command>list</command> command displays the contents of files
 that contain text (alphabetic characters). Some files like the
 <filename>OS9Boot</filename> file contain binary data such as machine language
-programs. These files are called &quot;binary files&quot;, and attempts to
+programs. These files are called <quote>binary files</quote>, and attempts to
 list them will result in a jumbled, meaningless display. On the
 other hand, OS-9 will complain mightily if you try to run a text
 file as a program!
@@ -155,9 +155,9 @@ really more files on the disk than you suspect. The <command>dir</command> comma
 showed you what is the disk's
 <emphasis>root directory</emphasis> - so named because the
 OS-9 filing system resembles a tree. Growing out of the root
-directory are three &quot;branches&quot; - files which are additional
+directory are three <quote>branches</quote> - files which are additional
 directories of file names instead of programs or data. They in turn
-can have even more &quot;branches&quot; - ad infinitum. If you draw a map on
+can have even more <quote>branches</quote> - ad infinitum. If you draw a map on
 paper of how this works it does look like a tree.
 </para>
 <para>
@@ -220,7 +220,7 @@ Ready?
 </screen>
 
 immediately remove your system disk and insert a blank disk
-<emphasis>before</emphasis> you type &quot;Y&quot;.
+<emphasis>before</emphasis> you type <quote>Y</quote>.
 
 IF YOU HAVE TWO DISK DRIVES place the blank disk in drive one and
 type:
@@ -229,7 +229,7 @@ type:
 format /d1
 </screen>
 <para>
-WHEN THE BLANK DISK IS IN THE RIGHT PLACE, type &quot;Y&quot;, then &quot;ENTER&quot;.
+WHEN THE BLANK DISK IS IN THE RIGHT PLACE, type <quote>Y</quote>, then <quote>ENTER</quote>.
 This initiates the formatting process. IF THE CORRECT DEVICE NAME
 (/D1) IS NOT DISPLAYED: TYPE N  RIGHT NOW and start over, OR YOU
 MAY ERASE your System Disk.
@@ -288,13 +288,13 @@ X is being scratched
 Ok ?:
 </screen>
 <para>
-Answer &quot;Y&quot; for yes again, and the backup process should begin.
+Answer <quote>Y</quote> for yes again, and the backup process should begin.
 </para>
 <para>
 The <command>backup</command> command has two phases: the first phase copies
 everything from drive zero to drive one checking for errors while
-reading from the master but not for &quot;write&quot; errors. The second
-phase is the &quot;verify&quot; pass which makes sure everything was copied
+reading from the master but not for <quote>write</quote> errors. The second
+phase is the <quote>verify</quote> pass which makes sure everything was copied
 onto the new disk correctly.  If any errors are reported during the
 first (copy) pass, there is a problem with the master disk or its
 drive. If errors occur during the second (verify) pass, there is a

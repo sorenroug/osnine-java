@@ -36,11 +36,11 @@ devices such as terminals, printers, etc. Therefore, the
 is to be sent to a terminal or printer.
 </para>
 <para>
-The &quot;-s&quot; option causes <command>copy</command> to perform a single drive copy
-operation. The second pathlist must be a full pathlist if &quot;-s
+The <quote>-s</quote> option causes <command>copy</command> to perform a single drive copy
+operation. The second pathlist must be a full pathlist if <quote>-s</quote>
 appears. <command>Copy</command> will read a portion of the source disk into memory,
 you remove the source disk and place the destination disk into the
-drive, enter a &quot;C&quot; whereupon <command>copy</command> writes on the destination disk,
+drive, enter a <quote>C</quote> whereupon <command>copy</command> writes on the destination disk,
 this process continues until the entire file is copied.
 </para>
 <para>

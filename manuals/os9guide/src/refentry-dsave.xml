@@ -40,7 +40,7 @@ and <command>chd</command> commands in the output before generating copy command
 files in the subdirectory. Since <command>dsave</command> is recursive in operation,
 the procedure file will exactly replicate all levels of the file
 system from the current data directory downward (such a section of
-the file system is called a &quot;subtree&quot;).
+the file system is called a <quote>subtree</quote>).
 </para>
 <para>
 If the current working directory happens to be the root directory of
@@ -95,12 +95,12 @@ For more information see: <xref linkend="sec2.3"/>
 </refsect1>
 <refsect1><title>Examples</title>
 <para>
-Example which copies all files on &quot;d2&quot; to &quot;d1&quot;:
+Example which copies all files on <quote>d2</quote> to <quote>d1</quote>:
 </para>
 <screen>
-chd /d2                          <lineannotation>(select &quot;from&quot; directory)</lineannotation>
-dsave /d2 &gt;/d0/makecopy       <lineannotation>(make procedure file &quot;makecopy&quot;)</lineannotation>
-chd /d1                          <lineannotation>(select &quot;to&quot; directory)</lineannotation>
+chd /d2                          <lineannotation>(select <quote>from</quote> directory)</lineannotation>
+dsave /d2 &gt;/d0/makecopy       <lineannotation>(make procedure file <quote>makecopy</quote>)</lineannotation>
+chd /d1                          <lineannotation>(select <quote>to</quote> directory)</lineannotation>
 /d0/makcopy                      <lineannotation>(run procedure file)</lineannotation>
 
 chd /d0/MYFILES/STUFF
