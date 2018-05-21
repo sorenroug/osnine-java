@@ -1,6 +1,7 @@
+<?xml version="1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook">
-<title>Multiprogramming and Memory Management</title>
-<para>
+  <title>Multiprogramming and Memory Management</title>
+  <para>
 One of OS-9's most extraordinary abilities is multiprogramming,
 which is sometimes called timesharing or multitasking. Simply
 states, OS-9 lets you computer run more than one program at the same
@@ -10,41 +11,39 @@ printed. Or you can use your Color Computer to control household
 automation and still be able to use it for routine work and
 entertainment.
 </para>
-<para>
+  <para>
 OS-9 uses this capability all the time for internal functions.
 The simple way for you to do so is by putting a <quote>&amp;</quote> character at the
 end of a command line which causes the shell to run your command as
 a <quote>background task</quote>.
 </para>
-<para>
+  <para>
 The information presented in this chapter is intended to give you
 an insight into how OS-9 performs this amazing feat. You certainly
 don't have to know every detail of how multiprogramming works in
 order to use OS-9, but a basic working knowledge can help you
 discover many new ways to use your Color Computer.
 </para>
-<para>
+  <para>
 In order to allow several programs to run simultaneously and
 without interference, OS-9 must perform many coordination and
 resource allocation functions. The major system resources managed
 by OS-9 are:
 </para>
-<simplelist>
-<member>CPU Time</member>
-<member>Memory</member>
-<member>The input/output system</member>
-</simplelist>
-<para>
+  <simplelist>
+    <member>CPU Time</member>
+    <member>Memory</member>
+    <member>The input/output system</member>
+  </simplelist>
+  <para>
 In order for the computer to have reasonable performance, these
 resources must be managed in the most efficient manner possible.
 Therefore, OS-9 uses many techniques and strategies to optimize
 system throughput and capacity.
 </para>
-
-<section xml:id="sec5.1">
-<title>Processor Time Allocation and Timeslicing</title>
-
-<para>
+  <section xml:id="sec5.1">
+    <title>Processor Time Allocation and Timeslicing</title>
+    <para>
 CPU time is a resource that must be allocated wisely to maximize
 the computer's throughput. It is characteristic of many programs to
 spend much unproductive time waiting for various events, such as an
@@ -56,7 +55,7 @@ processing and would waste CPU time. An efficient multiprogramming
 operating system such as OS-9 automatically assigns CPU time to only
 those programs that can effectively use the, time.
 </para>
-<para>
+    <para>
 OS-9 uses a technique called <emphasis>timeslicing</emphasis> which allows processes
 to share CPU time with all other active processes. Timeslicing is
 implemented using both hardware and software functions. The
@@ -76,26 +75,24 @@ affect the program's execution. How frequently a process is given
 time slices depends upon its assigned priority relative to the
 assigned priority of other active processes.
 </para>
-<para>
+    <para>
 The percentage of CPU time assigned to any particular process
 cannot be exactly computed because there are dynamic variables such
 as time the process spends waiting for I/O devices. It can be
 roughly approximated by dividing the process's priority by the sum
 of the priority numbers of all processes:
 </para>
-<screen>
+    <screen>
 
                      Process Priority
 Process CPU Share = -------------------
                      Sum of All Active
                     Process' Priorities
 </screen>
-</section>
-
-<section xml:id="sec5.2">
-<title>Process States</title>
-
-<para>
+  </section>
+  <section xml:id="sec5.2">
+    <title>Process States</title>
+    <para>
 The CPU time allocation system automatically assigns programs one
 of three <quote>states</quote> that describe their current status. Process
 states are also important for coordinating process execution. A
@@ -104,21 +101,18 @@ state changes may be frequent. The states are:
 
 
 </para>
-<para>
-<emphasis>ACTIVE:</emphasis>
+    <para><emphasis>ACTIVE:</emphasis>
 processes which can currently perform useful processing.
 These are the only processes assigned CPU time.
 </para>
-<para>
-<emphasis>WAITING:</emphasis>
+    <para><emphasis>WAITING:</emphasis>
 processes which have been suspended until another process
 terminates. This state is used to coordinate execution of
 sequential programs. The shell, for example, will be in the waiting
 state during the time a command program it has initiated is running.
 
 </para>
-<para>
-<emphasis>SLEEPING:</emphasis>
+    <para><emphasis>SLEEPING:</emphasis>
 processes suspended by self-request for a specified time
 interval or until receipt of a <quote>signal</quote>. Signals are internal
 messages used to coordinate concurrent processes. This is the
@@ -126,17 +120,15 @@ typical state of programs which are waiting for input/output
 operations.
 
 </para>
-<para>
+    <para>
 
 Sleeping and waiting processes are not given CPU time until they
 change to the active state.
 </para>
-</section>
-
-<section xml:id="sec5.3">
-<title>Creation of New Processes</title>
-
-<para>
+  </section>
+  <section xml:id="sec5.3">
+    <title>Creation of New Processes</title>
+    <para>
 The sequence of operations required to create a new process and
 initially allocate its resources (especially memory) are
 automatically performed by OS-9's <quote>fork</quote> function. If for any
@@ -148,7 +140,7 @@ to be run cannot be found. A process can create many new processes,
 subject only to the limitation of the amount of unassigned memory
 available.
 </para>
-<para>
+    <para>
 When a process creates a new process, the creator is called the
 <quote>parent process</quote>, and the newly created process is called the <quote>child
 process</quote>. The new child can itself become a parent by creating yet
@@ -161,60 +153,73 @@ tree. The <quote>family</quote> concept makes it easy to describe relationships
 between processes, and so it is used extensively in descriptions of
 OS-9's multiprogramming operations.
 </para>
-<para>
+    <para>
 When the parent issues a fork request to OS-9, it must specify
 the following required information:
 </para>
-<itemizedlist mark="square">
-<listitem><para>
+    <itemizedlist mark="square">
+      <listitem>
+        <para>
 A PRIMARY MODULE, which is the name of the program to be
 executed by the new process. The program can already be present
 in memory, or OS-9 may load it from a mass storage file having
 the same name.
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 PARAMETERS, which is data specified by the parent to be
 passed to and used by the new process. This data is copied to
 part of the child process' memory area. Parameters are
 frequently used to pass file names, initialization values, etc.
 The shell, passes command line parameters this way.
-</para></listitem>
-</itemizedlist>
-<para>
+</para>
+      </listitem>
+    </itemizedlist>
+    <para>
 The new process also <quote>inherits</quote> copies of certain of its parent's
 properties. These are:
 </para>
-<itemizedlist mark="square">
-<listitem><para>
+    <itemizedlist mark="square">
+      <listitem>
+        <para>
 A USER NUMBER which is used by the file security system and
 is used to identify all processes belonging to a specific user
 (this is not the same as the <quote>process ID</quote>, which identifies a
 specific process) . This number is usually obtained from the
 system password file when a user logs on. The system manager
 always is user number zero.
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 STANDARD INPUT AND OUTPUT PATHS: the three paths (input,
 output, and error/status) used for routine input and output.
 Note that most paths (files) may be shared simultaneously by
 two or more processes. The two current working
 directories are also inherited.
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 PROCESS PRIORITY which determines what proportion of CPU
 time the process receives with respect to others.
-</para></listitem>
-</itemizedlist>
-<para>
+</para>
+      </listitem>
+    </itemizedlist>
+    <para>
 As part of the fork operation, OS-9 automatically assigns:
 </para>
-<itemizedlist mark="square">
-<listitem><para>
+    <itemizedlist mark="square">
+      <listitem>
+        <para>
 A PROCESS ID: a number from 1 to 255, which is used to
 identify specific processes. Each process has a unique process
 ID number.
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 MEMORY: enough memory required for the new process to run.
 Level Two systems give each process a unique <quote>address space</quote>.
 In Level One systems, all processes share the single address
@@ -222,42 +227,54 @@ space. A <quote>data area</quote>, used for the program's parameters,
 variables, and stack is allocated for the process' exclusive
 use. A second memory area may also be required to load the
 program (primary module) if it is not resident in memory.
-</para></listitem>
-</itemizedlist>
-<para>
+</para>
+      </listitem>
+    </itemizedlist>
+    <para>
 To summarize, the following items are given to or associated with
 new processes:
 </para>
-
-<itemizedlist mark="square">
-<listitem><para>
+    <itemizedlist mark="square">
+      <listitem>
+        <para>
 Primary Module (program module to be run)
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Parameter(s) passed from parent to child
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 User Number
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Standard I/O paths and working directories
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Process Priority
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Process ID
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Memory
-</para></listitem>
-</itemizedlist>
-
-</section>
-
-<section xml:id="sec5.4">
-<title>Basic Memory Management Functions</title>
-<para>
+</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section xml:id="sec5.4">
+    <title>Basic Memory Management Functions</title>
+    <para>
 An important OS-9 function is memory management. OS-9 automatically allocates
 all system memory to itself and to processes, and
 also keeps track of the logical <emphasis>contents</emphasis>
@@ -266,12 +283,12 @@ program modules are resident in memory at any given time). The
 result is that you seldom have to be bothered with the actual memory
 addresses of programs or data.
 </para>
-<para>
+    <para>
 Within the address space, memory is assigned from higher
 addresses  downward  for  program  modules, and from lower addresses
 upward for data areas, as shown below:
 </para>
-<screen>
+    <screen>
                 +---------------------------+  highest address
                 !       program modules     !
                 !         (RAM or ROM)      !
@@ -288,10 +305,9 @@ upward for data areas, as shown below:
                 !                           !
                 +---------------------------+  lowest address (0)
 </screen>
-<section xml:id="sec5.4.1">
-<title>Loading Program Modules Into Memory</title>
-
-<para>
+    <section xml:id="sec5.4.1">
+      <title>Loading Program Modules Into Memory</title>
+      <para>
 When performing a fork operation, OS-9's first step is to attempt
 to locate the requested program module by searching the <quote>module
 directory</quote>, which has the address of every module present in memory.
@@ -299,9 +315,9 @@ The 6809 instruction set supports a type of program called
 <quote>reentrant code</quote> which means the exact same <quote>copy</quote> of a program can
 be shared by two or more different processes simultaneously without
 affecting each other, provided that each <quote>incarnation</quote> of the
-program has am independent memory area for its variables.
+program has an independent memory area for its variables.
 </para>
-<para>
+      <para>
 Almost all OS-9 family software is reentrant and can make most
 efficient use of memory. For example, Basic09 requires 22K bytes of
 memory to load into. If a request to run Basic09 is made, but
@@ -312,12 +328,12 @@ memory). OS-9 automatically keeps track of how many processes are
 using each program module and deletes the module (freeing its memory
 for other uses) when all processes using the module have terminated.
 </para>
-<para>
+      <para>
 If the requested program module is not already in memory, the
 name is used as a pathlist (file name) and an attempt is made to
-load the program from mass storage.
+load the program from mass storage (see <xref linkend="sec3.9.4"/>).
 </para>
-<para>
+      <para>
 Every program module has a <quote>module header</quote> that describes the
 program and its memory requirements. OS-9 uses this to determine
 how much memory for variable storage should be allocated to the
@@ -328,7 +344,7 @@ and is an essential part of OS-9 operation at the machine language
 level. A detailed description of memory modules and module headers
 can be found in the <citetitle pubwork="book">OS-9 System Programmer's Manual</citetitle>.
 </para>
-<para>
+      <para>
 Programs can also be explicitly loaded into memory using the
 <command>load</command> command. As with fork, the program will actually be loaded
 only if it is not already in memory. If the module is not in
@@ -340,7 +356,19 @@ memory limit is exceeded, or until a module with an invalid format
 is encountered. OS-9 always links to the first module read from the
 file.
 </para>
-<para>
+      <para>
+Level One systems load modules on 256-bytes page boundaries.
+Level Two system load modules contiguously on memory block boundaries. The block size is
+usually 2K per block for systems equipped with MC6829 MMUs, or 4K bytes for
+most SS-50 bus systems.
+Free memory to be used for <emphasis>user data area</emphasis> need not be contiguous
+because the MMU can map scattered free blocks th be logically contiguous.
+Since OS-9 will request the largest physically contiguous memory block available
+(up to 56K) to load program modules, load operations can fail even if sufficient
+total free memory exists. Any of this memory not used by the load operation is
+returned to the system.
+</para>
+      <para>
 If the program module <emphasis>is</emphasis> already in memory,
 the load will proceed
 as described above, loading the module from the specified file,
@@ -352,7 +380,7 @@ a program into memory. This can be useful if the same program is to
 be used frequently because the program will be kept in memory
 continuously, instead of being loaded repeatedly.
 </para>
-<para>
+      <para>
 The opposite of <command>load</command> is the <command>unlink</command> command, which decreases a
 program module's link count by one. Recall that when this count becomes zero
 (indicating the module in no longer used by any process),
@@ -362,7 +390,15 @@ generally used in conjunction with the <command>load</command> command (programs
 loaded by fork are automatically unlinked when the program
 terminates).
 </para>
-<para>
+      <para>
+On Level Two systems, multiple modules loaded from a single file are logically
+associated by the memory management logic. All modules in the group will occupy
+contiguous physical memory blocks. The group's memory can only be deallocated when
+all the modules which are members of the group have zero link counts.
+Similarly, linking to one module within a group causes all other modules in the group
+to be mapped into the process's address space. (see <xref linkend="sec3.9.4"/>).
+</para>
+      <para>
 Here is an example of the use of
 <command>load</command> and <command>unlink</command> to lock a
 program in memory. Suppose the <command>copy</command> command will be used five
@@ -370,14 +406,14 @@ times. Normally, the copy command would be loaded each time the
 <command>copy</command> command is called. If the <command>load</command> command is used first,
 <command>copy</command> will be locked into memory first, for example:
 </para>
-<screen>
+      <screen>
 OS9: load copy
 OS9: copy file1 file1a
 OS9: copy file2 file2a
 OS9: copy file3 file3a
 OS9: unlink copy
 </screen>
-<para>
+      <para>
 It is important to use the <command>unlink</command> command after the program is no
 longer needed, or the program will continue to occupy memory which
 otherwise could be used for other purposes. Be very careful
@@ -387,12 +423,10 @@ memory used by the module to be deallocated and its contents
 destroyed. This will certainly cause all programs using the
 unlinked module to crash.
 </para>
-</section>
-
-<section xml:id="sec5.4.2">
-<title>Loading Multiple Programs</title>
-
-<para>
+    </section>
+    <section xml:id="sec5.4.2">
+      <title>Loading Multiple Programs</title>
+      <para>
 Another important aspect of program loading is the ability to
 have two or more programs resident in memory at the same time. This
 is possible because all OS-9 program modules are <quote>position-independent
@@ -404,7 +438,7 @@ which few computers have. The ability of the 6809
 microprocessor to use this type of program is one of its most
 powerful features.
 </para>
-<para>
+      <para>
 The <command>load</command> command can therefore be used two or more times (or a
 single file may contain several memory modules), and each
 program module will be automatically loaded at different,
@@ -414,12 +448,10 @@ technique also relieves the user from having to be directly concerned with
 absolute memory addresses. Any number of program modules
 can be loaded until available system memory is full.
 </para>
-</section>
-
-<section xml:id="sec5.4.3">
-<title>Memory Fragmentation</title>
-
-<para>
+    </section>
+    <section xml:id="sec5.4.3">
+      <title>Memory Fragmentation</title>
+      <para>
 Even though PIC programs can be initially loaded at any address
 where free memory is available, program modules cannot be relocated
 dynamically afterwards, e.g., once a program is loaded it must
@@ -437,7 +469,7 @@ space may be quite large, but because they are scattered, not enough
 space will exist in a single block to load a program module larger
 than the largest free space.
 </para>
-<para>
+      <para>
 The <command>mfree</command> command shows the location and size of each unused
 memory area and the <command>mdir e</command> command shows the address, size, and
 link (use) count of each module in the address space. These
@@ -445,6 +477,6 @@ commands can be used to detect fragmentation. Memory can usually be
 de-fragmemted by unlinking scattered modules and reloading them.
 <emphasis>Make certain</emphasis> none are in use before doing so.
 </para>
-</section>
-</section>
+    </section>
+  </section>
 </chapter>

@@ -1,30 +1,45 @@
-<refentry xml:id="mfree" xmlns="http://docbook.org/ns/docbook">
-<refnamediv>
-<refname>MFREE</refname>
-<refpurpose>Display Free System RAM</refpurpose>
-</refnamediv>
-
-<refsynopsisdiv>
-<cmdsynopsis>
-<command>mfree</command>
-</cmdsynopsis>
-</refsynopsisdiv>
-
-<refsect1><title>Description</title>
-<para>
+<?xml version="1.0"?>
+<refentry xmlns="http://docbook.org/ns/docbook" xml:id="mfree">
+  <refnamediv>
+    <refname>MFREE</refname>
+    <refpurpose>Display Free System RAM</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>mfree</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>Description</title>
+    <para>
 Displays a list of which areas of memory are not presently in use
 and available for assignment. The address and size of each free
-memory block are displayed. The size is given as the number of 256-byte
-pages. This information is useful to detect and correct memory
+memory block are displayed.
+</para>
+    <para>
+In Level One systems, <command>mfree</command> shows the address and size of each contiguous
+area of unassigned RAM. The size is given as the number of 256-byte pages.
+This information is useful to detect and correct memory
 fragmentation (see <xref linkend="sec5.4.3"/>).
 </para>
-<para>
+    <para>
+In Level Two systems, <command>mfree</command> shows the block number, physical (extended)
+beginning and ending addresses, and size of each contiguous area of unassigned RAM.
+The size is given in number of blocks and in K bytes. The block size is usually 2K
+per block for systems equipped with MC6829 MMUs, or 4K bytes for most SS-50 bus
+systems. Free memory to be used for <emphasis>user data area</emphasis> need not be
+contiguous because the MMU can map scattered free blocks to be logically contiguous.
+Since OS-9 requires 56K of physically contiguous memory to load program modules,
+load operations can fail even if sufficient total free memory exists.
+</para>
+    <para>
 For more information see: <xref linkend="sec5.4"/>, <xref linkend="sec5.4.3"/>
 
 </para>
-</refsect1>
-<refsect1><title>Examples</title>
-<screen>
+  </refsect1>
+  <refsect1>
+    <title>Example (Level One MFREE)</title>
+    <screen>
 OS9: mfree
 
  Address  pages
@@ -35,6 +50,17 @@ B100-B1FF    1
 
 Total pages free = 166
 </screen>
-</refsect1>
+  </refsect1>
+  <refsect1>
+    <title>Example (Level Two MFREE)</title>
+    <screen>
+  Blk Begin  End  Blks  Size
+  --- ----- ----- ---- ------
+   10 10000 10FFF    1     4K
+   18 18000 1DFFF    6    24K
+   20 20000 3FFFF   32   128K
+                  ==== ======
+           Total:   39   156K
+</screen>
+  </refsect1>
 </refentry>
-

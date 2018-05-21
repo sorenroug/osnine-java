@@ -1,41 +1,42 @@
-<refentry xml:id="procs" xmlns="http://docbook.org/ns/docbook">
-<refnamediv>
-<refname>PROCS</refname>
-<refpurpose>Display Processes</refpurpose>
-</refnamediv>
-
-<refsynopsisdiv>
-<cmdsynopsis>
-<command>procs</command>
-<arg choice="opt">
-  <option>-e</option>
-</arg>
-</cmdsynopsis>
-</refsynopsisdiv>
-
-<refsect1><title>Description</title>
-<para>
+<?xml version="1.0"?>
+<refentry xmlns="http://docbook.org/ns/docbook" xml:id="procs">
+  <refnamediv>
+    <refname>PROCS</refname>
+    <refpurpose>Display Processes</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>procs</command>
+      <arg choice="opt">
+        <option>-e</option>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>Description</title>
+    <para>
 Displays a list of processes running on the system. Normally only
 processes having the user's ID are listed, but if the <quote>-e</quote> option is
 given, processes of all users are listed. The display is a
 <quote>snapshot</quote> taken at the instant the command is executed: processes
 can switch states rapidly, usually many times per second.
 </para>
-<para>
+    <para>
 PROCS shows the user and process ID numbers, priority, state
 (process status), memory size (in 256 byte pages), primary program
 module, and standard input path.
 </para>
-<para>
+    <para>
 For more information see: <xref linkend="sec5.1"/>,
 <xref linkend="sec5.2"/>, <xref linkend="sec5.3"/>
 </para>
-</refsect1>
-<refsect1><title>Examples</title>
-<para>
+  </refsect1>
+  <refsect1>
+    <title>Examples</title>
+    <para>
 Level One Example:
 </para>
-<screen>
+    <screen>
 User# Id pty  state   Mem Primary module
 ---- --- --- -------- --- --------------
    0   2   0  active    2 Shell
@@ -44,6 +45,19 @@ User# Id pty  state   Mem Primary module
    1   4   1  waiting   4 Shell
    1   5   1  active   64 Basic09
 </screen>
-</refsect1>
+    <para>
+Level Two Example:
+</para>
+    <screen>
+   Parnt User     Mem Stack
+ID  ID  Index Pty Siz  Ptr   Primary Module
+--- --- ----- --- --- ----- ----------------
+  2   1     0 255   1 $98E2 SysGo
+  3   2     0 255   2 $96E2 Shell
+  4   3     0 255  96 $94E2 Basic09
+  5   4     0 255   2 $92E2 Shell
+  6   5     0 255   4 $03F3 Procs
+  7   2     0 128  48 $A0F0 Cobol
+</screen>
+  </refsect1>
 </refentry>
-

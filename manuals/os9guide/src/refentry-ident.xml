@@ -67,16 +67,16 @@ Module name
 
 <refsect1><title>Examples</title>
 <screen>
-OS9: ident -m  ident
-Header for:  Ident               &lt;Module name&gt;
-Module size: $06A5    #1701      &lt;Module size&gt;
-Module CRC:  $1CE78A (Good)      &lt;Good or Bad&gt;
-Hdr parity:  $8B                 &lt;Header parity&gt;
-Exec. off:   $0222    #546       &lt;Execution offset&gt;
-Data size:   $0CA1    #3233      &lt;Permanent storage requirement&gt;
-Edition:     $05      #5         &lt;First byte after module name&gt;
-Ty/La At/Rv: $11 $81             &lt;Type/Language Attribute/Revision&gt;
-Prog mod, 6809 obj, re-en        &lt;Module type, Language, Attribute&gt;
+OS9: ident -m ident
+Header for:  Ident               <lineannotation>Module name</lineannotation>
+Module size: $06A5    #1701      <lineannotation>Module size</lineannotation>
+Module CRC:  $1CE78A (Good)      <lineannotation>Good or Bad</lineannotation>
+Hdr parity:  $8B                 <lineannotation>Header parity</lineannotation>
+Exec. off:   $0222    #546       <lineannotation>Execution offset</lineannotation>
+Data size:   $0CA1    #3233      <lineannotation>Permanent storage requirement</lineannotation>
+Edition:     $05      #5         <lineannotation>First byte after module name</lineannotation>
+Ty/La At/Rv: $11 $81             <lineannotation>Type/Language Attribute/Revision</lineannotation>
+Prog mod, 6809 obj, re-en        <lineannotation>Module type, Language, Attribute</lineannotation>
 </screen>
 <screen>
 OS9: ident /d0/os9boot -s

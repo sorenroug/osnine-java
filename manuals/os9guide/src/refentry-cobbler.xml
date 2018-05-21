@@ -17,13 +17,13 @@
 <para>
 <command>Cobbler</command> is used to create the <filename>OS9Boot</filename> file required on any disk
 from which OS-9 is to be bootstrapped. The boot file will consist
-of the <emphasis>same modules which were loaded into memory during the most
-recent boostrap.</emphasis>
+of the <emphasis>same modules which were loaded into memory during the most recent boostrap.</emphasis>
 To add modules to the bootstrap file use the
 <command>OS9Gen</command> command. <command>Cobbler</command> also writes the OS-9 kernel on the first
 fifteen sectors of track 34, and excludes these sectors from the
 disk allocation map. If any files are present on these sectors
 <command>cobbler</command> will display an error message.
+Level Two systems <emphasis>must</emphasis> use <command>OS9Gen</command> to create bootstrap files.
 </para>
 <para>
 NOTE: The boot file must fit into one contiguous block on the mass-storage
