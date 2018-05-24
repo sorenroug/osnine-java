@@ -1,11 +1,26 @@
-* ACIA51 is a device driver for the serial port.
+ nam ACIA51
+ ttl Interrupt-Driven Acia driver for Roswell 6551
 
-         nam   ACIA51
-         ttl   os9 device driver
+* Copyright 1982 by Microware Systems Corporation
+* Reproduced Under License
+
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than
+* the licensee is strictly prohibited!
+
 
          ifp1
          use   defsfile
          endc
+
+Edition equ 4 Current Edition
+
+***************
+* Interrupt-driven Acia Device Driver
+
+
 DataReg         equ   0
 StatReg         equ   1
 CmndReg         equ   2
@@ -18,7 +33,7 @@ INPERR   set   NOTDSR+DCDLST
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
+         mod   eom,name,tylg,atrv,ACIENT,size
 u0000    rmb   1
 u0001    rmb   2
 u0003    rmb   1
@@ -32,42 +47,48 @@ u000D    rmb   1
 u000E    rmb   1
 u000F    rmb   1
 u0010    rmb   13
-ReadPtr  rmb   1
-u001E    rmb   1
-u001F    rmb   1      0 = not ready?
-WritPtr  rmb   1      end of circular buffer
-u0021    rmb   1      start of circular buffer
-u0022    rmb   1      Flag register?
-u0023    rmb   1
+INXTI  rmb   1
+INXTO    rmb   1
+INCNT    rmb   1      0 = not ready?
+ONXTI  rmb   1      end of circular buffer
+ONXTO    rmb   1      start of circular buffer
+HALTED    rmb   1      Flag register?
+INHALT    rmb   1
 u0024    rmb   2
 u0026    rmb   1
-ReadBuf  rmb   80
-RxQLen   equ   .-ReadBuf
-TxQ      rmb   140
-TxQLen   equ   .-TxQ       Tx Queue length
+INPBUF  rmb   80
+INPSIZ   equ   .-INPBUF
+OUTBUF      rmb   140
+OUTSIZ   equ   .-OUTBUF       Tx Queue length
 size     equ   .
          fcb   $03
 name     equ   *
          fcs   /ACIA51/
-         fcb   $04
-start    equ   *
-         lbra  INIT
+
+ fcb Edition Current Revision
+
+         
+ACIENT lbra  INIT
          lbra  READ
          lbra  WRITE
          lbra  GETSTA
          lbra  PUTSTA
-         lbra  TERM
-*****************************
-* Init
-* (U) = Address of device static storage
-* (Y) = Address of device descriptor module
-IRQPKT    fcb   $00,$80,$0A
+         lbra  TRMNAT
 
-INIT     ldx   V.PORT,u
+
+ACMASK    fcb   $00,$80,$0A
+
+ ttl INTERRUPT-DRIVEN Acia device routines
+ pag
+***************
+* Init
+*   Initialize (Terminal) Acia
+*
+INIT ldx V.PORT,U I/o port address
 
          stb   StatReg,x
          ldb   #$02
-         stb   <u0022,u
+         stb   <HALTED,u
          ldd   <$26,y       a=Parity and b=baud rate?
          andb  #$0F
          leax  <L007C,pcr
@@ -79,17 +100,17 @@ INIT     ldx   V.PORT,u
          lda   ,x
          lda   ,x
          tst   StatReg,x
-         lbmi  NotRdy
+         lbmi  ErrNtRdy
          clra
          clrb
-         std   <ReadPtr,u
-         std   <WritPtr,u
-         sta   <u0023,u
-         sta   <u001F,u
+         std   <INXTI,u
+         std   <ONXTI,u
+         sta   <INHALT,u
+         sta   <INCNT,u
          std   <u0024,u
          ldd   V.PORT,u        get address to poll
          addd  #StatReg         Add location of status register
-         leax  >IRQPKT,pcr     point to IRQ packet
+         leax  >ACMASK,pcr     point to IRQ packet
          leay  >ACIRQ,pcr     point to IRQ service routine
          os9   F$IRQ
          bcs   INITERR         abnormal exit if error
@@ -117,34 +138,34 @@ L007C    fcb   $13        110 baud
 *         Y = Address of the path Descriptor
 *  Output A = character read
 *
-L0084    bsr   NoData
-READ     lda   <u0023,u
-         ble   L00A1
-         ldb   <u001F,u
+READ00    bsr   ACSLEP
+READ     lda   INHALT,u
+         ble   Read.a
+         ldb   INCNT,u
          cmpb  #$0A
-         bhi   L00A1
+         bhi   Read.a
          ldb   u000F,u
          orb   #$80
-         stb   <u0023,u
-         ldb   V.TYPE,u
+ stb INHALT,U flag input resume
+ ldb V.TYPE,U get control value
          orb   #$05
          ldx   V.PORT,u
          stb   CmndReg,x
-L00A1    tst   <u0024,u
-         bne   NotRdy
-         ldb   <u001E,u
-         leax  <ReadBuf,u
-         orcc  #IntMasks       Block I and F interrupts
-         cmpb  <ReadPtr,u
-         beq   L0084      No data available
+Read.a    tst   <u0024,u
+         bne   ErrNtRdy
+         ldb   <INXTO,u
+         leax  <INPBUF,u
+ orcc #IntMasks calm interrupts
+         cmpb  <INXTI,u
+         beq   READ00      No data available
          abx
          lda   ,x
-         dec   <u001F,u
+         dec   <INCNT,u
          incb
-         cmpb  #RxQLen-1
+         cmpb  #INPSIZ-1
          bls   L00BF
          clrb
-L00BF    stb   <u001E,u
+L00BF    stb   <INXTO,u
          clrb
          ldb   V.ERR,u
          beq   L00CF
@@ -154,61 +175,73 @@ L00BF    stb   <u001E,u
          ldb   #E$Read
 L00CF    andcc #^IntMasks       Allow I and F interrupts
          rts
-NotRdy   comb
-         ldb   #E$NotRdy
-         rts
 
-NoData   pshs  x,b,a
-         lda   V.BUSY,u   get proc ID
-         sta   V.WAKE,u   arrange for wakeup
-         andcc #^IntMasks       Allow I and F interrupts
-         ldx   #0         Sleep indefinitely (x=0)
-         os9   F$Sleep    Await an IRQ
+ErrNtRdy comb
+ ldb #E$NotRdy
+ rts
+
+**********
+* Acslep - Sleep for I/O activity
+*  This version Hogs Cpu if signal pending
+*
+* Passed: (cc)=Irq's Must be disabled
+*         (U)=Global Storage
+*         V.Busy,U=current proc id
+* Destroys: possibly Pc
+
+ACSLEP pshs D,X
+ lda V.BUSY,U get current process id
+ sta V.Wake,U arrange wake up signal
+ andcc #^IntMasks interrupts ok now
+ ldx #0
+ OS9 F$Sleep wait for input data
          ldx   <D.Proc
          ldb   <P$Signal,x
-         beq   L00EF
+         beq   ACSL90
          cmpb  #$03       Abort?
-         bls   L00F8
-L00EF    clra
+         bls   ACSLER
+ACSL90    clra
          lda   $0D,x
          bita  #$02
-         bne   L00F8
+         bne   ACSLER
          puls  pc,x,b,a
-L00F8    leas  $06,s
+ACSLER    leas  $06,s
          coma
          rts
 
-*****************************
-* WRITE
-* Write a byte
-*  Entry: U = Address of device static Storage
-*         Y = Address of the path Descriptor
-*  Output A = character to write
+***************
+* Write
+*   Write char Through Acia
 *
-L00FC    bsr   NoData
-WRITE    leax  <TxQ,u   Base of buffer?
-         ldb   <WritPtr,u
+* Passed: (A)=char to write
+*         (Y)=Path Descriptor
+*         (U)=Static Storage address
+* returns: CC=Set If Busy (output buffer Full)
+*
+WRIT00    bsr   ACSLEP
+WRITE    leax  <OUTBUF,u   Base of buffer?
+         ldb   <ONXTI,u
          abx              Add B into X
          sta   ,x
          incb
-         cmpb  #TxQLen-1           ; End of Queue area ?
+         cmpb  #OUTSIZ-1           ; End of Queue area ?
          bls   L010D
          clrb
 L010D    orcc  #IntMasks       Block I and F interrupts
-         cmpb  <u0021,u
-         beq   L00FC
-         stb   <WritPtr,u
-         lda   <u0022,u
+         cmpb  <ONXTO,u
+         beq   WRIT00
+         stb   <ONXTI,u
+         lda   <HALTED,u
          beq   L012B
          anda  #$FD
-         sta   <u0022,u
+         sta   <HALTED,u
          bne   L012B
          lda   V.TYPE,u
          ora   #$05
          ldx   V.PORT,u
          sta   CmndReg,x
 L012B    andcc #^IntMasks      Allow I and F interrupts
-noerror  clrb
+Write90  clrb
          rts
 
 **************************
@@ -218,15 +251,15 @@ noerror  clrb
 * (U) = Address of device static storage
 
 GETSTA   cmpa  #SS.Ready
-         bne   ASKEOF
-         ldb   <u001F,u
-         beq   NotRdy
+         bne   GETS10
+         ldb   <INCNT,u
+         beq   ErrNtRdy
          ldx   PD.RGS,y
          stb   R$B,x
 L013C    clrb
          rts
-ASKEOF   cmpa  #SS.EOF   We never have EOF
-         beq   noerror
+GETS10   cmpa  #SS.EOF   We never have EOF
+         beq   Write90
 unksvc   comb
          ldb   #E$UnkSvc
          rts
@@ -241,7 +274,7 @@ PUTSTA   cmpa  #SS.SSig   Send signal on data ready
          ldx   PD.RGS,y
          ldb   $05,x
          orcc  #IntMasks       Block I and F interrupts
-         tst   <u001F,u
+         tst   <INCNT,u
          bne   L015C
          std   <u0024,u
          bra   L012B
@@ -256,15 +289,15 @@ SetRel   cmpa  #SS.Relea
          rts
 ***************************
 *
-L0170    lbsr  NoData
-TERM     ldx   <D.Proc
+TRMN00    lbsr  ACSLEP
+TRMNAT     ldx   <D.Proc
          lda   ,x
          sta   V.BUSY,u
          sta   V.LPRC,u
-         ldb   <WritPtr,u
+         ldb   <ONXTI,u
          orcc  #IntMasks       Block I and F interrupts
-         cmpb  <u0021,u
-         bne   L0170
+         cmpb  <ONXTO,u
+         bne   TRMN00
          lda   V.TYPE,u
          ldx   V.PORT,u
          sta   CmndReg,x
@@ -280,39 +313,39 @@ ACIRQ    ldx   V.PORT,U get port address
          beq   L01AB
          stb   <u0026,u
          bitb  #INPERR
-         lbne  L02AE
-         lbra  L029C
+         lbne  InXOFF
+         lbra  InXON
 
 L01AB    bita  #$08
          bne   L01FD
-         lda   <u0023,u
+         lda   <INHALT,u
          bpl   L01C4
          anda  #$7F
          sta   DataReg,x
          eora  u000F,u
-         sta   <u0023,u
-         lda   <u0022,u
+         sta   <INHALT,u
+         lda   <HALTED,u
          bne   L01EA
          clrb
          rts
 *
-L01C4    leay  <TxQ,u
-         ldb   <u0021,u
-         cmpb  <WritPtr,u
+L01C4    leay  <OUTBUF,u
+         ldb   <ONXTO,u
+         cmpb  <ONXTI,u
          beq   L01E2
          clra
          lda   d,y
          incb
-         cmpb  #TxQLen-1           ; End of Queue area ?
+         cmpb  #OUTSIZ-1           ; End of Queue area ?
          bls   L01D8
          clrb              Reset buffer tail
-L01D8    stb   <u0021,u
+L01D8    stb   <ONXTO,u
          sta   ,x
-         cmpb  <WritPtr,u
+         cmpb  <ONXTI,u
          bne   WakeUp
-L01E2    lda   <u0022,u
+L01E2    lda   <HALTED,u
          ora   #$02
-         sta   <u0022,u   Set bit 2
+         sta   <HALTED,u   Set bit 2
 L01EA    ldb   V.TYPE,u
          orb   #$01
          stb   $02,x
@@ -325,7 +358,7 @@ IRQSVC80 clrb            clear the carry bit
          rts
 *
 L01FD    bita  #$07
-         beq   L0213
+         beq   InIRQ
          tfr   a,b
          tst   ,x
          anda  #$07
@@ -336,34 +369,35 @@ L01FD    bita  #$07
          sta   $02,x
          bra   IRQSVC80
 
-L0213    lda   ,x
-         beq   L022E
+InIRQ    lda   ,x
+         beq   InIRQ1
          cmpa  V.INTR,u
-         beq   Intrpt
+         beq   InAbort
          cmpa  V.QUIT,u
-         beq   Abort
+         beq   InQuit
          cmpa  V.PCHR,u
-         beq   L0283
+         beq   InPause
          cmpa  u000F,u
-         beq   L029C
+         beq   InXON
          cmpa  <u0010,u
-         lbeq  L02AE
-L022E    leax  <ReadBuf,u
-         ldb   <ReadPtr,u
+         lbeq  InXOFF
+
+InIRQ1    leax  <INPBUF,u
+         ldb   <INXTI,u
          abx
          sta   ,x
          incb
-         cmpb  #RxQLen-1
+         cmpb  #INPSIZ-1
          bls   L023D
          clrb
-L023D    cmpb  <u001E,u
+L023D    cmpb  <INXTO,u
          bne   L024A
          ldb   #$04
          orb   V.ERR,u
          stb   V.ERR,u
          bra   WakeUp
-L024A    stb   <ReadPtr,u
-         inc   <u001F,u
+L024A    stb   <INXTI,u
+         inc   <INCNT,u
          tst   <u0024,u
          beq   L025D
          ldd   <u0024,u
@@ -371,38 +405,38 @@ L024A    stb   <ReadPtr,u
          bra   Signal
 L025D    lda   <u0010,u
          beq   WakeUp
-         ldb   <u001F,u
+         ldb   <INCNT,u
          cmpb  #$46
          bcs   WakeUp
-         ldb   <u0023,u
+         ldb   <INHALT,u
          bne   WakeUp
          anda  #$7F
          sta   <u0010,u
          ora   #$80
-         sta   <u0023,u
+         sta   <INHALT,u
          ldb   V.TYPE,u
          orb   #$05
          ldx   V.PORT,u
          stb   CmndReg,x
          lbra  WakeUp
 
-L0283    ldx   V.DEV2,u
-         beq   L022E
+InPause    ldx   V.DEV2,u
+         beq   InIRQ1
          sta   $08,x
-         bra   L022E
-Intrpt   ldb   #S$Intrpt
-         bra   L0291
+         bra   InIRQ1
+InAbort   ldb   #S$Intrpt
+         bra   InQuit10
 
-Abort    ldb   #S$Abort
-L0291    pshs  a
+InQuit    ldb   #S$Abort
+InQuit10    pshs  a
          lda   V.LPRC,u   Wake up last active process
          lbsr  L01F4
          puls  a
-         bra   L022E
+         bra   InIRQ1
 
-L029C    lda   <u0022,u
+InXON    lda   <HALTED,u
          anda  #$FE       clear bit 1
-         sta   <u0022,u
+         sta   <HALTED,u
          bne   L02AC
          lda   V.TYPE,u
          ora   #$05
@@ -410,13 +444,13 @@ L029C    lda   <u0022,u
 L02AC    clrb
          rts
 *
-L02AE    lda   <u0022,u
+InXOFF    lda   <HALTED,u
          bne   L02B9
          ldb   V.TYPE,u
          orb   #$01
          stb   $02,x
 L02B9    ora   #$01       set bit 1
-         sta   <u0022,u
+         sta   <HALTED,u
          clrb
          rts
 *
