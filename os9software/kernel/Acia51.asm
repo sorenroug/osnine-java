@@ -1,5 +1,5 @@
  nam ACIA51
- ttl Interrupt-Driven Acia driver for Roswell 6551
+ ttl Interrupt-Driven Acia driver for Rockwell 6551
 
 * Copyright 1982 by Microware Systems Corporation
 * Reproduced Under License
