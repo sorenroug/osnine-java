@@ -3,32 +3,7 @@ package org.roug.osnine;
 /**
  * Bus in a computer - Motorola-style. Links CPU, memory and devices together.
  */
-public interface Bus8Motorola {
-
-    /**
-     * Single byte read from memory.
-     */
-    int read(int offset);
-
-    /**
-     * Single byte write to memory.
-     */
-    void write(int offset, int val);
-
-    /**
-     * Single byte write to memory.
-     */
-    void forceWrite(int offset, int val);
-
-    /**
-     * Install a memory segment as the last item of the list of segments.
-     */
-    void addMemorySegment(MemorySegment newMemory);
-
-    /**
-     * Install a memory segment as the first item of the list of segments.
-     */
-    void insertMemorySegment(MemorySegment newMemory);
+public interface Bus8Motorola extends MemoryBus {
 
     /**
      * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
