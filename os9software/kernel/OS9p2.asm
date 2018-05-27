@@ -21,7 +21,7 @@
 *
 
          ifp1
-         use   ../DEFS/os9defs
+         use   os9defs
          endc
 
 *****

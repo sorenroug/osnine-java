@@ -9,7 +9,8 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   $02
 
-clockctl set   $e000
+clockctl set   $E000
+
 TkPerSec set   50
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   0
@@ -42,6 +43,7 @@ MonthChk fcb   00
 ClockIRQ lda   >clockctl   Read the control register.
          bne   UpdateCK    If there is no interrupt then check devices.
          jmp   [>D.SvcIRQ]
+
 UpdateCK clra
          tfr   a,dp
          dec   <D.Tick                 decrement tick counter

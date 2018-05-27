@@ -27,6 +27,7 @@
         <assemble src="Acia_v2"/>
         <assemble src="Acia_v4"/>
         <assemble src="BootDyn"/>
+        <assemble src="Clock_gimix"/>
         <assemble src="D0_vdisk"/>
         <assemble src="D1_vdisk"/>
         <assemble src="HWClock"/>

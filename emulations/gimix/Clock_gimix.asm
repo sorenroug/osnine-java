@@ -1,24 +1,62 @@
-         nam   Clock
-         ttl   os9 system module    
+
+ nam Clock Module
+
+* Copyright 1980 by Microware Systems Corp.,
+
+*
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than
+* the licensee is strictly prohibited!
+*
+
+* Clock module for GIMIX system. Implements M58167 clock chip
+* Identical to the Clock source in os9software except for edition number.
+
+CPort    equ $E220
 
          ifp1
          use   /dd/defs/os9defs
          endc
+
+CLOCK set $FFE0
+ opt c
+ ttl Definitions
+ page
+*****
+*
+*  Clock Module
+*
+
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
+         mod   eom,ClkNam,tylg,atrv,ClkEnt,CPORT
 
-clockloc rmb   $E220
-
-size     equ   .
-name     equ   *
-         fcs   /Clock/
+ClkNam fcs   /Clock/
          fcb   $02 
 
-SysTbl   fcb   F$Time
-         fdb   FTime-*-2
+CLKPRT equ M$Mem Stack has clock port address
+
+TIMSVC   fcb   F$Time
+         fdb   TIME-*-2
          fcb   $80
+
+SecMilli equ 0
+SecTenth equ 1
+Second equ 2
+Minute equ 3
+Hour equ 4
+DayWeek equ 5
+DayMonth equ 6
+Month equ 7
+Status equ 16
+Control equ 17
+CountRst equ 18
+LatchRst equ 19
+RollOver equ 20
+Go equ 21
 
 *****
 *
@@ -26,18 +64,21 @@ SysTbl   fcb   F$Time
 *
 NOTCLK jmp [D.SvcIRQ] Go to interrupt service
 
-CLKSRV ldx 11,PCR
- lda $10,x
- beq NOTCLK
+CLKSRV ldx TICKVEC-*-1,PCR
+ lda Status,X Get status/clear interrupt
+ beq NOTCLK Branch if not clock
  clra
  tfr a,dp
- jmp [$FFE0]    Go to Clock tick handler
+TICKVEC jmp [CLOCK] Go to system clock routine
 
-start    equ   *
-         pshs  dp
-         clra  
-         tfr   a,dp
-         pshs  cc save interrupt masks
+*****
+*
+*  Clock Initialization Entry
+*
+ClkEnt pshs DP save direct page
+ clra clear Dp
+ tfr A,DP
+ pshs CC save interrupt masks
          lda #10 Set ticks / second
          sta   D.TSec
          sta   D.Tick
@@ -46,9 +87,9 @@ start    equ   *
          sta   D.Slice
          orcc #IRQMask+FIRQMask Set intrpt masks
          leax  >CLKSRV,pcr
-         stx   D.IRQ
-         leas  -$05,s
-         ldx   #$0054
+ stx D.IRQ Set interrupt vector
+ leas -5,S get scratch
+ ldx #D.Month Get month ptr
          bsr   CNVBB
          stb   ,s
          bsr   CNVBB
@@ -59,28 +100,28 @@ start    equ   *
          stb   $03,s
          bsr   CNVBB
          stb   $04,s
-         ldx   >name-2,pcr
+         ldx   >CLKPRT,pcr
          ldd   #$FF02
-         sta   <$13,x
-         lda   <$10,x
-         stb   <$11,x
-         lda   ,s
-         beq   L0088
+ sta LatchRst,X Reset latches
+ lda Status,X Clear any interrupt
+ stb Control,X enable 100 millisec line
+ lda 0,S retrieve month
+         beq   SkipSet
          sta   $07,x
          lda   $01,s
-         beq   L0088
+         beq   SkipSet
          sta   $06,x
          lda   $02,s
          sta   $04,x
          ldd   $03,s
          sta   $03,x
-         clr   <$15,x
-         stb   $02,x
-L0088    leas  $05,s
-         puls  cc
-         leay  >SysTbl,pcr
-         os9   F$SSvc   
-         puls  pc,dp
+ clr Go,X reset seconds
+ stb Second,X
+SkipSet leas 5,S return scratch
+ puls CC retrieve masks
+ leay TIMSVC,PCR
+ OS9 F$SSVC Set time sevice routine
+ puls DP,PC
 
 CNVBB lda ,X+ Get binary byte
  ldb #$FA Init bcd byte
@@ -92,11 +133,17 @@ CNVB20 decb Count Unit
  bne CNVB20 Branch if so
  rts
 
-FTime
-         ldx   >name-2,pcr
+*****
+*
+*  Subroutine Time
+*
+* Return Time Of Day
+*
+TIME equ *
+ ldx CLKPRT,PCR Get clock port address
          pshs  cc
-         orcc  #$50
-L00AC    lda   $02,x
+ orcc #IRQMask+FIRQMask Set interrupt masks
+TIME10    lda   $02,x
          sta   D.Sec
          lda   $03,x
          sta   D.Min
@@ -108,11 +155,10 @@ L00AC    lda   $02,x
          sta   D.Month
          lda   <$14,x
          rora  
-         bcs   L00AC
+         bcs   TIME10
          puls  cc
-         ldx   #$0054
-
-TIME20    lda   ,x
+ ldx #D.Month Get date ptr
+TIME20 lda 0,X Get bcd byte
          anda  #$F0
          tfr   a,b
          eora  ,x

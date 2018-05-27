@@ -2,15 +2,15 @@
          ttl   os9 system module    
 
          ifp1
-         use   os9defs
-         use   scfdefs
+         use   /d0/defs/os9defs
+         use   /d0/defs/scfdefs
          endc
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   $05
 
-hwclock  set   $FF10
+hwclock  set   $E010
          mod   eom,name,tylg,atrv,start,size
 stack    rmb   200
 size     equ   .
@@ -31,39 +31,19 @@ Startup  fcc   "STARTUP -P"
          fcb   C$CR
          fcc   ",,,,,,,,,," room for patch
          
-BasicRst fcb   $55
-         fcb   $00
-         fcb   $74
-         fcb   $12
-         fcb   $7F
-         fcb   $FF
-         fcb   $03
-         fcb   $B7
-         fcb   $FF
-         fcb   $DF
-         fcb   $7E
-         fcb   $F0
-         fcb   $02
-
 * SysGo entry point
 start    equ   *
          leax  >IcptRtn,pcr
          os9   F$Icpt   
-         leax  >BasicRst,pcr  CC warmstart
-         ldu   #D.CBStrt
-         ldb   #start-BasicRst
-CopyLoop lda   ,x+
-         sta   ,u+
-         decb  
-         bne   CopyLoop
+
          leax  >BootMsg,pcr
          ldy   #MsgEnd-BootMsg
          lda   #$01
          os9   I$Write  
 
 * OS9p2 has looked for a module called "Clock" and initialised it.
-         ldx   #hwclock
-         os9   F$STime
+*        ldx   #hwclock
+*        os9   F$STime
 
          leax  >ExecDir,pcr
          lda   #$04

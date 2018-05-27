@@ -22,3 +22,23 @@ The `load` property is a list of files or hex strings that will be loaded into m
 - Any other value will be interpreted to be a binary file to load.
 
 The `classpath` property can be used to load classes that are not in the package. It allows you to create your own devices or user interfaces.
+
+## How to run
+
+After you have done the `mvn install` in the directory above, you modify the `v6809.properties` to use two disks you have. The one called OS9.dsk is /d0 and must contain the `CMDS` directory and the Shell or Login commands.
+
+    java -jar target/osnine-v6809-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+This can be put into a script. To try some of the other properties files, you git it as an argument, like:
+
+    java -jar target/osnine-v6809-1.0-SNAPSHOT-jar-with-dependencies.jar -c tn6850.properties
+
+
+Telnet service
+--------------
+
+The v6809 can be configured to start to make a serial port available as a telnet port. This is set up in the telnet.properties file.
+
+In order to match assumptions of Linux users the end-of-file has been changed from ESC to CTRL-D,
+and the reprint-line has been changed from CTRL-D to CTRL-R. The Telnet service also launches the Login command because now it is a multi-user system.
+
