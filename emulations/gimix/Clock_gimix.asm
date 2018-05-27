@@ -20,53 +20,44 @@ SysTbl   fcb   F$Time
          fdb   FTime-*-2
          fcb   $80
 
-         fcb   $6E
-         fcb   $9F
-         fcb   $00
-         fcb   $38
+*****
+*
+*  Clock Interrupt Service Routine
+*
+NOTCLK jmp [D.SvcIRQ] Go to interrupt service
 
-L001B    fcb   $AE
-         fcb   $8D
-         fcb   $FF
-         fcb   $EC
-         fcb   $A6
-         fcb   $88
-         fcb   $10
-         fcb   $27
-         fcb   $F3
-         fcb   $4F
-         fcb   $1F 
-         fcb   $8B 
-         fcb   $6E
-         fcb   $9F 
-         fcb   $FF 
-         fcb   $E0
+CLKSRV ldx 11,PCR
+ lda $10,x
+ beq NOTCLK
+ clra
+ tfr a,dp
+ jmp [$FFE0]    Go to Clock tick handler
 
 start    equ   *
          pshs  dp
          clra  
          tfr   a,dp
-         pshs  cc
-         lda   #$0A
+         pshs  cc save interrupt masks
+         lda #10 Set ticks / second
          sta   D.TSec
          sta   D.Tick
-         lda   #$01
+         lda #1 Set ticks / time-slice
          sta   D.TSlice
          sta   D.Slice
-         orcc  #$50
-         leax  >L001B,pcr
+         orcc #IRQMask+FIRQMask Set intrpt masks
+         leax  >CLKSRV,pcr
          stx   D.IRQ
          leas  -$05,s
          ldx   #$0054
-         bsr   L0095
+         bsr   CNVBB
          stb   ,s
-         bsr   L0095
+         bsr   CNVBB
          stb   $01,s
-         bsr   L0095
+         bsr   CNVBB
          stb   $02,s
-         bsr   L0095
+         bsr   CNVBB
          stb   $03,s
-         bsr   L0095
+         bsr   CNVBB
          stb   $04,s
          ldx   >name-2,pcr
          ldd   #$FF02
@@ -91,15 +82,15 @@ L0088    leas  $05,s
          os9   F$SSvc   
          puls  pc,dp
 
-L0095    lda   ,x+
-         ldb   #$FA
-L0099    addb  #$10
-         suba  #$0A
-         bcc   L0099
-L009F    decb  
-         inca  
-         bne   L009F
-         rts   
+CNVBB lda ,X+ Get binary byte
+ ldb #$FA Init bcd byte
+CNVB10 addb #$10 Count ten
+ suba #10 Is there a ten?
+ bcc CNVB10 Branch if so
+CNVB20 decb Count Unit
+ inca Is there a unit?
+ bne CNVB20 Branch if so
+ rts
 
 FTime
          ldx   >name-2,pcr
@@ -121,7 +112,7 @@ L00AC    lda   $02,x
          puls  cc
          ldx   #$0054
 
-L00CB    lda   ,x
+TIME20    lda   ,x
          anda  #$F0
          tfr   a,b
          eora  ,x
@@ -130,12 +121,12 @@ L00CB    lda   ,x
          lsrb  
          lsrb  
          lsrb  
-         lda   #$0A
-         mul   
-         addb  ,x
-         stb   ,x+
-         cmpx  #$0059
-         bcs   L00CB
+ lda #10
+ mul
+ addb 0,X Add lsn
+ stb ,X+ Save converted byte
+ cmpx #D.SEC+1
+ bcs TIME20
 
          ldx   4,u
          ldd   D.Year
