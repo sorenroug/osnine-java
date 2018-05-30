@@ -69,6 +69,96 @@ public class InterruptTest {
     }
 
     /**
+     * Test Non-maskable IRQ pushing all registers to the S stack.
+     */
+    @Test
+    public void raiseNonmaskableIRQ() {
+        // Set register S to point to 517
+        myTestCPU.s.set(517);
+        // Set the registers we want to push
+        myTestCPU.cc.set(0x0F);
+        myTestCPU.a.set(1);
+        myTestCPU.b.set(2);
+        myTestCPU.dp.set(3);
+        myTestCPU.x.set(0x0405);
+        myTestCPU.y.set(0x0607);
+        myTestCPU.u.set(0x0809);
+
+        myTestCPU.write_word(MC6809.NMI_ADDR, 0x1234); // Set IRQ vector
+        myTestCPU.write(0x1234, 0x3B); // RTI
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.write(0xB00, 0x12); // NOP
+        myTestCPU.write(0xB01, 0x12); // NOP
+        myTestCPU.getBus().signalNMI(true);
+        myTestCPU.execute();
+        // S was not set via an instrution so the NMI was ignored
+        assertEquals(0xB01, myTestCPU.pc.intValue());
+
+        myTestCPU.write_word(0xB00, 0x10CE); // LDS #$900 sets CC
+        myTestCPU.write_word(0xB02, 0x900);
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x1234, myTestCPU.pc.intValue());
+
+        myTestCPU.getBus().signalNMI(false);
+        myTestCPU.execute();
+        assertEquals(0xB04, myTestCPU.pc.intValue());
+        assertEquals(0x81, myTestCPU.cc.intValue()); // Flag E is set by IRQ
+        assertEquals(0x01, myTestCPU.a.intValue());
+        assertEquals(0x02, myTestCPU.b.intValue());
+        assertEquals(0x900, myTestCPU.s.intValue());
+        assertEquals(0x04, myTestCPU.read(0x900 - 1)); // Check that PC-low was pushed.
+        assertEquals(0x0B, myTestCPU.read(0x900 - 2)); // Check that PC-high was pushed.
+        assertEquals(0x09, myTestCPU.read(0x900 - 3)); // Check that U-low was pushed.
+        assertEquals(0x08, myTestCPU.read(0x900 - 4)); // Check that U-high was pushed.
+        assertEquals(0x07, myTestCPU.read(0x900 - 5)); // Check that Y-low was pushed.
+        assertEquals(0x06, myTestCPU.read(0x900 - 6)); // Check that Y-high was pushed.
+        assertEquals(0x05, myTestCPU.read(0x900 - 7)); // Check that X-low was pushed.
+        assertEquals(0x04, myTestCPU.read(0x900 - 8)); // Check that X-high was pushed.
+        assertEquals(0x03, myTestCPU.read(0x900 - 9)); // Check that DP was pushed.
+        assertEquals(0x02, myTestCPU.read(0x900 - 10)); // Check that B was pushed.
+        assertEquals(0x01, myTestCPU.read(0x900 - 11)); // Check that A was pushed.
+        assertEquals(0x81, myTestCPU.read(0x900 - 12)); // Check that CC was pushed.
+    }
+
+    /**
+     * Test fast IRQ pushing CC and PC registers on stack.
+     */
+    @Test
+    public void raiseFastIRQ() {
+        // Set register S to point to 517
+        myTestCPU.s.set(517);
+        // Set the registers we want to push
+        myTestCPU.cc.set(0x0F);
+        myTestCPU.a.set(1);
+        myTestCPU.b.set(2);
+        myTestCPU.dp.set(3);
+        myTestCPU.x.set(0x0405);
+        myTestCPU.y.set(0x0607);
+        myTestCPU.u.set(0x0809);
+
+        myTestCPU.write_word(MC6809.FIRQ_ADDR, 0x1234); // Set IRQ vector
+        myTestCPU.write(0x1234, 0x3B); // RTI
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.write(0xB00, 0x12); // NOP
+        myTestCPU.write(0xB01, 0x12); // NOP
+        myTestCPU.getBus().signalFIRQ(true);
+        myTestCPU.execute();
+        assertEquals(0x1234, myTestCPU.pc.intValue());
+
+        myTestCPU.getBus().signalFIRQ(false);
+        myTestCPU.execute();
+        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertEquals(0x0F, myTestCPU.cc.intValue()); // Flag E is off by FIRQ
+        assertEquals(0x01, myTestCPU.a.intValue());
+        assertEquals(0x02, myTestCPU.b.intValue());
+        assertEquals(517, myTestCPU.s.intValue());
+        assertEquals(0x01, myTestCPU.read(517 - 1)); // Check that PC-low was pushed.
+        assertEquals(0x0B, myTestCPU.read(517 - 2)); // Check that PC-high was pushed.
+        assertEquals(0x0F, myTestCPU.read(517 - 3)); // Check that CC was pushed.
+    }
+
+    /**
      * Test CWAI.
      */
     @Test

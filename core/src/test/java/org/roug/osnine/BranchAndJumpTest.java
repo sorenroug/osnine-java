@@ -529,4 +529,15 @@ public class BranchAndJumpTest {
 	myTestCPU.execute();
         assertEquals(0x102C, myTestCPU.pc.intValue());
     }
+
+    @Test
+    public void testRTS() {
+        myTestCPU.s.set(0x300);
+        myTestCPU.write_word(0x300, 0x102C); // Write return address
+        myTestCPU.write(0xB00, 0x39); // RTS
+        myTestCPU.pc.set(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x102C, myTestCPU.pc.intValue());
+        assertEquals(0x302, myTestCPU.s.intValue());
+    }
 }
