@@ -296,7 +296,7 @@ Every floating constant is taken to be double-precision.
 A string is a sequence of characters surrounded by
 double quotes,
 as in
-<literal>&quot;...&quot;</literal>.
+<literal>"..."</literal>.
 A string has type
 <quote>array of <literal>char</literal></quote> and storage class
 <literal>static</literal>
@@ -308,7 +308,7 @@ at the end of each string so that programs
 which scan the string can
 find its end.
 In a string, the double quote character
-(<literal>&quot;</literal>)
+(<literal>"</literal>)
 must be preceded by
 a
 <literal>\</literal>;
@@ -3043,18 +3043,16 @@ the identifier is considered to be redefined.
 A compiler control line of
 the form
 <literallayout> 
-<literal>#include</literal><emphasis> &quot;filename</emphasis>&quot;
+<literal>#include</literal> "<replaceable>filename</replaceable>"
 </literallayout>
-causes the replacement of that
-line by the entire contents of the file
-<emphasis>
-filename</emphasis>.
+causes the replacement of that line by the entire contents of the file
+<replaceable>filename</replaceable>.
 The named file is searched for first in the directory
 of the file containing the <literal>#include</literal>,
 and then in a sequence of specified or standard places.
 Alternatively, a control line of the form
 <literallayout> 
-<literal>#include</literal><emphasis> &lt;filename</emphasis>>
+<literal>#include</literal> &lt;<replaceable>filename</replaceable>&gt;
 </literallayout>
 searches only the specified or standard places
 and not the directory of the <literal>#include</literal>.
