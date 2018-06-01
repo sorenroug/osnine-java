@@ -38,6 +38,7 @@
         <assemble src="OS9p1_swtc"/>
         <assemble src="OS9p2"/> <!-- version 9 -->
         <assemble src="OS9p2_v5"/>
+        <assemble src="OS9p2_v8"/>
         <assemble src="Pipe"/>
         <assemble src="PipeMan"/>
         <assemble src="Piper"/>

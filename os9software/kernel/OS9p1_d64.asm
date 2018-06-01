@@ -3,7 +3,7 @@
  ttl System Type definitions
 
          ifp1
-         use   ../DEFS/os9defs
+         use   os9defs
          endc
 OS9Start equ *
 
