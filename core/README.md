@@ -1,5 +1,9 @@
-Docker image
-------------
+# Emulator core
+
+![Class hierarchy](/images/classhierarchy.png)
+
+
+## Docker image
 
 The docker image build a configuration that makes it possible to have OS9 on a host on the Internet. To build do:
 ```
