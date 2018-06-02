@@ -348,7 +348,7 @@ too large ( &gt; 65535 ).</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>9 COMMAND ERROR _</term>
+        <term>9 COMMAND ERROR</term>
         <listitem>
           <para>Misspelled, missing or illegal command.</para>
         </listitem>
