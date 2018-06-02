@@ -15,8 +15,8 @@ mathematical problems often encountered by machine language programmers.
       <title>Installation</title>
       <para>
 The Interactive Debugger program is supplied on a file called
-"DEBUG" which should be located in the system's execution directory
-(usually "/D0/CMDS") .
+<quote>DEBUG</quote> which should be located in the system's execution directory
+(usually <quote>/D0/CMDS</quote>) .
 </para>
     </section>
     <section>
@@ -34,7 +34,7 @@ OS9: debug
       <para>
 The debugger operates in response to single line commands typed in
 from the keyboard. You can tell when you are communicating with_the
-debugger because it always displays a "DB:" prompt when it expects a
+debugger because it always displays a <quote>DB:</quote> prompt when it expects a
 command line.
 </para>
       <para>
@@ -46,7 +46,7 @@ using the <keycombo action="simul"><keycap>CONTROL</keycap><keycap>X</keycap></k
 Each command line starts with a single character command which may
 be followed by text or one or two arithmetic expressions depending on the
 specific command. Uppercase and lowercase characters can be used
-interchangeably. Here's an example of the "space" command which displays
+interchangeably. Here's an example of the <quote>space</quote> command which displays
 the result of an expression in hexadecimal and decimal notation:
 
 <screen>
@@ -81,22 +81,22 @@ operators and operands that are unique to the debugger.
 </para>
     <para>
 Numbers used in expressions are 16 bit unsigned integers, which is
-the 6809's "native" arithmetic representation. The allowable range of
+the 6809's <quote>native</quote> arithmetic representation. The allowable range of
 numbers is therefore zero to 65535. Two's complement addition and
 subtraction is performed correctly, but will print out as large positive
 numbers in decimal form. Some commands require byte values and an error
 message will be given if the result of the expression is too large to be
 stored in a byte (when the result &gt; 255 ). Also, some operands are only
 a byte long (such as individual memory locations and some registers).
-These are automatically converted to 16-bit "words" without sign
+These are automatically converted to 16-bit <quote>words</quote> without sign
 extension. Spaces may be used between operators and operands as desired
 to improve readability but do not affect evaluation.
 </para>
     <section>
       <title>Constants</title>
       <para>
-Constants can be in base 2 ("binary"), base 10 ("decimal"), or base
-16 (hexadecimal or "hex"). Binary and decimal constants require a prefix
+Constants can be in base 2 (<quote>binary</quote>), base 10 (<quote>decimal</quote>), or base
+16 (hexadecimal or <quote>hex</quote>). Binary and decimal constants require a prefix
 character: % (binary) or # (decimal). All other numbers are assumed to be
 hex. Hex numbers may also have an optional $ prefix. Here are some
 examples:
@@ -153,10 +153,10 @@ which follow. For example:
     <section>
       <title>Special Names</title>
       <para>
-There are other legal operands in expressions; "Dot", "Dot-Dot", and register names.
+There are other legal operands in expressions; <quote>Dot</quote>, <quote>Dot-Dot</quote>, and register names.
 </para>
       <para>
-"Dot" is simply the debugger's current working address in memory.
+<quote>Dot</quote> is simply the debugger's current working address in memory.
 It can be examined, changed, updated, used in expressions, or recalled.
 It has the main effect of eliminating a tremendous amount of memory
 address typing. The following command prints the current working
@@ -166,10 +166,10 @@ DB: . <keycap>RETURN</keycap>
     2204 82
 </screen>
 
-"Dot-Dot" is the value of "Dot" <emphasis>before</emphasis> the last time it was changed.
+<quote>Dot-Dot</quote> is the value of <quote>Dot</quote> <emphasis>before</emphasis> the last time it was changed.
 It is convenient to use if you change dot to an incorrect value, or as a
-second address "memory". For example, the following command prints the
-value of "Dot-Dot":
+second address <quote>memory</quote>. For example, the following command prints the
+value of <quote>Dot-Dot</quote>:
 <screen>
 DB: . 400 <keycap>RETURN</keycap>               <lineannotation>(set Dot to 400)</lineannotation>
 DB: . 800 <keycap>RETURN</keycap>               <lineannotation>(change Dot to 800)</lineannotation>
@@ -184,7 +184,7 @@ DB: . .. <keycap>RETURN</keycap>                <lineannotation>(change Dot to D
       <title>Register Names</title>
       <para>
 
-MPU Registers may be specified by a colon character ":" followed by
+MPU Registers may be specified by a colon character <quote>:</quote> followed by
 the mnemonic name of the register; for example:
 </para>
       <informaltable frame="none" colsep="0" rowsep="0">
@@ -237,7 +237,7 @@ the mnemonic name of the register; for example:
       </informaltable>
       <para>
 The values returned are of the program under test's registers, which are
-"stacked" when the debugger is active. Those registers which are a
+<quote>stacked</quote> when the debugger is active. Those registers which are a
 single byte long are promoted to a word when used in expressions.
 </para>
       <para>
@@ -296,17 +296,17 @@ modes:
 </para>
       <variablelist spacing="compact">
         <varlistentry>
-          <term>&lt; expr &gt;</term>
+          <term>&lt; <replaceable>expr</replaceable> &gt;</term>
           <listitem>
             <para>
-returns the value of a memory <emphasis>byte</emphasis> using the value of "expr" as an address
+returns the value of a memory <emphasis>byte</emphasis> using the value of <quote><replaceable>expr</replaceable></quote> as an address
           </para>
           </listitem>
         </varlistentry>
         <varlistentry>
-          <term>[ expr ]</term>
+          <term>[ <replaceable>expr</replaceable> ]</term>
           <listitem>
-            <para>returns the value of a 16-bit <emphasis>word</emphasis> using the value of "expr" as an address</para>
+            <para>returns the value of a 16-bit <emphasis>word</emphasis> using the value of <quote><replaceable>expr</replaceable></quote> as an address</para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -356,7 +356,7 @@ register names, special names, and operators. Here are some examples:
       <title>Calculator Command</title>
       <para>
 To use the calculator command, enter a line starting with one or
-more spaces followed by any legal expression, then "return". The
+more spaces followed by any legal expression, then <quote>return</quote>. The
 expression will be evaluated and the result displayed on the following.
 line in both hexadecimal and decimal representations.
 </para>
@@ -400,12 +400,12 @@ is the same as the assembly language syntax [D,Y].
 </para>
     </section>
     <section>
-      <title>"Dot" and Memory Examine/Change Commands</title>
+      <title><quote>Dot</quote> and Memory Examine/Change Commands</title>
       <section>
         <title>Display Dot Command</title>
         <para>
 
-Typing "." causes the current value of Dot and the contents of that
+Typing <quote>.</quote> causes the current value of Dot and the contents of that
 memory address to be displayed, for example:
 
 <screen>
@@ -450,7 +450,7 @@ DB:.. <keycap>RETURN</keycap> restore old value of Dot
 
 Typing a line with just <keycap>RETURN</keycap>, advances Dot to the next memory address
 and prints its new value and contents. The example below shows how to
-"step through" sequential memory locations.
+<quote>step through</quote> sequential memory locations.
 </para>
         <screen>
 DB:<keycap>RETURN</keycap>
@@ -465,7 +465,7 @@ DB:<keycap>RETURN</keycap>
         <title>Backstep Dot Command</title>
         <para>
 
-The "-" command backs up Dot one address and prints its value and
+The <quote>-</quote> command backs up Dot one address and prints its value and
 contents:
 </para>
         <screen>
@@ -514,17 +514,17 @@ incorrectly change their memory areas.
     <section>
       <title>Register Examine/Change Commands</title>
       <para>
-Several forms of the ":" register command can be used to examine one
+Several forms of the <quote>:</quote> register command can be used to examine one
 or all registers, or to change a specific register's contents.
 </para>
       <para>
-The "registers" affected by these commands, are actually stored
-copies in memory ("images") of the register values of_the.program under
+The <quote>registers</quote> affected by these commands, are actually stored
+copies in memory (<quote>images</quote>) of the register values of_the.program under
 test. They are stored on the stack when the program is stopped by a
 breakpoint or other interrupt. The value shown for the stack pointer
 register is the address ,of the stack where the register values are
 stored. Before the program under test is first executed, the register
-images must be made valid using the "E" command.
+images must be made valid using the <quote>E</quote> command.
 </para>
       <para>
 When a running program is interrupted by a
@@ -539,10 +539,10 @@ program execution is resumed.
       <section>
         <title>Display All Registers Command.</title>
         <para>
-To display all registers, type ":" followed by <keycap>RETURN</keycap>. For example:
+To display all registers, type <quote>:</quote> followed by <keycap>RETURN</keycap>. For example:
 
 <screen>
-DB:: <keycap>RETURN</keycap> -
+DB:: <keycap>RETURN</keycap>
      SP  CC  A  B DP   X    Y    U   PC
     C499 C4 20 1C 01 DD3E 239A 0000 240C
 </screen>
@@ -592,10 +592,10 @@ DB::D 24CF+:Y  Set D register to 24CF plus contents of Y register
 Breakpoints allow you to specify address(es) where execution of the
 program under test is to be suspended and the debugger re-entered. When
 a breakpoint is encountered, the values of the MPU registers and the
-"DB:" prompt will be displayed. After a breakpoint is reached,-registers
+<quote>DB:</quote> prompt will be displayed. After a breakpoint is reached,-registers
 can be examined or changed, memory can be altered, or any other debugger
 command can be used. Program execution can be resumed from the
-breakpoint location using the "G" command. Breakpoints may be inserted
+breakpoint location using the <quote>G</quote> command. Breakpoints may be inserted
 at up to 12 different addresses.
 </para>
       <para>
@@ -608,7 +608,7 @@ you will not see them in memory.
       <para>
 When a SWI is executed it interrupts.the program and saves the
 register contents .on the stack so they can be examined or changed using
-the ":" command. Because SWIs operate by temporarily replacing an
+the <quote>:</quote> command. Because SWIs operate by temporarily replacing an
 instruction opcode, there are three restrictions on their use:
 </para>
       <orderedlist>
@@ -631,10 +631,10 @@ User programs cannot utilize the SWI instruction for other purposes (but SWI2 an
       <para>
 When the breakpoint is encountered during execution of the program
 under test, the debugger is reentered and the program's register contents
-is displayed using the same format as the "display register" command.
+is displayed using the same format as the <quote>display register</quote> command.
 </para>
       <section>
-        <title>"B" Set or Display Breakpoints Command</title>
+        <title><quote>B</quote> Set or Display Breakpoints Command</title>
         <para>
 The B command-will insert a breakpoint if followed by an expression,
 or will display all present breakpoint addresses if used alone.
@@ -650,10 +650,10 @@ DB:B <keycap>RETURN</keycap> display current breakpoints
 </screen>
       </section>
       <section>
-        <title>"K" Remove Breakpoint Command</title>
+        <title><quote>K</quote> Remove Breakpoint Command</title>
         <para>
 
-The K command removes ("kills") a breakpoint at a specific address if
+The K command removes (<quote>kills</quote>) a breakpoint at a specific address if
 followed by an expression or ALL (caution!) breakpoints if used alone;
 </para>
         <screen>
@@ -674,17 +674,17 @@ DB:
       <section>
         <title>Prepare To Execute Command</title>
         <para>
-The Execute command consists of a "E" by a Shell-style command
+The Execute command consists of a <quote>E</quote> by a Shell-style command
 line. It prepares for testing of a specific program module and must be
 used before the program is run.
 </para>
         <para>
-The "E" command performs the rough equivalent of what the OS-9 <command>Shell</command>
+The <quote>E</quote> command performs the rough equivalent of what the OS-9 <command>Shell</command>
 does to start a program except for I/O redirection (&lt;, &gt;, &gt;&gt;), memory
-size override ("#"), and multitasking ("&amp;") functions.
+size override (<quote>#</quote>), and multitasking (<quote>&amp;</quote>) functions.
 It sets up a stack, parameters, registers, and data memory area in preparation for
 execution of the program to be tested.
-The "G" command is actually used to start running the program.
+The <quote>G</quote> command is actually used to start running the program.
 </para>
         <para>
 Note that this command will allocate program and data area memory as
@@ -694,8 +694,8 @@ and the program become coroutines.
 </para>
         <para>
 This command is acknowledged by a register dump showing the
-program's initial register values. The "G" command is used to begin
-actual program execution. The "E" command will set up the MPU registers
+program's initial register values. The <quote>G</quote> command is used to begin
+actual program execution. The <quote>E</quote> command will set up the MPU registers
 as if you had just performed an F$CHAIN service request as shown below:
 <screen>
 high    +---------------+ &lt;-- Y
@@ -733,12 +733,12 @@ DB:
       <section>
         <title>Go To Program Command</title>
         <para>
-The G ("Go") command is used to resume execution of a program under test under any of the following circumstances:
+The G (<quote>Go</quote>) command is used to resume execution of a program under test under any of the following circumstances:
 </para>
         <orderedlist>
           <listitem>
             <para>
-After the "E" command has been used to prepare a new program for execution.
+After the <quote>E</quote> command has been used to prepare a new program for execution.
 </para>
           </listitem>
           <listitem>
@@ -753,14 +753,14 @@ To resume execution after a <keycombo action="simul"><keycap>CONTROL</keycap><ke
           </listitem>
         </orderedlist>
         <para>
-If the "G" command is used to continue execution after a breakpoint
+If the <quote>G</quote> command is used to continue execution after a breakpoint
 that has not been removed, the breakpoint will not be reinserted so the
-program will not "hang-up". This features allows you to execute
+program will not <quote>hang-up</quote>. This features allows you to execute
 breakpoints within loops without continually inserting and removing them
 if two breakpoints are placed at different addresses within the loop.
 </para>
         <para>
-You can optionally put an expression after the "G". The result will
+You can optionally put an expression after the <quote>G</quote>. The result will
 be assigned to the PC register just before execution is resumed in order
 to change the re-start address. Here is an example:
 </para>
@@ -777,7 +777,7 @@ DB:G <keycap>RETURN</keycap>                <lineannotation>resume after breakpo
 </screen>
       </section>
       <section>
-        <title>"L" Link To Module Command</title>
+        <title><quote>L</quote> Link To Module Command</title>
         <para>
 This command (L followed by text) attempts to link to the module
 whose name is given in the text line. If successful, Dot is set to the
@@ -788,7 +788,7 @@ is commonly used to find the starting address of an OS-9 memory module.
 Example:
 </para>
         <screen>
-DB:L gotoxy <keycap>RETURN</keycap>   <lineannotation>link to module "gotoxy"</lineannotation>
+DB:L gotoxy <keycap>RETURN</keycap>   <lineannotation>link to module <quote>gotoxy</quote></lineannotation>
     EC00 87
 DB:
 </screen>
@@ -799,8 +799,8 @@ DB:
       <section>
         <title>Clear and Test Memory Command</title>
         <para>
-The "C" command followed by TWO expressions simultaneously performs
-a "walking bit" memory test and clears all memory between the two
+The <quote>C</quote> command followed by TWO expressions simultaneously performs
+a <quote>walking bit</quote> memory test and clears all memory between the two
 evaluated addresses. The first expression gives the starting address,
 and the second the ending address (which must be higher). If any byte(s)
 fail the test, its address is displayed. Of course, only RAM memory can
@@ -851,20 +851,20 @@ F170 3934 36EC E426 041A 0120 20CC 0010 E764 946..&amp;...  ....d
       <section>
         <title>Search Memory Command</title>
         <para>
-The "S" command is used to search an area of memory for a one or two
-byte pattern. The search begins at the present Dot address. The "S" is
+The <quote>S</quote> command is used to search an area of memory for a one or two
+byte pattern. The search begins at the present Dot address. The <quote>S</quote> is
 followed by two expressions: the first expression is the ending address
 of the search, and the second expression is the data to be searched for.
 If this value is less than 256, a byte comparison is used, otherwise two
 bytes are compared. If a matching pattern is found in memory, Dot is set
 to the address where it was located (which is displayed). If no match
-occurred, another "DB:" prompt is displayed.
+occurred, another <quote>DB:</quote> prompt is displayed.
 </para>
       </section>
       <section>
         <title>Shell Command</title>
         <para>
-This command calls the OS-9 "shell" to execute one or more system
+This command calls the OS-9 <quote>shell</quote> to execute one or more system
 command lines. Its format is a dollar sign optionally followed by a
 shell command line. If the command line is given, the shell will execute
 just that line and return back to the debugger. If the dollar sign is
@@ -885,7 +885,7 @@ DB:$asm myprogram o=myprogram.bin <keycap>RETURN</keycap>
 </screen>
       </section>
       <section>
-        <title>"Q" Quit Debugger Command</title>
+        <title><quote>Q</quote> Quit Debugger Command</title>
         <para>
 This command (Q) causes the Interactive Debugger to terminate and
 return to OS-9 or the program that called the debugger.
@@ -914,7 +914,7 @@ To test system memory and I/O devices
         </listitem>
         <listitem>
           <para>
-To "patch" the operating system or other programs
+To <quote>patch</quote> the operating system or other programs
 </para>
         </listitem>
         <listitem>
@@ -926,7 +926,7 @@ To test hand-written or compiler-generated programs.
       <para>
 The simple assembly language program shown below is used in some of
 the examples in this chapter to illustrate how debug commands are be used
-with a real program. The program prints "HELLO WORLD" and then waits for
+with a real program. The program prints <quote>HELLO WORLD</quote> and then waits for
 a line of input.
 </para>
       <programlisting xml:id="exampleprg">
@@ -970,7 +970,7 @@ a line of input.
         <para>
 Below is an example of how DEBUG might be used with the sample
 program on the previous page. DEBUG is called from OS-9, the $ command
-is used to tell SHELL to load "EXAMPLE" into memory, the "L" command is
+is used to tell SHELL to load <quote>EXAMPLE</quote> into memory, the <quote>L</quote> command is
 used to link to it, etc.
 </para>
         <screen>
@@ -1024,27 +1024,27 @@ OS9:
       <section>
         <title>Patching Programs</title>
         <para>
-"Patching" (changing the object code of) a program involves four steps:
+<quote>Patching</quote> (changing the object code of) a program involves four steps:
 </para>
         <orderedlist>
           <listitem>
             <para>
-Loading the program into memory using OS-9's "LOAD" command.
+Loading the program into memory using OS-9's <quote>LOAD</quote> command.
 </para>
           </listitem>
           <listitem>
             <para>
-Changing the program in memory using the Debugger's "L" and "=" commands. 
+Changing the program in memory using the Debugger's <quote>L</quote> and <quote>=</quote> commands. 
 </para>
           </listitem>
           <listitem>
             <para>
-Saving the new, patched version of the program on a disk file using the OS-9 "SAVE" command.
+Saving the new, patched version of the program on a disk file using the OS-9 <quote>SAVE</quote> command.
 </para>
           </listitem>
           <listitem>
             <para>
-Updating the program module's CRC check value using the OS-9 "VERIFY" command.
+Updating the program module's CRC check value using the OS-9 <quote>VERIFY</quote> command.
 </para>
           </listitem>
         </orderedlist>
@@ -1056,7 +1056,7 @@ value is updated and correct.
 </para>
         <para>
 The example that follows shows how the program listed on page 4-1 is
-"patched" - this case changing the "LDY #80" instruction to "LDY #32".
+<quote>patched</quote> - this case changing the <quote>LDY #80</quote> instruction to <quote>LDY #32</quote>.
 </para>
         <screen>
 OS9:load example <keycap>RETURN</keycap>         <lineannotation>load program to be patched</lineannotation>
@@ -1064,16 +1064,16 @@ OS9:debug <keycap>RETURN</keycap>                <lineannotation>run debug</line
 
 Interactive Debugger
 DB:L EXAMPLE <keycap>RETURN</keycap>             <lineannotation>set dot to start addr of program</lineannotation>
-    2000 87                     <lineannotation>note module starts at 2000</lineannotation>
+    2000 87                    <lineannotation>note module starts at 2000</lineannotation>
 DB:. .+28 <keycap>RETURN</keycap>                <lineannotation>add offset of byte to change</lineannotation>
-    2028 50                     <lineannotation>current value is 50</lineannotation>
+    2028 50                    <lineannotation>current value is 50</lineannotation>
 DB:=#32 <keycap>RETURN</keycap>                  <lineannotation>change to decimal 32</lineannotation>
-    2028 10                     <lineannotation>change confirmed</lineannotation>
+    2028 10                    <lineannotation>change confirmed</lineannotation>
 DB:Q <keycap>RETURN</keycap> quit debugger
 
 OS9:SAVE TEMP EXAMPLE <keycap>RETURN</keycap>    <lineannotation>save patched module on file TEMP</lineannotation>
 OS9:VERIFY &lt;TEMP &gt;EX2 <keycap>RETURN</keycap>    <lineannotation>update CRC and copy to file EX2</lineannotation>
-OS9:DEL TEMP                    <lineannotation>TEMP no longer needed</lineannotation>
+OS9:DEL TEMP                   <lineannotation>TEMP no longer needed</lineannotation>
 </screen>
         <para>
 After the above procedure has been completed, the file EX2 contains
@@ -1085,12 +1085,12 @@ be run and/or loaded into memory as desired.
         <title>Patching OS-9 Component Modules</title>
         <para>
 Patching modules that are part of OS-9 (modules contained in the
-"<filename>OS9Boot</filename>" file) is a bit trickier than patching regular program because
-the "COBBLER" and "OS9GEN" programs must be used to create a new
-"<filename>OS9Boot</filename>" file. The example below shows how an OS-9 "device descriptor"
+<quote><filename>OS9Boot</filename></quote> file) is a bit trickier than patching regular program because
+the <quote>COBBLER</quote> and <quote>OS9GEN</quote> programs must be used to create a new
+<quote><filename>OS9Boot</filename></quote> file. The example below shows how an OS-9 <quote>device descriptor</quote>
 module is permanently patched, in this case to change the uppercase lock
-of the device "/TERM" from "off" to "on". This example assumes a copy of
-the system disk is loaded in drive one ("/D1").
+of the device <quote>/TERM</quote> from <quote>off</quote> to <quote>on</quote>. This example assumes a copy of
+the system disk is loaded in drive one (<quote>/D1</quote>).
 </para>
         <caution>
           <para>
@@ -1106,11 +1106,11 @@ OS9: debug <keycap>RETURN</keycap>            <lineannotation>run debug</lineann
 
 Interactive Debugger
 DB: L TERM <keycap>RETURN</keycap>            <lineannotation>set dot to addr of TERM module</lineannotation>
-    D300 87                  <lineannotation>(actual address will vary)</lineannotation>
+    D300 87                 <lineannotation>(actual address will vary)</lineannotation>
 DB: . .+13 <keycap>RETURN</keycap>            <lineannotation>add offset of byte to change</lineannotation>
-    D313 00                  <lineannotation>current value is 00</lineannotation>
-DB: =1 <keycap>RETURN</keycap>                <lineannotation>change value to 1 for "ON"</lineannotation>
-    D313 01                  <lineannotation>change confirmed</lineannotation>
+    D313 00                 <lineannotation>current value is 00</lineannotation>
+DB: =1 <keycap>RETURN</keycap>                <lineannotation>change value to 1 for <quote>ON</quote></lineannotation>
+    D313 01                 <lineannotation>change confirmed</lineannotation>
 DB: Q <keycap>RETURN</keycap>                 <lineannotation>exit debugger</lineannotation>
 
 OS9:COBBLER /D1 <keycap>RETURN</keycap>       <lineannotation>write new bootfile on /D1</lineannotation>

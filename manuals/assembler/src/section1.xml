@@ -11,7 +11,7 @@ that make editing faster and more convenient. For example, most commands
 involve only one or two keystrokes.
 </para>
     <para>
-The "Macro" part of the editor's name refers to the its macro
+The <quote>Macro</quote> part of the editor's name refers to the its macro
 facility which allows you to create new personalized commands or complex
 commands for special purposes from the basic built-in command set.
 </para>
@@ -28,14 +28,14 @@ and even copy text from one file to another.
   <section>
     <title>Getting Started</title>
     <para>
-The editor is kept in a file called "edit", which should be present
+The editor is kept in a file called <quote>edit</quote>, which should be present
 in your system's CMDS (execution) directory. To run the editor type:
 <screen>
 OS9: edit <keycap>RETURN</keycap>
 </screen>
 
-The editor should load and start. When it prints the "E: " prompt, it is ready to accept a command.
-The first command to learn is how to quit editing (return to OS-9). To quit, type a "Q" followed by a carriage
+The editor should load and start. When it prints the <quote>E: </quote> prompt, it is ready to accept a command.
+The first command to learn is how to quit editing (return to OS-9). To quit, type a <quote>Q</quote> followed by a carriage
 return as follows:
 
 <screen>
@@ -60,7 +60,7 @@ files as special cases because it is assumed that these files
 (if specified) are the main working files.
 </para>
     <para>
-You may also want to use the OS-9 shell "#" memory size option to
+You may also want to use the OS-9 shell <quote>#</quote> memory size option to
 give the editor a bigger memory space, which will let you edit bigger
 sections of a file at once. If you don't, the default size is 4K bytes.
 For example:
@@ -71,8 +71,8 @@ OS9: EDIT myfile #24k <keycap>RETURN</keycap>
 </para>
     <para>
 Some of the different forms of the edit command line are illustrated
-below. The name "newfile" refers to the name of a new file you wish to
-create. The name "oldfile" refers to the name of an existing file you
+below. The name <quote>newfile</quote> refers to the name of a new file you wish to
+create. The name <quote>oldfile</quote> refers to the name of an existing file you
 wish the editor to use.
 </para>
     <synopsis>
@@ -86,7 +86,7 @@ be performed by opening files after the editor has started running.
 EDIT newfile
 </synopsis>
     <para>
-The editor will create a new file called "newfile" which will be the
+The editor will create a new file called <quote>newfile</quote> which will be the
 initial output file.V There will be no initial input file. However, read
 operations may be performed by opening files after the editor has started
 running.
@@ -95,35 +95,35 @@ running.
 EDIT oldfile
 </synopsis>
     <para>
-The initial input file is "oldfile". The editor will create a new
-temporary file called "SCRATCH" that will be the initial output file.
-when the edit session is done, "oldfile" will be deleted, and then
-"SCRATCH" will be renamed to the name "oldfile" to give the appearance of
-"oldfile" simply being updated. Note: The two OS-9 utilities "<command>DEL</command>" and
-"<command>RENAME</command>" must be present on your system if you wish to use this method to
+The initial input file is <quote>oldfile</quote>. The editor will create a new
+temporary file called <quote>SCRATCH</quote> that will be the initial output file.
+when the edit session is done, <quote>oldfile</quote> will be deleted, and then
+<quote>SCRATCH</quote> will be renamed to the name <quote>oldfile</quote> to give the appearance of
+<quote>oldfile</quote> simply being updated. Note: The two OS-9 utilities <quote><command>DEL</command></quote> and
+<quote><command>RENAME</command></quote> must be present on your system if you wish to use this method to
 start the editor.
 </para>
     <synopsis>
 EDIT oldfile newfile
 </synopsis>
     <para>
-The initial input file is "oldfile". The editor will create a new file
-called "newfile", which will be the initial output file.
+The initial input file is <quote>oldfile</quote>. The editor will create a new file
+called <quote>newfile</quote>, which will be the initial output file.
 </para>
   </section>
   <section>
     <title>Edit Buffers</title>
     <para>
-The text being edited is stored in a memory space called an "edit buffer".
+The text being edited is stored in a memory space called an <quote>edit buffer</quote>.
 Edit buffers may be thought of as scratch pads used for saving
 the text to be manipulated by the editor.
 </para>
     <para>
 There is always at least one edit buffer, but you can create several
 at the same time if you wish. The buffer currently being used is
-called the "primary buffer", and the last most recently used buffer is
-called the "secondary buffer". Normally, the primary buffer will simply
-be referred to as the "buffer" or "edit buffer" for short, except where
+called the <quote>primary buffer</quote>, and the last most recently used buffer is
+called the <quote>secondary buffer</quote>. Normally, the primary buffer will simply
+be referred to as the <quote>buffer</quote> or <quote>edit buffer</quote> for short, except where
 it is explicitly called the primary buffer. The secondary buffer is
 important only when you wish to use a command that involves moving text
 from one buffer to another.
@@ -132,7 +132,7 @@ from one buffer to another.
   <section>
     <title>Edit Pointers</title>
     <para>
-The macro text editor uses what is called an "edit pointer" as a
+The macro text editor uses what is called an <quote>edit pointer</quote> as a
 place holder to remember your current position in the text buffer. Many
 commands operate on the text at the current edit pointer position. This
 is similar to a person using his finger as a place holder when reading a
@@ -145,9 +145,9 @@ place in any of them.
   <section>
     <title>Entering Commands</title>
     <para>
-Whenever the editor prints the "E:" prompt, it is ready for you to
+Whenever the editor prints the <quote>E:</quote> prompt, it is ready for you to
 enter a command line. You can type one or more edit commands on a single
-line followed by <keycap>RETURN</keycap>. Some edit commands have "parameters" which are
+line followed by <keycap>RETURN</keycap>. Some edit commands have <quote>parameters</quote> which are
 values used by the command.
 </para>
     <para>
@@ -157,11 +157,11 @@ space character is itself a command (insert line).
 </para>
     <para>
 Many of the commands are single characters designed for rapid entry,
-for example "L" and "D". Some other command are function keys such as
+for example <quote>L</quote> and <quote>D</quote>. Some other command are function keys such as
 <keycap>SPACE</keycap> and <keycap>RETURN</keycap> which only apply
 if they are the first character of the line.
-Yet other commands are "built-in macros", which are
-descriptive names starting with a ".", such as ".size" and ".shell". In
+Yet other commands are <quote>built-in macros</quote>, which are
+descriptive names starting with a <quote>.</quote>, such as <quote>.size</quote> and <quote>.shell</quote>. In
 general, all three kinds work the same way despite the differences in form.
 </para>
     <para>
@@ -274,7 +274,7 @@ Line delete.
         </term>
         <listitem>
           <para>
-Quit editor - same as "Q" command.
+Quit editor - same as <quote>Q</quote> command.
 </para>
         </listitem>
       </varlistentry>
@@ -286,7 +286,7 @@ Quit editor - same as "Q" command.
 Many of the editor's commands allow you to specify some value which
 may represent such things as the number of times to repeat a command or a
 phrase you wish to find, etc. There are two types of edit parameters,
-"numeric" and "string".
+<quote>numeric</quote> and <quote>string</quote>.
 </para>
     <section>
       <title>Numeric Parameters</title>
@@ -309,7 +309,7 @@ The example below lists one line:
         <listitem>
           <para>
 The parameter can be a constant number from 0 to 65535. The example
-below shows the "L" (list lines) command with a parameter of "10".
+below shows the <quote>L</quote> (list lines) command with a parameter of <quote>10</quote>.
 </para>
       <simplelist type="vert">
 <member>L10</member>
@@ -317,8 +317,8 @@ below shows the "L" (list lines) command with a parameter of "10".
         </listitem>
         <listitem>
           <para>
-The parameter can be "*" which means repeat the command as many times
-as possible. The example below means "list all lines".
+The parameter can be <quote>*</quote> which means repeat the command as many times
+as possible. The example below means <quote>list all lines</quote>.
 </para>
       <simplelist type="vert">
 <member>L*</member>
@@ -326,9 +326,9 @@ as possible. The example below means "list all lines".
         </listitem>
         <listitem>
           <para>
-The parameter can be a numeric variable, which is a "#" followed by
+The parameter can be a numeric variable, which is a <quote>#</quote> followed by
 the letters A-Z, to be used in conjunction with macros and is explained
-in detail in the "Edit Macro" section.
+in detail in the <quote>Edit Macro</quote> section.
 </para>
         </listitem>
       </orderedlist>
@@ -342,10 +342,10 @@ use to specify strings.
 </para>
       <para>
 The first method is to enclose the text between a pair of
-"delimiter" characters. The delimiters are not part of the text. Any
+<quote>delimiter</quote> characters. The delimiters are not part of the text. Any
 characters can be used for delimiters, but punctuation characters chosen
 so they are not included in the actual text are most commonly used. For
-example, to tell the editor to search for the phrase "fast code" the
+example, to tell the editor to search for the phrase <quote>fast code</quote> the
 following command is used:
 <synopsis>
 S/fast code/
@@ -354,7 +354,7 @@ S/fast code/
       <para>
 Unlike commands, a distinction is always made between upper case and
 lower case strings. The example on the previous page would <emphasis>not</emphasis> find
-"FAST CODE".
+<quote>FAST CODE</quote>.
 </para>
     </section>
     <section>
@@ -364,7 +364,7 @@ When a command requires two to more parameters, they are given in
 the correct order immediately following the command name.
 You do not have to type spaces or other characters between the parameters.
 For example, the command to search for the next two occurrences of the phrase
-"compiler" is:
+<quote>compiler</quote> is:
 </para>
       <synopsis>
 S2/compiler/
@@ -373,15 +373,15 @@ S2/compiler/
 If two string parameters are required by a command, three delimiters
 are used: one at the beginning, one between the first string and the
 second, and one at the end of the second string. For example, the
-command to change the phrase "my cat" to "my dog" is:
+command to change the phrase <quote>my cat</quote> to <quote>my dog</quote> is:
 </para>
       <synopsis>
 C,my cat,my dog,
 </synopsis>
       <para>
-The second method uses "string variables", which consist of a "$"
+The second method uses <quote>string variables</quote>, which consist of a <quote>$</quote>
 followed by a variable name of A-Z. These are most commonly used in
-macros and are discussed in detail in the "Edit Macro" section.
+macros and are discussed in detail in the <quote>Edit Macro</quote> section.
 </para>
     </section>
   </section>
@@ -423,7 +423,7 @@ following definitions:
             <entry>
               <keycap>RETURN</keycap>
             </entry>
-            <entry>carriage return or "enter" key</entry>
+            <entry>carriage return or <quote>enter</quote> key</entry>
           </row>
           <row>
             <entry><replaceable>text</replaceable></entry>
@@ -501,8 +501,8 @@ so if you know Basic09; you already know how to use Edit effectively!
       </tgroup>
     </informaltable>
     <para>
-You will notice that some commands work on entire lines (such as "+"),
-and others work on characters within lines (such as "&gt;"). We also
+You will notice that some commands work on entire lines (such as <quote>+</quote>),
+and others work on characters within lines (such as <quote>&gt;</quote>). We also
 recommend that beginners master line-oriented commands before moving on
 to character-oriented commands.
 </para>
@@ -531,17 +531,17 @@ to character-oriented commands.
    </variablelist>
 
       <para>
-This command is used to change the next <replaceable>n</replaceable> occurrences of "<replaceable>str1</replaceable>" to
-"<replaceable>str2</replaceable>". Starting at the current edit pointer position; wherever "<replaceable>str1</replaceable>"
-is found, it is changed to "<replaceable>str2</replaceable>", and then the updated line is
-displayed. Changes continue until no more occurrences of "<replaceable>str1</replaceable>" are found
-or until the count "<replaceable>n</replaceable>" is reached, whichever occurs first.
+This command is used to change the next <replaceable>n</replaceable> occurrences of <quote><replaceable>str1</replaceable></quote> to
+<quote><replaceable>str2</replaceable></quote>. Starting at the current edit pointer position; wherever <quote><replaceable>str1</replaceable></quote>
+is found, it is changed to <quote><replaceable>str2</replaceable></quote>, and then the updated line is
+displayed. Changes continue until no more occurrences of <quote><replaceable>str1</replaceable></quote> are found
+or until the count <quote><replaceable>n</replaceable></quote> is reached, whichever occurs first.
 </para>
       <para>
-The "C" command leaves the edit pointer positioned at pointing to the
-beginning of the last line changed. The ".CHANGE" built-in macro will
+The <quote>C</quote> command leaves the edit pointer positioned at pointing to the
+beginning of the last line changed. The <quote>.CHANGE</quote> built-in macro will
 leave the edit pointer positioned just past the modified string. If
-"<replaceable>str1</replaceable>" is not found, the edit pointer will not be affected. Some typical
+<quote><replaceable>str1</replaceable></quote> is not found, the edit pointer will not be affected. Some typical
 examples of its use are:
 </para>
       <simplelist type="horiz" columns="2">
@@ -552,9 +552,9 @@ examples of its use are:
         <member>C*! seek and find ! seek and found !</member>
       </simplelist>
 <para>
-The first example changes the next occurrence of "this" to "that". The
-second example changes the next two occurrence of "in" to "out". The last
-example changes all occurrences of " seek and find " to " seek and found "
+The first example changes the next occurrence of <quote>this</quote> to <quote>that</quote>. The
+second example changes the next two occurrence of <quote>in</quote> to <quote>out</quote>. The last
+example changes all occurrences of <quote> seek and find </quote> to <quote> seek and found </quote>
 that are between the edit pointer and end of text.
 </para>
     </section>
@@ -667,9 +667,9 @@ edit pointer is moved past it. Below are some examples of how it may be used:
         <member>E3/XX/</member>
       </simplelist>
       <para>
-The first example would add the string "this is a comment" to the end of
+The first example would add the string <quote>this is a comment</quote> to the end of
 the current line and move the edit pointer to the next line. The second
-example would add the string "XX" to the end of the current line and the
+example would add the string <quote>XX</quote> to the end of the current line and the
 next two lines; the edit pointer would be moved past these lines.
 </para>
     </section>
@@ -699,7 +699,7 @@ next two lines; the edit pointer would be moved past these lines.
    <para>
 This command is used to unextend (truncate) a line at the current edit
 position. The characters in the line from the current edit pointer
-position to the end of the line are chopped off. The "&gt;" or "&lt;" commands
+position to the end of the line are chopped off. The <quote>&gt;</quote> or <quote>&lt;</quote> commands
 (see page 1-14) are usually used to position the pointer prior to use of
 this command. For example:
 </para>
@@ -829,7 +829,7 @@ buffer, use an asterisk for the value as in the following command line:
 <synopsis>
 L*
 </synopsis>
-The "L" command is not affected by "verify" mode;
+The <quote>L</quote> command is not affected by <quote>verify</quote> mode;
 
 </para>
     </section>
@@ -890,7 +890,7 @@ editor prevents you from entering more text, you may overcome the problem
 by increasing the workspace size. If you will not be using a large
 portion of the available workspace, you may wish to decrease the
 workspace size so that other OS-9 programs may use the memory that you
-free. Below are some examples of how the "M" command is used:
+free. Below are some examples of how the <quote>M</quote> command is used:
 </para>
       <simplelist type="horiz" columns="3">
         <member>M5000</member>
@@ -901,13 +901,13 @@ The first example sets the workspace size to 5000 bytes. The second
 example sets the workspace size to 10000 bytes.
 </para>
       <para>
-Before using the "Q" command to quit editing, you may want to make the
+Before using the <quote>Q</quote> command to quit editing, you may want to make the
 workspace size larger to decrease the amount of time needed to copy the
 input file to the output file allowing the editor to read and write a
 larger portion of the file at one time. Note that memory is allocated in
-256 byte pages. For the "M" command to have any effect, the desired
+256 byte pages. For the <quote>M</quote> command to have any effect, the desired
 workspace size must differ from the current size by at least 256 bytes.
-The "M" command will not allow you to return any part of the workspace
+The <quote>M</quote> command will not allow you to return any part of the workspace
 which is being used for buffers or macros.
 </para>
     </section>
@@ -940,9 +940,9 @@ that has been used, An example of how this command would be used is:
 E: .SIZE <keycap>RETURN</keycap>
   521 15328
 </screen>
-in the example above, the numbers that are printed below the ".SIZE"
-command are "521" which is the amount of the workspace that has been used
-for buffers and macros, "15328" is the total amount of memory available
+in the example above, the numbers that are printed below the <quote>.SIZE</quote>
+command are <quote>521</quote> which is the amount of the workspace that has been used
+for buffers and macros, <quote>15328</quote> is the total amount of memory available
 in the workspace.
 </para>
     </section>
@@ -1144,14 +1144,14 @@ If <replaceable>n</replaceable> = 0, go to the beginning of the line.</literalla
       </varlistentry>
    </variablelist>
       <para>
-The "-" command has two uses. If a number of one or more is given,
+The <quote>-</quote> command has two uses. If a number of one or more is given,
 the edit pointer is moved backward that number of lines, and the new line
 pointed to will be displayed. For example, the following command will
 move the edit pointer backward 5 lines:
 <synopsis>
 -5
 </synopsis>
-If the "-" command is given with a number of zero, it moves the edit
+If the <quote>-</quote> command is given with a number of zero, it moves the edit
 pointer past to the first character of the current line. This can be
 useful when you wish to repeat a command within the current line.
 For example:
@@ -1186,20 +1186,20 @@ If <replaceable>n</replaceable> = 0, go to the end of the line.</literallayout><
    </variablelist>
 
    <para>
-The "+" command has two uses. If a number of one or more is given, the
+The <quote>+</quote> command has two uses. If a number of one or more is given, the
 edit pointer is moved forward that number of lines, and the new line
 pointed to will be displayed. For example, the following command will
 move the edit pointer forward 5 lines:
 <synopsis>
 +5
 </synopsis>
-If the "+" command is given with a number of zero, it moves the edit
+If the <quote>+</quote> command is given with a number of zero, it moves the edit
 pointer past to the last character of the current line. This can be
 useful when you wish to append text to the current line. For example:
 <synopsis>
 +0
 </synopsis>
-Also note that "+*" is identical in function to "/".
+Also note that <quote>+*</quote> is identical in function to <quote>/</quote>.
 </para>
     </section>
     <section>
@@ -1288,7 +1288,7 @@ occurrence of the string was found, the edit pointer position will be
 unchanged.
 </para>
       <para>
-The ".SEARCH" built-in macro is similar to "S" except that it leaves the
+The <quote>.SEARCH</quote> built-in macro is similar to <quote>S</quote> except that it leaves the
 edit pointer just past the occurrence of the string. Some typical
 examples of its use are:
 </para>
@@ -1301,9 +1301,9 @@ examples of its use are:
         <member>.SEARCH*/seek and find/</member>
       </simplelist>
 <para>
-The first example searches for the next occurrence of "my string". The
-second example searches for the next three occurrence of "strung out".
-The last example searches for all occurrence of "seek and find" that are
+The first example searches for the next occurrence of <quote>my string</quote>. The
+second example searches for the next three occurrence of <quote>strung out</quote>.
+The last example searches for all occurrence of <quote>seek and find</quote> that are
 between the edit pointer and the end of text.
 </para>
     </section>
@@ -1332,7 +1332,7 @@ between the edit pointer and the end of text.
 
       <para>
 This command is used to set the SEARCH/CHANGE anchor to column number <replaceable>n</replaceable>.
-After the anchor has been set, the "S" and "C" commands will find a
+After the anchor has been set, the <quote>S</quote> and <quote>C</quote> commands will find a
 string only if it begins in column number <replaceable>n</replaceable>.
 For example, if you want to find a string that you know begins in column number one (such as an
 assembly language label), but don't want to find it if it begins in any
@@ -1356,7 +1356,7 @@ zero. For example:
 <synopsis>
 A0
 </synopsis>
-If you use the "A" command to set the anchor, this remains in effect only
+If you use the <quote>A</quote> command to set the anchor, this remains in effect only
 for the Current command line. After the command line is executed the
 anchor will automatically return to its normal value of zero.
 </para>
@@ -1386,7 +1386,7 @@ anchor will automatically return to its normal value of zero.
 
       <para>
 This command allows you to use any of the OS-9 commands from within the
-editor. The remainder of the command line following the ".SHELL" command
+editor. The remainder of the command line following the <quote>.SHELL</quote> command
 is passed to the OS-9 shell for execution. Some examples of how this
 command may be used are:
 <screen>
@@ -1422,7 +1422,7 @@ Notice that the second example starts the assembler as a background task.
 
       <para>
 This command is used to tab (move the edit pointer) to the character
-position "<replaceable>n</replaceable>" of the current line. If "<replaceable>n</replaceable>" exceeds the line length, the
+position <quote><replaceable>n</replaceable></quote> of the current line. If <quote><replaceable>n</replaceable></quote> exceeds the line length, the
 line will be extended with spaces. Some examples of usage are:
       <simplelist type="horiz" columns="3">
 <member>T</member>
@@ -1461,7 +1461,7 @@ fifth column of the current line.
 This command is used to turn the verify mode on or off. If the verify
 mode is turned on (the default), many edit commands will display their
 results which can be annoying and/or time consuming when certain commands
-are used repetitively (such as "c", and "d"). If you turn verify off, it
+are used repetitively (such as <quote>c</quote>, and <quote>d</quote>). If you turn verify off, it
 may be turned on again by specifying a non-zero value for <replaceable>n</replaceable>.
 For example:
       <simplelist type="horiz" columns="3">
@@ -1512,7 +1512,7 @@ buffer.
           <para>
 These commands allow sequences of edit commands to be executed
 repetitively, and to apply various conditional tests. Using these
-functions you can create editor "programs".
+functions you can create editor <quote>programs</quote>.
 </para>
         </listitem>
       </varlistentry>
@@ -1548,21 +1548,21 @@ the editor's workspace at one time.
 All lines of text before the current edit pointer position are written to
 the output file. The editor will then try to read new text lines from
 the input file, which are appended to the end of the edit buffer. The
-editor attempts to read as many new lines as were written out.; The "NEW"
+editor attempts to read as many new lines as were written out.; The <quote>NEW</quote>
 command always uses the initial input and output files
 (i.e., the files specified in the command line used to run the editor).
 </para>
       <para>
 If you have finished editing the text currently in the edit buffer, you
-may "flush" it out and refill the buffer with new text by moving the edit
-pointer to the bottom of the edit buffer and then use the ".NEW" command
+may <quote>flush</quote> it out and refill the buffer with new text by moving the edit
+pointer to the bottom of the edit buffer and then use the <quote>.NEW</quote> command
 as follows:
 <screen>
 E:/.NEW <keycap>RETURN</keycap>
 </screen>
 If you wish to retain part of the text that is already in the edit
 buffer,- move the edit pointer to the first line that you wish to retain,
-before using the ".NEW" command.
+before using the <quote>.NEW</quote> command.
 
 </para>
     </section>
@@ -1584,7 +1584,7 @@ original input file specified on the command line used to call the
 editor.
 </para>
       <para>
-To open a file, "<replaceable>str</replaceable>" is used to specify the OS-9 file name, for example:
+To open a file, <quote><replaceable>str</replaceable></quote> is used to specify the OS-9 file name, for example:
 <screen>
 E:.READ "myfile" <keycap>RETURN</keycap>
 </screen>
@@ -1596,7 +1596,7 @@ E:.READ "" <keycap>RETURN</keycap>
 </screen>
 When a file is opened it remains attached to the current primary buffer
 to allow each buffer to have its own independent input file. These files
-may be read by switching to the proper buffer, then using the "R" command
+may be read by switching to the proper buffer, then using the <quote>R</quote> command
 to read from that buffer's input file. When closing a file, you must
 select the same primary that the file was opened with.
 </para>
@@ -1617,7 +1617,7 @@ after it is no longer needed. The file opened replaces the original
 output file specified on the command line used to call the editor.
 </para>
       <para>
-To create an output file, "<replaceable>str</replaceable>" gives the OS-9 file name, for example;
+To create an output file, <quote><replaceable>str</replaceable></quote> gives the OS-9 file name, for example;
 <screen>
 E:.WRITE "myfile" <keycap>RETURN</keycap>
 </screen>
@@ -1629,7 +1629,7 @@ E:.READ "" <keycap>RETURN</keycap>
 </screen>
 When a file is created it remains attached to the current primary buffer
 so buffer can have its own independent output file. These files may be
-written to by switching to the proper buffer, then using the "W" command
+written to by switching to the proper buffer, then using the <quote>W</quote> command
 to write to the buffer's output file. When closing a file, you must
 select the same primary buffer that the file was opened with.
 
@@ -1647,7 +1647,7 @@ select the same primary buffer that the file was opened with.
   </variablelist>
 
   <para>
-This command is used to read "<replaceable>n</replaceable>" lines of text from the buffer's input
+This command is used to read <quote><replaceable>n</replaceable></quote> lines of text from the buffer's input
 file. The lines read in are displayed and inserted before the current
 edit position. For example:
 </para>
@@ -1658,7 +1658,7 @@ edit position. For example:
 <para>
 The first example reads ten lines of text from the input file, and the
 second example reads all remaining lines. If there is no more text in a
-file, the "*END OF FILE*" warning message will be displayed.
+file, the <quote>*END OF FILE*</quote> warning message will be displayed.
 
 </para>
     </section>
@@ -1673,7 +1673,7 @@ file, the "*END OF FILE*" warning message will be displayed.
       </varlistentry>
   </variablelist>
       <para>
-This command is used to write up to "<replaceable>n</replaceable>" lines of text from the buffer-to
+This command is used to write up to <quote><replaceable>n</replaceable></quote> lines of text from the buffer-to
 its output file. The lines are written starting at the current edit
 position. For example:
 </para>
@@ -1737,7 +1737,7 @@ above shows the macros MYMACRO and INDENT.
   </variablelist>
 
       <para>
-This command is used to make buffer number "<replaceable>n</replaceable>" the primary edit buffer.
+This command is used to make buffer number <quote><replaceable>n</replaceable></quote> the primary edit buffer.
 The previous primary buffer becomes the new secondary buffer. If you
 specify the number of a buffer that does not already exist, a new buffer
 will be created and assigned the buffer number. For example, assume the
@@ -1760,7 +1760,7 @@ The example above makes buffer 5 the new primary edit buffer, and buffer
       </varlistentry>
   </variablelist>
 
-  <para>This command is used to move "<replaceable>n</replaceable>" lines of text from the primary buffer to
+  <para>This command is used to move <quote><replaceable>n</replaceable></quote> lines of text from the primary buffer to
 the secondary buffer. The lines are removed from the primary edit buffer
 starting at its edit position and inserted into-the secondary buffer
 (before its edit position. The text moved is displayed. Some examples of
@@ -1777,7 +1777,7 @@ lines of text, and the last example moves all lines that are between the
 current edit position and end of text.
 </para>
       <para>
-This command is often used in combination with the "G" command below to
+This command is often used in combination with the <quote>G</quote> command below to
 perform block transfers of text within a buffer. The example below
 illustrates the block move operation.
 </para>
@@ -1855,7 +1855,7 @@ characteristics of a programming language.
       <title>Looping</title>
       <para>
 A loop is constructed by enclosing one or more commands in square
-brackets. A loop count value (which can be a number or "*") specifies
+brackets. A loop count value (which can be a number or <quote>*</quote>) specifies
 how many times the command within the loop are to be repeated. If any of
 the commands fails (such as an unsuccessful string search), the loop will
 be exited prematurely. For example, the commands in the loop shown below
@@ -1880,7 +1880,7 @@ conditional statements.
       <para>
 After the fail flag has been set, the editor skips commands until it
 reaches: a) the end of a keyboard command line, or b) the end of the
-current loop or c) an IF (":") command.
+current loop or c) an IF (<quote>:</quote>) command.
 </para>
       <para>
 The testing commands described in this section set or clear the fail
@@ -1927,39 +1927,39 @@ condition noted:
     <section>
       <title>Conditional Statements</title>
       <para>
-Conditional statements can be formed inside loops using the ":"
-operator. When the ":" is encountered, all statements that follow until
+Conditional statements can be formed inside loops using the <quote>:</quote>
+operator. When the <quote>:</quote> is encountered, all statements that follow until
 the end of the current loop or macro are skipped if the fail flag is not
 set (e.g., fail flag is cleared).
 </para>
       <para>
 Below is an example of a command line which deletes all lines of
-text that do not begin with "A":
+text that do not begin with <quote>A</quote>:
 <screen>
 ^ [ .NEOB [ .STR"A" + : D ] ]*
 </screen>
-The "^" moves the edit pointer to the beginning of the buffer. The outer
+The <quote>^</quote> moves the edit pointer to the beginning of the buffer. The outer
 loop tests for when the end of the buffer is reached and terminates the
-loop. The inner loop tests for an "A" at the beginning of the line. If
-there is one, the "+" command is executed, otherwise the "D" command is
+loop. The inner loop tests for an <quote>A</quote> at the beginning of the line. If
+there is one, the <quote>+</quote> command is executed, otherwise the <quote>D</quote> command is
 executed.
 </para>
       <para>
-Below is another example which searches the current line for "find
-it". If found, the line will be displayed, otherwise the command line
-will fail and "* FAIL *" will be printed:
+Below is another example which searches the current line for <quote>find it</quote>.
+If found, the line will be displayed, otherwise the command line
+will fail and <quote>* FAIL *</quote> will be printed:
 <screen>
 [ .EOL V0 -0 V .F : .STR"find it" -0 .S    : [&gt;] ]*
 </screen>
-In the command line above, the first part is ".EOL V0 -0 V .F", which
+In the command line above, the first part is <quote>.EOL V0 -0 V .F</quote>, which
 tests if the edit pointer is at the end of the line. If it is, verify
-mode is turned off to prevent the "-0" from displaying the line, and then
-it is turned back on and the ".F" causes the loop to be terminated. If
-the edit pointer is not at the end of the line, the ".STR" command will
-see if "find it" is at the current edit position. If it is, the "-0 .S"
+mode is turned off to prevent the <quote>-0</quote> from displaying the line, and then
+it is turned back on and the <quote>.F</quote> causes the loop to be terminated. If
+the edit pointer is not at the end of the line, the <quote>.STR</quote> command will
+see if <quote>find it</quote> is at the current edit position. If it is, the <quote>-0 .S</quote>
 commands will be executed to cause the edit pointer to be moved back to
 the beginning of the line, the line displayed, and the loop terminated.
-Otherwise the "&gt;" command is executed which moves the edit pointer to the
+Otherwise the <quote>&gt;</quote> command is executed which moves the edit pointer to the
 next position in the line. Note that it is enclosed in brackets to
 prevent it from failing and terminating the main loop if the end of the
 buffer is reached.
@@ -2077,7 +2077,7 @@ end of the line, otherwise it will set the fail flag.
       </varlistentry>
   </variablelist>
       <para>
-This command will clear the fail flag if "<replaceable>n</replaceable>" is equal to zero, otherwise
+This command will clear the fail flag if <quote><replaceable>n</replaceable></quote> is equal to zero, otherwise
 it will set the fail flag.
 </para>
     </section>
@@ -2092,8 +2092,8 @@ it will set the fail flag.
       </varlistentry>
   </variablelist>
       <para>
-This command will clear the fail flag if "<replaceable>n</replaceable>" is equal to 65535 (the value
-of "*"), otherwise it will set the fail flag.
+This command will clear the fail flag if <quote><replaceable>n</replaceable></quote> is equal to 65535 (the value
+of <quote>*</quote>), otherwise it will set the fail flag.
 </para>
     </section>
     <section>
@@ -2108,7 +2108,7 @@ of "*"), otherwise it will set the fail flag.
   </variablelist>
       <para>
 This command will clear the fail flag if the characters at the current
-edit position match "<replaceable>str</replaceable>", otherwise it will set the fail flag.
+edit position match <quote><replaceable>str</replaceable></quote>, otherwise it will set the fail flag.
 </para>
     </section>
     <section>
@@ -2124,7 +2124,7 @@ edit position match "<replaceable>str</replaceable>", otherwise it will set the 
 
   <para>
 This command will clear the fail flag if the characters at the current
-edit position do not match "<replaceable>str</replaceable>", otherwise the fail flag will be set.
+edit position do not match <quote><replaceable>str</replaceable></quote>, otherwise the fail flag will be set.
 </para>
     </section>
     <section>
@@ -2179,22 +2179,22 @@ Macros are made up of two main parts, the macro header and the macro
 body. The macro header is used to give the macro a name and describe the
 type and order of its parameters. The macro body is made up of any
 number of ordinary command lines (any edit command may be used in a macro
-except the "<keycap>SPACE</keycap>" and the "<keycap>RETURN</keycap>" commands).
+except the <quote><keycap>SPACE</keycap></quote> and the <quote><keycap>RETURN</keycap></quote> commands).
 Also, macros can not create new macros.
 </para>
     <para>
 To create a macro, you must first open its definition with the
-".MAC" command. After doing so, you may enter the macro's header and
+<quote>.MAC</quote> command. After doing so, you may enter the macro's header and
 body just as you would enter text into an edit buffer (you may use any of
 the edit commands to do so). When you are satisfied with the macro, you
-may close its definition with the "Q" command to return you to the normal
+may close its definition with the <quote>Q</quote> command to return you to the normal
 edit mode.
 </para>
     <section>
       <title>Macro Headers</title>
       <para>
 A macro header must be the first line in each macro. It is made up
-of a macro name which may be followed by a "variable list" that describes
+of a macro name which may be followed by a <quote>variable list</quote> that describes
 the macro's parameters if there are any. The macro name consists of any
 number of consecutive letters and underline characters. Below are some
 example macro names:
@@ -2227,8 +2227,8 @@ should be used.
 </para>
       <para>
 There are two types of variables: numeric and string. A numeric
-variable is a variable name is preceded by a "#" character. A string
-variable is a variable name preceded by a "$" character. Variable names
+variable is a variable name is preceded by a <quote>#</quote> character. A string
+variable is a variable name preceded by a <quote>$</quote> character. Variable names
 are just like macro names which are composed of any number of consecutive
 letters and underline characters. Some example numeric variables are:
 </para>
@@ -2249,12 +2249,12 @@ Some example string variables are:
       </simplelist>
       <para>
 An example of an entire edit macro is given below. It will do the
-same thing as the "S" command: search for the next "<replaceable>n</replaceable>" occurrences of a
+same thing as the <quote>S</quote> command: search for the next <quote><replaceable>n</replaceable></quote> occurrences of a
 string. The first line of the macro is the macro header; it declares the
-macro's name to be "FIND_LN" and also specifies that the macro needs one
-numeric parameter "#N" and one string parameter "$STR". The entire body
+macro's name to be <quote>FIND_LN</quote> and also specifies that the macro needs one
+numeric parameter <quote>#N</quote> and one string parameter <quote>$STR</quote>. The entire body
 of the macro is the second line. Here, both of the macro's parameters
-are passed to the "S" command to do the actual searching:
+are passed to the <quote>S</quote> command to do the actual searching:
 </para>
       <programlisting>
 FIND_LN #N  STR
@@ -2275,8 +2275,8 @@ FIND_LN $STR #N
 S #N $STR
 </programlisting>
       <para>
-We must still specify the parameters for the "S" command in the proper
-order since it is only the "FIND_LN" macro that was changed. Below is an
+We must still specify the parameters for the <quote>S</quote> command in the proper
+order since it is only the <quote>FIND_LN</quote> macro that was changed. Below is an
 example of how this macro is executed, notice that the order of the
 parameters directly correspond to the order of the variables in the
 variable list:
@@ -2289,25 +2289,25 @@ variable list:
       <title>Creating and Editing Macros</title>
       <para>
 Macros are created and edited using the normal editor command set.
-The ".MAC" command is used to create a new macro or open the definition
+The <quote>.MAC</quote> command is used to create a new macro or open the definition
 of an existing one so that it may be edited. To create a <emphasis>new</emphasis> macro, you
-use ".MAC" with an empty string, for example:
+use <quote>.MAC</quote> with an empty string, for example:
 <screen>
 E:.MAC // <keycap>RETURN</keycap>
 </screen>
 This creates a new macro and puts you into macro definition mode. The
-editor responds with the "M:" prompt instead of the normal "E:" edit
+editor responds with the <quote>M:</quote> prompt instead of the normal <quote>E:</quote> edit
 prompt when in macro definition mode. If you wish to edit a macro that
-already exists, "<replaceable>str</replaceable>" is used to specify the macro's name. For example:
+already exists, <quote><replaceable>str</replaceable></quote> is used to specify the macro's name. For example:
 <screen>
 E:.MAC "MYMACRO" <keycap>RETURN</keycap>
 </screen>
-This opens the existing macro "MYMACRO" for editing. When a macro is
+This opens the existing macro <quote>MYMACRO</quote> for editing. When a macro is
 open, you may edit it or enter its definition by using the edit commands
 as you would with an ordinary text buffer.
 </para>
       <para>
-The "Q" command is used to close the definition of a macro and
+The <quote>Q</quote> command is used to close the definition of a macro and
 return to the normal edit mode. For example:
 <screen>
 M:Q <keycap>RETURN</keycap>
@@ -2333,8 +2333,8 @@ with a legal macro name that has not already been used for another macro.
   </variablelist>
 
       <para>
-The "!" command may be used to place comments inside of a macro for
-documentation. The remainder of the line following the "!" command is
+The <quote>!</quote> command may be used to place comments inside of a macro for
+documentation. The remainder of the line following the <quote>!</quote> command is
 retained but never processed as a command.
 </para>
     </section>
@@ -2351,7 +2351,7 @@ retained but never processed as a command.
 
   <para>
 This command is used to load macros from an OS-9 file. The file name
-pathlist is specified by "<replaceable>str</replaceable>". As each macro is loaded, EDIT will make
+pathlist is specified by <quote><replaceable>str</replaceable></quote>. As each macro is loaded, EDIT will make
 sure that no other macro already exists with the same name. If one does,
 the macro will not be loaded and EDIT will skip to the next macro on the
 file. EDIT will display the names of all the macros that it loads. Some
@@ -2384,8 +2384,8 @@ the use of this command are:
 E:.SAVE "MYMACRO"MYFILE" <keycap>RETURN</keycap>
 E:.SAVE "MACA MACB MACC"MFILE" <keycap>RETURN</keycap>
 </screen>
-The first example saves the macro "MYMACRO" on the file "MYFILE", the
-second saves the macros "MACA", "MACB", and "MACC" on the file "MFILE".
+The first example saves the macro <quote>MYMACRO</quote> on the file <quote>MYFILE</quote>, the
+second saves the macros <quote>MACA</quote>, <quote>MACB</quote>, and <quote>MACC</quote> on the file <quote>MFILE</quote>.
 When more than one macro is to be saved on a single file, their names
 should be separated by spaces.
 </para>
@@ -2402,8 +2402,8 @@ should be separated by spaces.
   </variablelist>
 
       <para>
-This command is used to delete (erase) the macro specified by "<replaceable>str</replaceable>". For
-example to delete a macro called "MYMACRO" use:
+This command is used to delete (erase) the macro specified by <quote><replaceable>str</replaceable></quote>. For
+example to delete a macro called <quote>MYMACRO</quote> use:
 <screen>
 E:.DEL "MYMACRO" <keycap>RETURN</keycap>
 </screen>

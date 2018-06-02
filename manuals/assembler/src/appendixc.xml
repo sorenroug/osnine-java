@@ -283,7 +283,7 @@ W 0031 16007A              LBRA  PPTERM
 </example>
 
 <example>
-<title>P - Device Descriptor for "P"</title>
+<title>P - Device Descriptor for <quote>P</quote></title>
 <programlisting>
                           nam   P
 

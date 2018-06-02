@@ -7,7 +7,7 @@
       <varlistentry>
         <term>. <replaceable>macro_name</replaceable> <replaceable>parameters</replaceable></term>
         <listitem>
-          <para>The "." command is used to execute a macro.</para>
+          <para>The <quote>.</quote> command is used to execute a macro.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -178,7 +178,7 @@ primary buffer to the present edit position in the secondary buffer.</para>
       <varlistentry>
         <term>Q</term>
         <listitem>
-          <para>Terminate macro definition and return to the "E:" prompt.</para>
+          <para>Terminate macro definition and return to the <quote>E:</quote> prompt.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -227,7 +227,7 @@ on if <replaceable>n</replaceable> &lt;&gt; 0.</para>
       <varlistentry>
         <term>.CHANGE <replaceable>n</replaceable> <replaceable>str1</replaceable> <replaceable>str2</replaceable></term>
         <listitem>
-          <para>Similar to "C" command.</para>
+          <para>Similar to <quote>C</quote> command.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -271,13 +271,13 @@ of the line, this command will succeed, otherwise fail.</para>
       <varlistentry>
         <term>.LOAD <replaceable>str</replaceable></term>
         <listitem>
-          <para>Load macros from the path specified by "<replaceable>str</replaceable>".</para>
+          <para>Load macros from the path specified by <quote><replaceable>str</replaceable></quote>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>.MAC <replaceable>str</replaceable></term>
         <listitem>
-          <para>Open the macro specified by "<replaceable>str</replaceable>" for definition. If an
+          <para>Open the macro specified by <quote><replaceable>str</replaceable></quote> for definition. If an
 empty string is given, a new macro will be created.</para>
         </listitem>
       </varlistentry>
@@ -309,14 +309,14 @@ then try to read an equal amount from the input file.</para>
       <varlistentry>
         <term>.NSTR <replaceable>str</replaceable></term>
         <listitem>
-          <para>Test if "<replaceable>str</replaceable>" does not match characters at the current
+          <para>Test if <quote><replaceable>str</replaceable></quote> does not match characters at the current
 edit position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>.READ <replaceable>str</replaceable></term>
         <listitem>
-          <para>Open an file for reading, using "<replaceable>str</replaceable>" as the pathlist.</para>
+          <para>Open an file for reading, using <quote><replaceable>str</replaceable></quote> as the pathlist.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -328,14 +328,14 @@ edit position.</para>
       <varlistentry>
         <term>.SAVE <replaceable>str1</replaceable> <replaceable>str2</replaceable></term>
         <listitem>
-          <para>Save the macro(s) specified in "<replaceable>str1</replaceable>" on the file
+          <para>Save the macro(s) specified in <quote><replaceable>str1</replaceable></quote> on the file
 specified by the pathlist in <replaceable>str2</replaceable>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>.SEARCH <replaceable>n</replaceable> <replaceable>str</replaceable></term>
         <listitem>
-          <para>Similar to the "S" command.</para>
+          <para>Similar to the <quote>S</quote> command.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -360,14 +360,14 @@ memory available in the workspace.</para>
       <varlistentry>
         <term>.STR <replaceable>str</replaceable></term>
         <listitem>
-          <para>Test if "<replaceable>str</replaceable>" matches the characters at the current edit
+          <para>Test if <quote><replaceable>str</replaceable></quote> matches the characters at the current edit
 position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>.WRITE <replaceable>str</replaceable></term>
         <listitem>
-          <para>Open an file for writing using "<replaceable>str</replaceable>" as pathlist.</para>
+          <para>Open an file for writing using <quote><replaceable>str</replaceable></quote> as pathlist.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -418,7 +418,7 @@ position.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>[RETURN]</term>
+        <term><keycap>RETURN</keycap></term>
         <listitem>
           <para>Move Dot forward, print address and contents</para>
         </listitem>
