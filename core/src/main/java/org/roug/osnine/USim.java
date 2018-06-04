@@ -20,7 +20,7 @@ public abstract class USim {
     public boolean halted;
 
     /** Reference to the memory bus. */
-    protected Bus8Motorola bus;
+    private MemoryBus bus;
 
 // Generic internal registers that we assume all CPUs have
 
@@ -32,17 +32,9 @@ public abstract class USim {
 
     /**
      * Constructor.
-     * Creates its own bus.
-     */
-    public USim() {
-        bus = new BusStraight();
-    }
-
-    /**
-     * Constructor.
      * @param bus The memory bus that the CPU is attached to
      */
-    public USim(Bus8Motorola bus) {
+    public USim(MemoryBus bus) {
         this.bus = bus;
     }
 
@@ -51,8 +43,9 @@ public abstract class USim {
      * If used then create a bus and allocate memory.
      * @param memorySize Let the emulator allocate this much memory
      */
-    public USim(int memorySize) {
-        this();
+/*
+    public USim(MemoryBus bus, int memorySize) {
+        this(bus);
         allocate_memory(0, memorySize);
     }
 
@@ -60,11 +53,12 @@ public abstract class USim {
         MemorySegment newMemory = new RandomAccessMemory(start, bus, Integer.toString(memorySize));
         bus.addMemorySegment(newMemory);
     }
+*/
 
     /**
      * Get the memory bus.
      */
-    public Bus8Motorola getBus() {
+    public MemoryBus getBus() {
         return bus;
     }
 

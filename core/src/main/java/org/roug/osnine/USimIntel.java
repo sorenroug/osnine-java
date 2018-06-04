@@ -8,17 +8,9 @@ public class USimIntel extends USim {
     /**
      * Constructor.
      */
-    public USimIntel() {
-        super();
+    public USimIntel(MemoryBus bus) {
+        super(bus);
     }
-
-    /**
-     * Constructor.
-     */
-    public USimIntel(int memorySize) {
-        super(memorySize);
-    }
-
 
     /**
      * Read 16-bit word for little-endian (Intel type).

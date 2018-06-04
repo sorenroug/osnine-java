@@ -50,16 +50,21 @@ public class MC6809 extends USimMotorola {
     /** Condiction codes. */
     public final RegisterCC cc = new RegisterCC();
 
+    /** Make memory location act like a register. */
     private MemoryProxy memReg = new MemoryProxy();
 
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
 
+    /** CWAI active? */
     private boolean waitState = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MC6809.class);
 
     private DisAssembler disAsm = null;
+
+    /** The bus the CPU is connected to. */
+    private Bus8Motorola bus;
 
     /**
      * Do we have active FIRQs and we're accepting FIRQs?
@@ -86,8 +91,22 @@ public class MC6809 extends USimMotorola {
      * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
      */
     public MC6809() {
-        super();
+        super(new BusStraight());
+        bus = (Bus8Motorola)super.getBus();
         allocate_memory(0xfff0, 16);  // For interrupt vectors
+
+        if (LOGGER.isTraceEnabled()) {
+            setTraceInstructions(true);
+        }
+        reset();
+    }
+
+    /**
+     * Constructor: Assigned bus.
+     */
+    public MC6809(Bus8Motorola bus) {
+        super(bus);
+        this.bus = bus;
 
         if (LOGGER.isTraceEnabled()) {
             setTraceInstructions(true);
@@ -103,6 +122,13 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
+     * Get the memory bus.
+     */
+    public Bus8Motorola getBus() {
+        return bus;
+    }
+
+    /**
      * Constructor: Allocate memory.
      */
     public MC6809(int memorySize) {
@@ -110,16 +136,9 @@ public class MC6809 extends USimMotorola {
         allocate_memory(0, memorySize);
     }
 
-    /**
-     * Constructor: Assigned bus.
-     */
-    public MC6809(Bus8Motorola bus) {
-        super(bus);
-
-        if (LOGGER.isTraceEnabled()) {
-            setTraceInstructions(true);
-        }
-        reset();
+    private void allocate_memory(int start, int memorySize) {
+        MemorySegment newMemory = new RandomAccessMemory(start, bus, Integer.toString(memorySize));
+        bus.addMemorySegment(newMemory);
     }
 
     /**
@@ -1612,6 +1631,8 @@ public class MC6809 extends USimMotorola {
         help_pul(0x01, s, u);
         if (cc.isSetE()) {
             help_pul(0xfe, s, u);
+        } else {
+            help_pul(0x80, s, u);
         }
     }
 

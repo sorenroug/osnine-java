@@ -8,20 +8,6 @@ public class USimMotorola extends USim {
     /**
      * Constructor.
      */
-    public USimMotorola() {
-        super();
-    }
-
-    /**
-     * Constructor.
-     */
-    public USimMotorola(int memorySize) {
-        super(memorySize);
-    }
-
-    /**
-     * Constructor.
-     */
     public USimMotorola(Bus8Motorola bus) {
         super(bus);
     }
