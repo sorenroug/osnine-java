@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.io.InputStream;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -197,7 +196,7 @@ public class AciaGraphicalUI implements Runnable {
         }
     }
 
-    private class QuitAction implements ActionListener {
+    private static class QuitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);

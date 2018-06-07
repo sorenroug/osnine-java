@@ -1213,14 +1213,14 @@ public class MC6809 extends USimMotorola {
     }
 
     private void waitForInterrupt() {
-        while (!(isIRQActive() || isFIRQActive() || isNMIActive() )) {
-            try {
-                synchronized(bus) {
+        try {
+            synchronized(bus) {
+                while (!(isIRQActive() || isFIRQActive() || isNMIActive() )) {
                     bus.wait();
                 }
-            } catch (InterruptedException e) {
-                LOGGER.error("Wait interrupted");
             }
+        } catch (InterruptedException e) {
+            LOGGER.error("Wait interrupted");
         }
     }
 

@@ -48,7 +48,8 @@ public class Acia6850 extends MemorySegment implements Acia {
     private boolean receiveIrqEnabled = false;
     boolean transmitIrqEnabled = false;
 
-    private int transmitData, receiveData, controlRegister, statusRegister;
+    private int transmitData, receiveData, controlRegister;
+    private int statusRegister;
 
     private String eolSequence = "\015";
 
@@ -81,7 +82,7 @@ public class Acia6850 extends MemorySegment implements Acia {
             Constructor<Runnable> constructor = newClass.getConstructor(Acia.class);
             Runnable threadInstance = constructor.newInstance(this);
 
-            Thread reader = new Thread(threadInstance, "acia6551");
+            Thread reader = new Thread(threadInstance, "acia6850");
             reader.setDaemon(true);
             reader.start();
         } catch (Exception e) {
@@ -107,13 +108,16 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     @Override
     public void setDCD(boolean detected) {
-        int oldStatus = statusRegister & DCD;
-        if (detected) {
-            statusRegister &= ~DCD;  // Set bit 2 to 0
-        } else {
-            statusRegister |= DCD;   // Set bit 2 to 1
-            if (receiveIrqEnabled && oldStatus == 0) {
-                raiseIRQ();
+        synchronized(this) {
+            LOGGER.trace("setDCD");
+            int oldStatus = statusRegister & DCD;
+            if (detected) {
+                clearStatusBit(DCD);
+            } else {
+                setStatusBit(DCD);
+                if (receiveIrqEnabled && oldStatus == 0) {
+                    raiseIRQ();
+                }
             }
         }
     }
@@ -122,24 +126,24 @@ public class Acia6850 extends MemorySegment implements Acia {
      * Let the LineWriter wait for the next character.
      */
     @Override
-    public synchronized int waitForValueToTransmit() throws InterruptedException {
-        while (isTransmitRegisterEmpty()) {
-            wait();
+    public int waitForValueToTransmit() throws InterruptedException {
+        LOGGER.trace("Wait for value");
+//      synchronized(bus) {  // Hack
+//          bus.notifyAll();
+//      }
+        synchronized(this) {
+            while (isBitOn(statusRegister, TDRE)) {
+                wait();
+            }
+            LOGGER.trace("wait done");
+            int t = transmitData;
+            setStatusBit(TDRE);
+            if (transmitIrqEnabled) {
+                raiseIRQ();
+            }
+            notifyAll();
+            return t;
         }
-        int t = transmitData;
-        statusRegister |= TDRE;     // Transmit register is empty now
-        if (transmitIrqEnabled) {
-            raiseIRQ();
-        }
-        notifyAll();
-        return t;
-    }
-
-    /**
-     * Is Transmit register empty?
-     */
-    private boolean isTransmitRegisterEmpty() {
-        return (statusRegister & TDRE) == TDRE;
     }
 
     /**
@@ -157,13 +161,6 @@ public class Acia6850 extends MemorySegment implements Acia {
         }
     }
 
-    /**
-     * Is Receive register full?
-     */
-    private boolean isReceiveRegisterFull() {
-        return (statusRegister & RDRF) == RDRF;
-    }
-
     @Override
     public void eolReceived() {
         for (int i = 0; i < eolSequence.length(); i++) {
@@ -174,32 +171,39 @@ public class Acia6850 extends MemorySegment implements Acia {
     /**
      * Get interrupted by reader thread and get the byte.
      */
-    public synchronized void dataReceived(int val) {
-        // Wait until the CPU has taken the current byte
-        while (isReceiveRegisterFull()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                LOGGER.info("InterruptedException", e);
+    public void dataReceived(int val) {
+        LOGGER.trace("get data received: {}", val);
+        synchronized(this) {
+            // Wait until the CPU has taken the current byte
+            while (isBitOn(statusRegister, RDRF)) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    LOGGER.info("InterruptedException", e);
+                }
             }
+            // RDRF is now 0
+            receiveData = val;
+            setStatusBit(RDRF);   // Read register is full.
+            if (receiveIrqEnabled) {
+                raiseIRQ();
+            }
+            notifyAll();
         }
-        receiveData = val;
-        setStatusBit(RDRF);   // Read register is full.
-        if (receiveIrqEnabled) {
-            raiseIRQ();
-        }
-        notifyAll();
     }
 
     private void raiseIRQ() {
-        if ((statusRegister & IRQ) == 0) {
+        if (isBitOff(statusRegister, IRQ)) {
             setStatusBit(IRQ);
             bus.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
-        if ((statusRegister & IRQ) == IRQ) {
+        if (isBitOn(statusRegister, IRQ)) {
+            if (!bus.isIRQActive()) {
+                LOGGER.error("Lowering IRQ on bus that has no IRQ active");
+            }
             clearStatusBit(IRQ);
             bus.signalIRQ(false);
         }
@@ -245,8 +249,10 @@ public class Acia6850 extends MemorySegment implements Acia {
      * @return The contents of the status register.
      */
     private int getStatusReg() throws IOException {
-        LOGGER.debug("StatusRegister: {}", statusRegister);
-        return statusRegister;
+        synchronized(this) {
+            LOGGER.debug("StatusRegister: {}", statusRegister);
+            return statusRegister;
+        }
     }
 
     /**
@@ -255,19 +261,23 @@ public class Acia6850 extends MemorySegment implements Acia {
      *
      * @param value - Character to send.
      */
-    private synchronized void sendValue(int val) {
+    private void sendValue(int val) {
         LOGGER.debug("Send value: {}", val);
-        lowerIRQ();
-        while (!isTransmitRegisterEmpty()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                LOGGER.info("InterruptedException in sendValue", e);
+        synchronized(this) {
+            lowerIRQ();
+            while (isBitOff(statusRegister, TDRE)) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    LOGGER.info("InterruptedException in sendValue", e);
+                }
             }
+            // TDRE is now on
+            LOGGER.trace("Send wait done");
+            transmitData = val;
+            clearStatusBit(TDRE);
+            notifyAll();
         }
-        transmitData = val;
-        statusRegister &= ~TDRE;    // Transmit register is not empty now
-        notifyAll();
     }
 
     /**
@@ -275,20 +285,22 @@ public class Acia6850 extends MemorySegment implements Acia {
      * RDRF goes to 0 when the processor reads the register.
      * If IRQ is enabled then IRQ goes low.
      */
-    private synchronized int getReceivedValue() throws IOException {
-        LOGGER.debug("Received val: {}", receiveData);
-        lowerIRQ();
-        int r = receiveData;  // Read before we turn RDRF off.
-        statusRegister &= ~RDRF;    // Receive register is empty now
-        notifyAll();
-        return r;
+    private int getReceivedValue() throws IOException {
+        synchronized(this) {
+            LOGGER.debug("Received val: {}", receiveData);
+            lowerIRQ();
+            int r = receiveData;  // Read before we turn RDRF off.
+            clearStatusBit(RDRF);
+            notifyAll();
+            return r;
+        }
     }
 
     /**
      * Get DCD status. Inverted in register.
      */
     private boolean hasDCD() {
-        return (statusRegister & DCD) == 0;
+        return isBitOff(statusRegister, DCD);
     }
 
     /**
@@ -296,35 +308,40 @@ public class Acia6850 extends MemorySegment implements Acia {
      *
      * @param data Data to write into the control register
      */
-    private synchronized void setControlRegister(int data) {
+    private void setControlRegister(int data) {
         LOGGER.debug("Set control (Reg #{}): {}", CTRL_REG, data);
-        controlRegister = data;
-        boolean activateIRQ = false;
-        // Check for IRQ disable/enable
-        receiveIrqEnabled = isBitOn(data, CR7);
-        if (receiveIrqEnabled && isReceiveRegisterFull()) {
-            activateIRQ = true;
-        }
+        synchronized(this) {
+            controlRegister = data;
+            boolean activateIRQ = false;
+            // Check for IRQ disable/enable
+            receiveIrqEnabled = isBitOn(data, CR7);
+            if (receiveIrqEnabled && isBitOn(statusRegister, RDRF)) {
+                activateIRQ = true;
+            }
 
-        // Transmit IRQ is enabled if CR6 is 0 and CR5 is 1.
-        transmitIrqEnabled = !isBitOn(data, CR6)
-                           && isBitOn(data, CR5);
-        // Check for master reset
-        if (isBitOn(data, CR0) && isBitOn(data, CR1)) {
-            reset();
-        }
-        if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
-            activateIRQ = true;
-        }
-        if (activateIRQ) {
-            raiseIRQ();
-        } else {
-            lowerIRQ();
+            // Transmit IRQ is enabled if CR6 is 0 and CR5 is 1.
+            transmitIrqEnabled = isBitOff(data, CR6) && isBitOn(data, CR5);
+            // Check for master reset
+            if (isBitOn(data, CR0) && isBitOn(data, CR1)) {
+                reset();
+            }
+            if (transmitIrqEnabled && isBitOn(statusRegister, TDRE)) {
+                activateIRQ = true;
+            }
+            if (activateIRQ) {
+                raiseIRQ();
+            } else {
+                lowerIRQ();
+            }
         }
     }
 
     private static boolean isBitOn(int x, int n) {
         return (x & n) != 0;
+    }
+
+    private static boolean isBitOff(int x, int n) {
+        return (x & n) == 0;
     }
 
     private void setStatusBit(int n) {

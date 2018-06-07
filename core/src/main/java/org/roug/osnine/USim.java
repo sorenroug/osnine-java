@@ -184,8 +184,10 @@ public abstract class USim {
                 bOut.write(read(i));
             }
             bOut.flush();
+            bOut.close();
             fOut.close();
         } catch (Exception e) {
+            LOGGER.error("Unable to dump core");
         }
     }
 

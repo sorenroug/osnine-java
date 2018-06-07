@@ -81,7 +81,6 @@ public class V6809 {
      */
     private static int loadModules(String[] files) throws Exception {
         int loadAddress = 0;
-        byte[] buf = new byte[0x10000];
 
         for (String fileToLoad : files) {
             if (fileToLoad.startsWith("@")) {
