@@ -8,7 +8,7 @@ public class RandomAccessMemory extends MemorySegment {
     private int memorySize;
 
     /** Memory space. */
-    private int[] memory;
+    private byte[] memory;
 
     /**
      * Constructor.
@@ -19,17 +19,17 @@ public class RandomAccessMemory extends MemorySegment {
         int size = Integer.decode(args[0]).intValue();
         setEndAddress(start + size);
         this.memorySize = size;
-        memory = new int[size];
+        memory = new byte[size];
     }
 
     @Override
     protected int load(int addr) {
-        return memory[addr - getStartAddress()];
+        return memory[addr - getStartAddress()] & 0xFF;
     }
 
     @Override
     protected void store(int addr, int val) {
-        memory[addr - getStartAddress()] = val & 0xff;
+        memory[addr - getStartAddress()] = (byte)(val & 0xFF);
     }
 
 }

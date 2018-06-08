@@ -6,7 +6,7 @@ import org.junit.Test;
 public class MemorySegmentTest {
 
     /**
-     * 
+     * Write 1 to top memory.
      */
     @Test
     public void writeTop2() {
@@ -21,8 +21,13 @@ public class MemorySegmentTest {
         cpu.write(0xffff, 1);
         assertEquals(1, cpu.read(0xffff));
 
+        // Try values under 128
         cpu.write(0x0400, 0x34);
         assertEquals(0x34, cpu.read(0x0400));
+
+        // Try values over 128
+        cpu.write(0x03F0, 0x91);
+        assertEquals(0x91, cpu.read(0x03F0));
     }
 
     @Test
@@ -80,6 +85,32 @@ public class MemorySegmentTest {
         MC6809 cpu = new MC6809(bus);
         cpu.write(0xffff, 1);
         assertEquals(1, cpu.read(0xffff));
+    }
+
+    @Test
+    public void readWrite() {
+        MemorySegment newMemory = new RandomAccessMemory(0, null, "0x300");
+        newMemory.burn(0x100, 0xAA);
+        assertEquals(0xAA, newMemory.load(0x100));
+
+        newMemory.burn(0x100, 0x1B);
+        assertEquals(0x1B, newMemory.load(0x100));
+        // Test that it is read/write
+        newMemory.store(0x100, 0x34);
+        assertEquals(0x34, newMemory.load(0x100));
+    }
+
+    @Test
+    public void readOnly1() {
+        MemorySegment newMemory = new ReadOnlyMemory(0, null, "0x300");
+        newMemory.burn(0x100, 0xAA);
+        assertEquals(0xAA, newMemory.load(0x100));
+
+        newMemory.burn(0x100, 0x1B);
+        assertEquals(0x1B, newMemory.load(0x100));
+        // Test that it is Read-only
+        newMemory.store(0x100, 0x34);
+        assertEquals(0x1B, newMemory.load(0x100));
     }
 
 }
