@@ -35,6 +35,9 @@ public class AciaGraphicalUI implements Runnable {
     /** Whether the cursor is shown on the screen. */
     private boolean cursorShown;
 
+    /** Does backspace delete the last character? */
+    private boolean backspaceDeletes = true;
+
     private JFrame mainFrame = new JFrame("Terminal");
 
     private JTextArea textArea = new JTextArea();
@@ -117,7 +120,7 @@ public class AciaGraphicalUI implements Runnable {
      */
     void sendToGUI(int val) throws IOException {
         int caretPos = textArea.getCaretPosition();
-        String newchar = Character.toString ((char) val);
+        String newchar = Character.toString((char) val);
         if (LOGGER.isDebugEnabled()) {
             logCharacter(val, newchar);
         }
@@ -126,8 +129,13 @@ public class AciaGraphicalUI implements Runnable {
         case 7:
             Toolkit.getDefaultToolkit().beep();
             break;
-        case 8:
-            textArea.setCaretPosition(caretPos - 1);
+        case 8:     // Backspace
+            if (backspaceDeletes) {
+                if (caretPos > 0)
+                    textArea.replaceRange(null, caretPos - 1, caretPos);
+            } else {
+                textArea.setCaretPosition(caretPos - 1);
+            }
             break;
         case 12:    // Form feed - clear screen
             textArea.setText("");
