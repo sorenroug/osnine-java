@@ -25,11 +25,29 @@ public class AciaConsoleUI implements Runnable {
         LOGGER.debug("AciaConsoleUI thread started");
         try {
             acia.setDCD(true);
-            Thread reader = new Thread(new ConsoleReader(this), "con-in");
-            reader.start();
-            Thread writer = new Thread(new ConsoleWriter(this), "con-out");
+            Thread writer = new Thread(new ConsoleWriter(), "con-out");
             writer.start();
-            reader.join();
+            try {
+                while (true) {
+                    int receiveData = read();
+                    if (Thread.interrupted())
+                        throw new InterruptedException();
+                    LOGGER.debug("Received {}", receiveData);
+                    if (receiveData == -1) {  // EOF typed on console
+                        System.exit(0);
+                    }
+                    if (receiveData == 10) {
+                        eolReceived();
+                    } else {
+                        dataReceived(receiveData);
+                    }
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("InterruptException", e);
+            } catch (Exception e) {
+                LOGGER.error("Exception", e);
+            }
+            writer.interrupt();
             acia.setDCD(false);
         } catch (Exception e) {
             LOGGER.error("Console exception");
@@ -65,92 +83,33 @@ public class AciaConsoleUI implements Runnable {
     }
 
 
-}
-
-/**
- * Thread to listen to incoming data from stdin.
- * If it gets a read exception, then it shall tell the writer
- * to stop and it shall end the thread.
- */
-class ConsoleReader implements Runnable {
-
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(ConsoleReader.class);
-
-    private AciaConsoleUI handler;
 
     /**
-     * Constructor.
+     * Thread to write to socket.
+     * If it gets a write exception, then it shall tell the reader
+     * to stop and it shall end the thread.
+     * If it gets an InterruptedException then it shall just stop.
      */
-    ConsoleReader(AciaConsoleUI handler) {
-        this.handler = handler;
-    }
+    private class ConsoleWriter implements Runnable {
 
-    /**
-     * Since this waits in read() we can busy loop on the rest.
-     */
-    public void run() {
-        LOGGER.debug("Reader thread started");
-        try {
-            while (true) {
-                int receiveData = handler.read();
-                if (Thread.interrupted())
-                    throw new InterruptedException();
-                LOGGER.debug("Received {}", receiveData);
-                if (receiveData == -1) {  // EOF typed on console
-                    System.exit(0);
+        /**
+         * Wait for a value from the Acia to transmit to the console.
+         */
+        public void run() {
+            LOGGER.debug("Writer thread started");
+            try {
+                while (true) {
+                    int val = waitForValueToTransmit();
+                    sendToConsole(val);
+                    if (Thread.interrupted())
+                        throw new InterruptedException();
                 }
-                if (receiveData == 10) {
-                    handler.eolReceived();
-                } else {
-                    handler.dataReceived(receiveData);
-                }
+            } catch (InterruptedException e) {
+                LOGGER.error("InterruptException");
+            } catch (Exception e) {
+                LOGGER.error("Broken connection", e);
             }
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
         }
     }
+
 }
-
-/**
- * Thread to write to socket.
- * If it gets a write exception, then it shall tell the reader
- * to stop and it shall end the thread.
- * If it gets an InterruptedException then it shall just stop.
- */
-class ConsoleWriter implements Runnable {
-
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(ConsoleWriter.class);
-
-    private AciaConsoleUI handler;
-
-    /**
-     * Constructor.
-     */
-    ConsoleWriter(AciaConsoleUI handler) {
-        this.handler = handler;
-    }
-
-    /**
-     * Wait for a value from the Acia to transmit to the console.
-     */
-    public void run() {
-        LOGGER.debug("Writer thread started");
-        try {
-            while (true) {
-                int val = handler.waitForValueToTransmit();
-                handler.sendToConsole(val);
-                if (Thread.interrupted())
-                    throw new InterruptedException();
-            }
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptException");
-        } catch (Exception e) {
-            LOGGER.error("Broken connection", e);
-        }
-    }
-}
-
