@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>roug.org.osnine</groupId>
-        <artifactId>osnine</artifactId>
+        <artifactId>emulations</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
@@ -71,4 +71,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!-- Needed to run the 'asm' command -->
+        <dependency>
+            <groupId>roug.org.osnine</groupId>
+            <artifactId>osnine-os9</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 </project>

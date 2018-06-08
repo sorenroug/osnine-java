@@ -23,9 +23,7 @@
         <module>os9l1</module>
         <module>tools</module>
         <module>os9software</module>
-        <!--
-        <module>v6809</module>
-        -->
+        <module>emulations</module>
         <module>manuals</module>
     </modules>
 
