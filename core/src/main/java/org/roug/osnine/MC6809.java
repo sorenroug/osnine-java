@@ -1249,7 +1249,9 @@ public class MC6809 extends USimMotorola {
     private void sync() {
         try {
             synchronized(bus) {
-                bus.wait();
+                while(!(bus.isIRQActive() || bus.isFIRQActive() || bus.isNMIActive() )) {
+                    bus.wait();
+                }
             }
         } catch (InterruptedException e) {
             LOGGER.error("Wait interrupted");
