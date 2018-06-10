@@ -700,7 +700,7 @@ next two lines; the edit pointer would be moved past these lines.
 This command is used to unextend (truncate) a line at the current edit
 position. The characters in the line from the current edit pointer
 position to the end of the line are chopped off. The <quote>&gt;</quote> or <quote>&lt;</quote> commands
-(see page 1-14) are usually used to position the pointer prior to use of
+(see <xref linkend="moveback"/>) are usually used to position the pointer prior to use of
 this command. For example:
 </para>
       <simplelist type="horiz" columns="3">
@@ -781,9 +781,9 @@ asterisks you would enter the following command:
 <screen>
 I80/*/
 </screen>
-Note that this command always inserts a [RETURN] after the text. While
-this command is very similar to the [SPACE] (insert line) command, it is
-provided because the [SPACE] command cannot be used within macros.
+Note that this command always inserts a <keycap>RETURN</keycap> after the text. While
+this command is very similar to the <keycap>SPACE</keycap> (insert line) command, it is
+provided because the <keycap>SPACE</keycap> command cannot be used within macros.
 
 </para>
     </section>
@@ -946,7 +946,7 @@ for buffers and macros, <quote>15328</quote> is the total amount of memory avail
 in the workspace.
 </para>
     </section>
-    <section>
+    <section xml:id="moveback">
       <title>Move Characters Backward</title>
     <variablelist spacing="compact">
       <varlistentry>
