@@ -361,7 +361,7 @@ is copied into the DAT hardware.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: BOOT links the module named "Boot" or as specified in the INIT
+FUNCTION: BOOT links the module named <quote>Boot</quote> or as specified in the INIT
 module; calls linked module; and expects the return of a pointer and size
 of an area which is then searched for new modules.
 </para>
@@ -868,7 +868,7 @@ Used for process clean up after death.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: DELRAM clears the block's "RAM in use flag" in the system
+FUNCTION: DELRAM clears the block's <quote>RAM in use flag</quote> in the system
 memory block map. DelRam assumes the blocks are not associated with any
 DAT image.
 </para>
@@ -1015,7 +1015,7 @@ descriptor pointer is passed.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: ELINK performs a "Link" given a pointer to a module directory
+FUNCTION: ELINK performs a <quote>Link</quote> given a pointer to a module directory
 entry. Note that this call differs from F$Link in that a pointer to the
 module directory entry is supplied rather than a pointer to a module
 name.
@@ -1767,7 +1767,7 @@ offsetting into the DAT image to a block number is specified.
 FUNCTION: MAPBLK maps specified block(s) into unallocated blocks of
 process space. Blocks are mapped in from the top down. In other words,
 new blocks are mapped into the highest address available in the address
-space. See F$ClrBlk for information on "unmapping".
+space. See F$ClrBlk for information on <quote>unmapping</quote>.
 </para>
       <variablelist role="factsheet">
         <varlistentry>
@@ -2246,7 +2246,7 @@ space.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: This is similar to the assembly instruction "STA 0,X", except
+FUNCTION: This is similar to the assembly instruction <quote>STA 0,X</quote>, except
 that (X) refers to an address in the given task's address space rather
 than the current address space.
 </para>

@@ -6,7 +6,7 @@ system administrator, supervisor, and resource manager.
 </para>
   <para>
 The Level One kernel is about 3K bytes long and normally resides in
-two 2K byte ROMs: "OS9P1" residing at addresses $F800 - $FFFF, and
+two 2K byte ROMs: <quote>OS9P1</quote> residing at addresses $F800 - $FFFF, and
 "OS9P2", which is position-independent. OS9P2 only occupies about half
 (1K) of the ROM, the other space in the ROM is reserved for the disk
 bootstrap module.
@@ -15,7 +15,7 @@ bootstrap module.
 The Level Two kernel is somewhat larger than the Level One version.
 Its exact size depends on the size of the software routines required for
 the style of memory management unit used in the particular system. Half
-of the kernel (called "OS9P1") resides in ROM with the BOOT module; the
+of the kernel (called <quote>OS9P1</quote>) resides in ROM with the BOOT module; the
 other half ("OS9P2") is loaded into RAM with the other OS-9 modules.
 </para>
   <para>The kernel's main functions are:</para>
@@ -58,7 +58,7 @@ OS9p3 is a system module added to version 1.2 of Level 2 that is called
 during cold start to allow users to define their own system calls. The
 cold start routine in OS9p2 does a link to OS9p3. If the module exists
 (in the boot file or in ROM), then OS9p2 will do a BSR to the entry point
-of the "p3" module. If "p3" does not exist, OS9p2 will centinue with a
+of the <quote>p3</quote> module. If <quote>p3</quote> does not exist, OS9p2 will centinue with a
 normal cold start.
 </para>
     <para>
@@ -184,16 +184,16 @@ Service requests are divided into two categories:
 I/O REQUESTS perform various input/output functions and are passed by the
 kernel to IOMAN for processing. IOMAN will in turn call the appropriate
 file manager and device driver modules. The symbolic names for this
-category have a "I$" prefix, for example, the "read" service request is
-called "I$READ".
+category have a <quote>I$</quote> prefix, for example, the <quote>read</quote> service request is
+called <quote>I$READ</quote>.
 </para>
     <para>
 FUNCTION REQUESTS perform memory management, multiprogramming, and
 miscellaneous functions. Most are processed by the kernel. The symbolic
-names for this category begins with "F$".
+names for this category begins with <quote>F$</quote>.
 </para>
     <para>
-A system wide assembly language equate file called "OS9Defs" defines
+A system wide assembly language equate file called <quote>OS9Defs</quote> defines
 symbolic names for all service requests. The OS9Defs file is included
 when assembling hand-written or compiler-generated code. The OS-9
 Assembler has a built-in macro to generate system calls, for example:
@@ -214,7 +214,7 @@ FCB  I$READ
     <para>
 Memory management is an important operating system function. OS-9
 manages both the physical assignment of memory to programs and the
-logical contents of memory by using entities called "memory modules" (see
+logical contents of memory by using entities called <quote>memory modules</quote> (see
 chapter 4 for a detailed description of memory modules). All programs
 are loaded in memory module format allowing OS-9 to maintain a directory
 which contains the name, address, and other related information about
@@ -223,11 +223,11 @@ modular software environment. Some of the advantages are:
 </para>
     <itemizedlist mark="bullet">
       <listitem>
-        <para>Automatic run-time "linking" of programs to libraries of utility
+        <para>Automatic run-time <quote>linking</quote> of programs to libraries of utility
 modules.</para>
       </listitem>
       <listitem>
-        <para>Automatic "sharing" of reentrant programs, replacement of small
+        <para>Automatic <quote>sharing</quote> of reentrant programs, replacement of small
 sections of large programs for update or correction (even when in ROM), etc.</para>
       </listitem>
     </itemizedlist>
@@ -259,10 +259,10 @@ except RAM need not be contiguous as the Memory Management Unit (MMU)
 hardware can dynamically rearrange memory addresses.
 </para>
     <para>
-All other RAM memory is pooled into a "free memory" space. Memory
+All other RAM memory is pooled into a <quote>free memory</quote> space. Memory
 space is dynamically taken from and returned to the pool as it is
 allocated or deallocated for various purposes. The basic unit of memory
-allocation is the 256 byte "page". Memory is always allocated in whole
+allocation is the 256 byte <quote>page</quote>. Memory is always allocated in whole
 numbers of pages. Level Two systems must physically allocate memory
 according to the size of the smallest memory block the MMU hardware can
 handle, usually 2048 or 4096 byte blocks. The 256 byte page is still
@@ -348,7 +348,7 @@ upward.
 </screen>
     </figure>
     <para>
-The diagrams above illustrate "typical" systems. Actual memory sizes and
+The diagrams above illustrate <quote>typical</quote> systems. Actual memory sizes and
 addresses may vary depending on the exact system configuration.
 </para>
     <sect2>
@@ -368,7 +368,7 @@ specifications.
 A physical address space of up to 2 megabytes is addressed by the
 system bus using 20 or 21 address bits. All RAM, ROM, and I/O devices
 respond to these extended addresses. The physical address space is
-further subdivided into "blocks" of either exactly 2K or 4K (depending on
+further subdivided into <quote>blocks</quote> of either exactly 2K or 4K (depending on
 the hardware) bytes. The high order 8 or 9 (depending on the hardware)
 bits of the starting address of the block is called a block number. For
 example, the block having physical address $3C000 to $3CFFF is called
@@ -612,7 +612,7 @@ A common case is direct access to I/O devices. Normally, the block(s)
 that contain I/O devices are kept in OS-9's map and not in user maps,
 which is proper for true timesharing system security but not for process
 control applications, for example. In order for a user task to get
-access to the I/O device block, the "F$MapBlk" system call can be used.
+access to the I/O device block, the <quote>F$MapBlk</quote> system call can be used.
 It takes a starting block number and block count and maps them into
 unallocated spaces of the process' address space. You do not have a
 choice where in your block it is mapped, but the system call returns the
@@ -672,7 +672,7 @@ initially execute. The creation process is outlined as follows:
 </para>
     <orderedlist numeration="arabic">
       <listitem>
-        <para>OS-9 first attempts to find the module in the "module directory"
+        <para>OS-9 first attempts to find the module in the <quote>module directory</quote>
 which includes the names of all program modules already present in
 memory. If the module cannot be found there, OS-9 usually attempts to
 load into memory a mass-storage file using the requested module name
@@ -691,14 +691,14 @@ information on what is in a process descriptor.</para>
       <listitem>
         <para>The next step in the creation of a new process is allocation of
 data storage (RAM) memory for the process. The primary module's header
-contains a storage size value that is used unless the "fork" system
+contains a storage size value that is used unless the <quote>fork</quote> system
 call requested an optionally larger' size. OS-9 then attempts to
 allocate a <emphasis/> memory area of this size from the free memory
 space.</para>
       </listitem>
       <listitem>
         <para>If any of the previous steps cannot be performed, creation of the
-new process is aborted, and the process that originated the "fork" is
+new process is aborted, and the process that originated the <quote>fork</quote> is
 informed of the error. Otherwise, the new process is added to the
 active process queue for execution scheduling.</para>
       </listitem>
@@ -707,12 +707,12 @@ active process queue for execution scheduling.</para>
 The new process is also assigned a unique number called a ("process
 ID" which is used as its identifier. Other processes can communicate
 with it by referring to its ID in various system calls. The process also
-has associated with it a "user ID" which is used to identify all
+has associated with it a <quote>user ID</quote> which is used to identify all
 processes and files belonging to a particular user. The user ID is
 inherited from the parent process.
 </para>
     <para>
-Processes terminate when they execute an "EXIT" system service request
+Processes terminate when they execute an <quote>EXIT</quote> system service request
 or when they receive fatal signals. The process termination closes any
 open paths, deallocates its memory, and unlinks its primary module.
 </para>
@@ -1080,8 +1080,8 @@ the corresponding RAM interrupt vector. It starts polling the
 devices, using the entries in the polling table in priority order.
 For each entry, the status register address is loaded into
 accumulator A using the device address from the table. An
-exclusive "OR" operation using the "flip-byte" is executed, followed by a
-logical "AND" operation using the mask byte. If the result is non-zero,
+exclusive <quote>OR</quote> operation using the <quote>flip-byte</quote> is executed, followed by a
+logical <quote>AND</quote> operation using the mask byte. If the result is non-zero,
 the device is assumed to be the cause of the interrupt.
 The device's static storage address and service routine
 address is read from the table and executed.

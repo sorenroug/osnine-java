@@ -70,7 +70,7 @@ NOTE: The system call descriptions that follow are explained using a
 particular notation. When F.xxx appears in the SYSTEM CALLS section, it
 means that a <literal>BSR</literal> or <literal>LBSR</literal> is made instead of a system call. The SYSTEM
 CALLS section shows the other routines the service request calls. Any
-notation followed by "*" means that no error checking is done on return
+notation followed by <quote>*</quote> means that no error checking is done on return
 from the system call. The DATA section shows what direct page
 information is accessed by the service request.
 </para>
@@ -536,7 +536,7 @@ modules.
       <para>
 F$CRC calculates the CRC (cyclic redundancy count) for use by compilers,
 assemblers, or other module generators. The CRC is calculated starting
-at the source address over "byte count" bytes. It is not necessary to
+at the source address over <quote>byte count</quote> bytes. It is not necessary to
 cover an entire module in one call, since the CRC may be
 "accumulated" over several calls. The CRC accumulator can be any three
 byte memory location and must be initialized to $FFFFFF before the first
@@ -936,7 +936,7 @@ caller, and sets up the new process' memory, MPU registers, and standard
 I/O paths.
 </para>
       <para>
-The system parses the name string of the new process' "primary module" 9
+The system parses the name string of the new process' <quote>primary module</quote>
 the program that will initially be executed. Then the system module
 directory is searched to see if the program is already in memory. If so,
 the module is linked to and executed. If not, the name string is used
@@ -1324,7 +1324,7 @@ having a name, language, and type as given in the parameters. If found,
 the address of the module's header is returned in U, and the absolute
 address of the module's execution entry point is returned in Y (as a
 convenience: this and other information can.be obtained from the module
-header). The module's "link count" is incremented whenever a LINK
+header). The module's <quote>link count</quote> is incremented whenever a LINK
 references its name, thus keeping track of how many processes are using
 the module. If the module requested has an attribute byte indicating it
 is not sharable (meaning it is not reentrant), only one process may link
@@ -1465,7 +1465,7 @@ first module read is LINKed. The parameters returned are the same as the
 LINK call and apply only to the first module loaded.
 </para>
       <para>
-In order to be loaded, the file must have the "execute" permission and
+In order to be loaded, the file must have the <quote>execute</quote> permission and
 contain a module or modules that have a proper module header and CRC.
 The file will be loaded from the working execution directory unless a
 complete pathlist is specified.
@@ -1785,7 +1785,7 @@ implemented any PERR modification on Level 2 systems.
           <term>OUTPUT:</term>
           <listitem>
             <simplelist>
-              <member>(X) = Updated past the optional "/"</member>
+              <member>(X) = Updated past the optional <quote>/</quote></member>
               <member>(Y) = Address of the last character of the name +1</member>
               <member>(A) = Trailing byte (Delimiter character)</member>
               <member>(B) = Count of characters found.</member>
@@ -2159,7 +2159,7 @@ time interval if a signal is received, therefore. sleeping indefinately
 is a good way to wait for a signal or interrupt without wasting CPU time.
 </para>
       <para>
-The duration of a "tick" is system independent but is usually 100
+The duration of a <quote>tick</quote> is system independent but is usually 100
 milliseconds on Level I (50 ms with 6840) and 10 milliseconds on Level II.
 </para>
       <para>Due to the fact that it is not known when the <xref linkend="f.sleep"/> request was
@@ -3119,7 +3119,7 @@ has not yet been allocated).</para>
       <para>
 FUNCTION: ALL64 is used to dynamically allocate 64 byte blocks of memory
 by splitting whole pages (256 byte) into four sections. The first 64
-bytes of the base page are used as a "page table", which contains the MSB
+bytes of the base page are used as a <quote>page table</quote>, which contains the MSB
 of all pages in the memory structure. Passing a value of zero in the X
 register will cause the F$ALL64 service request to allocate a new base
 page and the first 64 byte memory block. Whenever a new page is needed,
@@ -4263,7 +4263,7 @@ If the device has already been attached, it will not be reinitialized.
 </para>
       <para>
 An ATTACH system call is not required to perform routine I/O. It does
-NOT "reserve" the device in question - it just prepares it for subsequent
+NOT <quote>reserve</quote> the device in question - it just prepares it for subsequent
 use by any process (see Note below). Most devices are automatically
 installed, so it is used mostly when devices are dynamically installed or
 to verify the existence of a device. IOMAN attaches all devices at open,
@@ -4426,7 +4426,7 @@ is changed. If the access mode is execute, the current execution
 directory is changed.
 </para>
       <para>
-Note: The <application>shell</application> "CHD" directive uses UPDATE mode, which means you must
+Note: The <application>shell</application> <quote>CHD</quote> directive uses UPDATE mode, which means you must
 have both read and write permission to change directories from the <application>shell</application>.
 </para>
   <variablelist role="factsheet">
@@ -5157,7 +5157,7 @@ good idea for more than one process to be doing 1/0 on the same path
 concurrently. On RBF files, unpredictable results may be produced.
 </para>
       <para>
-NOTE: This only increments the "use count" of a path descriptor and
+NOTE: This only increments the <quote>use count</quote> of a path descriptor and
 returns the synonymous path number. The path descriptor is NOT copied.
 It is usually not a good idea for more than process to be doing 1/0 on
 the same path concurrently. On RBF files, unpredictable results may be
@@ -5674,8 +5674,8 @@ itself (".") and its parent directory (".."). MAKDIR will fail on non-multifile 
 </para>
       <para>
 The caller is made the owner of the directory. MAKDIR does not return a
-path number because directory files are not "opened" by this request (use
-OPEN to do so). The new directory will automatically have its "directory"
+path number because directory files are not <quote>opened</quote> by this request (use
+OPEN to do so). The new directory will automatically have its <quote>directory</quote>
 bit set in the access permission attributes. The remaining attributes
 are specified by the byte passed in the B register, which has individual
 bits defined as follows:
@@ -5806,7 +5806,7 @@ is not going to be modified. This will inhibit record locking, and could
 dramatically improve system performance if more than one user is
 accessing the file. The access mode must conform to the access
 permission attributes associated with the file or device (see CREATE).
-Only the owner may access a file unless the appropriate "public permit"
+Only the owner may access a file unless the appropriate <quote>public permit</quote>
 bits are set.
 </para>
       <para>
@@ -6094,7 +6094,7 @@ The number of bytes requested will be read unless:
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: READLN is similar to "READ" except it reads data from the
+FUNCTION: READLN is similar to <quote>READ</quote> except it reads data from the
 input file or device until a carriage return character is encountered.
 Also, ReadLn causes line editing to occur on SCF-type devices. Line
 editing refers to backspace, line delete, echo, automatic line feed, etc.
@@ -6205,14 +6205,14 @@ LI and LII - <simplelist type="inline">
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: SEEK repositions the path's "file pointer"; which is the 32-
+FUNCTION: SEEK repositions the path's <quote>file pointer</quote>; which is the 32-
 bit address of the the next byte in the file to be read or written.
 </para>
       <para>
 A seek may be performed to any value even if the file is not large
 enough. Subsequent WRITEs will automatically expand the file to the
 required size (if possible), but READS will return an end-of-file
-condition. Note that a SEEK to address zero is the same as a "rewind"
+condition. Note that a SEEK to address zero is the same as a <quote>rewind</quote>
 operation.
 </para>
       <para>
@@ -6314,7 +6314,7 @@ Seek does not change the state of record locking.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: This system call is a "wild card" call used to handle individual device parameters that:
+FUNCTION: This system call is a <quote>wild card</quote> call used to handle individual device parameters that:
 </para>
       <orderedlist numeration="loweralpha">
         <listitem>
@@ -6547,7 +6547,7 @@ For Hard Disk Y = side only (may be more than one)
       </informaltable>
       <para>
 FUNCTION: This code causes a format track (most floppy disks) operation
-to occur. For hard disks or floppy disks with a "format entire disk"
+to occur. For hard disks or floppy disks with a <quote>format entire disk</quote>
 command, this command should format the entire media only when the track
 number equals zero.
 </para>

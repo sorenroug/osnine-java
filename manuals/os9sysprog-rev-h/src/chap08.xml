@@ -7,7 +7,7 @@ paths to pipes. Pipes allow concurrently executing processes to
 communicate data by allowing the output of one process (the writer) to be
 read as input to a second process (the reader). The writer sends it's
 output to standard output which is usually the terminal screen. The
-reader read input from standard input. When the "2" operator is used,
+reader read input from standard input. When the <quote>!</quote> operator is used,
 Pipeman handles reading and writing to the pipe. Pipeman allocates a
 path descriptor and a 256 byte data buffer that the processes will
 read/write to/from. Pipeman also controls which process has centrol of
@@ -36,7 +36,7 @@ PipeEnt  lbra Create
 <para>
 For pipes, the MakDir, ChgDir, Delete, and Seek are illegal service
 routines and will return <xref linkend="e.unksvc"/> (unknown service request). Getstat and
-Putstat are "no action service routines" and will return with no error.
+Putstat are <quote>no action service routines</quote> and will return with no error.
 </para>
 <para>
 Create and Open are the same routine. They set up the 256 byte data

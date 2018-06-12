@@ -25,8 +25,8 @@ with an excellent selection of time saving options such as hard disks,
 line printers, PROM programmers, etc.
 </para>
 <para>
-Microware sells source code for standard I/O drivers, and a "User
-Source Code Package" (on OS-9 format disk only) which contains source
+Microware sells source code for standard I/O drivers, and a
+<quote>User Source Code Package</quote> (on OS-9 format disk only) which contains source
 code to the Shell, INIT, SYSGO, device driver and descriptor modules, and
 a selection of utility commands which can be useful when moving OS-9 to a
 new target system.

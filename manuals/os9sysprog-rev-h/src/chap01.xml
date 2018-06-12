@@ -87,7 +87,7 @@ the system is running.</para></listitem>
 <title>System Hardware Requirements</title>
 
 <para>
-Because OS-9 is so flexible, the "minimum" hardware requirements are
+Because OS-9 is so flexible, the <quote>minimum</quote> hardware requirements are
 difficult to define. A bare-bones LEVEL I system requires 4K of ROM and
 2K of RAM, which may be expanded to 56K RAM.
 </para>

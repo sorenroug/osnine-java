@@ -81,16 +81,16 @@ value to zero.</para>
 
 <para>
 If PD.RPR &lt;&gt; 0, SCF (<xref linkend="i.readln"/>) will, upon receipt of this character, echo
-a carriage return (and insert it in the buffer for "DUP" described
+a carriage return (and insert it in the buffer for <quote>DUP</quote> described
 below), and then reprint the current line.
 </para>
 <para>
 If PD.DUP &lt;&gt; 0, SCF (<xref linkend="i.readln"/>) will duplicate whatever is in the input
-buffer through the first "PD.EOR" character.
+buffer through the first <quote>PD.EOR</quote> character.
 </para>
 <para>
-If PD.PSC &lt;&gt; 0, output is suspended before the next "PD.EOR" character
-when this character is input. This will also delete any "type ahead"
+If PD.PSC &lt;&gt; 0, output is suspended before the next <quote>PD.EOR</quote> character
+when this character is input. This will also delete any <quote>type ahead</quote>
 input for <xref linkend="i.readln"/>.
 </para>
 <para>
@@ -107,7 +107,7 @@ signal code. This location is normally set to a control-Q character.
 </para>
 <para>
 If PD.OVF &lt;&gt; 0, it is echoed when <xref linkend="i.readln"/> has satisfied its input byte
-count without finding a "PD.EOR" character.
+count without finding a <quote>PD.EOR</quote> character.
 </para>
 <para>
 NOTE: It is possible to disable most of these special editing functions
@@ -487,7 +487,7 @@ reported later when SCF calls one of the device driver routines.
 <title>SCF Device Driver Subroutines</title>
 <para>
 As with all device drivers, SCF device drivers use a standard
-executable memory module format with a module type of "device driver"
+executable memory module format with a module type of <quote>device driver</quote>
 (CODE $EO). The execution offset address in the module header points to
 a branch table that has six three byte entries. Each entry is typically
 a LBRA to the corresponding subroutine. The branch table is as follows:

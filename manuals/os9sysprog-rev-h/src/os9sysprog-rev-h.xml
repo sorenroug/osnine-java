@@ -82,7 +82,7 @@ Revision H
     OCR was then applied to the pages and it was reformatted into Docbook 5.0.
     </para>
     <para>
-    To explain the "DATA" section in the service request descriptions in chapters 11 and 12, an appendix D was added describing
+    To explain the <quote>DATA</quote> section in the service request descriptions in chapters 11 and 12, an appendix D was added describing
     the direct page (page 0) variables.
     </para>
   </colophon>

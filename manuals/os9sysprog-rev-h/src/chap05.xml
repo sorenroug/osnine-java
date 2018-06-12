@@ -136,7 +136,7 @@ P$DIO+2 (data directory) or P$DIO+8 (execution directory).
 <para>
 In the case of RBF, the address of the directory's file descriptor is
 saved. Open/Create begins searching in this directory when the caller's
-pathlist does not begin with a "/" character. File managers that do not
+pathlist does not begin with a <quote>/</quote> character. File managers that do not
 support directories should return the carry set and an appropriate error
 code in (B).
 </para>
@@ -158,7 +158,7 @@ Seek
 File managers that support random access devices use Seek to position
 file pointers of the already open path to the byte specified. Typically,
 this is a logical movement. No error is produced at the time of the seek
-if the position is beyond the current "end of file". File managers that
+if the position is beyond the current <quote>end of file</quote>. File managers that
 do not support random access should do nothing. It is conceivable that
 an SCF-type manager could use seek to perform cursor positioning.
 </para>
@@ -217,7 +217,7 @@ The GetStat (Get Status) and PutStat (Put Status) system calls are
 wild card calls designed to provide a method of accessing features of a
 device (or file manager) that are not generally device independent. The
 file manager may perform some specific function such as setting the size
-of a file to a given value. Status calls that are "unknown" should be
+of a file to a given value. Status calls that are <quote>unknown</quote> should be
 passed on to the driver to provide a further means of device dependence.
 For example, a PutStat call to format a disk track may behave differently
 on different types of disk controllers.
@@ -239,7 +239,7 @@ form feeds to printers.
 <title>Interfacing to the Device Driver</title>
 <para>
 Strictly speaking, device drivers must conform to the general format
-presented in this manual. However, IOMAN uses only the "Init" and
+presented in this manual. However, IOMAN uses only the <quote>Init</quote> and
 "Terminate" entry points. Other entry points need only be compatible
 with the file manager for which the driver is written. For example, the
 Read entry point of an SCF driver is expected to return one byte from the
@@ -288,16 +288,16 @@ low-level I/O transfers to or from a specific type of I/O device hardware
 controller. These modules are reentrant so one copy of the module can
 simultaneously run several different devices which use identical I/O
 controllers. For example, the device driver for 6850 serial interfaces
-is-called "ACIA" and can communicate to any number of serial terminals.
+is-called <quote>ACIA</quote> and can communicate to any number of serial terminals.
 </para>
 <para>
 Device driver modules use a standard module header and are given a
-module type of "device driver" (code $E0). The execution offset address
+module type of <quote>device driver</quote> (code $E0). The execution offset address
 in the module header points to a branch table that has a minimum of six
 (three byte) entries. Each entry is typically a LBRA to the
 corresponding subroutine. The File Managers call specific routines in the
-device driver through this table, passing a pointer to a "path
-descriptor" and the hardware control register address in the MPU
+device driver through this table, passing a pointer to a <quote>path
+descriptor</quote> and the hardware control register address in the MPU
 registers. The branch table looks like:
 </para>
 <literallayout>
@@ -424,7 +424,7 @@ should call a sleep routine. The sleep routine will copy V.Busy to
 V.Wake, then it will go to sleep for some period of time.
 </para>
 <para>
-Step 3: When the driver program "awakens", it will check whether
+Step 3: When the driver program <quote>awakens</quote>, it will check whether
 it awakened because of an interrupt or a signal sent from some other
 process. The usual way to accomplish the check is with the V.Wake
 storage byte. The V.Busy byte is maintained by the file manager to be
@@ -500,7 +500,7 @@ state bit set. The main advantage of this method over the previous
 method is the elimination of the F$Send system call during the interrupt
 handling. Since the process is already in the active queue, it need not
 be moved from one queue to another. The device driver IRQSERVC routine
-can now clear the suspend bit in the process state in order to "wakeup"
+can now clear the suspend bit in the process state in order to <quote>wakeup</quote>
 the suspended main driver. Sample routines for the sleep and IRQSERVC
 calls follow:
 </para>

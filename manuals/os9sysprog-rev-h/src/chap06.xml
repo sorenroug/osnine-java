@@ -18,7 +18,7 @@ the subroutines in the associated device drivers. All data transfers are
 performed using 256 byte data blocks. RBF does not directly deal with
 physical addresses such as tracks, cylinders, etc. Instead, it passes to
 device driver modules address parameters using a standard address called
-a "logical sector number", or "LSN". LSNs are integers in the range of 0
+a <quote>logical sector number</quote>, or <quote>LSN</quote>. LSNs are integers in the range of 0
 to n-1, where n is the maximum number of sectors on the media. The
 driver is responsible for translating the logical sector number to actual
 cylinder/track/sector values.
@@ -30,7 +30,7 @@ driven. The physical parameters it uses are stored on the media itself.
 On disk systems, this information is written on the first few sectors of
 track number zero. The device drivers also use this information,
 particularly the physical parameters stored on sector 0. These
-parameters are written by the "format" program that initializes and tests
+parameters are written by the <quote>format</quote> program that initializes and tests
 the media.
 </para>
   <sect1>
@@ -183,7 +183,7 @@ value stored in this sector.
       <title>Disk Allocation Map</title>
       <para>
 Logical sector one of the disk, and possibly more sectors, is used for
-the "disk allocation map" that specifies which clusters on the disk are
+the <quote>disk allocation map</quote> that specifies which clusters on the disk are
 available for allocation of file storage space. The size of the
 allocation map can be up to a maximum of 256 sectors decided by the
 Format utility. Format sets the size of the bitmap depending on disk
@@ -192,20 +192,20 @@ are actually used in the map.
 </para>
       <para>
 Each bit in the map corresponds to a cluster of sectors on the disk.
-The number of sectors per cluster is Specified by the "DD.BIT" variable
+The number of sectors per cluster is Specified by the <quote>DD.BIT</quote> variable
 in the identification sector, and is always an integral power of two,
 i.e., 1, 2, 4, 8, 16, etc. Multiple sector bitmaps allow the number of
 sectors per cluster to be as small as possible for high volume media.
 Each bit is cleared if the corresponding cluster is available for
 allocation, or set if the sector is already allocated, non-existent, or
-physically defective. The bitmap is initially created by the "format"
+physically defective. The bitmap is initially created by the <quote>format</quote>
 utility program.
 </para>
     </sect2>
     <sect2>
       <title>File Descriptor Sectors</title>
       <para>
-The first sector of every file is called a "file descriptor", which
+The first sector of every file is called a <quote>file descriptor</quote>, which
 contains the logical and physical description of the file. The table
 below describes the contents of the descriptor.
 </para>
@@ -271,7 +271,7 @@ below describes the contents of the descriptor.
       </informaltable>
       <para>
 The attribute byte contains the file permission bits. Bit 7 is set to
-indicate a directory file, bit 6 indicates a "nonsharable" file, bit 5 is
+indicate a directory file, bit 6 indicates a <quote>nonsharable</quote> file, bit 5 is
 public execute, bit 4 is public write, etc.
 </para>
       <para>
@@ -308,7 +308,7 @@ used on a file before writing any other data.
     <sect2>
       <title>Directory Files</title>
       <para>
-Disk directories are files that have the "D" attribute set. Directory
+Disk directories are files that have the <quote>D</quote> attribute set. Directory
 files contain an integral number of directory entries, each of which can
 hold the name and LSN of a regular file or directory file.
 </para>
@@ -320,8 +320,8 @@ sign bit of the last character set. Unused entries have a zero byte in
 the first file name character position.
 </para>
       <para>
-Every mass-storage media must have a master directory called the "root
-directory". The beginning logical sector number of this directory is
+Every mass-storage media must have a master directory called the <quote>root
+directory</quote>. The beginning logical sector number of this directory is
 stored in the identification sector, as previously described.
 </para>
     </sect2>
@@ -1607,8 +1607,8 @@ for multi-user activity.
     <para>
 Simply stated, record locking involves recognizing when a process is
 trying to read a record that is currently being modified by another
-process, and if the record is "locked out", deferring the read until the
-record is "safe". This scheme is referred to as conflict detection and
+process, and if the record is <quote>locked out</quote>, deferring the read until the
+record is <quote>safe</quote>. This scheme is referred to as conflict detection and
 prevention. RBF record locking also takes care of non-sharable file
 locking and deadlock detection.
 </para>
@@ -1685,7 +1685,7 @@ idea to have two processes actively use any disk file through the same
       <title>End of File Lock</title>
       <para>
 A special case of record locking occurs when a user reads or writes
-data at the end of file. The user is said to have "EOF Lock" and will
+data at the end of file. The user is said to have <quote>EOF Lock</quote> and will
 keep the end of file locked out until a read or write is performed that
 is not at the end of the file. EOF Lock is the only case that a write
 call automatically causes any of the file to be locked out. It was done
@@ -1695,7 +1695,7 @@ simultaneously extend a file.
       <para>
 An interesting and extremely useful side effect occurs when a program
 creates a file for sequential output. As soon as the file is created,
-EOF Lock is gained, and no other process will be able to "pass" the
+EOF Lock is gained, and no other process will be able to <quote>pass</quote> the
 writer in processing the file. For example, if an assembly listing is
 redirected to a disk file, a spooler utility might open and begin
 listing the file before the assembler has -written even the first line of
@@ -1723,7 +1723,7 @@ simultaneously.
 </para>
       <para>
 When a deadlock error does occur, it is not sufficient for a program
-to re-try the operation "in error". If all processes used this strategy,
+to re-try the operation <quote>in error</quote>. If all processes used this strategy,
 none would ever succeed. It is necessary for at least one process to
 release it's control over a requested segment for any to proceed by
 aborting.
@@ -1748,11 +1748,11 @@ permission to read a directory, you may not access any files in that
 directory.
 </para>
       <para>
-The special "@" file should be used in update mode with extreme care.
+The special <quote>@</quote> file should be used in update mode with extreme care.
 To keep system overhead low, record locking routines only check for
-conflicts on paths opened for the same file. The "@" file is considered
+conflicts on paths opened for the same file. The <quote>@</quote> file is considered
 different from any other file, and therefore will only conform to record
-lockouts with other users of the "@" file. Writing via the "@" file (to
+lockouts with other users of the <quote>@</quote> file. Writing via the <quote>@</quote> file (to
 patch crashed disks, for example) should only be done in single-user
 mode. The '@' file has been included as a convenience only; it likely
 that problems will eventually occur if it is used in update mode

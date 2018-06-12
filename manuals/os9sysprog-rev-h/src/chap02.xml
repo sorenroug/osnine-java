@@ -92,7 +92,7 @@ Sequential Character File Manager (SCF) handles all non-mass storage
 devices that basically operate a character at a time, such as terminals
 and printers. The user can add additional File Managers to handle
 classes of devices not covered by SCF or RBF. Another file manager
-called PIPEMAN supports the "pipe" interprocess communication method that
+called PIPEMAN supports the <quote>pipe</quote> interprocess communication method that
 uses memory buffers for data transfer instead of mass storage files.
 </para>
 
