@@ -1,4 +1,6 @@
-<?xml version="1.0"?>
+<!DOCTYPE chapter [
+<!ENTITY mdash    "&#8212;" >
+]>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <!-- page-118.png -->
   <title>OS-9 Service Request Descriptions</title>
@@ -931,12 +933,12 @@ or linked to by the process should be unlinked before calling F$EXIT.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: FORK creates a new process which becomes a <quote>child</quote>  of the
+FUNCTION: FORK creates a new process which becomes a <quote>child</quote> of the
 caller, and sets up the new process' memory, MPU registers, and standard
 I/O paths.
 </para>
       <para>
-The system parses the name string of the new process' <quote>primary module</quote>
+The system parses the name string of the new process' <quote>primary module</quote> &mdash;
 the program that will initially be executed. Then the system module
 directory is searched to see if the program is already in memory. If so,
 the module is linked to and executed. If not, the name string is used
@@ -958,10 +960,10 @@ the PC to the module's entry point.
       <para>When the <application>shell</application> processes a command line it passes a string in the
 parameter area which is a copy of the parameter part (if any) of the
 command line. It also inserts an end-of-line character at the end of
-the parameter string to simplify string-oriented processing. The X
-register will point to the beginning of the parameter string. If the
-command line included the optional memory size specification (#n or
-#nK), the <application>shell</application> will pass that size as the requested memory size when
+the parameter string to simplify string-oriented processing.
+The X register will point to the beginning of the parameter string. If the
+command line included the optional memory size specification (#n or #nK),
+the <application>shell</application> will pass that size as the requested memory size when
 executing the <xref linkend="f.fork"/>.</para>
       <para>If any of the above operations are unsuccessful, the <xref linkend="f.fork"/> is
 aborted and the caller is returned an error.</para>
