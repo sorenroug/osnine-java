@@ -25,7 +25,7 @@
       <para>The attribute PACKED is ignored due to 6809 memory addressing. Variables are always allocated such that they are packed to the byte level. Packing at the bit level is not done. The standard procedures PACK and UNPACK are not implemented.</para>
     </listitem>
     <listitem>
-      <para>Set constants can be built using the subrange form "A..B" where "A" and "B" are constant members of the set being formed. (Non-standard enhancement).</para>
+      <para>Set constants can be built using the subrange form <quote>A..B</quote> where <quote>A</quote> and <quote>B</quote> are constant members of the set being formed. (Non-standard enhancement).</para>
     </listitem>
     <listitem>
       <para>A list of file names in the PROGRAM statement is not required, but if supplied, it is checked for correctness. (Non-standard enhancement).</para>
@@ -34,10 +34,10 @@
       <para>DISPOSE (an ISO Level 1 feature) is not implemented.</para>
     </listitem>
     <listitem>
-      <para>Constants in the constant list of a case statement can have the form "A..B" which designates the list of values from A through B inclusive. (Non-standard enhancement).</para>
+      <para>Constants in the constant list of a case statement can have the form <quote>A..B</quote> which designates the list of values from A through B inclusive. (Non-standard enhancement).</para>
     </listitem>
     <listitem>
-      <para>Vectors, one dimensional arrays with character elements, can be indexed using the "expression FOR constant" form. (Non-standard enhancement).</para>
+      <para>Vectors, one dimensional arrays with character elements, can be indexed using the <quote>expression FOR constant</quote> form. (Non-standard enhancement).</para>
     </listitem>
     <listitem>
       <para>GOTO statements may not reference a label outside the current procedure.</para>

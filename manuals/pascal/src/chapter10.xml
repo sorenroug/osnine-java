@@ -12,8 +12,8 @@
 using either the PascalN or PascalS P-code interpreters (See Chapter 3),
 or programs translated to native code by PascalT can be run directly
 from OS-9 Shell command lines (See Chapter 4).</para>
-<para>As programs are executed, many operations are performed "behind
-the scenes" by either the P-code interpreter and/or the Pascal
+<para>As programs are executed, many operations are performed
+<quote>behind the scenes</quote> by either the P-code interpreter and/or the Pascal
 support package. This includes allocation of memory when procedures
 and functions are invoked, processing when errors occur, etc. Even
 though these functions are usually so automatic that novice programmers
@@ -35,10 +35,10 @@ valuable to advanced programmers in order to use all of the options and
 capabilities of OS-9 Pascal.</para>
 <para>When a P-code interpreter or a compiled native code Pascal program
 is run, OS-9 allocates to the task a contiguous block of RAM memory
-for its working storage. This area is called a "data area", and is for
+for its working storage. This area is called a <quote>data area</quote>, and is for
 exclusive use of the Pascal task. There is a certain minimum size for
 the data area coded into the Pascal program's memory module header which
-can be explicitly expanded using the OS-9 Shell's "<option>#</option>"
+can be explicitly expanded using the OS-9 Shell's <quote><option>#</option></quote>
 memory size option.</para>
 <para>Pascal further internally subdivides the data area into several
 sections. Most of the space is used for variables declared in the Pascal
@@ -46,7 +46,7 @@ program, but some space is also required for the Pascal runtime system
 internal use. If a P-code interpreter is being used, part of the data
 area must be used to hold the P-code or swap buffers for P-code; if the
 program is compiled native code, the machine language instructions are
-contained in a standard OS-9 "memory module" which is located outside
+contained in a standard OS-9 <quote>memory module</quote> which is located outside
 the data area in a separate memory area. For this reason it is more
 efficient for two users running exactly the same Pascal program to do so
 using native code which can be shared. P-code programs cannot be shared
@@ -106,16 +106,16 @@ low address +---------------------------+
 <para>All Pascal variables must be declared in a VAR statement, and
 storage for these variables is assigned in the GLOBAL VARIABLE and LOCAL
 VARIABLE STACK sections of the Pascal data area.</para>
-<para>Variables declared in the main program (Procedure 0 or "outer
-block") are global in scope with respect to all other procedures and are
-thus called "Global Variables". Addresses of global variables are assigned
+<para>Variables declared in the main program (Procedure 0 or <quote>outer block</quote>)
+are global in scope with respect to all other procedures and are
+thus called <quote>Global Variables</quote>. Addresses of global variables are assigned
 to specific locations within the GLOBAL VARIABLE section. Because the
 main procedure cannot call itself, only one set of variable locations
 is required, i.e., dynamic allocation is not required.</para>
 <para>Variables declared within all other procedures (Procedures 1..N)
 are local, meaning they are only known within the procedure in which they
 are declared and other procedures that it may call. To further complicate
-matters, Pascal permits "recursive" procedure calls where procedures
+matters, Pascal permits <quote>recursive</quote> procedure calls where procedures
 can call themselves but with unique variables in each call. For these
 reasons, Pascal must use a stack to dynamically allocate storage to
 procedures when they are called, and deallocate storage when they exit
@@ -133,10 +133,10 @@ temporary variables are automatically defined and managed by the
 compiler and are of no concern to the programmer except for the fact
 they do require memory space and must be taken into account when manually
 figuring and assigning memory space.</para>
-<para>Variables declared in the program are Kept on the "local
-stack". Compiler-created temporary variables are kept on the "extended
-stack". Both stacks are located in the section of the Pascal data area
-called the "LOCAL VARIABLE STACK". The main procedure (Procedure 0) also
+<para>Variables declared in the program are Kept on the <quote>local stack</quote>.
+Compiler-created temporary variables are kept on the <quote>extended stack</quote>.
+Both stacks are located in the section of the Pascal data area
+called the <quote>LOCAL VARIABLE STACK</quote>. The main procedure (Procedure 0) also
 may need an extended stack, but since it has its own global variable
 section part of it is reserved for the main procedure's extended
 stack.</para>
@@ -150,7 +150,7 @@ stack-checking code unless you specifically instruct otherwise.</para>
 
 <para>If the stack becomes too full to perform another procedure call,
 a fatal error occurs and the program is aborted. You must then use
-the "<option>l</option>" and/or "<option>e</option>" run-time options
+the <quote><option>l</option></quote> and/or <quote><option>e</option></quote> run-time options
 to increase the size of the local stack and/or the extended stack as
 necessary. Because procedure calling depends on program flow which can
 be almost random at times, it may be impossible for you (or the compiler)
@@ -162,17 +162,17 @@ for each procedure's LOCAL variables and extended STACK (See Chapter
 a procedure is the total amount of storage it requires (per call) within
 the local variable stack. The compiler sets the default size of the local
 variable stack section to a estimate based on these statistics. You
-can optionally use the "<option>l</option>" and "<option>e</option>"
+can optionally use the <quote><option>l</option></quote> and <quote><option>e</option></quote>
 run-time options (See Chapter 11) to manually alter the size of the local
 variable stack area. For example, you might need to increase the size
 in the case of highly recursive programs where the compiler's estimate
 was too small, or if economical use of memory is crucial you may want
 to manually compute worst-case requirements in order to reduce the size
 of the compiler's too-generous estimate.</para>
-<para>Each call to a procedure requires a block of memory called a "stack
-frame" to be allocated. A stack frame consists of the memory required to
+<para>Each call to a procedure requires a block of memory called a <quote>stack
+frame</quote> to be allocated. A stack frame consists of the memory required to
 hold the local and extended stacks for a procedure plus an additional
-7 bytes to hold a "stack mark". Each local variable is assigned some
+7 bytes to hold a <quote>stack mark</quote>. Each local variable is assigned some
 number of bytes of memory depending on its structure. Characters and
 boolean type variables are assigned 1 byte each. Integers are assigned
 2 bytes each. Real variables are assigned 5 bytes each. Arrays are
@@ -191,7 +191,7 @@ of variants.</para>
 i, j, k: integer;
 </programlisting>
 
-<para>the variable "k" is first assigned to the next lower 2 bytes of storage, then "j" is assigned to the next 2 lower bytes, then "i" to the next 2 lower bytes.</para>
+<para>the variable <quote>k</quote> is first assigned to the next lower 2 bytes of storage, then <quote>j</quote> is assigned to the next 2 lower bytes, then <quote>i</quote> to the next 2 lower bytes.</para>
 </sect1>
 
 <sect1>
@@ -201,7 +201,7 @@ i, j, k: integer;
 and it is managed via the standard procedures NEW, HARK, and RELEASE
 (These are described in Chapter 7). Only programs using these calls
 require HEAP section space; otherwise the size of this section may be
-zero. The run-time "<option>h</option>"  option can be used to set the
+zero. The run-time <quote><option>h</option></quote>  option can be used to set the
 size (See Chapter 11).</para>
 <para>MARK and RELEASE calls provide a way for saving and resetting the
 top of heap pointer. In particular, you can use MARK to save the current
@@ -227,7 +227,7 @@ small to handle a NEW call, Pascal will call OS-9 to request that the
 data area be given additional memory in order to expand the heap section
 space. If OS-9 can't do this for any reason, a fatal error occurs. When a
 RELEASE call gives the additional space back, Pascal automatically calls
-OS-9 to return the memory. The "<option>r</option>" run-time option
+OS-9 to return the memory. The <quote><option>r</option></quote> run-time option
 (See Chapter 11) can be used to inhibit automatic return of addition
 memory if it is anticipated that it will be needed again later.</para>
 </sect1>

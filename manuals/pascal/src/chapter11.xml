@@ -9,7 +9,7 @@
   <para>When a compiled Pascal program is run, any combination of the
   options described in this section can be given on the command line
   used to run the program. These options are mostly handled by the
-  "support" package, so the option apply both to P-code and native code
+  <quote>support</quote> package, so the option apply both to P-code and native code
   programs.</para>
   <para>If more than one option is specified, each option after the first
   must be separated from its predecessor by spaces and/or commas. If
@@ -21,11 +21,11 @@
   as if it had a '+' modifier.</para>
   <para>Those options which have number (memory size) parameters can
   be given either a decimal number in the range of 1 to 65535, or a
-  decimal number in the range of 1 to 63 followed by the letter "k" in
+  decimal number in the range of 1 to 63 followed by the letter <quote>k</quote> in
   which case the decimal number will be multiplied by 1024 to get the
-  equivalent number of "KBytes". An error message will be generated if
-  any individual number is greater than 65535 or if the sum of the "l"
-  and "e" values is greater than 65535.</para>
+  equivalent number of <quote>KBytes</quote>. An error message will be generated if
+  any individual number is greater than 65535 or if the sum of the <quote>l</quote>
+  and <quote>e</quote> values is greater than 65535.</para>
   <para>These options determine various modes in effect at the time the
   program is started. The Pascal standard library includes procedures
   that can override the initial options and change modes under program
@@ -48,8 +48,8 @@ PgName r+, h10, r+ #10k
       <term>j+  (default)</term>
       <term>j-</term>
       <listitem>
-        <para>"<option>j+</option>" sets the  right  justification mode, and "<option>j-</option>" sets the left justification mode for writing strings. This option exists because of a difference between the ISO specification which calls for right justification,  and the original Wirth/Jensen specification which call for left justification. We have allowed OS-9 Pascal to work either way to aid in program portability.</para>
-        <para>For example, if a write statement were used to put the string variable "STR1", an array of 20 characters, into a field with a width of 30 characters as in:</para>
+        <para>"<option>j+</option>" sets the  right  justification mode, and <quote><option>j-</option></quote> sets the left justification mode for writing strings. This option exists because of a difference between the ISO specification which calls for right justification,  and the original Wirth/Jensen specification which call for left justification. We have allowed OS-9 Pascal to work either way to aid in program portability.</para>
+        <para>For example, if a write statement were used to put the string variable <quote>STR1</quote>, an array of 20 characters, into a field with a width of 30 characters as in:</para>
         <programlisting>write(str1:30);</programlisting>
         <para>then 10 leading spaces would be written before the 20 character string. Strings which are written with width specifications that are wider than the string itself will be right justified within the field. This is how the ISO specification says how strings should be written. This options sets the default start up mode for string handling. The standard procedure RIGHTJUST can be used to change this option within a program.</para>
       </listitem>
@@ -79,32 +79,32 @@ PgName r+, h10, r+ #10k
       <term>r- (default)</term>
       <listitem>
         <para>This option directs Pascal to retain heap memory (<option>r+</option>) obtained by the NEW procedure after the RELEASE standard procedure frees it, or to call OS-9 to return heap memory (<option>r-</option>) after RELEASE calls.</para>
-        <para>Use of the "<option>r+</option>" option, when it is anticipated that more heap memory will be required later, will improve program efficiency since there will be fewer calls made to OS-9 to request memory. In a multi-tasking environment this option can also be useful because it can guarantee memory will be available later.  See also "<option>h</option>" option below.</para>
+        <para>Use of the <quote><option>r+</option></quote> option, when it is anticipated that more heap memory will be required later, will improve program efficiency since there will be fewer calls made to OS-9 to request memory. In a multi-tasking environment this option can also be useful because it can guarantee memory will be available later.  See also <quote><option>h</option></quote> option below.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>i+</term>
       <term>i-  (default)</term>
       <listitem>
-        <para>The "<option>i+</option>" option tells Pascal to generate a memory statistics report. "<option>i-</option>"  inhibits generation of the memory statistics report.</para>
+        <para>The <quote><option>i+</option></quote> option tells Pascal to generate a memory statistics report. <quote><option>i-</option></quote>  inhibits generation of the memory statistics report.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>l &lt;number&gt;</term>
       <listitem>
-        <para>This option  overrides  the default startup memory size for the local variable stack, which is used for all procedure and function variable storage. The stack is otherwise given a size based on the compiler's automatic estimate. This option is generally used with highly recursive programs that may need more variable size than usual. This option applies only to the PascalS and PascalN interpreters; stack size for pure native code procedure produced by PascalT are controlled by the OS-9 Shell "<option>#</option>" memory size option.</para>
+        <para>This option  overrides  the default startup memory size for the local variable stack, which is used for all procedure and function variable storage. The stack is otherwise given a size based on the compiler's automatic estimate. This option is generally used with highly recursive programs that may need more variable size than usual. This option applies only to the PascalS and PascalN interpreters; stack size for pure native code procedure produced by PascalT are controlled by the OS-9 Shell <quote><option>#</option></quote> memory size option.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>e &lt;number&gt;</term>
       <listitem>
-        <para>This option overrides the default startup memory size for the extended stack, which is used for internal variables and variables used by native-code procedures declared in EXTERNAL statements. This option applies only to the PascalS and PascalN interpreters; extended stack size for pure  native  code procedure produced by PascalT are controlled by the OS-9 Shell "<option>#</option>" memory size option.</para>
+        <para>This option overrides the default startup memory size for the extended stack, which is used for internal variables and variables used by native-code procedures declared in EXTERNAL statements. This option applies only to the PascalS and PascalN interpreters; extended stack size for pure  native  code procedure produced by PascalT are controlled by the OS-9 Shell <quote><option>#</option></quote> memory size option.</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>h &lt;number&gt;</term>
       <listitem>
-        <para>Specifies the minimum amount of heap memory to be initially reserved for a program. Heap memory is used for dynamic data structures via the NEW, MARK, and RELEASE standard procedures (see Chapter 7). This minimum memory will be retained throughout the execution of the program. If more heap space is required, Pascal will request it from OS-9.  See also "<option>r</option>" option.</para>
+        <para>Specifies the minimum amount of heap memory to be initially reserved for a program. Heap memory is used for dynamic data structures via the NEW, MARK, and RELEASE standard procedures (see Chapter 7). This minimum memory will be retained throughout the execution of the program. If more heap space is required, Pascal will request it from OS-9.  See also <quote><option>r</option></quote> option.</para>
       </listitem>
     </varlistentry>
     <varlistentry>

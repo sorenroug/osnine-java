@@ -2,18 +2,18 @@
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>The P-code Interpreters</title>
   <abstract>
-    <para>SYNOPSIS: Compiled Pascal programs in P-code form can be interpretively executed using either "PascalN", the normal interpreter, or "PascalS", a swapping (or "virtual memory") interpreter which can run very large programs.</para>
+    <para>SYNOPSIS: Compiled Pascal programs in P-code form can be interpretively executed using either <quote>PascalN</quote>, the normal interpreter, or <quote>PascalS</quote>, a swapping (or <quote>virtual memory</quote>) interpreter which can run very large programs.</para>
   </abstract>
   <sect1>
     <title>About The P-code Interpreters</title>
-    <para>After you have successfully compiled your Pascal program, you can run it using a "P-code" interpreter. It reads the P-code representation written by the compiler on the "PCODEF" (or other name you may have given) and executes the Pascal program. It also includes special features so that if an error occurs when the program is running, the type of error, the name of the offending procedure, and the corresponding source program statement line can be identified.</para>
-    <para>The OS-9 Pascal System includes two different P-code interpreters: PascalN which is the normal interpreter, and PascalS which is the swapping or "virtual memory" interpreter. PascalN is preferred for running most programs because it is fastest. PascalS is used only in cases where the compiled program is too large to fit in your computer's memory.</para>
+    <para>After you have successfully compiled your Pascal program, you can run it using a <quote>P-code</quote> interpreter. It reads the P-code representation written by the compiler on the <quote>PCODEF</quote> (or other name you may have given) and executes the Pascal program. It also includes special features so that if an error occurs when the program is running, the type of error, the name of the offending procedure, and the corresponding source program statement line can be identified.</para>
+    <para>The OS-9 Pascal System includes two different P-code interpreters: PascalN which is the normal interpreter, and PascalS which is the swapping or <quote>virtual memory</quote> interpreter. PascalN is preferred for running most programs because it is fastest. PascalS is used only in cases where the compiled program is too large to fit in your computer's memory.</para>
     <para>Calling the interpreter is simple: you just type its name followed by the name of the pcode file which is to be executed. For example:</para>
     <screen>
 pascaln pcode_filename
 pascals pcode_filename
 </screen>
-    <para>In the above example "pcode_filename" may be either the name of a pcode file in the current data directory or a pathlist to a pcode file in another directory.</para>
+    <para>In the above example <quote>pcode_filename</quote> may be either the name of a pcode file in the current data directory or a pathlist to a pcode file in another directory.</para>
   </sect1>
   <sect1>
     <title>A Detailed Description of P-code Interpreter Command Lines</title>
@@ -32,15 +32,15 @@ pascals pcode_filename
     <para>The format for PascalN or PascalS   command lines are:</para>
     <para>OS9:PascalN  Pcodefile   [Run-Time Options] [: Params]</para>
     <para>OS9:PascalS  Pcodefile   [Run-Time Options] [: Params]</para>
-    <para>Items enclosed in "[" and  "]"  are   optional.</para>
+    <para>Items enclosed in <quote>[</quote> and  <quote>]</quote>  are   optional.</para>
   </sect1>
   <sect1>
     <title>Standard I/O Paths</title>
     <para>The three standard I/O paths associated  with  any OS-9
     program are also used by the interpreters. The OS-9 paths for
     standard input, standard output, and standard error/status are
-    associated with Pascal's built-in standard files called "INPUT",
-    "OUTPUT", and "SYSERR", These three files are always automatically
+    associated with Pascal's built-in standard files called <quote>INPUT</quote>,
+    <quote>OUTPUT</quote>, and <quote>SYSERR</quote>, These three files are always automatically
     opened by the P-code interpreter for use by your Pascal program. If
     the command line that called the interpreter did not redirect I/O,
     the default paths used are usually the user's terminal.</para>
@@ -53,7 +53,7 @@ pascals pcode_filename
   <sect1>
     <title>Run-Time Options</title>
     <para>The interpreter command line can optionally include a  list  of run-time options which affect the interpreter performance and statistics reporting. They generally define memory allocation sizes, and/or they enable generation of the memory statistics report. The use of virtual code swapping buffers, which can be affected by these parameters, is discussed below. For more information about these options, refer to Chapter 11.</para>
-    <para>When using the PascalN and PascalS interpreters, the shell's "#memsize" directive has no affect on memory allocated. Memory allocation may be specified using one of two methods. The first is by using the compile time options to embed the requests in the code. This is particularly useful when making a program in Pcode form easy to run for users unfamiliar with all of Pascal's run-time options. The memory is allocated automatically, without user intervention, when initially requested through the compile time method. The second method is to use the run-time options to request memory from the command line.</para>
+    <para>When using the PascalN and PascalS interpreters, the shell's <quote>#memsize</quote> directive has no affect on memory allocated. Memory allocation may be specified using one of two methods. The first is by using the compile time options to embed the requests in the code. This is particularly useful when making a program in Pcode form easy to run for users unfamiliar with all of Pascal's run-time options. The memory is allocated automatically, without user intervention, when initially requested through the compile time method. The second method is to use the run-time options to request memory from the command line.</para>
     <para>There are a number of run-time memory allocation options which may be specified when using either of the interpreters to execute a program in pcode form. The options are used to control allocation of memory for the LOCAL STACK area, the EXTENDED STACK area, the initial HEAP STORAGE area, and when using PascalS, the SWAP BUFFER area. A single character is used to select one of the memory areas. The selecting character is then followed by an integer value representing the amount of memory you wish to allocate to that area. The integer values may be in one of two forms.</para>
     <orderedlist numeration="arabic">
     <listitem><para>0  to 65535    Byte sizes</para></listitem>
@@ -66,19 +66,19 @@ pascals pcode_filename
         <colspec colwidth="2in" colname="c2"/>
         <tbody>
           <row>
-            <entry>"L" or "l"</entry>
+            <entry><quote>L</quote> or <quote>l</quote></entry>
             <entry>LOCAL STACK</entry>
           </row>
           <row>
-            <entry>"E" or "e"</entry>
+            <entry><quote>E</quote> or <quote>e</quote></entry>
             <entry>EXTENDED STACK</entry>
           </row>
           <row>
-            <entry>"H" or "h"</entry>
+            <entry><quote>H</quote> or <quote>h</quote></entry>
             <entry>DYNAMIC HEAP</entry>
           </row>
           <row>
-            <entry>"S" or "s"</entry>
+            <entry><quote>S</quote> or <quote>s</quote></entry>
             <entry>SWAP BUFFERS</entry>
           </row>
         </tbody>
@@ -98,7 +98,7 @@ PascalS pcodef L1000 S20K H1000
     <para>NOTE: This is a feature of OS-9 Pascal and is not a standard Pascal function.</para>
     <para>The array in which this data is passed to the program is predefined as:</para>
     <programlisting>sysparam : ARRAY [0..79] OF char;</programlisting>
-    <para>The program can access sysparam as if it were specifically defined. The parameter string  <emphasis>must</emphasis>  begin with a ":" character (which is not passed to the program) followed by up to 80 characters. Extra characters are ignored. If less than 80 characters are given, or no parameter string is given, space characters will be supplied to fill out the array. The parameter string <emphasis>cannot</emphasis>  include control characters or any of the characters that have special meaning to the OS-9 Shell ( &lt; &gt; # ; or !  ).  Here are examples:</para>
+    <para>The program can access sysparam as if it were specifically defined. The parameter string  <emphasis>must</emphasis>  begin with a <quote>:</quote> character (which is not passed to the program) followed by up to 80 characters. Extra characters are ignored. If less than 80 characters are given, or no parameter string is given, space characters will be supplied to fill out the array. The parameter string <emphasis>cannot</emphasis>  include control characters or any of the characters that have special meaning to the OS-9 Shell ( &lt; &gt; # ; or !  ).  Here are examples:</para>
     <screen>
 pascaln pcodef :this message is passed to the program
 pascaln sales.analysis  &gt;/p :Report for Joanie's Boutique
@@ -107,19 +107,19 @@ pascals translate :channel5,channel8,noprint
   </sect1>
   <sect1>
     <title>Files Used by the Interpreters</title>
-    <para>As mentioned previously, the interpreter will read the Pascal program P-code from the filename you specify on the command line. The file <filename>"SUPPORT"</filename>, which contains the machine language support library  for virtually all parts of the OS-9 Pascal System, is required by PascalN and PascalS and will be automatically loaded from  the current execution directory. You can also preload it using the OS-9 command "load support" to save time if you are constantly using the interpreters.</para>
-    <para>The file <filename>"PASCALERRS"</filename> should also be in the execution directory. <filename>PASCALERRS</filename> contains all of the run-time error message strings. If this file is not found in the execution directory, any run-time error will only print out the error number without the normal accompanying textual description. Also, if <filename>PASCALERRS</filename> is not in the execution directory, the standard procedure SYSREPORT (see the chapter on standard procedures) will not function correctly.</para>
+    <para>As mentioned previously, the interpreter will read the Pascal program P-code from the filename you specify on the command line. The file <quote><filename>SUPPORT</filename></quote>, which contains the machine language support library  for virtually all parts of the OS-9 Pascal System, is required by PascalN and PascalS and will be automatically loaded from  the current execution directory. You can also preload it using the OS-9 command <quote>load support</quote> to save time if you are constantly using the interpreters.</para>
+    <para>The file <quote><filename>PASCALERRS</filename></quote> should also be in the execution directory. <filename>PASCALERRS</filename> contains all of the run-time error message strings. If this file is not found in the execution directory, any run-time error will only print out the error number without the normal accompanying textual description. Also, if <filename>PASCALERRS</filename> is not in the execution directory, the standard procedure SYSREPORT (see the chapter on standard procedures) will not function correctly.</para>
   </sect1>
   <sect1>
     <title>Choosing Between PascalS And PascalN</title>
     <para>PascalN should be used to run P-code programs unless the combined size of the program itself and its data area is too large to fit in the memory available in your system. It runs faster than PascalS and is somewhat smaller.</para>
-    <para>PascalS allows you to run much bigger programs in the range of 10,000 plus source statements. In general, the ability of PascalS to run any Pascal program is mostly restricted by the amount of memory required for global and local variable storage. The ability to run very large programs is based on a technique called "virtual code swapping". The maximum possible size program that PascalS can run is 254 procedures within the outer block; each containing up to 32767 bytes of P-code (approximately 8.3 megabytes), however, this is practically limited by the amount of disk space available.</para>
+    <para>PascalS allows you to run much bigger programs in the range of 10,000 plus source statements. In general, the ability of PascalS to run any Pascal program is mostly restricted by the amount of memory required for global and local variable storage. The ability to run very large programs is based on a technique called <quote>virtual code swapping</quote>. The maximum possible size program that PascalS can run is 254 procedures within the outer block; each containing up to 32767 bytes of P-code (approximately 8.3 megabytes), however, this is practically limited by the amount of disk space available.</para>
   </sect1>
   <sect1>
     <title>How Virtual Code Swapping Works</title>
     <para>Despite its intimidating sounding name, the way virtual code swapping works is fairly easy to understand. It is also simple to use, because PascalS does it automatically with almost no special effort on your part. In fact, the main reason its internal operation is described here is so you can understand the factors that affect its efficiency and speed. Virtual code swapping is especially important because two major parts of the OS-9 Pascal System (the compiler and the native code translator) are also P-code programs run on PascalS.</para>
-    <para>All P-code programs, whether or not they are to be executed by PascalS, are automatically broken into 256-byte "virtual memory" pages by the compiler. PascalS copies these pages from the PCODEF (or equivalent) file to a temporary disk file. Of course, only one P-code instruction can be executed at a time, so theoretically only the page containing the current instruction must actually be present in "real" memory, and all other pages can remain on the disk until needed. The virtual memory effect is achieved because the disk file containing the virtual pages can be larger than the actual amount of real memory available.</para>
-    <para>Because disk read operations take a relatively long time, PascalS attempts to keep as many pages in real memory as possible in an area divided in 256-byte blocks called "swap buffers". In order to further reduce the number of disk operations necessary, PascalS attempts to keep pages accessed most frequently in the swap buffers. If all, or nearly all, of the pages can fit in the swap buffers at the same time, PascalS can run almost as fast as PascalN. At the other extreme, if a relatively small percentage of the pages fit in the swap buffers, many more disk read operations  will  be needed so PascalS will run slower.</para>
+    <para>All P-code programs, whether or not they are to be executed by PascalS, are automatically broken into 256-byte <quote>virtual memory</quote> pages by the compiler. PascalS copies these pages from the PCODEF (or equivalent) file to a temporary disk file. Of course, only one P-code instruction can be executed at a time, so theoretically only the page containing the current instruction must actually be present in <quote>real</quote> memory, and all other pages can remain on the disk until needed. The virtual memory effect is achieved because the disk file containing the virtual pages can be larger than the actual amount of real memory available.</para>
+    <para>Because disk read operations take a relatively long time, PascalS attempts to keep as many pages in real memory as possible in an area divided in 256-byte blocks called <quote>swap buffers</quote>. In order to further reduce the number of disk operations necessary, PascalS attempts to keep pages accessed most frequently in the swap buffers. If all, or nearly all, of the pages can fit in the swap buffers at the same time, PascalS can run almost as fast as PascalN. At the other extreme, if a relatively small percentage of the pages fit in the swap buffers, many more disk read operations  will  be needed so PascalS will run slower.</para>
     <para>Putting all this together, it logically follows that the three main factors affecting the speed of PascalS ate:</para>
     <orderedlist numeration="arabic">
       <listitem>
@@ -133,7 +133,7 @@ pascals translate :channel5,channel8,noprint
       </listitem>
     </orderedlist>
     <para>There is always an absolute minimum of 8 swap buffers. Beyond that, the minimum number depends on the use of string constants in the Pascal program because procedures that use string constants have special pages  allocated  in the P-code file to hold the strings. As a procedure executes and makes reference to a string, the code page containing the string must be swapped into memory just like a normal code page. As long as that procedure is still active, that is, until the end of the procedure is reached and a return from procedure sequence is executed, any and all pages of string constants which were swapped in for the procedure must remain locked in memory. If a program were to use no strings at all, that program could be run using only the minimum 8 swap buffers.</para>
-    <para>There is an easy method for finding out if there are enough swap buffers available - simply run the program. If there aren't enough swap buffers, PASCALS will give a specific  error  message stating so. The "<option>S</option>" run-time option can be used to  explicitly assign more swap buffers.</para>
+    <para>There is an easy method for finding out if there are enough swap buffers available - simply run the program. If there aren't enough swap buffers, PASCALS will give a specific  error  message stating so. The <quote><option>S</option></quote> run-time option can be used to  explicitly assign more swap buffers.</para>
     <para>When allocating swap buffers, you  will  typically find that
     performance goes up in a lumpy fashion as more swap buffers are
     allocated, if, for instance, a program runs in, say, 5 minutes

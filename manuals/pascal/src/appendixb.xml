@@ -1,7 +1,7 @@
 <appendix xmlns="http://docbook.org/ns/docbook">
 <title>Pascal Syntax</title>
 
-<para>The following information describes the syntax of the Pascal language. The "Backus-Naur Formalism" will be used to describe the correct structure of Pascal statements. The following symbols are meta-symbols, symbols that describe other symbols, belonging to BNF, but they are not part of the Pascal language.</para>
+<para>The following information describes the syntax of the Pascal language. The <quote>Backus-Naur Formalism</quote> will be used to describe the correct structure of Pascal statements. The following symbols are meta-symbols, symbols that describe other symbols, belonging to BNF, but they are not part of the Pascal language.</para>
 <informalexample>
 <para>{ } - Curly brackets indicate possible repetition of the enclosed symbols.</para>
 <para>| - Or</para>

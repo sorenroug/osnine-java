@@ -6,7 +6,7 @@
   </abstract>
   <sect1>
     <title>Variable Space: Stack Frames and Stack Marks</title>
-    <para>All variable storage used by a procedure invocation is allocated in a section of the Pascal stack called a "stack frame". A stack frame consists of the following three components: a stack mark, local variables, and the extended stack. Any parameters which are to be passed to a procedure are part of the calling procedure's extended stack. Suppose that procedure Q is declared as:</para>
+    <para>All variable storage used by a procedure invocation is allocated in a section of the Pascal stack called a <quote>stack frame</quote>. A stack frame consists of the following three components: a stack mark, local variables, and the extended stack. Any parameters which are to be passed to a procedure are part of the calling procedure's extended stack. Suppose that procedure Q is declared as:</para>
     <programlisting>
 FUNCTION Q(i: real; var j: real; ch: char): integer;
 </programlisting>

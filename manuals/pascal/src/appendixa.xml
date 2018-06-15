@@ -23,7 +23,7 @@
     <para>When scanning TYPE declarations, expected to find an identifier being declared.</para>
     <para>When scanning VAR declarations, expected to find an identifier begin declared.</para>
     <para>When scanning a procedure or function parameter list, found PROCEDURE or FUNCTION, but the token after is not an identifier.</para>
-    <para>When scanning a function declaration, ":" was found, but it was not followed identifier naming the type of result.</para>
+    <para>When scanning a function declaration, <quote>:</quote> was found, but it was not followed identifier naming the type of result.</para>
     <para>When scanning a procedure or function parameter list, found a list of identifiers followed by a colon, but the token after is not an identifier naming type of identifier(s).</para>
     <para>*PROCEDURE or FUNCTION is not followed by an identifier giving routine name.</para>
     <para>*A period is found indicating reference to a field within a record, but the period is not followed by an identifier naming the field.</para>
@@ -245,7 +245,7 @@
   <term>30: Error in real constant, digit expected.</term>
   <listitem>
     <para>*A string of digits was found followed by a period (but not a double period), but no digit was found after the period, this is an invalid real number according to the language spec. You may need to put a zero after the period.</para>
-    <para>* A real number was found which ends with an "e" or "E" followed by an optional sign but not followed by a digit. After the "E" must come an integer exponent value.</para>
+    <para>* A real number was found which ends with an <quote>e</quote> or <quote>E</quote> followed by an optional sign but not followed by a digit. After the <quote>E</quote> must come an integer exponent value.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -332,7 +332,7 @@
 <varlistentry>
   <term>44: Unimplemented file function in support package.</term>
   <listitem>
-    <para>*You are running a program using either the "Support1" or "Support2" support modules which contain subsets of the full support module, and one of the missing support routines is needed. Cause the correct support module to be used as described in the implementation guide, and rerun the program.</para>
+    <para>*You are running a program using either the <quote>Support1</quote> or <quote>Support2</quote> support modules which contain subsets of the full support module, and one of the missing support routines is needed. Cause the correct support module to be used as described in the implementation guide, and rerun the program.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -769,7 +769,7 @@
 <varlistentry>
   <term>112: Unimplemented Support Package function.</term>
   <listitem>
-    <para>*The version of the Support Package which is in memory is not the version required for running this program. For example, your program may require floating point arithmetic, and the version of the Support Package which was either found in memory or which was loaded into memory does not support floating point arithmetic. There are three versions of the support package supplied. Either you should unlink the version of Support which is currently loaded in memory and load the required version before re-running this program or, if Support is not currently loaded into memory, you should cause the required version of the support package to have the file name "SUPPORT" in the current execution directory before re-running this program.</para>
+    <para>*The version of the Support Package which is in memory is not the version required for running this program. For example, your program may require floating point arithmetic, and the version of the Support Package which was either found in memory or which was loaded into memory does not support floating point arithmetic. There are three versions of the support package supplied. Either you should unlink the version of Support which is currently loaded in memory and load the required version before re-running this program or, if Support is not currently loaded into memory, you should cause the required version of the support package to have the file name <quote>SUPPORT</quote> in the current execution directory before re-running this program.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -1214,7 +1214,7 @@
 <varlistentry>
   <term>182: OS-9 error on get heap call, OS-9 error number follows.</term>
   <listitem>
-    <para>*Program called standard procedure NEW and OS-9 detected an error (usually not enough memory). Program aborts and displays OS-9 error. Check to see that memory is not fragmented when program begins execution or use the runtime "<option>h</option>" option to assure than enough heap memory will be available during program execution. This error typically indicates that either not enough heap area memory is available to start with due to too large a need of heap memory or due to multi-tasking activity or that heap memory which may have been available previously has since been returned to the system and is not available now. This latter cause can be eliminated by using the "<option>r</option>" or retain-heap run time option.</para>
+    <para>*Program called standard procedure NEW and OS-9 detected an error (usually not enough memory). Program aborts and displays OS-9 error. Check to see that memory is not fragmented when program begins execution or use the runtime <quote><option>h</option></quote> option to assure than enough heap memory will be available during program execution. This error typically indicates that either not enough heap area memory is available to start with due to too large a need of heap memory or due to multi-tasking activity or that heap memory which may have been available previously has since been returned to the system and is not available now. This latter cause can be eliminated by using the <quote><option>r</option></quote> or retain-heap run time option.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -1244,13 +1244,13 @@
 <varlistentry>
   <term>187: Stack overflow.</term>
   <listitem>
-    <para>*Not enough local and/or estimated stack was allocated to run the program. This error typically means that the compiler's "best guess" of run-time stack memory requirements is wrong or that you have given overrides for the compiler generated values which are insufficient. The compiler cannot foresee the actual runtime routine calling structure and recursion activity, but its guess is in very many cases adequate. You may, however, from time to time need to use run time option overrides using the "<option>l</option>" option to override the local stack requirement assignment and the "<option>e</option>" option to override the estimated or working stack requirement. The required values can be deduced from the procedure table information which is printed at the end of each compilation if you know the actual nature of the run time routine activity, otherwise a "best guess" can be used and the run time option "<option>i</option>" can be invoked to get actual program statistics which show your override allocation, the actual needs of the program up to its termination point, and the amount of memory free that was overallocated.</para>
+    <para>*Not enough local and/or estimated stack was allocated to run the program. This error typically means that the compiler's <quote>best guess</quote> of run-time stack memory requirements is wrong or that you have given overrides for the compiler generated values which are insufficient. The compiler cannot foresee the actual runtime routine calling structure and recursion activity, but its guess is in very many cases adequate. You may, however, from time to time need to use run time option overrides using the <quote><option>l</option></quote> option to override the local stack requirement assignment and the <quote><option>e</option></quote> option to override the estimated or working stack requirement. The required values can be deduced from the procedure table information which is printed at the end of each compilation if you know the actual nature of the run time routine activity, otherwise a <quote>best guess</quote> can be used and the run time option <quote><option>i</option></quote> can be invoked to get actual program statistics which show your override allocation, the actual needs of the program up to its termination point, and the amount of memory free that was overallocated.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
   <term>188: MOD error, right argument is negative.</term>
   <listitem>
-    <para>*Program used the MOD operator and has selected or defaulted to use the ISO version of the MOD function which cannot have a negative right argument. If a negative right argument is needed insert a "ISOMODE(false);" statement before the use of the MOD operator.</para>
+    <para>*Program used the MOD operator and has selected or defaulted to use the ISO version of the MOD function which cannot have a negative right argument. If a negative right argument is needed insert a <quote>ISOMODE(false);</quote> statement before the use of the MOD operator.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -1275,7 +1275,7 @@
 <varlistentry>
   <term>192: Pointer range error.</term>
   <listitem>
-    <para>*Program is attempting to reference memory via a pointer, and the pointer does not point to a valid memory address. Check that the pointer has been properly initialized in your program. This error is caused by your program either not initializing the pointer correctly or setting it to an incorrect value via "trick" programming or non-standard programming.</para>
+    <para>*Program is attempting to reference memory via a pointer, and the pointer does not point to a valid memory address. Check that the pointer has been properly initialized in your program. This error is caused by your program either not initializing the pointer correctly or setting it to an incorrect value via <quote>trick</quote> programming or non-standard programming.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -1342,7 +1342,7 @@
 <varlistentry>
   <term>202: Local or Extended default stack requirement greater than 65535.</term>
   <listitem>
-    <para>*The value for a run time option for "l" or "e" is too big.</para>
+    <para>*The value for a run time option for <quote>l</quote> or <quote>e</quote> is too big.</para>
   </listitem>
 </varlistentry>
 <varlistentry>

@@ -2,7 +2,7 @@
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>Standard Functions and Procedures</title>
   <abstract>
-    <para>OS-9 Pascal includes a library of standard functions and procedures that perform a variety of useful tasks. These subprograms are "built-in" OS-9 Pascal and can be used in programs without any special declarations. This chapter describes the subprograms for mathematical and run-time control. Input/Output related standard subprograms are discussed in Chapter 8.</para>
+    <para>OS-9 Pascal includes a library of standard functions and procedures that perform a variety of useful tasks. These subprograms are <quote>built-in</quote> OS-9 Pascal and can be used in programs without any special declarations. This chapter describes the subprograms for mathematical and run-time control. Input/Output related standard subprograms are discussed in Chapter 8.</para>
     <para>OS-9 Pascal includes all ISO standard functions (except DISPOSE, PACK, AND UNPACK) plus a number of additional non-standard functions, which are denoted by an asterisk where they appear in the descriptions that follow.</para>
   </abstract>
   <para>Standard Procedures:</para>
@@ -44,13 +44,13 @@
   </simplelist>
   <sect1>
     <title>Standard Procedures</title>
-    <para>The following is a list of non-I/O-related standard procedures available. I/O related procedures are discussed in Chapter 8, The expected arguments and their type is given in the title line, followed by a description of the procedure's operation. Those procedures which are extensions added to OS-9 Pascal, but not called for in the ISO standard, are marked by "*". Programs that use these functions may not be portable to other Pascal compilers.</para>
+    <para>The following is a list of non-I/O-related standard procedures available. I/O related procedures are discussed in Chapter 8, The expected arguments and their type is given in the title line, followed by a description of the procedure's operation. Those procedures which are extensions added to OS-9 Pascal, but not called for in the ISO standard, are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
     <variablelist>
     <?dbfo list-presentation="blocks"?>
       <varlistentry>
         <term>Procedure FIELDPUT(variable-name, start-bit, length, value:integer)*</term>
         <listitem>
-          <para>This procedure allows you to selectively set or reset bit fields in an integer. The start-bit defines the integer starting bit number of the field to be affected; 0 is the least significant bit and 15 is the most significant bit. Length defines the integer number of bits in the field, 1 through 16. Bits are affected starting at start-bit and proceeding toward the least significant bit with wrap around through the high order bit positions if necessary. The value will be stored in the specified field within the 16 bit 'integer-variable-name ' variable. Only the least significant "length" bits of the value are used, any higher order bits are ignored.</para>
+          <para>This procedure allows you to selectively set or reset bit fields in an integer. The start-bit defines the integer starting bit number of the field to be affected; 0 is the least significant bit and 15 is the most significant bit. Length defines the integer number of bits in the field, 1 through 16. Bits are affected starting at start-bit and proceeding toward the least significant bit with wrap around through the high order bit positions if necessary. The value will be stored in the specified field within the 16 bit 'integer-variable-name ' variable. Only the least significant <quote>length</quote> bits of the value are used, any higher order bits are ignored.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -94,7 +94,7 @@
   </sect1>
   <sect1>
     <title>Standard Functions</title>
-    <para>The following is a list of non-I/O-related standard functions available. I/O-related functions are discussed in Chapter 8, The expected arguments and their type, and the type of the value returned by the function is given in the title line, followed by a description of the function's operation. Those functions which are extensions added to OS-9 Pascal but not called for in the ISO standard are marked by "*". Programs that use these functions may not be portable to other Pascal compilers.</para>
+    <para>The following is a list of non-I/O-related standard functions available. I/O-related functions are discussed in Chapter 8, The expected arguments and their type, and the type of the value returned by the function is given in the title line, followed by a description of the function's operation. Those functions which are extensions added to OS-9 Pascal but not called for in the ISO standard are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
     <variablelist>
     <?dbfo list-presentation="blocks"?>
       <varlistentry>
