@@ -60,23 +60,27 @@ public class AciaTelnetUI implements Runnable {
             LOGGER.error("Unable to create listening socket");
             return;
         }
-        activeSocket = null;
+        synchronized(this) {
+            activeSocket = null;
+        }
 
         try {
             while (true) {
                 LOGGER.info("Waiting for connection");
                 Socket socket = serverSocket.accept();
-                if (activeSocket != null) {
-                    OutputStreamWriter w = new OutputStreamWriter(socket.getOutputStream());
-                    w.write("\r\nAnother session is active\r\n\r\n");
-                    w.flush();
-                    socket.close();
-                    continue;
+                synchronized(this) {
+                    if (activeSocket != null) {
+                        OutputStreamWriter w = new OutputStreamWriter(socket.getOutputStream());
+                        w.write("\r\nAnother session is active\r\n\r\n");
+                        w.flush();
+                        socket.close();
+                        continue;
+                    }
+                    socket.setKeepAlive(true);
+                    clientOut = socket.getOutputStream();
+                    clientIn = socket.getInputStream();
+                    activeSocket = socket;
                 }
-                socket.setKeepAlive(true);
-                clientOut = socket.getOutputStream();
-                clientIn = socket.getInputStream();
-                activeSocket = socket;
                 acia.setDCD(true);
                 resetModes();
 
@@ -255,13 +259,17 @@ enum TelnetState {
         TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
                 throws IOException {
             switch (receiveData) {
-                case IP_CHAR:
+                case IP_CHAR:  // Interrupt process
                     handler.dataReceived(INTR_CHAR);
                     return NORMAL;
                 case DO_CHAR:
                     return DO;
                 case DONT_CHAR:
                     return DONT;
+                case WILL_CHAR:
+                    return WILL;
+                case WONT_CHAR:
+                    return WONT;
                 default:
                     return NORMAL;
             }
@@ -280,13 +288,16 @@ enum TelnetState {
                     handler.pleaseDo(receiveData);
                     return NORMAL;
                 default:        // Must respond to unsupported option
-                    LOGGER.info("Don't do: {}", receiveData);
+                    LOGGER.debug("Don't do: {}", receiveData);
                     handler.pleaseDont(receiveData);
                     return NORMAL;
             }
         }
     },
 
+    /**
+     * Client sends won't.
+     */
     WONT {
         @Override
         TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)

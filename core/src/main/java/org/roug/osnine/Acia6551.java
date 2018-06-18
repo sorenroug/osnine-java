@@ -106,25 +106,18 @@ public class Acia6551 extends MemorySegment implements Acia {
      * @param detected - if there is a carrier
      */
     @Override
-    public void setDCD(boolean detected) {
+    public synchronized void setDCD(boolean detected) {
         int oldStatus = statusRegister;
         if (detected) {
-            statusRegister &= ~DCD;  // Set bit 5 to 0
+            clearStatusBit(DCD);
         } else {
-            statusRegister |= DCD;   // Set bit 5 to 1
+            setStatusBit(DCD);
         }
         if (oldStatus != statusRegister) {
-            signalCPU();
-        }
-    }
-
-    /**
-     * Send interrupt to CPU if IRQ is enabled in the ACIA.
-     */
-    private void signalCPU() {
-        if (receiveIrqEnabled) {
-            statusRegister |= IRQ;
-            bus.signalIRQ(true);
+            if (receiveIrqEnabled) {
+                setStatusBit(IRQ);
+                bus.signalIRQ(true);
+            }
         }
     }
 
@@ -177,7 +170,7 @@ public class Acia6551 extends MemorySegment implements Acia {
             }
         }
         receiveData = val;
-        statusRegister |= RDRF;   // We have set interrupt, Read register is full.
+        setStatusBit(RDRF);   // We have set interrupt, Read register is full.
         if (receiveIrqEnabled) {
             raiseIRQ();
         }
@@ -193,31 +186,24 @@ public class Acia6551 extends MemorySegment implements Acia {
             wait();
         }
         int t = transmitData;
-        statusRegister |= TDRE;     // Transmit register is empty now
-        if (transmitIrqEnabled && hasDCD()) {
+        setStatusBit(TDRE);     // Transmit register is empty now
+        if (transmitIrqEnabled && isBitOff(statusRegister, DCD)) {
             raiseIRQ();
         }
         notifyAll();
         return t;
     }
 
-    /**
-     * Get DCD status. Inverted in register.
-     */
-    private boolean hasDCD() {
-        return (statusRegister & DCD) == 0;
-    }
-
     private void raiseIRQ() {
-        if ((statusRegister & IRQ) == 0) {
-            statusRegister |= IRQ;
+        if (isBitOff(statusRegister, IRQ)) {
+            setStatusBit(IRQ);
             bus.signalIRQ(true);
         }
     }
 
     private void lowerIRQ() {
-        if ((statusRegister & IRQ) == IRQ) {
-            statusRegister &= ~IRQ;    // Turn off interrupt flag
+        if (isBitOn(statusRegister, IRQ)) {
+            clearStatusBit(IRQ);
             bus.signalIRQ(false);
         }
     }
@@ -232,7 +218,9 @@ public class Acia6551 extends MemorySegment implements Acia {
                 return getStatusReg();
             case CMND_REG:
                 LOGGER.debug("Read command register");
-                return commandRegister;
+                synchronized(this) {
+                    return commandRegister;
+                }
             case CTRL_REG:
                 LOGGER.debug("Read control register");
                 return controlRegister;
@@ -264,7 +252,7 @@ public class Acia6551 extends MemorySegment implements Acia {
     /**
      * Writing a byte to the status register resets the chip.
      */
-    private void reset() {
+    private synchronized void reset() {
         LOGGER.debug("Reset");
         statusRegister = TDRE;
         transmitData = 0;
@@ -302,7 +290,7 @@ public class Acia6551 extends MemorySegment implements Acia {
             }
         }
         transmitData = val;
-        statusRegister &= ~TDRE;    // Transmit register is not empty now
+        clearStatusBit(TDRE);    // Transmit register is not empty now
         notifyAll();
     }
 
@@ -312,7 +300,7 @@ public class Acia6551 extends MemorySegment implements Acia {
      */
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        statusRegister &= ~RDRF;    // Receive register is empty now
+        clearStatusBit(RDRF);    // Receive register is empty now
         if (transmitIrqEnabled && isTransmitRegisterEmpty()) {
             raiseIRQ();
         }
@@ -330,7 +318,7 @@ public class Acia6551 extends MemorySegment implements Acia {
         boolean activateIRQ = false;
 
         // Bit 1 controls receiver IRQ behavior
-        receiveIrqEnabled = (commandRegister & IRD) == 0;
+        receiveIrqEnabled = isBitOff(commandRegister, IRD);
         if (receiveIrqEnabled && isReceiveRegisterFull()) {
             activateIRQ = true;
         }
@@ -369,6 +357,22 @@ public class Acia6551 extends MemorySegment implements Acia {
             // Unused.
             int baudSelector = data & 0x0f;
         }
+    }
+
+    private static boolean isBitOn(int x, int n) {
+        return (x & n) != 0;
+    }
+
+    private static boolean isBitOff(int x, int n) {
+        return (x & n) == 0;
+    }
+
+    private void setStatusBit(int n) {
+        statusRegister |= n;
+    }
+
+    private void clearStatusBit(int n) {
+        statusRegister &= ~n;
     }
 
 }
