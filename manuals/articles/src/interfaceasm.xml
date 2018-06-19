@@ -15,7 +15,7 @@ pushed on the <varname>S</varname> stack. There is no additional information pus
 If the function has a return value then it is loaded into the <varname>D</varname> register
 before the <code>rts</code> code is executed. In case the return type is integer, then
 the value is returned directly. Otherwise the result is stored in the <code>_flacc</code> buffer
-and a reference to the address is returned.
+and a reference to the address is returned. The <code>_flacc</code> buffer is 8 bytes in size.
 </para>
     <para>
 At the beginning of the called function, the <varname>U</varname> register is pushed on the
@@ -32,13 +32,15 @@ copyvar(arg)
     int arg;
 {
 #asm
-    ldu 4,s
-    stu globvar,y
+* This is a comment
+ ldu 4,s
+ stu globvar,y
 #endasm
 }
 
 int main()
 {
+    globvar = 0x100;
     printf("globvar value: %x\n", globvar);
     copyvar(0x1234);
     printf("globvar value: %x\n", globvar);
