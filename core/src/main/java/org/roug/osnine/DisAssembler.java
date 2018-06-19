@@ -1,77 +1,84 @@
 package org.roug.osnine;
 
+class Opcode {
+    String name;
+    int  clock;
+    int  bytes;
+    int  display;
+
+    Opcode(String name, int clock, int bytes, int display) {
+        this.name = name;
+        this.clock = clock;
+        this.bytes = bytes;
+        this.display = display;
+    }
+}
+
 /**
  * Disassebles 6809 code one instruction at a time.
  */
 public class DisAssembler {
 
-    class Opcode {
-        String name;
-        int  clock;
-        int  bytes;
-        int  display;
-
-        Opcode(String name, int clock, int bytes, int display) {
-            this.name = name;
-            this.clock = clock;
-            this.bytes = bytes;
-            this.display = display;
-        }
-    }
 
     private MC6809 cpu;
 
+    private final static Opcode ILLEGAL;
+
+    static {
+        ILLEGAL = new Opcode( "?????",  0,  1, 0);
+    }
+
     private final Opcode[] optable = {
-      new Opcode( "NEG  ",  6,  2, 1),	 /* 0x00 */
-      new Opcode( "?????",  0,  1, 0),	 /* 0x01 */
-      new Opcode( "?????",  0,  1,	0),	 /* 0x02 */
-      new Opcode( "COM  ",  6,  2,	1),	 /* 0x03 */
-      new Opcode( "LSR  ",  6,  2,	1),	 /* 0x04 */
-      new Opcode( "?????",  0,  1,	0),	 /* 0x05 */
-      new Opcode( "ROR  ",  6,  2,	1),	 /* 0x06 */
-      new Opcode( "ASR  ",  6,  2,	1),	 /* 0x07 */
-      new Opcode( "LSL  ",  6,  2,	1),	 /* 0x08 */
-      new Opcode( "ROR  ",  6,  2,	1),	 /* 0x09 */
-      new Opcode( "DEC  ",  6,  2,	1),	 /* 0x0a */
-      new Opcode( "?????",  0,  1,	0),	 /* 0x0b */
-      new Opcode( "INC  ",  6,  2,	1),	 /* 0x0c */
-      new Opcode( "TST  ",  6,  2,	1),	 /* 0x0d */
-      new Opcode( "JMP  ",  3,  2,	1),	 /* 0x0e */
-      new Opcode( "CLR  ",  6,  2,	1),     /* 0x0f */
+      new Opcode( "NEG  ",  6,  2, 1),   /* 0x00 */
+      ILLEGAL,   /* 0x01 */
+      ILLEGAL,      /* 0x02 */
+      new Opcode( "COM  ",  6,  2,      1),      /* 0x03 */
+      new Opcode( "LSR  ",  6,  2,      1),      /* 0x04 */
+      ILLEGAL,      /* 0x05 */
+      new Opcode( "ROR  ",  6,  2,      1),      /* 0x06 */
+      new Opcode( "ASR  ",  6,  2,      1),      /* 0x07 */
+      new Opcode( "LSL  ",  6,  2,      1),      /* 0x08 */
+      new Opcode( "ROR  ",  6,  2,      1),      /* 0x09 */
+      new Opcode( "DEC  ",  6,  2,      1),      /* 0x0a */
+      ILLEGAL,      /* 0x0b */
+      new Opcode( "INC  ",  6,  2,      1),      /* 0x0c */
+      new Opcode( "TST  ",  6,  2,      1),      /* 0x0d */
+      new Opcode( "JMP  ",  3,  2,      1),      /* 0x0e */
+      new Opcode( "CLR  ",  6,  2,      1),     /* 0x0f */
 
-      new Opcode( "",       0,  1, 12),	 /* 0x10 */
-      new Opcode( "",       0,  1, 13),	 /* 0x11 */
-      new Opcode( "NOP  ",  2,  1, 4),	 /* 0x12 */
+      new Opcode( "",       0,  1, 12),  /* 0x10 */
+      new Opcode( "",       0,  1, 13),  /* 0x11 */
+      new Opcode( "NOP  ",  2,  1, 4),   /* 0x12 */
       new Opcode( "SYNC ",  4,  1, 4),        /* 0x13 */
-      new Opcode( "?????",  0,  1, 0),	 /* 0x14 */
-      new Opcode( "?????",  0,  1, 0),        /* 0x15 */
-      new Opcode( "LBRA ",  5,  3, 8),	 /* 0x16 */
-      new Opcode( "LBSR ",  9,  3, 8),	 /* 0x17 */
-      new Opcode( "?????",  0,  1, 0),	 /* 0x18 */
-      new Opcode( "DAA  ",  2,  1, 4),	 /* 0x19 */
-      new Opcode( "ORCC ",  3,  2, 2),	 /* 0x1a */
-      new Opcode( "?????",  0,  1, 0),	 /* 0x1b */
+      ILLEGAL,   /* 0x14 */
+      ILLEGAL,        /* 0x15 */
+      new Opcode( "LBRA ",  5,  3, 8),   /* 0x16 */
+      new Opcode( "LBSR ",  9,  3, 8),   /* 0x17 */
+      ILLEGAL,   /* 0x18 */
+      new Opcode( "DAA  ",  2,  1, 4),   /* 0x19 */
+      new Opcode( "ORCC ",  3,  2, 2),   /* 0x1a */
+      ILLEGAL,   /* 0x1b */
       new Opcode( "ANDCC",  3,  2, 2),        /* 0x1c */
-      new Opcode( "SEX  ",  2,  1, 4),	 /* 0x1d */
-      new Opcode( "EXG  ",  8,  2, 9),	 /* 0x1e */
-      new Opcode( "TFR  ",  6,  2,   9),	 /* 0x1f */
+      new Opcode( "SEX  ",  2,  1, 4),   /* 0x1d */
+      new Opcode( "EXG  ",  8,  2, 9),   /* 0x1e */
+      new Opcode( "TFR  ",  6,  2,   9),         /* 0x1f */
 
-      new Opcode( "BRA  ",  3,  2,   7),	 /* 0x20 */
-      new Opcode( "BRN  ",  3,  2,   7),	 /* 0x21 */
-      new Opcode( "BHI  ",  3,  2,   7),	 /* 0x22 */
-      new Opcode( "BLS  ",  3,  2,   7),	 /* 0x23 */
-      new Opcode( "BCC  ",  3,  2,   7),	 /* 0x24 */
-      new Opcode( "BCS  ",  3,  2,   7),	 /* 0x25 */
-      new Opcode( "BNE  ",  3,  2,   7),	 /* 0x26 */
-      new Opcode( "BEQ  ",  3,  2,   7),	 /* 0x27 */
-      new Opcode( "BVC  ",  3,  2,   7),	 /* 0x28 */
-      new Opcode( "BVS  ",  3,  2,   7),	 /* 0x29 */
-      new Opcode( "BPL  ",  3,  2,   7),	 /* 0x2a */
-      new Opcode( "BMI  ",  3,  2,   7),	 /* 0x2b */
-      new Opcode( "BGE  ",  3,  2,   7),	 /* 0x2c */
-      new Opcode( "BLT  ",  3,  2,   7),	 /* 0x2d */
-      new Opcode( "BGT  ",  3,  2,   7),	 /* 0x2e */
-      new Opcode( "BLE  ",  3,  2,   7),	 /* 0x2f */
+      new Opcode( "BRA  ",  3,  2,   7),         /* 0x20 */
+      new Opcode( "BRN  ",  3,  2,   7),         /* 0x21 */
+      new Opcode( "BHI  ",  3,  2,   7),         /* 0x22 */
+      new Opcode( "BLS  ",  3,  2,   7),         /* 0x23 */
+      new Opcode( "BCC  ",  3,  2,   7),         /* 0x24 */
+      new Opcode( "BCS  ",  3,  2,   7),         /* 0x25 */
+      new Opcode( "BNE  ",  3,  2,   7),         /* 0x26 */
+      new Opcode( "BEQ  ",  3,  2,   7),         /* 0x27 */
+      new Opcode( "BVC  ",  3,  2,   7),         /* 0x28 */
+      new Opcode( "BVS  ",  3,  2,   7),         /* 0x29 */
+      new Opcode( "BPL  ",  3,  2,   7),         /* 0x2a */
+      new Opcode( "BMI  ",  3,  2,   7),         /* 0x2b */
+      new Opcode( "BGE  ",  3,  2,   7),         /* 0x2c */
+      new Opcode( "BLT  ",  3,  2,   7),         /* 0x2d */
+      new Opcode( "BGT  ",  3,  2,   7),         /* 0x2e */
+      new Opcode( "BLE  ",  3,  2,   7),         /* 0x2f */
 
       new Opcode( "LEAX ",  4,  2,   5),      /* 0x30 */
       new Opcode( "LEAY ",  4,  2,   5),      /* 0x31 */
@@ -81,256 +88,256 @@ public class DisAssembler {
       new Opcode( "PULS ",  5,  2,   10),      /* 0x35 */
       new Opcode( "PSHU ",  5,  2,   11),      /* 0x36 */
       new Opcode( "PULU ",  5,  2,   11),      /* 0x37 */
-      new Opcode( "?????",  0,  1,   0),      /* 0x38 */
+      ILLEGAL,      /* 0x38 */
       new Opcode( "RTS  ",  5,  1,   4),      /* 0x39 */
       new Opcode( "ABX  ",  3,  1,   4),      /* 0x3a */
       new Opcode( "RTI  ",  6,  1,   4),      /* 0x3b */
       new Opcode( "CWAI ",  20, 2,   4),      /* 0x3c */
       new Opcode( "MUL  ",  11, 1,   4),      /* 0x3d */
-      new Opcode( "?????",  0,  1,   0),      /* 0x3e */
+      ILLEGAL,      /* 0x3e */
       new Opcode( "SWI  ",  19, 1,   4),      /* 0x3f */
 
-      new Opcode( "NEGA ",   2,  1,   4),	 /* 0x40 */
-      new Opcode(  "?????",  0, 1,   0),	 /* 0x41 */
-      new Opcode(  "?????",  0, 1,   0),	 /* 0x42 */
-      new Opcode(  "COMA ",  2, 1,   4),	 /* 0x43 */
-      new Opcode(  "LSRA ",  2, 1,   4),	 /* 0x44 */
-      new Opcode(  "?????",  0, 1,   0),	 /* 0x45 */
-      new Opcode(  "RORA ",  2, 1,   4),	 /* 0x46 */
-      new Opcode(  "ASRA ",  2, 1,   4),	 /* 0x47 */
-      new Opcode(  "LSLA ",  2, 1,   4),	 /* 0x48 */
-      new Opcode(  "ROLA ",  2, 1,   4),	 /* 0x49 */
-      new Opcode(  "DECA ",  2, 1,   4),	 /* 0x4a */
-      new Opcode(  "?????",  0, 1,   0),	 /* 0x4b */
-      new Opcode(  "INCA ",  2, 1,   4),	 /* 0x4c */
-      new Opcode(  "TSTA ",  2, 1,   4),      /* 0x4d */
-      new Opcode(  "?????",  0, 1,   0),	 /* 0x4e */
-      new Opcode(  "CLRA ",  2, 1,   4),	 /* 0x4f */
+      new Opcode( "NEGA ",   2,  1,   4),        /* 0x40 */
+      ILLEGAL,         /* 0x41 */
+      ILLEGAL,         /* 0x42 */
+      new Opcode( "COMA ",  2, 1,   4),         /* 0x43 */
+      new Opcode( "LSRA ",  2, 1,   4),         /* 0x44 */
+      ILLEGAL,         /* 0x45 */
+      new Opcode( "RORA ",  2, 1,   4),         /* 0x46 */
+      new Opcode( "ASRA ",  2, 1,   4),         /* 0x47 */
+      new Opcode( "LSLA ",  2, 1,   4),         /* 0x48 */
+      new Opcode( "ROLA ",  2, 1,   4),         /* 0x49 */
+      new Opcode( "DECA ",  2, 1,   4),         /* 0x4a */
+      ILLEGAL,         /* 0x4b */
+      new Opcode( "INCA ",  2, 1,   4),         /* 0x4c */
+      new Opcode( "TSTA ",  2, 1,   4),      /* 0x4d */
+      ILLEGAL,         /* 0x4e */
+      new Opcode( "CLRA ",  2, 1,   4),         /* 0x4f */
 
-      new Opcode(  "NEGB ",  2, 1,   4),	 /* 0x50 */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x51 */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x52 */
-      new Opcode( "COMB ",   2, 1,   4),	 /* 0x53 */
-      new Opcode( "LSRB ",   2, 1,   4),	 /* 0x54 */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x55 */
-      new Opcode( "RORB ",   2, 1,   4),	 /* 0x56 */
-      new Opcode( "ASRB ",   2, 1,   4),	 /* 0x57 */
-      new Opcode( "LSLB ",   2, 1,   4),	 /* 0x58 */
-      new Opcode( "ROLB ",   2, 1,   4),	 /* 0x59 */
-      new Opcode( "DECB ",   2, 1,   4),	 /* 0x5a */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x5b */
-      new Opcode( "INCB ",   2, 1,   4),	 /* 0x5c */
-      new Opcode( "TSTB ",   2, 1,   4),	 /* 0x5d */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x5e */
-      new Opcode( "CLRB ",   2, 1,   4),	 /* 0x5f */
+      new Opcode( "NEGB ",  2, 1,   4),         /* 0x50 */
+      ILLEGAL,         /* 0x51 */
+      ILLEGAL,         /* 0x52 */
+      new Opcode( "COMB ",   2, 1,   4),         /* 0x53 */
+      new Opcode( "LSRB ",   2, 1,   4),         /* 0x54 */
+      ILLEGAL,         /* 0x55 */
+      new Opcode( "RORB ",   2, 1,   4),         /* 0x56 */
+      new Opcode( "ASRB ",   2, 1,   4),         /* 0x57 */
+      new Opcode( "LSLB ",   2, 1,   4),         /* 0x58 */
+      new Opcode( "ROLB ",   2, 1,   4),         /* 0x59 */
+      new Opcode( "DECB ",   2, 1,   4),         /* 0x5a */
+      ILLEGAL,         /* 0x5b */
+      new Opcode( "INCB ",   2, 1,   4),         /* 0x5c */
+      new Opcode( "TSTB ",   2, 1,   4),         /* 0x5d */
+      ILLEGAL,         /* 0x5e */
+      new Opcode( "CLRB ",   2, 1,   4),         /* 0x5f */
 
-      new Opcode( "NEG  ",   6, 2,   5),	 /* 0x60 */
-      new Opcode( "?????",   0, 2,   0),	 /* 0x61 */
-      new Opcode( "?????",   0, 2,   0),	 /* 0x62 */
-      new Opcode( "COM  ",   6, 2,   5),	 /* 0x63 */
-      new Opcode( "LSR  ",   6, 2,   5),	 /* 0x64 */
-      new Opcode( "?????",   0, 2,   5),	 /* 0x65 */
-      new Opcode( "ROR  ",   6, 2,   5),	 /* 0x66 */
-      new Opcode( "ASR  ",   6, 2,   5),	 /* 0x67 */
-      new Opcode( "LSL  ",   6, 2,   5),	 /* 0x68 */
-      new Opcode( "ROL  ",   6, 2,   5),	 /* 0x69 */
-      new Opcode( "DEC  ",   6, 2,   5),	 /* 0x6a */
-      new Opcode( "?????",   0, 2,   0),	 /* 0x6b */
-      new Opcode( "INC  ",   6, 2,   5),	 /* 0x6c */
-      new Opcode( "TST  ",   6, 2,   5),	 /* 0x6d */
-      new Opcode( "JMP  ",   3, 2,   5),	 /* 0x6e */
-      new Opcode( "CLR  ",   6, 2,   5),	 /* 0x6f */
+      new Opcode( "NEG  ",   6, 2,   5),         /* 0x60 */
+      new Opcode( "?????",   0, 2,   0),         /* 0x61 */
+      new Opcode( "?????",   0, 2,   0),         /* 0x62 */
+      new Opcode( "COM  ",   6, 2,   5),         /* 0x63 */
+      new Opcode( "LSR  ",   6, 2,   5),         /* 0x64 */
+      new Opcode( "?????",   0, 2,   5),         /* 0x65 */
+      new Opcode( "ROR  ",   6, 2,   5),         /* 0x66 */
+      new Opcode( "ASR  ",   6, 2,   5),         /* 0x67 */
+      new Opcode( "LSL  ",   6, 2,   5),         /* 0x68 */
+      new Opcode( "ROL  ",   6, 2,   5),         /* 0x69 */
+      new Opcode( "DEC  ",   6, 2,   5),         /* 0x6a */
+      new Opcode( "?????",   0, 2,   0),         /* 0x6b */
+      new Opcode( "INC  ",   6, 2,   5),         /* 0x6c */
+      new Opcode( "TST  ",   6, 2,   5),         /* 0x6d */
+      new Opcode( "JMP  ",   3, 2,   5),         /* 0x6e */
+      new Opcode( "CLR  ",   6, 2,   5),         /* 0x6f */
 
       new Opcode( "NEG  ",   7, 3,   6),      /* 0x70 */
-      new Opcode( "?????",   0, 1,   0),      /* 0x71 */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x72 */
-      new Opcode( "COM  ",   7, 3,   6),	 /* 0x73 */
-      new Opcode( "LSR  ",   7, 3,   6),	 /* 0x74 */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x75 */
-      new Opcode( "ROR  ",   7, 3,   6),	 /* 0x76 */
-      new Opcode( "ASR  ",   7, 3,   6),	 /* 0x77 */
-      new Opcode( "LSL  ",   7, 3,   6),	 /* 0x78 */
-      new Opcode( "ROL  ",   7, 3,   6),	 /* 0x79 */
-      new Opcode( "DEC  ",   7, 3,   6),	 /* 0x7a */
-      new Opcode( "?????",   0, 1,   0),	 /* 0x7b */
-      new Opcode( "INC  ",   7, 3,   6),	 /* 0x7c */
-      new Opcode( "TST  ",   7, 3,   6),	 /* 0x7d */
-      new Opcode( "JMP  ",   4, 3,   6),	 /* 0x7e */
-      new Opcode( "CLR  ",   7, 3,   6),	 /* 0x7f */
+      ILLEGAL,      /* 0x71 */
+      ILLEGAL,         /* 0x72 */
+      new Opcode( "COM  ",   7, 3,   6),         /* 0x73 */
+      new Opcode( "LSR  ",   7, 3,   6),         /* 0x74 */
+      ILLEGAL,         /* 0x75 */
+      new Opcode( "ROR  ",   7, 3,   6),         /* 0x76 */
+      new Opcode( "ASR  ",   7, 3,   6),         /* 0x77 */
+      new Opcode( "LSL  ",   7, 3,   6),         /* 0x78 */
+      new Opcode( "ROL  ",   7, 3,   6),         /* 0x79 */
+      new Opcode( "DEC  ",   7, 3,   6),         /* 0x7a */
+      ILLEGAL,         /* 0x7b */
+      new Opcode( "INC  ",   7, 3,   6),         /* 0x7c */
+      new Opcode( "TST  ",   7, 3,   6),         /* 0x7d */
+      new Opcode( "JMP  ",   4, 3,   6),         /* 0x7e */
+      new Opcode( "CLR  ",   7, 3,   6),         /* 0x7f */
 
-      new Opcode( "SUBA ",  2,  2,   2),	/* 0x80 */
-      new Opcode( "CMPA ",  2,  2,   2),	/* 0x81 */
-      new Opcode( "SBCA ",  2,  2,   2),	/* 0x82 */
-      new Opcode( "SUBD ",  4,  3,   3),	/* 0x83 */
-      new Opcode( "ANDA ",  2,  2,   2),	/* 0x84 */
-      new Opcode( "BITA ",  2,  2,   2),	/* 0x85 */
-      new Opcode( "LDA  ",  2,  2,   2),	/* 0x86 */
-      new Opcode( "?????",  0,  2,   0),	/* 0x87 */
-      new Opcode( "EORA ",  2,  2,   2),	/* 0x88 */
-      new Opcode( "ADCA ",  2,  2,   2),	/* 0x89 */
-      new Opcode( "ORA  ",  2,  2,   2),	/* 0x8a */
-      new Opcode( "ADDA ",  2,  2,   2),	/* 0x8b */
-      new Opcode( "CMPX ",  4,  3,   3),	/* 0x8c */
-      new Opcode( "BSR  ",  7,  2,   7),	/* 0x8d */
-      new Opcode( "LDX  ",  3,  3,   3),	/* 0x8e */
-      new Opcode( "?????",  0,  2,   0),	/* 0x8f */
+      new Opcode( "SUBA ",  2,  2,   2),        /* 0x80 */
+      new Opcode( "CMPA ",  2,  2,   2),        /* 0x81 */
+      new Opcode( "SBCA ",  2,  2,   2),        /* 0x82 */
+      new Opcode( "SUBD ",  4,  3,   3),        /* 0x83 */
+      new Opcode( "ANDA ",  2,  2,   2),        /* 0x84 */
+      new Opcode( "BITA ",  2,  2,   2),        /* 0x85 */
+      new Opcode( "LDA  ",  2,  2,   2),        /* 0x86 */
+      new Opcode( "?????",  0,  2,   0),        /* 0x87 */
+      new Opcode( "EORA ",  2,  2,   2),        /* 0x88 */
+      new Opcode( "ADCA ",  2,  2,   2),        /* 0x89 */
+      new Opcode( "ORA  ",  2,  2,   2),        /* 0x8a */
+      new Opcode( "ADDA ",  2,  2,   2),        /* 0x8b */
+      new Opcode( "CMPX ",  4,  3,   3),        /* 0x8c */
+      new Opcode( "BSR  ",  7,  2,   7),        /* 0x8d */
+      new Opcode( "LDX  ",  3,  3,   3),        /* 0x8e */
+      new Opcode( "?????",  0,  2,   0),        /* 0x8f */
 
-      new Opcode( "SUBA ",  4,  2,   1),	/* 0x90 */
-      new Opcode( "CMPA ",  4,  2,   1),	/* 0x91 */
-      new Opcode( "SBCA ",  4,  2,   1),	/* 0x92 */
-      new Opcode( "SUBD ",  6,  2,   1),	/* 0x93 */
-      new Opcode( "ANDA ",  4,  2,   1),	/* 0x94 */
-      new Opcode( "BITA ",  4,  2,   1),	/* 0x95 */
-      new Opcode( "LDA  ",  4,  2,   1),	/* 0x96 */
-      new Opcode( "STA  ",  4,  2,   1),	/* 0x97 */
-      new Opcode( "EORA ",  4,  2,   1),	/* 0x98 */
-      new Opcode( "ADCA ",  4,  2,   1),	/* 0x99 */
-      new Opcode( "ORA  ",  4,  2,   1),	/* 0x9a */
-      new Opcode( "ADDA ",  4,  2,   1),	/* 0x9b */
-      new Opcode( "CMPX ",  6,  2,   1),	/* 0x9c */
-      new Opcode( "JSR  ",  7,  2,   1),	/* 0x9d */
-      new Opcode( "LDX  ",  5,  2,   1),	/* 0x9e */
-      new Opcode( "STX  ",  5,  2,   1),	/* 0x9f */
+      new Opcode( "SUBA ",  4,  2,   1),        /* 0x90 */
+      new Opcode( "CMPA ",  4,  2,   1),        /* 0x91 */
+      new Opcode( "SBCA ",  4,  2,   1),        /* 0x92 */
+      new Opcode( "SUBD ",  6,  2,   1),        /* 0x93 */
+      new Opcode( "ANDA ",  4,  2,   1),        /* 0x94 */
+      new Opcode( "BITA ",  4,  2,   1),        /* 0x95 */
+      new Opcode( "LDA  ",  4,  2,   1),        /* 0x96 */
+      new Opcode( "STA  ",  4,  2,   1),        /* 0x97 */
+      new Opcode( "EORA ",  4,  2,   1),        /* 0x98 */
+      new Opcode( "ADCA ",  4,  2,   1),        /* 0x99 */
+      new Opcode( "ORA  ",  4,  2,   1),        /* 0x9a */
+      new Opcode( "ADDA ",  4,  2,   1),        /* 0x9b */
+      new Opcode( "CMPX ",  6,  2,   1),        /* 0x9c */
+      new Opcode( "JSR  ",  7,  2,   1),        /* 0x9d */
+      new Opcode( "LDX  ",  5,  2,   1),        /* 0x9e */
+      new Opcode( "STX  ",  5,  2,   1),        /* 0x9f */
 
-      new Opcode( "SUBA ",  4,  2,   5),	/* 0xa0 */
-      new Opcode( "CMPA ",  4,  2,   5),	/* 0xa1 */
-      new Opcode( "SBCA ",  4,  2,   5),	/* 0xa2 */
-      new Opcode( "SUBD ",  6,  2,   5),	/* 0xa3 */
-      new Opcode( "ANDA ",  4,  2,   5),	/* 0xa4 */
-      new Opcode( "BITA ",  4,  2,   5),	/* 0xa5 */
-      new Opcode( "LDA  ",  4,  2,   5),	/* 0xa6 */
-      new Opcode( "STA  ",  4,  2,   5),	/* 0xa7 */
-      new Opcode( "EORA ",  4,  2,   5),	/* 0xa8 */
-      new Opcode( "ADCA ",  4,  2,   5),	/* 0xa9 */
-      new Opcode( "ORA  ",  4,  2,   5),	/* 0xaa */
-      new Opcode( "ADDA ",  4,  2,   5),	/* 0xab */
-      new Opcode( "CMPX ",  6,  2,   5),	/* 0xac */
-      new Opcode( "JSR  ",  7,  2,   5),	/* 0xad */
-      new Opcode( "LDX  ",  5,  2,   5),	/* 0xae */
-      new Opcode( "STX  ",  5,  2,   5),	/* 0xaf */
+      new Opcode( "SUBA ",  4,  2,   5),        /* 0xa0 */
+      new Opcode( "CMPA ",  4,  2,   5),        /* 0xa1 */
+      new Opcode( "SBCA ",  4,  2,   5),        /* 0xa2 */
+      new Opcode( "SUBD ",  6,  2,   5),        /* 0xa3 */
+      new Opcode( "ANDA ",  4,  2,   5),        /* 0xa4 */
+      new Opcode( "BITA ",  4,  2,   5),        /* 0xa5 */
+      new Opcode( "LDA  ",  4,  2,   5),        /* 0xa6 */
+      new Opcode( "STA  ",  4,  2,   5),        /* 0xa7 */
+      new Opcode( "EORA ",  4,  2,   5),        /* 0xa8 */
+      new Opcode( "ADCA ",  4,  2,   5),        /* 0xa9 */
+      new Opcode( "ORA  ",  4,  2,   5),        /* 0xaa */
+      new Opcode( "ADDA ",  4,  2,   5),        /* 0xab */
+      new Opcode( "CMPX ",  6,  2,   5),        /* 0xac */
+      new Opcode( "JSR  ",  7,  2,   5),        /* 0xad */
+      new Opcode( "LDX  ",  5,  2,   5),        /* 0xae */
+      new Opcode( "STX  ",  5,  2,   5),        /* 0xaf */
 
-      new Opcode( "SUBA ",  5,  3,   6),	/* 0xb0 */
-      new Opcode( "CMPA ",  5,  3,   6),	/* 0xb1 */
-      new Opcode( "SBCA ",  5,  3,   6),	/* 0xb2 */
-      new Opcode( "SUBD ",  7,  3,   6),	/* 0xb3 */
-      new Opcode( "ANDA ",  5,  3,   6),	/* 0xb4 */
-      new Opcode( "BITA ",  5,  3,   6),	/* 0xb5 */
-      new Opcode( "LDA  ",  5,  3,   6),	/* 0xb6 */
-      new Opcode( "STA  ",  5,  3,   6),	/* 0xb7 */
-      new Opcode( "EORA ",  5,  3,   6),	/* 0xb8 */
-      new Opcode( "ADCA ",  5,  3,   6),	/* 0xb9 */
-      new Opcode( "ORA  ",  5,  3,   6),	/* 0xba */
-      new Opcode( "ADDA ",  5,  3,   6),	/* 0xbb */
-      new Opcode( "CMPX ",  7,  3,   6),	/* 0xbc */
-      new Opcode( "JSR  ",  8,  3,   6),	/* 0xbd */
-      new Opcode( "LDX  ",  6,  3,   6),	/* 0xbe */
-      new Opcode( "STX  ",  6,  3,   6),	/* 0xbf */
+      new Opcode( "SUBA ",  5,  3,   6),        /* 0xb0 */
+      new Opcode( "CMPA ",  5,  3,   6),        /* 0xb1 */
+      new Opcode( "SBCA ",  5,  3,   6),        /* 0xb2 */
+      new Opcode( "SUBD ",  7,  3,   6),        /* 0xb3 */
+      new Opcode( "ANDA ",  5,  3,   6),        /* 0xb4 */
+      new Opcode( "BITA ",  5,  3,   6),        /* 0xb5 */
+      new Opcode( "LDA  ",  5,  3,   6),        /* 0xb6 */
+      new Opcode( "STA  ",  5,  3,   6),        /* 0xb7 */
+      new Opcode( "EORA ",  5,  3,   6),        /* 0xb8 */
+      new Opcode( "ADCA ",  5,  3,   6),        /* 0xb9 */
+      new Opcode( "ORA  ",  5,  3,   6),        /* 0xba */
+      new Opcode( "ADDA ",  5,  3,   6),        /* 0xbb */
+      new Opcode( "CMPX ",  7,  3,   6),        /* 0xbc */
+      new Opcode( "JSR  ",  8,  3,   6),        /* 0xbd */
+      new Opcode( "LDX  ",  6,  3,   6),        /* 0xbe */
+      new Opcode( "STX  ",  6,  3,   6),        /* 0xbf */
 
-      new Opcode( "SUBB ",  2,  2,   2),	/* 0xc0 */
-      new Opcode( "CMPB ",  2,  2,   2),	/* 0xc1 */
-      new Opcode( "SBCB ",  2,  2,   2),	/* 0xc2 */
-      new Opcode( "ADDD ",  4,  3,   3),	/* 0xc3 */
-      new Opcode( "ANDB ",  2,  2,   2),	/* 0xc4 */
-      new Opcode( "BITB ",  2,  2,   2),	/* 0xc5 */
-      new Opcode( "LDB  ",  2,  2,   2),	/* 0xc6 */
-      new Opcode( "?????",  0,  1,   0),	/* 0xc7 */
-      new Opcode( "EORB ",  2,  2,   2),	/* 0xc8 */
-      new Opcode( "ADCB ",  2,  2,   2),	/* 0xc9 */
-      new Opcode( "ORB  ",  2,  2,   2),	/* 0xca */
-      new Opcode( "ADDB ",  2,  2,   2),	/* 0xcb */
-      new Opcode( "LDD  ",  3,  3,   3),	/* 0xcc */
-      new Opcode( "?????",  0,  1,   0),	/* 0xcd */
-      new Opcode( "LDU  ",  3,  3,   3),	/* 0xce */
-      new Opcode( "?????",  0,  1,   0),	/* 0xcf */
+      new Opcode( "SUBB ",  2,  2,   2),        /* 0xc0 */
+      new Opcode( "CMPB ",  2,  2,   2),        /* 0xc1 */
+      new Opcode( "SBCB ",  2,  2,   2),        /* 0xc2 */
+      new Opcode( "ADDD ",  4,  3,   3),        /* 0xc3 */
+      new Opcode( "ANDB ",  2,  2,   2),        /* 0xc4 */
+      new Opcode( "BITB ",  2,  2,   2),        /* 0xc5 */
+      new Opcode( "LDB  ",  2,  2,   2),        /* 0xc6 */
+      ILLEGAL,        /* 0xc7 */
+      new Opcode( "EORB ",  2,  2,   2),        /* 0xc8 */
+      new Opcode( "ADCB ",  2,  2,   2),        /* 0xc9 */
+      new Opcode( "ORB  ",  2,  2,   2),        /* 0xca */
+      new Opcode( "ADDB ",  2,  2,   2),        /* 0xcb */
+      new Opcode( "LDD  ",  3,  3,   3),        /* 0xcc */
+      ILLEGAL,        /* 0xcd */
+      new Opcode( "LDU  ",  3,  3,   3),        /* 0xce */
+      ILLEGAL,        /* 0xcf */
 
-      new Opcode( "SUBB ",  4,  2,   1),	/* 0xd0 */
-      new Opcode( "CMPB ",  4,  2,   1),	/* 0xd1 */
-      new Opcode( "SBCB ",  4,  2,   1),	/* 0xd2 */
-      new Opcode( "ADDD ",  6,  2,   1),	/* 0xd3 */
-      new Opcode( "ANDB ",  4,  2,   1),	/* 0xd4 */
-      new Opcode( "BITB ",  4,  2,   1),	/* 0xd5 */
-      new Opcode( "LDB  ",  4,  2,   1),	/* 0xd6 */
-      new Opcode( "STB  ",  4,  2,   1),	/* 0xd7 */
-      new Opcode( "EORB ",  4,  2,   1),	/* 0xd8 */
-      new Opcode( "ADCB ",  4,  2,   1),	/* 0xd9 */
-      new Opcode( "ORB  ",  4,  2,   1),	/* 0xda */
-      new Opcode( "ADDB ",  4,  2,   1),	/* 0xdb */
-      new Opcode( "LDD  ",  5,  2,   1),	/* 0xdc */
-      new Opcode( "STD  ",  5,  2,   1),	/* 0xdd */
-      new Opcode( "LDU  ",  5,  2,   1),	/* 0xde */
-      new Opcode( "STU  ",  5,  2,   1),	/* 0xdf */
+      new Opcode( "SUBB ",  4,  2,   1),        /* 0xd0 */
+      new Opcode( "CMPB ",  4,  2,   1),        /* 0xd1 */
+      new Opcode( "SBCB ",  4,  2,   1),        /* 0xd2 */
+      new Opcode( "ADDD ",  6,  2,   1),        /* 0xd3 */
+      new Opcode( "ANDB ",  4,  2,   1),        /* 0xd4 */
+      new Opcode( "BITB ",  4,  2,   1),        /* 0xd5 */
+      new Opcode( "LDB  ",  4,  2,   1),        /* 0xd6 */
+      new Opcode( "STB  ",  4,  2,   1),        /* 0xd7 */
+      new Opcode( "EORB ",  4,  2,   1),        /* 0xd8 */
+      new Opcode( "ADCB ",  4,  2,   1),        /* 0xd9 */
+      new Opcode( "ORB  ",  4,  2,   1),        /* 0xda */
+      new Opcode( "ADDB ",  4,  2,   1),        /* 0xdb */
+      new Opcode( "LDD  ",  5,  2,   1),        /* 0xdc */
+      new Opcode( "STD  ",  5,  2,   1),        /* 0xdd */
+      new Opcode( "LDU  ",  5,  2,   1),        /* 0xde */
+      new Opcode( "STU  ",  5,  2,   1),        /* 0xdf */
 
-      new Opcode( "SUBB ",  4,  2,   5),	   /* 0xe0 */
-      new Opcode( "CMPB ",  4,  2,   5),	   /* 0xe1 */
-      new Opcode( "SBCB ",  4,  2,   5),	   /* 0xe2 */
-      new Opcode( "ADDD ",  6,  2,   5),  	   /* 0xe3 */
-      new Opcode( "ANDB ",  4,  2,   5),	   /* 0xe4 */
-      new Opcode( "BITB ",  4,  2,   5),	   /* 0xe5 */
-      new Opcode( "LDB  ",  4,  2,   5),	   /* 0xe6 */
-      new Opcode( "STB  ",  4,  2,   5),	   /* 0xe7 */
-      new Opcode( "EORB ",  4,  2,   5),	   /* 0xe8 */
-      new Opcode( "ADCB ",  4,  2,   5),	   /* 0xe9 */
-      new Opcode( "ORB  ",  4,  2,   5),	   /* 0xea */
-      new Opcode( "ADDB ",  4,  2,   5),	   /* 0xeb */
-      new Opcode( "LDD  ",  5,  2,   5),	   /* 0xec */
-      new Opcode( "STD  ",  5,  2,   5),	   /* 0xed */
-      new Opcode( "LDU  ",  5,  2,   5),	   /* 0xee */
-      new Opcode( "STU  ",  5,  2,   5),	   /* 0xef */
+      new Opcode( "SUBB ",  4,  2,   5),           /* 0xe0 */
+      new Opcode( "CMPB ",  4,  2,   5),           /* 0xe1 */
+      new Opcode( "SBCB ",  4,  2,   5),           /* 0xe2 */
+      new Opcode( "ADDD ",  6,  2,   5),           /* 0xe3 */
+      new Opcode( "ANDB ",  4,  2,   5),           /* 0xe4 */
+      new Opcode( "BITB ",  4,  2,   5),           /* 0xe5 */
+      new Opcode( "LDB  ",  4,  2,   5),           /* 0xe6 */
+      new Opcode( "STB  ",  4,  2,   5),           /* 0xe7 */
+      new Opcode( "EORB ",  4,  2,   5),           /* 0xe8 */
+      new Opcode( "ADCB ",  4,  2,   5),           /* 0xe9 */
+      new Opcode( "ORB  ",  4,  2,   5),           /* 0xea */
+      new Opcode( "ADDB ",  4,  2,   5),           /* 0xeb */
+      new Opcode( "LDD  ",  5,  2,   5),           /* 0xec */
+      new Opcode( "STD  ",  5,  2,   5),           /* 0xed */
+      new Opcode( "LDU  ",  5,  2,   5),           /* 0xee */
+      new Opcode( "STU  ",  5,  2,   5),           /* 0xef */
 
-      new Opcode( "SUBB ",  5,  3,   6),	   /* 0xf0 */
-      new Opcode( "CMPB ",  5,  3,   6),	   /* 0xf1 */
-      new Opcode( "SBCB ",  5,  3,   6),	   /* 0xf2 */
-      new Opcode( "ADDD ",  7,  3,   6),	   /* 0xf3 */
-      new Opcode( "ANDB ",  5,  3,   6),	   /* 0xf4 */
-      new Opcode( "BITB ",  5,  3,   6),	   /* 0xf5 */
-      new Opcode( "LDB  ",  5,  3,   6),	   /* 0xf6 */
-      new Opcode( "STB  ",  5,  3,   6),	   /* 0xf7 */
-      new Opcode( "EORB ",  5,  3,   6),	   /* 0xf8 */
-      new Opcode( "ADCB ",  5,  3,   6),	   /* 0xf9 */
-      new Opcode( "ORB  ",  5,  3,   6),	   /* 0xfa */
-      new Opcode( "ADDB ",  5,  3,   6),	   /* 0xfb */
-      new Opcode( "LDD  ",  6,  3,   6),	   /* 0xfc */
-      new Opcode( "STD  ",  6,  3,   6),	   /* 0xfd */
-      new Opcode( "LDU  ",  6,  3,   6),	   /* 0xfe */
-      new Opcode( "STU  ",  6,  3,   6),   	   /* 0xff */
+      new Opcode( "SUBB ",  5,  3,   6),           /* 0xf0 */
+      new Opcode( "CMPB ",  5,  3,   6),           /* 0xf1 */
+      new Opcode( "SBCB ",  5,  3,   6),           /* 0xf2 */
+      new Opcode( "ADDD ",  7,  3,   6),           /* 0xf3 */
+      new Opcode( "ANDB ",  5,  3,   6),           /* 0xf4 */
+      new Opcode( "BITB ",  5,  3,   6),           /* 0xf5 */
+      new Opcode( "LDB  ",  5,  3,   6),           /* 0xf6 */
+      new Opcode( "STB  ",  5,  3,   6),           /* 0xf7 */
+      new Opcode( "EORB ",  5,  3,   6),           /* 0xf8 */
+      new Opcode( "ADCB ",  5,  3,   6),           /* 0xf9 */
+      new Opcode( "ORB  ",  5,  3,   6),           /* 0xfa */
+      new Opcode( "ADDB ",  5,  3,   6),           /* 0xfb */
+      new Opcode( "LDD  ",  6,  3,   6),           /* 0xfc */
+      new Opcode( "STD  ",  6,  3,   6),           /* 0xfd */
+      new Opcode( "LDU  ",  6,  3,   6),           /* 0xfe */
+      new Opcode( "STU  ",  6,  3,   6),           /* 0xff */
     };
 
     private final Opcode[] optable10 = {
-      new Opcode( "?????",  0,  1,   0),        /* 0x00 */
-      new Opcode( "?????",  0,  1,   0),	   /* 0x01 */
-      new Opcode( "?????",  0,  1,   0),	   /* 0x02 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x03 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x04 */
-      new Opcode( "?????",  0,  1,   0),	   /* 0x05 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x06 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x07 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x08 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x09 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x0a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x0b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x0c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x0d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x0e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x0f */
+      ILLEGAL,        /* 0x00 */
+      ILLEGAL,           /* 0x01 */
+      ILLEGAL,           /* 0x02 */
+      ILLEGAL,        /* 0x03 */
+      ILLEGAL,        /* 0x04 */
+      ILLEGAL,           /* 0x05 */
+      ILLEGAL,        /* 0x06 */
+      ILLEGAL,        /* 0x07 */
+      ILLEGAL,        /* 0x08 */
+      ILLEGAL,        /* 0x09 */
+      ILLEGAL,        /* 0x0a */
+      ILLEGAL,        /* 0x0b */
+      ILLEGAL,        /* 0x0c */
+      ILLEGAL,        /* 0x0d */
+      ILLEGAL,        /* 0x0e */
+      ILLEGAL,        /* 0x0f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x10 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x11 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x12 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x13 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x14 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x15 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x16 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x17 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x18 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x19 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x1a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x1b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x1c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x1d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x1e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x1f */
+      ILLEGAL,        /* 0x10 */
+      ILLEGAL,        /* 0x11 */
+      ILLEGAL,        /* 0x12 */
+      ILLEGAL,        /* 0x13 */
+      ILLEGAL,        /* 0x14 */
+      ILLEGAL,        /* 0x15 */
+      ILLEGAL,        /* 0x16 */
+      ILLEGAL,        /* 0x17 */
+      ILLEGAL,        /* 0x18 */
+      ILLEGAL,        /* 0x19 */
+      ILLEGAL,        /* 0x1a */
+      ILLEGAL,        /* 0x1b */
+      ILLEGAL,        /* 0x1c */
+      ILLEGAL,        /* 0x1d */
+      ILLEGAL,        /* 0x1e */
+      ILLEGAL,        /* 0x1f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x20 */
+      ILLEGAL,        /* 0x20 */
       new Opcode( "LBRN ",  5,  4,   8),        /* 0x21 */
       new Opcode( "LBHI ",  5,  4,   8),        /* 0x22 */
       new Opcode( "LBLS ",  5,  4,   8),        /* 0x23 */
@@ -347,225 +354,225 @@ public class DisAssembler {
       new Opcode( "LBGT ",  5,  4,   8),        /* 0x2e */
       new Opcode( "LBLE ",  5,  4,   8),        /* 0x2f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x30 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x31 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x32 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x33 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x34 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x35 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x36 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x37 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x38 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x39 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x3a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x3b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x3c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x3d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x3e */
+      ILLEGAL,        /* 0x30 */
+      ILLEGAL,        /* 0x31 */
+      ILLEGAL,        /* 0x32 */
+      ILLEGAL,        /* 0x33 */
+      ILLEGAL,        /* 0x34 */
+      ILLEGAL,        /* 0x35 */
+      ILLEGAL,        /* 0x36 */
+      ILLEGAL,        /* 0x37 */
+      ILLEGAL,        /* 0x38 */
+      ILLEGAL,        /* 0x39 */
+      ILLEGAL,        /* 0x3a */
+      ILLEGAL,        /* 0x3b */
+      ILLEGAL,        /* 0x3c */
+      ILLEGAL,        /* 0x3d */
+      ILLEGAL,        /* 0x3e */
     /* Fake SWI2 as an OS9 F$xxx system call */
       new Opcode( "OS9  ",  20, 3,   14),             /* 0x3f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x40 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x41 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x42 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x43 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x44 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x45 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x46 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x47 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x48 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x49 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x4a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x4b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x4c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x4d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x4e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x4f */
+      ILLEGAL,        /* 0x40 */
+      ILLEGAL,        /* 0x41 */
+      ILLEGAL,        /* 0x42 */
+      ILLEGAL,        /* 0x43 */
+      ILLEGAL,        /* 0x44 */
+      ILLEGAL,        /* 0x45 */
+      ILLEGAL,        /* 0x46 */
+      ILLEGAL,        /* 0x47 */
+      ILLEGAL,        /* 0x48 */
+      ILLEGAL,        /* 0x49 */
+      ILLEGAL,        /* 0x4a */
+      ILLEGAL,        /* 0x4b */
+      ILLEGAL,        /* 0x4c */
+      ILLEGAL,        /* 0x4d */
+      ILLEGAL,        /* 0x4e */
+      ILLEGAL,        /* 0x4f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x50 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x51 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x52 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x53 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x54 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x55 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x56 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x57 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x58 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x59 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x5a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x5b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x5c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x5d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x5e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x5f */
+      ILLEGAL,        /* 0x50 */
+      ILLEGAL,        /* 0x51 */
+      ILLEGAL,        /* 0x52 */
+      ILLEGAL,        /* 0x53 */
+      ILLEGAL,        /* 0x54 */
+      ILLEGAL,        /* 0x55 */
+      ILLEGAL,        /* 0x56 */
+      ILLEGAL,        /* 0x57 */
+      ILLEGAL,        /* 0x58 */
+      ILLEGAL,        /* 0x59 */
+      ILLEGAL,        /* 0x5a */
+      ILLEGAL,        /* 0x5b */
+      ILLEGAL,        /* 0x5c */
+      ILLEGAL,        /* 0x5d */
+      ILLEGAL,        /* 0x5e */
+      ILLEGAL,        /* 0x5f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x60 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x61 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x62 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x63 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x64 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x65 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x66 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x67 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x68 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x69 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x6a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x6b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x6c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x6d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x6e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x6f */
+      ILLEGAL,        /* 0x60 */
+      ILLEGAL,        /* 0x61 */
+      ILLEGAL,        /* 0x62 */
+      ILLEGAL,        /* 0x63 */
+      ILLEGAL,        /* 0x64 */
+      ILLEGAL,        /* 0x65 */
+      ILLEGAL,        /* 0x66 */
+      ILLEGAL,        /* 0x67 */
+      ILLEGAL,        /* 0x68 */
+      ILLEGAL,        /* 0x69 */
+      ILLEGAL,        /* 0x6a */
+      ILLEGAL,        /* 0x6b */
+      ILLEGAL,        /* 0x6c */
+      ILLEGAL,        /* 0x6d */
+      ILLEGAL,        /* 0x6e */
+      ILLEGAL,        /* 0x6f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x70 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x71 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x72 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x73 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x74 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x75 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x76 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x77 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x78 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x79 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x7a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x7b */
-      new Opcode( "?????",  0,  1,   0),        /* 0x7c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x7d */
-      new Opcode( "?????",  0,  1,   0),        /* 0x7e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x7f */
+      ILLEGAL,        /* 0x70 */
+      ILLEGAL,        /* 0x71 */
+      ILLEGAL,        /* 0x72 */
+      ILLEGAL,        /* 0x73 */
+      ILLEGAL,        /* 0x74 */
+      ILLEGAL,        /* 0x75 */
+      ILLEGAL,        /* 0x76 */
+      ILLEGAL,        /* 0x77 */
+      ILLEGAL,        /* 0x78 */
+      ILLEGAL,        /* 0x79 */
+      ILLEGAL,        /* 0x7a */
+      ILLEGAL,        /* 0x7b */
+      ILLEGAL,        /* 0x7c */
+      ILLEGAL,        /* 0x7d */
+      ILLEGAL,        /* 0x7e */
+      ILLEGAL,        /* 0x7f */
 
-      new Opcode( "?????",  0,  1,   0),        /* 0x80 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x81 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x82 */
+      ILLEGAL,        /* 0x80 */
+      ILLEGAL,        /* 0x81 */
+      ILLEGAL,        /* 0x82 */
       new Opcode( "CMPD ",  5,  4,   3),        /* 0x83 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x84 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x85 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x86 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x87 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x88 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x89 */
-      new Opcode( "?????",  0,  1,   0),        /* 0x8a */
-      new Opcode( "?????",  0,  1,   0),        /* 0x8b */
+      ILLEGAL,        /* 0x84 */
+      ILLEGAL,        /* 0x85 */
+      ILLEGAL,        /* 0x86 */
+      ILLEGAL,        /* 0x87 */
+      ILLEGAL,        /* 0x88 */
+      ILLEGAL,        /* 0x89 */
+      ILLEGAL,        /* 0x8a */
+      ILLEGAL,        /* 0x8b */
       new Opcode( "CMPY ",  5,  4,   3),        /* 0x8c */
-      new Opcode( "?????",  0,  1,   0),        /* 0x8d */
+      ILLEGAL,        /* 0x8d */
       new Opcode( "LDY  ",  4,  4,   3),        /* 0x8e */
-      new Opcode( "?????",  0,  1,   0),        /* 0x8f */
+      ILLEGAL,        /* 0x8f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x90 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x91 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x92 */
+        ILLEGAL,        /* 0x90 */
+        ILLEGAL,        /* 0x91 */
+        ILLEGAL,        /* 0x92 */
         new Opcode( "CMPD ",  7,  3,   1),        /* 0x93 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x94 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x95 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x96 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x97 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x98 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x99 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9b */
+        ILLEGAL,        /* 0x94 */
+        ILLEGAL,        /* 0x95 */
+        ILLEGAL,        /* 0x96 */
+        ILLEGAL,        /* 0x97 */
+        ILLEGAL,        /* 0x98 */
+        ILLEGAL,        /* 0x99 */
+        ILLEGAL,        /* 0x9a */
+        ILLEGAL,        /* 0x9b */
         new Opcode( "CMPY ",  7,  3,   1),        /* 0x9c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9d */
+        ILLEGAL,        /* 0x9d */
         new Opcode( "LDY  ",  6,  3,   1),        /* 0x9e */
         new Opcode( "STY  ",  6,  3,   1),        /* 0x9f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xa0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa2 */
+        ILLEGAL,        /* 0xa0 */
+        ILLEGAL,        /* 0xa1 */
+        ILLEGAL,        /* 0xa2 */
         new Opcode( "CMPD ",  7,  3,   5),        /* 0xa3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xaa */
-        new Opcode( "?????",  0,  1,   0),        /* 0xab */
+        ILLEGAL,        /* 0xa4 */
+        ILLEGAL,        /* 0xa5 */
+        ILLEGAL,        /* 0xa6 */
+        ILLEGAL,        /* 0xa7 */
+        ILLEGAL,        /* 0xa8 */
+        ILLEGAL,        /* 0xa9 */
+        ILLEGAL,        /* 0xaa */
+        ILLEGAL,        /* 0xab */
         new Opcode( "CMPY ",  7,  3,   5),        /* 0xac */
-        new Opcode( "?????",  0,  1,   0),        /* 0xad */
+        ILLEGAL,        /* 0xad */
         new Opcode( "LDY  ",  6,  3,   5),        /* 0xae */
         new Opcode( "STY  ",  6,  3,   5),        /* 0xaf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xb0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb2 */
+        ILLEGAL,        /* 0xb0 */
+        ILLEGAL,        /* 0xb1 */
+        ILLEGAL,        /* 0xb2 */
         new Opcode( "CMPD ",  8,  4,   6),        /* 0xb3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xba */
-        new Opcode( "?????",  0,  1,   0),        /* 0xbb */
+        ILLEGAL,        /* 0xb4 */
+        ILLEGAL,        /* 0xb5 */
+        ILLEGAL,        /* 0xb6 */
+        ILLEGAL,        /* 0xb7 */
+        ILLEGAL,        /* 0xb8 */
+        ILLEGAL,        /* 0xb9 */
+        ILLEGAL,        /* 0xba */
+        ILLEGAL,        /* 0xbb */
         new Opcode( "CMPY ",  8,  4,   6),        /* 0xbc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xbd */
+        ILLEGAL,        /* 0xbd */
         new Opcode( "LDY  ",  7,  4,   6),        /* 0xbe */
         new Opcode( "STY  ",  7,  4,   6),        /* 0xbf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xc0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xca */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcd */
+        ILLEGAL,        /* 0xc0 */
+        ILLEGAL,        /* 0xc1 */
+        ILLEGAL,        /* 0xc2 */
+        ILLEGAL,        /* 0xc3 */
+        ILLEGAL,        /* 0xc4 */
+        ILLEGAL,        /* 0xc5 */
+        ILLEGAL,        /* 0xc6 */
+        ILLEGAL,        /* 0xc7 */
+        ILLEGAL,        /* 0xc8 */
+        ILLEGAL,        /* 0xc9 */
+        ILLEGAL,        /* 0xca */
+        ILLEGAL,        /* 0xcb */
+        ILLEGAL,        /* 0xcc */
+        ILLEGAL,        /* 0xcd */
         new Opcode( "LDS  ",  4,  4,   3),        /* 0xce */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcf */
+        ILLEGAL,        /* 0xcf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xd0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xda */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdd */
+        ILLEGAL,        /* 0xd0 */
+        ILLEGAL,        /* 0xd1 */
+        ILLEGAL,        /* 0xd2 */
+        ILLEGAL,        /* 0xd3 */
+        ILLEGAL,        /* 0xd4 */
+        ILLEGAL,        /* 0xd5 */
+        ILLEGAL,        /* 0xd6 */
+        ILLEGAL,        /* 0xd7 */
+        ILLEGAL,        /* 0xd8 */
+        ILLEGAL,        /* 0xd9 */
+        ILLEGAL,        /* 0xda */
+        ILLEGAL,        /* 0xdb */
+        ILLEGAL,        /* 0xdc */
+        ILLEGAL,        /* 0xdd */
         new Opcode( "LDS  ",  6,  3,   1),        /* 0xde */
         new Opcode( "STS  ",  6,  3,   1),        /* 0xdf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xe0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xea */
-        new Opcode( "?????",  0,  1,   0),        /* 0xeb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xec */
-        new Opcode( "?????",  0,  1,   0),        /* 0xed */
+        ILLEGAL,        /* 0xe0 */
+        ILLEGAL,        /* 0xe1 */
+        ILLEGAL,        /* 0xe2 */
+        ILLEGAL,        /* 0xe3 */
+        ILLEGAL,        /* 0xe4 */
+        ILLEGAL,        /* 0xe5 */
+        ILLEGAL,        /* 0xe6 */
+        ILLEGAL,        /* 0xe7 */
+        ILLEGAL,        /* 0xe8 */
+        ILLEGAL,        /* 0xe9 */
+        ILLEGAL,        /* 0xea */
+        ILLEGAL,        /* 0xeb */
+        ILLEGAL,        /* 0xec */
+        ILLEGAL,        /* 0xed */
         new Opcode( "LDS  ",  6,  3,   5),        /* 0xee */
         new Opcode( "STS  ",  6,  3,   5),        /* 0xef */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xf0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfa */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfd */
+        ILLEGAL,        /* 0xf0 */
+        ILLEGAL,        /* 0xf1 */
+        ILLEGAL,        /* 0xf2 */
+        ILLEGAL,        /* 0xf3 */
+        ILLEGAL,        /* 0xf4 */
+        ILLEGAL,        /* 0xf5 */
+        ILLEGAL,        /* 0xf6 */
+        ILLEGAL,        /* 0xf7 */
+        ILLEGAL,        /* 0xf8 */
+        ILLEGAL,        /* 0xf9 */
+        ILLEGAL,        /* 0xfa */
+        ILLEGAL,        /* 0xfb */
+        ILLEGAL,        /* 0xfc */
+        ILLEGAL,        /* 0xfd */
         new Opcode( "LDS  ",  7,  4,   6),        /* 0xfe */
         new Opcode( "STS  ",  7,  4,   6),        /* 0xff */
 
@@ -573,347 +580,277 @@ public class DisAssembler {
 
 
     private final Opcode optable11[] = {
-        new Opcode( "?????",  0,  1,   0),        /* 0x00 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x01 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x02 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x03 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x04 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x05 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x06 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x07 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x08 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x09 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x0a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x0b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x0c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x0d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x0e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x0f */
+        ILLEGAL,        /* 0x00 */
+        ILLEGAL,        /* 0x01 */
+        ILLEGAL,        /* 0x02 */
+        ILLEGAL,        /* 0x03 */
+        ILLEGAL,        /* 0x04 */
+        ILLEGAL,        /* 0x05 */
+        ILLEGAL,        /* 0x06 */
+        ILLEGAL,        /* 0x07 */
+        ILLEGAL,        /* 0x08 */
+        ILLEGAL,        /* 0x09 */
+        ILLEGAL,        /* 0x0a */
+        ILLEGAL,        /* 0x0b */
+        ILLEGAL,        /* 0x0c */
+        ILLEGAL,        /* 0x0d */
+        ILLEGAL,        /* 0x0e */
+        ILLEGAL,        /* 0x0f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x10 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x11 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x12 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x13 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x14 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x15 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x16 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x17 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x18 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x19 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x1a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x1b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x1c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x1d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x1e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x1f */
+        ILLEGAL,        /* 0x10 */
+        ILLEGAL,        /* 0x11 */
+        ILLEGAL,        /* 0x12 */
+        ILLEGAL,        /* 0x13 */
+        ILLEGAL,        /* 0x14 */
+        ILLEGAL,        /* 0x15 */
+        ILLEGAL,        /* 0x16 */
+        ILLEGAL,        /* 0x17 */
+        ILLEGAL,        /* 0x18 */
+        ILLEGAL,        /* 0x19 */
+        ILLEGAL,        /* 0x1a */
+        ILLEGAL,        /* 0x1b */
+        ILLEGAL,        /* 0x1c */
+        ILLEGAL,        /* 0x1d */
+        ILLEGAL,        /* 0x1e */
+        ILLEGAL,        /* 0x1f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x20 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x21 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x22 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x23 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x24 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x25 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x26 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x27 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x28 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x29 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x2a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x2b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x2c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x2d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x2e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x2f */
+        ILLEGAL,        /* 0x20 */
+        ILLEGAL,        /* 0x21 */
+        ILLEGAL,        /* 0x22 */
+        ILLEGAL,        /* 0x23 */
+        ILLEGAL,        /* 0x24 */
+        ILLEGAL,        /* 0x25 */
+        ILLEGAL,        /* 0x26 */
+        ILLEGAL,        /* 0x27 */
+        ILLEGAL,        /* 0x28 */
+        ILLEGAL,        /* 0x29 */
+        ILLEGAL,        /* 0x2a */
+        ILLEGAL,        /* 0x2b */
+        ILLEGAL,        /* 0x2c */
+        ILLEGAL,        /* 0x2d */
+        ILLEGAL,        /* 0x2e */
+        ILLEGAL,        /* 0x2f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x30 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x31 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x32 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x33 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x34 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x35 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x36 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x37 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x38 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x39 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x3a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x3b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x3c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x3d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x3e */
+        ILLEGAL,        /* 0x30 */
+        ILLEGAL,        /* 0x31 */
+        ILLEGAL,        /* 0x32 */
+        ILLEGAL,        /* 0x33 */
+        ILLEGAL,        /* 0x34 */
+        ILLEGAL,        /* 0x35 */
+        ILLEGAL,        /* 0x36 */
+        ILLEGAL,        /* 0x37 */
+        ILLEGAL,        /* 0x38 */
+        ILLEGAL,        /* 0x39 */
+        ILLEGAL,        /* 0x3a */
+        ILLEGAL,        /* 0x3b */
+        ILLEGAL,        /* 0x3c */
+        ILLEGAL,        /* 0x3d */
+        ILLEGAL,        /* 0x3e */
         new Opcode( "SWI3 ",  20, 2,   4),        /* 0x3f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x40 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x41 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x42 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x43 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x44 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x45 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x46 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x47 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x48 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x49 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x4a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x4b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x4c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x4d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x4e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x4f */
+        ILLEGAL,        /* 0x40 */
+        ILLEGAL,        /* 0x41 */
+        ILLEGAL,        /* 0x42 */
+        ILLEGAL,        /* 0x43 */
+        ILLEGAL,        /* 0x44 */
+        ILLEGAL,        /* 0x45 */
+        ILLEGAL,        /* 0x46 */
+        ILLEGAL,        /* 0x47 */
+        ILLEGAL,        /* 0x48 */
+        ILLEGAL,        /* 0x49 */
+        ILLEGAL,        /* 0x4a */
+        ILLEGAL,        /* 0x4b */
+        ILLEGAL,        /* 0x4c */
+        ILLEGAL,        /* 0x4d */
+        ILLEGAL,        /* 0x4e */
+        ILLEGAL,        /* 0x4f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x50 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x51 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x52 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x53 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x54 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x55 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x56 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x57 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x58 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x59 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x5a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x5b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x5c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x5d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x5e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x5f */
+        ILLEGAL,        /* 0x50 */
+        ILLEGAL,        /* 0x51 */
+        ILLEGAL,        /* 0x52 */
+        ILLEGAL,        /* 0x53 */
+        ILLEGAL,        /* 0x54 */
+        ILLEGAL,        /* 0x55 */
+        ILLEGAL,        /* 0x56 */
+        ILLEGAL,        /* 0x57 */
+        ILLEGAL,        /* 0x58 */
+        ILLEGAL,        /* 0x59 */
+        ILLEGAL,        /* 0x5a */
+        ILLEGAL,        /* 0x5b */
+        ILLEGAL,        /* 0x5c */
+        ILLEGAL,        /* 0x5d */
+        ILLEGAL,        /* 0x5e */
+        ILLEGAL,        /* 0x5f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x60 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x61 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x62 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x63 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x64 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x65 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x66 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x67 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x68 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x69 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x6a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x6b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x6c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x6d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x6e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x6f */
+        ILLEGAL,        /* 0x60 */
+        ILLEGAL,        /* 0x61 */
+        ILLEGAL,        /* 0x62 */
+        ILLEGAL,        /* 0x63 */
+        ILLEGAL,        /* 0x64 */
+        ILLEGAL,        /* 0x65 */
+        ILLEGAL,        /* 0x66 */
+        ILLEGAL,        /* 0x67 */
+        ILLEGAL,        /* 0x68 */
+        ILLEGAL,        /* 0x69 */
+        ILLEGAL,        /* 0x6a */
+        ILLEGAL,        /* 0x6b */
+        ILLEGAL,        /* 0x6c */
+        ILLEGAL,        /* 0x6d */
+        ILLEGAL,        /* 0x6e */
+        ILLEGAL,        /* 0x6f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x70 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x71 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x72 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x73 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x74 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x75 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x76 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x77 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x78 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x79 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x7a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x7b */
-        new Opcode( "?????",  0,  1,   0),        /* 0x7c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x7d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x7e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x7f */
+        ILLEGAL,        /* 0x70 */
+        ILLEGAL,        /* 0x71 */
+        ILLEGAL,        /* 0x72 */
+        ILLEGAL,        /* 0x73 */
+        ILLEGAL,        /* 0x74 */
+        ILLEGAL,        /* 0x75 */
+        ILLEGAL,        /* 0x76 */
+        ILLEGAL,        /* 0x77 */
+        ILLEGAL,        /* 0x78 */
+        ILLEGAL,        /* 0x79 */
+        ILLEGAL,        /* 0x7a */
+        ILLEGAL,        /* 0x7b */
+        ILLEGAL,        /* 0x7c */
+        ILLEGAL,        /* 0x7d */
+        ILLEGAL,        /* 0x7e */
+        ILLEGAL,        /* 0x7f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x80 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x81 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x82 */
+        ILLEGAL,        /* 0x80 */
+        ILLEGAL,        /* 0x81 */
+        ILLEGAL,        /* 0x82 */
         new Opcode( "CMPU ",  5,  4,   3),        /* 0x83 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x84 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x85 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x86 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x87 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x88 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x89 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x8a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x8b */
+        ILLEGAL,        /* 0x84 */
+        ILLEGAL,        /* 0x85 */
+        ILLEGAL,        /* 0x86 */
+        ILLEGAL,        /* 0x87 */
+        ILLEGAL,        /* 0x88 */
+        ILLEGAL,        /* 0x89 */
+        ILLEGAL,        /* 0x8a */
+        ILLEGAL,        /* 0x8b */
         new Opcode( "CMPS ",  5,  4,   3),        /* 0x8c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x8d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x8e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x8f */
+        ILLEGAL,        /* 0x8d */
+        ILLEGAL,        /* 0x8e */
+        ILLEGAL,        /* 0x8f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0x90 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x91 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x92 */
+        ILLEGAL,        /* 0x90 */
+        ILLEGAL,        /* 0x91 */
+        ILLEGAL,        /* 0x92 */
         new Opcode( "CMPU ",  7,  3,   1),        /* 0x93 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x94 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x95 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x96 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x97 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x98 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x99 */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9a */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9b */
+        ILLEGAL,        /* 0x94 */
+        ILLEGAL,        /* 0x95 */
+        ILLEGAL,        /* 0x96 */
+        ILLEGAL,        /* 0x97 */
+        ILLEGAL,        /* 0x98 */
+        ILLEGAL,        /* 0x99 */
+        ILLEGAL,        /* 0x9a */
+        ILLEGAL,        /* 0x9b */
         new Opcode( "CMPS ",  7,  3,   1),        /* 0x9c */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9d */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9e */
-        new Opcode( "?????",  0,  1,   0),        /* 0x9f */
+        ILLEGAL,        /* 0x9d */
+        ILLEGAL,        /* 0x9e */
+        ILLEGAL,        /* 0x9f */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xa0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa2 */
+        ILLEGAL,        /* 0xa0 */
+        ILLEGAL,        /* 0xa1 */
+        ILLEGAL,        /* 0xa2 */
         new Opcode( "CMPU ",  7,  3,   5),        /* 0xa3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xa9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xaa */
-        new Opcode( "?????",  0,  1,   0),        /* 0xab */
+        ILLEGAL,        /* 0xa4 */
+        ILLEGAL,        /* 0xa5 */
+        ILLEGAL,        /* 0xa6 */
+        ILLEGAL,        /* 0xa7 */
+        ILLEGAL,        /* 0xa8 */
+        ILLEGAL,        /* 0xa9 */
+        ILLEGAL,        /* 0xaa */
+        ILLEGAL,        /* 0xab */
         new Opcode( "CMPS ",  7,  3,   5),        /* 0xac */
-        new Opcode( "?????",  0,  1,   0),        /* 0xad */
-        new Opcode( "?????",  0,  1,   0),        /* 0xae */
-        new Opcode( "?????",  0,  1,   0),        /* 0xaf */
+        ILLEGAL,        /* 0xad */
+        ILLEGAL,        /* 0xae */
+        ILLEGAL,        /* 0xaf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xb0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb2 */
+        ILLEGAL,        /* 0xb0 */
+        ILLEGAL,        /* 0xb1 */
+        ILLEGAL,        /* 0xb2 */
         new Opcode( "CMPU ",  8,  4,   6),        /* 0xb3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xb9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xba */
-        new Opcode( "?????",  0,  1,   0),        /* 0xbb */
+        ILLEGAL,        /* 0xb4 */
+        ILLEGAL,        /* 0xb5 */
+        ILLEGAL,        /* 0xb6 */
+        ILLEGAL,        /* 0xb7 */
+        ILLEGAL,        /* 0xb8 */
+        ILLEGAL,        /* 0xb9 */
+        ILLEGAL,        /* 0xba */
+        ILLEGAL,        /* 0xbb */
         new Opcode( "CMPS ",  8,  4,   6),        /* 0xbc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xbd */
-        new Opcode( "?????",  0,  1,   0),        /* 0xbe */
-        new Opcode( "?????",  0,  1,   0),        /* 0xbf */
+        ILLEGAL,        /* 0xbd */
+        ILLEGAL,        /* 0xbe */
+        ILLEGAL,        /* 0xbf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xc0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xc9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xca */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcd */
-        new Opcode( "?????",  0,  1,   0),        /* 0xce */
-        new Opcode( "?????",  0,  1,   0),        /* 0xcf */
+        ILLEGAL,        /* 0xc0 */
+        ILLEGAL,        /* 0xc1 */
+        ILLEGAL,        /* 0xc2 */
+        ILLEGAL,        /* 0xc3 */
+        ILLEGAL,        /* 0xc4 */
+        ILLEGAL,        /* 0xc5 */
+        ILLEGAL,        /* 0xc6 */
+        ILLEGAL,        /* 0xc7 */
+        ILLEGAL,        /* 0xc8 */
+        ILLEGAL,        /* 0xc9 */
+        ILLEGAL,        /* 0xca */
+        ILLEGAL,        /* 0xcb */
+        ILLEGAL,        /* 0xcc */
+        ILLEGAL,        /* 0xcd */
+        ILLEGAL,        /* 0xce */
+        ILLEGAL,        /* 0xcf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xd0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xd9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xda */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdd */
-        new Opcode( "?????",  0,  1,   0),        /* 0xde */
-        new Opcode( "?????",  0,  1,   0),        /* 0xdf */
+        ILLEGAL,        /* 0xd0 */
+        ILLEGAL,        /* 0xd1 */
+        ILLEGAL,        /* 0xd2 */
+        ILLEGAL,        /* 0xd3 */
+        ILLEGAL,        /* 0xd4 */
+        ILLEGAL,        /* 0xd5 */
+        ILLEGAL,        /* 0xd6 */
+        ILLEGAL,        /* 0xd7 */
+        ILLEGAL,        /* 0xd8 */
+        ILLEGAL,        /* 0xd9 */
+        ILLEGAL,        /* 0xda */
+        ILLEGAL,        /* 0xdb */
+        ILLEGAL,        /* 0xdc */
+        ILLEGAL,        /* 0xdd */
+        ILLEGAL,        /* 0xde */
+        ILLEGAL,        /* 0xdf */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xe0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xe9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xea */
-        new Opcode( "?????",  0,  1,   0),        /* 0xeb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xec */
-        new Opcode( "?????",  0,  1,   0),        /* 0xed */
-        new Opcode( "?????",  0,  1,   0),        /* 0xee */
-        new Opcode( "?????",  0,  1,   0),        /* 0xef */
+        ILLEGAL,        /* 0xe0 */
+        ILLEGAL,        /* 0xe1 */
+        ILLEGAL,        /* 0xe2 */
+        ILLEGAL,        /* 0xe3 */
+        ILLEGAL,        /* 0xe4 */
+        ILLEGAL,        /* 0xe5 */
+        ILLEGAL,        /* 0xe6 */
+        ILLEGAL,        /* 0xe7 */
+        ILLEGAL,        /* 0xe8 */
+        ILLEGAL,        /* 0xe9 */
+        ILLEGAL,        /* 0xea */
+        ILLEGAL,        /* 0xeb */
+        ILLEGAL,        /* 0xec */
+        ILLEGAL,        /* 0xed */
+        ILLEGAL,        /* 0xee */
+        ILLEGAL,        /* 0xef */
 
-        new Opcode( "?????",  0,  1,   0),        /* 0xf0 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf1 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf2 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf3 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf4 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf5 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf6 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf7 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf8 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xf9 */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfa */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfb */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfc */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfd */
-        new Opcode( "?????",  0,  1,   0),        /* 0xfe */
-        new Opcode( "?????",  0,  1,   0),        /* 0xff */
-    };
-
-    private final static int[] iotable = {
-        0x0000,
-        0x0001,
-        0x0002,
-        0x0003,
-        0x0008,
-        0x0009,
-        0x000a,
-        0x000b,
-        0x000c,
-        0x000d,
-        0x000e,
-        0x0010,
-        0x0011,
-        0x0012,
-        0x0013,
-        0x0014,
-        0x8000,
-        0x8001,
-        0x8002,
-        0x8003,
-        0x8004,
-        0x8005,
-        0x8006,
-        0x8007,
-        0x8008,
-        0x8009,
-        0x800a,
-        0x800b,
-        0x800c,
-        0x800d,
-        0x800e,
-        0x800f,
-    };
-
-    private final static String[] iocomment = {
-        "Data direction register port 1",
-        "Data direction register port 2",
-        "I/O register port 1",
-        "I/O register port 2",
-        "Timer control and status",
-        "Counter high byte",
-        "Counter low byte",
-        "Output compare high byte",
-        "Output compare low byte",
-        "Input capture high byte",
-        "Input capture low byte",
-        "Serial rate and mode register",
-        "Serial control and status register",
-        "Serial receiver data register",
-        "Serial transmit data register",
-        "Ram control register",
-        "Modem port 0",
-        "Modem port 1",
-        "Modem port 2",
-        "Modem port 3",
-        "Modem port 4",
-        "Modem port 5",
-        "Modem port 6",
-        "Modem port 7",
-        "Modem port 8",
-        "Modem port 9",
-        "Modem port 10",
-        "Modem port 11",
-        "Modem port 12",
-        "Modem port 13",
-        "Modem port 14",
-        "Modem port 15",
+        ILLEGAL,        /* 0xf0 */
+        ILLEGAL,        /* 0xf1 */
+        ILLEGAL,        /* 0xf2 */
+        ILLEGAL,        /* 0xf3 */
+        ILLEGAL,        /* 0xf4 */
+        ILLEGAL,        /* 0xf5 */
+        ILLEGAL,        /* 0xf6 */
+        ILLEGAL,        /* 0xf7 */
+        ILLEGAL,        /* 0xf8 */
+        ILLEGAL,        /* 0xf9 */
+        ILLEGAL,        /* 0xfa */
+        ILLEGAL,        /* 0xfb */
+        ILLEGAL,        /* 0xfc */
+        ILLEGAL,        /* 0xfd */
+        ILLEGAL,        /* 0xfe */
+        ILLEGAL,        /* 0xff */
     };
 
     private final static String[] os9opcodes = {
@@ -972,8 +909,6 @@ public class DisAssembler {
 
     final String[] Indexed_Register={"X","Y","U","S"};
 
-
-    private final int  lastio = 32;
 
     int readMemory(int loc) {
         return cpu.read(loc);
