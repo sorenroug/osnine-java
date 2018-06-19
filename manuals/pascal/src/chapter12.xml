@@ -14,8 +14,13 @@ LINE NUMBER=y
 PCODE LOCATION=z
 </screen>
   <para>where:</para>
-  <para>w Is the error number that occurred. Error numbers less than 100 generally refer to I/O errors where other numbers generally refer to process errors.</para>
-  <para>"error message text" Is the text of the message taken from the <filename>PASCALERRS</filename> file. If the <filename>PASCALERRS</filename> file cannot be opened, or if the appropriate text cannot be found, this line will be omitted. If the error is an I/O error, a second line will usually be displayed giving an OS-9 error message relating to the I/O error.</para>
+  <para><quote>w</quote> is the error number that occurred. Error numbers less than 100 generally refer to I/O errors where other numbers generally refer to process errors.</para>
+  <para><quote>error message text</quote> Is the text of the message
+  taken from the <filename>PASCALERRS</filename> file. If the
+  <filename>PASCALERRS</filename> file cannot be opened, or if the
+  appropriate text cannot be found, this line will be omitted. If the
+  error is an I/O error, a second line will usually be displayed giving
+  an OS-9 error message relating to the I/O error.</para>
   <para>x0, x1, ..., xn is an unlinking of the procedure call nesting. It
 indicates that procedure number <quote>x0</quote> was executing when the error
 occurred, and the <quote>x0</quote> was called by <quote>x1</quote> and so on until <quote>xn</quote> is
@@ -31,7 +36,7 @@ to be a native code procedure. If execution hasn't proceeded far enough
 for a call stack, to be built, or if the call stack is invalid, either no
 unlinking will be shown, or the unlinking may show meaningless procedure
 numbers.</para>
-  <para>"y" is the line number of the source program where the error
+  <para><quote>y</quote> is the line number of the source program where the error
 occurred. If the source line number begins with the keyword <quote>END</quote> or
 "ELSE", it is possible that the error really occurred in the code for
 the next previous significant source line, or that the error really
@@ -43,7 +48,7 @@ is reported only if execution has proceeded far enough for a valid
 line number to be known. Also, if line number inclusion is selectively
 enabled and disabled within the source program, this error line shows
 the last known source line number.</para>
-  <para>"z" is the P-code location within procedure <quote>x0</quote> which was
+  <para><quote>z</quote> is the P-code location within procedure <quote>x0</quote> which was
 being executed when the error occurred. Where the line number message
 can quickly get you to the vicinity of the problem statement, the
 P-code location can give you an idea as to where within a statement
@@ -89,7 +94,13 @@ CASE i OF
 END; { CASE }
 </programlisting>
   </figure>
-  <para>would cause a run time abort since the actual value of variable <quote>i</quote>, which is 5 in this case, does not appear in any constant selection list. One of two actions can be taken to prevent this type of error &#x2014; either make sure that all possible values of the selecting expression are accounted for in the constant selection  lists, or use the OTHERWISE case statement option as in:</para>
+  <para>would cause a run time abort since the actual value of variable
+  <quote><varname>i</varname></quote>, which is 5 in this case, does
+  not appear in any constant selection list. One of two actions can be
+  taken to prevent this type of error &#x2014; either make sure that all
+  possible values of the selecting expression are accounted for in the
+  constant selection  lists, or use the OTHERWISE case statement option
+  as in:</para>
   <figure>
     <title>A Coding Example Which Eliminates the Case Error by Using the <quote>OTHERWISE</quote> Case Option.</title>
     <programlisting>
@@ -104,8 +115,20 @@ CASE i OF
 END; { CASE }
 </programlisting>
   </figure>
-  <para>See the chapter on deviations and enhancements from ISO7185.1 for more discussion of the OTHERWISE option. Stack and heap overflow errors also unconditionally abort a program. Use of run time options can eliminate such errors, as is explained in the chapter on run time options. Address multiply overflow errors also unconditionally abort a program, but this, along with any other unconditionally aborting errors, can be avoided by good programming practices. The OS-9 Pascal system is intended to provide the ability to write programs which are as user friendly and user tolerant as possible and those errors remaining which always unconditionally abort a program do so because it is not feasible to intelligently recover from the error condition and continue with the program execution.</para>
-  <para>When using IOABORT and MATHABORT it is best to disable the abort process for the smallest range of code necessary. For example:</para>
+  <para>See the chapter on deviations and enhancements from ISO7185.1
+  for more discussion of the OTHERWISE option. Stack and heap overflow
+  errors also unconditionally abort a program. Use of run time options
+  can eliminate such errors, as is explained in the chapter on run time
+  options. Address multiply overflow errors also unconditionally abort
+  a program, but this, along with any other unconditionally aborting
+  errors, can be avoided by good programming practices. The <application>OS-9 Pascal</application>
+  system is intended to provide the ability to write programs which
+  are as user friendly and user tolerant as possible and those errors
+  remaining which always unconditionally abort a program do so because
+  it is not feasible to intelligently recover from the error condition
+  and continue with the program execution.</para>
+  <para>When using IOABORT and MATHABORT it is best to disable the abort
+  process for the smallest range of code necessary. For example:</para>
   <figure>
     <title>Code Example Using the Standard Procedure <quote>IOABORT</quote>.</title>
     <programlisting>
@@ -115,7 +138,17 @@ ioabort(f, true);
 i:=ioresult(f);
 </programlisting>
   </figure>
-  <para>is a good way to check if a file already exists. If the file doesn't exist, variable <quote>i</quote> will contain the number 216 which is the OS-9 error number for an attempt to open a nonexistent file. If no errors were encountered while trying to open the file, variable <quote>i</quote> will contain the number 0. Remember that if multiple errors are encountered for a file between the IOABORT call which disables the abort process and the IOABORT call which re-enables the abort process, only the first error number is returned - the others are lost. The opposite holds true for math errors - only the last error number is retained, the others are lost. For example:</para>
+  <para>is a good way to check if a file already exists. If the file
+  doesn't exist, variable <quote><varname>i</varname></quote> will contain
+  the number 216 which is the OS-9 error number for an attempt to open a
+  nonexistent file. If no errors were encountered while trying to open
+  the file, variable <quote><varname>i</varname></quote> will contain
+  the number 0. Remember that if multiple errors are encountered for a
+  file between the IOABORT call which disables the abort process and the
+  IOABORT call which re-enables the abort process, only the first error
+  number is returned - the others are lost. The opposite holds true for
+  math errors - only the last error number is retained, the others are
+  lost. For example:</para>
   <figure>
     <title>Code Example Using the Standard Procedure <quote>MATHABORT</quote>.</title>
     <programlisting>
@@ -125,5 +158,19 @@ mathabort(true);
 j:=mathresult;
 </programlisting>
   </figure>
-  <para>will set the variable <quote>j</quote> to number 199, indicating an integer overflow on add, subtract, or negate. The error caused by the integer overflow for the multiply is lost since the add operation which also caused an overflow occurred last. If, in the above example, the multiplication overflow caused the modulus result which is retained to be a negative number, it is likely that no overflow on add, subtract, or negate would have occurred. In that case, the variable <quote>j</quote> would be set to the number 184, indicating a multiplication overflow. Bear in mind the possible combination of events which can occur and the possible results for all such combinations when using IORESULT and MATHRESULT. Remember, also, that each time you call either IORESOLT or MATHRESULT that the error number for the appropriate file or for the mathematical result is reset to zero. You must save a copy of the error number from the last call if you intend to use it more than once.</para>
+  <para>will set the variable <quote><varname>j</varname></quote>
+  to number 199, indicating an integer overflow on add, subtract, or
+  negate. The error caused by the integer overflow for the multiply is
+  lost since the add operation which also caused an overflow occurred
+  last. If, in the above example, the multiplication overflow caused the
+  modulus result which is retained to be a negative number, it is likely
+  that no overflow on add, subtract, or negate would have occurred. In
+  that case, the variable <quote><varname>j</varname></quote> would be
+  set to the number 184, indicating a multiplication overflow. Bear
+  in mind the possible combination of events which can occur and the
+  possible results for all such combinations when using IORESULT and
+  MATHRESULT. Remember, also, that each time you call either IORESOLT or
+  MATHRESULT that the error number for the appropriate file or for the
+  mathematical result is reset to zero. You must save a copy of the error
+  number from the last call if you intend to use it more than once.</para>
 </chapter>

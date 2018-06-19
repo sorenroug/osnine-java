@@ -37,64 +37,52 @@ Telex <phone>910-520-2535</phone>
     </publisher>
     <subjectset>
       <subject>
-        <subjectterm>&gt;pascal</subjectterm>
+        <subjectterm>pascal</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;program</subjectterm>
+        <subjectterm>program</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;file</subjectterm>
+        <subjectterm>file</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;error</subjectterm>
+        <subjectterm>error</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;manual</subjectterm>
+        <subjectterm>manual</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;compiler</subjectterm>
+        <subjectterm>compiler</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;code</subjectterm>
+        <subjectterm>code</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;procedure</subjectterm>
+        <subjectterm>procedure</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;standard</subjectterm>
+        <subjectterm>standard</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;variable</subjectterm>
+        <subjectterm>variable</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;message descriptions</subjectterm>
+        <subjectterm>message descriptions</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;source program</subjectterm>
+        <subjectterm>source program</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;native code</subjectterm>
+        <subjectterm>native code</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;pascal compiler</subjectterm>
+        <subjectterm>pascal compiler</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;standard procedure</subjectterm>
+        <subjectterm>pascal language</subjectterm>
       </subject>
       <subject>
-        <subjectterm>&gt;error number</subjectterm>
-      </subject>
-      <subject>
-        <subjectterm>&gt;pascal language</subjectterm>
-      </subject>
-      <subject>
-        <subjectterm>&gt;abort flag</subjectterm>
-      </subject>
-      <subject>
-        <subjectterm>&gt;error message</subjectterm>
-      </subject>
-      <subject>
-        <subjectterm>&gt;manual error</subjectterm>
+        <subjectterm>error message</subjectterm>
       </subject>
     </subjectset>
   </info>

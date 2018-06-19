@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="articles" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <part label="Part One" id="part1">
+    <title>Using OS9</title>
+    <partintro>
+      <para>Introduction to OS9 - Using it</para>
+    </partintro>
+    <xi:include href="tutorial.article"/>
+  </part>
+  <part label="Part Two" id="part2">
+    <title>System Administration</title>
+    <partintro>
+      <para>How to administer OS9</para>
+    </partintro>
+    <xi:include href="bootprocess.article"/>
+    <xi:include href="diskcrash.article"/>
+    <xi:include href="ded.article"/>
+    <xi:include href="os9diskformat.article"/>
+  </part>
+  <part label="Part Three" id="part3">
+    <title>Programming</title>
+    <partintro>
+      <para>How to program OS9</para>
+    </partintro>
+    <xi:include href="os9software.article"/>
+    <xi:include href="extensionmodule.article"/>
+  </part>
+</book>

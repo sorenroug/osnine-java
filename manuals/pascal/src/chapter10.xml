@@ -32,7 +32,7 @@ recursive nature of functions and procedures that require allocation
 of separate variable storage areas for each procedure or function
 invocation. A good understanding of how Pascal utilizes memory can be
 valuable to advanced programmers in order to use all of the options and
-capabilities of OS-9 Pascal.</para>
+capabilities of <application>OS-9 Pascal</application>.</para>
 <para>When a P-code interpreter or a compiled native code Pascal program
 is run, OS-9 allocates to the task a contiguous block of RAM memory
 for its working storage. This area is called a <quote>data area</quote>, and is for
@@ -133,7 +133,7 @@ temporary variables are automatically defined and managed by the
 compiler and are of no concern to the programmer except for the fact
 they do require memory space and must be taken into account when manually
 figuring and assigning memory space.</para>
-<para>Variables declared in the program are Kept on the <quote>local stack</quote>.
+<para>Variables declared in the program are kept on the <quote>local stack</quote>.
 Compiler-created temporary variables are kept on the <quote>extended stack</quote>.
 Both stacks are located in the section of the Pascal data area
 called the <quote>LOCAL VARIABLE STACK</quote>. The main procedure (Procedure 0) also
@@ -191,14 +191,17 @@ of variants.</para>
 i, j, k: integer;
 </programlisting>
 
-<para>the variable <quote>k</quote> is first assigned to the next lower 2 bytes of storage, then <quote>j</quote> is assigned to the next 2 lower bytes, then <quote>i</quote> to the next 2 lower bytes.</para>
+<para>the variable <quote><varname>k</varname></quote>
+is first assigned to the next lower 2 bytes of storage, then
+<quote><varname>j</varname></quote> is assigned to the next 2 lower bytes,
+then <quote><varname>i</varname></quote> to the next 2 lower bytes.</para>
 </sect1>
 
 <sect1>
 <title>Heap Storage</title>
 
 <para>Heap storage is for variables that are dynamically assigned,
-and it is managed via the standard procedures NEW, HARK, and RELEASE
+and it is managed via the standard procedures NEW, MARK, and RELEASE
 (These are described in Chapter 7). Only programs using these calls
 require HEAP section space; otherwise the size of this section may be
 zero. The run-time <quote><option>h</option></quote>  option can be used to set the

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>Conformance with ISO Standards</title>
-  <para>OS-9 Pascal Version 2.0 has some differences from the ISO7185.1 Level 0 language specification. Many of these are the result of enhancements made to this version of Pascal to improve its performance and to add programmer conveniences. If portability of programs written in OS-9 Pascal to other systems is important, these features should not be used. A complete list of deviations from the standard is given below:</para>
+  <para><application>OS-9 Pascal</application> Version 2.0 has some differences from the ISO7185.1 Level 0 language specification. Many of these are the result of enhancements made to this version of Pascal to improve its performance and to add programmer conveniences. If portability of programs written in <application>OS-9 Pascal</application> to other systems is important, these features should not be used. A complete list of deviations from the standard is given below:</para>
   <orderedlist numeration="arabic">
     <listitem>
       <para>CASE Statements can have an OTHERWISE option. (Non-standard enhancement).</para>
@@ -58,7 +58,7 @@
       <para>REALs use a five byte (9 1/2 decimal digit) format. (Standard defines this as implementation dependent; some Pascals have less precision).</para>
     </listitem>
     <listitem>
-      <para>Bit-by-bit boolean operators are included in OS-9 Pascal.</para>
+      <para>Bit-by-bit boolean operators are included in <application>OS-9 Pascal</application>.</para>
     </listitem>
     <listitem>
       <para>GOTO's are allowed in CASE, REPEAT, WHILE, IF, and FOR statements. (Non-standard enhancement).</para>

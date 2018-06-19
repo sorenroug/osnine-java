@@ -2,8 +2,8 @@
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>Standard Functions and Procedures</title>
   <abstract>
-    <para>OS-9 Pascal includes a library of standard functions and procedures that perform a variety of useful tasks. These subprograms are <quote>built-in</quote> OS-9 Pascal and can be used in programs without any special declarations. This chapter describes the subprograms for mathematical and run-time control. Input/Output related standard subprograms are discussed in Chapter 8.</para>
-    <para>OS-9 Pascal includes all ISO standard functions (except DISPOSE, PACK, AND UNPACK) plus a number of additional non-standard functions, which are denoted by an asterisk where they appear in the descriptions that follow.</para>
+    <para><application>OS-9 Pascal</application> includes a library of standard functions and procedures that perform a variety of useful tasks. These subprograms are <quote>built-in</quote> <application>OS-9 Pascal</application> and can be used in programs without any special declarations. This chapter describes the subprograms for mathematical and run-time control. Input/Output related standard subprograms are discussed in Chapter 8.</para>
+    <para><application>OS-9 Pascal</application> includes all ISO standard functions (except DISPOSE, PACK, AND UNPACK) plus a number of additional non-standard functions, which are denoted by an asterisk where they appear in the descriptions that follow.</para>
   </abstract>
   <para>Standard Procedures:</para>
   <simplelist>
@@ -44,7 +44,7 @@
   </simplelist>
   <sect1>
     <title>Standard Procedures</title>
-    <para>The following is a list of non-I/O-related standard procedures available. I/O related procedures are discussed in Chapter 8, The expected arguments and their type is given in the title line, followed by a description of the procedure's operation. Those procedures which are extensions added to OS-9 Pascal, but not called for in the ISO standard, are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
+    <para>The following is a list of non-I/O-related standard procedures available. I/O related procedures are discussed in Chapter 8, The expected arguments and their type is given in the title line, followed by a description of the procedure's operation. Those procedures which are extensions added to <application>OS-9 Pascal</application>, but not called for in the ISO standard, are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
     <variablelist>
     <?dbfo list-presentation="blocks"?>
       <varlistentry>
@@ -94,7 +94,7 @@
   </sect1>
   <sect1>
     <title>Standard Functions</title>
-    <para>The following is a list of non-I/O-related standard functions available. I/O-related functions are discussed in Chapter 8, The expected arguments and their type, and the type of the value returned by the function is given in the title line, followed by a description of the function's operation. Those functions which are extensions added to OS-9 Pascal but not called for in the ISO standard are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
+    <para>The following is a list of non-I/O-related standard functions available. I/O-related functions are discussed in Chapter 8, The expected arguments and their type, and the type of the value returned by the function is given in the title line, followed by a description of the function's operation. Those functions which are extensions added to <application>OS-9 Pascal</application> but not called for in the ISO standard are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
     <variablelist>
     <?dbfo list-presentation="blocks"?>
       <varlistentry>

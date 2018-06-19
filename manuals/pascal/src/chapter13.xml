@@ -16,13 +16,13 @@ FUNCTION Q(i: real; var j: real; ch: char): integer;
         <para>Reserve 2 bytes on the stack to hold the integer result of Q.</para>
       </listitem>
       <listitem>
-        <para>Push the 5 byte value of variable 'i' onto the stack.</para>
+        <para>Push the 5 byte value of variable '<varname>i</varname>' onto the stack.</para>
       </listitem>
       <listitem>
-        <para>Push the 2 byte address of variable 'j' onto the stack.</para>
+        <para>Push the 2 byte address of variable '<varname>j</varname>' onto the stack.</para>
       </listitem>
       <listitem>
-        <para>Push the 1 byte value of variable 'ch' onto the stack.</para>
+        <para>Push the 1 byte value of variable '<varname>ch</varname>' onto the stack.</para>
       </listitem>
       <listitem>
         <para>Load register B with Q's procedure number.</para>
@@ -93,8 +93,29 @@ PROCQ  LDA   PROCN          <lineannotation>LOAD WITH CALLING PROCEDURE</lineann
        PSHS  D              <lineannotation>SAVE COPY ON STACK</lineannotation>
 </programlisting>
     </figure>
-    <para>The code shown in figure 2 is virtually identical for every procedure entry. The only change from procedure to procedure is the label for the first line, the value of 'locsize', and the value of 'extsize'. There are 3 variables stored in page zero (i.e. in the base page) which must be used or maintained by every procedure. The variable PROCN is the one byte current procedure number. This variable must at all times indicate the procedure number as shown in the procedure table of the currently executing procedure. The variable SUPJTBL contains an absolute memory address of a known point within the support package. If the X register of the 6809 is loaded with this value, a 'JSR subr,X' instruction, where 'subr' is the name of a support package subroutine as defined in the PASCALDEFS file, will cause the proper subroutine call to be made for any support subroutine. Variable DHOLD contains a 16 bit value which must be saved locally on every procedure entry and restored on every procedure exit. The value of 'locsize' is, of course, the size as shown in the procedure table list for the procedure's local stack size.</para>
-    <para>After executing the code in figure 2, the 7 byte stack mark is completed. The form and contents of a stack mark is shown in figure 3. Figure 4 shows the form and contents of the stack and where the U and S registers point after a call is made to a procedure and the procedure entry code has been executed.</para>
+    <para>The code shown in figure 2 is virtually identical for every
+    procedure entry. The only change from procedure to procedure is the
+    label for the first line, the value of '<varname>locsize</varname>', and the value of
+    '<varname>extsize</varname>'. There are 3 variables stored in page zero (i.e. in the
+    base page) which must be used or maintained by every procedure. The
+    variable <varname>PROCN</varname> is the one byte current procedure
+    number. This variable must at all times indicate the procedure
+    number as shown in the procedure table of the currently executing
+    procedure. The variable <varname>SUPJTBL</varname> contains
+    an absolute memory address of a known point within the support
+    package. If the X register of the 6809 is loaded with this value,
+    a '<code>JSR subr,X</code>' instruction, where 'subr' is the name of a support
+    package subroutine as defined in the <filename>PASCALDEFS</filename> file, will cause the
+    proper subroutine call to be made for any support subroutine. Variable
+    <varname>DHOLD</varname> contains a 16 bit value which must be saved
+    locally on every procedure entry and restored on every procedure
+    exit. The value of '<varname>locsize</varname>' is, of course, the size as shown in
+    the procedure table list for the procedure's local stack size.</para>
+    <para>After executing the code in figure 2, the 7 byte stack mark is
+    completed. The form and contents of a stack mark is shown in figure
+    3. Figure 4 shows the form and contents of the stack and where the
+    U and S registers point after a call is made to a procedure and the
+    procedure entry code has been executed.</para>
     <figure>
       <title>Format and Contents of a Stack Mark.</title>
       <screen>
@@ -135,18 +156,34 @@ S-reg =&gt;    +--------------------------------+    !
             +--------------------------------+
 </screen>
     </figure>
-    <para>References to most data is made via the U register. Passed parameters and the function result area are at a positive displacement from U, while local variables are at a negative displacement from U. The last parameter passed is stored beginning at '7,U' displacement for its most significant byte. The first local variable is stored at '-1,U' displacement for its least significant byte. To access data in lexically higher levels of procedures, that is in calling procedures, you need to do a 'basex' operation. A basex is done by climbing up the stack marks to find the address of the appropriate procedure's local data area. The address of the local data of the immediately calling procedure can be found in the 5th and 6th bytes of the current stack mark, as shown in figure 3. If you wanted to access a 2 byte variable which is at a displacement of -17 in the calling procedure's local data area, the following code would be used:</para>
+    <para>References to most data is made via the U register. Passed
+    parameters and the function result area are at a positive displacement
+    from U, while local variables are at a negative displacement from
+    U. The last parameter passed is stored beginning at '7,U' displacement
+    for its most significant byte. The first local variable is stored at
+    '-1,U' displacement for its least significant byte. To access data in
+    lexically higher levels of procedures, that is in calling procedures,
+    you need to do a 'basex' operation. A basex is done by climbing up
+    the stack marks to find the address of the appropriate procedure's
+    local data area. The address of the local data of the immediately
+    calling procedure can be found in the 5th and 6th bytes of the
+    current stack mark, as shown in figure 3. If you wanted to access
+    a 2 byte variable which is at a displacement of -17 in the calling
+    procedure's local data area, the following code would be used:</para>
     <programlisting>
         LDX   5,0      <lineannotation>BASEX UP 1 LEVEL</lineannotation>
         LDD   -17,X    <lineannotation>GET 2B FROM CALLING PROC'S AREA</lineannotation>
 </programlisting>
-    <para>Similarly, to access data from a procedure which is lexically two levels higher (i.e. the procedure which called the procedure which called the current procedure), two basex operations must be performed.</para>
+    <para>Similarly, to access data from a procedure which is lexically
+    two levels higher (i.e. the procedure which called the procedure
+    which called the current procedure), two basex operations must be
+    performed.</para>
     <programlisting>
         LDX   5,U      <lineannotation>BASEX UP 1 LEVEL</lineannotation>
         LDX   5,X      <lineannotation>BASEX UP 1 MORE LEVEL</lineannotation>
         LDD  -displacement,X  <lineannotation>GET 2B OF DATA</lineannotation>
 </programlisting>
-    <para>To access data in the global area, that is data declared in the outer block, does not require basex operations to get to the proper level - the Y register always points to the top of global area. At a zero or positive displacement from Y is the system area which contains several pointers, buffers, work areas, and heap memory. At a negative displacement from Y is the outer block's local data - the global data area. Figure 5 shows the register contents and usage for procedures executing in an OS-9 Pascal environment.</para>
+    <para>To access data in the global area, that is data declared in the outer block, does not require basex operations to get to the proper level - the Y register always points to the top of global area. At a zero or positive displacement from Y is the system area which contains several pointers, buffers, work areas, and heap memory. At a negative displacement from Y is the outer block's local data - the global data area. Figure 5 shows the register contents and usage for procedures executing in an <application>OS-9 Pascal</application> environment.</para>
     <figure>
       <title>Register Usage in an OS-9 Pascal Environment.</title>
       <informaltable frame="none" colsep="0" rowsep="0">
@@ -186,7 +223,7 @@ S-reg =&gt;    +--------------------------------+    !
             </row>
             <row>
               <entry>DP</entry>
-              <entry>Points to the page zero data area.  This area should never by used by a user program or procedure for its own data - the OS-9 Pascal support package manages this area.</entry>
+              <entry>Points to the page zero data area.  This area should never by used by a user program or procedure for its own data - the <application>OS-9 Pascal</application> support package manages this area.</entry>
             </row>
           </tbody>
         </tgroup>

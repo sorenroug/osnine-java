@@ -1,0 +1,145 @@
+<!DOCTYPE article [
+<!ENTITY mdash "&#8212;" >
+]>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <info>
+  <!--
+    <author>
+      <firstname>S&#xF8;ren</firstname>
+      <surname>Roug</surname>
+    </author>
+    -->
+    <title>Using the OS-9 Pascal Link Editor</title>
+  </info>
+  <section>
+    <title>Linking an External Pascal Function</title>
+    <para>
+The following example will show how Knuths random generator from pages 221-222 in
+<citetitle pubwork="book">Numerical Recipes in Pascal, 1st edition</citetitle> can be
+created as an external module and then linked into a Pascal P-code module.
+The random function needs to keep a state to generate a different number from the previous call.
+External Pascal sub-modules don't have their own global storage, and therefore the main procedure
+must provide that space.  Thanks to Willard Goosey for having done the initial work.
+</para>
+    <para>
+The function to compile as an external function looks like this:
+</para>
+    <programlisting>
+<xi:include parse="text" href="random.pas"/>
+</programlisting>
+    <para>
+First we compile the random.pas file into a P-code file with the name random.prun.
+</para>
+    <screen>
+OS9:pascal &lt;random.pas : o=random.prun
+</screen>
+<para>
+Note the numbers of the procedures you want to make into
+external subroutines.
+</para>
+<programlisting>
+PROC NAME       PSEC  PSIZE  LOCAL  STACK   CSEC  CSIZE  DEBUG
+   0 RANDOM        5      7    279      7      6      0      0
+   1 RAND          1    667     20     27      4     22      0
+                        674    299     34            22
+</programlisting>
+    <para>
+The second step is to translate it into assembly form.
+</para>
+    <screen>
+OS9:pascals pascalt.prun #20K
+
+Enter the name of the pcode file to be translated.
+<userinput>random.prun</userinput>
+
+Enter the name of the 6809 assembly language file to be produced.
+<userinput>random.asm</userinput>
+
+Translate all procedures? (Y or N)? <userinput>n</userinput>
+
+Produce external definition file (Y or N)? <userinput>y</userinput>
+
+Enter the name of the external definition file to be produced.
+<userinput>random.e</userinput>
+
+Enter a list of procedure numbers to translate.
+A zero value will terminate the list.
+A negative value will back out a previously selected entry.
+<userinput>1</userinput>
+<userinput>0</userinput>
+
+List of procedures selected for translation.
+   1
+
+Is this list correct. (Y or N)? <userinput>y</userinput>
+
+Enter a pathlist to be used as the external module pathlist
+and module name.
+<userinput>random</userinput>
+
+Translate line numbers in pcode file (Y or N)? <userinput>y</userinput>
+
+
+Begin translation of ...
+Proc Name     Psize Csize
+   1 RAND       682     0
+</screen>
+    <para>
+Assemble the module. The file <filename>PascalDefs</filename> must be present in the data directory.
+</para>
+    <screen>
+OS9:asm random.asm o=random
+</screen>
+    <para>
+The external module is created in the <emphasis>execution</emphasis> directory with the file name <quote>random</quote>.
+It is recommended to choose a naming convention that shows that these files are not <emphasis>commands</emphasis>.
+The module is now available for other programs to link to. Keep the <filename>random.e</filename> for this occasion.
+</para>
+    <para>
+We will now write a test program:
+</para>
+    <programlisting>
+PROGRAM test(input, output);
+TYPE
+   static = RECORD
+      ran3inext, ran3extp : integer;
+      ran3ma: ARRAY [1..55] OF real
+   END;
+
+VAR
+    randstate : static;
+    res : real;
+    i,s : integer;
+
+FUNCTION rand(VAR i:integer; VAR block:static) : real; EXTERNAL;
+
+BEGIN
+   writeln('Enter seed value (1..32767)');
+   readln(s);
+   s := -s;
+   FOR i := 1 TO 30 DO BEGIN
+      res := rand(s, randstate);
+      writeln(res);
+   END   
+END.
+</programlisting>
+    <para>
+Compile the test program.
+</para>
+    <screen>
+OS9:pascal &lt;test.pas
+</screen>
+    <para>
+Run the linkage editor.
+</para>
+    <screen>
+OS9:pascale &lt;random.e :PCODEF
+</screen>
+    <para>
+Run the program.
+</para>
+    <screen>
+OS9:PASCALN PCODEF
+</screen>
+  </section>
+</article>

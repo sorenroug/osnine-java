@@ -3,14 +3,14 @@
 <abstract>
 <para>SYNOPSIS: The native code translator is an optional third step in
 the Pascal development process. The translator takes a compiled P-code
-program and converts it to 6809 assembly language source code ("native
-code"). The assembly language program generated is functionally identical
+program and converts it to 6809 assembly language source code (<quote>native code</quote>).
+The assembly language program generated is functionally identical
 to the P-code version of the program.</para>
 </abstract>
 
 <sect1>
 <title>About the Native Code Translator</title>
-<para>As mentioned in the introduction to this manual, an unusual characteristic of the OS-9 Pascal system is its ability to execute Pascal programs in P-code, native code, or both at the same time. <quote>PascalT</quote> is the program used to convert P-code versions of programs to native code (6809 machine language).</para>
+<para>As mentioned in the introduction to this manual, an unusual characteristic of the <application>OS-9 Pascal</application> system is its ability to execute Pascal programs in P-code, native code, or both at the same time. <quote>PascalT</quote> is the program used to convert P-code versions of programs to native code (6809 machine language).</para>
 <para>The <emphasis>advantages</emphasis> of using PascalT to translate P-code to native code are:</para>
 <itemizedlist spacing="compact">
     <listitem><para>native code is typically 5 times faster than the P-code version of the same program.</para></listitem>
@@ -38,10 +38,11 @@ object code will be generated.</para>
 <para>Since a large assembler source code output file may be generated,
 make sure the disk has enough free space to hold it before you
 begin translation. You may wish to create separate system and working
-diskettes containing only PascalT and the required files (<filename>PascalT.PRUN</filename>,
+diskettes containing only PascalT and the required files
+(<filename>PascalT.PRUN</filename>,
 <filename>PascalT.MODL</filename>, <filename>PascalS</filename>, <filename>Support</filename>,
-<filename>PascalErrs</filename>, and <filename>Asm</filename>, plus minimal
-OS-9 commands in the commands directory, and
+<filename>PascalErrs</filename>, and <filename>Asm</filename>,
+plus minimal OS-9 commands in the commands directory, and
 <filename>Pascaldefs</filename> in the working directory).</para>
 </sect1>
 
@@ -84,7 +85,7 @@ Enter the name of the 6809 assembler language file to be produced:
 <screen>
 Translate all procedures? (Y or N):
 </screen>
-<para>You must respond with a single letter 'y' or 'n', in upper or lower case. You are being asked whether you wish to translate all procedures of a complete program, or if you wish to individually translate only certain individual procedures within the P-code file. A <quote>y</quote> response is the simplest, from the user's point of view, because all subsequent processing is completely automatic. An <quote>n</quote> response leads to a more complex and lengthy process that requires you to have a more in-depth understanding of the OS-9 Pascal System. A separate section of this chapter is devoted to each option.</para>
+<para>You must respond with a single letter 'y' or 'n', in upper or lower case. You are being asked whether you wish to translate all procedures of a complete program, or if you wish to individually translate only certain individual procedures within the P-code file. A <quote>y</quote> response is the simplest, from the user's point of view, because all subsequent processing is completely automatic. An <quote>n</quote> response leads to a more complex and lengthy process that requires you to have a more in-depth understanding of the <application>OS-9 Pascal</application> System. A separate section of this chapter is devoted to each option.</para>
 </sect1>
 
 <sect1>
@@ -125,9 +126,10 @@ Enter a name to be used as the module name:
 <para>The next step is to give the translator a list of the procedures you wish translated. The procedure numbers are obtained from the procedure table given at the end of the compiler listing. The procedure numbers are requested by the prompt:</para>
 
 <screen>Enter a list of procedure numbers to translate.
-A zero value will terminate the list.</screen>
+A zero value will terminate the list.
+A negative value will back out a previously selected entry.</screen>
 
-<para>A negative value will back out a previously selected entry. You respond by entering a series of procedure numbers separated by spaces or carriage returns. You signify the end of the list of procedure numbers by entering the number <quote>0</quote> (remember that procedure 0 - the outer block - cannot be translated in this mode). If a procedure number was erroneously entered, simply enter the negative of the procedure number to remove it from the list. Each procedure number is checked to see that it really exists in the P-code file and, if not, the following error message is given:</para>
+<para>You respond by entering a series of procedure numbers separated by spaces or carriage returns. You signify the end of the list of procedure numbers by entering the number <quote>0</quote> (remember that procedure 0 - the outer block - cannot be translated in this mode). If a procedure number was erroneously entered, simply enter the negative of the procedure number to remove it from the list. Each procedure number is checked to see that it really exists in the P-code file and, if not, the following error message is given:</para>
 
 <screen>Value N is out of range.
 Absolute value must be between 1 and X inclusive.
@@ -159,7 +161,14 @@ and module name.</screen>
 
 <screen>Translate line numbers in P-code file? (Y or N):</screen>
 
-<para>Inclusion of line numbers in the output file can only be accomplished if you included source line numbers in your P-code file via either a parameter or compile option as discussed in chapter 2 of this manual. If you respond <quote>Y</quote>, any included line numbers will produce native- code to inform the run time error reporting system of the last known line number (see the chapter on run time error handling). If you respond 'n', then any included line numbers simply produce a comment in the assembly language source program.</para>
+<para>Inclusion of line numbers in the output file can only be
+accomplished if you included source line numbers in your P-code file via
+either a parameter or compile option as discussed in chapter 2 of this
+manual. If you respond <quote>Y</quote>, any included line numbers will
+produce native code to inform the run time error reporting system of the
+last known line number (see the chapter on run time error handling). If
+you respond <quote>N</quote>, then any included line numbers simply produce a comment
+in the assembly language source program.</para>
 <para>After one or more of the procedures have been translated and assembled, you will have to recompile the original source program to take advantage of the native code routines. The Pascal procedures that now have translated equivalents should be removed from the program and replaced with EXTERNAL procedure declarations. After the Pascal program has been recompiled, you need only update the P-code file with the PASCALE program, which puts into the P-code file all the information about the native code modules. The result is a program which uses both P-code and native code procedures.</para>
 </sect1>
 
@@ -185,17 +194,17 @@ ASM PCODEFASM #20k
 
 <para>Of course, any of the assembler options can be selected as well,
 especially the <quote><option>L</option></quote> option to produce a listing and the
-"<option>O=</option>" option to override the default output file name. In
+<quote><option>O=</option></quote> option to override the default output file name. In
 general, it is a good practice to make sure that the output filename
 is the same as the module name. The <quote><option>O</option></quote> option or
-"<option>O=</option>" option must be specified if you wish to create an
+<quote><option>O=</option></quote> option must be specified if you wish to create an
 executable output file from the assembler. Using the assembler without
 either form of <quote><option>O</option></quote> option is useful to make sure the
 assembly is error free before actually assembling to create an executable
 file.</para>
 <para>The output of the assembler in the above example is a native code
-module a file in the execution ("CMDS") directory that is also called
-"PCODEFASM". If the <filename>PCODEFASM</filename> file contained only external modules from
+module a file in the execution (<quote>CMDS</quote>) directory that is also called
+<quote>PCODEFASM</quote>. If the <filename>PCODEFASM</filename> file contained only external modules from
 a partially translated program, they are now ready to be linked to the
 recompiled P-code program using PascalE. If the <filename>PCODEFASM</filename> file contained
 a fully translated program, it may now be run. See the section below on
@@ -213,30 +222,30 @@ program &lt;input &gt;output &gt;&gt;syserr [Run-Time Options] [:Params]
 
 <para>Items enclosed in <quote>[</quote> and <quote>]</quote> are optional.</para>
 <para>Where:</para>
-<para>"program" is the pathname of the native code program which is to be executed. The module must have been created using PascalT and the OS-9 Assembler as described previously. It may reside in the system current execution directory, or it can be preloaded into memory using the OS-9 <quote>load</quote> command.</para>
-<para>"input" is the pathname to be associated with the standard file
+<para><quote>program</quote> is the pathname of the native code program which is to be executed. The module must have been created using PascalT and the OS-9 Assembler as described previously. It may reside in the system current execution directory, or it can be preloaded into memory using the OS-9 <quote>load</quote> command.</para>
+<para><quote>input</quote> is the pathname to be associated with the standard file
 'INPUT'. The file will be opened for read access only, and it must
 already exist when the program begins. If the path name is given, it
 must be immediately preceded by the <quote>&lt;</quote> character. If the input path
 is not redirected, any program reference to the standard file INPUT will
 default to the standard input path, usually the terminal.</para>
-<para>"output" is the pathname to be associated with the standard file
+<para><quote>output</quote> is the pathname to be associated with the standard file
 'OUTPUT'. The file will be opened for read and write (i.e. update)
 access, and, if the file does not already exist, it will be created. If
 the pathname is given, it must be immediately preceded by the <quote>&gt;</quote>
 character. If the output path is not redirected, any reference to the
 standard file OUTPUT will default to the standard output path, usually
 the terminal.</para>
-<para>"syserr" is the pathname to be associated with the standard
-file 'SYSERR', a predefined text file provided as an OS-9 Pascal
+<para><quote>syserr</quote> is the pathname to be associated with the standard
+file 'SYSERR', a predefined text file provided as an <application>OS-9 Pascal</application>
 extension. The file will be opened for read and write (i.e. update)
 access, and, if the file does not already exist, it will be created. If
 the pathname is given, it must be immediately preceded by the <quote>&gt;&gt;</quote>
 characters. If the syserr path is not redirected, any program reference
 to the standard file SYSERR will default to the standard error path,
 usually the terminal.</para>
-<para>"Run-Time Options" is a list of zero or more run time options which generally define memory allocation sizes, and/or they enable generation of the memory statistics report. The only two options which have any affect for programs which run totally as native code are the '<option>h</option>' and '<option>i</option>' options. See Chapter 11 for details.</para>
-<para>"Params" is a character string of up to 80 characters which
+<para><quote>Run-Time Options</quote> is a list of zero or more run time options which generally define memory allocation sizes, and/or they enable generation of the memory statistics report. The only two options which have any affect for programs which run totally as native code are the '<option>h</option>' and '<option>i</option>' options. See Chapter 11 for details.</para>
+<para><quote>Params</quote> is a character string of up to 80 characters which
 will be made available to the running program in a predefined array
 called 'SYSPARAM'. This works in a manner compatible with the P-code
 interpreters.</para>

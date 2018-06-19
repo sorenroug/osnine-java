@@ -1,0 +1,464 @@
+<?xml version="1.0"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <title>Interfacing C to Assembler</title>
+  <para>
+The <productname>Microware C Compiler</productname> can embed
+assembler routines between the "#asm" and "#endasm" statements.
+</para>
+  <section>
+    <title>C function/procedure calls</title>
+    <para>
+When a procedure in C calls another procedure the arguments to the called procedure are
+pushed on the <varname>S</varname> stack. There is no additional information pushed.
+</para>
+    <para>
+If the function has a return value then it is loaded into the <varname>D</varname> register
+before the <code>rts</code> code is executed. In case the return type is integer, then
+the value is returned directly. Otherwise the result is stored in the <code>_flacc</code> buffer
+and a reference to the address is returned.
+</para>
+    <para>
+At the beginning of the called function, the <varname>U</varname> register is pushed on the
+<varname>S</varname> stack. To get the argument, these extra two bytes on the stack have to be added to the offset.
+The <code>_stkcheck</code> is then called with the size of the needed automatic variables in register <varname>D</varname>.
+</para>
+<para>
+The following example shows how to get the value of a single argument to a function and copy it to a global variable.
+</para>
+<programlisting>
+int globvar;
+
+copyvar(arg)
+    int arg;
+{
+#asm
+    ldu 4,s
+    stu globvar,y
+#endasm
+}
+
+int main()
+{
+    printf("globvar value: %x\n", globvar);
+    copyvar(0x1234);
+    printf("globvar value: %x\n", globvar);
+}
+</programlisting>
+  </section>
+  <section>
+    <title>Global variables</title>
+    <para>
+All variables that are defined globally are available as as assembler definitions.
+If a C program defines a variable called <varname>global1</varname> like this:
+</para>
+    <programlisting>
+int global1;
+</programlisting>
+    <para>
+Then the corresponding assembler instructions look like this:
+</para>
+    <programlisting>
+global1: rmb 2
+</programlisting>
+    <para>
+Loading the variable into register D in assembler looks like this, assuming the
+Y register has not been changed.
+</para>
+    <programlisting>
+ ldd global1,y
+</programlisting>
+    <section>
+      <title>Predefined global variables</title>
+      <variablelist>
+        <varlistentry>
+          <term>errno</term>
+          <listitem>
+            <para>Global error holder (integer)</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>memend</term>
+          <listitem>
+            <para>Contains the top location of memory allocated for stack and parameters.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>edata</term>
+          <listitem>
+            <para>One byte higher than the initialized data.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>end</term>
+          <listitem>
+            <para>One byte higher than the uninitialized data.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>etext</term>
+          <listitem>
+            <para>End of executable text.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>End, edata and etext are identifiers created by c.link, and are not variables.
+The values are accessed in C by using the '&amp;' operator.
+</para>
+    </section>
+    <para>
+Register variables stored in register U.
+</para>
+    <para>
+Storage class specifier 'direct'
+</para>
+    <para>
+Static variables
+</para>
+  </section>
+  <section>
+    <title>Calling C functions from ASM</title>
+    <para>
+</para>
+  </section>
+  <section>
+    <title>Initialization and clean-up code</title>
+    <section>
+      <title>cstart.a</title>
+      <para>The <filename>cstart.r</filename> module is the very first file presented to the linker.
+      </para>
+      <screen>
+C.LINK /d0/lib/cstart.r ctmp.1.r -o=myprogram -l=/d0/lib/clib.l
+</screen>
+<para>
+It defines the execution offset for the executable memory module by declaring a <literal>PSECT</literal> statement
+that points to the name <literal>_cstart</literal>. This code segment sets up
+the argv vector and then does a LBSR to the <literal>main</literal> routine.
+      </para>
+      <programlisting>
+         ifp1
+         use ..../defs/os9defs.a
+         endc
+
+pushzero macro
+         clr ,-s <lineannotation>clear a byte on stack</lineannotation>
+         endm
+ 
+nfiles   equ 2 <lineannotation>stdin and stdout at least</lineannotation>
+Typ      equ 1
+Edit     equ 1
+Stk      equ nfiles*256+128+256 <lineannotation>stdin,stdout,stderr and fudge</lineannotation>
+         psect cstart_a,$11,$81,Edit,Stk,_cstart
+
+cr       equ $0d
+sp       equ $20
+comma    equ ',
+dquote   equ '"
+squote   equ ''
+
+MAXARGS  equ 30 <lineannotation>allow for 30 arguments</lineannotation>
+
+*
+* rob the first dp byte so nothing gets assigned
+* here.  No valid pointer can point to byte zero.
+*
+         vsect dp
+__$$     fcb 0
+         endsect
+
+         vsect
+argv     rmb 2*MAXARGS <lineannotation>pointers to args</lineannotation>
+argc     rmb 2 <lineannotation>argument counter</lineannotation>
+_sttop   rmb 2 <lineannotation>stack top</lineannotation>
+         endsect
+
+* the following are globally known
+         vsect
+memend:  rmb 2
+_flacc:  rmb 8 <lineannotation>floating point &amp; longs accumulator</lineannotation>
+_mtop:   rmb 2 <lineannotation>current non-stack memory top</lineannotation>
+_stbot:  rmb 2 <lineannotation>current stack bottom limit</lineannotation>
+errno:   rmb 2 <lineannotation>global error holder</lineannotation>
+         endsect
+
+*
+* move bytes (Y=From addr, U=To addr, X=Count)
+*
+movbytes
+         lda ,y+ <lineannotation>get a byte</lineannotation>
+         sta ,u+ <lineannotation>put a byte</lineannotation>
+         leax -1,x <lineannotation>dec the count</lineannotation>
+         bne movbytes <lineannotation>and round again</lineannotation>
+         rts
+
+_cstart:
+         pshs y <lineannotation>save the top of mem</lineannotation>
+         pshs u <lineannotation>save the data beginning address</lineannotation>
+
+         clra <lineannotation>setup to clear</lineannotation>
+         clrb <lineannotation>256 bytes</lineannotation>
+csta05   sta ,u+ <lineannotation>clear dp bytes</lineannotation>
+         decb
+         bne csta05
+
+csta10   ldx 0,s <lineannotation>get the beginning of data address</lineannotation>
+         leau 0,x <lineannotation>(tfr x,u)</lineannotation>
+         leax end,x <lineannotation>get the end of bss address</lineannotation>
+         pshs x <lineannotation>save it</lineannotation>
+         leay etext,pcr <lineannotation>point to dp-data count word</lineannotation>
+
+         ldx ,y++  <lineannotation>get count of dp-data to be moved</lineannotation>
+         beq csta15 <lineannotation>bra if none</lineannotation>
+         bsr movbytes <lineannotation>move dp data into position</lineannotation>
+
+         ldu 2,s get <lineannotation>beginning address again</lineannotation>
+csta15   leau dpsiz,u <lineannotation>point to where non-dp should start</lineannotation>
+         ldx ,y++ <lineannotation>get count of non-dp data to be moved</lineannotation>
+         beq clrbss
+         bsr movbytes <lineannotation>move non-dp data into position</lineannotation>
+
+* clear the bss area - starts where
+* the transferred data finished
+         clra
+clrbss   cmpu 0,s <lineannotation>reached the end?</lineannotation>
+         beq reldt <lineannotation>bra if so</lineannotation>
+         sta ,u+ <lineannotation>clear it</lineannotation>
+         bra clrbss
+
+* now relocate the data-text references
+reldt    ldu 2,s <lineannotation>restore to data bottom</lineannotation>
+         ldd ,y++ <lineannotation>get dat-text ref. count</lineannotation>
+         beq reldd
+         leax btext,pcr <lineannotation>point to text</lineannotation>
+         lbsr patch <lineannotation>patch them</lineannotation>
+
+* and the data-data refs.
+reldd    ldd ,y++ <lineannotation>get the count of data refs.</lineannotation>
+         beq restack <lineannotation>bra if none</lineannotation>
+         leax 0,u <lineannotation>u was already pointing there</lineannotation>
+         lbsr patch
+
+restack  leas 4,s <lineannotation>reset stack</lineannotation>
+         puls x <lineannotation>restore 'memend'</lineannotation>
+         stx memend,u
+
+* process the params
+* the stack pointer is back where it started so is
+* pointing at the params
+*
+* the objective is to insert null chars at the end of each argument
+* and fill in the argv vector with pointers to them
+
+* first store the program name address
+* (an extra name inserted here for just this purpose
+* - undocumented as yet)
+         sty argv,u
+
+         ldd #1 <lineannotation>at least one arg</lineannotation>
+         std argc,u
+         leay argv+2,u <lineannotation>point y at second slot</lineannotation>
+         leax 0,s <lineannotation>point x at params</lineannotation>
+         lda ,x+ <lineannotation>initialize</lineannotation>
+
+aloop    ldb argc+1,u
+         cmpb #MAXARGS-1 <lineannotation>about to overflow?</lineannotation>
+         beq final
+aloop10  cmpa #cr <lineannotation>is it EOL?</lineannotation>
+         beq final <lineannotation>yes - reached the end of the list</lineannotation>
+
+         cmpa #sp <lineannotation>is it a space?</lineannotation>
+         beq aloop20 <lineannotation>yes - try another</lineannotation>
+         cmpa #comma <lineannotation>is it a comma?</lineannotation>
+         bne aloop30 <lineannotation>no - a word has started</lineannotation>
+aloop20  lda ,x+ <lineannotation>yes - bump</lineannotation>
+         bra aloop10              <lineannotation>and round again</lineannotation>
+
+aloop30  cmpa #dquote <lineannotation>quoted string?</lineannotation>
+         beq aloop40  <lineannotation>yes</lineannotation>
+         cmpa #squote <lineannotation>the other one?</lineannotation>
+         bne aloop60 <lineannotation>no - ordinary</lineannotation>
+
+aloop40  stx ,y++ <lineannotation>save address in vector</lineannotation>
+         inc argc+1,u <lineannotation>bump the arg count</lineannotation>
+         pshs a <lineannotation>save delimiter</lineannotation>
+
+qloop    lda ,x+ <lineannotation>get another</lineannotation>
+         cmpa #cr <lineannotation>eol?</lineannotation>
+         beq aloop50
+         cmpa 0,s <lineannotation>delimiter?</lineannotation>
+         bne qloop
+
+aloop50  puls b <lineannotation>clean stack</lineannotation>
+         clr -1,x
+         cmpa #cr
+         beq final
+         lda ,x+
+         bra aloop
+
+aloop60  leax -1,x <lineannotation>point at first char</lineannotation>
+         stx ,y++ <lineannotation>put address in vector</lineannotation>
+         leax 1,x <lineannotation>bump it back</lineannotation>
+         inc argc+1,u <lineannotation>bump the arg count</lineannotation>
+
+* at least one non-space char has been seen
+aloop70  cmpa #cr <lineannotation>have</lineannotation>
+         beq loopend <lineannotation>we</lineannotation>
+         cmpa #sp <lineannotation>reached</lineannotation>
+         beq loopend <lineannotation>the end?</lineannotation>
+         cmpa #comma <lineannotation>comma?</lineannotation>
+         beq loopend
+         lda ,x+ <lineannotation>no - look further</lineannotation>
+         bra aloop70
+
+loopend  clr -1,x <lineannotation>yes - put in the null byte</lineannotation>
+         bra aloop <lineannotation>and look for the next word</lineannotation>
+
+* now put the pointers on the stack
+final    leax argv,u <lineannotation>get the address of the arg vector</lineannotation>
+         pshs x <lineannotation>goes on the stack first</lineannotation>
+         ldd argc,u <lineannotation>get the arg count</lineannotation>
+         pshs d <lineannotation>stack it</lineannotation>
+         leay 0,u <lineannotation>C progs. assume data &amp; bss offset from y</lineannotation>
+
+         bsr _fixtop <lineannotation>set various variables</lineannotation>
+
+         lbsr main <lineannotation>call the program</lineannotation>
+
+         pushzero <lineannotation>put a zero</lineannotation>
+         pushzero <lineannotation>on the stack</lineannotation>
+         lbsr exit <lineannotation>and a dummy 'return address'</lineannotation>
+
+* no return here
+_fixtop  leax end,y <lineannotation>get the initial memory end address</lineannotation>
+         stx _mtop,y <lineannotation>it's the current memory top</lineannotation>
+         sts _sttop,y <lineannotation>this is really two bytes short!</lineannotation>
+         sts _stbot,y
+         ldd #-126 <lineannotation>give ourselves some breathing space</lineannotation>
+
+* on entry here, d holds the negative of a stack reservation request
+_stkchec:
+_stkcheck:
+         leax d,s <lineannotation>calculate the requested size</lineannotation>
+         cmpx _stbot,y <lineannotation>is it lower than already reserved?</lineannotation>
+         bhs stk10 <lineannotation>no - return</lineannotation>
+         cmpx _mtop,y <lineannotation>yes - is it lower than possible?</lineannotation>
+         blo fsterr <lineannotation>yes - can't cope</lineannotation>
+         stx _stbot,y <lineannotation>no - reserve it</lineannotation>
+stk10    rts <lineannotation>and return</lineannotation>
+
+fixserr  fcc /**** STACK OVERFLOW ****/
+         fcb 13
+
+fsterr   leax &lt;fixserr,pcr <lineannotation>address of error string</lineannotation>
+         ldb #E$MEMFUL <lineannotation>MEMORY FULL error number</lineannotation>
+
+erexit   pshs b <lineannotation>stack the error number</lineannotation>
+         lda #2 <lineannotation>standard error output</lineannotation>
+         ldy #100 <lineannotation>more than necessary</lineannotation>
+         os9 I$WRITLN <lineannotation>write it</lineannotation>
+         pushzero <lineannotation>clear MSB of status</lineannotation>
+         lbsr _exit <lineannotation>and out</lineannotation>
+* no return here
+
+* stacksize()
+* returns the extent of stack requested
+* can be used by programmer for guidance
+* in sizing memory at compile time
+stacksiz:
+         ldd _sttop,y <lineannotation>top of stack on entry</lineannotation>
+         subd _stbot,y <lineannotation>subtract current reserved limit</lineannotation>
+         rts
+
+* freemem()
+* returns the current size of the free memory area
+freemem:
+         ldd _stbot,y
+         subd _mtop,y
+         rts
+
+* patch - adjust initialised data which refer to memory locations.
+* entry:
+*       y -&gt; list of offsets in the data area to be patched
+*       u -&gt; base of data
+*       x -&gt; base of either text or data area as appropriate
+*       d =  count of offsets in the list
+*
+* exit:
+*       u - unchanged
+*       y - past the last entry in the list
+*       x and d mangled
+
+patch    pshs x <lineannotation>save the base</lineannotation>
+         leax d,y <lineannotation>half way up the list</lineannotation>
+         leax d,x <lineannotation>top of list</lineannotation>
+         pshs x <lineannotation>save it as place to stop</lineannotation>
+
+* we do not come to this routine with
+* a zero count (check!) so a test at the loop top
+* is unnecessary
+patch10  ldd ,y++ <lineannotation>get the offset</lineannotation>
+         leax d,u <lineannotation>point to location</lineannotation>
+         ldd 0,x <lineannotation>get the relative reference</lineannotation>
+         addd 2,s <lineannotation>add in the base</lineannotation>
+         std 0,x <lineannotation>store the absolute reference</lineannotation>
+         cmpy 0,s <lineannotation>reached the top?</lineannotation>
+         bne patch10 <lineannotation>no - round again</lineannotation>
+
+         leas 4,s <lineannotation>reset the stack</lineannotation>
+         rts <lineannotation>and return</lineannotation>
+
+         endsect
+</programlisting>
+    </section>
+    <section>
+      <title>cfinish.a</title>
+      <para>
+This module is called from cstart.r after the <function>main</function> routine has finished.
+</para>
+      <programlisting>
+         use ...../defs/os9defs.a
+
+         psect cfinish_a,0,0,1,0,0
+* normal exit - buffers flushed if there are any
+exit:    lbsr _dumprof <lineannotation>profile dump (if necessary)</lineannotation>
+         lbsr _tidyup
+
+* abnormal exit - no buffer flushing
+* the argument to either exit entry is taken to be the
+* F$EXIT status
+_exit:   ldd 2,s <lineannotation>get the exit status</lineannotation>
+         os9 F$EXIT <lineannotation>and bye-bye!</lineannotation>
+         endsect
+</programlisting>
+    </section>
+    <section>
+      <title>profdummy.a</title>
+      <para>
+This stub provides a location for the profiler to be attached. It is called from the exit routine
+in <filename>cfinish.a</filename>. It is located near the end in the <filename>clib.l</filename> library,
+so it won't be loaded if another module has resolved it already.
+</para>
+      <programlisting>
+* dummy profile dump
+         psect profdummy_a,0,0,0,0,0,0
+
+_dumprof:
+         rts
+         endsect
+</programlisting>
+    </section>
+    <section>
+      <title>tidyup.a</title>
+      <para>
+This stub provides a location for flushing of I/O buffers to be attached. It is called from the exit routine
+in <filename>cfinish.a</filename>. It is located near the end in the <filename>clib.l</filename> library.
+</para>
+      <programlisting>
+         psect tidyup_a,0,0,1,0,0
+
+_tidyup:
+         rts
+         endsect
+</programlisting>
+    </section>
+  </section>
+</article>

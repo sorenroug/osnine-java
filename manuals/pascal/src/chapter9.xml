@@ -2,27 +2,82 @@
 <title>Suggestions for Program Optimization</title>
 
 <abstract>
-<para>SYNOPSIS: This section contains information and suggestions on how to produce more efficient programs and how to use special features of OS-9 Pascal.</para>
+<para>SYNOPSIS: This section contains information and suggestions on
+how to produce more efficient programs and how to use special features
+of <application>OS-9 Pascal</application>.</para>
 </abstract>
 
 <sect1>
 <title>The Debug Option</title>
-<para>Use the debug option (see the chapter on compile-time options for <option>d+</option>/<option>d-</option> option) during program development to aid in producing bug free programs. The debug option causes the compiler to create code to perform run time range checking on memory references via pointers, and assignments to boolean, set, and subrange type variables. Once individual procedures or whole programs have been thoroughly tested and are to be translated into native code, the debug option potentially causes much larger object code modules to be produced, because the code required to perform run time range checks almost always occurs right in the middle of a sequence of code which could have been highly optimized if the debug code were not present. The debug code itself is not particularly large, but the OS-9 Pascal native code translator products can, if allowed, compress many long sequences of native code into much smaller sequences. The OS-9 Pascal compiler produces pcode which was designed with the goal of native code optimization in mind, and the native code translators can do an impressive job for most programs. If you feel you need the debug code in the native code version of any procedure or program, then by all means use it &#8212; it is a very important and powerful feature. Just keep in mind that you can often pay a high price in memory requirements and execution speed. Debug code does not, by contrast, typically add significantly to either the memory requirements or execution time of the pcode version of programs. This is, again, due to the very way that the pcode was designed in the first place.</para>
+<para>Use the debug option (see the chapter on compile-time options for
+<option>d+</option>/<option>d-</option> option) during program development
+to aid in producing bug free programs. The debug option causes the
+compiler to create code to perform run time range checking on memory
+references via pointers, and assignments to boolean, set, and subrange
+type variables. Once individual procedures or whole programs have been
+thoroughly tested and are to be translated into native code, the debug
+option potentially causes much larger object code modules to be produced,
+because the code required to perform run time range checks almost always
+occurs right in the middle of a sequence of code which could have been
+highly optimized if the debug code were not present. The debug code itself
+is not particularly large, but the <application>OS-9 Pascal</application> native code translator
+products can, if allowed, compress many long sequences of native code into
+much smaller sequences. The <application>OS-9 Pascal</application> compiler produces pcode which
+was designed with the goal of native code optimization in mind, and the
+native code translators can do an impressive job for most programs. If you
+feel you need the debug code in the native code version of any procedure
+or program, then by all means use it &#8212; it is a very important and
+powerful feature. Just keep in mind that you can often pay a high price
+in memory requirements and execution speed. Debug code does not, by
+contrast, typically add significantly to either the memory requirements
+or execution time of the pcode version of programs. This is, again,
+due to the very way that the pcode was designed in the first place.</para>
 </sect1>
 
 <sect1>
 <title>Designing Programs to Be Run By PascalS</title>
-<para>If a program is going to be run using PascalS, the virtual code swapping interpreter, design the program with its particular performance considerations in mind. Code which is executed just once or relatively infrequently in a program should be placed in a separate procedure or procedures. That way it will seldom have to be <quote>swapped in</quote> for execution, thus allowing what swap buffers that are available to be better used for holding frequently used code segments. Remember that every time a byte of pcode is needed which is not currently in a swap buffer, some code which is currently in a swap buffer is going to be thrown away. A poorly designed program can cause a let of swapping to occur which can significantly slow down the execution of a program.</para>
+<para>If a program is going to be run using PascalS, the virtual code
+swapping interpreter, design the program with its particular performance
+considerations in mind. Code which is executed just once or relatively
+infrequently in a program should be placed in a separate procedure or
+procedures. That way it will seldom have to be <quote>swapped in</quote>
+for execution, thus allowing what swap buffers that are available to be
+better used for holding frequently used code segments. Remember that
+every time a byte of pcode is needed which is not currently in a swap
+buffer, some code which is currently in a swap buffer is going to be
+thrown away. A poorly designed program can cause a lot of swapping to
+occur which can significantly slow down the execution of a program.</para>
 </sect1>
 
 <sect1>
 <title>Optimizing Variable Declarations</title>
-<para>Declare any small and frequently used variables at the beginning of the VAR declaration part of any procedure or program. Both the pcode and the native code versions of a program can take advantage of variable allocations that are near to the stack mark within a stack frame. The two probably most important <quote>thresholds</quote> of address ranges are at -16 and -128. That is, data which is allocated to an address between 0 and -16 as shown on the compilation listing is very efficiently accessed. Data which is allocated to an address between -17 and -128 is slightly less efficiently accessed, and data allocated to locations below -128 are least efficiently accessed. These two thresholds just mentioned are by no means universally observed, and the list of addressing efficiency considerations would be long indeed if it were to be written out. You can, as a rule of thumb, remember that for the most memory and execution efficient programming you should declare the data which will be most frequently referenced during the execution of a procedure either at the end of a parameter list, if it is a passed parameter, or near the beginning of VAR declarations for other data types. Refer to the chapter on writing procedures in native code for more information on stack frames, stack marks, and variable allocation.</para>
+<para>Declare any small and frequently used variables at the beginning
+of the VAR declaration part of any procedure or program. Both the pcode
+and the native code versions of a program can take advantage of variable
+allocations that are near to the stack mark within a stack frame. The two
+probably most important <quote>thresholds</quote> of address ranges are at
+-16 and -128. That is, data which is allocated to an address between 0 and
+-16 as shown on the compilation listing is very efficiently accessed. Data
+which is allocated to an address between -17 and -128 is slightly less
+efficiently accessed, and data allocated to locations below -128 are
+least efficiently accessed. These two thresholds just mentioned are by
+no means universally observed, and the list of addressing efficiency
+considerations would be long indeed if it were to be written out. You
+can, as a rule of thumb, remember that for the most memory and execution
+efficient programming you should declare the data which will be most
+frequently referenced during the execution of a procedure either at
+the end of a parameter list, if it is a passed parameter, or near the
+beginning of VAR declarations for other data types. Refer to the chapter
+on writing procedures in native code for more information on stack frames,
+stack marks, and variable allocation.</para>
 </sect1>
 
 <sect1>
 <title>Accessing Absolute Memory Locations</title>
-<para>If you need to refer to an absolute memory location within an OS-9 Pascal program, such as to access a hardware device's control registers, you need to do two things: disable the compile time debug option, and use overdefined records. The following code shows an example:</para>
+<para>If you need to refer to an absolute memory location within an
+<application>OS-9 Pascal</application> program, such as to access a hardware device's control registers,
+you need to do two things: disable the compile time debug option, and
+use overdefined records. The following code shows an example:</para>
 <figure>
 <title>Code Example to Access Absolute Memory Locations.</title>
 <programlisting>
@@ -30,11 +85,11 @@ PROGRAM memorydemo;
 VAR
    trix: RECORD CASE boolean OF
             true : (i: ^integer);
-            false: {p: integer);
+            false: (p: integer);
          END;
    j: integer;
 BEGIN
-{$D-} {Disable run time range checking code generation }
+{$D-} { Disable run time range checking code generation }
 trix.p:=$1234; { Setup "p" to access memory beginning }
                { at hex location 1234 }
 j:=trix.i^;    { Get a 2 byte integer from locations }
@@ -44,13 +99,32 @@ END.
 </programlisting>
 </figure>
 
-<para>Debug code generation must be disabled for at least the small section of code as shown, since one of the things that the debug code does is to check that all memory references via pointer variables refer to memory which is within the program's data area. Since, presumably, you are trying to access some special location in memory, and it is unlikely that the special location could be in your program's data area, you must disable debug code generation for the above <quote>trick</quote> to work. Since the variable <quote>trix.p</quote> is an integer, it is perfectly legal to set it to the value <quote>1234</quote>. Variable <quote>trix.i</quote>, however, is a pointer to an integer, but it occupies the same 2 byte location as <quote>trix.p</quote>. By executing the statement, <quote>j:=trix.i</quote>", you in fact say, <quote>store in variable j the 2 byte integer which is pointed at by the variable trix.i</quote>. Refer to any good book on Pascal programming for further information on this type of program trick and on the use of overdefined variables in general.</para>
+<para>Debug code generation must be disabled for at least the small
+section of code as shown, since one of the things that the debug code
+does is to check that all memory references via pointer variables refer
+to memory which is within the program's data area. Since, presumably,
+you are trying to access some special location in memory, and it is
+unlikely that the special location could be in your program's data area,
+you must disable debug code generation for the above <quote>trick</quote>
+to work. Since the variable <quote><varname>trix.p</varname></quote> is an integer, it is
+perfectly legal to set it to the value <quote>1234</quote>. Variable
+<quote><varname>trix.i</varname></quote>, however, is a pointer to an integer, but it
+occupies the same 2 byte location as <quote><varname>trix.p</varname></quote>.
+By executing the statement, <quote><code>j:=trix.i^</code></quote>, you in
+fact say, <quote>store in variable <varname>j</varname> the 2 byte integer
+which is pointed at by the variable <varname>trix.i</varname></quote>.
+Refer to any good book on Pascal programming for further information on
+this type of program trick and on the use of overdefined variables in
+general.</para>
 </sect1>
 
 <sect1>
 <title>Deleting Files</title>
 
-<para>To cause any file to be deleted, simply issue a REWRITE call to the file. For example, if a program wants to open file <quote>f</quote> as shown in figure 2 below for update access, but it wants to be sure that it is a new file, then it could do the following:</para>
+<para>To cause any file to be deleted, simply issue a REWRITE call to
+the file. For example, if a program wants to open file <quote>f</quote>
+as shown in figure 2 below for update access, but it wants to be sure
+that it is a new file, then it could do the following:</para>
 <figure>
 <title>Code Example to Delete a File.</title>
 <programlisting>
@@ -63,14 +137,32 @@ update(f)
 END.
 </programlisting>
 </figure>
-<para>You should keep in mind a couple of points. First, if calls to REWRITE and UPDATE do not supply a filename for a second argument as in the example above, then the file name used is the identifier name of the file in the source program (file name <quote>f</quote> for the example above), and the file is assumed to be in the current data directory. For the above example, then, the file named <quote>f</quote> in the current data directory is first deleted if it already exists. Next, a file named <quote>f</quote> is created in the current data directory and is opened for update access. The second point, as suggested by the above, is that with the call to REWRITE, you automatically delete any existing file of the same name, if it isn't write protected. If the file is write protected, then a run time error would occur when the attempted deletion was performed. Automatic deletion can be dangerous; data in the file is permanently lost.</para>
+<para>You should keep in mind a couple of points. First, if calls to
+REWRITE and UPDATE do not supply a filename for a second argument as in
+the example above, then the file name used is the identifier name of the
+file in the source program (file name <quote>f</quote> for the example
+above), and the file is assumed to be in the current data directory. For
+the above example, then, the file named <quote>f</quote> in the current
+data directory is first deleted if it already exists. Next, a file
+named <quote>f</quote> is created in the current data directory and is
+opened for update access. The second point, as suggested by the above,
+is that with the call to REWRITE, you automatically delete any existing
+file of the same name, if it isn't write protected. If the file is write
+protected, then a run time error would occur when the attempted deletion
+was performed. Automatic deletion can be dangerous; data in the file is
+permanently lost.</para>
 
 </sect1>
 
 <sect1>
 <title>Bit-Level Operations</title>
 
-<para>The <quote>arithmetic</quote> operators <quote>&amp;</quote>, <quote>!</quote>, and <quote>#</quote> perform the AND, OR, and EXCLUSIVE OR bit-by-bit logical operations, respectively, on integer variables. Also, the standard procedures FIELDPUT and FIELDGET can be used to implement a wide range of bit functions. Some examples are shown in figure 3 below:</para>
+<para>The <quote>arithmetic</quote> operators <quote>&amp;</quote>,
+<quote>!</quote>, and <quote>#</quote> perform the AND, OR, and
+EXCLUSIVE OR bit-by-bit logical operations, respectively, on integer
+variables. Also, the standard procedures FIELDPUT and FIELDGET can be
+used to implement a wide range of bit functions. Some examples are shown
+in figure 3 below:</para>
 <figure>
 <title>Code Examples Using the Standard Procedures FIELDPUT and FIELDGET.</title>
 <programlisting>
@@ -94,27 +186,55 @@ i:=FIELDGET(i, 14, 16};{ Rotate variable "i" 1 bit to }
 </programlisting>
 </figure>
 
-<para>In addition to the obvious applications, FIELDPUT and FIELDGET can be used to tightly pack data in memory, set bits on and off in I/O device control registers, to extract 4-bit groups from a variable in order to print out the variable's value as a hexadecimal number, and for a host of other functions.</para>
+<para>In addition to the obvious applications, FIELDPUT and FIELDGET
+can be used to tightly pack data in memory, set bits on and off in I/O
+device control registers, to extract 4-bit groups from a variable in
+order to print out the variable's value as a hexadecimal number, and
+for a host of other functions.</para>
 </sect1>
 
 <sect1>
 <title>Using Zero-Base Array Indices</title>
-<para>If it is not inconvenient, make array indices start at zero for the lower bound. When any reference is made to an element of an array, the index value is scaled so that the array looks as if it begins with an index of zero. For example, for the following two lines:</para>
+<para>If it is not inconvenient, make array indices start at zero for
+the lower bound. When any reference is made to an element of an array,
+the index value is scaled so that the array looks as if it begins with
+an index of zero. For example, for the following two lines:</para>
 
 <programlisting>
 VAR a: array[2..5, -6..7] OF integer;
 i:=a[3, -6];
 </programlisting>
 
-<para>the reference to row 3, column -6 of array <quote>a</quote> is scaled to reference row 1, column 0 of the actual array that is stored in memory. What this all means is that all arrays are stored in memory as if each index really begins with a lower bound of zero. Because of this mapping, any reference to an element of an array must be adjusted by run time code to conform to the real array mapping. If, however, an array index already has a lower bound of zero, then no scaling is needed - thus there are fewer instructions to be executed in the program, and the program is smaller. If there is some reason for not making an array index start at zero, then by all means don't. Remember that there is a very small speed and memory penalty for each reference if you don't.</para>
+<para>the reference to row 3, column -6 of array <quote><varname>a</varname></quote> is
+scaled to reference row 1, column 0 of the actual array that is stored
+in memory. What this all means is that all arrays are stored in memory
+as if each index really begins with a lower bound of zero. Because of
+this mapping, any reference to an element of an array must be adjusted
+by run time code to conform to the real array mapping. If, however, an
+array index already has a lower bound of zero, then no scaling is needed -
+thus there are fewer instructions to be executed in the program, and the
+program is smaller. If there is some reason for not making an array index
+start at zero, then by all means don't. Remember that there is a very
+small speed and memory penalty for each reference if you don't.</para>
 </sect1>
 
 <sect1>
 <title>Using the SHORTIO Standard Procedure</title>
-<para>The SHORTIO standard procedure can be used to make copies of files of arbitrary lengths. Declare the input and output files of the copy program to be fixed length files of some identical length. Use the standard procedure IOABORT to disable error aborting for the input file. Read from the input file and write the resulting record to the output file until an I/O error occurs for the input file. If the IORESULT value for the input file is then 68, indicating that a GET was attempted on a short record, execute the statement:</para>
+<para>The SHORTIO standard procedure can be used to make copies of
+files of arbitrary lengths. Declare the input and output files of the
+copy program to be fixed length files of some identical length. Use
+the standard procedure IOABORT to disable error aborting for the input
+file. Read from the input file and write the resulting record to the
+output file until an I/O error occurs for the input file. If the IORESULT
+value for the input file is then 68, indicating that a GET was attempted
+on a short record, execute the statement:</para>
 <programlisting>
-SHORTIO(outputfile, linlength(inputfile));
+SHORTIO(outputfile, linelength(inputfile));
 </programlisting>
-<para>and proceed to write a copy of the input record. The SHORTIO call sets the length of the next PUT call to the output file to the truncated length of the input file record. If the IORESULT value was 69, indicating a GET with EOF true, no SHORTIO call or PUT is needed. Any other IORESULT value indicates a programming or file system error.</para>
+<para>and proceed to write a copy of the input record. The SHORTIO call
+sets the length of the next PUT call to the output file to the truncated
+length of the input file record. If the IORESULT value was 69, indicating
+a GET with EOF true, no SHORTIO call or PUT is needed. Any other IORESULT
+value indicates a programming or file system error.</para>
 </sect1>
 </chapter>
