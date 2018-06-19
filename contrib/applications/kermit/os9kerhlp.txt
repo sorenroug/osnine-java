@@ -1,0 +1,70 @@
+Os9 kermit (Glen Seaton/Robert Larson/James Jones) (02/26/86) (ral)
+
+  Read os9ker.bwr for known bugs and limitations
+
+Os9 kermit compilation instructions:
+
+Compilation switches:
+  -dCOCO          Same as -dtps=60 -dnooverlap
+
+  -dtps=number    Set ticks per second.  100 assumed for OSK, gotten from 
+                  <time.h> otherwise.  (<time.h> is often wrong or needs 
+                  its own compilation switch.)
+
+  -dnooverlap     Specifies that disk i/o and serial i/o cannot occur at the
+                  same time.  Hopefully only needed for COCO.  Slows down  
+                  transfer if not needed.  (Avoids timeouts if it is needed.)
+                  (also needed for QT+ floppies)
+
+  -dticstosleep=number
+                  Specifies number of ticks to sleep between checking for
+                  input while waiting for packet.  Making it bigger makes
+                  timeouts more accurate.  Making it to big will slow file
+                  transfers.  Default value is 4, minimum is 1.  Aprox. 
+                  1/10 second is recomended.
+
+  -dtimeoutint=number
+                  Number of "seconds" until timeout.  (Inacurate.)  Default
+                  15.    
+
+  -dOSK           Os9/68000.  Defined by os9/68000 compiler.  Has several 
+                  effects, including defining SLEEPOK and SGXONOFF.
+                  
+  -dSLEEPOK       The sleep function should be used rather than a macro that
+                  calls tsleep.  (Coco os9 sleep is wrong, and other 6809
+                  versions should be checked.)
+                  
+  -dSGXONOFF      SCF drivers handle xon/xoff.  Assumed for OSK and probably
+                  to be added to os9/6809.
+
+  -f=kermit       Specifys name of compiled program.
+
+
+Compilation:
+
+Os9/68000: 
+rename os9ker.mak to makefile, edit compilation options if needed,
+and use the make command.  I had problems with the -d compiler option 
+(aparently bugs in the compiler (1.3, microware reported that they could 
+not reporduce my problems) so had to put #define statements in 
+os9inc.h.  The QT+ needs tps to be 10 and nooverlap for floppy operation.
+
+Os9/6809:
+CC os9ker.c os9get.c os9sen.c os9rec.c os9srv.c os9utl.c os9raw.c os9con.c
+   os9qui.c -f=kermit [other options]
+
+   By CC I mean cc1 or cc2 as apropriate.
+
+Use:
+
+   Some device drivers will drop dtr when the serial line is closed.
+This will cause some modems to hang up, and some comnputers to log you
+out.  Iniz can sometimes be used to fix this problem, i.e. iniz the
+device before using it.  The coco os9 2.0 /aciapak driver is one of 
+these, so "iniz t2" before using kermit on a coco.
+
+Coco:
+
+   When using the r.s. aciapak with the supplied /t2 driver, the
+aciapak must be in slot 1 of your multipak.  Also see the note above
+and the notes in the .bwr file on the use of the bit banger port (/t1).

@@ -1,0 +1,59 @@
+Os9 kermit (Glen Seaton/Robert Larson/James Jones)  (01/26/86) (ral)
+
+
+Compilation warnings:
+
+  Use the switches defined in os9ker.hlp to configure for your system.
+
+  Compilation on a coco takes 165 pages of free memory, and takes about
+40 min. on a stock system.  
+
+  Single sided disk users will have to move the documentation, etc. 
+elsewhere to have enough room for the .r files.
+
+Known bugs:
+
+  Server functions were not completely correct when I got them.  I tried to
+fix the get and quit functions, but not the actual host server mode.  Use
+server functions with caution.         
+
+  Timeout interval is unstable and incorrect.  I did not consider this a
+problem worth worrying about.  It does do timeouts reliably and with no
+system dependent code.  (Except a few compile time constants.)
+
+  Messages should go to stderr rather than stdout.
+
+  Connect mode on a Coco bit banger port has been reported to be unreliable.
+The problems is the bit banger port uses more than 90% of the cpu time to
+receive characters at full speed, so insufficent time is left to display them
+one at a time.  I have modified the os9con.c routine to do multi-character
+i/o if the sgstat routine returns the number of characters available.  It 
+would be nice if someone could contribute an interupt driven /t1 driver
+that does this.  (possilbly based on the public domain one in the os9 users
+group library.)  Note this has yet to be tested on a coco.
+
+
+  Spelling in documentation, messages and comments may be incorrect.
+
+
+Still untested:
+
+  Os9 system acting as host, especially in server mode.
+
+
+
+Desired features:
+
+  Speed setting of external line.  (Use xmode or tmode currently.)
+
+  Simple single compile switches for systems other that COCO.
+
+  More server functions, for both host and guest modes.
+
+  8-bit quoting.
+
+  Make overlap a function of the device being written to.  (I.e. QT+ needs it
+    for floppy but not ramdisk or hard disk.)
+
+------------------------------
+

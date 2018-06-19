@@ -1,0 +1,34 @@
+Date: Wed 30 Oct 85 17:23:47-PST
+From: Bob Larson <BLARSON@OBERON.ARPA>
+Subject: Os9 kermit is known to work
+
+The os9 kermit I sent you (and you are distributing) is know to work on
+the following os9 systems.  Sorry it took so long to compile this list,
+but the answers to my message slowly trickled in.
+
+Os9 Level I: (6809)
+
+    Radio Shack Color Computer (coco) with either a radio-shack rs232-pak
+    (hardware serial port) or a homebrew 6551 board.
+
+    S100 system based on an Ackerman Digial 6809 board.
+
+    Systems based on a Finland club's boards.
+
+    A homebrew system.
+
+Os9 Level II: (6809)
+
+    Gimex III
+
+Os9 68000:
+
+    A homebrew system.
+
+
+Homebrew os9 systems seem to be popular.
+
+Bob Larson
+
+Arpa: Blarson@usc-ecl.arpa
+-------
