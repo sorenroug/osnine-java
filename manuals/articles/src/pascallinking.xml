@@ -17,9 +17,18 @@
 The following example will show how Knuths random generator from pages 221-222 in
 <citetitle pubwork="book">Numerical Recipes in Pascal, 1st edition</citetitle> can be
 created as an external module and then linked into a Pascal P-code module.
-The random function needs to keep a state to generate a different number from the previous call.
-External Pascal sub-modules don't have their own global storage, and therefore the main procedure
-must provide that space.  Thanks to Willard Goosey for having done the initial work.
+Thanks to Willard Goosey for having done the initial work.
+</para>
+<para>
+The random function needs to keep a state to generate a different number
+from the previous call.  External Pascal sub-modules don't have their own
+global storage, and therefore the main procedure must provide that space.
+We don't want the calling program to know about the inner working of the external
+rand procedure, and we are therefore making it look like the external procedure
+just needs an integer, which must be set to 0 before the first call.
+In reality it is interpreted as a pointer to a record structure. If it is <code>nil</code>
+the the structure is a allocated with a <code>new</code> operation.
+The mechanism expects <code>nil</code> to be identical to '0' when seen as an integer.
 </para>
     <para>
 The function to compile as an external function looks like this:
@@ -92,36 +101,14 @@ OS9:asm random.asm o=random
 </screen>
     <para>
 The external module is created in the <emphasis>execution</emphasis> directory with the file name <quote>random</quote>.
-It is recommended to choose a naming convention that shows that these files are not <emphasis>commands</emphasis>.
+It is recommended to choose a naming convention that shows that these files are <emphasis>not</emphasis> commands.
 The module is now available for other programs to link to. Keep the <filename>random.e</filename> for this occasion.
 </para>
     <para>
 We will now write a test program:
 </para>
     <programlisting>
-PROGRAM test(input, output);
-TYPE
-   static = RECORD
-      ran3inext, ran3extp : integer;
-      ran3ma: ARRAY [1..55] OF real
-   END;
-
-VAR
-    randstate : static;
-    res : real;
-    i,s : integer;
-
-FUNCTION rand(VAR i:integer; VAR block:static) : real; EXTERNAL;
-
-BEGIN
-   writeln('Enter seed value (1..32767)');
-   readln(s);
-   s := -s;
-   FOR i := 1 TO 30 DO BEGIN
-      res := rand(s, randstate);
-      writeln(res);
-   END   
-END.
+<xi:include parse="text" href="test.pas"/>
 </programlisting>
     <para>
 Compile the test program.
@@ -139,7 +126,7 @@ OS9:pascale &lt;random.e :PCODEF
 Run the program.
 </para>
     <screen>
-OS9:PASCALN PCODEF
+OS9:pascaln PCODEF
 </screen>
   </section>
 </article>
