@@ -54,7 +54,7 @@ BEGIN
       idum := 1
    END;
 
-   b^.Ran3Inext := b^.ran3inext+1;
+   b^.Ran3Inext := b^.Ran3Inext+1;
    IF b^.Ran3Inext = 56 THEN
       b^.Ran3Inext := 1;
    b^.Ran3Extp := b^.Ran3Extp+1;
