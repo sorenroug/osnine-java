@@ -87,7 +87,7 @@ public class AciaTelnetUI implements Runnable {
                 reader = new Thread(new LineReader(this), "acia-in");
                 reader.start();
 
-                writer = new Thread(new LineWriter(this), "acia-out");
+                writer = new Thread(new LineWriter(), "acia-out");
                 writer.start();
                 listeners = 2;
             }
@@ -224,6 +224,40 @@ public class AciaTelnetUI implements Runnable {
             setMode(i, false);
         }
     }
+
+    /**
+     * Thread to write to socket.
+     * If it gets a write exception, then it shall tell the reader
+     * to stop and it shall end the thread.
+     * If it gets an InterruptedException then it shall just stop.
+     */
+    class LineWriter implements Runnable {
+
+        /**
+         * Wait for a value from the Acia to transmit to the client terminal.
+         * Send it, if exception, assume the connection is broken and exit.
+         */
+        public void run() {
+            LOGGER.debug("Writer thread started");
+            try {
+                willDo(TelnetState.SUPPRESS_GA);
+                willDo(TelnetState.ECHO);
+                while (true) {
+                    int val = waitForValueToTransmit();
+                    sendTelnetClient(val);
+                    if (Thread.interrupted())
+                        throw new InterruptedException();
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("InterruptException");
+                endSession();
+            } catch (Exception e) {
+                LOGGER.error("Broken connection", e);
+                interruptReader();
+            }
+        }
+    }
+
 }
 
 /**
@@ -410,51 +444,6 @@ class LineReader implements Runnable {
         } catch (Exception e) {
             LOGGER.error("Exception", e);
             handler.interruptWriter();
-        }
-    }
-}
-
-/**
- * Thread to write to socket.
- * If it gets a write exception, then it shall tell the reader
- * to stop and it shall end the thread.
- * If it gets an InterruptedException then it shall just stop.
- */
-class LineWriter implements Runnable {
-
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(LineWriter.class);
-
-    private AciaTelnetUI handler;
-
-    /**
-     * Constructor.
-     */
-    LineWriter(AciaTelnetUI handler) {
-        this.handler = handler;
-    }
-
-    /**
-     * Wait for a value from the Acia to transmit to the client terminal.
-     * Send it, if exception, assume the connection is broken and exit.
-     */
-    public void run() {
-        LOGGER.debug("Writer thread started");
-        try {
-            handler.willDo(TelnetState.SUPPRESS_GA);
-            handler.willDo(TelnetState.ECHO);
-            while (true) {
-                int val = handler.waitForValueToTransmit();
-                handler.sendTelnetClient(val);
-                if (Thread.interrupted())
-                    throw new InterruptedException();
-            }
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptException");
-            handler.endSession();
-        } catch (Exception e) {
-            LOGGER.error("Broken connection", e);
-            handler.interruptReader();
         }
     }
 }
