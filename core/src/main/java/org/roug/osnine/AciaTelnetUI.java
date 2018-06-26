@@ -42,6 +42,8 @@ public class AciaTelnetUI implements Runnable {
 
     private Socket activeSocket;
 
+    private GO51Terminal term = GO51Terminal.NORMAL;
+
     /**
      * Constructor.
      */
@@ -87,6 +89,7 @@ public class AciaTelnetUI implements Runnable {
                 reader = new Thread(new LineReader(this), "acia-in");
                 reader.start();
 
+                term = GO51Terminal.NORMAL;
                 writer = new Thread(new LineWriter(), "acia-out");
                 writer.start();
                 listeners = 2;
@@ -113,7 +116,7 @@ public class AciaTelnetUI implements Runnable {
     }
 
     void sendTelnetClient(int val) throws IOException {
-        clientOut.write(val);
+        term = term.handleCharacter(val, clientOut);
         clientOut.flush();
     }
 
