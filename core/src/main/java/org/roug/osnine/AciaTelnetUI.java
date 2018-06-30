@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,6 +282,9 @@ class LineReader implements Runnable {
 
     private AciaTelnetUI handler;
 
+    /** Characters read from the telnet client. */
+    private volatile int charsRead;
+
     /**
      * Constructor.
      */
@@ -292,6 +297,7 @@ class LineReader implements Runnable {
      */
     public void run() {
         LOGGER.debug("Reader thread started");
+        Timer timer = new Timer("escape", true);
         try {
             while (true) {
                 int receiveData = handler.read();
@@ -303,6 +309,11 @@ class LineReader implements Runnable {
                     handler.interruptWriter();
                     break;
                 }
+                charsRead++;
+                if (receiveData == 27) {
+                    TimeoutEscape timeout = new TimeoutEscape(this, charsRead);
+                    timer.schedule(timeout, 100);
+                }
                 state = state.handleCharacter(receiveData, handler);
             }
         } catch (InterruptedException e) {
@@ -313,5 +324,34 @@ class LineReader implements Runnable {
             handler.interruptWriter();
         }
     }
+
+    void resetState(int charsReadAtStart) {
+        try {
+            if (charsRead == charsReadAtStart) {
+                state = state.handleCharacter(0, handler);
+            }
+        } catch (IOException e) {
+          // Do nothing
+        }
+    }
 }
 
+/**
+ * A class to reset the escape sequences if nothing has been
+ * received.
+ */
+class TimeoutEscape extends TimerTask {
+
+    private int beginChars;
+    private LineReader reader;
+
+
+    TimeoutEscape(LineReader reader, int beginChars) {
+        this.reader = reader;
+        this.beginChars = beginChars;
+    }
+
+    public void run() {
+        reader.resetState(beginChars);
+    }
+}
