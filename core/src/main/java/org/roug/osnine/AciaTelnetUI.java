@@ -92,7 +92,9 @@ public class AciaTelnetUI implements Runnable {
                 term = GO51Terminal.NORMAL;
                 writer = new Thread(new LineWriter(), "acia-out");
                 writer.start();
-                listeners = 2;
+                synchronized(this) {
+                    listeners = 2;
+                }
             }
         } catch (IOException e) {
             LOGGER.error("IOException", e);
@@ -261,144 +263,6 @@ public class AciaTelnetUI implements Runnable {
         }
     }
 
-}
-
-/**
- * State engine to handle telnet protocol.
- */
-enum TelnetState {
-
-    NORMAL {
-        @Override
-        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-                throws IOException {
-            switch (receiveData) {
-                case NULL_CHAR:
-                case NEWLINE_CHAR:
-                    return NORMAL; // Swallow newlines
-                case IAC_CHAR:
-                    return IAC;
-                case DEL_CHAR:
-                    handler.dataReceived(8);
-                    return NORMAL;
-                case CR_CHAR:
-                    handler.eolReceived();
-                    return NORMAL;
-                default:
-                    handler.dataReceived(receiveData);
-                    return NORMAL;
-            }
-        }
-    },
-
-    IAC {
-        @Override
-        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-                throws IOException {
-            switch (receiveData) {
-                case IP_CHAR:  // Interrupt process
-                    handler.dataReceived(INTR_CHAR);
-                    return NORMAL;
-                case DO_CHAR:
-                    return DO;
-                case DONT_CHAR:
-                    return DONT;
-                case WILL_CHAR:
-                    return WILL;
-                case WONT_CHAR:
-                    return WONT;
-                default:
-                    return NORMAL;
-            }
-        }
-    },
-
-    /**
-     * Client sends will.
-     */
-    WILL {
-        @Override
-        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-                throws IOException {
-            switch (receiveData) {
-                case ECHO:
-                    handler.pleaseDo(receiveData);
-                    return NORMAL;
-                default:        // Must respond to unsupported option
-                    LOGGER.debug("Don't do: {}", receiveData);
-                    handler.pleaseDont(receiveData);
-                    return NORMAL;
-            }
-        }
-    },
-
-    /**
-     * Client sends won't.
-     */
-    WONT {
-        @Override
-        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-                throws IOException {
-            switch (receiveData) {
-                default:        // Must respond to unsupported option
-                    return NORMAL;
-            }
-        }
-    },
-
-    DO {
-        @Override
-        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-                throws IOException {
-            switch (receiveData) {
-                case SUPPRESS_GA:
-                case ECHO:
-                    handler.willDo(receiveData);
-                    return NORMAL;
-                default:        // Must respond to unsupported option
-                    LOGGER.info("Wont do: {}", receiveData);
-                    handler.wontDo(receiveData);
-                    return NORMAL;
-            }
-        }
-    },
-
-    DONT {
-        @Override
-        TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-                throws IOException {
-            switch (receiveData) {
-                default:
-                    return NORMAL;
-            }
-        }
-    };
-
-    private static final Logger LOGGER = 
-            LoggerFactory.getLogger(TelnetState.class);
-
-    private static final int NULL_CHAR = 0;
-    private static final int INTR_CHAR = 3;
-    private static final int QUIT_CHAR = 5;
-    private static final int NEWLINE_CHAR = 10;
-    private static final int CR_CHAR = 13;
-    private static final int DEL_CHAR = 127;   // VT100 sends DEL and not BS
-
-    static final int TRANSMIT_BINARY = 0;
-    static final int ECHO = 1;
-    static final int SUPPRESS_GA = 3;  // Suppress Go ahead
-    static final int TIMING = 6;  // Telnet option Timing mark
-
-    static final int NOP_CHAR = 241;  // No operation
-    static final int IP_CHAR = 244;   // Interrupt Process
-    static final int WILL_CHAR = 251;
-    static final int WONT_CHAR = 252;
-    static final int DO_CHAR = 253;
-    static final int DONT_CHAR = 254;
-    static final int IAC_CHAR = 255;  // Interpret as Command
-
-    abstract TelnetState handleCharacter(int receiveData, AciaTelnetUI handler)
-            throws IOException;
 }
 
 /**

@@ -16,6 +16,8 @@ public class AciaTelnetUITest {
     private static final int DO = 253;
     private static final int DONT = 254;
     private static final int IAC = 255;
+    private static final int ESC = 27;
+    private static final int DEL = 127;
 
     private class AciaTelnetUIMock extends AciaTelnetUI {
 
@@ -166,5 +168,45 @@ public class AciaTelnetUITest {
         checkSequence(sequence, expected);
     }
 
+
+    /**
+     * Client DELETE. VT100 backspace.
+     * Server gets BACKSPACE.
+     */
+    @Test
+    public void deleteKey() throws IOException {
+        int[] sequence = {DEL};
+        int[] expected = {8};
+        checkSequence(sequence, expected);
+    }
+
+    /**
+     * Send vt100 cursor up.
+     */
+    @Test
+    public void cursorUp() throws IOException {
+        int[] sequence = {ESC, '[', 'A'};
+        int[] expected = {12};
+        checkSequence(sequence, expected);
+    }
+
+    /**
+     * Send vt100 cursor left.
+     */
+    @Test
+    public void cursorLeft() throws IOException {
+        int[] sequence = {ESC, '[', 'D'};
+        int[] expected = {0x18};
+        checkSequence(sequence, expected);
+    }
+
+    /**
+     * Send vt100 function key PF2
+     */
+    @Test
+    public void keyPF2() throws IOException {
+        int[] sequence = {ESC, 'O', 'Q'};
+        checkSequence(sequence, sequence);
+    }
 }
 

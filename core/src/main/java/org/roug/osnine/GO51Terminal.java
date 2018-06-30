@@ -102,22 +102,22 @@ enum GO51Terminal {
             clientOut.write(ESC);
             clientOut.write('[');
             val++; // VT100 starts at 1.
-            if (val > 100) {
+            if (val >= 100) {
                 clientOut.write('0' + val / 100);
                 val = val % 100;
             }
-            if (val > 10) {
+            if (val >= 10) {
                 clientOut.write('0' + val / 10);
                 val = val % 10;
             }
             clientOut.write('0' + val);
             clientOut.write(';');
 
-            if (column > 100) {
+            if (column >= 100) {
                 clientOut.write('0' + column / 100);
                 column = column % 100;
             }
-            if (column > 10) {
+            if (column >= 10) {
                 clientOut.write('0' + column / 10);
                 column = column % 10;
             }

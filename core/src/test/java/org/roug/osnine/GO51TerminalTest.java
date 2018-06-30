@@ -95,4 +95,20 @@ public class GO51TerminalTest {
     }
 
 
+    /**
+     * Go to location 9,9.
+     */
+    @Test
+    public void goX9Y9() throws IOException {
+        GO51Terminal term = GO51Terminal.NORMAL;
+        ByteArrayOutputStream res = new ByteArrayOutputStream();
+        
+        term = term.handleCharacter(0x1B, res);
+        term = term.handleCharacter(0x41, res);
+        term = term.handleCharacter(9, res);
+        term = term.handleCharacter(9, res);
+        assertEquals("\033[10;10H", res.toString());
+    }
+
+
 }
