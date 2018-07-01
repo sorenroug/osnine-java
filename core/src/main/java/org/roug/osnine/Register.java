@@ -9,11 +9,11 @@ public interface Register {
 
     int intValue();
 
-    public int get();
+    int get();
 
-    public void set(int newValue);
+    void set(int newValue);
 
-    public int getSigned();
+    int getSigned();
 
     /**
      * Bit test.

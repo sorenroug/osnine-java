@@ -91,7 +91,7 @@ public class UByte implements Register {
 
     @Override
     public void bset(int n) {
-        value |= (1 << n);
+        value |= 1 << n;
     }
 
     @Override

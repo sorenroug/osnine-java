@@ -41,6 +41,10 @@ enum GO51Terminal {
         GO51Terminal handleCharacter(int val, OutputStream clientOut)
                                     throws IOException {
             switch (val) {
+                case 0x32:   // Text color
+                     return TEXT_COLOR;
+                case 0x33:   // Background color
+                     return BG_COLOR;
                 case 0x41:   // Cursor XY
                     return X_VAL;
                 case 0x42:   // Clear to end of line.
@@ -102,30 +106,51 @@ enum GO51Terminal {
             clientOut.write(ESC);
             clientOut.write('[');
             val++; // VT100 starts at 1.
-            if (val >= 100) {
-                clientOut.write('0' + val / 100);
-                val = val % 100;
-            }
-            if (val >= 10) {
-                clientOut.write('0' + val / 10);
-                val = val % 10;
-            }
-            clientOut.write('0' + val);
+            writeNumber(val, clientOut);
             clientOut.write(';');
-
-            if (column >= 100) {
-                clientOut.write('0' + column / 100);
-                column = column % 100;
-            }
-            if (column >= 10) {
-                clientOut.write('0' + column / 10);
-                column = column % 10;
-            }
-            clientOut.write('0' + column);
+            writeNumber(column, clientOut);
             clientOut.write('H');
             return NORMAL;
         }
+    },
+
+    TEXT_COLOR {
+        GO51Terminal handleCharacter(int val, OutputStream clientOut)
+                                    throws IOException {
+            int colors[] = {37, 34, 30, 32, 31, 33, 35, 36};
+            clientOut.write(ESC);
+            clientOut.write('[');
+            writeNumber(colors[val % 8], clientOut);
+            clientOut.write('m');
+            return NORMAL;
+        }
+    },
+
+    BG_COLOR {
+        GO51Terminal handleCharacter(int val, OutputStream clientOut)
+                                    throws IOException {
+            int colors[] = {47, 44, 40, 42, 41, 43, 45, 46};
+            clientOut.write(ESC);
+            clientOut.write('[');
+            writeNumber(colors[val % 8], clientOut);
+            clientOut.write('m');
+            return NORMAL;
+        }
     };
+
+
+    private static void writeNumber(int val, OutputStream clientOut)
+                                    throws IOException {
+        if (val >= 100) {
+            clientOut.write('0' + val / 100);
+            val = val % 100;
+        }
+        if (val >= 10) {
+            clientOut.write('0' + val / 10);
+            val = val % 10;
+        }
+        clientOut.write('0' + val);
+    }
 
     private static void setAttribute(int code, OutputStream clientOut)
                                     throws IOException {

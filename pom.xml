@@ -9,7 +9,20 @@
     <packaging>pom</packaging>
 
     <name>OS-Nine</name>
-    <url>http://www.roug.org</url>
+    <description>The purpose of this project is to create an 6809 emulator that can
+be configured at runtime with a range of memory mapped devices.
+You can allocate RAM, load data into the memory and set up devices.</description>
+    <url>https://github.com/sorenroug/osnine-java</url>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3, 29 June 2007</name>
+        </license>
+    </licenses>
+    
+    <scm>
+        <connection>scm:git:https://github.com/sorenroug/osnine-java</connection>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

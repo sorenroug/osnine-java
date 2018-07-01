@@ -100,7 +100,7 @@ public class RegisterBytePair extends Word implements Register {
     @Override
     public void bset(int n) {
         int value = intValue();
-        value |= (1 << n);
+        value |= 1 << n;
         set(value);
     }
 

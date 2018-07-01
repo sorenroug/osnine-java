@@ -123,7 +123,7 @@ public class RegisterCC extends UByte implements Register {
     //FIXME
     @Override
     public void bset(int n) {
-        all |= (1 << n);
+        all |= 1 << n;
     }
 
     //FIXME

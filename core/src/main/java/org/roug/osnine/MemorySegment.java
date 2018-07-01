@@ -31,7 +31,7 @@ public abstract class MemorySegment {
     }
 
     public boolean inSegment(int addr) {
-        return (addr >= startAddress && addr < endAddress);
+        return addr >= startAddress && addr < endAddress;
     }
 
     public int getStartAddress() {
