@@ -7,148 +7,142 @@ REM to add missing lines by Ken Drexler.
 REM Revised to accept UPPER and lower case guesses and 
 REM use only 2/3 of the words each time the game is played.
 REM Also the figure array matrix was enlarged.
-REM Revised to seed RND from D.SEC
 REM 
 PRINT TAB(32); "HANGMAN"
-PRINT  \ PRINT 
+PRINT \ PRINT 
 DIM P$(12,18),L$(20),D$(20),N$(26):STRING[1]
-DIM U(60):BYTE
-DIM X:INTEGER
-DIM I:INTEGER
+DIM USED(60):BOOLEAN
+DIM T1,X:INTEGER
+DIM C,M,I,J,N:INTEGER
 C=1
 N=60 \REM WORD COUNT
-X=PEEK($58) \REM Set RND from D.SEC
+RUN RANDOMIZE \ REM Set RND from clock
 X=-(X) \REM Make it negative
 X=RND(X)
 10 FOR I=1 TO 20
-D$(I)="-"
+  D$(I)="-"
 NEXT I
 M=0
 FOR I=1 TO 26
-N$(I)=""
+  N$(I)=""
 NEXT I
 FOR I=1 TO 12
-FOR J=1 TO 18
-P$(I,J)=" "
-NEXT J
+  FOR J=1 TO 18
+    P$(I,J)=" "
+  NEXT J
 NEXT I
 FOR I=1 TO 12
-P$(I,1)="X"
+  P$(I,1)="X"
 NEXT I
 FOR I=1 TO 13
-P$(1,I)="X"
+  P$(1,I)="X"
 NEXT I
 P$(2,13)="X"
 IF C<N-20 THEN 20
-PRINT "YOU DID ALL THE WORDS!"
+PRINT "You did all the words!"
 END 
-20 IF C<>0 THEN 25 \REM CLEAR ARRAY
-FOR I=1 TO N
-U(I)=0
-NEXT I
-25 Q=INT(RND(N-1)+1) \REM SELECT WORD
-IF U(Q)=1 THEN 20
-U(Q)=1
+20 IF C=0 THEN
+  REM CLEAR ARRAY
+  FOR I=1 TO N
+    USED(I)=FALSE
+  NEXT I
+ENDIF
+Q=INT(RND(N-1)+1) \REM SELECT WORD
+IF USED(Q)=TRUE THEN 20
+USED(Q)=TRUE
 C=C+1
 RESTORE 
 T1=0
 FOR I=1 TO Q
-READ A$
+  READ A$
 NEXT I
 L=LEN(A$)
 FOR I=1 TO LEN(A$)
-L$(I)=MID$(A$,I,1)
+  L$(I)=MID$(A$,I,1)
 NEXT I
-30 PRINT "HERE ARE THE LETTERS YOU USED:"
+
+30 PRINT "Here are the letters you used:"
 FOR I=1 TO 26
-PRINT N$(I); 
-IF N$(I+1)="" THEN 40
-PRINT ","; 
+  PRINT N$(I); 
+  IF N$(I+1)="" THEN 40
+  PRINT ","; 
 NEXT I
-40 PRINT  \ PRINT 
+40 PRINT \ PRINT 
 FOR I=1 TO L
-PRINT D$(I); 
+  PRINT D$(I); 
 NEXT I
-PRINT  \ PRINT 
-INPUT "WHAT IS YOUR NEXT LETTER GUESS? ",G$
-IF G$>="a" AND G$<="z" THEN 
-G$=CHR$(ASC(G$)-32)
-ENDIF 
+PRINT \ PRINT 
+INPUT "What is your next letter guess? ",G$
+RUN UPPERCASE(G$)
 R=0
 FOR I=1 TO 26
-IF N$(I)="" THEN 50
-IF G$=N$(I) THEN 
-PRINT "YOU GUESSED THAT LETTER BEFORE!"
-GOTO 30
-ENDIF 
+  IF N$(I)="" THEN 50
+  IF G$=N$(I) THEN 
+    PRINT "You guessed that letter before!"
+    GOTO 30
+  ENDIF 
 NEXT I
-PRINT "PROGRAM ERROR!! PLEASE RUN AGAIN."
+PRINT "PROGRAM ERROR!! Please run again."
 STOP 
+
 50 N$(I)=G$
 T1=T1+1
 FOR I=1 TO L
-IF L$(I)=G$ THEN 70
-60 NEXT I
-IF R=0 THEN 80
-GOTO 90
-70 D$(I)=G$
-R=R+1
-GOTO 60
-80 M=M+1
-GOTO 140
-90 FOR I=1 TO L
-IF D$(I)="-" THEN 100
+  IF L$(I)=G$ THEN
+    D$(I)=G$
+    R=R+1
+  ENDIF
 NEXT I
-GOTO 130
+IF R=0 THEN
+  M=M+1
+  GOTO 140
+ENDIF
+
+FOR I=1 TO L
+  IF D$(I)="-" THEN 100
+NEXT I
+PRINT "You found the word!"
+GOTO 120
+
 100 PRINT 
 FOR I=1 TO L
-PRINT D$(I); 
+  PRINT D$(I); 
 NEXT I
 PRINT  \ PRINT 
-INPUT "WHAT IS YOUR GUESS FOR THE WORD? ",B$
-Z$=""
-FOR I=1 TO LEN(B$)
-X$=MID$(B$,I,1)
-IF X$>="a" AND X$<="z" THEN 
-X$=CHR$(ASC(X$)-32)
-Z$=Z$+X$
-ENDIF 
-NEXT I
-B$=Z$
-IF A$=B$ THEN 110
-PRINT "WRONG.  TRY ANOTHER LETTER."
+INPUT "What is your guess for the word? ",B$
+RUN UPPERCASE(B$)
+IF A$=B$ THEN
+  PRINT "Right!!  It took you "; T1; " guesses."
+  GOTO 120
+ENDIF
+PRINT "WRONG.  Try another letter."
 PRINT 
 GOTO 30
-110 PRINT "RIGHT!!  IT TOOK YOU "; T1; " GUESSES."
-120 INPUT "WANT ANOTHER WORD? ",W$
+
+120 INPUT "Want another word? ",W$
 IF LEFT$(W$,1)="y" OR LEFT$(W$,1)="Y" THEN 10
-PRINT "IT'S BEEN FUN.  BYE FOR NOW."
+PRINT "It's been fun.  Bye for now."
 END 
-130 PRINT "YOU FOUND THE WORD!"
-GOTO 120
-140 PRINT  \ PRINT 
-PRINT "SORRY, THAT LETTER ISN'T IN THE WORD."
-ON M GOTO 150,160,170,180,190,200,210,220,230,240
-150 PRINT "FIRST WE DRAW A HEAD"
+
+140 PRINT \ PRINT 
+PRINT "Sorry, that letter isn't in the word."
+ON M GOSUB 150,160,170,180,190,200,210,220,230,240
 GOTO 250
-160 PRINT "NOW WE DRAW A BODY"
-GOTO 250
-170 PRINT "NEXT WE DRAW AN ARM"
-GOTO 250
-180 PRINT "THIS TIME IT'S THE OTHER ARM"
-GOTO 250
-190 PRINT "NOW LET'S DRAW THE RIGHT LEG"
-GOTO 250
-200 PRINT "THIS TIME WE ADD THE LEFT LEG"
-GOTO 250
-210 PRINT "NOW WE PUT UP A HAND"
-GOTO 250
-220 PRINT "NEXT THE OTHER HAND"
-GOTO 250
-230 PRINT "NOW WE DRAW ONE FOOT"
-GOTO 250
-240 PRINT "HERE'S THE OTHER FOOT -- YOU'RE HUNG!!"
-250 ON M GOTO 260,270,280,290,300,310,320,330,340,350
+
+150 PRINT "First we draw a head" \ RETURN
+160 PRINT "Now we draw a body" \ RETURN
+170 PRINT "Next we draw an arm" \ RETURN
+180 PRINT "This time it's the other arm" \ RETURN
+190 PRINT "Now let's draw the right leg" \ RETURN
+200 PRINT "This time we add the left leg" \ RETURN
+210 PRINT "Now we put up a hand" \ RETURN
+220 PRINT "Next the other hand" \ RETURN
+230 PRINT "Now we draw one foot" \ RETURN
+240 PRINT "Here's the other foot -- you're hung!!" \ RETURN
+
+250 ON M GOSUB 260,270,280,290,300,310,320,330,340,350
+GOTO 360
+
 260 P$(3,12)="-"
 P$(3,13)="-"
 P$(3,14)="-"
@@ -159,49 +153,61 @@ P$(4,15)=")"
 P$(5,12)="-"
 P$(5,13)="-"
 P$(5,14)="-"
-GOTO 360
+RETURN
+
 270 FOR I=6 TO 9
-P$(I,13)="X"
+  P$(I,13)="X"
 NEXT I
-GOTO 360
+RETURN
+
 280 FOR I=4 TO 7
-P$(I,I+5)="\"
+  P$(I,I+5)="\"
 NEXT I
-GOTO 360
+RETURN
+
 290 P$(4,17)="/"
 P$(5,16)="/"
 P$(6,15)="/"
 P$(7,14)="/"
-GOTO 360
+RETURN
+
 300 P$(10,12)="/"
 P$(11,11)="/"
-GOTO 360
+RETURN
+
 310 P$(10,14)="\"
 P$(11,15)="\"
-GOTO 360
+RETURN
+
 320 P$(3,17)="\"
-GOTO 360
+RETURN
+
 330 P$(3,9)="/"
-GOTO 360
+RETURN
+
 340 P$(12,16)="\"
 P$(12,17)="_"
-GOTO 360
+RETURN
+
 350 P$(12,9)="_"
 P$(12,10)="/"
+RETURN
+
 360 FOR I=1 TO 12
-FOR J=1 TO 18
-PRINT P$(I,J); 
-NEXT J
-370 PRINT 
+  FOR J=1 TO 18
+    PRINT P$(I,J); 
+  NEXT J
+  PRINT 
 NEXT I
 PRINT 
 PRINT 
 IF M<>10 THEN 30
-PRINT "SORRY, YOU LOSE. THE WORD WAS "; A$
-PRINT "YOU MISSED THAT ONE. DO YOU "; 
+PRINT "Sorry, you lose. The word was "; A$
+PRINT "You missed that one. Do you "; 
 GOTO 120
-INPUT "TYPE YES OR NO",Y$
+INPUT "Type YES or NO",Y$
 IF Y$="YES" THEN 10
+
 DATA "GUM","SIN","FOR","CRY","LUG","BYE","FLY"
 DATA "UGLY","EACH","FROM","WORK","TALK","WITH","SELF"
 DATA "SORE","EAGLE","BIRD","CLOCK","SISTER","MOTHER","FATHER"
@@ -210,4 +216,28 @@ DATA "CAR","DRESS","COAT","TENT","SLEEP","PAPER","SCHOOL","PENCIL"
 DATA "TEACHER","BUS","PLAY","FLUTE","BOOK","TEST","CIRCLE","PLAIN"
 DATA "DOG","TABLE","PLATE","JUMP","PIANO","DANCE","GOOD","PRETTY"
 DATA "HOPE","FAITH","LOVE","TRUST","CREED","FORGIVE","PRAY","SEEK"
-380 END 
+END 
+
+PROCEDURE RANDOMIZE
+DIM SEC,MIN,HOU:STRING[2]
+D$=DATE$
+SEC=RIGHT$(D$,2)
+MIN=MID$(D$,13,2)
+HOU=MID$(D$,10,2)
+SEED = VAL(HOU)* 3600 + VAL(MIN) * 60 + VAL(SEC)
+R = RND(0 - SEED)
+END
+
+PROCEDURE UPPERCASE
+PARAM B$:STRING
+DIM I:INTEGER
+DIM X$:STRING[1]
+Z$=""
+FOR I=1 TO LEN(B$)
+  X$=MID$(B$,I,1)
+  IF X$ >= "a" AND X$ <= "z" THEN 
+    X$=CHR$(ASC(X$)-32)
+  ENDIF 
+  Z$=Z$+X$
+NEXT I
+B$=Z$
