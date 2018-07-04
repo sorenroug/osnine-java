@@ -1,0 +1,7 @@
+# Makefile for Adventure on Linux
+#
+CFLAGS=-Wtraditional -g -w -DLNX=1
+OBJ = advent.o database.o english.o itverb.o turn.o util.o verb.o
+
+advent: $(OBJ)
+	cc $(OBJ) -o adventure

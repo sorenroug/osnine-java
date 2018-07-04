@@ -1,0 +1,30 @@
+
+Advent [-r][file]
+        -r - Resume saved game.
+             (Advent will prompt for filename.)
+        If "file" is present, advent will tack on ".adv" and
+         try to restart it as a saved game.
+         Magic is said to work in the cave.  Your computer
+         will be your eyes and hands.  Use commands of 1 or 2
+         words.  Only the first five letters of each word are
+         significant, so you'll have to enter "Northeast" as
+         "ne" to distinguish it from "North".  (Should you
+         get stuck, type "help" for some general hints).
+         The following errors are possible:
+ 
+           Error 21    Seek error reading data file 4.
+           Error 30    Corrupted data in data file 4.
+           Error 31    Rewind file failure on one of the data files.
+           Error 32    Corrupted data in one of the data files.
+           Error 33    Corrupted data in data file 3.
+           Error 36    Corrupted data in data file 4.
+           Error 37    Bad memory.
+           Error 38    Corrupted data in data file 3.
+           Error 39    Corrupted data in data file 4.
+           Error 40    Corrupted data in data file 1, 2, or 3.
+           Error 41    Corrupted data in data file 6.
+           Error 42    Rewind failure on data file 1, 2 , or 3.
+           Error 43    Rewind failure on data file 6.
+           Error 44    Corrupted data in data file 4.
+           Error 45    Corrupted data in data file 4.
+           Error 46    Rewind failure on data file 4.

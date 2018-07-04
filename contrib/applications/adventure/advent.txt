@@ -1,0 +1,17 @@
+                        November 17, 1985
+     This  is the source package for the famous Crowther and Woods
+adventure  game.   It  compiles with MicroWare  C.   This  source
+compiles  to the object currently distributed, and, as such, does
+run.  To any who are brave enough to enter here, good luck.
+   MAKING CHANGES
+1. Make your changes
+2. compile any modified modules with the -r option
+3. Run linkadv (after editing for your library drive).
+    These files will be linked to make advent
+       advent.r
+       turn.r
+       database.r
+       english.r
+       verb.r
+       itverb.r
+  Remember - advent needs at least 2 extra pages of memory!
