@@ -488,7 +488,7 @@ reported later when SCF calls one of the device driver routines.
 <para>
 As with all device drivers, SCF device drivers use a standard
 executable memory module format with a module type of <quote>device driver</quote>
-(CODE $EO). The execution offset address in the module header points to
+(CODE $E0). The execution offset address in the module header points to
 a branch table that has six three byte entries. Each entry is typically
 a LBRA to the corresponding subroutine. The branch table is as follows:
 </para>
