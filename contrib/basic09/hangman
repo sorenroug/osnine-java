@@ -16,7 +16,7 @@ DIM T1,X:INTEGER
 DIM C,M,I,J,N:INTEGER
 C=1
 N=60 \REM WORD COUNT
-RUN RANDOMIZE \ REM Set RND from clock
+RUN Randomize \ REM Set RND from clock
 X=-(X) \REM Make it negative
 X=RND(X)
 10 FOR I=1 TO 20
@@ -73,7 +73,7 @@ FOR I=1 TO L
 NEXT I
 PRINT \ PRINT 
 INPUT "What is your next letter guess? ",G$
-RUN UPPERCASE(G$)
+RUN ToUpper(G$)
 R=0
 FOR I=1 TO 26
   IF N$(I)="" THEN 50
@@ -110,7 +110,7 @@ FOR I=1 TO L
 NEXT I
 PRINT  \ PRINT 
 INPUT "What is your guess for the word? ",B$
-RUN UPPERCASE(B$)
+RUN ToUpper(B$)
 IF A$=B$ THEN
   PRINT "Right!!  It took you "; T1; " guesses."
   GOTO 120
@@ -218,7 +218,7 @@ DATA "DOG","TABLE","PLATE","JUMP","PIANO","DANCE","GOOD","PRETTY"
 DATA "HOPE","FAITH","LOVE","TRUST","CREED","FORGIVE","PRAY","SEEK"
 END 
 
-PROCEDURE RANDOMIZE
+PROCEDURE Randomize
 DIM SEC,MIN,HOU:STRING[2]
 D$=DATE$
 SEC=RIGHT$(D$,2)
@@ -228,7 +228,7 @@ SEED = VAL(HOU)* 3600 + VAL(MIN) * 60 + VAL(SEC)
 R = RND(0 - SEED)
 END
 
-PROCEDURE UPPERCASE
+PROCEDURE ToUpper
 PARAM B$:STRING
 DIM I:INTEGER
 DIM X$:STRING[1]
