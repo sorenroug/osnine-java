@@ -5,15 +5,15 @@
 The Graphics Interface module provides a simple and convenient
 way to access the colour graphics and joystick functions of the
 Dragon Computer from <productname>BASIS09</productname> programs. The module is a program
-written in assembly language and stored in a file called "GFX". It
-can be loaded into memory using the OS-9 "LOAD" command prior to or
+written in assembly language and stored in a file called <quote>GFX</quote>. It
+can be loaded into memory using the OS-9 <quote>LOAD</quote> command prior to or
 after called <productname>BASIS09</productname>, or it will be
 automatically called by <productname>BASIS09</productname>
-the first time it is referenced in a program if the "GFX" file is
-located in the execution ("CMDS") directory.
+the first time it is referenced in a program if the <quote>GFX</quote> file is
+located in the execution (<quote>CMDS</quote>) directory.
 </para>
 <para>
-"GFX" is called using the <productname>BASIS09</productname> "RUN" statement. The first
+<quote>GFX</quote> is called using the <productname>BASIS09</productname> <quote>RUN</quote> statement. The first
 parameter passed is the name of the graphics function desired.
 Other parameters are used to pass coordinates, colour modes, etc.
 </para>
@@ -161,9 +161,9 @@ Colour Sets 3 and 4 are not available on PAL video system
 </cmdsynopsis>
 <para>
 MODE switches the screen from alphanumeric to graphics display mode,
-and selects the screen mode and colour mode. "Format" determines
+and selects the screen mode and colour mode. <quote>Format</quote> determines
 between two-colour (Format = 0), or four-colour (Format = 1)
-graphics modes. "Colour" is the initial colour code that specifies
+graphics modes. <quote>Colour</quote> is the initial colour code that specifies
 the foreground colour and colour set.
 </para>
 <para>
@@ -218,8 +218,8 @@ black in two-colour format).
 <para>
 POINT moves the graphics cursor to the specified X.Y coordinate and
 sets the pixel at that coordinate to the current foreground colour.
-If the optional "Colour" is specified, the current foreground colour
-is set to the given "Colour". For example:
+If the optional <quote>Colour</quote> is specified, the current foreground colour
+is set to the given <quote>Colour</quote>. For example:
 <programlisting>
 RUN GFX("Point",0,192,1)
 </programlisting>
@@ -310,7 +310,7 @@ Module.
 <para>
 GCOLR is used to read the colour of the pixel at the current
 graphics cursor position, or from the coordinates X,Y. The
-parameter "Colour" may be an integer or a byte variable in which the
+parameter <quote>Colour</quote> may be an integer or a byte variable in which the
 colour code is returned.
 </para>
 <bridgehead renderas="sect2">JOYSTK</bridgehead>

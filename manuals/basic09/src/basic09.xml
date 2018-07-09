@@ -92,7 +92,7 @@ run-time interpreter, high-level interactive debugger, and a system
 executive. Each of these components was carefully integrated
 to give the user a
 friendly, highly interactive programming resource. that provides all the tools
-and helpful "extra" facilities needed for fast, accurate creation and testing of
+and helpful <quote>extra</quote> facilities needed for fast, accurate creation and testing of
 structured programs.
 </para>
 
@@ -110,7 +110,7 @@ structured programs.
     <listitem><para>multi-character, upper or lower case identifiers</para></listitem>
     <listitem><para>variables and line numbers local to procedures</para></listitem>
     <listitem><para>line numbers optional</para></listitem>
-    <listitem><para>automatic linkage to ROM or RAM "library" procedures</para></listitem>
+    <listitem><para>automatic linkage to ROM or RAM <quote>library</quote> procedures</para></listitem>
     <listitem><para>PACK command compacts program and provides security</para></listitem>
     <listitem><para>PRINT USING with FORTRAN-like format specifications</para></listitem>
   </itemizedlist>
@@ -213,7 +213,7 @@ sophistication and reliability <productname>BASIC09</productname> has today.
 This section is intended for persons who have not previously
 written computer programs. If you are familiar with programming in
 general or BASIC programming specifically, this section can give you
-a "feel" for the <productname>BASIC09</productname> interactive environment.
+a <quote>feel</quote> for the <productname>BASIC09</productname> interactive environment.
 
 </para>
 <sect1><title>What is a Program?</title>
@@ -229,10 +229,10 @@ but most computer languages use command names instead of buttons.
 <para>
 To get results from a computer, you must first put into the
 computer the list of commands you want executed in the order you
-want them executed. Each command will mean "do this thing" or "do
-that thing", but the computer only has certain commands which it
-will understand. A computer can do things like "add" or "save the
-result into memory". Typing "get me a taco" to a computer won't
+want them executed. Each command will mean <quote>do this thing</quote> or
+<quote>do that thing</quote>, but the computer only has certain commands which it
+will understand. A computer can do things like <quote>add</quote> or <quote>save the
+result into memory</quote>. Typing <quote>get me a taco</quote> to a computer won't
 get it; similarly, on a calculator you can't push buttons which
 aren't there. After you have stored a list of commands into the
 computer, you can tell it to perform those operations. This is like
@@ -246,13 +246,13 @@ overwhelming.
 
 <para>
 You enter a program into a computer by using the computer
-itself as a "text editor", to store the commands you type in. Some
+itself as a <quote>text editor</quote>, to store the commands you type in. Some
 editors allow you to enter any text you want. Other editors will
 only store valid computer commands. Even if the computer does store
 all the text you type in, it can only execute those commands it
 knows. If during program execution, <productname>BASIC09</productname> finds a word which does
 not correspond to a command it will probably stop and print out an
-"error message". Other editors check each command as you enter it
+<quote>error message</quote>. Other editors check each command as you enter it
 (usually after the carriage-return ending each line) and print error
 messages immediately for invalid commands. After typing in your
 list of commands, there are ways to display that list, to modify the
@@ -288,40 +288,40 @@ the computer will do the right things for you.
 Probably the easiest way to explain programming is by example.
 This simple program sometimes keeps kids happy for hours. First,
 the program asks the user for his name. Then the computer types out
-"Hi", then the name, then "see you later". This may not seem like
+<quote>Hi</quote>, then the name, then <quote>see you later</quote>. This may not seem like
 much, but it is great fun to type in things which are not your name,
 and see if they will be printed out. They will, of course.
 </para>
 <para>
 When you turn on the <productname>BASIC09</productname> computer it will print some heading
-information. If the prompt is "OS9:  ", enter the "basic09" (and
-a carriage-return) to get to the prompt "B:". When you have the
-prompt "B:", it means that the system is in the <productname>BASIC09</productname> "command
-mode". While in the command mode, you can do several things, like:
-list, kill, or create programs (called "procedures" in <productname>BASIC09</productname>).
+information. If the prompt is <quote>OS9:  </quote>, enter the <quote>basic09</quote> (and
+a carriage-return) to get to the prompt <quote>B:</quote>. When you have the
+prompt <quote>B:</quote>, it means that the system is in the <productname>BASIC09</productname> <quote>command mode</quote>.
+While in the command mode, you can do several things, like:
+list, kill, or create programs (called <quote>procedures</quote> in <productname>BASIC09</productname>).
 <productname>BASIC09</productname> lets you keep several different programs in memory at the
 same time. Each procedure is identified by a name you give it when
 you create the procedure.</para>
 <para>
 To create a new procedure you command the system to enter the
-"edit mode" by typing a simple "e" (in upper or lower case) and a
+<quote>edit mode</quote> by typing a simple <quote>e</quote> (in upper or lower case) and a
 carriage-return (the <keycap>ENTER</keycap> or <keycap>RETURN</keycap> key). The Editor lets you
 enter or change programs and actually checks for many common errors
 as you type in your program. This automatic checking feature is one
-of the nicest things about <productname>BASIC09</productname>. Because it's always "looking
-over your shoulder" to catch mistakes, it saves a lot of debugging
+of the nicest things about <productname>BASIC09</productname>. Because it's always <quote>looking
+over your shoulder</quote> to catch mistakes, it saves a lot of debugging
 time! If you're not 100% sure about how something works - you can
 go ahead and try it instead of digging through this manual. If you
 guess wrong <productname>BASIC09</productname> will usually show you where and why.
 </para>
 <para>
 Because you did not specify a particular procedure name,
-<productname>BASIC09</productname> will automatically select the name "PROGRAM" for you, and
-will respond by printing out "PROCEDURE PROGRAM"; this means that
+<productname>BASIC09</productname> will automatically select the name <quote>PROGRAM</quote> for you, and
+will respond by printing out <quote>PROCEDURE PROGRAM</quote>; this means that
 you will be editing a procedure which is named PROGRAM. Later you
 will see that you can enter many different procedures and give them
 different names (just type the name you want to use for the program
-after the "e"). A procedure name may be any combination of
+after the <quote>e</quote>). A procedure name may be any combination of
 alphanumeric characters beginning with a letter.
 </para>
 <para>
@@ -335,17 +335,17 @@ PROCEDURE PROGRAM
 *
 E:
 </screen>
-The asterisk (*) indicates the "current edit line" in the procedure
+The asterisk (*) indicates the <quote>current edit line</quote> in the procedure
 being edited. In this case the current line is empty since you have
 not yet entered anything. The asterisk is handy, since you will be
 moving back and forth between different lines to edit them. Later
-you will be "opening" existing procedures for modification, and the
+you will be <quote>opening</quote> existing procedures for modification, and the
 first line will be displayed automatically, helping identify that
 you are editing the correct program.
 </para>
 <para>
-When <productname>BASIC09</productname> responds with the edit prompt "E:", it is in the
-edit mode. Now you can enter "edit commands" which help us enter
+When <productname>BASIC09</productname> responds with the edit prompt <quote>E:</quote>, it is in the
+edit mode. Now you can enter <quote>edit commands</quote> which help us enter
 the computer program. While in edit mode, <emphasis><productname>BASIC09</productname> always takes the
 first character of every line as an edit command.</emphasis>
 Some of the basic edit commands are:
@@ -357,17 +357,17 @@ L <keycap>RETURN</keycap>  list current line
 d <keycap>RETURN</keycap>  delete current line
 </programlisting>
 You must type an edit command at the start of each line.
-If you forget to type an edit command, <productname>BASIC09</productname> will respond with "WHAT?".
+If you forget to type an edit command, <productname>BASIC09</productname> will respond with <quote>WHAT?</quote>.
 The most-important edit command is the (invisible) space character;
-it means "save the following line of text".
-The "space" command is the way most text is entered into the system.
+it means <quote>save the following line of text</quote>.
+The <quote>space</quote> command is the way most text is entered into the system.
 If a line is to be entered, you must type a space before the rest of the line.
-Another useful edit command is "L*" (or "l*", since the editor accepts
+Another useful edit command is <quote>L*</quote> (or <quote>l*</quote>, since the editor accepts
 either upper or lower case) which will display the whole procedure.
 This allows you to watch the procedure develop as lines are entered.
 </para>
 <para>
-You use the "space" command to enter the following line:
+You use the <quote>space</quote> command to enter the following line:
 <screen>
 E: PRINT "type your name"
 *
@@ -381,7 +381,7 @@ each line and again when the edit is finished. These errors are, in
 general, anything <productname>BASIC09</productname> cannot identify or things that don't
 conform to the rules of the language. An error could be a bad
 character, mismatched parenthesis, or one of many other things.
-<productname>BASIC09</productname> will print out an "error code" to identify the error and
+<productname>BASIC09</productname> will print out an <quote>error code</quote> to identify the error and
 print an up arrow character under the place in the line where it
 detected the error. The error codes are listed at the end of this
 manual. If the error was detected at the end of the edit session,
@@ -401,29 +401,29 @@ E: PRINT "Hi ";name$;", see you later."
 E: END
 *
 </screen>
-The second line ("input name$"), when executed, commands <productname>BASIC09</productname> to
+The second line (<quote>input name$</quote>), when executed, commands <productname>BASIC09</productname> to
 wait for a line of text to come in from the keyboard (this will
 happen after the user reads the message printed out in the first
 line). <productname>BASIC09</productname> will accumulate text from the keyboard character-by-character
 until a carriage-return ends the line. This text is
-placed in memory corresponding to the variable "name$". The dollar-sign
+placed in memory corresponding to the variable <quote>name$</quote>. The dollar-sign
 ($) on the end of the variable tells <productname>BASIC09</productname> that you want to
 store a sequence of characters as opposed to a number.
 </para>
 <para>
-The third line of procedure PROGRAM (print "Hi ";name$;", see
-you later."), starts out like the first line. The command "print"
+The third line of procedure PROGRAM (<code>print "Hi ";name$;", see
+you later."</code>), starts out like the first line. The command <quote>print</quote>
 causes <productname>BASIC09</productname> to print out the various values which come after it.
-When this line is executed, the characters H, i, and "space" are
+When this line is executed, the characters H, i, and <quote>space</quote> are
 printed out since the are enclosed in double-quotes. Next, without
 additional spaces, <productname>BASIC09</productname> prints out the line which was typed in by
-the user and saved in the memory corresponding to "name$" and prints
-out " see you later". When a PRINT statement contains multiple values,
+the user and saved in the memory corresponding to <quote>name$</quote> and prints
+out <quote> see you later</quote>. When a PRINT statement contains multiple values,
 it will print them out one after the other. If the separator
-is a comma, <productname>BASIC09</productname> will move to the next 16-column "tab stop"
+is a comma, <productname>BASIC09</productname> will move to the next 16-column <quote>tab stop</quote>
 before printing the next value. However, if the separator between
 print values is a semicolon, absolutely no space will separate the
-values. The last line of the procedure ("END") tells <productname>BASIC09</productname> to
+values. The last line of the procedure (<quote>END</quote>) tells <productname>BASIC09</productname> to
 stop executing the program and return to the command mode (B:).
 You have not yet EXECUTED the procedure, you are just EDITING. If
 you type in l* the whole program will be listed, as follows:
@@ -443,7 +443,7 @@ to run this program, but the editor only wants the relevant
 information.
 </para>
 <para>
-The numbers to the left are "I-code addresses". These are the
+The numbers to the left are <quote>I-code addresses</quote>. These are the
 actual memory locations relative to the start of the procedure where
 each line begins. These numbers may look strange because they are in
 hexadecimal (base 16). These values are important, since the
@@ -452,16 +452,16 @@ convey that information it has to the programmer. I-code addresses
 are supplied automatically by <productname>BASIC09</productname>.
 </para>
 <para>
-The space between the "I-code addresses" and the beginning of
-the program line is reserved for "line numbers". Line numbers are
+The space between the <quote>I-code addresses</quote> and the beginning of
+the program line is reserved for <quote>line numbers</quote>. Line numbers are
 required in many versions of BASIC (although not in <productname>BASIC09</productname>).
 Notice that although the program was typed in lower case some words
 are printed in upper case. <productname>BASIC09</productname> identifies valid command
-"keywords" and converts them to upper case automatically.
+<quote>keywords</quote> and converts them to upper case automatically.
 </para>
 <para>
-Now let's run it. First type "q" to quit the editor. We are
-now back in "command mode" ( B:). Now type "run". <productname>BASIC09</productname>
+Now let's run it. First type <quote>q</quote> to quit the editor. We are
+now back in <quote>command mode</quote> ( B:). Now type <quote>run</quote>. <productname>BASIC09</productname>
 remembers the procedure edited (PROGRAM) and starts to execute
 it.
 <screen>
@@ -481,8 +481,8 @@ that the program is waiting for input.
 This program is extremely simple, but younger kids can get
 great fun from it. Its action is especially amusing to young people
 who are learning a computer language for the first time because a
-machine is "responding" to them, and because the machine is too
-easily "fooled" if you do not type in a real name.
+machine is <quote>responding</quote> to them, and because the machine is too
+easily <quote>fooled</quote> if you do not type in a real name.
 </para></sect1>
 <sect1><title>Basic Programming Techniques: Loops and Arithmetic</title>
 <para>
@@ -496,49 +496,49 @@ PROCEDURE multable
     NEXT j
   NEXT i
 </programlisting>
-First, open the editor by typing "e multable", as follows:
+First, open the editor by typing <quote>e multable</quote>, as follows:
 <screen>
 B: e multable
 PROCEDURE multable
 *
 E:
 </screen>
-Next, type in the program line-by-line staring with "FOR i=1 TO 9"
-(lower-case is perfectly fine). If you loose your way, type "L*" to
+Next, type in the program line-by-line starting with <quote>FOR i=1 TO 9</quote>
+(lower-case is perfectly fine). If you loose your way, type <quote>L*</quote> to
 see where you are. This will display the entire procedure and put
 an asterisk at the left of the current line. If you make a mistake,
-use "+" or "-" to mode to that line, use "d" to delete the line, and
+use <quote>+</quote> or <quote>-</quote> to mode to that line, use <quote>d</quote> to delete the line, and
 use the space command to enter the line over. Make sure that there
-are no errors and then type "q". When you have the program running,
-try adding a statement before "FOR i=1 TO 9" as follows: "DIM
-i,j:INTEGER".
+are no errors and then type <quote>q</quote>. When you have the program running,
+try adding a statement before <quote>FOR i=1 TO 9</quote> as follows:
+<quote>DIM i,j:INTEGER</quote>.
 </para>
 <para>
 The FOR i=1 TO 9 and NEXT i constitute the start and end of a
-control structure or "loop". A control structure is used to cause
+control structure or <quote>loop</quote>. A control structure is used to cause
 repeated or conditional execution of the statement(s) it surrounds.
 A control structure usually has one entry at the top and one exit at
 the bottom. In this way, the entire structure take on the properties
 of a single statement. The beginning statement of the
-FOR...NEXT structure (FOR...) provides a "loop initialization", places
-the value 1 in the storage called "i", and sets up the operation of
-the following NEXT (every FOR must have a NEXT). When "NEXT i" is
-executed, the value in "i" is increased by 1 (which is the default
+FOR...NEXT structure (FOR...) provides a <quote>loop initialization</quote>, places
+the value 1 in the storage called <quote>i</quote>, and sets up the operation of
+the following NEXT (every FOR must have a NEXT). When <quote>NEXT i</quote> is
+executed, the value in <quote>i</quote> is increased by 1 (which is the default
 STEP size) and compared to the value 9 (which is the ending value
-for this loop). If the resulting "i" is less than or equal to 9,
+for this loop). If the resulting <quote>i</quote> is less than or equal to 9,
 the statement(s) following that FOR... is (are) executed.
 </para>
 <para>
-Loops can be "nested" to execute the enclosed statements even
-more times. For example, the PRINT statement in "multable" is
-executed 81 times; once for each of 9 values of "j" and this number
-(9 times) for each of 9 values of "i". The ability to tremendously
+Loops can be <quote>nested</quote> to execute the enclosed statements even
+more times. For example, the PRINT statement in <quote>multable</quote> is
+executed 81 times; once for each of 9 values of <quote>j</quote> and this number
+(9 times) for each of 9 values of <quote>i</quote>. The ability to tremendously
 increase the number of times some code is executed is at the heart
 of both computer programming and computer errors. It means that
 a vary small portion of a program can often be made to do the vast
 majority of the work. But a few remaining special cases may require
 individual handling and may consume more programming and code than
-that which "usually" works. Unfortunately, "usually" is not
+that which <quote>usually</quote> works. Unfortunately, <quote>usually</quote> is not
 sufficient. A special case which occurs once in a thousand times
 may occur once a second, and if the error stops the program, further
 processing of normal values also stops. Experience has indicated
@@ -548,13 +548,13 @@ loop in the program.
 </para></sect1>
 <sect1><title>Listing Procedure Names</title>
 <para>
-The "DIR" command causes <productname>BASIC09</productname> to display the names and sizes
+The <quote>DIR</quote> command causes <productname>BASIC09</productname> to display the names and sizes
 of all procedures in memory. This command is used so frequently
 that there is a quick shorthand for DIR: a simple <keycap>RETURN</keycap> when in
 command mode does the same thing. You will see
 a table of all procedure names and two numbers next to each
-name. The first column, "proc size", is the size of the corresponding
-procedure. The "data size" column shows the amount of memory that the
+name. The first column, <quote>proc size</quote>, is the size of the corresponding
+procedure. The <quote>data size</quote> column shows the amount of memory that the
 procedure requires for its variables.
 On the last line this command shows the amount of free bytes of workspace memory
 remaining. You can use this information to estimate how much memory
@@ -581,10 +581,10 @@ MEM 20000
 
 requests 20.000 (20K) bytes of memory. <productname>BASIC09</productname> will always round the
 amount you request up to the next highest multiple of 256 bytes. If MEM
-responds with "WHAT?", this means that much memory is not
+responds with <quote>WHAT?</quote>, this means that much memory is not
 available. There is another convenient way to do the same thing
 when you first call up <productname>BASIC09</productname> from OS-9.  OS-9 has a
-"#" <emphasis>memory size option</emphasis> on command lines
+<quote>#</quote> <emphasis>memory size option</emphasis> on command lines
 that let you specify how much memory to give the program.
 To call <productname>BASIC09</productname> with 16K of memory to start with, you can type:
 <screen>
@@ -597,36 +597,36 @@ OS9: basic #16k
 <para>
 Nobody wants to retype a whole program every time it is to be
 run. Two commands, SAVE and LOAD, are used to store programs and
-recall previously "SAVEd" programs to or from OS-9 disk files. The
+recall previously <quote>SAVEd</quote> programs to or from OS-9 disk files. The
 simple way to use SAVE is by itself. It will store the procedure
 last edited or run on a disk file having the same name. For
 example:
 <screen>
 B: save
 </screen>
-If our procedure name was the default name "PROGRAM", <productname>BASIC09</productname> will
-create a file called "PROGRAM" to hold it. OS-9 won't let you have
+If our procedure name was the default name <quote>PROGRAM</quote>, <productname>BASIC09</productname> will
+create a file called <quote>PROGRAM</quote> to hold it. OS-9 won't let you have
 two files of the same name because unique names are necessary to
 identify the specific file you want. Therefore if a file called
-"PROGRAM" already exists, <productname>BASIC09</productname> will ask you:
+<quote>PROGRAM</quote> already exists, <productname>BASIC09</productname> will ask you:
 <screen>
 Overwrite?
 </screen>
-If you respond "Y" for YES, it will replace the file previously
+If you respond <quote>Y</quote> for YES, it will replace the file previously
 stored on that file with the program to be saved. This is OK if
 what you want to save is a never version of the same program. But if
 not you will permanently erase another program you may have wanted
-to keep. If this is the case answer "N" for NO. Fortunately, there
+to keep. If this is the case answer <quote>N</quote> for NO. Fortunately, there
 is a simple way to store the procedure on a file using a different
-name: just type SAVE, a ">", and a different file name of your
+name: just type SAVE, a <quote>></quote>, and a different file name of your
 choice. The file can consist of any combination of up to
-thirty-one letters, numbers, periods, or underscores ("_"). The only
+thirty-one letters, numbers, periods, or underscores (<quote>_</quote>). The only
 restriction is that the name must start with a letter A-Z or a-z.
 For example:
 <screen>
 save >newprogram5
 </screen>
-will save the program on a file called "newprogram5". There are
+will save the program on a file called <quote>newprogram5</quote>. There are
 several useful variations of the SAVE command that let you save
 various combinations of programs on the same file. See the SAVE
 command description for more information. You should also read
@@ -662,7 +662,7 @@ before loading new ones, you can type:
 <screen>
 B: kill*
 </screen>
-This tells <productname>BASIC09</productname> to "kill" all procedures in memory and has the
+This tells <productname>BASIC09</productname> to <quote>kill</quote> all procedures in memory and has the
 same effect as completely resetting <productname>BASIC09</productname>.
 </para>
 </sect1>
@@ -676,7 +676,7 @@ type:
 B: LIST* /p
 </screen>
 This tells <productname>BASIC09</productname> to LIST all procedures in memory to the output
-device "/p" which is the printer device name in most OS-9 systems.
+device <quote>/p</quote> which is the printer device name in most OS-9 systems.
 Like the SAVE command, LIST has several useful variations. If you
 want to list just one procedure (if there are more than on in
 memory) you can type:
@@ -688,10 +688,10 @@ spaces) before the semicolon and those specific procedures will be
 listed.
 </para>
 <para>
-Notice that if you omit the "/p" or ">/p" from the commands above,
+Notice that if you omit the <quote>/p</quote> or <quote>>/p</quote> from the commands above,
 the programs will be listed on your display instead of the printer.
-This is the same as the "L*" command in Edit Mode. You will also
-notice that the listing will be automatically "pretty-printed",
+This is the same as the <quote>L*</quote> command in Edit Mode. You will also
+notice that the listing will be automatically <quote>pretty-printed</quote>,
 e.g. program levels within loops are indented for easy reading.
 </para></sect1>
 <sect1><title><productname>BASIC09</productname>'s Four Modes:</title>
@@ -761,7 +761,7 @@ individually or as a group. For example, you can save all procedures
 in the workspace to a single mass storage file or load a
 file containing multiple procedures. Usually all procedures
 associated with a project exists inside the workspace. However, you
-can also call library procedures which are "outside" the workspace
+can also call library procedures which are <quote>outside</quote> the workspace
 in OS-9 memory module format. The library procedures can be written
 in <productname>BASIC09</productname> or machine language, can be in RAM or ROM memory, and can
 even be shared by several users.
@@ -773,7 +773,7 @@ procedures and for procedure variable storage during execution.
 <productname>BASIC09</productname> will not run a procedure if there is not enough space for
 variables. If you run out of workspace area, you can use the MEM
 command to enlarge the workspace or you can kill procedures in the
-workspace that are not needed. The "MEM" command can be used at any
+workspace that are not needed. The <quote>MEM</quote> command can be used at any
 time to change the size of the workspace. The size of the workspace
 can be increased (subject to availability of free memory) or
 decreased (but not below the minimal amount needed to store the
@@ -830,12 +830,12 @@ is given below.
 </table>
 </para>
 <para>
-The system commands are processed by the <productname>BASIC09</productname> "command interpreter"
-which always identifies itself with the "B:" prompt. It is entered
+The system commands are processed by the <productname>BASIC09</productname> <quote>command interpreter</quote>
+which always identifies itself with the <quote>B:</quote> prompt. It is entered
 automatically when <productname>BASIC09</productname> is started up and
 whenever you exit any other mode. Commands can be entered in either upper or
 lower-case letters.
-Commands such as DIR, MEM, "$", and BYE don't operate on specific
+Commands such as DIR, MEM, <quote>$</quote>, and BYE don't operate on specific
 procedures, but may have optional or required parameters. Other commands
 (such as SAVE, LOAD, PACK, KILL, and LIST) can operate on a specific
 procedure or on ALL procedures within the workspace.
@@ -846,9 +846,9 @@ applied to only that procedure. For example:
 list pete
 </screen>
 </informalexample>
-will display the procedure named "pete".
-The asterisk is a special name that means "all procedures in the
-workspace". Therefore, if the command is given followed by an asterisk it
+will display the procedure named <quote>pete</quote>.
+The asterisk is a special name that means <quote>all procedures in the
+workspace</quote>. Therefore, if the command is given followed by an asterisk it
 is applied to all procedures. For example:
 <screen>
 list*
@@ -856,17 +856,17 @@ list*
 will display all of the procedures in the workspace.
 </para>
 <para>
-If the command is given without any name at all, the "current" working
+If the command is given without any name at all, the <quote>current</quote> working
 procedure is used. This means the name of the procedure
 last given in another command. The DIR command prints an asterisk
 before its name so it can be found at any time.
 If you have not yet given a name in any command, 
-the name "PROGRAM" is automatically used. Some commands that require a file
+the name <quote>PROGRAM</quote> is automatically used. Some commands that require a file
 name as well as (one or
-more) procedure names require that a ">"
+more) procedure names require that a <quote>></quote>
 precede the file name so it is not mistaken for a procedure name. If
 you omit the file name, the name of the (first) procedure is used instead.
-In this manual, the phrase file name means an OS-9 "pathlist"
+In this manual, the phrase file name means an OS-9 <quote>pathlist</quote>
 which can describe either a file or device.
 </para>
 <para>
@@ -945,14 +945,14 @@ is used.
 <title>System Mode Commands</title>
 <para>
 <synopsis>
-<command>$ [<replaceable>text</replaceable>]   ("Shell" Command)</command>
+<command>$ [<replaceable>text</replaceable>]   (<quote>Shell</quote> Command)</command>
 </synopsis>
 This command calls the OS-9 Shell command interpreter to process an OS-9
 command or to run another program. Running the OS-9 command does not
 cause <productname>BASIC09</productname> or its workspace to be disturbed.
 </para>
 <para>
-If the "$" is followed by text, the Shell is called to process the
+If the <quote>$</quote> is followed by text, the Shell is called to process the
 text as a single OS-9 command line. After the command is executed,
 <productname>BASIC09</productname> is immediately re-entered.
 </para>
@@ -965,7 +965,7 @@ convenient way to temporarily leave <productname>BASIC09</productname> to manipu
 other housekeeping tasks.
 </para>
 <para>
-This command is the "gateway" to OS-9 from inside <productname>BASIC09</productname>. It allows access to
+This command is the <quote>gateway</quote> to OS-9 from inside <productname>BASIC09</productname>. It allows access to
 any OS-9 command or to other programs. It also permits creation of
 concurrent processes and other real-time functions.
 </para>
@@ -1024,7 +1024,7 @@ A question mark next to a data storage size means the workspace does not
 have enough free memory to run that procedure.
 </para>
 <para>
-Note: This command should not be confused with the OS-9 "DIR" command.
+Note: This command should not be confused with the OS-9 <quote>DIR</quote> command.
 They have completely different functions.
 </para>
 
@@ -1072,7 +1072,7 @@ kill prog1, prog2, prog7
 <command>LIST* [<replaceable>pathlist</replaceable>]</command>
 </synopsis>
 <para>
-Prints a formatted "pretty printed" listing of one or more procedures.
+Prints a formatted <quote>pretty printed</quote> listing of one or more procedures.
 The listing includes
 the relative I-code storage addresses in hexadecimal format in the first
 column. The second column is reserved for program line numbers (if line
@@ -1088,8 +1088,8 @@ The files produced are formatted differently, but the function is similar.
 
 <important>
 <para>
-If an "*" is used with LIST, SAVE or PACK, the file name
-immediately follows WITHOUT a greater-than sign ">" before it!
+If an <quote>*</quote> is used with LIST, SAVE or PACK, the file name
+immediately follows WITHOUT a greater-than sign <quote>></quote> before it!
 </para>
 </important>
 
@@ -1165,7 +1165,7 @@ This command
 causes an extra compiler pass on the procedure(s) specified, which
 removes names, line numbers, non-executable statements, etc. The result is
 a smaller, faster procedure(s) that <emphasis>cannot</emphasis> be edited or debugged but can be
-executed by <productname>BASIC09</productname> or by the <productname>BASIC09</productname> run-time-only program called "RunB".
+executed by <productname>BASIC09</productname> or by the <productname>BASIC09</productname> run-time-only program called <quote>RunB</quote>.
 If a pathlist is not given, the name of the first procedure in the list will be
 used as a default pathname.
 The procedure is written to the file/device specified in OS-9 memory
@@ -1197,7 +1197,7 @@ procedure:
 </row>
 <row>
 <entry>kill sort</entry>
-<entry>done; delete "sort" from outside memory</entry>
+<entry>done; delete <quote>sort</quote> from outside memory</entry>
 </row>
 </tbody>
 </tgroup>
@@ -1253,7 +1253,7 @@ PARAM statement description.
 Assembly language procedures cannot be run from command mode.
 </para>
 <para>
-The procedure called can be normal or "packed". If the procedure is not
+The procedure called can be normal or <quote>packed</quote>. If the procedure is not
 found inside <productname>BASIC09</productname>'s workspace, <productname>BASIC09</productname> will call OS-9 to attempt to LINK
 to an external (outside the workspace) module. If this fails, <productname>BASIC09</productname>
 attempts to LOAD the procedure from a file of the same name.
@@ -1290,8 +1290,8 @@ If a file of the same name already exists, SAVE will prompt with:
 <screen>
 rewrite?
 </screen>
-You may answer "Y" for yes which causes the existing file to be rewritten
-with the new procedure(s); or "N" to cancel the SAVE command.
+You may answer <quote>Y</quote> for yes which causes the existing file to be rewritten
+with the new procedure(s); or <quote>N</quote> to cancel the SAVE command.
 </para>
 <para>
 Examples:
@@ -1313,9 +1313,9 @@ save  >testprogram
 <chapter>
 <title>Edit Mode</title>
 <para>
-Edit Mode (also called "The Editor") is used to enter or modify
+Edit Mode (also called <quote>The Editor</quote>) is used to enter or modify
 <productname>BASIC09</productname> procedures. It is entered from Command Mode by the EDIT (or E) command.
-As soon as Edit Mode is entered, prompts change from "B:" to "E:"
+As soon as Edit Mode is entered, prompts change from <quote>B:</quote> to <quote>E:</quote>
 If you have used a
 text editor before, you will find the <productname>BASIC09</productname> editor similar to many others
 except for these two differences:
@@ -1323,14 +1323,14 @@ except for these two differences:
 <orderedlist  numeration="arabic">
 <listitem>
 <para>
-The editor is both "string" and "line number" oriented. The use of line numbers
+The editor is both <quote>string</quote> and <quote>line number</quote> oriented. The use of line numbers
 is optional and text can be corrected without re-typing the entire line.
 </para>
 </listitem>
   
 <listitem>
 <para>
-The editor is interfaced to the <productname>BASIC09</productname> compiler and "decompiler". This
+The editor is interfaced to the <productname>BASIC09</productname> compiler and <quote>decompiler</quote>. This
 lets <productname>BASIC09</productname> do continuous syntax error checking and permits
 programs to be stored in memory in a more compact, compiled form.
 </para>
@@ -1435,21 +1435,21 @@ In order to understand how the editor works it is helpful to
 have a general idea of what goes on inside <productname>BASIC09</productname> while you are
 editing procedures.  <productname>BASIC09</productname> programs are always stored in memory
 in a compiled form called
-"I-code" (short for "Intermediate Code"). I-code is a complex binary coding
-system for programs that lies between your original "source" program and
-the computer's native "machine language". I-code is relatively compact, can
+<quote>I-code</quote> (short for <quote>Intermediate Code</quote>). I-code is a complex binary coding
+system for programs that lies between your original <quote>source</quote> program and
+the computer's native <quote>machine language</quote>. I-code is relatively compact, can
 be executed rapidly, and most importantly, can be reconstructed almost exactly
 back to the original source program. The Editor is closely connected to the
-"compiler" and "decompiler" systems within <productname>BASIC09</productname> that translate source code
+<quote>compiler</quote> and <quote>decompiler</quote> systems within <productname>BASIC09</productname> that translate source code
 to I-Code and vice-versa.
 It is this innovative system that gives <productname>BASIC09</productname> its most powerful and unusual
 abilities.
 </para>
 <para>
-Whenever you enter (or change) a program line and "return", the
+Whenever you enter (or change) a program line and <quote>return</quote>, the
 compiler instantly translates this text to the internal I-code form. When
 <productname>BASIC09</productname> needs to display program lines back, it uses the decompiler to translate the
-I-code back to the original "source" format. These processes are completely
+I-code back to the original <quote>source</quote> format. These processes are completely
 automatic and do not require any special action on your part.
 </para>
 <para>
@@ -1471,10 +1471,10 @@ parentheses in expressions, etc. <productname>BASIC09</productname> keywords are
 capitalized.
 </para>
 <para>
-When you have finished editing the procedure, use the "q" (for "quit")
+When you have finished editing the procedure, use the <quote>q</quote> (for <quote>quit</quote>)
 command to exit edit mode and return to the command
-mode. When you give the "q" command, the compiler performs another
-"pass" over the entire procedure again. At this time syntax
+mode. When you give the <quote>q</quote> command, the compiler performs another
+<quote>pass</quote> over the entire procedure again. At this time syntax
 that extends over multiple lines is checked and errors reported. Examples
 of these errors are: GOTO or GOSUB to a non-existent line,
 missing variable or array declarations, improperly constructed loops, etc.
@@ -1537,10 +1537,10 @@ number and statement. Numbered lines can be entered in any order, but will
 be automatically stored in ascending sequence. To move to a numbered
 line, type the line number followed by a carriage return. The editor will move
 to that line (or the line with the next higher number if the specified number
-is not found) and print it. The line may be deleted using the "d" command.
+is not found) and print it. The line may be deleted using the <quote>d</quote> command.
 </para>
 <para>
-The "r" renumber command will uniformly resequence all numbered lines and
+The <quote>r</quote> renumber command will uniformly resequence all numbered lines and
 lines that refer to numbered lines. Its formats are:
 <programlisting>
 r [ <replaceable>beg line #</replaceable> [,<replaceable>incr</replaceable> ] ] <keycap>RETURN</keycap>
@@ -1569,16 +1569,16 @@ find that string-oriented editing is generally faster and more convenient.
 <para>
 Because line numbers are not used, there has to be another way
 to tell <productname>BASIC09</productname> what place in the program to work on. To do this,
-the editor maintains an "edit pointer" that
+the editor maintains an <quote>edit pointer</quote> that
 indicates which line is the present working location within the procedure,
 and commands start working at this point.
 The editor shows you the location of the edit pointer by displaying an
-"*" at the left side of the program line where the edit pointer is
+<quote>*</quote> at the left side of the program line where the edit pointer is
 presently located.
 </para>
 <sect2><title>Moving the Edit Pointer</title>
 <para>
-The "+" and "-" are used to reposition the edit pointer:
+The <quote>+</quote> and <quote>-</quote> are used to reposition the edit pointer:
 
 <informaltable frame="none" colsep="0" rowsep="0">
 <tgroup cols="2">
@@ -1629,7 +1629,7 @@ Therefore, the following commands all do the same thing:
 </para></sect2>
 <sect2><title>Inserting Lines</title>
 <para>
-The Insert Line function consists of a "space" followed by a <productname>BASIC09</productname> statement
+The Insert Line function consists of a <quote>space</quote> followed by a <productname>BASIC09</productname> statement
 line. The statement is inserted just ahead of the edit pointer position. (the
 space itself is not inserted).
 </para></sect2>
@@ -1637,7 +1637,7 @@ space itself is not inserted).
 <para>
 
 
-The "d" command is used to delete one or more lines. Its format is:
+The <quote>d</quote> command is used to delete one or more lines. Its format is:
 
 <programlisting>
 d [<replaceable>number</replaceable>] <keycap>RETURN</keycap>
@@ -1648,14 +1648,14 @@ The first form deletes the <replaceable>number</replaceable> of lines starting a
 pointer location.
 The second form deletes ALL lines in the procedure (caution!).
 The editor accepts
-"+*" and "-*" to mean to the end, or to the beginning of the procedure
+<quote>+*</quote> and <quote>-*</quote> to mean to the end, or to the beginning of the procedure
 respectively. If the number is negative, that many lines <emphasis>before</emphasis> the
 current line is deleted.
 If a line number is omitted, only the current line is deleted.
 </para></sect2>
 <sect2><title>Listing Lines</title>
 <para>
-The "l" command is used to display one or more lines.
+The <quote>l</quote> command is used to display one or more lines.
 It also has the forms:
 <programlisting>
 l [<replaceable>number</replaceable>] <keycap>RETURN</keycap>
@@ -1686,7 +1686,7 @@ Strings used by the Editor should not be confused with <productname>BASIC09</pro
 which is also called STRING &#8212; they are different creatures.
 </para>
 <para>
-The "s" command may be used to locate the next occurrence or all
+The <quote>s</quote> command may be used to locate the next occurrence or all
 occurrences of a string. The format for this command is:
 
 <programlisting>
@@ -1704,7 +1704,7 @@ cannot be located, the message:
 CAN'T FIND: "<replaceable>match str</replaceable>"
 </screen>
 will be displayed and the edit pointer will remain at its original
-position.  The "s*" variation searches for all occurrences of the string
+position.  The <quote>s*</quote> variation searches for all occurrences of the string
 in the procedure starting at the present edit pointer and displays all
 lines it is found in.  The edit pointer ends up at the last line the
 string occurred in.
@@ -1724,7 +1724,7 @@ E:s?three blind mice?    Looks for the string: three blind mice
 </para></sect2>
 <sect2><title>Change: String Substitution</title>
 <para>
-The "c" change string function is a very handy tool that
+The <quote>c</quote> change string function is a very handy tool that
 can eliminate a tremendous amount of typing.
 It allows strings within lines to be located, removed, and replaced by
 another string. This command is very commonly used for things like:
@@ -1743,15 +1743,15 @@ ALL occurrences of the match string in the procedure starting at the
 present edit pointer position.
 </para>
 <para>
-The "c*" command will stop anytime it finds or causes a line with an error.
+The <quote>c*</quote> command will stop anytime it finds or causes a line with an error.
 It cannot be used to find or change line numbers.
 </para>
 <para>
 A word of warning:
 sometimes you can inadvertently change a line you didn't
 intend to change because the match string is embedded in a longer string.
-For example, if you attempt to change "no" to "yes" and the word "normal"
-occurs before the "no" you are looking for, "normal" will change to "yesrmal".
+For example, if you attempt to change <quote>no</quote> to <quote>yes</quote> and the word <quote>normal</quote>
+occurs before the <quote>no</quote> you are looking for, <quote>normal</quote> will change to <quote>yesrmal</quote>.
 </para>
 <para>
 Examples:
@@ -1781,7 +1781,7 @@ RUN <replaceable>procname</replaceable>
 
 If the procedure you want to run was the last procedure edited, listed,
 saved, etc., you can type RUN without giving a procedure name (the
-"*" shown in the DIR command identifies this procedure).
+<quote>*</quote> shown in the DIR command identifies this procedure).
 </para>
 <para>
 If the procedure expects <emphasis>parameters</emphasis> (see Chapter 7),
@@ -1899,7 +1899,7 @@ D:
 </para>
 <para>
 Notice that 
-Debug Mode displays a "D:" prompt when it is awaiting a
+Debug Mode displays a <quote>D:</quote> prompt when it is awaiting a
 command. Any debug mode commands can the be used to examine or
 change variables, turn trace mode on/off, etc. Depending on which
 commands are used, execution of the program can be terminated, resumed,
@@ -1911,12 +1911,12 @@ or executed one source line at a time.
 <command>$ <replaceable>text</replaceable></command>
 </synopsis>
 Calls OS-9's Shell command interpreter to run a program or OS-9
-command. Exactly the same as the System Mode "$" command.
+command. Exactly the same as the System Mode <quote>$</quote> command.
 
 <synopsis>
 <command>BREAK <replaceable>proc name</replaceable></command>
 </synopsis>
-Sets up a "breakpoint" at the procedure named. This command is used
+Sets up a <quote>breakpoint</quote> at the procedure named. This command is used
 when procedures call each other, and provides a way to re-enter Debug
 Mode when returning to a specific procedure.
 To illustrate how BREAK works, suppose there are three procedures in the
@@ -1929,9 +1929,9 @@ D: BREAK proc1
 ok
 D:
 </screen>
-Notice that BREAK responds with "ok" if the procedure was found on the
+Notice that BREAK responds with <quote>ok</quote> if the procedure was found on the
 current RUN stack. If you wish you can use the STATE command to verify that the
-three procedures are "nested" as expected.
+three procedures are <quote>nested</quote> as expected.
 Now, you can resume execution of PROC3 by typing CONT. After PROC3 terminates,
 control passes back to PROC2, which eventually returns to PROC1. As soon as
 this happens, the breakpoint you set is encountered, PROC1 is suspended,
@@ -1996,7 +1996,7 @@ returning to System Mode. Any open paths are closed at this point.
 This command is essentially the same as the <productname>BASIC09</productname> LET program statement,
 which allows the value of a procedure variable to be set to a new value
 using the result of the evaluated expression. The variable names used
-in this command must be the same as in the original "source" program;
+in this command must be the same as in the original <quote>source</quote> program;
 otherwise, an error is generated. LET does not work on user-defined
 data structures.
 
@@ -2026,7 +2026,7 @@ be printed.
 
 
 This command
-lists the calling ("nesting") order of all active procedures. The
+lists the calling (<quote>nesting</quote>) order of all active procedures. The
 highest-level procedure is always shown at the bottom of the calling list,
 and the lowest-level procedure will always be the suspended procedure.
 An example:
@@ -2046,19 +2046,19 @@ CALLED BY PROGRAM
 </synopsis>
 This command allows the suspended procedure to be executed one or
 more source statements at a time.
-For example, "STEP 5" would execute the equivalent of the next 5 source
+For example, <quote>STEP 5</quote> would execute the equivalent of the next 5 source
 statements. A debug command line which is just a carriage return is
-considered the same as "STEP 1". The STEP command is most commonly
+considered the same as <quote>STEP 1</quote>. The STEP command is most commonly
 used with the trace
 mode on, so the original source lines can be seen as they
 are executed.
 </para>
 <para>
 Note: because compiled I-code contains actual statement memory addresses,
-the "top" or "bottom" statements of loop structures are usually executed
+the <quote>top</quote> or <quote>bottom</quote> statements of loop structures are usually executed
 just once. For example, in FOR...NEXT loops the FOR statement is executed
 once, so the statement that appears to be the top of the loop is actually
-the one following the "FOR" statement.
+the one following the <quote>FOR</quote> statement.
 
 <synopsis>
 <command>TRON</command>
@@ -2119,7 +2119,7 @@ D: TRON
 </screen>
 </para>
 <para>
-Don't forget that trace mode is "local" to one procedure only. If the procedure
+Don't forget that trace mode is <quote>local</quote> to one procedure only. If the procedure
 under test returns to another procedure you need to use the BREAK
 command or put a PAUSE statement in the procedure to enter Debug Mode.
 If you call another procedure from the procedure being debugged, tracing will
@@ -2213,13 +2213,13 @@ The simplest kind of data structure is the <emphasis>array</emphasis>,
 which is a table of values.
 The table has a single name, and the storage space for each individual
 value is numbered. Arrays are created by DIM statements.
-For example, to create an array having five storage spaces called "AGES",
+For example, to create an array having five storage spaces called <quote>AGES</quote>,
 we can use the statement:
 
 <programlisting>
 DIM AGES(5):INTEGER
 </programlisting>
-"(5)" tells <productname>BASIC09</productname> how many spaces to reserve. The ":INTEGER" part
+<quote>(5)</quote> tells <productname>BASIC09</productname> how many spaces to reserve. The <quote>:INTEGER</quote> part
 indicates the array's data type. To assign a value of 22 to the third
 storage space in the array we can use the statement:
 
@@ -2317,7 +2317,7 @@ requires less storage than REAL values.
 </para>
 <para>
 Arithmetic which results in values outside the INTEGER range does not
-cause run-time errors but instead "wraps around" modulo 65536; i.e.,
+cause run-time errors but instead <quote>wraps around</quote> modulo 65536; i.e.,
 32767 + 1 yields -32768. Division of an integer by another integer
 yields an integer result, and any remainder is discarded. The programmer
 should be aware that numeric comparisons made on values in the range
@@ -2396,11 +2396,11 @@ truncate the string on the right and no error is generated.
 Normally the internal representation of the string is hidden. A string
 is stored in a fixed-size storage area and is represented by a sequence
 of bytes terminated by the value 255 or by the maximum length allocated
-to the STRING variable. Any remaining "unused" storage after the 255
+to the STRING variable. Any remaining <quote>unused</quote> storage after the 255
 byte allows the stored string to expand and contract during execution.
 
 The example below shows the internal storage of a variable dimensioned as
-STRING[6] and assigned a value of "SAM". Notice the byte at +3 contains
+STRING[6] and assigned a value of <quote>SAM</quote>. Notice the byte at +3 contains
 the 255 string terminator, and the two following bytes are not used.
 <informalfigure>
 <screen>
@@ -2410,7 +2410,7 @@ the 255 string terminator, and the two following bytes are not used.
 byte:     +0       +1       +2       +3       +4       +5
 </screen>
 </informalfigure>
-If the value "ROBERT" is assigned to the variable, the 255 byte terminator
+If the value <quote>ROBERT</quote> is assigned to the variable, the 255 byte terminator
 is not needed because the STRING fills the storage exactly:
 <informalfigure>
 <screen>
@@ -2426,8 +2426,8 @@ byte:     +0       +1       +2       +3       +4       +5
 A BOOLEAN quantity can have only two values: TRUE or FALSE.  A variable
 may be typed BOOLEAN (e.g., DIM done_flag:BOOLEAN ).  BOOLEAN quantities
 are stored as single byte values, but they may not be used for numeric
-computation.  BOOLEAN values print out as the character strings: "TRUE"
-and "FALSE."
+computation.  BOOLEAN values print out as the character strings: <quote>TRUE</quote>
+and <quote>FALSE.</quote>
 
 BOOLEAN values result from comparisons (comparing two compatible types),
 and are appropriate for logical flags and expressions.  ( result:=a AND
@@ -2462,7 +2462,7 @@ constants that correspond to the five basic data types.
 <sect2><title>Numeric Constants</title>
 <para>
 Numeric constants can be either REAL or INTEGER. If a number constant
-includes a decimal point or uses the "E format" exponential form,
+includes a decimal point or uses the <quote>E format</quote> exponential form,
 it forces <productname>BASIC09</productname> to
 store the number in REAL format even if the value could have been
 stored in INTEGER or BYTE format.
@@ -2535,7 +2535,7 @@ examples of INTEGER constants:
 </para></sect2>
 <sect2><title>Boolean Constants</title>
 <para>
-The two legal Boolean constants are "TRUE" and "FALSE".
+The two legal Boolean constants are <quote>TRUE</quote> and <quote>FALSE</quote>.
 </para>
 <para>
 Example:
@@ -2553,7 +2553,7 @@ double quote characters. The binary value of each character byte can be
 1 to 255.  Double quote characters to be included in the string use two
 characters in a row to represent one double quote.
 
-The null string "" is important because it represents a string having no
+The null string <quote></quote> is important because it represents a string having no
 characters. It is analogous to the numeric zero.  Here are some examples
 of string constants:
 
@@ -2568,7 +2568,7 @@ of string constants:
 </sect1>
 <sect1><title>Variables</title>
 <para>
-Each <productname>BASIC09</productname> variable is "local" to the procedure where it is defined. This
+Each <productname>BASIC09</productname> variable is <quote>local</quote> to the procedure where it is defined. This
 means that it is only known to the program statements within that
 procedure. You can use the same variable name in several procedures and
 the variables will be completely independent. If you want other procedures
@@ -2598,14 +2598,14 @@ any initial value if needed.
 <sect1><title>Parameter Variables</title>
 <para>
 Procedures may pass variables to other procedures. When this occurs, the
-variables passed to the called procedure are called "parameters".
-Parameters may be passed either "by reference",
+variables passed to the called procedure are called <quote>parameters</quote>.
+Parameters may be passed either <quote>by reference</quote>,
 allowing values to be returned from the called procedure, or
-"by value", which protects the values in the calling procedure such
+<quote>by value</quote>, which protects the values in the calling procedure such
 that they may not be changed by the procedure which is called.
 </para>
 <para>
-Parameters are usually passed "by reference"; this is done by enclosing
+Parameters are usually passed <quote>by reference</quote>; this is done by enclosing
 the names of the variables to be sent to the called procedure in
 parentheses as part of the RUN statement. The storage address of each
 parameter variable is evaluated and sent to the called procedure, which
@@ -2616,7 +2616,7 @@ Parameters passed by reference allow called procedures to return values
 to their callers.
 </para>
 <para>
-Parameters may be passed "by value" by writing the value to be passed
+Parameters may be passed <quote>by value</quote> by writing the value to be passed
 as an expression which is evaluated at the time of the call. Useful
 expression-generators that do not alter values are +0 for numbers or +""
 for strings. For example:
@@ -2651,8 +2651,8 @@ intended to be in BYTE-range, will probably be zero!).
 <sect1><title>Arrays</title>
 <para>
 The DIM statement can create arrays of from 1 to 3 dimensions
-(a one-dimensional array is often called a "vector", while a 2 or 3
-dimensional array is called a "matrix" ).  The sizes of each dimension are
+(a one-dimensional array is often called a <quote>vector</quote>, while a 2 or 3
+dimensional array is called a <quote>matrix</quote> ).  The sizes of each dimension are
 defined when the array is typed (e.g., DIM plot(24,80):BYTE) by including
 the number of elements in each dimension.  Thus, a table dimensioned
 (24,80) has 24 rows (1-24) of 80 columns (1 - 80) when accessed in the
@@ -2663,7 +2663,7 @@ types, complex data types, or other arrays.
 </para></sect1>
 <sect1><title>Complex Data Types</title>
 <para>
-The TYPE statement can be used to define a new data type as a "vector" (a
+The TYPE statement can be used to define a new data type as a <quote>vector</quote> (a
 one-dimensional array) of any atomic or previously-defined types.
 For example:
 
@@ -2687,11 +2687,11 @@ employee_file(20).number(2) := 115
 </para>
 <para>
 The complex structure gives the programmer the ability to store and
-manipulate related values that are of many types, to create "new"
+manipulate related values that are of many types, to create <quote>new</quote>
 types in addition to the five atomic data types, or to create data
-structures of unusual "shape" or size.  Additionally, the position of
+structures of unusual <quote>shape</quote> or size.  Additionally, the position of
 the desired element in complex-type storage is known and defined at
-"compile time" and need not be calculated at "run time". Therefore,
+<quote>compile time</quote> and need not be calculated at <quote>run time</quote>. Therefore,
 complex structure accesses may be slightly faster than array accesses.
 The elements of a complex structure may be copied to another similar
 structure using a single assignment operator (:= ). An entire structure
@@ -2712,34 +2712,34 @@ of subsequent complex structures or arrays.
 Many <productname>BASIC09</productname> statements evaluate <emphasis>expressions</emphasis>. The
 result of an evaluation is just a value of some atomic type (e.g., REAL,
 INTEGER, STRING, or BOOLEAN). The expression itself may consist of values
-and operators. For example, the expression "5+5" results in an integer
+and operators. For example, the expression <quote>5+5</quote> results in an integer
 with a value of ten.
 </para>
 <para>
-A "value" can be a constant value (e.g, 5.0, 5 , "5" , or TRUE), a
-variable name, or a function (e.g, SIN(x) ) which "returns" the result as
+A <quote>value</quote> can be a constant value (e.g, 5.0, 5 , "5" , or TRUE), a
+variable name, or a function (e.g, SIN(x) ) which <quote>returns</quote> the result as
 a value. An <emphasis>operator</emphasis> combines values (typically,
 those adjacent to the operator) and also returns a result.
 </para>
 <para>
 In the course of evaluating an expression, each value is copied to an
-"expression stack" where functions and operators take their input values
+<quote>expression stack</quote> where functions and operators take their input values
 and return results. If (as is often the case) the expression is to be
 used in an assignment statement, only when the result of the entire
 expression has been found is the assignment made.  This allows
 the variable which is being modified (assigned to) to be one of the
 values in the expression. The same principles apply for numeric, string,
 and Boolean operators. These principles make assignment statements such
-as "X=X+1" legal in all cases, even though it would not make sense in a
+as <quote>X=X+1</quote> legal in all cases, even though it would not make sense in a
 mathematical context.
 </para>
 <para>
-Any expression evaluates to one of the five "atomic" data types, i.e.,
+Any expression evaluates to one of the five <quote>atomic</quote> data types, i.e.,
 real, integer, byte, Boolean, or string. This does not mean, however,
 that all the operators and operands in expressions have to be of an
 identical type. Often types are mixed in expressions because the RESULT
 of some operator or function has a different type than its operands.
-An example is the "less than" operator. Here is an example:
+An example is the <quote>less than</quote> operator. Here is an example:
 
 <informalexample>
 <programlisting>
@@ -2747,13 +2747,13 @@ An example is the "less than" operator. Here is an example:
 </programlisting>
 </informalexample>
 
-The "&lt;" operator compares two numeric operands. The result of the
+The <quote>&lt;</quote> operator compares two numeric operands. The result of the
 comparison is of type BOOLEAN; in this case, the value TRUE.
 </para>
 <para>
 <productname>BASIC09</productname> allows intermixing of the three numeric types because it performs
 automatic type conversion of operands. If different types are used in an
-expression, the "result" will be  the same type as the operand(s)
+expression, the <quote>result</quote> will be  the same type as the operand(s)
 having the largest representation. As a rule, any numeric type operand
 may be used in a expression that is expected to produce a result of
 type REAL. Expressions that must produce BYTE or INTEGER results must
@@ -2770,7 +2770,7 @@ Operators take two operands (except negation) and cause some operation
 to be performed producing a result, which is generally the same type
 as the operands (except comparisons).  The table below lists the operators
 available and the types they accept and produce.
-"NUMERIC" refers to either BYTE, INTEGER, or REAL types.
+<quote>NUMERIC</quote> refers to either BYTE, INTEGER, or REAL types.
 <table frame="none" colsep="0" rowsep="0">
 <title>BASIC09 Expression Operators</title>
 <tgroup cols="4">
@@ -2896,7 +2896,7 @@ When comparing strings, the ASCII collating sequence is used, so that
 <sect2>
 <title>Operator Precedence</title>
 <para>
-Operators have "precedence". This means they are evaluated in a specific
+Operators have <quote>precedence</quote>. This means they are evaluated in a specific
 order. (i.e., multiplications performed before addition).  Parentheses can
 be used to override natural precedence, however, extraneous parentheses
 may be removed by the compiler. The legal operators are listed below,
@@ -3305,7 +3305,7 @@ for your program if you so desire.
 <para>
 A procedure consists of any number of program statement lines. Each line
 can have an optional line number, and more than one program statement can be
-placed on the same line if separated by "\" characters. For
+placed on the same line if separated by <quote>\</quote> characters. For
 example, the following statements are equivalent:
 
 <informaltable frame="none" colsep="0" rowsep="0">
@@ -3362,16 +3362,16 @@ Syntax:
 This statement evaluates an expression and stores the result in <replaceable>var</replaceable> which may be a
 simple variable or data structure element. The result of the expression
 must be of the same or compatible type as <replaceable>var</replaceable>.
-<productname>BASIC09</productname> will accept either "=" or ":=" as an assignment operator, however, the
+<productname>BASIC09</productname> will accept either <quote>=</quote> or <quote>:=</quote> as an assignment operator, however, the
 second form ( := ) is preferred because it distinguishes the assignment
-operation from a comparison (the test for equality). The ":="  operator is
+operation from a comparison (the test for equality). The <quote>:=</quote>  operator is
 the same as used in PASCAL.
 </para>
 <para>
 Another use of the assignment statement is to copy the entire value
 of an array or complex data structure to another array or complex
 data structure.  The data structures do not have to have the same type
-or "shape". The only restriction is that the size of the destination
+or <quote>shape</quote>. The only restriction is that the size of the destination
 structure be the same or larger than the source structure.  In fact this
 type of assignment can be used to perform unusual type conversions.
 For example, a string variable of 80 characters can be copied to a
@@ -3514,7 +3514,7 @@ If the STEP clause is used, the expression following is evaluated
 and used as the loop increment. If it is negative, the loop will count down.
 </para>
 <para>
-The "body" of the loop (i.e. statements between the "FOR" and "NEXT" are
+The <quote>body</quote> of the loop (i.e. statements between the <quote>FOR</quote> and <quote>NEXT</quote> are
 executed until the counter variable is larger than the terminating
 expression value. For negative STEP values, the loop will execute until the
 loop counter is less than the termination value. If the initial value of <replaceable>var</replaceable>
@@ -3550,7 +3550,7 @@ Syntax:
 <command>WHILE <replaceable>bool expr</replaceable> DO</command>
 <command>ENDWHILE</command>
 </synopsis>
-This is a loop construct with the test at the "top" of the loop.
+This is a loop construct with the test at the <quote>top</quote> of the loop.
 Statements within the loop are executed as long as <replaceable>bool expr</replaceable> is TRUE.
 The body of the loop will not be executed if the
 Boolean expression evaluates to FALSE when first executed.
@@ -3708,7 +3708,7 @@ The GOSUB statement
  transfers program execution to a subroutine starting at the specified
 line number. The subroutine is executed until a RETURN statement is
 encountered, which causes execution to resume at the statement following
-the calling GOSUB. Subroutines may be "nested" to any depth.
+the calling GOSUB. Subroutines may be <quote>nested</quote> to any depth.
 </para>
 <para>
 Example:
@@ -3792,7 +3792,7 @@ Syntax:
 <synopsis>
 <command>ON ERROR [ GOTO <replaceable>line #</replaceable> ]</command>
 </synopsis>
-This statement sets a "trap" that transfers control to the line
+This statement sets a <quote>trap</quote> that transfers control to the line
 number given when a non-fatal run-time error occurs. If no ON ERROR GOTO has
 been executed in a procedure before an error occurs, the procedure will stop
 and enter DEBUG mode. The error trap can be turned of by executing ON
@@ -3801,7 +3801,7 @@ ERROR without a GOTO.
 <para>
 This statement is often used in conjunction with the ERR function,
 which returns the specific error code, and the ERROR statement
-which artificially generates "errors". Note: the ERR function
+which artificially generates <quote>errors</quote>. Note: the ERR function
 automatically resets to zero any time it is called.
 </para>
 <para>
@@ -3865,7 +3865,7 @@ calling procedure.
 The parameters can be variables, constants, or the names of entire arrays or
 data structures. They can be of any type, (EXCEPT variable of type BYTE
 but BYTE arrays are O.K.).
-If a parameter is a constant or expression, it is passed "by value", i.e.,
+If a parameter is a constant or expression, it is passed <quote>by value</quote>, i.e.,
 it is evaluated and placed in a temporary storage
 location, and the address of the temporary storage is passed to the called
 procedure. Parameters passed by value can be changed by the receiving
@@ -3873,7 +3873,7 @@ procedure, but the changes are not reflected in the calling procedure.
 </para>
 <para>
 If the parameter is the name of a variable, array, or data structure, it is
-passed by "reference", i.e., the address of that storage
+passed by <quote>reference</quote>, i.e., the address of that storage
 is sent to the called procedure and thus the value in that storage may be
 changed by the receiving procedure. These changes are reflected in the
 calling procedure.
@@ -3927,10 +3927,10 @@ used for other purposes.
 </figure>
 </para>
 <para>
-Machine language modules return error status by setting the "C"
+Machine language modules return error status by setting the <quote>C</quote>
 bit of the MPU condition codes register, and by setting the B
 register to the appropriate error code. For an example of a machine
-language subroutine ("INKEY"), See <xref linkend="sample-programs"/>.
+language subroutine (<quote>INKEY</quote>), See <xref linkend="sample-programs"/>.
 </para>
 <para>
 Example of use of the RUN statement:
@@ -3964,7 +3964,7 @@ Syntax:
 </synopsis>
 
 This statement is used to
-"unlink" an external procedure, possibly returning system memory,
+<quote>unlink</quote> an external procedure, possibly returning system memory,
 and remove it from <productname>BASIC09</productname>'s procedure directory. If the procedure is
 inside the workspace, nothing happens and no error is generated. KILL can
 be used with auto-loading PACKed procedures as an alternative to CHAIN
@@ -3973,7 +3973,7 @@ when program overlay is desired.
 <orderedlist numeration="arabic">
 <listitem>
 <para>
-It can be fatal to OS-9 to KILL a procedure that is still "active".
+It can be fatal to OS-9 to KILL a procedure that is still <quote>active</quote>.
 </para>
 </listitem>
 <listitem>
@@ -4004,8 +4004,7 @@ Syntax:
 <synopsis>
 <command>CHAIN <replaceable>str expr</replaceable></command>
 </synopsis>
-The CHAIN statement
- performs an OS-9 "chain" operation on the SHELL, passing the specified
+The CHAIN statement performs an OS-9 <quote>chain</quote> operation on the SHELL, passing the specified
 string as an argument. This causes <productname>BASIC09</productname> to be exited, unlinked,
 and its memory returned to OS-9. The string should evaluate to the
 name of an executable module (such as BASIC09), passing parameters if
@@ -4015,16 +4014,16 @@ appropriate.
 CHAIN can begin execution of any module, not just <productname>BASIC09</productname>. It executes the
 module indirectly through the Shell in order to take advantage of Shell's
 parameter processing. This has the side-effect of
-leaving an extra "incarnation" of the Shell active. Programs that
+leaving an extra <quote>incarnation</quote> of the Shell active. Programs that
 repeatedly chain to each other eventually find all of memory filled with
-waiting shells. This can be prevented by using the "ex" option of the Shell.
+waiting shells. This can be prevented by using the <quote>ex</quote> option of the Shell.
 Consult the <citetitle pubwork="book">OS-9 User's Guide</citetitle> for more details on the capabilities of the shell.
 </para>
 <para>
 Files that are open when a CHAIN occurs are not closed.
 However, the OS-9 Fork call will only pass the standard I/O paths
 (0,1,2) to a child process. Therefore, if it is necessary to pass
-an open path to another program segment, the "ex" option of Shell
+an open path to another program segment, the <quote>ex</quote> option of Shell
 must be used.
 </para>
 <para>
@@ -4059,7 +4058,7 @@ discussion of OS-9 standard commands.
 </para>
 <para>
 The SHELL statement requests OS-9 to create a new process, initially
-executing the "shell", which is the OS-9 command interpreter. The
+executing the <quote>shell</quote>, which is the OS-9 command interpreter. The
 shell can then call any program in the system (subject to the normal
 security functions). The string expression is evaluated and passed to the
 shell to be executed as a command line. (just as if it had
@@ -4100,7 +4099,7 @@ This statement ends execution of the procedure and returns to the calling proced
 or to <productname>BASIC09</productname> command mode if it was the highest level procedure. If an
 output list is given, it also works the same as the PRINT statement.
 END is an executable statement and can be used several times in the same
-procedure. END is optional: it is not required at the "bottom" of a procedure.
+procedure. END is optional: it is not required at the <quote>bottom</quote> of a procedure.
 </para>
 <para>
 Examples:
@@ -4165,7 +4164,7 @@ Debug Mode. If an output list is given it also works like a PRINT statement.
 <programlisting>
 <replaceable>output</replaceable> BREAK IN PROCEDURE <replaceable>procedure name</replaceable>
 </programlisting>
-The Debug Mode "CONT" command can be used to resume procedure
+The Debug Mode <quote>CONT</quote> command can be used to resume procedure
 execution at the following statement.
 </para>
 <para>
@@ -4243,7 +4242,7 @@ Syntax:
 These statements are used to put comments in programs. The second form
 of the statement is for compatibility with PASCAL programs. Comments
 are retained in the I-code but are removed by the PACK compile command.
-The "!" character can be typed in place of the keyword
+The <quote>!</quote> character can be typed in place of the keyword
 REM when editing programs. The compiler trims away extra spaces
 following REM to conserve memory space.
 </para>
@@ -4274,7 +4273,7 @@ When do you need to use the DIM statement?
 You don't need to for simple variables of type REAL because
 this is the default format for undeclared variables. You also don't need to
 for 32-character STRING type variables (any name ending with a
-"$" is automatically assigned this type). Even though you don't have to
+<quote>$</quote> is automatically assigned this type). Even though you don't have to
 declare variables in these two cases, you may want to anyway to
 improve your program's internal documentation. Those
 things you <emphasis>must</emphasis> declare are:
@@ -4323,7 +4322,7 @@ Simple variables are declared by using the variable name in a DIM
 statement without a subscript. If variables are not explicitly declared, they
 are automatically assumed to be REAL, or type STRING[32]
 if the variable name ends with a
-"$" character. Therefore all simple variables of other types
+<quote>$</quote> character. Therefore all simple variables of other types
 must be explicitly declared. For example:
 
 <informalexample>
@@ -4340,7 +4339,7 @@ DIM a,b,c: STRING
 </programlisting>
 </informalexample>
 In addition, several different types can be declared in a single DIM
-statement by using a semicolon ";" to separate different types:
+statement by using a semicolon <quote>;</quote> to separate different types:
 
 <informalexample>
 <programlisting>
@@ -4348,7 +4347,7 @@ DIM a,b,c:INTEGER; n,m:decimal; x,y,z:BOOLEAN
 </programlisting>
 </informalexample>
 
-In this example a, b, and c are type INTEGER, n and m are type "decimal" (a
+In this example a, b, and c are type INTEGER, n and m are type <quote>decimal</quote> (a
 user-defined type), and x, y, and z are type BOOLEAN.
 String variables are declared the same way except an optional
 maximum string length can be specified. If a length is not explicitly
@@ -4360,8 +4359,8 @@ DIM name:STRING[40]; address,city:STRING; zip:REAL
 </programlisting>
 </informalexample>
 
-In this case, "name" is a string variable of 40 characters maximum, "address"
-and "city" are string variables of 32 characters each, and "zip" is a
+In this case, <quote>name</quote> is a string variable of 40 characters maximum, <quote>address</quote>
+and <quote>city</quote> are string variables of 32 characters each, and <quote>zip</quote> is a
 real variable.
 </para></sect3>
 <sect3><title>Array Declarations</title>
@@ -4379,8 +4378,8 @@ DIM a(10),b(20,30),c:INTEGER; x(5,5,5):STRING[12]
 </programlisting>
 </informalexample>
 
-In the example above, "a" is an array of 10 integers, "b" is a 20 by 30
-matrix of integers, "c" is a simple integer variable, and "x" is a
+In the example above, <quote>a</quote> is an array of 10 integers, <quote>b</quote> is a 20 by 30
+matrix of integers, <quote>c</quote> is a simple integer variable, and <quote>x</quote> is a
 three-dimensional array of 12-character strings.
 </para>
 <para>
@@ -4389,7 +4388,7 @@ user-defined types, structures of arbitrary complexity and shape can
 be generated.
 Here's an example declaration that generates a doubly-linked list
 of character strings. Each element of the array consists of the string
-containing the data and two integer "pointers".
+containing the data and two integer <quote>pointers</quote>.
 
 <informalexample>
 <programlisting>
@@ -4424,8 +4423,8 @@ Syntax: Same as DIM statement
 </para>
 <para>
 PARAM is identical to the DIM statement, but it does not create
-variable storage. Instead, it describes what parameters the "called" procedure
-expects to receive from the "calling" procedure.
+variable storage. Instead, it describes what parameters the <quote>called</quote> procedure
+expects to receive from the <quote>calling</quote> procedure.
 </para>
 <para>
 The programmer must insure that the total size of each
@@ -4464,7 +4463,7 @@ Syntax:
 </synopsis>
 
 This statement is used to define new data types. New data types are
-defined as a "vector" (a one-dimensional array) of previously
+defined as a <quote>vector</quote> (a one-dimensional array) of previously
 defined types. This structure differs from an array in that the
 various elements may be of different types, and the elements are
 accessed by field name instead of an array index.
@@ -4475,10 +4474,10 @@ TYPE cust_recd := name,address(3):STRING; balance
 </programlisting>
 </informalexample>
 
-This example creates a new data type called "cust_recd" which has three
-named fields: a field called "name" which is a string, a field
-called "address" which is a vector of three strings; and
-a field called "balance" which is a (default) REAL value.
+This example creates a new data type called <quote>cust_recd</quote> which has three
+named fields: a field called <quote>name</quote> which is a string, a field
+called <quote>address</quote> which is a vector of three strings; and
+a field called <quote>balance</quote> which is a (default) REAL value.
 </para>
 <para>
 The TYPE statement can include previously-defined types so very
@@ -4487,7 +4486,7 @@ lists, trees, etc. This statement  does not create any variable storage
 itself; the storage is created when the newly-defined type is used in a
 DIM statement.
 The example show below creates an array having 250 elements of type
-"cust_recd" that was defined above:
+<quote>cust_recd</quote> that was defined above:
 
 <programlisting>
 DIM customer_file(250):cust_recd
@@ -4520,13 +4519,13 @@ faster than arrays.
 A file is a logical concept for a sequence of data which is
 saved for convenience in use and storage. File data may be pure
 binary data, textual data (ASCII characters), or any other useful
-information. Hardware input/output ("I/O") devices used by OS-9
+information. Hardware input/output (<quote>I/O</quote>) devices used by OS-9
 also work like files, so you can generally use any I/O facility
 regardless of whether you are
 working with disk files or I/O devices such as printers. This single
 interface standard for any device and simple communication facilities allow
 any device to be used with any other device. This concept is known as
-"unified I/O". Note that
+<quote>unified I/O</quote>. Note that
 unified I/O can benefit routine programming. For example:
 file operations can be debugged by communicating with a terminal or
 printer instead of a storage device, and procedures which normally
@@ -4561,7 +4560,7 @@ bytes (in a complex structure).  The GET structure statement merely
 recovers the number of bytes associated with that type of structure.
 It is possible to move to a particular byte in a random-access file
 (using SEEK) and to begin to PUT or GET sequentially from that point (in
-general, "SEEK #path,0" is equivalent to the REWIND used in some forms
+general, <quote>SEEK #path,0</quote> is equivalent to the REWIND used in some forms
 of BASIC). Since the random-access file contains no record-separators
 to indicate the size of particular elements of the file, the programmer
 should use the SIZE function to determine the size of a single element,
@@ -4578,16 +4577,16 @@ has updated all data back onto magnetic media.
 </para></sect1>
 <sect1><title>I/O Paths</title>
 <para>
-A "path" is a description of a "channel" through which data flows from a
+A <quote>path</quote> is a description of a <quote>channel</quote> through which data flows from a
 given program outward or from some device inward.  In order for data to
 flow to or from a device, there must be an associated OS-9 device driver
 &#8212; see the <citetitle pubwork="book">OS9 User's Manual</citetitle>.
 When a path is created, OS-9 returns
 a unique number to identify the path in subsequent file operations. This
-"path number" is used by the I/O statements to specify the file to be
-used. Three path numbers have special meanings because they are "standard
-I/O paths" representing <productname>BASIC09</productname>'s interactive input/output (your terminal).
-These are automatically "opened" for you and should not be closed except
+<quote>path number</quote> is used by the I/O statements to specify the file to be
+used. Three path numbers have special meanings because they are <quote>standard
+I/O paths</quote> representing <productname>BASIC09</productname>'s interactive input/output (your terminal).
+These are automatically <quote>opened</quote> for you and should not be closed except
 in very special circumstances. The standard I/O path numbers are:
 <informaltable frame="none" colsep="0" rowsep="0">
 <tgroup cols="2">
@@ -4694,9 +4693,9 @@ Syntax:
 This statement accepts input during the execution of a program. The
 input is normally read from the standard input device (terminal)
 unless an optional path number is given. When the INPUT statement
-is encountered, program execution is suspended and a "?" prompt is
+is encountered, program execution is suspended and a <quote>?</quote> prompt is
 displayed.  If the optional prompt string is given, it is displayed
-instead of the normal "?" prompt.  This means that the INPUT statement
+instead of the normal <quote>?</quote> prompt.  This means that the INPUT statement
 is really <emphasis>both</emphasis>
 an input and output statement.  Therefore, if a path other than the
 default standard input path is used, the path should be open in UPDATE
@@ -4746,7 +4745,7 @@ GET #0,char
 </programlisting>
 </informalexample>
 For a function to test if data is available from the keyboard without
-"hanging" the program, see the "INKEY" assembly language program included
+<quote>hanging</quote> the program, see the <quote>INKEY</quote> assembly language program included
 in <xref linkend="sample-programs"/>.
 </para></sect2>
 <sect2><title>PRINT Statement</title>
@@ -4769,17 +4768,17 @@ of any atomic type. The PRINT statement evaluates each item and converts
 the result to corresponding ASCII characters which are then displayed.
 If the separator character following the item is a semicolon, the
 next item will be displayed without any spacing in between. If a comma
-is used, spaces are output so the next item starts at the next "tab"
+is used, spaces are output so the next item starts at the next <quote>tab</quote>
 zone. The tab zones are 16 characters long starting at the beginning of
 the line. If the line is terminated by a semicolon, the usual carriage
 return following the output line is inhibited.
 </para>
 <para>
-The "TAB(<replaceable>expr</replaceable>)" function can be used as an item in the output list,
+The <quote>TAB(<replaceable>expr</replaceable>)</quote> function can be used as an item in the output list,
 which outputs the correct number of spaces to cause the next item to start
 in the print column specified by the result of the expression. If the
 output line is already past the desired tab position, the TAB is ignored.
-A related function, "POS", can be used in the program to determine
+A related function, <quote>POS</quote>, can be used in the program to determine
 the output position at any given time. The output columns are numbered
 from one to a maximum of 255.
 The size of <productname>BASIC09</productname>'s output buffer varies according to stack size at the moment.
@@ -4825,12 +4824,12 @@ Syntax:
 This statement issues a request to OS-9 to open an I/O path to an existing
 file or device.  The STRING expression is evaluated and passed to OS-9 as
 the descriptive pathlist.The variable name specified must be DIMensioned
-as type INTEGER or BYTE and is used "receive" the "path number" assigned
+as type INTEGER or BYTE and is used <quote>receive</quote> the <quote>path number</quote> assigned
 to the path by OS-9. This path number is used to reference the specific
 file/device in subsequent input/output statements.
 </para>
 <para>
-The OPEN statement may also specify the path's desired "access mode" which
+The OPEN statement may also specify the path's desired <quote>access mode</quote> which
 can be READ, WRITE, UPDATE, EXEC, or DIR. This defines which direction I/O
 transfers will occur. If no access mode is specified, UPDATE is assumed
 and both reading and writing are permitted. The DIR mode allows OS-9
@@ -4872,22 +4871,22 @@ Syntax:
 </synopsis>
 The CREATE statement is used to create a new file on a multifile mass storage
 device such as disk or tape. If the device is not of multifile type,
-this statement works like an "OPEN" statement.
+this statement works like an <quote>OPEN</quote> statement.
 The variable name is used to receive the path number assigned by
 OS-9 and must be of BYTE or INTEGER type.  The STRING expression is
 evaluated and passed to OS-9 to be used as the descriptive pathlist.
 </para>
 <para>
-The "access mode" defines the direction of subsequent I/O transfers and
-should be either WRITE or UPDATE. "UPDATE" mode allows the file to be
+The <quote>access mode</quote> defines the direction of subsequent I/O transfers and
+should be either WRITE or UPDATE. <quote>UPDATE</quote> mode allows the file to be
 either read or written.
 </para>
 <para>
 OS-9 has a single file type that can be accessed both sequentially OR at
-random. Files are byte-addressed, so no explicit "record" length need be
+random. Files are byte-addressed, so no explicit <quote>record</quote> length need be
 given (see GET and PUT statements). When a new file is created, it has an
 initial length of zero. Files are expanded automatically by PRINT, WRITE,
-or PUT statements that write beyond the current "end of file".
+or PUT statements that write beyond the current <quote>end of file</quote>.
 File size may be set explicitly using the OS9 statement.
 </para>
 <para>
@@ -4987,12 +4986,12 @@ depends on the capacity of the device.
 </para>
 <para>
 Although SEEK is normally used with random-access files, it can be used
-to "rewind" sequential files. For example:
+to <quote>rewind</quote> sequential files. For example:
 
 <programlisting>
 SEEK #path,0
 </programlisting>
-is the same as a "rewind" or "restore" function. This is the only form of
+is the same as a <quote>rewind</quote> or <quote>restore</quote> function. This is the only form of
 the SEEK statement that is generally useful for files accessed by READ
 and WRITE statements. These statements use variable-length records, so
 it is difficult to know the address of any particular record in the file.
@@ -5144,10 +5143,10 @@ data type that describes such a record. For example:
 TYPE inv_item=name:STRING[25];list,cost:REAL;qty:INTEGER
 </programlisting>
 </informalexample>
-This statement describes a new record type called "inv_item" but does not
+This statement describes a new record type called <quote>inv_item</quote> but does not
 cause variable storage to be assigned for it. The next step is to create
-two data structures: an array of 100 "records" of type "inv_item" to be called
-"inv_array" and a single working record called "work_rec":
+two data structures: an array of 100 <quote>records</quote> of type <quote>inv_item</quote> to be called
+<quote>inv_array</quote> and a single working record called <quote>work_rec</quote>:
 <programlisting>
 DIM inv_array(100):inv_item
 DIM work_rec:inv_item
@@ -5168,7 +5167,7 @@ used in conjunction with the SEEK statement to position a file pointer
 to a specific record's address.
 </para>
 <para>
-The procedure below creates a file called "inventory" and initializes it
+The procedure below creates a file called <quote>inventory</quote> and initializes it
 with zeroes and nulls:
 
 <programlisting>
@@ -5188,7 +5187,7 @@ NEXT n
 END
 </programlisting>
 
-Notice that the assignment statements referenced each named "field" of
+Notice that the assignment statements referenced each named <quote>field</quote> of
 work_rec by name, but PUT referenced the record as a whole.
 </para>
 <para>
@@ -5205,7 +5204,7 @@ SEEK #path, (recnum - 1) * SIZE(work_rec)
 PUT #path,work_rec
 </programlisting>
 This routine below uses a loop to read the entire file into the array
-"inv_array":
+<quote>inv_array</quote>:
 
 <programlisting>
 SEEK #path,0 \ (* "rewind" the file *)
@@ -5288,11 +5287,11 @@ DATA TRUE,FALSE,TRUE,TRUE,FALSE
 </para>
 <para>
 The READ statement has a list of one or more variable names. When
-executed, it gets "input" by evaluating the current expression in the
+executed, it gets <quote>input</quote> by evaluating the current expression in the
 current data statement. The result must match the type of the variable. When
 all the expressions in a DATA statement have been evaluated, the next
 DATA statement (in sequential order) is used. If there are no more DATA
-statements following, processing "wraps around" to the first data statement
+statements following, processing <quote>wraps around</quote> to the first data statement
 in the program.
 </para>
 <para>
@@ -5329,9 +5328,9 @@ number of any output file or device. If it is omitted, the output is
 written to the standard output path (usually the terminal).
 </para>
 <para>
-The string expression is evaluated and used as a "format specification"
-which contains specific formatting directives for each item in the "output
-list".  The items in the output list can be constants, variables, or
+The string expression is evaluated and used as a <quote>format specification</quote>
+which contains specific formatting directives for each item in the <quote>output list</quote>.
+The items in the output list can be constants, variables, or
 expressions of any atomic type. <emphasis>Blanks are not allowed in format strings!</emphasis>
 As each output item is processed, it is matched up with a specification
 in the format list. The type of each expression result must be compatible
@@ -5378,13 +5377,13 @@ identifier:
 </tbody>
 </tgroup>
 </informaltable>
-The identifier letter is followed by a constant number called the "field
-width". This number indicates the exact number of print columns the
-output is to occupy and must allow for the data <emphasis>and</emphasis> "overhead" character
+The identifier letter is followed by a constant number called the <quote>field width</quote>.
+This number indicates the exact number of print columns the
+output is to occupy and must allow for the data <emphasis>and</emphasis> <quote>overhead</quote> character
 positions such as sign characters, decimal points, exponents, etc.
 Some formats have additional mandatory or optional parameters that
 control subfields or select editing options. One of these options is
-"justification" which specifies whether the output is to "line up" on
+<quote>justification</quote> which specifies whether the output is to <quote>line up</quote> on
 the left, right side, or center of the output field. Fields are commonly
 right-justified in reports because it arranges them into neat columns
 with decimal points aligned in the same position.
@@ -5424,7 +5423,7 @@ Syntax:
 </synopsis>
 This format can be used for numbers of types REAL, INTEGER, or
 BYTE. The total field width specification must include two overhead
-positions for the sign and decimal point. The "f" specifies how many
+positions for the sign and decimal point. The <quote>f</quote> specifies how many
 fractional digits to the right of the decimal point are to be
 displayed. If the number has more significant digits than the field
 allows for, the undisplayed places are used to round the displayed digits. For
@@ -5480,9 +5479,9 @@ Syntax:
 This format prints numbers of types REAL, INTEGER, or BYTE
 in the scientific notation format using a mantissa and decimal exponent.
 The syntax and behavior of this format is similar to the REAL format
-except the "w" field width must allow for eight overhead positions for the
+except the <quote>w</quote> field width must allow for eight overhead positions for the
 mantissa sign, decimal point, and exponent characters.
-The "&lt;" and "&gt;" justification modes are allowed and work the same way.
+The <quote>&lt;</quote> and <quote>&gt;</quote> justification modes are allowed and work the same way.
 </para>
 <para>
 Example:
@@ -5504,7 +5503,7 @@ Syntax:
 </synopsis>
 This format is used to display numbers of types INTEGER or BYTE,
 and REAL numbers that are within range for automatic type conversion.
-The "w" field width must allow for one position overhead for the sign.
+The <quote>w</quote> field width must allow for one position overhead for the sign.
 The justification modes are:
 
 <informaltable frame="none" colsep="0" rowsep="0">
@@ -5546,7 +5545,7 @@ Syntax:
 <command>Hwj</command>
 </synopsis>
 This format can be used to display the internal binary representation
-of ANY data type, using hexadecimal characters. The "w" field width
+of ANY data type, using hexadecimal characters. The <quote>w</quote> field width
 specification determines the number of hexadecimal characters to
 output. Justification modes are:
 
@@ -5619,7 +5618,7 @@ Syntax:
 <synopsis>
 <command>Swj</command>
 </synopsis>
-This format is used to display string data of any length. The "w" field
+This format is used to display string data of any length. The <quote>w</quote> field
 width specifies the total field size. If the string to be displayed is
 shorter than the field size, it is padded with spaces according to the
 justification mode.  If it is too long, it will be truncated on the right side.
@@ -5666,7 +5665,7 @@ Syntax:
 <command>Bwj</command>
 </synopsis>
 This format is used to display Boolean data. The result of the Boolean
-expression is converted to the strings "TRUE" and "FALSE".
+expression is converted to the strings <quote>TRUE</quote> and <quote>FALSE</quote>.
 The specification is otherwise identical to the STRING format.
 </para></sect2>
 <sect2><title>Control Specifications</title>
@@ -5734,7 +5733,7 @@ Here are some examples:
 <sect1><title>General Execution Performance of BASIC09</title>
 <para>
 The <productname>BASIC09</productname> multipass compiler produces a compressed and
-optimized low-level "I-code" for execution. Compared to other BASIC
+optimized low-level <quote>I-code</quote> for execution. Compared to other BASIC
 languages program storage is greatly decreased and execution speed
 is increased.
 </para>
@@ -5746,8 +5745,8 @@ there is often result in many MPU instruction cycles (such as execution
 of floating-point arithmetic operations). Thus, for complex programs
 there is little performance difference between execution of I-code and
 straight machine-language instructions.  This is generally not the case
-with traditional BASIC interpreters that have to "compile" from text as
-they run or even "tokenized" BASICs that must perform table-searching
+with traditional BASIC interpreters that have to <quote>compile</quote> from text as
+they run or even <quote>tokenized</quote> BASICs that must perform table-searching
 during execution.  <productname>BASIC09</productname> I-code instructions that reference variable
 storage, statements, labels, etc., contain the actual memory addresses
 so no table searching is ever required.  Off course, <productname>BASIC09</productname> fully exploits
@@ -5770,7 +5769,7 @@ code.
 <sect1><title>Optimum Use of Numeric Data Types</title>
 <para>
 Because <productname>BASIC09</productname> includes several different numeric representations
-(i.e., REAL, INTEGER, and BYTE) and does "automatic type conversions"
+(i.e., REAL, INTEGER, and BYTE) and does <quote>automatic type conversions</quote>
 between them, it is easy to write expressions or loops that take at
 least ten times longer to execute than is necessary. Some particular
 <productname>BASIC09</productname> numeric operators (+, -, *, /) and control structures (FOR..NEXT)
@@ -5801,10 +5800,10 @@ of types BYTE or INTEGER will the result also be INTEGER.
 <para>
 Sometimes, similar or identical results can be obtained in a number
 of different ways at various execution speeds. For example, if the
-variable "value" is an integer, then "value*2" will be a fast integer
-operation. However, if the expression is "value*2.0" the value "2.0"
+variable <quote>value</quote> is an integer, then <quote>value*2</quote> will be a fast integer
+operation. However, if the expression is <quote>value*2.0</quote> the value <quote>2.0</quote>
 will be represented as a REAL number, and the multiplication will be a
-REAL multiplication. This will also require that the variable "value"
+REAL multiplication. This will also require that the variable <quote>value</quote>
 will have to be transformed into a REAL value, and finally the result of
 the expression will have to be transformed back to an INTEGER value if
 it is to be assigned to a variable of that type. Thus a single decimal
@@ -5871,14 +5870,14 @@ point will slow this particular operation down by about ten times!
 </para>
 <para>
 This table can be used to deduce some interesting points. For
-example, "value*2" is not optimum - "value+value" can produce the
+example, <quote>value*2</quote> is not optimum - <quote>value+value</quote> can produce the
 same result in less time because multiplication takes longer than
-addition. Similarly, "value*value" or "SQ(value)" is <emphasis>much</emphasis> faster
-than the equivalent "value^2". Another interesting case is "x/2.0".
+addition. Similarly, <quote>value*value</quote> or <quote>SQ(value)</quote> is <emphasis>much</emphasis> faster
+than the equivalent <quote>value^2</quote>. Another interesting case is <quote>x/2.0</quote>.
 The REAL divide will cost 3870 cycles, but REAL multiplication takes
 only 990 cycles. The mathematical equivalent to division by a
 constant is multiplication by the inverse of the constant.
-Therefore, using "X*0.5" instead is almost four times faster!
+Therefore, using <quote>X*0.5</quote> instead is almost four times faster!
 </para></sect1>
 
 <sect1><title>Looping Quickly</title>
@@ -5926,7 +5925,7 @@ is exactly the same as the expression:
 <programlisting>
 x = x+5
 </programlisting>
-The subexpression "SQRT(100)/2" consists of constants only, so its result
+The subexpression <quote>SQRT(100)/2</quote> consists of constants only, so its result
 will not vary regardless of the rest of the program. But every time the
 program is run, the computer must evaluate it. This time can be significant,
 especially if the statement is within a loop. Constant expressions or
@@ -5946,7 +5945,7 @@ ASCII-to-binary conversions which take time.
 <para>
 One sure way to make a program faster is to use the most
 efficient algorithms possible. There are many good programming
-"cookbooks" that explain useful algorithms with examples in BASIC or PASCAL.
+<quote>cookbooks</quote> that explain useful algorithms with examples in BASIC or PASCAL.
 Thanks to <productname>BASIC09</productname>'s rich vocabulary you can use algorithms written in either
 language with little or no adaptation.
 </para>
