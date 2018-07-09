@@ -25,14 +25,14 @@ os9 I$SEEK
 <refsect1><title>Description</title>
 <para>
 The read or write pointer for the open file with the path
-number, "pn", is positioned by lseek to the specified place in
-the file. The "type" indicates from where "position" is to be
+number, <quote>pn</quote>, is positioned by lseek to the specified place in
+the file. The <quote>type</quote> indicates from where <quote>position</quote> is to be
 measured: if 0, from the beginning of the file, if 1, from the
 current location, or if 2, from the end of the file.
 </para>
 <para>
 Seeking to a location beyond the end of a file open for
-writing and then writing to it, creates a "hole" in the file
+writing and then writing to it, creates a <quote>hole</quote> in the file
 which appears to be filled with zeros from the previous end to
 the position sought.
 </para>
@@ -49,8 +49,8 @@ lseek(pn,0l,1);
 
 <refsect1><title>Caveats</title>
 <para>
-The argument "position" <emphasis>must</emphasis> be a long integer. Constants
-should be explicitly made long by appending an "l", as above,
+The argument <quote>position</quote> <emphasis>must</emphasis> be a long integer. Constants
+should be explicitly made long by appending an <quote>l</quote>, as above,
 and other types should be converted using a cast:
 <informalexample>
 <para>
@@ -63,7 +63,7 @@ Notice also, that the return value from lseek is itself a long integer.
 
 <refsect1><title>Diagnostics</title>
 <para>
--1 is returned if "pn" is a bad path number, or attempting to
+-1 is returned if <quote>pn</quote> is a bad path number, or attempting to
 seek to a position before the beginning of a file.
 </para>
 </refsect1>

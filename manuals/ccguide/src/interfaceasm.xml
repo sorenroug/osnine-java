@@ -3,7 +3,7 @@
   <title>Interfacing C to Assembler</title>
   <para>
 The <productname>Microware C Compiler</productname> can embed
-assembler routines between the "#asm" and "#endasm" statements.
+assembler routines between the <quote>#asm</quote> and <quote>#endasm</quote> statements.
 </para>
   <section>
     <title>C function/procedure calls</title>

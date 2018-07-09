@@ -21,7 +21,7 @@
 <refsect1><title>Description</title>
 <para>
 This function alters the state of the input file buffer such
-that the next call of "getc()" returns "ch".
+that the next call of <quote>getc()</quote> returns <quote>ch</quote>.
 </para>
 <para>
 Only one character may be pushed back, and at least on

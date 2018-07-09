@@ -27,17 +27,17 @@ os9 I$CREATE
 <refsect1><title>Description</title>
 <para>
 Creat returns a path number to a new file available for
-writing, giving it the permissions specified in "perm" and
-making the task user the owner. If, however, "fname" is the
+writing, giving it the permissions specified in <quote>perm</quote> and
+making the task user the owner. If, however, <quote>fname</quote> is the
 name of an existing file, the file is truncated to zero length,
 and the ownership and permissions remain unchanged. NOTE,
 that unlike the OS-9 assembler service request, creat does
-not return an error if the file already exists. "Access()"
+not return an error if the file already exists. <quote>Access()</quote>
 should be used to establish the existence of a file if it is
 important that a file should not be overwritten.
 </para>
 <para>
-It is unnecessary to specify writing permissions in "perm" in
+It is unnecessary to specify writing permissions in <quote>perm</quote> in
 order to write to the file in the current task.
 </para>
 <para>
@@ -55,7 +55,7 @@ follows:
 #define  S_ISHARE  0x40     /* sharable */
 </programlisting>
 <para>
-Directories may not be created with this call; use "mknod()"
+Directories may not be created with this call; use <quote>mknod()</quote>
 instead.
 </para>
 </refsect1>

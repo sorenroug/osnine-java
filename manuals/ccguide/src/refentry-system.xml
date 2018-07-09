@@ -16,7 +16,7 @@
 
 <refsect1><title>Description</title>
 <para>
-System passes its argument to "shell" which executes it as a
+System passes its argument to <quote>shell</quote> which executes it as a
 command line. The task is suspended until the shell command
 is completed and system returns the shell's exit status. The
 maximum length of string is 80 characters. If a longer string

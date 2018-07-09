@@ -7,10 +7,10 @@ This package contains the OS-9 C Compiler Version 1.1. Many
 improvements and bug fixes have been incorporated since the V1.0
 release. If you are upgrading from V1.0, be <emphasis>absolutely sure</emphasis>
 to install <emphasis>all</emphasis> the files from the V1.1 disks. None of the
-compiler sections or the library is compatible with V1.0 files. Any ".r" or
-".a" files produced by the V1.0 compiler should not be assembled or
-linked with any ".a" or ".r" files produced by the V1.1 compiler.
-To be safe, recompile/reassemble <emphasis>all</emphasis> ".a" and ".r"
+compiler sections or the library is compatible with V1.0 files. Any <quote>.r</quote> or
+<quote>.a</quote> files produced by the V1.0 compiler should not be assembled or
+linked with any <quote>.a</quote> or <quote>.r</quote> files produced by the V1.1 compiler.
+To be safe, recompile/reassemble <emphasis>all</emphasis> <quote>.a</quote> and <quote>.r</quote>
 files with V.1.1.
 </para>
 <para>
@@ -119,7 +119,7 @@ C.link will now report if the direct page allocations exceeds 256 bytes.
 C.link is about three times faster using the improved V1.1 standard library.
 </para>
 <para>
-C.link can now output modules that can be entered by the BASIC09 "RUN" command.
+C.link can now output modules that can be entered by the BASIC09 <quote>RUN</quote> command.
 </para>
 </listitem>
 </varlistentry>
@@ -167,14 +167,14 @@ Fseek() now does not cause the buffer to be re-filled if the
 seek destination is already in the buffer.
 </para>
 <para>
-Getc() now does "I$READ" on unbuffered SCF devices rather than
-"I$READLN".
+Getc() now does <quote>I$READ</quote> on unbuffered SCF devices rather than
+<quote>I$READLN</quote>.
 </para>
 <para>
-Getc() performed on "stdin" flushes the "stdout" buffer.
+Getc() performed on <quote>stdin</quote> flushes the <quote>stdout</quote> buffer.
 </para>
 <para>
-Printf() has been changed to not flush the "stdout" buffer
+Printf() has been changed to not flush the <quote>stdout</quote> buffer
 before returning.
 </para>
 <para>

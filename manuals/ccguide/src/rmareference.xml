@@ -1,11 +1,11 @@
 <appendix xmlns="http://docbook.org/ns/docbook">
 <title>Relocating Macro Assembler Reference</title>
 <para>
-This appendix gives a summary of the operation of the "Relocating
-Macro Assembler" (named c.asm as distributed with the C Compiler).
+This appendix gives a summary of the operation of the
+<quote>Relocating Macro Assembler</quote> (named c.asm as distributed with the C Compiler).
 This appendix and the example assembly source files supplied with
 the C compiler should provide the basic information on how to use the
-"Relocating Macro Assembler" to create relocatable-object format
+<quote>Relocating Macro Assembler</quote> to create relocatable-object format
 files (ROF). It is further assumed that you are familiar with the
 6809 instruction set and mnemonics.
 See the <citetitle pubwork="book">Microware Relocating Assembler Manual</citetitle> for a more detailed description.
@@ -31,12 +31,12 @@ layout of the ROF file is described later.
 <para>
 RMA has a number of new directives to control the placement of
 code and data in the executable module. Since RMA does not
-produce memory modules, the MIA directives "mod" and "emod" are
+produce memory modules, the MIA directives <quote>mod</quote> and <quote>emod</quote> are
 not present. Instead, new directives PSECT and VSECT control
 the allocation of code and data areas by the linker.
 </para>
 <para>
-RMA has no equivalent to the MIA "setdp" directive. Data (and
+RMA has no equivalent to the MIA <quote>setdp</quote> directive. Data (and
 DP) allocation is handled by the linker.
 </para>
 </blockquote>
@@ -45,8 +45,9 @@ DP) allocation is handled by the linker.
 <para>
 A symbolic name is valid if it consists of from one to nine
 uppercase or lowercase characters, decimal digits or the characters
-"$", "_", "." or "@". RMA does not fold lowercase letters to
-uppercase. The names "Hi.you" and "HI.YOU" are distinct names.
+<quote>$</quote>, <quote>_</quote>, <quote>.</quote> or <quote>@</quote>.
+RMA does not fold lowercase letters to uppercase.
+The names <quote>Hi.you</quote> and <quote>HI.YOU</quote> are distinct names.
 </para>
 </section>
 
@@ -188,7 +189,7 @@ the names are different.</entry>
 <row>
 <entry>typelang</entry>
 <entry>byte expression for the executable module type/language
-byte. If this PSECT is not a "mainline"
+byte. If this PSECT is not a <quote>mainline</quote>
 (a module that has been designed to be forked to) module
 this byte must be zero.</entry>
 </row> 
@@ -221,7 +222,7 @@ be set to zero.</entry>
 <para>
 PSECT must have either no operand list or an operand list
 containing a name and five expressions. If no operand list is
-provided, the PSECT name defaults to "program" and all other
+provided, the PSECT name defaults to <quote>program</quote> and all other
 expressions to zero. The can only be one PSECT per assembly
 language file.
 </para>
@@ -475,15 +476,15 @@ The previous call to frud would expand the macro as follows:
       ldd  2,s
       beq  @xxx
 </programlisting>
-Where "\@" is a label, and "xxx" would be replaced
+Where <quote>\@</quote> is a label, and <quote>xxx</quote> would be replaced
 by a three digit number.
 </para>
 <para>
 An argument may be declared null by leaving it blank in the macro
-call. For example, if the macro instruction was "ldd \1ZZ\2", then
+call. For example, if the macro instruction was <quote>ldd \1ZZ\2</quote>, then
 the call to the macro with arguments AA,BB would expand the
-instruction to "ldd AAZZBB", and the call with argument ,BB will
-expand it to "ldd ZZBB".
+instruction to <quote>ldd AAZZBB</quote>, and the call with argument ,BB will
+expand it to <quote>ldd ZZBB</quote>.
 </para>
 </section>
 
@@ -517,11 +518,11 @@ will be a decimal number between 000 to 999.
 <para>
 More than one label may be specified in a macro by the addition of
 an extra character(s). For example, if two different labels are
-required in a macro, they can be specified by "\@A" and "\@B". In
-the first expansion of te macro, the labels would be "@001A" and
-"@001B", and in the second expansion they would be "@002A" and
-"@002B". The extra characters may be appended before the "\" or
-after the "@".
+required in a macro, they can be specified by <quote>\@A</quote> and <quote>\@B</quote>.
+In the first expansion of te macro, the labels would be <quote>@001A</quote> and
+<quote>@001B</quote>, and in the second expansion they would be <quote>@002A</quote> and
+<quote>@002B</quote>. The extra characters may be appended before the <quote>\</quote> or
+after the <quote>@</quote>.
 </para>
 </section>
 

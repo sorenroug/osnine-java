@@ -28,7 +28,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Conversions of the string pointed to by "ptr" to the relevant
+Conversions of the string pointed to by <quote>ptr</quote> to the relevant
 number type are carried out by these functions. They cease to
 convert a number when the first unrecognized character is
 encountered.
@@ -36,8 +36,8 @@ encountered.
 <para>
 Each skips leading spaces and tab characters. Atof()
 recognizes an optional sign followed by a digit string that
-could possibly contain a decimal point, then an optional "e"
-or "E", and optional sign and a digit string. Atol() and atoi()
+could possibly contain a decimal point, then an optional <quote>e</quote>
+or <quote>E</quote>, and optional sign and a digit string. Atol() and atoi()
 recognize an optional sign and a digit string.
 </para>
 </refsect1>

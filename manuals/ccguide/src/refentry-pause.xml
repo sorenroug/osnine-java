@@ -23,7 +23,7 @@ os9 I$SLEEP (with a value of 0)
 <refsect1><title>Description</title>
 <para>
 Pause may be used to halt a task until an interrupt is received
-from "kill".
+from <quote>kill</quote>.
 </para>
 <para>
 Pause always returns -1.
@@ -34,7 +34,7 @@ Pause always returns -1.
 <para>
 <link linkend="kill">kill()</link>,
 <link linkend="signal">signal()</link>,
-OS-9 shell command "kill"
+OS-9 shell command <quote>kill</quote>
 </para>
 </refsect1>
 

@@ -39,7 +39,7 @@ not been used.
 <refsect1><title>See Also</title>
 <para>
 <link linkend="sbrk">ibrk(), sbrk()</link>,
-Global variable "memend" and value "end".
+Global variable <quote>memend</quote> and value <quote>end</quote>.
 </para>
 </refsect1>
 

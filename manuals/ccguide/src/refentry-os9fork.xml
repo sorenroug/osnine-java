@@ -34,13 +34,13 @@ run concurrently with the calling process. When the forked
 process terminates, it will return to the calling process.
 </para>
 <para>
-"Modname" should point to the name of the desired module.
-"Paramsize" is the length of the parameter string which should
-normally be terminated with a '\n', and "paramptr" points to
-the parameter string. "Type" is the module type as found in
-the header(normally 1: program), and "lang" should match the
+<quote>Modname</quote> should point to the name of the desired module.
+<quote>Paramsize</quote> is the length of the parameter string which should
+normally be terminated with a '\n', and <quote>paramptr</quote> points to
+the parameter string. <quote>Type</quote> is the module type as found in
+the header(normally 1: program), and <quote>lang</quote> should match the
 language nibble in the module header (C programs have 1 for
-6809 machine code here). "Datasize" may be zero, or it may
+6809 machine code here). <quote>Datasize</quote> may be zero, or it may
 contain the number of 256 byte pages to give to the new process
 as initial allocation of memory.
 </para>

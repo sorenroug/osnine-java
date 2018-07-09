@@ -34,9 +34,9 @@
 <refsect1><title>Description</title>
 <para>
 Fopen returns a pointer to a file structure (file pointer) if
-the file name in the string pointed to by "filename" can be
+the file name in the string pointed to by <quote>filename</quote> can be
 validly opened with the action in the string pointed to by
-"action".
+<quote>action</quote>.
 </para>
 <para>
 The valid actions are:

@@ -85,36 +85,36 @@
 All strings passed to these functions are assumed null-terminated.
 </para>
 <para>
-Strcat appends a copy of the string pointed to by "s2" to the
-end of the string pointed to by "s1". Strncat copies at most
-"n" characters. Both return the first argument.
+Strcat appends a copy of the string pointed to by <quote>s2</quote> to the
+end of the string pointed to by <quote>s1</quote>. Strncat copies at most
+<quote>n</quote> characters. Both return the first argument.
 </para>
 <para>
-Strcmp compares strings "s1" and "s2" for lexicographic order
+Strcmp compares strings <quote>s1</quote> and <quote>s2</quote> for lexicographic order
 and returns an integer less than, equal to or greater than 0
-where, respectively, "s1" is less than, equal to or greater
-than "s2". Strncmp compares at most "n" characters.
+where, respectively, <quote>s1</quote> is less than, equal to or greater
+than <quote>s2</quote>. Strncmp compares at most <quote>n</quote> characters.
 </para>
 <para>
-Strcpy copies characters from "s2" to the space pointed to by
-"s1" up to and including the null byte. Strncpy copies exactly
-"n" characters. If the string "s2" is too short, the "s1" will
-be padded with null bytes to make up the difference. If "s2"
-is too long, "s1" may not be null-terminated. Both functions
+Strcpy copies characters from <quote>s2</quote> to the space pointed to by
+<quote>s1</quote> up to and including the null byte. Strncpy copies exactly
+<quote>n</quote> characters. If the string <quote>s2</quote> is too short, the <quote>s1</quote> will
+be padded with null bytes to make up the difference. If <quote>s2</quote>
+is too long, <quote>s1</quote> may not be null-terminated. Both functions
 return the first argument.
 </para>
 <para>
 Strhcpy copies string with sign bit terminator.
 </para>
 <para>
-Strlen returns the number of non-null characters in "s".
+Strlen returns the number of non-null characters in <quote>s</quote>.
 </para>
 <para>
-Index returns a pointer to the first occurrence of "ch" in "s"
+Index returns a pointer to the first occurrence of <quote>ch</quote> in <quote>s</quote>
 or NULL if not found.
 </para>
 <para>
-Rindex returns a pointer to the last occurrence of "ch" in "s"
+Rindex returns a pointer to the last occurrence of <quote>ch</quote> in <quote>s</quote>
 or NULL if not found.
 </para>
 </refsect1>

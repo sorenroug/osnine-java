@@ -35,21 +35,21 @@
 
 <refsect1><title>Description</title>
 <para>
-Getc returns the next character from the file pointed to by "fp".
+Getc returns the next character from the file pointed to by <quote>fp</quote>.
 Fgetc is a synonym for getc defined as a preproccessor substitution.
 </para>
 <para>
-Getchar is equivalent to "getc(stdin)".
+Getchar is equivalent to <quote>getc(stdin)</quote>.
 </para>
 <para>
 Getw returns the next two bytes from the file as an integer.
 </para>
 <para>
 Under OS-9 there is a choice of service requests to use when
-reading from a file. "Read()" will get characters up to a
-specified number in "raw" mode i.e. no editing will take
+reading from a file. <quote>Read()</quote> will get characters up to a
+specified number in <quote>raw</quote> mode i.e. no editing will take
 place on the input stream and the characters will appear to the
-program exactly as in the file. "Readln()", on the other
+program exactly as in the file. <quote>Readln()</quote>, on the other
 hand, will honor the various mappings of characters
 associated with a Serial Character device such as a terminal
 and in any case will return to the caller as soon as a carriage
@@ -57,28 +57,28 @@ return is seen on the input.
 </para>
 <para>
 In the vast majority of cases, it is preferable to use
-"readln()" for accessing Serial Character devices and "read()"
-for any other file input. "Getc()" uses this strategy and, as
+<quote>readln()</quote> for accessing Serial Character devices and <quote>read()</quote>
+for any other file input. <quote>Getc()</quote> uses this strategy and, as
 all file input using the Standard Library functions is routed
-through "getc()", so do all the other input functions. The
-choice is made when the first call to "getc()" is made after
+through <quote>getc()</quote>, so do all the other input functions. The
+choice is made when the first call to <quote>getc()</quote> is made after
 the file has been opened. The system is consulted for the
 status of the file and a flag bit is set in the file structure
 accordingly. The choice may be forced by the programmer by
-setting the relevant bit before a call to "getc()". The flag
-bits are defined in "&lt;stdio.h&gt;" and "_SCF" and "_RBF" and the
+setting the relevant bit before a call to <quote>getc()</quote>. The flag
+bits are defined in <quote>&lt;stdio.h&gt;</quote> and <quote>_SCF</quote> and <quote>_RBF</quote> and the
 method is as follows: assuming that the file pointer for the
-file, as returned by "fopen()" is f,
+file, as returned by <quote>fopen()</quote> is <varname>f</varname>,
 <programlisting>
          f->_flag |= _SCF;
 </programlisting>
-will force the use of "readln()" on input and
+will force the use of <quote>readln()</quote> on input and
 <programlisting>
          f->_flag |= _RBF;
 </programlisting>
-will force the use of "read()". This trick may be played on
-the standard streams "stdin", "stdout" and "stderr" without the
-need for calling "fopen()" but before any input is requested
+will force the use of <quote>read()</quote>. This trick may be played on
+the standard streams <quote>stdin</quote>, <quote>stdout</quote> and <quote>stderr</quote> without the
+need for calling <quote>fopen()</quote> but before any input is requested
 from the stream.
 </para>
 </refsect1>

@@ -23,8 +23,8 @@ os9 F$SPRIOR
 
 <refsect1><title>Description</title>
 <para>
-SETPR sets the process identified by "pid" (process id) to have
-a priority of "priority". The lowest level is 0 and the
+SETPR sets the process identified by <quote>pid</quote> (process id) to have
+a priority of <quote>priority</quote>. The lowest level is 0 and the
 highest is 255.
 </para>
 </refsect1>

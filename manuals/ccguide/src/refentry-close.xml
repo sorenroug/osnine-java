@@ -22,8 +22,8 @@ os9 I$CLOSE
 
 <refsect1><title>Description</title>
 <para>
-Close takes a path number, "pn", as returned from system calls
-"open()", "creat()", or "dup()", and closes the associated
+Close takes a path number, <quote>pn</quote>, as returned from system calls
+<quote>open()</quote>, <quote>creat()</quote>, or <quote>dup()</quote>, and closes the associated
 file.
 </para>
 <para>

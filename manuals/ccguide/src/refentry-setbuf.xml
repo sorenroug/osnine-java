@@ -21,7 +21,7 @@
 <refsect1><title>Description</title>
 <para>
 When the first character is written to or read from a file
-after it has been opened by "fopen()", a buffer is obtained
+after it has been opened by <quote>fopen()</quote>, a buffer is obtained
 from the system if required and assigned to it. Setbuf may be
 used to forestall this by assigning a user buffer to the file.
 </para>
@@ -35,7 +35,7 @@ manifest constant, BUFSIZ, is defined in the header file for
 use in declarations.
 </para>
 <para>
-If the "buffer" argument is NULL (0), the file becomes unbuffered
+If the <quote>buffer</quote> argument is NULL (0), the file becomes unbuffered
 and characters are read or written singly.
 </para>
 <para>

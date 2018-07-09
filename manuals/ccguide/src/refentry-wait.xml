@@ -31,15 +31,15 @@ terminated.
 </para>
 <para>
 The call returns the task id of the terminating task and places
-the status of that task in the integer pointed to by "status"
-unless "status" is 0. A wait must be executed for each child
+the status of that task in the integer pointed to by <quote>status</quote>
+unless <quote>status</quote> is 0. A wait must be executed for each child
 task spawned.
 </para>
 <para>
-The status will contain the argument of the "exit" or "_exit"
+The status will contain the argument of the <quote>exit</quote> or <quote>_exit</quote>
 call in the child task of the signal number if it was
 interrupted. A normally terminating C program with no call to
-"exit" or "_exit" has an implied call of "exit(0)".
+<quote>exit</quote> or <quote>_exit</quote> has an implied call of <quote>exit(0)</quote>.
 </para>
 </refsect1>
 <refsect1><title>Caveats</title>

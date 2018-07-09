@@ -29,7 +29,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Malloc returns a pointer to a block of at least "size" free bytes.
+Malloc returns a pointer to a block of at least <quote>size</quote> free bytes.
 </para>
 <para>
 Free requires a pointer to a block that has been allocated by

@@ -17,7 +17,7 @@
 <refsect1><title>Description</title>
 <para>
 This call causes a memory image to be written out to the file
-"core" in the current directory, and then the program exits
+<quote>core</quote> in the current directory, and then the program exits
 with a status of 1.
 </para>
 </refsect1>

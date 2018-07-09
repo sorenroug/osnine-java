@@ -18,7 +18,7 @@
 <para>
 A call to defdrive returns a pointer to a string containing the
 name of the default system drive. The method used is to
-consult the "Init" module for the default directory name. The
+consult the <quote>Init</quote> module for the default directory name. The
 name is copied to a static data area and a pointer to it is
 returned.
 </para>
@@ -26,7 +26,7 @@ returned.
 
 <refsect1><title>Diagnostics</title>
 <para>
--1 is returned if the "Init" module cannot be linked to.
+-1 is returned if the <quote>Init</quote> module cannot be linked to.
 </para>
 </refsect1>
 

@@ -34,16 +34,17 @@ to the caller. If there is an error, the process will abort
 and return to its parent process. It might be wise, therefore,
 for the programs to check the existence and access permissions
 of the module before calling chain. Permissions may be checked
-by using "modlink()" or "modload()" followed by an "munlink()".
+by using <quote>modlink()</quote> or <quote>modload()</quote> followed by an <quote>munlink()</quote>.
 </para>
 <para>
-"Modname" should point to the name of the desired module.
-"Paramsize is the length of the parameter string (which should
-normally be terminated with a "\n"), and "paramptr" points to
-the parameter string. "Type" is the module type as found in
-the module header (normally 1: program), and "lang" should
+<quote>Modname</quote> should point to the name of the desired module.
+<quote>Paramsize</quote> is the length of the parameter string (which should
+normally be terminated with a <quote>\n</quote>), and <quote>paramptr</quote> points to
+the parameter string. <quote>Type</quote> is the module type as found in
+the module header (normally 1: program), and <quote>lang</quote> should
 match the language nibble in the module header (C programs
-have 1 for 6809 machine code here). "Datasize" may be zero, or
+have 1 for 6809 machine code here).
+<quote>Datasize</quote> may be zero, or
 it may contain the number of 256 byte pages to give to the new
 process as initial allocation of data memory.
 </para>

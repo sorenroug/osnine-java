@@ -93,7 +93,7 @@ the -E= option in cc.
 <section>
 <title>Information</title>
 <para>
-Any strings preceded by the directive "info" in an assembly code
+Any strings preceded by the directive <quote>info</quote> in an assembly code
 file will be placed here. A major use of this facility is to place
 in the module the version number and/or a copyright notice. Note
 that the '#asm' pre-compiler instruction may be used in a C source
@@ -181,10 +181,10 @@ The startup routine will first copy all the entries in the initializing
 data section into their allotted places in the DATA section.
 Then it will scan the data-text reference table for the offsets of
 values that need to have the addresses of the base of the TEXT
-section added to them. Among these will be the "p" which, after
+section added to them. Among these will be the <quote>p</quote> which, after
 updating, will point to the string which is in the TEXT section.
-Similarly, after a scan of the data-data references, "q" will point
-to (contain the absolute of) "p".
+Similarly, after a scan of the data-data references, <quote>q</quote> will point
+to (contain the absolute of) <quote>p</quote>.
 </para>
 </section>
 </section>
@@ -237,10 +237,10 @@ of data       ->    !........^.........!  &lt;- IBRK() changes this
                         low addresses
 </screen>
 <para>
-The overall size of this memory area is defined by the "storage
-size" value stored in the program's module header. This can be
+The overall size of this memory area is defined by the <quote>storage
+size</quote> value stored in the program's module header. This can be
 overridden to assign the program additional memory if the OS-9 Shell
-"#" command is used.
+<quote>#</quote> command is used.
 </para>
 <para>
 The parameter area is where the parameter string from the
@@ -298,12 +298,12 @@ addresses using Y-offset indexed instructions.
 </para>
 <para>
 When the program starts running, the remaining memory is
-assigned to the "free" area. A program may call "ibrk()" to
+assigned to the <quote>free</quote> area. A program may call <quote>ibrk()</quote> to
 request additional working memory (initialized to zeros) from the
 free memory area. Alternatively, more memory can be dynamically
-obtained using the "sbrk()" which requests additional memory from
+obtained using the <quote>sbrk()</quote> which requests additional memory from
 the operating system and returns its lower bound. If this fails
-because OS-9 refuses to grant more memory for any reason "sbrk()"
+because OS-9 refuses to grant more memory for any reason <quote>sbrk()</quote>
 will return -1.
 </para>
 </section>
@@ -316,7 +316,7 @@ allocate 1k bytes more than the total size of the program's
 variables and strings. This size will normally be adequate to cover
 the parameter area, stack requirements, and Standard Library file
 buffers. The allocation size may be altered when using the compiler
-by using the "-m" option on the command line. The memory
+by using the <quote>-m</quote> option on the command line. The memory
 requirements may be stated in pages, for example,
 <programlisting>
        cc prg.c -m=2
@@ -351,9 +351,9 @@ variable.
 Free memory is requested by the Standard Library I/O
 functions for buffers at the rate of 256 bytes per accessed
 file. The does not apply to the lower level service request I/O
-functions such as "open()", "read()" or "write()" not to
-"stderr" which is always un-buffered, but it does apply to both
-"stdin" and "stdout" (see the Standard Library documentation).
+functions such as <quote>open()</quote>, <quote>read()</quote> or <quote>write()</quote> not to
+<quote>stderr</quote> which is always un-buffered, but it does apply to both
+<quote>stdin</quote> and <quote>stdout</quote> (see the Standard Library documentation).
 </para></listitem>
 </orderedlist>
 <para>
@@ -362,7 +362,7 @@ needed by your program is to allow the linker to set the memory size
 to its usually conservative value. Then, if the program runs
 with a variety of input satisfactorily but memory is limited on the
 system, try reducing the allocation at the next compilation. If a
-stack overflow occurs or an "ibrk()" call returns -1, then try
+stack overflow occurs or an <quote>ibrk()</quote> call returns -1, then try
 increasing the memory next time. You cannot damage the system by
 getting it wrong, but data may be lost if the program runs out of
 space at a crucial time. It pays to be in error on the generous

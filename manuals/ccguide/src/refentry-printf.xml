@@ -42,13 +42,13 @@ Thse three functions are used to place numbers and strings on
 the output in formatted, human readable form.
 </para>
 <para>
-Fprintf places its output on the file "fp", printf on the
+Fprintf places its output on the file <quote>fp</quote>, printf on the
 standard output, and sprintf in the buffer pointed to by
-"string". NOTE that it is the user's responsibility to ensure
+<quote>string</quote>. NOTE that it is the user's responsibility to ensure
 that this buffer is large enough.
 </para>
 <para>
-The "control" string determines the format, type, and number
+The <quote>control</quote> string determines the format, type, and number
 of the following arguments expected by the function. If the
 control does not match the arguments correctly, the results
 are unpredictable.
@@ -60,14 +60,14 @@ specification causes the function to take the next successive
 argument for output.
 </para>
 <para>
-A format specification consists of a "%" character followed by
+A format specification consists of a <quote>%</quote> character followed by
 (in this order):
 </para>
 
 <itemizedlist spacing="compact">
 <listitem>
 <para>
-An optional minus sign ("-") that means left justification
+An optional minus sign (<quote>-</quote>) that means left justification
 in the field.
 </para>
 </listitem>
@@ -79,12 +79,12 @@ wider if the conversion requires it. The field will be
 padded on the left unless the above minus sign is present,
 in which case it will be padded on the right. The padding
 character is, by default, a space, but if the digit string
-starts with a zero ("0"), it will be "0".
+starts with a zero (<quote>0</quote>), it will be <quote>0</quote>.
 </para>
 </listitem>
 <listitem>
 <para>
-An optional dot (".") and a digit string, the precision,
+An optional dot (<quote>.</quote>) and a digit string, the precision,
 which for floating point arguments indicates the number
 of digits to follow the decimal point on conversion, and
 for strings, the maximum number of characters from the
@@ -93,8 +93,8 @@ string argument are to be printed.
 </listitem>
 <listitem>
 <para>
-An optional character "l" indicates that the following
-"d","x", or "o" is the specification of a long integer
+An optional character <quote>l</quote> indicates that the following
+<quote>d</quote>,<quote>x</quote>, or <quote>o</quote> is the specification of a long integer
 argument. NOTE that in order for the printing of long
 integers to take place, the source code must have in it
 somewhere the statement pflinit(), which causes routines
@@ -117,7 +117,7 @@ conversion characters are:
 <entry>d,o,x,X</entry>
 <entry>The argument is an integer and the
 conversion is to decimal, octal, or
-hexadecimal, respectively. "X" prints hex
+hexadecimal, respectively. <quote>X</quote> prints hex
 and alpha in upper case.</entry>
 </row>
 <row>
@@ -129,7 +129,7 @@ the range 0 to 65535.</entry>
 <row>
 <entry>f</entry>
 <entry>The argument is a double, and the form of
-the conversion is "[-]nnn.nnn". Where the
+the conversion is <quote>[-]nnn.nnn</quote>. Where the
 digits after the decimal point are
 specified as above. If not specified, the
 precision defaults to six digits. If the
@@ -139,17 +139,17 @@ following digits are printed.</entry>
 <row>
 <entry>e,E</entry>
 <entry>The argument is a double and the form of
-the conversion is "[-]n.nnne(+or-)nn"; one
+the conversion is <quote>[-]n.nnne(+or-)nn</quote>; one
 digit before the decimal point, and the
 precision controls the number following.
-"E" prints the "e" in upper case.</entry>
+<quote>E</quote> prints the <quote>e</quote> in upper case.</entry>
 </row>
 <row>
 <entry>g,G</entry>
 <entry>The argument is a double, and either the
-"f" format or the "e" format is chosen,
-whichever is the shortest. If the "G"
-format is used, the "e" is printed in
+<quote>f</quote> format or the <quote>e</quote> format is chosen,
+whichever is the shortest. If the <quote>G</quote>
+format is used, the <quote>e</quote> is printed in
 upper case.</entry>
 </row>
 </tbody>
@@ -186,7 +186,7 @@ missing, the characters are not counted.</entry>
 </row>
 <row>
 <entry>%</entry>
-<entry>No argument corresponding; "%" is printed.</entry>
+<entry>No argument corresponding; <quote>%</quote> is printed.</entry>
 </row>
 </tbody>
 </tgroup>

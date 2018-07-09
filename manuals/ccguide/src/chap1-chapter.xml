@@ -4,7 +4,7 @@
 <section>
 <title>Introduction</title>
 <para>
-The "C" programming language is rapidly growing in popularity
+The <quote>C</quote> programming language is rapidly growing in popularity
 and seems destined to become one of the most popular programming
 languages used for microcomputers. The rapid rise in the use of C
 is not surprising. C is an incredibly versatile and efficient
@@ -74,8 +74,8 @@ are recognized by some C compilers, are not supported. You
 must use the newer forms '+=','*=' etc.
 </para></listitem>
 <listitem><para>
-"#ifdef (or #ifndef) ...[#else...] #endif" is supported but
-"#if &lt;constant expression&gt;" is not.
+<quote>#ifdef (or #ifndef) ...[#else...] #endif</quote> is supported but
+<quote>#if &lt;constant expression&gt;</quote> is not.
 </para></listitem>
 <listitem><para>
 It is not possible to extend macro definitions or strings
@@ -99,14 +99,14 @@ properly.
 <para>
 The 6809 microprocessor instructions for accessing memory via
 an index register or the stack pointer can be relatively short and
-fast when they are used in C programs to access "auto" (function
+fast when they are used in C programs to access <quote>auto</quote> (function
 local) variables or function arguments. The instructions for
 accessing global variables are normally not so nice and must be four
 bytes long and correspondingly slow. However, the 6809 has a nice
 feature which helps considerably. Memory, anywhere in a single page
 (256 byte block), may be accessed with fast, two byte instructions.
-This is called the "direct page", and at any time its location is
-specified by the contents of the "direct page register" within the
+This is called the <quote>direct page</quote>, and at any time its location is
+specified by the contents of the <quote>direct page register</quote> within the
 processor. The linkage editor sorts out where this could be, and
 it need not concern the programmer, who only needs to specify for
 the compiler which variables should be in the direct page to give
@@ -167,10 +167,10 @@ is extended as follows:
 </informaltable>
 The new key word may be used in place of one of the other sc-specifiers,
 and its effect is that the variable will be placed in
-the direct page. "DIRECT" creates a global direct page variable.
-"EXTERN DIRECT" references an EXTERNAL-type direct page variable;
-and "STATIC DIRECT" creates a local direct page variable. These new
-classed may not be used to declare function arguments. "Direct"
+the direct page. <quote>DIRECT</quote> creates a global direct page variable.
+<quote>EXTERN DIRECT</quote> references an EXTERNAL-type direct page variable;
+and <quote>STATIC DIRECT</quote> creates a local direct page variable. These new
+classed may not be used to declare function arguments. <quote>Direct</quote>
 variables can be initialized but will, as with other variables not
 explicitly initialized, have the value zero at the start of program
 execution. 255 bytes are available in the direct page (the linker
@@ -182,9 +182,9 @@ error, and the programmer will have to reduce the use of DIRECT-type
 variables to fit the 256 bytes addressable by the 6809.
 </para>
 <para>
-It should be kept in mind that "direct" is unique to this
+It should be kept in mind that <quote>direct</quote> is unique to this
 compiler, and it may not be possible to transport programs written
-using "direct" to other environments without modification.
+using <quote>direct</quote> to other environments without modification.
 </para>
 </section>
 
@@ -197,10 +197,10 @@ The OS-9 C compiler permits user-supplied assembly-language
 statements to be directly embedded in C source programs.
 </para>
 <para>
-A line beginning with "#asm" switches the compiler into a mode
+A line beginning with <quote>#asm</quote> switches the compiler into a mode
 which passes all subsequent lines directly to the assembly-language
-output, until a line beginning with "#endasm" is encountered.
-"#endasm" switches the mode back to normal. Care should be
+output, until a line beginning with <quote>#endasm</quote> is encountered.
+<quote>#endasm</quote> switches the mode back to normal. Care should be
 exercised when using this directive so that the correct code section
 is adhered to. Normal code from the compiler is in the PSECT (code)
 section. If your assembly code uses the VSECT (variable) section,
@@ -295,8 +295,8 @@ storage. The sizes of the basic types in bytes are as follows:
 </informaltable>
 <para>
 This compiler follows the PDP-11 implementation and format in
-that CHARs are converted to INTs by sign extension, "SHORT" or
-"SHORT INT" means INT, "LONG INT" means LONG and "LONG FLOAT" means
+that CHARs are converted to INTs by sign extension, <quote>SHORT</quote> or
+<quote>SHORT INT</quote> means INT, <quote>LONG INT</quote> means LONG and <quote>LONG FLOAT</quote> means
 DOUBLE. The format for DOUBLE values is as follows:
 </para>
 <screen>
@@ -309,7 +309,7 @@ DOUBLE. The format for DOUBLE values is as follows:
 </screen>
 <para>
 The form of the mantissa is sign and magnitude with an implied
-"1" bit at the sign bit position. The exponent is biased by 128.
+<quote>1</quote> bit at the sign bit position. The exponent is biased by 128.
 The format of a FLOAT is identical, except that the mantissa is only
 three bytes long. Conversion from DOUBLE to FLOAT is carried out by
 truncating the least significant (right-most) four bytes of the
@@ -331,19 +331,19 @@ A considerable saving in code size and speed can be made by
 judicious use of a register variable. The most efficient use is
 made of it for a pointer or a counter for a loop. However, if a
 register variable is used for a complex arithmetic expression, there
-is no saving. The "U" register is assigned to register variables.
+is no saving. The <quote>U</quote> register is assigned to register variables.
 </para>
 </section>
 
 <section>
 <title>Access To Command Line Parameters</title>
 <para>
-The standard C arguments "argc" and "argv" are available to
-"main" as described in K &amp; R page 110. The start-up routine for C
+The standard C arguments <quote>argc</quote> and <quote>argv</quote> are available to
+<quote>main</quote> as described in K &amp; R page 110. The start-up routine for C
 programs ensures that the parameter string passed to it by the
 parent process is converted into null-terminated strings as expected
 by the program. In addition, it will run together as a single
-argument any strings enclosed between single or double quotes ("'" or '"').
+argument any strings enclosed between single or double quotes (<quote>'</quote> or '"').
 If either is part of the string required, then the other
 should be used as a delimiter.
 </para>
@@ -360,7 +360,7 @@ You can use the modpatch command to do these patches. The patches are as follows
 Load <command>c.prep</command> into memory and change the byte at offset $135C and $135D to the name of the
 drive you want (e.g. set $135C=68 'h' and $135D=30 '0'). Then load <command>cc1</command> and
 do the same thing except at the offsets $0EE5 and $0EE6. Be sure to verify and save the
-modules back to disk. Alternatively use the command "verify u" to update the module CRC.
+modules back to disk. Alternatively use the command <quote>verify u</quote> to update the module CRC.
 </para>
 </section>
 </section>
@@ -379,7 +379,7 @@ do not have exactly equivalent OS-9 calls. In these cases, the
 library function simulates the function of the corresponding UNIX
 call. In cases where there are OS-9 calls that do not have UNIX
 equivalents, the OS-9 names are used. Details of the calls and a
-name cross-reference are provided in the "C System Calls" section of
+name cross-reference are provided in the <quote>C System Calls</quote> section of
 this manual.
 </para>
 </section>
@@ -393,15 +393,15 @@ from the standard library to have the statement:
 <programlisting>
        #include &lt;stdio.h&gt;
 </programlisting>
-See the "C Standard Library" section of this manual for details on
+See the <quote>C Standard Library</quote> section of this manual for details on
 the standard library functions provided.
 </para>
 <para>
 IMPORTANT NOTE: If output via printf(), fprintf() or sprintf() of
-long integers is required, the program MUST call "pflinit()" at some
+long integers is required, the program MUST call <quote>pflinit()</quote> at some
 point; this is necessary so that programs not involving LONGS do not
 have the extra LONGs output code appended. Similarly, if FLOATs or
-DOUBLEs are to be printed, "pffinit()" MUST be called. These functions
+DOUBLEs are to be printed, <quote>pffinit()</quote> MUST be called. These functions
 do nothing; existence of calls to them in a program informs
 the linker that the relevant routines are also needed.
 </para>
@@ -431,7 +431,7 @@ If one of these conditions occur, the program will send a
 signal to itself with the value of one of these errors. If not
 caught or ignored, the will cause termination of program with
 an error return to the parent process. However, the program can
-catch the interrupt using "signal()" or "intercept()" (see C System
+catch the interrupt using <quote>signal()</quote> or <quote>intercept()</quote> (see C System
 Calls), and in this case the service routine has the error number as
 its argument.
 </para>
@@ -453,7 +453,7 @@ don't use LONG, FLOAT, or DOUBLE where INT or UNSIGNED will do.
 The compiler can perform extensive evaluation of constant
 expressions provided they involve only constants of type CHAR, INT,
 and UNSIGNED. There is no constant expression evaluation at
-compile-time (except single constants and "casts" of them) where
+compile-time (except single constants and <quote>casts</quote> of them) where
 there are constants of type LONG, FLOAT, or DOUBLE, therefore,
 complex constant expressions involving these types are evaluated at
 run time by the compiled program. You should manually compute the
@@ -470,7 +470,7 @@ redundant code and searches for code sequences that can be replaced
 by shorter and faster equivalents. The optimizer will shorten object
 code by about 11% with a significant increase in program execution
 speed. The optimizer is recommended for production versions of
-debugged programs. Because this pass takes additional time, the "-O"
+debugged programs. Because this pass takes additional time, the <quote>-O</quote>
 compiler option can be used to inhibit it during error-checking-only
 compilations.
 </para>
@@ -486,13 +486,13 @@ or C source code programming improvements will yield the greatest
 gains.
 </para>
 <para>
-When the "-P" compiler option is selected, code is generated at
+When the <quote>-P</quote> compiler option is selected, code is generated at
 the beginning of each function to call the profiler module (called
-"_prof"), which counts invocations of each function during program
+<quote>_prof</quote>), which counts invocations of each function during program
 execution. When the program has terminated, the profiler
 automatically prints a list of all functions and the number of times
 each was called. The profiler slightly reduces program execution
-speed. See "prof.c" source for more information.
+speed. See <quote>prof.c</quote> source for more information.
 </para>
 </section>
 </section>
@@ -577,17 +577,17 @@ files be present in the current execution directory (CMDS).
 </tgroup>
 </table>
 <para>
-In addition a file called "clib.l" contains the standard library,
-math functions, and systems library. The file "cstart.r" is
+In addition a file called <quote>clib.l</quote> contains the standard library,
+math functions, and systems library. The file <quote>cstart.r</quote> is
 the setup code for compiled programs. Both of these files must be
-located in a directory named "LIB" on the system's default mass
-storage device, which is specified in the OS-9 "INIT" module and is
+located in a directory named <quote>LIB</quote> on the system's default mass
+storage device, which is specified in the OS-9 <quote>INIT</quote> module and is
 usually the disk drive the system is booted from.
 </para>
 <para>
-If, when specifying "#include" files for the pre-processor to
-read in, the programmer uses angle brackets, "&lt;" and "&gt;", instead of
-parentheses, the file will be sought starting at the "DEFS"
+If, when specifying <quote>#include</quote> files for the pre-processor to
+read in, the programmer uses angle brackets, <quote>&lt;</quote> and <quote>&gt;</quote>, instead of
+parentheses, the file will be sought starting at the <quote>DEFS</quote>
 directory on whichever drive is the default system drive for the
 system running.
 </para>
@@ -602,7 +602,7 @@ least three times the number of blocks in the largest source file
 (and its included files) should be free.
 </para>
 <para>
-The identifiers "etext", "edata", and "end" are predefined in the
+The identifiers <quote>etext</quote>, <quote>edata</quote>, and <quote>end</quote> are predefined in the
 linkage editor and may be used to establish the addresses of the end
 of executable text, initialized data, and uninitialized data
 respectively.
@@ -614,12 +614,12 @@ respectively.
 <title>Running the Compiler</title>
 <para>
 The are two commands which invoke distinct versions of the
-compiler. "cc1" is for OS-9 Level I which uses a two pass compiler,
-and, "cc2" is for Level II which causes a single pass version. Both
+compiler. <quote>cc1</quote> is for OS-9 Level I which uses a two pass compiler,
+and, <quote>cc2</quote> is for Level II which causes a single pass version. Both
 versions of the compiler works identically, the main difference is
 that cc1 has been divided into two passes to fit the smaller memory
-size of OS-9 Level I systems. In the following text, "cc" refers to
-either "cc1" or "cc2" as appropriate for your system. The syntax of
+size of OS-9 Level I systems. In the following text, <quote>cc</quote> refers to
+either <quote>cc1</quote> or <quote>cc2</quote> as appropriate for your system. The syntax of
 the command line which calls the compiler is:
 </para>
 <cmdsynopsis>
@@ -676,31 +676,31 @@ single source file. The compiler selects the mode by inspecting
 the command line. The usual mode is single source and is specified
 by having only one source file name on the command line. Of
 course, more than one source file may be compiled together by using
-the "#include" facility in the source code. In this mode, the
+the <quote>#include</quote> facility in the source code. In this mode, the
 compiler will use the name obtained by removing the postfix from the
 name supplied on the command line, and the output file (and the
 memory module produced) will have this name. For example:
 <screen>
         cc prg.c
 </screen>
-will leave an executable file called "prg" in the current execution
+will leave an executable file called <quote>prg</quote> in the current execution
 directory.
 </para>
 <para>
 The multiple source mode is specified by having more than one
 source file name on the command line. In this mode, the object code
-output file will have the name "output" in the current execution
-directory, unless a name is given using the "-f=" option (see
+output file will have the name <quote>output</quote> in the current execution
+directory, unless a name is given using the <quote>-f=</quote> option (see
 below). Also, in multiple source mode, the relocatable modules
 generated as intermediate files will be left in the same directories
 as their corresponding source files with the postfixes changed to
-".r". For example:
+<quote>.r</quote>. For example:
 <screen>
        cc prg1.c /d0/fred/prg2.c
 </screen>
-will leave an executable file called "output" in the current
-execution directory, one file called "prg1.r" in the current data
-directory, and "prg2.r" in "/d0/fred".
+will leave an executable file called <quote>output</quote> in the current
+execution directory, one file called <quote>prg1.r</quote> in the current data
+directory, and <quote>prg2.r</quote> in <quote>/d0/fred</quote>.
 </para>
 </section>
 
@@ -710,14 +710,14 @@ directory, and "prg2.r" in "/d0/fred".
 The compiler recognizes several command-line option flags which
 modify the compilation process where needed. All flags are
 recognized before compilation commences so the flags may be placed
-anywhere on the command line. Flags may be ran together as in "-ro",
-except where a flag is followed by something else; see "-f=" and
-"-d" for examples.
+anywhere on the command line. Flags may be ran together as in <quote>-ro</quote>,
+except where a flag is followed by something else; see <quote>-f=</quote> and
+<quote>-d</quote> for examples.
 </para>
 <para>
 <option>-A</option>
 suppresses assembly, leaving the output as assembler code in a
-file whose name is postfixed ".a".
+file whose name is postfixed <quote>.a</quote>.
 </para>
 <para>
 <option>-E</option>=&lt;number&gt;
@@ -738,15 +738,15 @@ statistics after program execution.
 <para>
 <option>-R</option>
 suppresses linking library modules into an executable program.
-Outputs are left in files with postfixes ".r".
+Outputs are left in files with postfixes <quote>.r</quote>.
 </para>
 <para>
 <option>-M</option>=&lt;memory size&gt;
 will instruct the linker to allocate &lt;memory size&gt;
 for data, stack, and parameter area. Memory size may be expressed
-in pages (an integer) or in kilobytes by appending "k" to an 
+in pages (an integer) or in kilobytes by appending <quote>k</quote> to an 
 integer. For more details of the use of this option, see the
-"Memory Management" section of this manual.
+<quote>Memory Management</quote> section of this manual.
 </para>
 <para>
 <option>-L</option>=&lt;filename&gt;
@@ -773,12 +773,12 @@ understood.
 </para>
 <para>
 <option>-D</option>&lt;identifier&gt;
-is equivalent to "#define &lt;identifier&gt;" written in
+is equivalent to <quote>#define &lt;identifier&gt;</quote> written in
 the source file. -D is useful where different versions of a program
 are maintained in one source file and differentiated by means of the
-"#ifdef" of "#ifndef" pre-processor directives. If the &lt;identifier&gt;
-is used as a macro for expansion by the pre-processor, "1" (one) will
-be the expanded "value" unless the form "-d&lt;identifier&gt;=&lt;string&gt;" is
+<quote>#ifdef</quote> of <quote>#ifndef</quote> pre-processor directives. If the &lt;identifier&gt;
+is used as a macro for expansion by the pre-processor, <quote>1</quote> (one) will
+be the expanded <quote>value</quote> unless the form <quote>-d&lt;identifier&gt;=&lt;string&gt;</quote> is
 used in which case the expansion will be &lt;string&gt;.
 </para>
 <table frame="none" rowsep="0" colsep="0">

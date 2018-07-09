@@ -31,8 +31,8 @@ a higher level function. They are most useful when dealing
 with errors and interrupts encountered in a low level routine.
 </para>
 <para>
-"Goto" in C has scope only in the function in which it is
-used; i.e. the label which is the object of a "goto" may only
+<quote>Goto</quote> in C has scope only in the function in which it is
+used; i.e. the label which is the object of a <quote>goto</quote> may only
 be in the same function. Control can only be transferred
 elsewhere by means of the function call, which, of course
 returns to the caller. In certain abnormal situations a
@@ -41,7 +41,7 @@ code again, but this would mean returning up a ladder of
 function calls with error indications all the way.
 </para>
 <para>
-Setjmp is used to "mark" a point in the program where a
+Setjmp is used to <quote>mark</quote> a point in the program where a
 subsequent longjmp can reach. It places in the buffer, defined
 in the header file, enough information for longjmp to restore
 the environment to that existing at the relevant call to
@@ -55,7 +55,7 @@ perhaps, an error status.
 <para>
 To set the system up, a function will call setjmp to set up the
 buffer, and if the returned value is zero, the program will
-know that the call was the "first time through". If, however,
+know that the call was the <quote>first time through</quote>. If, however,
 the returned value is non-zero, it must be a longjmp returning
 from some deeper level of the program.
 </para>

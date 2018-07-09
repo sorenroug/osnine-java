@@ -21,7 +21,7 @@
 <refsect1><title>Description</title>
 <para>
 Chmod changes the permission bits associated with a file.
-"Fname" must be a pointer to a file name, and "perm" should
+<quote>Fname</quote> must be a pointer to a file name, and <quote>perm</quote> should
 contain the desired bit pattern,
 </para>
 <para>
@@ -47,14 +47,14 @@ a file.
 <refsect1><title>Diagnostics</title>
 <para>
 A successful call returns 0. A -1 is returned if the
-caller is not entitled to change permissions of "fname" cannot
+caller is not entitled to change permissions of <quote>fname</quote> cannot
 be found.
 </para>
 </refsect1>
 
 <refsect1><title>See Also</title>
 <para>
-OS-9 command "attr"
+OS-9 command <quote>attr</quote>
 </para>
 </refsect1>
 

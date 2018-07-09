@@ -37,12 +37,12 @@
 
 <refsect1><title>Description</title>
 <para>
-These functions perform the complement to "printf()" etc.
+These functions perform the complement to <quote>printf()</quote> etc.
 </para>
 <para>
-Fscanf performs conversions from the file "fp", scanf from the
+Fscanf performs conversions from the file <quote>fp</quote>, scanf from the
 standard input, and sscanf from the string pointed to by
-"string".
+<quote>string</quote>.
 </para>
 <para>
 Each function expects a control string containing conversion
@@ -53,15 +53,15 @@ the converted values are stored.
 The control string may contain three types of fields:
 <orderedlist numeration="loweralpha" spacing="compact">
 <listitem><para>
-Space, tab characters, or "\n" which match any of
+Space, tab characters, or <quote>\n</quote> which match any of
 the three in the input.
 </para></listitem>
 <listitem><para>
-Characters not among the above and not "%" which must
+Characters not among the above and not <quote>%</quote> which must
 match characters in the input.
 </para></listitem>
 <listitem><para>
-A "%" followed by an optional "*" indicates
+A <quote>%</quote> followed by an optional <quote>*</quote> indicates
 suppression of assignment, an optional field width
 maximum and a conversion character indicating the
 type expected.
@@ -99,10 +99,10 @@ point to an integer.</entry>
 <entry>s</entry>
 <entry>A string of non-space characters is expected and
 will be copied to the buffer pointed to by the
-corresponding argument and a null ("\0") appended.
+corresponding argument and a null (<quote>\0</quote>) appended.
 The user must ensure that the buffer is large
 enough. The input string is considered terminated
-by a space, tab of ("\n").</entry>
+by a space, tab of (<quote>\n</quote>).</entry>
 </row>
 <row>
 <entry>c</entry>
@@ -113,7 +113,7 @@ field width is given, the argument is assumed to
 point to a character array and the number of
 characters indicated is copied to it. NOTE to ensure
 that the next non-white-space character is read use
-"%1s" and that TWO bytes are pointed to by the
+<quote>%1s</quote> and that TWO bytes are pointed to by the
 argument.</entry>
 </row>
 <row>
@@ -130,12 +130,12 @@ the inclusion or exclusion of which delimits the
 input field. The white-space skipping is
 suppressed. The corresponding argument should be a
 pointer to a character array. If the first
-character in the match string is not "^",
+character in the match string is not <quote>^</quote>,
 characters are copied from the input as long as they
 can be found in the match string. If the first
-character is the "^", copying continues while characters
+character is the <quote>^</quote>, copying continues while characters
 cannot be found in the match string. The match
-string is delimited by a "]".</entry>
+string is delimited by a <quote>]</quote>.</entry>
 </row>
 <row>
 <entry>D,O,X</entry>
@@ -149,7 +149,7 @@ should point to a double.</entry>
 </row>
 <row>
 <entry>%</entry>
-<entry>A match for "%" is sought; no conversion takes place.</entry>
+<entry>A match for <quote>%</quote> is sought; no conversion takes place.</entry>
 </row>
 </tbody>
 </tgroup>
@@ -163,7 +163,7 @@ fields successfully matched and assigned.
 <refsect1><title>Caveats</title>
 <para>
 The returned count of matches/assigments does not include
-character matches and assigments suppressed by "*". The
+character matches and assigments suppressed by <quote>*</quote>. The
 arguments must ALL be pointers. It is a common error to call
 scanf with the value of an item rather than a pointer to it.
 </para>

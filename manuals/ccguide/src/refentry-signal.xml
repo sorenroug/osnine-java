@@ -24,8 +24,8 @@ typedef int (*sighandler_t)(int);
 <refsect1><title>Description</title>
 <para>
 This call is a comprehensive method of catching or ignoring
-signals sent to the current process. Notice that "kill()" does
-the sending of signals, and "signal()" does the catching.
+signals sent to the current process. Notice that <quote>kill()</quote> does
+the sending of signals, and <quote>signal()</quote> does the catching.
 </para>
 <para>
 Normally, a signal sent to a process causes it to terminate
@@ -36,7 +36,7 @@ be executed when it is received. Different functions may be
 designated for different signals.
 </para>
 <para>
-The values for "address" have the following meanings:
+The values for <quote>address</quote> have the following meanings:
 <informaltable frame="none" rowsep="0" colsep="0">
 <tgroup cols="2">
 <colspec colwidth="0.7in"/>
@@ -61,14 +61,14 @@ is to be executed on receipt of the signal.</entry>
 </para>
 <para>
 If the latter case is chosen, when the signal is received by
-the process the "address" is reset to 0, the default, before
+the process the <quote>address</quote> is reset to 0, the default, before
 the function is executed. This means that if the next signal
-received should be caught then another call to "signal()"
+received should be caught then another call to <quote>signal()</quote>
 should be made immediately. This is normally the first action
-taken by the "interrupt" function. The function may access the
+taken by the <quote>interrupt</quote> function. The function may access the
 signal number which caused its execution by looking at its
 argument. On completion of this function the program resumes
-at the point at which is was "interrupted" by the signal.
+at the point at which is was <quote>interrupted</quote> by the signal.
 </para>
 <para>
 An example should help to clarify all this. Suppose a program
@@ -98,10 +98,10 @@ exit(sig);                 /* received signal er exit status */
 </para>
 <para>
 In this case, as the function will be exiting before another
-signal is received, it is unnecessary to call "signal()" again
+signal is received, it is unnecessary to call <quote>signal()</quote> again
 to reset its pointer. Note that either the function
-"intrupt()" should appear in the source code before the call to
-"signal()", or it should be pre-declared.
+<quote>intrupt()</quote> should appear in the source code before the call to
+<quote>signal()</quote>, or it should be pre-declared.
 </para>
 <para>
 The signals used by OS-9 are defined in the header file as
@@ -120,19 +120,19 @@ follows:
 </programlisting>
 <para>
 Please note that there is another method of trapping signals,
-namely "intercept()" (q.v.). However, since "signal()" and
-"intercept()" are mutually incompatible, calls to both of them
+namely <quote>intercept()</quote> (q.v.). However, since <quote>signal()</quote> and
+<quote>intercept()</quote> are mutually incompatible, calls to both of them
 must not appear in the same program. The link-loader will
 preven the creation of an executable program in which both are
-called by aborting with an "entry name clash" error for
-"_sigint".
+called by aborting with an <quote>entry name clash</quote> error for
+<quote>_sigint</quote>.
 </para>
 </refsect1>
 
 <refsect1><title>See Also</title>
 <para>
 <link linkend="intercept">intercept()</link>,
-OS-9 shell command "kill",
+OS-9 shell command <quote>kill</quote>,
 <link linkend="kill">kill()</link>
 </para>
 </refsect1>

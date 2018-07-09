@@ -24,8 +24,8 @@ Qsort implements the quick-sort algoritm for sortig an
 arbitrary array of items.
 </para>
 <para>
-"Base" is the address of the array of "n" items of size "size".
-"Compfunc" is a pointer to a comparison routine supplied by
+<quote>Base</quote> is the address of the array of <quote>n</quote> items of size <quote>size</quote>.
+<quote>Compfunc</quote> is a pointer to a comparison routine supplied by
 the user. It will be called by qsort with two pointers to
 items in the array for comparison and should return an integer
 which is less than, equal to, or greater than 0 where,

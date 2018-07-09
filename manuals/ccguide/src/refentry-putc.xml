@@ -33,20 +33,20 @@
 
 <refsect1><title>Description</title>
 <para>
-Putc add the character "ch" to the file "fp" at the current
+Putc add the character <quote>ch</quote> to the file <quote>fp</quote> at the current
 writing position and advances the position pointer.
 </para>
 <para>
 Putchar is implemented as a macro (defined in the header file)
-and is equivalent to "putc(ch,stdout)".
+and is equivalent to <quote>putc(ch,stdout)</quote>.
 </para>
 <para>
-Putw adds the (two byte) machine word "n" to the file "fp" in
+Putw adds the (two byte) machine word <quote>n</quote> to the file <quote>fp</quote> in
 the manner of putc.
 </para>
 <para>
 Output via putc is normally buffered except;
-(a) when the buffering is disabled by "setbuf()", and
+(a) when the buffering is disabled by <quote>setbuf()</quote>, and
 (b) the standard error output is always unbuffered.
 </para>
 </refsect1>

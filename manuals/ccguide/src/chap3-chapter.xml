@@ -29,16 +29,16 @@ already familiar with OS-9 calls.
 <para>
 The normal error indication on return from a system call is a
 returned value of -1. The relevant error will be found in the
-predefined int "errno". Errno always contains the error from the last
+predefined int <quote>errno</quote>. Errno always contains the error from the last
 erroneous system call. Definitions for the errors for inclusion in
-the programs are in "&lt;errno.h&gt;".
+the programs are in <quote>&lt;errno.h&gt;</quote>.
 </para>
 <para>
-In the "See Also" sections on the following pages, unless
+In the <quote>See Also</quote> sections on the following pages, unless
 otherwise stated, the references are to other system calls.
 </para>
 <para>
-Where "#include" files are shown, it is not mandatory to include
+Where <quote>#include</quote> files are shown, it is not mandatory to include
 them, but it might be convenient to use the manifest constants
 defined in them rather than integers; it certainly makes for
 more readable programs.

@@ -27,19 +27,19 @@
 
 <refsect1><title>Description</title>
 <para>
-These functions search the string pointed to by "string" for
-the first instance of the pattern pointed to by "pattern"
-starting at position "pos" (where the first position is 1 not
+These functions search the string pointed to by <quote>string</quote> for
+the first instance of the pattern pointed to by <quote>pattern</quote>
+starting at position <quote>pos</quote> (where the first position is 1 not
 0). The returned value is the position of the first matched
 character of the pattern in the string or zero if a match is
 not found.
 </para>
 <para>
 Findstr stops searching the string when a null byte is found in
-"string".
+<quote>string</quote>.
 </para>
 <para>
-Findnstr only stops searching at position "pos" + "len" so it may
+Findnstr only stops searching at position <quote>pos</quote> + <quote>len</quote> so it may
 continue past null bytes.
 </para>
 </refsect1>

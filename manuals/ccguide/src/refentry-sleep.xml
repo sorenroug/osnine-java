@@ -18,7 +18,7 @@
 The current task is stopped for the specified time.
 </para>
 <para>
-If "seconds" is zero, the task will sleep for one tick.
+If <quote>seconds</quote> is zero, the task will sleep for one tick.
 </para>
 </refsect1>
 </refentry>

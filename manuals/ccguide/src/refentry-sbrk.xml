@@ -25,7 +25,7 @@ Sbrk requests an allocation from free memory and returns a
 pointer to its base.
 </para>
 <para>
-"Sbrk()" requests the system to allocate "new" memory from
+<quote>Sbrk()</quote> requests the system to allocate <quote>new</quote> memory from
 outside the initial allocation.
 </para>
 <para>

@@ -26,13 +26,13 @@ os9 I$MAKDIR
 
 <refsect1><title>Description</title>
 <para>
-This call may be used to create a new directory. "Fname"
+This call may be used to create a new directory. <quote>Fname</quote>
 should point to a string containing the desired name of the
-directory. "Desc" is a descriptor specifying the desired mode
+directory. <quote>Desc</quote> is a descriptor specifying the desired mode
 (file type) and permissions of the new file.
 </para>
 <para>
-The include file defines the possible values for "desc" as
+The include file defines the possible values for <quote>desc</quote> as
 follows:
 </para>
 <programlisting>
@@ -55,7 +55,7 @@ Zero is returned if the directory has been successfully made;
 
 <refsect1><title>See Also</title>
 <para>
-OS-9 command "makdir"
+OS-9 command <quote>makdir</quote>
 </para>
 </refsect1>
 </refentry>
