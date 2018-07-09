@@ -44,7 +44,8 @@ os9 I$DELETE
 <refsect1><title>Description</title>
 <para>
 Unlink deletes the directory entry whose name is pointed to by
-"fname". If the entry was the last link to the file, the file
+<quote><replaceable>fname</replaceable></quote>.
+If the entry was the last link to the file, the file
 itself is deleted and the disc space occupied made available
 for re-use. If, however the file is open, in any active task,
 the deletion of the actual file is delayed until the file is
@@ -62,7 +63,7 @@ searched, if the file is a non-empty directory or a device.
 
 <refsect1><title>See Also</title>
 <para>
-OS-9 command "kill"
+OS-9 command <quote>del</quote>
 <!-- The original manual referenced link() here, but no such system call exists. -->
 </para>
 </refsect1>
