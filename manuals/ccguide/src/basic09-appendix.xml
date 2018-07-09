@@ -201,7 +201,7 @@ build bt2.c
 <para>
 This example differs from the first in a number of ways. The line
 "<code>static int entcnt</code>" defines an integer value name <varname>entcnt</varname> global to
-<filename>bt2.c</filename>. The parameter <parameter>cmem</parameter> and the line "<code>char *cmen</code>" indicate a
+<filename>bt2.c</filename>. The parameter <parameter>cmem</parameter> and the line "<code>char *cmem</code>" indicate a
 character array. The array will be used in the C function for
 global/static storage. C accesses non-auto and non-register
 variables indexed off the Y register. <filename>cstart.r</filename> normally takes care
