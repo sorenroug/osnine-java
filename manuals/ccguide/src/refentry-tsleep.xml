@@ -22,8 +22,8 @@ os9 F$SLEEP
 <refsect1><title>Description</title>
 <para>
 Tsleep deactivates the calling process for a specified number
-of system <quote>ticks</quote> or indefinitely if <quote>ticks</quote> is zero. A tick
-is system dependent but is usually 100ms.
+of system <quote><replaceable>ticks</replaceable></quote> or indefinitely if <quote><replaceable>ticks</replaceable></quote> is zero.
+A tick is system dependent but is usually 100ms.
 </para>
 <para>
 For a fuller description of this call, see the

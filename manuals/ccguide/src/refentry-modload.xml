@@ -19,7 +19,7 @@
 
 <funcprototype>
   <funcdef>mod_exec *<function>modload</function></funcdef>
-  <paramdef>char *<parameter>modname</parameter></paramdef>
+  <paramdef>char *<parameter>filename</parameter></paramdef>
   <paramdef>int <parameter>type</parameter></paramdef>
   <paramdef>int <parameter>language</parameter></paramdef>
 </funcprototype>
@@ -42,11 +42,11 @@ Each of these calls return a pointer to an OS-9 memory module.
 </para>
 <para>
 Modlink will search the module directory for a module with the
-same name as <quote>modname</quote> and, if found, increment its link count.
+same name as <quote><replaceable>modname</replaceable></quote> and, if found, increment its link count.
 </para>
 <para>
 Modload will open the file which has the path list specified by
-<quote>filename</quote> and loads modules from the file adding them to the
+<quote><replaceable>filename</replaceable></quote> and loads modules from the file adding them to the
 module directory. The returned value is a pointer to the first
 module loaded.
 </para>

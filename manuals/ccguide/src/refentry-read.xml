@@ -34,15 +34,14 @@ os9 I$READLN
 
 <refsect1><title>Description</title>
 <para>
-The path number, <quote>pn</quote> is an integer which is one of the
+The path number, <quote><replaceable>pn</replaceable></quote> is an integer which is one of the
 standard path numbers 0, 1, or 2, or the path number should
 have been returned by a successful call to <quote>open</quote>, <quote>creat</quote>, or
-<quote>dup</quote>. <quote>Buffer</quote> is a pointer to space with at least <quote>count</quote>
-bytes of memory into which read will put the data from the
-file.
+<quote>dup</quote>. <quote><replaceable>Buffer</replaceable></quote> is a pointer to space with at least <quote><replaceable>count</replaceable></quote>
+bytes of memory into which read will put the data from the file.
 </para>
 <para>
-It is guaranteed that at most <quote>count</quote> bytes will be read, but
+It is guaranteed that at most <quote><replaceable>count</replaceable></quote> bytes will be read, but
 often less will be, either because, for <function>readln</function>, the file
 represents a terminal and input stops at the end of a line, or
 for both, end-of-file has been reached.
@@ -63,7 +62,7 @@ a fuller description of the actions of these calls.
 <para>
 Read and readln return the number of bytes actually read (0 at
 end-of-file) or -1 for physical i/o errors, a bad path number,
-or a ridicolous <quote>count</quote>.
+or a ridicolous <quote><replaceable>count</replaceable></quote>.
 </para>
 <para>
 NOTE that end-of-file is not considered an error, and no error

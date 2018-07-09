@@ -85,32 +85,33 @@
 All strings passed to these functions are assumed null-terminated.
 </para>
 <para>
-Strcat appends a copy of the string pointed to by <quote>s2</quote> to the
-end of the string pointed to by <quote>s1</quote>. Strncat copies at most
-<quote>n</quote> characters. Both return the first argument.
+Strcat appends a copy of the string pointed to by <quote><replaceable>s2</replaceable></quote> to the
+end of the string pointed to by <quote><replaceable>s1</replaceable></quote>. Strncat copies at most
+<quote><replaceable>n</replaceable></quote> characters. Both return the first argument.
 </para>
 <para>
-Strcmp compares strings <quote>s1</quote> and <quote>s2</quote> for lexicographic order
+Strcmp compares strings <quote><replaceable>s1</replaceable></quote> and <quote><replaceable>s2</replaceable></quote> for lexicographic order
 and returns an integer less than, equal to or greater than 0
-where, respectively, <quote>s1</quote> is less than, equal to or greater
-than <quote>s2</quote>. Strncmp compares at most <quote>n</quote> characters.
+where, respectively, <quote><replaceable>s1</replaceable></quote> is less than, equal to or greater
+than <quote><replaceable>s2</replaceable></quote>. Strncmp compares at most <quote><replaceable>n</replaceable></quote> characters.
 </para>
 <para>
-Strcpy copies characters from <quote>s2</quote> to the space pointed to by
-<quote>s1</quote> up to and including the null byte. Strncpy copies exactly
-<quote>n</quote> characters. If the string <quote>s2</quote> is too short, the <quote>s1</quote> will
-be padded with null bytes to make up the difference. If <quote>s2</quote>
-is too long, <quote>s1</quote> may not be null-terminated. Both functions
-return the first argument.
+Strcpy copies characters from <quote><replaceable>s2</replaceable></quote> to the space pointed to by
+<quote><replaceable>s1</replaceable></quote> up to and including the null byte. Strncpy copies exactly
+<quote><replaceable>n</replaceable></quote> characters. If the string <quote><replaceable>s2</replaceable></quote> is too short,
+the <quote><replaceable>s1</replaceable></quote> will
+be padded with null bytes to make up the difference. If <quote><replaceable>s2</replaceable></quote>
+is too long, <quote><replaceable>s1</replaceable></quote> may not be null-terminated.
+Both functions return the first argument.
 </para>
 <para>
 Strhcpy copies string with sign bit terminator.
 </para>
 <para>
-Strlen returns the number of non-null characters in <quote>s</quote>.
+Strlen returns the number of non-null characters in <quote><replaceable>s</replaceable></quote>.
 </para>
 <para>
-Index returns a pointer to the first occurrence of <quote>ch</quote> in <quote>s</quote>
+Index returns a pointer to the first occurrence of <quote><replaceable>ch</replaceable></quote> in <quote><replaceable>s</replaceable></quote>
 or NULL if not found.
 </para>
 <para>

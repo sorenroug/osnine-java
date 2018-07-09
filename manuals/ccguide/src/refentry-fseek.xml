@@ -35,8 +35,8 @@
 <refsect1><title>Description</title>
 <para>
 Fseek repositions the next character position of a file for
-either read or write. The new position is a <quote>offset</quote> bytes
-from the beginning of the file if <quote>place</quote> is 0, the current
+either read or write. The new position is a <quote><replaceable>offset</replaceable></quote> bytes
+from the beginning of the file if <quote><replaceable>place</replaceable></quote> is 0, the current
 position is 1, or the end if 2. Fseek sorts out the special
 problems of buffering.
 </para>
@@ -49,7 +49,7 @@ Rewind is equivalent to <quote>fseek(fp,0L,0)</quote>.
 </para>
 <para>
 Ftell returns the current position, measured in bytes, from the
-beginning of the file pointed to by <quote>fp</quote>.
+beginning of the file pointed to by <quote><replaceable>fp</replaceable></quote>.
 </para>
 </refsect1>
 

@@ -35,7 +35,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Getc returns the next character from the file pointed to by <quote>fp</quote>.
+Getc returns the next character from the file pointed to by <quote><replaceable>fp</replaceable></quote>.
 Fgetc is a synonym for getc defined as a preproccessor substitution.
 </para>
 <para>

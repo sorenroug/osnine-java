@@ -17,8 +17,8 @@
 
 <refsect1><title>Description</title>
 <para>
-This call is available only to the super user. <quote>Fname</quote> is a
-pointer to a file name, and <quote>ownerid</quote> is the new user-id.
+This call is available only to the super user. <quote><replaceable>Fname</replaceable></quote> is a
+pointer to a file name, and <quote><replaceable>ownerid</replaceable></quote> is the new user-id.
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>

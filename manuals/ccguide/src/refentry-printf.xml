@@ -42,13 +42,13 @@ Thse three functions are used to place numbers and strings on
 the output in formatted, human readable form.
 </para>
 <para>
-Fprintf places its output on the file <quote>fp</quote>, printf on the
+Fprintf places its output on the file <quote><replaceable>fp</replaceable></quote>, printf on the
 standard output, and sprintf in the buffer pointed to by
-<quote>string</quote>. NOTE that it is the user's responsibility to ensure
+<quote><replaceable>string</replaceable></quote>. NOTE that it is the user's responsibility to ensure
 that this buffer is large enough.
 </para>
 <para>
-The <quote>control</quote> string determines the format, type, and number
+The <quote><replaceable>control</replaceable></quote> string determines the format, type, and number
 of the following arguments expected by the function. If the
 control does not match the arguments correctly, the results
 are unpredictable.

@@ -31,16 +31,17 @@
 
 <refsect1><title>Description</title>
 <para>
-Fread reads from the file pointed to by <quote>fp</quote>. <quote>Number</quote> is the
-number of items of size <quote>size</quote> that are to be read starting at
-<quote>ptr</quote>. The best way to pass the argument <quote>size</quote> to fread is by
+Fread reads from the file pointed to by <quote><replaceable>fp</replaceable></quote>.
+<quote><replaceable>Number</replaceable></quote> is the
+number of items of size <quote><replaceable>size</replaceable></quote> that are to be read starting at
+<quote><replaceable>ptr</replaceable></quote>. The best way to pass the argument <quote><replaceable>size</replaceable></quote> to fread is by
 using <quote>sizeof</quote>. Fread returns the number of items actually
 read.
 </para>
 <para>
-Fwrite writes to the file pointed to by <quote>fp</quote>. <quote>Number</quote> is the
-number of items of size <quote>size</quote> reading the from memory
-starting at <quote>ptr</quote>.
+Fwrite writes to the file pointed to by <quote><replaceable>fp</replaceable></quote>. <quote><replaceable>Number</replaceable></quote> is the
+number of items of size <quote><replaceable>size</replaceable></quote> reading the from memory
+starting at <quote><replaceable>ptr</replaceable></quote>.
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>

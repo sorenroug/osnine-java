@@ -34,9 +34,9 @@
 <refsect1><title>Description</title>
 <para>
 Fopen returns a pointer to a file structure (file pointer) if
-the file name in the string pointed to by <quote>filename</quote> can be
+the file name in the string pointed to by <quote><replaceable>filename</replaceable></quote> can be
 validly opened with the action in the string pointed to by
-<quote>action</quote>.
+<quote><replaceable>action</replaceable></quote>.
 </para>
 <para>
 The valid actions are:
@@ -84,7 +84,7 @@ execution directory if a full path is not given, and
 the x also specifies that the file should have execute permission.
 <informalexample>
 <para>
-E.g. f = fopen(<quote>fred</quote>,<quote>wx</quote>);
+E.g. f = fopen("fred","wx");
 </para>
 </informalexample>
 </para>
@@ -145,11 +145,11 @@ type(r,w,a) must be the same as the mode of the open file.
 
 <refsect1><title>Caveats</title>
 <para>
-The <quote>action</quote> passed as an argument to fopen must be a pointer
+The <quote><replaceable>action</replaceable></quote> passed as an argument to fopen must be a pointer
 to a string, <emphasis>not</emphasis> a character. For example
 <literallayout>
-fp = fopen(<quote>fred</quote>,<quote>r</quote>); is correct but
-fp = fopen(<quote>fred</quote>,'r'); is not.
+fp = fopen("fred","r"); is correct but
+fp = fopen("fred",'r'); is not.
 </literallayout>
 </para>
 </refsect1>

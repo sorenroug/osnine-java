@@ -65,6 +65,7 @@ example of this is <quote>ftell()</quote> which is pre-declared in <quote>stdio.
 If you are in any doubt, read the header file.
 </para>
 
+<xi:include href="refentry-abs.xml" />
 <xi:include href="refentry-atof.xml" />
 <xi:include href="refentry-fclose.xml" />
 <xi:include href="refentry-feof.xml" />

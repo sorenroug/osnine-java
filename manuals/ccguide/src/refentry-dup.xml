@@ -21,9 +21,8 @@ os9 I$DUP
 </refsect1>
 <refsect1><title>Description</title>
 <para>
-Dup takes the path number, <quote>pn</quote>, as returned from <quote>open()</quote> or
-<quote>creat()</quote> and returns another path number associated with the
-same file.
+Dup takes the path number, <quote><replaceable>pn</replaceable></quote>, as returned from <quote>open()</quote> or
+<quote>creat()</quote> and returns another path number associated with the same file.
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>

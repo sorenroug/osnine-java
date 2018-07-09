@@ -28,7 +28,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Conversions of the string pointed to by <quote>ptr</quote> to the relevant
+Conversions of the string pointed to by <quote><replaceable>ptr</replaceable></quote> to the relevant
 number type are carried out by these functions. They cease to
 convert a number when the first unrecognized character is
 encountered.

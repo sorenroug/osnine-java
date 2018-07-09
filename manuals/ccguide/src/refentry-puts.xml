@@ -27,11 +27,11 @@
 
 <refsect1><title>Description</title>
 <para>
-Fputs copies the (null-terminated) string pointed to by <quote>s</quote>
-onto the file <quote>fp</quote>.
+Fputs copies the (null-terminated) string pointed to by <quote><replaceable>s</replaceable></quote>
+onto the file <quote><replaceable>fp</replaceable></quote>.
 </para>
 <para>
-Puts copies the string <quote>s</quote> onto the standard output and
+Puts copies the string <quote><replaceable>s</replaceable></quote> onto the standard output and
 appends <quote>\n</quote>.
 </para>
 <para>

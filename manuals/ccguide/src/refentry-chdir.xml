@@ -29,13 +29,13 @@ os9 I$CHGDIR
 <para>
 These calls change the current data directory and the current
 execution directory, respectively, for the running task.
-<quote>Dirname</quote> is a pointer to a string that gives a pathname for
+<quote><replaceable>Dirname</replaceable></quote> is a pointer to a string that gives a pathname for
 a directory.
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>
 <para>
-Each call returns 0 after a successful call, or -1 if <quote>dirname</quote>
+Each call returns 0 after a successful call, or -1 if <quote><replaceable>dirname</replaceable></quote>
 is not a directory path name, or it is not searchable.
 </para>
 </refsect1>

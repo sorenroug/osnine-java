@@ -33,7 +33,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Putc add the character <quote>ch</quote> to the file <quote>fp</quote> at the current
+Putc adds the character <quote><replaceable>ch</replaceable></quote> to the file <quote><replaceable>fp</replaceable></quote> at the current
 writing position and advances the position pointer.
 </para>
 <para>
@@ -41,7 +41,7 @@ Putchar is implemented as a macro (defined in the header file)
 and is equivalent to <quote>putc(ch,stdout)</quote>.
 </para>
 <para>
-Putw adds the (two byte) machine word <quote>n</quote> to the file <quote>fp</quote> in
+Putw adds the (two byte) machine word <quote><replaceable>n</replaceable></quote> to the file <quote><replaceable>fp</replaceable></quote> in
 the manner of putc.
 </para>
 <para>

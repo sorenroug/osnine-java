@@ -39,8 +39,8 @@ were not used and <quote>stdout</quote> referred to the terminal, the
 </para>
 <para>
 Fclose calls fflush to clear out the buffer associated with
-<quote><replaceable>fp</replaceable></quote>, closes the file, and frees the buffer for use by another
-fopen call.
+<quote><replaceable>fp</replaceable></quote>, closes the file,
+and frees the buffer for use by another fopen call.
 </para>
 <para>
 The exit() system call and normal termination of a program

@@ -45,7 +45,6 @@ more readable programs.
 </para>
 
 <xi:include href="refentry-abort.xml" />
-<xi:include href="refentry-abs.xml" />
 <xi:include href="refentry-access.xml" />
 <xi:include href="refentry-chain.xml" />
 <xi:include href="refentry-chdir.xml" />

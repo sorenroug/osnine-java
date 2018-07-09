@@ -22,7 +22,7 @@ os9 I$CLOSE
 
 <refsect1><title>Description</title>
 <para>
-Close takes a path number, <quote>pn</quote>, as returned from system calls
+Close takes a path number, <quote><replaceable>pn</replaceable></quote>, as returned from system calls
 <quote>open()</quote>, <quote>creat()</quote>, or <quote>dup()</quote>, and closes the associated
 file.
 </para>

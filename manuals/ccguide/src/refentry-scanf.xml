@@ -40,9 +40,9 @@
 These functions perform the complement to <quote>printf()</quote> etc.
 </para>
 <para>
-Fscanf performs conversions from the file <quote>fp</quote>, scanf from the
+Fscanf performs conversions from the file <quote><replaceable>fp</replaceable></quote>, scanf from the
 standard input, and sscanf from the string pointed to by
-<quote>string</quote>.
+<quote><replaceable>string</replaceable></quote>.
 </para>
 <para>
 Each function expects a control string containing conversion

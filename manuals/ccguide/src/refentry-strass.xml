@@ -23,8 +23,8 @@ assignment, this function is useful for copying one structure
 to another.
 </para>
 <para>
-<quote>Count</quote> bytes are copied from memory location at <quote>s2</quote> to memory
-as <quote>s1</quote> regardless of the contents.
+<quote><replaceable>Count</replaceable></quote> bytes are copied from memory location at <quote><replaceable>s2</replaceable></quote> to memory
+as <quote><replaceable>s1</replaceable></quote> regardless of the contents.
 </para>
 </refsect1>
 </refentry>

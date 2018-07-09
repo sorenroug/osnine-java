@@ -35,7 +35,7 @@ manifest constant, BUFSIZ, is defined in the header file for
 use in declarations.
 </para>
 <para>
-If the <quote>buffer</quote> argument is NULL (0), the file becomes unbuffered
+If the <quote><replaceable>buffer</replaceable></quote> argument is NULL (0), the file becomes unbuffered
 and characters are read or written singly.
 </para>
 <para>

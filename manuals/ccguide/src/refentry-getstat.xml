@@ -64,12 +64,12 @@ A full description of getstat can be found in the
 <citetitle pubwork="book">OS-9 System Programmer's Manual</citetitle>.
 </para>
 <para>
-<quote>Code</quote> must be the value of one of the standard codes for the
-getstat service request. <quote>Filenum</quote> must be the path number of
+<quote><replaceable>Code</replaceable></quote> must be the value of one of the standard codes for the
+getstat service request. <quote><replaceable>Filenum</replaceable></quote> must be the path number of
 an open file.
 </para>
 <para>
-The form of the call depends on the value of <quote>code</quote>.
+The form of the call depends on the value of <quote><replaceable>code</replaceable></quote>.
 </para>
 <informaltable frame="none" rowsep="0" colsep="0">
 <tgroup cols="2">
@@ -78,7 +78,7 @@ The form of the call depends on the value of <quote>code</quote>.
 <tbody>
 <row>
 <entry>Code 0:</entry>
-<entry><quote>Buffer</quote> must be the address of a 32 byte
+<entry><quote><replaceable>Buffer</replaceable></quote> must be the address of a 32 byte
 buffer into which the relevant status packet
 is copied. The header file has the
 definitions of the various file and device
@@ -93,14 +93,14 @@ returned if there is no data.</entry>
 </row>
 <row>
 <entry>Code 2:</entry>
-<entry><quote>Size</quote> should be the address of a long
+<entry><quote><replaceable>Size</replaceable></quote> should be the address of a long
 integer into which the current file size is
 placed. The return value of the function is
 -1 on error and 0 on success.</entry>
 </row>
 <row>
 <entry>Code 5:</entry>
-<entry><quote>Pos</quote> should be the address of a long integer
+<entry><quote><replaceable>Pos</replaceable></quote> should be the address of a long integer
 into which the current file position is
 placed. The return value of the function is -1 on
 error and 0 on success.</entry>

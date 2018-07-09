@@ -24,9 +24,9 @@ os9 F$CRC
 
 <refsect1><title>Description</title>
 <para>
-This call accumulates a crc into a three byte array at <quote>accum</quote>
-for <quote>count</quote> bytes starting at <quote>start</quote>. All three bytes of
-<quote>accum</quote> should be initialized to 0xff before the first call to
+This call accumulates a crc into a three byte array at <quote><replaceable>accum</replaceable></quote>
+for <quote><replaceable>count</replaceable></quote> bytes starting at <quote><replaceable>start</replaceable></quote>. All three bytes of
+<quote><replaceable>accum</replaceable></quote> should be initialized to 0xff before the first call to
 <quote>crc()</quote>. However, repeated calls can be subsequently made to
 cover an entire module. If the result is to be used as an OS-9
 module crc, it should have its bytes complemented before

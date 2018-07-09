@@ -27,8 +27,8 @@ os9 I$CREATE
 <refsect1><title>Description</title>
 <para>
 Creat returns a path number to a new file available for
-writing, giving it the permissions specified in <quote>perm</quote> and
-making the task user the owner. If, however, <quote>fname</quote> is the
+writing, giving it the permissions specified in <quote><replaceable>perm</replaceable></quote> and
+making the task user the owner. If, however, <quote><replaceable>fname</replaceable></quote> is the
 name of an existing file, the file is truncated to zero length,
 and the ownership and permissions remain unchanged. NOTE,
 that unlike the OS-9 assembler service request, creat does
@@ -37,7 +37,7 @@ should be used to establish the existence of a file if it is
 important that a file should not be overwritten.
 </para>
 <para>
-It is unnecessary to specify writing permissions in <quote>perm</quote> in
+It is unnecessary to specify writing permissions in <quote><replaceable>perm</replaceable></quote> in
 order to write to the file in the current task.
 </para>
 <para>

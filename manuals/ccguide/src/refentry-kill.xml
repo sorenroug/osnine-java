@@ -20,8 +20,8 @@
 
 <refsect1><title>Description</title>
 <para>
-Kill sends the interrupt type <quote>interrupt</quote> to the task with id
-<quote>tid</quote>.
+Kill sends the interrupt type <quote><replaceable>interrupt</replaceable></quote> to the task with id
+<quote><replaceable>tid</replaceable></quote>.
 </para>
 <para>
 Both tasks, sender and receiver, must have the same user id

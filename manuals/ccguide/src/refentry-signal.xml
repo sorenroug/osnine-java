@@ -36,7 +36,7 @@ be executed when it is received. Different functions may be
 designated for different signals.
 </para>
 <para>
-The values for <quote>address</quote> have the following meanings:
+The values for <quote><replaceable>address</replaceable></quote> have the following meanings:
 <informaltable frame="none" rowsep="0" colsep="0">
 <tgroup cols="2">
 <colspec colwidth="0.7in"/>
@@ -61,11 +61,11 @@ is to be executed on receipt of the signal.</entry>
 </para>
 <para>
 If the latter case is chosen, when the signal is received by
-the process the <quote>address</quote> is reset to 0, the default, before
+the process the <quote><replaceable>address</replaceable></quote> is reset to 0, the default, before
 the function is executed. This means that if the next signal
 received should be caught then another call to <quote>signal()</quote>
 should be made immediately. This is normally the first action
-taken by the <quote>interrupt</quote> function. The function may access the
+taken by the <quote><replaceable>interrupt</replaceable></quote> function. The function may access the
 signal number which caused its execution by looking at its
 argument. On completion of this function the program resumes
 at the point at which is was <quote>interrupted</quote> by the signal.

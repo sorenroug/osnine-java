@@ -31,8 +31,8 @@ in three-byte form rather than four-byte; these functions
 enable arithmetic to be used on them.
 </para>
 <para>
-L3tol converts a vector on <quote>n</quote> three-byte integers pointed to
-by <quote>cp</quote>, into a vector of long integers starting at <quote>lp</quote>.
+L3tol converts a vector on <quote><replaceable>n</replaceable></quote> three-byte integers pointed to
+by <quote><replaceable>cp</replaceable></quote>, into a vector of long integers starting at <quote><replaceable>lp</replaceable></quote>.
 </para>
 <para>
 Ltol3 does the opposite.

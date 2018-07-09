@@ -27,9 +27,9 @@
 
 <refsect1><title>Description</title>
 <para>
-Fgets reads characters from the file <quote>fp</quote> and places them in
-the buffer pointed to by <quote>s</quote> up to a carriage return ('\n') but
-not more than <quote>n</quote> - 1 characters. A null character is appended
+Fgets reads characters from the file <quote><replaceable>fp</replaceable></quote> and places them in
+the buffer pointed to by <quote><replaceable>s</replaceable></quote> up to a carriage return ('\n') but
+not more than <quote><replaceable>n</replaceable></quote> - 1 characters. A null character is appended
 to the end of the string.
 </para>
 <para>

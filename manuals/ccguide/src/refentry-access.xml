@@ -18,18 +18,18 @@
 <refsect1><title>Description</title>
 <para>
 Access returns 0 if the access modes specified in <quote>perm</quote> are
-correct for the user to access <quote>fname</quote>. -1 is returned if the
+correct for the user to access <quote><replaceable>fname</replaceable></quote>. -1 is returned if the
 file cannot be accessed.
 </para>
 <para>
-The value for <quote>perm</quote> may be any legal OS-9 mode as used for
+The value for <quote><replaceable>perm</replaceable></quote> may be any legal OS-9 mode as used for
 <quote>open()</quote> or <quote>creat()</quote>, it may be zero, which tests whether the
 file exists, or the path to it may be searched.
 </para>
 </refsect1>
 <refsect1><title>Caveats</title>
 <para>
-NOTE that the <quote>perm</quote> value is <emphasis>not</emphasis> compatible with other
+NOTE that the <quote><replaceable>perm</replaceable></quote> value is <emphasis>not</emphasis> compatible with other
 systems.
 </para>
 </refsect1>
