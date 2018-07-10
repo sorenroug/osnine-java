@@ -10,15 +10,15 @@ REM Also the figure array matrix was enlarged.
 REM 
 PRINT TAB(32); "HANGMAN"
 PRINT \ PRINT 
-DIM P$(12,18),L$(20),D$(20),N$(26):STRING[1]
+DIM P$(12,18),L$(20),D$(20),N$(26),CD$:STRING[1]
 DIM USED(60):BOOLEAN
-DIM T1,X:INTEGER
+DIM MSG:STRING[40]
+DIM T1,X,Y:INTEGER
 DIM C,M,I,J,N:INTEGER
-C=1
+
+C=0
 N=60 \REM WORD COUNT
 RUN Randomize \ REM Set RND from clock
-X=-(X) \REM Make it negative
-X=RND(X)
 10 FOR I=1 TO 20
   D$(I)="-"
 NEXT I
@@ -38,20 +38,26 @@ FOR I=1 TO 13
   P$(1,I)="X"
 NEXT I
 P$(2,13)="X"
-IF C<N-20 THEN 20
-PRINT "You did all the words!"
-END 
-20 IF C=0 THEN
-  REM CLEAR ARRAY
+IF C >= N-20 THEN
+  PRINT "You did all the words!"
+  END 
+ENDIF
+
+REM CLEAR USAGE ARRAY
+IF C=0 THEN
   FOR I=1 TO N
     USED(I)=FALSE
   NEXT I
 ENDIF
-Q=INT(RND(N-1)+1) \REM SELECT WORD
-IF USED(Q)=TRUE THEN 20
+
+REM SELECT WORD
+REPEAT
+  Q=INT(RND(N-1)+1)
+UNTIL USED(Q)=FALSE
 USED(Q)=TRUE
 C=C+1
-RESTORE 
+
+RESTORE 400
 T1=0
 FOR I=1 TO Q
   READ A$
@@ -64,10 +70,10 @@ NEXT I
 30 PRINT "Here are the letters you used:"
 FOR I=1 TO 26
   PRINT N$(I); 
-  IF N$(I+1)="" THEN 40
+  EXITIF N$(I+1)="" THEN ENDEXIT
   PRINT ","; 
 NEXT I
-40 PRINT \ PRINT 
+PRINT \ PRINT 
 FOR I=1 TO L
   PRINT D$(I); 
 NEXT I
@@ -126,74 +132,22 @@ END
 
 140 PRINT \ PRINT 
 PRINT "Sorry, that letter isn't in the word."
-ON M GOSUB 150,160,170,180,190,200,210,220,230,240
-GOTO 250
-
-150 PRINT "First we draw a head" \ RETURN
-160 PRINT "Now we draw a body" \ RETURN
-170 PRINT "Next we draw an arm" \ RETURN
-180 PRINT "This time it's the other arm" \ RETURN
-190 PRINT "Now let's draw the right leg" \ RETURN
-200 PRINT "This time we add the left leg" \ RETURN
-210 PRINT "Now we put up a hand" \ RETURN
-220 PRINT "Next the other hand" \ RETURN
-230 PRINT "Now we draw one foot" \ RETURN
-240 PRINT "Here's the other foot -- you're hung!!" \ RETURN
-
-250 ON M GOSUB 260,270,280,290,300,310,320,330,340,350
-GOTO 360
-
-260 P$(3,12)="-"
-P$(3,13)="-"
-P$(3,14)="-"
-P$(4,11)="("
-P$(4,12)="."
-P$(4,14)="."
-P$(4,15)=")"
-P$(5,12)="-"
-P$(5,13)="-"
-P$(5,14)="-"
-RETURN
-
-270 FOR I=6 TO 9
-  P$(I,13)="X"
+PRINT
+RESTORE 450
+FOR I = 1 TO M-1
+  READ MSG, SZ
+  FOR J = 1 TO SZ
+    READ X,Y,CD$
+  NEXT J
 NEXT I
-RETURN
+READ MSG, SZ
+PRINT MSG
+FOR J = 1 TO SZ
+  READ X,Y,CD$
+  P$(X,Y) = CD$
+NEXT J
 
-280 FOR I=4 TO 7
-  P$(I,I+5)="\"
-NEXT I
-RETURN
-
-290 P$(4,17)="/"
-P$(5,16)="/"
-P$(6,15)="/"
-P$(7,14)="/"
-RETURN
-
-300 P$(10,12)="/"
-P$(11,11)="/"
-RETURN
-
-310 P$(10,14)="\"
-P$(11,15)="\"
-RETURN
-
-320 P$(3,17)="\"
-RETURN
-
-330 P$(3,9)="/"
-RETURN
-
-340 P$(12,16)="\"
-P$(12,17)="_"
-RETURN
-
-350 P$(12,9)="_"
-P$(12,10)="/"
-RETURN
-
-360 FOR I=1 TO 12
+FOR I=1 TO 12
   FOR J=1 TO 18
     PRINT P$(I,J); 
   NEXT J
@@ -201,6 +155,7 @@ RETURN
 NEXT I
 PRINT 
 PRINT 
+
 IF M<>10 THEN 30
 PRINT "Sorry, you lose. The word was "; A$
 PRINT "You missed that one. Do you "; 
@@ -208,7 +163,7 @@ GOTO 120
 INPUT "Type YES or NO",Y$
 IF Y$="YES" THEN 10
 
-DATA "GUM","SIN","FOR","CRY","LUG","BYE","FLY"
+400 DATA "GUM","SIN","FOR","CRY","LUG","BYE","FLY"
 DATA "UGLY","EACH","FROM","WORK","TALK","WITH","SELF"
 DATA "SORE","EAGLE","BIRD","CLOCK","SISTER","MOTHER","FATHER"
 DATA "PUPPY","CAKE","YARD","TREE","APPLE","ARM","LEG","BOAT"
@@ -216,6 +171,28 @@ DATA "CAR","DRESS","COAT","TENT","SLEEP","PAPER","SCHOOL","PENCIL"
 DATA "TEACHER","BUS","PLAY","FLUTE","BOOK","TEST","CIRCLE","PLAIN"
 DATA "DOG","TABLE","PLATE","JUMP","PIANO","DANCE","GOOD","PRETTY"
 DATA "HOPE","FAITH","LOVE","TRUST","CREED","FORGIVE","PRAY","SEEK"
+
+450 DATA "First we draw a head",10
+DATA 3,12,"-",3,13,"-",3,14,"-",4,11,"(",4,12,"."
+DATA 4,14,".",4,15,")",5,12,"-",5,13,"-",5,14,"-"
+DATA "Now we draw a body",4
+DATA 6,13,"X",7,13,"X",8,13,"X",9,13,"X"
+DATA "Next we draw an arm",4
+DATA 4,9,"\",5,10,"\",6,11,"\",7,12,"\"
+DATA "This time it's the other arm",4
+DATA 4,17,"/",5,16,"/",6,15,"/",7,14,"/"
+DATA "Now let's draw the right leg",2
+DATA 10,12,"/",11,11,"/"
+DATA "This time we add the left leg",2
+DATA 10,14,"\",11,15,"\"
+DATA "Now we put up a hand",1
+DATA 3,17,"\"
+DATA "Next the other hand",1
+DATA 3,9,"/"
+DATA "Now we draw one foot",2
+DATA 12,16,"\",12,17,"_"
+DATA "Here's the other foot -- you're hung!!",2
+DATA 12,9,"_",12,10,"/"
 END 
 
 PROCEDURE Randomize
