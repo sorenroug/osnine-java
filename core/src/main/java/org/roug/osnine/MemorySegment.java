@@ -34,6 +34,10 @@ public abstract class MemorySegment {
         return addr >= startAddress && addr < endAddress;
     }
 
+    /**
+     * Start address of memory segment.
+     * @return start of memory segment.
+     */
     public int getStartAddress() {
         return startAddress;
     }
@@ -45,6 +49,10 @@ public abstract class MemorySegment {
         startAddress = address;
     }
 
+    /**
+     * End address of memory segment.
+     * @return end of memory segment.
+     */
     public int getEndAddress() {
         return endAddress;
     }
@@ -58,11 +66,13 @@ public abstract class MemorySegment {
 
     /**
      * Single byte read from memory.
+     * @return the value of the memory location.
      */
     protected abstract int load(int addr);
 
     /**
      * Read from memory. If there is no memory at that location then return 0.
+     * @return the value of the memory location.
      */
     public int read(int addr) {
         if (!inSegment(addr)) {
@@ -83,6 +93,8 @@ public abstract class MemorySegment {
 
     /**
      * Write a byte to memory. If there is no memory, ignore.
+     * @param addr the memory address to write to.
+     * @param val value to write.
      */
     public void write(int addr, int val) {
         if (!inSegment(addr)) {
@@ -98,6 +110,8 @@ public abstract class MemorySegment {
 
     /**
      * Single byte write to memory.
+     * @param addr the memory address to write to.
+     * @param val value to write.
      */
     protected void burn(int addr, int val) {
         store(addr, val);
@@ -106,6 +120,8 @@ public abstract class MemorySegment {
 
     /**
      * Forcefully write a byte to memory. If there is no memory, ignore.
+     * @param addr the memory address to write to.
+     * @param val value to write.
      */
     public void forceWrite(int addr, int val) {
         if (!inSegment(addr)) {

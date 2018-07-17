@@ -1,7 +1,7 @@
 package org.roug.osnine;
 
 /**
- * RAM segment.
+ * ROM segment.
  */
 public class ReadOnlyMemory extends MemorySegment {
 
