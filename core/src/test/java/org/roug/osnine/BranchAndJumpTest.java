@@ -9,22 +9,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BranchAndJumpTest {
+public class BranchAndJumpTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
-
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
 
     /**
      * Load a short program into memory.
      */
     private void loadProg(int[] instructions) {
-        myTestCPU.write_word(0xfffe, LOCATION);
+        writeword(0xfffe, LOCATION);
         int respc = myTestCPU.read_word(0xfffe);
         assertEquals(LOCATION, respc);
 
@@ -441,11 +434,11 @@ public class BranchAndJumpTest {
     @Test
     public void testJSR() {
         // Set up a word to test at address 0x205
-        myTestCPU.write_word(0x205, 0x03ff);
+        writeword(0x205, 0x03ff);
         // Set register D
         myTestCPU.d.set(0x105);
         // Set register Y to point to that location minus 5
-        myTestCPU.y.set(0x200);
+        setY(0x200);
         // Set register S to point to 0x915
         myTestCPU.s.set(0x915);
         // Two bytes of instruction
@@ -466,7 +459,7 @@ public class BranchAndJumpTest {
     @Test
     public void testLBRAForwards() {
         myTestCPU.write(0xB00, 0x16);
-        myTestCPU.write_word(0xB01, 0x03FF);
+        writeword(0xB01, 0x03FF);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
         assertEquals(0xB00 + 3 + 0x03FF, myTestCPU.pc.intValue());
@@ -475,7 +468,7 @@ public class BranchAndJumpTest {
     @Test
     public void testLBRABackwards() {
         myTestCPU.write(0x1B00, 0x16);
-        myTestCPU.write_word(0x1B01, 0xF333);
+        writeword(0x1B01, 0xF333);
         myTestCPU.pc.set(0x1B00);
 	myTestCPU.execute();
         assertEquals(0x1B00 + 3 - 0xCCD, myTestCPU.pc.intValue());
@@ -483,8 +476,8 @@ public class BranchAndJumpTest {
 
     @Test
     public void testLBRNForwards() {
-        myTestCPU.write_word(0xB00, 0x1021);
-        myTestCPU.write_word(0xB02, 0x03FF);
+        writeword(0xB00, 0x1021);
+        writeword(0xB02, 0x03FF);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
         assertEquals(0xB00 + 4, myTestCPU.pc.intValue());
@@ -493,8 +486,8 @@ public class BranchAndJumpTest {
     @Test
     public void testLBCCForwards() {
         myTestCPU.cc.setC(0);
-        myTestCPU.write_word(0xB00, 0x1024);
-        myTestCPU.write_word(0xB02, 0x03FF);
+        writeword(0xB00, 0x1024);
+        writeword(0xB02, 0x03FF);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
         assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
@@ -503,8 +496,8 @@ public class BranchAndJumpTest {
     @Test
     public void testLBEQForwards() {
         myTestCPU.cc.setZ(1);
-        myTestCPU.write_word(0xB00, 0x1027);
-        myTestCPU.write_word(0xB02, 0x03FF);
+        writeword(0xB00, 0x1027);
+        writeword(0xB02, 0x03FF);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
         assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
@@ -514,8 +507,8 @@ public class BranchAndJumpTest {
     public void testLBGEForwards() {
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setV(1);
-        myTestCPU.write_word(0xB00, 0x102C);
-        myTestCPU.write_word(0xB02, 0x03FF);
+        writeword(0xB00, 0x102C);
+        writeword(0xB02, 0x03FF);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
         assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
@@ -524,7 +517,7 @@ public class BranchAndJumpTest {
     @Test
     public void testJMPExtended() {
         myTestCPU.write(0xB00, 0x7E); // JMP
-        myTestCPU.write_word(0xB01, 0x102C);
+        writeword(0xB01, 0x102C);
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
         assertEquals(0x102C, myTestCPU.pc.intValue());
@@ -533,7 +526,7 @@ public class BranchAndJumpTest {
     @Test
     public void testRTS() {
         myTestCPU.s.set(0x300);
-        myTestCPU.write_word(0x300, 0x102C); // Write return address
+        writeword(0x300, 0x102C); // Write return address
         myTestCPU.write(0xB00, 0x39); // RTS
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();

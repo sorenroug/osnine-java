@@ -9,22 +9,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SubtractionTest {
+public class SubtractionTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
-
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
 
     /**
      * Load a short program into memory.
      */
     private void loadProg(int[] instructions) {
-        myTestCPU.write_word(0xfffe, LOCATION);
+        writeword(0xfffe, LOCATION);
         int respc = myTestCPU.read_word(0xfffe);
         assertEquals(LOCATION, respc);
 
@@ -36,11 +29,11 @@ public class SubtractionTest {
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         myTestCPU.cc.set(cc);
-        myTestCPU.a.set(a);
-        myTestCPU.b.set(b);
+        setA(a);
+        setB(b);
         myTestCPU.dp.set(dp);
-        myTestCPU.x.set(x);
-        myTestCPU.y.set(y);
+        setX(x);
+        setY(y);
         myTestCPU.s.set(s);
         myTestCPU.u.set(u);
     }
@@ -66,8 +59,8 @@ public class SubtractionTest {
         myTestCPU.write(0x205, 0xff);
         myTestCPU.cc.clear();
         // Set register Y to point to that location
-        myTestCPU.y.set(0x205);
-        myTestCPU.a.set(0xff);
+        setY(0x205);
+        setA(0xff);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xA1);  // CMPA indexed
         myTestCPU.write(0xB01, 0xA0);
@@ -83,7 +76,7 @@ public class SubtractionTest {
         // B = 0xA0, CMPB with 0xA0
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
-        myTestCPU.b.set(0xA0);
+        setB(0xA0);
         myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
         myTestCPU.write(0xB01, 0xA0);
         myTestCPU.pc.set(0xB00);
@@ -96,7 +89,7 @@ public class SubtractionTest {
         // B = 0x70, CMPB with 0xA0
         // positive - negative = negative + overflow
         myTestCPU.cc.clear();
-        myTestCPU.b.set(0x70);
+        setB(0x70);
         myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
         myTestCPU.write(0xB01, 0xA0);
         myTestCPU.pc.set(0xB00);
@@ -109,7 +102,7 @@ public class SubtractionTest {
 
     @Test
     public void testCMP16ext() {
-        myTestCPU.x.set(0x5410);
+        setX(0x5410);
         myTestCPU.cc.set(0x23);
         myTestCPU.write(0x0B33, 0x54);
         myTestCPU.write(0x0B34, 0x10);
@@ -129,7 +122,7 @@ public class SubtractionTest {
     @Test
     public void testDECA() {
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0x32);
+        setA(0x32);
         myTestCPU.write(0xB00, 0x4A);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
@@ -140,7 +133,7 @@ public class SubtractionTest {
         assertEquals(0, myTestCPU.cc.getC());
 
         // Test 0x80 - special case
-        myTestCPU.a.set(0x80);
+        setA(0x80);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x7F, myTestCPU.a.intValue());
@@ -150,7 +143,7 @@ public class SubtractionTest {
         assertEquals(0, myTestCPU.cc.getC());
 
         // Test 0x00 - special case
-        myTestCPU.a.set(0x00);
+        setA(0x00);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
@@ -168,7 +161,7 @@ public class SubtractionTest {
         myTestCPU.cc.clear();
         myTestCPU.write(0xB10, 0x7F);
         myTestCPU.write(0xB00, 0x7A);
-        myTestCPU.write_word(0xB01, 0xB10);
+        writeword(0xB01, 0xB10);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x7E, myTestCPU.read(0x0B10));
@@ -186,7 +179,7 @@ public class SubtractionTest {
     @Test
     public void testSBCB() {
         myTestCPU.dp.set(0x05);
-        myTestCPU.b.set(0x35);
+        setB(0x35);
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(1);
         myTestCPU.write(0x0503, 0x03);
@@ -214,7 +207,7 @@ public class SubtractionTest {
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setC(1);
-        myTestCPU.a.set(0xFF);
+        setA(0xFF);
         myTestCPU.write(0xB00, 0x82);  // SBCA immediate
         myTestCPU.write(0xB01, 0xFE);
         myTestCPU.pc.set(0xB00);
@@ -236,7 +229,7 @@ public class SubtractionTest {
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setC(0);
-        myTestCPU.a.set(0x00);
+        setA(0x00);
         myTestCPU.write(0xB00, 0x82);  // SBCA immediate
         myTestCPU.write(0xB01, 0xFF);
         myTestCPU.pc.set(0xB00);
@@ -258,7 +251,7 @@ public class SubtractionTest {
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setC(0);
-        myTestCPU.a.set(0x00);
+        setA(0x00);
         myTestCPU.write(0xB00, 0x82);  // SBCA immediate
         myTestCPU.write(0xB01, 0x01);
         myTestCPU.pc.set(0xB00);
@@ -282,7 +275,7 @@ public class SubtractionTest {
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setC(1);
-        myTestCPU.a.set(0x00);
+        setA(0x00);
         myTestCPU.write(0xB00, 0x80);  // SUBA immediate
         myTestCPU.write(0xB01, 0xFF);
         myTestCPU.pc.set(0xB00);
@@ -302,7 +295,7 @@ public class SubtractionTest {
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setC(1);
-        myTestCPU.a.set(0x00);
+        setA(0x00);
         myTestCPU.write(0xB00, 0x80);  // SUBA immediate
         myTestCPU.write(0xB01, 0x01);
         myTestCPU.pc.set(0xB00);
@@ -321,7 +314,7 @@ public class SubtractionTest {
      */
     @Test
     public void testSUBB1() {
-        myTestCPU.b.set(0x02);
+        setB(0x02);
         myTestCPU.write(0xB00, 0xC0); // SUBB
         myTestCPU.write(0xB01, 0xB3);
         myTestCPU.cc.clear();
@@ -342,7 +335,7 @@ public class SubtractionTest {
      */
     @Test
     public void testSUBB2() {
-        myTestCPU.b.set(0x02);
+        setB(0x02);
         myTestCPU.write(0xB00, 0xC0); // SUBB
         myTestCPU.write(0xB01, 0x81);
         myTestCPU.cc.clear();
@@ -372,9 +365,9 @@ public class SubtractionTest {
     public void testSUBAindexed() {
         // Set up a byte to test at address 0x202
         myTestCPU.write(0x202, 0x73);
-        myTestCPU.a.set(0x99);
+        setA(0x99);
         // Set register B to the offset = -14
-        myTestCPU.b.set(0xF2);
+        setB(0xF2);
         // Set register S to point to that location minus 2
         myTestCPU.s.set(0x210);
         // Two bytes of instruction
@@ -406,10 +399,10 @@ public class SubtractionTest {
         // Test INDEXED mode:   SUBB   A,S where A is negative
         //
         // Set up a word to test at address 0x202
-        myTestCPU.write_word(0x202, 0x73ff);
-        myTestCPU.b.set(0x40);
+        writeword(0x202, 0x73ff);
+        setB(0x40);
         // Set register A to the offset = -14
-        myTestCPU.a.set(0xF2);
+        setA(0xF2);
         // Set register S to point to that location minus 2
         myTestCPU.s.set(0x210);
         // Two bytes of instruction
@@ -434,8 +427,8 @@ public class SubtractionTest {
      */
     @Test
     public void testSUBBcommaY() {
-        myTestCPU.b.set(0x03);
-        myTestCPU.y.set(0x0021);
+        setB(0x03);
+        setY(0x0021);
         myTestCPU.cc.set(0x44);
         myTestCPU.write(0x21, 0x21);
         myTestCPU.write(0xB00, 0xE0); // SUBB
@@ -457,8 +450,8 @@ public class SubtractionTest {
      */
     @Test
     public void testSUBD1() {
-        myTestCPU.a.set(0x77);
-        myTestCPU.b.set(0x02);
+        setA(0x77);
+        setB(0x02);
         myTestCPU.dp.set(0x02);
         myTestCPU.write(0x0200, 0x01);
         myTestCPU.write(0x0201, 0x23);
@@ -490,7 +483,7 @@ public class SubtractionTest {
         myTestCPU.d.set(0x0705);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0x83); //SUBD
-        myTestCPU.write_word(0xB01, 0x0123);
+        writeword(0xB01, 0x0123);
         myTestCPU.cc.clear();
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
@@ -513,7 +506,7 @@ public class SubtractionTest {
     public void testSUBD3() {
         myTestCPU.d.set(0x0702);
         myTestCPU.write(0xB00, 0x83); //SUBD
-        myTestCPU.write_word(0xB01, 0xF123);
+        writeword(0xB01, 0xF123);
         myTestCPU.cc.clear();
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
@@ -531,7 +524,7 @@ public class SubtractionTest {
         // positive - negative = negative + overflow
         myTestCPU.d.set(0x0800);
         myTestCPU.write(0xB00, 0x83); //SUBD
-        myTestCPU.write_word(0xB01, 0x8000);
+        writeword(0xB01, 0x8000);
         myTestCPU.cc.clear();
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();

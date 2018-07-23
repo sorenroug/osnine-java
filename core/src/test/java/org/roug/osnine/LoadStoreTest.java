@@ -7,29 +7,21 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-public class LoadStoreTest {
-
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
-
+public class LoadStoreTest extends Framework {
 
     /**
      * Load 0 into A.
      */
     @Test
     public void testLDAZero() {
-        myTestCPU.a.set(0x02);
+        setA(0x02);
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.write(0xB00, 0x86);
         myTestCPU.write(0xB01, 0x00);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x00, myTestCPU.a.intValue());
+        assertA(0x00);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(1, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -40,9 +32,9 @@ public class LoadStoreTest {
         // Test INDEXED INDIRECT mode:   LDA [$10,X]
         //
         // Set register X to point to a location
-        myTestCPU.x.set(0x1000);
+        setX(0x1000);
         // Set up a word to at address 0x1010 to point to 0x1150
-        myTestCPU.write_word(0x1010, 0x1150);
+        writeword(0x1010, 0x1150);
         // The value to load into A
         myTestCPU.write(0x1150, 0xAA);
         // Two bytes of instruction
@@ -52,8 +44,8 @@ public class LoadStoreTest {
         myTestCPU.write(0xB03, 0x10);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x1000, myTestCPU.x.intValue());
-        assertEquals(0xAA, myTestCPU.a.intValue());
+        assertX(0x1000);
+        assertA(0xAA);
         assertEquals(0xB04, myTestCPU.pc.intValue());
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -67,7 +59,7 @@ public class LoadStoreTest {
         // Set register X to point to a location
         myTestCPU.u.set(0x1000);
         // Set up a word to at address 0x1000 - 0x10 to point to 0x1150
-        myTestCPU.write_word(0x0FF0, 0x1150);
+        writeword(0x0FF0, 0x1150);
         // The value to load into A
         myTestCPU.write(0x1150, 0x7A);
         // Two bytes of instruction
@@ -78,7 +70,7 @@ public class LoadStoreTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x1000, myTestCPU.u.intValue());
-        assertEquals(0x7A, myTestCPU.a.intValue());
+        assertA(0x7A);
         assertEquals(0xB04, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -93,9 +85,9 @@ public class LoadStoreTest {
         // Test INDEXED mode:   LDB   A,S
         //
         // Set up a word to test at address 0x205
-        myTestCPU.write_word(0x202, 0xb3ff);
+        writeword(0x202, 0xb3ff);
         // Set register A to the offset
-        myTestCPU.a.set(0x02);
+        setA(0x02);
         // Set register S to point to that location minus 2
         myTestCPU.s.set(0x200);
         // Two bytes of instruction
@@ -105,7 +97,7 @@ public class LoadStoreTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x200, myTestCPU.s.intValue());
-        assertEquals(0xb3, myTestCPU.b.intValue());
+        assertB(0xb3);
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -117,9 +109,9 @@ public class LoadStoreTest {
         // Test INDEXED mode:   LDB   A,S where A is negative
         //
         // Set up a word to test at address 0x205
-        myTestCPU.write_word(0x202, 0x73ff);
+        writeword(0x202, 0x73ff);
         // Set register A to the offset
-        myTestCPU.a.set(0xF2);
+        setA(0xF2);
         // Set register S to point to that location minus 2
         myTestCPU.s.set(0x210);
         // Two bytes of instruction
@@ -128,7 +120,7 @@ public class LoadStoreTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x210, myTestCPU.s.intValue());
-        assertEquals(0x73, myTestCPU.b.intValue());
+        assertB(0x73);
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -143,17 +135,17 @@ public class LoadStoreTest {
         // Test INDEXED mode:   LDD   2,Y
         //
         // Set up a word to test at address 0x205
-        myTestCPU.write_word(0x202, 0xb3ff);
+        writeword(0x202, 0xb3ff);
         // Set register D to something
         myTestCPU.d.set(0x105);
         // Set register Y to point to that location minus 5
-        myTestCPU.y.set(0x200);
+        setY(0x200);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xEC);
         myTestCPU.write(0xB01, 0x22);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x200, myTestCPU.y.intValue());
+        assertY(0x200);
         assertEquals(0xb3ff, myTestCPU.d.intValue());
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -164,17 +156,17 @@ public class LoadStoreTest {
         //
         myTestCPU.cc.clear();
         // Set up a word to test at address 0x1FE
-        myTestCPU.write_word(0x1FE, 0x33ff);
+        writeword(0x1FE, 0x33ff);
         // Set register Y to point to that location plus 2
-        myTestCPU.y.set(0x200);
+        setY(0x200);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xEC);
         myTestCPU.write(0xB01, 0x3E);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x200, myTestCPU.y.intValue());
+        assertY(0x200);
         assertEquals(0x33ff, myTestCPU.d.intValue());
-        assertEquals(0x33, myTestCPU.a.intValue());
+        assertA(0x33);
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -184,15 +176,15 @@ public class LoadStoreTest {
         //
         myTestCPU.cc.clear();
         // Set up a word to test at address 0x200
-        myTestCPU.write_word(0x200, 0x31ff);
+        writeword(0x200, 0x31ff);
         // Set register Y to point to that location minus 5
-        myTestCPU.y.set(0x202);
+        setY(0x202);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xEC); // LDD
         myTestCPU.write(0xB01, 0xA3);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
-        assertEquals(0x200, myTestCPU.y.intValue());
+        assertY(0x200);
         assertEquals(0x31ff, myTestCPU.d.intValue());
         assertEquals(0xB02, myTestCPU.pc.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -208,7 +200,7 @@ public class LoadStoreTest {
         myTestCPU.s.set(0xA11);
         myTestCPU.write(0xB00, 0x10); // LDS
         myTestCPU.write(0xB01, 0xCE);
-        myTestCPU.write_word(0xB02, 0x1234);
+        writeword(0xB02, 0x1234);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.s.intValue());
@@ -222,11 +214,11 @@ public class LoadStoreTest {
      */
     @Test
     public void testLDYextended() {
-        myTestCPU.write_word(0x0E81, 0x0202); // Set up a value of 0x0202 at 0x0E81
+        writeword(0x0E81, 0x0202); // Set up a value of 0x0202 at 0x0E81
         // Set register D to something
         myTestCPU.d.set(0x105);
         // Set register Y to point to that location minus 5
-        myTestCPU.y.set(0x200);
+        setY(0x200);
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0x10); // LDY
         myTestCPU.write(0xB01, 0xBE); // LDY
@@ -235,7 +227,7 @@ public class LoadStoreTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xB04, myTestCPU.pc.intValue());
-        assertEquals(0x0202, myTestCPU.y.intValue());
+        assertY(0x0202);
     }
 
     /**
@@ -243,12 +235,12 @@ public class LoadStoreTest {
      */
     @Test
     public void testLDYextendedIndirect() {
-        myTestCPU.write_word(0x0202, 0xB3FF); // Set up a word to test at address 0x202
-        myTestCPU.write_word(0x0E81, 0x0202); // Set up a pointer to 0x0202 at 0x0E81
+        writeword(0x0202, 0xB3FF); // Set up a word to test at address 0x202
+        writeword(0x0E81, 0x0202); // Set up a pointer to 0x0202 at 0x0E81
         // Set register D to something
         myTestCPU.d.set(0x105);
         // Set register Y to point to that location minus 5
-        myTestCPU.y.set(0x200);
+        setY(0x200);
         // Five bytes of instruction
         myTestCPU.write(0xB00, 0x10); // LDY
         myTestCPU.write(0xB01, 0xAE); // LDY
@@ -258,7 +250,7 @@ public class LoadStoreTest {
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xB05, myTestCPU.pc.intValue());
-        assertEquals(0xB3FF, myTestCPU.y.intValue());
+        assertY(0xB3FF);
     }
 
     /**
@@ -286,8 +278,8 @@ public class LoadStoreTest {
      */
     @Test
     public void testSTBindexed() {
-        myTestCPU.b.set(0xE5);
-        myTestCPU.x.set(0x056A);
+        setB(0xE5);
+        setX(0x056A);
         myTestCPU.write(0x0579, 0x03);
         myTestCPU.write(0x057A, 0xBB);
         myTestCPU.write(0x03BB, 0x02);
@@ -308,7 +300,7 @@ public class LoadStoreTest {
      */
     @Test(expected = RuntimeException.class)
     public void testSTAillegal() {
-        myTestCPU.a.set(0xE5);
+        setA(0xE5);
         myTestCPU.write(0xB00, 0x87); // illegal
         myTestCPU.write(0xB01, 0x20);
         myTestCPU.pc.set(0xB00);
@@ -322,7 +314,7 @@ public class LoadStoreTest {
      */
     @Test(expected = RuntimeException.class)
     public void testSTBillegal() {
-        myTestCPU.b.set(0xE5);
+        setB(0xE5);
         myTestCPU.write(0xB00, 0xC7); // illegal
         myTestCPU.write(0xB01, 0x20);
         myTestCPU.pc.set(0xB00);
@@ -336,7 +328,7 @@ public class LoadStoreTest {
      */
     @Test(expected = RuntimeException.class)
     public void testSTDillegal() {
-        myTestCPU.b.set(0xE5);
+        setB(0xE5);
         myTestCPU.write(0xB00, 0xCD); // illegal
         myTestCPU.write(0xB01, 0x20);
         myTestCPU.write(0xB02, 0x20);
@@ -367,7 +359,7 @@ public class LoadStoreTest {
      */
     @Test(expected = RuntimeException.class)
     public void testSTXillegal() {
-        myTestCPU.b.set(0xE5);
+        setB(0xE5);
         myTestCPU.write(0xB00, 0x8F); // illegal
         myTestCPU.write(0xB01, 0x20);
         myTestCPU.write(0xB02, 0x20);

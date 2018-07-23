@@ -18,7 +18,7 @@ public class InstructionsTest extends Framework {
      * Load a short program into memory.
      */
     private void loadProg(int[] instructions) {
-        myTestCPU.write_word(0xfffe, LOCATION);
+        writeword(0xfffe, LOCATION);
         int respc = myTestCPU.read_word(0xfffe);
         assertEquals(LOCATION, respc);
 
@@ -536,7 +536,7 @@ public class InstructionsTest extends Framework {
      */
     @Test
     public void testSWI3() {
-        myTestCPU.write_word(0xfff2, 0x0300);
+        writeword(0xfff2, 0x0300);
         myTestCPU.s.set(0x1000);
         myTestCPU.write(0xB00, 0x11);
         myTestCPU.write(0xB01, 0x3F);

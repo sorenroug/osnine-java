@@ -17,7 +17,7 @@ public class AddTest extends Framework {
      * Load a short program into memory.
      */
     private void loadProg(int[] instructions) {
-        myTestCPU.write_word(0xfffe, LOCATION);
+        writeword(0xfffe, LOCATION);
         int respc = myTestCPU.read_word(0xfffe);
         assertEquals(LOCATION, respc);
 
@@ -278,7 +278,7 @@ public class AddTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.d.set(0xD000);
         myTestCPU.write(0xB00, 0xC3);
-        myTestCPU.write_word(0xB01, 0xE000);
+        writeword(0xB01, 0xE000);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xB000, myTestCPU.d.intValue());
@@ -292,7 +292,7 @@ public class AddTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.d.set(0x7000);
         myTestCPU.write(0xB00, 0xC3);
-        myTestCPU.write_word(0xB01, 0x7000);
+        writeword(0xB01, 0x7000);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xE000, myTestCPU.d.intValue());
@@ -317,7 +317,7 @@ public class AddTest extends Framework {
         myTestCPU.s.set(0x1202);
         setA(0x00);
         setB(0xC5);
-        myTestCPU.write_word(0x1202, 0x92FC);
+        writeword(0x1202, 0x92FC);
         myTestCPU.execute();
         assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
         assertEquals(0x93C1, myTestCPU.d.intValue());
@@ -372,7 +372,7 @@ public class AddTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.write(0xB10, 0x7F);
         myTestCPU.write(0xB00, 0x7C);
-        myTestCPU.write_word(0xB01, 0xB10);
+        writeword(0xB01, 0xB10);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x80, myTestCPU.read(0x0B10));

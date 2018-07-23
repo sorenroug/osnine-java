@@ -100,10 +100,10 @@ public class StackTest extends Framework {
         myTestCPU.write(512 - 11, 0x11);  // Store A
         myTestCPU.write(512 - 10, 0x12);  // Store B
         myTestCPU.write(512 - 9, 0x13);  // Store DP
-	myTestCPU.write_word(512 - 8, 0x9141); // Set up stored X value
-	myTestCPU.write_word(512 - 6, 0xa142); // Set up stored Y value
-	myTestCPU.write_word(512 - 4, 0xb140); // Set up stored U value
-	myTestCPU.write_word(512 - 2, 0x04ff); // Set up stored PC value
+	writeword(512 - 8, 0x9141); // Set up stored X value
+	writeword(512 - 6, 0xa142); // Set up stored Y value
+	writeword(512 - 4, 0xb140); // Set up stored U value
+	writeword(512 - 2, 0x04ff); // Set up stored PC value
 	setY(0x1115); // Set Y to something benign
 	myTestCPU.s.set(500); // Set register S to point to 500
 	myTestCPU.cc.set(0x0f);
@@ -133,10 +133,10 @@ public class StackTest extends Framework {
         myTestCPU.write(512 - 11, 0x11);  // Store A
         myTestCPU.write(512 - 10, 0x12);  // Store B
         myTestCPU.write(512 - 9, 0x13);  // Store DP
-	myTestCPU.write_word(512 - 8, 0x9141); // Set up stored X value
-	myTestCPU.write_word(512 - 6, 0xa142); // Set up stored Y value
-	myTestCPU.write_word(512 - 4, 0xb140); // Set up stored S value
-	myTestCPU.write_word(512 - 2, 0x04ff); // Set up stored PC value
+	writeword(512 - 8, 0x9141); // Set up stored X value
+	writeword(512 - 6, 0xa142); // Set up stored Y value
+	writeword(512 - 4, 0xb140); // Set up stored S value
+	writeword(512 - 2, 0x04ff); // Set up stored PC value
 	setY(0x1115); // Set Y to something benign
 	myTestCPU.u.set(500); // Set register U to point to 500
 	myTestCPU.cc.set(0x0f);
@@ -149,8 +149,8 @@ public class StackTest extends Framework {
         assertA(0x11);
         assertB(0x12);
 	assertEquals(0x13, myTestCPU.dp.intValue());
-	assertEquals(0x9141, myTestCPU.x.intValue());
-	assertEquals(0xa142, myTestCPU.y.intValue());
+        assertX(0x9141);
+        assertY(0xA142);
 	assertEquals(0xb140, myTestCPU.s.intValue());
 	assertEquals(0x04ff, myTestCPU.pc.intValue());
     }
@@ -165,9 +165,9 @@ public class StackTest extends Framework {
 	// Test: PULS PC,Y
 	//
 	// Set up stored Y value at 0x205
-	myTestCPU.write_word(0x205, 0xb140);
+	writeword(0x205, 0xb140);
 	// Set up stored PC value at 0x207
-	myTestCPU.write_word(0x207, 0x04ff);
+	writeword(0x207, 0x04ff);
 	// Set Y to something benign
 	setY(0x1115);
 	// Set register S to point to 0x205
@@ -178,7 +178,7 @@ public class StackTest extends Framework {
 	myTestCPU.write(0xB01, 0xA0); // PC,Y
         myTestCPU.pc.set(0xB00);
 	myTestCPU.execute();
-	assertEquals(0xb140, myTestCPU.y.intValue());
+        assertY(0xB140);
 	assertEquals(0x04ff, myTestCPU.pc.intValue());
 	assertEquals(0x0f, myTestCPU.cc.intValue());
     }

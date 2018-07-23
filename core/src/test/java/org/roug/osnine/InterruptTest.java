@@ -8,9 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InterruptTest {
-
-    private MC6809 myTestCPU;
+public class InterruptTest extends Framework {
 
     @Before
     public void setUp() {
@@ -18,7 +16,7 @@ public class InterruptTest {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         myTestCPU.cc.set(0x0F);
-        myTestCPU.write_word(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
+        writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
         myTestCPU.pc.set(0xB00);
     }
@@ -33,14 +31,14 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.write_word(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
+        writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
         myTestCPU.pc.set(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
@@ -79,14 +77,14 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.write_word(MC6809.NMI_ADDR, 0x1234); // Set IRQ vector
+        writeword(MC6809.NMI_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
         myTestCPU.pc.set(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
@@ -96,8 +94,8 @@ public class InterruptTest {
         // S was not set via an instrution so the NMI was ignored
         assertEquals(0xB01, myTestCPU.pc.intValue());
 
-        myTestCPU.write_word(0xB00, 0x10CE); // LDS #$900 sets CC
-        myTestCPU.write_word(0xB02, 0x900);
+        writeword(0xB00, 0x10CE); // LDS #$900 sets CC
+        writeword(0xB02, 0x900);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.pc.intValue());
@@ -132,14 +130,14 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.write_word(MC6809.FIRQ_ADDR, 0x1234); // Set IRQ vector
+        writeword(MC6809.FIRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
         myTestCPU.pc.set(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
@@ -169,14 +167,14 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.write_word(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
+        writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
         myTestCPU.pc.set(0xB00);
         myTestCPU.write(0xB00, 0x3C); // CWAI
@@ -260,11 +258,11 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x5F);  // Inhibit FIRQ and IRQ
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
         myTestCPU.pc.set(0xB00);
@@ -293,11 +291,11 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x5F);  // Inhibit FIRQ and IRQ
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
         myTestCPU.pc.set(0xB00);
@@ -328,11 +326,11 @@ public class InterruptTest {
         myTestCPU.s.set(517);
         // Set the registers we want to push
         myTestCPU.cc.set(0x4F);  // Inhibit FIRQ only
-        myTestCPU.a.set(1);
-        myTestCPU.b.set(2);
+        setA(1);
+        setB(2);
         myTestCPU.dp.set(3);
-        myTestCPU.x.set(0x0405);
-        myTestCPU.y.set(0x0607);
+        setX(0x0405);
+        setY(0x0607);
         myTestCPU.u.set(0x0809);
 
         myTestCPU.pc.set(0xB00);

@@ -9,22 +9,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ShiftTest {
+public class ShiftTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
-
-    private MC6809 myTestCPU;
-
-    @Before
-    public void setUp() {
-        myTestCPU = new MC6809(0x2000);
-    }
 
     /**
      * Load a short program into memory.
      */
     private void loadProg(int[] instructions) {
-        myTestCPU.write_word(0xfffe, LOCATION);
+        writeword(0xfffe, LOCATION);
         int respc = myTestCPU.read_word(0xfffe);
         assertEquals(LOCATION, respc);
 
@@ -36,11 +29,11 @@ public class ShiftTest {
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
         myTestCPU.cc.set(cc);
-        myTestCPU.a.set(a);
-        myTestCPU.b.set(b);
+        setA(a);
+        setB(b);
         myTestCPU.dp.set(dp);
-        myTestCPU.x.set(x);
-        myTestCPU.y.set(y);
+        setX(x);
+        setY(y);
         myTestCPU.s.set(s);
         myTestCPU.u.set(u);
     }
@@ -66,7 +59,7 @@ public class ShiftTest {
         myTestCPU.write(0xB00, 0x47); // ASRA
         // Logical Shift Right of 0x3E to 0x1F
         myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(0x3E);
+        setA(0x3E);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x1F, myTestCPU.a.intValue());
@@ -78,7 +71,7 @@ public class ShiftTest {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        myTestCPU.b.set(1);
+        setB(1);
         myTestCPU.write(0xB00, 0x57); // ASRB
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
@@ -91,7 +84,7 @@ public class ShiftTest {
         // Arithmic Shift Right of 0xB8
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
-        myTestCPU.b.set(0xB8);
+        setB(0xB8);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xDC, myTestCPU.b.intValue());
@@ -135,7 +128,7 @@ public class ShiftTest {
         myTestCPU.write(0xB00, 0x48);
         // Logical Shift Left of 0xff in register A
         myTestCPU.cc.clear();
-        myTestCPU.a.set(0xFF);
+        setA(0xFF);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xFE, myTestCPU.a.intValue());
@@ -146,7 +139,7 @@ public class ShiftTest {
         // Logical Shift Left of 1
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(1);
-        myTestCPU.a.set(1);
+        setA(1);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x02, myTestCPU.a.intValue());
@@ -157,7 +150,7 @@ public class ShiftTest {
         // Logical Shift Left of 0xB8
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
-        myTestCPU.a.set(0xB8);
+        setA(0xB8);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x70, myTestCPU.a.intValue());
@@ -175,7 +168,7 @@ public class ShiftTest {
         myTestCPU.write(0xB00, 0x44); // LSRA
         // Logical Shift Right of 0x3E to 0x1F
         myTestCPU.cc.set(0x0F);
-        myTestCPU.a.set(0x3E);
+        setA(0x3E);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x1F, myTestCPU.a.intValue());
@@ -187,7 +180,7 @@ public class ShiftTest {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        myTestCPU.a.set(1);
+        setA(1);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x00, myTestCPU.a.intValue());
@@ -198,7 +191,7 @@ public class ShiftTest {
         // Logical Shift Right of 0xB8
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
-        myTestCPU.a.set(0xB8);
+        setA(0xB8);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x5C, myTestCPU.a.intValue());
@@ -239,7 +232,7 @@ public class ShiftTest {
         myTestCPU.write(0xB00, 0x59); // ROLB
 
         // Rotate 0x89 to 0x13.
-        myTestCPU.b.set(0x89);
+        setB(0x89);
         myTestCPU.cc.clear();
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setC(1);
@@ -253,7 +246,7 @@ public class ShiftTest {
         // Logical Shift Left of 1 with carry set
         myTestCPU.cc.setC(1);
         myTestCPU.cc.setV(1);
-        myTestCPU.b.set(1);
+        setB(1);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0x03, myTestCPU.b.intValue());
@@ -264,7 +257,7 @@ public class ShiftTest {
         // Rotate Left of 0xD8
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
-        myTestCPU.b.set(0xD8);
+        setB(0xD8);
         myTestCPU.pc.set(0xB00);
         myTestCPU.execute();
         assertEquals(0xb0, myTestCPU.b.intValue());
@@ -286,7 +279,7 @@ public class ShiftTest {
     public void testRORB() {
         myTestCPU.write(0xB00, 0x56); // RORB
         // Rotate 0x89 with CC set to 0xC4
-        myTestCPU.b.set(0x89);
+        setB(0x89);
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(1);
         myTestCPU.pc.set(0xB00);
@@ -298,7 +291,7 @@ public class ShiftTest {
         assertEquals(1, myTestCPU.cc.getC());
 
         // Rotate 0x89 with CC clear to 0x44
-        myTestCPU.b.set(0x89);
+        setB(0x89);
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(0);
         myTestCPU.pc.set(0xB00);

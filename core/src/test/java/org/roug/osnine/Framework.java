@@ -53,4 +53,11 @@ public class Framework {
         assertEquals(exp, myTestCPU.y.intValue());
     }
 
+    void writebyte(int loc, int value) {
+        myTestCPU.write(loc, value);
+    }
+
+    void writeword(int loc, int value) {
+        myTestCPU.write_word(loc, value);
+    }
 }
