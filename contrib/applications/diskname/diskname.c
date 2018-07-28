@@ -44,6 +44,7 @@ main(argc,argv)
 {
     FILE *dfp;
     long totsect;
+    int e;
     char buffer[40];
     struct ddsect idsector;
 
@@ -72,7 +73,11 @@ main(argc,argv)
             exit(3);
         }
         strcpyc(idsector.dd_name, argv[2], 32);
-        rewind(dfp);
+        e = rewind(dfp);
+        if (e == -1) {
+            fprintf(stderr, "Unable to rewind\n");
+            exit(1);
+        }
         fwrite(&idsector, sizeof(idsector), 1, dfp);
     }
     strcpyh(buffer, idsector.dd_name);
