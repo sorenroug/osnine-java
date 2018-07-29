@@ -1,0 +1,22 @@
+DIM PATH:INTEGER
+DIM RECORD:STRING[200] \(*assign a large enough string
+DIM FLAG:STRING
+OPEN #PATH,"CUSTOMER.RMS":READ \(*open the data file for read
+REPEAT
+  READ #PATH,RECORD \(*read a record into the string
+  FLAG=LEFT$(RECORD,1) \(*get the flag character
+  IF FLAG="U" THEN
+  PRINT "UNUSED RECORD"
+  ENDIF
+  IF FLAG="D" THEN
+  PRINT "  DELETED RECORD: ";RECORD
+  ENDIF
+  IF FLAG="1" THEN
+  PRINT "  PRIMARY RECORD: ";RECORD
+  ENDIF
+  IF FLAG="2" THEN
+  PRINT "SECONDARY RECORD: ";RECORD
+  ENDIF
+UNTIL EOF(#PATH) \(*until file exhausted
+CLOSE #PATH
+END

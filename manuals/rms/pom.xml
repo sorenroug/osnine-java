@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>roug.org.osnine</groupId>
+    <artifactId>manuals</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>roug.org.osnine</groupId>
+  <artifactId>rms</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <name>RMS User's Guide</name>
+  <packaging>pom</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+    <!-- Copy media files to target -->
+    <!--
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/docbkx/html/media</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/docbkx/media</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>*.*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+      <plugin>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.17</version>
+        <executions>
+          <execution>
+            <id>rms</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+              <!--<goal>generate-html</goal>-->
+            </goals>
+            <configuration>
+              <!-- per execution configuration -->
+              <draftMode>no</draftMode>
+              <sourceDirectory>${basedir}/src</sourceDirectory>
+              <foCustomization>src/style.xslt</foCustomization>
+              <includes>rms.xml</includes>
+            </configuration>
+          </execution>
+        </executions>
+
+        <configuration>
+          <!-- shared configuration -->
+          <generatedSourceDirectory>${project.build.directory}/generated</generatedSourceDirectory>
+          <xincludeSupported>true</xincludeSupported>
+          <highlightSource>0</highlightSource>
+          <paperType>A4</paperType>
+          <fop1Extensions>1</fop1Extensions>
+        </configuration>
+
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>5.0-all</version>
+            <classifier>resources</classifier>
+            <type>zip</type>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+
+      </plugin>
+    </plugins>
+  </build>
+</project>

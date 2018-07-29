@@ -1,0 +1,481 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="ccguide" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <bookinfo>
+    <title>RMS</title>
+    <subtitle>Record Management System for the OS-9 operating system</subtitle>
+    <publisher>
+      <publishername>Dragon Data Professional Software</publishername>
+      <address>
+        <city>Port Talbot</city>
+      </address>
+    </publisher>
+    <copyright>
+      <year>1983</year>
+      <holder>Dragon Data Professional Software</holder>
+    </copyright>
+    <legalnotice>
+      <para>
+RMS, in all machine readable formats and the written documentation accompanying them, are copyrighted. The purchase of RMS conveys to the purchase a licence to use RMS for his/her own use and not for sale or free distribution to others. No other licence, expressed or implied, is granted.
+</para>
+<para>
+This manual and associated programs are the copyright of Dragon Data Ltd (under licence).
+Copying is only permitted for backup purposes on a single computer system.
+Any other copying by whatever means without the written authorisation of Dragon Data Ltd is strictly prohibited.
+</para>
+<para>
+This manual was prepared using the STYLOGRAPH word processor, check with the SPELL CHECK spelling checker,
+and printed with the MAIL MERGE merge/print program.
+</para>
+<para>
+OS-9 and BASIC09 are trade marks of Microware Systems Corporation and Motorola Inc.
+</para>
+    </legalnotice>
+  </bookinfo>
+  <preface>
+    <title>System Requirements</title>
+    <para>
+RMS is supplied configured for your Dragon Data Computer, and will work equally well under OS-9 Level One or OS-9 Level Two. The programs do not require large amounts of working memory; each takes 8k bytes or less, plus the size of the program.
+</para>
+    <para>
+The minimum system configuration you require is your Dragon Data compute, with at least 64k bytes of RAM, running the OS-9 operating system; a floppy disk drive; and a television, or preferably a monochrome monitor. (The monitor will generally give you a better picture than a television).
+</para>
+    <para>
+RMS will certainly run with only one disk drive, although two are more convenient.
+</para>
+    <para>
+A printer is not essential with RMS, but it does increase the usefulness of RMS. Almost any printer can be used - RMS makes no assumptions about the printer, not does it use any special printer features.
+</para>
+    <para>
+You will need a text editor - such as the STYLOGRAPH word processor, or the OS-9 text editor - to create the RMS dictionaries and report specifications.
+</para>
+  </preface>
+  <chapter>
+    <title>Introduction to RMS</title>
+    <para>
+Record Management System is a complete DATABASE MANAGEMENT SYSTEM for OS-9. It is extremely versatile, and very easy to learn to use. Applications may include accounting, business record-keeping, management information systems, customer or personnel records, customized data entry, immediate data retrieval, and various other situations which require data entry, online data retrieval and update, and printed reports. RMS can easily be customized to fit various requirements without any programming knowledge. The data stored under RMS is, however accessible to user written programs (in BASIC09 or other languages).
+</para>
+    <section>
+      <title>What RMS Can Do</title>
+      <para>
+RMS allows the user to determine the format under which his data is to be stored. This format consists of deciding what data items are to be kept, and what the characteristics of each item are to be. The characteristics include the type of data (ie, number, alphanumeric string, date, money value), the maximum length of the data item, and if necessary, limits or restrictions on the possible values.
+</para>
+      <para>
+Once the data format is determined and stored in a DICTIONARY, the RMS automatically provides:
+</para>
+<itemizedlist>
+<listitem>
+          <para>
+creation of a disk file properly formatted to store the data,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+online data entry in a form fill-out manner on the screen,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+online data access for lookup or modification,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+creation of printed reports and text files to the user's specifications,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+facility to later change the format of the data as requirements change.
+          </para>
+      </listitem>
+  </itemizedlist>
+    </section>
+    <section>
+      <title>What RMS Consists of</title>
+      <para>
+RMS is a package of utility programs, written in machine language for maximum efficiency. These utilities may be used individually or in various combinations to provide the above features. It is also possible to access RMS data file from user-written programs, for example in BASIC09. This allows the user to take advantage of RMS to do much of the time-consuming part of a large custom programming task, and still allows for the use of a general purpose programming language for the unique processing that can be done no other way. The RMS programs are:
+</para>
+      <variablelist>
+        <varlistentry>
+          <term>RMSNEW</term>
+          <listitem>
+            <para>
+is used to create and format a new RMS data file which fits the user's needs.
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>RMS (EDITOR)</term>
+          <listitem>
+            <para>
+is used to input data to a file, modify data in a file, or display data in a file. In general, this is accomplished by the display of a form on the screen. The form reflects the specific data items as determined by the user. The user can fill out the form to enter new data or can request data from the file to be displayed in the form.
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>REPORT</term>
+          <listitem>
+            <para>
+is used to create printed or text file output from the RMS data file. The user has complete control over the data that is printed and the manner in which it is printed. Many built-in features are available to facilitate the creation of quality finished reports, or text files for use by other programs, such as MAIL MERGE.
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INDEX</term>
+          <listitem>
+            <para>
+is used to create one or more index files from the data file which can be used to "drive" the RMS EDITOR or REPORT programs. This provides display, modification or printing of the data in the desired order.
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>RMSCOPY</term>
+          <listitem>
+            <para>
+is used to copy an RMS file when its capacity or internal structure is required to be changed. It can also be used to merge two files or to "post" one file to another.
+</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+    <section>
+      <title>Getting Started</title>
+      <important>
+        <para>
+We suggest that you read this short section carefully, and then try out the example application at the end of the manual. The assignment of the command keys for RMS on your keyboard and a summary of OS-9 command lines for calling RMS are given at the back of this manual.
+</para>
+      </important>
+      <para>
+      The first thing you must do before using RMS is to make a copy of the supplied RMS onto a freshly formatted disk. Then <emphasis>store the original disk in a safe place.</emphasis>
+      <emphasis>Never</emphasis> use the supplied disk for running RMS, and <emphasis>never</emphasis> write to it.
+      Refer to the <citetitle pubwork="book">OS-9 User's manual</citetitle> for instructions on how to use the <command>format</command> and <command>backup</command> commands.
+      </para>
+      <para>
+      Remove your system disk from drive 0 and insert your freshly made disk.
+      Change your execution directory (using 'chx') and your data directory (using 'chd') to refer to this disk:
+      </para>
+      <screen>
+      OS9: chx /d0/cmds chd /d0
+      </screen>
+      <para>
+      If you are using a Dragon 64, and the screen is not already in the 51 characters by 24 lines mode, enter this mode by:
+      </para>
+      <screen>
+      OS9: go51
+      </screen>
+      <para>
+      Inspect the root directory of the disk by:
+      </para>
+      <screen>
+      OS9: dir
+      </screen>
+      <para>
+      The root directory contains several example files:
+      </para>
+      <variablelist>
+        <varlistentry>
+          <term>SAMPLE.DIC</term>
+          <listitem>
+            <para>
+example files used in the tutorial
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>PRLIST.REP</term>
+          <listitem>
+            <para>
+at the end of this manual
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ADDRESS.RMS</term>
+          <listitem>
+            <para>
+a sample data file - an address book
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>ADDRESS.DIC</term>
+          <listitem>
+            <para>
+the dictionary file for the address book
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>BOOK.REP</term>
+          <listitem>
+            <para>
+a report spec to print out the address book
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>PHONES.REP</term>
+          <listitem>
+            <para>
+a report spec to print out the phone numbers
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>NAME.NDX</term>
+          <listitem>
+            <para>
+a sample index file for the address book
+</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+In addition there are two directories, CMDS and SYS. CMDS contains the RMS programs. To inspect the directory, try:
+</para>
+      <screen>
+OS9: dir cmds
+</screen>
+      <variablelist>
+        <varlistentry>
+          <term>RMS</term>
+          <listitem>
+            <para>
+the RMS editor, to enter or modify records
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>RMSNEW</term>
+          <listitem>
+            <para>
+for creating new data files
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INDEX</term>
+          <listitem>
+            <para>
+for generating sorted index files
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>REPORT</term>
+          <listitem>
+            <para>
+to produce a printed report or text file
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>RMSCOPY</term>
+          <listitem>
+            <para>
+to transfer records from one file to another
+</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>RMS.TRM</term>
+          <listitem>
+            <para>
+descriptor file used by RMS
+</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+plus several commonly used OS-9 utilities.
+</para>
+      <para>
+The SYS directory contains the OS-9 error messages file <filename>errmsg</filename>, used
+by OS-9 when reporting errors. (for example "Error #216 - Path name not found").
+</para>
+      <para>
+You are now ready for a trial run with RMS. Try getting into RMS with:
+</para>
+<screen>
+OS9: rms address
+</screen>
+      <para>
+To return to OS-9, (at any time), hit
+<keycombo action="simul"><keycap>Control</keycap><keycap>E</keycap></keycombo>.
+</para>
+<para>
+We suggest that you now work through the Example Application at the end of this manual,
+to familiarise yourself with the basic features of RMS.
+This will not be sufficient for you to create your own RMS applications - to do so
+you must read the rest of the manual carefully, section by section.
+RMS has many useful features which can be missed on a casual reading.
+Don't be afraid to try things out - it's the easiest way to learn.
+</para>
+<bridgehead renderas="sect2">
+Using RMS on two drives
+</bridgehead>
+<para>
+We have described the use of RMS on a single drive, drive 0.
+If you have two drives, and there is room on your system disk, you will find
+it more convenient to move the RMS programs onto your system disk.
+You should copy
+RMS, RMSNEW, INDEX, REPORT, RMSCOPY, and RMS.TRM from the
+CMDS directory of the RMS disk to the CMDS directory of your system disk.
+</para>
+<para>
+      Refer to the <citetitle pubwork="book">OS-9 User's manual</citetitle> for instructions on the <command>copy</command> command.
+</para>
+<para>
+You can now use a separate disk as you data disk, in drive 1. You could try this out by placing your RMS disk, (not the original!) in drive 1, and your system disk in drive 0.
+Set your execution and data directories with:
+</para>
+      <screen>
+      OS9: chx /d0/cmds chd /d1
+      </screen>
+    </section>
+  </chapter>
+
+  <chapter>
+  <title>Data Storage Under RMS</title>
+  <para>
+      All data is stored in files on disk. Each file consists of a set of
+      RECORDS. All records in a particular file are of the same length and
+      have certain characteristics in common:
+  </para>
+  <itemizedlist>
+      <listitem>
+          <para>
+              all records consist of printable ASCII data,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+              each record ends with a carriage return character,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+              the first character of each record is used by RMS for internal categorization of the record,
+          </para>
+      </listitem>
+      <listitem>
+          <para>
+              the rest of the record is divided among the various data fields as determined by the dictionary.
+          </para>
+      </listitem>
+  </itemizedlist>
+  <para>
+      The user can define as many RMS data files as needed. Associated with each data file is a dictionary file, and possibly one or more index and report specification files.
+  </para>
+  <section>
+      <title>The Concept of a Record</title>
+      <para>
+          A record is the logical grouping of several data items into one physical entity. Data is stored and retrieved by RMS a record at a time. Usually the data items within a record will describe particular details of one useful <quote>real-world</quote> entity. For example, a record might contain a person's name, address, phone number, social security number and age.
+      </para>
+      <section>
+          <title>Fields and Record Keys</title>
+          <para>
+              In the above example the particular data items (name, address, etc.) are called FIELDS. The grouping of all the fields together is called a RECORD. Each of the fields has its own particular characteristics; the social security number is always 9 characters long and must always consist of numeric digits only. The name field could consist of alphabetic characters, and so on. In RMS, it is up to the user to decide what data fields he needs, and what the characteristics of each will be. In doing so, he determines that data a record is to contain.
+          </para>
+          <para>
+              Normall the is on field in the record which is designated as the KEY FIELD. The key field will be the one by which immediate access to the record may be made. In the above, if the name field is designated as the key then the user can lookup and display a record by entering only the name.
+          </para>
+      </section>
+      <section>
+          <title>Primary Record</title>
+          <para>
+              Within on RMS data file the user may choose to use one of two possible situations. The first situation is one in which all records in the file have the same format (ie, same set of fields). This will fit applications where the data base can be well represented by a set of individual records; one record per one real world entity. Each record in the file has a unique key field value. An example of this organization is a mailing list; another might be a stock inventory system. In this case all the records in the file are referred to as PRIMARY records.
+          </para>
+      </section>
+      <section>
+          <title>Secondary Record</title>
+          <para>
+              The second possible situation is one which allows two types of records within one file. The first type of record is called the PRIMARY record; the second type is called the SECONDARY record. In this situation there may be but one primary record with any given key field value, but under each such primary record there may be any number of associated secondary records. Within the file, all primary records have the same format, and all secondary records have the same format. However, the format of the primary records can differ from that of the secondary records.
+          </para>
+      </section>
+      <section>
+          <title>Record Groups</title>
+          <para>
+              When a file is of the second type (both primary and secondary records) then each primary along with its associated secondary records is called a record GROUP. A primary may have no secondary records or may have many. A secondary record must always belong to some primary record. Some examples which help demonstrate the parent/child relationship between primary and secondary records within a group are:
+          </para>
+          <orderedlist>
+              <listitem>
+                  <para>
+                      a primary record for each customer with a secondary record for each invoice for that customer;
+                  </para>
+              </listitem>
+              <listitem>
+                  <para>
+                      a primary record for each student with a secondary record for each class he takes;
+                  </para>
+              </listitem>
+              <listitem>
+                  <para>
+                      patients/visits;
+                  </para>
+              </listitem>
+              <listitem>
+                  <para>
+                      employees/pay periods;
+                  </para>
+              </listitem>
+              <listitem>
+                  <para>
+                      ledger entry/detail item.
+                  </para>
+              </listitem>
+          </orderedlist>
+          <para>
+              There are undoubtedly many other possibilities which can be considered.
+          </para>
+      </section>
+  </section>
+  <section>
+      <title>Files Used by RMS</title>
+      <para>
+          The files used by RMS fill several functions. The particular function served by the file is denoted by the file suffix appended to the file name. (the file suffix is a three character code, preceded by an <quote>.</quote>, and place after the name of a file as it is stored in the disk directory by OS-9.) The following descriptions thell what purposes each of the file types serve.
+      </para>
+      <variablelist>
+        <varlistentry>
+          <term>.RMS</term>
+          <listitem>
+            <para>
+                An RMS main data file is followed by the suffix <quote>.RMS</quote>. Its purpose is to store the data records of the user's data base. It is created initially by RMSNEW. It can be updated by the RMS editor. The REPORT program reads data from it to create printed reports. It may be read also by BASIC09 programs.
+            </para>
+        </listitem>
+    </varlistentry>
+    <varlistentry>
+        <term>.DIC</term>
+        <listitem>
+            <para>
+                Every RMS main file must have a dictionary file associated with it. The dictionary file must have the same basic file name but must have a suffix of <quote>.DIC</quote> when created by the user. The dictionary file is a text file which contains the information about the fields in the primary and secondary records of a file. It can be created and edited by use of the OS-9 EDIT program or the STYLOGRAPH word processor. Details about the contents of the dictionary file are found in section 4.
+            </para>
+        </listitem>
+    </varlistentry>
+    <varlistentry>
+        <term>.REP</term>
+        <listitem>
+            <para>
+                A file with a suffix of <quote>.REP</quote> is a text file which contains a set of REPORT SPECS. Report specs are the specific instructions about the actual format that a printed report is to have. Any number of the files may be associated with any RMS main data file. The <filename class="extension">.REP</filename> may be created and edited with the OS-9 EDIT program or the STYLOGRAPH word processor. Details about the contents of the <filename class="extension">.REP</filename> file may be found section 6.
+            </para>
+        </listitem>
+    </varlistentry>
+    <varlistentry>
+        <term>.NDX</term>
+        <listitem>
+            <para>
+                A file with the suffix <quote>.NDX</quote> is called an INDEX FILE. An index file is simply a text file containing a list of KEY FIELD values. It may be used to drive the editor or report program to process the RMS main data file in any desired order. There may be any number of index files for any RMS main data file. The <filename class="extension">.NDX</filename> file may be created by the use of the OS-9 text EDIT program or the STYLOGRAPH word processor, a BASIC09 program or by the INDEX program which is part of RMS.
+            </para>
+        </listitem>
+    </varlistentry>
+</variablelist>
+</section>
+</chapter>
+
+  <chapter>
+  <title>RMS With Other Languages</title>
+  <programlisting>
+<xi:include parse="text" href="readrms.bas"/>
+  </programlisting>
+  </chapter>
+</book>
