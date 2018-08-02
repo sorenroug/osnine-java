@@ -38,7 +38,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Thse three functions are used to place numbers and strings on
+These three functions are used to place numbers and strings on
 the output in formatted, human readable form.
 </para>
 <para>
@@ -179,7 +179,7 @@ pffinit() somewhere.
 <entry>s</entry>
 <entry>The argument is a pointer to a string.
 Characters from the string are printed up
-to a null character, or untill the number of
+to a null character, or until the number of
 characters indicated by the precision have
 been printed. If the precision is 0 or
 missing, the characters are not counted.</entry>
