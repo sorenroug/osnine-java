@@ -393,7 +393,13 @@ val := (total/count)+ adj
 
 answer := (last &gt;first) AND NOT correct
 </programlisting>
-    <para>In general, the variable in which the result is stored may be a simple type, a specific element of an array, a function ,or a specific element of a record structure. The type of the variable and the type of the expression result must match (except integers and reals), or an error will be reported by the compiler. Automatic type conversion is performed when real and integer types are mixed within an expression.</para>
+    <para>In general, the variable in which the result is stored may
+    be a simple type, a specific element of an array, a function, or
+    a specific element of a record structure. The type of the variable
+    and the type of the expression result must match (except integers
+    and reals), or an error will be reported by the compiler. Automatic
+    type conversion is performed when real and integer types are mixed
+    within an expression.</para>
     <para>Expressions are made up of <quote>operands</quote> (data) and <quote>operators</quote>. Operands may be constants, variables, array or record elements, set members, pointers, etc. Numeric operands may have their sign specified by use of the + or - single argument operators (which are different than add and subtract operators).</para>
     <para>The operators are evaluated in precedence (priority) order. If several operators of the same priority appear consecutively, they are evaluated from left to right. The normal precedence may be overridden by grouping of subexpressions in parentheses. The operators and data types that may be used are given in the table on the next page in order of <emphasis>group</emphasis> precedence.</para>
     <para>A number of standard functions that perform mathematical and logical functions are also available - see Chapter 7.</para>

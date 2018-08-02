@@ -338,7 +338,7 @@
 <varlistentry>
   <term>45: IOABORT called with TRUE argument value, previous error not cleared.</term>
   <listitem>
-    <para>*Once IOABORT has been called with a FALSE value, the IO errors must be cleared by a call to IORESULT. The result buffer must be cleared before attempting to call IOABORT with a TRUE value.</para>
+    <para>*Once IOABORT has been called with a FALSE value, the I/O errors must be cleared by a call to IORESULT. The result buffer must be cleared before attempting to call IOABORT with a TRUE value.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -749,7 +749,7 @@
 <varlistentry>
   <term>109: Type must not be real.</term>
   <listitem>
-    <para>When scanning a subrange declaration,found a real range constraint. Only integer ranges are allowed.</para>
+    <para>When scanning a subrange declaration, found a real range constraint. Only integer ranges are allowed.</para>
     <para>When scanning a case discriminant (tagfield identifier), found a real-type identifier.</para>
     <para>When scanning array declaration, found ARRAY [ REAL ].</para>
   </listitem>
@@ -897,7 +897,7 @@
 <varlistentry>
   <term>132: Strict inclusion test not allowed.</term>
   <listitem>
-    <para>*Between sets only the following relationals are allowed: '&lt;=*, '&gt;=', '=' f -&lt;&gt;-.</para>
+    <para>*Between sets only the following relationals are allowed: '&lt;=', '&gt;=', '=', '&lt;&gt;'.</para>
   </listitem>
 </varlistentry>
 <varlistentry>

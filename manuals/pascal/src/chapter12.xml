@@ -169,7 +169,7 @@ j:=mathresult;
   set to the number 184, indicating a multiplication overflow. Bear
   in mind the possible combination of events which can occur and the
   possible results for all such combinations when using IORESULT and
-  MATHRESULT. Remember, also, that each time you call either IORESOLT or
+  MATHRESULT. Remember, also, that each time you call either IORESULT or
   MATHRESULT that the error number for the appropriate file or for the
   mathematical result is reset to zero. You must save a copy of the error
   number from the last call if you intend to use it more than once.</para>
