@@ -52,7 +52,7 @@ volume media.
 </para>
     <para>
 The volume's root directory usually starts at logical sector two or it
-will start at the logical sector following the allocation map. It's
+will start at the logical sector following the allocation map. Its
 logical sector number is given in the information LSN 0 (DD.Dir).
 </para>
     <sect2 xml:id="ident-sector">
