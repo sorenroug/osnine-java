@@ -8,7 +8,7 @@
     <cmdsynopsis>
       <command>procs</command>
       <arg choice="opt">
-        <option>-e</option>
+        <option>e</option>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -16,7 +16,7 @@
     <title>Description</title>
     <para>
 Displays a list of processes running on the system. Normally only
-processes having the user's ID are listed, but if the <quote>-e</quote> option is
+processes having the user's ID are listed, but if the <quote>e</quote> option is
 given, processes of all users are listed. The display is a
 <quote>snapshot</quote> taken at the instant the command is executed: processes
 can switch states rapidly, usually many times per second.

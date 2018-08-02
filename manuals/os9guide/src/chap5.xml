@@ -474,7 +474,7 @@ The <command>mfree</command> command shows the location and size of each unused
 memory area and the <command>mdir e</command> command shows the address, size, and
 link (use) count of each module in the address space. These
 commands can be used to detect fragmentation. Memory can usually be
-de-fragmemted by unlinking scattered modules and reloading them.
+de-fragmented by unlinking scattered modules and reloading them.
 <emphasis>Make certain</emphasis> none are in use before doing so.
 </para>
     </section>

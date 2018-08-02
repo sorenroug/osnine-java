@@ -25,13 +25,13 @@ within the OS-9 system. The editor has many features that make editing faster an
 more convenient. For example, most commands involve only one or two keystrokes.
 </para>
     <para>
-The editor is kept in a file called "edit", which should be present in your system's
+The editor is kept in a file called <quote>edit</quote>, which should be present in your system's
 CMDS (execution) directory. To run the editor type:
 <screen>
 OS9: edit <keycap>RETURN</keycap>
 </screen>
-The editor should load and start. When it prints the "E:" prompt, it is
-ready to accept a command. To quit, type a "Q" followed by a carriage return as follows:
+The editor should load and start. When it prints the <quote>E:</quote> prompt, it is
+ready to accept a command. To quit, type a <quote>Q</quote> followed by a carriage return as follows:
 <screen>
 E: q <keycap>RETURN</keycap>
 </screen>

@@ -23,7 +23,7 @@ passed following the pathname specified.
 </para>
 <para>
 Once one or more BASIC09 procedures are debugged to the programmer's
-satisfaction, they can be "packed" or converted permanently to
+satisfaction, they can be <quote>packed</quote> or converted permanently to
 bytecode form. Comments and names of local variables are discarded during
 packing, so that in BASIC09, 
 comments and intelligible variable names are not considered

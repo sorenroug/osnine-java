@@ -1,3 +1,7 @@
+<!DOCTYPE chapter [
+<!ENTITY mdash "&#8212;" >
+<!ENTITY larrow "&#8592;" >
+]>
 <chapter xmlns="http://docbook.org/ns/docbook">
 <title>Basic Interactive Functions</title>
 
@@ -159,14 +163,14 @@ dir
 </screen>
 <para>
 shows the names of the files in the user's data directory. Normally
-it simply lists the file names only, but if the <quote>-e</quote>
+it simply lists the file names only, but if the <quote>e</quote>
 (for <emphasis>e</emphasis>ntire)
 option is given, it will also give complete statistics for each file
 such as the date and time created, size, security codes, etc. To do
 so enter:
 </para>
 <screen>
-dir -e
+dir e
 </screen>
 <para>
 The <command>dir</command> command also can accept a file name as a parameter which
@@ -181,7 +185,7 @@ It is also possible to specify both a directory name parameter and
 the <option>e</option> option, such as:
 </para>
 <screen>
-dir sys -e
+dir sys e
 </screen>
 <para>
 giving file names and complete statistics.
@@ -214,14 +218,14 @@ DEL filename                               del oldstuff
 </screen>
 Deletes (destroys) the file specified.
 <screen>
-DIR [filename] [-e] [-x]                   dir myfiles -e
+DIR [filename] [e] [x]                     dir myfiles e
 </screen>
-List names of files contained in a directory. If the <quote>-x</quote> option is
+List names of files contained in a directory. If the <quote>x</quote> option is
 used the files in the current <emphasis>execution</emphasis>
 directory are listed,
 othervise, if no directory name is given, the current
 <emphasis>data</emphasis> directory will be listed.
-The <quote>-e</quote> option selects the long format
+The <quote>e</quote> option selects the long format
 which shows detailed information about each file.
 <screen>
 FREE devicename                            free /d1
@@ -396,7 +400,7 @@ recognized.
   </listitem>
 </varlistentry>
 <varlistentry>
-  <term><keycap>&#8592;</keycap>
+  <term><keycap>&larrow;</keycap>
   (or <keycombo action="simul"> <keycap>CONTROL</keycap><keycap>H</keycap></keycombo>)</term>
   <listitem>
 <para>
@@ -406,7 +410,7 @@ Backspace - erase previous character
 </varlistentry>
 <varlistentry>
   <term><keycombo action="simul">
-    <keycap>SHIFT</keycap> <keycap>&#8592;</keycap></keycombo> (or <keycombo action="simul">
+    <keycap>SHIFT</keycap> <keycap>&larrow;</keycap></keycombo> (or <keycombo action="simul">
   <keycap>CONTROL</keycap> <keycap>X</keycap></keycombo>)</term>
   <listitem>
 <para>

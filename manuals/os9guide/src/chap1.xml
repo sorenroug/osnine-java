@@ -1,3 +1,7 @@
+<!DOCTYPE chapter [
+<!ENTITY mdash "&#8212;" >
+<!ENTITY larrow "&#8592;" >
+]>
 <chapter xmlns="http://docbook.org/ns/docbook">
 <title>Getting Started...</title>
 
@@ -81,7 +85,7 @@ you may have a corrupted system disk. Hopefully you did make a backup!</para></l
 For now, the only special keys on the keyboard of interest are
 the <keycap>SHIFT</keycap> key which works like a typewriter shift key; the <keycap>ENTER</keycap> key
 which you always use after typing a command or response to OS-9; and
-the <keycap>&#8592;</keycap> left arrow key which you can use to erase typing mistakes.
+the <keycap>&larrow;</keycap> left arrow key which you can use to erase typing mistakes.
 </para>
 <para>
 Your main disk drive is known to to OS-9 as <quote>/D0</quote> and is often
@@ -178,7 +182,7 @@ Seven explains each one in detail. The <command>dir</command> command also has a
 option to display the
 <filename class="directory">CMDS</filename> directory with less typing:
 <screen>
-dir -x
+dir x
 </screen>
 Whenever you want a list of available commands you can use this so
 you don't have to look it up in the book. The <command>dir</command> command has
@@ -220,7 +224,7 @@ Ready?
 </screen>
 
 immediately remove your system disk and insert a blank disk
-<emphasis>before</emphasis> you type <quote>Y</quote>.
+<emphasis>before</emphasis> you type <keycap>Y</keycap>.
 
 IF YOU HAVE TWO DISK DRIVES place the blank disk in drive one and
 type:
@@ -229,9 +233,9 @@ type:
 format /d1
 </screen>
 <para>
-WHEN THE BLANK DISK IS IN THE RIGHT PLACE, type <quote>Y</quote>, then <quote>ENTER</quote>.
+WHEN THE BLANK DISK IS IN THE RIGHT PLACE, type <keycap>Y</keycap>, then <keycap>ENTER</keycap>.
 This initiates the formatting process. IF THE CORRECT DEVICE NAME
-(/D1) IS NOT DISPLAYED: TYPE N  RIGHT NOW and start over, OR YOU
+(/D1) IS NOT DISPLAYED: TYPE <keycap>N</keycap> RIGHT NOW and start over, OR YOU
 MAY ERASE your System Disk.
 </para>
 <para>
@@ -281,14 +285,14 @@ The <command>backup</command> program will respond with
 Ready to backup from /d0 to /d1?
 </screen>
 <para>
-Now enter Y  for yes. It will then ask:
+Now enter <keycap>Y</keycap>  for yes. It will then ask:
 </para>
 <screen>
 X is being scratched
 Ok ?:
 </screen>
 <para>
-Answer <quote>Y</quote> for yes again, and the backup process should begin.
+Answer <keycap>Y</keycap> for yes again, and the backup process should begin.
 </para>
 <para>
 The <command>backup</command> command has two phases: the first phase copies

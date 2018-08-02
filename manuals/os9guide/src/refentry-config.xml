@@ -1,3 +1,8 @@
+<!DOCTYPE refentry [
+<!ENTITY mdash "&#8212;" >
+<!ENTITY larrow "&#8592;" >
+<!ENTITY rarrow "&#8594;" >
+]>
 <refentry xml:id="config" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
 <refname>CONFIG</refname>
@@ -36,7 +41,7 @@ before executing the command.
 Examples:
 </para>
 <screen>
-	CONFIG [ENTER]
+CONFIG <keycap>ENTER</keycap>
 </screen>
 <para>
 <command>Config</command> executes and a prompt asks you to indicate whether you wish to use
@@ -49,13 +54,13 @@ When the list is complete, a screen menu appears.  Use the up and down arrow
 keys to move to a device.  Then, press <keycap>S</keycap> to either select or exclude a
 particular device.  Press <keycap>S</keycap> once to display an X to the right of the
 selected device.  Press <keycap>S</keycap> again to erase the X.  The device is selected
-only when the "X" appears.  Information about each device is available with
+only when the <quote>X</quote> appears.  Information about each device is available with
 a special help command.  To display the information on the current device
-(the device indicated by the right arrow <keycap>&#8594;</keycap>), press <keycap>H</keycap>.
+(the device indicated by the right arrow <keycap>&rarrow;</keycap>), press <keycap>H</keycap>.
 </para>
 <para>
-If there are more than ten devices in a CONFIG menu, use <keycap>&#8594;</keycap> to move ahead
-page-by-page and <keycap>&#8592;</keycap> to move back.
+If there are more than ten devices in a CONFIG menu, use <keycap>&rarrow;</keycap> to move ahead
+page-by-page and <keycap>&larrow;</keycap> to move back.
 </para>
 <para>
 The devices you can select are:
@@ -183,7 +188,7 @@ device.
 </para>
 <para>
 <command>Config</command> builds a boot list from the selected devices and their associated
-drivers and managers.  "Bootlist" is created in the ROOT directory of
+drivers and managers.  <quote>Bootlist</quote> is created in the ROOT directory of
 Drive 0.  <command>Config</command> next displays two clock options:
 </para>
 <literallayout>

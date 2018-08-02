@@ -20,7 +20,7 @@ compiler. <command>cc1</command> is for OS-9 Level I which uses a two pass compi
 and, <command>cc2</command> is for Level II which causes a single pass version. Both
 versions of the compiler works identically, the main difference is
 that <command>cc1</command> has been divided into two passes to fit the smaller memory
-size of OS-9 Level I systems. In the following text, "cc" refers to
+size of OS-9 Level I systems. In the following text, <quote>cc</quote> refers to
 either <command>cc1</command> or <command>cc2</command> as appropiate for your system.
 </para>
 </refsect1>
@@ -35,7 +35,7 @@ Recognized options: (UPPER and lower case is equiv.)
 <tbody>
 <row>
     <entry>-a</entry>
-    <entry>Suppress assembly. Leave output in ".a" file.</entry>
+    <entry>Suppress assembly. Leave output in <quote>.a</quote> file.</entry>
 </row>
 <row>
     <entry>-e=n</entry>
@@ -54,7 +54,7 @@ Recognized options: (UPPER and lower case is equiv.)
 </row>
 <row>
     <entry>-r</entry>
-    <entry>Suppress link step. Leave output in ".r" file.</entry>
+    <entry>Suppress link step. Leave output in <quote>.r</quote> file.</entry>
 </row>
 <row>
     <entry>-m=<replaceable>size</replaceable></entry>

@@ -20,10 +20,10 @@
 This new version allows any combination of upper or lower
 case options to be specified.
 </para><para>
-Also, current parameters are displayed with a "$" preceding
+Also, current parameters are displayed with a <quote>$</quote> preceding
 to remind the user that the values are <emphasis>hexadecimal</emphasis>.
 </para><para>
-Options may be prefixed with a "$". It is simply ignored.
+Options may be prefixed with a <quote>$</quote>. It is simply ignored.
 </para>
 </refsect1>
 <refsect1><title>Examples</title>
@@ -46,7 +46,7 @@ OS9:  dmode /dd CYL=276
 -or-  dmode /dd cYL=276
 </screen>
 
-Lastly, you may now specify either "TOS" or "T0S" to setup
+Lastly, you may now specify either <quote>TOS</quote> or <quote>T0S</quote> to setup
 the number of sectors per track in track zero. Example:
 
 <screen>

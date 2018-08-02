@@ -42,7 +42,7 @@ OS9: build newfile
 ? The powers of the OS-9
 ? operating system are truly
 ? fantastic.
-? [RETURN]
+? <keycap>RETURN</keycap>
 
 OS9: list newfile
 

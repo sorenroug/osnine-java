@@ -441,7 +441,7 @@ copy all files from a directory called <filename class="directory">WORKING</file
 <filename class="directory">ARCHIVE</filename>:
 </para>
 <screen>
-OS9: chd /d0/WORKING; dsave /d0/ARCHIVE ! shell -p
+OS9: chd /d0/WORKING; dsave ! (chd /d0/ARCHIVE)
 </screen>
 </section>
 
@@ -627,7 +627,7 @@ output path. The standard error codes are listed in the <xref linkend="errorcode
 this manual. If desired, the <command>printerr</command> command can be executed,
 which replaces the smaller, built-in error display routine with a
 larger (and slower) routine that looks up descriptive error messages
-from a text file called <filename>/dd/sys/errmsg</filename>.
+from a text file called <filename>/d0/sys/errmsg</filename>.
 Once the <command>printerr</command>
 command has been run it cannot be turned off. Also, its effect is
 system-wide.

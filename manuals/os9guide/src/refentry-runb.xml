@@ -1,3 +1,6 @@
+<!DOCTYPE refentry [
+<!ENTITY mdash "&#8212;" >
+]>
 <refentry xml:id="runb" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
 <refname>RUNB</refname>
@@ -18,16 +21,16 @@ BASIC09 run time package.
 </para>
 <para>
 Once one or more BASIC09 procedures are debugged to the programmer's
-satisfaction, they can be "packed" or converted permanently to the
+satisfaction, they can be <quote>packed</quote> or converted permanently to the
 bytecode form.
 </para>
 <para>
 Packed BASIC09 procedures are in fact OS-9 modules, and the OS-9 shell
 recognizes them as I-code and passes them off to the virtual machine
 emulator RunB for execution. RunB avoids a great deal of the overhead of
-the typical interpreted BASICs of the day -- not to mention that one can do
+the typical interpreted BASICs of the day &mdash; not to mention that one can do
 integer calculations where appropriate rather than doing everything in
-floating point -- so that BASIC09 programs run very quickly in comparison
+floating point &mdash; so that BASIC09 programs run very quickly in comparison
 with interpreted BASICs.
 </para>
 </refsect1>

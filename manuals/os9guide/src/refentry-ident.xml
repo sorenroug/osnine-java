@@ -1,72 +1,81 @@
-<refentry xml:id="ident" xmlns="http://docbook.org/ns/docbook">
-<refnamediv>
-<refname>IDENT</refname>
-<refpurpose>Print OS-9 module identification</refpurpose>
-</refnamediv>
-
-<refsynopsisdiv>
-<cmdsynopsis>
-<command>ident</command>
-<arg choice="opt">
-  <option>-opts</option>
-</arg>
-<arg choice="plain">
-  <replaceable>path</replaceable>
-</arg>
-<arg choice="opt">
-  <option>-opts</option>
-</arg>
-</cmdsynopsis>
-</refsynopsisdiv>
-
-<refsect1><title>Description</title>
-<para>
+<?xml version="1.0"?>
+<refentry xmlns="http://docbook.org/ns/docbook" xml:id="ident">
+  <refnamediv>
+    <refname>IDENT</refname>
+    <refpurpose>Print OS-9 module identification</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>ident</command>
+      <arg choice="opt">
+        <option>-opts</option>
+      </arg>
+      <arg choice="plain">
+        <replaceable>path</replaceable>
+      </arg>
+      <arg choice="opt">
+        <option>-opts</option>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>Description</title>
+    <para>
 This command is used to display header information from OS-9 memory
 modules. <command>Ident</command> displays the module size, CRC bytes (with verification), and for
 program and device driver modules, the execution
-offset and the permanent storage requirement bytes. <command>ident</command> will
+offset and the permanent storage requirement bytes. <command>Ident</command> will
 print and interpret the type/language and attribute/revision bytes.
 In addition, <command>ident</command> displays the byte immediately following the
 module name since most Microware-supplied modules set this byte to
 indicate the module edition.
 </para>
-<para>
-<command>Ident</command> will display all modules contained in a disk file. If the
+    <para><command>Ident</command> will display all modules contained in a disk file. If the
 <quote>-m</quote> option appears, <replaceable>path</replaceable> is assumed to be a module in memory.
 </para>
-<para>
+    <para>
 If the <quote>-v</quote> option is specified, the module CRC is not verified.
 </para>
-<para>
+    <para>
 The <quote>-x</quote> option implies the pathlist begins in the execution
 directory.
 </para>
-<para>
+    <para>
 The <quote>-s</quote> option causes <command>ident</command> to display the. following module
 information on a single line:
 </para>
-<simplelist>
-<member>
+    <itemizedlist>
+      <listitem>
+        <para>
 Edition byte (first byte after module name)
-</member>
-<member>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Type/Language byte
-</member>
-<member>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Module CRC
-</member>
-<member>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 A <quote>.</quote> if the CRC verifies correctly, <quote>?</quote> if incorrect.
 (<command>Ident</command> will leave this field blank if the <quote>-v</quote> option appears.)
-</member>
-<member>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Module name
-</member>
-</simplelist>
-</refsect1>
-
-<refsect1><title>Examples</title>
-<screen>
+</para>
+      </listitem>
+    </itemizedlist>
+  </refsect1>
+  <refsect1>
+    <title>Examples</title>
+    <screen>
 OS9: ident -m ident
 Header for:  Ident               <lineannotation>Module name</lineannotation>
 Module size: $06A5    #1701      <lineannotation>Module size</lineannotation>
@@ -78,7 +87,7 @@ Edition:     $05      #5         <lineannotation>First byte after module name</l
 Ty/La At/Rv: $11 $81             <lineannotation>Type/Language Attribute/Revision</lineannotation>
 Prog mod, 6809 obj, re-en        <lineannotation>Module type, Language, Attribute</lineannotation>
 </screen>
-<screen>
+    <screen>
 OS9: ident /d0/os9boot -s
     1 $C0 $A366DC . OS9p2
    83 $C0 $7FC336 . Init
@@ -110,6 +119,5 @@ OS9: ident /d0/os9boot -s
     |  Type/Language byte
     Edition byte (first byte after name)
 </screen>
-</refsect1>
+  </refsect1>
 </refentry>
-

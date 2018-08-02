@@ -25,7 +25,8 @@ syntax appears for each valid command you include.
 
 <refsect1><title>Notes</title>
 <para>
-To use <command>help</command>, first copy <filename>Cmds.hp</filename> from the <filename class="directory">SYS</filename> directory of the CONFIG/BOOT
+To use <command>help</command>, first copy <filename>Cmds.hp</filename> from the
+<filename class="directory">SYS</filename> directory of the CONFIG/BOOT
 Diskette to the <filename class="directory">SYS</filename> directory of your system diskette.
 Next, copy <command>help</command>
 from the <filename class="directory">CMDS</filename> directory of
@@ -39,13 +40,13 @@ Procedure for one disk drive:
 1. With OS-9 booted and the system diskette in your drive, type:
 </para>
 <screen>
-	LOAD COPY [ENTER]
+	LOAD COPY <keycap>ENTER</keycap>
 </screen>
 <para>
 2. Replace the system diskete with the CONFIG/BOOT Diskette and type:
 </para>
 <screen>
-	COPY /D0/SYS/CMDS.HP /D0/SYS/CMDS.HP -S #30K [ENTER]
+	COPY /D0/SYS/CMDS.HP /D0/SYS/CMDS.HP -S #30K <keycap>ENTER</keycap>
 </screen>
 <para>
 3. Exchange the two diskettes as requested by the screen prompts until the
@@ -55,7 +56,7 @@ process is complete.
 4. Again, place the CONFIG/BOOT DIskette int he drive, and type:
 </para>
 <screen>
-	COPY /D0/CMDS/help /D0/CMDS/help -S #30K [ENTER]
+	COPY /D0/CMDS/help /D0/CMDS/help -S #30K <keycap>ENTER</keycap>
 </screen>
 <para>
 5. Swap diskettes as requested until the process is complete.
@@ -71,18 +72,18 @@ the system diskette is in Drive 0.
 2. Type:
 </para>
 <screen>
-	COPY /D1/SYS/CMDS.HP /D0/SYS/CMDS.HP [ENTER]
+	COPY /D1/SYS/CMDS.HP /D0/SYS/CMDS.HP <keycap>ENTER</keycap>
 </screen>
 <para>
 3. When the first copy is complete, type:
 </para>
 <screen>
-	COPY /D1/CMDS/help /D0/CMDS/help [ENTER]
+	COPY /D1/CMDS/help /D0/CMDS/help <keycap>ENTER</keycap>
 </screen>
 <para>
-Cmds.hp is a data file, not a text file, and you cannot successfully display
-it on your screen or edit it with a standard text editor.  It contains help
-for standard OS-9 commands.
+<filename>Cmds.hp</filename> is a data file, not a text file, and you cannot successfully display
+it on your screen or edit it with a standard text editor.
+It contains help for standard OS-9 commands.
 </para>
 <para>
 <command>Help</command> displays the form and syntax of the specified command.  If you use a
@@ -93,14 +94,14 @@ available for that command.
 Examples:
 </para>
 <screen>
-	HELP BACKUP [ENTER]
+	HELP BACKUP <keycap>ENTER</keycap>
 	BACKUP [e][s][-v][dev][dev]
 	Copies all data from one device to another
 
-	HELP ME [ENTER]
+	HELP ME <keycap>ENTER</keycap>
 	ME Help not available
 
-	HELP [ENTER]
+	HELP <keycap>ENTER</keycap>
 	HELP [command name][...]
 </screen>
 </refsect1>

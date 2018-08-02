@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>dir</command>
 <arg choice="opt">
-  <option>-e</option>
+  <option>e</option>
 </arg>
 <arg choice="opt">
-  <option>-x</option>
+  <option>x</option>
 </arg>
 <arg choice="opt">
   <replaceable>path</replaceable>
@@ -44,15 +44,15 @@ For more information see: <xref linkend="sec1.0.3"/>, <xref linkend="sec3.4"/>, 
 <screen>
 dir                  <lineannotation>(display data directory)</lineannotation>
 
-dir -x               <lineannotation>(display execution directory)</lineannotation>
+dir x                <lineannotation>(display execution directory)</lineannotation>
 
-dir -x -e            <lineannotation>(display entire description of execution dir)</lineannotation>
+dir x e              <lineannotation>(display entire description of execution dir)</lineannotation>
 
 dir ..               <lineannotation>(display parent of working data directory)</lineannotation>
 
 dir newstuff         <lineannotation>(display newstuff directory)</lineannotation>
 
-dir -e test_programs <lineannotation>(display entire description of <filename class="directory">test_programs</filename>)</lineannotation>
+dir e test_programs  <lineannotation>(display entire description of <filename class="directory">test_programs</filename>)</lineannotation>
 </screen>
 </refsect1>
 </refentry>

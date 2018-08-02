@@ -1040,8 +1040,8 @@ method for examining the contents of unusually formatted files.
 When a file is accessed by two or more processes simultaneously,
 the possibility exists that they may attept to update the same
 record of the file at the same time, with unpredictable results. To
-avoid this potential problem, OS-9 Level Two automatically "locks"
-sections of all files opened in "update" mode. The lock covers any
+avoid this potential problem, OS-9 Level Two automatically <quote>locks</quote>
+sections of all files opened in <quote>update</quote> mode. The lock covers any
 disk sectors containing the bytes last read by each process
 accessing the file. If another process attempts to access a locked
 portion of a file, the process is put to sleep until the area is no
@@ -1055,7 +1055,7 @@ to the file. Each process can lock one area per file (but cna have
 locks on more than one file).
 </para>
 <para>
-An entire file can be locked by activating its "sharable" bit
+An entire file can be locked by activating its <quote>sharable</quote> bit
 (see <xref linkend="sec3.8.1"/>). When this attribute is on, only one process may open a
 path to the file at any given time. Any other processes attempting
 to access the file will receive an error code.
@@ -1153,7 +1153,7 @@ Therefore, OS-9's disk allocation strategy is to minimize the number of
 segments if possible. It can do so more effectively if programs
 cause larger amounts of storage to be allocated at a time. If a
 file is to have a fixed size which is known beforehand, a program
-can cause all storage to be allocated by performing a "seek" to the
+can cause all storage to be allocated by performing a <quote>seek</quote> to the
 last byte to be used by the file, then writing dummy data to the
 last byte. This causes all storage to be allocated in one operation
 which allows OS-9 to find the most optimum segment sizes and locations.
@@ -1169,9 +1169,10 @@ but <emphasis>not</emphasis> <command>backup</command>) to a freshly formatted d
 <section xml:id="sec3.11">
 <title>Physical Sector I/O</title>
 <para>
-A special pathlist can be used to perform "raw" physical I/O
+A special pathlist can be used to perform <quote>raw</quote> physical I/O
 operations on a disk. The pathlist consists of the device name
-immediately followed by an "@" character (<emphasis>without</emphasis> a "/" in between),
+immediately followed by an <quote>@</quote> character
+(<emphasis>without</emphasis> a <quote>/</quote> in between),
 for example:
 </para>
 <informalexample>
@@ -1193,18 +1194,18 @@ Use extreme caution when using physical sector I/O. Because any sector can be wr
 it is possible to severely damage the file structure and data on a disk.
 </para>
 <para>
-Also, using "@" completely defeats the file security and record locking systems.
+Also, using <quote>@</quote> completely defeats the file security and record locking systems.
 </para>
 </warning>
 <para>
 <!-- This information is incorrect in source -->
-To convert a logical sector number of an "@" file to a byte number,
+To convert a logical sector number of an <quote>@1</quote> file to a byte number,
 multiply the sector number by 256 (the number of bytes per sector).
 Conversely, the logical sector number of a byte address is
 the byte address divided by 256 (integer division).
 </para>
 <para>
-As an example, the following command will give a complete "dump" of every data byte on disk device "d0":
+As an example, the following command will give a complete <quote>dump</quote> of every data byte on disk device <quote>d0</quote>:
 </para>
 <informalexample>
 <screen>

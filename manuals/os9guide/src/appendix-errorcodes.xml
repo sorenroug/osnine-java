@@ -271,7 +271,7 @@ are somewhat hardware dependent. Consult manufacturer's hardware manual for more
  <entry>$F6</entry>
  <entry>246</entry>
  <entry><errorname>NOT READY</errorname>
- - device has "not ready" status.</entry></row>
+ - device has <quote>not ready</quote> status.</entry></row>
 <row>
  <entry>$F7</entry>
  <entry>247</entry>

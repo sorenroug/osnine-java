@@ -52,9 +52,8 @@ encountering the first file for which you do not have write
 permission.
 </para>
 <para>
-The <command>deldir</command> command automatically calls the DIR and ATTR
-commands, so they both must reside in the current execution
-directory.
+The <command>deldir</command> command automatically calls the <command>dir</command> and <command>attr</command>
+commands, so they both must reside in the current execution directory.
 </para>
 </refsect1>
 </refentry>
