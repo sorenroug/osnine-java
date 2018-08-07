@@ -1,4 +1,11 @@
 <?xml version="1.0"?>
+<!DOCTYPE book [
+<!ENTITY mdash "&#8212;">
+<!ENTITY larrow "&#8592;">
+<!ENTITY uarrow "&#8593;">
+<!ENTITY rarrow "&#8594;">
+<!ENTITY darrow "&#8595;">
+]>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="ccguide" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
   <bookinfo>
     <title>RMS</title>
@@ -17,16 +24,16 @@
       <para>
 RMS, in all machine readable formats and the written documentation accompanying them, are copyrighted. The purchase of RMS conveys to the purchase a licence to use RMS for his/her own use and not for sale or free distribution to others. No other licence, expressed or implied, is granted.
 </para>
-<para>
+      <para>
 This manual and associated programs are the copyright of Dragon Data Ltd (under licence).
 Copying is only permitted for backup purposes on a single computer system.
 Any other copying by whatever means without the written authorisation of Dragon Data Ltd is strictly prohibited.
 </para>
-<para>
+      <para>
 This manual was prepared using the STYLOGRAPH word processor, check with the SPELL CHECK spelling checker,
 and printed with the MAIL MERGE merge/print program.
 </para>
-<para>
+      <para>
 OS-9 and BASIC09 are trade marks of Microware Systems Corporation and Motorola Inc.
 </para>
     </legalnotice>
@@ -50,48 +57,49 @@ You will need a text editor - such as the STYLOGRAPH word processor, or the OS-9
 </para>
   </preface>
   <chapter>
+    <!-- 1 -->
     <title>Introduction to RMS</title>
     <para>
 Record Management System is a complete DATABASE MANAGEMENT SYSTEM for OS-9. It is extremely versatile, and very easy to learn to use. Applications may include accounting, business record-keeping, management information systems, customer or personnel records, customized data entry, immediate data retrieval, and various other situations which require data entry, online data retrieval and update, and printed reports. RMS can easily be customized to fit various requirements without any programming knowledge. The data stored under RMS is, however accessible to user written programs (in BASIC09 or other languages).
 </para>
     <section>
-      <title>What RMS Can Do</title>
+      <title>What RMS can do</title>
       <para>
 RMS allows the user to determine the format under which his data is to be stored. This format consists of deciding what data items are to be kept, and what the characteristics of each item are to be. The characteristics include the type of data (ie, number, alphanumeric string, date, money value), the maximum length of the data item, and if necessary, limits or restrictions on the possible values.
 </para>
       <para>
 Once the data format is determined and stored in a DICTIONARY, the RMS automatically provides:
 </para>
-<itemizedlist>
-<listitem>
+      <itemizedlist>
+        <listitem>
           <para>
 creation of a disk file properly formatted to store the data,
           </para>
-      </listitem>
-      <listitem>
+        </listitem>
+        <listitem>
           <para>
 online data entry in a form fill-out manner on the screen,
           </para>
-      </listitem>
-      <listitem>
+        </listitem>
+        <listitem>
           <para>
 online data access for lookup or modification,
           </para>
-      </listitem>
-      <listitem>
+        </listitem>
+        <listitem>
           <para>
 creation of printed reports and text files to the user's specifications,
           </para>
-      </listitem>
-      <listitem>
+        </listitem>
+        <listitem>
           <para>
 facility to later change the format of the data as requirements change.
           </para>
-      </listitem>
-  </itemizedlist>
+        </listitem>
+      </itemizedlist>
     </section>
     <section>
-      <title>What RMS Consists of</title>
+      <title>What RMS consists of</title>
       <para>
 RMS is a package of utility programs, written in machine language for maximum efficiency. These utilities may be used individually or in various combinations to provide the above features. It is also possible to access RMS data file from user-written programs, for example in BASIC09. This allows the user to take advantage of RMS to do much of the time-consuming part of a large custom programming task, and still allows for the use of a general purpose programming language for the unique processing that can be done no other way. The RMS programs are:
 </para>
@@ -296,14 +304,14 @@ by OS-9 when reporting errors. (for example "Error #216 - Path name not found").
       <para>
 You are now ready for a trial run with RMS. Try getting into RMS with:
 </para>
-<screen>
+      <screen>
 OS9: rms address
 </screen>
       <para>
 To return to OS-9, (at any time), hit
 <keycombo action="simul"><keycap>Control</keycap><keycap>E</keycap></keycombo>.
 </para>
-<para>
+      <para>
 We suggest that you now work through the Example Application at the end of this manual,
 to familiarise yourself with the basic features of RMS.
 This will not be sufficient for you to create your own RMS applications - to do so
@@ -311,10 +319,10 @@ you must read the rest of the manual carefully, section by section.
 RMS has many useful features which can be missed on a casual reading.
 Don't be afraid to try things out - it's the easiest way to learn.
 </para>
-<bridgehead renderas="sect2">
+      <bridgehead renderas="sect2">
 Using RMS on two drives
 </bridgehead>
-<para>
+      <para>
 We have described the use of RMS on a single drive, drive 0.
 If you have two drives, and there is room on your system disk, you will find
 it more convenient to move the RMS programs onto your system disk.
@@ -322,10 +330,10 @@ You should copy
 RMS, RMSNEW, INDEX, REPORT, RMSCOPY, and RMS.TRM from the
 CMDS directory of the RMS disk to the CMDS directory of your system disk.
 </para>
-<para>
+      <para>
       Refer to the <citetitle pubwork="book">OS-9 User's manual</citetitle> for instructions on the <command>copy</command> command.
 </para>
-<para>
+      <para>
 You can now use a separate disk as you data disk, in drive 1. You could try this out by placing your RMS disk, (not the original!) in drive 1, and your system disk in drive 0.
 Set your execution and data directories with:
 </para>
@@ -334,103 +342,103 @@ Set your execution and data directories with:
       </screen>
     </section>
   </chapter>
-
   <chapter>
-  <title>Data Storage Under RMS</title>
-  <para>
+    <!-- 2 -->
+    <title>Data Storage under RMS</title>
+    <para>
       All data is stored in files on disk. Each file consists of a set of
       RECORDS. All records in a particular file are of the same length and
       have certain characteristics in common:
   </para>
-  <itemizedlist>
+    <itemizedlist>
       <listitem>
-          <para>
+        <para>
               all records consist of printable ASCII data,
           </para>
       </listitem>
       <listitem>
-          <para>
+        <para>
               each record ends with a carriage return character,
           </para>
       </listitem>
       <listitem>
-          <para>
+        <para>
               the first character of each record is used by RMS for internal categorization of the record,
           </para>
       </listitem>
       <listitem>
-          <para>
+        <para>
               the rest of the record is divided among the various data fields as determined by the dictionary.
           </para>
       </listitem>
-  </itemizedlist>
-  <para>
+    </itemizedlist>
+    <para>
       The user can define as many RMS data files as needed. Associated with each data file is a dictionary file, and possibly one or more index and report specification files.
   </para>
-  <section>
-      <title>The Concept of a Record</title>
+    <section>
+      <title>The concept of a record</title>
       <para>
           A record is the logical grouping of several data items into one physical entity. Data is stored and retrieved by RMS a record at a time. Usually the data items within a record will describe particular details of one useful <quote>real-world</quote> entity. For example, a record might contain a person's name, address, phone number, social security number and age.
       </para>
       <section>
-          <title>Fields and Record Keys</title>
-          <para>
+        <title>Fields and Record Keys</title>
+        <para>
               In the above example the particular data items (name, address, etc.) are called FIELDS. The grouping of all the fields together is called a RECORD. Each of the fields has its own particular characteristics; the social security number is always 9 characters long and must always consist of numeric digits only. The name field could consist of alphabetic characters, and so on. In RMS, it is up to the user to decide what data fields he needs, and what the characteristics of each will be. In doing so, he determines that data a record is to contain.
           </para>
-          <para>
+        <para>
               Normall the is on field in the record which is designated as the KEY FIELD. The key field will be the one by which immediate access to the record may be made. In the above, if the name field is designated as the key then the user can lookup and display a record by entering only the name.
           </para>
       </section>
       <section>
-          <title>Primary Record</title>
-          <para>
+        <title>Primary Record</title>
+        <para>
               Within on RMS data file the user may choose to use one of two possible situations. The first situation is one in which all records in the file have the same format (ie, same set of fields). This will fit applications where the data base can be well represented by a set of individual records; one record per one real world entity. Each record in the file has a unique key field value. An example of this organization is a mailing list; another might be a stock inventory system. In this case all the records in the file are referred to as PRIMARY records.
           </para>
       </section>
       <section>
-          <title>Secondary Record</title>
-          <para>
+        <title>Secondary Record</title>
+        <para>
               The second possible situation is one which allows two types of records within one file. The first type of record is called the PRIMARY record; the second type is called the SECONDARY record. In this situation there may be but one primary record with any given key field value, but under each such primary record there may be any number of associated secondary records. Within the file, all primary records have the same format, and all secondary records have the same format. However, the format of the primary records can differ from that of the secondary records.
           </para>
       </section>
       <section>
-          <title>Record Groups</title>
-          <para>
+        <title>Record Groups</title>
+        <para>
               When a file is of the second type (both primary and secondary records) then each primary along with its associated secondary records is called a record GROUP. A primary may have no secondary records or may have many. A secondary record must always belong to some primary record. Some examples which help demonstrate the parent/child relationship between primary and secondary records within a group are:
           </para>
-          <orderedlist>
-              <listitem>
-                  <para>
+        <orderedlist>
+          <listitem>
+            <para>
                       a primary record for each customer with a secondary record for each invoice for that customer;
                   </para>
-              </listitem>
-              <listitem>
-                  <para>
+          </listitem>
+          <listitem>
+            <para>
                       a primary record for each student with a secondary record for each class he takes;
                   </para>
-              </listitem>
-              <listitem>
-                  <para>
+          </listitem>
+          <listitem>
+            <para>
                       patients/visits;
                   </para>
-              </listitem>
-              <listitem>
-                  <para>
+          </listitem>
+          <listitem>
+            <para>
                       employees/pay periods;
                   </para>
-              </listitem>
-              <listitem>
-                  <para>
+          </listitem>
+          <listitem>
+            <para>
                       ledger entry/detail item.
                   </para>
-              </listitem>
-          </orderedlist>
-          <para>
+          </listitem>
+        </orderedlist>
+        <para>
               There are undoubtedly many other possibilities which can be considered.
           </para>
       </section>
-  </section>
-  <section>
+    </section>
+    <section>
       <title>Files Used by RMS</title>
       <para>
           The files used by RMS fill several functions. The particular function served by the file is denoted by the file suffix appended to the file name. (the file suffix is a three character code, preceded by an <quote>.</quote>, and place after the name of a file as it is stored in the disk directory by OS-9.) The following descriptions thell what purposes each of the file types serve.
@@ -442,40 +450,471 @@ Set your execution and data directories with:
             <para>
                 An RMS main data file is followed by the suffix <quote>.RMS</quote>. Its purpose is to store the data records of the user's data base. It is created initially by RMSNEW. It can be updated by the RMS editor. The REPORT program reads data from it to create printed reports. It may be read also by BASIC09 programs.
             </para>
-        </listitem>
-    </varlistentry>
-    <varlistentry>
-        <term>.DIC</term>
-        <listitem>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>.DIC</term>
+          <listitem>
             <para>
                 Every RMS main file must have a dictionary file associated with it. The dictionary file must have the same basic file name but must have a suffix of <quote>.DIC</quote> when created by the user. The dictionary file is a text file which contains the information about the fields in the primary and secondary records of a file. It can be created and edited by use of the OS-9 EDIT program or the STYLOGRAPH word processor. Details about the contents of the dictionary file are found in section 4.
             </para>
-        </listitem>
-    </varlistentry>
-    <varlistentry>
-        <term>.REP</term>
-        <listitem>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>.REP</term>
+          <listitem>
             <para>
                 A file with a suffix of <quote>.REP</quote> is a text file which contains a set of REPORT SPECS. Report specs are the specific instructions about the actual format that a printed report is to have. Any number of the files may be associated with any RMS main data file. The <filename class="extension">.REP</filename> may be created and edited with the OS-9 EDIT program or the STYLOGRAPH word processor. Details about the contents of the <filename class="extension">.REP</filename> file may be found section 6.
             </para>
-        </listitem>
-    </varlistentry>
-    <varlistentry>
-        <term>.NDX</term>
-        <listitem>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>.NDX</term>
+          <listitem>
             <para>
                 A file with the suffix <quote>.NDX</quote> is called an INDEX FILE. An index file is simply a text file containing a list of KEY FIELD values. It may be used to drive the editor or report program to process the RMS main data file in any desired order. There may be any number of index files for any RMS main data file. The <filename class="extension">.NDX</filename> file may be created by the use of the OS-9 text EDIT program or the STYLOGRAPH word processor, a BASIC09 program or by the INDEX program which is part of RMS.
             </para>
-        </listitem>
-    </varlistentry>
-</variablelist>
-</section>
-</chapter>
-
-  <chapter>
-  <title>RMS With Other Languages</title>
-  <programlisting>
-<xi:include parse="text" href="readrms.bas"/>
-  </programlisting>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
   </chapter>
+  <chapter>
+    <!-- 3 -->
+    <title>Getting Started With RMS</title>
+    <para>
+  This section describes the general step in getting an application started using RMS. The specific details on each of the steps in the process are covered completely in other parts of this manual.
+  It is siggested that the reader be familiar with the contents of the previous sections of this manual before proceeding, since certain terms that are used here have been introduced in those sections.
+  </para>
+    <section>
+      <title>Record Layout and Creating the Record Dictionary</title>
+      <para>
+          The first task is to examine your problem and determine what data items must be stored. Organize the data values into related sets of items. Determine whether there is a primary-only or primary-secondary group structure to your data. If there is a primary-only structure then all data fields will go in the primary record. If there is a group type structure the you must determine what items can be placed in the primary record which heads up the group, and what items must be placed in the secondary records. In general, put all common data in the primary record.
+      </para>
+      <para>
+          Give each data item a FIELD NAME. This name can be any word of 8 or fewer characters in length. The field names for a record might be: NAME, ADDRESS, PHONE, SOCSEC and AGE, for example. You must also determine which field is to be the key field within the primary record. The secondary records, if they are to be used, will have the same key field as the primary records.
+      </para>
+      <para>
+          Next determine the characteristics of each field. The first consideration is what the FIELD TYPE is to be. The choices are: Alphanumeric (any data at all), Numeric (only digits 0 to 9 allowed), Money (always stored as pounds and pence), or Data (day, month and year). In all but the case of the date, which is always 8 characters, you must determine for each field what the maximum number of characters can be. The sum of the size of the fields in the record gives you the size of the record. Lastly, you must now consider for moment how the RMS editor works.
+      </para>
+      <para>
+          The RMS editor builds a fill-out form on the screen for each record. To do so it places blanks on the screen which correspond to the various fields that can be entered by the operator. But for the form to make sense there must be an explanatory phrase or message next to each blank so that the operator knows what data he is to enter. The message or phrase is called a PROMPT. It is up to the user to determine what prompt he wishes to appear in front of each field on the screen. To illustrate this principle look at the following diagram. It is a representation of what a screen form might look like in the RMS editor. All the text on the form is that specified by the prompts. The dashed lines represent blanks to be filled in by the operator.
+      </para>
+      <screen>
+CUSTOMER NAME:______________________________ PHONE:___________________
+HOME ADDRESS:_______________________________ TYPE OF PLAN:____________
+TOWN:___________COUNTY:__________ POSTCODE:______ CONTACT DATE:_______
+CURRENT BALANCE:_________ CREDIT LIMIT:__________ STATUS:_____________
+</screen>
+      <para>
+    Once the field characteristics have been determined, a dictionary file must be created. This is accomplished by coding the field names, types, lengths and prompts into a text file. The name of the text file must correspond to the name to be given the RMS data file and must have a suffix of <quote>.DIC</quote>. See section 4 for more details. The dictionary file is created with the OS-9 text EDIT program or the STYLOGRAPH word processor.
+</para>
+    </section>
+    <section>
+      <title>Formatting the RMS Main Data File</title>
+      <para>
+          Once the record dictionary has been created, the <emphasis role="bold">.RMS</emphasis> file can be created. The <emphasis role="bold">.RMS</emphasis> file has the same root name as the <emphasis role="bold">.DIC</emphasis> file but has the suffix <quote>.RMS</quote>.
+          These files should be stored in the same directory on disk. The <emphasis role="bold">.RMS</emphasis> file contains the actual data records. The create the <emphasis role="bold">.RMS</emphasis> file you use the RMSNEW utility program. It is stated by entering:
+      </para>
+      <screen>
+OS9: rmsnew name
+</screen>
+      <para>
+    The name may be any properly qualified OS-9 file specification. The <emphasis role="bold">.RMS</emphasis> suffix will be added on automatically and should not be entered. Before proceeding, the utility will request two values. The first is the record length. This must be a number which is large enough to accomodate the longer of the primary and the secondary records to be stored in the file. The possible record length may be any number from 3 to 1022 characters. It is permissible for a record length to be too long to accomodate the desired records but not too short. RMSNEW will add two to the entered length: one for a prefix identifier byt on each record, and one for a return character at the end of each record.
+</para>
+      <para>
+    The second number which must be entered is the number of records to be stored in the file. Because os the hash coding technique used by RMS to store and retrieve records, this number should be at least 25% more than the actual maximum number of records that will ever be stored in the file. The reason is that hash coding only works rapidly if the target file is less than about 80% full. Also advantageous but not necessary is to make the size of the file a prime number. This is not essential but can improve the access time average for the data records in the file. The maximum number of records allowed in 65535.
+</para>
+    </section>
+    <section>
+      <title>Putting Data Into the File</title>
+      <para>
+        Once the <emphasis role="bold">.DIC</emphasis> and <emphasis role="bold">.RMS</emphasis> files have been created, data can be entered into the file using the RME editor program. The complete details of its use are found in section 5, but the general steps to add one or more records are:
+    </para>
+      <screen><lineannotation>enter the command...</lineannotation>
+OS9: rms name
+</screen>
+      <para>
+Where <quote>name</quote> is the same name entered when creating the file with RMSNEW. RMS will add the suffix <quote>.RMS</quote> to locate the main data file and <quote>.DIC</quote> to locate the dictionary.
+</para>
+      <para>
+    Now fill out the displayed form with the desired data, use the INSERT function key to put a new record into the file.
+</para>
+    </section>
+    <section>
+      <title>Modifying Data in the File</title>
+      <para>
+        To change the data in one or more records of the file:
+    </para>
+      <itemizedlist>
+        <listitem>
+          <para>Enter the RMS command shown above,</para>
+        </listitem>
+        <listitem>
+          <para>fill in the key field of the desired record and push the FIND function key to display the data for that record,</para>
+        </listitem>
+        <listitem>
+          <para>change the desired fields in the record.</para>
+        </listitem>
+        <listitem>
+          <para>Use the UPDATE function key to put the modified record back in the file.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Getting Data Out of the File</title>
+      <para>
+        There are two ways to get data out. The first is to use the RMS editor to find and display the desired record as it is needed. The second is to use the REPORT program to produce a printed report or text file with all or the desired portion of the data from the file. The steps to create a printed report or text file are covered in detail in section 6. However, in general the process is:
+    </para>
+      <itemizedlist>
+        <listitem>
+          <para>create a report spec file indicating what the report is to look like,</para>
+        </listitem>
+        <listitem>
+          <para>then run the REPORT utility program by entering:</para>
+          <screen>
+OS9: report name sfile
+</screen>
+          <para>
+    where <quote>name</quote> is the name of the data file (without the <quote>.RMS</quote> suffix) and <quote>sfile</quote> is the root name of the report spec file.
+</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Use of an Index File</title>
+      <para>
+        In the simple case an index file is used to create a report in a sorted order by one of the fields. This is accomplished by running the INDEX program to create a <emphasis role="bold">.NDX</emphasis> file; then the report spec can designate that the <emphasis role="bold">.NDX</emphasis> file is to be used to force the desired order on the output of data records. More on the use of index files may be found in section 7.
+    </para>
+    </section>
+  </chapter>
+  <chapter>
+    <title>The RMS dictionary</title>
+    <para>
+          The dictionary is stored in a file with the same root name as the RMS main data file but with a suffix of <quote>.DIC</quote> added to the name. The purpose of the dictionary is to describe the layout of the fields within the primary record and, if one is to be used, the secondary record. The <emphasis role="bold">.DIC</emphasis> file is formatted as a text file, and may be created with the EDIT program or the STYLOGRAPH word processor. It should be stored in the same disk directory as the <emphasis role="bold">.RMS</emphasis> file. As an example, a dictionary might look like the following:
+      </para>
+    <programlisting>
+    "EMPLOYEE BENEFITS "
+NAME    20    A    "EMPLOYEE NAME:" ;
+SOCSEC   9    N    "SOCIAL SECURITY NUMBER:";
+DEPT     3    A    "DEPARTMENT";
+SAL      7    M    "SALARY:" ;
+PLAN    15    A    "BENEFIT PLAN: " ;
+HDATE    8    D    "DATE HIRED:" ;
+$
+</programlisting>
+    <para>
+    The first seven lines above are called a record specification. The top line is called the TITLE LINE. It is used by the RMS editor. The text within the quotes will be printed on the second line of the screen to indicate to the operator what form is being displayed. The next 6 lines represent 5 field specs with the record. Each of the fields is given a FIELD NAME. These names are arbitrary but are usually chosen as meaningful words. After the field name is a number which determines the maximum number of characters that can be entered into the field. Next comes a one letter FIELD TYPE CODE. This code determines the type of data which is to be stored in the field. The type codes shown are A(lphanumeric), N(umeric), M(oney) and D(ate). Next, each line has a PROMPT, which is a text string in quotes. The RMS editor uses these strings to display a meaningful form to be filled out by the operator. Each prompt appears on the screen preceding a blank space long enough to hold the corresponding field. Finally, each field line in the dictionary <emphasis role="bold">must</emphasis> be terminated by a semi-colon.
+</para>
+    <para>
+    The details on building a dictionary are presented below, but in general:
+</para>
+    <itemizedlist>
+      <listitem>
+        <para>
+            Each item on a line is separated from the next by a comma, or by spaces, or both.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+            The first field name given is assumed to be the KEY FIELD of the record.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+            Any field spec may be continued on another line; to do so, just break it a comma or a space, and continue on the next line.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+            Each field spec <emphasis role="bold">must</emphasis> be terminated by a semi-colon.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <section>
+      <title>Title line</title>
+      <para>
+        The first line of a record specification must be a title line. It consists of two quote marks ( " ) with from 0 to 80 characters between. The RMS editor displays the text on the second line of the screen whenever the form for the the record is displayed.
+    </para>
+    </section>
+    <section>
+      <title>Field specs</title>
+      <para>
+            After the title line, there may be one or more field specs. Each one represents one data field in the record. The first field spec represents the KEY FIELD of the record. There may be up to 50 field specs within one record specification.
+        </para>
+      <section>
+        <title>Field name</title>
+        <para>
+            The field name is the first item in each field spec. It may be any word of the user's choosing which is from 1 to 8 characters in length. The field names used within on file should all be unique. Letter case in field names is ignored, so that <emphasis role="bold">PHONE</emphasis>, <emphasis role="bold">Phone</emphasis>, and <emphasis role="bold">phone</emphasis> are all the same name.
+        </para>
+      </section>
+      <section>
+        <title>Field length</title>
+        <para>
+            The field length is the number of characters reserved within each data record for this field. The minimum length is 1. The maximum field length is 255 characters. A date field must always be length 8. A money field must be at least length 4. Other than these restrictions, the user may chose whatever lengths he sees fit.
+        </para>
+      </section>
+      <section>
+        <title>Field type</title>
+        <para>
+            The field type code is one letter, in upper or lower case. The RMS editor will insure that only valid data is keyed into any field according to the type code given. The possible types of fields are:
+        </para>
+        <informaltable frame="none" colsep="0" rowsep="0">
+          <tgroup cols="3">
+            <colspec colwidth="0.4in"/>
+            <colspec colwidth="2in"/>
+            <colspec colwidth="4in"/>
+            <tbody>
+              <row>
+                <entry>A</entry>
+                <entry>Alphanumeric</entry>
+                <entry>Any data may be stored in this field</entry>
+              </row>
+              <row>
+                <entry>N</entry>
+                <entry>Numeric</entry>
+                <entry>Only digits from 0 to 9 may be stored in this field. Also, before storing any record, all data in N type fields will be adjusted with the field to insure right-justification. If necessary, the field will be padded on the left with spaces to attain right justification.</entry>
+              </row>
+              <row>
+                <entry>M</entry>
+                <entry>Money</entry>
+                <entry>Only digits 0 to 9 and a decimal point may be stored in this type of field. Also, before storing any record, all data in M type fields will be automatically adjusted to proper pounds and pence form. Specifically, there will always be exactly 2 decimal places and the number will be right justified within the field.</entry>
+              </row>
+              <row>
+                <entry>D</entry>
+                <entry>Date</entry>
+                <entry>A date field may only contain a value in the form of DD/MM/YY. DD is the day from 1 to 31, MM is the month from 1 to 12. And YY is the year from 00 to 99. Before storing any record, all D type fields will be adjusted to insure the standard data format. The editor also provides some time-saving short cuts when entering data into a data field, by automatically inserting the <quote>/</quote> characters as you enter the data.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+      <section>
+        <title>Optional fill-in flag</title>
+        <para>
+        Unless otherwise designated, the RMS edirot will not store a data record into the main file unless all fields within the form are filled in and validated as to type and validators. However, if the user wishes to designate that the operator may leave a field blank within a record this is done by entering an <quote>optional fill-in flag</quote>. This consists of an asterisk <quote>*</quote> immediately following the type code. For example:
+    </para>
+        <programlisting>
+SALARY   7   M*    "MONTHLY SALARY" ;
+</programlisting>
+        <para>
+    If the * is used then the operator may leave a field completely blank when inputting a data record with the RMS editor. However, if he keys any data other than blanks into the field, the the field must conform to all the type and validator restrictions.
+</para>
+      </section>
+      <section>
+        <title>Prompt</title>
+        <para>
+        After the field type code comes the prompt value. The prompt consists of a pair of quote marks (") with any number of characters in between. The promp is displayed on the screen by the RMS editor when the fill-out form for this record is displayed. An empty promt, signified by two adjacent quote marks, indicates that no text is to be displayed preceding the blank for this field. The prompt may carry over for as many lines as necessary as long as it is ended with a quote mark. Skillful use of placing blanks withing prompts will allow the user to force the screen to look as desired. In general, it will be easiest to do this by trial and error. A few attempts at creating a form then running the RMS editor to see what it looks like will quickly show how the editor uses prompts to build the form. Essentially, the editor always ensures that the prompt and the associated data space are on the same line, provided that their total length is less than the line length.
+    </para>
+      </section>
+      <section>
+        <title>Validators</title>
+        <para>
+        In addition to the above items for each field spec, it is possible to further restrict the allowable values for any particular field. This is done by the use of one of three types of VALIDATORS. Validators are very useful in assuring that only <quote>correct</quote> data is entered into the file using the RMS editor. The editor will not store a record into the file if the data in any field violates the restrictions placed on the field by the validators. The optional-fill-in flag be used to designate that a field may be left blank and thus not conform to the validator.
+    </para>
+        <para>
+        A validator, if used, is placed after the prompt item, and before the semi-colon. There may be a most one validator per field spec but the may be any number within the record specification.
+    </para>
+        <section>
+          <title>Minimum length validator</title>
+          <para>
+            The first type of validator is the minimum length validator. It is coded as follows:
+        </para>
+          <programlisting>
+NAME   20   A   "STUDENT NAME"  &lt;10&gt; ;
+</programlisting>
+          <para>
+    The <emphasis role="bold">&lt;10&gt;</emphasis> denotes that there must be at least 10 non-blank characters in the NAME field for it to be considered valid.
+</para>
+        </section>
+        <section>
+          <title>Range validator</title>
+          <para>
+            The range validator is coded as follows:
+        </para>
+          <programlisting>
+PRICE   6   M   "RETAIL PRICE "   (  2.00,599.99) ;
+</programlisting>
+          <para>
+    The range validator denotes that, to be considered valid, the data value must be greater then or equal to the first item in parentheses and less than or equal to the second item in the parentheses. In this case the value would have to be at least 2.00, and no more than 599.99. <emphasis role="bold">IT IS VERY IMPORTANT TO NOTE THAT</emphasis> the items in the parentheses must each be exactly the same length as the length of the data field, and must be in the form to which the editor would automatically convert for date, numeric or money fields. Failure to observe this rule will result in incorrect data validation. The minimum and maximum values must be separated by a comma.
+    </para>
+          <para>
+        The comparison is arithmetic for money or numeric type fields. For alphanumeric fields the comparison is a left to right character comparison determined by the ASCII code. In general this produces alphabetic order - <quote>A</quote> less than <quote>B</quote>, etc.
+    </para>
+          <para>
+        For a date field the comparison is chronological. That is, a date that is earlier is considered to be less. For example 25/08/85 is less (sooner) than 30/01/86.
+    </para>
+        </section>
+        <section>
+          <title>List validator</title>
+          <para>
+        A this type of validator is the LIST validator. This provides a means to explicitly list all the possible values that are to be considered valid. The format is shown by this example:
+    </para>
+          <programlisting>
+GRADE   1   A   "FINAL GRADE FOR THE CLASS:"  [A,B,C,D,F]  ;
+</programlisting>
+          <para>
+    The items within the brackets are considered to be a complete list of the possible valid entries for the field called GRADE. The list may have any number of entries and may carry on for as many lines as necessary as long as it ends with a <quote>]</quote>. The items must be separated by commas as shown. Each item should be exactly the same length as the data field, and should be in the format to which the RMS editor will automatically convert for money, numeric or date fields. If a list item is longer than the data field it will never match. If is is shorter than the data fields then the data field is only checked for a match up to the length of the list item. If is is equal up to that point, then it is valid regardless of the value of the rest of the field. LETTER CASE IS NOT IGNORED IN THE MATCHING - thus <quote>a</quote> does not match with <quote>A</quote>.
+</para>
+        </section>
+      </section>
+    </section>
+    <section>
+      <title>Primary and secondary record specifications</title>
+      <para>
+If only primary records are to be stored in the file then only one record specification is entered in the dictionary file. It may be ended by a $ as shown in the example in section 4 or the $ may be omitted. If there is to be a secondary record specification for the file then it is separated from the primary record specification by a $. After that is is formed in exactly the same manner as the primary record specification. For example:
+</para>
+      <programlisting>
+"CUSTOMER MASTER RECORD"
+NAME  20   A   "CUSTOMER NAME" ;
+PHONE  7   N   "PHONE NUMBER"  ;
+CREDIT 6   M   "CREDIT LIMIT"  ;
+OUTSC  6   M   "OUTSTANDING CREDIT BALANCE";
+PDATE  8   D   "LAST PAYMENT DATE" ;
+$
+"CUSTOMER INVOICE RECORD"
+NAME  20   A   "NAME" ;
+IDATE  8   D   "INVOICE DATE" ;
+AMT    6   M   "INVOICE AMOUNT" ;
+ITEM  15   A   "ITEM DESCRIPTION" ;
+$
+</programlisting>
+      <para>
+    The primary record is entitled "CUSTOMER MASTER RECORD", and the secondary record is entitled "CUSTOMER INVOICE RECORD". This dictionary would allow a file with one primary record for each customer name, optionally followed by any number of secondary records, one for each invoice. All the rules for building the primary record specification apply to the secondary record specification as well. In addition there are a few more rules:
+</para>
+      <orderedlist>
+        <listitem>
+          <para>The key field (first field) in the secondary record must have the same field name, length and type code as the primary record. The prompt may differ.
+        </para>
+        </listitem>
+        <listitem>
+          <para>
+            The primary record spec could have but one field if desired. The secondary record spec must have at least two fields, (including the key field).
+        </para>
+        </listitem>
+      </orderedlist>
+      <para>
+    Note that all the user need to do to use secondary records in a file is to include the secondary record specification in the dictionary.
+</para>
+    </section>
+  </chapter>
+  <chapter>
+    <!-- 9 -->
+    <title>Compatibility of RMS With Other Languages and Utilities</title>
+    <para>
+  RMS has been designed specifically for maximum compatibility with other forms of access. RMS files are, for the most part, simple text files, which can be read by most common utilities and by user-written BASIC09 programs.
+  It is just as easy to read an RMS file with an assembler of Pascal program. Though it is a little more dangerous to do, it is also possible to update an RMS file in the same manner.
+  The information in this section is not necessary in order to use RMS effectively. It is provided for the programmer who whishes to extend the power of RMS, or to use it as part of the solution to a larger problem.
+  </para>
+    <programlisting>
+      <xi:include parse="text" href="readrms.bas"/>
+    </programlisting>
+  </chapter>
+  <appendix>
+    <title>Key assignments for the Dragon 64</title>
+    <para>
+          On the Dragon 64 the CLEAR key is used as the CONTROL key. For example, where CONTROL-U is mentioned, this is achieved by holding down the CLEAR key and hitting the U key.
+      </para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="3">
+        <colspec colwidth="2in"/>
+        <colspec colwidth="2in"/>
+        <colspec colwidth="3in"/>
+        <thead>
+          <row>
+            <entry>Key name</entry>
+            <entry>Dragon 64 key</entry>
+            <entry>Function</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>RETURN</entry>
+            <entry>ENTER</entry>
+            <entry>Move to next field</entry>
+          </row>
+          <row>
+            <entry>BACKSPACE</entry>
+            <entry>&larrow;</entry>
+            <entry>Delete a character</entry>
+          </row>
+          <row>
+            <entry>RIGHT-ARROW</entry>
+            <entry>&rarrow;</entry>
+            <entry>Same as RETURN</entry>
+          </row>
+          <row>
+            <entry>LEFT-ARROW</entry>
+            <entry>SHIFT-&larrow;</entry>
+            <entry>Move to previous field</entry>
+          </row>
+          <row>
+            <entry>QUIT</entry>
+            <entry>CONTROL-E</entry>
+            <entry>Return to OS-9</entry>
+          </row>
+          <row>
+            <entry>CLEAR</entry>
+            <entry>SHIFT-&uarrow;</entry>
+            <entry>Clear the form</entry>
+          </row>
+          <row>
+            <entry>FIND</entry>
+            <entry>CONTROL-F</entry>
+            <entry>Find a record by key field</entry>
+          </row>
+          <row>
+            <entry>DELETE</entry>
+            <entry>CONTROL-D</entry>
+            <entry>Delete the displayed record</entry>
+          </row>
+          <row>
+            <entry>UPDATE</entry>
+            <entry>CONTROL-U</entry>
+            <entry>Update the record on disk</entry>
+          </row>
+          <row>
+            <entry>FEED</entry>
+            <entry>&darrow;</entry>
+            <entry>Display the next secondary record</entry>
+          </row>
+          <row>
+            <entry>INSERT</entry>
+            <entry>SHIFT-&rarrow;</entry>
+            <entry>Insert a new record on disk</entry>
+          </row>
+          <row>
+            <entry>HOME</entry>
+            <entry/>
+            <entry>Go to first (key) field</entry>
+          </row>
+          <row>
+            <entry>SCAN</entry>
+            <entry>SHIFT-&darrow;</entry>
+            <entry>Browse through file</entry>
+          </row>
+          <row>
+            <entry>DUPLICATE</entry>
+            <entry>CONTROL-&darrow;</entry>
+            <entry>Copy field from last record</entry>
+          </row>
+          <row>
+            <entry>[</entry>
+            <entry>CONTROL-8</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>]</entry>
+            <entry>CONTROL-9</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>CAPS-LOCK</entry>
+            <entry>CONTROL-O</entry>
+            <entry/>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </appendix>
 </book>
