@@ -661,8 +661,8 @@ $
         </para>
         <informaltable frame="none" colsep="0" rowsep="0">
           <tgroup cols="3">
-            <colspec colwidth="0.4in"/>
-            <colspec colwidth="2in"/>
+            <colspec colwidth="0.3in"/>
+            <colspec colwidth="1in"/>
             <colspec colwidth="4in"/>
             <tbody>
               <row>
@@ -692,7 +692,7 @@ $
       <section>
         <title>Optional fill-in flag</title>
         <para>
-        Unless otherwise designated, the RMS edirot will not store a data record into the main file unless all fields within the form are filled in and validated as to type and validators. However, if the user wishes to designate that the operator may leave a field blank within a record this is done by entering an <quote>optional fill-in flag</quote>. This consists of an asterisk <quote>*</quote> immediately following the type code. For example:
+        Unless otherwise designated, the RMS editor will not store a data record into the main file unless all fields within the form are filled in and validated as to type and validators. However, if the user wishes to designate that the operator may leave a field blank within a record this is done by entering an <quote>optional fill-in flag</quote>. This consists of an asterisk <quote>*</quote> immediately following the type code. For example:
     </para>
         <programlisting>
 SALARY   7   M*    "MONTHLY SALARY" ;
@@ -799,21 +799,484 @@ $
     </section>
   </chapter>
   <chapter>
+    <title>The RMS editor</title>
+    <para>
+          The RMS editor is used to add records to the RMS main data file; display the contents of records in the file; change the contents of records or remove records. To run the RMS editor type:
+      </para>
+    <screen>
+OS9: rms name index
+      </screen>
+    <para><quote>name</quote> is the root name of the <emphasis role="bold">.RMS</emphasis> and <emphasis role="bold">.DIC</emphasis> files. If the <quote>index</quote> file is to be used then ut must have the suffix <emphasis role="bold">.NDX</emphasis>. The index file is optional; its use is discussed later. A sample command to start the editor is:
+      </para>
+    <screen>
+OS9: rms patient names
+      </screen>
+    <para>
+          This command would assume that PATIENT.RMS and PATIENT.DIC reside in the current directory and that NAMES.NDX does as well.
+      </para>
+    <para>
+          In general RMS displays a form on the screen. It is made up of the title line and the various prompt strings and blank areas for the data fields. The top line of the screen is reserved for any necessary messages from RMS to the operator. The second line will contain a title. The rest of the screen has a prompt and a blank area for each field of the record. Depending on what is going on, the screen may be displaying the primary form or the secondary form.
+      </para>
+    <para>
+          Once the form is displayed the user can fill out the form and fetch or store records into the data file.
+      </para>
+    <section>
+      <title>A screen fill out form</title>
+      <para>
+              The form on the screen represents a picture of what a paper form for the same data might look like. The cursor will only come to rest within the blanks on the form where the operator should enter data. AS one field is filled the cursor will skip to the start of the next field. The prompt strings that were define by the user and placed in the dictionary will, if designed carefully, always inform the operator as to what data is to be entered into each field. The type of each field, also designated in the dictionary, will determine exactly what data may be entered into a field. For example, if the cursor is in a numeric field then the only printable characters that can be entered are space and the digits 0 to 9. If any other key, such as <quote>A</quote>; is pressed then the audible alarm on the terminal will beep, indicating an invalid key.
+          </para>
+    </section>
+    <section>
+      <title>Putting data into a form</title>
+      <para>
+              To enter data into a field within the form it is necessary to first move the cursor to the desired field and position with the field. There are several comman keys that move the cursor. Refer to the Key Assigments section at the end of this manual for the keys used on your keyboard.
+          </para>
+      <variablelist>
+        <varlistentry>
+          <term>RETURN</term>
+          <listitem>
+            <para>moves the cursor to the start of the next field, if in the last field the cursor is moved to the first field.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>RIGHT-ARROW</term>
+          <listitem>
+            <para>
+                acts in the same manner as RETURN; it can be thought of as a TAB key.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>LEFT-ARROW</term>
+          <listitem>
+            <para>
+                is a BACK TAB; the cursor is moved to the start of the previous field on the screen. If the cursor is in the first field on the screen then no action is taken.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>HOME</term>
+          <listitem>
+            <para>
+                moves the cursor to the first field on the screen.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>BACKSPACE</term>
+          <listitem>
+            <para>
+                moves the cursor one position to the left and erases the character under the cursor. It may be used to correct typing errors while entering data.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>CLEAR</term>
+          <listitem>
+            <para>
+                clears the screen and displays a blank primary form.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+    If a secondary form is displayed the editor will automatically fill in the key field (first field) with the key value of the associated primary record. Furthermore, the cursor will never come to rest in the key field of a secondary record since it may not be changed. Whenever the cursor would otherwise go to the key field (such as in response to the HOME key) it will go to the second field instead.
+</para>
+      <para>
+    Once the cursor is in the desired position data may be entered into a blank field, or an existing field may be modified by simply typing on the keyboard, overwriting the existing characters. If a key is typed which is not valid for the context then the terminal will beep and no action is taken. <emphasis role="bold">REMEMBER</emphasis> also that any new data entered on the screen is not saved in the disk file until either the INSERT or UPDATE keys (described below) are pushed.
+</para>
+      <para>
+    When the cursor is in an alphanumeric field any printable characters may be entered. When in a numeric field only space and the digits 0 to 9 may be entered. When in a money field space, digits 0 to 9 and a decimal point may be entered. It is not necessary to put in a decimal point if the money value is in whole pounds but the must be enough room for the decimal point and two zeros to be added (see RECORD VALIDATION below). When in a data field the date must be finally stored in the form DD/MM/YY, (day, month and year). However when entering a date the operator can save keystrokes on a couple of ways. If the month or day is one digit then it is not necessary to put in a leading zero. Just put in the one digit then push <quote>/</quote> or the space bar and RMS will fill in the leading zero and the <quote>/</quote>. Or, if the month or day is two digits then it is not necessary to put in the <quote>/</quote> or push space. When the next digit is entered RMS will fill in the <quote>/</quote> automatically. This all seems confusing but if you play with it a bit you will see that it is really quite convenient.
+</para>
+    </section>
+    <section>
+      <title>Command keys in the editor</title>
+      <para>
+        All actions concerning the fetching and storing of records in the data file are invoked by sngle key commands. If for any reason a command function cannot be executed or a message to the operator is necessary then the message is displayed on the top line of the screen. Once a message is displayed the user is asked to push the RETURN key to go on. Once the key is pressed, the message goes away and the user may then proceed as desired. The command keys and their actions are described here. Refer to the Key Assigments section at the end of this manual for the keys used on your keyboard.
+    </para>
+      <variablelist>
+        <varlistentry>
+          <term>QUIT</term>
+          <listitem>
+            <para>
+                causes the termination of the RMS editor and immediate return to OS-9.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>FIND</term>
+          <listitem>
+            <para>
+                finds the primary record in the file that has the key value which is now displayed in the key field (first field) on the screen. Then the record is displayed in the rest of the form. The basic use of FIND is to enter the key value of a record, then push FIND to display the rest of the record in the form. Also, whenever a secondary form is displayed on the screen, pushing the FIND key will re-display the associated primary record.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>CLEAR</term>
+          <listitem>
+            <para>
+                clears the screen and displays a blank primary form. If a secondary for is displayed on the screen and you wish to use the SCAN key, you must first push CLEAR to get a primary form displayed.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>INSERT</term>
+          <listitem>
+            <para>
+                causes a new record to be placed in the data file. All fields will first be checked for valid data as described under RECORD VALIDATION below. If any field is found to be invalid the record is not written to the file. The operator may correct the problem then try INSERT again. If a primary form is displayed then a new primary record is created. The key field as displayed in the form must not already be in the data file. If it is, then the new record is not written to the file. If a secondary form is displayed then a new secondary record is added to the end of the current record group.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>UPDATE</term>
+          <listitem>
+            <para>
+                is used to change the contents of one or more of the fields of a record. To use UPDATE the record must first have been displayed by the FIND or SCAN keys for a primary record or by the FEED key for a secondary record. Once displayed, any fields, except the key field may be modified. Then UPDATE will cause the updated record to replace the previous record in the file. Before the record is written it is checked for valid data as described below. If any field is found to contain invalid data then the record is not rewritten to the file.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>DELETE</term>
+          <listitem>
+            <para>
+                is used to remove a record or group of records from the file. Once a record is removed is it not retrievable. For this reason whenever DELETE is pressed a message is displayed on the top of the screen asking if it is OK to delete the record or record group. The operator must respond with a <quote>D</quote> to continue with the delete. Any other key causes the command to be ignored. Before deleting a record it must first be displayed by the FIND or SCAN key for a primary record, or the FEED key for a secondary record. An attempt to delete a primary record will also delete all secondary records in the group (if there are any). If a secondary record is displayed when DELETE is pressed then only that particular record is deleted.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>FEED</term>
+          <listitem>
+            <para>
+                is used to display the next secondary record in the current group. It is necessary to first have displayed the primary record with the FIND or SCAN key before any secondary records may be displayed. Each time FEED is pressed the next secondary is displayed. It may then be updated with UPDATE or removed from the file with DELETE. If it is deleted then the next secondary will be displayed when the delete function is complete. At any time when a secondary record is displayed the FIND key may be used to re-display the associated primary record at the beginning of the group. When there are no more secondary records in the group the FEED key will cause a blank secondary form to be displayed with the key field filled in to reflect the key of the group. To get a blank primary form push CLEAR. If there is no secondary record specification in the dictionary then the FEED key may not be used.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>SCAN</term>
+          <listitem>
+            <para>
+                is used in one of two ways, depending on the presence or absence of an index file when the RMS editor was invoked. In either case it may only be used when a primary form is displayed.
+            </para>
+            <para>
+                If no index file was specified then SCAN is used to browse through the file. Each time SCAN is pressed a sequential search is made in the file for the next primary record to be found. Then that record is displayed on the screen. Due to the hash coding technique the records will be located in a random order. It may also be possible that no record is found quickly since records can be spread out within the file. For this reason, if no record is found within a couple of hundred slots or the previous one then the search stops and a blank primary form is displayed. If you wish to continue just hit <emphasis role="bold">SCAN</emphasis> again. When all records of the file have been displayed a message is displayed on the top line telling the operator that further SCAN commands will start over from the beginning of the file.
+            </para>
+            <para>
+                If an index file was specified on the command line that started RMS, then SCAN is used in an alternate manner. The index file is assumed to contain a list of key field values, one per line. The specific details on how to create an index may be found in section 7. Each time SCAN is pressed the next key value is read from the index file and displayed in the key field of the screen. Then the equivalent of a FIND key command is executed. That is, the record is found in the file and displayed in the screen form. If no record exists with that key then a message is displayed on the top line of the screen. Note that is a record exists in the data file but its key field is not in the index field, it will not be found by SCAN. It can only be found by FIND.
+            </para>
+            <para>
+                Once SCAN is used to display a primary record it may be updated by UPDATE, or removed by DELETE, or the associated secondary records may be displayed by FEED.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>DUPLICATE</term>
+          <listitem>
+            <para>
+                the contents of the field in which the cursor is resting are duplicated from the last record of the same type (primary or secondary) that was written to the file by an INSERT or UPDATE. DUPLICATE can be useful if several records are to be entered and one or more of the fields need to be the same in each record.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+    <section>
+      <title>Record validation</title>
+      <para>
+        Each time the operator tries to write a new record into the data file by pressing INSERT or UPDATE, the contents of the screen form are automatically checked for validity. First of all, the data must conform to the field type. A data field must have a reasonable data; ie, the month must be from 1 to 12, etc. If necessary minor adjustments are made automatically. These might include right justifying a numeric or money field, supplying any missing decimal places in a money field, and so on. All such changes are shown on the screen as they are made. The second type of checking is that called for by any of the four types of validators that the user may have entered in the dictionary. See section 4 for more details on validators. If for any reason a field is found to be invalid, the appropriate message is displayed on the top line. The operator must press space to go on. Once he does so the message is erased and the INSERT or UPDATE is discontinued. The error may be fixed and the INSERT or UPDATE retried.
+    </para>
+      <para>
+        The optional-fill-in flag described in section 4 may be used to specify that a field may be left blank. In this case, a blank field is considered valid even if it would not otherwise be valid. If the optional-fill-in flag is not set in the field spec then the field must conform to all field validations. If the record is valid then it is written to file as requested.
+    </para>
+    </section>
+  </chapter>
+  <chapter>
+    <title>The RMS report writer</title>
+    <para>
+        The REPORT program is used to create a printed listing of all or part of the data in the RMS data file. Through the use of the various report commands a wide variety of options may be selected to build customized reports. A report might consist of a simple listing of the records, a set of mailing labels, a ledger, trial balance, inventory or stock report, reorder lists, checks, receipts, or any number of different management information reports. REPORT is also used to create disk text files for use by other programs, for instance a list of names and addressess to be used by the MAIL MERGE program.
+    </para>
+    <section>
+      <title>How to use REPORT</title>
+      <para>
+            To use the REPORT program it is necessary to first create a REPORT SPEC file. A report spec file is simply a text file with the necessary report commands to specify what the report is to contain and how it is to look. A report spec file may have any root name but must always have a suffix of <quote>.REP</quote>. Any number of <emphasis role="bold">.REP</emphasis> file may be created and re-used as many times as necessary. The following sample command illustrates the use of REPORT.
+        </para>
+      <screen>
+OS9: report client weekly
+</screen>
+      <para>
+    In this example, the current directory contains the main data file, CLIENT.RMS, and the associated dictionary CLIENT.DIC. The file WEEKLY.REP is the report spec file. The report printout will be written to the standard output, normally the screen.
+</para>
+    </section>
+    <section>
+      <title>What REPORT can do</title>
+      <para>
+        Using the report commands described below, the user may choose any combination of the following features.
+    </para>
+      <orderedlist numeration="loweralpha">
+        <listitem>
+          <para>report title page before the body of the report.
+            </para>
+        </listitem>
+        <listitem>
+          <para>report wrap up page after the body of the report.
+            </para>
+        </listitem>
+        <listitem>
+          <para>process the records in physical order or in any chosen order as driven by an index file.
+            </para>
+        </listitem>
+        <listitem>
+          <para>adjust to any page size or special form layout.
+            </para>
+        </listitem>
+        <listitem>
+          <para>automatic skipping over page perforations.
+            </para>
+        </listitem>
+        <listitem>
+          <para>selection of specific records to be part of the report, by low/high bounds or by set selection.
+            </para>
+        </listitem>
+        <listitem>
+          <para>selection of specific records to be excluded from the report by low/high bounds or by set exclusion.
+            </para>
+        </listitem>
+        <listitem>
+          <para>automatic new page for each primary record or each secondary record (or both, or neither).
+            </para>
+        </listitem>
+        <listitem>
+          <para>print any number of lines for each selected primary record.
+            </para>
+        </listitem>
+        <listitem>
+          <para>print any number of lines for each selected secondary record.
+            </para>
+        </listitem>
+        <listitem>
+          <para>automatic page overflow headers, any number of headers allowed.
+            </para>
+        </listitem>
+        <listitem>
+          <para>end of record group print lines to summarize information from each record group.
+            </para>
+        </listitem>
+        <listitem>
+          <para>automatic record counting by group or by file.
+            </para>
+        </listitem>
+        <listitem>
+          <para>automatic totalling of numeric and money fields available as file totals, total so far, or subtotal by record group.
+            </para>
+        </listitem>
+        <listitem>
+          <para>current date and page number available.
+            </para>
+        </listitem>
+        <listitem>
+          <para>user specification of exact format of each type of print line.
+            </para>
+        </listitem>
+      </orderedlist>
+    </section>
+    <section>
+      <title>Routing output from the report writer</title>
+    </section>
+    <section>
+      <title>The report spec file</title>
+      <para>
+    </para>
+      <section>
+        <title>L command - page length</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>I command - include</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>E command - exclude</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>T command - title</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>W command - wrap-up</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>P command - primary records</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>S command - secondary records</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>H command - page header</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>G command - record group</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>B command - page break</title>
+        <para>
+        </para>
+      </section>
+      <section>
+        <title>X command - index file</title>
+        <para>
+        </para>
+      </section>
+    </section>
+    <section>
+      <title>How to make up a print line with the REPORT writer</title>
+      <para>
+    </para>
+    </section>
+  </chapter>
+  <chapter>
+    <!-- 7 -->
+    <title>INDEX files with RMS</title>
+    <para>
+    </para>
+    <section>
+      <title>Format of an index file</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>Creating an index file</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>The RMS INDEX utility</title>
+      <para>
+    </para>
+    </section>
+  </chapter>
+  <chapter>
+    <!-- 8 -->
+    <title>RMSCOPY utility</title>
+    <para>
+    </para>
+    <section>
+      <title>To change the size of a file</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>The change the record dictionary for a file</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>To merge two files</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>To post a transaction file to a master file</title>
+      <para>
+    </para>
+    </section>
+  </chapter>
+  <chapter>
     <!-- 9 -->
-    <title>Compatibility of RMS With Other Languages and Utilities</title>
+    <title>Compatibility of RMS with other languages and utilities</title>
     <para>
   RMS has been designed specifically for maximum compatibility with other forms of access. RMS files are, for the most part, simple text files, which can be read by most common utilities and by user-written BASIC09 programs.
   It is just as easy to read an RMS file with an assembler of Pascal program. Though it is a little more dangerous to do, it is also possible to update an RMS file in the same manner.
   The information in this section is not necessary in order to use RMS effectively. It is provided for the programmer who whishes to extend the power of RMS, or to use it as part of the solution to a larger problem.
   </para>
+    <section>
+      <title>Format of an RMS file</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>Hash coding</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>About the hash coding algorithm</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>RMS and utilities</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>Access to RMS files from BASIC09</title>
+      <para>
+    </para>
+    </section>
     <programlisting>
       <xi:include parse="text" href="readrms.bas"/>
     </programlisting>
   </chapter>
+  <chapter>
+    <!-- 10 -->
+    <title>An example RMS application explained in detail</title>
+    <para>
+    </para>
+    <section>
+      <title>A sample dictionary - SAMPLE.DIC</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>A sample master file - SAMPLE.RMS</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>Using RMS on the sample file</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>A sample index file - DESCRIP.NDX</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>A sample report - PRLIST.REP</title>
+      <para>
+    </para>
+    </section>
+    <section>
+      <title>Some comments</title>
+      <para>
+    </para>
+    </section>
+  </chapter>
+  <appendix>
+    <title>OS-9 Command line summary</title>
+    <para>
+        A summary of OS-9 command line syntax for calling the RMS programs.
+    </para>
+  </appendix>
   <appendix>
     <title>Key assignments for the Dragon 64</title>
     <para>
-          On the Dragon 64 the CLEAR key is used as the CONTROL key. For example, where CONTROL-U is mentioned, this is achieved by holding down the CLEAR key and hitting the U key.
+        On the Dragon 64 the CLEAR key is used as the CONTROL key. For example, where CONTROL-U is mentioned, this is achieved by holding down the CLEAR key and hitting the U key.
       </para>
     <informaltable frame="none" colsep="0" rowsep="0">
       <tgroup cols="3">
