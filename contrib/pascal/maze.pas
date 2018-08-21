@@ -1,3 +1,7 @@
+{ Generate a maze.
+  The algoritm uses a two-dimensional matrix of cells, where the bottom
+  or the right wall can be absent.
+}
 PROGRAM maze(input);
 label 580,750,820,960;
 
@@ -38,7 +42,7 @@ procedure askdimensions;
     repeat
       writeln('What are your length and width (e. g. 13 10)?');
       readln(rows, cols);
-      if (rows > 1) or (rows <= 25) or (cols > 1) or (cols <= 25) then
+      if (rows > 1) or (rows <= MAXROWS) or (cols > 1) or (cols <= MAXCOLS) then
         goodsize := true
       else
         writeln('Meaningless dimensions.  Try again.');
