@@ -1,9 +1,8 @@
 { Generate a maze.
   The algoritm uses a two-dimensional matrix of cells, where the bottom
-  or the right wall can be absent.
-}
+  or the right wall can be absent. }
 PROGRAM maze(input);
-label 580,750,820,960;
+label 580,750,820;
 
 const
     MAXROWS = 25;
@@ -34,7 +33,7 @@ end;
 
 { Ask for dimensions.
   Sets the global variables: cols and rows }
-procedure askdimensions;
+procedure AskDimensions;
   var
     goodsize : boolean;
   begin
@@ -49,8 +48,7 @@ procedure askdimensions;
     until goodsize = true;
   end;
 
-{ Print maze }
-procedure printmaze;
+procedure PrintMaze;
   var
     r, c : integer;
   begin
@@ -85,7 +83,24 @@ procedure printmaze;
     end
   end;
 
-procedure initmaze;
+{ Find a cell that is already visited to continue from.
+  Uses the global variables r, c, cols, rows and visited.
+}
+procedure FindVisited;
+  begin
+    repeat
+      c := c + 1;
+      if c > cols then
+      begin
+        r := r + 1;
+        if r > rows then
+          r := 1;
+        c := 1
+      end;
+    until visited[r, c] = true;
+  end;
+
+procedure InitMaze;
   var q,z : integer;
   begin
     for q := 1 to rows do
@@ -96,12 +111,18 @@ procedure initmaze;
       end;
   end;
 
+procedure AddPossibility(go:direction);
+  begin
+    dx := dx + 1;
+    d[dx] := go;
+  end;
+
 begin
   randstate := 0;
   randomize(randstate);
-  askdimensions;
+  AskDimensions;
   totcells := rows * cols;
-  initmaze;
+  InitMaze;
 
   bottom := false;
   entry := rnd(cols) + 1;
@@ -111,95 +132,85 @@ begin
   cellinx := 1;
   visited[r, c] := true;
 
-580:
-  dx := 0;
-  if c <> 1 then
-  begin
-    if visited[r, c - 1] = false then
+  repeat
+    dx := 0;
+    if c <> 1 then
     begin
-      dx := dx + 1;
-      d[dx] := Left;
-    end;
-  end;
-  if c <> cols then
-  begin
-    if visited[r, c + 1] = false then
-    begin
-      dx := dx + 1;
-      d[dx] := Right
-    end
-    else goto 750;
-  end;
-  if r > 1 then
-  begin
-    if visited[r - 1, c] = false then
-    begin
-      dx := dx + 1;
-      d[dx] := Up
-    end;
-  end;
-750:
-  if r < rows then
-  begin
-    if visited[r + 1, c] = true then goto 820
-  end
-  else
-  begin
-    if bottom = true then goto 820
-  end;
-  dx := dx + 1;
-  d[dx] := Down;
-820:
-  if dx = 0 then
-  begin
-    while true do
-    begin
-      c := c + 1;
-      if c > cols then
+      if visited[r, c - 1] = false then
       begin
-        r := r + 1;
-        if r > rows then
-          r := 1;
-        c := 1
+        AddPossibility(Left)
       end;
-960:
-      if visited[r, c] = true then goto 580;
-    end
-  end;
-  x := rnd(dx) + 1;
-  case d[x] of
-    Down:
+    end;
+
+    if c <> cols then
+    begin
+      if visited[r, c + 1] = false then
       begin
-        cells[r, c] := cells[r, c] + NO_FLOOR;
-        r := r + 1;
-        if r > rows then
+        AddPossibility(Right)
+      end
+      else goto 750;
+    end;
+
+    if r > 1 then
+    begin
+      if visited[r - 1, c] = false then
+      begin
+        AddPossibility(Up)
+      end;
+    end;
+
+  750:
+    if r < rows then
+    begin
+      if visited[r + 1, c] = true then goto 820
+    end
+    else
+    begin
+      if bottom = true then goto 820
+    end;
+    AddPossibility(Down);
+  820:
+    if dx = 0 then
+    begin
+      FindVisited;
+      goto 580;
+    end;
+    x := rnd(dx) + 1;
+    case d[x] of
+      Down:
         begin
-          bottom := true;
-          r := 1;
-          c := 1;
-          goto 960;
-        end
-      end;
-    Up:
-      begin
-        r := r - 1;
-        cells[r, c] := NO_FLOOR
-      end;
-    Right:
-      begin
-        cells[r, c] := cells[r, c] + NO_RIGHT_WALL;
-        c := c + 1
-      end;
-    Left:
-      begin
-        c := c - 1;
-        cells[r, c] := NO_RIGHT_WALL
-      end;
-  end;
+          cells[r, c] := cells[r, c] + NO_FLOOR;
+          r := r + 1;
+          if r > rows then
+          begin
+            bottom := true;
+            r := 1;
+            c := 0;
+            FindVisited;
+            goto 580;
+          end
+        end;
+      Up:
+        begin
+          r := r - 1;
+          cells[r, c] := NO_FLOOR
+        end;
+      Right:
+        begin
+          cells[r, c] := cells[r, c] + NO_RIGHT_WALL;
+          c := c + 1
+        end;
+      Left:
+        begin
+          c := c - 1;
+          cells[r, c] := NO_RIGHT_WALL
+        end;
+    end;
 
-  cellinx := cellinx + 1;
-  visited[r, c] := true;
-  if cellinx < totcells then goto 580;
+    cellinx := cellinx + 1;
+    visited[r, c] := true;
+580:
+  until cellinx >= totcells;
 
-  printmaze;
+  PrintMaze;
 end.
