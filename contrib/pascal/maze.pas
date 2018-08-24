@@ -2,7 +2,7 @@
   The algoritm uses a two-dimensional matrix of cells, where the bottom
   or the right wall can be absent. }
 PROGRAM maze(input);
-label 580,750,820;
+label 580,750;
 
 const
     MAXROWS = 25;
@@ -162,14 +162,15 @@ begin
   750:
     if r < rows then
     begin
-      if visited[r + 1, c] = true then goto 820
+      if visited[r + 1, c] = false then
+        AddPossibility(Down);
     end
     else
     begin
-      if bottom = true then goto 820
+      if bottom = false then
+        AddPossibility(Down);
     end;
-    AddPossibility(Down);
-  820:
+
     if dx = 0 then
     begin
       FindVisited;
