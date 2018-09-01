@@ -1,15 +1,15 @@
 <project name="BuildModules" default="compile">
 
-    <property name="homedir" value="kernel"/>
     <property name="os9dir" value="${project.basedir}" />
     <property name="targetdir" value="target" />
 
     <macrodef name="assemble">
         <attribute name="src" />
+        <attribute name="home" />
         <sequential>
             <echo message="Assembling: @{src}"/>
             <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
-                    fork="true" dir="${homedir}">
+                    fork="true" dir="@{home}">
                 <env key="OSNINEDIR" value="${os9dir}"/>
                 <arg value="-m"/>
                 <arg value="20000"/>
@@ -23,31 +23,37 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="Acia51"/>
-        <assemble src="Acia_v2"/>
-        <assemble src="Acia_v4"/>
-        <assemble src="BootDyn"/>
-        <assemble src="Clock_gimix"/>
-        <assemble src="D0_vdisk"/>
-        <assemble src="D1_vdisk"/>
-        <assemble src="HWClock"/>
-        <assemble src="IOMan_v4"/>
-        <assemble src="KbVdIO"/>
-        <assemble src="OS9p1_d64"/>
-        <assemble src="OS9p1_gimix"/>
-        <assemble src="OS9p1_swtc"/>
-        <assemble src="OS9p2"/> <!-- version 9 -->
-        <assemble src="OS9p2_v5"/>
-        <assemble src="OS9p2_v8"/>
-        <assemble src="Pipe"/>
-        <assemble src="PipeMan"/>
-        <assemble src="Piper"/>
-        <assemble src="RBF"/> <!-- version 7 -->
-        <assemble src="SCF_v7"/>
-        <assemble src="SCF"/> <!-- version 8 -->
-        <assemble src="SysGo"/>
-        <assemble src="SysGo_login"/>
-        <assemble src="VDisk"/>
+        <assemble src="go51nkb" home="kernel"/>
+        <assemble src="go51n" home="kernel"/>
+        <assemble src="go51" home="kernel"/>
+        <assemble src="Acia51" home="kernel"/>
+        <assemble src="Acia_v2" home="kernel"/>
+        <assemble src="Acia_v4" home="kernel"/>
+        <assemble src="BootDyn" home="kernel"/>
+        <assemble src="Clock_gimix" home="kernel"/>
+        <assemble src="D0_vdisk" home="kernel"/>
+        <assemble src="D1_vdisk" home="kernel"/>
+        <assemble src="HWClock" home="kernel"/>
+        <assemble src="IOMan_v4" home="kernel"/>
+        <assemble src="KbVdIO" home="kernel"/>
+        <assemble src="OS9p1_d64" home="kernel"/>
+        <assemble src="OS9p1_gimix" home="kernel"/>
+        <assemble src="OS9p1_swtc" home="kernel"/>
+        <assemble src="OS9p2" home="kernel"/> <!-- version 9 -->
+        <assemble src="OS9p2_v5" home="kernel"/>
+        <assemble src="OS9p2_v8" home="kernel"/>
+        <assemble src="Pipe" home="kernel"/>
+        <assemble src="PipeMan" home="kernel"/>
+        <assemble src="Piper" home="kernel"/>
+        <assemble src="RBF" home="kernel"/> <!-- version 7 -->
+        <assemble src="SCF_v7" home="kernel"/>
+        <assemble src="SCF" home="kernel"/> <!-- version 8 -->
+        <assemble src="SysGo" home="kernel"/>
+        <assemble src="SysGo_login" home="kernel"/>
+        <assemble src="VDisk" home="kernel"/>
+
+        <assemble src="Build" home="utilities"/>
+        <assemble src="Setime" home="utilities"/>
     </target>
 
 </project>

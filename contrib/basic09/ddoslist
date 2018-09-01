@@ -8,37 +8,34 @@ PROCEDURE listtoc
     PARAM sides:REAL
     TYPE dentry = flag:BYTE; name:STRING[8]; ext:STRING[3]; alloc(3,4),last:BYTE
     DIM tocrec: dentry
-    DIM fd:INTEGER
-    DIM eod,deleted,continued:INTEGER
-    DIM recnum:INTEGER
+    DIM fd, recnum:INTEGER
+    DIM eod,deleted,contentry:BOOLEAN
+    DIM tocloc:REAL
     DIM unused(6):BYTE
     OPEN #fd,filename:READ
     REM sides = 1.
     sectors = 18
-    tocloc = sides * 16. * sectors * 256 + 512
+    tocloc = sides * 16 * sectors * 256 + 512
     SEEK #fd, tocloc
     recnum = 0
     REPEAT
       GET #fd,tocrec
       RUN fixzeros(tocrec.name)
-      eod = LAND(tocrec.flag, 8)
-      deleted = LAND(tocrec.flag, 128)
-      contentry = LAND(tocrec.flag, 1)
-      EXITIF eod=8 THEN
-      ENDEXIT
-      IF contentry = 1 THEN 100
-      continued = LAND(tocrec.flag, 32)
-      PRINT tocrec.name; "."; tocrec.ext;
-      IF deleted=128 THEN PRINT "(deleted)";
+      eod := LAND(tocrec.flag, 8) <> 0
+      deleted := LAND(tocrec.flag, 128) <> 0
+      contentry := LAND(tocrec.flag, 1) <> 0
+      EXITIF eod THEN ENDEXIT
+      IF NOT contentry THEN
+        PRINT tocrec.name; "."; tocrec.ext;
+        IF deleted THEN PRINT "(deleted)";
+        ENDIF
+        PRINT
       ENDIF
-      REM IF continued=32 THEN PRINT "(continued)";
-      REM ENDIF
-      PRINT
-100   recnum = recnum + 1
+      recnum = recnum + 1
       IF MOD(recnum, 10) = 0 THEN
         GET #fd,unused
       ENDIF
-      UNTIL eod=8
+    UNTIL eod
     CLOSE #fd
     BYE
 

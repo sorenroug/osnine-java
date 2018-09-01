@@ -50,7 +50,7 @@
       <varlistentry>
         <term>Procedure FIELDPUT(variable-name, start-bit, length, value:integer)*</term>
         <listitem>
-          <para>This procedure allows you to selectively set or reset bit fields in an integer. The start-bit defines the integer starting bit number of the field to be affected; 0 is the least significant bit and 15 is the most significant bit. Length defines the integer number of bits in the field, 1 through 16. Bits are affected starting at start-bit and proceeding toward the least significant bit with wrap around through the high order bit positions if necessary. The value will be stored in the specified field within the 16 bit 'integer-variable-name ' variable. Only the least significant <quote>length</quote> bits of the value are used, any higher order bits are ignored.</para>
+          <para>This procedure allows you to selectively set or reset bit fields in an integer. The start-bit defines the integer starting bit number of the field to be affected; 0 is the least significant bit and 15 is the most significant bit. Length defines the integer number of bits in the field, 1 through 16. Bits are affected starting at start-bit and proceeding toward the least significant bit with wrap around through the high order bit positions if necessary. The value will be stored in the specified field within the 16 bit 'integer-variable-name' variable. Only the least significant <quote>length</quote> bits of the value are used, any higher order bits are ignored.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -118,7 +118,7 @@
       <varlistentry>
         <term>Function AINT(expression:real): real*</term>
         <listitem>
-          <para>Returns the integer portion of the value of 'real-expression'. For instance, the result of AINT(3.14) is 3,0, and the result of AINT(-0.0123) is 0.0.</para>
+          <para>Returns the integer portion of the value of 'real-expression'. For instance, the result of AINT(3.14) is 3.0, and the result of AINT(-0.0123) is 0.0.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -146,9 +146,9 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>Function EXP(expression:integer-or-real]: real</term>
+        <term>Function EXP(expression:integer-or-real): real</term>
         <listitem>
-          <para>Performs the exponential function to argument, e.g. e to the X power. The argument may be of types integer or real.</para>
+          <para>Performs the exponential function to argument, e.g. <constant>e</constant> to the X power. The argument may be of types integer or real.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -160,7 +160,7 @@
       <varlistentry>
         <term>Function LN(expression:integer-or-real): real</term>
         <listitem>
-          <para>Computes the natural logarithm (base e) of an integer or real type argument. The result is of type real.</para>
+          <para>Computes the natural logarithm (base <constant>e</constant>) of an integer or real type argument. The result is of type real.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -178,13 +178,13 @@
       <varlistentry>
         <term>Function ORD(ordinal-type-value) :    integer</term>
         <listitem>
-          <para>Takes an argument of any ordinal type (char, integer, boolean, etc.) and returns the ordinal number of the value within that type. For example ORD(Wednesday) of the set (Monday,.Friday) is 2.</para>
+          <para>Takes an argument of any ordinal type (char, integer, boolean, etc.) and returns the ordinal number of the value within that type. For example ORD(Wednesday) of the set (Monday..Friday) is 2.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>Function PRED(ordinal-type-value): same-type-as-argument</term>
         <listitem>
-          <para>Returns the predecessor value that has an ordinal value of one less than the argument. For example, PRED(7) returns 6; PRED(FRIDAY) returns THURSDAY. If no predecessor exists, (such as PRED(0) )  an error occurs.</para>
+          <para>Returns the predecessor value that has an ordinal value of one less than the argument. For example, PRED(7) returns 6; PRED(FRIDAY) returns THURSDAY. If no predecessor exists, (such as PRED(0)) an error occurs.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -226,7 +226,7 @@
       <varlistentry>
         <term>Function SUCC(ordinal-type-value): same-type-as-argument</term>
         <listitem>
-          <para>Returns the successor value that has an ordinal value of one more than the argument. For example, SUCC(7) returns 8; SUCC(THURSDAY) returns FRIDAY. If no successor exists (such as SUCC(TRUE) ) an error occurs.</para>
+          <para>Returns the successor value that has an ordinal value of one more than the argument. For example, SUCC(7) returns 8; SUCC(THURSDAY) returns FRIDAY. If no successor exists (such as SUCC(TRUE)) an error occurs.</para>
         </listitem>
       </varlistentry>
       <varlistentry>

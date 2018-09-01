@@ -64,7 +64,7 @@
 
 <production xml:id="structured_type"><lhs>structured-type</lhs> <rhs><nonterminal def="#unpacked_structured_type">unpacked-structured-type</nonterminal> | PACKED <nonterminal def="#unpacked_structured_type">unpacked-structured-type</nonterminal></rhs></production>
 
-<production xml:id="unpacked_structured_type"><lhs>unpacked-structured-type</lhs> <rhs><nonterminal def="#array_type">array-type</nonterminal> | <nonterminal def="#record_type">record-type</nonterminal> <nonterminal def="#set_type">set-type</nonterminal> | <nonterminal def="#file_type">file-type</nonterminal></rhs></production>
+<production xml:id="unpacked_structured_type"><lhs>unpacked-structured-type</lhs> <rhs><nonterminal def="#array_type">array-type</nonterminal> | <nonterminal def="#record_type">record-type</nonterminal> | <nonterminal def="#set_type">set-type</nonterminal> | <nonterminal def="#file_type">file-type</nonterminal></rhs></production>
 
 <production xml:id="array_type"><lhs>array-type</lhs> <rhs>ARRAY "[" <nonterminal def="#index_type">index-type</nonterminal> { "," <nonterminal def="#index_type">index-type</nonterminal>} "]" OF <nonterminal def="#component_type">component-type</nonterminal></rhs></production>
 

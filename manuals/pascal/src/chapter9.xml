@@ -166,23 +166,23 @@ in figure 3 below:</para>
 <figure>
 <title>Code Examples Using the Standard Procedures FIELDPUT and FIELDGET.</title>
 <programlisting>
-FIELDPUT(i, bit_number, 1, 0);
-    { Resets a bit in the integer variable "i" }
+FIELDPUT(i, bit number, 1, 0);
+    <lineannotation>{ Resets a bit in the integer variable "i" }</lineannotation>
 FIELDPUT(i, bit number, 1, 1);
-    { Sets a bit in the integer variable "i" }
+    <lineannotation>{ Sets a bit in the integer variable "i" }</lineannotation>
 
-i:=ord(ch);                      { The following 3   }
-FIELDPUT(i, bit number, 1, 0);   {statements reset a  }
-ch:=chr(i);     { bit in the character variable "ch"  }
+i:=ord(ch);                      <lineannotation>{ The following 3    }</lineannotation>
+FIELDPUT(i, bit number, 1, 0);   <lineannotation>{statements reset a  }</lineannotation>
+ch:=chr(i);     <lineannotation>{ bit in the character variable "ch"  }</lineannotation>
 
-FIELDPUT(i, bit_number,
-   1-FIELDGET{i, bit number, 1));
-   { Flips a bit in the integer variable "i" }
+FIELDPUT(i, bit number, 1,
+   1-FIELDGET(i, bit number, 1));
+   <lineannotation>{ Flips a bit in the integer variable "i" }</lineannotation>
 
-i:=FIELDGET(i, 0, 16); { Rotate variable "i" 1 bit to }
-                       { the right }
-i:=FIELDGET(i, 14, 16};{ Rotate variable "i" 1 bit to }
-                       { the left }
+i:=FIELDGET(i, 0, 16); <lineannotation>{ Rotate variable "i" 1 bit to }</lineannotation>
+                       <lineannotation>{ the right }</lineannotation>
+i:=FIELDGET(i, 14, 16};<lineannotation>{ Rotate variable "i" 1 bit to }</lineannotation>
+                       <lineannotation>{ the left }</lineannotation>
 </programlisting>
 </figure>
 

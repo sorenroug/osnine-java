@@ -14,7 +14,7 @@ PROCEDURE findintoc
     DIM tocrec: dentry
     DIM crec: centry
     DIM fd,outfd,i,j:INTEGER
-    DIM eodata,deleted,contentry,continued:INTEGER
+    DIM eodata,deleted,contentry:BOOLEAN
     DIM recnum,finish,howmany:INTEGER
     DIM cb,c,unused(6):BYTE
     DIM dosname:STRING
@@ -29,20 +29,20 @@ PROCEDURE findintoc
     cb = -1
     REPEAT
       GET #fd,tocrec
-      eodata = LAND(tocrec.flag, 8)
-      EXITIF eodata=8 THEN
+      eodata = LAND(tocrec.flag, 8) <> 0
+      EXITIF eodata THEN
       ENDEXIT
-      deleted = LAND(tocrec.flag, 128)
-      IF deleted=128 THEN 100
-      contentry = LAND(tocrec.flag, 1)
-      IF contentry = 1 AND cb = recnum THEN
+      deleted := LAND(tocrec.flag, 128) <> 0
+      IF deleted THEN 100
+      contentry = LAND(tocrec.flag, 1) <> 0
+      IF contentry AND cb = recnum THEN
         crec = tocrec
         FOR i = 1 TO 7
           segments(i+4) = crec.calloc(i)
           finish = tocrec.last
         NEXT i
       ENDIF
-      IF contentry = 1 THEN 100
+      IF contentry THEN 100
       RUN createfn(tocrec.name, dosname)
       IF dosname = filename THEN
         FOR i = 1 TO 4
@@ -53,7 +53,7 @@ PROCEDURE findintoc
           segments(i).count = 0
         NEXT i
         finish = tocrec.last
-        IF LAND(tocrec.flag, 32) = 32 THEN
+        IF LAND(tocrec.flag, 32) <> 0 THEN
           cb = tocrec.last
         ENDIF
       ENDIF
@@ -61,7 +61,7 @@ PROCEDURE findintoc
       IF MOD(recnum, 10) = 0 THEN
         GET #fd,unused
       ENDIF
-    UNTIL eodata=8
+    UNTIL eodata
 
     IF segments(1).count = 0 THEN
       PRINT "*** File not found on disk"
