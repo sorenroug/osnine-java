@@ -154,31 +154,31 @@ We suggest that you read this short section carefully, and then try out the exam
 </para>
       </important>
       <para>
-      The first thing you must do before using RMS is to make a copy of the supplied RMS onto a freshly formatted disk. Then <emphasis>store the original disk in a safe place.</emphasis>
-      <emphasis>Never</emphasis> use the supplied disk for running RMS, and <emphasis>never</emphasis> write to it.
+The first thing you must do before using RMS is to make a copy of the supplied RMS onto a freshly formatted disk. Then <emphasis>store the original disk in a safe place</emphasis>.
+<emphasis>Never</emphasis> use the supplied disk for running RMS, and <emphasis>never</emphasis> write to it.
       Refer to the <citetitle pubwork="book">OS-9 User's manual</citetitle> for instructions on how to use the <command>format</command> and <command>backup</command> commands.
       </para>
       <para>
-      Remove your system disk from drive 0 and insert your freshly made disk.
-      Change your execution directory (using 'chx') and your data directory (using 'chd') to refer to this disk:
+Remove your system disk from drive 0 and insert your freshly made disk.
+Change your execution directory (using 'chx') and your data directory (using 'chd') to refer to this disk:
       </para>
       <screen>
-      OS9: chx /d0/cmds chd /d0
+      OS9: <userinput>chx /d0/cmds chd /d0</userinput>
       </screen>
       <para>
       If you are using a Dragon 64, and the screen is not already in the 51 characters by 24 lines mode, enter this mode by:
       </para>
       <screen>
-      OS9: go51
+OS9: <userinput>go51</userinput>
       </screen>
       <para>
-      Inspect the root directory of the disk by:
+Inspect the root directory of the disk by:
       </para>
       <screen>
-      OS9: dir
+OS9: <userinput>dir</userinput>
       </screen>
       <para>
-      The root directory contains several example files:
+The root directory contains several example files:
       </para>
       <variablelist>
         <varlistentry>
@@ -242,7 +242,7 @@ a sample index file for the address book
 In addition there are two directories, CMDS and SYS. CMDS contains the RMS programs. To inspect the directory, try:
 </para>
       <screen>
-OS9: dir cmds
+OS9: <userinput>dir cmds</userinput>
 </screen>
       <variablelist>
         <varlistentry>
@@ -305,7 +305,7 @@ by OS-9 when reporting errors. (for example "Error #216 - Path name not found").
 You are now ready for a trial run with RMS. Try getting into RMS with:
 </para>
       <screen>
-OS9: rms address
+OS9: <userinput>rms address</userinput>
 </screen>
       <para>
 To return to OS-9, (at any time), hit
@@ -338,7 +338,7 @@ You can now use a separate disk as you data disk, in drive 1. You could try this
 Set your execution and data directories with:
 </para>
       <screen>
-      OS9: chx /d0/cmds chd /d1
+      OS9: <userinput>chx /d0/cmds chd /d1</userinput>
       </screen>
     </section>
   </chapter>
@@ -346,9 +346,9 @@ Set your execution and data directories with:
     <!-- 2 -->
     <title>Data Storage under RMS</title>
     <para>
-      All data is stored in files on disk. Each file consists of a set of
-      RECORDS. All records in a particular file are of the same length and
-      have certain characteristics in common:
+All data is stored in files on disk. Each file consists of a set of
+RECORDS. All records in a particular file are of the same length and
+have certain characteristics in common:
   </para>
     <itemizedlist>
       <listitem>
@@ -373,32 +373,32 @@ Set your execution and data directories with:
       </listitem>
     </itemizedlist>
     <para>
-      The user can define as many RMS data files as needed. Associated with each data file is a dictionary file, and possibly one or more index and report specification files.
+The user can define as many RMS data files as needed. Associated with each data file is a dictionary file, and possibly one or more index and report specification files.
   </para>
     <section>
       <title>The concept of a record</title>
       <para>
-          A record is the logical grouping of several data items into one physical entity. Data is stored and retrieved by RMS a record at a time. Usually the data items within a record will describe particular details of one useful <quote>real-world</quote> entity. For example, a record might contain a person's name, address, phone number, social security number and age.
+A record is the logical grouping of several data items into one physical entity. Data is stored and retrieved by RMS a record at a time. Usually the data items within a record will describe particular details of one useful <quote>real-world</quote> entity. For example, a record might contain a person's name, address, phone number, social security number and age.
       </para>
       <section>
         <title>Fields and Record Keys</title>
         <para>
-              In the above example the particular data items (name, address, etc.) are called FIELDS. The grouping of all the fields together is called a RECORD. Each of the fields has its own particular characteristics; the social security number is always 9 characters long and must always consist of numeric digits only. The name field could consist of alphabetic characters, and so on. In RMS, it is up to the user to decide what data fields he needs, and what the characteristics of each will be. In doing so, he determines that data a record is to contain.
+In the above example the particular data items (name, address, etc.) are called FIELDS. The grouping of all the fields together is called a RECORD. Each of the fields has its own particular characteristics; the social security number is always 9 characters long and must always consist of numeric digits only. The name field could consist of alphabetic characters, and so on. In RMS, it is up to the user to decide what data fields he needs, and what the characteristics of each will be. In doing so, he determines that data a record is to contain.
           </para>
         <para>
-              Normall the is on field in the record which is designated as the KEY FIELD. The key field will be the one by which immediate access to the record may be made. In the above, if the name field is designated as the key then the user can lookup and display a record by entering only the name.
+Normall the is on field in the record which is designated as the KEY FIELD. The key field will be the one by which immediate access to the record may be made. In the above, if the name field is designated as the key then the user can lookup and display a record by entering only the name.
           </para>
       </section>
       <section>
         <title>Primary Record</title>
         <para>
-              Within on RMS data file the user may choose to use one of two possible situations. The first situation is one in which all records in the file have the same format (ie, same set of fields). This will fit applications where the data base can be well represented by a set of individual records; one record per one real world entity. Each record in the file has a unique key field value. An example of this organization is a mailing list; another might be a stock inventory system. In this case all the records in the file are referred to as PRIMARY records.
+Within on RMS data file the user may choose to use one of two possible situations. The first situation is one in which all records in the file have the same format (ie, same set of fields). This will fit applications where the data base can be well represented by a set of individual records; one record per one real world entity. Each record in the file has a unique key field value. An example of this organization is a mailing list; another might be a stock inventory system. In this case all the records in the file are referred to as PRIMARY records.
           </para>
       </section>
       <section>
         <title>Secondary Record</title>
         <para>
-              The second possible situation is one which allows two types of records within one file. The first type of record is called the PRIMARY record; the second type is called the SECONDARY record. In this situation there may be but one primary record with any given key field value, but under each such primary record there may be any number of associated secondary records. Within the file, all primary records have the same format, and all secondary records have the same format. However, the format of the primary records can differ from that of the secondary records.
+The second possible situation is one which allows two types of records within one file. The first type of record is called the PRIMARY record; the second type is called the SECONDARY record. In this situation there may be but one primary record with any given key field value, but under each such primary record there may be any number of associated secondary records. Within the file, all primary records have the same format, and all secondary records have the same format. However, the format of the primary records can differ from that of the secondary records.
           </para>
       </section>
       <section>
@@ -410,32 +410,32 @@ Set your execution and data directories with:
           <listitem>
             <para>
                       a primary record for each customer with a secondary record for each invoice for that customer;
-                  </para>
+            </para>
           </listitem>
           <listitem>
             <para>
-                      a primary record for each student with a secondary record for each class he takes;
-                  </para>
+              a primary record for each student with a secondary record for each class he takes;
+            </para>
           </listitem>
           <listitem>
             <para>
-                      patients/visits;
-                  </para>
+              patients/visits;
+            </para>
           </listitem>
           <listitem>
             <para>
-                      employees/pay periods;
-                  </para>
+              employees/pay periods;
+            </para>
           </listitem>
           <listitem>
             <para>
-                      ledger entry/detail item.
-                  </para>
+              ledger entry/detail item.
+            </para>
           </listitem>
         </orderedlist>
         <para>
               There are undoubtedly many other possibilities which can be considered.
-          </para>
+        </para>
       </section>
     </section>
     <section>
@@ -517,7 +517,7 @@ CURRENT BALANCE:_________ CREDIT LIMIT:__________ STATUS:_____________
           These files should be stored in the same directory on disk. The <emphasis role="bold">.RMS</emphasis> file contains the actual data records. The create the <emphasis role="bold">.RMS</emphasis> file you use the RMSNEW utility program. It is stated by entering:
       </para>
       <screen>
-OS9: rmsnew name
+OS9: <userinput>rmsnew name</userinput>
 </screen>
       <para>
     The name may be any properly qualified OS-9 file specification. The <emphasis role="bold">.RMS</emphasis> suffix will be added on automatically and should not be entered. Before proceeding, the utility will request two values. The first is the record length. This must be a number which is large enough to accomodate the longer of the primary and the secondary records to be stored in the file. The possible record length may be any number from 3 to 1022 characters. It is permissible for a record length to be too long to accomodate the desired records but not too short. RMSNEW will add two to the entered length: one for a prefix identifier byt on each record, and one for a return character at the end of each record.
@@ -532,7 +532,7 @@ OS9: rmsnew name
         Once the <emphasis role="bold">.DIC</emphasis> and <emphasis role="bold">.RMS</emphasis> files have been created, data can be entered into the file using the RME editor program. The complete details of its use are found in section 5, but the general steps to add one or more records are:
     </para>
       <screen><lineannotation>enter the command...</lineannotation>
-OS9: rms name
+OS9: <userinput>rms name</userinput>
 </screen>
       <para>
 Where <quote>name</quote> is the same name entered when creating the file with RMSNEW. RMS will add the suffix <quote>.RMS</quote> to locate the main data file and <quote>.DIC</quote> to locate the dictionary.
@@ -573,7 +573,7 @@ Where <quote>name</quote> is the same name entered when creating the file with R
         <listitem>
           <para>then run the REPORT utility program by entering:</para>
           <screen>
-OS9: report name sfile
+OS9: <userinput>report name sfile</userinput>
 </screen>
           <para>
     where <quote>name</quote> is the name of the data file (without the <quote>.RMS</quote> suffix) and <quote>sfile</quote> is the root name of the report spec file.
@@ -704,7 +704,7 @@ SALARY   7   M*    "MONTHLY SALARY" ;
       <section>
         <title>Prompt</title>
         <para>
-        After the field type code comes the prompt value. The prompt consists of a pair of quote marks (") with any number of characters in between. The promp is displayed on the screen by the RMS editor when the fill-out form for this record is displayed. An empty promt, signified by two adjacent quote marks, indicates that no text is to be displayed preceding the blank for this field. The prompt may carry over for as many lines as necessary as long as it is ended with a quote mark. Skillful use of placing blanks withing prompts will allow the user to force the screen to look as desired. In general, it will be easiest to do this by trial and error. A few attempts at creating a form then running the RMS editor to see what it looks like will quickly show how the editor uses prompts to build the form. Essentially, the editor always ensures that the prompt and the associated data space are on the same line, provided that their total length is less than the line length.
+        After the field type code comes the prompt value. The prompt consists of a pair of quote marks (") with any number of characters in between. The prompt is displayed on the screen by the RMS editor when the fill-out form for this record is displayed. An empty prompt, signified by two adjacent quote marks, indicates that no text is to be displayed preceding the blank for this field. The prompt may carry over for as many lines as necessary as long as it is ended with a quote mark. Skillful use of placing blanks withing prompts will allow the user to force the screen to look as desired. In general, it will be easiest to do this by trial and error. A few attempts at creating a form then running the RMS editor to see what it looks like will quickly show how the editor uses prompts to build the form. Essentially, the editor always ensures that the prompt and the associated data space are on the same line, provided that their total length is less than the line length.
     </para>
       </section>
       <section>
@@ -804,12 +804,12 @@ $
           The RMS editor is used to add records to the RMS main data file; display the contents of records in the file; change the contents of records or remove records. To run the RMS editor type:
       </para>
     <screen>
-OS9: rms name index
+OS9: <userinput>rms name index</userinput>
       </screen>
     <para><quote>name</quote> is the root name of the <emphasis role="bold">.RMS</emphasis> and <emphasis role="bold">.DIC</emphasis> files. If the <quote>index</quote> file is to be used then ut must have the suffix <emphasis role="bold">.NDX</emphasis>. The index file is optional; its use is discussed later. A sample command to start the editor is:
       </para>
     <screen>
-OS9: rms patient names
+OS9: <userinput>rms patient names</userinput>
       </screen>
     <para>
           This command would assume that PATIENT.RMS and PATIENT.DIC reside in the current directory and that NAMES.NDX does as well.
@@ -1000,7 +1000,7 @@ OS9: rms patient names
             To use the REPORT program it is necessary to first create a REPORT SPEC file. A report spec file is simply a text file with the necessary report commands to specify what the report is to contain and how it is to look. A report spec file may have any root name but must always have a suffix of <quote>.REP</quote>. Any number of <emphasis role="bold">.REP</emphasis> file may be created and re-used as many times as necessary. The following sample command illustrates the use of REPORT.
         </para>
       <screen>
-OS9: report client weekly
+OS9: <userinput>report client weekly</userinput>
 </screen>
       <para>
     In this example, the current directory contains the main data file, CLIENT.RMS, and the associated dictionary CLIENT.DIC. The file WEEKLY.REP is the report spec file. The report printout will be written to the standard output, normally the screen.
@@ -1080,6 +1080,27 @@ OS9: report client weekly
     </section>
     <section>
       <title>Routing output from the report writer</title>
+      <para>
+          The REPORT program writes all output ti the standard output file. This means that the output will normally come to the screen but may be redirected to a disk file or printer. For example, to send the output to the parallel printer port <quote>/p</quote>:
+      </para>
+      <screen>
+OS9: <userinput>report client weekly &gt;/p</userinput>
+      </screen>
+      <para>
+          or to send to the serial printer port <quote>/p1</quote>:
+      </para>
+      <screen>
+OS9: <userinput>report client weekly &gt;/p1</userinput>
+      </screen>
+      <para>
+          or to send the output to a text file on disk called <quote>OUTFILE</quote>.
+      </para>
+      <screen>
+OS9: <userinput>report client weekly &gt;outfile</userinput>
+      </screen>
+      <para>
+          When the REPORT command is given it is assumed that the print mechanism is positioned at the first print line that is to be actually printed upon a new page.
+      </para>
     </section>
     <section>
       <title>The report spec file</title>
@@ -1144,28 +1165,136 @@ OS9: report client weekly
     <section>
       <title>How to make up a print line with the REPORT writer</title>
       <para>
+          Several of the REPORT commands call for a <quote>print line</quote>. A print line is a list of values to be printed on one line of a report printout. The general form of a print line is:
+      </para>
+      <programlisting>
+item item item     ;
+      </programlisting>
+      <para>
+That is, there may be any number of items. Each one is separated from the previous one by one or more spaces. A print line which contains no items designates a blank print line. A semi-colon must appear after the last item.
+      </para>
+      <para>
+          The items that can occur in a print line are:
+      </para>
+      <variablelist>
+        <varlistentry>
+          <term>field-name</term>
+          <listitem>
+            <para>the contents of that field are printed
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>"any text"</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>$D</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>$P</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>$T</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>$G</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>$S</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>field-name#n</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>field-name%n</term>
+          <listitem>
+            <para>
+            </para>
+          </listitem>
+        </varlistentry>
+    </variablelist>
+    <para>
+        For the counter ($T, $G, $S) values, and the total (...#.) and subtotal (...%.) values, only the selected records are counted or totalled. That is, any record which is omitted due to an I or E command, or because its key field is not in the index file (if one is used), is not included in the count or total.
     </para>
+      
+      
+      
+      
     </section>
   </chapter>
   <chapter>
     <!-- 7 -->
     <title>INDEX files with RMS</title>
     <para>
+        The RMS editor and the REPORT writer can each be driven by an optional INDEX file. In the RMS editor, the INDEX file controls which primary record is to be displayed on each successive use of the SCAN function. This allows the operator to view and/or change a pre-determined set of records in a given order. In the case of the REPORT program an INDEX file can be used to specify which primary records are to be processed, and to determine the order of processing. This the report can include any set of the records in the file, and can be printed in any desired order.
+    </para>
+    <para>
+        Typically, an index file will have the effect of sequencing the records into ascending order by one of the fields within the records. It is possible, however, for an index file to impose any arbitrary ordering on the file. The index can include all records, or can leave out records, or can repeat any record key causing, it to be processed more than once.
+    </para>
+    <para>
+        Any number of index files can be created and associated with an RMS data file. An index file can have any root name but must have a file extension of <quote>.NDX</quote>.
     </para>
     <section>
       <title>Format of an index file</title>
       <para>
+          An INDEX file is just a text file which contains one record key field value on each line. The key field value should match one that is found in a key field (first field) of a record in the data file.
+          Letter case is ignored in the matching. (Thus SMITH and Smith will match). It does not matter what other data is after the key field in the index file, as long as the key field starts in column 1 of the line and the other data is after the full key field length, with spaces in between. It is not necessary to hace trailing blanks after a key value that is shorter than the key field as long there is no other data after it on the line.
     </para>
     </section>
     <section>
       <title>Creating an index file</title>
       <para>
+          There are many ways to create an index file. The simplest and most convenient way is to use the INDEX program supplied with RMS. However, it can be done with the OS-9 EDIT program or the STYLOGRAPH word processor. In the case the key values are just entered as text, one per line. Another method is to write a file of key values from a BASIC09 program. The index file is produced as a sequential file with one key value put out by each PRINT. (To do so, however, it is necessary to select only records from the RMS file that have a <quote>1</quote> in the first byte. This will cause only primary records to be sorted, and will exclude secondary records, deleted records and unused records. More information on the format of the RMS file may be found in section 9.
     </para>
     </section>
     <section>
       <title>The RMS INDEX utility</title>
       <para>
+          Included with RMS is the INDEX utility. It can be used to create a <quote>.NDX</quote> file with one command. The index file can be ordered by any field in the primary record. To use INDEX enter a command like the following:
     </para>
+    <screen>
+OS9: <userinput>index mailing postcode post</userinput>
+    </screen>
+    <para>
+        In this example, the main file is <quote>MAILING.RMS</quote>. The index file to be produced is to be called <quote>POSTCODE.NDX</quote>, and the field which is to specify the order of the index file is called <quote>POST</quote>. There are always three arguments after the INDEX command. The first is the name of the RMS data file. The associated dictionary file must also be present in the same directory as the RMS data file. The second argument is the name of the index file to create, without the <quote>.NDX</quote> suffix. If the <quote>.NDX</quote> file already exists then the old one is deleted and replaced by the new one. The third argument must be the name of a field in the primary record specification. It need not be the key field, any field may be used. The INDEX file produced will always contain a complete list of all key field values in the file. The ordering of the list will be determined by whatever field name is given in the INDEX command.
+    </para>
+    <para>
+        It may be necessary for the INDEX utility to create one or more disk files for scratch pas use while it is sorting the data file. If so, the are created in the current directory. The temporary files will have a root name of <quote>TEMP</quote>. Unless a problem forces an untimely end to the INDEX program, the scratch files will always be deleted before the program ends.
+    </para>
+    <para>
+        If the INDEX program reports that it cannot sort the file because it is too large, or if the individual records in the file are large, try giving INDEX more working memory:
+    </para>
+    <screen>
+OS9: <userinput>index mailing postcode post #15k</userinput>
+    </screen>
     </section>
   </chapter>
   <chapter>
@@ -1205,46 +1334,553 @@ OS9: report client weekly
     <section>
       <title>Format of an RMS file</title>
       <para>
+          There are actually 4 types of files used by RMS. They are:
+    </para>
+      <variablelist>
+        <varlistentry>
+          <term>xxxxxx.RMS</term>
+          <listitem>
+            <para>
+                an RMS main data file
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>xxxxxx.DIC</term>
+          <listitem>
+            <para>
+                an RMS dictionary file
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>xxxxxx.REP</term>
+          <listitem>
+            <para>
+                a REPORT specification file
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>xxxxxx.NDX</term>
+          <listitem>
+            <para>
+                an INDEX file
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+        The <emphasis role="bold">.DIC</emphasis> and <emphasis role="bold">.REP</emphasis> files are usually created by a text editor, and are by definition, text files. The <emphasis role="bold">.NDX</emphasis> file is normally created by the INDEX program, but its format is that of a text file. Without going into great detail, a text file has the following characteristics:
+    </para>
+      <itemizedlist>
+        <listitem>
+          <para>Each line may be any length.
+            </para>
+        </listitem>
+        <listitem>
+          <para>Each line consists of printable ASCII characters only, that is hexadecimal $20 to $7E, or decimal 32 to 126.
+            </para>
+        </listitem>
+        <listitem>
+          <para>Each line is terminated by a RETURN character, hexadecimal $0D, or decimal 13. On disk, lines are stored contiguously; each line begins after the RETURN character of the previous line. This lines are packed together, crossing sector boundaries as necessary.
+            </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        The RMS main data files are also text files, except that they have a few more characteristics:
+    </para>
+      <itemizedlist>
+        <listitem>
+          <para>Every record (line) is the same length.
+            </para>
+        </listitem>
+        <listitem>
+          <para>The file is created all at once, and all records are written with fill characters. Later, data is written into the records.
+            </para>
+        </listitem>
+        <listitem>
+          <para>The first character of each record has a flag character in it.
+            </para>
+        </listitem>
+        <listitem>
+          <para>The first record has some other system information in it.
+            </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+            The first character of each record will have one of the four following flag values:
+        </para>
+      <variablelist>
+        <varlistentry>
+          <term>U</term>
+          <listitem>
+            <para>
+                This is an unused record; no data has been stored in it yet.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>1</term>
+          <listitem>
+            <para>
+                The record currently contains a primary record.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>2</term>
+          <listitem>
+            <para>
+                This record currently contains a secondary record.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>D</term>
+          <listitem>
+            <para>
+                The record used to contain data but has been deleted; it may be subsequently re-used for a primary or secondary record.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+        When the RMSNEW utility is run, all records are filled with U. The first record in the file contains some vital information about the file.
+        This record, which is marked with a <quote>U</quote>, will never be changed by RMS, and will never be used for other data. Changing this record can render the entire file garbage, so great care must be taken in user-written programs that are to write into the file. The specific data stored there may be read and used by programs. It consists of two binary numbers. The first is a 16 bit (2 byte) number. This is the length of each record in the file. Note that the length includes the flag byte, trailing RETURN, and all field data in between. These two values are filled in by the RMSNEW utility. The rest of the first record is reserved for future use by RMS.
+    </para>
+      <para>
+        Within the RMS file, all the other records are available for storage of primary or secondary records. The fields are arranged within the record in the same order are they are found in the dictionary. If the fields do not fill the allotted record length, then the unused characters will be blank in each record. The unused characters occur after the last field and before the RETURN.
+    </para>
+      <para>
+        Because of the method used to assign a location in the file to each new record that is written into it, the data records in the file are, in general, scattered pseudo-randomly throughout the entire file. This method provides for extremely fast access to any particular record with a minimum of disk overhead. The method, called Hash Coding, is described below.
     </para>
     </section>
     <section>
       <title>Hash coding</title>
       <para>
     </para>
+      <variablelist>
+        <?dbfo list-presentation="blocks"?>
+        <varlistentry>
+          <term>To FIND a primary record, given its key value:</term>
+          <listitem>
+            <orderedlist>
+              <listitem>
+                <para>
+                the key value is passed through the hash formula, this produces a number, <varname>n</varname>, between 1 and the file size,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                read record <varname>n</varname>,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                if the record has a <quote>U</quote> in column 1, then our record is NOT in the file.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                if the record has a <quote>1</quote> in column 1, and it has the same value in the key field as the one we want, then we have found the desired record.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                otherwise, the record is a deleted one, or a secondary, or a primary other than the one sought. In this case, if we have looked at more than 255 records so far, then give up, we will not find our record. Otherwise, add one to the record number, <varname>n</varname>. If <varname>n</varname> is greater than the size of the file, then set <varname>n</varname> to 1. Now go back to step 2 above.
+            </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>To FIND a secondary record, given the location, <varname>n</varname>, of its associated primary record:</term>
+          <listitem>
+            <orderedlist>
+              <listitem>
+                <para>
+                add one to <varname>n</varname>, if it is over the file size, then set <varname>n</varname> to 1.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                read record <varname>n</varname>,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                if it is a <quote>U</quote> record then there are no more secondary records in this group,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                if it is a <quote>2</quote> record, and the key field matches that of the sought record group, then this is the next secondary of the group,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                otherwise, if we have looked at over 255 records since the last record of this group, then give up, there are no more. If we have looked at fewer than 256 records, then go back to step 1.
+            </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>To DELETE a record:</term>
+          <listitem>
+            <orderedlist>
+              <listitem>
+                <para>
+                FIND the record, as shown above, and read it into memory.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                    change the first column of the record to <quote>D</quote>.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                re-write the record to the same spot.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                If the record was a primary record, and if secondary records exist in the file, then you must also delete all secondary records that belong to this primary record.
+            </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>To MODIFY a record</term>
+          <listitem>
+            <orderedlist>
+              <listitem>
+                <para>
+                FIND the record, as shown above, and read it into memory.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                    change any field EXCEPT the key field, never change a key field, or the record will never be found again.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                re-write the record to the same spot.
+            </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>To INSERT a new primary record:</term>
+          <listitem>
+            <orderedlist>
+              <listitem>
+                <para>
+                Try to FIND the record as shown above; if we do, then we may NOT insert a record with the same key.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                    If a <quote>D</quote> record was passed along the way while we were searching for the record, then the new record is written into the spot occupied by the first <quote>D</quote> record passed.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                If no <quote>D</quote> record was passed, and the search ended only after searching over 255 records, then we may NOT insert this record, there is no room.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                If neither case 2 or 3 happen, then the search ended by running into a <quote>U</quote>; write the new record into that same spot.
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                    The record MUST have a <quote>1</quote> in column 1, followed by the key value, and MUST end with a RETURN character. We may fill in any or all of the other fields. Fields are padded with spaces.
+            </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>To INSERT a new secondary record:</term>
+          <listitem>
+            <orderedlist>
+              <listitem>
+                <para>
+                FIND the associated primary record,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                FIND the next secondary record in the group,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                if a secondary record is found then go to step 2,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                follow rules 2, 3 and 4 for inserting a primary record, to decide where to put this secondary record,
+            </para>
+              </listitem>
+              <listitem>
+                <para>
+                    follow rule 5 for inserting a primary record, except that column 1 must contain a <quote>2</quote>.
+            </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </varlistentry>
+      </variablelist>
     </section>
     <section>
       <title>About the hash coding algorithm</title>
       <para>
+          The particular hash coding formula used throughout all of the RMS utilities has been tested on large sets of various types of keys, including names, social security numbers, part numbers, etc. It works reasonably well on these, and other key sets that have some randomness in at least part of the key. If you happen to have a set of keys which seems to clump together rather than spread out in the file, then try adjusting the file size op to a larger prime number. This often helps spread the records more evenly in the file.
     </para>
     </section>
     <section>
       <title>RMS and utilities</title>
       <para>
+          Since all RMS files are text files, then the following OS-9 utilities may be useful:
     </para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="1.5in"/>
+          <colspec colwidth="4in"/>
+          <tbody>
+            <row>
+              <entry>EDIT or STYLOGRAPH</entry>
+              <entry>a text editor or word processor for creating and modifying dictionary and report spec files, and for entering index files.</entry>
+            </row>
+            <row>
+              <entry>LIST</entry>
+              <entry>to print out main data files, dictionaries, index files or report spec files.</entry>
+            </row>
+            <row>
+              <entry>COPY</entry>
+              <entry>to backup any RMS files.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+    Note that even though it is possible to modify a main RMS data file with a text editor, it is very dangerous. Changing the key field of a record will cause the hash coding algorithm to fail to find it. Also, changing the length of any record in the file will have the effect of making the remainder of the file totally inaccessible to RMS.
+</para>
     </section>
     <section>
       <title>Access to RMS files from BASIC09</title>
       <para>
+      The two types of RMS files which are likely to be accessed from BASIC09 and other user-written programs are the main data files, and the index files. For this explanation, examples are given in BASIC09 format.
     </para>
-    </section>
-    <programlisting>
-      <xi:include parse="text" href="readrms.bas"/>
+      <para>
+    To create an index file which is to be used to drive the RMS editor or REPORT writer, you need only write the record key values to a sequential file. An example will demonstrate:
+    </para>
+      <programlisting>
+DIM PATH:INTEGER
+CREATE #PATH,"abc.ndx":WRITE \(*create the index file
+PRINT #PATH,"John Smith"     \(*write two key field values
+PRINT #PATH,"Wilbur Wright"
+CLOSE #PATH                  \(*close the index file
     </programlisting>
+      <para>
+    This example creates a file on the working drive. The file is named ABC.NDX, and it contains 2 lines. This file could be used by RMS as an index file.
+    </para>
+      <para>
+    The other type of RMS file that may be accessed is the RMS main data file. This file can be read as a sequential file, or it can be read and written as a random file. In either case, the records read in will all be the same length. They should be read into a string variable or BASIC09 user-defined structure. The first character will be the record type flag (U, D, 1 or 2). The rest of the string will be the data fields. This example shows how to read an RMS file sequentially.
+    </para>
+      <programlisting>
+DIM PATH:INTEGER
+DIM RECORD:STRING[200] \(*assign a large enough string
+DIM FLAG:STRING
+OPEN #PATH,"CUSTOMER.RMS":READ \(*open the data file for read
+REPEAT
+  READ #PATH,RECORD \(*read a record into the string
+  FLAG=LEFT$(RECORD,1) \(*get the flag character
+  IF FLAG="U" THEN
+  PRINT "UNUSED RECORD"
+  ENDIF
+  IF FLAG="D" THEN
+  PRINT "  DELETED RECORD: ";RECORD
+  ENDIF
+  IF FLAG="1" THEN
+  PRINT "  PRIMARY RECORD: ";RECORD
+  ENDIF
+  IF FLAG="2" THEN
+  PRINT "SECONDARY RECORD: ";RECORD
+  ENDIF
+UNTIL EOF(#PATH) \(*until file exhausted
+CLOSE #PATH
+END
+      </programlisting>
+      <para>
+    This example will read all records of the file. It will stop only when an end of file is reached.
+    </para>
+      <para>
+        To access the same file as a random file it must be treated as a series of fixed length records. To do so you must know the records size. The physical record size is 2 greater than the record size that was input when RMSNEW was run to create the file. For example, if the length put in was 61, then the actual physical record length is 63. The 61 is the number of bytes available for field data, the 2 extra bytes are for the flag byte at the beginning of the record and the RETURN at the end. You must also know the number of records in the file. This was also put in when RMSNEW was run. The number of records will always be an odd number. If you put in an even number, say 500, then RMSNEW will use the next odd number, 501.
+    </para>
+      <para>
+        Consider a simple example of stock records, for which the RMS dictionary is
+    </para>
+      <programlisting>
+"       STOCK RECORDS"
+PART  6  B  "PART NUMBER: ";
+NAME 20  A  "Part name: ";
+LEVEL 5  N  "Stock level: ";
+PRICE 7  M  "Item price: ";
+$
+</programlisting>
+      <para>
+        Each record is 38 characters long. With the flag character and RETURN, the physical record length is 40 bytes. The following program reads the number or records and the record length from the <quote>zeroth</quote> record, and accesses the file by record number.
+    </para>
+      <programlisting>
+DIM PATH,NUMBER,LENGTH,TOTAL,STOCK:INTEGER
+DIM RECORD:STRING[200]
+DIM PLACE:REAL
+DIM PRICE:REAL
+OPEN #PATH,"STOCK.RMS":READ
+GET #PATH,TOTAL \(*Read the number of records
+GET #PATH,LENGTH \(*and the record length
+INPUT "WHich record shall I read? ",NUMBER
+PLACE=NUMBER*LENGTH \(*calculate the record position in the file
+SEEK #PATH,PLACE \(*seek to it
+READ #PATH,RECORD \(*now read the record
+(*Print the record
+PRINT "Record is type ";LEFT$(RECORD,1)
+PRINT "Part number is ";MID$(RECORD,2,6)
+PRINT "Part name is ";MID$(RECORD,8,20)
+PRINT "Current stock level is ";MID$(RECORD,28,5)
+PRINT "Item price is ";MID$(RECORD,33,7)
+PRICE=VAL(MID$(RECORD,33,7)) \(*get the item price
+STOCK=VAL(MID$(RECORD,28,5)) \(*and the stock level
+PRINT "Current stock value is ";PRICE*STOCK
+CLOSE #PATH
+END
+</programlisting>
+      <para>
+  This program has assumed that the record number you entered was valid primary record. Normally, RMS data files are accessed by the key field of the record. To do this we need the hash coding algorithm used by RMS. The algorithm used is simple and straightforward. The ASCII values of the characters in the key field are forced to upper case summated alternately into two counters, which are then combined to form the record number. An example will best show the details:
+</para>
+      <programlisting>
+DIM TOTAL,NUMBER,M,N,MASK,I,C:INTEGER
+DIM KEY:STRING[200]
+INPUT "Enter key field: ",key
+INPUT "Enter total number of records in the file: ",TOTAL
+M=0 \N=0 \(*zero the counters
+FOR I=1 TO LEN(KEY) STEP 2
+  C=ASC(MID$(KEY,I,1))
+  GOSUB 100 \(*force upper case
+  M=M+C-$20 \(*subtract space character $20
+  EXITIF I=LEN(KEY) THEN \(*exit loop if all chrs counted
+  ENDEXIT
+  C=ASC(MID$(KEY,I+1,1))
+  GOSUB 100
+  N=N+C-$20 \(*alternate chrs in M and N
+NEXT I
+N=MOD(N,256) \(*make N fit into a byte
+MASK=1 \(*now make up a limiting mask
+WHILE MASK &lt;TOTAL/256 DO
+  MASK=MASK*2
+ENDWHILE
+M=MOD(M,MASK) \(*mask the high byte
+NUMBER=M*256+N \(*combine the two bytes into an integer
+NUMBER=MOD(NUMBER,TOTAL) \(*ensure it is less than the file size
+IF NUMBER=0 THEN
+  NUMBER=1 \(*can't be 0
+ENDIF
+PRINT "Record number is ";NUMBER
+END
+100 (*convert to upper case
+IF C&gt;=ASC("a")AND C&lt;=ASC("z")THEN
+  C=C-ASC("a")+ASC("A")
+ENDIF
+RETURN
+</programlisting>
+      <para>
+    The above subroutine is coded for clarity rather than for minimum number of statements. It can, however be used as shown to compute the hash value for any key field in exactly the same way as the RMS programs do it.
+</para>
+    </section>
   </chapter>
   <chapter>
     <!-- 10 -->
     <title>An example RMS application explained in detail</title>
     <para>
+        This short tutorial is intended to give you a quick and easy introduction to RMS. Follow it through, then go back and read the rest of the manual thoroughly, to pick up all the useful features of RMS.
+        We suggest that you make frequent reference to the Key Assigment and Command Line summaries at the end of this manual.
+    </para>
+    <para>
+        To start with, make sure that you have made a backup copy of your RMS disk using the OS-9 '<command>backup</command>' command, and that you have put the original disk away in a safe place. Use the copy you have made for this exercise. Place your disk in drive 0, and set your execution directory (using 'chx') and your data directory (using 'chd'):
+    </para>
+    <screen>
+OS9: <userinput>chd /d0/cmds chd /d0</userinput>
+</screen>
+    <para>
+        If you are using a Dragon 64, and your screen is not already in the 51 characters by 24 lines mode, enter that mode by:
+    </para>
+    <screen>
+OS9: <userinput>go51</userinput>
+</screen>
+    <para>
+        You are now ready to run RMS.
+    </para>
+    <para>
+        This example is that of a simple inventory system. It consists of an inventory master file, keyed on part number; each record contains several pieces of information about each part. Though this example is a simple one, it shows how an application is put together with RMS since all the essential elements are present. The sample inventory file is contained on the RMS distribution disk as 2 files: SAMPLE.DIC and PRLIST.REP.
     </para>
     <section>
       <title>A sample dictionary - SAMPLE.DIC</title>
       <para>
+          The first step in implementing an application with RMS is to create a dictionary file. In this case the file is named SAMPLE.DIC; we have already created it for you. The root name (SAMPLE) must be the same as the name we will use for the master data file. The file type (.DIC) indicates that this is an RMS dictionary file. SAMPLE.DIC was created using a text editor; it can be listed by the <command>LIST</command> command. Such a listing is shown below.
     </para>
+      <screen>
+OS9: <userinput>list sample.dic</userinput>
+
+"RMS SAMPLE FILE: INVENTORY RECORD";
+PARTNO   8   A   "PART NUMBER: " &lt;6&gt; ;
+DESC     30  A   "DESCRIPTION: " ;
+PRICE    7   M   "RETAIL PRICE: ";
+INSTOCK  4   N   "NUMBER IN STOCK: ";
+LOC      1   A   "STORED IN AISLE "  (A,F) ;
+REORDER  3   N   "RE-ORDER WHEN STOCK DOWN TO " ;
+COST     7   M   "WHOLESALE PRICE: ";
+SUPPLIER 10  A   "SUPPLIED BY: ";
+ONORDER  1   A   "BACK ORDERED NOW " [Y,N, ];
+ESTDATE  8   D*  "SHOULD BE IN STOCK BY ";
+</screen>
+      <para>
+    The top line is the title line. The next 10 lines describe 10 fields within the record. The first is considered to be the key field. Down the left side are the field names: PARTNO, DESC, PRICE, INSTOCK, LOC, etc. These have been chosen to indicate what the field contains. The second column indicates the number of characters reserved in each record for the individual fields. Note that the total length is 79. This number is important when the master data file is created. The next column indicates the type of data to be stored in each field. Note that all four types are used: Alphanumeric, Numeric, Money and Date. The asterisk, <quote>*</quote>, after the D on the last line indicates that this field is optional. That is, it need not be filled in by the operator when storing a record. The next item on each line is a prompt. Note that each is enclosed in quotes. The prompt is an explanatory message to be built into the screen form as an aid to the operator who must fill out the form. Some of the prompts have extra spaces inserted at the beginning or elsewhere within the text. These spaces are placed in such a way as to arrange the screen form into a neat and pleasing display. This is done largely by trial and error. On the first try just put the prompts in with no extra spaces, as we have done. Then run the RMS editor to see what the form looks like. Then insert spaces or re-arrange the form by editing the dictionary. It will usually take just two or three attempts to get the desired display. After using RMS a few times you will gain a skill for this process.
+</para>
+      <para>
+    Three of the fields have anothe item on the line. The three are PARTNO, LOC and ONORDER. The items are VALIDATORS. The purpose is to insure that the operator can not store a record in the file unless the data in these fields meet the given restrictions. The PARTNO field must have at least 6 non-blank characters in it. The LOC must be a letter greater than or equal to <quote>A</quote> and less than or equal to <quote>F</quote>. In effect, LOC can be A, B, C, D, E or F. The ONORDER field can only be Y, N or blank.
+</para>
+      <para>
+    Notice that each field spec line ends with a semi-colon. This is required by RMS.
+</para>
+      <para>
+    The sample file will have primary records only. no secondary records. If secondary records were to be used, then a <quote>$</quote> would need to be typed after the last field spec line, then another record specification would follow.
+</para>
     </section>
     <section>
       <title>A sample master file - SAMPLE.RMS</title>
       <para>
+          The master data file for the example will be called SAMPLE.RMS. Note that the root name <quote>SAMPLE</quote> matches that of the dictionary file and the file type is <quote>.RMS</quote> which indicates that this is an RMS master data file. You should create it by the command shown below using RMSNEW. RMSNEW will ask you for the record size and the number of records. Respond with 79 and 47 respectively.
     </para>
+      <screen>
+        OS9: <userinput>rmsnew sample</userinput>
+
+INPUT RECORD SIZE :
+<userinput>79</userinput>
+INPUT NUMBER OF RECORDS :
+<userinput>47</userinput>
+FORMAT IN PROGRESS...
+FILE FORMATTED OK
+</screen>
     </section>
     <section>
       <title>Using RMS on the sample file</title>
@@ -1259,11 +1895,82 @@ OS9: report client weekly
     <section>
       <title>A sample report - PRLIST.REP</title>
       <para>
+          The file PRLIST.REP on the distribution disk is a report spec. It can be used to produce a price list with the description, part number and retail price of each item in the file.
     </para>
+      <para>
+        PRLIST.REP was created using the OS-9 text editor. Since it is a standard text file it can be listed with the '<command>list</command>' command. For example:
+    </para>
+      <screen>
+OS9: <userinput>list prlist.rep</userinput>
+
+L 1,1 ;
+T ;
+T "SAMPLE PRICE LIST IN ORDER BY PRODUCT DESCRIPTION"@8;
+T ;
+T "DESCRIPTION OF PRODUCT          PART NUMBER      RETAIL PRICE"@1 ;
+T "_____________________________________________________________"@1 ;
+P DESC@1 PARTNO@35 PRICE@52 ;
+X DESCRIP;
+    </screen>
+      <para>
+        The first line <quote>L 1,1</quote> indicates that the report is to be printed without any automatic skipping over page boundaries. The next 5 lines (starting with <quote>T</quote>) are title page lines. Each indicates a line to be displayed at the top of the report printout. Two of these lines are <quote>T ;</quote>. These indicate a blank line, for cosmetic purposes. The seventh line, starting with <quote>P</quote>, indicates what is to be printed for each primary record in the file. In our case there are only primary records in the file, no secondary records. The <quote>DESC@1</quote> indicates that the field called DESC, the description field, should be printed starting in column 1 of the line. The <quote>PARTNO@35</quote> indicates that the part number field is to be printed starting in column 35. The price field is to be printed in column 52. The last line of the file PRLIST.REP indicates that an index file is to be used to determine the order that the record are to be printed. The index file specified is DESCRIP.NDX. If the <quote>X</quote> command line were omitted from the <emphasis role="bold">.REP</emphasis> file, then the report would contain the same print lines, but they would not be in order by description. They would be in random order.
+    </para>
+      <para>
+        There may be any number of <emphasis role="bold">.REP</emphasis> files associated with one RMS master data file. Each one may have any desired root name and a file extension of <quote>.REP</quote>. For the sample inventory file it would be possible to produce many useful reports: a re-order list based on low stock; an inventory by supplier; a list of all back ordered items; a form for taking physical inventory which would contain a list of all parts, sorted by aisle, with the number the computer thinks are in stock and a blank spot to fill in the actual number in stock. Hopefully, you get the idea.
+    </para>
+      <para>
+        To print the sample report enter the following command:
+    </para>
+      <screen>
+OS9: <userinput>report sample prlist</userinput>
+    </screen>
+      <para><quote>SAMPLE</quote> specifies that the main data file is SAMPLE.RMS and the dictionary is SAMPLE.DIC. <quote>PRLIST</quote> indicates that the report spec is found in the file PRLIST.REP.
+    </para>
+      <para>
+        The above command should produce output that looks something like this:
+    </para>
+      <programlisting>
+       SAMPLE PRICE LIST IN ORDER BY PRODUCT DESCRIPTION
+
+DESCRIPTION OF PRODUCT          PART NUMBER      RETAIL PRICE
+-------------------------------------------------------------
+10 FT RUBBER GAS LINE             222222222           8.99
+ADULT LIFE JACKET, LARGE          444444444          49.95
+ADULT LIFE JACKET, MEDIUM         555555555          49.95
+ADULT LIFE JACKET, SMALL          666666666          49.95
+CHILDS LIFE JACKET, LARGE         999999999          13.95
+CHILDS LIFE JACKET, MEDIUM        888888888          13.95
+CHILDS LIFE JACKET, SMALL         777777777          13.95
+PLASTIC BATTERY CADDY, 6 VOLT     333333333           5.00
+PORTABLE 6 GALLON GAS CAN         111111111          47.50
+</programlisting>
+      <para>
+    Of course, what is actually displayed will depend on what you entered!
+</para>
+      <para>
+    To send this report to a printer on the parallel port <quote>/p</quote> you would use the OS-9 redirection facility:
+</para>
+      <screen>
+OS9: <userinput>report sample prlist &gt;/p</userinput>
+</screen>
     </section>
     <section>
       <title>Some comments</title>
       <para>
+      Once you have seen how it is done, you should begin to get ideas about possible applications
+      you have that can be done completely, or in part, by RMS. To start up an RMS application you need only
+      create the dictionary, then run RMSNEW to create and format the master data file.
+      Various report spec files can be added as they are needed. Any time a sorted index is needed,
+      the INDEX utility can be used to create it with one simple command. Once the files are created, the
+      user need only know how to use the RMS editor, and know the schedule for entering the commands
+      that create index files and reports.
+    </para>
+      <para>
+    As with any computerized system, make sure that backup disks are made, and keps on a regular rotational
+    schedule. This will guard against hardware malfunction, as well as operator errors.
+    </para>
+      <para>
+    We hope that RMS will become your <quote>best friend</quote>.
     </para>
     </section>
   </chapter>
@@ -1272,6 +1979,58 @@ OS9: report client weekly
     <para>
         A summary of OS-9 command line syntax for calling the RMS programs.
     </para>
+<informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="3">
+        <colspec colname="c1" colwidth="1in"/>
+        <colspec colname="c2" colwidth="3in"/>
+        <colspec colname="c3" colwidth="2in"/>
+        <spanspec spanname="s1" namest="c1" nameend="c2"/>
+        <spanspec spanname="s2" namest="c2" nameend="c3"/>
+        <thead>
+          <row>
+            <entry spanname="s1">Command line</entry>
+            <entry>Produces</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry spanname="s1"><screen>OS9: <userinput>stylo datafile.dic</userinput>
+OS9: <userinput>edit datafile.dic</userinput></screen></entry>
+            <entry>datafile.dic</entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">STYLOGRAPH word processor or OS-9 text editor used to create the dictionary that defines the format of the datafile.</entry>
+          </row>
+          <row>
+            <entry spanname="s1"><screen>OS9: <userinput>rmsnew datafile</userinput></screen></entry>
+            <entry>datafile.rms</entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">Creates and formats a new RMS data file as specified by the user.</entry>
+          </row>
+          <row>
+            <entry spanname="s1"><screen>OS9: <userinput>rms datafile</userinput></screen></entry>
+            <entry></entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">Calls up the RMS editor to allow the operator to inspect, modify or add to the data in the file.</entry>
+          </row>
+          <row>
+            <entry spanname="s1"><screen>OS9: <userinput>rms datafile indexfile</userinput></screen></entry>
+            <entry></entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">Specifies an index file to be used in conjunction with the RMS SCAN command for an orderly scan of the data records.</entry>
+          </row>
+
+        </tbody>
+      </tgroup>
+</informaltable>
+
   </appendix>
   <appendix>
     <title>Key assignments for the Dragon 64</title>
@@ -1373,7 +2132,7 @@ OS9: report client weekly
           </row>
           <row>
             <entry>CAPS-LOCK</entry>
-            <entry>CONTROL-O</entry>
+            <entry>CONTROL-0</entry>
             <entry/>
           </row>
         </tbody>
