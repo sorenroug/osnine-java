@@ -1244,12 +1244,9 @@ That is, there may be any number of items. Each one is separated from the previo
     <para>
         For the counter ($T, $G, $S) values, and the total (...#.) and subtotal (...%.) values, only the selected records are counted or totalled. That is, any record which is omitted due to an I or E command, or because its key field is not in the index file (if one is used), is not included in the count or total.
     </para>
-      
-      
-      
-      
     </section>
   </chapter>
+
   <chapter>
     <!-- 7 -->
     <title>INDEX files with RMS</title>
@@ -1301,28 +1298,135 @@ OS9: <userinput>index mailing postcode post #15k</userinput>
     <!-- 8 -->
     <title>RMSCOPY utility</title>
     <para>
+        The normal <command>copy</command> program should be used in preference to RMSCOPY when making a simple backup copy of an RMS dara file, as it is quicker.
     </para>
+    <para>
+        To use RMSCOPY enter the following command:
+    </para>
+    <screen>
+OS9: <userinput>rmscopy source destination</userinput>
+    </screen>
+    <para>
+        The source is the root name of the <quote>.RMS</quote> file to be copied from. The destination is the root name of the <quote>.RMS</quote> file to be copied to.
+    </para>
+    <para>
+        The RMSCOPY utility is provided as an aid in managing RMS data files. It performs a copy, record by record, from one RMS data file to another. Each record is read from the source file and inserted into the destination file. This allows a file to be copied into an empty file or into a file that already has records in it. In the latter case, the previous file contents are preserved. Both the source and destination files must have been created with the RMSNEW program, and each must have a dictionary file in the same disk directory as its associated RMS data file. If the two dictionaries are the same then each record is copied as is. If the dictionaries are difference, then the destination records are built field-by-field according to the following rules:
+    </para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                If a field name exists in both dictionaries, then the field data from the source file is copied to the corresponding field in the destination file.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                If in the above case, the field lengths differ, then the source field is truncated or padded with spaces to fit the destination field. The truncation or padding occurs on the left end for numeric or money fields, and on the right for alphanumeric fields.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                If a field name occurs in the source dictionary but not in the destination dictionary, then the contents of the field are not copied anywhere.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                If a field name occurs in the destination dictionary but not in the source dictionary, then the field is left blank in the destination file.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                The key field name of the destination dictionary MUST be present in the source dictionary.
+            </para>
+        </listitem>
+    </itemizedlist>
+    <para>
+        After each record is constructed it is inserted into the destination file. If the key field value of the new record is found to be already in the destination file, then the new record is not copied into the destination file. The key field value of the record will be displayed on the screen, to show that this has happened.
+    </para>
+
     <section>
       <title>To change the size of a file</title>
       <para>
+          The size of an RMS data file can be changed by these steps. For explanation purposes the original file name is XXX.
     </para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                Use RMSNEW to create a file of the desired length, call it YYY
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Copy the dictionary file from XXX.DIC to YYY.DIC, using the OS-9 'copy' command
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Copy the data from XXX.RMS to YYY.RMS using:
+            </para>
+            <screen>
+OS9: <userinput>rmscopy xxx yyy</userinput>
+            </screen>
+        </listitem>
+        <listitem>
+            <para>
+                YYY could now be renamed to XXX if desired, after deleting XXX if it is in the same disk directory
+            </para>
+        </listitem>
+    </itemizedlist>
     </section>
+
     <section>
-      <title>The change the record dictionary for a file</title>
+      <title>To change the record dictionary for a file</title>
       <para>
+          It is possible to re-arrange the fields within the records, add new fields, delete fields or change the length or one of more fields. It is even possible to change the field that is to be the key field. For example: the old file is keyed on <quote>name</quote> byt contains social security number as a data field. The new file could be keyed on social security number, with the name as a data field. All these actions are controlled by the contents of the dictionary for the new file. The steps in this process are:
     </para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                Use RMSNEW to create a file of the same length as XXX, call it YYY.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Create the dictionary for YYY with the desired format.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Copy the data from XXX.RMS to YYY.RMS using:
+            </para>
+            <screen>
+OS9: <userinput>rmscopy xxx yyy</userinput>
+            </screen>
+        </listitem>
+        <listitem>
+            <para>
+                YYY could now be renamed to XXX if desired.
+            </para>
+        </listitem>
+    </itemizedlist>
     </section>
+
     <section>
       <title>To merge two files</title>
       <para>
+          Assuming XXX and YYY have the same dictionary formats, then to combine all the records from both files into YYY enter the command:
     </para>
+    <screen>
+OS9: <userinput>rmscopy xxx yyy</userinput>
+    </screen>
     </section>
     <section>
       <title>To post a transaction file to a master file</title>
       <para>
+          This operation is the same as a merge. As an example of this use, assume that an accounting function is to be performed with RMS. There may be a MASTER file of accounting transactions which is to contain only permanent date. There may also be a BATCH file which has the same record format as the MASTER file but is much shorter. Each time a new set of transactions are to be entered, for example each week they are entered into the file BATCH.RMS using the RMS editor. Then it is possible to run various validation printouts using the RMS REPORT program. These may include batch totals, or trial balance runs. If necessary, then the RMS editor is used to make corrections to the BATCH file until the reports balance properly. Then the RMSCOPY program can be used to <quote>POST</quote> the BATCH file to the MASTER file by merging it record-by-record. Once the is accomplished the BATCH file can be retained for archival, or deleted and re-created with RMSNEW.
     </para>
+    <screen>
+OS9: <userinput>rmscopy batch master</userinput>
+    </screen>
     </section>
   </chapter>
+
   <chapter>
     <!-- 9 -->
     <title>Compatibility of RMS with other languages and utilities</title>
