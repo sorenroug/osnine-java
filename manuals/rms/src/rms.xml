@@ -1105,60 +1105,126 @@ OS9: <userinput>report client weekly &gt;outfile</userinput>
     <section>
       <title>The report spec file</title>
       <para>
+          The commands described below are entered into a file with a suffix of <quote>.REP</quote>. This may be done with the OS-9 <command>edit</command> program or the STYLOGRAPH word processor. Each command <emphasis>must</emphasis> be terminated with a semi-colon. Any particular command may carry over as many lines as necessary as long as it is broken between print line items. In general, the report command may be entered into the report spec file in any order. The only case in which the order matters is the case of multiple print lines of the same type. The types of print line commands are T, W, P, S, H and G. For example, if there are three T commands then they are processed in the order that they are found in the report spec file.
     </para>
       <section>
         <title>L command - page length</title>
         <para>
+            format: <code>L x,y ;</code>
+        </para>
+        <para>
+            x and y represent numbers. The L command tells how many print lines there are on a page, <quote>x</quote>; and how many lines of those are to be actually printed upon, <quote>y</quote>. <quote>y</quote> should be less than or equal to <quote>x</quote>. If no L command is found then the page size is assumed to be 66, and the printed lines per page is 60. REPORT will automatically print blank lines to cross page boundaries. A command of <quote>L 1,1 ;</quote> will have the effect of nullifying all automatic skipping across page boundaries. The is the form that must be used to create unpaginated text files, for example for use by MAIL MERGE.
         </para>
       </section>
       <section>
         <title>I command - include</title>
+        <para><literallayout>
+format: <code>I fieldname (low,high) ;</code>
+    or  <code>I fieldname [value,value,value,.....] ;</code></literallayout>
+        </para>
         <para>
+            The I command allows for selection of the desired records for inclusion within the report output. In both forms the field name may be that of a field  in the primary record or the secondary record. The first form allows for accepting records only if the named field has a value greater than or equal to the low value, and less than or equal to the high value. The values in the parentheses MUST be exactly the same length as the fields and must have the data coded in exactly the same manner as it will be found in the field. For example, a date field should be in DD/MM/YY form, a money field must be right justifiedm oadded with spaces on the left if necessary, and must have exactly two decimal places. The second form allows for inclusion of records only if the named field has one of the values in the list. The values in the list should be exactly the same length as the field and should follow the same rules just stated. If a list value is shorter than the designated field then the field need only match for the given item's length. In both cases the use of the <quote>include</quote> is analogous to the use of a validator in the RMS editor (see section 5.4). Any number of <quote>include</quote> or <quote>exclude</quote> commands may be given. For a record to be selected as part of the report it must conform to all selections specified. If a primary record is excluded due to an I or an E selection then the entire record group is skipped. If a secondary record is excluded then there is not any automatic effect on any other records in its group.
         </para>
       </section>
       <section>
         <title>E command - exclude</title>
+        <para><literallayout>
+format: <code>E fieldname (low,high) ;</code>
+    or  <code>E fieldname [value,value,value,.....] ;</code></literallayout>
+        </para>
         <para>
+            The E command allows for selective exclusion of specific records from the report. It works just like the I command except that to be accepted for the report a record must NOT be within the specified bounds (first form), or must NOT be in the specified list (second form). As stated above, to be accepted as part of the report a record must conform to all I or E commands.
         </para>
       </section>
       <section>
         <title>T command - title</title>
         <para>
+            format: <code>T print-line ;</code>
+        </para>
+        <para>
+            The T command specifies a line to be printed on the report title page. There may be any number of T commands. If there are none then there will be no title page. The title lines are printed about one quarter of the way down the title page. After the title lines are printed the form is moved up to the first print line of the next page.
         </para>
       </section>
       <section>
         <title>W command - wrap-up</title>
         <para>
+            format: <code>W print-line ;</code>
+        </para>
+        <para>
+            The W command specifies a line to be printed on the report wrap-up page. There may be any number of W commands. If there are none then there will be no wrap-up page. The wrap-up page is printer on a new page at the end of the body of the report.
         </para>
       </section>
       <section>
         <title>P command - primary records</title>
         <para>
+            format: <code>P print-line ;</code>
+        </para>
+        <para>
+            The P command specifies a line to be printed for each primary record that is included in the report. There may be any number of P commands. If there are more than one then all P commands are processed, in the order they are found in the report spec file, for each primary record. If no P commands are corded then no lines are printed for each primary record.
         </para>
       </section>
       <section>
         <title>S command - secondary records</title>
+        <para>
+            format: <code>S print-line ;</code>
+        </para>
+            The S command specifies a line to be printed for each secondary record that is included in the report. There may be any number of P commands. The may be any number of S commands. If there are more than one then all S commands are processed in the order they are found in the report spec file, for each secondary record. If no S commands are corded then no lines are printed for each secondary record.
         <para>
         </para>
       </section>
       <section>
         <title>H command - page header</title>
         <para>
+            format: <code>H print-line ;</code>
+        </para>
+        <para>
+            The H command specifies a page header line to be printed on the top of the page in the case that the page becomes full and a new page skip is automatically done. There may be any number of H commands. They are processed in the order they are found in the report spec file. Note that the H command specifies a page header line only for the case of page overflow. If a new page is reached as a result of the page break (B command) then the H commands are not processed. In the case of a new page due to a B command, the P or S commands can be used to print any page headers that are necessary.
         </para>
       </section>
       <section>
         <title>G command - record group</title>
         <para>
+            format: <code>G print-line ;</code>
+        </para>
+        <para>
+            The G command specifies a line to be printed at the end of a group of records. If there are primary and secondary records in the group then the G commands are processed after the last secondary record of the group. If there is only a primary record in the group the G commands are processed after that record. The G command is used to summarize information that pertains to a group of records. Any number of G commands may be specified.
         </para>
       </section>
       <section>
         <title>B command - page break</title>
+        <para><literallayout>
+format:   <code>BP ;</code>
+    or    <code>BS ;</code></literallayout>
+        </para>
         <para>
+            The B command specifies a page break for the primary or the secondary record type. If a BP is coded then a new page is started for each primary record processed. If a BS is coded then a new page is started for each secondary record processed. One or both of these commands (BP and BS) may be coded in one report spec.
         </para>
       </section>
       <section>
         <title>X command - index file</title>
         <para>
+            format: <code>X filename ;</code>
+        </para>
+        <para>
+            The X command us used to specify the name of the INDEX file to be used by the REPORT program. The index file is a text file which contains a list of record keys. The name of the file is assumed to be <quote>filename.NDX</quote>, the <quote>.NDX</quote> is not actually entered in the X command.
+        </para>
+        <para>
+            Each line of the text file must contain a record key field value. If the is other data on the line after the key field value it is ignored. The record groups in the data file are selected and processed in the order of the keys in the index file. The index file can be a list of all or some of the keys and may be in any desired order. Records whose key fields are not found in the index file will not appear in the report. The index file may be created by the INDEX program described in section 7 or by a BASIC09 program or text editor.
+        </para>
+        <para>
+            A special use of the X command is to specify the index file to come from the keyboard (standard input):
+        </para>
+        <programlisting>
+X &lt;prompt ;
+        </programlisting>
+        <para>
+            The <quote>&lt;</quote> symbol indicates to REPORT that the string is a prompt, and not a filename. Now each time REPORT is read to process a new record group it will display the prompt string on the screen and wait for the operator to enter a key field value, followed by RETURN. If RETURN or ESCAP is the first key hit, REPORT takes this to mean that no more records are to be processed.
+        </para>
+        <para>
+            This mode of operation is very useful for interactively displaying or printing record information, for example printing address labels - the operator can ask for none, one, or any number of records to be printed.
+        </para>
+        <para>
+            If no X command is coded in the report spec file then the record groups within the file are processed in the physical order they are found in the file. This will be a random order due to the hash coding technique used to locate the records.
         </para>
       </section>
     </section>
@@ -1188,6 +1254,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>"any text"</term>
           <listitem>
             <para>
+                the text between the quotes is printed
             </para>
           </listitem>
         </varlistentry>
@@ -1195,6 +1262,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>$D</term>
           <listitem>
             <para>
+                today's date as DD-MM-YY is printed
             </para>
           </listitem>
         </varlistentry>
@@ -1202,6 +1270,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>$P</term>
           <listitem>
             <para>
+                the current report page number is printed as a 4 digit number
             </para>
           </listitem>
         </varlistentry>
@@ -1209,6 +1278,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>$T</term>
           <listitem>
             <para>
+                the total number of selected records in the report is printed as a 5 digit number
             </para>
           </listitem>
         </varlistentry>
@@ -1216,6 +1286,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>$G</term>
           <listitem>
             <para>
+                the total number of selected groups in the report is printed as a 5 digit number. This can also be thought of as the number of primary records printed since each group is associated with one primary record.
             </para>
           </listitem>
         </varlistentry>
@@ -1223,6 +1294,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>$S</term>
           <listitem>
             <para>
+                the total number of selected secondary records in the current record group is printed as a 5 digit number.
             </para>
           </listitem>
         </varlistentry>
@@ -1230,6 +1302,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>field-name#n</term>
           <listitem>
             <para>
+                the arithmetic sum of the contents of the named field in all records is printed as an <varname>n</varname> digit number. <quote>field-name</quote> must identify a field of type N or M. This total field is printed with its value so far, and it accumulates all the way through the report. Normally, this is used to total up a field for the entire report and print the value on the wrap-up page, but it can be used to print a running total with each record.
             </para>
           </listitem>
         </varlistentry>
@@ -1237,6 +1310,7 @@ That is, there may be any number of items. Each one is separated from the previo
           <term>field-name%n</term>
           <listitem>
             <para>
+                the arithmetic sum of the contents of the named field in all records is printed as an <varname>n</varname> digit number. <quote>field-name</quote> must identify a field of type N or M. This subtotal field is cleared to zero after each time it is printed. Normally, this is used to total up a field within a record group and print the value in a group-end line.
             </para>
           </listitem>
         </varlistentry>
@@ -1244,6 +1318,54 @@ That is, there may be any number of items. Each one is separated from the previo
     <para>
         For the counter ($T, $G, $S) values, and the total (...#.) and subtotal (...%.) values, only the selected records are counted or totalled. That is, any record which is omitted due to an I or E command, or because its key field is not in the index file (if one is used), is not included in the count or total.
     </para>
+    <para>
+        The total field, which is specified by a field name, followed by a #, followed by a number, is used to add up the contents of a particular field over an entire file. It makes most sense to include such a total in a <quote>W</quote> print line. This would print the total on a wrap up line. But, the total could be place in any type of print line. It would then give the running total so far in the file.
+    </para>
+    <para>
+        MISSING
+    </para>
+      <bridgehead renderas="sect4">
+          Column designator - @
+      </bridgehead>
+      <para>
+          Following each of the print items there MUST be a column designator. The format is <quote>@n</quote>, where <varname>n</varname> is the column number, from 1 to the line length. This number indicates the column in which the print item is to start.
+      </para>
+      <para>
+          A few sample print lines will demonstrate.
+      </para>
+      <programlisting>
+G  "MONTH END REPORT"@10  $D@30  "PAGE"@50 $P@55 ;
+      </programlisting>
+      <para>
+          might produce a line from a primary record like...
+      </para>
+      <screen>
+JOHNNY Q. DOE      332456223   856.50
+      </screen>
+      <programlisting>
+W $S@1 "CHECKS  WRITTEN TO"@7  $G@25  "VENDORS.  TOTAL CASH OUT IS"@31 AMOUNT#7@58 ;
+      </programlisting>
+      <para>
+          might produce a line in the wrap up page like:
+      </para>
+      <screen>
+34 CHECKS WRITTEN TO    15    VENDORS. TOTAL CASH OUT IS 3245.55
+      </screen>
+      <para>
+          When including a field name in a print line, the value printed is the one from the last record of the appropriate type that was passed. For example, in an <quote>S</quote> command, which prints a line for each secondary record, if a field name is specified for a field in the primary record, then the value printed is the value from the last primary passed. In this case it would be the primary at the head of the same record group.
+      </para>
+      <para>
+          A useful thing to know is the REPORT formats the line by placing the items in the print buffer in the order they are found in the command. Then the entire print buffer is printed. This means that the items in the print line command new not bi in any particular order. It also means that it is possible to overlay all or part of an item by a later item in the line. The following example shows how to use this fact. Remember that the secondary record count field <quote>$S</quote> is printed as a five digit number. Assume we know that the actual count can only be a three digit number, because we will never enter more than 999 secondary records in a group. The following print line includes this counter but leaves only three spaces for it to print by overlaying it with a later literal.
+      </para>
+      <programlisting>
+W  $S@32  "THE NUMBER OF OVERDUE NOTICES IS"@1 ;
+      </programlisting>
+      <para>
+          would print...
+      </para>
+      <screen>
+THE NUMBER OF OVERDUE NOTICES IS 512
+      </screen>
     </section>
   </chapter>
 
