@@ -1685,6 +1685,7 @@ OS9: <userinput>rmscopy batch master</userinput>
     <section>
       <title>Hash coding</title>
       <para>
+          Hash coding is simply a method of passing the key field through a mathematical function in such a way that the entire set of possible key values are mapped pseudo-randomly into the number of records allotted in the file. The same formula is always used, so the record can be found later by applying the same function to the key field again. Since it is possible for more than one different key value to be mapped to the same record location, hash coding requires that there be rules for resolving such problems in an orderly way. These rules are accomplished automatically by RMS. You need not be concerned with them unless you plan to have random access to the file from another language. In general terms:
     </para>
       <variablelist>
         <?dbfo list-presentation="blocks"?>
@@ -1975,7 +1976,7 @@ DIM PRICE:REAL
 OPEN #PATH,"STOCK.RMS":READ
 GET #PATH,TOTAL \(*Read the number of records
 GET #PATH,LENGTH \(*and the record length
-INPUT "WHich record shall I read? ",NUMBER
+INPUT "Which record shall I read? ",NUMBER
 PLACE=NUMBER*LENGTH \(*calculate the record position in the file
 SEEK #PATH,PLACE \(*seek to it
 READ #PATH,RECORD \(*now read the record
@@ -2083,7 +2084,7 @@ ESTDATE  8   D*  "SHOULD BE IN STOCK BY ";
     The top line is the title line. The next 10 lines describe 10 fields within the record. The first is considered to be the key field. Down the left side are the field names: PARTNO, DESC, PRICE, INSTOCK, LOC, etc. These have been chosen to indicate what the field contains. The second column indicates the number of characters reserved in each record for the individual fields. Note that the total length is 79. This number is important when the master data file is created. The next column indicates the type of data to be stored in each field. Note that all four types are used: Alphanumeric, Numeric, Money and Date. The asterisk, <quote>*</quote>, after the D on the last line indicates that this field is optional. That is, it need not be filled in by the operator when storing a record. The next item on each line is a prompt. Note that each is enclosed in quotes. The prompt is an explanatory message to be built into the screen form as an aid to the operator who must fill out the form. Some of the prompts have extra spaces inserted at the beginning or elsewhere within the text. These spaces are placed in such a way as to arrange the screen form into a neat and pleasing display. This is done largely by trial and error. On the first try just put the prompts in with no extra spaces, as we have done. Then run the RMS editor to see what the form looks like. Then insert spaces or re-arrange the form by editing the dictionary. It will usually take just two or three attempts to get the desired display. After using RMS a few times you will gain a skill for this process.
 </para>
       <para>
-    Three of the fields have anothe item on the line. The three are PARTNO, LOC and ONORDER. The items are VALIDATORS. The purpose is to insure that the operator can not store a record in the file unless the data in these fields meet the given restrictions. The PARTNO field must have at least 6 non-blank characters in it. The LOC must be a letter greater than or equal to <quote>A</quote> and less than or equal to <quote>F</quote>. In effect, LOC can be A, B, C, D, E or F. The ONORDER field can only be Y, N or blank.
+    Three of the fields have another item on the line. The three are PARTNO, LOC and ONORDER. The items are VALIDATORS. The purpose is to insure that the operator can not store a record in the file unless the data in these fields meet the given restrictions. The PARTNO field must have at least 6 non-blank characters in it. The LOC must be a letter greater than or equal to <quote>A</quote> and less than or equal to <quote>F</quote>. In effect, LOC can be A, B, C, D, E or F. The ONORDER field can only be Y, N or blank.
 </para>
       <para>
     Notice that each field spec line ends with a semi-colon. This is required by RMS.
@@ -2107,17 +2108,83 @@ INPUT NUMBER OF RECORDS :
 FORMAT IN PROGRESS...
 FILE FORMATTED OK
 </screen>
+<para>
+    This sequence need only be done once for any particular RMS file.The record size put in is 79, which will contain our record length, 79. The number of records, 47, was chosen arbitrarily. For an example, 47 is large enough to demonstrate how RMS works. The reason for 47 rather than 40 or 50 is that the hash coding scheme used internally by RMS is most efficient when the number of records in the file is a prime number. It is not absolutely necessary to use a prime, but it will increase the performance of RMS if you do.
+</para>
+<para>
+    Once formatted the file contains records filled with the letter <quote>U</quote>. Normally a <quote>U</quote> in the first character or a record indicates to RMS that the record is so far unused. Thus all records in the file are unused. The first record of the file will have the <quote>U</quote> in the first character, then it will have some important overhead information in the nect few bytes. RMS will never write any other data in this record. Change the first record would have a very harmful effect on the validity of the file, so avoid doing so if you ever write any BASIC09 programs that access the file.
+</para>
     </section>
+
     <section>
       <title>Using RMS on the sample file</title>
       <para>
+          The above two files, SAMPLE.RMS and SAMPLE.DIC are all that is necessary to try out RMS. To start the RMS editor enter:
+    </para>
+    <screen>
+OS9: <userinput>rms sample</userinput>
+    </screen>
+    <para>
+        At present the data file is empty - all the records are <quote>unused</quote>. Try entering some records. Type in the characters that you want in each field. Use the BACKSPACE key to correct errors. Use the RETURN key to move to the next field in the record, and the LEFT-ARROW key to move to the previous field. When you are happy with the data, insert the record into the file with the INSERT key. Three <quote>beeps</quote> tells you that the record has been inserted. Then clear the form with the CLEAR key, ready to enter the next record. Enter about half a dozen records.
+    </para>
+    <para>
+        Now try FINDing and changing a record. Get an empty form with the CLEAR key. Type in the key field, (the Part Number in our example), or a record that you have previously inserted into the file. (If you can't remember any of the Part Numbers that you inserted, use the SCAN key to browse through the file). Now use the FIND key to read in the record from the data file. Go through and change any fields you like but NOT the key field, (the first field). You can change fields simply by overtyping the data in the field. Overtype unwanted characters with spaces. Nor use the UPDATE key to write the changed record back into the file. Three <quote>beeps</quote> tells you that the record has been successfully updated.
+    </para>
+    <para>
+        Lastly try DELETing a record. Display the record using FIND or SCAN. Press DELETE to delete the record. RMS will ask you if you are sure you want to delete the record. If you are sure, press D, otherwise press some other key. Don't delete all the records that you have entered - leave at least four, we will use the to demonstrate INDEX and REPORT.
+    </para>
+    <para>
+        To exit RMS and return to OS-9 use the quit key.
+    </para>
+    <para>
+        Note that when you push INSERT or UPDATE, RMS will check the validity of all fields. This consists of making sure all numbers are right justified, decimal points appear where they should, etc. Some corrections to the data will be made automatically and will appear on the screen. Also checked are the various validators for each field. If anything is wrong with the data a message is placed on the top line of the screen telling you what is wrong. You must then push a key to continue. If this happens the record is no stored into the master file. To do so you must correct the problem then try INSERT or UPDATE again.
+    </para>
+    <para>
+        You may also notice that while typing data into the form you hear a beep. This indicates that you have hit an invalid key. For example, a <quote>G</quote> would be invalid in a numeric field.
     </para>
     </section>
+   
+
     <section>
       <title>A sample index file - DESCRIP.NDX</title>
       <para>
+          The file DESCRIP.NDX is an index file. Its purpose is to determine the processing order of the records when printed by the sample report. (The sample report is described below). You should create this file by the command:
+    </para>
+    <screen>
+OS9: <userinput>index sample descrip desc</userinput>
+    </screen>
+    <para>
+        <quote>SAMPLE</quote> indicates the name of the master data file, SAMPLE.RMS, and the dictionary SAMPLE.DIC. <quote>DESCRIP</quote> indicates that the index file to be created should be named DESCRIP.NDX. <quote>DESC</quote> is the name of one of the fields in the dictionary. Specifically, it is the name of the description field for each part number.
+    </para>
+    <para>
+        This command reads through the file SAMPLE.RMS and creates a list of PART NUMBERS, (the key fields,) in the file DESCRIP.NDX. The list will be in alphabetical order by the DESC (description) field associated with each PARTNE. After a few moments the INDEX program will indicate that it is done by the message: .NDX FILE CREATED OK.
+    </para>
+    <para>
+        If an old file named DESCRIP.NDX is found, it is deleted and replaced by the newly created one. The NDX file created by the above will be a text file, with one PARTNO per line. You can list it using the OS-9 '<command>list</command>' command:
+    </para>
+    <screen>
+OS9: <userinput>list descrip.ndx</userinput>
+    </screen>
+    <para>
+        Since the NDX file is just a text file, there are other ways to create one. One such way is with a text editor or a word processor. To do so just type one part number per line. The part numbers need bnot be in any particular order, any order you want may be used. Also, it is not necessary to include all the part numbers, and any individual part number could be included more than once if desired.
+    </para>
+    <para>
+        Remember that an <emphasis role="bold">.NDX</emphasis> file is valid only until records have been inserted or deleted from the master file. Once the contents of the file are changed, the <emphasis role="bold">.NDX</emphasis> file must be recreated by entering the above command again. This can be done any time before the index file is utilized again by REPORT or RMS.
+    </para>
+    <para>
+        There may be as many index files as necessary associated with one RMS master data file. For example, one index may be in order by part number, another by supplier, another by aisle location, etc. Each <emphasis role="bold">.NDX</emphasis> file is created similarly, and may be given any root name you choose.
+    </para>
+    <para>
+        There are two places in which an index file can be put to use. One is in conjunction with a REPORT printout. This is described in more detail below. The second way is in conjunction with the RMS editor. To use the index file in this way enter:
+    </para>
+    <screen>
+OS9: <userinput>rms sample descrip</userinput>
+    </screen>
+    <para>
+        This starts RMS with DESCRIP.NDX as the designated index file. The index file comes into play when the SCAN key is depressed. Note that each time it is pushed, another record is displayed. Note also that the records are selected and displayed in alphabetical order by the description field.
     </para>
     </section>
+
     <section>
       <title>A sample report - PRLIST.REP</title>
       <para>
@@ -2228,6 +2295,7 @@ OS9: <userinput>edit datafile.dic</userinput></screen></entry>
             <entry></entry>
             <entry spanspec="s2">STYLOGRAPH word processor or OS-9 text editor used to create the dictionary that defines the format of the datafile.</entry>
           </row>
+
           <row>
             <entry spanname="s1"><screen>OS9: <userinput>rmsnew datafile</userinput></screen></entry>
             <entry>datafile.rms</entry>
@@ -2236,6 +2304,7 @@ OS9: <userinput>edit datafile.dic</userinput></screen></entry>
             <entry></entry>
             <entry spanspec="s2">Creates and formats a new RMS data file as specified by the user.</entry>
           </row>
+
           <row>
             <entry spanname="s1"><screen>OS9: <userinput>rms datafile</userinput></screen></entry>
             <entry></entry>
@@ -2244,6 +2313,7 @@ OS9: <userinput>edit datafile.dic</userinput></screen></entry>
             <entry></entry>
             <entry spanspec="s2">Calls up the RMS editor to allow the operator to inspect, modify or add to the data in the file.</entry>
           </row>
+
           <row>
             <entry spanname="s1"><screen>OS9: <userinput>rms datafile indexfile</userinput></screen></entry>
             <entry></entry>
@@ -2251,6 +2321,52 @@ OS9: <userinput>edit datafile.dic</userinput></screen></entry>
           <row>
             <entry></entry>
             <entry spanspec="s2">Specifies an index file to be used in conjunction with the RMS SCAN command for an orderly scan of the data records.</entry>
+          </row>
+
+          <row>
+            <entry spanname="s1"><screen>OS9: <userinput>index datafile indexfile sortfiled</userinput></screen></entry>
+            <entry>indexfile.ndx</entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">Used to create an index file <quote>indexfile.ndx</quote> containing the key fields of the data file <quote>datafile</quote> sorted by field <quote>sortfield</quote>.</entry>
+          </row>
+
+          <row>
+            <entry spanname="s1"><screen>OS9: <userinput>stylo reportspec.rep</userinput>
+OS9: <userinput>edit reportspec.rep</userinput></screen></entry>
+            <entry>reportspec.rep</entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">STYLOGRAPH word processor or OS-9 text editor used to create the report specification needed by the REPORT program.</entry>
+          </row>
+
+          <row>
+              <entry spanname="s1"><screen>OS9: <userinput>report datafile reportspec >/device</userinput></screen></entry>
+            <entry></entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">The REPORT program produces a report out to device <quote>device</quote> of the data in file <quote>datafile.rms</quote> in a manner defined by the report specification <quote>reportspec.rep</quote>.</entry>
+          </row>
+
+          <row>
+              <entry spanname="s1"><screen>OS9: <userinput>report datafile reportspec >outfile</userinput></screen></entry>
+            <entry>outfile</entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">The same, except that the output goes to a disk file <quote>outfile</quote>.</entry>
+          </row>
+
+          <row>
+              <entry spanname="s1"><screen>OS9: <userinput>rmscopy source destination</userinput></screen></entry>
+            <entry></entry>
+          </row>
+          <row>
+            <entry></entry>
+            <entry spanspec="s2">Copies the records in <quote>source.rms</quote> to the file <quote>destination.rms</quote>. Can be used to merge files, change the size of the file, or change the record format of a file.</entry>
           </row>
 
         </tbody>
