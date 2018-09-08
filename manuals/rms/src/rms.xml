@@ -6,19 +6,30 @@
 <!ENTITY rarrow "&#8594;">
 <!ENTITY darrow "&#8595;">
 ]>
-<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="ccguide" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="rms" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+<!--
+It appears that the creator was
+Washington Computer Services
+3028 Silvern Lane
+Bellingham, WA 98226
+
+RMS was also ported to the IBM PC.
+-->
   <bookinfo>
     <title>RMS</title>
-    <subtitle>Record Management System for the OS-9 operating system</subtitle>
+    <subtitle>Record Management System for the <productname>OS-9</productname> operating system</subtitle>
     <publisher>
-      <publishername>Dragon Data Professional Software</publishername>
+      <publishername>Dragon Data Limited</publishername>
       <address>
+        <street>Kenfig Industrial Estate</street>
         <city>Port Talbot</city>
+        <postcode>SA13 1ZZ</postcode>
       </address>
     </publisher>
+    
     <copyright>
       <year>1983</year>
-      <holder>Dragon Data Professional Software</holder>
+      <holder>Dragon Data Ltd</holder>
     </copyright>
     <legalnotice>
       <para>
@@ -30,8 +41,8 @@ Copying is only permitted for backup purposes on a single computer system.
 Any other copying by whatever means without the written authorisation of Dragon Data Ltd is strictly prohibited.
 </para>
       <para>
-This manual was prepared using the STYLOGRAPH word processor, check with the SPELL CHECK spelling checker,
-and printed with the MAIL MERGE merge/print program.
+This manual was prepared using the <application>stylograph</application> word processor, check with the <application>spell check</application> spelling checker,
+and printed with the <application>mail merge</application> merge/print program.
 </para>
       <para>
 OS-9 and BASIC09 are trade marks of Microware Systems Corporation and Motorola Inc.
@@ -44,7 +55,7 @@ OS-9 and BASIC09 are trade marks of Microware Systems Corporation and Motorola I
 RMS is supplied configured for your Dragon Data Computer, and will work equally well under OS-9 Level One or OS-9 Level Two. The programs do not require large amounts of working memory; each takes 8k bytes or less, plus the size of the program.
 </para>
     <para>
-The minimum system configuration you require is your Dragon Data compute, with at least 64k bytes of RAM, running the OS-9 operating system; a floppy disk drive; and a television, or preferably a monochrome monitor. (The monitor will generally give you a better picture than a television).
+The minimum system configuration you require is your Dragon Data compute, with at least 64k bytes of RAM, running the <productname>OS-9</productname> operating system; a floppy disk drive; and a television, or preferably a monochrome monitor. (The monitor will generally give you a better picture than a television).
 </para>
     <para>
 RMS will certainly run with only one disk drive, although two are more convenient.
@@ -53,14 +64,14 @@ RMS will certainly run with only one disk drive, although two are more convenien
 A printer is not essential with RMS, but it does increase the usefulness of RMS. Almost any printer can be used - RMS makes no assumptions about the printer, not does it use any special printer features.
 </para>
     <para>
-You will need a text editor - such as the STYLOGRAPH word processor, or the OS-9 text editor - to create the RMS dictionaries and report specifications.
+You will need a text editor - such as the <application>stylograph</application> word processor, or the <productname>OS-9</productname> text editor - to create the RMS dictionaries and report specifications.
 </para>
   </preface>
   <chapter>
     <!-- 1 -->
     <title>Introduction to RMS</title>
     <para>
-Record Management System is a complete DATABASE MANAGEMENT SYSTEM for OS-9. It is extremely versatile, and very easy to learn to use. Applications may include accounting, business record-keeping, management information systems, customer or personnel records, customized data entry, immediate data retrieval, and various other situations which require data entry, online data retrieval and update, and printed reports. RMS can easily be customized to fit various requirements without any programming knowledge. The data stored under RMS is, however accessible to user written programs (in BASIC09 or other languages).
+Record Management System is a complete DATABASE MANAGEMENT SYSTEM for <productname>OS-9</productname>. It is extremely versatile, and very easy to learn to use. Applications may include accounting, business record-keeping, management information systems, customer or personnel records, customized data entry, immediate data retrieval, and various other situations which require data entry, online data retrieval and update, and printed reports. RMS can easily be customized to fit various requirements without any programming knowledge. The data stored under RMS is, however accessible to user written programs (in <application>BASIC09</application> or other languages).
 </para>
     <section>
       <title>What RMS can do</title>
@@ -68,7 +79,7 @@ Record Management System is a complete DATABASE MANAGEMENT SYSTEM for OS-9. It i
 RMS allows the user to determine the format under which his data is to be stored. This format consists of deciding what data items are to be kept, and what the characteristics of each item are to be. The characteristics include the type of data (ie, number, alphanumeric string, date, money value), the maximum length of the data item, and if necessary, limits or restrictions on the possible values.
 </para>
       <para>
-Once the data format is determined and stored in a DICTIONARY, the RMS automatically provides:
+Once the data format is determined and stored in a DICTIONARY, then RMS automatically provides:
 </para>
       <itemizedlist>
         <listitem>
@@ -101,7 +112,7 @@ facility to later change the format of the data as requirements change.
     <section>
       <title>What RMS consists of</title>
       <para>
-RMS is a package of utility programs, written in machine language for maximum efficiency. These utilities may be used individually or in various combinations to provide the above features. It is also possible to access RMS data file from user-written programs, for example in BASIC09. This allows the user to take advantage of RMS to do much of the time-consuming part of a large custom programming task, and still allows for the use of a general purpose programming language for the unique processing that can be done no other way. The RMS programs are:
+RMS is a package of utility programs, written in machine language for maximum efficiency. These utilities may be used individually or in various combinations to provide the above features. It is also possible to access RMS data file from user-written programs, for example in <application>BASIC09</application>. This allows the user to take advantage of RMS to do much of the time-consuming part of a large custom programming task, and still allows for the use of a general purpose programming language for the unique processing that can be done no other way. The RMS programs are:
 </para>
       <variablelist>
         <varlistentry>
@@ -150,7 +161,7 @@ is used to copy an RMS file when its capacity or internal structure is required 
       <title>Getting Started</title>
       <important>
         <para>
-We suggest that you read this short section carefully, and then try out the example application at the end of the manual. The assignment of the command keys for RMS on your keyboard and a summary of OS-9 command lines for calling RMS are given at the back of this manual.
+We suggest that you read this short section carefully, and then try out the example application at the end of the manual. The assignment of the command keys for RMS on your keyboard and a summary of <productname>OS-9</productname> command lines for calling RMS are given at the back of this manual.
 </para>
       </important>
       <para>
@@ -295,11 +306,11 @@ descriptor file used by RMS
         </varlistentry>
       </variablelist>
       <para>
-plus several commonly used OS-9 utilities.
+plus several commonly used <productname>OS-9</productname> utilities.
 </para>
       <para>
-The SYS directory contains the OS-9 error messages file <filename>errmsg</filename>, used
-by OS-9 when reporting errors. (for example "Error #216 - Path name not found").
+The SYS directory contains the <productname>OS-9</productname> error messages file <filename>errmsg</filename>, used
+by <productname>OS-9</productname> when reporting errors. (for example "Error #216 - Path name not found").
 </para>
       <para>
 You are now ready for a trial run with RMS. Try getting into RMS with:
@@ -308,7 +319,7 @@ You are now ready for a trial run with RMS. Try getting into RMS with:
 OS9: <userinput>rms address</userinput>
 </screen>
       <para>
-To return to OS-9, (at any time), hit
+To return to <productname>OS-9</productname>, (at any time), hit
 <keycombo action="simul"><keycap>Control</keycap><keycap>E</keycap></keycombo>.
 </para>
       <para>
@@ -381,7 +392,7 @@ The user can define as many RMS data files as needed. Associated with each data 
 A record is the logical grouping of several data items into one physical entity. Data is stored and retrieved by RMS a record at a time. Usually the data items within a record will describe particular details of one useful <quote>real-world</quote> entity. For example, a record might contain a person's name, address, phone number, social security number and age.
       </para>
       <section>
-        <title>Fields and Record Keys</title>
+        <title>Fields and record Keys</title>
         <para>
 In the above example the particular data items (name, address, etc.) are called FIELDS. The grouping of all the fields together is called a RECORD. Each of the fields has its own particular characteristics; the social security number is always 9 characters long and must always consist of numeric digits only. The name field could consist of alphabetic characters, and so on. In RMS, it is up to the user to decide what data fields he needs, and what the characteristics of each will be. In doing so, he determines that data a record is to contain.
           </para>
@@ -390,19 +401,19 @@ Normall the is on field in the record which is designated as the KEY FIELD. The 
           </para>
       </section>
       <section>
-        <title>Primary Record</title>
+        <title>Primary record</title>
         <para>
 Within on RMS data file the user may choose to use one of two possible situations. The first situation is one in which all records in the file have the same format (ie, same set of fields). This will fit applications where the data base can be well represented by a set of individual records; one record per one real world entity. Each record in the file has a unique key field value. An example of this organization is a mailing list; another might be a stock inventory system. In this case all the records in the file are referred to as PRIMARY records.
           </para>
       </section>
       <section>
-        <title>Secondary Record</title>
+        <title>Secondary record</title>
         <para>
 The second possible situation is one which allows two types of records within one file. The first type of record is called the PRIMARY record; the second type is called the SECONDARY record. In this situation there may be but one primary record with any given key field value, but under each such primary record there may be any number of associated secondary records. Within the file, all primary records have the same format, and all secondary records have the same format. However, the format of the primary records can differ from that of the secondary records.
           </para>
       </section>
       <section>
-        <title>Record Groups</title>
+        <title>Record groups</title>
         <para>
               When a file is of the second type (both primary and secondary records) then each primary along with its associated secondary records is called a record GROUP. A primary may have no secondary records or may have many. A secondary record must always belong to some primary record. Some examples which help demonstrate the parent/child relationship between primary and secondary records within a group are:
           </para>
@@ -439,16 +450,16 @@ The second possible situation is one which allows two types of records within on
       </section>
     </section>
     <section>
-      <title>Files Used by RMS</title>
+      <title>Files used by RMS</title>
       <para>
-          The files used by RMS fill several functions. The particular function served by the file is denoted by the file suffix appended to the file name. (the file suffix is a three character code, preceded by an <quote>.</quote>, and place after the name of a file as it is stored in the disk directory by OS-9.) The following descriptions thell what purposes each of the file types serve.
+          The files used by RMS fill several functions. The particular function served by the file is denoted by the file suffix appended to the file name. (the file suffix is a three character code, preceded by an <quote>.</quote>, and place after the name of a file as it is stored in the disk directory by <productname>OS-9</productname>.) The following descriptions tell what purposes each of the file types serve.
       </para>
       <variablelist>
         <varlistentry>
           <term>.RMS</term>
           <listitem>
             <para>
-                An RMS main data file is followed by the suffix <quote>.RMS</quote>. Its purpose is to store the data records of the user's data base. It is created initially by RMSNEW. It can be updated by the RMS editor. The REPORT program reads data from it to create printed reports. It may be read also by BASIC09 programs.
+                An RMS main data file is followed by the suffix <quote>.RMS</quote>. Its purpose is to store the data records of the user's data base. It is created initially by RMSNEW. It can be updated by the RMS editor. The REPORT program reads data from it to create printed reports. It may be read also by <application>BASIC09</application> programs.
             </para>
           </listitem>
         </varlistentry>
@@ -456,7 +467,7 @@ The second possible situation is one which allows two types of records within on
           <term>.DIC</term>
           <listitem>
             <para>
-                Every RMS main file must have a dictionary file associated with it. The dictionary file must have the same basic file name but must have a suffix of <quote>.DIC</quote> when created by the user. The dictionary file is a text file which contains the information about the fields in the primary and secondary records of a file. It can be created and edited by use of the OS-9 EDIT program or the STYLOGRAPH word processor. Details about the contents of the dictionary file are found in section 4.
+                Every RMS main file must have a dictionary file associated with it. The dictionary file must have the same basic file name but must have a suffix of <quote>.DIC</quote> when created by the user. The dictionary file is a text file which contains the information about the fields in the primary and secondary records of a file. It can be created and edited by use of the <productname>OS-9</productname> <command>edit</command> program or the <application>stylograph</application> word processor. Details about the contents of the dictionary file are found in section 4.
             </para>
           </listitem>
         </varlistentry>
@@ -464,7 +475,7 @@ The second possible situation is one which allows two types of records within on
           <term>.REP</term>
           <listitem>
             <para>
-                A file with a suffix of <quote>.REP</quote> is a text file which contains a set of REPORT SPECS. Report specs are the specific instructions about the actual format that a printed report is to have. Any number of the files may be associated with any RMS main data file. The <filename class="extension">.REP</filename> may be created and edited with the OS-9 EDIT program or the STYLOGRAPH word processor. Details about the contents of the <filename class="extension">.REP</filename> file may be found section 6.
+                A file with a suffix of <quote>.REP</quote> is a text file which contains a set of REPORT SPECS. Report specs are the specific instructions about the actual format that a printed report is to have. Any number of the files may be associated with any RMS main data file. The <filename class="extension">.REP</filename> may be created and edited with the <productname>OS-9</productname> <command>edit</command> program or the <application>stylograph</application> word processor. Details about the contents of the <filename class="extension">.REP</filename> file may be found section 6.
             </para>
           </listitem>
         </varlistentry>
@@ -472,7 +483,7 @@ The second possible situation is one which allows two types of records within on
           <term>.NDX</term>
           <listitem>
             <para>
-                A file with the suffix <quote>.NDX</quote> is called an INDEX FILE. An index file is simply a text file containing a list of KEY FIELD values. It may be used to drive the editor or report program to process the RMS main data file in any desired order. There may be any number of index files for any RMS main data file. The <filename class="extension">.NDX</filename> file may be created by the use of the OS-9 text EDIT program or the STYLOGRAPH word processor, a BASIC09 program or by the INDEX program which is part of RMS.
+                A file with the suffix <quote>.NDX</quote> is called an INDEX FILE. An index file is simply a text file containing a list of KEY FIELD values. It may be used to drive the editor or report program to process the RMS main data file in any desired order. There may be any number of index files for any RMS main data file. The <filename class="extension">.NDX</filename> file may be created by the use of the <productname>OS-9</productname> text <command>edit</command> program or the <application>stylograph</application> word processor, a <application>BASIC09</application> program or by the INDEX program which is part of RMS.
             </para>
           </listitem>
         </varlistentry>
@@ -481,13 +492,13 @@ The second possible situation is one which allows two types of records within on
   </chapter>
   <chapter>
     <!-- 3 -->
-    <title>Getting Started With RMS</title>
+    <title>Getting started with RMS</title>
     <para>
   This section describes the general step in getting an application started using RMS. The specific details on each of the steps in the process are covered completely in other parts of this manual.
   It is siggested that the reader be familiar with the contents of the previous sections of this manual before proceeding, since certain terms that are used here have been introduced in those sections.
   </para>
     <section>
-      <title>Record Layout and Creating the Record Dictionary</title>
+      <title>Record layout and creating the record dictionary</title>
       <para>
           The first task is to examine your problem and determine what data items must be stored. Organize the data values into related sets of items. Determine whether there is a primary-only or primary-secondary group structure to your data. If there is a primary-only structure then all data fields will go in the primary record. If there is a group type structure the you must determine what items can be placed in the primary record which heads up the group, and what items must be placed in the secondary records. In general, put all common data in the primary record.
       </para>
@@ -507,11 +518,11 @@ TOWN:___________COUNTY:__________ POSTCODE:______ CONTACT DATE:_______
 CURRENT BALANCE:_________ CREDIT LIMIT:__________ STATUS:_____________
 </screen>
       <para>
-    Once the field characteristics have been determined, a dictionary file must be created. This is accomplished by coding the field names, types, lengths and prompts into a text file. The name of the text file must correspond to the name to be given the RMS data file and must have a suffix of <quote>.DIC</quote>. See section 4 for more details. The dictionary file is created with the OS-9 text EDIT program or the STYLOGRAPH word processor.
+    Once the field characteristics have been determined, a dictionary file must be created. This is accomplished by coding the field names, types, lengths and prompts into a text file. The name of the text file must correspond to the name to be given the RMS data file and must have a suffix of <quote>.DIC</quote>. See section 4 for more details. The dictionary file is created with the <productname>OS-9</productname> text <command>edit</command> program or the <application>stylograph</application> word processor.
 </para>
     </section>
     <section>
-      <title>Formatting the RMS Main Data File</title>
+      <title>Formatting the RMS main data file</title>
       <para>
           Once the record dictionary has been created, the <emphasis role="bold">.RMS</emphasis> file can be created. The <emphasis role="bold">.RMS</emphasis> file has the same root name as the <emphasis role="bold">.DIC</emphasis> file but has the suffix <quote>.RMS</quote>.
           These files should be stored in the same directory on disk. The <emphasis role="bold">.RMS</emphasis> file contains the actual data records. The create the <emphasis role="bold">.RMS</emphasis> file you use the RMSNEW utility program. It is stated by entering:
@@ -520,10 +531,10 @@ CURRENT BALANCE:_________ CREDIT LIMIT:__________ STATUS:_____________
 OS9: <userinput>rmsnew name</userinput>
 </screen>
       <para>
-    The name may be any properly qualified OS-9 file specification. The <emphasis role="bold">.RMS</emphasis> suffix will be added on automatically and should not be entered. Before proceeding, the utility will request two values. The first is the record length. This must be a number which is large enough to accomodate the longer of the primary and the secondary records to be stored in the file. The possible record length may be any number from 3 to 1022 characters. It is permissible for a record length to be too long to accomodate the desired records but not too short. RMSNEW will add two to the entered length: one for a prefix identifier byt on each record, and one for a return character at the end of each record.
+    The name may be any properly qualified <productname>OS-9</productname> file specification. The <emphasis role="bold">.RMS</emphasis> suffix will be added on automatically and should not be entered. Before proceeding, the utility will request two values. The first is the record length. This must be a number which is large enough to accomodate the longer of the primary and the secondary records to be stored in the file. The possible record length may be any number from 3 to 1022 characters. It is permissible for a record length to be too long to accomodate the desired records but not too short. RMSNEW will add two to the entered length: one for a prefix identifier byte on each record, and one for a return character at the end of each record.
 </para>
       <para>
-    The second number which must be entered is the number of records to be stored in the file. Because os the hash coding technique used by RMS to store and retrieve records, this number should be at least 25% more than the actual maximum number of records that will ever be stored in the file. The reason is that hash coding only works rapidly if the target file is less than about 80% full. Also advantageous but not necessary is to make the size of the file a prime number. This is not essential but can improve the access time average for the data records in the file. The maximum number of records allowed in 65535.
+    The second number which must be entered is the number of records to be stored in the file. Because of the hash coding technique used by RMS to store and retrieve records, this number should be at least 25% more than the actual maximum number of records that will ever be stored in the file. The reason is that hash coding only works rapidly if the target file is less than about 80% full. Also advantageous but not necessary is to make the size of the file a prime number. This is not essential but can improve the access time average for the data records in the file. The maximum number of records allowed is 65535.
 </para>
     </section>
     <section>
@@ -591,7 +602,7 @@ OS9: <userinput>report name sfile</userinput>
   <chapter>
     <title>The RMS dictionary</title>
     <para>
-          The dictionary is stored in a file with the same root name as the RMS main data file but with a suffix of <quote>.DIC</quote> added to the name. The purpose of the dictionary is to describe the layout of the fields within the primary record and, if one is to be used, the secondary record. The <emphasis role="bold">.DIC</emphasis> file is formatted as a text file, and may be created with the EDIT program or the STYLOGRAPH word processor. It should be stored in the same disk directory as the <emphasis role="bold">.RMS</emphasis> file. As an example, a dictionary might look like the following:
+          The dictionary is stored in a file with the same root name as the RMS main data file but with a suffix of <quote>.DIC</quote> added to the name. The purpose of the dictionary is to describe the layout of the fields within the primary record and, if one is to be used, the secondary record. The <emphasis role="bold">.DIC</emphasis> file is formatted as a text file, and may be created with the <command>edit</command> program or the <application>stylograph</application> word processor. It should be stored in the same disk directory as the <emphasis role="bold">.RMS</emphasis> file. As an example, a dictionary might look like the following:
       </para>
     <programlisting>
     "EMPLOYEE BENEFITS "
@@ -698,7 +709,7 @@ $
 SALARY   7   M*    "MONTHLY SALARY" ;
 </programlisting>
         <para>
-    If the * is used then the operator may leave a field completely blank when inputting a data record with the RMS editor. However, if he keys any data other than blanks into the field, the the field must conform to all the type and validator restrictions.
+    If the * is used then the operator may leave a field completely blank when inputting a data record with the RMS editor. However, if he keys any data other than blanks into the field, then the field must conform to all the type and validator restrictions.
 </para>
       </section>
       <section>
@@ -806,7 +817,7 @@ $
     <screen>
 OS9: <userinput>rms name index</userinput>
       </screen>
-    <para><quote>name</quote> is the root name of the <emphasis role="bold">.RMS</emphasis> and <emphasis role="bold">.DIC</emphasis> files. If the <quote>index</quote> file is to be used then ut must have the suffix <emphasis role="bold">.NDX</emphasis>. The index file is optional; its use is discussed later. A sample command to start the editor is:
+    <para><quote>name</quote> is the root name of the <emphasis role="bold">.RMS</emphasis> and <emphasis role="bold">.DIC</emphasis> files. If the <quote>index</quote> file is to be used then it must have the suffix <emphasis role="bold">.NDX</emphasis>. The index file is optional; its use is discussed later. A sample command to start the editor is:
       </para>
     <screen>
 OS9: <userinput>rms patient names</userinput>
@@ -900,7 +911,7 @@ OS9: <userinput>rms patient names</userinput>
           <term>QUIT</term>
           <listitem>
             <para>
-                causes the termination of the RMS editor and immediate return to OS-9.
+                causes the termination of the RMS editor and immediate return to <productname>OS-9</productname>.
             </para>
           </listitem>
         </varlistentry>
@@ -1105,10 +1116,10 @@ OS9: <userinput>report client weekly &gt;outfile</userinput>
     <section>
       <title>The report spec file</title>
       <para>
-          The commands described below are entered into a file with a suffix of <quote>.REP</quote>. This may be done with the OS-9 <command>edit</command> program or the STYLOGRAPH word processor. Each command <emphasis>must</emphasis> be terminated with a semi-colon. Any particular command may carry over as many lines as necessary as long as it is broken between print line items. In general, the report command may be entered into the report spec file in any order. The only case in which the order matters is the case of multiple print lines of the same type. The types of print line commands are T, W, P, S, H and G. For example, if there are three T commands then they are processed in the order that they are found in the report spec file.
+          The commands described below are entered into a file with a suffix of <quote>.REP</quote>. This may be done with the <productname>OS-9</productname> <command>edit</command> program or the <application>stylograph</application> word processor. Each command <emphasis>must</emphasis> be terminated with a semi-colon. Any particular command may carry over as many lines as necessary as long as it is broken between print line items. In general, the report command may be entered into the report spec file in any order. The only case in which the order matters is the case of multiple print lines of the same type. The types of print line commands are T, W, P, S, H and G. For example, if there are three T commands then they are processed in the order that they are found in the report spec file.
     </para>
       <section>
-        <title>L command - page length</title>
+        <title>L command - lines per page</title>
         <para>
             format: <code>L x,y ;</code>
         </para>
@@ -1118,9 +1129,8 @@ OS9: <userinput>report client weekly &gt;outfile</userinput>
       </section>
       <section>
         <title>I command - include</title>
-        <para><literallayout>
-format: <code>I fieldname (low,high) ;</code>
-    or  <code>I fieldname [value,value,value,.....] ;</code></literallayout>
+        <para><literallayout>format: <code>I fieldname (low,high) ;</code>
+       or  <code>I fieldname [value,value,value,.....] ;</code></literallayout>
         </para>
         <para>
             The I command allows for selection of the desired records for inclusion within the report output. In both forms the field name may be that of a field  in the primary record or the secondary record. The first form allows for accepting records only if the named field has a value greater than or equal to the low value, and less than or equal to the high value. The values in the parentheses MUST be exactly the same length as the fields and must have the data coded in exactly the same manner as it will be found in the field. For example, a date field should be in DD/MM/YY form, a money field must be right justifiedm oadded with spaces on the left if necessary, and must have exactly two decimal places. The second form allows for inclusion of records only if the named field has one of the values in the list. The values in the list should be exactly the same length as the field and should follow the same rules just stated. If a list value is shorter than the designated field then the field need only match for the given item's length. In both cases the use of the <quote>include</quote> is analogous to the use of a validator in the RMS editor (see section 5.4). Any number of <quote>include</quote> or <quote>exclude</quote> commands may be given. For a record to be selected as part of the report it must conform to all selections specified. If a primary record is excluded due to an I or an E selection then the entire record group is skipped. If a secondary record is excluded then there is not any automatic effect on any other records in its group.
@@ -1128,9 +1138,8 @@ format: <code>I fieldname (low,high) ;</code>
       </section>
       <section>
         <title>E command - exclude</title>
-        <para><literallayout>
-format: <code>E fieldname (low,high) ;</code>
-    or  <code>E fieldname [value,value,value,.....] ;</code></literallayout>
+        <para><literallayout>format: <code>E fieldname (low,high) ;</code>
+       or  <code>E fieldname [value,value,value,.....] ;</code></literallayout>
         </para>
         <para>
             The E command allows for selective exclusion of specific records from the report. It works just like the I command except that to be accepted for the report a record must NOT be within the specified bounds (first form), or must NOT be in the specified list (second form). As stated above, to be accepted as part of the report a record must conform to all I or E commands.
@@ -1192,9 +1201,8 @@ format: <code>E fieldname (low,high) ;</code>
       </section>
       <section>
         <title>B command - page break</title>
-        <para><literallayout>
-format:   <code>BP ;</code>
-    or    <code>BS ;</code></literallayout>
+        <para><literallayout>format:   <code>BP ;</code>
+       or    <code>BS ;</code></literallayout>
         </para>
         <para>
             The B command specifies a page break for the primary or the secondary record type. If a BP is coded then a new page is started for each primary record processed. If a BS is coded then a new page is started for each secondary record processed. One or both of these commands (BP and BS) may be coded in one report spec.
@@ -1209,7 +1217,7 @@ format:   <code>BP ;</code>
             The X command us used to specify the name of the INDEX file to be used by the REPORT program. The index file is a text file which contains a list of record keys. The name of the file is assumed to be <quote>filename.NDX</quote>, the <quote>.NDX</quote> is not actually entered in the X command.
         </para>
         <para>
-            Each line of the text file must contain a record key field value. If the is other data on the line after the key field value it is ignored. The record groups in the data file are selected and processed in the order of the keys in the index file. The index file can be a list of all or some of the keys and may be in any desired order. Records whose key fields are not found in the index file will not appear in the report. The index file may be created by the INDEX program described in section 7 or by a BASIC09 program or text editor.
+            Each line of the text file must contain a record key field value. If the is other data on the line after the key field value it is ignored. The record groups in the data file are selected and processed in the order of the keys in the index file. The index file can be a list of all or some of the keys and may be in any desired order. Records whose key fields are not found in the index file will not appear in the report. The index file may be created by the INDEX program described in section 7 or by a <application>BASIC09</application> program or text editor.
         </para>
         <para>
             A special use of the X command is to specify the index file to come from the keyboard (standard input):
@@ -1343,13 +1351,14 @@ G  "MONTH END REPORT"@10  $D@30  "PAGE"@50 $P@55 ;
 JOHNNY Q. DOE      332456223   856.50
       </screen>
       <programlisting>
-W $S@1 "CHECKS  WRITTEN TO"@7  $G@25  "VENDORS.  TOTAL CASH OUT IS"@31 AMOUNT#7@58 ;
+W $S@1 "CHECKS  WRITTEN TO"@7  $G@25  "VENDORS.  TOTAL CASH OUT IS"@31
+AMOUNT#7@58 ;
       </programlisting>
       <para>
           might produce a line in the wrap up page like:
       </para>
       <screen>
-34 CHECKS WRITTEN TO    15    VENDORS. TOTAL CASH OUT IS 3245.55
+   34 CHECKS WRITTEN TO    15 VENDORS.  TOTAL CASH OUT IS 3245.55
       </screen>
       <para>
           When including a field name in a print line, the value printed is the one from the last record of the appropriate type that was passed. For example, in an <quote>S</quote> command, which prints a line for each secondary record, if a field name is specified for a field in the primary record, then the value printed is the value from the last primary passed. In this case it would be the primary at the head of the same record group.
@@ -1391,7 +1400,7 @@ THE NUMBER OF OVERDUE NOTICES IS 512
     <section>
       <title>Creating an index file</title>
       <para>
-          There are many ways to create an index file. The simplest and most convenient way is to use the INDEX program supplied with RMS. However, it can be done with the OS-9 EDIT program or the STYLOGRAPH word processor. In the case the key values are just entered as text, one per line. Another method is to write a file of key values from a BASIC09 program. The index file is produced as a sequential file with one key value put out by each PRINT. (To do so, however, it is necessary to select only records from the RMS file that have a <quote>1</quote> in the first byte. This will cause only primary records to be sorted, and will exclude secondary records, deleted records and unused records. More information on the format of the RMS file may be found in section 9.
+          There are many ways to create an index file. The simplest and most convenient way is to use the INDEX program supplied with RMS. However, it can be done with the <productname>OS-9</productname> <command>edit</command> program or the <application>stylograph</application> word processor. In the case the key values are just entered as text, one per line. Another method is to write a file of key values from a <application>BASIC09</application> program. The index file is produced as a sequential file with one key value put out by each PRINT. (To do so, however, it is necessary to select only records from the RMS file that have a <quote>1</quote> in the first byte. This will cause only primary records to be sorted, and will exclude secondary records, deleted records and unused records. More information on the format of the RMS file may be found in section 9.
     </para>
     </section>
     <section>
@@ -1478,7 +1487,7 @@ OS9: <userinput>rmscopy source destination</userinput>
         </listitem>
         <listitem>
             <para>
-                Copy the dictionary file from XXX.DIC to YYY.DIC, using the OS-9 'copy' command
+                Copy the dictionary file from XXX.DIC to YYY.DIC, using the <productname>OS-9</productname> 'copy' command
             </para>
         </listitem>
         <listitem>
@@ -1553,7 +1562,7 @@ OS9: <userinput>rmscopy batch master</userinput>
     <!-- 9 -->
     <title>Compatibility of RMS with other languages and utilities</title>
     <para>
-  RMS has been designed specifically for maximum compatibility with other forms of access. RMS files are, for the most part, simple text files, which can be read by most common utilities and by user-written BASIC09 programs.
+  RMS has been designed specifically for maximum compatibility with other forms of access. RMS files are, for the most part, simple text files, which can be read by most common utilities and by user-written <application>BASIC09</application> programs.
   It is just as easy to read an RMS file with an assembler of Pascal program. Though it is a little more dangerous to do, it is also possible to update an RMS file in the same manner.
   The information in this section is not necessary in order to use RMS effectively. It is provided for the programmer who whishes to extend the power of RMS, or to use it as part of the solution to a larger problem.
   </para>
@@ -1877,7 +1886,7 @@ OS9: <userinput>rmscopy batch master</userinput>
     <section>
       <title>RMS and utilities</title>
       <para>
-          Since all RMS files are text files, then the following OS-9 utilities may be useful:
+          Since all RMS files are text files, then the following <productname>OS-9</productname> utilities may be useful:
     </para>
       <informaltable frame="none" colsep="0" rowsep="0">
         <tgroup cols="2">
@@ -1885,7 +1894,7 @@ OS9: <userinput>rmscopy batch master</userinput>
           <colspec colwidth="4in"/>
           <tbody>
             <row>
-              <entry>EDIT or STYLOGRAPH</entry>
+              <entry><command>edit</command> or <application>stylograph</application></entry>
               <entry>a text editor or word processor for creating and modifying dictionary and report spec files, and for entering index files.</entry>
             </row>
             <row>
@@ -1906,7 +1915,7 @@ OS9: <userinput>rmscopy batch master</userinput>
     <section>
       <title>Access to RMS files from BASIC09</title>
       <para>
-      The two types of RMS files which are likely to be accessed from BASIC09 and other user-written programs are the main data files, and the index files. For this explanation, examples are given in BASIC09 format.
+      The two types of RMS files which are likely to be accessed from <application>BASIC09</application> and other user-written programs are the main data files, and the index files. For this explanation, examples are given in <application>BASIC09</application> format.
     </para>
       <para>
     To create an index file which is to be used to drive the RMS editor or REPORT writer, you need only write the record key values to a sequential file. An example will demonstrate:
@@ -1922,7 +1931,7 @@ CLOSE #PATH                  \(*close the index file
     This example creates a file on the working drive. The file is named ABC.NDX, and it contains 2 lines. This file could be used by RMS as an index file.
     </para>
       <para>
-    The other type of RMS file that may be accessed is the RMS main data file. This file can be read as a sequential file, or it can be read and written as a random file. In either case, the records read in will all be the same length. They should be read into a string variable or BASIC09 user-defined structure. The first character will be the record type flag (U, D, 1 or 2). The rest of the string will be the data fields. This example shows how to read an RMS file sequentially.
+    The other type of RMS file that may be accessed is the RMS main data file. This file can be read as a sequential file, or it can be read and written as a random file. In either case, the records read in will all be the same length. They should be read into a string variable or <application>BASIC09</application> user-defined structure. The first character will be the record type flag (U, D, 1 or 2). The rest of the string will be the data fields. This example shows how to read an RMS file sequentially.
     </para>
       <programlisting>
 DIM PATH:INTEGER
@@ -2043,7 +2052,7 @@ RETURN
         We suggest that you make frequent reference to the Key Assigment and Command Line summaries at the end of this manual.
     </para>
     <para>
-        To start with, make sure that you have made a backup copy of your RMS disk using the OS-9 '<command>backup</command>' command, and that you have put the original disk away in a safe place. Use the copy you have made for this exercise. Place your disk in drive 0, and set your execution directory (using 'chx') and your data directory (using 'chd'):
+        To start with, make sure that you have made a backup copy of your RMS disk using the <productname>OS-9</productname> '<command>backup</command>' command, and that you have put the original disk away in a safe place. Use the copy you have made for this exercise. Place your disk in drive 0, and set your execution directory (using 'chx') and your data directory (using 'chd'):
     </para>
     <screen>
 OS9: <userinput>chd /d0/cmds chd /d0</userinput>
@@ -2112,7 +2121,7 @@ FILE FORMATTED OK
     This sequence need only be done once for any particular RMS file.The record size put in is 79, which will contain our record length, 79. The number of records, 47, was chosen arbitrarily. For an example, 47 is large enough to demonstrate how RMS works. The reason for 47 rather than 40 or 50 is that the hash coding scheme used internally by RMS is most efficient when the number of records in the file is a prime number. It is not absolutely necessary to use a prime, but it will increase the performance of RMS if you do.
 </para>
 <para>
-    Once formatted the file contains records filled with the letter <quote>U</quote>. Normally a <quote>U</quote> in the first character or a record indicates to RMS that the record is so far unused. Thus all records in the file are unused. The first record of the file will have the <quote>U</quote> in the first character, then it will have some important overhead information in the nect few bytes. RMS will never write any other data in this record. Change the first record would have a very harmful effect on the validity of the file, so avoid doing so if you ever write any BASIC09 programs that access the file.
+    Once formatted the file contains records filled with the letter <quote>U</quote>. Normally a <quote>U</quote> in the first character or a record indicates to RMS that the record is so far unused. Thus all records in the file are unused. The first record of the file will have the <quote>U</quote> in the first character, then it will have some important overhead information in the nect few bytes. RMS will never write any other data in this record. Change the first record would have a very harmful effect on the validity of the file, so avoid doing so if you ever write any <application>BASIC09</application> programs that access the file.
 </para>
     </section>
 
@@ -2134,7 +2143,7 @@ OS9: <userinput>rms sample</userinput>
         Lastly try DELETing a record. Display the record using FIND or SCAN. Press DELETE to delete the record. RMS will ask you if you are sure you want to delete the record. If you are sure, press D, otherwise press some other key. Don't delete all the records that you have entered - leave at least four, we will use the to demonstrate INDEX and REPORT.
     </para>
     <para>
-        To exit RMS and return to OS-9 use the quit key.
+        To exit RMS and return to <productname>OS-9</productname> use the quit key.
     </para>
     <para>
         Note that when you push INSERT or UPDATE, RMS will check the validity of all fields. This consists of making sure all numbers are right justified, decimal points appear where they should, etc. Some corrections to the data will be made automatically and will appear on the screen. Also checked are the various validators for each field. If anything is wrong with the data a message is placed on the top line of the screen telling you what is wrong. You must then push a key to continue. If this happens the record is no stored into the master file. To do so you must correct the problem then try INSERT or UPDATE again.
@@ -2160,7 +2169,7 @@ OS9: <userinput>index sample descrip desc</userinput>
         This command reads through the file SAMPLE.RMS and creates a list of PART NUMBERS, (the key fields,) in the file DESCRIP.NDX. The list will be in alphabetical order by the DESC (description) field associated with each PARTNE. After a few moments the INDEX program will indicate that it is done by the message: .NDX FILE CREATED OK.
     </para>
     <para>
-        If an old file named DESCRIP.NDX is found, it is deleted and replaced by the newly created one. The NDX file created by the above will be a text file, with one PARTNO per line. You can list it using the OS-9 '<command>list</command>' command:
+        If an old file named DESCRIP.NDX is found, it is deleted and replaced by the newly created one. The NDX file created by the above will be a text file, with one PARTNO per line. You can list it using the <productname>OS-9</productname> '<command>list</command>' command:
     </para>
     <screen>
 OS9: <userinput>list descrip.ndx</userinput>
@@ -2191,7 +2200,7 @@ OS9: <userinput>rms sample descrip</userinput>
           The file PRLIST.REP on the distribution disk is a report spec. It can be used to produce a price list with the description, part number and retail price of each item in the file.
     </para>
       <para>
-        PRLIST.REP was created using the OS-9 text editor. Since it is a standard text file it can be listed with the '<command>list</command>' command. For example:
+        PRLIST.REP was created using the <productname>OS-9</productname> text editor. Since it is a standard text file it can be listed with the '<command>list</command>' command. For example:
     </para>
       <screen>
 OS9: <userinput>list prlist.rep</userinput>
@@ -2206,7 +2215,7 @@ P DESC@1 PARTNO@35 PRICE@52 ;
 X DESCRIP;
     </screen>
       <para>
-        The first line <quote>L 1,1</quote> indicates that the report is to be printed without any automatic skipping over page boundaries. The next 5 lines (starting with <quote>T</quote>) are title page lines. Each indicates a line to be displayed at the top of the report printout. Two of these lines are <quote>T ;</quote>. These indicate a blank line, for cosmetic purposes. The seventh line, starting with <quote>P</quote>, indicates what is to be printed for each primary record in the file. In our case there are only primary records in the file, no secondary records. The <quote>DESC@1</quote> indicates that the field called DESC, the description field, should be printed starting in column 1 of the line. The <quote>PARTNO@35</quote> indicates that the part number field is to be printed starting in column 35. The price field is to be printed in column 52. The last line of the file PRLIST.REP indicates that an index file is to be used to determine the order that the record are to be printed. The index file specified is DESCRIP.NDX. If the <quote>X</quote> command line were omitted from the <emphasis role="bold">.REP</emphasis> file, then the report would contain the same print lines, but they would not be in order by description. They would be in random order.
+      The first line <quote><code>L 1,1 ;</code></quote> indicates that the report is to be printed without any automatic skipping over page boundaries. The next 5 lines (starting with <quote><code>T</code></quote>) are title page lines. Each indicates a line to be displayed at the top of the report printout. Two of these lines are <quote><code>T ;</code></quote>. These indicate a blank line, for cosmetic purposes. The seventh line, starting with <quote><code>P</code></quote>, indicates what is to be printed for each primary record in the file. In our case there are only primary records in the file, no secondary records. The <quote><code>DESC@1</code></quote> indicates that the field called DESC, the description field, should be printed starting in column 1 of the line. The <quote><code>PARTNO@35</code></quote> indicates that the part number field is to be printed starting in column 35. The price field is to be printed in column 52. The last line of the file PRLIST.REP indicates that an index file is to be used to determine the order that the record are to be printed. The index file specified is DESCRIP.NDX. If the <quote><code>X</code></quote> command line were omitted from the <emphasis role="bold">.REP</emphasis> file, then the report would contain the same print lines, but they would not be in order by description. They would be in random order.
     </para>
       <para>
         There may be any number of <emphasis role="bold">.REP</emphasis> files associated with one RMS master data file. Each one may have any desired root name and a file extension of <quote>.REP</quote>. For the sample inventory file it would be possible to produce many useful reports: a re-order list based on low stock; an inventory by supplier; a list of all back ordered items; a form for taking physical inventory which would contain a list of all parts, sorted by aisle, with the number the computer thinks are in stock and a blank spot to fill in the actual number in stock. Hopefully, you get the idea.
@@ -2241,7 +2250,7 @@ PORTABLE 6 GALLON GAS CAN         111111111          47.50
     Of course, what is actually displayed will depend on what you entered!
 </para>
       <para>
-    To send this report to a printer on the parallel port <quote>/p</quote> you would use the OS-9 redirection facility:
+    To send this report to a printer on the parallel port <quote>/p</quote> you would use the <productname>OS-9</productname> redirection facility:
 </para>
       <screen>
 OS9: <userinput>report sample prlist &gt;/p</userinput>
@@ -2268,9 +2277,9 @@ OS9: <userinput>report sample prlist &gt;/p</userinput>
     </section>
   </chapter>
   <appendix>
-    <title>OS-9 Command line summary</title>
+    <title><productname>OS-9</productname> Command line summary</title>
     <para>
-        A summary of OS-9 command line syntax for calling the RMS programs.
+        A summary of <productname>OS-9</productname> command line syntax for calling the RMS programs.
     </para>
 <informaltable frame="none" colsep="0" rowsep="0">
       <tgroup cols="3">
@@ -2293,7 +2302,7 @@ OS9: <userinput>edit datafile.dic</userinput></screen></entry>
           </row>
           <row>
             <entry></entry>
-            <entry spanspec="s2">STYLOGRAPH word processor or OS-9 text editor used to create the dictionary that defines the format of the datafile.</entry>
+            <entry spanspec="s2"><application>stylograph</application> word processor or <productname>OS-9</productname> text editor used to create the dictionary that defines the format of the datafile.</entry>
           </row>
 
           <row>
@@ -2339,7 +2348,7 @@ OS9: <userinput>edit reportspec.rep</userinput></screen></entry>
           </row>
           <row>
             <entry></entry>
-            <entry spanspec="s2">STYLOGRAPH word processor or OS-9 text editor used to create the report specification needed by the REPORT program.</entry>
+            <entry spanspec="s2"><application>stylograph</application> word processor or <productname>OS-9</productname> text editor used to create the report specification needed by the REPORT program.</entry>
           </row>
 
           <row>
@@ -2415,7 +2424,7 @@ OS9: <userinput>edit reportspec.rep</userinput></screen></entry>
           <row>
             <entry>QUIT</entry>
             <entry>CONTROL-E</entry>
-            <entry>Return to OS-9</entry>
+            <entry>Return to <productname>OS-9</productname></entry>
           </row>
           <row>
             <entry>CLEAR</entry>
