@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="stylo" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <info>
+<!--
+Stylo was also sold by Sonex Systems in Williamsville, NY 14211 for the FLEX OS.
+The product was formerly called STYLUS.
+OS-9 versions were sold by Microware.
+-->
+    <title>STYLOGRAPH</title>
+    <subtitle>for the OS-9 operating system
+ with MAIL MERGE and SPELLCHECK</subtitle>
+    <titleabbrev>STYLOGRAPH</titleabbrev>
+    <copyright>
+      <year>1983</year>
+      <holder>Dragon Data Ltd.</holder>
+    </copyright>
+    <legalnotice>
+      <para>This manual and the associated programs are the copyright of
+Dragon Data Ltd (under license). Copying is only permitted for backup
+purposes on a single computer system. Any other copying by whatever
+means without the written authorization of Dragon Data Ltd is
+strictly prohibited.</para>
+      <para>This manual was prepared using the STYLOGRAPH word processor,
+checked with the SPELL CHECK spelling checker, and printed with the
+MAIL MERGE merge/print program.</para>
+      <para>OS-9 and BASIC09 are trade marks of Microware Systems
+Corporation and Motorola Inc.</para>
+    </legalnotice>
+    <printhistory>
+      <para>Printed by Cleglen Publishing Ltd., Cardiff.</para>
+      <para>1983/4777</para>
+    </printhistory>
+  </info>
+  <xi:include href="overview.xml"/>
+  <xi:include href="tutorial.xml"/>
+  <xi:include href="mailmerge.xml"/>
+  <xi:include href="spell.xml"/>
+  <xi:include href="keysd64.xml"/>
+  <!--
+-->
+</book>

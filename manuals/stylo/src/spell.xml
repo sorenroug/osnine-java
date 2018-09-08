@@ -1,0 +1,612 @@
+<?xml version="1.0"?>
+<article xmlns="http://docbook.org/ns/docbook">
+  <articleinfo>
+    <title>SPELLING CHECKER USER'S MANUAL</title>
+    <titleabbrev>SPELL CHECK</titleabbrev>
+  </articleinfo>
+  <section>
+    <title>INTRODUCTION</title>
+    <para>The STYLOGRAPH Spelling
+Checker is a fast, reliable, and easy-to-use software tool that
+greatly enhances the usefulness of the STYLOGRAPH Word Processing
+System. The Spelling Checker allows even an inexperienced user to
+eliminate spelling errors from a text file. Although it is
+recommended that this manual be studied thoroughly before using the
+Spelling Checker, many people will be able to use it with little
+instruction. The Spelling Checker operates in a totally
+self-prompting fashion which simply means that whenever any action
+is of required on your part, a message will appear on your screen
+stating what action is required and what your options may be. You
+merely call the program and indicate the name of the text file to
+be checked. Spelling Checker then scans through the entire file and
+compares each word to a Standard Dictionary. Next, it refers to a
+Supplementary Dictionary (created by the user) that contains any
+additional words (such as peoples' names, names of cities, or
+technical terms) that might not exist in the Standard Dictionary.
+It then displays on the user's screen (or printer) a count of the
+total number of words in the file, the number of different words it
+contains, and the number of words that may have been misspelled. It
+also lists in a convenient, tabular form all the words that it
+considers to be possible misspellings. Some of these words are
+likely to be actual misspellings that should be corrected. Others,
+however, may be rare words that are spelled correctly but are not
+in the dictionary; you may wish to add these colds to the
+Supplementary Dictionary (as explained below) if they are words
+that occur frequently in the text files you will be checking in the
+future.</para>
+    <para>At this point, the
+Spelling Checker enters an interactive Review process, where the
+user decides which of several options to select. If no spelling
+errors have been detected, the program simply ends and returns the
+user to OS-9.</para>
+    <para>If possible errors have
+been detected, the user has the option of either exiting the
+program or of continuing with a word-by-word review of the possibly
+misspelled words. If the Exit option is selected, the user is
+returned to OS-9. If the user decides to proceed with the Review,
+he may choose to exit the program at any point in the Review.</para>
+    <para>During the Review
+process, each possibly misspelled word is displayed along with a
+set of options that may be selected for each word. The options may
+be selected by a single keystroke from the terminal. These options
+include:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Ignoring the word
+(leaving the word intact in the text file)</para>
+      </listitem>
+      <listitem>
+        <para>Adding the word to the
+Supplementary Dictionary</para>
+      </listitem>
+      <listitem>
+        <para>Flagging the word
+(placing a special character, normally a "&lt;" next to the word in
+the disk text file so that it may be located easily with the
+STYLOGRAPH Word Processor)</para>
+      </listitem>
+      <listitem>
+        <para>Displaying the word
+surrounded by its original context in the text file (to help
+determine what word was intended)</para>
+      </listitem>
+      <listitem>
+        <para>Changing the spelling
+of the word, so that all occurrences of this word will be corrected
+automatically in the text file</para>
+      </listitem>
+      <listitem>
+        <para>Exiting the Spelling
+Checker to return to OS-9</para>
+      </listitem>
+    </itemizedlist>
+    <para>As each word is
+displayed, the user has the option or ignoring it, adding it to the
+dictionary, flagging it or selecting it for Display-in-context. The
+Display-in-context option allows the user to see the questionable
+word in its context before deciding what to do with it. When all
+the words have been presented, the Spell Checker goes through the
+words that have been selected for Display-in context, showing each
+on the screen with some of the surrounding text. After the word is
+displayed, the user has the choice of ignoring it, adding it to the
+dictionary, or flagging it. In addition, the user has the option of
+changing the word to a new spelling. If the change option is
+selected, the user is asked to type in the new, correct spelling
+for the word, which is then substituted in the text file for the
+old, incorrect spelling. If you select the change option, be sure
+that the new spelling you enter is the correct one!</para>
+    <para>After the Review is
+complete, the Spelling Checker automatically creates a new text
+file that incorporates all the spelling changes and flags that the
+user has requested. (If no changes or flags have been selected,
+then no new text file will be created). It also adds any new words
+to the Supplementary Dictionary that the user has indicated. At
+this point, the program is finished, and control returns to OS-9.
+If flags have been added to the text file, the user may wish to
+edit the file immediately with the STYLOGRAPH Word Processor.
+STYLOGRAPH's Find feature provides a convenient way to locate all
+the flags that have been added, so that appropriate action may be
+taken on them. If no flags have been added, then no further editing
+is necessary; the text file should now be free of any spelling
+errors.</para>
+    <para>It is important to note
+that each word in the original text file need be dealt with only
+once in the Review process. For example, once a word has been
+Flagged, all occurrences of the word will be Flagged in the text
+file; the user will not be bothered with that word again.
+Furthermore, all of the user options may be selected with a single
+keystroke, so the Review process proceeds quickly and
+efficiently.</para>
+    <para>The Standard Dictionary
+supplied with the STYLOGRAPH spelling checker is among the most
+complete and accurate computerised dictionaries available. The
+large vocabulary of 42,000 words includes all of the common words
+normally encountered in English text. It includes the names of the
+days of the week, months of the year, countries, states and most
+large cities, common first and last names, and other entries not
+found in all dictionaries. It also includes all of STYLOGRAPH'S
+formatting commands, so these do not appear as typographical errors
+to the Spelling Checker. The dictionary has been prepared with
+great care to ensure that it is complete and error-free. They have
+been cheeked against a dictionary of common misspellings to ensure
+that all the most likely misspellings are doubly certain to be
+detected.</para>
+    <para>The Standard Dictionary
+is supplied to you in compacted form to reduce the amount of disk
+space it occupies and to reduce the time required for the program
+to read it from disk. A combination of sophisticated compression
+techniques have reduced the dictionary to less than one quarter of
+the size it would take up if it were supplied as an ordinary text
+file. As a result, the Standard Dictionary cannot be listed on your
+terminal, nor can it be edited using STYLOGRAPH. However, for those
+users who might wish to convert the compacted form of the
+dictionary to a normal text file, a special decompression utility
+program (called SPELLDCM) has been furnished for this purpose and
+is described later in the manual.</para>
+    <para>Most users will wish to
+add words to the dictionary to customize it for their own purposes.
+For example, technical terms, special abbreviations or codes, and
+names are popular candidates for inclusion. These words may be
+conveniently entered into the Supplementary Dictionary, usually
+called "supp" in the STY directory of the disk in drive 0. The
+supplied Supplementary Dictionary is empty; it is there to receive
+words the user may wish to add to it. The user may add an unlimited
+number of words to the Supplementary Dictionary. This may be done
+easily in either of two ways. The first is simply to use the
+Add-to-dictionary option during the Review process of the Spelling
+Checker. The second is to edit the Supplementary Dictionary using
+STYLOGRAPH. The Supplementary Dictionary is simply a text file that
+can be listed or edited like any other file. As this dictionary
+grows, however, it will occupy more disk space and will take longer
+to read. To anticipate this possibility, a utility program called
+"SPELLADD" has been furnished with the Spelling Checker to merge
+your Supplementary Dictionary with the Standard Dictionary. In this
+way, all the speed and space advantages of the compacted dictionary
+format will apply to the words you have added to the dictionary. Of
+course, additional words may be added to the Supplementary
+Dictionary at any time.</para>
+    <para>Some users may even
+want to delete certain words from the Standard Dictionary. While
+most users will not need to do this, a utility program called
+"SPELLSUB" is included to serve this function. This might be useful
+to the person who, for example, does not want certain spelling
+alternatives (e.g. British or American spellings) to be allowed or
+who does not wish particular "slang" words to exist in the
+dictionary.</para>
+    <para>One final precautionary
+note must be made. Although the Spelling Checker will detect all
+genuinely misspelled words, it cannot detect a correctly spelled
+word that is used improperly. For example, if the word "principle"
+is used when "principal" is meant, the Spelling Checker will not
+detect the misspelling. Both "principle" and "principal" are
+legitimate words, and although their meanings are different, there
+is no way that the Spelling Checker can determine which of the two
+you intend.</para>
+    <para>This concludes the
+introduction to the STYLOGRAPH Spelling Checker. The following
+sections contain more detailed operation on the use of the Spelling
+Checker. We recommend that you read through this Operation section
+of the manual at least once to become familiar with the
+requirements and various options of the program. Since the program
+is simple and self-prompting, a single, careful reading may be all
+that is necessary.</para>
+  </section>
+  <section>
+    <title>OPERATION</title>
+    <section>
+      <title>1. Using the Spelling Checker</title>
+      <para>To use the Spelling
+Checker command the user will normally type in the name "spell"
+followed by the name of the file that is to be checked. For
+example, if you want to cheek a file called "INTRO" you would type
+in the following lines from OS-9:</para>
+      <screen>
+OS9: spell intro
+</screen>
+      <para>A filename must be
+supplied; if none is given, an error message will appear and the
+program's execution will' be terminated. If the user wishes the
+output of Spelling Checker to be routed to a printer rather than to
+the terminal, he may redirect the output using OS's redirection
+facility. For example:</para>
+      <screen>
+OS9: spell intro &gt;/p
+</screen>
+      <para>Most of the user
+prompts and messages will still be directed to the terminal, but
+the list or possibly misspelled words will appear on the printer,
+along with the summary information about the number or words in the
+text file.</para>
+      <para>At this time, Spelling
+Checker will scan the text file. Following this, it will compare
+the words in the text file against the Standard Dictionary, whose
+filename is DICT. The dictionary must be in directory STY on the
+disk in drive 0. The time required for scanning will of course
+depend on the size of the file being checked. Messages will appear
+on the user's terminal indicating what the program is doing at each
+stage of its operation. The Spelling Checker can abort its
+operation during this phase if any of the following conditions
+arise:</para>
+      <orderedlist>
+        <listitem>
+          <para>The text file cannot be
+found</para>
+        </listitem>
+        <listitem>
+          <para>The Standard Dictionary
+cannot be found</para>
+        </listitem>
+        <listitem>
+          <para>The file contains too
+many different words. so that Spelling Checker's storage capacity
+has been exceeded.</para>
+        </listitem>
+      </orderedlist>
+      <para>The first two
+conditions are self-explanatory and may easily be corrected by
+ensuring that the required files exist with their correct
+filenames. The third condition, which most users will never
+encounter, indicates an "overflow" problem has been encountered in
+processing the text file. In this case, the text file must be
+divided into smaller sections using the STYLOGRAPH word processor.
+Normally, any file that STYLOGRAPH can manage will be processed
+without overflow by the Spelling Checker. With unusual files in
+which each word is different from all others, an overflow can
+arise. This is most likely to happen if Spelling Checker is used to
+check long lists of names, technical terms, or even to check a
+dictionary. Using smaller text files or expanding the amount of
+memory available will solve this problem quickly. For example:</para>
+      <screen>
+os9: spell intro #15k
+</screen>
+      <para>After scanning the text
+file and processing the Standard Dictionary, the Spelling Checker
+will look for the user's Supplementary Dictionary, whose name is
+"supp" in the STY directory of the disk in drive 0. If it is not
+found, the user will be prompted (asked) for an alternative
+filename for this dictionary. If you have no Supplementary
+Dictionary, just hit RETURN.</para>
+      <para>If the file exists
+under a different name or drive, supplying the correct file
+specification will allow the Spelling Checker to process the user's
+Supplementary Dictionary. If a carriage return is entered in reply
+to the prompt, the Spelling Checker will assume that no user
+Supplementary Dictionary exists, and so it will check the text file
+against the Standard Dictionary only.</para>
+    </section>
+    <section>
+      <title>2. Text File Information Display</title>
+      <para>After the text file has
+been scanned and the dictionaries have been processed, some useful
+information will be displayed on the user's terminal, including the
+total number of words in the text file and the number of different
+(or unique) words it contains. The program considers a word to be
+any contiguous (unbroken) string of letters (upper case, lower
+case, or mixed) that is at least two letters long. (A single letter
+is not treated as a word, since a single letter cannot be
+misspelled!) Any space, hard-hyphen, numeral, punctuation mark, or
+other printable character is treated as a delimiter (or breaking
+point) between words. Apostrophes are not considered as delimiters;
+instead, they are ignored, as though they were not present.
+Similarly, special "control characters" that may have been placed
+in the STYLOGRAPH Word Processor (to indicate Character mods like
+underlining, boldface, soft-hyphen, etc.) are ignored, so the user
+need not worry about them or even be aware of their existence.</para>
+      <para>The Spelling Checker
+will then display on the user's terminal a listing of all the words
+it considers to have questionable spelling. If no possible
+misspellings have been detected, the program will automatically
+terminate and control will return to OS-9. If possible errors have
+been found, they will be listed in a convenient, tabular form or
+five columns, followed by a count of their number. At this point,
+some users day decide to exit the program rather than to proceed
+with the Review process which follows. If the user has routed the
+Spelling Checker's output to a printer, this list of possibly
+misspelled words will be available as hard copy to be scanned at a
+later time (for checking in a conventional dictionary, for
+instance).</para>
+    </section>
+    <section>
+      <title>3. The Review process.</title>
+      <para>At this point in the
+program, the Spelling Checker will sort through its list of
+possibly misspelled words and print them on the user's terminal one
+at a time, along with a list of five options from which the user
+may choose. For example, given the misspelling "occassion", the
+user will see displayed:</para>
+      <screen>
+OCCASSION (I*/D/A/F/X)?
+</screen>
+      <para>At this time, the user
+simply enters one of the five indicated letters (no RETURN is
+necessary), and the appropriate action will be taken, as described
+next. (Note that the questionable word will be displayed in upper
+case only, with no hyphens or apostrophes, regardless of the word's
+appearance in the actual text file. At this point, the Spelling
+Checker is concerned only with spelling, and this is what it is
+asking about.)</para>
+      <section>
+        <title>The Ignore Option</title>
+        <para>The first choice "I",
+is the ignore option. Entering the letter "I" will cause the
+Spelling Checker to ignore this and all following occurrences of
+the word "occassion". The asterisk following the "I" simply
+indicates that this is the "default" option; merely entering a
+RETURN instead of the letter "I" will cause this option to be
+entered. In selecting the Ignore option, the user is indicating
+that the spelling of the word is acceptable but that the word
+should not be added to the Supplementary Dictionary. This option
+will be useful for rare words or abbreviations that are correct but
+unlikely to occur in any future files.</para>
+      </section>
+      <section>
+        <title>The Display-in-Context Option</title>
+        <para>The second choice, "D"
+is the Display-in-Context option. This indicates that the user
+wishes to see the word displayed in the context in which it
+occurred in the original text file before acting on it. When this
+option is selected, no immediate action will be taken by the
+program. It will delay its display of the word in context until the
+entire list of possibly misspelled words has been reviewed. At that
+time, all the words selected for display will be presented in
+context, one at a time, with a full list or options provided for
+each, including the Change option.</para>
+        <para>It is important to note
+that the Display option provides the only way for the Change option
+to be specified. In other words, the user is not permitted to
+change the spelling of the word without first viewing it in its
+actual context. This is a deliberate restriction in the program
+that is intended to prevent the user from changing the spelling of
+a word without an appropriate measure of caution.</para>
+      </section>
+      <section>
+        <title>The Add-to-Dictionary Option</title>
+        <para>The third option, "A"
+allows the user to Add the displayed word to of the Supplementary
+Dictionary. The actual addition takes place at a later phase of
+Spelling Checker's operation, but this is of no concern to the
+user. In addition, the user will not be bothered with this word
+again during the Review process; the Spelling Checker assumes that
+this word is spelled correctly, and it will accept all further
+occurrences of this word in the current text file, as well as in
+later text files.</para>
+      </section>
+      <section>
+        <title>The Flag Option</title>
+        <para>The fourth option, "F"
+causes all occurrences of the displayed word of to be flagged in
+the text file, after it is written to disk following completion of
+the remainder of the program. The normal (or default) flag
+character is the left arrow (&lt;) appended to the end of all
+occurrences of the word in question. Thus, if the word RYTHM is
+selected for flagging, it will appear as RHYTHM&lt; (or as
+rhythm&lt; if it appears in lower case) in the text file when the
+program is finished.</para>
+        <para>After the suspect word
+his been checked in a conventional dictionary, it is a simple
+matter to edit the text file with the STYLOGRAPH word processor and
+find all occurrences of the Flag character (&lt;) with the Find
+function. If some character other than the left arrow is preferred,
+the program asks for an alternative Flag Character, which the user
+simply enters in response to a prompt. This option will be most
+useful in situations where the user cannot determine the correct
+spelling of a word or name at the time of the Review and so must
+wait until some later occasion to verify its spelling.</para>
+      </section>
+      <section>
+        <title>The Exit Option</title>
+        <para>The fifth and last
+option, "X" allows the user to exit the Spelling Checker and return
+to OS-9. This is a useful feature for the user who is interrupted
+and so cannot complete the entire Review. Selecting this option
+voids any actions that were taken by the user on the preceding
+words; the text file will be left intact, in its original state.
+The user may then use the Spelling Checker on the current file at
+some later time.</para>
+      </section>
+    </section>
+    <section>
+      <title>4. The Display Process</title>
+      <para>When the Review is
+completed, the Spelling Checker displays all words that have been
+selected for Display-in-context. Each selected word is displayed
+surrounded by its context in the original text file. This display
+will show the text exactly as it occurs in the original file,
+preserving upper and lower case, hyphens and apostrophes. For
+example, if the selected word is "jumpes" the Display-in-context
+might look like this:</para>
+      <programlisting>
+The quick brown fox jumpes over the lazy dog
+</programlisting>
+      <para>The Display-in-context contains about 64 characters,
+with the selected word appearing near the center of the display. An
+upward arrow points to the last letter of the selected word,
+allowing it to be located quickly. If any RETURNS occur within this
+range of 64 characters, they will be replaced by the STYLOGRAPH
+RETURN marker (a broken vertical line). If the selected word occurs
+at the very beginning or end of the text file, or if its
+immediately preceding or following context contains a long series
+of spaces or RETURNS, obviously this will affect the appearance of
+the context display.</para>
+      <para>After the selected word
+is displayed in its context, a prompt will appear that looks like
+this:</para>
+      <screen>
+(I*/A/F/C)?
+</screen>
+      <para>These symbols indicate
+the four options available to the user for acting upon the selected
+word. As explained before, "I" indicates Ignore (the default
+option), "A" indicates Add to the Supplementary Dictionary, and "F"
+indicates Flag the word in the text file. These options operate
+exactly as specified in the previous section of the Review
+Process.</para>
+      <para>The "C" option allows
+the user to Change the spelling of the word in the text file. If
+this option is selected, the user will be asked to enter the new
+spelling for the word. The user should then enter the correct
+spelling, being careful to enter it accurately in upper or lower
+case as appropriate.</para>
+      <para>It should be noted that
+if a word contains STYLOGRAPH Character Mods (such as underlining
+or boldface), it cannot be Changed, since the Spelling Checker is
+not able to handle these modifications. Instead, following a
+warning message, the Flag option will be imposed automatically. In
+this case, the user will have to correct these modified words with
+the STYLOGRAPH word processor. By the same token, no character mods
+may be introduced when the correct spelling is entered. Following
+entry of the new, changed spelling, the user will be prompted by
+the message, "ARE YOU SURE (Y/N)?", at which time entering Y (for
+Yes) or N (for No) is expected. If N (No) is entered, the user will
+have another opportunity to enter the correct spelling. Once a
+change is entered, all further occurrences of the changed word will
+be corrected automatically.</para>
+    </section>
+    <section>
+      <title>5. Updating the Text File and the Supplementary
+Dictionary</title>
+      <para>After the preceding
+four phases of the Spelling Checker have been completed, the
+altered text file (containing flags and changed spellings) will be
+written to disk (if any alterations have been made), and the user's
+Supplementary Dictionary will be expanded (if required) to include
+any words added to the dictionary. Note that these actions will be
+taken only as necessary. In other words, if no flags or changes
+have been specified, no new text file will be created; if no words
+have been selected for addition to the dictionary, no additions to
+the Supplementary Dictionary will be made. If a new text file is to
+be created, the user will first be warned of any current backup
+file that might be deleted in the process. If no backup file
+exists. or if the user indicates that a backup file may be deleted,
+the original text file will be renamed as a backup file and the
+corrected file will be written to disk as a text file.</para>
+    </section>
+    <section>
+      <title>6. Using the Utility Programs</title>
+      <para>The following utility programs are for manipulating
+the Standard dictionary file. In most cases they will not be used
+at all. However, there are some users who may wish to make changes
+to the dictionary or are curious about the makeup of the
+dictionary. The following utilities will allow you to compress and
+decompress the dictionary and to add and subtract words from it.
+Notice that once the dictionary has been decompressed it is simply
+a list of ASCII characters separated by RETURNS. This decompressed
+file can then be worked on by other software packages such as
+BASIC09, data base management, or sort/merge programs.</para>
+      <section>
+        <title>SPELLDCM - Dictionary decompression</title>
+        <para>This program will take
+the compressed dictionary file and output the normal ASCII
+character strings to the user's terminal. To look at the words in
+the dictionary you could enter the following line from OS9:</para>
+        <screen>
+OS9: spelldcm /d0/sty/dict
+</screen>
+        <para>This will cause all of
+the words in the dictionary to be listed out to your screen. If you
+do this you will notice that all of the words are in alphabetical
+order. You will also notice that all of the letters are in upper
+case and that there are no spaces or punctuations in the file. By
+redirecting the output of this program to a disk file you can
+create an text file of the dictionary. For example:</para>
+        <screen>
+OS9: spelldcm /d0/sty/dict &gt;dictionary
+</screen>
+        <para>This could take several
+minutes to do and there must be plenty of disk space available
+since the decompressed file will be four times the size of the
+compressed file. You could even rename the resulting file to the
+name "DICT" so that the Spelling Checker would use the new file as
+the normal dictionary file. This is not recommended since the
+decompressed file would take up unnecessary disk space and cause
+the Spelling Checker to run much more slowly.</para>
+        <note><para>The
+decompressed version of the dictionary supplied is over 400k bytes
+in size, and will not fit on a mini-floppy disk, (unless
+double-sided, 80 track).</para></note>
+      </section>
+      <section>
+        <title>SPELLCOM - Dictionary compression</title>
+        <para>This program will take
+a normal ASCII text file and create a compressed file. For maximum
+compression the text file should be in alphabetical order. This
+program could compress a file that has been decompressed by the
+above program. Also, the supplementary dictionary could be
+compressed to speed up the operation of the Spelling Checker. This
+will mean that new words cannot be added to this dictionary,
+however. There may be some situations in which this may be
+desirable since you may want to prevent people from making
+unauthorized entries to the supplementary dictionary. This is
+particularly true of multi-user systems in which many different
+people will be using the dictionary, and not all of them will be
+good spellers. This precaution would reduce the chance of
+misspellings being added to the dictionary.</para>
+        <para>The normal syntax of
+the command is as follows:</para>
+        <screen>
+OS9: spellcom dict4 dict5
+</screen>
+        <para>This would cause the
+text file "DICT4" to be compressed and output to the file "DICT5".
+The size of the resulting file will be less than 50% of the
+original.</para>
+      </section>
+      <section>
+        <title>SPELLADD - Add words to the dictionary</title>
+        <para>This is the program
+that is normally used to add words to the Standard Dictionary. If
+the Supplementary Dictionary gets to be very large you may want to
+add it to the Standard Dictionary using this program. With the
+original dictionary file "DICT" renamed to "DICTOLD" the command
+line would look something like the following:</para>
+        <screen>
+OS9: chd /d0/sty
+OS9: spelladd dictold supp dict
+</screen>
+        <para>The "DICTOLD" file must
+be a compressed file, which should be in alphabetical order. The
+"SUPP" file must be an uncompressed (ASCII text) file which may be
+in any order. All of the characters should be in upper case and
+should not contain any characters other than letters "A" through
+"Z". Any other characters that are encountered will simply be
+regarded as separators so that the string "ALPHA=BETA" will appear
+as separate words "ALPHA" and "BETA" in the dictionary. The new
+words will be added in the correct alphabetical sequence. Before
+you add any words to the Standard Dictionary you should check them
+all carefully to ensure that they are correct. Once incorrect words
+are added to the Standard Dictionary, it is very unlikely that
+their existence will ever be discovered. You should also remember
+that everyone has a few words that they consistently misspell, so
+that they will look correct to them when they are checked.
+Consequently, all of the words should be checked by someone else or
+be looked up in a dictionary before they are added to the Standard
+Dictionary. The list of words to be added must be no longer than
+about 3,000 words. If the list is too long, the program will
+terminate with an error. In that case, the list must be split into
+shorter sections and added one at a time.</para>
+      </section>
+      <section>
+        <title>SPELLSUB - Remove words from the
+dictionary</title>
+        <para>This utility will
+remove words from the Standard dictionary. This need will rarely
+arise, but the utility is included for completeness. It could be
+used to shorten the dictionary or to remove misspellings that have
+inadvertently been added to the dictionary. Assuming that the
+dictionary to be shortened is called "DICTOLD" the command will
+look like the following:</para>
+        <screen>
+OS9: chd /d0/sty
+OS9: spellsub dictold /d1/mydir/wrong dict
+</screen>
+        <para>This will cause all of
+the words in the file "WRONG" to be taken out of the file
+"DICTOLD". The dictionary file must be a compressed file that is in
+alphabetical order. The third name (WRONG in this example) must be
+a list of uncompressed (ASCII) words separated by RETURNs. The last
+name on the line ("DICT" in this example) will be the name of the
+new file, which will have the words omitted.</para>
+      </section>
+    </section>
+  </section>
+</article>

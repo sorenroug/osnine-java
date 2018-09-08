@@ -1,0 +1,2699 @@
+<article xmlns="http://docbook.org/ns/docbook">
+  <articleinfo>
+    <title>STYLOGRAPH USER'S MANUAL</title>
+    <titleabbrev>STYLOGRAPH</titleabbrev>
+  </articleinfo>
+
+  <section>
+    <title>AN OVERVIEW OF THE STYLOGRAPH WORD PROCESSING SYSTEM</title>
+    <titleabbrev>OVERVIEW</titleabbrev>
+  <para>The STYLOGRAPH text processing system is a very easy to use but
+powerful method of creating and printing text. It allows you to
+type text on a video terminal, modifying and correcting it as you
+go, and then print it out when the complete text is finished. The
+STYLOGRAPH system is cursor-orientated with dynamic screen
+formatting. Cursor-based editing means that you may work on any
+portion of the text by moving the cursor to that point. Dynamic
+screen formatting means that the text is formatted on the screen in
+the same way it will appear on the printed copy. The display is
+continuously updated to show you how the text will appear. This is
+a very important feature normally available only on very expensive
+commercial word processing systems. It significantly reduces the
+time that it takes to produce finished copy.</para>
+<section>
+<title>FULL FEATURE TEXT EDITING</title>
+  <para>There is a full array of commands to help in the creation and
+modification of the text. The text displayed on the screen may be
+moved up, down, left or right. Also, the cursor can be moved to any
+page or to any specified series of letters or words. The cursor
+itself can be moved left, right, up, down, to any tab position, or
+to the extreme left or right. Any block of text can be moved,
+copied or deleted. You may also do a global replace so that all
+occurrences of a given string will be replaced with or without a
+"prompt" asking you if you wish the item replaced.</para>
+  </section>
+  <section>
+    <title>OPERATOR CONVENIENCE</title>
+  <para>At the beginning of the text, the operator normally types in a
+few simple commands indicating the line length, left margin, and so
+forth, and then enters the header and footer as they should appear.
+After that point the operator need not worry about the formatting
+of the page since it is taken care of automatically. Words that
+extend beyond the end of the line are automatically removed and
+placed on the next line. Headers and footers are also automatically
+inserted so that the operator always knows what portion of the page
+is being worked on. Ghost hyphens can also be entered so that if
+the word falls at the end of a line, and a ghost hyphen has been
+inserted, the hyphen will automatically be added.</para>
+  </section>
+  <section>
+    <title>FLEXIBLE DISPLAY</title>
+  <para>A command allows you to view the formatting commands or make
+them disappear from the screen. Another command allows you to see
+which characters will be modified at printout by underlining,
+superscripting, boldface and so forth. A page status command allows
+of you to see the current format values and other useful
+information.</para>
+  </section>
+  <section>
+    <title>COMPLETE FORMATTING CONTROL</title>
+  <para>The text or individual lines may be centered, left justified, right justified, or right
+and left justified. Tabs can be set or cleared at any point.
+Spacing of the lines on the text is under complete operator control
+with end of page, spacing, and vertical tab commands.</para>
+  </section>
+  <section>
+    <title>POWERFUL PRINTING OPTIONS</title>
+  <para>Underlining is supported by TTY type printers. For those people
+who have specialty
+printers there are a variety of additional capabilities
+including:</para>
+  <para>operator controllable pitch</para>
+  <para>1.5 line spacing</para>
+  <para><emphasis role="bold">BOLDFACE</emphasis></para>
+  <para>superscript<superscript>1</superscript></para>
+  <para>subscript<subscript>2</subscript></para>
+  <para><phrase role="underline">underline</phrase>, <phrase role="overline">overline</phrase></para>
+  <para>Also right and left justification of text is accomplished by
+incremental printing and true proportional spacing is supported on
+the specialty printers.</para>
+  </section>
+  <section>
+    <title>OPERATING SYSTEM COMPATIBILITY</title>
+  <para>STYLOGRAPH is fully compatible with the powerful OS-9 operating
+system. Text prepared using STYLOGRAPH is directly usable by other software. (This
+significantly aids software development since cursor based editing
+allows full viewing of the text being worked on thereby reducing
+errors and decreasing programming time). The size of the file being
+edited is limited only by the capacity of the disk system. Files
+may be loaded into the text at any point making it possible to
+rapidly create made-up documents using portions of text that have
+been previously saved to a text file. Also, to complement this
+feature, any portion of a text may be saved to a text file for use
+at a later point. The printer output may also be directed to a disk
+file for later print spooling. Most disk operating system commands
+are directly accessible without leaving the STYLOGRAPH system.</para>
+  </section>
+  <section>
+    <title>COMPLETE INSTRUCTIONS</title>
+  <para>The manual is written so that people with little or no
+experience with computers can easily learn to use STYLOGHAPH in a
+few hours. A text file is included which demonstrates most of the
+features of STYLOGRAPH and allows the operator to practice most of
+the functions. The logical arrangement of the commands and the
+immediate display of the results greatly simplifies the learning
+process. The manual also contains instructions for limited
+modification of STYLOGRAPH for special applications.</para>
+  </section>
+  </section>
+  <section>
+    <title>INTRODUCTION</title>
+  <section>
+    <title>SYSTEM REQUIREMENTS</title>
+  <para>STYLOGRAPH, MAIL MERGE,
+and SPELLCHECK are designed to operate under the OS-9 operating
+system, either Level One or Level Two. With a Level One system,
+about 15k of user space remains after STYLOGRAPH is loaded, which
+is enough room for about 5 full A4 pages of text to be held in
+memory at once, (workfiles can of course be much larger, by making
+use of the "NEWS" command). A Level Two system will allow about 35k
+of user space, enough for about 11 pages of text.</para>
+  <para>The minimum system
+configuration you require is your Dragon Data computer, with at
+least 64k bytes of RAM, running the OS-9 operating system; a floppy
+disk drive; and a television, or preferably a monochrome monitor.
+(The monitor will generally give you a better picture than a
+television). you can certainly run STYLOGRAPH with only one disk
+drive, although two drives are more convenient.</para>
+  <para>You can use almost any
+printer with STYLOGRAPH, to print out your finished letters and
+documents. STYLOGRAPH comes already configured to handle a wide
+range of letter quality (daisy-wheel) printers, and allows you full
+use of facilities such as proportional spacing, underline, bold,
+subscripts and superscript. You can also use STYLOGRAPH equally
+well with a simple printer, (such as a matrix printer), with none
+of these facilities.</para>
+  </section>
+  <section>
+    <title>GETTING STARTED</title>
+  <para>PLEASE READ THIS SHORT
+SECTION VERY CAREFULLY BEFORE ATTEMPTING TO USE STYLOGRAPH. WE
+SUGGEST THAT WHILE YOU ARE LEARNING TO USE STYLOGRAPH YOU SHOULD
+MAKE USE OF THE COMMAND AND KEY ASSIGNMENT SUMMARIES AT THE END OF
+THIS MANUAL.</para>
+  <note><para>In this manual,
+when we say that you should hit, for example, CONTROL-D, we mean
+that you should hold down the CONTROL key and hit the D key. (For
+the assignment of the CONTROL key on your keyboard, see the Key
+Assignment Summary at the end of this manual).</para>
+</note>
+  <para>The STYLOGRAPH package
+from Dragon Data contains two items: this manual, and a single
+floppy disk. Because of the risk of inadvertently damaging the disk or deleting the
+files on it, you should NEVER use the disk for running STYLOGRAPH.
+Use the 'backup' command available on OS-9 to copy the original
+disk to a freshly formatted blank disk, and STORE THE ORIGINAL DISK
+IN A SAFE PLACE. Refer to the <citetitle pubwork="book">OS-9 User's Manual</citetitle> for instructions
+on how to use the 'backup' and 'format' commands.</para>
+  <para>Now place the new disk
+in drive d0 (drive zero). Change your execution and data
+directories to the new disk:</para>
+  <screen>
+OS9: chx /d0/cmds chd /d0
+</screen>
+  <para>On the root directory
+of the disk, which you can now inspect by</para>
+  <screen>
+OS9: dir
+</screen>
+  <para>you will find some
+sample STYLOGRAPH workfiles and three directories - CMDS, STY, and
+SYS. The CMDS (commands) directory contains the files that you need
+to run STYLOGRAPH. You can inspect it by:</para>
+  <screen>
+os9: dir cmds
+</screen>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="1in"/>
+      <colspec colnum="2" colname="col2" colwidth="4in"/>
+      <tbody>
+        <row>
+            <entry>stylo</entry>
+            <entry>the word processing program - STYLOGRAPH</entry>
+        </row>
+        <row>
+            <entry>mm</entry>
+            <entry>the mail merge program - MAIL MERGE</entry>
+        </row>
+        <row>
+            <entry>spell</entry>
+            <entry>the spell check program - SPELL CHECK</entry>
+        </row>
+        <row>
+            <entry>spelladd</entry>
+            <entry>the program to add words to the spelling dictionary</entry>
+        </row>
+        <row>
+            <entry>spellsub</entry>
+            <entry>the program to remove words from the spelling dictionary</entry>
+        </row>
+        <row>
+            <entry>spelldcm</entry>
+            <entry>the program to decompile the spelling dictionary to a text file</entry>
+        </row>
+        <row>
+            <entry>spellcom</entry>
+            <entry>the program to compile a text file into a spelling dictionary</entry>
+        </row>
+        <row>
+            <entry>styfix</entry>
+            <entry>the program for customizing STYLOGRAPH</entry>
+        </row>
+        <row>
+            <entry>mmfix</entry>
+            <entry>the program for customizing MAIL MERGE</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para>Plus a few of the
+commonly used OS-9 utility programs.</para>
+  <para>STYFIX and MMFIX are
+used to customize STYLOGRAPH and MAIL MERGE for your printer. The
+supplied STYLOGRAPH and MAIL MERGE have been configured for your
+Dragon computer with a simple matrix printer, (type 'P40' in the
+System Configuration section of this manual), on the parallel
+printer port '/p'. If you are using a different type of printer,
+such as a daisy-wheel, you can either specify the printer type each
+tin: you call STYLOGRAPH or MAIL MERGE, (see below), or you can
+permanently change the type that STYLOGRAPH and MAIL MERGE assume
+using STYFIX and MMFIX, (see the System Configuration section).</para>
+  <para>The STY directory
+contains files that are used by STYLOGRAPH, MAIL MERGE, and SPELL
+CHECK. These are the STYHLP help files used by STYLOGRAPH, the
+STYPS proportional spacing tables used by STYLOGRAPH and MAIL
+MERGE, and the DICT spelling dictionary used by SPELLCHECK.</para>
+  <para>The DICT dictionary is
+very large, and you may want to make a separate SPELLCHECK disk.
+The easiest way to do this is to make a backup copy of the
+STYLOGRAPH disk, and then delete all the files not associated with
+SPELLCHECK.</para>
+  <para>The SYS directory
+contains the OS-9 error messages file a 'errmsg', used by OS-9 when
+reporting an error (such as "Error #216 - Pathname not found").</para>
+  <para>Note that you must have
+the STYLOGRAPH disk in drive 0, as STYLOGRAPH expects to find
+certain files that it needs in the directory /d0/STY.</para>
+  <para>If you are using a
+Dragon 64 computer and (you be not already in the 51 characters by
+24 lines mode, use the 'go51' command to change the screen
+format:</para>
+  <screen>
+OS9: go51
+</screen>
+  </section>
+  <section>
+    <title>GETTING INTO AND OUT OF STYLOGRAPH</title>
+  <para>You are now ready to
+try out STYLOGRAPH. All you need to do is type:</para>
+  <screen>
+OS9: stylo
+</screen>
+  <para>To exit STYLOGRAPH at
+any time and return to OS-9:</para>
+  <orderedlist>
+    <listitem>
+      <para>hit the ESCAPE key to
+enter the ESCAPE mode. (For the assignment of the ESCAPE key on
+your keyboard, see the Key Assignment Summary at the end of this
+manual).</para>
+    </listitem>
+    <listitem>
+      <para>hit the "/" key to
+return to the Supervisor mode, where you will see the main command
+menu.</para>
+    </listitem>
+    <listitem>
+      <para>use the "," key to move
+down the menu. If you have text that you wish to save, move to the
+line 'Save and Return', hit RETURN, and answer the questions
+STYLOGRAPH gives you. If you just wish to exit STYLOGRAPH, move to
+the line 'Return', hit RETURN and answer "Y" to 'Is the text
+secure' and 'are you sure?'</para>
+    </listitem>
+  </orderedlist>
+  <para>You can always return
+to the ESCAPE mode by hitting the ESCAPE key. You should also use
+the ESCAPE key to return to the ESCAPE mode when you want to exit
+from a HELP display. Don't be afraid to experiment - it's the
+quickest way to learn.</para>
+  <para>To try out the sample
+workfile, 'intro'
+use:</para>
+  <screen>
+OS9: stylo intro #15k
+</screen>
+  <para>The '#15k' is a request
+to OS-9, asking OS-9 to give STYLOGRAPH 15k bytes, (15360 bytes),
+of workspace. This is a reasonable upper limit on OS-9 Level One.
+On OS-9 Level Two, 30k would be a reasonable upper limit.</para>
+  <section>
+    <title>WORKING WITH TWO DISK DRIVES</title>
+  <para>If you have two disk
+driven, you can use a separate disk for your workfiles. Format a
+disk, put it in drive d1, and change your current data directory to
+that disk by:</para>
+  <screen>
+OS9: chd /d1
+</screen>
+  <para>If there is enough free
+space on your OS-9 system disk, you may find it more convenient to
+have the STYLOGRAPH programs on your system disk. To do this, copy
+the files in the CMDS directory of the STYLOGRAPH disk to the CMDS
+directory of your system disk. Refer to the description of the copy
+program in the <citetitle pubwork="book">OS-9 User's Manual</citetitle>.
+Next make a directory 'STY' on your system disk, e.g.</para>
+  <screen>
+OS9: makdir /d0/STY
+</screen>
+  <para>and copy the files in
+the STY directory on your STYLOGRAPH disk to the new STY directory
+on your system disk.</para>
+  </section>
+  <section>
+    <title>WORKING WITH ONE DISK DRIVE</title>
+  <para>If you have only one
+disk drive, your text files will be on your STYLOGRAPH disk. This
+means that whenever your disk becomes full you must make a fresh
+STYLOGRAPH disk. The easiest way to do this is to take a second
+backup copy of your original STYLOGRAPH disk, and use it as a
+master disk for creating new disks using 'backup'. In order to make
+more efficient use of the disk spaces you might like to delete all
+the SPELLCHECK files, especially the DICT dictionary, which is very
+large, and have a separate SPELLCHECK disk. When you want to
+SPELLCHECK a text file, copy it onto your SPELLCHECK disk.</para>
+  </section>
+  </section>
+  <section>
+    <title>STARTING STYLOGRAPH</title>
+  <para>STYLOGRAPH can be
+started in three different ways. The first and most common way is
+to enter the STYLOGRAPH command followed by the text file that you
+wish to edit. The command line would look something like this :</para>
+  <screen>
+OS9: stylo letter
+</screen>
+  <para>This would cause
+STYLOGRAPH to be called and the text file by the name 'letter' to
+be loaded in. If no such file name exists on the disk then no file
+will be loaded but STYLOGRAPH will remember the name in case you
+want to use it when you save the file at a later time.</para>
+  <para>The second method is to
+call STYLOGRAPH specifying both an input and output file. A typical
+command line from OS-9 might look like this:</para>
+  <screen>
+OS9: stylo letter1 letter2
+</screen>
+  <para>This would cause the
+file by the name 'letter1' to be loaded by STYLOGRAPH. The file
+name 'letter2' would be remembered by STYLOGRAPH so you can save
+the file under that name when you are finished editing. If two
+files are listed when STYLOGRAPH is called, the first file MUST
+exist on the disk or an error will result.</para>
+  <para>The third method is to
+specify no file name at all such as:</para>
+  <screen>
+OS9: stylo
+</screen>
+  <para>In this case STYLOGRAPH
+is called but no file will be loaded into memory. This method is
+normally not used since you will usually want to save the file when
+it is completed. It can be useful when you want to create a short
+letter or memo and do not want to save it on the disk.</para>
+  <para>You should be aware
+that there is no absolute necessity for specifying files at all
+when calling STYLOGRAPH since files may be loaded or saved under
+any name at any time. You can look at the current input and output
+file names by using the PAGE STATUS command which is explained in
+the CONTROL COMMANDS section of this manual.</para>
+  </section>
+  <section>
+    <title>USING DIFFERENT PRINTERS</title>
+  <para>STYLOGRAPH must know
+what kind of printer you are using before it will work correctly.
+You may configure STYLOGRAPH for your particular equipment by using
+the "STYFIX" command which is included on your STYLOGRAPH disk. The
+operation of this command is explained in the a "Operating System
+Notes" section of this manual. You may also specify the printer on
+the calling line. This portion of the command consists of a "+"
+sign, a "P" for printer, and a number specifying the particular
+equipment. The printer numbers are listed in the system
+configuration section of this manual. A command line for specifying
+a Diablo printer, printer type 0 (zero), would look like this:</para>
+  <screen>
+OS9: stylo letter +P0
+</screen>
+  </section>
+  <section>
+    <title>EXPANDING THE PAGE LIMIT</title>
+  <para>There is one additional
+option that may be specified on the calling line from OS-9. The
+maximum number of pages that STYLOGRAPH can work with can be
+changed. STYLOGRAPH defaults to a maximum of 22. This should be
+enough for most applications but in some circumstances where there
+are many short lines such as with a mailing list it may be
+desirable to increase the maximum number of pages. This maximum can
+also be set with the STYFIX command. If you have more pages in
+memory than STYLOGRAPH will allow, you will not be able to move the
+cursor beyond the last page even though the rest of the text will
+be visible on the screen. Also, STYLOGRAPH will prevent you from
+inserting text on the last line of the last page. To increase the
+number of pages by a calling line option you may use the "+Mx"
+option. The "x" refers to the number of pages. For example, the
+following line would increase the maximum number of pages to
+35:</para>
+  <screen>
+OS9: stylo letter +M35
+</screen>
+  </section>
+  <section>
+    <title>HOW STYLOGRAPH WORKS</title>
+  <para>STYLOGRAPH is always in
+one of three operating modes. These are the ESCAPE, INSERT, and
+SUPERVISOR modes. Each mode has its own special characteristics.
+After calling STYLOGRAPH from OS-9 you are in the SUPERVISOR mode.
+In this mode all of the keys on the terminal have special meanings.
+A cluster of 12 keys on the right side of the keyboard is used to
+move the cursor around on the screen, move the screen up and down
+or change to one of the other operating modes. The letters on the
+keys have no special meaning since they are arranged to make their
+functions easy to remember and use. For example, to move the cursor
+left, right, up or down you will use keys that are arranged in the
+corresponding positions in the cluster. There are several keys on
+the left side of the keyboard that are used to find, replace,
+duplicate, and move portions of the text round. On these keys the
+letter signifies its function. So, for example, the "F" key is used
+to Find some part of the text.</para>
+  <para>In the INSERT mode
+STYLOGRAPH ants very much like a typewriter. This is the mode you
+will be in when you are typing (also called "entering") the text.
+There are several important differences, however. You do not have
+to watch for the end of the line and insert a carriage return since
+STYLOGRAPH automatically puts a word on the next line if it is too
+large for the previous line. Also, if you make a mistake, you can
+simply backspace over your mistake and retype it. The major
+difference between typing on a typewriter and using STYLOGRAPH is
+that there are also FORMAT COMMANDS that can be entered while using
+STYLOGRAPH. These commands are typed in like normal text and cause
+the appearance of the text to change in some way. For example,
+there are format commands that can change the length of the lines
+and the size of the margin. These FORMAT COMMANDS are displayed on
+the screen but do not appear on the printed copy.</para>
+  <para>The SUPERVISOR mode is
+used to start the printing and to interact with OS-9. In this mode
+the text is not displayed on the screen. This mode is menu driven
+and self-prompting. This means that you will be given a list of
+actions that you can take. After making your choice you may be
+asked one or more questions. This method of printing and
+interacting with OS-9 is very simple and takes almost no practice
+to use.</para>
+  </section>
+  <section>
+    <title>LEARNING THE SYSTEM</title>
+  <para>Most parts of this
+manual are designed so that very little knowledge of computer
+systems is needed to use it effectively. Some knowledge of OS-9 is
+needed, however, so that you can get STYLOGRAPH started and handle
+the disk files that are created. Normally it will take a person
+with reasonable typing skills only a few hours to start using
+STYLOGRAPH competently. The best way to learn to use STYLOGRAPH is
+to sit down in front of the terminal and practice all of the
+commands as they are explained in the Tutorial at the end of this
+manual. After going through the Tutorial you should go through this
+manual to learn all of the functions not explained in the tutorial.
+A practice text with the name "INTRO" is included on the supplied
+disk. This is an ideal text to work with initially to show how
+STYLOGRAPH works. To load this text simply enter (type) the
+following command line from the disk operating system:</para>
+  <screen>
+OS9: stylo intro
+</screen>
+  <para>This file is the
+overview section of the manual. By using this file you can see how
+a STYLOGRAPH file looks on the screen and also how the printed
+output will look. When working with this file you need not worry
+about making mistakes or destroying it since you will normally not
+be saving it. You should experiment freely so you can become
+completely familiar with the system. After you have experimented
+with this text and are familiar with the STYLOGRAPH text processing
+system you should then try to start creating your own text files
+from scratch.</para>
+  <para>Another very useful
+feature of STYLOGRAPH is that it is virtually impossible to type
+too fast. Many times while you are entering text, STYLOGRAPH will
+be readjusting lines below the cursor. For example, if you type in
+something which causes a word at the end of the line to be bumped
+off to the next line, STYLOGRAPH will immediately start rewriting
+all of the following lines. You do not have to wait for this to be
+completed. You may continue typing and STYLOGRAPH will finish the
+rest of the screen without missing any characters that are being
+entered. The line that you are typing on will always be displayed
+correctly even though the rest of the screen may be in the process
+of being updated.</para>
+  <para>An important advantage
+that STYLOGRAPH has over most other word processing systems is that
+formatting is done on the screen. This makes learning the system
+especially easy since the effects of most of the commands are
+immediately visible. There are some differences between the display
+on the screen and the printed outputs however. Spaces between the
+lines (for example, if you are double spacing) are not shown on the
+screen. This is so you can view as much text as possible on the
+screen without scrolling up or down. The left margin is also not
+displayed on the screen. Several special printing characteristics
+such as underlining, proportional spacing, and so forth cannot be
+displayed on the screen because of limitations of the display
+device. Also it is possible to insert special printer commands in
+the text. These commands will, of course, not actually be printed
+out as text. but sent as invisible control sequences.</para>
+  <para>You will find that
+almost any common text processing task can easily be accomplished
+using the STYLOGRAPH word processing system. Often a re-reading of
+the manual will help in devising new methods of making the word
+processing task easier. Every user of STYLOGRAPH eventually
+develops their own "tricks of the trade". For example, most people
+find that it is unnecessary to enter the header and the footer
+information at the beginning of each editing session since it is
+easier to create a file with this information already on it and
+then call it in at the beginning of each new text file.</para>
+  </section>
+  </section>
+  <section>
+    <title>ESCAPE MODE</title>
+  <para>The escape mode is a
+kind of "home base" for all of the various functions of the
+STYLOGRAPH word processor. It may be entered at any time simply by
+hitting the ESCAPE key on the keyboard. (For the assignment of the
+ESCAPE key on your keyboard, see the Key Assignment section at the
+end of this manual). This will cause the text to be displayed on
+the screen and allow you to do a number of important editing
+functions.</para>
+  <para>Many of the
+characteristics of the display will be explained later but it is
+important to understand the meaning of a couple of the
+characteristics from the start. The broken vertical lines on the
+right of the screen indicate that the line ends with a user-entered
+"RETURN". Lines that end with a hyphen at the far right of the
+screen are processor created lines, such as the headers and
+footers. and were not typed in at the place that they actually
+appear on the screen. The exact way in which the display is
+modified and created will become clearer as you become more
+familiar with the system. If there is no text in the memory of the
+computer, only the line indicating the first page and a single
+"RETURN" at the right of the screen will appear on the screen.</para>
+  <section>
+    <title>CURSOR CONTROL</title>
+  <para>There are five keys
+which control the position of the cursor on the screen. These keys
+are arranged in the shape of a cross to make it easy to remember
+their functions:</para>
+  <screen>
+                           I
+                         J K L
+                           ,
+</screen>
+  <para>The centre key in this
+cross is the "K" key with the four keys "JIL," on the outside. The
+top key "I" moves the cursor up. The bottom key "," moves the
+cursor down, and the "J" and "L" keys move it left and right
+respectively. The "K" key is a special express key which moves the
+cursor from one end of the line to the other. Hitting this key once
+will move the cursor to the far left and hitting it twice will move
+it to the far right. You should practice moving the cursor to
+various parts of the screen so you can see how it works.</para>
+  <para>You will notice several
+important characteristics of the cursor. The cursor will only move
+to a portion of the screen in which a character (a character is a
+letter, number, punctuation, or space) has previously been entered,
+so that the cursor will sometimes unexpectedly jump rapidly from
+place to place. If you move the cursor to a portion of the text in
+which the lines are right and left justified, you will find there
+are some spaces that the cursor cannot move to. This occurs because
+these spaces were not actually typed in but were added by
+STYLOGRAPH to even out the lines. If you can move the cursor to a
+space it means that a "SPACE" from the keyboard was entered there.
+If you cannot move the cursor there, then no space character exists
+at that place.</para>
+  <para>You will notice that it
+is impossible to move the cursor off the top or bottom of the text.
+If you try to do this you will hear the error bell. (To find out
+what error you have made, hold down the "CONTROL" and depress the
+"N" key, once to display the error message and again to return to
+the ESCAPE mode). The cursor cannot be moved to the "processor
+created" lines at the top and the bottom of the page, (the header
+and footer), since these have been inserted by STYLOGRAPH and can
+only be changed by editing at the point where they were defined
+earlier in the text. The text will automatically scroll up or down
+if you try to move the cursor off the bottom or top of the
+screen.</para>
+  <para>The tab key can also be
+used to move the cursor. To move to the next defined tab location
+hold down the "CONTROL" key and depress the "T" key. This function
+is explained more fully in the section on CONTROL commands.
+Sometimes the TAB function will not cause the cursor to move. This
+means that a character does not exist at the next tab position.</para>
+  </section>
+  <section>
+    <title>SCROLLING UP AND DOWN</title>
+  <para>The four keys "UO.M"
+located in the corners of the cursor control keys are for scrolling
+up and down:</para>
+  <screen>
+                         U I O
+                         J K L
+                         M , .
+</screen>
+  <para>The "U" key cause the
+whole screen to move up one line and the "M" key cause it to move
+down. The "O" and "." keys cause the screen to move up or down
+respectively by the size of the screen. These keys are useful for
+rapidly scanning through the text since new text will appear on the
+screen as rapidly as the terminal can rewrite the screen. The "O"
+key, for example, causes the text to be moved up so that the line
+that appeared on the bottom of the screen now appears on the top.
+The easiest way to remember the effects of the "O" and of "." keys
+is to keep in mind that moving your finger up to the "O" key causes
+the text to move up and moving your finger down causes the text to
+move down.</para>
+  </section>
+  <section>
+    <title>SCROLLING LEFT AND RIGHT</title>
+  <para>Hitting the "7" key
+causes the entire screen to shift 25 characters to the left and
+hitting the "9" key causes it to move 25 characters to the right.
+This is the way text is normally displayed. These commands are
+useful when the lines are wider than the screen. If part of the
+text extends off the screen you will see arrows at the edge to
+indicate this. If there is text extending bar to the left of the
+screen there will be left pointing arrows fish on the left side. If
+the text extends off to the right side, you will see right pointing
+arrows "&gt;" on the right side.</para>
+  </section>
+  <section>
+    <title>FINDING A PAGE</title>
+  <para>Every page, as it
+appears on the screen, has a serial page number. This number
+appears on the page boundary which will look like this:</para>
+  <screen>
+---------- PAGE 5 ----------
+</screen>
+  <para>This number is to help
+you keep track of your place in the text and to provide a
+convenient way of getting from one place in the text to another. To
+move to a given page hit the pop's key and a message will appear on
+the screen like this:</para>
+  <screen>
+*********** PAGE=
+</screen>
+  <para>Type in the page number
+that you want and hit RETURN. If you enter a number which is larger
+than the number of pages available, the cursor will move to the
+last line and the error bell will ring. Thin provides a convenient
+way of mooing to the bottom of the text. Entering another he'd
+instead of a number will move the cursor to the beginning of the
+text in memory. As with virtually all other commands, you may hit
+the ESCAPE key at any time to return to the ESCAPE mode without
+taking any action.</para>
+  <para>The number that is used
+in the page command and which appears on the page boundary is
+called the "serial" page number. It is important to remember that
+the serial page number may not be the same as the "printed" page
+number. The printed page number is set by a format command that is
+explained later. The printed page number can appear in the header
+(top margin) or footer (bottom margin) of the page.</para>
+  </section>
+  <section>
+    <title>FINDING A STRING</title>
+  <para>A string consists of
+one or more characters. Words, phrases, numbers, or even single
+characters are called strings. You may move the cursor to any given
+string by using the "F" command. When you hit the "F" key a space
+will open up at the top of the screen and the following message
+will appear:</para>
+  <screen>
+*** FIND {
+</screen>
+  <para>Enter the string you
+want to find and hit RETURN. The cursor will then move to the next
+occurrence of that string and the following message will
+appear:</para>
+  <screen>
+*** STOP (RET) OR CONTINUE (SP)?
+</screen>
+  <para>This means that to stop
+and leave the cursor in its present position, hit the RETURN key.
+To continue on to the next occurrence of the string, hit the space
+bar. This allows you to move rapidly through the text to find a
+particular portion of the text. If the string does not exist below
+the cursor, the screen will return to normal and the error bell
+will ring. Remember that the FIND command will only search for
+strings below the cursor so if you want to search the entire text
+you must move the cursor to the top first using the "PP"
+command.</para>
+  </section>
+  <section>
+    <title>REPLACING A STRING</title>
+  <para>You may replace one
+string with another with the REPLACE, "R", command. This command is
+similar to the FIND command except that it will not only find the
+string but it will replace the string with a second string. When
+you hit the "R" key the following message will appear:</para>
+  <screen>
+*** REPLACE {
+</screen>
+  <para>Enter the string you
+want replaced, hit return, and the next message will appear:</para>
+  <screen>
+*** WITH {
+</screen>
+  <para>Enter the replacement
+string, hit RETURN, and the cursor will move to the next occurrence
+of the first string with the following message:</para>
+  <screen>
+REPLACE (Y-N-A)?
+</screen>
+  <para>To replace the string
+type in a "Y" for yes. If you decide not to replace the string,
+enter a "N" for no. If you want to replace all of the strings
+without being asked, hit the "A" for all. Unless you know exactly
+what you are doing you should not use the "A" option since you will
+not be able to see the strings before and after they have been
+replaced. After you have responded, unless you took the again
+option a message will appear asking you if you want to continue or
+not as it did with the FIND command:</para>
+  <screen>
+*** STOP (RET) OR CONTINUE (SP)?
+</screen>
+  <para>Hit the RETURN if you
+want to stop at this point and hit the space bar if you want to go
+on to the next occurrence of the string. As with the FIND command,
+this will only search for strings which are below the cursor.
+Again, remember that the ESCAPE key may be hit at any time if you
+want to go back to the normal display. The REPLACE function has one
+additional feature which may be useful if you want to replace or
+add CARRIAGE RETURNS. This could be used if you have an old text
+file, that was prepared using a line orientated editor: which has a
+number of RETURNS that must be removed. While using the FIND or
+REPLACE, the "|" character can be entered as a substitute for the
+RETURN. For example, to replace the "RETURNS" with a space, you
+would enter the "|" and a SPACE so the screen would appear as
+follows:</para>
+  <screen>
+REPLACE {|}
+WITH {
+</screen>
+  <para>You could then go down
+through the text and selectively replace only those RETURNS that
+need to be removed.</para>
+  <para>The FIND and REPLACE
+commands can do a search for both upper and lower case characters
+by hitting CONTROL-U at the end of the string to find, instead of
+the RETURN key, as would normally be the case. At that point, the
+search would disregard the ease of the characters in conducting its
+search for the desired string.</para>
+  </section>
+  <section>
+    <title>MOVING A STRING</title>
+  <para>There are many times
+during text editing that you will want to move a string from one
+place to another. This is easily accomplished with the SAVE, "S"
+and WITHDRAW, "W" functions. To do this you must first set of a a
+marker at the end of the string. This is done by moving the cursor
+to the end of the string and entering two marker characters "}}" Do
+not worry about these unwanted marker characters appearing in the
+text since they will automatically disappear when you save the
+text. Now move the cursor to the beginning of the string and hit
+the "S" key indicating a SAVE. The text between the cursor and the
+markers will then disappear from the screen. Then move the cursor
+to the place that you want the text to appear and hit the "W" key
+to withdraw the text. This is a very useful command but it takes
+some thought and planning to use correctly since you must include
+the correct number of spaces and/or returns for the text to be
+formatted after you are finished. It is not a particularly serious
+matter if you have made an error, however, since the errors are
+normally easily correctable.</para>
+  </section>
+  <section>
+    <title>DUPLICATING A STRING</title>
+  <para>Duplicating a string is
+very similar to moving a string. This is an especially useful
+feature if a particular string occurs many times. By using this
+command you will not have to re-enter the string every time it is
+needed. To duplicate a string you must set a pair of markers and
+SAVE the string as you did when moving a string. The only
+difference is that when you want the string to reappear at the
+cursor you enter a "D" to duplicate the string. You may do this as
+often as you wish. The last place that you want to duplicate the
+string you must enter "W" to withdraw the text, thus leaving the
+SAVE buffer available for another SAVE command.</para>
+  </section>
+  <section>
+    <title>REMOVING TEXT</title>
+  <para>The easiest method of
+erasing (removing) a large portion of the text is to use the ZAP,
+"Z" command. To use this function, set a couple of markers at the
+end of the string that you want to delete and move the cursor to
+the beginning bf the string. Hit the "Z" key and a message will
+appear similar to this:</para>
+  <screen>
+*** DELETE 345 CHARACTERS?
+</screen>
+  <para>Answer with a "Y" for
+yes and a "N" for no. This message is so you can be sure that you
+are deleting the correct number of characters and will not
+accidentally delete a
+large portion of your text. There are a few other ways of deleting
+text but these will be explained later.</para>
+  </section>
+  <section>
+    <title>SINGLE CHARACTER OVERWRITE</title>
+  <para>One of the most common
+typographical errors to make is to hit the wrong key. STYLOGRAPH
+has a convenient way of correcting this in the ESCAPE mode. You can
+hit the "1" (number one) key and the next key you hit will
+overwrite the character that the cursor is on. This command is easy
+to remember because you are overwriting "1" character.</para>
+  </section>
+  <section>
+    <title>SINGLE CHARACTER INSERT</title>
+  <para>Another common
+typographical error is to simply miss a key. To insert just one
+character just move the cursor to the point where you want to
+insert the character, hit the up arrow "^" and the next key that
+you hit will be inserted in front of the character under the
+cursor. All of the characters under and to the right of the cursor
+will be bumped to make room.</para>
+  </section>
+  <section>
+    <title>SUPERVISOR AND INSERT MODES</title>
+  <para>You may enter the
+SUPERVISOR mode by hitting the "/" key and the INSERT mode by
+hitting the ";" key. There are separate sections in this manual
+fully explaining these modes.</para>
+  </section>
+  </section>
+  <section>
+    <title>INSERT MODE</title>
+  <para>The INSERT mode is the
+mode that you will be spending the most time in, since this is the
+mode that is actually used to enter text. Before entering text you
+must move the cursor to the point that you would like to start
+entering text. You then leave the ESCAPE mode and enter the INSERT
+MODE by hitting the ";" key once. At this point the cursor line
+will have a different appearance to make it easier to enter the
+text and to indicate that you are in the INSERT mode. The text to
+the left of the cursor will appear normally on the left but the
+text to the right will be put on the far right with a string of
+hyphens in between. The number of hyphens indicates how much room
+there is on the line before a word will be bumped down to the next
+line. On some terminals the shape of the cursor will also change or
+it may change from flashing to solid to indicate that you are in
+the INSERT mode.</para>
+  <para>When in the INSERT mode
+you can type in the text just as you would on a typewriter. If you
+make a mistake you may simply backspace over your error and
+continue typing. Use the BACKSPACE key to do this (For the
+assignment of the BACKSPACE key on your keyboard, see the Key
+assignment section at the end of this manual). You should not hit
+the RETURN as you approach the end of the line since STYLOGRAPH
+automatically picks up the word at the end of the line and puts it
+on the next line if it is too long. All of the text, with the
+exception of the line you are typing will, as always, be formatted
+as it will appear on the printed copy.</para>
+  <para>RETURNS (these are
+equivalent to "carriage returns" on a typewriter) are only used
+when you want to start the next line at the beginning of the line.
+You would start a new paragraph or set up neatly arranged columns
+by starting the line with a RETURN. Any time you want some text to
+appear in a certain column of the page, such as in charts and
+tables, you must start out the line with a RETURN. The presence of
+the RETURN is always indicated by a broken vertical line on the far
+right of the screen.</para>
+  <para>There are a couple of
+things to keep in mind when placing the cursor before starting to
+enter text. If you are inserting text somewhere inside a line it
+makes the most sense to put the cursor on top of a space and then
+enter a apace as the first character. This assures that the words
+that you are entering will always have a space before and after
+them as they would normally have when you are done. If you are
+starting a complete new tine which starts at the left side of the
+screen, it is usually easiest to move the cursor to the previous
+RETURN and enter a RETURN as the first character. This will usually
+cause the next line to be completely empty and will reduce
+distracting Cursor movement On Some terminals.</para>
+  <section>
+    <title>CHARACTER MODS</title>
+  <para>While you are entering
+text you may specify that the characters you are entering will have
+some kind of modification when they are printed such as
+underlining, superscript, boldface, and so forth. These character
+modifications are done with "CONTROL" key combinations. To start
+underlining characters hit CONTROL-U and continue entering text.
+('CONTROL-U' means 'hold down the CONTROL key and press the U key'.
+For the assignment of the CONTROL key on your keyboard, see the Key
+Assignment section at the end of this manual). When you want to
+stop underlining hit the UNMOD key. BOLDFACE works in the same way
+except that CONTROL-B starts the boldface.</para>
+  <para>There are five
+different kinds of modifications that can be specified: (1)
+underlining, (2) overlining, (3) boldface, (4) superscript, and (5)
+subscript. Any logical combination of the five can be specified by
+hitting the appropriate "CONTROL" keys :</para>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="1in"/>
+      <colspec colnum="2" colname="col2" colwidth="2in"/>
+      <thead>
+        <row>
+            <entry>Key</entry>
+            <entry>Function</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+            <entry>U</entry>
+            <entry>underline</entry>
+        </row>
+        <row>
+            <entry>O</entry>
+            <entry>overline</entry>
+        </row>
+        <row>
+            <entry>I</entry>
+            <entry>superscript</entry>
+        </row>
+        <row>
+            <entry>K</entry>
+            <entry>subscript</entry>
+        </row>
+        <row>
+            <entry>B</entry>
+            <entry>boldface</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para>As an example, you
+might want to have a superscripted character which you want to be
+in boldface with an underline. To do this enter CONTROL-U,
+CONTROL-I, and CONTROL-B, one after another. Then enter the
+character that you want modified. Now hit the UNMOD key to stop
+modifying characters in this way and continue entering text.</para>
+  <para>On some terminals the
+modified characters will appear in low intensity, indicating that
+they have been modified. On other terminals the characters will be
+indicated by a "reverse" field. You may look at the modification by
+using the "view" key (CONTROL-V). Enter CONTROL-V and all of the
+character modifications will be displayed. Hit the CONTROL-V key
+again and the display will return to normal. On the example just
+given in the previous paragraph, the modified character would be
+replaced by a "C" when the VIEW key is hit. The meaning of these
+characters is listed in the Viewed Character Modifications section
+of this manual or you can use the "ASSIST" command which will be
+explained later.</para>
+  </section>
+  <section>
+    <title>GHOST HYPHENS</title>
+  <para>You may enter normal
+hyphens as you are entering text and STYLOGRAPH will automatically
+break the word at the hyphen if it falls off the end of the line.
+The only potential problem with this is that if you modify text at
+some later point, the hyphenated word might appear in the centre of
+the line with the hyphen still there. You would then have to remove
+the hyphen. One way round this problem is to insert ghost hyphens
+as you are entering text. When you come to a point, normally in a
+long word, where you think a hyphen may be needed, hit CONTROL-G.
+The hyphen will not normally appear on the screen at this point.
+You then continue entering text. The ghost hyphen will
+automatically appear and disappear depending on whether the word
+falls at the end of the line or not.</para>
+  <para>There are a couple of
+things to keep in mind about ghost hyphens. If you are using right
+and left justified text the hyphens are often not really needed.
+This is especially true if you are using a "speciality" printer
+version of STYLOGRAPH since the characters will be evenly spaced
+throughout the line. Also, it is often most convenient to go back
+through the text and insert ghost hyphens in the ESCAPE mode just
+before the final printout so you need not worry about inserting
+them while entering text.</para>
+  </section>
+  <section>
+    <title>LONG LINES</title>
+  <para>When you are working
+with lines that are wider than the screen STYLOGRAPH will always
+keep the cursor on the screen by shifting the line right or left if
+needed so you can see what you are typing. This means that at times
+the position of the line may be different from the rest of the
+screen. The line will return to normal when you go back to the
+ESCAPE made.</para>
+  </section>
+  </section>
+  <section>
+    <title>FORMAT COMMANDS</title>
+  <para>Format commands are
+entered while you are in the INSERT mode. These tell STYLOGRAPH how
+the text is to be formatted on the screen and at printout time. The
+format commands start in the first column with a comma followed by
+the command. The format command must <citetitle>ALWAYS</citetitle> be proceeded by
+a RETURN and followed by a RETURN. In many cases the format command
+is followed by a number or a character. There must always be a
+space between the command and the number or character.</para>
+  <para>Since these commands do
+not appear on the printout it is often desirable to view the screen
+without them. This is done with the FORMAT command (CONTROL-F). To
+make the format command disappear from the display press CONTROL-F.
+To return the screen to normal, press CONTROL-F again.</para>
+  <para>STYLOGRAPH starts out
+with format commands and values that are preset. These preset commands are called
+default values. For example, if you enter no format commands in
+your text, STYLOGRAPH will use the default value of 66 lines for
+the page length. To change the page length you must enter a format
+command. The normal default values are listed in the Command
+Summary section.</para>
+  <para>It is possible that
+format commands will be entered incorrectly. For example, you could
+forget to put a space between the format command and the number,
+which would be an error. In this case STYLOGRAPH would simply
+ignore the command altogether. The error bell will then sound
+whenever the cursor moves from the erroneous line to the next line,
+indicating that there has been an error.</para>
+  <para>Also, you will notice
+that many format commands require no numbers (also called format
+parameters). Even for those commands that need a number, you may
+omit the number and STYLOGRAPH will automatically use the smallest
+sensible number. So. for example, the following two format commands
+have the same meaning:</para>
+  <screen>
+,ce
+,ce 1
+</screen>
+  <para>These are centring
+commands and in both cases will cause only one line to be
+centred.</para>
+  <para>A brief description of
+each of the format commands follows. Most of the commands are used
+at some point in the INTRO text file so you can see how they work.
+The best way to learn their use is to try each of them and then
+observe the result. Where a command needs a number, we have used an
+X to represent the number. Where a command needs a character as a
+parameter, we have used C to represent the character.</para>
+  <section>
+    <title>,ce X CENTRING</title>
+  <para>To centre a line or
+lines simply type in the centre command and enter the number of
+lines you want centred in place of the X. If you only want to
+centre one line you may omit the number. For example, the following
+two lines are legitimate centring commands:</para>
+  <screen>
+,ce 4
+,ce
+</screen>
+  <para>The command on the
+first line would centre the next four lines and the command on the
+next line would centre only one. It only makes sense to centre a
+line which has been proceeded with a RETURN and which is followed
+by a RETURN so you will know exactly where the beginning and end of
+the line will be. The following lines are not legal format
+lines:</para>
+  <screen>
+,ce4
+ ,ce
+</screen>
+  <para>The first command is
+incorrect because there is no space between the command and the
+number while the second is incorrect because it does not start in
+the first column.</para>
+  </section>
+  <section>
+    <title>,rj X RIGHT JUSTIFICATION</title>
+  <para>Right justification
+works exactly like the centring command except that the following
+line or lines are set to the far right of the page. The following
+would be legal right justification commands:</para>
+  <screen>
+,rj 3
+,rj
+</screen>
+  <para>The first command would
+right justify three lines and the second would right justify
+one.</para>
+  </section>
+  <section>
+    <title>,ju JUSTIFY</title>
+  <para>The justify command
+causes the lines to be right and left justified. The line will not
+be justified if it ends with a RETURN. The text on this page was
+created with the justify command. If you are using a proportional
+spacing printer, the printed output will look slightly different
+than on the screen since the line is evened out on the screen by
+putting spaces between the words whale on the printed output all of
+the letters are evenly spaced apart. For printers without
+proportional spacing, (we refer to these as TTY printers). the
+lines will have the same spacing on the screen as on the printed
+output.</para>
+  </section>
+  <section>
+    <title>,nj NO JUSTIFY</title>
+  <para>This command will cause
+the lines to have a ragged right edge. It is only used if the <command>,ju</command>
+command has previously been used.</para>
+  </section>
+  <section>
+    <title>,ll X LINE LENGTH</title>
+  <para>The line length command
+changes the length of the line on the screen. The following two
+examples show the use of this command:</para>
+  <screen>
+,ll 35
+,ll 120
+</screen>
+  <para>The first command sets
+the line length to be 35 columns and the second command sets it to
+be 120. After the second command the lines will be longer than the
+screen so the screen will have to be scrolled left and right to
+view some of the text. If the lines extend off the side of the
+screen there will be right facing arrows "&gt;" on the right
+side.</para>
+  </section>
+  <section>
+    <title>,in X INDENT</title>
+  <para>The indent command
+causes all of the following lines to be spaced to the right by "X"
+spaces. This effectively causes the line length to be reduced also.
+Here are two examples of correct indent commands:</para>
+  <screen>
+,in 7
+,in
+</screen>
+  <para>The first example
+causes 7 spaces to be added to the left hand side of all of the
+following lines. If the current line length in this example is 65,
+then the actual line length is now really 58. The second example
+causes the indent to go back to zero and is the same as entering
+",in 0". The line length must never be reduced to less than 10 by
+this command.</para>
+  </section>
+  <section>
+    <title>,si X SINGLE INDENT</title>
+  <para>The single indent
+command is useful when you want to indent for only one line. You
+could, for example, use this command to create an indent at the
+beginning of every paragraph (although it would be easier to simply
+type in the spaces or use a TAB, or better still to use the
+paragraph formatting commands). This and the <command>,ppsi</command> command are the
+only commands that will accept a minus number. A minus number will
+cause the next line to be spaced back to the left by "X" columns.
+Before using a minus single indent you must be sure that there is
+enough room on the left side by using the "<command>,in</command>" indent command. The
+following two examples will show how this might work:</para>
+  <screen>
+,si 6
+,si -4
+</screen>
+  <para>The first example
+causes the next line to be indented by 6 spaces and the effective
+line length to be reduced by 6. The second example causes the next
+line to stick out four columns to the left of the normal line and
+the line length to be increased by 4. For the second example to
+work, an indent of 4 or greater must have been set. This command
+with a negative parameter is very useful in conjunction with a tab
+for entering indented blocks of text in which the first line has a
+title in the margin, for example:</para>
+  <screen>
+,in 10
+,si -10
+TITLE     This is an indented block of text with a title on the
+          first  line. A 'tab'  was used  to move to the first
+          word, 'This'.
+</screen>
+  </section>
+  <section>
+    <title>,lm X LEFT MARGIN</title>
+  <para>The left margin on the
+printed page can be set to any value as long as the line length and
+the left margin do not exceed the width of the printed page. This
+command differs from the indent command in that it affects headers
+and footers as well as the text. Also, the margin does not appear
+on the screen but only appears on the printout. Use it to position
+the printed text on the paper to suit your printer.</para>
+  </section>
+  <section>
+    <title>,cs X CHARACTER SPACING</title>
+  <para>The character spacing
+can be set for those people who have versions for 'speciality'
+printers. The value X is the number of characters per inch. This
+value would normally only be set at 10 or 12 for "elite" and "pica"
+spacing respectively. Other values may be set for special
+applications but the error bell will sound as a warning that a
+non-normal value has been entered.</para>
+  </section>
+  <section>
+    <title>,ps PROPORTIONAL SPACING</title>
+  <para>Speciality printers and
+Centronics 737 and 739 printers support a special printing method
+called proportional spacing. What this means is that the characters
+are set in the line so that their widths are adjusted for. This
+causes the printout to look "typeset". To do this kind of printing
+you must first have established a "STYPS" file in the "STY"
+directory of your disk, and a special printer wheel must be
+installed in your printer. The following section on the
+proportional spacing command presents some details not needed for
+elementary text processing; you may want to go on to other format
+commands until you need to know more about the <command>,ps</command> command.</para>
+  <para>Some printers. such as
+Diablo, Qume, NEC, and Centronics 737 are capable of true
+proportional spacing. This means that each character has a
+different width so that the placement of a character on the line is
+different for each character. When a text is proportionally spaced,
+an "i" will take less space than an "m".</para>
+  <para>Before STYLOGRAPH can
+operate with proportional spacing, it must know two characteristics
+of the type face. First of all, it must know the width of the
+character, and second. it must know the actual character to be
+output. The width of the character will vary from printer to
+printer and from one type face to another. Also, some printers
+require that the character that is output to the printer be
+different from the character seen on the screen. This is because
+the proportionally spaced characters are actually arranged
+differently on the print wheel than standard characters. For
+example, to print a proportionally spaced "x" on a Diablo printer,
+you must actually send it a "v". The correspondence between the
+standard character set and the proportional set is referred to as a
+"translation".</para>
+  <para>STYLOGRAPH obtains the
+character width and the translation from a proportional spacing
+file on the disk. This file should be named "STYPS". You will
+normally create this file by copying one of the STYPS files that
+are supplied on the disk. A table showing which supplied file is
+suitable for each printer is given in the System Configuration
+section. For example, to set up proportional spacing for the Diablo
+printers you would use:</para>
+  <screen>
+OS9: copy /d0/sty/styps.d /d0/sty/styps
+</screen>
+  <para>The STYPS file provided
+on the STYLOGRAPH disk is a copy of STYPS.D for the Diablo
+printers. Delete it with the 'del' command if you want to use a
+different file. Before STYLOGRAPH can correctly handle
+proportionally spaced text, it must first read in one of these
+proportional spacing files. The original STYLOGRAPH disk contains
+proportional spacing tables for different printers and the most
+common print wheels. For print wheels that are not supported you
+may create a new proportional spacing table by editing one of the
+existing tables. These tables are standard text files which can be
+edited by STYLOGRAPH. Each of these tables contains three rows of
+constants. Here is a partial list of one of the tables:</para>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="3">
+      <colspec colnum="1" colname="col1" colwidth="0.6in"/>
+      <colspec colnum="2" colname="col2" colwidth="0.6in"/>
+      <colspec colnum="3" colname="col3" colwidth="1.6in"/>
+      <tbody>
+        <row>
+            <entry>'r</entry>
+            <entry>8</entry>
+            <entry>'&lt;</entry>
+        </row>
+        <row>
+            <entry>'s</entry>
+            <entry>8</entry>
+            <entry>$7C</entry>
+        </row>
+        <row>
+            <entry>'t</entry>
+            <entry>8</entry>
+            <entry>'{</entry>
+        </row>
+        <row>
+            <entry>'u</entry>
+            <entry>10</entry>
+            <entry>'?</entry>
+        </row>
+        <row>
+            <entry>'v</entry>
+            <entry>10</entry>
+            <entry>'0</entry>
+        </row>
+        <row>
+            <entry>'w</entry>
+            <entry>14</entry>
+            <entry>$7E</entry>
+        </row>
+        <row>
+            <entry>'x</entry>
+            <entry>10</entry>
+            <entry>'v</entry>
+        </row>
+        <row>
+            <entry>'y</entry>
+            <entry>10</entry>
+            <entry>'!</entry>
+        </row>
+        <row>
+            <entry>'z</entry>
+            <entry>10</entry>
+            <entry>'g</entry>
+        </row>
+        <row>
+            <entry>'{</entry>
+            <entry>10</entry>
+            <entry>-'u NEC ONLY</entry>
+        </row>
+        <row>
+            <entry>'|</entry>
+            <entry>10</entry>
+            <entry>'.</entry>
+        </row>
+        <row>
+            <entry>'}</entry>
+            <entry>10</entry>
+            <entry>'k</entry>
+        </row>
+        <row>
+            <entry>'~</entry>
+            <entry>10</entry>
+            <entry>'w</entry>
+        </row>
+        <row>
+            <entry>$7F</entry>
+            <entry>10</entry>
+            <entry>'p</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para>The first column
+contains a list of the standard ASCII character set. The third
+column contains the character that must be output to get these
+characters. The middle column contains the number increments
+required for the width of the character. Notice that there are two
+ways of specifying the characters. If the actual characters are
+used, the character is preceded by an apostrophe. The character may
+also be specified by it's ASCII code. This is indicated by
+preceding the hexadecimal number with a "$". Some of the third
+column characters are preceded by a minus sign. This is used only
+with the NEC printers, to indicate that the character is one of the
+32 shifted characters on the print thimble, since the thimble
+actually has 128 positions.</para>
+  <para>When producing a
+proportional spacing table, several things should be kept in mind.
+First, the width of the character should be an even number for the
+Diablo, Qume, and NEC printers. This number should be double the
+width that is listed for these characters in the printer
+documentation. Second, characters which are printable but are not
+available from the keyboard must be entered with the ASCII code.
+Finally, it is possible, although very tedious, to create one of
+these tables without any documentation on the print wheel, by
+printing all of the characters from a text which is not set to
+proportional spacing. You can then figure out what the translation
+table must look like, and you may estimate the character widths.
+After a few trials of adjusting the translations and the widths it
+should be possible to get a satisfactory printout.</para>
+  </section>
+  <section>
+    <title>,nps NO PROPORTIONAL SPACING</title>
+  <para>This causes STYLOGRAPH
+to go back to the normal printing mode if proportional spacing has
+been set.</para>
+  </section>
+  <section>
+    <title>,pl X PAGE LENGTH</title>
+  <para>This command sets the
+length of the page in lines. It must be set to a number between 10
+and 100. It is important to realize, when using this command, that
+the header (top margin) and footer (bottom margin) count as lines
+on the page so the page length must be set large enough to allow
+some text lines on each page. So, for example if you leave the page
+length at the default value of 66 and have 6 lines in the header
+and 6 lines in the footer, there will be a total of 54 lines or
+text on each page.</para>
+  </section>
+  <section>
+    <title>,pg NEW PAGE</title>
+  <para>You may start on a new
+page by the use of this command. This will cause the footer to be
+put at the bottom of the page and the next line to appear after the
+header on the top of the next page. Remember that pagination is
+automatic in STYLOGRAPH. You need only use this command if you want
+to force a 'new page', for instance when starting a chapter.</para>
+  </section>
+  <section>
+    <title>,pn X PAGE NUMBER</title>
+  <para>This command sets the
+page number which can appear in the header or the footer of the
+page as explained in the header and footer description. This
+command only affects the page number printed in the header or
+footer - it does not affect the serial page number which appears on
+the page boundary on the screen and which is used in the find page
+numbers escape command. Page numbering is automatic in STYLOGRAPH.
+You will normally only need to use this command if the text you are
+editing is part of a large: document, and is to be printed out
+separately. Note that MAIL MERGE will automatically continue the
+page numbering over a number or files if they are printed out
+together, so that the <command>,pn</command> command is not needed at the start of
+each file.</para>
+  </section>
+  <section>
+    <title>,tf TOP OF FORM</title>
+  <para>This is a command which
+has no effect on the display on the screen but causes a TOP OF FORM
+command to be sent to the printer. It is normally used with
+printers that are using special forms paper or are using a single
+sheet feeder. If used, it should be inserted at the start of the
+header so that a new sheet will be fed at the top of the page.</para>
+  </section>
+  <section>
+    <title>HEADERS AND FOOTERS</title>
+    <para>,hd DEFINE HEADER</para>
+    <para>,ft DEFINE FOOTER</para>
+    <para>,, END DEFINITION</para>
+  <para>These three commands
+are used to page. For example, the following set up the header and
+footer of the 5 lines will cause a simple three line header to
+appear at the top of all of the following pages:</para>
+  <screen>
+,hd
+INTRO
+,,
+</screen>
+  <para>This would cause the
+first line at the top of the page to be a space, the word "INTRO"
+to appear on the second line and another space to appear' on the
+third line. You may also cause the page number to appear in the
+header or footer by entering the characters ### at any point. When
+STYLOGRAPH sees these characters it will replace them with the page
+number. You may enter one or more of these characters at any place.
+STYLOGRAPH always replaces these characters with a left justified
+number and replaces the remaining "#" characters with spaces. You
+may also use any of the following formatting commands in a header
+or footer:</para>
+  <para>,ll line length</para>
+  <para>,ce centre</para>
+  <para>,rj right justify</para>
+  <para>These commands when
+used within a header or footer affect only the headers and footers
+and do not affect the rest of the text. This means that if you set
+the line length for the text you may also have to set the line
+length for the headers and footers to the same length. This also
+means that you may allow the headers and footers to extend beyond
+the normal right margin since the header and footer line lengths
+are specified separately from the rest of the text.</para>
+  <para>The following would be
+an example of how the headers and footers were set up for this
+portion of the manual:</para>
+  <screen>
+,hd
+
+,rj
+FORMAT COMMANDS
+
+,,
+,ft
+,ll 70
+
+,ce
+PAGE ###
+
+,,
+</screen>
+  <para>The line length for the
+headers and footers must be set separately rest of the text and can
+be different from the line length and the rest of the text. This
+allows the lines in the header and footer to extend out from the
+text on the rest of the screen. The header does not appear on the
+first page so the footer contains the line length since it will be
+the first one to be used by STYLOGRAPH.</para>
+  </section>
+  <section>
+    <title>,sp X SPACE LINES</title>
+  <para>Extra spaces between
+lines can be inserted by this command. The parameter "X" specifies
+how many lines are to be inserted. Spaces are not carried over from
+one page to the next so that all of the spaces may not actually
+appear on the printout if you are too close to the bottom. The
+following are legal spacing commands:</para>
+  <screen>
+,sp 22
+,sp
+</screen>
+  <para>The first command will
+cause 22 lines to be spaced on the page. If, for example, there are
+only 13 lines remaining on the page before the footer, then only 13
+lines will be spaced. The second command spaces only one line.</para>
+  </section>
+  <section>
+    <title>,ss X SET SPACING</title>
+  <para>This particular command
+is for setting the spacing between the lines. It has the same
+function as single, double or triple spacing on a typewriter.
+Although the spaces between the lines do not appear on the screen,
+STYLOGRAPH does keep track of the line number on the page so that
+the headers and footers will be inserted in the proper places.</para>
+  </section>
+  <section>
+    <title>,vt X VERTICAL TAB</title>
+  <para>This command will cause
+the next line to be printed on the specified line number on the
+page. The following command would cause the next line to be printed
+on the 20th line:</para>
+  <screen>
+,vt 20
+</screen>
+  <para>If the present line
+number on the page is greater than 20, the error bell will sound
+and the command will be ignored.</para>
+  </section>
+  <section>
+    <title>,vs X VERTICAL SPACING</title>
+  <para>The vertical spacing
+between the lines can also be set using this command. As with the
+character spacing command it is only usable on those versions of
+STYLOGRAPH that support a "speciality" printer. The use of any
+value other than 4, 6 or 8 will result in a warning that a
+non-normal line spacing is in use. Remember that when using this
+command you must also change the number of lines on the page. For
+example, if you set the vertical spacing to 4 (this is equivalent
+to "space and a half" spacing on some typewriters) you must also
+set the number of lines on the page to 44 for a normal 11 inch
+page. This is because there will be 4 lines per inch and there are
+11 inches on the page, making a total of 44 lines per page.</para>
+  </section>
+  <section>
+    <title>,nl X NEED LINES</title>
+  <para>There are some cases
+where you will need to be sure that a portion of text, such as
+table or illustration, appears on one page. The <command>,nl</command> command checks
+to see if there are enough lines on the page. If there is not, a
+new page will be started. Since STYLOGRAPH actually formats
+correctly on the screen, there is often no need to use this command
+since you can always readily see where you are on a page. Its
+primary purpose is to be used with the MAIL MERGE program when you
+may not have a chance to preview the text, and to protect your
+carefully arranged formats against future changes to the text or
+page size. See also the <command>,ppnl</command> command.</para>
+  </section>
+  <section>
+    <title>PARAGRAPH COMMANDS</title>
+  <section>
+    <title>,pp PARAGRAPH</title>
+  <para>This causes a new
+paragraph to be started. This will have no effect unless one or
+more of the next three commands have been set. It causes three
+things to happen. (1) The <command>,ppnl</command> value is checked to see that there
+are enough lines left on the page to start a new paragraph. If
+there are not, a new page is started. (2) The number of lines,
+indicated by the <command>,ppsp</command> command, are spaced. (3) The first line is
+indented according to the <command>,ppsi</command> command.</para>
+  </section>
+  <section>
+    <title>,ppnl X PARAGRAPH NEED LINES</title>
+  <para>This has exactly the
+same effect as the <command>,nl</command> command except that it has its effect
+whenever the <command>,pp</command> command is entered. It is useful in ensuring that
+you don't get just one line of a new paragraph at the bottom of a
+page.</para>
+  </section>
+  <section>
+    <title>,ppsp X PARAGRAPH SPACE</title>
+  <para>This has the same
+effect as the <command>,sp</command> command except that it has its effect whenever
+the <command>,pp</command> command is entered. Remember that these spaces between the
+lines will not appear on the screen but will appear on the
+printout.</para>
+  </section>
+  <section>
+    <title>,ppsi X PARAGRAPH SINGLE INDENT</title>
+  <para>This causes a single
+indent of X spaces to appear whenever the <command>,pp</command> paragraph command is
+encountered. As with the <command>,si</command> command, the indent must have
+previously been set if the <command>,ppsi</command> is set to a negative value.</para>
+  </section>
+  </section>
+  <section>
+    <title>,bfs X BOLDFACE STRIKE</title>
+  <para>This controls the
+number of times that characters in boldfaced are printed.
+STYLOGRAPH initially starts out with the value set to 4. If you
+wish the boldface to be darker you may increase this value.</para>
+  </section>
+  <section>
+    <title>,padc C PAD SPACE CHARACTER</title>
+  <para>STYLOGRAPH uses the
+space character as a separator. That is, when the end of a line is
+reached STYLOGRAPH will break the line at a space. Also, STYLOGRAPH
+will add spaces between words, if justification is on, to make the
+text right and left justified. You may cause a space to be treated
+as a normal character rather than as a separator by using the <command>,padc</command>
+command. This command causes the character "C" when you enter it in
+your text to be printed on the printer as a space although it will
+be displayed normally on the screen. For example, let's assume that
+you have entered the following command:</para>
+  <screen>
+,padc &amp;
+</screen>
+  <para>After this point the
+character "&amp;" on the screen will be printed out as space on the
+printer. One common use for this is to prevent abbreviations and
+other strings from being broken at the end or a line. For example,
+you would not want someone's name and initials broken between the
+initials, with one initial at the end of one line and the other at
+the start of the next line. If you have J.&amp;M.&amp; Johnson, the
+line will not be broken up. On the printed output the "&amp;" will
+be replaced by a space.</para>
+  </section>
+  <section>
+    <title>,mmc C MAIL MERGE CHARACTER</title>
+  <para>This command sets the
+character for the mail merge program. Its use is explained in the
+MAIL MERGE manual.</para>
+  </section>
+  <section>
+    <title>,pc C PRINTER CONTROL CHARACTER</title>
+  <para>This command sets the
+printer control character which allows special commands to be sent
+to the printer. If "C" is omitted, the printer control character
+facility is disabled. This should only be used by people who are
+thoroughly familiar with the ASCII protocol of their particular
+printer. Some printers allow special characteristics such as double
+height, double width, or other enhanced printing. This command
+allows those special commands to be embedded in the text. For
+example. the printer control character could be set as follows:</para>
+  <screen>
+,pc \
+</screen>
+  <para>This means that all
+sequences between two "\" characters will be sent to the printer.
+The sequences may be specified in three different ways; ASCII
+character, decimal number, or hexadecimal number. Each of these
+printer command characters must be separated by a space or a comma.
+ASCII characters are indicated by an apostrophe ' preceding the
+character. Decimal numbers are entered without any preceding
+character and hexadecimal numbers are preceded by a dollar sign $.
+A typical printer control sequence in a text might look like this
+:</para>
+  <para>This sequence \$1B,14\
+will produce elongated characters on the Centronics 737 printer.
+The sequence \$1B,$14\ will select the condensed character set and
+the sequence \'a,'b,'c\ will cause the sequence "abc" to be printed
+on the printer.</para>
+  <para>There are three other
+commands that may be specified between the "PC" characters for
+special printer operations:</para>
+  <para>S stops the printer
+for changing printwheels, etc.</para>
+  <para>B backspaces one space
+for overprinting</para>
+  <para>Tx tabs printer to the
+"x" column</para>
+  <para>Presuming the command
+,pc a has been previously executed, the following would be legal
+commands:</para>
+  <para>The \b\x e and x would
+be overprinted, the printer would stop here\s\ and could be
+restarted from the keyboard, and the numbers "12345" would appear
+in column 70\t70\12345.</para>
+  <para>Notice that these
+printer sequences are not taken into account when the line length
+is calculated for the screen, so the line with these sequences
+embedded will look longer than a normal line on the screen, but
+will be the correct length on the printer.</para>
+  </section>
+  <section>
+    <title>,* COMMENTS</title>
+  <para>There may be situations
+in which you will want to enter comments in the text which should
+not appear on the printed copy. For example, you may want to leave
+a reminder for the next person that will be working on the text.
+This could indicate the type of print wheel you want to be used or
+it could be a simple note about the purpose of the text. It is
+often a good idea to use these comment commands to document the
+history of the text and its various revisions. To enter these
+comments you need to enter the "<command>,*</command>" on the left edge of the screen
+and follow of it with a comment. The comment must end with a return
+and cannot extend beyond the end of the line. This is not really a
+formatting command like the previous commands since it does not
+change the appearance of the printed copy. Typical comments might
+appear like this:</para>
+  <screen>
+,* use a pica print wheel for this text
+,* written 4/5/1775. Ben Franklin
+,* revised 5/22/1975 Thomas Jefferson
+</screen>
+  </section>
+  </section>
+  <section>
+    <title>CONTROL COMMANDS</title>
+  <para>CONTROL commands can be
+executed from either the ESCAPE mode or the INSERT mode. To execute
+a CONTROL command you must hold down the COMTROL key and press the
+designated key at the same time. Some of the CONTROL commands have
+already been briefly described.</para>
+  <section>
+    <title>CONTROL-P PAGE STATUS</title>
+  <para>The page status command
+causes the screen to be replaced with information about the current
+status of the text. The input and output file names, their status,
+a number of format parameters, and the room left in memory are all
+listed. To redisplay the text hit CONTROL-P again. Notice that many
+of the formatting commands themselves are displayed here. This is a
+quick way of recalling these commands if you have forgotten
+them.</para>
+  </section>
+  <section>
+    <title>CONTROL-N NAME THE ERROR</title>
+  <para>Whenever the error bell
+sounds it means that STYLOGRAPH has encountered an error. If you
+want to see a description of the error just press CONTROL-N and the
+cursor line will be replaced with a description of the error. To
+return to the normal text do the command again or hit the ESCAPE
+key.</para>
+  <para>Most of the time the
+cause of the error will be obvious since the error usually is the
+result of something you have just entered. The error bell will also
+sound whenever the cursor passes a line in which there is a format
+command error. This can be particularly puzzling when using the
+FIND, REPLACE, or FIND PAGE commands since the error bell can sound
+whenever you are moving from one portion of the text to another. In
+this circumstance the only way to find the line that caused the
+error is to move the cursor back up through the text and then move
+the cursor down through the text until the bell sounds again.</para>
+  </section>
+  <section>
+    <title>CONTROL-F FORMAT DISPLAY/CONCEAL</title>
+  <para>The format lines can be
+displayed or removed from the screen by this command. This is
+useful when you want to look at the text without the format lines.
+There are some commands such as the FIND command that cause
+STYLOGRAPH to display the format commands.</para>
+  </section>
+  <section>
+    <title>CONTROL-V VIEW</title>
+  <para>This command will cause
+the character mods to be displayed rather than the characters
+themselves. You can find the meaning of these character mods by
+looking them up in the View Character Modifications section of this
+manual or by using the "assistance" command. To return the display
+to normal, press the CONTROL-V keys again.</para>
+  </section>
+  <section>
+    <title>CONTROL-A ASSISTANCE</title>
+  <para>If you forget a
+particular command you may get some "assistance" by hitting
+CONTROL-A. This will cause the screen to be cleared and a "menu" to
+appear. This is like a table of contents since it indicates your
+choice of other things to look at. There is a pointer on the left
+side of the menu. To choose an item on the menu you simply move the
+cursor up and down on the menu using the "I" and "," keys as you
+would when moving the cursor up and down on the screen. When the
+cursor is at the correct line, hit the "RETURN" key and the screen
+will be replaced with a list of the appropriate commands. The best
+way to learn the use of this function is to try the various items
+on the menu. You will notice that the disk will be accessed when
+you choose an item on the menu. This is because the various help
+tables are being read off the disk. For the command to work, the
+"STYHLP" files must exist on your execution disk. If the table does
+not appear, it means that the tables cannot be found on the
+disk.</para>
+  <para>The assistance command
+is especially useful while you are first learning the system. This
+command will cause a "menu" to be displayed on the screen. This
+menu is a list of different kinds of assistance you can get. Notice
+that there are three different lists of format commands. The
+horizontal commands affect the horizontal positioning of the text.
+The indent, line length, centering, and justification commands
+would be examples of this. The vertical commands affect the
+placement of the lines on the page. The page length, header,
+footer, and set spacing commands would be examples of vertical
+formatting commands.</para>
+  </section>
+  <section>
+    <title>DELETES</title>
+  <section>
+    <title>CONTROL-D SINGLE CHARACTER DELETE</title>
+  <para>This command deletes
+the character on which the cursor is superimposed. The cursor then
+moves to the next character. Remember that in the INSERT mode the
+cursor may not be directly on top of the character since the gap in
+the line has been filled with hyphens. In the INSERT mode the
+deleted character will always be at the end of the line or
+hyphens.</para>
+  </section>
+  <section>
+    <title>CONTROL-S WORD DELETE</title>
+  <para>The word that the
+cursor is sitting on and the following spaces, if there are any,
+will be deleted by this command. The cursor will then move to the
+first character of the next word. The RETURN is considered to be a
+word so that if the cursor is sitting on a RETURN it will be
+deleted by this command.</para>
+  </section>
+  <section>
+    <title>CONTROL-X LINE DELETE</title>
+  <para>This command will
+delete a line if it is bracketed by RETURNS. This means that if the
+cursor line was started by hitting the RETURN and ends with a
+RETURN, that line will be deleted. The RETURN at the end will
+remain in case you want to enter a new line. To delete the RETURN,
+do a single character delete. A series of lines can be deleted by
+alternately depressing the "X" and "D" keys while holding down the
+CONTROL key.</para>
+  </section>
+  </section>
+  <section>
+    <title>TABS</title>
+  <section>
+    <title>CONTROL-T MOVE CURSOR TO A TAB POSITION</title>
+  <para>The tab functions in
+STYLOGRAPH operate very much like those on a typewriter. The
+CONTROL-T command has a slightly different function in the ESCAPE
+mode than in the INSERT mode. In the insert mode the line must be
+started with a RETURN for it to work at all. If there is a RETURN
+at the end of the previous line, STYLOGRAPH will add the proper
+number of spaces to the line to move the cursor to the next valid
+tab position. In the ESCAPE mode the cursor will move to the next
+tab position only if there is already a character there. When
+STYLOGRAPH starts out, tabs are automatically set to every 8th
+character position. These may be removed or changed at will.</para>
+  </section>
+  <section>
+    <title>CONTROL-R SET A TAB</title>
+  <para>A tab will be set at
+the cursor position when the CONTROL-R keys are pressed.</para>
+  </section>
+  <section>
+    <title>CONTROL-Y CLEAR A TAB</title>
+  <para>If a tab has been set
+at the present cursor position it will be cleared by this
+command.</para>
+  </section>
+  </section>
+  <section>
+    <title>CONTROL-G GHOST HYPHEN</title>
+  <para>A ghost hyphen can be
+inserted anywhere in a word by moving the cursor to the appropriate
+position and hitting the CONTROL-G. The most logical use of this
+command is to scan the text. just before it is to be printed out,
+for lines that are short and are also followed by a large word. To
+cause the large word to be hyphenated simply move the cursor to the
+place that you would like to place the hyphen and press the
+CONTROL-G. STYLOGRAPH will automatically move the first part of the
+word to the previous line if it will fit. Ghost hyphens can also be
+entered when inserting text.</para>
+  </section>
+  <section>
+    <title>CHARACTER MODS</title>
+  <para>CONTROL-U UNDERLINE</para>
+  <para>CONTROL-O OVERLINE</para>
+  <para>CONTROL-I SUPERSCRIPT</para>
+  <para>CONTROL-K SUBSCRIPT</para>
+  <para>CONTROL-B BOLDFACE</para>
+  <para>These CONTROL commands
+are referred to as MOD (modifier) commands.. Characters MODS can be
+specified in either the INSERT or ESCAPE modes, although the method
+is slightly different for each mode. All of the modifications are
+specified with CONTROL keys. For example, underlining is done by
+holding down the CONTROL key and hitting the "U" key.</para>
+  <para>In the ESCAPE mode
+CONTROL-U causes the character at the cursor to be underlined and
+the cursor to move one character to the right. Note that the space
+bar can also move the cursor to the right in the ESCAPE mode.
+Therefore, to underline a series of words, but not the spaces
+between them, you can hold down the CONTROL key and hit the "U" key
+to underline the words and the space bar to skip between the words.
+All of the character mods work in this manner. If the character is
+already modified, the new modification will be added to it. Also,
+the UNMOD key can be used in the same manner to remove
+modifications of the character.</para>
+  <para>In the INSERT mode
+CONTROL-U causes all characters entered after this point to be
+underlined. This will continue until the UNMOD key is hit. After
+this point none of the entered characters will be modified. It is
+possible for a character to have more than one modification. If,
+for example. you wanted a word to be boldfaced and underlined, you
+would hold down the CONTROL key and hit the "U" key and then the
+"B" key. You would then type in word and then hit the UNMOD
+key.</para>
+  <para>Many printers can print
+these modifications but they cannot be displayed on the screen. The
+presence of these modified characters is indicated on the screen by
+some changes in the display. Normally these characters will be
+displayed in low intensity or in reverse field. You can examine
+these modifications by use of the VIEW control command. To do this
+you must hit CONTROL-V. This will cause all the modified characters
+to be changed to "symbolic" characters. The meaning of these
+characters is listed in the View Character Modifications section.
+The display will return to normal by hitting CONTROL-V again. The
+meaning of these symbolic characters can also be shown with the
+"Assistance" command.</para>
+  </section>
+  </section>
+  <section>
+    <title>SUPERVISOR MODE</title>
+  <para>The SUPERVISOR mode is
+entered from the ESCAPE mode by hitting the "/" key. This will
+cause the text to disappear from the screen and a "menu" to appear.
+This menu is a list of actions that you can take. The cursor and
+"&gt;" symbol can be moved up and down with the "I" and "," keys
+the same as in the ESCAPE mode. You execute a command by moving the
+cursor to that line and then hitting the RETURN. You will then be
+prompted for any further information if it is needed. In many cases
+you will be asked for a yes or no response to a question. There may
+be an asterisk * beside one of the responses such as (Y/N*). The
+asterisk indicates that you may give that response by hitting the
+RETURN. This will be the most common answer to the question, so you
+can hit the RETURN in response to most of the questions.</para>
+  <section>
+    <title>EDIT</title>
+  <para>This command has the
+same effect as hitting the ESCAPE key. It causes STYLOGRAPH to go
+back to the escape mode so that the text is displayed on the
+screen, and you are ready to edit the text.</para>
+  </section>
+  <section>
+    <title>PRINT</title>
+  <para>This command will cause
+the current text in memory to be printed out on the printer. When
+this command is executed you will first be asked if you want to
+change the printer. STYLOGRAPH normally uses the parallel printer
+port called "/p". If you want to use a different printer port, such
+as "/p1" the serial port, you should answer "Y" to the first
+question. STYLOGRAPH will prompt you for the name of the printer
+port. If you want to use the serial port, you would respond with
+"/p1" (If OS-9 does not recognize the name you have entered.
+(because a device descriptor of that name has not been loaded into
+memory), OS-9 will display "Error #221 - Module not found". Note
+that if you forget the "/" at the start of the printer name, your
+text will go to a disk file with that name.)</para>
+  <para>Next STYLOGRAPH will
+ask you if you want to stop for new pages. This is in case you are
+not using continuous feed paper in your printer and need to hand
+load each sheet. When the printer has stopped to allow you to load
+a new sheet you will see another prompt on the screen. You may
+resume printing by hitting any key except the "ESCAPE" key. The
+"ESCAPE" key will cause the printing to stop.</para>
+  <para>STYLOGRAPH will then
+ask if you want to print all the pages. If you answer "N" you will
+then be asked for the numbers of the first and last pages that you
+want printed. Remember that these numbers refer to the serial page
+numbers, as displayed on the screen, and not to the numbers that
+appear on the printout.</para>
+  </section>
+  <section>
+    <title>SAVE AND RETURN</title>
+  <para>This command is a time
+saver that allows you to save the text file and then return to
+OS-9. It operates exactly like the SAVE command except that after
+it is done, STYLOGRAPH is exited and you will be back in OS-9. If
+all of the text has not been read in from the disk, STYLOGRAPH will
+automatically read in the remaining text and send it to the output
+file. This is the ONLY way you will be able to permanently save
+text files which are larger than memory, or if you have dumped any
+of the text to an output file; if you attempt to execute a simple
+SAVE command (see below) when the file is still open, STYLOGRAPH
+will give you an error.</para>
+  </section>
+  <section>
+    <title>SAVE</title>
+  <para>The save command causes
+the text in memory to be saved to a disk file. You will first be
+asked if you want to save the file under the present file name. The
+present file name will be the same file name that was used when
+STYLOGRAPH was first called. If you do not want to save it under
+this name, or you did not give a name when you called STYLOGRAPH,
+you will be prompted for the file name. If you also specified an
+output file name when you initially called STYLOGRAPH, the output
+file name will be used by the SAVE command. This command will be
+prohibited if there are any files still open. This is to prevent
+you from erroneously saving part of a file when you intended to
+save the whole file. If files are open and you only want to save
+part of the text, you must use the SAVE TO MARK command.</para>
+  <para>If there is already a
+file by that name when the SAVE command is executed, STYLOGRAPH
+will rename the old file by adding ".BAK", (for backup), to the
+name. If there is already a backup file by that name, STYLOGRAPH
+will ask you if you want the old file deleted. You may answer with
+a "Y" or "N". If you answer "N" no action is taken.</para>
+  </section>
+  <section>
+    <title>SAVE TO MARK</title>
+  <para>This command may be
+used to save a smaller portion of the text. For example, you may
+have a certain paragraph or part of one text that you will also be
+needing in another text. To save the portion simple enter two
+marker characters "}}" at the end of the block of the text and then
+move the cursor to the front of the text. Then execute the SAVE TO
+MARK command. After using this command you will normally want to go
+back and delete the "}}" characters.</para>
+  </section>
+  <section>
+    <title>RETURN</title>
+  <para>This command allows you
+to return to OS-9 without saving the file. To be sure you are not
+making a mistake, STYLOGRAPH will first ask you if the text is
+secure (that is, is there a copy on the disk?) before returning you
+to OS-9.</para>
+  </section>
+  <section>
+    <title>LOAD</title>
+  <para>This command causes a
+text file to be loaded into memory at the position of the cursor.
+The command will prompt you for the name of the file you want to
+load. Remember that when STYLOGRAPH is first called from OS-9, the
+file name on the command line will be loaded automatically, so
+normally it will not be necessary to use the LOAD command.</para>
+  <para>The LOAD command
+provides a convenient way of producing made-up documents. Separate
+parts of a manuscript can be created and saved to disk files. At a
+later point any assortment of files that exist in disk files can be
+loaded to create a finished manuscript. This could be used for
+legal documents and form letters in which identical parts of a text
+are used in many different documents.</para>
+  </section>
+  <section>
+    <title>ERASE</title>
+  <para>All of the text an
+memory is erased with this command. To be sure you are not
+destroying a valuable text, STYLOGRAPH first asks you twice if you
+are sure. You must answer "Y" to each question before the text is
+erased. This command should, obviously, be used with caution. This
+command will be prohibited if any files are open.</para>
+  </section>
+  <section>
+    <title>SPECIAL</title>
+  <para>This command has the
+opposite function of the TTY command. It allows you to go back to
+printing on a speciality printer after having printed on a TTY type
+printer.</para>
+  </section>
+  <section>
+    <title>TTY</title>
+  <para>You can set STYLOGRAPH
+to act as if it were outputting to a TTY type printer (such as a
+simple matrix printer) by the use of this command. The printed
+output will then appear without many of the special effects such as
+boldface and proportional spacing. This command is useful if you
+also have a high speed line printer and would like to get a rapid
+printout of the text. This command is equivalent to selecting
+printer type 30 when you call STYLOGRAPH from OS-9.</para>
+  </section>
+  <section>
+    <title>PASS</title>
+  <para>This command allows you
+to pass a command to OS-9. You will be prompted for the command
+line. You can execute any OS-9 command, provided there is
+sufficient memory available. When the command is finished, hit
+ESCAPE to return to STYLOGRAPH. Note that the 'chd' and 'chx'
+commands will have no effect on STYLOGRAPH's own data and execution
+directories.</para>
+  </section>
+  <section>
+    <title>SPOOL</title>
+  <para>This command is similar
+to the PRINT command except that the output is directed to a disk
+file. This allows the text to be printed out at another time using
+the 'copy' command under OS-9, (e.g. 'copy file /p'). You will be
+prompted for the name of the output file.</para>
+  </section>
+  <section>
+    <title>WHEEL</title>
+  <para>This command loads in a
+proportional spacing table. STYLOGRAPH will load in a proportional
+spacing table at startup so this command is normally only used if
+the print wheel is being changed. The proportional spacing table
+that is usually loaded in is named "STYPS" You will first be asked
+if you want to load a table by this name. You will be prompted for
+a different name if you wish.</para>
+  </section>
+  <section>
+    <title>NEW</title>
+  <para>This command is for
+working with files that are too large to fit in memory in one go.
+STYLOGRAPH can only work on text that is in the memory of the
+computer. If the text will not fit in the memory, then part of it
+will be kept on the disk. There are two files that this excess text
+is kept on, the input file and the output file. When STYLOGRAPH is
+called, it first loads in text from the input file until memory is
+nearly full. You may then edit and work on this portion of the file
+until you are ready to go on to the next portion of text. You will
+then use the NEW command to dump your present text to the output
+file and bring in some more text from the input file. Notice that
+once you are finished with a portion or text and have dumped it to
+the output file, you cannot then go back and work on it during this
+editing session. This means that you may only use the NEW command
+to go forward through the text.</para>
+  <para>The NEW command
+actually consists of two different steps, "dumping" and "filling".
+"Dumping" consists of sending the present text in memory to the
+output file and "filling" consists of bringing text into memory
+from the input file. You will be given a choice of doing either or
+both of these operations. You may use the "PAGE STATUS" command to
+see if either or both of the files are open. The input file is open
+if there is still text in it which has not been read in to the
+memory. The output file is open whenever a portion of text has been
+dumped to the output file.</para>
+  <para>When dumping text, all
+of the text above the cursor page is dumped to the output file.
+Therefore, if you are finished working with pages 1-5 you may put
+the cursor somewhere on page 6 before executing the NEW command. If
+you put the cursor on the first page, no text will be dumped and
+you will see a message indicating that the cursor is on the first
+page. If you are dumping text for the first time, you will be asked
+if you wish to use the present file name. If you do not, you will
+be asked for a new file name. Also, if there is an old backup file
+of that name, you will be asked if you want to delete the old
+backup file. There are occasions where you will want to dump text
+to the output file but will not want to do any filling. You might
+do this to create more free space in memory to do additional
+editing. For example, you might want to make room for additions to
+the text at some point. Also, you might want to make room to load
+in another file or make a large block move. Remember that you can
+only print out text that is in memory, so you might want to print
+the text before dumping it.</para>
+  <para>Text will be filled
+from the input file if there is any remaining. The new text will be
+added to the bottom of the present text in memory. STYLOGRAPH will
+leave a little room in memory so you can do some additional
+editing. Working with text files larger than memory is a great
+convenience but it should be done with caution. Having a large text
+in one file greatly increases the chance of losing the text, either
+through a power failure or a disk error. If you are working with a
+large text file it makes sense to always keep a recent copy of the
+text on a backup disk so that you can always easily recover from
+such an error. In many cases it makes more sense to break a large
+text into several smaller sections, such as chapters, and then
+print out all the files together using the MAIL MERGE program. This
+simplifies editing and decreases the chances of losing a large text
+file.</para>
+  </section>
+  </section>
+  <section>
+    <title>SYSTEM CONFIGURATION</title>
+  <section>
+    <title>CONFIGURING STYLOGRAPH FOR YOUR PRINTER</title>
+  <para>STYLOGRAPH is supplied
+configured to work with the parallel printer port ("/p"), and a
+simple matrix printer, type P40 in the table below. If you are
+using a different port or a different type of printer, there are
+two ways of informing STYLOGRAPH. You can specify the printer type
+when you call STYLOGRAPH, for example:</para>
+  <screen>
+OS9: stylo letter +P0
+</screen>
+  <para>and specify the printer
+port name by answering "Y" when STYLOGRAPH asks "Different printer?
+(Y/N*)". Alternatively, you can permanently reconfigure STYLOGRAPH
+using the STYFIX command.</para>
+  </section>
+  <section>
+    <title>STYFIX COMMAND</title>
+  <para>The "STYFIX" command is
+normally used to set up three different characteristics of
+STYLOGRAPH; the printer port name, the printer type, and whether it
+loads up a proportional spacing table when it is first called. It
+can also set the maximum number of pages that STYLOGRAPH can work
+on. The normal method of operation is to first establish STYLOGRAPH
+in your execution directory, by placing your STYLOGRAPH disk in
+drive 0, and entering:</para>
+  <screen>
+OS9: chx /d0/cmds
+</screen>
+  <para>Next, change your data
+directory to be your execution directory: e.g.</para>
+  <screen>
+OS9: chd /d0/cmds
+</screen>
+  <para>You should then execute
+the following command:</para>
+  <screen>
+OS9: styfix stylo
+</screen>
+  <para>The STYFIX command is
+menu driven and self prompting. Simply enter the number of your
+choice and answer the questions. You must consult the table below
+for the particular number of your printer. When entering the name
+of the printer port, remember that it must start with a "/". After
+you have specified the printer type you may return to OS9 and your
+copy of STYLOGRAPH will be correctly configured for your particular
+printer and terminal. Don't forget to change your data directory
+back again, e.g.</para>
+  <screen>
+OS9: chd /d0
+</screen>
+  </section>
+  <section>
+    <title>PRINTER TYPES AND CHARACTERISTICS</title>
+  <para>This table lists the
+various printer types handled by STYLOGRAPH, and gives the
+associated numbers for use when calling STYLOGRAPH, or when using
+STYFIX.</para>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="3">
+      <colspec colnum="1" colname="col1" colwidth="0.6in"/>
+      <colspec colnum="2" colname="col2" colwidth="1.4in"/>
+      <colspec colnum="3" colname="col3" colwidth="3.0in"/>
+      <thead>
+        <row>
+            <entry>Type</entry>
+            <entry>Proportional Spacing file</entry>
+            <entry>Printers of this type</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+            <entry>P0</entry>
+            <entry>STYPS.D</entry>
+            <entry>All DIABLO, all C.ITOH, NEC 3515, 3525, 5515,5525,7715, 7725,
+QUME SPRINT, 5/xx or 9/xx</entry>
+        </row>
+        <row>
+            <entry>P10</entry>
+            <entry>STYPS.N</entry>
+            <entry>NEC 3510, 3520, 5510, 5520, 7710, 7720</entry>
+        </row>
+        <row>
+            <entry>P20</entry>
+            <entry>STYPS.7</entry>
+            <entry>CENTRONICS 737/739</entry>
+        </row>
+        <row>
+            <entry>P30</entry>
+            <entry>none</entry>
+            <entry>TTY (matrix) printer with backspace capability</entry>
+        </row>
+        <row>
+            <entry>P40</entry>
+            <entry>none</entry>
+            <entry>TTY (matrix) printer without backspace capability</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para>NOTES</para>
+  <orderedlist>
+    <listitem>
+      <para>P0, P10, and P20 type
+printers will support: Underline. Overline, Boldface, Superscript,
+Subscript, and proportional spacing.</para>
+    </listitem>
+    <listitem>
+      <para>P30 type printers will
+support: Underline, Overline, and Boldface, but no proportional
+spacing.</para>
+    </listitem>
+    <listitem>
+      <para>P40 type printers
+support no character modifications and no proportional spacing.
+Most matrix printers are of this type.</para>
+    </listitem>
+  </orderedlist>
+  </section>
+  </section>
+  <section>
+    <title>SUMMARY OF STYLEGRAPH COMMANDS</title>
+  <section>
+    <title>ESCAPE COMMANDS (USED IN ESCAPE MODE)</title>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="0.4in"/>
+      <colspec colnum="2" colname="col2" colwidth="4.0in"/>
+      <tbody>
+        <row>
+            <entry>J</entry>
+            <entry>cursor left</entry>
+        </row>
+        <row>
+            <entry>L</entry>
+            <entry>cursor right</entry>
+        </row>
+        <row>
+            <entry>I</entry>
+            <entry>cursor up</entry>
+        </row>
+        <row>
+            <entry>K</entry>
+            <entry>cursor left and right to end of line</entry>
+        </row>
+        <row>
+            <entry>U</entry>
+            <entry>scroll up one line</entry>
+        </row>
+        <row>
+            <entry>M</entry>
+            <entry>scroll down one line</entry>
+        </row>
+        <row>
+            <entry>O</entry>
+            <entry>scroll up one screen</entry>
+        </row>
+        <row>
+            <entry>.</entry>
+            <entry>scroll down one screen</entry>
+        </row>
+        <row>
+            <entry>1</entry>
+            <entry>overlay one character with next key hit</entry>
+        </row>
+        <row>
+            <entry>^</entry>
+            <entry>insert next key hit</entry>
+        </row>
+        <row>
+            <entry>7</entry>
+            <entry>scroll left by 25 columns</entry>
+        </row>
+        <row>
+            <entry>9</entry>
+            <entry>scroll right by 25 columns</entry>
+        </row>
+        <row>
+            <entry>;</entry>
+            <entry>enter INSERT mode</entry>
+        </row>
+        <row>
+            <entry>/</entry>
+            <entry>go to SUPERVISOR mode</entry>
+        </row>
+        <row>
+            <entry>S</entry>
+            <entry>save text from cursor to marker</entry>
+        </row>
+        <row>
+            <entry>W</entry>
+            <entry>withdraw saved text</entry>
+        </row>
+        <row>
+            <entry>D</entry>
+            <entry>duplicate (without withdrawing) saved text</entry>
+        </row>
+        <row>
+            <entry>Z</entry>
+            <entry>zap (delete) text from cursor to marker</entry>
+        </row>
+        <row>
+            <entry>}}</entry>
+            <entry>set marker (two required)</entry>
+        </row>
+        <row>
+            <entry>P</entry>
+            <entry>move to page N</entry>
+        </row>
+        <row>
+            <entry>F</entry>
+            <entry><literallayout>find character string
+responses: space  - go to next;
+           return - stop</literallayout></entry>
+        </row>
+        <row>
+            <entry>R</entry>
+            <entry><literallayout>replace first character string with second
+responses: Y       - replace string;
+           N       - don't replace string;
+           A       - replace all occurrences (no prompt);
+           space   - go on to next;
+           return  - stop</literallayout></entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  </section>
+  <section>
+    <title>CONTROL COMMANDS (USED IN ESCAPE AND INSERT MODES)</title>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="1.0in"/>
+      <colspec colnum="2" colname="col2" colwidth="4.0in"/>
+      <tbody>
+        <row>
+            <entry>CONTROL-A</entry>
+            <entry>help</entry>
+        </row>
+        <row>
+            <entry>CONTROL-P</entry>
+            <entry>page status</entry>
+        </row>
+        <row>
+            <entry>CONTROL-N</entry>
+            <entry>name the last error</entry>
+        </row>
+        <row>
+            <entry>CONTROL-W</entry>
+            <entry>delete word</entry>
+        </row>
+        <row>
+            <entry>CONTROL-D</entry>
+            <entry>delete single character</entry>
+        </row>
+        <row>
+            <entry>CONTROL-X</entry>
+            <entry>delete line (bracketed by returns)</entry>
+        </row>
+        <row>
+            <entry>CONTROL-F</entry>
+            <entry>display/non-display format commands</entry>
+        </row>
+        <row>
+            <entry>CONTROL-R</entry>
+            <entry>set a tab</entry>
+        </row>
+        <row>
+            <entry>CONTROL-T</entry>
+            <entry>move to tab</entry>
+        </row>
+        <row>
+            <entry>CONTROL-Y</entry>
+            <entry>clear a tab</entry>
+        </row>
+        <row>
+            <entry>CONTROL-G</entry>
+            <entry>insert a ghost hyphen</entry>
+        </row>
+        <row>
+            <entry>CONTROL-V</entry>
+            <entry>view/hide character modifiers</entry>
+        </row>
+        <row>
+            <entry>CONTROL-U</entry>
+            <entry>underline - in escape
+mode, underline a character. In INSERT mode, underline following
+characters until UNMOD hit.</entry>
+        </row>
+        <row>
+            <entry>CONTROL-O</entry>
+            <entry>overline - same as underline</entry>
+        </row>
+        <row>
+            <entry>CONTROL-I</entry>
+            <entry>superscript - same as underline</entry>
+        </row>
+        <row>
+            <entry>CONTROL-K</entry>
+            <entry>subscript - same as underline</entry>
+        </row>
+        <row>
+            <entry>CONTROL-B</entry>
+            <entry>boldface - same as underline</entry>
+        </row>
+        <row>
+            <entry>UNMOD</entry>
+            <entry>end/remove mods - in
+ESCAPE mode, removes all mods from a character. In INSERT mode,
+returns to unmodified character entry.</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  </section>
+  <section>
+    <title>FORMATTING COMMANDS</title>
+  <para>Default values are
+shown in square brackets [ ].</para>
+  <table frame="none" rowsep="0" colsep="0">
+    <title>Vertical formatting commands</title>
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="0.8in"/>
+      <colspec colnum="2" colname="col2" colwidth="4.2in"/>
+      <tbody>
+        <row>
+            <entry>,PL N</entry>
+            <entry>Set page length to N lines per page [66]</entry>
+        </row>
+        <row>
+            <entry>,PG</entry>
+            <entry>Force a new page</entry>
+        </row>
+        <row>
+            <entry>,PN N</entry>
+            <entry>Set the printed page number to N</entry>
+        </row>
+        <row>
+            <entry>,TF</entry>
+            <entry>Send TOP OF FORM to printer</entry>
+        </row>
+        <row>
+            <entry>,HD</entry>
+            <entry>Start header definition</entry>
+        </row>
+        <row>
+            <entry>,FT</entry>
+            <entry>Start footer definition</entry>
+        </row>
+        <row>
+            <entry>,,</entry>
+            <entry>End header or footer definition</entry>
+        </row>
+        <row>
+            <entry>,SP N</entry>
+            <entry>Space N lines (print parameter)</entry>
+        </row>
+        <row>
+            <entry>,SS N</entry>
+            <entry>Set line spacing to N (print parameter) [1]</entry>
+        </row>
+        <row>
+            <entry>,VT N</entry>
+            <entry>Vertical tab to Nth line (print parameter)</entry>
+        </row>
+        <row>
+            <entry>,VS N</entry>
+            <entry>Vertical spacing, lines/inch (print parameter)</entry>
+        </row>
+        <row>
+            <entry>,NL N</entry>
+            <entry>Need N lines on same page, (to keep a block of text on one page).</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  <table frame="none" rowsep="0" colsep="0">
+    <title>Horizontal formatting commands</title>
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="0.8in"/>
+      <colspec colnum="2" colname="col2" colwidth="4.2in"/>
+      <tbody>
+        <row>
+            <entry>,CE N</entry>
+            <entry>Centre N lines</entry>
+        </row>
+        <row>
+            <entry>,RJ N</entry>
+            <entry>Right justify N lines</entry>
+        </row>
+        <row>
+            <entry>,JU</entry>
+            <entry>Justify</entry>
+        </row>
+        <row>
+            <entry>,NJ</entry>
+            <entry>No justify</entry>
+        </row>
+        <row>
+            <entry>,LL N</entry>
+            <entry>Line length of N characters [screen width -1]</entry>
+        </row>
+        <row>
+            <entry>,IN N</entry>
+            <entry>Indent N spaces from the margin until next ,IN command</entry>
+        </row>
+        <row>
+            <entry>,SI N</entry>
+            <entry>Indent one line N spaces (N can be negative)</entry>
+        </row>
+        <row>
+            <entry>,LM N</entry>
+            <entry>Set left margin on printer to N spaces [0]</entry>
+        </row>
+        <row>
+            <entry>,CS N</entry>
+            <entry>Character spacing, N characters/inch (print parameter)[12]</entry>
+        </row>
+        <row>
+            <entry>,PS</entry>
+            <entry>Start proportional spacing</entry>
+        </row>
+        <row>
+            <entry>,NPS</entry>
+            <entry>Return to non-proportional spacing, normal spacing</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  <table frame="none" rowsep="0" colsep="0">
+    <title>Paragraph formatting commands</title>
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="0.8in"/>
+      <colspec colnum="2" colname="col2" colwidth="4.2in"/>
+      <tbody>
+        <row>
+            <entry>,PP</entry>
+            <entry>Start a new paragraph</entry>
+        </row>
+        <row>
+            <entry>,PPNL N</entry>
+            <entry>Paragraphs need N lines on same page</entry>
+        </row>
+        <row>
+            <entry>,PPSP N</entry>
+            <entry>Space N lines on new paragraphs</entry>
+        </row>
+        <row>
+            <entry>,PPSI N</entry>
+            <entry>Indent N spaces on first line of paragraph</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  <table frame="none" rowsep="0" colsep="0">
+    <title>Misc. Formatting commands</title>
+    <tgroup cols="2">
+      <colspec colnum="1" colname="col1" colwidth="0.8in"/>
+      <colspec colnum="2" colname="col2" colwidth="4.2in"/>
+      <tbody>
+        <row>
+            <entry>,BFS N</entry>
+            <entry>Boldface strike N times at printout</entry>
+        </row>
+        <row>
+            <entry>,PADC C</entry>
+            <entry>Pad character C for non-paddable spaces on printout</entry>
+        </row>
+        <row>
+            <entry>,MMC C</entry>
+            <entry>Mail Merge character C</entry>
+        </row>
+        <row>
+            <entry>,PC C</entry>
+            <entry>Print character C for delimiting printer control strings</entry>
+        </row>
+        <row>
+            <entry>,*</entry>
+            <entry>Comment line</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  </section>
+  <section>
+    <title>VIEWED CHARACTER MODIFICATIONS</title>
+  <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="3">
+      <colspec colnum="1" colname="col1" colwidth="1.1in"/>
+      <colspec colnum="2" colname="col2" colwidth="1.0in"/>
+      <colspec colnum="2" colname="col2" colwidth="2.5in"/>
+      <colspec colnum="3" colname="col3"/>
+      <thead>
+        <row>
+          <entry/>
+            <entry>Command</entry>
+            <entry>As seen on screen in viewing mode</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+            <entry>Underline</entry>
+            <entry>CONTROL-U</entry>
+            <entry><literallayout class="monospaced">_________________________________</literallayout></entry>
+        </row>
+        <row>
+            <entry>Overline</entry>
+            <entry>CONTROL-O</entry>
+            <entry><literallayout class="monospaced">555555555555555555555555555555555</literallayout></entry>
+        </row>
+        <row>
+            <entry>Boldface</entry>
+            <entry>CONTROL-B</entry>
+            <entry><literallayout class="monospaced">333333333333333333333333333333333</literallayout></entry>
+        </row>
+        <row>
+            <entry>Superscript</entry>
+            <entry>CONTROL-I</entry>
+            <entry><literallayout class="monospaced">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</literallayout></entry>
+        </row>
+        <row>
+            <entry>Subscript</entry>
+            <entry>CONTROL-K</entry>
+            <entry><literallayout class="monospaced">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</literallayout></entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <section>
+    <title>Displayed mod characters</title>
+  <programlisting>
+_ Underline
+3 Boldface
+4 Underline, Boldface
+5 Overline
+6 Underline, Overline
+7 Boldface, Overline 
+8 Underline, Boldface, Overline
+A Superscript
+B Superscript, Underline
+C Superscript, Boldface
+D Superscript, Underline, Boldface
+E Superscript, Overline
+F Superscript: Underlined Overline
+G Superscript, Boldface, Overline
+H Superscript, Underline, Boldface, Overline
+a Subscript
+b Subscript, Underline
+c Subscript, Boldface
+d Subscript. Underline, Boldface
+e Subscript, Overline
+f Subscript: Underline, Overline
+g Subscript, Boldface. Overline
+h Subscript, Underline, Boldface, Overline
+</programlisting>
+  </section>
+  </section>
+  </section>
+</article>

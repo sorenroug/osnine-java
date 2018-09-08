@@ -1,0 +1,904 @@
+<article xmlns="http://docbook.org/ns/docbook">
+  <articleinfo>
+    <title>MAIL MERGE USER'S MANUAL</title>
+    <titleabbrev>MAIL MERGE</titleabbrev>
+  </articleinfo>
+  <bridgehead id="mmintro" renderas="sect1">INTRODUCTION</bridgehead>
+  <para>The MAIL MERGE program is designed to fulfill three different
+needs for people who use STYLOGRAPH. First of all, it is designed
+to merge file of
+"variables" such as names and addresses into a STYLOGRAPH text file
+so that form letters and so forth can be printed. Secondly, the
+program allows a number of text files to be appended together at
+printout time so that page numbers and headings can be continued
+from one text file to another. This allows longer manuscripts to be
+edited as, smaller, easy to handle text files but be printed as one
+document. Finally the MAIL MERGE program can print multiple copies
+of the same file. In multitasking environments. this can be
+especially useful since a long printout or any file can be started
+and run as a background task while you are busy doing other
+tasks.</para>
+  <section>
+    <title>OPERATION</title>
+    <section>
+      <title>PRINTING OF TEXT FILES</title>
+      <para>To simply display a
+text, use a command line like this:</para>
+      <screen>
+OS9: mm intro
+</screen>
+      <para>This causes the file
+"INTRO" in your current data directory to be listed on the screen.
+Normally, you will want to list the file to a printer. If you have
+a printer on the parallel port "/p", you might try:</para>
+      <screen>
+OS9: mm intro &gt;/p
+</screen>
+      <para>The output is directed
+to the parallel printer device "/p". While the text is being
+printed you may stop the printing by hitting the "SPACE" bar on the
+terminal. The printer will then stop. You may restart the printing
+by hitting the "SPACE" bar again or you may stop it altogether by
+hitting the "RETURN" key.</para>
+      <para>To print out several
+text files in succession, the file names are listed one after
+another as follows, (assuming that you have files "TEXT2" and
+"TEXT3"):</para>
+      <screen>
+OS9: mm intro text2 text3 &gt;/p
+</screen>
+      <para>The three text files
+will then be printed out as if they were one file. When editing the
+files "TEXT2" and "TEXT3" you may want to add your normal header
+and footer to the start of each file so that you can see what the
+text will look like while you are editing it. At a minimum you will
+probably want to at least specify the line length for the second
+and third files while you are editing them. You should
+<citetitle>not</citetitle>set the page
+number using the ",pn" command in the second and third files since
+this will be taken care of automatically by the MAIL MERGE program.
+The successive text files could even be broken off in mid sentence
+although, ideally, the next file will start off on the next page or
+at least the next paragraph.</para>
+    </section>
+    <section>
+      <title>MAIL MERGE AS A BACKGROUND TASK</title>
+      <para>MAIL MERGE can be run
+as a background task, that is, MAIL MERGE can be printing out while
+you are entering further commands to OS-9 and running other
+programs.</para>
+      <para>Because MAIL MERGE is
+looking for SPACEs being sent to it to pause printing, if you want
+to run MAIL MERGE as a background task you must redirect its input
+to come from a device other than your keyboard. Otherwise it will
+"eat" the characters you are trying to type in for the next task
+you want to run. A simple way to do this is to redirect its input
+to come from the printer that its output is going to. The printer
+will not normally send data back to the computer, so MAIL MERGE
+will never be unexpectedly paused. For example, to print file
+"INTRO" as a background task you could use:</para>
+      <screen>
+OS9: mm intro &gt;/p &lt;/p &amp;
+</screen>
+      <para>"&gt;/p" means
+'send the output to the printer port /p', "&lt;/p" means 'take
+input from /p', and the "&amp;" on the end means 'run as a
+background task'. OS-9 will respond with the process number of the
+background task. e.g.:</para>
+      <screen>
+&amp;004
+
+OS9:
+</screen>
+      <para>You would use this
+number to abort (stop) the printout:</para>
+      <screen>
+OS9: kill 4
+</screen>
+      <para>Some versions of OS-9
+have the device descriptors for the printers set to be
+non-sharable, that is,
+it is not permitted to have two paths open to the same printer at
+once. This is to prevent two users sending data to the same printer
+at the same time. If your version of OS-9 is set up like this, the
+above example would give you an "Error #209 - Module busy". To
+overcome this, you must set the input to come from a different
+device, for instance another printer port, or the 'null' device, if
+your system has this. For example:</para>
+      <screen>
+OS9: mm intro &gt;/p &lt;/p1 &amp;
+OS9: mm intro &gt;/p &lt;/null &amp;
+</screen>
+    </section>
+    <section>
+      <title>SPECIFYING COMMAND LINE OPTIONS</title>
+      <section>
+        <title>FORM LETTERS</title>
+        <para>To allow data items to
+be inserted into a text file you must use the "+D=" option. A
+typical use of this feature of the MAIL MERGE program is to produce
+personalized form letters in which the names and addresses are a
+part of a data file. The actual nature of these files is explained
+later. The calling line might look like this:</para>
+        <screen>
+OS9: mm letter +d=names &gt;/p
+</screen>
+        <para>In this case the file
+"LETTER" will be printed out and will take information from the
+data file "NAMES". The data file is always specified by the data
+option prefix "+D=". Only one data file may be specified. The MAIL
+MERGE program will continue printing copies of the file "LETTER"
+until all the data in the data file is used up.</para>
+      </section>
+      <section>
+        <title>MULTIPLE COPIES</title>
+        <para>Multiple copies may be
+printed using the "+C=" option:</para>
+        <screen>
+OS9: mm intro +c=5 &gt;/p
+</screen>
+        <para>This would cause five
+copies of the file "INTRO" to be printed out.</para>
+      </section>
+      <section>
+        <title>SPECIFY PRINTER</title>
+        <para>The MAIL MERGE program
+may be set to format its output for a particular printer on the
+calling line by using the "+P=" option (or you can use the "MMFIX"
+program to configure MAIL MERGE permanently for your printer). The
+printer types are the same numbers that are used with STYLOGRAPH.
+The program defaults to a simple matrix (type 40) printer unless
+this option is specified. To specify a NEC printer the command line
+would look something like this:</para>
+        <screen>
+OS9: mm intro +P=10 &gt;/p7
+</screen>
+        <para>This configures your
+printer as type 10 only for this call-up of MAIL MERGE. Use "MMFIX"
+for a permanent change.</para>
+        <important>
+          <para>You
+should notice the slight difference in the syntax between MAIL
+MERGE and STYLOGRAPH when specifying the printer type:</para>
+        </important>
+        <screen>
+OS9: mm intro +P=10
+OS9: stylo intro +P10
+</screen>
+        <para>The various printer
+codes are listed below:</para>
+        <informaltable frame="none" rowsep="0" colsep="0">
+          <tgroup cols="2">
+            <colspec colnum="1" colname="col1" colwidth="0.6in"/>
+            <colspec colnum="2" colname="col2" colwidth="4in"/>
+            <thead>
+              <row>
+                <entry>CODE</entry>
+                <entry>PRINTER</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>0</entry>
+                <entry>Diablo Type:
+All Diablo, All C.ITOH, NEC 3515/25, 5515/+25,7715, 25, Qume
+Sprint, 5/xx or 9/xx</entry>
+              </row>
+              <row>
+                <entry>10</entry>
+                <entry>NEC 3510, 3520, 5510, 5520, 7710, 7720</entry>
+              </row>
+              <row>
+                <entry>20</entry>
+                <entry>CENTRONICS 737/739</entry>
+              </row>
+              <row>
+                <entry>30</entry>
+                <entry>TTY (matrix) printer with backspace capability</entry>
+              </row>
+              <row>
+                <entry>40</entry>
+                <entry>TTY (matrix) printer without backspace capability</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </section>
+      <section>
+        <title>SINGLE SHEET PAPER</title>
+        <para>Normally, the whole file will print out regardless of the number
+of pages, stopping only to prompt you for input when you have
+requested for it in the text file. If you wish to insert a new
+sheet of paper between pages, use the "+S" option; then your
+approval will be requested before each new page is printed.</para>
+      </section>
+      <section>
+        <title>PRINTING PART OF A FILE</title>
+        <para>The final option is the page number option "+N=". This will
+allow you to print only a few pages of text. For example, if you
+wanted to print out only pages 8 through 120 the command line would
+look like this:</para>
+        <screen>
+OS9: mm text +n=8-10 &gt;/p
+</screen>
+        <para>Pages 8 to 10 will be printed. This will allow you to print out
+only a few of the pages if you had to edit some errors that existed
+in a previous printout. If you specify only one number in this
+option, the printing will start on that page and continue to the
+end. The page numbers used in this option refer to the printed page
+number which is set by the ",pn" command and not to the serial page
+numbers which appears on the page breaks in STYLOGRAPH.</para>
+        <para>If you wish to use more than one option in the command line,
+just separate them with spaces. For example:</para>
+        <screen>
+OS9: mm letter +D=names +P=10 &gt;/p
+</screen>
+      </section>
+    </section>
+    <section>
+      <title>SPECIFYING VARIABLES IN THE TEXT</title>
+      <para>STYLOGRAPH has a formatting command ",mmc", which sets the
+mail-merge character. After this command, that specified character
+may be used to enclose MAIL MERGE "variables". This command look
+like this is in STYLOGRAPH file:</para>
+      <programlisting>
+,mmc \
+</programlisting>
+      <para>After this point the "\" character will be the mail-merge
+character and cannot be used for anything else. This character may
+be changed to another or removed as follows:</para>
+      <programlisting>
+,mmc @
+,mmc
+</programlisting>
+      <para>The first command changes the mail-merge character to a "@" and
+the second causes there to be no mail-merge character.</para>
+      <para>Whenever MAIL MERGE encounters this character, it removes the
+two bracketing mail-merge characters along with any intervening
+text and inserts an item from the data ("+D=") file. The text might
+look like this:</para>
+      <programlisting>
+,mmc @
+@name@
+@address@
+@address2@
+@address3@
+
+Dear @greeting@:
+
+This letter is to inform you that we are taking your wife, children,
+home,  computer,  and all  other  possessions  from  you  for using
+unstructured programming methods.
+
+                        Sincerely,
+                        B. Pascal
+</programlisting>
+      <para>The data file might look like this:</para>
+      <programlisting>
+G. C. Fortran
+123 W. 33rd
+Antarctica
+South Pole
+Mr. Fortran
+O.BASIC
+Axis 1
+Island 3
+North Pole
+Mr. BASIC
+</programlisting>
+      <para>MAIL MERGE would then print two letters substituting the
+information from the data file. Notice that the items in the data
+file are simply separated by carriage return, and that the are five
+lines of entry for each letter. You are responsible for ensuring
+that there are the same number of lines of data requested as are
+supplied. Sometimes you have to be a little clever. For instance,
+if mode of your customers have four-line, you will have to enter a
+blank fourth line for three line addresses. The data file can be
+created by STYLOGRAPH (or any other text editor) as a normal text
+file. However, normally the data file will be created by some
+sort-merge program or data base management program such as RMS, for
+greater efficiency.</para>
+    </section>
+    <section>
+      <title>SYNTAX</title>
+      <para>In most cases the names between the markers will have no
+importance since the data will usually be pulled off the file one
+at a time. There are two major exceptions however. The first
+exception is that the names can be reused so that the data will
+reappear. The second exception involves the use of predefined
+variables. These predefined variables are as follows:</para>
+      <informaltable frame="none" rowsep="0" colsep="0">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="col1" colwidth="1.0in"/>
+          <colspec colnum="2" colname="col2" colwidth="1in"/>
+          <colspec colnum="3" colname="col3" colwidth="3in"/>
+          <thead>
+            <row>
+              <entry>VARIABLE</entry>
+              <entry>OPTION</entry>
+              <entry>DESCRIPTION</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>DATE</entry>
+              <entry/>
+              <entry>date in "July 4, 1776" format</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>E</entry>
+              <entry>date in European "4.7.76"</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>M</entry>
+              <entry>date in military "4 JUL 76"</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>N</entry>
+              <entry>date in numeric "07/04/76"</entry>
+            </row>
+            <row>
+              <entry>#</entry>
+              <entry/>
+              <entry>number register</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>1</entry>
+              <entry>single digit</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>2</entry>
+              <entry>right justified in 2 spaces</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>3</entry>
+              <entry>right justified in 3 spaces</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>+</entry>
+              <entry>increment number</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>-</entry>
+              <entry>decrement number</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>+=</entry>
+              <entry>set number equal to value</entry>
+            </row>
+            <row>
+              <entry>*</entry>
+              <entry/>
+              <entry>second number register (with same options)</entry>
+            </row>
+            <row>
+              <entry>&lt;</entry>
+              <entry/>
+              <entry>get variable from screen using prompt</entry>
+            </row>
+            <row>
+              <entry>^</entry>
+              <entry/>
+              <entry>read a variable without prompting</entry>
+            </row>
+            <row>
+              <entry>TIME</entry>
+              <entry/>
+              <entry>time as "01:15 PM"</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>24</entry>
+              <entry>24 hour "13:15"</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry>S</entry>
+              <entry>seconds "01:15:27"</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>Here is an example of a
+letter using the same input variable as before:</para>
+      <screen>
+,mmc |
+|date|
+      |name|
+      |address1|
+      |address2|
+      |address3| |^greet|
+
+      I am sure that you, |greet|, will be |&lt;magnitude|
+      interested in the following list of items:
+
+      |* + =101|. Overdrawn accounts
+      |* +|. Unpaid bills
+      |* +|. Accounts receivable
+
+      The time is now |time S|
+
+      Within 24 hours of this time you will be hearing from our bill
+      collector Boris about these items. You should be |magnitude|
+      concerned. He will be stopping by your residence at |address1|,
+      |address2|, |address3| to talk about these matters.
+</screen>
+      <para>While this is being printed a prompt will appear on the screen
+like this:</para>
+      <para>magnitude?</para>
+      <para>Assuming that you answer with the word "extremely" the letter
+should look like this:</para>
+      <screen>
+July 19, 1981
+G. D. Fortran
+123 W 33rd
+Antarctica
+South Pole
+
+I am sure that you, Mr. Fortran, will be extremely interested in
+the following list of items:
+
+101. Overdrawn accounts
+102. Unpaid bills
+103. Accounts receivable
+
+The time is now 01:15:27.
+
+Within 24 hours of this time you will be hearing from our bill
+collector Boris about these items. You should be extremely
+concerned. He will be stopping by your residence at 123 W 33rd,
+Antarctica, South Pole, to talk to you about these matters.
+</screen>
+      <para>Note the use of the predefined variable, "date", for which the
+current date on your computer is substituted. Note the use of the
+"^" in front of the first "greet". "Greet" is used later in the
+letter - it takes on the value already read. The "*+=101" sets the
+number register to "101". The when the "*+" is again encountered,
+that register is incremented to "102", and then "103". The second
+time "address1", "address2" and "address3" are referenced, they
+take on the same value they were assigned the first time through.
+"Magnitude" is also a repeated value, although the second time it
+is used, it does not have to be preceded by a "&lt;", as it has
+already been entered from the keyboard.</para>
+      <para>There are two files, named "LETTER" and "NAMES" on the
+STYLOGRAPH disk supplied. You can use these files to become
+familiar with MAIL MERGE. If you are still not sure how to run MAIL
+MERGE, turn to the chapter MAIL MERGE TUTORIAL, where this same
+information will be illustrated with plenty of examples.</para>
+    </section>
+  </section>
+  <section>
+    <title>SYSTEM CONFIGURATION</title>
+    <para>When you receive your STYLOGRAPH diskette it will
+have the following files:</para>
+    <informaltable frame="none" rowsep="0" colsep="0">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="col1" colwidth="1in"/>
+        <colspec colnum="2" colname="col2" colwidth="4in"/>
+        <thead>
+          <row>
+            <entry>Name</entry>
+            <entry>Function</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>INTRO</entry>
+            <entry>A text file, the introductory entrygraph for the STYLOGRAPH
+manual; included here for demonstration purposes. This file
+contains intentional misspellings for demonstration of STYLOGRAPH
+SPELLING CHECKER.</entry>
+          </row>
+          <row>
+            <entry>LETTER</entry>
+            <entry>A text file, demonstration form letter as per the MAIL MERGE
+TUTORIAL section of the MAIL MERGE manual.</entry>
+          </row>
+          <row>
+            <entry>NAMES</entry>
+            <entry>A text file, the data file for use in demonstration of the above
+LETTER file.</entry>
+          </row>
+          <row>
+            <entry>MM</entry>
+            <entry>The MAIL MERGE program, (in the CMDS directory)</entry>
+          </row>
+          <row>
+            <entry>MMFIX</entry>
+            <entry>The MAIL MERGE configuration program (in the CMDS directory).
+This program is only used to set up the printer type.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>Normally, the only thing you will need to do to the MAIL MERGE
+program is set up for the particular type of printer you are using.
+This is done by the "MMFIX" command as follows:</para>
+    <screen>
+OS9: mmfix /d0/cmds/mm
+</screen>
+    <para>You will then be prompted for the number code of your type of
+printer. The various printer codes are listed in the SPECIFY
+PRINTER section. If you wish to abort this command you can respond
+to the prompt by entering "RETURN" instead of a printer code
+number. If you have entered a correct number the default printer
+type will be automatically set for your copy of MAIL MERGE.</para>
+    <section>
+      <title>PROPORTIONAL SPACING</title>
+      <para>If you are using proportional spacing with MAIL MERGE, you must
+have the STYPS file in the STY directory of the disk in drive 0, as
+explained in the STYLOGRAPH manual.</para>
+    </section>
+  </section>
+  <section>
+    <title>MAIL MERGE TUTORIAL</title>
+    <para>If you are using MAIL MERGE successfully already, you can skip
+this chapter. If you are having problems with MAIL MERGE, go over
+this chapter carefully.</para>
+    <para>Suppose you want to write a letter to your mother. Using
+STYLOGRAPH, you compose the following letter:</para>
+    <screen>
+Dear Mother,
+
+    I miss you. Send money.
+,rj
+Love, John
+</screen>
+    <para>You then save this letter onto your disk using some obvious file
+name, like "MONEY". Every time you need more of that green stuff,
+you type the following command while in OS9:</para>
+    <screen>
+OS9: mm money &gt;/p
+</screen>
+    <para>After executing this command, the letter shows on your
+printer.</para>
+    <para>Now, no doubt this is a fine letter, and since mothers have soft
+hearts, it will probably have its effect. However, it is a rather
+specific letter, addressed only to one person (you could always try
+someone else's mother) and for only one specific purpose. To take
+advantage of the real power of form letters, we will have to employ
+some additional options as per the examples supplied on the MAIL
+MERGE disk.</para>
+    <para>On your data disk you have a file name "LETTER", which is
+reproduced below so that we can discuss it:</para>
+    <screen>
+,LL 65
+,LM 10
+,MMC \
+
+,RJ
+\date\
+
+re: Election of \edate\
+
+Mr. \pres1\ \pres2\
+White House
+Washington D.C.
+
+Dear Mr. \pres2\
+
+As a loyal member of the \party1\ party, I wanted
+to write and tell you how pleased I was to learn
+that you have received \vote1\ electoral votes. I
+hope you won't mind having \vpres1\ \vpres2\ of the
+\party2\ as your vice president. \^\ \^\ I am sorry
+that I am so late in replying but I have been \&lt;Busy\.
+
+Sincerely,
+
+Millard Filmore
+</screen>
+    <para>We will discuss this letter in detail, explaining each of the
+options, but it might be easier to absorb if you merely printed out
+this letter with its sample data file on you own printer, and
+observe how each of the options function. To do this, use the
+following command:</para>
+    <screen>
+OS9: mm letter +d=names &gt;/p
+</screen>
+    <para>Each time you are prompted with the message, "Busy?", type in
+some appropriate word (like "typing", "sleeping", or maybe even
+"working").</para>
+    <para>Let's go over these options in detail:</para>
+    <informaltable frame="none" rowsep="0" colsep="0">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="col1" colwidth="0.8in"/>
+        <colspec colnum="2" colname="col2" colwidth="4.2in"/>
+        <tbody>
+          <row>
+            <entry>\date\</entry>
+            <entry>When the computer sees this, it supplies the current date
+entered in its memory ("today's date").</entry>
+          </row>
+          <row>
+            <entry>\edate\</entry>
+            <entry>The computer prints the first line it finds in the data file in
+place of this "variable".</entry>
+          </row>
+          <row>
+            <entry>\pres1\</entry>
+            <entry>The computer picks up the second line in the data file, calling
+it "pres1" and inserts it at this point in the printout.</entry>
+          </row>
+          <row>
+            <entry>\pres2\</entry>
+            <entry>The third line of the data file becomes "pres2" and is inserted
+in the data file.</entry>
+          </row>
+          <row>
+            <entry>\pres2\</entry>
+            <entry>Here we see an interesting feature of MAIL MERGE: Once a
+variable has been used, MAIL MERGE remembers the name of that
+variable, and if it is encountered again, that same variable is
+used again.</entry>
+          </row>
+          <row>
+            <entry>\party1\</entry>
+            <entry>The next variable after the one named \pres1\ is used. Note that
+only one line of the data file was used when the last two variables
+(both with the same name, "pres2") were printed.</entry>
+          </row>
+          <row>
+            <entry>\vpres1\</entry>
+            <entry>Obviously, since this variable is spelled differently from
+"pres1", the next line in the data file is used (rather than using
+the previous variable "pres1").</entry>
+          </row>
+          <row>
+            <entry>\vpres2\</entry>
+            <entry>Again, a new line is taken from the data file and inserted in
+the printed text.</entry>
+          </row>
+          <row>
+            <entry>\party2\</entry>
+            <entry>Another line is taken from the data file.</entry>
+          </row>
+          <row>
+            <entry>\^\</entry>
+            <entry>The next line in the data file is skipped. This has the effect
+of a carriage return in the printed letter. This might be useful if
+you have constructed a very large data file and then changed your
+form letter so you did not use all the data. This way, you only
+need change the form letter once, and you don't have to change the
+data for each customer in your data file. It is also useful if you
+decide to write multiple text files using the same data file (for
+instance, a form letter and an envelope addressing text file run
+off the same data file - example below.)</entry>
+          </row>
+          <row>
+            <entry>\&lt;busy\</entry>
+            <entry>The "&lt;" tells the computer that the user (you) must be
+prompted for the next input. The message "Busy?" will appear on
+your screen and the printing will stop until you type in the
+desired input.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>With a little thought, you can see how you might create many
+letters, with varying subject matter, addressed to different
+people. The best way to learn is to enter the STYLOGRAPH program
+and compose your own letter. Using the techniques described above,
+first compose the "form" letter (make sure you have the ",mmc"
+character at the beginning).</para>
+    <para>When you have a suitable form letter prepared, save it with some
+descriptive name (such as "letter1").</para>
+    <para>Now create your own data file. For each variable that appears in
+the form letter, create a line of data. When you have entered all
+the data for a particular variable, hit the carriage return to
+signify the end of that variable. Do not enter data for the
+predefined variables (like "date"), or for repeated variables after
+their first appearance. Also remember that variables preceded by
+"&lt;" will be supplied by the user when the letter is printed out,
+and must not be included in the data file.</para>
+    <para>When you have exactly the number of variables in your data file
+that you request in your form letter, your job is done. You can
+create as many "letters" within the data file as you wish. For
+instance, suppose one printing of your form letter requires 10
+variables. Your data file may contain any multiple of that (in this
+case, 10, 20, 40, 70, 90, etc.) If you have an odd number, however,
+you will get an error on the last letter that is printed. For
+example, if in our last example, you supply 93 variables instead of
+90, the computer will print out nine letters, and then generate the
+error, "out of data" because you only allowed 3 variables for your
+last letter. You will get into trouble even if your "odd" line is
+just a blank line following the data (say, on the 91<superscript>st</superscript>
+line of the file).</para>
+    <para>Now save your data file (under some name like "names") and you
+are ready to execute the "mm" command on your files.</para>
+    <para>Let's cover some more examples of what MAIL MERGE can do.
+Suppose you have composed the text file below (called "form1" for
+the purpose of this example):</para>
+    <screen>
+,mmc \
+
+,rj
+\date\
+
+\name\
+\address1\
+\address2\
+\address3\
+
+Dear \name\:
+
+It is \&lt;complaint-compliment\, because now we are \&lt;our
+action\. As you know, our new address is at \address\,
+\our city\. \&lt;message\, so please be sure to \&lt;their action\
+as soon as possible. We will be seeing you very soon.
+
+Respectfully
+
+John Calvin
+</screen>
+    <para>This form letter is written so that it may create a very
+sociable letter, or a letter of complaint, depending upon what
+responses are input by the user at printout time. For example,
+let's visit two groups of user input which could cause the letter
+to have a very different meaning. Note that only the variables
+preceded by a "&lt;" will be listed in the two groups below:</para>
+    <informaltable frame="none" rowsep="0" colsep="0">
+      <tgroup cols="3">
+        <colspec colnum="1" colname="col1" colwidth="1.8in"/>
+        <colspec colnum="2" colname="col2" colwidth="1.6in"/>
+        <colspec colnum="3" colname="col3" colwidth="1.6in"/>
+        <thead>
+          <row>
+            <entry>Input Variable</entry>
+            <entry>Sociable letter</entry>
+            <entry>Angry letter</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>complaint/compliment</entry>
+            <entry>so sad</entry>
+            <entry>too late</entry>
+          </row>
+          <row>
+            <entry>our action</entry>
+            <entry>leaving you</entry>
+            <entry>suing you</entry>
+          </row>
+          <row>
+            <entry>message</entry>
+            <entry>We miss you</entry>
+            <entry>We have a good lawyer</entry>
+          </row>
+          <row>
+            <entry>their action</entry>
+            <entry>write</entry>
+            <entry>contact yours</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>As you can see, one form letter may serve many purposes, taking
+on different meanings as dictated by the user during printout. A
+data file which may be used with this letter is included (named
+"data1" for the purpose of this example):</para>
+    <screen>
+Mr. Jones
+17 Acacia Avenue
+Sheffield
+SH21 7GH
+82 West Road
+York
+Bill and Jane
+111 Mulberry Lane
+London
+SW12 3AB
+Greener Pastures
+The other side of the Mountain
+</screen>
+    <para>Perhaps you can visualize how the variables fit into the text
+file just by studying these two examples. If not, copy the form
+letter and the data file onto your disk, and use the "mm" command
+to have them printed out, as follows (assuming you used the same
+names as in this example when you copied these files onto your
+disk):</para>
+    <screen>
+OS9: mm form1 +d=data1 &gt;/p
+</screen>
+    <para>Suppose we introduce another file which can use the same data
+file as illustrated above. We can use this text file to do the
+envelope addressing for each form letter we have created (called
+"form2" for this example):</para>
+    <screen>
+,mmc /
+,sp 7
+,rj 4
+                           /name/
+                       /address1/
+                       /address2/
+                       /address2/
+                       /postcode/
+/^/
+/^/
+</screen>
+    <para>To use this text file with the original data file, you would
+enter the following command:</para>
+    <screen>
+OS9: mm form2 +d=data1 &gt;/p
+</screen>
+    <para>Note that this text file will first space down seven lines (so
+it is not writing the address along the top of the envelope). Then
+the first four lines in the data file will be printed out (right
+justified). Finally, the next two lines in the file will be
+skipped, since they are not relevant to the envelope
+addressing.</para>
+  </section>
+  <section>
+    <title>USING MAIL MERGE WITH RMS</title>
+    <para>If you have the RMS database management system, you can use it
+very effectively to create the data file for MAIL MERGE when you
+are printing form letters. Assuming that you have all the relevant
+names and addresses entered into an RMS data file called
+"ADDRESS.RMS", you can use the RMS REPORT program to produce the
+MAIL MERGE data file. For example, you might have four fields in
+your "ADDRESS" file, called, (in "ADDRESS.DIC", the specification
+file for your RMS data file), NAME, ADDRESS1, ADDRESS2, ADDRESS3.
+You would then create a report specification file, "MAIL.REP",
+using STYLOGRAPH, such as:</para>
+    <screen>
+L 1,1;
+P NAME@1;
+P ADDRESS1@1;
+P ADDRESS2@1;
+P ADDRESS3@1;
+</screen>
+    <para>The "L 1,1;" tells REPORT not to paginate the printout. The
+command</para>
+    <screen>
+OS9: report address mail &gt;data
+</screen>
+    <para>will produce a text file "DATA" containing all the names and
+addresses in the "ADDRESS.RMS" file. Use the "I" and "E" commands
+of REPORT, or an index file and the "X" command, if you want to
+include only some of the names and addresses. The data file is then
+ready to be used by MAIL MERGE. A suitable letter might be:</para>
+    <screen>
+,mmc /
+
+/name/
+/address1/
+/address2/
+/address3/
+,rj
+/date/
+
+Dear /name/,
+I am sending you a circular letter to show you what STYLOGRAPH, MAIL
+MERGE, and RMS can do together.
+
+Yours sincerely,
+A. User
+</screen>
+    <para>You could print this with:</para>
+    <screen>
+OS9: mm letter +D=data &gt;/p
+</screen>
+    <para>which would produce a letter for each person in your
+"ADDRESS.RMS" file.</para>
+    <para>Experiment with using MAIL MERGE and RMS together - they can
+really streamline your paperwork, and help you avoid errors. For
+example, a standard invoice letter together with the "prompting
+keyboard index file" version of the "X" command in RMS REPORT
+allows you to rapidly make out invoices with a minimum of effort,
+and the minimum room for error. MAIL MERGE can automatically print
+out the two copies you require of each invoice as well. Using a
+computer in your business is all about improved efficiency and
+presentation. Flexible programs such as MAIL MERGE and RMS allow
+you to achieve these benefits and still retain you own style of
+working.</para>
+  </section>
+</article>
