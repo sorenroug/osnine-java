@@ -1790,7 +1790,7 @@ OS9: <userinput>rmscopy batch master</userinput>
           </listitem>
         </varlistentry>
         <varlistentry>
-          <term>To MODIFY a record</term>
+          <term>To MODIFY a record:</term>
           <listitem>
             <orderedlist>
               <listitem>
