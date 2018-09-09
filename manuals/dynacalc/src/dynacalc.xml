@@ -1,0 +1,1316 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="dynacalc" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <title>DYNACALC</title>
+  <subtitle>Electronic Spread Sheet Program for the OS-9 operating system</subtitle>
+  <info>
+    <copyright>
+      <year>1983</year>
+      <holder>Dragon Data Ltd</holder>
+    </copyright>
+    <legalnotice>
+      <para>Dynacalc, in all machine readable formats and the written documentation accompanying them, are copyrighted. The purchase of Dynacalc conveys to the purchaser a license to use Dynacalc for his/her own use and not for sale or free distribution to others. No other license, expressed or implied, is granted.</para>
+      <para>This manual and the associated programs are the copyright of Dragon Data Ltd (under licence). Copying is only permitted for backup purposes on a single computer system. Any other copying by whatever means without the written authorisation of Dragon Data Ltd is strictly prohibited.</para>
+      <para>This manual was prepared using the STYLOGRAPH word processor, checked with the SPELL CHECK spelling checker, and printed with the MAIL MERGE merge/print program.</para>
+      <para>OS-9 and BASIC09 are trade marks of Microware Systems Corporation and Motorola Inc.</para>
+    </legalnotice>
+  </info>
+  <preface>
+    <title>System Requirements</title>
+    <para>This version of DYNACALC is designed to operate under the 6809 OS-9 operating system, either &#x2018;level one&#x2019; or &#x2018;level 2&#x2019;. With a level one system, about 13k of user space remains after DYNACALC is loaded, which will hold about 1000 numeric cells. A level two system will allow about 36k of user space, or room for about 3000 numeric cells.</para>
+    <para>The minimum system configuration you require is your Dragon Data computer, with at least ask bytes of RAM, running the OS-9 operating system; a floppy disk drive; and a television, or preferably a monochrome monitor. (The monitor will generally give you a better picture than a television). You can certainly run DYNACALC with only one disk drive, although two drives are more convenient.</para>
+    <para>Use of a printer with DYNACALC is entirely optional, and you can use any hard copy device which you currently use under OS-9. The user has control of all important printer parameters: printer device name, column width (up to 255), number of lines per page, multiple spacing, pagination on/off, and DYNACALC borders on/off.</para>
+  </preface>
+
+
+  <xi:include href="chapter01.xml"/>
+
+
+  <chapter>
+    <title>DYNACALC Basics</title>
+    <para>DYNACALC is a computer program that simulates a large sheet of paper (worksheet) arranged as a rectangular array of &#x2018;columns&#x2019; (vertical) and 'rows' (horizontal). At each intersection of a column and a row there is a 'value' (number), or an 'expression' (describes mathematical operations), or a 'label' (an alphanumeric message). See the illustrations on page <xref linkend="screen.illustrations">25</xref>.</para>
+    <para>To enter a value, expression, or label into a cell, you must first move the 'cursor' (pointer) to the cell you wish to use. You may move the cursor with the ARROW keys on your keyboard, if it has such special keys, or with a combination of the 'CONTROL' key and various alphabetic keys such as 'u' for up and 'd' for down. See the <xref linkend="key.assignment">Key Assignment Summary</xref>section for details on your keyboard.</para>
+    <para>Using the ARROW keys you can move the cursor up, down, right, or left from its current position. Each time the cursor moves, the cell 'address' (column and row position) is changed. You will see the address continuously updated at the extreme top left corner of the screen.</para>
+    <para>If you attempt to move the cursor beyond the edge of the screen, the display will &#x201C;scroll&#x201D; (move up, down, or sideways), and the column and row borders will change to reflect the new location. Of course, if there is any data in a cell, that data will move to a new physical location on the screen, or may even scroll off to make room for new cells. The actual contents of cells is not changed, however. If you restore the cursor to where it was before, you will see some of the same cells appear.</para>
+    <para>The ARROW keys are very useful for moving short distances. but may be cumbersome when long moves become necessary. Immediate cursor positioning to a given cell address is provided by the 'Goto:' command, invoked by typing the '&gt;' key. As soon as you hit this key, the message 'Goto:' is displayed near the top of the screen. Now enter the address of the cell you want, for example 'A3' or 'B23', and the cursor will move immediately to that cell.</para>
+    <para>Since it is frequently necessary to move to the top-left corner of the worksheet, a special HOME key has been implemented to do just that. Normally, HOME will cause the cursor to move to cell A1. However, if titles are enabled, that won&#x2019;t be possible. The cursor will in that case go as close to A1 as it can. Check the <xref linkend="key.assignment">Key Assignment Summary</xref>section for the HOME key on your keyboard.</para>
+    <para>Once you move DYNACALC&#x2019;s cursor to the cell you wish to examine, you will notice that the contents of that cell are now displayed on the very top line of your screen. This cell to which the cursor points is called the 'current cell'. To examine another location, move the cursor as explained above. When you reach a cell whose contents you wish to change, simply type in the new value expression, or label. When you hit the RETURN key, the new information will be transferred to the current cell.</para>
+  </chapter>
+
+
+  <chapter>
+    <title>Entering Data and Equations</title>
+    <para>As mentioned earlier, each DYNACALC cell can store any of these types of data: values, labels, and expressions. When you move the cursor to a particular cell (let&#x2019;s call this pointing to a cell), its contents are displayed on the top line of the screen. The symbols (V), (L), and (E) are used to indicate Value, Label, and Expression. A given cell can contain only a single type of data at a time. When the cell is changed, the new data may be of any of the three types, but never mixed at the same time.</para>
+    <para>The first kind of data a cell can contain is a number, or 'value'. To enter a value, move the cursor to the desired cell and then type the number, for example <userinput>2, 3.4, -12, .09, -3487.345, 3.8E6, 6.8E-18</userinput>. These are all valid numbers. Commas are not allowed within a number, however. As soon as you type the first character of the number, DYNACALC will detect that it is part of a number, and will display 'Value' on line 2 of your screen. When you finish entering the number, hit the RETURN key, and the number will be transferred to the current cell.</para>
+    <para>In addition to numbers, cells can contain descriptive text, known as 'labels'.</para>
+    <para>To enter a label, move the cursor to the desired cell and then type the message you wish displayed at that place in your worksheet. When you type the first character of the label, DYNACALC will display 'Label' on line 2. But what if you want to enter a number as the first part of a message? Or if you want to enter a string of periods. If you try doing this, DYNACALC will think you are trying to input a number. To 'fool' DYNACALC, precede your label with a single-quote character ('), and it will know that what is to follow is a label. No trailing quote is required, and the leading quote will be 'swallowed' so as not to spoil the appearance of the message. When you are finished entering the message: hit RETURN to copy the label to the current cell.</para>
+    <para>The third type of data a cell can contain is an 'expression', such as 'A3+B4'. Expressions can be simple, or as complicated as you like. They are the basis for the great power of DYNACALC. Expressions are made up of cell addresses, arithmetic operators (such as '+'), and functions, (such as <userinput>@SQ</userinput> for 'square root').</para>
+    <para>To enter an expression, move to the desired cell and enter the expression you need. The result of the expression will be transferred to the current cell, and each time the contents of any referenced cell are changed, the expression will be re-evaluated and the new answer put in the target cell. For example, if the current cell is A3, and you wish that cell to contain the product of the contents of cells A1 and A2, the expression will be A1*A2. However, if you type just that, DYNACALC will think it&#x2019;s a label (since it starts with an alphabetic character). To get around this, you must fool DYNACALC by giving it an arithmetic operator character first. For example, you could type <userinput>+A1*A2</userinput>. If your expression begins with a function, the '@' character will accomplish the same thing by itself. Thus if you want the current cell to hold the square root of 2, simply type <userinput>@SQ2</userinput> (those who love to type will be happy to know that <userinput>@SQRT(2)</userinput> will also work). Note that upper-case characters are NOT essential. If you type a lower-case letter when a cell address or function name is required, it will automatically be converted to upper case.</para>
+    <para>In each or the above cases you have transferred the new value to the current cell by hitting the RETURN key. Since frequently several adjacent cells are entered in a series, DYNACALC also allows use of the ARROW keys to do this, and at the same time move to the next cell, thereby saving a keystroke for each cell entered.</para>
+    <para>Let&#x2019;s try a simple example to make sure we haven&#x2019;t missed anything. If you don&#x2019;t already have DYNACALC running, bring up your OS-9 computer and, when you see the 'OS9:' prompt, type 'dynacalc'. After a few seconds you will see the 'Hello' screen: which displays DYNACALC&#x2019;s version number. Type any key to continue, or just wait for the screen to 'time out'.</para>
+    <para>When the screen is rewritten you will see the basic worksheet, as shown on page <xref linkend="empty.screen">24</xref>. (If you already have DYNACALC running type <userinput>/CY</userinput> to clear the current worksheet (don&#x2019;t forget to save it first, if it&#x2019;s anything important)).</para>
+    <para>The cursor now points to cell A1. Type <userinput>23</userinput> (DOWN-ARROW) <userinput>45</userinput> (DOWN- ARROW). You have placed constants in cells A1 and A2, and the cursor now points to A3. To add cells A1 and A2 and place the sum in A3, type +A1+A2 (RETURN). Now A3 displays 68, the sum of 23 and 45.</para>
+    <para>Now move the cursor back to A1 and enter a different value. When you hit 'RETURN', A1 is updated to its new value. No surprise. But A3 is also changed, and still shows the correct sum of the other two numbers. This is the real power of DYNACALC, and the basis for even the largest and most complex spread-sheet.</para>
+  </chapter>
+
+
+  <chapter xml:id="error.correction">
+    <title>Error Correction</title>
+    <para>Line 2 of the DYNACALC screen displays information about the current operating mode and the settings of various options. One of the most important things displayed on line 2 is the &#x2018;Ready&#x2019; message. Whenever you see &#x2018;Ready&#x2019;, you know that DYNACALC is in its &#x2018;Ready&#x2019; mode, and is able to accept commands from the keyboard. The Ready message will not be displayed, for example, while the printer is printing, or while a command menu is being displayed.</para>
+    <para>If you are uncertain about 'where you are' in DYNACALC, hitting the ESCAPE key will always leave whatever mode the program is in and immediately go to Ready. Thus you can abort from any command or data input at any time by hitting ESCAPE.</para>
+    <para>Whenever you are typing in data to be put into a cell, you can use the BACKSPACE key to correct recent errors without retyping the whole line. Note that the BACKSPACE and LEFT-ARROW keys are two different keys and produce very different results in DYNACALC.</para>
+    <para>You can at any time edit the contents of any cell by moving the cursor to that location and using the edit command. After you reach the desired cell, type <userinput>/E</userinput> to enter the Editor. Now the contents of the current cell are displayed on the edit line (line 3), and you can insert new characters, delete existing ones or overlay old characters with new, all without retyping the entire line.</para>
+    <para>When you are using the editor, the RIGHT-ARROW and LEFT-ARROW keys take on a new function: that of moving the cursor left and right on the edit line. Note that the ARROW keys do not change anything; they just bring the cursor to the point where you want to make a change.</para>
+    <para>Once you have reached the desired spot in the line, characters you type in will be inserted at that point. If you want to delete a character, move the cursor one character past the one to be deleted, then strike the BACKSPACE key. The character will disappear and the right side of the line will move one position to the left.</para>
+    <para>To overlay, hit the OVERLAY key and type the new character(s). The old will be replaced with the new, without changing the length of the line. While you are in the overlay mode, you can still use the ARROW keys to move the cursor without making changes. Note, however, that the BACKSPACE key is ignored in this mode. To exit overlay, hit the OVERLAY key again.</para>
+    <para>When you are finished editing, hit 'RETURN' to transfer the data to the current cell.</para>
+    <para>As described above, the editor is normally entered from the &#x2018;Ready&#x2019; mode, by typing <userinput>/E</userinput>. However, you can also get into the editor directly from the data entry mode by typing the EDIT key (CONTROL-E on most keyboards). You might want to do this if you are typing a long entry and notice that its beginning is messed up. The editor works the same as described earlier; only the method of entry is different.</para>
+  </chapter>
+
+
+  <chapter>
+    <title>Calling DYNACALC</title>
+    <para>If you are in OS-9. and see the shell&#x2019;s prompt (OS9:), you can enter DYNACALC by simply typing 'dynacalc' and hitting RETURN. You will be greeted by a copyright notice, and then by an empty DYNACALC worksheet.</para>
+    <para>When you call DYNACALC from OS-9, you can optionally specify a worksheet to be automatically loaded upon entering DYNACALC. Do this by typing 'dynacalc filename' on the OS-9 command line, where 'filename.cal' is the name of the worksheet to be loaded. This file defaults to the working data directory. Note that you do not type in the filename extension '.cal' it is supplied automatically by DYNACALC. Such a command can be put into your system&#x2019;s 'startup' file so that DYNACALC and a pre-defined worksheet will be loaded automatically on login.</para>
+    <para>DYNACALC allows one command line option: '-h' at the end of the command line will delete the built-in HELP messages, thereby leaving more user space. If this option is omitted, HELPs will be turned on unless they were disabled by &#x201C;install.dc&#x201D;.</para>
+    <sect1>
+      <title>For the experienced OS-9 user</title>
+      <para>You can also use OS-9&#x2019;s powerful I/O redirection with DYNACALC. To automate repetitive tasks, such as merging worksheets and loading data tables, use your system text editor to build a file containing a sequence of DYNACALC commands. Watch out for blank lines! Then call DYNACALC with an OS-9 command like 'dynacalc &lt;commandfile', and the desired commands will be executed.</para>
+      <para>If DYNACALC hits an end-of-file in the commandfile, it will return to OS-9, but not before saving the current worksheet in 'dyna.xxxxx.cal' in the working data directory, where 'xxxxx' is your user id number. (Your 'user id' is normally 00000 if you are the only user - see the OS-9 User&#x2019;s Manual on the 'login' command for using OS-9 multi-user). To defeat this action, end your command file with a quit command (<userinput>/QOY</userinput>), which will cause an immediate exit. Normally you will want to save the updated worksheet in a specified disk file before exiting. If so, include a save command (<userinput>/SS</userinput>filename) before the quit command.</para>
+      <para>You may also want to redirect DYNACALC&#x2019;s output to the 'null' device (if available) to avoid a lot of unnecessary screen flashing. Use a command like 'dynacalc &lt;commandfile &gt;/null' to do this. Don&#x2019;t forget, the whole thing can be run in background by ending the command with an ampersand (&amp;). You might even put the OS-9 command line itself in a 'procedure' file, so that this complex command can be executed by typing a single command name.</para>
+    </sect1>
+  </chapter>
+
+  <xi:include href="chapter06.xml"/>
+
+  <chapter>
+    <title>Functions</title>
+    <para>DYNACALC has over two dozen built-in mathematical functions. As you probably know, a function is a predefined mathematical expression that produces a result value. In DYNACALC, most functions require one or more independent variables, furnished as arguments. The function then returns the result. A minority of DYNACALC functions, namely @ERROR, @NA, and @PI, require no arguments, and return a pre-defined value or condition.</para>
+    <para>Let&#x2019;s use the square root function, @SQRT, as an example. This handy function requires a single numeric argument, and its return value is the square root of the argument. To generate the square root of 4, for example, you would type '@SQ4'. DYNACALC generates the extra characters to display the complete '@SQRT(4'. You could also type '@SQR4' or '@SQ(4' or '@SQR(4' or any of several other combinations. DYNACALC knows what you're up to, and does the right thing.</para>
+    <para>If you now hit RETURN, the function '@SQRT(4' is put into the current cell. From now on, each time the worksheet is recalculated, that function will be invoked. This can really waste some time if you have a lot of cells with functions of constant values, so what you do if all the arguments are constants (rather than cell addresses) is to evaluate the function once, then place the value of the function in the current cell. You do this by typing '!' after the typing function, but before the RETURN. The '!' causes the expression on the edit line to be evaluated, and replaced by the resulting value. This value is then, of course, a constant, which will never require recalculation.</para>
+    <para>DYNACALC functions are not limited to using constants as arguments, however. The arguments can just as well be expressions, results of other functions, and/or cell addresses. For example, the function '@SQRT(G5' will return the square root of whatever value happens to be in cell G5. If the cell contents change, for whatever reason, the function is recalculated. If you are interested in the value of a cell at the present time only and not subsequent changes, you can type '!' before hitting 'RETURN' and the function will be evaluated once, and replaced with its current value, which is then a constant. You are in full control. If you don&#x2019;t require recalculation of a particular function, you don&#x2019;t need to wait for it.</para>
+    <para>Most DYNACALC functions that accept a range of cell addresses as an argument (@AVERAGE, @CHOOSE @COUNT, @MAX, @MIN, @STDDEV and @SUM) will also accept any rectangular area of the worksheet, including any number of columns and rows. Just supply the addresses of the top-left and bottom-right cells at the extremes of the area desired. For example, '@SUM(B3...E8' would return the sum of the values of all cells B3...B8, C3...C8, D3...D8, and E3...E8. Because of their list-related operation, @INDEX, @LOOKUP, and @NPV will accept ranges of cell addresses in a single column or row only.</para>
+    <para>Note that whenever address ranges are required in functions or commands, the '...' is entered by typing a single period.</para>
+    <para>All DYNACALC operations, including functions, accept either upper-case or lower-case letters wherever an alphabetic character is required. The letter is always displayed as upper case in the function name.</para>
+    <para>DYNACALC&#x2019;s trigonometric functions @COS, @SIN, and @TAN require angular arguments expressed in degrees or radians, depending on the current setting of the degrees/radians switch. The inverses of these functions, @ACOS, @ASIN, and @ATAN, return angles expressed in degrees or radians, also determined by the setting of the degrees/radians switch. This switch, whose default setting is 'degrees', may be toggled by attribute command <userinput>/AD</userinput>. When a worksheet is saved with <userinput>/SS</userinput>, the setting of this switch is saved, and will be correctly set when the worksheet is loaded with <userinput>/SL</userinput>.</para>
+    <para>HELP is available for DYNACALC functions by typing '<userinput>/?@</userinput>' in the Ready mode. Hit any key to see the second page. In the HELP messages, functions are listed by group. Here we list them in alphabetical order for ease of reference.</para>
+    <para>@ABS(x) is the absolute value function. This function returns the value of the argument with its sign forced to positive. This function is handy for checking to see if a number is negative. The expression '+H1-@ABS(H1' will be zero if the value in the cell H1 is zero or positive and non-zero if H1 holds a negative number.</para>
+    <para>@ACOS(x) is the arc-cosine function. This function returns the inverse cosine of the argument.</para>
+    <para>@ASIN(x) is the arc-sine function. This function returns the inverse sine of the argument.</para>
+    <para>@ATAN(x) is the arc-tangent function. This function returns the inverse tangent of the argument.</para>
+    <para>@AVERAGE(x...y) is the average, or arithmetic mean, function. This function returns the average numeric value of all the cells in the range x...y. The range need not be a single range but may be any combination of cells, ranges of cells, expressions (including functions), and/or constants. For example, the function '@AVERAGE(E5, R6...R89, 17, 23.5, @SQRT(A3), B7' would return the average value of the contents of cell E5, contents of cells in the range R6...R89, the constants 17 and 23.5, the square root of the contents of cell A3, and the contents of cell B7. Whatever you want to average in, include in the list of arguments. The function works by adding all arguments, then dividing by the number of arguments. Only those arguments representing numbers count as items, so blank cells and cells containing labels do not affect the average.</para>
+    <para>@CHOOSE(n,x...y) is a function that lets DYNACALC select a value from a list of two or more values. The first argument, n, is used as an index into the list of values x...y. For example, '@CHOOSE(A4, B5...E5' first looks at the value of cell A4. If it&#x2019;s 1, the value of cell B5 is returned; if it&#x2019;s 2, that of cell C5, and so on. But you are not limited to such a simple use of @CHOOSE. While the first argument must be a constant, expression, or a single cell address, the list of values x...y can be spread all over the worksheet. '@CHOOSE(6-H4,13,G4,H3...H12,B1...G1' would subtract the value of cell H4 from the constant 6, then use the difference as a pointer to the list consisting of the constant 13, cell G4. and values from parts of column H and row 1.</para>
+    <para>@COS(x) is the cosine function. This function returns the cosine of x, where x is an angle expressed in degrees or radians.</para>
+    <para>@COUNT(x...y) is a function that returns the number of numeric items in a list. @COUNT counts as described previously under @AVERAGE: only those arguments representing numbers count as items, so blank cells and cells containing labels do not affect the count.</para>
+    <para>@ERROR forces an &gt;ER&lt; error condition wherever it is used. This function is normally used with @CHOOSE, @INDEX, or @LOOKUP to report attempted accesses of invalid table entries. For example put @ERROR in cell B4. Then put '@CHOOSE(B1,B3...B5' someplace else. If B1 has the value 2, @CHOOSE will return &gt;ER&lt;.</para>
+    <para>@EXP(x) is the natural antilogarithm function. This function returns the value of e (2.718..., the base of the natural logarithm system) to the x power. This function is the inverse or @LN(x).</para>
+    <para>@INDEX(n,x...y,z) is used to return a value or label from a list or number of lists. The first argument, n, must be a value (rather than a label). but it may be a constant, cell address, or expression. This value is used as a comparison value for searching the range of cells specified in the second argument, x...y. The range must be a single range of cells in a column or row. The third argument, z, is optional, and specifies the column or row from which the returned value is taken. If the third argument is omitted, the returned value will come from the column just to the right of the column in the second argument or, if a row was specified in the second argument, from the row just below that one.</para>
+    <para>@INDEX is useful for extracting data based on an associated key. For example, you could pick out someone&#x2019;s salary by referring to their name. It is pretty complicated for a written example, so fire up DYNACALC and load the sample worksheet &#x201C;DEMO-IND&#x201D;. This is a simple demonstration of @INDEX. Here we have a list of five numbers in column A, and two lists of five names each in columns B and C. By changing the value in cell A1 over the range of 1-5, you change the name displayed in B9. The @INDEX function is in B9, as you will see if you move the cursor to that location. The function appears as '@INDEX(A1,A3...A7'.</para>
+    <para>The selected name is returned by @INDEX from column B by default, since no third argument is given. Column B is used as the default because it is just to the right of the column used for the match search (column A). Now, while you're pointing at B9, type '/E' and use the editor to add ',C1' to the end of the function. When you hit return you will see the name change to the corresponding one from column C. You might try changing the ',C1' to ',C2' or ',C50' You will get the same results. All @INDEX is interested in is the column. As an exercise, try duplicating this arrangement on another worksheet using rows instead of columns for your lists. In that case, only the row number portion of the third argument is significant.</para>
+    <para>@INDEX works just like @LOOKUP except that the comparison is made for an exact match between the first argument and values in the second. See '<xref linkend="operating.tips">Operating Tips</xref>' for further considerations.</para>
+    <para>@INT(x) is the integer function. It returns the whole number part of the argument. The fractional part of the number is simply thrown away. Note that this is not the same as rounding. If you want to round, use @ROUND. Also note that @INT works exactly the same with positive and negative numbers, unlike the INT functions in some programming languages.</para>
+    <para>@LN(x) is the natural logarithm function. This function returns the logarithm of the argument to the base e (2.718...). This is the inverse of @EXP(x).</para>
+    <para>@LOG(x) is the common logarithm function. This function returns the logarithm of the argument to the base 10. The inverse of @LOG(x) is 10^x.</para>
+    <para>@LOOKUP(n,x...y,z) works just like @INDEX described above, except that the comparison between the first argument and values in the second is made for a 'greater than' condition rather than an exact match. See '<xref linkend="operating.tips">Operating Tips</xref>' for further considerations.</para>
+    <para>@MAX(x..y) is the maximum value function. It returns the greatest value found in the list x...y. The list can be simple or complex, just a as in @AVERAGE, described previously.</para>
+    <para>@MIN(x...y) is the minimum value function. It returns the smallest value round in the list x...y. The list can be simple or complex, just as in average, described previously.</para>
+    <para>@NA forces &gt;NA&lt; (not available) error condition wherever it is used. This function is normally used with @CHOOSE, @INDEX, or @LOOKUP to report attempted accesses of invalid table entries. For example, put @NA in cell B4. Then put '@CHOOSE(B1,B3...B5' someplace else. If B1 has the value 2, @CHOOSE will return &gt;NA&lt;.</para>
+    <para>@NPV(r,x...y) is the Net Present Value Function. It returns the Net Present Value at discount rate r for payback in range x...y. Load worksheet &#x201C;DEMO-NPV&#x201D; for a simple example. All the displayed values except that in cell D13 are arguments to the function. NPV is a financial planning tool whose explanation is far outside the scope of this manual. See any good, modern, book on business management for this information.</para>
+    <para>@PI returns the value of PI (3.14...), which is used in almost every branch of science and mathematics.</para>
+    <para>@ROUND(d,x) is the value rounding function, used to reduce the precision of calculation to a controllable degree. You might use @ROUND in some cases so that DYNACALC could duplicate exact results obtained by other calculators that round after all operations. The first argument, d, is a value equal to an exact power of 10 (.001, 1, 10, 1000, 1e6, etc) which specifies the degree of rounding. Allowable range is from 1e-9 to 1e9. The second argument, x, is the number to be rounded. Either argument can be a constant, cell address, or expression. Unlike the I and $ display formats, the @ROUND function actually changes the value of the cell in which it is used. Any subsequent calculation based on the rounded value will be affected.</para>
+    <para>@SIN(x) is the sine function. This function returns the sine of x, where x is an angle expressed in degrees or radians, depending on the state of the degrees/radians switch.</para>
+    <para>@SQRT(x) is the square root function. It returns the value of the positive number which, when multiplied by itself, equals the argument x.</para>
+    <para>@STDDEV(m,x...y) is the standard deviation function. This function returns the standard deviation of values in the range x...y, using method m. (Standard deviation is a statistical method for expressing by how much a set of values varies from the mean). Like @AVERAGE (arithmetic mean - see above): @STDDEV can be applied to any number of constants, cells or ranges or cells. If m is negative, the population method of calculation is used. If m is zero or positive, the sample method is used. Variance can be calculated by squaring the standard deviation. See any good reference on statistics for information on the application of this function.</para>
+    <para>@SUM(x...y) is the summation function. It returns the total value of all cells in range x...y. As in @AVERAGE the range may be any combination of constants, cell addresses, and ranges of cells.</para>
+    <para>@TAN(x) is the tangent function. This function returns the tangent of x, where x is an angle expressed in degrees or radians.</para>
+  </chapter>
+
+
+  <chapter>
+    <title>Arithmetic Operations</title>
+    <para>The building blocks of DYNACALC&#x2019;s built in functions and user calculations are the basic mathematical operators plus (+), minus (-), times (*), divide (/), and exponentiate (^). These operators are used just as in everyday arithmetic, and can be combined in every imaginable way to do what you need to do.</para>
+    <para>The plus operator adds the two values (numbers), and yields their sum. The minus operator subtracts the second value from the first, and yields the difference. The times operator multiplies the two values to give the product. The divide operator divides the first value by the second to give the quotient. Finally, the exponentiate operator raises the first value to the power of the second value.</para>
+    <para>Note that all these operators are dyadic, that is, they require two operands. There is no monadic (single argument) minus operator as found in many programming languages. To negate a number, subtract it from zero (0-x). In other words, instead of typing '-G5', type '0-G5'. Negative constants (-3, -3.4, -2.5e8, etc.) are permitted, however.</para>
+    <para>All regular mathematical operations in DYNACALC are performed to full 16-digit accuracy. Transcendental functions are limited to about 15 digits for reasons of speed and memory consumption.</para>
+    <para>Numbers are limited to the range +/- 1.0e-37 to 9.999...e37. They may be entered in any format (commas are not permitted to be embedded, however), and will be displayed according to the room available in the current column. If a number has too many digits to be displayed completely, the cell will be displayed in scientific notation (if allowed by the current format). Falling that, the cell will be filled with '&gt;&gt;&gt;&gt;&gt;&gt;' to indicate overflow. Increase the column width (<userinput>/AWC</userinput> or <userinput>/AWW</userinput>) to see the number.</para>
+    <para>Remember that you can use the @ROUND function to reduce the precision of any calculation. This may be necessary to duplicate the operation of manually-operated calculators.</para>
+  </chapter>
+
+  <chapter xml:id="operating.tips">
+    <title>Operating Tips</title>
+    <sect1>
+      <title>Determining function ranges</title>
+      <para>Some DYNACALC functions such as @SUM, @AVERAGE, @MAX, @LOOKUP, etc. allow or require arguments to consist of ranges of cells within a column or row. For example, '@SUM (A1...A7' will return the sum of the value of cells A1, A2, A3, A4, A5, A6, and A7. However, due to the action of the Delete, Insert, and Move Commands, the address ranges may be automatically changed by DYNACALC at some time after you type them in. Of course, these changes are beneficial. Since the data has moved around on your worksheet, the equations affected by the moves need to be altered. Just be happy that DYNACALC is smart enough to do all this work for you.</para>
+      <para>You must, however, give careful consideration to the range boundaries if DYNACALC is to do what you want it to do. A simple example should be convincing: starting with a clear worksheet, type ten random numbers into cells A2...A11. Now in cell A13 put the function '@SUM(A2...A11'. Cell A13 now holds the sum of the ten numbers you entered, right. Moving the numbers around wouldn&#x2019;t change the sum, would it? Right! Now rearrange the numbers by typing '<userinput>/MA</userinput>A2.A11' (ascending-sort move). The screen is re-written, and the numbers are put into ascending numeric order. But wait a minute! The sum in cell A13 changed, didn&#x2019;t it? To see why, point to A13 and look at the function range. It&#x2019;s not 'A2...A11' any more, is it?</para>
+      <para>If you look carefully, you will see that the new range limits are the cells holding the values that were previously at A2 and A11. When DYNACALC moved these cells - as you instructed it to do - it also updated all expressions to contain their new addresses. How do you get around this? Easy. Just put a blank cell (or one holding a label) on either end of the range, and INCLUDE THOSE BLANK CELLS when you type in the range for the sum (but not in the range for the move). Clear the worksheet and try it again, this time giving the range as '@SUM(A1...A12'. Now when you move things around. the sum won&#x2019;t change.</para>
+      <para>The above information applies to all functions using column or row ranges. Remember, a cell containing a label looks just like a blank cell in these cases, so your border lines will work nicely as range limits.</para>
+    </sect1>
+    <sect1>
+      <title>Moving blocks of data</title>
+      <para>The move command (<userinput>/MM</userinput>) will move only a single column or row at a time. Of course, you could use several <userinput>/MM</userinput>&#x2019;s to move several adjacent columns or rows. But what if you want to move only the bottom half of several adjacent columns? Or if you want to move part of a few rows? You can&#x2019;t use <userinput>/MM</userinput> because that will move only entire columns or rows.</para>
+      <para>To move a rectangular block of data from one part of a worksheet to another, you use the data storage commands /S#S and /S#L. /S#S is used to save any rectangular area of any worksheet to a disk file, then /S#L is used to load it back in at any starting point on the same or any other worksheet.</para>
+    </sect1>
+    <sect1>
+      <title>Setting format of an entire column</title>
+      <para>There are two format commands in DYNACALC: the window format command (<userinput>/WF</userinput>) and the cell format command (/F). Unfortunately there is no single command to change the format of an entire row or column while leaving the window format undisturbed.</para>
+      <para>However, there is an easy way to do just that. Set the first cell of the column or row to the desired format with /F, then replicate that cell to the range of cells where the format is desired. The replicate command (/R) copies not just the cell contents, but also the current cell format, to the target cells.</para>
+      <para>But what if you have already entered a column of data before you decide to change the format? Replicating the first value throughout the range will replace all your data with copies of the first value. Not too useful. To get around this, DYNACALC lets you use /R to copy the format of a BLANK CELL into a range of cells without changing the data in the target cells. Simply set the format of the blank cell as desired, then use /R to move this format to the column or row of interest.</para>
+    </sect1>
+    <sect1>
+      <title>Order of calculation</title>
+      <para>Whenever the worksheet is recalculated by DYNACALC, a certain order is followed. In most cases, column order is used. In other words, A1 is calculated first, followed by A2, A3, to the end of column A, then B1, B2 and so on. This is the default order of calculation, and is indicated on line 2 of the display by 'Mode=C,x'.</para>
+      <para>The other choice is to calculate by rows, as A1, B1, C1, etc., A2, B2, C2, and so on. You switch between these two options with <userinput>/AO</userinput>. Line 2 will display 'Mode=R,x' when row order is in use. Note that the calculation order is saved when a worksheet is saved to disk with <userinput>/SS</userinput>.</para>
+      <para>The idea is to avoid forward references whenever possible. That is, the value of any cell should normally not depend on the contents of any other cell whose value hasn&#x2019;t yet been calculated. Sometimes forward references are desirable, as in some successive approximation formulas, but usually they are bad news, because the calculations may not have come out as you intended.</para>
+      <para>You can tell if there are forward references in your worksheet by repeatedly calculating the sheet without changing any data. Do this by hitting the '!' several times, and watching suspected cells. If they change in value, there is a forward reference somewhere in the sheet. Try changing the order of calculation (<userinput>/AO</userinput>) to see if the forward reference disappears. If not you must look further. The formula dump mode (toggled on/off by <userinput>/WD</userinput>) can be very useful for further searching. If you don&#x2019;t see any changes anywhere on your worksheet when you hit '!' you have no forward references.</para>
+    </sect1>
+    <sect1>
+      <title>Speeding things up</title>
+      <para>Although DYNACALC is very fast, there may be cases where you need to do a great deal of calculating, and you will then notice some delays. There are a few things you can do to assure maximum speed for a given application. First, plan your equations for simplicity; avoid recalculating the same value over and over - do it once and stick the answer in a cell, then reference that cell. Avoid calculating things like '1/(2*@PI)' over and over again. If you need a constant like this frequently, type it in on the edit line, and hit '!' before transferring to a cell. This will calculate the value right then, and the resulting constant can then be stored.</para>
+      <para>Whenever you need to enter several values into a worksheet containing lots of arithmetic, turn off the automatic recalculation feature (toggled on/off by <userinput>/AR</userinput>). Hit '!' in the &#x2018;Ready&#x2019; mode whenever you want to recalculate, or type <userinput>/AR</userinput> to go back to automatic. Line 2 will show 'Mode=x,A' or 'Mode=x,M' to indicate Automatic or Manual recalculate.</para>
+    </sect1>
+    <sect1>
+      <title>Automatic cursor advancing</title>
+      <para>Normally when you hit RETURN to enter the contents of the edit line to the current cell, the cursor stays positioned at that cell so that you can change it again if you want. To enter the value and advance to the next cell (in any direction), you hit an ARROW key. Wouldn&#x2019;t it be nice if you could use the 'RETURN' key instead? Certainly, so DYNACALC allows that, too. To get into this mode, just hit any ARROW key to enter the first cell in a series. Now subsequent cells can be entered just by hitting 'RETURN', and the cursor will advance in the same direction as your initial ARROW key. To get out of this mode, just hit 'RETURN' while the &#x2018;Ready&#x2019; prompt is showing.</para>
+    </sect1>
+    <sect1>
+      <title>Pointing to cells</title>
+      <para>Don&#x2019;t forget - whenever DYNACALC is expecting a cell address, you have the option of typing the address manually, or POINTING to the desired cell with the ARROW keys. This can save time and eliminate errors. Watch the edit line...as you move the cursor, each cell&#x2019;s address will appear in the expression or command argument, and will automatically change as you move in any direction. When you reach the desired cell, proceed with the operation as though you had typed in the address manually. The cursor will return to where it was before you started 'pointing'.</para>
+    </sect1>
+    <sect1>
+      <title>Incrementing cell values</title>
+      <para>Normally when you want to change a cell&#x2019;s contents you point to it, and type in the new value. But what if the value is 4876.39 and you want to decrease it by 20.00? Who needs to type in all those digits? Not you, certainly. You have DYNACALC, which allows you to point to a cell, hit the '#' key, which will transfer the value of that cell to the edit line, then use arithmetic on the current value. To add 20.000 to a cell, for example, you just point to the cell, then type '#+20' and hit 'RETURN'. Any other arithmetic operation could be used as well.</para>
+    </sect1>
+    <sect1>
+      <title>Using @INDEX and @LOOKUP</title>
+      <para>These two powerful functions are very similar. They are both used to compare a supplied value with values in a table; only the comparison itself is different. @INDEX looks for an exact match, while @LOOKUP checks for a 'greater than' condition. @LOOKUP is useful for checking tables to find the range applicable to a particular comparison value. For example, a table might list discount percentages for quantities 1, 2-5, 6-10, and 11-99. If the desired quantity is 7, that would be associated with the 6-10 range. @LOOKUP does this by returning the value or label associated with the 6-10 entry. Obviously an exact match would be useless here.</para>
+      <para>@LOOKUP fails when used in combination with @MIN, however. This is because the comparison value will never be 'greater than' any of the table entries. This is one case when the exact matching comparison of @INDEX is most valuable. As an example, '@INDEX(@MIN(B6...B20),B6...B20,A1' would return from column A the value or label associated with (in the same row as) the lowest-value entry in the range B6...B20.</para>
+    </sect1>
+    <sect1>
+      <title>Memory conservation</title>
+      <para>DYNACALC allows your worksheet to have up to 256 columns or up to 256 rows. It doesn&#x2019;t take a mental giant to figure that a given worksheet can&#x2019;t have both 256 columns and 256 rows; 65536 cells is a little beyond the range of a 6809 computer. With 'helps' disabled (in an OS-9 level one system), there is about 21k of workspace available, or room for about 1750 numeric cells. Level two systems allow about 36k of workspace, or room for about 3000 numeric cells.</para>
+      <para>How can you tell how much memory a cell takes? Simple...just watch the 'Used memory' indicator on line 2 of the screen. You'll notice that the used memory rises a certain amount each time you put some data in a cell. Each active cell requires a two-byte pointer, plus a variable amount of memory for the actual cell contents. Any numeric entry uses a total of 10 bytes (8 for the number, and 2 for the pointer). Any label uses x+2 bytes, where x is the number of characters in the string. An expression uses 2 bytes for its pointer, 2 bytes for each cell reference, 1 byte for each function call, 8 bytes for each numeric constant (even 0 or 1), and 1 byte for any other characters (commas, parentheses, etc.). In addition, DYNACALC maintains a table of all cells in the active area of the worksheet (as reported by <userinput>/AS</userinput>). Each cell takes up two bytes in this table.</para>
+      <para>Now one fact that should be immediately obvious from the above is that you should avoid using large numbers of numeric constants in expressions. If a value is used repeatedly in lots of expressions, put it into a cell, and use the cell address instead.</para>
+      <para>Since the label entry mode (see <userinput>/AL</userinput>) makes it so easy to enter long strings, you may be tempted to enter your borders that way. This will use up more room than necessary. If you think you need this space, just put in one border character, set continuous format in that cell (<userinput>/FC</userinput>), then replicate (see /R) to the border area(s). This will also expand automatically if you later change column width(s).</para>
+      <para>Another important consideration is that DYNACALC allocates worksheet space in rectangular areas only. For example, if your sheet has an active cell at H27, all cells from A1...A27 through H1...H27 are put into the cell table at two bytes per cell. This means that a single entry, poorly placed, could eat half the available memory. The idea is to keep your worksheet as compact as possible, and to avoid scattering entries around. Use <userinput>/AS</userinput> to see the current size of your worksheet at any time, and try to keep new entries within this range. This will result in efficient usage of available memory.</para>
+      <para>If you delete extreme-right columns and/or bottom rows, space is still reserved for them (try <userinput>/AS</userinput> to see for yourself). To free up this unneeded space for other uses, save your worksheet (<userinput>/SS</userinput>), clear it from memory (<userinput>/CY</userinput>), and reload it from scratch (<userinput>/SL</userinput>). Now try <userinput>/AS</userinput> and see how the sheet has shrunk. You will also notice that the free memory is greater than before.</para>
+    </sect1>
+    <sect1>
+      <title>Making your worksheet bullet-proof</title>
+      <para>You never mess up a worksheet once it&#x2019;s set up, do you? Not very often. But what about your helper(s)? How many times have you had to demonstrate that you're not SUPPOSED to type in part numbers in a title row? DYNACALC has a number of features built in to protect your worksheet from accidents.</para>
+      <para>First or all, put any necessary operating instructions off to the side where they will be seen by the operator. Hopefully you will be able to find room in the title areas. Use the titles command to turn on column and/or row titles. Then you can&#x2019;t even move the cursor into those areas. Then, turn on the type-protection feature (toggled by <userinput>/AT</userinput>). This will prevent accidental changes of any cell from one type to another. Next, set the window division (if appropriate for your worksheet), and make sure the window formats are the way you want them. Make sure all your columns are wide enough to display worst-case data without overflow. Then put the cursor at the place most likely to be used to begin data entry, and save the worksheet on diskette. When it is reloaded, all the above things are ready to go, and hopefully your operator will be able to breeze right through the job you have set up.</para>
+      <para>You can make it even easier by putting a command like 'dynacalc inventory' in your startup file, so that the operator need only login to get going.</para>
+    </sect1>
+  </chapter>
+
+
+  <chapter>
+    <title>DYNACALC Error Messages</title>
+    <para>&gt;AE&lt;Argument error.</para>
+    <para>&gt;D0&lt;Divide by zero attempted.</para>
+    <para>&gt;ER&lt;General purpose error.</para>
+    <para>&gt;EX&lt;Exponent too large.</para>
+    <para>&gt;HO&lt;Holder overflow error.</para>
+    <para>&gt;LN&lt;Negative or zero logarithm attempted.</para>
+    <para>&gt;NA&lt;Not available.</para>
+    <para>&gt;NR&lt;Negative root attempted.</para>
+    <para>&gt;OV&lt;Arithmetic overflow error.</para>
+    <para>&gt;RE&lt;Reference error.</para>
+    <para>&gt;RN&lt;Range Error.</para>
+    <para>&gt;SN&lt;Syntax error.</para>
+    <para>Machine-generated errors are displayed as @ERROR? on the top line of the display, when pointed to.</para>
+  </chapter>
+
+
+  <chapter xml:id="empty.screen">
+    <title>Screen Layout</title>
+    <screen>A1
+Mode=C,A Memory=xxxxx Ready
+
+   [ A ] [ B ] [ C ] [ D ] [ E ] [ F ] [ G ] [ H ]
+ 1-
+ 2-
+ 3-
+ 4-
+ 5-
+ 6-
+ 7-
+ 8-
+ 9-
+10-
+11-
+12-
+13-
+14-
+15-
+16-
+17-
+18-
+19-
+20-
+</screen>
+    <para>This is how your screen will look like when DYNACALC takes over.</para>
+    <para>Note that 'A1' is displayed in the top left corner. This means that the cursor is currently at cell A1. As you move the cursor with the ARROW keys or the 'Goto:' command, this value will be updated. You can tell at a glance at the top left corner of the screen exactly where the cursor is.</para>
+    <para>The balance of line 1 is used to display the contents of the current cell. Since when you start up DYNACALC (or clear an existing worksheet by typing <userinput>/CY</userinput>) the current cell (A1) is empty, nothing will be seen here.</para>
+    <para>Line 2 is used to display general information to the operator. The message 'Mode=C,A' means that the current mode is '(calculate Columns first', and 'Automatically recalculate after any numeric entry'. The attribute command can be used to change these modes. '<userinput>/AO</userinput>' will change the order calculation, and '<userinput>/AR</userinput>' will toggle automatic recalculation on/off.</para>
+    <para>Also displayed on line 2 is the amount of system memory used. You will notice this number increase as your worksheet gets larger.</para>
+    <para>The final message on line 2 at this time is &#x2018;Ready&#x2019;, which indicates that DYNACALC is ready to accept commands or data entries. If you type &#x2018;/&#x2019; to enter command mode, the &#x2018;Ready&#x2019; will be replaced by the command menu.</para>
+    <para>The third line, blank at this time, is called the edit line, and it is here that you enter data before transferring it into a particular cell. Just point to the desired cell with the cursor, and start entering your data. It will automatically be displayed on line 3.</para>
+  </chapter>
+
+
+  <chapter xml:id="screen.illustrations">
+    <title>Columns, Rows, and Cells</title>
+    <screen>
+A1
+Mode=C,A Memory=xxxxx Ready
+
+[ A ] [ B ] [ C ] [ D ] [ E ] [ F ] [ G ] [ H ]
+1- Cell A1 Col B Col G
+2- Col B Col G
+3- This is row 3, for example, row 3....row 3...row 3................
+4- Col B Col G
+5- Col B Cell D5 Col G
+6- Col B Col G
+7- Col B Cell E7 Col G
+8- Col B Col G
+9- Col B Col G
+10- Col B Col G
+11- Col B Col G
+12- Col B Col G
+13- Col B Col G
+14- Col B Col G
+15- Col B Col G
+16- This is row 16, for example, row 16....row 16...row 16..
+17- Col B Col G
+18- Col B Col G
+19- Col B Col G
+20- Col B Col G
+etc etc
+</screen>
+    <para>The cell address, or location is given by the column and row it intersects. Thus Cell D5 intersects both column D and row 5.</para>
+    <para>The current cell is always the cell to which the cursor points, and whose address is displayed at the extreme top left corner of the screen.</para>
+    <para>It is possible to have up to 256 rows or 256 columns, depending on available memory. Rows are numbered from 1 to 256 and columns are lettered from A-Z, then AA-AZ, BA-BZ, and so on up to IA-IV. The cell in the far bottom right corner of the DYNACALC worksheet is therefore IV256.</para>
+    <para>Display shown is from a screen with 24 rows of 80 characters. Actual number of columns and rows depends on characteristics of your terminal.</para>
+  </chapter>
+
+
+  <chapter xml:id="system.configuration">
+    <title>System Configuration</title>
+    <sect1>
+      <title>The 'install.dc' utility</title>
+      <para>Each time you enter DYNACALC from OS-9, two files are loaded into memory: 'dynacalc' itself, and 'dynacalc.trm', which customizes DYNACALC to your system. Both files are loaded from the current execution directory (see the description of the 'chx' command in your OS-9 manual). The 'dynacalc.trm' file contains information about your screen, keyboard, and printer. The version of 'dynacalc.trm' supplied on your DYNACALC disk has been set up for your Dragon computer keyboard and screen, and for an 80 column printer on the parallel printer port '/p'.</para>
+      <para>The program 'install.dc' allows you to change the printer/textfile defaults and the printer on/off strings.</para>
+      <para>There are six printer/textfile parameters. First is the Border flag, which tells DYNACALC whether or not to print the column and row indicators. Normally you will want to leave the borders off, but they can be very helpful in troubleshooting a worksheet, or sending a copy of a useful worksheet to others (maybe even for publication). You can also control whether or not DYNACALC paginates its output. Your printers capabilities will help you decide this one. If pagination is enabled, the number of lines per page becomes important. For regular size paper (11 inches long), use 58 lines per page. Maximum is 255 lines. You can also set DYNACALC to multiple spacing of printed (or textfile) output. Finally, you have control over the width of the printed (or output) line. In general, this should be set to as high a value as your printer will permit. Maximum is 255 characters per line. Finally, 'install.dc' lets you define the default printer driver name. The standard printer name is '/p', but you may use any valid name you wish, such as '/p1' for a serial printer port.</para>
+      <para>To modify 'dynacalc.trm' for your printer, call up 'install.dc':</para>
+      <screen>OS9: install.dc</screen>
+      <para>'install.dc' will then ask you several questions about your printer, and will use your answers to modify the 'dynacalc.trm' file, (which it expects to find in the current execution directory, normally '/d0/cmds').</para>
+    </sect1>
+  </chapter>
+
+
+  <chapter>
+    <title>Using Data Files</title>
+    <para>DYNACALC can read and write OS-9 data files, with it&#x2019;s /S#S and /S#L commands. All such operations default to the working data directory. But of course you may override the default by typing in a more complete pathname.</para>
+    <para>The data file format is very simple. It is a standard OS-9 text file, which can be read or written to by any system software as a simple sequential file. Worksheet data (number and/or strings) is put into this text file one line per worksheet cell.</para>
+    <para>Here&#x2019;s a simple example:</para>
+    <screen>
+[ A ] [ B ] [ C ] [ D ] [ E ] [ F ] [ G ] [ H ]
+1- STRING 34 5.6e9 THE
+2- 1.23 27.5 MESSAGE 6 END
+</screen>
+    <para>The command /S#S was used to save the block A1...H4 (any rectangular area of the worksheet can be used). Here is the resulting data file:</para>
+    <screen>
+*DYNACALC Data file January 26, 1983this is a comment line
+/Col/C indicates saved by column
+STRINGfirst cell contents (A1 )
+1.23next cell in column (A2)
+@@ indicates end of column
+34first cell in next column (B1)
+27.5 next cell in column (B2)
+@
+&gt;&gt;indicates blank cell (C1)
+&gt;C2
+@
+&gt;D1
+&gt;D2
+@
+5600000000E1 full precision always saved
+MESSAGEE2
+@
+&gt;F1
+&gt;F2
+@
+&gt;G1
+6G2 may be constant or calculated value
+@
+THEH1
+ENDH2
+@
+</screen>
+    <para>This same simple format is used for both saving and loading; DYNACALC can always read what it has written. When you are preparing other programs to write a data file for DYNACALC, however, there are a few additional options at your disposal.</para>
+    <para>First, DYNACALC always puts a '&gt;' symbol at the beginning of any data file line representing a blank cell. Such a line, when read back into a worksheet. will clear the previous contents of that cell. However, if the textfile line is completely blank, the contents of that cell will be left undisturbed. This permits you to overlay other data if desired. This also means that you cannot leave blank lines in your data file without affecting the worksheet. Any line beginning with an asterisk will be ignored, if you want to space things apart, or include comments.</para>
+    <para>The '@' symbol can be followed by a 'skip count', which is a decimal number optionally used to indicate to DYNACALC how many columns (or rows) to skip before entering the next column (or row) of data.</para>
+    <para>The first non-comment line in the file should begin with '/C' or '/R' to indicate how the file is to be loaded. If this indicator is omitted, DYNACALC defaults to loading the same as the last /S# operation.</para>
+    <para>You may sometimes need to input a string which begins with a number (an address, for example). If you don&#x2019;t include a leading quote ('), an error will be generated. DYNACALC will 'swallow' the quote, so it won&#x2019;t clutter up your worksheet.</para>
+    <para>If a format error is detected during an /S#L operation, loading will halt at the bad cell, and the cell&#x2019;s contents will be displayed on the edit line, with the cursor pointing to the problem. If you wish, you can correct the error, as DYNACALC has put you into the edit mode. (Note that at this point, inserting a single quote at the beginning of the line will NOT allow you to load the line as a label, since DYNACALC has already decided that it&#x2019;s a number). Then hit RETURN to continue loading. If you prefer, just hit ESCAPE. The loading operation will be terminated, and you can check the sheet to see how much of the file was loaded. You can then use the OS-9 editor or other utilities to remedy the problem.</para>
+    <para>If you want to transfer data from an RMS data base to a DYNACALC worksheet, set up a 'xxx.rep' file for RMS REPORT including lines like these:</para>
+    <programlisting>
+L 1,1 ;
+T &#x201C;* MAILLING LIST&#x201D;@1 ;
+T &#x201C;/Rows&#x201D;@1 ;
+P NAME@1 ;
+P CITY@1 ;
+P &#x201C;'&#x201D;@1 STREET@2 ;
+P &#x201C;'&#x201D;@1 PHONE@2 ;
+P &#x201C;@&#x201D;@1 ;
+X ALPHA ;
+</programlisting>
+    <para>Of course, getting data back into the RMS file isn&#x2019;t quite that simple. For this you need a program (possibly in BASIC09) to work out where in the 'xxx.rms' file each record needs to go. DYNACALC will give you a text file, but the rest is up to you.</para>
+  </chapter>
+
+
+  <chapter>
+    <title>DYNACALC Tutorial</title>
+    <para>This tutorial is intended to show you the commonly used features of DYNACALC, and to make you feel more at ease about using DYNACALC for the first time. We will use an example worksheet supplied on your DYNACALC disk. This tutorial is not intended as a substitute for careful reading of the whole manual - which we suggest you do once you have worked through the tutorial - and we will not by any means be covering all the features of DYNACALC. We suggest that you make frequent reference to the Key Assignment, Command, and Function summaries at the back of the manual.</para>
+    <para>Assuming that you have made a backup copy of your DYNACALC disk (see the section <xref linkend="getting.started">Getting Started</xref>), place this copy in drive 0. Change your execution and data directories to this disk:</para>
+    <screen>OS9: chx /d0/cmds ; chd /d0</screen>
+    <para>If you are using a Dragon 64 and you are not already in the 51 characters by 24 lines screen mode, change to this mode with:</para>
+    <screen>OS9: go51</screen>
+    <para>and call up DYNACALC:</para>
+    <screen>OS9: dynacalc</screen>
+    <para>DYNACALC will display its 'Hello' message - hit the SPACE key to continue. Now DYNACALC is displaying a blank worksheet. Let&#x2019;s consider the various parts of the display. Most prominently we can see the borders, showing the rows and columns, something like this:</para>
+    <screen>
+[ A ] [ B ] [ C ]
+1-
+2-
+</screen>
+    <para>The letters - A, B, C etc - are the columns, and the numbers - 1,2,3 etc - are the rows. Thus the top left hand 'cell' has address A1. Notice the flashing cursor in this cell? The cursor tells us which cell we are currently 'pointing' at. This is the cell whose contents we can display and change. Notice that the cell address is displayed in the top left hand corner of the screen. Hit the RIGHT-ARROW key (see the <xref linkend="key.assignment">Key Assignment Summary</xref>section for the RIGHT-ARROW key on your keyboard). You will see the cursor move right by one cell, into cell B1. Notice that the address displayed in the top. left hand corner has changed. There are four ARROW keys - UP, DOWN, LEFT, and RIGHT. Practice moving around the screen with them.</para>
+    <para>On the second line of the screen there are three messages. The rightmost one is the &#x2018;Ready&#x2019; prompt. This tells you that DYNACALC is ready for a command. The middle message tells you how much memory the worksheet is taking up. With the HELP messages enabled, as they are now, even with an empty worksheet we are using over 8000 bytes of memory. The message on the left - 'Mode=C,A' - is telling us the row/column Calculation order, (this is explained more fully in the section on Commands), and that recalculation of the worksheet is Automatic whenever we change anything. The third line of the screen is blank. This line is used to display the content of the cell as we are entering or changing it, and for some of DYNACALC&#x2019;s messages.</para>
+    <para>Let&#x2019;s go straight into entering some data and seeing its effect on the worksheet. Hit the HOME key to return to cell A1. Now type "23", (don&#x2019;t type the quote marks - we will use them to show you exactly what we want you to type). You will see "23" appear on the third line of the screen as you types Use the BACKSPACE key to correct any errors you make. When you hit the "2", DYNACALC will display 'Value' in place of the &#x2018;Ready&#x2019; prompt. This is to tell you that DYNACALC knows you are entering a Value. (a number), rather than a Label, (descriptive text), or an Expression. Now hit RETURN. You have entered "23" into cell A1, and DYNACALC is displaying the "23" in that cell. Also, on the first line or the screen you will now see</para>
+    <screen>A1 (V) 23</screen>
+    <para>DYNACALC is informing you that the cursor is at cell A1. and that the cell contains a Value of 23. Move to cell B1 and enter "45" (don&#x2019;t forget the RETURN). This is tame stuff, and slower than writing the numbers on graph paper. The power of DYNACALC lies in its ability to do calculations for you. Move to cell C1 and enter "+A1+B1" (and RETURN, of course). The &#x201C;+A1+B1&#x201D; appeared on the third line, (the first &#x201C;+&#x201D; was just to tell DYNACALC that we were entering an expression), but "68" has appeared in cell C1. The "A1+B1" is known as an 'expression', and instructs DYNACALC that cell C1, the cell into which we entered the expression, should contain the sum of cells A1 and B1. You will see on the first line of the screen the expression you have entered, with '(E)' to indicate an Expression. Now move back to cell A1, and enter "12". You have changed the contents of cell A1 to "12" as you would expect, but cell C1 has also changed to reflect the new sum of A1 and B1 - "57". Imagine how easy this will make cash forecasting! If you set up a complicated cash forecast on paper. and you want to try moving a few purchases around to see how it will affect your bank balance, it&#x2019;s a lot of work. With DYNACALC, a few keystrokes and the new balance is instantly displayed!</para>
+    <para>It&#x2019;s time to try one or the example worksheets, which will give you a better idea of how DYNACALC&#x2019;s features can be used. First, we must clear the present worksheet, which allows us to introduce the concept of a DYNACALC command. Hit "/", the command key. You will see the &#x2018;Ready&#x2019; prompt replaced by the main command menu:</para>
+    <screen>Command: A B C D E F I M P Q R S T W ?</screen>
+    <para>DYNACALC is asking us which command we want. Before we enter the command to clear the worksheet, we can try out DYNACALC&#x2019;s HELP facility. Hit "?", the HELP key. You will see the worksheet replaced by a screenful of help messages about each of the commands. We won&#x2019;t go through these - you can look through them later at your leisure. Suffice it to say that each DYNACALC command menu has its own HELP messages, which you can call up with the HELP key whenever you are not sure about how to use one of the commands. For now, hit the ESCAPE key to return to the &#x2018;Ready&#x2019; prompt. Hit "/" to bring back the main menu, followed by "C", the Clear worksheet command. DYNACALC will ask you if you are sure you want the worksheet cleared out. Answer "Y" (for Yes), and you will be presented with a clear worksheet.</para>
+    <para>Now we can load in a worksheet. Hit "/" to get the main command menu, and "S" to get the 'System' sub menu:</para>
+    <screen>C L S X # ?</screen>
+    <para>We want the "Load worksheet" command. so hit "L". DYNACALC will ask you for the name of the worksheet you want to load. Respond with "demo1" followed by RETURN. 'Demo1' is an example worksheet supplied on your DYNACALC disk - It represents a simple business cash flow for a twelve month period.</para>
+    <para>You should now see a much fuller display on the screen, with months along the top, (all twelve are in the worksheets but some are off the screen at present), and various items of expenditure and income down the side. These are titles, and you will find that you cannot move the cursor into those cells. Also, if you cause the display to scroll, by moving to a cell that was not initially visible on the screen, (try moving off the right hand edge of the screen), the titles do not move. How did they get there? They were typed in as usual, but this worksheet has titles turned on. Turn them off, with "<userinput>/TN</userinput>", and move to cell D1, which contains the label "MAR".</para>
+    <para>[Aside: Cells can contain three types of data &#x2013; numbers, expressions, and labels (descriptive text). If a label starts with a numeric character or an arithmetic operator, precede it with '(single quote) to avoid DYNACALC thinking of it as a number or expression. If an expression is to begin with a cell address, precede it with a + (plus sign), to avoid DYNACALC thinking of it as a label].</para>
+    <para>You will find now that you can change the contents of the cell. Try it - then restore the cell to "MAR". Turn titles back on by moving to cell B2, (the top-leftmost cell inside of the titles), and entering "<userinput>/TB</userinput>".</para>
+    <para>The worksheet is fairly straightforward. The incomings and outgoings for each month are added up for the year in column N. You can see what expressions have been used by moving to cell N2 and entering "<userinput>/WD</userinput>", followed by RETURN in response to "Formula dump on". This causes the expressions in the cells to be displayed rather than the results of the expressions. In cell N2 the expression is &#x201C;@SUM(B2...M2)&#x201D; that is, the sum of cells B2 to M2, (B2,C2,D2,E2,etc). &#x201C;@SUM&#x201D; is a DYNACALC 'function', giving as its result the sum of all the cells specified. DYNACALC has many functions - see the DYNACALC Function Summary section. Expressions can be as long and complicated as you like. They may be too long to be displayed in the cell, in which case "<userinput>/WD</userinput>" will not show you the whole expression. To see the whole expression, move to the cell containing the expression, and the expression will be displayed on the first line of the screen.</para>
+    <para>You can use &#x201C;<userinput>/WD</userinput>&#x201D; again to return to the value display mode, but leave DYNACALC in formula display mode for the moment. Let&#x2019;s look at how the worksheet has been arranged. We shall look over a part of the worksheet - you can go over the rest at your leisure. Use the HOME key to return to cell B2. The expression "B12/12" means the contents of cell B12, (the yearly rent). divided by 12 to give the monthly rent.</para>
+    <para>Cell C2 has the expression "B2", that is, cell C2 is to contain the same value as cell B2. Cell D2 has "C2", and so on. With this arrangement, if the monthly rental changes, then by entering the value of the new rent in the right month you automatically update all succeeding months. Try it - turn value display back on with "<userinput>/WD</userinput>". Move to cell F2, and enter a new value. (You can mess around with the worksheet as much as you like - &#x201C;<userinput>/CY</userinput>&#x201D; to clear the worksheet, followed by "<userinput>/SL</userinput>" and "demo1 RETURN" will load in the original worksheet again).</para>
+    <para>Move to cell M2 and enter &#x201C;<userinput>/WV</userinput>&#x201D;. The worksheet is now split vertically into two halves called 'windows' (because they are windows looking into the overall worksheet). You can move from one to the other with the JUMP key. Try moving the cursor off the edge of a window - for instance, by moving left while in the right hand window. You will see the windows scroll independently of each other. In this way you can keep the totals (in column N) in view in the right hand window, and scroll through the months in the left hand window. You can turn windows off again with "<userinput>/WN</userinput>".</para>
+    <para>We will demonstrate two more commonly used features of DYNACALC before leaving you to read through the rest of the manual and try things out on the screen. Play around with the worksheet. Make as many changes as you like. Now enter "<userinput>/SS</userinput>". This is the command to save the worksheet on disk. DYNACALC will ask you for the file name. Answer &#x201C;myfile&#x201D; and RETURN. DYNACALC will save the worksheet on disk in a file called 'myfile'. Now clear the worksheet, (remember - "<userinput>/CY</userinput>") and load your saved worksheet in with "<userinput>/SL</userinput> myfile RETURN". Just to show you that it does work.</para>
+    <para>Lastly, we can print out the worksheet. Make sure your printer is correctly connected up and turned on. DYNACALC starts off by assuming that your printer is on the parallel printer port '/p'. If it is not - for instance, if it is on the serial port '/p1' - turn off the current setting with "<userinput>/APC</userinput>". Also, if your printer is less than 80 characters wide, you must use &#x201C;<userinput>/APW</userinput>&#x201D; to set the width. Now print the worksheet with "/P". If you had turned off the current printer name with &#x201C;<userinput>/APC</userinput>&#x201D;, DYNACALC will ask you for the new name. Answer with the name you want, for instance &#x201C;/p1&#x201D; (RETURN) for the serial printer port.</para>
+    <para>To exit DYNACALC and return to OS-9, type &#x201C;<userinput>/QOY</userinput>&#x201D; (letter &#x201C;O&#x201D;).</para>
+    <para>Now we have given you an introductory tour of DYNACALC. DYNACALC is a very powerful tool, with many more features than we have shown here. We suggest that you read carefully through the rest of the manual, trying out things as you read about them. This may be tedious at first, but when you can use DYNACALC well you will find it an invaluable tool, and wonder how you ever managed without it! Have fun!</para>
+  </chapter>
+
+
+  <chapter xml:id="functions">
+    <title>DYNACALC Function Summary</title>
+    <para>Type @ to enter a function. Parenthesis input is optional. You need type only the first 2 letters of the function name (3 for COS, INDEX, and LOOKUP).</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="2">
+        <tbody>
+          <row>
+            <entry>
+            ABS (x)
+          </entry>
+            <entry>
+            returns absolute value of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            ACOS (x)
+          </entry>
+            <entry>
+            returns the arccosine (inverse cosine) of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            ASIN (x)
+          </entry>
+            <entry>
+            returns the arcsine (inverse sine) of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            ATAN (x)
+          </entry>
+            <entry>
+            returns the arctangent (inverse tangent) of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            AVERAGE (x...y)
+          </entry>
+            <entry>
+            returns the average value from range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            CHOOSE (n,x..y)
+          </entry>
+            <entry>
+            returns the value of the nth cell in range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            COS (x)
+          </entry>
+            <entry>
+            returns cosine of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            COUNT (x...y)
+          </entry>
+            <entry>
+            returns number of cells in range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            ERROR
+          </entry>
+            <entry>
+            returns &gt;ER&lt; error message (general use).
+          </entry>
+          </row>
+          <row>
+            <entry>
+            EXP (x)
+          </entry>
+            <entry>
+            returns e (2.718...) to the x power.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            INDEX (n,x..y,z)
+          </entry>
+            <entry>
+            returns value adjacent to first cell equal to n in range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            INT (x)
+          </entry>
+            <entry>
+            returns the integer part of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            LN (x)
+          </entry>
+            <entry>
+            returns natural (base e) logarithm of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            LOG (x)
+          </entry>
+            <entry>
+            returns common (base 10) logarithm of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            LOOKUP(n,x..y,z)
+          </entry>
+            <entry>
+            returns value adjacent to first cell greater than n in range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            MAX (x...y)
+          </entry>
+            <entry>
+            returns the greatest value from range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            MIN (x...y)
+          </entry>
+            <entry>
+            returns the smallest value from range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            NA
+          </entry>
+            <entry>
+            returns &gt;NA&lt; (not available) error message.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            NPV (r,x...y)
+          </entry>
+            <entry>
+            returns the net present value at rate r from range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            PI
+          </entry>
+            <entry>
+            returns 3.141...
+          </entry>
+          </row>
+          <row>
+            <entry>
+            ROUND (d,x)
+          </entry>
+            <entry>
+            returns x rounded to nearest d (d must be a power of 10) (10e-9 &lt; d &lt; 10e9 )
+          </entry>
+          </row>
+          <row>
+            <entry>
+            SIN (x)
+          </entry>
+            <entry>
+            returns sine of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            SQRT (x)
+          </entry>
+            <entry>
+            returns the square root of x.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            STDDEV (m,x...y)
+          </entry>
+            <entry>
+              <literallayout>returns standard deviation of data in range x...y
+m sets method used: &lt;0 =population; &gt;=0 =sample.</literallayout>
+            </entry>
+          </row>
+          <row>
+            <entry>
+            SUM (x...y)
+          </entry>
+            <entry>
+            returns sum of cells from range x...y.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            TAN (x)
+          </entry>
+            <entry>
+            returns tangent of x.
+          </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>NOTE: Third argument (z - cell address) in @INDEX and @LOOKUP functions is optional. If present, causes value returned to be taken from column or row given. If z is omitted, value is returned from adjacent column or row.</para>
+  </chapter>
+
+
+  <chapter>
+    <title>DYNACALC Command Summary</title>
+    <para>Type / to enter the command mode when you have the DYNACALC &#x2018;Ready&#x2019; prompt. DYNACALC will display the primary command menu. Follow this with the key for the command you require. Several commands require an additional key or keys. These commands prompt you with subsidiary menus.</para>
+    <para>For example, to toggle the degrees/radians setting, type <userinput>/AD</userinput>.</para>
+    <para>A 'toggle' command is one that reverses the current setting of something. For example, if you are in 'degrees' mode and you enter <userinput>/AD</userinput> you will go into 'radians' mode. Enter <userinput>/AD</userinput> again and you will be back in 'degrees' mode.</para>
+    <para>At any level, typing ? will display the help messages for that command.</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="4"><colspec colwidth="0.9in"/>/&gt;
+      <colspec colwidth="4.0in"/><colspec colwidth="1.0in"/><colspec colwidth="0.4in"/><thead><row><entry>
+              KEY
+            </entry><entry>
+              ACTION
+            </entry><entry>
+              DEFAULT
+            </entry><entry>
+              PAGE
+            </entry></row></thead><tbody><row><entry><userinput>/</userinput></entry><entry>
+            Enter command mode
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/A</userinput></entry><entry><para>ATTRIBUTES</para></entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AB</userinput></entry><entry>
+            Toggle bell on/off
+          </entry><entry>
+            on
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AD</userinput></entry><entry>
+            Toggle degrees/radians degrees
+          </entry><entry>
+            degrees
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AG</userinput></entry><entry>
+            Select graphics character
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AH</userinput></entry><entry>
+            Delete help messages
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AL</userinput></entry><entry>
+            Toggle label entry mode
+          </entry><entry>
+            single cell
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AM</userinput></entry><entry>
+            Re-write the screen
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AO</userinput></entry><entry>
+            (letter O) Toggle row/column order
+          </entry><entry>
+            column/row
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AP</userinput></entry><entry>
+            Printer
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/APB</userinput></entry><entry>
+            Toggle border print
+          </entry><entry>
+            off
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/APC</userinput></entry><entry>
+            Close present print device
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/APL</userinput></entry><entry>
+            Set lines per page
+          </entry><entry>
+            58
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/APP</userinput></entry><entry>
+            Toggle paginate on/off
+          </entry><entry>
+            on
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/APS</userinput></entry><entry>
+            Select printout spacing
+          </entry><entry>
+            1
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/APW</userinput></entry><entry>
+            Set printer width
+          </entry><entry>
+            80
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AR</userinput></entry><entry>
+            Toggle re-calculate mode
+          </entry><entry>
+            auto
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AS</userinput></entry><entry>
+            Report highest row/column
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/AT</userinput></entry><entry>
+            Toggle type protection setting
+          </entry><entry>
+            off
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/B</userinput></entry><entry>
+            BLANK (erase) a cell
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/C</userinput></entry><entry>
+            CLEAR (erase) the entire worksheet
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/D</userinput></entry><entry>
+            DELETE (erase) an entire row or column
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/E</userinput></entry><entry>
+            EDIT a cell
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/F</userinput></entry><entry>
+            FORMAT cell (or window if <userinput>/WF</userinput>)
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FC</userinput></entry><entry>
+            Continuous format (labels)
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FD</userinput></entry><entry>
+            Default format
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FG</userinput></entry><entry>
+            General format
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FI</userinput></entry><entry>
+            Integer format
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FL</userinput></entry><entry>
+            Left justify
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FP</userinput></entry><entry>
+            Plotting format (for histograms)
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/FR</userinput></entry><entry>
+            Right justify
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/F$</userinput></entry><entry>
+            Money format
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/I</userinput></entry><entry>
+            INSERT a blank row or column
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/M</userinput></entry><entry>
+            MOVE rows or columns
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/MA</userinput></entry><entry>
+            Ascending sort
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/MD</userinput></entry><entry>
+            Descending sort
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/MM</userinput></entry><entry>
+            Manual move
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/P</userinput></entry><entry>
+            PRINTER output
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry>
+            /Q
+          </entry><entry>
+            QUIT from DYNACALC
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/QO</userinput></entry><entry>
+            Return to OS-9
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/QS</userinput></entry><entry>
+            Sleep until key hit
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/R</userinput></entry><entry>
+            REPLICATE (copy) cells
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/S</userinput></entry><entry>
+            SYSTEM
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/SC</userinput></entry><entry>
+            Change data directory
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/SL</userinput></entry><entry>
+            LOAD worksheet from disk
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/SS</userinput></entry><entry>
+            SAVE worksheet to disk
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/SX</userinput></entry><entry>
+            Execute OS-9 command
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/S#</userinput></entry><entry>
+            Data files:
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/S#L</userinput></entry><entry>
+            Load a data file from disk
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/S#S</userinput></entry><entry>
+            Save to a data file on disk
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/T</userinput></entry><entry>
+            TITLES control
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/TB</userinput></entry><entry>
+            Both horizontal and vertical titles
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/TH</userinput></entry><entry>
+            Horizontal titles
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/TN</userinput></entry><entry>
+            No titles
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/TV</userinput></entry><entry>
+            Vertical titles
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/W</userinput></entry><entry>
+            WINDOWS
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WD</userinput></entry><entry>
+            Toggle value/formula display
+          </entry><entry>
+            value
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WF</userinput></entry><entry>
+            Change default format for window
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WH</userinput></entry><entry>
+            Horizontal window split
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WN</userinput></entry><entry>
+            No window split (one window)
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WS</userinput></entry><entry>
+            Synchronize window scrolling
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WU</userinput></entry><entry>
+            Un-synchronise window scrolling
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/WV</userinput></entry><entry>
+            Vertical window split
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row><row><entry><userinput>/?</userinput></entry><entry>
+            HELP - DYNACALC help displays
+          </entry><entry>
+            
+          </entry><entry>
+            
+          </entry></row></tbody></tgroup>
+    </informaltable>
+  </chapter>
+
+
+  <chapter xml:id="key.assignment">
+    <title>Key Assignment Summary</title>
+    <para>Key Assignment Summary for the Dragon 64</para>
+    <para>On the Dragon 64 under OS-9 the CLEAR key is used as the CONTROL key. For example, to get 'CONTROL-E', hold the CLEAR key down and hit the E key.</para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="3">
+        <colspec colwidth="0.9in"/>
+        <colspec colwidth="1.3in"/>
+        <colspec colwidth="3.9in"/>
+        <thead>
+          <row>
+            <entry>
+              Function
+            </entry>
+            <entry>
+              Key
+            </entry>
+            <entry>
+              Action
+            </entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>
+            CONTROL
+          </entry>
+            <entry>
+            CLEAR
+          </entry>
+            <entry>
+            
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <para>ESCAPE</para>
+            </entry>
+            <entry>
+              <para>CONTROL-BREAK</para>
+            </entry>
+            <entry>
+              <para>Return to &#x2018;Ready&#x2019; prompt.</para>
+            </entry>
+          </row>
+          <row>
+            <entry>
+        </entry>
+            <entry>
+        </entry>
+            <entry>
+              <para>ARROW KEYS:</para>
+            </entry>
+          </row>
+          <row>
+            <entry>
+              <para>UP</para>
+            </entry>
+            <entry>
+              <para>&#x2191;</para>
+            </entry>
+            <entry>
+              <para>Move up</para>
+            </entry>
+          </row>
+          <row>
+            <entry>
+              <para>DOWN</para>
+            </entry>
+            <entry>
+              <para>&#x2193;</para>
+            </entry>
+            <entry>
+              <para>Move down</para>
+            </entry>
+          </row>
+          <row>
+            <entry>
+              <para>LEFT</para>
+            </entry>
+            <entry>
+              <para>SHIFT-&#x2190;</para>
+            </entry>
+            <entry>
+              <para>Move left</para>
+            </entry>
+          </row>
+          <row>
+            <entry>
+              <para>RIGHT</para>
+            </entry>
+            <entry>
+              <para>&#x2192;</para>
+            </entry>
+            <entry>
+              <para>Move right</para>
+            </entry>
+          </row>
+          <row>
+            <entry>
+            BACKSPACE
+          </entry>
+            <entry>
+              <para>&#x2190;</para>
+            </entry>
+            <entry>
+            Backspace cursor to erase character
+          </entry>
+          </row>
+          <row>
+            <entry>
+            RETURN
+          </entry>
+            <entry>
+            ENTER
+          </entry>
+            <entry>
+            Enter data
+          </entry>
+          </row>
+          <row>
+            <entry>
+            GOTO
+          </entry>
+            <entry>
+            &gt;
+          </entry>
+            <entry>
+            'Go to cell' command
+          </entry>
+          </row>
+          <row>
+            <entry>
+            HOME
+          </entry>
+            <entry>
+            SHIFT-&#x2191;
+          </entry>
+            <entry>
+            Go to top left cell
+          </entry>
+          </row>
+          <row>
+            <entry>
+            JUMP
+          </entry>
+            <entry>
+            SHIFT-&#x2192;
+          </entry>
+            <entry>
+            Jump to other window
+          </entry>
+          </row>
+          <row>
+            <entry>
+            EDIT
+          </entry>
+            <entry>
+            CONTROL-E
+          </entry>
+            <entry>
+            Edit cell, (same as <userinput>/E</userinput> in Ready mode.)
+          </entry>
+          </row>
+          <row>
+            <entry>
+            OVERLAY
+          </entry>
+            <entry>
+            CONTROL-O
+          </entry>
+            <entry>
+            When editing, toggles overlay/insert mode.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            ADDRESS
+          </entry>
+            <entry>
+            SHIFT-&#x2193;
+          </entry>
+            <entry>
+            Put address of current cell in expression.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            VALUE
+          </entry>
+            <entry>
+            #
+          </entry>
+            <entry>
+            In entry mode, causes a cell address to be replaced by the value in that cell. In ready mode, copies value of current cell to edit line.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            CALCULATE
+          </entry>
+            <entry>
+            !
+          </entry>
+            <entry>
+            In entry mode, causes current expression to be replaced by its current value. In ready mode, causes entire worksheet to be recalculated.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            FUNCTION
+          </entry>
+            <entry>
+            @
+          </entry>
+            <entry>
+            Introduces a function (@SIN, @SQRT, etc.)
+          </entry>
+          </row>
+          <row>
+            <entry>
+            RANGE
+          </entry>
+            <entry>
+            .
+          </entry>
+            <entry>
+            Range separator, prints as &#x2018;...&#x2019;
+          </entry>
+          </row>
+          <row>
+            <entry>
+            COMMAND
+          </entry>
+            <entry>
+            /
+          </entry>
+            <entry>
+            Introduces a command. displays the command menu.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            HELP
+          </entry>
+            <entry>
+            ?
+          </entry>
+            <entry>
+            Displays 'HELP' messages for any command menu.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            FLUSH
+          </entry>
+            <entry>
+            CONTROL-C
+          </entry>
+            <entry>
+            Empties the type-ahead buffer.
+          </entry>
+          </row>
+          <row>
+            <entry>
+            LOG-OFF
+          </entry>
+            <entry>
+            CONTROL-D
+          </entry>
+            <entry>
+            ABORT DYNACALC, saving the work sheet in file 'dyna.xxxxx.cal', where 'xxxxx' is your user number.
+          </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </chapter>
+</book>

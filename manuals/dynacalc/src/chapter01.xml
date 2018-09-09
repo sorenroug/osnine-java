@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xml:id="getting.started">
+  <title>Getting Started</title>
+  <para>PLEASE READ THIS SHORT SECTION CAREFULLY BEFORE ATTEMPTING TO USE DYNACALC. WE SUGGEST THAT WHILE YOU ARE LEARNING TO USE DYNACALC YOU SHOULD MAKE USE OF THE COMMAND AND KEY-ASSIGNMENT SUMMARIES AT THE END OF THIS MANUAL.</para>
+  <para>When you have read this section, try out the tutorial at the end of is this manual. 'Hands-on experience' is the best way of quickly becoming familiar with DYNACALC.</para>
+  <para>The DYNACALC package from Dragon Data contains two items: this
+    manual, and a single floppy disk. Because of the risk of inadvertently
+    damaging the disk or deleting the files on it, you should NEVER use
+    the disk for running DYNACALC. Use the &#x2018;backup&#x2019; command
+    available on OS-9 to copy the original disk to a freshly formatted
+    blank disk, and STORE THE ORIGINAL DISK IN A SAFE PLACE. Refer to
+    the OS-9 User&#x2019;s manual for instructions on how to use the
+    'backup' and 'format' commands.</para>
+  <para>Now place the new disk in drive d0. Change your execution and data directories to the new disk:</para>
+  <screen>OS9: chx /d0/cmds ; chd /d0</screen>
+  <para>On the root directory of the disk, which you can now inspect by</para>
+  <screen>OS9: dir</screen>
+  <para>you will find some sample DYNACALC workfiles, and two directories - CMDS and SYS. The CMDS (commands) directory contains the files that you need to run DYNACALC: </para>
+  <informaltable frame="none" colsep="0" rowsep="0">
+    <tgroup cols="2">
+      <colspec colwidth="2.0in"/>
+      <colspec colwidth="3.0in"/>
+      <tbody>
+        <row>
+          <entry>
+            dynacalc
+          </entry>
+          <entry>
+            The program itself
+          </entry>
+        </row>
+        <row>
+          <entry>
+            install.dc
+          </entry>
+          <entry>
+            The customizing program
+          </entry>
+        </row>
+        <row>
+          <entry>
+            dynacalc.trm
+          </entry>
+          <entry>
+            System information for your Dragon and printer
+          </entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para>plus a few of the commonly used OS-9 utility programs.</para>
+  <para>To inspect this directory type:</para>
+  <screen>OS9: dir cmds</screen>
+  <para>&#x201C;install.dc&#x201D; is used to customize DYNACALC for your printer. The supplied &#x201C;dynacalc.trm&#x201D; is configured for a standard 80 column printer on the parallel printer port, &#x201C;/p&#x201D;. If you do need to change the configuration, see the section on &#x2018;<xref linkend="system.configuration">System Configuration</xref>&#x2019;.</para>
+  <para>The SYS directory contains the OS-9 error messages file, 'errmsg', used by OS-9 when reporting an error (such as &#x201C;Error #216 - Pathname not found&#x201D;).</para>
+  <para>If you are using a Dragon 64 computer and you are not already in the 51 characters by 24 lines mode use the 'go51' command to change the screen format:</para>
+  <screen>OS9: go51</screen>
+  <sect1>
+    <title>Getting into and out or DYNACALC</title>
+    <para>You are now ready to try out DYNACALC. All you need do is type:</para>
+    <screen>OS9: dynacalc</screen>
+    <para>To exit DYNACALC at any time and return to OS-9:</para>
+    <orderedlist numeration="lowerroman">
+      <listitem>
+        <para>hit the ESCAPE key to return to the DYNACALC &#x2018;Ready&#x2019; prompt. (For the assignment of the ESCAPE key on your keyboard, see the <xref linkend="key.assignment">Key Assignment Summary</xref>at the end of this manual).</para>
+      </listitem>
+      <listitem>
+        <para>if you want to save your worksheet, use the <userinput>/SS</userinput> command.</para>
+      </listitem>
+      <listitem>
+        <para>type <userinput>/QOY</userinput> (letter "O") to return to OS-9.</para>
+      </listitem>
+    </orderedlist>
+    <para>You can exit any command and return to the &#x2018;Ready&#x2019; prompt by hitting the ESCAPE key. You should also use the ESCAPE key to return to the &#x2018;Ready&#x2019; prompt when DYNACALC is showing you an error message, or when you want to exit from a HELP display.</para>
+    <para>To try out one of the sample profiles, for instance &#x2018;demo1.cal&#x2019;, use:</para>
+    <screen>OS9: dynacalc demo1</screen>
+    <para>Note that you do not type in the '.cal' extension of the filename. DYNACALC supplies the extension automatically.</para>
+  </sect1>
+  <sect1>
+    <title>Working with two disk drives</title>
+    <para>If you have two disk drives, you can use a separate disk for your workfiles. Format a disk, put it in drive d1, and change your current data directory to that disk by:</para>
+    <screen>OS9: chd /d1</screen>
+    <para>If there is enough free space on your OS-9 system disk, you may find it more convenient to have the DYNACALC programs on your system disk. To do this, copy the files in the CMDS directory of the DYNACALC disk to the CMDS directory of your system disk. Refer to the description of the &#x2018;copy&#x2019; program in the OS-9 User&#x2019;s manual.</para>
+  </sect1>
+  <sect1>
+    <title>Working with one disk drive</title>
+    <para>It is possible to use a separate data disk when you have only one drive. Put your DYNACALC disk in your drive, d0, and set your execution directory to that disk:</para>
+    <screen>OS9: chx /d0/cmds</screen>
+    <para>Now call up DYNACALC, without specifying a work file:</para>
+    <screen>OS9: dynacalc</screen>
+    <para>When DYNACALC is ready, remove your DYNACALC disk and insert your data disk. Now use the DYNACALC 'change directory' command to change your data directory to the new disk:</para>
+    <screen>You enter <userinput>/SC</userinput></screen>
+    <para>DYNACALC asks you for the directory name, which you enter as /d0. Use the 'load' command, (<userinput>/SL</userinput>), to load your worksheet, if you have one.</para>
+  </sect1>
+  <sect1>
+    <title>DYNACALC on the Dragon 64</title>
+    <para>Before you dive into the rest of this manual, a note about workspace. DYNACALC has a large number of informative HELP messages that can be very useful when you are learning. However, these messages take up a sizable chunk of memory - about 8K bytes - which will limit the size of your worksheet on the Dragon 64. If you need this extra space you can turn off the help messages on the command line, using the '-h' option. For example:</para>
+    <screen>OS9: dynacalc demo1 -h</screen>
+    <para>You can now work on quite a large spreadsheet. As your worksheet grows, DYNACALC will automatically take up more of your computer&#x2019;s memory. Eventually, you may no longer be able to use the <userinput>/SX</userinput> &#x2018;pass a command to OS-9&#x2019; command. This does not inhibit your use of DYNACALC.</para>
+  </sect1>
+</chapter>
