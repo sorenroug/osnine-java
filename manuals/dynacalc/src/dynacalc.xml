@@ -27,14 +27,26 @@ Computer Systems Center
 </address>
 and was ported to several operating systems including FLEX and Disk Extended Color Basic on the TRS-80 Color Computer.
   </para>
-<mediaobject>
+<para>
+<inlinemediaobject>
   <imageobject condition="web">
-    <imagedata fileref="Dynacalc_Screenshot02.png" format="PNG" scale="60"/>
+    <imagedata fileref="flexfront.png" format="PNG" scale="40"/>
   </imageobject>
   <caption>
-   <para>Dynacalc on a Dragon 64 running OS-9</para>
+   <para>Dynacalc for FLEX</para>
   </caption>
-</mediaobject>
+</inlinemediaobject>
+
+<inlinemediaobject>
+  <imageobject condition="web">
+    <imagedata fileref="colorfront.png" format="PNG" scale="40"/>
+  </imageobject>
+  <caption>
+   <para>Dynacalc for Color Basic</para>
+  </caption>
+</inlinemediaobject>
+
+</para>
 </dedication>
 
   <preface>
