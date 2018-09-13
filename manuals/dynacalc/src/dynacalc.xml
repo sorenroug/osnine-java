@@ -744,25 +744,25 @@ Mode=C,A Memory=xxxxx Ready
     <programlisting>
 *DYNACALC Data file January 26, 1983 this is a comment line
 /Col                                 /C indicates saved by column
-STRING                               first cell contents (A1 )
+STRING                               first cell contents (A1)
 1.23                                 next cell in column (A2)
 @                                    @ indicates end of column
 34                                   first cell in next column (B1)
 27.5                                 next cell in column (B2)
 @
-&gt;                               &gt;indicates blank cell (C1)
-&gt;                               C2
+&gt;                                    &gt;indicates blank cell (C1)
+&gt;                                    C2
 @
-&gt;                               D1
-&gt;                               D2
+&gt;                                    D1
+&gt;                                    D2
 @
 5600000000                           E1 full precision always saved
 MESSAGE                              E2
 @
-&gt;                               F1
-&gt;                               F2
+&gt;                                    F1
+&gt;                                    F2
 @
-&gt;                               G1
+&gt;                                    G1
 6                                    G2 may be constant or calculated value
 @
 THE                                  H1
