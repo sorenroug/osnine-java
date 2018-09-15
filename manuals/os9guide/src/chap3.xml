@@ -91,7 +91,7 @@ Names are used to describe three kinds of things:
 
 
 Names can have one to 29 characters, all of which are used for
-matching. They must becin with an upper- or lower-case letter
+matching. They must begin with an upper- or lower-case letter
 followed by any combination of the following characters:
 </para>
 
@@ -661,49 +661,68 @@ or the next higher-level directory, but its name (full pathlist) may
 not be known. Because of this, special <quote>name substitutes</quote> are
 available. They are:
 </para>
-<para>
-<filename class="directory">.</filename> refers to the present working directory
-</para>
-<para>
-<filename class="directory">..</filename> refers to the directory that contains the name of the present
-directory (e.g., the next highest level directory)
-</para>
-<para>
-<filename class="directory">...</filename> refers to directory two levels up, and so on
-</para>
+
+<informaltable frame="none" colsep="0" rowsep="0">
+  <tgroup cols="2">
+    <colspec colwidth=".5in"/>
+    <colspec colwidth="3in"/>
+    <tbody>
+      <row>
+        <entry>
+          <filename class="directory">.</filename>
+        </entry>
+        <entry>refers to the present working directory</entry>
+      </row>
+      <row>
+        <entry>
+          <filename class="directory">..</filename>
+        </entry>
+        <entry>refers to the directory that contains the name of the present directory (e.g., the next highest level directory)</entry>
+      </row>
+      <row>
+        <entry>
+          <filename class="directory">...</filename>
+        </entry>
+        <entry>refers to directory two levels up, and so on</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
 <para>
 These can be used in place of pathlists and/or the first name in a
 pathlist. Here are some examples:
 </para>
+
 <informaltable frame="none" colsep="0" rowsep="0">
-<tgroup cols="2">
-<colspec colwidth="1.5in"/>
-<colspec colwidth="3in"/>
-<tbody>
-<row>
-<entry>OS9: dir .</entry>
-<entry>lists file names in the working data directory</entry>
-</row>
-<row>
-<entry>OS9: dir ..</entry>
-<entry>lists names in the working data directory's parent directory.</entry>
-</row>
-<row>
-<entry>OS9: del ../temp</entry>
-<entry>deletes the file <filename>temp</filename> from the
+  <tgroup cols="2">
+    <colspec colwidth="1.5in"/>
+    <colspec colwidth="3in"/>
+    <tbody>
+      <row>
+        <entry>OS9: dir .</entry>
+        <entry>lists file names in the working data directory</entry>
+      </row>
+      <row>
+        <entry>OS9: dir ..</entry>
+        <entry>lists names in the working data directory's parent directory.</entry>
+      </row>
+      <row>
+        <entry>OS9: del ../temp</entry>
+        <entry>deletes the file <filename>temp</filename> from the
 working data directory's parent directory.</entry>
-</row>
-</tbody>
-</tgroup>
+      </row>
+    </tbody>
+  </tgroup>
 </informaltable>
+
 <para>
 The substitute names refer to either the execution or data
 directories, depending on the context in which they are used.
 For example, if <filename class="directory">..</filename> is used in a pathlist of a file which
 will be loaded and/or executed, it will represent the parent
 directory of the execution directory. Likewise, if <filename class="directory">.</filename> is used in a
-pathlist describing a program's input file, it will represent the
-current data directory.
+pathlist describing a program's input file, it will represent the current data directory.
 </para>
 </section>
 </section>
@@ -780,7 +799,7 @@ used. An example using the <command>dir e</command> command to show the detailed
 attributes of the files in the current working directory is:
 </para>
 <screen>
-   Directory of .   2003/03/04 10:20
+   Directory of .  10:20:44
 
 Owner Last Modified Attributes Sector Bytecount Name
 ----- ------------- ---------- ------ --------- ----
@@ -1097,7 +1116,7 @@ free for allocation to files.
 <para>
 A 5.25 inch floppy disk system uses the following format:
 </para>
-<itemizedlist mark="square">
+<itemizedlist spacing="compact" mark="square">
 <listitem><para>
 double density recording on one side
 </para></listitem>
@@ -1117,7 +1136,7 @@ file name and the logical sector number of the file's <quote>file descriptor
 sector</quote>, which contains a complete description of the file
 including:
 </para>
-<itemizedlist mark="square">
+<itemizedlist spacing="compact" mark="square">
 <listitem><para>
 attributes
 </para></listitem>
@@ -1208,8 +1227,7 @@ the byte address divided by 256 (integer division).
 As an example, the following command will give a complete <quote>dump</quote> of every data byte on disk device <quote>d0</quote>:
 </para>
 <informalexample>
-<screen>
-dump /d0@
+<screen>dump /d0@
 </screen>
 </informalexample>
 

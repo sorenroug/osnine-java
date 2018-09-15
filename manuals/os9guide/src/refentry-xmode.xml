@@ -173,9 +173,9 @@ of character in hexadecimal.</entry>
 </row>
 <row>
 <entry>baud=d</entry>
-<entry>Set baud rate for software-controllable interface. Numeric
-code for baud rate: 0=110 1=300 2=600 3=1200 4=2400 5=4800
-6=9600 7=19200</entry>
+<entry>Set baud rate for software-controllable Acia 6551 interface.
+Numeric code for baud rate: 0=110 1=300 2=600 3=1200 4=2400 5=4800 6=9600 7=19200
+</entry>
 </row>
 </tbody>
 </tgroup>

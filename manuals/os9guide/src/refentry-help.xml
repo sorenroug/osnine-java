@@ -53,7 +53,7 @@ Procedure for one disk drive:
 process is complete.
 </para>
 <para>
-4. Again, place the CONFIG/BOOT DIskette int he drive, and type:
+4. Again, place the CONFIG/BOOT Diskette in the drive, and type:
 </para>
 <screen>
 	COPY /D0/CMDS/help /D0/CMDS/help -S #30K <keycap>ENTER</keycap>
@@ -65,8 +65,8 @@ process is complete.
 Procedure for two disk drives
 </para>
 <para>
-1. With OS-9 booted, place the CONFIG/BOOT Diskette in Drive 1.  Be sure
-the system diskette is in Drive 0.
+1. With OS-9 booted, place the CONFIG/BOOT Diskette in Drive 1.
+Be sure the system diskette is in Drive 0.
 </para>
 <para>
 2. Type:

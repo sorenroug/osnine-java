@@ -8,15 +8,12 @@ your computer.
 <para>
 This is done by including the following module in the OS-9 kernel:
 </para>
-<literallayout>
-ACIA51 - Serial Device Driver
+<literallayout>ACIA51 - Serial Device Driver
 </literallayout>
 <para>
 To load this module into the kernel enter the following command line:
 </para>
-<screen>
-LOAD /D0/CMDS/ACIA51
-</screen>
+<screen>LOAD /D0/CMDS/ACIA51</screen>
 
 <section>
 <title>Serial Printer Implementation</title>
@@ -25,14 +22,12 @@ For those with a serial printer, you can use the serial port
 in the redirection of a program's output path by including the
 following modifier at the end of a command line:
 </para>
-<programlisting>
-&gt;/P1
+<programlisting>&gt;/P1
 </programlisting>
 <para>
 The baud rate of the serial port may be changed as follows:
 </para>
-<screen>
-XMODE /P1 BAUD=3
+<screen>XMODE /P1 BAUD=3
 </screen>
 <para>
 This will change the baud rate to 1200 characters per second.
@@ -48,8 +43,7 @@ OS-9, together using the serial port, redirection of the input
 or output paths is possible using the following modifier at
 the end of a command line:
 </para>
-<programlisting>
-&gt;/T1 <lineannotation>- for an output path</lineannotation>
+<programlisting>&gt;/T1 <lineannotation>- for an output path</lineannotation>
 
 &lt;/T1 <lineannotation>- for an input path</lineannotation>
 </programlisting>
@@ -58,12 +52,8 @@ To pass a file of data between the two computers, one must be
 configured for input from the serial port and the other
 configured for output:
 </para>
-<literallayout>
-Computer 1,        <code>BUILD TEXT &lt;/T1</code> - input to port
-</literallayout>
-<literallayout>
-Computer 2,        <code>BUILD &lt;TEXT /T1</code> - output to port
-</literallayout>
+<literallayout>Computer 1,        <code>BUILD TEXT &lt;/T1</code> - input to port</literallayout>
+<literallayout>Computer 2,        <code>BUILD &lt;TEXT /T1</code> - output to port</literallayout>
 <para>
 Using the above example, the text file on computer 2 will be
 transferred to a file called TEXT on computer 1.
@@ -80,8 +70,7 @@ respective computers.
 To create a log-off sequence after such a transfer, use the DISPLAY
 command as follows:
 </para>
-<literallayout>
-Computer 1,        <code>BUILD &lt;TEXT /T1 ; DISPLAY 0A 0D &gt;/T1</code>
+<literallayout>Computer 1,        <code>BUILD &lt;TEXT /T1 ; DISPLAY 0A 0D &gt;/T1</code>
 </literallayout>
 </section>
 </appendix>

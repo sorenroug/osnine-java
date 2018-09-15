@@ -91,13 +91,13 @@ command line before it is passed to the program being called.
 <xi:include href="refentry-chd.xml"/>
 <xi:include href="refentry-cmp.xml"/>
 <xi:include href="refentry-cobbler.xml"/>
-<xi:include href="refentry-config.xml"/>
+<!-- <xi:include href="refentry-config.xml"/> -->
 <xi:include href="refentry-copy.xml"/>
-<xi:include href="refentry-cputype.xml"/>
+<!-- <xi:include href="refentry-cputype.xml"/> -->
 <xi:include href="refentry-date.xml"/>
 <xi:include href="refentry-dcheck.xml"/>
 <xi:include href="refentry-debug.xml"/>
-<xi:include href="refentry-ded.xml"/>
+<!-- <xi:include href="refentry-ded.xml"/> -->
 <xi:include href="refentry-del.xml"/>
 <xi:include href="refentry-deldir.xml"/>
 <xi:include href="refentry-devs.xml"/>
@@ -117,8 +117,8 @@ command line before it is passed to the program being called.
 <xi:include href="refentry-go51.xml"/>
 <xi:include href="refentry-help.xml"/>
 <xi:include href="refentry-ident.xml"/>
-<xi:include href="refentry-iniz.xml"/>
-<xi:include href="refentry-irqs.xml"/>
+<!-- <xi:include href="refentry-iniz.xml"/> -->
+<!-- <xi:include href="refentry-irqs.xml"/> -->
 <xi:include href="refentry-kill.xml"/>
 <xi:include href="refentry-link.xml"/>
 <xi:include href="refentry-list.xml"/>
@@ -143,10 +143,10 @@ command line before it is passed to the program being called.
 <xi:include href="refentry-tee.xml"/>
 <xi:include href="refentry-tmode.xml"/>
 <xi:include href="refentry-tsmon.xml"/>
-<xi:include href="refentry-tuneport.xml"/>
+<!-- <xi:include href="refentry-tuneport.xml"/> -->
 <xi:include href="refentry-unlink.xml"/>
 <xi:include href="refentry-verify.xml"/>
-<xi:include href="refentry-wcreate.xml"/>
+<!-- <xi:include href="refentry-wcreate.xml"/> -->
 <xi:include href="refentry-xmode.xml"/>
 
 </section>

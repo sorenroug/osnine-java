@@ -1,67 +1,70 @@
 <chapter xmlns="http://docbook.org/ns/docbook">
-<title>Advanced Features of the Shell</title>
-<para>
+  <title>Advanced Features of the Shell</title>
+  <para>
 The basic shell functions were introduced in a prior chapter in order
 to provide an understanding of how basic OS-9 commands work. In
 this section the more advanced capabilities of the shell are
 discussed. In addition to basic command line processing, the shell
 has functions that facilitate:
 </para>
-
-<itemizedlist mark="square">
-<listitem><para>
+  <itemizedlist mark="square">
+    <listitem>
+      <para>
 I/O redirection (including filters)
-</para></listitem>
-<listitem><para>
-Memory Allocation
-</para></listitem>
-<listitem><para>
-Multitasking (concurrent execution)
-</para></listitem>
-<listitem><para>
-Procedure File Execution (background processing)
-</para></listitem>
-<listitem><para>
-Execution Control (built-in commands)
-</para></listitem>
-</itemizedlist>
-
-<para>
+</para>
+    </listitem>
+    <listitem>
+      <para>Memory Allocation</para>
+    </listitem>
+    <listitem>
+      <para>Multitasking (concurrent execution)</para>
+    </listitem>
+    <listitem>
+      <para>Procedure File Execution (background processing)</para>
+    </listitem>
+    <listitem>
+      <para>Execution Control (built-in commands)</para>
+    </listitem>
+  </itemizedlist>
+  <para>
 There is a virtually unlimited combination of ways these
 capabilities can be used, and it is impossible to give more than a
 representative set of examples in this manual. You are therefore
 encouraged to study the basic rules, use your imagination, and
 explore the possibilities on your own.
 </para>
-
-<section>
-<title>A More Detailed Description Command Line Processing</title>
-<para>
+  <section>
+    <title>A More Detailed Description Command Line Processing</title>
+    <para>
 The shell is a program that reads and processes command lines one
 at a time from its input path (usually your keyboard). Each line is
 first scanned (or <quote>parsed</quote>) in order to identify and process any of
 the following parts which may be present:
 </para>
-
-<itemizedlist mark="square">
-<listitem><para>
+    <itemizedlist mark="square">
+      <listitem>
+        <para>
 A program, procedure file, or built-in command name (<quote>verbs</quote>)
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Parameters to be passed to the program
-</para></listitem>
-<listitem><para>
+</para>
+      </listitem>
+      <listitem>
+        <para>
 Execution modifiers to be processed by the shell
-</para></listitem>
-</itemizedlist>
-
-<para>
+</para>
+      </listitem>
+    </itemizedlist>
+    <para>
 Note that only the verb (the program or command name) need be
 present, the other parts are optional. After the verb has been
 identified, the shell processes modifiers (if any). Any other text
 not yet processed is assumed to be parameters and passed to the program called.
 </para>
-<para>
+    <para>
 Unless the verb is a <quote>built-in command</quote>, the shell will run the
 program named as a new process (task). It then deactivates itself
 until the program called eventually terminates, at which time it
@@ -70,55 +73,50 @@ over and over until an end-of-file condition is detected on the
 shell's input path which causes the shell to terminate its own
 execution.
 </para>
-<para>
+    <para>
 Here is a sample shell line which calls the assembler:
 </para>
-<screen>
-asm sourcefile l -o &gt;/p #12k
-</screen>
-<para>
+    <screen>asm sourcefile l -o &gt;/p #12k</screen>
+    <para>
 In this example:
 </para>
-
-<informaltable frame="none" colsep="0" rowsep="0">
-<tgroup cols="2">
-<colspec colwidth="2in"/>
-<colspec colwidth="3in"/>
-<tbody>
-<row>
-<entry>asm</entry>
-<entry>is the verb</entry>
-</row>
-<row>
-<entry>sourcefile l -o</entry>
-<entry>are parameters passed to <command>asm</command></entry>
-</row>
-<row>
-<entry>&gt;/p</entry>
-<entry>is a modifier which redirects the output
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="2">
+        <colspec colwidth="2in"/>
+        <colspec colwidth="3in"/>
+        <tbody>
+          <row>
+            <entry>asm</entry>
+            <entry>is the verb</entry>
+          </row>
+          <row>
+            <entry>sourcefile l -o</entry>
+            <entry>are parameters passed to <command>asm</command></entry>
+          </row>
+          <row>
+            <entry>&gt;/p</entry>
+            <entry>is a modifier which redirects the output
 (listing) to the system's printer</entry>
-</row>
-<row>
-<entry>#12K</entry>
-<entry>is a modifier which requests that the
+          </row>
+          <row>
+            <entry>#12K</entry>
+            <entry>is a modifier which requests that the
 process be assigned 12K bytes of memory
 instead of its (smaller) default amount.</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
-
-<para>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>
 The verb must be the first name in the command line. After it
 has been scanned, the shell first checks if it is a <quote>built-in</quote>
 command. If it is, it is immediately executed. Otherwise, the shell
 assumes it is a program name and attempts to locate and execute it.
 </para>
-</section>
-
-<section>
-<title>Execution Modifiers</title>
-<para>
+  </section>
+  <section>
+    <title>Execution Modifiers</title>
+    <para>
 Execution modifiers are processed by the shell before the program
 is run. If an error is detected in any of the modifiers, the run
 will be aborted and the error reported. Characters which comprise
@@ -127,10 +125,9 @@ to the program as parameters, therefore, the characters reserved for
 use as modifiers ( # ; ! &lt; &gt; &amp; ) cannot be used inside parameters,
 but can be used before or after the parameters.
 </para>
-
-<section>
-<title>Alternate Memory Size Modifier</title>
-<para>
+    <section>
+      <title>Alternate Memory Size Modifier</title>
+      <para>
 When command programs are invoked by the shell, they are
 allocated the minimum amount of working RAM memory specified in the
 program's module header. A module header is part of all executable
@@ -141,15 +138,13 @@ modifier <quote>#n</quote> where n is the decimal number of pages, or in 1024
 byte increments using the modifier <quote>#nK</quote>. The two examples below
 behave identically:
 </para>
-<screen>
-OS9: copy #8 file1 file2     <lineannotation>(gives 8*256 = 2048 bytes)</lineannotation>
+      <screen>OS9: copy #8 file1 file2     <lineannotation>(gives 8*256 = 2048 bytes)</lineannotation>
 OS9: copy #2K file1 file2    <lineannotation>(gives 2*1024 = 2048 bytes)</lineannotation>
 </screen>
-</section>
-
-<section>
-<title>I/O Redirection Modifiers</title>
-<para>
+    </section>
+    <section>
+      <title>I/O Redirection Modifiers</title>
+      <para>
 The second kind of modifier is used to redirect the program's
 <quote>standard I/O paths</quote> to alternate files or devices. Well-written
 OS-9 programs use these paths for routine I/O. Because the programs
@@ -159,15 +154,15 @@ program itself. Programs which normally receive input from a
 terminal or send output to a terminal use one or more of the
 standard I/O paths as defined below:
 </para>
-<para>
+      <para>
 STANDARD INPUT: This path normally passes data from the
 terminal's keyboard to the program.
 </para>
-<para>
+      <para>
 STANDARD OUTPUT PATH: This path is normally used to output
 data from the program to the terminal's display.
 </para>
-<para>
+      <para>
 STANDARD ERROR OUTPUT PATH: This path is used to output
 routine status messages such as prompts and errors to the
 terminal's display (defaults to the same device as the
@@ -175,7 +170,7 @@ standard output path). NOTE: The name <quote>error output</quote> is
 sometimes misleading since many other kinds of messages besides
 errors are sent on this path.
 </para>
-<para>
+      <para>
 When new processes are created, they inherit their parent process'
 standard I/O paths. Therefore, when the shell
 creates new processes, they usually inherit its standard I/O paths.
@@ -186,66 +181,61 @@ shell will open the corresponding paths and pass them to the new
 process as its standard I/O paths. There are three redirection
 modifiers as given below:
 </para>
-<informaltable frame="none" colsep="0" rowsep="0">
-<tgroup cols="2">
-<colspec colwidth="0.4in"/>
-<colspec colwidth="3in"/>
-<tbody>
-<row>
-<entry>&lt;</entry>
-<entry>Redirect the standard input path</entry>
-</row>
-<row>
-<entry>&gt;</entry>
-<entry>Redirect the standard output path</entry>
-</row>
-<row>
-<entry>&gt;&gt;</entry>
-<entry>Redirect the standard error output path</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
-
-<para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="0.4in"/>
+          <colspec colwidth="3in"/>
+          <tbody>
+            <row>
+              <entry>&lt;</entry>
+              <entry>Redirect the standard input path</entry>
+            </row>
+            <row>
+              <entry>&gt;</entry>
+              <entry>Redirect the standard output path</entry>
+            </row>
+            <row>
+              <entry>&gt;&gt;</entry>
+              <entry>Redirect the standard error output path</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
 When redirection modifiers are used on a command line, they must
 be immediately followed by a pathlist describing the file or device
 the I/O is to be redirected to or from. For example, the standard
 output of <command>list</command> can be redirected to write to the system printer
 instead of the terminal:
 </para>
-<screen>
-OS9: list correspondence &gt;/p
+      <screen>OS9: list correspondence &gt;/p
 </screen>
-<para>
+      <para>
 Files referenced by I/O redirection modifiers are automatically
 opened or created, and closed (as appropriate) by the shell. Here is
 another example, the output of the <command>dir</command> command is redirected to the
 file <filename>/D1/savelisting</filename>:
 </para>
-<screen>
-OS9: DIR &gt;/D1/savelisting
+      <screen>OS9: DIR &gt;/D1/savelisting
 </screen>
-<para>
+      <para>
 If the <command>list</command> command is used on the file <filename>/D1/savelisting</filename>, output
 from the <command>dir</command> command will be displayed as shown below:
 </para>
-<screen>
-OS9: list /d1/savelisting
+      <screen>OS9: list /d1/savelisting
 
    Directory of .   10:15:00
 myfile          savelisting       file1
 </screen>
-<para>
+      <para>
 Redirection modifiers can be used before and/or after the program's
 parameters, but each modifier can only be used once.
 </para>
-</section>
-</section>
-
-<section xml:id="sec4.3">
-<title>Command Separators</title>
-<para>
+    </section>
+  </section>
+  <section xml:id="sec4.3">
+    <title>Command Separators</title>
+    <para>
 A single shell input line can request execution of more than one
 program. These programs may be executed sequentially or
 concurrently. Sequential execution means that one program must
@@ -254,54 +244,50 @@ allowed to begin execution. Concurrent execution means that several
 programs are allowed to begin execution and run simultaneously.
 
 </para>
-
-<section xml:id="sec4.3.1">
-<title>Sequential Execution</title>
-<para>
+    <section xml:id="sec4.3.1">
+      <title>Sequential Execution</title>
+      <para>
 Programs are executed sequentially when each is entered on a
 separate line. More than one program can be specified on a single
 shell command line by separating each
 <replaceable>program name</replaceable> <replaceable>parameters</replaceable>
 from the next one with a <quote>;</quote> character. For example:
 </para>
-<screen>
-OS9: copy myfile /d1/newfile ; dir &gt;/p
+      <screen>OS9: copy myfile /d1/newfile ; dir &gt;/p
 </screen>
-<para>
+      <para>
 This command line will first execute the <command>copy</command> command and then the
 <command>dir</command> command.
 </para>
-<para>
+      <para>
 If an error is returned by any program, subsequent commands on
 the same line are not executed (regardless of the state of the <quote>x</quote>
 option), otherwise, <quote>;</quote> and <quote>return</quote> are identical
 separators.
 </para>
-<para>
+      <para>
 Here are some more examples:
 </para>
-<screen>
-OS9: copy oldfile newfile; del oldfile; list newfile
+      <screen>OS9: copy oldfile newfile; del oldfile; list newfile
 
 OS9: dir &gt;/d1/myfile ; list temp &gt;/p; del temp
 </screen>
-<para>
+      <para>
 All programs executed sequentially are in fact separate, child
 processes of the shell. After initiating execution of a
 program to be executed sequentially, the shell enters the <quote>wait</quote>
 state until execution of the called program terminates.
 </para>
-</section>
-
-<section xml:id="sec4.3.2">
-<title>Concurrent Execution</title>
-<para>
+    </section>
+    <section xml:id="sec4.3.2">
+      <title>Concurrent Execution</title>
+      <para>
 The second kind of separator is the <quote>&amp;</quote> which implies concurrent
 execution, meaning that the program is run (as a separate, child
 process), but the shell does not wait for it to complete
 before processing the next command.
 </para>
-<para>
+      <para>
 The concurrent execution separator is therefore the means by
 which multiprogramming (running two or more programs simultaneously)
 is accomplished. The number of programs that can run at the same
@@ -309,13 +295,12 @@ time is not fixed: it depends upon the amount of free memory in the
 system versus the memory requirements of the specific programs.
 Here is an example:
 </para>
-<screen>
-OS9: dir &gt;/p&amp;
+      <screen>OS9: dir &gt;/p&amp;
 &amp;007
 
 OS9:
 </screen>
-<para>
+      <para>
 This command line will cause shell to start the <command>dir</command> command
 executing, print the process ID number (&amp;007), and then immediately
 display the <quote>OS9:</quote> prompt and wait for another command to be
@@ -324,13 +309,12 @@ listing to the printer. You can display a <quote>status summary</quote> of all
 processes you have created by using the <command>procs</command> command. Below is
 another example:
 </para>
-<screen>
-OS9: dir &gt;/p&amp; list file1&amp; copy file1 file2 ; del temp
+      <screen>OS9: dir &gt;/p&amp; list file1&amp; copy file1 file2 ; del temp
 </screen>
-<para>
+      <para>
 
 </para>
-<para>
+      <para>
 Because they were followed by <quote>&amp;</quote> separators, the <command>dir</command>,
 <command>list</command>, and
 <command>copy</command> programs will run concurrently,
@@ -338,22 +322,21 @@ but the <command>del</command> program will not
 run until the <command>copy</command> program has terminated because sequential
 execution (<quote>;</quote>) was specified.
 </para>
-</section>
-
-<section xml:id="sec4.3.3">
-<title>Pipes and Filters</title>
-<para>
+    </section>
+    <section xml:id="sec4.3.3">
+      <title>Pipes and Filters</title>
+      <para>
 The third kind of separator is the <quote>!</quote> character which is used to
 construct <quote>pipelines</quote>. Pipelines consist of two or more concurrent
 programs whose standard input and/or output paths connect to each
 other using <quote>pipes</quote>.
 </para>
-<para>
+      <para>
 Pipes are the primary means-by which data is transferred from
 process to process (interprocess communications). Pipes are first-in,
 first-out buffers that behave like mass-storage files.
 </para>
-<para>
+      <para>
 I/O transfers using pipes are automatically buffered and
 synchronized. A single pipe may have several <quote>readers</quote> and several
 <quote>writers</quote>. Multiple writers send, and multiple readers accept, data
@@ -362,7 +345,7 @@ will occur if an attempt is made to read from a pipe but there are
 no writers available to send data. Conversely, a write error will
 occur if an attempt is made to write to a pipe having no readers.
 </para>
-<para>
+      <para>
 Pipelines are created by the shell when an input line having one
 or more <quote>!</quote> separators is processed. For each <quote>!</quote>, the standard
 output of the program named to the left of the <quote>!</quote> is redirected via
@@ -370,17 +353,16 @@ a pipe to the standard input of the program named to the right of
 the <quote>!</quote>. Individual pipes are created for each <quote>!</quote> present.
 For example:
 </para>
-<screen>
-OS9: update &lt;master_file ! sort ! write_report &gt;/p
+      <screen>OS9: update &lt;master_file ! sort ! write_report &gt;/p
 </screen>
-<para>
+      <para>
 In the example above, the program <command>update</command> has its input redirected
 from a path called <filename>master_file</filename>. Its standard output becomes the
 standard input for the program <command>sort</command>. Its output, in turn, becomes
 the standard input for the program <command>write_report</command>, which has its
 standard output redirected to the printer.
 </para>
-<para>
+      <para>
 All programs in a pipeline are executed concurrently. The pipes
 automatically synchronize the programs so the output of one never
 <quote>gets ahead</quote> of the input request of the next program in the
@@ -394,44 +376,39 @@ The <command>tee</command> command, which uses
 pipes to allow data to be simultaneously <quote>broadcast</quote> from a single
 input path to several output paths, is a useful filter.
 </para>
-</section>
-</section>
-
-<section>
-<title>Command Grouping</title>
-<para>
+    </section>
+  </section>
+  <section>
+    <title>Command Grouping</title>
+    <para>
 Sections of shell input lines can be enclosed in parentheses
 which permits modifiers and separators to be applied to an entire
 set of programs. The shell processes them by calling itself
 recursively (as a new process) to execute the enclosed program list.
 For example:
-<screen>
-OS9: (dir /d0; dir /d1) &gt;/p
+<screen>OS9: (dir /d0; dir /d1) &gt;/p
 </screen>
 gives the same result as:
-<screen>
-OS9: dir /d0 &gt;/p; dir /d1 &gt;/p
+<screen>OS9: dir /d0 &gt;/p; dir /d1 &gt;/p
 </screen>
 except for the subtle difference that the printer is <quote>kept</quote>
 continuously in the first example; in the second case another user
 could <quote>steal</quote> the printer in between the <command>dir</command> commands.
 </para>
-<para>
+    <para>
 Command grouping can be used to cause a group of programs to be
 executed sequentially, but also concurrently with respect to the
 shell that initiated them, such as:
 </para>
-<screen>
-OS9: (del file1; del file2; del file3)&amp;
+    <screen>OS9: (del file1; del file2; del file3)&amp;
 </screen>
-<para>
+    <para>
 A useful extension of this form is to construct pipelines consisting
 of sequential and/or concurrent programs. For example:
 </para>
-<screen>
-OS9: (dir CMDS; dir SYS) ! makeuppercase ! transmit
+    <screen>OS9: (dir CMDS; dir SYS) ! makeuppercase ! transmit
 </screen>
-<para>
+    <para>
 Here is a very practical example of the use of pipelines. Recall
 that the <command>dsave</command> command generates a procedure file to copy all the
 files in a directory. The example below shows how the output of
@@ -440,14 +417,12 @@ commands as they are generated by <command>dsave</command>. Assume that we want 
 copy all files from a directory called <filename class="directory">WORKING</filename> to a directory called
 <filename class="directory">ARCHIVE</filename>:
 </para>
-<screen>
-OS9: chd /d0/WORKING; dsave ! (chd /d0/ARCHIVE)
+    <screen>OS9: chd /d0/WORKING; dsave ! (chd /d0/ARCHIVE)
 </screen>
-</section>
-
-<section xml:id="sec4.5">
-<title>Built-in Shell Commands and Options</title>
-<para>
+  </section>
+  <section xml:id="sec4.5">
+    <title>Built-in Shell Commands and Options</title>
+    <para>
 When processing input lines, the shell looks for several special
 names of commands or option switches that are built-in the shell.
 These commands are executed without loading a program and creating a
@@ -457,77 +432,93 @@ separator (<quote>;</quote>, <quote>&amp;</quote>, or <quote>!</quote>).
 Two or more adjacent built-in
 commands can be separated by spaces or commas.
 </para>
-<para>
+    <para>
 The built-in commands and their functions are:
 </para>
-<informaltable frame="none" colsep="0" rowsep="0">
-<tgroup cols="2">
-<colspec colwidth="1.5in"/>
-<colspec colwidth="3.5in"/>
-<tbody>
-<row>
-<entry><command>chd</command> <replaceable>pathlist</replaceable></entry>
-<entry>change the working data directory to the directory
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="2">
+        <colspec colwidth="1.5in"/>
+        <colspec colwidth="3.5in"/>
+        <tbody>
+          <row>
+            <entry>
+              <command>chd</command>
+              <replaceable>pathlist</replaceable>
+            </entry>
+            <entry>change the working data directory to the directory
 specified by the pathlist.</entry>
-</row>
-<row>
-<entry><command>chx</command> <replaceable>pathlist</replaceable></entry>
-<entry>change the working execution directory to the
+          </row>
+          <row>
+            <entry>
+              <command>chx</command>
+              <replaceable>pathlist</replaceable>
+            </entry>
+            <entry>change the working execution directory to the
 directory specified by the pathlist.</entry>
-</row>
-<row>
-<entry><command>ex</command> <replaceable>name</replaceable></entry>
-<entry>directly execute the module named. This
+          </row>
+          <row>
+            <entry>
+              <command>ex</command>
+              <replaceable>name</replaceable>
+            </entry>
+            <entry>directly execute the module named. This
 transforms the shell process so it ceases
 to exist and a new module begins execution in
 its place.</entry>
-</row>
-<row>
-<entry><command>w</command></entry>
-<entry>wait for any process to terminate.</entry>
-</row>
-<row>
-<entry>* <replaceable>text</replaceable></entry>
-<entry>comment: <quote>text</quote> is not processed.</entry>
-</row>
-<row>
-<entry><command>kill</command> <replaceable>Proc ID</replaceable></entry>
-<entry>abort the process specified.</entry>
-</row>
-<row>
-<entry><command>setpr</command> <replaceable>Proc ID</replaceable> <replaceable>priority</replaceable></entry>
-<entry>changes process' priority.</entry>
-</row>
-<row>
-<entry>x</entry>
-<entry>causes shell to abort on any error (default)</entry>
-</row>
-<row>
-<entry>-x</entry>
-<entry>causes shell not to abort on error</entry>
-</row>
-<row>
-<entry>p</entry>
-<entry>turns shell prompt and messages on (default)</entry>
-</row>
-<row>
-<entry>-p</entry>
-<entry>inhibits shell prompt and messages</entry>
-</row>
-<row>
-<entry>t</entry>
-<entry>makes shell copy all input lines to output</entry>
-</row>
-<row>
-<entry>-t</entry>
-<entry>does not copy input lines to output (default)</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
-
-
-<para>
+          </row>
+          <row>
+            <entry>
+              <command>w</command>
+            </entry>
+            <entry>wait for any process to terminate.</entry>
+          </row>
+          <row>
+            <entry>* <replaceable>text</replaceable></entry>
+            <entry>comment: <quote>text</quote> is not processed.</entry>
+          </row>
+          <row>
+            <entry>
+              <command>kill</command>
+              <replaceable>Proc ID</replaceable>
+            </entry>
+            <entry>abort the process specified.</entry>
+          </row>
+          <row>
+            <entry>
+              <command>setpr</command>
+              <replaceable>Proc ID</replaceable>
+              <replaceable>priority</replaceable>
+            </entry>
+            <entry>changes process' priority.</entry>
+          </row>
+          <row>
+            <entry>x</entry>
+            <entry>causes shell to abort on any error (default)</entry>
+          </row>
+          <row>
+            <entry>-x</entry>
+            <entry>causes shell not to abort on error</entry>
+          </row>
+          <row>
+            <entry>p</entry>
+            <entry>turns shell prompt and messages on (default)</entry>
+          </row>
+          <row>
+            <entry>-p</entry>
+            <entry>inhibits shell prompt and messages</entry>
+          </row>
+          <row>
+            <entry>t</entry>
+            <entry>makes shell copy all input lines to output</entry>
+          </row>
+          <row>
+            <entry>-t</entry>
+            <entry>does not copy input lines to output (default)</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>
 The change directory commands switch the shell's working directory
 and, by inheritance, any subsequently created child process. The
 <command>ex</command> command is used where the shell is needed to initiate execution
@@ -535,11 +526,10 @@ of a program without the overhead of a suspended <command>shell</command> proces
 The name used is processed according to standard shell operation,
 and modifiers can be used.
 </para>
-</section>
-
-<section xml:id="sec4.6">
-<title>Shell Procedure Files</title>
-<para>
+  </section>
+  <section xml:id="sec4.6">
+    <title>Shell Procedure Files</title>
+    <para>
 The shell is a reentrant program that can be simultaneously
 executed by more than one process at a time. As is the case with
 most other OS-9 programs, it uses standard I/O paths for routine
@@ -547,7 +537,7 @@ input and output. specifically, it requests command
 lines from the standard input path and writes its prompts and other
 data to the standard error path.
 </para>
-<para>
+    <para>
 The shell can start up another process also running the shell by
 means of the <command>shell</command> command. If the standard input path is
 redirected to a mass storage file, the new <quote>incarnation</quote> of the
@@ -558,13 +548,13 @@ that are identical to command lines that are manually entered from
 the keyboard. This technique is sometimes called <quote>batch</quote> or
 <quote>background</quote> processing.
 </para>
-<para>
+    <para>
 If the <replaceable>program name</replaceable> specified on a shell command line can not be
 found in memory or in the execution directory, shell will search the
 data directory for a file with the desired name. If one is found,
 shell will automatically execute it as a procedure file.
 </para>
-<para>
+    <para>
 Execution of procedure files have a number of valuable
 applications. It can eliminate repetitive manual entry of commonly-used
 sequences of commands. It can allow the computer to execute a
@@ -572,41 +562,38 @@ lengthy series of programs <quote>in the background</quote> while the computer i
 unattended or while the user is running other programs <quote>in the
 foreground</quote>.
 </para>
-<para>
+    <para>
 In addition to redirecting the shell's standard input to a
 procedure file, the standard output and standard error output can be
 redirected to another file which can record output for later review
 or printing. This can also eliminate the sometimes-annoying output
 of shell messages to your terminal at random times.
 </para>
-<para>
+    <para>
 Here are two simple ways to use the shell to create another
 shell:
 </para>
-<screen>
-OS9: shell &lt;procfile
+    <screen>OS9: shell &lt;procfile
 
 OS9: procfile
 </screen>
-<para>
+    <para>
 Both do exactly the same thing: execute the commands of the file
 <filename>procfile</filename>. To run the procedure file in a <quote>background</quote> mode you
 simply add the ampersand operator:
 </para>
-<screen>
-OS9: procfile&amp;
+    <screen>OS9: procfile&amp;
 </screen>
-<para>
+    <para>
 OS-9 does not have any constraints on the number of jobs that can be
 simultaneously executed as long as there is memory available. Also, the procedure files can themselves cause sequential or
 concurrent execution of additional procedure files. Here's a more
 complex example of initiating two processing streams with
 redirection of each shell's output to files:
 </para>
-<screen>
-OS9: proc1 T &gt;&gt;stat1&amp; proc2 T &gt;&gt;stat2&amp;
+    <screen>OS9: proc1 T &gt;&gt;stat1&amp; proc2 T &gt;&gt;stat2&amp;
 </screen>
-<para>
+    <para>
 Note that the built-in command <quote>T</quote> (copy input lines to error
 output) was used above. They make the output file contain a record
 of all lines executed, but without useless <quote>OS9</quote> prompts intermixed.
@@ -616,11 +603,10 @@ to stop if an error occurs. Note that the built-in commands only
 affect the shell that executes them, and not any others that may
 exist.
 </para>
-</section>
-
-<section xml:id="sec4.7">
-<title>Error Reporting</title>
-<para>
+  </section>
+  <section xml:id="sec4.7">
+    <title>Error Reporting</title>
+    <para>
 Many programs (including the shell) use OS-9's standard error
 reporting function, which displays an error number on the error
 output path. The standard error codes are listed in the <xref linkend="errorcodes"/> of
@@ -632,7 +618,7 @@ Once the <command>printerr</command>
 command has been run it cannot be turned off. Also, its effect is
 system-wide.
 </para>
-<para>
+    <para>
 Programs called by the shell can return an error code in the CPU's
 <quote>B</quote> register (otherwise B should be cleared) upon termination. This
 type of error, as well as errors detected by the shell itself, will
@@ -640,11 +626,10 @@ cause an error message to be displayed and processing of the command
 line or procedure file to be terminated unless the <quote>-x</quote> built-in
 command has been previously executed.
 </para>
-</section>
-
-<section xml:id="sec4.8">
-<title>Running Compiled Intermediate Code Programs</title>
-<para>
+  </section>
+  <section xml:id="sec4.8">
+    <title>Running Compiled Intermediate Code Programs</title>
+    <para>
 Before the shell executes a program, it checks the program
 module's language type. If its type is not 6809 machine language,
 shell will call the appropriate run-time system for that module.
@@ -654,25 +639,21 @@ Basic09 when appropriate, and Level Two versions of shell can also
 call the Pascal P-code interpreter (PascalN), or the CIS Cobol
 runtime system (RunC).
 </para>
-<para>
+    <para>
 For example, if you wanted to run a Basic09 I-code module called
 <command>adventure</command>, you could type the command given below:
 </para>
-<screen>
-OS9: basic09 adventure
+    <screen>OS9: basic09 adventure
 </screen>
-<para>
+    <para>
 Or you could accomplish the same thing by typing the following:
 </para>
-<screen>
-OS9: adventure
+    <screen>OS9: adventure
 </screen>
-</section>
-
-<section xml:id="sec4.9">
-<title>Setting Up Timesharing System Procedure Files</title>
-
-<para>
+  </section>
+  <section xml:id="sec4.9">
+    <title>Setting Up Timesharing System Procedure Files</title>
+    <para>
 OS-9 systems used for timesharing usually have a procedure file
 that brings the system up by means of one simple command or by using
 the system <filename>startup</filename> file. A procedure file which initiates the
@@ -681,7 +662,7 @@ system. The procedure file first starts the system clock, then
 initiates concurrent execution of a number of processes that have
 their I/O redirected to each timesharing terminal.
 </para>
-<para>
+    <para>
 Usually one <command>tsmon</command> command program is started up concurrently for
 each terminal in the system. This is a special program which
 monitors a terminal for activity. When a carriage return character
@@ -692,7 +673,7 @@ Here's a sample procedure file for a 4-terminal timesharing system
 having terminals names <quote>TERM</quote>, <quote>T1</quote>,
 <quote>T2</quote>, and <quote>T3</quote>.
 </para>
-<programlisting>
+    <programlisting>
 * system startup procedure file
 echo Please Enter the Date and Time
 setime &lt;/term
@@ -701,17 +682,17 @@ tsmon /t1&amp;
 tsmon /t2&amp;
 tsmon /t3&amp;
 </programlisting>
-<para>
+    <para>
 NOTE: This <command>login</command> procedure will not work until a password file
-called <filename>/DD/SYS/PASSWORD</filename> has been created. For more information,
+called <filename>/D0/SYS/PASSWORD</filename> has been created. For more information,
 please see the <command>login</command> command description.
 </para>
-<para>
+    <para>
 The example above deserves special attention. Note that the
 <command>setime</command> command has its input redirected to the system console
 <quote>term</quote>, which is necessary because it would otherwise attempt to
 read the time information from its current standard input path,
 which is the procedure file and not the keyboard.
 </para>
-</section>
+  </section>
 </chapter>

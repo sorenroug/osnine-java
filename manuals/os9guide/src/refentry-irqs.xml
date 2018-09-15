@@ -2,6 +2,7 @@
 <refnamediv>
 <refname>IRQS</refname>
 <refpurpose>Show interrupt polling table</refpurpose>
+<refclass>OS-9 Level Two</refclass>
 </refnamediv>
 
 <refsynopsisdiv>

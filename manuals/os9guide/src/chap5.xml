@@ -234,41 +234,27 @@ program (primary module) if it is not resident in memory.
 To summarize, the following items are given to or associated with
 new processes:
 </para>
-    <itemizedlist mark="square">
+    <itemizedlist spacing="compact" mark="square">
       <listitem>
-        <para>
-Primary Module (program module to be run)
-</para>
+        <para>Primary Module (program module to be run)</para>
       </listitem>
       <listitem>
-        <para>
-Parameter(s) passed from parent to child
-</para>
+        <para>Parameter(s) passed from parent to child</para>
       </listitem>
       <listitem>
-        <para>
-User Number
-</para>
+        <para>User Number</para>
       </listitem>
       <listitem>
-        <para>
-Standard I/O paths and working directories
-</para>
+        <para>Standard I/O paths and working directories</para>
       </listitem>
       <listitem>
-        <para>
-Process Priority
-</para>
+        <para>Process Priority</para>
       </listitem>
       <listitem>
-        <para>
-Process ID
-</para>
+        <para>Process ID</para>
       </listitem>
       <listitem>
-        <para>
-Memory
-</para>
+        <para>Memory</para>
       </listitem>
     </itemizedlist>
   </section>
