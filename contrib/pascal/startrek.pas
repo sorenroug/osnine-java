@@ -54,10 +54,6 @@ var
 function random(var block:integer) : real; external;
 procedure randomize(var block:integer); external;
 
-procedure newquadrant; forward;
-procedure shortrange; forward;
-procedure enemyfire; forward;
-
 { Provide a random real 0 <= x < 1 }
 function rnd1:real;
 begin
@@ -265,115 +261,6 @@ procedure direction(dX,dY : integer);
     writeln('Distance = ',SQRT(SQR(dY) + SQR(dX)):6:5)
   end;
 
-procedure initialize;
-  var
-    i,j : integer;
-    t1 : real;
-  begin
-    lines(11);
-    writeln('                                    ,------*------,');
-    writeln('                    ,-------------   ''---  ------''');
-    writeln('                     ''-------- --''      / /');
-    writeln('                         ,---'' ''-------/ /--,');
-    writeln('                          ''----------------''');
-    writeln;
-    writeln('                    THE USS ENTERPRISE --- NCC-1701');
-    lines(5);
-
-    time := 0.0 + (rnd(20)+20)*100;
-    startdate := time;
-    duration := 25 + rnd(10);
-    docked := false;
-    e := E_ENERGY;
-    p := ORGTORPS;
-    s := 0;
-    starbases := 0;
-    klingons := 0;
-
-    q1 := rnd(8)+1;
-    q2 := rnd(8)+1;
-    s1 := rnd(8)+1;
-    s2 := rnd(8)+1;
-
-    for i := 1 to 9 do
-      begin
-        c[i,1]:=0;  c[i,2]:=0
-      end;
-    c[3,1]:=-1;  c[2,1]:=-1;  c[4,1]:=-1;  c[4,2]:=-1;  c[5,2]:=-1;  c[6,2]:=-1;
-    c[1,2]:=1; c[2,2]:=1; c[6,1]:=1; c[7,1]:=1; c[8,1]:=1; c[8,2]:=1; c[9,2]:=1;
-
-    for i := 1 to 8 do dmg[i] := 0;
-{
-Setup what exists in galaxy . . .
-K3= # Klingons  B3= # Starbases  S3 = # Stars
-}
-  for i := 1 to 8 do
-    for j := 1 to 8 do
-      begin
-        k3 := 0;
-        z[i,j] := 0;
-        t1 := rnd1;
-        if t1 > 0.98 then
-          begin
-            k3 := k3 + 1;
-            klingons := klingons+1
-          end;
-        if t1 > 0.95 then
-          begin
-            k3 := k3 + 1;
-            klingons := klingons+1
-          end;
-        if t1 > 0.80 then
-          begin
-            k3 := k3 + 1;
-            klingons := klingons+1
-          end;
-        
-        b3 := 0;
-        if rnd1 > 0.96 then
-          begin
-            b3 := 1;
-            starbases := starbases+1;
-          end;
-          s3 := rand8i;
-          g[i,j] := k3*100 + b3*10 + s3
-       end; { for j }
-
-    if klingons > duration then
-      duration := klingons+1;
-
-    if starbases = 0 then
-      begin
-        { ADD A KLINGON TO THE SECTOR WITH THE ONLY STARBASE }
-        if g[q1,q2]<200 then
-          begin
-            g[q1,q2] := g[q1,q2]+100;
-            klingons := klingons+1
-          end;
-        starbases := 1;
-        g[q1,q2] := g[q1,q2]+10;
-        q1 := rand8i;
-        q2 := rand8i
-      end;
-
-    orgklings := klingons;
-    writeln('Your orders are as follows:');
-    writeln('''Destroy the ',klingons:1,' Klingon warships which have invaded');
-    writeln('the galaxy before they can attack federation');
-    writeln('headquarters on stardate ',startdate+duration:4:0,'. This gives you ',duration:2);
-    if starbases <> 1 then
-      writeln('days. There are ',starbases:1,' starbases in the galaxy for')
-    else
-      writeln('days. There is ',starbases:1,' starbase in the galaxy for');
-    writeln('resupplying your ship.''');
-    writeln;
-    newquadrant;
-    shortrange;
-  {
-
-}
-end;
-
 { Append Roman numeral to string }
 procedure appendnum(var name: qname; num: roman);
   var
@@ -526,6 +413,69 @@ begin
     end;
 end;
 
+{ SHORT RANGE SENSOR SCAN & STARTUP SUBROUTINE }
+procedure shortrange;
+  var
+    cs : array[1..6] of char;
+    i,j : integer;
+begin
+  docked := false;
+  if k3 > 0 then
+    cs := '*RED* '
+  else
+    begin
+      cs := 'GREEN ';
+      if e < E_ENERGY * 0.1 then
+        cs := 'YELLOW';
+    end;
+  for i := s1-1 to s1+1 do
+    for j := s2-1 to s2+1 do
+      if (i>0) and (i<=8) and (j>0) and (j<=8) then
+        begin
+          z3 := checkfeature('>!<', i, j);
+          if z3 = true then
+            begin
+              docked := true ;
+              cs := 'DOCKED';
+              e := E_ENERGY;
+              p := ORGTORPS;
+              writeln('Shields dropped for docking purposes');
+              s := 0
+            end
+        end;
+  
+  if dmg[2]<0 then
+    begin
+      writeln;
+      writeln('*** SHORT RANGE SENSORS ARE OUT ***');
+      writeln;
+    end
+  else
+    begin
+      writeln('---1---2---3---4---5---6---7---8---');
+      for i := 1 to 8 do
+        begin
+          write(i:1);
+            for j := 1 to 8 do
+              write(' ', q[i,j]);
+          writeln(' ',i:1)
+        end;
+      writeln('---1---2---3---4---5---6---7---8---');
+      for i := 1 to 8 do
+        case i of
+          1: writeln('     Stardate           ',time:6:1);
+          2: writeln('     Condition          ',cs);
+          3: writeln('     Quadrant           ',q1:1,',',q2:1);
+          4: writeln('     Sector             ',s1:1,',',s2:1);
+          5: writeln('     Photon torpedoes   ',p:2); 
+          6: writeln('     Total energy       ',e+s:4);
+          7: writeln('     Shields            ',s:1);
+          8: writeln('     Klingons remaining ',klingons:2);
+        end
+    end;
+end;
+
+
 procedure placeship(w1:real);
   var
     t8:real; { Time of Travelling }
@@ -581,6 +531,46 @@ begin
       shortrange;
     end;
 9:
+end;
+
+{ KLINGONS SHOOTING }
+procedure enemyfire;
+label 4,5;
+var
+  i,l: integer;
+  h: real;
+  xsq,ysq : real;
+begin
+  if k3<=0 then goto 5;
+
+  if docked=true then
+    begin
+      writeln('Starbase shields protect the enterprise');
+      goto 5;
+    end;
+
+  for i := 1 to 3 do
+    begin
+      if k[i].energy <= 0 then goto 4;
+
+      xsq := sqr(k[i].sectx - s1);
+      ysq := sqr(k[i].secty - s2);
+      h := aint((k[i].energy/sqr(xsq + ysq))*(rnd1 + 2));
+      s := s-round(h);
+      k[i].energy := aint(k[i].energy/(3 + rnd1));
+      writeln(h:3:0,' unit hit on Enterprise from sector ',k[i].sectx:1,',',k[i].secty:1);
+      if s<=0 then begin destruction; goto 5 end;
+      writeln('      <SHIELDS DOWN TO ',S:4,' UNITS>');
+      if h<20 then goto 4;
+      if (rnd1 > 0.6) or (h/s <= 0.02) then goto 4;
+      rd := rand8i;
+      dmg[rd] := dmg[rd]-h/s - 0.5*rnd1;
+      write('Damage control reports:    ''');
+      l := devicename(rd);
+      writeln(' damaged by the hit''');
+    4:
+    end;
+5:
 end;
 
 { Course control begins here }
@@ -1036,108 +1026,6 @@ begin
 5980:
 end;
 
-{ KLINGONS SHOOTING }
-procedure enemyfire;
-label 4,5;
-var
-  i,l: integer;
-  h: real;
-  xsq,ysq : real;
-begin
-  if k3<=0 then goto 5;
-
-  if docked=true then
-    begin
-      writeln('Starbase shields protect the enterprise');
-      goto 5;
-    end;
-
-  for i := 1 to 3 do
-    begin
-      if k[i].energy <= 0 then goto 4;
-
-      xsq := sqr(k[i].sectx - s1);
-      ysq := sqr(k[i].secty - s2);
-      h := aint((k[i].energy/sqr(xsq + ysq))*(rnd1 + 2));
-      s := s-round(h);
-      k[i].energy := aint(k[i].energy/(3 + rnd1));
-      writeln(h:3:0,' unit hit on Enterprise from sector ',k[i].sectx:1,',',k[i].secty:1);
-      if s<=0 then begin destruction; goto 5 end;
-      writeln('      <SHIELDS DOWN TO ',S:4,' UNITS>');
-      if h<20 then goto 4;
-      if (rnd1 > 0.6) or (h/s <= 0.02) then goto 4;
-      rd := rand8i;
-      dmg[rd] := dmg[rd]-h/s - 0.5*rnd1;
-      write('Damage control reports:    ''');
-      l := devicename(rd);
-      writeln(' damaged by the hit''');
-    4:
-    end;
-5:
-end;
-
-{ SHORT RANGE SENSOR SCAN & STARTUP SUBROUTINE }
-procedure shortrange;
-  var
-    cs : array[1..6] of char;
-    i,j : integer;
-begin
-  docked := false;
-  if k3 > 0 then
-    cs := '*RED* '
-  else
-    begin
-      cs := 'GREEN ';
-      if e < E_ENERGY * 0.1 then
-        cs := 'YELLOW';
-    end;
-  for i := s1-1 to s1+1 do
-    for j := s2-1 to s2+1 do
-      if (i>0) and (i<=8) and (j>0) and (j<=8) then
-        begin
-          z3 := checkfeature('>!<', i, j);
-          if z3 = true then
-            begin
-              docked := true ;
-              cs := 'DOCKED';
-              e := E_ENERGY;
-              p := ORGTORPS;
-              writeln('Shields dropped for docking purposes');
-              s := 0
-            end
-        end;
-  
-  if dmg[2]<0 then
-    begin
-      writeln;
-      writeln('*** SHORT RANGE SENSORS ARE OUT ***');
-      writeln;
-    end
-  else
-    begin
-      writeln('---1---2---3---4---5---6---7---8---');
-      for i := 1 to 8 do
-        begin
-          write(i:1);
-            for j := 1 to 8 do
-              write(' ', q[i,j]);
-          writeln(' ',i:1)
-        end;
-      writeln('---1---2---3---4---5---6---7---8---');
-      for i := 1 to 8 do
-        case i of
-          1: writeln('     Stardate           ',time:6:1);
-          2: writeln('     Condition          ',cs);
-          3: writeln('     Quadrant           ',q1:1,',',q2:1);
-          4: writeln('     Sector             ',s1:1,',',s2:1);
-          5: writeln('     Photon torpedoes   ',p:2); 
-          6: writeln('     Total energy       ',e+s:4);
-          7: writeln('     Shields            ',s:1);
-          8: writeln('     Klingons remaining ',klingons:2);
-        end
-    end;
-end;
-
 procedure map;
   var
     i,j,j0 : integer;
@@ -1308,6 +1196,116 @@ begin
   until redo = false;
   1:
 end;
+
+procedure initialize;
+  var
+    i,j : integer;
+    t1 : real;
+  begin
+    lines(11);
+    writeln('                                    ,------*------,');
+    writeln('                    ,-------------   ''---  ------''');
+    writeln('                     ''-------- --''      / /');
+    writeln('                         ,---'' ''-------/ /--,');
+    writeln('                          ''----------------''');
+    writeln;
+    writeln('                    THE USS ENTERPRISE --- NCC-1701');
+    lines(5);
+
+    time := 0.0 + (rnd(20)+20)*100;
+    startdate := time;
+    duration := 25 + rnd(10);
+    docked := false;
+    e := E_ENERGY;
+    p := ORGTORPS;
+    s := 0;
+    starbases := 0;
+    klingons := 0;
+
+    q1 := rnd(8)+1;
+    q2 := rnd(8)+1;
+    s1 := rnd(8)+1;
+    s2 := rnd(8)+1;
+
+    for i := 1 to 9 do
+      begin
+        c[i,1]:=0;  c[i,2]:=0
+      end;
+    c[3,1]:=-1;  c[2,1]:=-1;  c[4,1]:=-1;  c[4,2]:=-1;  c[5,2]:=-1;  c[6,2]:=-1;
+    c[1,2]:=1; c[2,2]:=1; c[6,1]:=1; c[7,1]:=1; c[8,1]:=1; c[8,2]:=1; c[9,2]:=1;
+
+    for i := 1 to 8 do dmg[i] := 0;
+{
+Setup what exists in galaxy . . .
+K3= # Klingons  B3= # Starbases  S3 = # Stars
+}
+  for i := 1 to 8 do
+    for j := 1 to 8 do
+      begin
+        k3 := 0;
+        z[i,j] := 0;
+        t1 := rnd1;
+        if t1 > 0.98 then
+          begin
+            k3 := k3 + 1;
+            klingons := klingons+1
+          end;
+        if t1 > 0.95 then
+          begin
+            k3 := k3 + 1;
+            klingons := klingons+1
+          end;
+        if t1 > 0.80 then
+          begin
+            k3 := k3 + 1;
+            klingons := klingons+1
+          end;
+        
+        b3 := 0;
+        if rnd1 > 0.96 then
+          begin
+            b3 := 1;
+            starbases := starbases+1;
+          end;
+          s3 := rand8i;
+          g[i,j] := k3*100 + b3*10 + s3
+       end; { for j }
+
+    if klingons > duration then
+      duration := klingons+1;
+
+    if starbases = 0 then
+      begin
+        { ADD A KLINGON TO THE SECTOR WITH THE ONLY STARBASE }
+        if g[q1,q2]<200 then
+          begin
+            g[q1,q2] := g[q1,q2]+100;
+            klingons := klingons+1
+          end;
+        starbases := 1;
+        g[q1,q2] := g[q1,q2]+10;
+        q1 := rand8i;
+        q2 := rand8i
+      end;
+
+    orgklings := klingons;
+    writeln('Your orders are as follows:');
+    writeln('''Destroy the ',klingons:1,' Klingon warships which have invaded');
+    writeln('the galaxy before they can attack federation');
+    writeln('headquarters on stardate ',startdate+duration:4:0,'. This gives you ',duration:2);
+    if starbases <> 1 then
+      writeln('days. There are ',starbases:1,' starbases in the galaxy for')
+    else
+      writeln('days. There is ',starbases:1,' starbase in the galaxy for');
+    writeln('resupplying your ship.''');
+    writeln;
+    newquadrant;
+    shortrange;
+  {
+
+}
+end;
+
 
 { MAIN }
 begin
