@@ -170,7 +170,7 @@ PROCEDURE hammurabi
       GOTO 990
     ENDIF
     IF DIEDAVG > 10 OR L < 9 THEN
-      PRINT "Your heavy-handed performance smacks of Nero and IVan IV."
+      PRINT "Your heavy-handed performance smacks of Nero and Ivan IV."
       PRINT "The people (remaining) find you an unpleasant ruler, and,"
       PRINT "frankly, hate your guts!!"
       GOTO 990
@@ -182,7 +182,7 @@ PROCEDURE hammurabi
       PRINT "trivial problems."
       GOTO 990
     ENDIF
-    PRINT "A fantastic performance!!!  Charlemange, Disraeli, and"
+    PRINT "A fantastic performance!!!  Charlemagne, Disraeli, and"
     PRINT "Jefferson combined could not have done better!"
 
 
