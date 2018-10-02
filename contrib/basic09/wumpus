@@ -1,7 +1,10 @@
 PROCEDURE wumpus
      REM *** HUNT THE WUMPUS ***
-     DIM path(5):INTEGER
+     DIM legal:BOOLEAN
      DIM lt,j,k:INTEGER
+     DIM path(5):INTEGER
+     DIM feature(6),origsetup(6):INTEGER
+     DIM cave(20,3):INTEGER
 
      INPUT "INSTRUCTIONS (Y-N)? ", i$
      IF i$="Y" OR i$="y" THEN
@@ -9,7 +12,6 @@ PROCEDURE wumpus
      ENDIF
 
 80   REM *** SET UP CAVE (DODECAHEDRAL NODE LIST) ***
-     DIM cave(20,3):INTEGER
      FOR j=1 TO 20
          FOR k=1 TO 3
              READ cave(j,k)
@@ -20,12 +22,46 @@ PROCEDURE wumpus
      DATA 10,12,19,3,11,13,12,14,20,4,13,15,6,14,16
      DATA 15,17,20,7,16,18,9,17,19,11,18,20,13,16,19
 
-     REM *** LOCATE L ARRAY ITEMS ***
-     REM *** 1-YOU, 2-WUMPUS, 3&4-PITS, 5&6-BATS ***
-     DIM feature(6):INTEGER
-     DIM origsetup(6):INTEGER
+     GOSUB 320
+230  LOOP
+       REM *** SET NO. OF ARROWS ***
+       LET a=5
+       LET lt=feature(1)
+       REM *** RUN THE GAME ***
+       PRINT "HUNT THE WUMPUS"
+       REM *** HAZARD WARNING AND LOCATION ***
+255    GOSUB 585
+       REM *** MOVE OR SHOOT ***
+       GOSUB 670
+       ON o GOTO 280,300
+       REM *** SHOOT ***
+280    GOSUB 715
+       IF duel=0 THEN 255
+       GOTO 310
+       REM *** MOVE ***
+300    GOSUB 975
+       IF duel=0 THEN 255
 
-170  FOR j=1 TO 6
+310    IF duel > 0 THEN
+         REM *** WIN ***
+         PRINT "HEE HEE HEE - THE WUMPUS'LL GET YOU NEXT TIME!!"
+       ELSE
+         REM *** LOSE ***
+         PRINT "HA HA HA - YOU LOSE!"
+       ENDIF
+       FOR j=1 TO 6
+         LET feature(j)=origsetup(j)
+       NEXT j
+       INPUT "SAME SETUP (Y-N)? ", i$
+       IF i$<>"Y" AND i$<>"y" THEN
+         GOSUB 320
+       ENDIF
+     ENDLOOP
+
+320  REM *** LOCATE L ARRAY ITEMS ***
+     REM *** 1-YOU, 2-WUMPUS, 3&4-PITS, 5&6-BATS ***
+
+     FOR j=1 TO 6
          LET feature(j)=INT(20*RND(1))+1
          LET origsetup(j)=feature(j)
      NEXT j
@@ -33,39 +69,11 @@ PROCEDURE wumpus
      REM *** CHECK FOR CROSSOVERS (IE feature(1)=feature(2), ETC) ***
      FOR j=1 TO 6
          FOR k=1 TO 6
-             IF j=k THEN 215
-             IF feature(j)=feature(k) THEN 170
-215      NEXT k
+             IF j=k THEN 330
+             IF feature(j)=feature(k) THEN 320
+330      NEXT k
      NEXT j
-230  REM *** SET NO. OF ARROWS ***
-     a=5
-     LET lt=feature(1)
-     REM *** RUN THE GAME ***
-     PRINT "HUNT THE WUMPUS"
-     REM *** HAZARD WARNING AND LOCATION ***
-255  GOSUB 585
-     REM *** MOVE OR SHOOT ***
-     GOSUB 670
-     ON o GOTO 280,300
-     REM *** SHOOT ***
-280  GOSUB 715
-     IF duel=0 THEN 255
-     GOTO 310
-     REM *** MOVE ***
-300  GOSUB 975
-     IF duel=0 THEN 255
-310  IF duel>0 THEN 335
-     REM *** LOSE ***
-     PRINT "HA HA HA - YOU LOSE!"
-     GOTO 340
-     REM *** WIN ***
-335  PRINT "HEE HEE HEE - THE WUMPUS'LL GET YOU NEXT TIME!!"
-340  FOR j=1 TO 6
-         LET feature(j)=origsetup(j)
-     NEXT j
-     INPUT "SAME SETUP (Y-N)? ", i$
-     IF i$<>"Y" AND i$<>"y" THEN 170
-     GOTO 230
+     RETURN
 
 375  REM *** INSTRUCTIONS ***
      PRINT "WELCOME TO 'HUNT THE WUMPUS'"
@@ -177,43 +185,52 @@ PROCEDURE wumpus
      IF a > 0 THEN
          RETURN
      ENDIF
-880  duel=-1
-885  RETURN
+     LET duel= -1
+     RETURN
 
      REM *** SEE IF ARROW IS AT feature(1) OR AT feature(2)
-895  lt=path(k)
+895  LET lt=path(k)
 900  IF lt=feature(2) THEN
          PRINT "AHA! YOU GOT THE WUMPUS!"
-         LET duel=1
+         LET duel = 1
          RETURN
      ENDIF
-
      IF lt<>feature(1) THEN 840
      PRINT "OUCH! ARROW GOT YOU!"
-     GOTO 880
+     LET duel= -1
+     RETURN
+
 940  REM *** MOVE WUMPUS ROUTINE ***
-     k=INT(4*RND(1))+1
+     LET k=INT(4*RND(1))+1
      IF k<>4 THEN
        LET feature(2)=cave(feature(2),k)
      ENDIF
-955  IF feature(2) = lt THEN
+     IF feature(2) = lt THEN
          PRINT "TSK TSK TSK - WUMPUS GOT YOU!"
-         LET duel=-1
+         LET duel= -1
      ENDIF
-970  RETURN
+     RETURN
 
 975  REM *** MOVE ROUTINE ***
      LET duel=0
-985  REPEAT
+     REPEAT
+       REPEAT
          INPUT "WHERE TO? ", lt
-     UNTIL lt >= 1 AND lt <= 20
-     FOR k=1 TO 3
+       UNTIL lt >= 1 AND lt <= 20
+       LET legal=FALSE
+       FOR k=1 TO 3
          REM *** CHECK IF LEGAL MOVE ***
-         IF cave(feature(1),k)=lt THEN 1045
-     NEXT k
-     IF lt=feature(1) THEN 1045
-     PRINT "NOT POSSIBLE -";
-     GOTO 985
+         IF cave(feature(1),k)=lt THEN
+           LET legal=TRUE
+         ENDIF
+       NEXT k
+       IF lt=feature(1) THEN
+         LET legal=TRUE
+       ENDIF
+       IF legal=FALSE THEN
+         PRINT "NOT POSSIBLE -";
+       ENDIF
+     UNTIL legal
 
      REM *** CHECK FOR HAZARDS ***
 1045 LET feature(1)=lt
@@ -226,19 +243,19 @@ PROCEDURE wumpus
          RETURN
        ENDIF
      ENDIF
-1090 REM *** PIT ***
-     IF lt=feature(3) THEN 1100
-     IF lt<>feature(4) THEN 1120
-1100 PRINT "YYYYIIIIEEEE . . . FELL IN PIT"
-     LET duel=-1
-     RETURN
+     REM *** PIT ***
+     IF lt=feature(3) OR lt=feature(4) THEN
+       PRINT "YYYYIIIIEEEE . . . FELL IN PIT"
+       LET duel= -1
+       RETURN
+     ENDIF
 
      REM *** BATS ***
-1120 IF lt=feature(5) THEN 1130
-     IF lt <> feature(6) THEN 1145
-1130 PRINT "ZAP--SUPER BAT SNATCH! ELSEWHEREVILLE FOR YOU!"
-     LET lt=INT(20*RND(1))+1
-     GOTO 1045
-1145 RETURN
+     IF lt=feature(5) OR lt=feature(6) THEN
+       PRINT "ZAP--SUPER BAT SNATCH! ELSEWHEREVILLE FOR YOU!"
+       LET lt=INT(20*RND(1))+1
+       GOTO 1045
+     ENDIF
+     RETURN
 
      END
