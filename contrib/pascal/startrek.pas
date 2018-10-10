@@ -49,7 +49,7 @@ var
   cmd : command;
   shield, p, energy, eneed, duration,starbases : integer;
   orgklings, klingons : integer;
-  k3,s3,b3,s1,s2, sb1,sb2,i,j,rd : integer;
+  k3,s3,b3,s1,s2,sb1,sb2 : integer;
   r1, r2: integer;
   d4 : real;  { Extra repair time }
   q1,q2,q4,q5 : integer;
@@ -61,21 +61,21 @@ procedure randomize(var block:integer); external;
 
 { Provide a random real 0 <= x < 1 }
 function rnd1:real;
-begin
-  rnd1 := random(randstate);
-end;
+  begin
+    rnd1 := random(randstate);
+  end;
 
 { Provide a random integer 0 <= x < maxval }
 function rnd(maxval:integer):integer;
-begin
-  rnd := trunc(random(randstate) * maxval);
-end;
+  begin
+    rnd := trunc(random(randstate) * maxval);
+  end;
 
 { Return a random integer between 1 and 8 }
-function rand8i:integer;
-begin
-  rand8i := rnd(8) + 1;
-end;
+function rnd8i:integer;
+  begin
+    rnd8i := rnd(8) + 1;
+  end;
 
 { Print N lines }
 procedure lines(n: integer);
@@ -115,8 +115,8 @@ function checkfeature(a: feature; z1,z2: integer) : boolean;
 procedure findempty(var r1,r2:integer);
   begin
     repeat
-      r1 := rand8i;
-      r2 := rand8i;
+      r1 := rnd8i;
+      r2 := rnd8i;
     until checkfeature('   ', r1, r2);
   end;
 
@@ -176,29 +176,29 @@ procedure trimwrite(st: qname);
 
 { End of game }
 procedure resign;
-begin
-  gameison := false;
-  if klingons > 0 then
-    begin
-      writeln('There were ',klingons:1,' Klingon battle cruisers left at');
-      writeln('the end of your mission.');
-    end;
-  writeln;
-  writeln;
-end;
+  begin
+    gameison := false;
+    if klingons > 0 then
+      begin
+        writeln('There were ',klingons:1,' Klingon battle cruisers left at');
+        writeln('the end of your mission.');
+      end;
+    writeln;
+    writeln;
+  end;
 
 procedure outoftime;
-begin
-  writeln('It is stardate ',time:6:1,'.');
-  resign;
-end;
+  begin
+    writeln('It is stardate ',time:6:1,'.');
+    resign;
+  end;
 
 procedure destruction;
-begin
-  writeln;
-  writeln('The Enterprise has been destroyed.  Then federation will be conquered.');
-  outoftime;
-end;
+  begin
+    writeln;
+    writeln('The Enterprise has been destroyed.  Then federation will be conquered.');
+    outoftime;
+  end;
 
 procedure wongame;
   begin
@@ -219,7 +219,7 @@ procedure initquadrant;
         q[i,j] := '   ';
   end;
 
-procedure direction(dX,dY : integer);
+procedure direction(dX,dY:integer);
   label 30;
   var
     res : real;
@@ -238,6 +238,11 @@ procedure direction(dX,dY : integer);
         verti := h + (abs(dY)/abs(dX))
       else
         verti := h + (((abs(dY)-abs(dX))+abs(dY)) / abs(dY));
+    end;
+
+  function distance(dX,dY:integer):real;
+    begin
+      distance := sqrt(sqr(dY) + sqr(dX))
     end;
 
   begin
@@ -282,8 +287,8 @@ procedure direction(dX,dY : integer);
     res := horiz(1);
 
     30:
-    writeln('Direction = ',res:6:5);
-    writeln('Distance = ',sqrt(sqr(dY) + sqr(dX)):6:5)
+    writeln('Direction = ', res:6:5);
+    writeln('Distance = ', distance(dX,dY):6:5)
   end;
 
 { Append Roman numeral to string }
@@ -337,106 +342,103 @@ procedure quadrant(q1,q2: integer; nameonly: boolean; var name: qname);
 
 { Here any time new quadrant entered }
 procedure newquadrant;
-var
-  i,j : integer;
-  g2: qname;
-begin
-  k3 := 0;
-  b3 := 0;
-  s3 := 0;
-  d4 := 0.5 * rnd1;
-  z[q1,q2] := g[q1,q2];
-  {
-  if q1<1 or q1>8 or q2<1 or q2>8 then 2210 ; REM HUH?
-  }
-  quadrant(q1,q2,false,g2);
-  writeln;
-  if startdate <> time then
-    begin
-      write('Now entering ');
-      trimwrite(g2);
-      writeln(' quadrant . . .')
-    end
-  else
-    begin
-      writeln('Your mission begins with your starship located');
-      write('in the galactic quadrant, ');
-      trimwrite(g2);
-      writeln('.');
-    end;
-  writeln;
-  k3 := g[q1,q2] div 100;
-  b3 := g[q1,q2] div 10 - 10*k3;
-  s3 := g[q1,q2] - 100*k3 - 10*b3;
-  if k3 > 0 then
-    begin
-      writeln('Combat area      Condition RED');
-      if shield<=200 then
-        writeln('   Shields dangerously low');
-    end;
-  for i := 1 to 3 do
-    begin
-      k[i].sectx := 0;
-      k[i].secty := 0;
-      k[i].energy := 0
-    end;
-
-  for i := 1 to 8 do
-    for j := 1 to 8 do
-      q[i,j] := '   ';
-
-{ Position Enterprise in quadrant, then place 'K3' klingons, &
-  'B3' starbases, & 'S3' stars elsewhere. }
-  insertfeature('<*>', s1, s2);
-  if k3>0 then
-    for i := 1 to k3 do
+  var
+    i,j : integer;
+    g2: qname;
+  begin
+    k3 := 0;
+    b3 := 0;
+    s3 := 0;
+    d4 := 0.5 * rnd1;
+    z[q1,q2] := g[q1,q2];
+    quadrant(q1,q2,false,g2);
+    writeln;
+    if startdate <> time then
       begin
-        findempty(r1,r2);
-        insertfeature('+K+', r1, r2);
-        k[i].sectx := r1;
-        k[i].secty := r2;
-        k[i].energy := K_ENERGY * (0.5 + rnd1)
+        write('Now entering ');
+        trimwrite(g2);
+        writeln(' quadrant . . .')
+      end
+    else
+      begin
+        writeln('Your mission begins with your starship located');
+        write('in the galactic quadrant, ');
+        trimwrite(g2);
+        writeln('.');
+      end;
+    writeln;
+    k3 := g[q1,q2] div 100;
+    b3 := g[q1,q2] div 10 - 10*k3;
+    s3 := g[q1,q2] - 100*k3 - 10*b3;
+    if k3 > 0 then
+      begin
+        writeln('Combat area      Condition RED');
+        if shield<=200 then
+          writeln('   Shields dangerously low');
+      end;
+    for i := 1 to 3 do
+      begin
+        k[i].sectx := 0;
+        k[i].secty := 0;
+        k[i].energy := 0
       end;
 
-  if b3>0 then
-    begin
-      findempty(sb1,sb2);
-      insertfeature('>!<', sb1, sb2)
-    end;
-  for i := 1 to s3 do
-    begin
-      findempty(r1,r2);
-      insertfeature(' * ', r1, r2)
-    end;
-end;
+    for i := 1 to 8 do
+      for j := 1 to 8 do
+        q[i,j] := '   ';
+
+  { Position Enterprise in quadrant, then place 'K3' klingons, &
+    'B3' starbases, & 'S3' stars elsewhere. }
+    insertfeature('<*>', s1, s2);
+    if k3>0 then
+      for i := 1 to k3 do
+        begin
+          findempty(r1,r2);
+          insertfeature('+K+', r1, r2);
+          k[i].sectx := r1;
+          k[i].secty := r2;
+          k[i].energy := K_ENERGY * (0.5 + rnd1)
+        end;
+
+    if b3>0 then
+      begin
+        findempty(sb1,sb2);
+        insertfeature('>!<', sb1, sb2)
+      end;
+    for i := 1 to s3 do
+      begin
+        findempty(r1,r2);
+        insertfeature(' * ', r1, r2)
+      end;
+  end;
 
 { Print device name and return length }
 function writedevice(rd: integer):integer;
-begin
-  case rd of
-    1: begin write('Warp engines'); writedevice := 12 end;
-    2: begin write('Short range sensors'); writedevice := 19 end;
-    3: begin write('Long range sensors'); writedevice := 18 end;
-    4: begin write('Phaser control'); writedevice := 14 end;
-    5: begin write('Photon tubes'); writedevice := 12 end;
-    6: begin write('Damage control'); writedevice := 14 end;
-    7: begin write('Shield control'); writedevice := 14 end;
-    8: begin write('Library-computer'); writedevice := 16 end;
-  end
-end;
+  begin
+    case rd of
+      1: begin write('Warp engines'); writedevice := 12 end;
+      2: begin write('Short range sensors'); writedevice := 19 end;
+      3: begin write('Long range sensors'); writedevice := 18 end;
+      4: begin write('Phaser control'); writedevice := 14 end;
+      5: begin write('Photon tubes'); writedevice := 12 end;
+      6: begin write('Damage control'); writedevice := 14 end;
+      7: begin write('Shield control'); writedevice := 14 end;
+      8: begin write('Library-computer'); writedevice := 16 end;
+    end
+  end;
 
 { Maneuver energy s/r **}
 procedure useenergy;
-begin
-  energy := energy-eneed-10;
-  if energy < 0 then
-    begin
-      writeln('Shield control supplies energy to complete the maneuver.');
-      shield := shield+energy;
-      energy := 0;
-      if shield <= 0 then shield := 0;
-    end;
-end;
+  begin
+    energy := energy-eneed-10;
+    if energy < 0 then
+      begin
+        writeln('Shield control supplies energy to complete the maneuver.');
+        shield := shield+energy;
+        energy := 0;
+        if shield <= 0 then shield := 0;
+      end;
+  end;
 
 { Short range sensor scan & startup subroutine }
 procedure shortrange;
@@ -498,7 +500,7 @@ procedure shortrange;
           end;
         writeln('---1---2---3---4---5---6---7---8---');
       end;
-end;
+  end;
 
 
 procedure placeship(w1:real);
@@ -518,50 +520,50 @@ procedure placeship(w1:real);
 
 {Exceeded quadrant limits }
 procedure exceedquadrant(x1,x2,w1:real); 
-label 9;
-var
-  x,y: real;
-  x5: boolean;
-begin
-  x := 8*q1 + s1 + eneed*x1;
-  y := 8*q2 + s2 + eneed*x2;
-  q1 := round(x/8 - 0.5);
-  q2 := round(y/8 - 0.5);
-  {
-  s1 := round(x-q1*8 - 0.5);
-  s2 := round(y-q2*8 - 0.5);
-  }
-  s1 := round(x-q1*8);
-  s2 := round(y-q2*8);
-  if s1=0 then begin q1 := q1-1 ; s1 := 8 end;
-  if s2=0 then begin q2 := q2-1 ; s2 := 8 end;
+  label 9;
+  var
+    x,y: real;
+    x5: boolean;
+  begin
+    x := 8*q1 + s1 + eneed*x1;
+    y := 8*q2 + s2 + eneed*x2;
+    q1 := round(x/8 - 0.5);
+    q2 := round(y/8 - 0.5);
+    {
+    s1 := round(x-q1*8 - 0.5);
+    s2 := round(y-q2*8 - 0.5);
+    }
+    s1 := round(x-q1*8);
+    s2 := round(y-q2*8);
+    if s1=0 then begin q1 := q1-1 ; s1 := 8 end;
+    if s2=0 then begin q2 := q2-1 ; s2 := 8 end;
 
-  x5 := false;
-  if q1<1 then begin x5 := true ; q1 := 1 ; s1 := 1 end;
-  if q1>8 then begin x5 := true ; q1 := 8 ; s1 := 8 end;
-  if q2<1 then begin x5 := true ; q2 := 1 ; s2 := 1 end;
-  if q2>8 then begin x5 := true ; q2 := 8 ; s2 := 8 end;
-  if x5=true then
-    begin
-      writeln('Lt. Uhura reports message from starfleet command:');
-      writeln('  ''Permission to attempt crossing of galactic perimeter');
-      writeln('  is hereby *DENIED*.  Shut down your engines.''');
-      writeln('Chief engineer Scott reports  ''Warp engines shut down');
-      writeln('  at sector ',s1:1,',',s2:1,' of quadrant ',q1:1,',',q2:1,'.''');
-      if time > startdate + duration then begin outoftime; goto 9 end;
-    end;
+    x5 := false;
+    if q1<1 then begin x5 := true ; q1 := 1 ; s1 := 1 end;
+    if q1>8 then begin x5 := true ; q1 := 8 ; s1 := 8 end;
+    if q2<1 then begin x5 := true ; q2 := 1 ; s2 := 1 end;
+    if q2>8 then begin x5 := true ; q2 := 8 ; s2 := 8 end;
+    if x5=true then
+      begin
+        writeln('Lt. Uhura reports message from starfleet command:');
+        writeln('  ''Permission to attempt crossing of galactic perimeter');
+        writeln('  is hereby *DENIED*.  Shut down your engines.''');
+        writeln('Chief engineer Scott reports  ''Warp engines shut down');
+        writeln('  at sector ',s1:1,',',s2:1,' of quadrant ',q1:1,',',q2:1,'.''');
+        if time > startdate + duration then begin outoftime; goto 9 end;
+      end;
 
-  if 8*q1+q2 = 8*q4+q5 then
-    placeship(w1)
-  else
-    begin
-      time := time + 1;
-      useenergy;
-      newquadrant;
-      shortrange;
-    end;
-9:
-end;
+    if 8*q1+q2 = 8*q4+q5 then
+      placeship(w1)
+    else
+      begin
+        time := time + 1;
+        useenergy;
+        newquadrant;
+        shortrange;
+      end;
+  9:
+  end;
 
 function phasereffect(energy:real; num:integer):real;
   var
@@ -576,7 +578,7 @@ function phasereffect(energy:real; num:integer):real;
 procedure enemyfire;
   label 4,5;
   var
-    i,l: integer;
+    i,l,rd: integer;
     h: real;
   begin
     if k3<=0 then goto 5;
@@ -599,7 +601,7 @@ procedure enemyfire;
         writeln('      <SHIELDS DOWN TO ',shield:1,' UNITS>');
         if h<20 then goto 4;
         if (rnd1 > 0.6) or (h/shield <= 0.02) then goto 4;
-        rd := rand8i;
+        rd := rnd8i;
         dmg[rd] := dmg[rd]-h/shield - 0.5*rnd1;
         write('Damage control reports:    ''');
         l := writedevice(rd);
@@ -640,24 +642,24 @@ procedure repairs(d6:real);
     end;
   end;
 
+procedure vector(course:real; var x1,x2:real);
+  var
+    j:integer;
+  begin
+    j := round(course - 0.5);
+    x1 := c[j,1] + (c[j+1,1]-c[j,1]) * (course-j);
+    x2 := c[j,2] + (c[j+1,2]-c[j,2]) * (course-j);
+  end;
+
 { Course control begins here }
 procedure coursecontrol;
   label 3360,3370;
   var
-    i,l: integer;
+    i,l,rd: integer;
     c1: real;
     sX: array [1..3] of char;
     x,y,x1,x2, w1: real;
     z3 : boolean;
-
-  procedure vector(course:real; var x1,x2:real);
-    var
-      c1i:integer;
-    begin
-      c1i := round(course - 0.5);
-      x1 := c[c1i,1] + (c[c1i+1,1]-c[c1i,1]) * (c1-c1i);
-      x2 := c[c1i,2] + (c[c1i+1,2]-c[c1i,2]) * (c1-c1i);
-    end;
 
   begin
     write('Course (1-9)? ');
@@ -686,7 +688,7 @@ procedure coursecontrol;
 
     if (w1 < 0) or (w1 > 8) then
       begin
-        writeln('   Chief engineer scott reports ''The engines won''t take warp ',w1:1:1,'!''');
+        writeln('   Chief engineer scott reports ''The engines won''t take warp ', w1:1:1,'!''');
         goto 3370
       end;
     eneed := round(w1 * 8);
@@ -717,7 +719,7 @@ procedure coursecontrol;
 
     if rnd1 < 0.2 then
       begin
-        rd := rand8i;
+        rd := rnd8i;
         write('Damage control report:  ');
         l := writedevice(rd);
         if rnd1 >= 0.6 then
@@ -782,43 +784,43 @@ procedure zeroprint(val : integer);
 
 { Long range sensor scan code }
 procedure longrange;
-var
-  i,j,l: integer;
-  n : array [1..3] of integer; { Known quadrants }
-begin
-  if dmg[DMG_LRS]<0 then
-    writeln('Long range sensors are inoperable')
-  else
-    begin
-      writeln('Long range scan for quadrant ',q1:1,',',q2:1);
-      writeln('-------------------');
-      for i := q1-1 to q1+1 do
-        begin
-          n[1] := -1;
-          n[2] := -2;
-          n[3] := -3;
-          for j := q2-1 to q2+1 do
-            if (i>0) and (i<9) and (j>0) and (j<9) then
-              begin
-                n[j-q2+2] := g[i,j];
-                z[i,j] := g[i,j]
-              end;
-          for l := 1 to 3 do
-            begin
-              write(': ');
-              if n[l] < 0 then
-                write('*** ')
-              else
+  var
+    i,j,l: integer;
+    n : array [1..3] of integer; { Known quadrants }
+  begin
+    if dmg[DMG_LRS]<0 then
+      writeln('Long range sensors are inoperable')
+    else
+      begin
+        writeln('Long range scan for quadrant ',q1:1,',',q2:1);
+        writeln('-------------------');
+        for i := q1-1 to q1+1 do
+          begin
+            n[1] := -1;
+            n[2] := -2;
+            n[3] := -3;
+            for j := q2-1 to q2+1 do
+              if (i>0) and (i<9) and (j>0) and (j<9) then
                 begin
-                  zeroprint(n[l]);
-                  write(' ')
+                  n[j-q2+2] := g[i,j];
+                  z[i,j] := g[i,j]
                 end;
-            end;
-          writeln(':')
-        end;
-      writeln('-------------------')
-    end;
-end;
+            for l := 1 to 3 do
+              begin
+                write(': ');
+                if n[l] < 0 then
+                  write('*** ')
+                else
+                  begin
+                    zeroprint(n[l]);
+                    write(' ')
+                  end;
+              end;
+            writeln(':')
+          end;
+        writeln('-------------------')
+      end;
+  end;
 
 procedure noklingons;
   begin
@@ -844,63 +846,64 @@ procedure killklingon(i:integer);
 
 { Phaser control code begins here }
 procedure phaser;
-label 4670,4680;
-var
-  i,h,tofire: integer;
-  h1: real;
-begin
-  if dmg[DMG_PHA]<0 then
-    begin
-      writeln('Phasers inoperative');
-      goto 4680
-    end;
-
-  if k3<=0 then
-    begin
-      noklingons;
-      goto 4680
-    end;
-
-  if dmg[DMG_COM]<0 then
-    writeln('Computer failure hampers accuracy');
-  write('Phasers locked on target;  ');
-
-  repeat
-    writeln('Energy available = ',energy:4,' units');
-    write('Number of units to fire? ');
-    tofire := readint;
-    if tofire<=0 then
+  label 4670,4680;
+  var
+    i,h,tofire: integer;
+    h1: real;
+  begin
+    if dmg[DMG_PHA]<0 then
       begin
-        writeln('Phaser fire cancelled');
-        goto 4680;
+        writeln('Phasers inoperative');
+        goto 4680
       end;
-  until energy >= tofire;
-  energy := energy - tofire;
-  if dmg[DMG_COM]<0 then tofire := round(tofire * rnd1);
 
-  h1 := tofire / k3;
-  for i := 1 to 3 do
-    begin
-      if k[i].energy <= 0 then goto 4670;
-      h := round(phasereffect(h1, i));
-      if h <= 0.15 * k[i].energy then
-        writeln('Sensors show no damage to enemy at ',k[i].sectx:1,',',k[i].secty:1)
-      else
+    if k3<=0 then
+      begin
+        noklingons;
+        goto 4680
+      end;
+
+    if dmg[DMG_COM]<0 then
+      writeln('Computer failure hampers accuracy');
+    write('Phasers locked on target;  ');
+
+    repeat
+      writeln('Energy available = ',energy:4,' units');
+      write('Number of units to fire? ');
+      tofire := readint;
+      if tofire<=0 then
         begin
-          k[i].energy := k[i].energy - h;
-          writeln(h:1,' Unit hit on klingon at sector ',k[i].sectx:1,',',k[i].secty:1);
-          if k[i].energy <= 0 then
-            begin
-              killklingon(i);
-              if klingons<=0 then wongame;
-            end;
-          writeln('   (Sensors show ',round(k[i].energy):1,' units remaining)');
+          writeln('Phaser fire cancelled');
+          goto 4680;
         end;
-    4670:
-    end;
-    enemyfire;
-  4680:
-end;
+    until energy >= tofire;
+    energy := energy - tofire;
+    if dmg[DMG_COM]<0 then tofire := round(tofire * rnd1);
+
+    h1 := tofire / k3;
+    for i := 1 to 3 do
+      begin
+        if k[i].energy <= 0 then goto 4670;
+        h := round(phasereffect(h1, i));
+        if h <= 0.15 * k[i].energy then
+          writeln('Sensors show no damage to enemy at ',k[i].sectx:1,',',k[i].secty:1)
+        else
+          begin
+            k[i].energy := k[i].energy - h;
+            writeln(h:1,' Unit hit on klingon at sector ',k[i].sectx:1,',',k[i].secty:1);
+            if k[i].energy <= 0 then
+              begin
+                killklingon(i);
+                if klingons<=0 then wongame;
+              end
+            else
+              writeln('   (Sensors show ',round(k[i].energy):1,' units remaining)');
+          end;
+      4670:
+      end;
+      enemyfire;
+    4680:
+  end;
 
 { Photon torpedo code begins here }
 procedure firetorpedo;
@@ -909,181 +912,179 @@ procedure firetorpedo;
     i,x3,y3:integer;
     c1,x,y,x1,x2:real;
     z3 : boolean;
-begin
-  if p<=0 then
-    begin
-      writeln('All photon torpedoes expended');
-      goto 5500
-    end;
-
-  if dmg[DMG_TOR]<0 then
-    begin
-      writeln('Photon tubes are not operational');
-      goto 5500
-    end;
-  4760:
-  write('Photon torpedo course (1-9) ');
-  prompt;
-  readln(c1);
-  if c1 = 9 then c1 := 1;
-  if (c1<1) or (c1>9) then
-    begin
-      writeln('Ensign Chekov reports,  ''Incorrect course data, sir!''');
-      goto 5500
-    end;
-  energy := energy-2;
-  p := p-1;
-  j := round(c1 - 0.5);
-  x1 := c[j,1] + (c[j+1,1]-c[j,1]) * (c1-j);
-  x2 := c[j,2] + (c[j+1,2]-c[j,2]) * (c1-j);
-  x := s1;
-  y := s2;
-  writeln('Torpedo track:');
-
-  repeat
-    x := x + x1;
-    y := y + x2;
-    x3 := round(x);
-    y3 := round(y);
-    if (x3<1) or (x3>8) or (y3<1) or (y3>8) then
-      begin
-        writeln('Torpedo missed');
-        enemyfire;
-        goto 5500
-      end;
-    writeln('               ',x3:1,',',y3:1);
-    z3 := checkfeature('   ', x3, y3);
-  until z3=false;
-{ We have now hit something }
-  z3 := checkfeature('+K+', x3, y3);
-  if z3=true then
-    begin
-      for i := 1 to 3 do
-        if (x3=k[i].sectx) and (y3=k[i].secty) then goto 5190;
-      i := 3; { Couldn't find the klingon }
-      5190:
-      killklingon(i);
-      if klingons<=0 then wongame;
-      goto 5430
-    end;
-  z3 := checkfeature(' * ', x3, y3);
-  if z3=true then
-    begin
-      writeln('Star at ',x3:1,',',y3:1,' absorbed torpedo energy.');
-      goto 5430
-    end;
-
-  z3 := checkfeature('>!<', x3, y3);
-  if z3=true then
   begin
-    writeln('*** STARBASE DESTROYED ***');
-    b3 := b3-1;
-    starbases := starbases-1;
-    insertfeature('   ', x3, y3);
-    updatequadrant;
-    if (starbases > 0) or (klingons > time - startdate - duration) then
+    if p<=0 then
       begin
-        writeln('Starfleet command reviewing your record to consider');
-        writeln('court martial!');
-        docked := false
-      end
-    else
-      begin
-        writeln('That does it, captain!!  You are hereby relieved of command');
-        writeln('and sentenced to 99 stardates at hard labor on cygnus 12!!');
-        resign;
+        writeln('All photon torpedoes expended');
         goto 5500
       end;
+
+    if dmg[DMG_TOR]<0 then
+      begin
+        writeln('Photon tubes are not operational');
+        goto 5500
+      end;
+    4760:
+    write('Photon torpedo course (1-9) ');
+    prompt;
+    readln(c1);
+    if c1 = 9 then c1 := 1;
+    if (c1<1) or (c1>9) then
+      begin
+        writeln('Ensign Chekov reports,  ''Incorrect course data, sir!''');
+        goto 5500
+      end;
+    energy := energy-2;
+    p := p-1;
+    vector(c1, x1, x2);
+    x := s1;
+    y := s2;
+    writeln('Torpedo track:');
+
+    repeat
+      x := x + x1;
+      y := y + x2;
+      x3 := round(x);
+      y3 := round(y);
+      if (x3<1) or (x3>8) or (y3<1) or (y3>8) then
+        begin
+          writeln('Torpedo missed');
+          enemyfire;
+          goto 5500
+        end;
+      writeln('               ',x3:1,',',y3:1);
+      z3 := checkfeature('   ', x3, y3);
+    until z3=false;
+  { We have now hit something }
+    z3 := checkfeature('+K+', x3, y3);
+    if z3=true then
+      begin
+        for i := 1 to 3 do
+          if (x3=k[i].sectx) and (y3=k[i].secty) then goto 5190;
+        i := 3; { Couldn't find the klingon }
+        5190:
+        killklingon(i);
+        if klingons<=0 then wongame;
+        goto 5430
+      end;
+    z3 := checkfeature(' * ', x3, y3);
+    if z3=true then
+      begin
+        writeln('Star at ',x3:1,',',y3:1,' absorbed torpedo energy.');
+        goto 5430
+      end;
+
+    z3 := checkfeature('>!<', x3, y3);
+    if z3=true then
+    begin
+      writeln('*** STARBASE DESTROYED ***');
+      b3 := b3-1;
+      starbases := starbases-1;
+      insertfeature('   ', x3, y3);
+      updatequadrant;
+      if (starbases > 0) or (klingons > time - startdate - duration) then
+        begin
+          writeln('Starfleet command reviewing your record to consider');
+          writeln('court martial!');
+          docked := false
+        end
+      else
+        begin
+          writeln('That does it, captain!!  You are hereby relieved of command');
+          writeln('and sentenced to 99 stardates at hard labor on cygnus 12!!');
+          resign;
+          goto 5500
+        end;
+    end;
+    5430:
+    enemyfire;
+  5500:
   end;
-  5430:
-  enemyfire;
-5500:
-end;
 
 { Shield control }
 procedure shieldcontrol;
-label 2;
-var
-  newval : integer;
-begin
-  if dmg[DMG_SHE]<0 then
-    begin
-      writeln('Shield control inoperable');
-      goto 2
-    end;
-  write('Energy available = ',energy+shield:4);
-  write(' Number of units to shields? ');
-  newval := readint;
-  if (newval<0) or (shield=newval) then
-    begin
-      writeln('<SHIELDS UNCHANGED>');
-      goto 2
-    end;
+  label 2;
+  var
+    newval : integer;
+  begin
+    if dmg[DMG_SHE]<0 then
+      begin
+        writeln('Shield control inoperable');
+        goto 2
+      end;
+    write('Energy available = ',energy+shield:4);
+    write(' Number of units to shields? ');
+    newval := readint;
+    if (newval<0) or (shield=newval) then
+      begin
+        writeln('<SHIELDS UNCHANGED>');
+        goto 2
+      end;
 
-  if newval > energy+shield then
-    begin
-      writeln('Shield control reports  ''This is not the federation treasury.''');
-      writeln('<SHIELDS UNCHANGED>');
-    end
-  else
-    begin
-      energy := energy+shield-newval;
-      shield := newval;
-      writeln('Deflector control room report:');
-      writeln('  ''Shields now at ',shield:1,' units per your command.''');
-    end;
-2:
-end;
+    if newval > energy+shield then
+      begin
+        writeln('Shield control reports  ''This is not the federation treasury.''');
+        writeln('<SHIELDS UNCHANGED>');
+      end
+    else
+      begin
+        energy := energy+shield-newval;
+        shield := newval;
+        writeln('Deflector control room report:');
+        writeln('  ''Shields now at ',shield:1,' units per your command.''');
+      end;
+  2:
+  end;
 
 { DAMAGE CONTROL }
 procedure damagecontrol;
-label 5720,5910,5980;
-var
-  repairyn : char;
-  l, i,rd : integer;
-  d3 : real;
-begin
-  if dmg[DMG_DAM]>=0 then goto 5910;
-  writeln('Damage control report not available');
-  if docked=false then goto 5980;
+  label 5720,5910,5980;
+  var
+    repairyn : char;
+    l, i,rd : integer;
+    d3 : real;
+  begin
+    if dmg[DMG_DAM]>=0 then goto 5910;
+    writeln('Damage control report not available');
+    if docked=false then goto 5980;
 
 5720:
-  d3 := 0;
-  for i := 1 to 8 do
-    if dmg[i]<0 then d3 := d3 + 0.1;
+    d3 := 0;
+    for i := 1 to 8 do
+      if dmg[i]<0 then d3 := d3 + 0.1;
 
-  if d3=0 then
-    goto 5980;
+    if d3=0 then
+      goto 5980;
 
-  writeln;
-  d3 := d3 + d4; { Add random extra repair time }
-  if d3 >= 1 then d3 := 0.9;
+    writeln;
+    d3 := d3 + d4; { Add random extra repair time }
+    if d3 >= 1 then d3 := 0.9;
 
-  writeln('Technicians standing by to effect repairs to your ship;');
-  writeln('Estimated time to repair: ',d3:1:2,' stardates.');
-  write('Will you authorize the repair order (y/n)? ');
-  prompt;
-  readln(repairyn);
-  if repairyn <>'y' then
-    goto 5980;
+    writeln('Technicians standing by to effect repairs to your ship;');
+    writeln('Estimated time to repair: ',d3:1:2,' stardates.');
+    write('Will you authorize the repair order (y/n)? ');
+    prompt;
+    readln(repairyn);
+    if repairyn <>'y' then
+      goto 5980;
 
-  for i := 1 to 8 do
-    if dmg[i]<0 then dmg[i] := 0;
+    for i := 1 to 8 do
+      if dmg[i]<0 then dmg[i] := 0;
 
-  time := time + d3 + 0.1;
+    time := time + d3 + 0.1;
 5910:
-  writeln;
-  writeln('Device             State of repair');
-  for rd := 1 to 8 do
-    begin
-      l := writedevice(rd);
-      tab(25-l);
-      writeln(dmg[rd]:6:2)
-    end;
-  writeln;
-  if docked=true then goto 5720;
+    writeln;
+    writeln('Device             State of repair');
+    for rd := 1 to 8 do
+      begin
+        l := writedevice(rd);
+        tab(25-l);
+        writeln(dmg[rd]:6:2)
+      end;
+    writeln;
+    if docked=true then goto 5720;
 5980:
-end;
+  end;
 
 procedure map(h8:boolean);
   var
@@ -1126,133 +1127,133 @@ procedure map(h8:boolean);
 
 { Show map of star systems }
 procedure galaxymap;
-begin
-  writeln('                        The galaxy');
-  map(false);
-end;
+  begin
+    writeln('                        The galaxy');
+    map(false);
+  end;
 
 { Show visited quadrants }
 procedure galacticrecord;
-begin
-  writeln;
-  writeln('     Computer record of galaxy for quadrant ',q1:1,',',q2:1);
-  writeln;
-  map(true);
-end;
+  begin
+    writeln;
+    writeln('     Computer record of galaxy for quadrant ',q1:1,',',q2:1);
+    writeln;
+    map(true);
+  end;
 
 { Status report }
 procedure statusreport;
-begin
-  writeln('   Status report:');
-  if klingons > 1 then
-    writeln('Klingons left: ',klingons:1)
-  else
-    writeln('Klingon left: ',klingons:1);
-
-  writeln('Mission must be completed in ',
-     (startdate + duration - time):3:1,' stardates');
-  if starbases < 1 then
-    begin
-      writeln('Your stupidity has left you on your own in');
-      writeln('  the galaxy -- You have no starbases left!');
-    end
-  else
-    if starbases < 2 then
-      writeln('The federation is maintaining ',starbases:1,' starbase in the galaxy')
+  begin
+    writeln('   Status report:');
+    if klingons > 1 then
+      writeln('Klingons left: ',klingons:1)
     else
-      writeln('The federation is maintaining ',starbases:1,' starbases in the galaxy');
-end;
+      writeln('Klingon left: ',klingons:1);
+
+    writeln('Mission must be completed in ',
+       (startdate + duration - time):3:1,' stardates');
+    if starbases < 1 then
+      begin
+        writeln('Your stupidity has left you on your own in');
+        writeln('  the galaxy -- You have no starbases left!');
+      end
+    else
+      if starbases < 2 then
+        writeln('The federation is maintaining ',starbases:1,' starbase in the galaxy')
+      else
+        writeln('The federation is maintaining ',starbases:1,' starbases in the galaxy');
+  end;
 
 { Torpedo, base nav, d/d calculator }
 procedure torpedodata;
-var
-  i:integer;
-begin
-  if k3<=0 then
-    noklingons
-  else
-    begin
-      write('From enterprise to Klingon battle cruiser');
-      if k3 > 1 then writeln('s')
-      else writeln;
+  var
+    i:integer;
+  begin
+    if k3<=0 then
+      noklingons
+    else
+      begin
+        write('From enterprise to Klingon battle cruiser');
+        if k3 > 1 then writeln('s')
+        else writeln;
 
-      for i := 1 to 3 do
-        if k[i].energy > 0 then
-          direction(s1-k[i].sectx, s2-k[i].secty);
-    end
-end;
+        for i := 1 to 3 do
+          if k[i].energy > 0 then
+            direction(s1-k[i].sectx, s2-k[i].secty);
+      end
+  end;
 
 procedure dircalc;
-var
-  ix,iy,fx,fy: integer;
-  comma: char;
-begin
-  writeln('Direction/distance calculator:');
-  writeln('You are at quadrant ',q1:1,',',q2:1,' sector ',s1:1,',',s2:1);
-  writeln('Please enter');
-  write('  Initial coordinates (x,y) ');
-  prompt;
-  readln(ix,comma,iy);
-  write('  Final coordinates (x,y) ');
-  prompt;
-  readln(fx,comma,fy);
-  direction(ix-fx, iy-fy)
-end;
+  var
+    ix,iy,fx,fy: integer;
+    comma: char;
+  begin
+    writeln('Direction/distance calculator:');
+    writeln('You are at quadrant ',q1:1,',',q2:1,' sector ',s1:1,',',s2:1);
+    writeln('Please enter');
+    write('  Initial coordinates (x,y) ');
+    prompt;
+    readln(ix,comma,iy);
+    write('  Final coordinates (x,y) ');
+    prompt;
+    readln(fx,comma,fy);
+    direction(ix-fx, iy-fy)
+  end;
 
 procedure navdata;
-begin
-  if b3<>0 then
-    begin
-      writeln('From enterprise to starbase:');
-      direction(s1-sb1, s2-sb2)
-    end
-  else
-    writeln('Mr. Spock reports,  ''Sensors show no starbases in this quadrant.''');
-end;
+  begin
+    if b3<>0 then
+      begin
+        writeln('From enterprise to starbase:');
+        direction(s1-sb1, s2-sb2)
+      end
+    else
+      writeln('Mr. Spock reports,  ''Sensors show no starbases in this quadrant.''');
+  end;
 
 
 procedure librarycomputer;
-label 1;
-var
-  a : integer;
-  redo : boolean;
-begin
-  if dmg[DMG_COM]<0 then
-    begin
-      writeln('Computer disabled');
-      goto 1
-    end;
-  repeat
-    redo := false;
-    write('Computer active and awaiting command? ');
-    a := readint;
-    if a < 0 then
-      goto 1;
+  label 1;
+  var
+    a : integer;
+    redo : boolean;
+  begin
+    if dmg[DMG_COM]<0 then
+      begin
+        writeln('Computer disabled');
+        goto 1
+      end;
+    repeat
+      redo := false;
+      write('Computer active and awaiting command? ');
+      a := readint;
+      if a < 0 then
+        goto 1;
 
-    writeln;
-    case a of
-      0: galacticrecord;
-      1: statusreport;
-      2: torpedodata;
-      3: navdata;
-      4: dircalc;
-      5: galaxymap;
-      otherwise:
-        begin
-          redo := true;
-          writeln('Functions available from library-computer:');
-          writeln('   0 = Cumulative galactic record');
-          writeln('   1 = Status report');
-          writeln('   2 = Photon torpedo data');
-          writeln('   3 = Starbase nav data');
-          writeln('   4 = Direction/distance calculator');
-          writeln('   5 = Galaxy ''region name'' map');
-          writeln
-        end;
-    end;
-  until redo = false;
+      writeln;
+      case a of
+        0: galacticrecord;
+        1: statusreport;
+        2: torpedodata;
+        3: navdata;
+        4: dircalc;
+        5: galaxymap;
+        otherwise:
+          begin
+            redo := true;
+            writeln('Functions available from library-computer:');
+            writeln('   0 = Cumulative galactic record');
+            writeln('   1 = Status report');
+            writeln('   2 = Photon torpedo data');
+            writeln('   3 = Starbase nav data');
+            writeln('   4 = Direction/distance calculator');
+            writeln('   5 = Galaxy ''region name'' map');
+            writeln
+          end;
+      end;
+    until redo = false;
   1:
-end;
+  end;
 
 procedure initialize;
   var
@@ -1280,10 +1281,10 @@ procedure initialize;
     klingons := 0;
 
     { Position ship in the galaxy }
-    q1 := rnd(8)+1;
-    q2 := rnd(8)+1;
-    s1 := rnd(8)+1;
-    s2 := rnd(8)+1;
+    q1 := rnd8i;
+    q2 := rnd8i;
+    s1 := rnd8i;
+    s2 := rnd8i;
 
     for i := 1 to 9 do
       begin
@@ -1324,7 +1325,7 @@ procedure initialize;
               b3 := 1;
               starbases := starbases+1;
             end;
-          s3 := rand8i;
+          s3 := rnd8i;
           g[i,j] := k3*100 + b3*10 + s3
         end; { for j,i }
 
@@ -1341,8 +1342,8 @@ procedure initialize;
           end;
         starbases := 1;
         g[q1,q2] := g[q1,q2]+10;
-        q1 := rand8i;
-        q2 := rand8i
+        q1 := rnd8i;
+        q2 := rnd8i
       end;
 
     orgklings := klingons;
