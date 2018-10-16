@@ -60,6 +60,7 @@
             <phase>pre-site</phase>
             <goals>
               <goal>generate-pdf</goal>
+              <goal>generate-html</goal>
               <!--<goal>generate-html</goal>-->
             </goals>
             <configuration>
@@ -68,6 +69,7 @@
               <sourceDirectory>${basedir}/src</sourceDirectory>
               <foCustomization>src/style.xslt</foCustomization>
               <includes>pascal.xml</includes>
+              <chunkedOutput>false</chunkedOutput>
             </configuration>
           </execution>
         </executions>

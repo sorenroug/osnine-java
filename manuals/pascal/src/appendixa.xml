@@ -34,8 +34,10 @@
     <para>*PROGRAM is not followed by an identifier naming the program.</para>
     <para>When scanning the list of file names after PROGRAM, an identifier naming a file was expected.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-An extra comma was found in a list.</para>
-    <para>-A reserved word is used as a variable name.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>An extra comma was found in a list.</para></listitem>
+      <listitem><para>A reserved word is used as a variable name.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -65,17 +67,19 @@
   <listitem>
     <para>*Token scanned is not a valid next token for the type of scanning being performed. This is a sort of catch all error for whenever the scanned token doesn't fall within the set of tokens that the scanner knows how to handle next. Frequently, this error is preceded by other the error numbers, in this case, the error usually means that due to the other errors for this line the scanner has lost track of what should be happening next in the sentence. If there are no preceding errors for this sentence, then the token is simply invalid for syntax of the statement at this point.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-A semicolon precedes ELSE in an IF</para>
-    <para>-This or previous statement is missing a required semicolon;</para>
-    <para>-An extra END is encountered.</para>
-    <para>-DO is used instead of BEGIN.</para>
-    <para>-Spaces are used within an identifier name.</para>
-    <para>-A keyword has been misspelled.</para>
-    <para>-A comment is malformed.</para>
-    <para>-A string or character constant is malformed.</para>
-    <para>-A malformed double character operator is found such as =&gt; instead of &gt;= or = instead of := or one or more spaces or end of lines occurs between the first and second character.</para>
-    <para>-A comma is missing between elements in a list.</para>
-    <para>-An equal sign is used instead of a colon for declaring a record within a record.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>A semicolon precedes ELSE in an IF</para></listitem>
+      <listitem><para>This or previous statement is missing a required semicolon;</para></listitem>
+      <listitem><para>An extra END is encountered.</para></listitem>
+      <listitem><para>DO is used instead of BEGIN.</para></listitem>
+      <listitem><para>Spaces are used within an identifier name.</para></listitem>
+      <listitem><para>A keyword has been misspelled.</para></listitem>
+      <listitem><para>A comment is malformed.</para></listitem>
+      <listitem><para>A string or character constant is malformed.</para></listitem>
+      <listitem><para>A malformed double character operator is found such as =&gt; instead of &gt;= or = instead of := or one or more spaces or end of lines occurs between the first and second character.</para></listitem>
+      <listitem><para>A comma is missing between elements in a list.</para></listitem>
+      <listitem><para>An equal sign is used instead of a colon for declaring a record within a record.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -110,8 +114,10 @@
     <para>When scanning a type declaration, found PACKED not followed by ARRAY, RECORD, SET, or FILE.</para>
     <para>When scanning a function declaration, found a colon introducing the result type, but no type or an unknown type is found following the colon.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-Using a reserved word as a variable name.</para>
-    <para>-Using a colon instead of equal sign in a type declaration.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>Using a reserved word as a variable name.</para></listitem>
+      <listitem><para>Using a colon instead of equal sign in a type declaration.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -181,7 +187,7 @@
   <term>20: Comma expected.</term>
   <listitem>
     <para>*For this procedure or function call another parameter is expected, and the separating comma is not found.</para>
-    <para>When scanning the list of file names following PROGRAM, the last file name is not followed by a comma or eight parenthesis.</para>
+    <para>When scanning the list of file names following PROGRAM, the last file name is not followed by a comma or right parenthesis.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -201,7 +207,7 @@
   <listitem>
     <para>When scanning a hexadecimal number, found the dollar sign which indicates
     the start of a hexadecimal number, but the current character being scanned should
-    be and is not a hexadecimal digit (O through 9, 'A' through 'F', or 'a' through 'f').</para>
+    be and is not a hexadecimal digit (0 through 9, 'A' through 'F', or 'a' through 'f').</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -370,8 +376,10 @@
   <listitem>
     <para>*Looking for a constant, but did not find a valid token to start a constant, i.e. a plus sign / minus sign, integer constant, real constant, string constant, or an identifier.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-Three periods in a row are found where a double period is intended.</para>
-    <para>-Finding a list when an array index specification is needed.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>Three periods in a row are found where a double period is intended.</para></listitem>
+      <listitem><para>Finding a list when an array index specification is needed.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -380,8 +388,10 @@
     <para>*A statement is being scanned, an identifier was found which is not a procedure or function name, therefore, it must be an assignment statement, but the next token is not ':='.</para>
     <para>*A FOR statement is begin scanned, FOR was followed by an identifier name but was not further followed by ':='.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-An equal sign is found where := is intended.</para>
-    <para>-An identifier is misspelled.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>An equal sign is found where := is intended.</para></listitem>
+      <listitem><para>An identifier is misspelled.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -426,12 +436,13 @@
 <varlistentry>
   <term>58: Factor expected.</term>
   <listitem>
-    <para>*Looking for a factor but didn't find a valid first token, i.e.</para>
-    <para>an integer constant, real constant, string constant, identifier, left parenthesis, Left bracket, or NOT.</para>
+    <para>*Looking for a factor but didn't find a valid first token, i.e. an integer constant, real constant, string constant, identifier, left parenthesis, left bracket, or NOT.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-A real constant is intended but there are no digits before the decimal point.</para>
-    <para>-A malformed string constant is found.</para>
-    <para>-A malformed double character operator is found (see error message 6 for examples).</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>A real constant is intended but there are no digits before the decimal point.</para></listitem>
+      <listitem><para>A malformed string constant is found.</para></listitem>
+      <listitem><para>A malformed double character operator is found (see error message 6 for examples).</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -519,7 +530,7 @@
   </listitem>
 </varlistentry>
 <varlistentry>
-  <term>73: Digit expected during READ or real number.</term>
+  <term>73: Digit expected during READ of real number.</term>
   <listitem>
     <para>*Program called the standard procedure READ to yet a real number, but at some point a digit was required and not found. Check the format of the data being read for bad characters or for a number with no digits before 'E' or no digits after 'E' with its optional sign.</para>
   </listitem>
@@ -671,7 +682,7 @@
 <varlistentry>
   <term>98: OS-9 error on file open, OS-9 error number follows.</term>
   <listitem>
-    <para>*Program has either explicitly or implicitly attempted to open a file, and OS-9 detected an error. The I/O abort flag is enabled / so the program aborts and the OS-9 error is displayed.</para>
+    <para>*Program has either explicitly or implicitly attempted to open a file, and OS-9 detected an error. The I/O abort flag is enabled, so the program aborts and the OS-9 error is displayed.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -692,8 +703,10 @@
   <listitem>
     <para>*A new name is being declared, but the name already has been declared.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-An identifier is misspelled.</para>
-    <para>-An identifier is being used both as a simple type and as an enumeration identifier.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>An identifier is misspelled.</para></listitem>
+      <listitem><para>An identifier is being used both as a simple type and as an enumeration identifier.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -707,8 +720,10 @@
   <listitem>
     <para>*The identifier named is does not have valid attributes for use here.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-A string or character constant is malformed.</para>
-    <para>-Previous errors were found in the declaration of the identifier.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>A string or character constant is malformed.</para></listitem>
+      <listitem><para>Previous errors were found in the declaration of the identifier.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -716,9 +731,11 @@
   <listitem>
     <para>*The identifier found has not been previously defined and this is not a forward pointer declaration.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-An identifier is misspelled.</para>
-    <para>-A keyword is being used as an identifier name.</para>
-    <para>-A string or character constant is malformed.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>An identifier is misspelled.</para></listitem>
+      <listitem><para>A keyword is being used as an identifier name.</para></listitem>
+      <listitem><para>A string or character constant is malformed.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -736,7 +753,7 @@
 <varlistentry>
   <term>107: Incompatible subrange types.</term>
   <listitem>
-    <para>When scanning a simple type, found a subrange* but the token to the right of the '..' is not compatible with the token to the left.</para>
+    <para>When scanning a simple type, found a subrange, but the token to the right of the '..' is not compatible with the token to the left.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -769,7 +786,18 @@
 <varlistentry>
   <term>112: Unimplemented Support Package function.</term>
   <listitem>
-    <para>*The version of the Support Package which is in memory is not the version required for running this program. For example, your program may require floating point arithmetic, and the version of the Support Package which was either found in memory or which was loaded into memory does not support floating point arithmetic. There are three versions of the support package supplied. Either you should unlink the version of Support which is currently loaded in memory and load the required version before re-running this program or, if Support is not currently loaded into memory, you should cause the required version of the support package to have the file name <quote>SUPPORT</quote> in the current execution directory before re-running this program.</para>
+    <para>*The version of the Support Package which is in memory is not
+    the version required for running this program. For example, your
+    program may require floating point arithmetic, and the version of the
+    Support Package which was either found in memory or which was loaded
+    into memory does not support floating point arithmetic. There are
+    three versions of the support package supplied. Either you should
+    unlink the version of Support which is currently loaded in memory
+    and load the required version before re-running this program or,
+    if Support is not currently loaded into memory, you should cause
+    the required version of the support package to have the file name
+    <quote>SUPPORT</quote> in the current execution directory before
+    re-running this program.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -866,26 +894,28 @@
 <varlistentry>
   <term>128: Result type of parameter function does not agree with its declaration.</term>
   <listitem>
-    <para>when scanning a procedure or function call and the parameter being passed is a function which does not have the correct result type.</para>
+    <para>When scanning a procedure or function call and the parameter being passed is a function which does not have the correct result type.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
-  <term>129: Operands are of Incompatible types.</term>
+  <term>129: Operands are of incompatible types.</term>
   <listitem>
     <para>*Left argument of IN operator is not compatible with the right argument.</para>
     <para>*Left argument of a relational operator is not compatible with the right argument.</para>
     <para>*Left argument of the ':=' operator is not compatible with the right argument.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-Attempting to assign a real result to an integer (use TRUNC or ROUND).</para>
-    <para>-Using a slash character instead of DIV.</para>
-    <para>-Using a string constant which is not the exact size required.</para>
-    <para>-An identifier is misspelled.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>Attempting to assign a real result to an integer (use TRUNC or ROUND).</para></listitem>
+      <listitem><para>Using a slash character instead of DIV.</para></listitem>
+      <listitem><para>Using a string constant which is not the exact size required.</para></listitem>
+      <listitem><para>An identifier is misspelled.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
   <term>130: Expression must be a SET type.</term>
   <listitem>
-    <para>*Right argument of IN operator must be a set~type.</para>
+    <para>*Right argument of IN operator must be a set-type.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -918,8 +948,10 @@
     <para>*Plus can only be used as a unary sign for reals or integers or to add reals and/or integers or to union sets.</para>
     <para>*Minus can only be used as a unary sign for reals or: integers or to subtract reals and/or integers or to intersect sets.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-Errors were encountered in the previous declaration of the identifier.</para>
-    <para>-Malformed double character operator (see error message 6 for examples).</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>Errors were encountered in the previous declaration of the identifier.</para></listitem>
+      <listitem><para>Malformed double character operator (see error message 6 for examples).</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -951,8 +983,10 @@
   <listitem>
     <para>*Scanned an index expression but the type of the expression is not compatible with the array object being indexed.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-Errors detected during previous declaration of identifier.</para>
-    <para>-Identifier is misspelled.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>Errors detected during previous declaration of identifier.</para></listitem>
+      <listitem><para>Identifier is misspelled.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -990,8 +1024,10 @@
   <listitem>
     <para>*Scanning a FOR statement, found FOR &lt;ident&gt;:=&lt;expr&gt; and possibly TO/DOWNTO &lt;expr&gt; but &lt;expr&gt; is not compatible with the type of &lt;ident&gt;.</para>
     <para>**Possible common programming errors which might trigger this message include:</para>
-    <para>-Errors detected during previous declaration of identifier.</para>
-    <para>-Identifier is misspelled.</para>
+    <itemizedlist spacing="compact">
+      <listitem><para>Errors detected during previous declaration of identifier.</para></listitem>
+      <listitem><para>Identifier is misspelled.</para></listitem>
+    </itemizedlist>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -1244,7 +1280,25 @@
 <varlistentry>
   <term>187: Stack overflow.</term>
   <listitem>
-    <para>*Not enough local and/or estimated stack was allocated to run the program. This error typically means that the compiler's <quote>best guess</quote> of run-time stack memory requirements is wrong or that you have given overrides for the compiler generated values which are insufficient. The compiler cannot foresee the actual runtime routine calling structure and recursion activity, but its guess is in very many cases adequate. You may, however, from time to time need to use run time option overrides using the <quote><option>l</option></quote> option to override the local stack requirement assignment and the <quote><option>e</option></quote> option to override the estimated or working stack requirement. The required values can be deduced from the procedure table information which is printed at the end of each compilation if you know the actual nature of the run time routine activity, otherwise a <quote>best guess</quote> can be used and the run time option <quote><option>i</option></quote> can be invoked to get actual program statistics which show your override allocation, the actual needs of the program up to its termination point, and the amount of memory free that was overallocated.</para>
+    <para>*Not enough local and/or estimated stack was allocated to
+    run the program. This error typically means that the compiler's
+    <quote>best guess</quote> of run-time stack memory requirements is
+    wrong or that you have given overrides for the compiler generated
+    values which are insufficient. The compiler cannot foresee the
+    actual runtime routine calling structure and recursion activity,
+    but its guess is in very many cases adequate. You may, however,
+    from time to time need to use run time option overrides using the
+    <quote><option>l</option></quote> option to override the local stack
+    requirement assignment and the <quote><option>e</option></quote>
+    option to override the estimated or working stack requirement. The
+    required values can be deduced from the procedure table information
+    which is printed at the end of each compilation if you know
+    the actual nature of the run time routine activity, otherwise
+    a <quote>best guess</quote> can be used and the run time option
+    <quote><option>i</option></quote> can be invoked to get actual program
+    statistics which show your override allocation, the actual needs of
+    the program up to its termination point, and the amount of memory
+    free that was overallocated.</para>
   </listitem>
 </varlistentry>
 <varlistentry>
@@ -1372,7 +1426,17 @@
 <varlistentry>
   <term>207: Ran out of swap buffers.</term>
   <listitem>
-    <para>*While running a Pascal program via one of the interpreter products, there were not enough swap buffers allocated. This situation occurs when a routine is currently running which requires several buffers to be locked since they contain string constant information which may be needed by a buffer containing program code. As a result, the code swapper finds that another swap buffer is required for processing, but a 1 1 available buffers are locked. To cure this, either allocate more swap buffers when running the program, run the program via a non-swapping interpreter, or rewrite the program so that fewer and/or smaller string constants are used in the routine which caused the fault.</para>
+    <para>*While running a Pascal program via one of the interpreter
+    products, there were not enough swap buffers allocated. This situation
+    occurs when a routine is currently running which requires several
+    buffers to be locked since they contain string constant information
+    which may be needed by a buffer containing program code. As a result,
+    the code swapper finds that another swap buffer is required for
+    processing, but all available buffers are locked. To cure this,
+    either allocate more swap buffers when running the program, run the
+    program via a non-swapping interpreter, or rewrite the program so
+    that fewer and/or smaller string constants are used in the routine
+    which caused the fault.</para>
   </listitem>
 </varlistentry>
 <varlistentry>

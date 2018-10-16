@@ -340,7 +340,7 @@ IF interactive(filename) THEN get(filename);
           (i.e. text) files, and the buffer is not loaded with the first
           record when the file is first opened. Both GETs and PUTs will
           be allowed as long as a series of only GETs or a series of only
-          PUTS is done. If you want to do one or more GETs followed by
+          PUTs is done. If you want to do one or more GETs followed by
           one or more PUTs, or vice-versa, you need to call REPOSITION
           in between the two types of calls. Any records currently in
           the file are not destroyed as with REWRITE. For a description

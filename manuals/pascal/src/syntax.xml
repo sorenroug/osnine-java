@@ -30,7 +30,7 @@
 
 <production xml:id="constant_definition"><lhs>constant-definition</lhs> <rhs><nonterminal def="#identifier">identifier</nonterminal> = <nonterminal def="#constant">constant</nonterminal></rhs></production>
 
-<production xml:id="constant"><lhs>constant</lhs> <rhs><nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#constant_identifier">constant-identifier</nonterminal> j <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#constant_identifier">constant-identifier</nonterminal> | <nonterminal def="#string">string</nonterminal></rhs></production>
+<production xml:id="constant"><lhs>constant</lhs> <rhs><nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#unsigned_number">unsigned-number</nonterminal> | <nonterminal def="#constant_identifier">constant-identifier</nonterminal> | <nonterminal def="#sign">sign</nonterminal> <nonterminal def="#constant_identifier">constant-identifier</nonterminal> | <nonterminal def="#string">string</nonterminal></rhs></production>
 
 <production xml:id="unsigned_number"><lhs>unsigned-number</lhs> <rhs><nonterminal def="#unsigned_integer">unsigned-integer</nonterminal> | <nonterminal def="#unsigned_real">unsigned-real</nonterminal> | <nonterminal def="#unsigned_hexinteger">unsigned-hexinteger</nonterminal></rhs></production>
 
@@ -84,7 +84,7 @@
 
 <production xml:id="tag_field"><lhs>tag-field</lhs> <rhs><nonterminal def="#field_identifier">field-identifier</nonterminal> ":" | <nonterminal def="#empty">empty</nonterminal></rhs></production>
 
-<production xml:id="variant"><lhs>variant</lhs> <rhs><nonterminal def="#case_label_list">case-label-list</nonterminal> ":" ( <nonterminal def="#field_list">field-list</nonterminal> | <nonterminal def="#empty">empty</nonterminal></rhs></production>
+<production xml:id="variant"><lhs>variant</lhs> <rhs><nonterminal def="#case_label_list">case-label-list</nonterminal> ":" "(" <nonterminal def="#field_list">field-list</nonterminal> ")" | <nonterminal def="#empty">empty</nonterminal></rhs></production>
 
 <!--
 <production xml:id="case_label_list"><lhs>case-label-list</lhs> <rhs><nonterminal def="#case_label">case-label</nonterminal> { "," <nonterminal def="#case_label">case-label</nonterminal>}</rhs></production>
@@ -117,7 +117,7 @@
 
 <production xml:id="function_declaration"><lhs>function-declaration</lhs> <rhs><nonterminal def="#function_heading">function-heading</nonterminal> <nonterminal def="#block">block</nonterminal></rhs></production>
 
-<production xml:id="function_heading"><lhs>function-heading</lhs> <rhs>FUNCTION <nonterminal def="#identifier">identifier</nonterminal> ":" <nonterminal def="#result_type">result-type</nonterminal> ";" | FUNCTION <nonterminal def="#identifier">identifier</nonterminal> ( <nonterminal def="#formal_parameter_section">formal-parameter-section</nonterminal>} ) ":" <nonterminal def="#result_type">result-type</nonterminal> ";"</rhs></production>
+<production xml:id="function_heading"><lhs>function-heading</lhs> <rhs>FUNCTION <nonterminal def="#identifier">identifier</nonterminal> ":" <nonterminal def="#result_type">result-type</nonterminal> ";" | FUNCTION <nonterminal def="#identifier">identifier</nonterminal> "(" <nonterminal def="#formal_parameter_section">formal-parameter-section</nonterminal> {";" <nonterminal def="#formal_parameter_section">formal-parameter-section</nonterminal>} ")" ":" <nonterminal def="#result_type">result-type</nonterminal> ";"</rhs></production>
 
 <production xml:id="result_type"><lhs>result-type</lhs> <rhs><nonterminal def="#type_identifier">type-identifier</nonterminal></rhs></production>
 
@@ -139,7 +139,7 @@
 
 <production xml:id="component_variable"><lhs>component-variable</lhs> <rhs><nonterminal def="#indexed_variable">indexed-variable</nonterminal> | <nonterminal def="#field_designator">field-designator</nonterminal> | <nonterminal def="#file_buffer">file-buffer</nonterminal></rhs></production>
 
-<production xml:id="indexed_variable"><lhs>indexed-variable</lhs> <rhs><nonterminal def="#array_variable">array-variable</nonterminal> "[" <nonterminal def="#expression">expression</nonterminal> { "," <nonterminal def="#expression">expression</nonterminal>} "]"</rhs></production>
+<production xml:id="indexed_variable"><lhs>indexed-variable</lhs> <rhs><nonterminal def="#array_variable">array-variable</nonterminal> "[" <nonterminal def="#expression">expression</nonterminal> {"," <nonterminal def="#expression">expression</nonterminal>} "]"</rhs></production>
 
 <production xml:id="array_variable"><lhs>array-variable</lhs> <rhs><nonterminal def="#variable">variable</nonterminal></rhs></production>
 
