@@ -11,7 +11,7 @@ SUPER STARTREK - MAY 16,1978
 *** WITH A LITTLE HELP FROM HIS FRIENDS . . .
 }
 
-program startrek(input,syserr);
+program startrek(input);
 
 const
   ORGTORPS = 10;
@@ -49,8 +49,8 @@ var
   cmd : command;
   shield, torpedos, energy, eneed, duration,starbases : integer;
   orgklings, klingons : integer;
-  k3,s3,b3,s1,s2,sb1,sb2 : integer;
-  r1, r2: integer;
+  k3,s3,b3 : integer;
+  s1,s2,sb1,sb2 : integer;
   d4 : real;  { Extra repair time }
   q1,q2: integer;
   docked : boolean;
@@ -96,10 +96,6 @@ procedure tab(num:integer);
 { Insert in string array for quadrant }
 procedure insertfeature(a: feature; z1,z2: integer);
   begin
-    if (z1 < 1) or (z1 >= 9) or (z2 < 1) or (z2 >= 9) then
-      begin
-        writeln(syserr, 'Out of bounds: Placing ',a,' at ',z1:1,',',z2:1);
-      end;
     quadrant[z1,z2] := a
   end;
 
@@ -120,12 +116,60 @@ procedure findempty(var r1,r2:integer);
     until checkfeature('   ', r1, r2);
   end;
 
+procedure inputerr;
+  begin
+    writeln('** Input error - reenter **');
+    readln(input)
+  end;
+
 { Read up to three letters from the user followed by newline }
 procedure readcommand(var cmd:command);
+  label 999;
+  var
+    i: integer;
   begin
     cmd := '   ';
     prompt;  { flush output }
-    readln(cmd[1], cmd[2], cmd[3]);
+    i := 1;
+    while (i <= 3) and not eoln do
+      begin
+        read(cmd[i]);
+        if ord(cmd[i]) = 32 then goto 999;
+        i := i + 1
+      end;
+    readln;
+  999:
+  end;
+
+{ Read integer coordinate separated by a comma }
+procedure readcoord(var x,y:integer);
+  var
+    r : integer;
+    comma: char;
+  begin
+    prompt;  { flush output }
+    repeat
+      ioabort(input, false);
+      readln(x, comma, y);
+      r := ioresult(input);
+      ioabort(input, true);
+      if r <> 0 then
+        inputerr;
+      if comma <> ',' then
+        begin
+          inputerr;
+          r := 20; { Comma expected }
+        end;
+    until r = 0;
+  end;
+
+{ Read a y/n answer. Returns lowercase }
+procedure readyesno(var yesno:char);
+  begin
+    prompt;  { flush output }
+    readln(yesno);
+    if (yesno >= 'A') and (yesno <= 'Z') then
+      yesno := chr(ord(yesno) - ord('A') + ord('a'));
   end;
 
 { Read a floating point number }
@@ -140,10 +184,7 @@ procedure readreal(var value:real);
       r := ioresult(input);
       ioabort(input, true);
       if r <> 0 then
-        begin
-          writeln('** Input error - reenter **');
-          readln(input)
-        end;
+        inputerr;
     until r = 0;
   end;
 
@@ -159,10 +200,7 @@ procedure readint(var value:integer);
       r := ioresult(input);
       ioabort(input, true);
       if r <> 0 then
-        begin
-          writeln('** Input error - reenter **');
-          readln(input)
-        end;
+        inputerr;
     until r = 0;
   end;
 
@@ -242,14 +280,11 @@ function distance(dX,dY:integer):real;
     distance := sqrt(sqr(dY) + sqr(dX))
   end;
 
-procedure direction(dX,dY:integer);
-  label 30;
-  var
-    res : real;
+function direction(dX,dY:integer):real;
 
   function horiz(h:real):real;
     begin
-      if abs(dX)<=abs(dY) then
+     if abs(dX)<=abs(dY) then
         horiz := h + (abs(dX)/abs(dY))
       else
         horiz := h + (((abs(dX)-abs(dY))+abs(dX)) / abs(dX));
@@ -268,55 +303,26 @@ procedure direction(dX,dY:integer);
     if dY<0 then
       begin
         if dX>0 then
-          begin
-            res := verti(3);
-            goto 30
-          end;
-        if dY<>0 then
-          begin
-            res := horiz(5);
-            goto 30
-          end
+          direction := verti(3)
+        else if dY<>0 then
+          direction := horiz(5)
         else
-          begin
-            res := verti(7);
-            goto 30
-          end
-      end;
-
-    if dX<0 then
-      begin
-        res := verti(7);
-        goto 30
-      end;
-
-    if dY>0 then
-      begin
-        res := horiz(1);
-        goto 30
+          direction := verti(7)
       end
-    else
-      if dX=0 then
-        begin
-          res := horiz(5);
-          goto 30
-        end;
-    { dY = 0 and dX >= 0 }
-    res := horiz(1);
-
-    30:
-    writeln('Direction = ', res:6:5);
-    writeln('Distance = ', distance(dX,dY):6:5)
+    else if dX<0 then
+      direction := verti(7)
+    else if dY>0 then
+      direction := horiz(1)
+    else if dX=0 then
+      direction := horiz(5)
+    else { dY = 0 and dX >= 0 }
+      direction := horiz(1);
   end;
 
-{ Append Roman numeral to string }
-procedure appendnum(var name: qname; num: roman);
-  var
-    last,i : integer;
+procedure dirdist(dX,dY:integer);
   begin
-    last := lastletter(name);
-    for i := 1 to 4 do
-      name[last + i] := num[i];
+    writeln('Direction = ', direction(dX,dY):6:5);
+    writeln('Distance = ', distance(dX,dY):6:5)
   end;
 
 { Return quadrant name from Q1,Q2
@@ -324,6 +330,16 @@ procedure appendnum(var name: qname; num: roman);
 procedure namequadrant(q1,q2: integer; nameonly: boolean; var name: qname);
   var
     tmp : qname;
+
+  { Append Roman numeral to string }
+  procedure appendnum(var name: qname; num: roman);
+    var
+      last,i : integer;
+    begin
+      last := lastletter(name);
+      for i := 1 to 4 do
+        name[last + i] := num[i];
+    end;
 
   begin
     If q2 <= 4 then
@@ -363,6 +379,7 @@ procedure newquadrant;
   var
     i,j : integer;
     g2: qname;
+    r1, r2: integer;
   begin
     k3 := 0;
     b3 := 0;
@@ -542,7 +559,7 @@ function phasereffect(energy:real; num:integer):real;
   begin
     dx := k[num].sectx - s1;
     dy := k[num].secty - s2;
-    phasereffect := (energy / distance(dx, dy)) * (rnd1 + 2);
+    phasereffect := (k[num].energy / distance(dx, dy)) * (rnd1 + 2);
   end;
 
 { KLINGONS SHOOTING }
@@ -566,11 +583,11 @@ procedure enemyfire;
 
         h := phasereffect(k[i].energy,i);
         shield := shield - round(h);
-        k[i].energy := aint(k[i].energy/(3 + rnd1));
+        k[i].energy := k[i].energy/(3 + rnd1);
         writeln(h:3:0,' unit hit on Enterprise from sector ',k[i].sectx:1,',',k[i].secty:1);
-        if shield<=0 then begin destruction; goto 5 end;
+        if shield <= 0 then begin destruction; goto 5 end;
         writeln('      <SHIELDS DOWN TO ',shield:1,' UNITS>');
-        if h<20 then goto 4;
+        if h < 20 then goto 4;
         if (rnd1 > 0.6) or (h/shield <= 0.02) then goto 4;
         rd := rnd8i;
         dmg[rd] := dmg[rd]-h/shield - 0.5*rnd1;
@@ -582,35 +599,35 @@ procedure enemyfire;
   5:
   end;
 
+{ Make repairs while travelling. D6 is distance }
 procedure repairs(d6:real);
-  label 2880;
   var
-    d1 : boolean;
+    header : boolean;
     i,l : integer;
   begin
-    d1 := false;
+    header := false;
     if d6 >= 1 then d6 := 1;
 
     for i := 1 to 8 do
       begin
-        if dmg[i]>=0 then goto 2880;
-        dmg[i] := dmg[i]+d6;
-        if (dmg[i] > -0.1) and (dmg[i] < 0) then
+        if dmg[i] < 0 then
           begin
-            dmg[i] := -0.1;
-            goto 2880
-          end;
-      if dmg[i]<0 then goto 2880;
-      if d1=false then
-        begin
-          d1 := true;
-          write('Damage control report:  ');
-        end;
-      tab(8);
-      l := writedevice(i);
-      writeln(' repair completed.');
-2880:
-    end;
+            dmg[i] := dmg[i] + d6;
+            if (dmg[i] > -0.1) and (dmg[i] < 0) then
+              dmg[i] := -0.1;
+            if dmg[i] >= 0 then
+              begin
+                if header = false then
+                  begin
+                    header := true;
+                    write('Damage control report:  ')
+                  end;
+                tab(8);
+                l := writedevice(i);
+                writeln(' repair completed.')
+              end
+          end
+      end
   end;
 
 procedure vector(course:real; var x1,x2:real);
@@ -643,10 +660,6 @@ procedure coursecontrol;
       y := 8*q2 + s2 + eneed*x2;
       q1 := round(x/8 - 0.5);
       q2 := round(y/8 - 0.5);
-      {
-      s1 := round(x-q1*8 - 0.5);
-      s2 := round(y-q2*8 - 0.5);
-      }
       s1 := round(x-q1*8);
       s2 := round(y-q2*8);
       if s1=0 then begin q1 := q1-1 ; s1 := 8 end;
@@ -677,6 +690,22 @@ procedure coursecontrol;
           shortrange;
         end;
     9:
+    end;
+
+  procedure enemymove;
+    var
+      i : integer;
+      r1, r2: integer;
+    begin
+      for i := 1 to k3 do
+        if k[i].energy <> 0 then
+          begin
+            insertfeature('   ', k[i].sectx, k[i].secty);
+            findempty(r1,r2);
+            k[i].sectx := r1;
+            k[i].secty := r2;
+            insertfeature('+K+', r1, r2);
+          end;
     end;
 
   begin
@@ -720,16 +749,7 @@ procedure coursecontrol;
       end;
 
     { Klingons move/fire on moving starship . . . }
-    for i := 1 to k3 do
-      if k[i].energy <> 0 then
-        begin
-          insertfeature('   ', k[i].sectx, k[i].secty);
-          findempty(r1,r2);
-          k[i].sectx := r1;
-          k[i].secty := r2;
-          insertfeature('+K+', r1, r2);
-        end;
-
+    enemymove;
     enemyfire;
     repairs(w1);
 
@@ -1078,8 +1098,7 @@ procedure damagecontrol;
     writeln('Technicians standing by to effect repairs to your ship;');
     writeln('Estimated time to repair: ',estimate:1:2,' stardates.');
     write('Will you authorize the repair order (y/n)? ');
-    prompt;
-    readln(repairyn);
+    readyesno(repairyn);
     if repairyn <>'y' then
       goto 5980;
 
@@ -1194,25 +1213,22 @@ procedure torpedodata;
 
         for i := 1 to 3 do
           if k[i].energy > 0 then
-            direction(s1-k[i].sectx, s2-k[i].secty);
+            dirdist(s1-k[i].sectx, s2-k[i].secty);
       end
   end;
 
 procedure dircalc;
   var
     ix,iy,fx,fy: integer;
-    comma: char;
   begin
     writeln('Direction/distance calculator:');
     writeln('You are at quadrant ',q1:1,',',q2:1,' sector ',s1:1,',',s2:1);
     writeln('Please enter');
     write('  Initial coordinates (x,y) ');
-    prompt;
-    readln(ix,comma,iy);
+    readcoord(ix, iy);
     write('  Final coordinates (x,y) ');
-    prompt;
-    readln(fx,comma,fy);
-    direction(ix-fx, iy-fy)
+    readcoord(fx, fy);
+    dirdist(ix-fx, iy-fy)
   end;
 
 procedure navdata;
@@ -1220,7 +1236,7 @@ procedure navdata;
     if b3<>0 then
       begin
         writeln('From enterprise to starbase:');
-        direction(s1-sb1, s2-sb2)
+        dirdist(s1-sb1, s2-sb2)
       end
     else
       writeln('Mr. Spock reports,  ''Sensors show no starbases in this quadrant.''');
