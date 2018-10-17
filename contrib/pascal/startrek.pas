@@ -553,13 +553,13 @@ procedure placeship(w1:real);
     shortrange;
   end;
 
-function phasereffect(energy:real; num:integer):real;
+function phasereffect(available:real; num:integer):real;
   var
     dx,dy : integer;
   begin
     dx := k[num].sectx - s1;
     dy := k[num].secty - s2;
-    phasereffect := (k[num].energy / distance(dx, dy)) * (rnd1 + 2);
+    phasereffect := (available / distance(dx, dy)) * (rnd1 + 2);
   end;
 
 { KLINGONS SHOOTING }
