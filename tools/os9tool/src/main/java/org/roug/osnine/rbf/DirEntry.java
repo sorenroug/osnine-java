@@ -28,7 +28,7 @@ public class DirEntry {
     }
 
     public boolean isDeleted() {
-        return name.charAt(0) == 0;
+        return name.length() == 0;
     }
 }
 

@@ -46,6 +46,22 @@ public class DiskTest {
     }
 
     /**
+     * Get the LSN of the CMDS directory.
+     */
+    @Test
+    public void getLSNforSlashCMDS() throws Exception {
+        assertEquals(0x4E, disk.getLSNForPath("/CMDS"));
+    }
+
+    /**
+     * Get the LSN of the CMDS directory.
+     */
+    @Test
+    public void getLSNforDir() throws Exception {
+        assertEquals(0xD4, disk.getLSNForPath("/CMDS/dir"));
+    }
+
+    /**
      * Get the LSN of the top directory.
      */
     @Test

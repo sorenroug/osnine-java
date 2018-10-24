@@ -48,25 +48,58 @@ public class Disk {
     }
 
     /**
-     * Get the LSN for a path like /cmds.
-     * Device part has been removed already.
+     * Returns the part after the first "/".
+     * If there is no "/" then return null.
      */
-    public int getLSNForPath(String path) {
-        int rootLSN;
+    private String skipNextSegment(String path) {
+        int i = path.indexOf('/');
+        if (i == -1) return null;
+        return path.substring(i + 1);
+    }
 
-        if ("".equals(path) || "/".equals(path)) {
-            return getRootLSN();
-        }
-        rootLSN = getRootLSN();
-        FileDescriptor rootDesc = readFileDescriptor(rootLSN);
+    /**
+     * Returns the part up to the first "/"
+     * Returns the full segment if there is no "/".
+     */
+    private String getNextSegment(String path) {
+        int i = path.indexOf('/');
+        if (i == -1) return path;
+        return path.substring(0, i);
+    }
+
+    private int getLSNForSegment(String segment, int startLSN) {
+        FileDescriptor rootDesc = readFileDescriptor(startLSN);
         PathDescriptor p = new PathDescriptor(this, rootDesc, 0x81);
 
         DirEntry de;
         while ((de = p.readNextDirEntry()) != null) {
             if (de.isDeleted()) continue;
-            if (path.equalsIgnoreCase(de.getName())) return de.getLSN();
+            if (segment.equalsIgnoreCase(de.getName())) return de.getLSN();
         }
-        return getRootLSN();
+        return -1;
+    }
+
+    /**
+     * Get the LSN for a path like /cmds.
+     * Device part has been removed already.
+     */
+    public int getLSNForPath(String path) {
+        int startLSN;
+        String segment;
+
+        if (path == null) return -1;
+        if (path.startsWith("/")) path = path.substring(1);
+        if ("".equals(path)) {
+            return getRootLSN();
+        }
+
+        startLSN = getRootLSN();
+        do {
+            segment = getNextSegment(path);
+            startLSN = getLSNForSegment(segment, startLSN);
+            path = skipNextSegment(path);
+        } while (path != null);
+        return startLSN;
     }
 
     /**
@@ -106,6 +139,7 @@ public class Disk {
         int l;
         for (l = 0; l < DirEntry.NAMELEN; l++) {
             byte c = diskBuffer.get(location + l);
+            if (c == 0) break;
             if (c < 0) {
                 namebuf[l] = (char) (c & 0x7F);
                 break;
