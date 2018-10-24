@@ -83,7 +83,7 @@ public class Disk {
      * Get the LSN for a path like /cmds.
      * Device part has been removed already.
      */
-    public int getLSNForPath(String path) {
+    int getLSNForPath(String path) {
         int startLSN;
         String segment;
 
@@ -109,6 +109,13 @@ public class Disk {
         SectorSupport sectorBlock = readSector(lsn);
         FileDescriptor desc = new FileDescriptor(sectorBlock);
         return desc;
+    }
+
+    public RBFInputStream openFile(String path) {
+        int startLSN = getLSNForPath(path);
+        FileDescriptor fileDesc = readFileDescriptor(startLSN);
+        RBFInputStream is = new RBFInputStream(this, fileDesc, 0x01);
+        return is;
     }
 
     /**

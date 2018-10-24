@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import java.io.IOException;
 
 public class DiskTest {
 
@@ -93,5 +94,26 @@ public class DiskTest {
 
         p = fd.getLSNFromPosition(0x700);
         assertEquals(-1, p);
+    }
+
+    /**
+     * Load the startup file.
+     * Content:
+     * printerr /d0/sys/errmsg
+     * setime &lt;/term
+     */
+    @Test
+    public void getStartupFile() throws IOException {
+        RBFInputStream is = disk.openFile("startup");
+        int c = is.read();
+        assertEquals('p', c);
+        c = is.read();
+        assertEquals('r', c);
+        byte[] buffer = new byte[200];
+        int size = is.read(buffer);
+        assertEquals(36, size);
+        String b = new String(buffer, 0, size);
+        assertEquals("interr /d0/sys/errmsg\rsetime </term\r", b);
+        is.close();
     }
 }
