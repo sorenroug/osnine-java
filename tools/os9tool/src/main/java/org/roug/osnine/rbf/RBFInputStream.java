@@ -29,6 +29,9 @@ public class RBFInputStream extends InputStream {
     public RBFInputStream(Disk disk, FileDescriptor fd, int attrs) {
         this.disk = disk;
         this.fd = fd;
+        if ((fd.getAttributes() & 0x80) != 0) {
+            throw new RuntimeException("Attempting to open directory as file");
+        }
         position = 0;
         sectorInx = 0;
     }

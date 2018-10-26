@@ -3,7 +3,7 @@ package org.roug.osnine.rbf;
 /**
  * Represents an open file.
  */
-public class PathDescriptor {
+public class RBFDirectory {
 
     /** Reference to the harddisk the file resides on.  */
     private Disk disk;
@@ -18,9 +18,12 @@ public class PathDescriptor {
      *
      * @param attrs Access attributes, r/w, directory access
      */
-    public PathDescriptor(Disk disk, FileDescriptor fd, int attrs) {
+    public RBFDirectory(Disk disk, FileDescriptor fd, int attrs) {
         this.disk = disk;
         this.fd = fd;
+        if ((fd.getAttributes() & 0x80) == 0) {
+            throw new RuntimeException("Attempting to open file as directory");
+        }
         position = 0;
     }
 
@@ -37,11 +40,13 @@ public class PathDescriptor {
      */
     public DirEntry readNextDirEntry() {
         DirEntry de = new DirEntry();
-        int lsn = fd.getLSNFromPosition(position);
-        if (lsn == -1) return null;
-        int diskLocation = lsn * 256 + (position & 0xFF);
-        disk.readDirEntry(de, diskLocation);
-        position += 32;
+        do { 
+            int lsn = fd.getLSNFromPosition(position);
+            if (lsn == -1) return null;
+            int diskLocation = lsn * 256 + (position & 0xFF);
+            disk.readDirEntry(de, diskLocation);
+            position += 32;
+        } while (de.isDeleted());
         return de;
     }
 }

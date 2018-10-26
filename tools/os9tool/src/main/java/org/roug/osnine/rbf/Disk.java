@@ -69,7 +69,7 @@ public class Disk {
 
     private int getLSNForSegment(String segment, int startLSN) {
         FileDescriptor rootDesc = readFileDescriptor(startLSN);
-        PathDescriptor p = new PathDescriptor(this, rootDesc, 0x81);
+        RBFDirectory p = new RBFDirectory(this, rootDesc, 0x81);
 
         DirEntry de;
         while ((de = p.readNextDirEntry()) != null) {
@@ -118,6 +118,12 @@ public class Disk {
         return is;
     }
 
+    public RBFDirectory openDirectory(String path) {
+        int startLSN = getLSNForPath(path);
+        FileDescriptor fileDesc = readFileDescriptor(startLSN);
+        RBFDirectory is = new RBFDirectory(this, fileDesc, 0x81);
+        return is;
+    }
     /**
      * Write a new disk name to the disk image.
      */
@@ -146,8 +152,10 @@ public class Disk {
         int l;
         for (l = 0; l < DirEntry.NAMELEN; l++) {
             byte c = diskBuffer.get(location + l);
-            if (c == 0) break;
-            if (c < 0) {
+            if (c == 0) {
+                l -= 1;
+                break;
+            } else if (c < 0) {
                 namebuf[l] = (char) (c & 0x7F);
                 break;
             } else

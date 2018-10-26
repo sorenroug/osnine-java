@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import java.io.IOException;
 
 public class DiskTest {
@@ -18,6 +20,9 @@ public class DiskTest {
         disk = new Disk(resourcefile);
         assertNotNull(disk);
     }
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     /**
      * Get the root LSN of the disk.
@@ -85,7 +90,7 @@ public class DiskTest {
     @Test
     public void getLSNforPosition() {
         FileDescriptor fd = disk.readFileDescriptor(0x4E);
-        //PathDescriptor pathDesc = new PathDescriptor(disk, fd, 0x80);
+        //RBFDirectory pathDesc = new RBFDirectory(disk, fd, 0x80);
         int p = fd.getLSNFromPosition(0);
         assertEquals(0x4F, p);
 
@@ -115,5 +120,28 @@ public class DiskTest {
         String b = new String(buffer, 0, size);
         assertEquals("interr /d0/sys/errmsg\rsetime </term\r", b);
         is.close();
+    }
+
+    /**
+     * Open the CMDS directory.
+     */
+    @Test
+    public void getCmdsDirectory() throws IOException {
+        RBFDirectory d = disk.openDirectory("CMDS");
+        DirEntry de = null;
+        for (int i = 0; i < 15; i++) {
+            de = d.readNextDirEntry();
+        }
+        assertEquals("dir", de.getName());
+    }
+
+    /**
+     * Open the startup file as a directory.
+     * Must cause an exception.
+     */
+    @Test
+    public void getStartupAsDirectory() throws IOException {
+        exception.expect(RuntimeException.class);
+        RBFDirectory d = disk.openDirectory("startup");
     }
 }
