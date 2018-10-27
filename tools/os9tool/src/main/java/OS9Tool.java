@@ -1,6 +1,9 @@
 import java.io.FileInputStream;
 import java.util.Arrays;
 import org.roug.osnine.format.Format;
+import org.roug.osnine.rbf.RBFDirectory;
+import org.roug.osnine.rbf.DirEntry;
+import org.roug.osnine.rbf.Disk;
 
 public class OS9Tool {
 
@@ -30,9 +33,23 @@ public class OS9Tool {
             CreateModule cm = new CreateModule(extraArgs);
         } else if ("format".equals(subCommand)) {
             Format cm = new Format(extraArgs);
+        } else if ("dir".equals(subCommand) || "ls".equals(subCommand)) {
+            Dir d = new Dir(extraArgs[0], extraArgs[1]);
         } else {
             usage("Unknown subcommand: " + subCommand);
         }
 
+    }
+}
+
+class Dir {
+
+    Dir(String diskName, String dirName) throws Exception {
+        Disk disk = new Disk(diskName);
+        RBFDirectory d = disk.openDirectory(dirName);
+        DirEntry de = null;
+        while ((de = d.readNextDirEntry()) != null) {
+            System.out.println(de.getName());
+        };
     }
 }

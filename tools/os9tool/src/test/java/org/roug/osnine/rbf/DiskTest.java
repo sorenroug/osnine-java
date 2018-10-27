@@ -140,8 +140,18 @@ public class DiskTest {
      * Must cause an exception.
      */
     @Test
-    public void getStartupAsDirectory() throws IOException {
+    public void openStartupAsDirectory() throws IOException {
         exception.expect(RuntimeException.class);
         RBFDirectory d = disk.openDirectory("startup");
+    }
+
+    /**
+     * Open the CMDS directory as a file.
+     * Must cause an exception.
+     */
+    @Test
+    public void openCMDSAsFile() throws IOException {
+        exception.expect(RuntimeException.class);
+        RBFInputStream is = disk.openFile("CMDS");
     }
 }
