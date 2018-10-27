@@ -11,8 +11,9 @@
  <subtitle>For Use with OS-9 Level One and OS-9 Level Two</subtitle>
 
 <copyright>
-  <year>2003</year>
-  <holder>The CoCo/Dragon Community</holder>
+  <year>1980</year>
+  <year>1983</year>
+  <holder>Microware Systems Corporation</holder>
 </copyright>
 
  <legalnotice>
@@ -21,14 +22,14 @@
 
 <revhistory>
   <revision>
-    <revnumber>Org.</revnumber>
+    <revnumber>F</revnumber>
     <date>1983</date>
-    <revremark>Original OS-9 Level One Guide</revremark>
+    <revremark>Original OS-9 Level One Guide from Dragon Data</revremark>
   </revision>
   <revision>
-    <revnumber>A</revnumber>
-    <date>March 2003</date>
-    <revremark>Updated with the changes made by Boisy Pitre</revremark>
+    <revnumber>G</revnumber>
+    <date>1983</date>
+    <revremark>Merged OS-9 Level One and Two Guide from Motorola</revremark>
   </revision>
 </revhistory>
 
