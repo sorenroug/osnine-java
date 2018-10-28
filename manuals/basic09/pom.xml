@@ -60,7 +60,7 @@
             <phase>pre-site</phase>
             <goals>
               <goal>generate-pdf</goal>
-              <!--<goal>generate-html</goal>-->
+              <goal>generate-html</goal>
             </goals>
             <configuration>
               <!-- per execution configuration -->

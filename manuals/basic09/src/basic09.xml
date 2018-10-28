@@ -1757,8 +1757,7 @@ occurs before the <quote>no</quote> you are looking for, <quote>normal</quote> w
 Examples:
 
 <informalexample>
-<screen>
-c/xval/yval/
+<screen>c/xval/yval/
 c*,GOSUB 5300,GOSUB 5500
 </screen>
 </informalexample>
@@ -1775,8 +1774,7 @@ c*,GOSUB 5300,GOSUB 5500
 <para>
 To run a <productname>BASIC09</productname> procedure, enter:
 
-<screen>
-RUN <replaceable>procname</replaceable>
+<screen>RUN <replaceable>procname</replaceable>
 </screen>
 
 If the procedure you want to run was the last procedure edited, listed,
@@ -1789,14 +1787,13 @@ they can be given on the same
 command line, however they must all be constant numbers or strings, as
 appropriate, and must be given in the correct order. For example:
 
-<screen>
-RUN add(4,7)
+<screen>RUN add(4,7)
 </screen>
 
 is used to call a program that expects parameter, such as
 <programlisting>
 PROCEDURE add
-PARAMETER a,b                a,b will receive the values 4,7
+PARAMETER a,b                <lineannotation>a,b will receive the values 4,7</lineannotation>
 PRINT a+b
 END
 </programlisting>
@@ -2742,8 +2739,7 @@ of some operator or function has a different type than its operands.
 An example is the <quote>less than</quote> operator. Here is an example:
 
 <informalexample>
-<programlisting>
-24 &lt; 100
+<programlisting>24 &lt; 100
 </programlisting>
 </informalexample>
 
@@ -4073,19 +4069,19 @@ Here are a few examples of using the shell from <productname>BASIC09</productnam
 
 <informalexample>
 <programlisting>
-SHELL "copy file1 file2"         sequential execution
+SHELL "copy file1 file2"            <lineannotation>sequential execution</lineannotation>
 
-SHELL "copy file1 file2&amp;"       concurrent execution
+SHELL "copy file1 file2&amp;"           <lineannotation>concurrent execution</lineannotation>
 
-SHELL "edit document"             calling text editor
+SHELL "edit document"               <lineannotation>calling text editor</lineannotation>
 
-SHELL "asm source o=obj ! spool &amp;"        concurrent assembly
+SHELL "asm source o=obj ! spool &amp;"  <lineannotation>concurrent assembly</lineannotation>
 
 N:=5
 SHELL "kill "+STR$(N)
 
-file$ := "/d1/batch_jobs"         concurrent execution of a
-SHELL file$ + " -p >/p &amp;"       batch procedure file
+file$ := "/d1/batch_jobs"           <lineannotation>concurrent execution of a</lineannotation>
+SHELL file$ + " -p >/p &amp;"           <lineannotation>batch procedure file</lineannotation>
 </programlisting>
 </informalexample>
 </para></sect2>
