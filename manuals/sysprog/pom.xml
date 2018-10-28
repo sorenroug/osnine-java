@@ -11,7 +11,7 @@
   </parent>
 
   <groupId>roug.org.osnine</groupId>
-  <artifactId>os9sysprog-rev-h</artifactId>
+  <artifactId>sysprog</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>OS-9 System Programmer's Manual</name>
   <packaging>pom</packaging>

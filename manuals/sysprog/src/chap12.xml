@@ -1256,7 +1256,7 @@ free blocks of the given size.
         <varlistentry>
           <term>ASSEMBLER CALL:</term>
           <listitem>
-            <para>OS9 P$GBlkMp</para>
+            <para>OS9 F$GBlkMp</para>
           </listitem>
         </varlistentry>
         <varlistentry>
