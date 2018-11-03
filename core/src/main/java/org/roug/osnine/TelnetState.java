@@ -29,7 +29,10 @@ enum TelnetState {
                 case ESC_CHAR:
                     return ESCAPE;
                 default:
-                    handler.dataReceived(receiveData);
+                    if (receiveData > 127)
+                        handler.dataReceived('?');
+                    else
+                        handler.dataReceived(receiveData);
                     return NORMAL;
             }
         }

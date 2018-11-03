@@ -113,5 +113,54 @@ public class MemorySegmentTest {
         assertEquals(0x1B, newMemory.load(0x100));
     }
 
+
+    @Test
+    public void remapWrite() {
+        Bus8Motorola bus = new BusStraight();
+
+        MemorySegment newMemory = new RandomAccessMemory(0, bus, "0x300");
+        bus.addMemorySegment(newMemory);
+        newMemory.burn(0x100, 0xAA);
+        newMemory.burn(0x105, 0xBA);
+        assertEquals(0xAA, newMemory.load(0x100));
+
+        MemoryRemap mapper = new MemoryRemap(0x500, bus, "0x10", "0x100");
+        bus.addMemorySegment(mapper);
+        assertEquals(0xAA, mapper.load(0x500));
+
+        // Test that it is read/write
+        newMemory.store(0x100, 0x34);
+        assertEquals(0x34, newMemory.load(0x100));
+        // Test location 0x105
+        assertEquals(0xBA, bus.read(0x505));
+        bus.write(0x505, 0x77);
+        assertEquals(0x77, newMemory.load(0x105));
+        assertEquals(0x77, bus.read(0x505));
+    }
+
+    @Test
+    public void remapRead() {
+        Bus8Motorola bus = new BusStraight();
+
+        // Add memory that starts at addr 0
+        MemorySegment newMemory = new ReadOnlyMemory(0, bus, "0x300");
+        bus.addMemorySegment(newMemory);
+        newMemory.burn(0x100, 0xAA);
+        newMemory.burn(0x105, 0xBA);
+        assertEquals(0xAA, newMemory.load(0x100));
+        assertEquals(0xAA, bus.read(0x100));
+
+        // Place a remapper at 0x500 to point at 0x100
+        MemoryRemap mapper = new MemoryRemap(0x500, bus, "0x10", "0x100");
+        bus.addMemorySegment(mapper);
+        assertEquals(0xAA, mapper.load(0x500));
+        assertEquals(0xAA, bus.read(0x500));
+        // Test that it is Read-only
+        newMemory.store(0x100, 0x34);
+        assertEquals(0xAA, newMemory.load(0x100));
+        // Test location 0x105
+        assertEquals(0xBA, bus.read(0x505));
+    }
+
 }
 
