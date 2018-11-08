@@ -3,11 +3,17 @@ package org.roug.osnine.gui;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * Keyboard listener.
  * This class interfaces to the GUI and tells the PIA what keys are pressed.
  */
 public class Keyboard implements KeyListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Keyboard.class);
 
     /** Interface to the 6821 PIA. */
     private PIA6821MO5 pia;
@@ -21,9 +27,9 @@ public class Keyboard implements KeyListener {
         this.pia = pia;
         int i;
 
-        this.ftable = new int[128];
+        this.ftable = new int[PIA6821MO5.KEYS];
 
-        for (i = 0; i < 128; i++) {
+        for (i = 0; i < PIA6821MO5.KEYS; i++) {
             ftable[i] = 0;
         }
         /* STOP */
@@ -96,30 +102,24 @@ public class Keyboard implements KeyListener {
         ftable[0x72] = KeyEvent.VK_F11 + EVENT;//Basic
 
         /* CNT RAZ */
-        ftable[0x6A] = 17+ EVENT;//CTRL
-        ftable[0x66] = 27+ EVENT;//ESCAPE = raz
-
+        ftable[0x6A] = 17 + EVENT;//CTRL
+        ftable[0x66] = 27 + EVENT;//ESCAPE = raz
     }
 
     public void keyTyped(KeyEvent e) {
     }
 
     public void keyMemory(int key, boolean press) {
-        if(press)
-            pia.setKey(key);
-        else
-            pia.remKey(key);
+        pia.setKey(key, press);
     }
 
     public void keyTranslator(KeyEvent e, boolean press) {
-        int tmp_char = e.getKeyChar();
-        int tmp_code = e.getKeyCode()+ EVENT;
+        int tmpChar = e.getKeyChar();
+        int tmpCode = e.getKeyCode()+ EVENT;
 
-        //System.out.println("key " + tmp_code); // Debug
-        int i;
+        LOGGER.debug("Key event {}", tmpCode);
 
-
-        switch(tmp_char) {
+        switch(tmpChar) {
             case '!':
                 keyMemory(0x70, press);//Shift
                 keyMemory(0x5E, press);//1
@@ -193,17 +193,17 @@ public class Keyboard implements KeyListener {
                 break;
         }
 
-        for (i = 0; i < 127; i++) {
+        for (int i = 0; i < PIA6821MO5.KEYS; i++) {
             if (ftable[i] >= EVENT) {
                 // Specials keys test
-                if (ftable[i] == tmp_code) { // Match the lookup table
+                if (ftable[i] == tmpCode) { // Match the lookup table
                     keyMemory(i, press); // Press or release the key
                     return;
                 }
             } else {
-                if((tmp_char >= 'A') && (tmp_char <= 'Z')) // Uppercase test
-                    tmp_char = tmp_char + 'a' - 'A'; // Convert to lowercase
-                if (ftable[i] == tmp_char) { // Match the lookup table
+                if((tmpChar >= 'A') && (tmpChar <= 'Z')) // Uppercase test
+                    tmpChar = tmpChar + 'a' - 'A'; // Convert to lowercase
+                if (ftable[i] == tmpChar) { // Match the lookup table
                     keyMemory(i, press); // Press or release the key
                     return;
                 }
@@ -213,14 +213,12 @@ public class Keyboard implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        for (int i = 0; i < 127; i++)
-            pia.remKey(i);
+        for (int i = 0; i < PIA6821MO5.KEYS; i++)
+            pia.setKey(i, false);
         keyTranslator(e, true);
-
     }
 
     public void keyReleased(KeyEvent e) {
-
         keyTranslator(e, false);
     }
 
@@ -239,10 +237,9 @@ public class Keyboard implements KeyListener {
             return;
         }
 
-        int i;
-        for (i = 0; i < 127; i++) {
+        for (int i = 0; i < PIA6821MO5.KEYS; i++) {
             if (ftable[i] == tmp) {
-                pia.setKey(i);
+                pia.setKey(i, true);
                 return;
             }
         }
@@ -257,10 +254,9 @@ public class Keyboard implements KeyListener {
         if (tmp == (int) 'x') {
             tmp = 50;
         }
-        int i;
-        for (i = 0; i < 127; i++) {
+        for (int i = 0; i < PIA6821MO5.KEYS; i++) {
             if (ftable[i] == tmp) {
-                pia.remKey(i);
+                pia.setKey(i, false);
                 return;
             }
         }

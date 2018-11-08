@@ -116,8 +116,9 @@ procedure findempty(var r1,r2:integer);
     until checkfeature('   ', r1, r2);
   end;
 
-procedure inputerr;
+function inputerr(r: integer):integer;
   begin
+    {sysreport(output, r); writeln;}  { print message for error code }
     writeln('** Input error - reenter **');
     readln(input)
   end;
@@ -154,12 +155,9 @@ procedure readcoord(var x,y:integer);
       r := ioresult(input);
       ioabort(input, true);
       if r <> 0 then
-        inputerr;
+        r := inputerr(r);
       if comma <> ',' then
-        begin
-          inputerr;
-          r := 20; { Comma expected }
-        end;
+        r := inputerr(20);
     until r = 0;
   end;
 
@@ -184,7 +182,7 @@ procedure readreal(var value:real);
       r := ioresult(input);
       ioabort(input, true);
       if r <> 0 then
-        inputerr;
+        r := inputerr(r);
     until r = 0;
   end;
 
@@ -200,7 +198,7 @@ procedure readint(var value:integer);
       r := ioresult(input);
       ioabort(input, true);
       if r <> 0 then
-        inputerr;
+        r := inputerr(r);
     until r = 0;
   end;
 

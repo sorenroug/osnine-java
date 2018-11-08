@@ -12,7 +12,7 @@
                     fork="true" dir="@{home}">
                 <env key="OSNINEDIR" value="${os9dir}"/>
                 <arg value="-m"/>
-                <arg value="20000"/>
+                <arg value="50000"/>
                 <arg value="asm"/>
                 <arg value="@{src}.asm"/>
                 <arg value="o=a.out"/>
@@ -23,6 +23,10 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+        <assemble src="basic09_tandy" home="basic09"/>
+        <assemble src="basic09_dragon" home="basic09"/>
+        <assemble src="RunB_org" home="basic09"/>
+
         <assemble src="go51nkb" home="kernel"/>
         <assemble src="go51n" home="kernel"/>
         <assemble src="go51" home="kernel"/>
@@ -54,6 +58,7 @@
 
         <assemble src="Build" home="utilities"/>
         <assemble src="Setime" home="utilities"/>
+
     </target>
 
 </project>

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * This chip is located at addresses 0xA7C0-0xA7C3.
  * The MO5 buzzer is controlled by bit 0 on $A7C1. By changing this bit
  * a quadratic signal is emitted. This is used by the PLAY instruction in BASIC.
- * An IRQ signal is sent 50 times a second and cancelled when the CPU reads $A7C3?
+ * An IRQ signal is sent 50 times a second and cancelled when the CPU reads $A7C3
  *
  * data port A (A7C0)
  *  bit 0: /FORME - Switch the screen RAM mapping between pixel and attribute RAMs
@@ -39,7 +39,10 @@ import org.slf4j.LoggerFactory;
  * */
 public class PIA6821MO5 extends MemorySegment {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PIA6821MO5.class);
+    private static final Logger LOGGER
+                = LoggerFactory.getLogger(PIA6821MO5.class);
+
+    public static final int KEYS = 128;
 
     private static final int BIT0 = 0x01;
     private static final int BIT1 = 0x02;
@@ -68,9 +71,6 @@ public class PIA6821MO5 extends MemorySegment {
 
     private int outputRegisterB; 
     private int dataDirectionRegisterB;
-    /** Control register B.
-     * BIT0 holds a periodic IRQ
-     */
     private int controlRegisterB;
 
     private boolean activeIRQA;
@@ -87,8 +87,8 @@ public class PIA6821MO5 extends MemorySegment {
     public PIA6821MO5(Bus8Motorola bus) {
         super(0xA7C0, 0xA7C0 + 4);
         this.bus = bus;
-        key = new boolean[256];
-        for (int i = 0; i < 256; i++) key[i] = false;
+        key = new boolean[KEYS];
+        for (int i = 0; i < KEYS; i++) key[i] = false;
 
         LOGGER.debug("Starting heartbeat every 20 milliseconds");
         if (clocktask == null) {
@@ -178,14 +178,8 @@ public class PIA6821MO5 extends MemorySegment {
 
     }
 
-    public void setKey(int i) {
-        key[i] = true;
-    }
-
-    /** FIXME: merge with setKey.
-     */
-    public void remKey(int i) {
-        key[i] = false;
+    public void setKey(int i, boolean pressed) {
+        key[i] = pressed;
     }
 
     private void disableIRQB() {

@@ -1,37 +1,33 @@
 package org.roug.osnine.gui;
 
-import java.awt.*;
-import java.net.URL;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.*;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import javax.swing.JPanel;
 
 /**
  * Graphical screen for Thomson MO5. The dimensions are 320x200 pixels,
  * one byte per pixel. This requires 8000 bytes.
  */
-public class Screen extends Canvas {
+public class Screen extends JPanel {
 
-    private static final long serialVersionUID = 1L;
     private static final int COLUMNS = 320;
     private static final int ROWS = 200;
 
-    BufferedImage buffImg;
+    private BufferedImage buffImg;
 
-    WritableRaster raster;
+    private WritableRaster raster;
 
     public boolean mouse_clic = false ;
 
     public int mouse_X = -1, mouse_Y = -1;
 
-    int[] pixels;
+    private int[] pixels;
 
     public double pixelSize;
-
-    private Graphics og;
-
-    public boolean filter = false;
 
     /** MO5 16 colour palette. */
     private final int palette[] = {
@@ -62,7 +58,7 @@ public class Screen extends Canvas {
         raster = buffImg.getRaster();
         pixels = new int[COLUMNS * ROWS];
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = 0xff00f000;
+            pixels[i] = 0xff000000;
         }
         raster.setDataElements(0, 0, COLUMNS, ROWS, pixels);
         buffImg.setData(raster);
@@ -135,22 +131,20 @@ public class Screen extends Canvas {
             }
             pixelByte <<= 1;
         }
+        repaint();
     }
 
+/*
     public void update(Graphics gc) {
         paint(gc);
     }
+*/
 
     @Override
-    public void paint(Graphics gc) {
+    protected void paintComponent(Graphics gc) {
+        super.paintComponent(gc);
         raster.setDataElements(0, 0, COLUMNS, ROWS, pixels);
-        if (filter) {
-            Graphics2D g2 = (Graphics2D) gc;
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            gc = g2;
-        }
-        og = buffImg.getGraphics();
-        gc.drawImage(buffImg, 0, 0, (int)(COLUMNS * pixelSize), (int)(ROWS * pixelSize), this);
+        gc.drawImage(buffImg, 0, 0, (int)(COLUMNS * pixelSize), (int)(ROWS * pixelSize), null);
     }
+
 }

@@ -5,7 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.*;
+import java.awt.Insets;
+import javax.swing.*;
 
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
@@ -25,8 +26,8 @@ public class GuiEmu {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiEmu.class);
 
-    private Frame guiFrame;
-    private Menu guiMenuFile;
+    private JFrame guiFrame;
+    private JMenu guiMenuFile;
     private PIA6821MO5 pia;
 
     private Bus8Motorola bus;
@@ -37,15 +38,15 @@ public class GuiEmu {
     }
 
     public GuiEmu() throws Exception {
-        guiFrame = new Frame("6809 emulator");
-        guiFrame.setLayout(new BorderLayout());
-        MenuBar guiMenuBar = new MenuBar();
+        guiFrame = new JFrame("6809 emulator");
+        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JMenuBar guiMenuBar = new JMenuBar();
 
-        guiMenuFile = new Menu("File");
+        guiMenuFile = new JMenu("File");
 
-        guiFrame.setMenuBar(guiMenuBar);
+        guiFrame.setJMenuBar(guiMenuBar);
 
-        MenuItem guiMenuFileExit = new MenuItem("Exit");
+        JMenuItem guiMenuFileExit = new JMenuItem("Exit");
         guiMenuFileExit.addActionListener(new QuitAction());
         guiMenuFile.add(guiMenuFileExit);
 
@@ -75,16 +76,18 @@ public class GuiEmu {
         screen.addKeyListener(keyboard);
         guiFrame.add(screen);
         guiFrame.pack();
+
         Insets insets = guiFrame.getInsets();
         guiFrame.setSize((int)(320 * screen.getPixelSize()
                     + (insets.left + insets.right)),
                 (int)(200 * screen.getPixelSize()
                     + (insets.top + insets.bottom)));
+
         screen.requestFocusInWindow();
         guiFrame.setVisible(true);
         cpu.reset();
         cpu.pc.set(start);
-        LOGGER.info("Starting at: {}", cpu.pc.intValue());
+        LOGGER.info("Starting CPU");
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
     }
@@ -113,7 +116,8 @@ public class GuiEmu {
 
     private void loadROM(String fileToLoad, int loadAddress)
                             throws IOException, FileNotFoundException {
-        LOGGER.debug("Loading {} at {}", fileToLoad, Integer.toHexString(loadAddress));
+        LOGGER.debug("Loading {} at {}", fileToLoad,
+                Integer.toHexString(loadAddress));
 
         InputStream moduleStream = openFile(fileToLoad);
         int b = moduleStream.read();
