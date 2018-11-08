@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Generic processor run state routines.
  */
-public abstract class USim {
+public abstract class USim implements Runnable {
 
     private static final int MEM_TOP = 0xFFFF;
     private static final int MEM_MAX = 0x10000;
@@ -37,23 +37,6 @@ public abstract class USim {
     public USim(MemoryBus bus) {
         this.bus = bus;
     }
-
-    /**
-     * Constructor.
-     * If used then create a bus and allocate memory.
-     * @param memorySize Let the emulator allocate this much memory
-     */
-/*
-    public USim(MemoryBus bus, int memorySize) {
-        this(bus);
-        allocate_memory(0, memorySize);
-    }
-
-    void allocate_memory(int start, int memorySize) {
-        MemorySegment newMemory = new RandomAccessMemory(start, bus, Integer.toString(memorySize));
-        bus.addMemorySegment(newMemory);
-    }
-*/
 
     /**
      * Get the memory bus.

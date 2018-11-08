@@ -170,7 +170,7 @@ public class BusStraight implements Bus8Motorola {
      */
     @Override
     public void insertMemorySegment(MemorySegment newMemory) {
-        newMemory.nextSegment = memory;
+        newMemory.insertMemorySegment(memory);
         memory = newMemory;
     }
 

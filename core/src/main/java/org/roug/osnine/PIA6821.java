@@ -5,23 +5,23 @@ package org.roug.osnine;
  * There are so many ways this adapter can be wired to devices
  * that it should probably be an abstract class.
  */
-public class PIA6821 extends MemorySegment {
+public abstract class PIA6821 extends MemorySegment {
 
-    private static final int DDRA = 0;
-    private static final int CRA = 1;
-    private static final int DDRB = 2;
-    private static final int CRB = 3;
+    protected static final int DDRA = 0;
+    protected static final int CRA = 1;
+    protected static final int DDRB = 2;
+    protected static final int CRB = 3;
 
-    private int outputRegisterA; 
-    private int dataDirectionRegisterA;
-    private int controlRegisterA;
+    protected int outputRegisterA; 
+    protected int dataDirectionRegisterA;
+    protected int controlRegisterA;
 
-    private int outputRegisterB; 
-    private int dataDirectionRegisterB;
-    private int controlRegisterB;
+    protected int outputRegisterB; 
+    protected int dataDirectionRegisterB;
+    protected int controlRegisterB;
 
     /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus8Motorola bus;
+    protected Bus8Motorola bus;
 
     /**
      * Constructor.
@@ -53,7 +53,6 @@ public class PIA6821 extends MemorySegment {
     }
 
     @Override
-    protected void store(int addr, int val) {
-    }
+    protected abstract void store(int addr, int val);
 
 }

@@ -11,7 +11,7 @@ public abstract class MemorySegment {
     /** Last address where the segment reacts. */
     private int endAddress;
 
-    protected MemorySegment nextSegment = null;
+    private MemorySegment nextSegment = null;
 
     /**
      * Constructor.
@@ -76,11 +76,7 @@ public abstract class MemorySegment {
      */
     public int read(int addr) {
         if (!inSegment(addr)) {
-            if (nextSegment == null) {
-                return 0;
-            } else {
-                return nextSegment.read(addr);
-            }
+            return readBelow(addr);
         }
         return load(addr);
     }
@@ -98,11 +94,7 @@ public abstract class MemorySegment {
      */
     public void write(int addr, int val) {
         if (!inSegment(addr)) {
-            if (nextSegment == null) {
-                return;
-            } else {
-                nextSegment.write(addr, val);
-            }
+            writeBelow(addr, val);
         } else {
             store(addr, val);
         }
@@ -143,4 +135,30 @@ public abstract class MemorySegment {
         }
     }
 
+    /**
+     * Put this memory segment before the argument in the chain.
+     */
+    public void insertMemorySegment(MemorySegment segment) {
+        nextSegment = segment;
+    }
+
+    /**
+     * Read value from the segment below.
+     */
+    protected int readBelow(int addr) {
+        if (nextSegment == null) {
+            return 0;
+        } else {
+            return nextSegment.read(addr);
+        }
+    }
+
+    /**
+     * Write to the segment below if there is one.
+     */
+    protected void writeBelow(int addr, int val) {
+        if (nextSegment != null) {
+            nextSegment.write(addr, val);
+        }
+    }
 }

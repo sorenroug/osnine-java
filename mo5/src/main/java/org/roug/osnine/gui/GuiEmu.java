@@ -85,7 +85,7 @@ public class GuiEmu {
         cpu.reset();
         cpu.pc.set(start);
         LOGGER.info("Starting at: {}", cpu.pc.intValue());
-        Thread cpuThread = new Thread(new CPUThread(), "cpu");
+        Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
     }
 
@@ -129,12 +129,6 @@ public class GuiEmu {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
-        }
-    }
-
-    private class CPUThread implements Runnable {
-        public void run() {
-            cpu.run();
         }
     }
 }
