@@ -123,7 +123,7 @@ public class Screen extends JPanel {
         int fgInx = (colorByte & 0xF0) >> 4;
         int fgColor = palette[fgInx];
         int bgColor = palette[bgInx];
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
             if ((pixelByte & 0x80) != 0) {
                 pixels[offset + i] = fgColor;
             } else {
