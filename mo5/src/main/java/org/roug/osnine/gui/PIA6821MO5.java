@@ -44,6 +44,9 @@ public class PIA6821MO5 extends MemorySegment {
 
     public static final int KEYS = 128;
 
+    private static final int A = 0;
+    private static final int B = 1;
+
     private static final int BIT0 = 0x01;
     private static final int BIT1 = 0x02;
     private static final int BIT2 = 0x04;
@@ -52,6 +55,9 @@ public class PIA6821MO5 extends MemorySegment {
     private static final int BIT5 = 0x20;
     private static final int BIT6 = 0x40;
     private static final int BIT7 = 0x80;
+
+    /** Control bit for IRQ. */
+    private static final int CIRQ = 0x01;
 
     // NOTE: the MO5 has swapped Register Select 0 and 1.
     private static final int DDRA = 0;
@@ -65,16 +71,12 @@ public class PIA6821MO5 extends MemorySegment {
     /** On MO5 the interrupt is 50 times a second. */
     private static final int CLOCKPERIOD = 20;  // milliseconds
 
-    private int outputRegisterA; 
-    private int dataDirectionRegisterA;
-    private int controlRegisterA;
+    private int[] outputRegister = new int[2]; 
+    private int[] dataDirectionRegister = new int[2];
+    private int[] controlRegister = new int[2];
 
-    private int outputRegisterB; 
-    private int dataDirectionRegisterB;
-    private int controlRegisterB;
-
-    private boolean activeIRQA;
-    private boolean activeIRQB;
+    /** If PIA has raised IRQ on the bus. */
+    private boolean[] activeIRQ = new boolean[2];
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus8Motorola bus;
@@ -102,89 +104,96 @@ public class PIA6821MO5 extends MemorySegment {
     protected int load(int addr) {
         switch (addr - getStartAddress()) {
             case DDRA:
-                if (isBitOn(controlRegisterA, BIT2))
-                    return outputRegisterA;
+                if (isBitOn(controlRegister[A], BIT2))
+                    return outputRegister[A];
                 else
-                    return dataDirectionRegisterA;
-            case CRA: return controlRegisterA;
+                    return dataDirectionRegister[A];
+            case CRA:
+                return readControlRegister(A);
             case DDRB:
-                if (isBitOn(controlRegisterB, BIT2))
-                    return outputRegisterB;
+                if (isBitOn(controlRegister[B], BIT2))
+                    return outputRegister[B];
                 else
-                    return dataDirectionRegisterB;
+                    return dataDirectionRegister[B];
             case CRB:
-                int tmpCRB = controlRegisterB;
-                if (isBitOn(controlRegisterB, BIT0) && activeIRQB) {
-                    bus.signalIRQ(false);
-                }
-                controlRegisterB &= ~(BIT7 | BIT6); // Turn off IRQ bits.
-                return tmpCRB;
+                return readControlRegister(B);
         }
         return 0;
+    }
+
+    private int readControlRegister(int side) {
+        int tmpCR = controlRegister[side];
+        if (isBitOn(controlRegister[side], CIRQ) && activeIRQ[side]) {
+            activeIRQ[side] = false;
+            bus.signalIRQ(false);
+        }
+        controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
+        return tmpCR;
     }
 
     @Override
     protected void store(int addr, int operation) {
         switch (addr - getStartAddress()) {
             case DDRA: 
-                if (isBitOn(controlRegisterA, BIT2)) {
+                if (isBitOn(controlRegister[A], BIT2)) {
                     if (isBitOn(operation, BIT0)) {
-                        outputRegisterA |= BIT0;
+                        outputRegister[A] |= BIT0;
                     } else {
-                        outputRegisterA &= ~BIT0;
+                        outputRegister[A] &= ~BIT0;
                     }
                     operation |= BIT7 + BIT5; // gestion de ,l'inter optique
-                    outputRegisterA = (outputRegisterA
-                            & (dataDirectionRegisterA ^ 0xFF))
-                            | (operation & dataDirectionRegisterA);
+                    outputRegister[A] = (outputRegister[A]
+                            & (dataDirectionRegister[A] ^ 0xFF))
+                            | (operation & dataDirectionRegister[A]);
 //                  if (LightPenClic)
-//                       dataDirectionRegisterA= outputRegisterA|BIT5;
+//                       dataDirectionRegister[A]= outputRegister[A]|BIT5;
 //                  else
-                        dataDirectionRegisterA = outputRegisterA & (0xFF - BIT5);
+                        dataDirectionRegister[A] = outputRegister[A] & (0xFF - BIT5);
                 } else {
-                    dataDirectionRegisterA = operation;
+                    dataDirectionRegister[A] = operation;
                 }
                 break;
             case CRA: 
-                controlRegisterA = (controlRegisterA & 0xD0) | (operation & 0x3F);
+                if ((operation & CIRQ) == 0) {
+                    disableIRQ(A);
+                }
+                controlRegister[A] = (controlRegister[A] & 0xD0) | (operation & 0x3F);
                 break;
             case DDRB:
-                if (isBitOn(controlRegisterB, BIT2)) {
-                    outputRegisterB = (outputRegisterB
-                            & (dataDirectionRegisterB ^ 0xFF))
-                            | (operation & dataDirectionRegisterB);
+                if (isBitOn(controlRegister[B], BIT2)) {
+                    outputRegister[B] = (outputRegister[B]
+                            & (dataDirectionRegister[B] ^ 0xFF))
+                            | (operation & dataDirectionRegister[B]);
                     // Keyboard handler
-                    if (key[outputRegisterB & 0x7E]) {
-                        outputRegisterB = outputRegisterB & 0x7F;
+                    if (key[outputRegister[B] & 0x7E]) {
+                        outputRegister[B] = outputRegister[B] & 0x7F;
                     } else {
-                        outputRegisterB = outputRegisterB | BIT7;
+                        outputRegister[B] = outputRegister[B] | BIT7;
                     }
                 } else {
-                    dataDirectionRegisterB = operation;
+                    dataDirectionRegister[B] = operation;
                 }
                 break;
             case CRB:
-                if ((operation & BIT0) == BIT0) {
-                    controlRegisterB |= BIT0;
-                    activeIRQB = false;
-                    signalCB1();
-                } else if ((operation & BIT0) == 0) {
-                    controlRegisterB &= ~BIT0;
-                    disableIRQB();
+                if ((operation & CIRQ) == 0) {
+                    disableIRQ(B);
                 }
-                controlRegisterB = (controlRegisterB & 0xD0)|(operation & 0x3F);
+                controlRegister[B] = (controlRegister[B] & 0xD0)|(operation & 0x3F);
                 break;
             }
 
     }
 
+    /**
+     * Called from the keyboard event handler.
+     */
     public void setKey(int i, boolean pressed) {
         key[i] = pressed;
     }
 
-    private void disableIRQB() {
-        if (activeIRQB) {
-            activeIRQB = false;
+    private void disableIRQ(int side) {
+        if (activeIRQ[side]) {
+            activeIRQ[side] = false;
             bus.signalIRQ(false);
         }
     }
@@ -195,10 +204,10 @@ public class PIA6821MO5 extends MemorySegment {
      * but the status is kept.
      */
     void signalCB1() {
-        if (activeIRQB == false) {
-            activeIRQB = true;
-            if (isBitOn(controlRegisterB, BIT0)) {
-                controlRegisterB |= BIT7;
+        if (activeIRQ[B] == false) {
+            activeIRQ[B] = true;
+            if (isBitOn(controlRegister[B], CIRQ)) {
+                controlRegister[B] |= BIT7;
                 bus.signalIRQ(true);
             }
         }

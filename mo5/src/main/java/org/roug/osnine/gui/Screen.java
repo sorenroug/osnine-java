@@ -58,7 +58,7 @@ public class Screen extends JPanel {
         raster = buffImg.getRaster();
         pixels = new int[COLUMNS * ROWS];
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = 0xff000000;
+            pixels[i] = 0xff00f0f0;
         }
         raster.setDataElements(0, 0, COLUMNS, ROWS, pixels);
         buffImg.setData(raster);
