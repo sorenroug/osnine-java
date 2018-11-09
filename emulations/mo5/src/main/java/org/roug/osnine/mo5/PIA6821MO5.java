@@ -1,4 +1,4 @@
-package org.roug.osnine.gui;
+package org.roug.osnine.mo5;
 
 import org.roug.osnine.MemorySegment;
 import org.roug.osnine.Bus8Motorola;

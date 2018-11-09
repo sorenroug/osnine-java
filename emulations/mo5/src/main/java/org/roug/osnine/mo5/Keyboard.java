@@ -1,4 +1,4 @@
-package org.roug.osnine.gui;
+package org.roug.osnine.mo5;
 
 import java.awt.*;
 import java.awt.event.*;

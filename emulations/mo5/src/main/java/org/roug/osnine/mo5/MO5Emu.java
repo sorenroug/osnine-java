@@ -1,4 +1,4 @@
-package org.roug.osnine.gui;
+package org.roug.osnine.mo5;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,9 +22,9 @@ import java.io.FileInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GuiEmu {
+public class MO5Emu {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GuiEmu.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MO5Emu.class);
 
     private JFrame guiFrame;
     private JMenu guiMenuFile;
@@ -34,10 +34,10 @@ public class GuiEmu {
     private static MC6809 cpu;
 
     public static void main(String[] args) throws Exception {
-        new GuiEmu();
+        new MO5Emu();
     }
 
-    public GuiEmu() throws Exception {
+    public MO5Emu() throws Exception {
         guiFrame = new JFrame("6809 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
@@ -106,7 +106,7 @@ public class GuiEmu {
         if (fileToLoad.contains("/")) {
             moduleStream = new FileInputStream(fileToLoad);
         } else {
-            moduleStream = GuiEmu.class.getResourceAsStream("/" + fileToLoad);
+            moduleStream = MO5Emu.class.getResourceAsStream("/" + fileToLoad);
         }
         if (moduleStream == null) {
             throw new FileNotFoundException("File not found: " + fileToLoad);
