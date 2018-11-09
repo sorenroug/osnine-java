@@ -16,6 +16,7 @@
     <modules>
         <module>os9dragon</module>
         <module>gimix</module>
+        <module>mo5</module>
     </modules>
 
     <properties>
