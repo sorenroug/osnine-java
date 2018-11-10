@@ -3,6 +3,7 @@ package org.roug.osnine.mo5;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -52,6 +53,8 @@ public class Screen extends JPanel {
         0xF06300,
     };
 
+    /** Constructor.
+     */
     public Screen() {
         this.pixelSize = 2;
         buffImg = new BufferedImage(COLUMNS, ROWS, BufferedImage.TYPE_INT_RGB);
@@ -134,11 +137,11 @@ public class Screen extends JPanel {
         repaint();
     }
 
-/*
-    public void update(Graphics gc) {
-        paint(gc);
+    @Override
+    public Dimension getPreferredSize() {
+        return (new Dimension((int)(COLUMNS * pixelSize),
+                              (int)(ROWS * pixelSize)));
     }
-*/
 
     @Override
     protected void paintComponent(Graphics gc) {

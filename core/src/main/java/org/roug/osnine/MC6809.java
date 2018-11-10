@@ -26,9 +26,6 @@ public class MC6809 extends USimMotorola {
     /** Addressing mode. */
     private int mode;
 
-    /** Set to true to disassemble executed instruction. */
-    private boolean traceInstructions = false;
-
     /** Stack pointer U. */
     public final Word u = new Word("U");
     /** Stack pointer S. */
@@ -56,12 +53,13 @@ public class MC6809 extends USimMotorola {
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
 
+    /** RESET signalled. */
+    private volatile boolean resetSignal;
+
     /** CWAI active? */
     private boolean waitState = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MC6809.class);
-
-    private DisAssembler disAsm = null;
 
     /** The bus the CPU is connected to. */
     private Bus8Motorola bus;
@@ -94,10 +92,6 @@ public class MC6809 extends USimMotorola {
         super(new BusStraight());
         bus = (Bus8Motorola)super.getBus();
         allocate_memory(0xfff0, 16);  // For interrupt vectors
-
-        if (LOGGER.isTraceEnabled()) {
-            setTraceInstructions(true);
-        }
         reset();
     }
 
@@ -107,18 +101,7 @@ public class MC6809 extends USimMotorola {
     public MC6809(Bus8Motorola bus) {
         super(bus);
         this.bus = bus;
-
-        if (LOGGER.isTraceEnabled()) {
-            setTraceInstructions(true);
-        }
         reset();
-    }
-
-    private void setTraceInstructions(boolean value) {
-        traceInstructions = value;
-        if (disAsm == null && value) {
-            disAsm = new DisAssembler(this);
-        }
     }
 
     /**
@@ -141,11 +124,16 @@ public class MC6809 extends USimMotorola {
         bus.addMemorySegment(newMemory);
     }
 
+    public void signalReset() {
+        resetSignal = true;
+    }
+
     /**
      * Reset the simulator. Program counter is set to the content for the top
      * two bytes in memory. Direct page register is set to 0.
      */
     public void reset() {
+        resetSignal = false;
         pc.set(read_word(RESET_ADDR));
         dp.set(0x00);      // Direct page register = 0x00
         cc.clear();      // Clear all flags
@@ -165,8 +153,8 @@ public class MC6809 extends USimMotorola {
      * Execute one instruction.
      */
     public void execute() {
-        if (traceInstructions) {
-            disAsm.disasmPC();
+        if (resetSignal) {
+            reset();
         }
         ir = fetch();
 

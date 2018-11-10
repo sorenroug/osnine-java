@@ -23,6 +23,9 @@ public class Keyboard implements KeyListener {
 
     final public int EVENT = 0x8000;
 
+    /**
+     * Constructor.
+     */
     public Keyboard(PIA6821MO5 pia) {
         this.pia = pia;
         int i;
@@ -109,11 +112,11 @@ public class Keyboard implements KeyListener {
     public void keyTyped(KeyEvent e) {
     }
 
-    public void keyMemory(int key, boolean press) {
+    private void keyMemory(int key, boolean press) {
         pia.setKey(key, press);
     }
 
-    public void keyTranslator(KeyEvent e, boolean press) {
+    private void keyTranslator(KeyEvent e, boolean press) {
         int tmpChar = e.getKeyChar();
         int tmpCode = e.getKeyCode()+ EVENT;
 
@@ -222,43 +225,4 @@ public class Keyboard implements KeyListener {
         keyTranslator(e, false);
     }
 
-    int shiftpressed = 0;
-
-    public void press(int tmp) {
-        if (tmp == (int) 'z') {
-            shiftpressed++;
-            tmp = 16;
-        }
-        if (tmp == (int) 'x') {
-            tmp = 50;
-        }
-        if (shiftpressed == 2) {
-            shiftpressed = 0;
-            return;
-        }
-
-        for (int i = 0; i < PIA6821MO5.KEYS; i++) {
-            if (ftable[i] == tmp) {
-                pia.setKey(i, true);
-                return;
-            }
-        }
-    }
-
-    public void release(int tmp) {
-        if (tmp == (int) 'z') {
-        if (shiftpressed == 1)
-            return;
-            tmp = 16;
-        }
-        if (tmp == (int) 'x') {
-            tmp = 50;
-        }
-        for (int i = 0; i < PIA6821MO5.KEYS; i++) {
-            if (ftable[i] == tmp) {
-                pia.setKey(i, false);
-                return;
-            }
-        }
-    }
 }

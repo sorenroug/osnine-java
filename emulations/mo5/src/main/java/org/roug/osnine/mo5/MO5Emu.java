@@ -27,33 +27,27 @@ public class MO5Emu {
     private static final Logger LOGGER = LoggerFactory.getLogger(MO5Emu.class);
 
     private JFrame guiFrame;
-    private JMenu guiMenuFile;
     private PIA6821MO5 pia;
 
     private Bus8Motorola bus;
-    private static MC6809 cpu;
+    private MC6809 cpu;
+
+    /** The display of the MO5. */
+    private Screen screen;
 
     public static void main(String[] args) throws Exception {
         new MO5Emu();
     }
 
     public MO5Emu() throws Exception {
-        guiFrame = new JFrame("6809 emulator");
+        guiFrame = new JFrame("MO5 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
-
-        guiMenuFile = new JMenu("File");
-
         guiFrame.setJMenuBar(guiMenuBar);
-
-        JMenuItem guiMenuFileExit = new JMenuItem("Exit");
-        guiMenuFileExit.addActionListener(new QuitAction());
-        guiMenuFile.add(guiMenuFileExit);
-
-        guiMenuBar.add(guiMenuFile);
+        addFileMenu(guiMenuBar);
 
         // Create screen and attach it to the bus.
-        Screen screen = new Screen();
+        screen = new Screen();
         bus = new BusStraight();
         ScreenMemory scrMem = new ScreenMemory(bus, screen);
         bus.addMemorySegment(scrMem);
@@ -69,7 +63,6 @@ public class MO5Emu {
         bus.addMemorySegment(pia);
 
         cpu = new MC6809(bus);
-        int start = cpu.read_word(MC6809.RESET_ADDR);
 
         // Hook up the Keyboard to the PIA
         Keyboard keyboard = new Keyboard(pia);
@@ -77,16 +70,10 @@ public class MO5Emu {
         guiFrame.add(screen);
         guiFrame.pack();
 
-        Insets insets = guiFrame.getInsets();
-        guiFrame.setSize((int)(320 * screen.getPixelSize()
-                    + (insets.left + insets.right)),
-                (int)(200 * screen.getPixelSize()
-                    + (insets.top + insets.bottom)));
-
         screen.requestFocusInWindow();
         guiFrame.setVisible(true);
         cpu.reset();
-        cpu.pc.set(start);
+
         LOGGER.info("Starting CPU");
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
@@ -99,7 +86,7 @@ public class MO5Emu {
      * @return Opened file
      * @throws FileNotFoundException if there is no file
      */
-    private static InputStream openFile(String fileToLoad)
+    private InputStream openFile(String fileToLoad)
                             throws FileNotFoundException {
         InputStream moduleStream = null;
 
@@ -114,6 +101,9 @@ public class MO5Emu {
         return moduleStream;
     }
 
+    /**
+     * Load a file containing data for memory.
+     */
     private void loadROM(String fileToLoad, int loadAddress)
                             throws IOException, FileNotFoundException {
         LOGGER.debug("Loading {} at {}", fileToLoad,
@@ -129,10 +119,56 @@ public class MO5Emu {
         moduleStream.close();
     }
 
+    private void addFileMenu(JMenuBar guiMenuBar) {
+        JMenu guiMenuFile = new JMenu("File");
+
+        JMenuItem guiMenuFileZoom2 = new JMenuItem("Zoom 2x");
+        guiMenuFileZoom2.addActionListener(new Zoom2Action());
+        guiMenuFile.add(guiMenuFileZoom2);
+
+        JMenuItem guiMenuFileZoom4 = new JMenuItem("Zoom 4x");
+        guiMenuFileZoom4.addActionListener(new Zoom4Action());
+        guiMenuFile.add(guiMenuFileZoom4);
+
+        JMenuItem guiMenuFileReset = new JMenuItem("Reset CPU");
+        guiMenuFileReset.addActionListener(new ResetAction());
+        guiMenuFile.add(guiMenuFileReset);
+
+        JMenuItem guiMenuFileExit = new JMenuItem("Exit");
+        guiMenuFileExit.addActionListener(new QuitAction());
+        guiMenuFile.add(guiMenuFileExit);
+
+        guiMenuBar.add(guiMenuFile);
+    }
+
     private class QuitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
         }
     }
+
+    private class ResetAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            cpu.signalReset();
+        }
+    }
+
+    private class Zoom2Action implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            screen.setPixelSize(2);
+            guiFrame.pack();
+        }
+    }
+
+    private class Zoom4Action implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            screen.setPixelSize(4);
+            guiFrame.pack();
+        }
+    }
+
 }
