@@ -59,6 +59,9 @@ public class PIA6821MO5 extends MemorySegment {
     /** Control bit for IRQ. */
     private static final int CIRQ = 0x01;
 
+    /** Bit to select between the OR and DDR. */
+    private static final int SELECT_OR = 0x04;
+
     // NOTE: the MO5 has swapped Register Select 0 and 1.
     private static final int DDRA = 0;
     private static final int ORA = 0;
@@ -104,15 +107,15 @@ public class PIA6821MO5 extends MemorySegment {
     protected int load(int addr) {
         switch (addr - getStartAddress()) {
             case DDRA:
-                if (isBitOn(controlRegister[A], BIT2))
-                    return outputRegister[A];
+                if (isBitOn(controlRegister[A], SELECT_OR))
+                    return outputRegister[A] & 0xFF;
                 else
                     return dataDirectionRegister[A];
             case CRA:
                 return readControlRegister(A);
             case DDRB:
-                if (isBitOn(controlRegister[B], BIT2))
-                    return outputRegister[B];
+                if (isBitOn(controlRegister[B], SELECT_OR))
+                    return outputRegister[B] & 0xFF;
                 else
                     return dataDirectionRegister[B];
             case CRB:
@@ -135,7 +138,7 @@ public class PIA6821MO5 extends MemorySegment {
     protected void store(int addr, int operation) {
         switch (addr - getStartAddress()) {
             case DDRA: 
-                if (isBitOn(controlRegister[A], BIT2)) {
+                if (isBitOn(controlRegister[A], SELECT_OR)) {
                     if (isBitOn(operation, BIT0)) {
                         outputRegister[A] |= BIT0;
                     } else {
@@ -160,15 +163,15 @@ public class PIA6821MO5 extends MemorySegment {
                 controlRegister[A] = (controlRegister[A] & 0xD0) | (operation & 0x3F);
                 break;
             case DDRB:
-                if (isBitOn(controlRegister[B], BIT2)) {
+                if (isBitOn(controlRegister[B], SELECT_OR)) {
                     outputRegister[B] = (outputRegister[B]
                             & (dataDirectionRegister[B] ^ 0xFF))
                             | (operation & dataDirectionRegister[B]);
                     // Keyboard handler
                     if (key[outputRegister[B] & 0x7E]) {
-                        outputRegister[B] = outputRegister[B] & 0x7F;
+                        outputRegister[B] &= ~BIT7;
                     } else {
-                        outputRegister[B] = outputRegister[B] | BIT7;
+                        outputRegister[B] |= BIT7;
                     }
                 } else {
                     dataDirectionRegister[B] = operation;

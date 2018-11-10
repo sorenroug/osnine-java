@@ -15,96 +15,110 @@ public class Keyboard implements KeyListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Keyboard.class);
 
+    private static final int COL0 = 0x00;
+    private static final int COL1 = 0x02;
+    private static final int COL2 = 0x04;
+    private static final int COL3 = 0x06;
+    private static final int COL4 = 0x08;
+    private static final int COL5 = 0x0A;
+    private static final int COL6 = 0x0C;
+    private static final int COL7 = 0x0E;
+
+    private static final int ROW0 = 0x00;
+    private static final int ROW1 = 0x10;
+    private static final int ROW2 = 0x20;
+    private static final int ROW3 = 0x30;
+    private static final int ROW4 = 0x40;
+    private static final int ROW5 = 0x50;
+    private static final int ROW6 = 0x60;
+    private static final int ROW7 = 0x70;
+
     /** Interface to the 6821 PIA. */
     private PIA6821MO5 pia;
 
     // translation table from scancode to java keycodes VK_
-    private HashMap<Integer, Integer> ftable;
+    private static HashMap<Integer, Integer> ftable = new HashMap(100);
 
-    final public int EVENT = 0x8000;
+    private static final int EVENT = 0x8000;
+
+    static {
+        /* 1 .. ACC */
+        ftable.put(Integer.valueOf('1'), ROW5 + COL7);
+        ftable.put(Integer.valueOf('2'), ROW4 + COL7);
+        ftable.put(Integer.valueOf('3'), ROW3 + COL7);
+        ftable.put(Integer.valueOf('4'), ROW2 + COL7);
+        ftable.put(Integer.valueOf('5'), ROW1 + COL7);
+        ftable.put(Integer.valueOf('6'), ROW0 + COL7);
+        ftable.put(Integer.valueOf('7'), ROW0 + COL6);
+        ftable.put(Integer.valueOf('8'), ROW1 + COL6);
+        ftable.put(Integer.valueOf('9'), ROW2 + COL6);
+        ftable.put(Integer.valueOf('0'), ROW3 + COL6);
+        ftable.put(Integer.valueOf('-'), ROW4 + COL6);
+        ftable.put(Integer.valueOf('+'), ROW5 + COL6);
+        //ftable.put(KeyEvent.VK_BACK_SPACE + EVENT, ROW6 + COL6);
+        ftable.put(KeyEvent.VK_BACK_SPACE + EVENT, ROW5 + COL1); // Plain backspace
+        /* A .. --> */
+        ftable.put(Integer.valueOf('a'), ROW5 + COL5);
+        ftable.put(Integer.valueOf('z'), ROW4 + COL5);
+        ftable.put(Integer.valueOf('e'), ROW3 + COL5);
+        ftable.put(Integer.valueOf('r'), ROW2 + COL5);
+        ftable.put(Integer.valueOf('t'), ROW1 + COL5);
+        ftable.put(Integer.valueOf('y'), ROW0 + COL5);
+        ftable.put(Integer.valueOf('u'), ROW0 + COL4);
+        ftable.put(Integer.valueOf('i'), ROW1 + COL4);
+        ftable.put(Integer.valueOf('o'), ROW2 + COL4);
+        ftable.put(Integer.valueOf('p'), ROW3 + COL4);
+        ftable.put(Integer.valueOf('/'), ROW4 + COL4);
+        //ftable.put(Integer.valueOf(')'), ROW5 + COL4);
+        /* Q .. enter */
+        ftable.put(Integer.valueOf('q'), ROW5 + COL3);
+        ftable.put(Integer.valueOf('s'), ROW4 + COL3);
+        ftable.put(Integer.valueOf('d'), ROW3 + COL3);
+        ftable.put(Integer.valueOf('f'), ROW2 + COL3);
+        ftable.put(Integer.valueOf('g'), ROW1 + COL3);
+        ftable.put(Integer.valueOf('h'), ROW0 + COL3);
+        ftable.put(Integer.valueOf('j'), ROW0 + COL2);
+        ftable.put(Integer.valueOf('k'), ROW1 + COL2);
+        ftable.put(Integer.valueOf('l'), ROW2 + COL2);
+        ftable.put(Integer.valueOf('m'), ROW3 + COL2);
+        ftable.put(KeyEvent.VK_ENTER + EVENT, ROW6 + COL4);
+        /* W .. , */
+        ftable.put(Integer.valueOf('w'), ROW6 + COL0);
+        ftable.put(Integer.valueOf('x'), ROW5 + COL0);
+        ftable.put(Integer.valueOf('c'), ROW6 + COL2);
+        ftable.put(Integer.valueOf('v'), ROW5 + COL2);
+        ftable.put(Integer.valueOf('b'), ROW4 + COL2);
+        ftable.put(Integer.valueOf('n'), ROW0 + COL0);
+        ftable.put(Integer.valueOf(','), ROW1 + COL0);
+        ftable.put(Integer.valueOf('.'), ROW2 + COL0);
+        ftable.put(Integer.valueOf('@'), ROW3 + COL0);
+        ftable.put(KeyEvent.VK_SCROLL_LOCK + EVENT, ROW6 + COL7); //STOP
+        ftable.put(Integer.valueOf('*'), ROW5 + COL4);
+
+        /* Specials keys */
+        ftable.put(KeyEvent.VK_INSERT + EVENT, ROW1 + COL1);
+        ftable.put(KeyEvent.VK_DELETE + EVENT, ROW0 + COL1);
+        ftable.put(KeyEvent.VK_HOME + EVENT, ROW2 + COL1);// Back to top
+        ftable.put(KeyEvent.VK_UP + EVENT, ROW6 + COL1);
+        ftable.put(KeyEvent.VK_LEFT + EVENT, ROW5 + COL1);
+        ftable.put(KeyEvent.VK_RIGHT + EVENT, ROW3 + COL1);
+        ftable.put(KeyEvent.VK_DOWN + EVENT, ROW4 + COL1);
+        /* space */
+        ftable.put(Integer.valueOf(' '), ROW4 + COL0);
+        /* SHIFT + BASIC */
+        ftable.put(KeyEvent.VK_F12 + EVENT, ROW7 + COL0);//Shift
+        ftable.put(KeyEvent.VK_F11 + EVENT, ROW7 + COL1);//Basic
+
+        /* CNT RAZ */
+        ftable.put(KeyEvent.VK_CONTROL + EVENT, ROW6 + COL5);//CTRL
+        ftable.put(KeyEvent.VK_ESCAPE + EVENT, ROW6 + COL3);//ESCAPE = raz
+    }
 
     /**
      * Constructor.
      */
     public Keyboard(PIA6821MO5 pia) {
         this.pia = pia;
-        int i;
-
-        ftable = new HashMap(100);
-
-        /* STOP */
-        //ftable[0x6E]=0x29;
-        /* 1 .. ACC */
-        ftable.put(Integer.valueOf('1'), 0x5E);
-        ftable.put(Integer.valueOf('2'), 0x4E);
-        ftable.put(Integer.valueOf('3'), 0x3E);
-        ftable.put(Integer.valueOf('4'), 0x2E);
-        ftable.put(Integer.valueOf('5'), 0x1E);
-        ftable.put(Integer.valueOf('6'), 0x0E);
-        ftable.put(Integer.valueOf('7'), 0x0C);
-        ftable.put(Integer.valueOf('8'), 0x1C);
-        ftable.put(Integer.valueOf('9'), 0x2C);
-        ftable.put(Integer.valueOf('0'), 0x3C);
-        ftable.put(Integer.valueOf('-'), 0x4C);
-        ftable.put(Integer.valueOf('+'), 0x5C);
-        //ftable.put(KeyEvent.VK_BACK_SPACE + EVENT, 0x6C);
-        ftable.put(KeyEvent.VK_BACK_SPACE + EVENT, 0x52); // Plain backspace
-        /* A .. --> */
-        ftable.put(Integer.valueOf('a'), 0x5A);
-        ftable.put(Integer.valueOf('z'), 0x4A);
-        ftable.put(Integer.valueOf('e'), 0x3A);
-        ftable.put(Integer.valueOf('r'), 0x2A);
-        ftable.put(Integer.valueOf('t'), 0x1A);
-        ftable.put(Integer.valueOf('y'), 0x0A);
-        ftable.put(Integer.valueOf('u'), 0x08);
-        ftable.put(Integer.valueOf('i'), 0x18);
-        ftable.put(Integer.valueOf('o'), 0x28);
-        ftable.put(Integer.valueOf('p'), 0x38);
-        ftable.put(Integer.valueOf('/'), 0x48);
-        ftable.put(Integer.valueOf(')'), 0x58);
-        /* Q .. enter */
-        ftable.put(Integer.valueOf('q'), 0x56);
-        ftable.put(Integer.valueOf('s'), 0x46);
-        ftable.put(Integer.valueOf('d'), 0x36);
-        ftable.put(Integer.valueOf('f'), 0x26);
-        ftable.put(Integer.valueOf('g'), 0x16);
-        ftable.put(Integer.valueOf('h'), 0x06);
-        ftable.put(Integer.valueOf('j'), 0x04);
-        ftable.put(Integer.valueOf('k'), 0x14);
-        ftable.put(Integer.valueOf('l'), 0x24);
-        ftable.put(Integer.valueOf('m'), 0x34);
-        ftable.put(KeyEvent.VK_ENTER + EVENT, 0x68);
-        /* W .. , */
-        ftable.put(Integer.valueOf('w'), 0x60);
-        ftable.put(Integer.valueOf('x'), 0x50);
-        ftable.put(Integer.valueOf('c'), 0x64);
-        ftable.put(Integer.valueOf('v'), 0x54);
-        ftable.put(Integer.valueOf('b'), 0x44);
-        ftable.put(Integer.valueOf('n'), 0x00);
-        ftable.put(Integer.valueOf(','), 0x10);
-
-        ftable.put(Integer.valueOf('.'), 0x20);
-        ftable.put(Integer.valueOf('@'), 0x30);
-        ftable.put(145 + EVENT, 0x6E); //STOP
-        ftable.put(Integer.valueOf('*'), 0x58);
-
-        /* Specials keys */
-        ftable.put(KeyEvent.VK_INSERT + EVENT, 0x12);
-        ftable.put(KeyEvent.VK_DELETE + EVENT, 0x02);
-        ftable.put(36 + EVENT, 0x22);// Back to top
-        ftable.put(KeyEvent.VK_UP + EVENT, 0x62);
-        ftable.put(KeyEvent.VK_LEFT + EVENT, 0x52);
-        ftable.put(KeyEvent.VK_RIGHT + EVENT, 0x32);
-        ftable.put(KeyEvent.VK_DOWN + EVENT, 0x42);
-        /* space */
-        ftable.put(Integer.valueOf(' '), 0x40);
-        /* SHIFT + BASIC */
-        ftable.put(KeyEvent.VK_F12 + EVENT, 0x70);//Shift
-        ftable.put(KeyEvent.VK_F11 + EVENT, 0x72);//Basic
-
-        /* CNT RAZ */
-        ftable.put(17 + EVENT, 0x6A);//CTRL
-        ftable.put(27 + EVENT, 0x66);//ESCAPE = raz
     }
 
     public void keyTyped(KeyEvent e) {
@@ -122,72 +136,72 @@ public class Keyboard implements KeyListener {
 
         switch(tmpChar) {
             case '!':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x5E, press);//1
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW5 + COL7, press);//1
                 return;
             case '"':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x4E, press);//2
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW4 + COL7, press);//2
                 return;
             case '#':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x3E, press);//3
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW3 + COL7, press);//3
                 return;
             case '$':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x2E, press);//4
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW2 + COL7, press);//4
                 return;
             case '%':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x1E, press);//5
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW1 + COL7, press);//5
                 return;
             case '&':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x0E, press);//6
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW0 + COL7, press);//6
                 return;
             case 39://'
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x0C, press);//7
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW0 + COL6, press);//7
                 return;
             case '(':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x1C, press);//8
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW1 + COL6, press);//8
                 return;
             case ')':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x2C, press);//9
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW2 + COL6, press);//9
                 return;
             case '=':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x4C, press);//-
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW4 + COL6, press);//-
                 return;
             case ';':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x5C, press);//+
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW5 + COL6, press);//+
                 return;
             case '?':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x48, press);// /
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW4 + COL4, press);// /
                 return;
             case ':':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x58, press);//*
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW5 + COL4, press);//*
                 return;
             case '<':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x10, press);//,
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW1 + COL0, press);//,
                 return;
             case '>':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x20, press);//.
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW2 + COL0, press);//.
                 return;
             case '^':
-                keyMemory(0x70, press);//Shift
-                keyMemory(0x30, press);//@
+                keyMemory(ROW7 + COL0, press);//Shift
+                keyMemory(ROW3 + COL0, press);//@
                 return;
             case '©':
-                keyMemory(0x6A, press);//Ctrl
-                keyMemory(0x64, press);//C
+                keyMemory(ROW6 + COL5, press);//Ctrl
+                keyMemory(ROW6 + COL2, press);//C
                 return;
             default:
                 break;
@@ -204,7 +218,8 @@ public class Keyboard implements KeyListener {
                 return;
             }
         }
-        if (tmpCode != KeyEvent.VK_SHIFT + EVENT && tmpCode != KeyEvent.VK_CONTROL + EVENT)
+        tmpCode -= EVENT;
+        if (tmpCode != KeyEvent.VK_SHIFT && tmpCode != KeyEvent.VK_CONTROL)
             LOGGER.info("Unrecognized Key code: {}", tmpCode);
     }
 
