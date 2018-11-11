@@ -1,7 +1,6 @@
 package org.roug.osnine.mo5;
 
 import org.roug.osnine.MemorySegment;
-import org.roug.osnine.Bus8Motorola;
 
 /**
  * Screen memory at $0000 to $1FFF (or 1F3F).
@@ -22,15 +21,13 @@ public class ScreenMemory extends MemorySegment {
     /** The graphical effect of modifying these bytes. */
     private Screen screen;
 
-    private Bus8Motorola bus;
-
     /**
      * Constructor.
      * The screen memory is always 8192 bytes, but only uses 8000.
+     * @param screen - Connection to the GUI
      */
-    public ScreenMemory(Bus8Motorola bus, Screen screen) {
+    public ScreenMemory(Screen screen) {
         super(0, SIZE);
-        this.bus = bus;
         this.screen = screen;
         pixels = new byte[SIZE];
         color = new byte[SIZE];
@@ -38,8 +35,7 @@ public class ScreenMemory extends MemorySegment {
 
     @Override
     protected int load(int addr) {
-        int bank = bus.read(0xA7C0) & 1;
-        if (bank == 1)
+        if (screen.isPixelMemoryActive())
             return pixels[addr - getStartAddress()] & 0xFF;
         else
             return color[addr - getStartAddress()] & 0xFF;
@@ -49,8 +45,7 @@ public class ScreenMemory extends MemorySegment {
     @Override
     protected void store(int addr, int val) {
         int relAddr = addr - getStartAddress();
-        int bank = bus.read(0xA7C0) & 1;
-        if (bank == 1)
+        if (screen.isPixelMemoryActive())
             pixels[relAddr] = (byte)(val & 0xFF);
         else
             color[relAddr] = (byte)(val & 0xFF);

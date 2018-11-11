@@ -42,8 +42,6 @@ public class PIA6821MO5 extends MemorySegment {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(PIA6821MO5.class);
 
-    public static final int KEYS = 128;
-
     private static final int A = 0;
     private static final int B = 1;
 
@@ -83,17 +81,14 @@ public class PIA6821MO5 extends MemorySegment {
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus8Motorola bus;
-
-    /** Table of keys that are pressed on the keyboard. */
-    private boolean[] key;
+    private Screen screen;
 
     private ClockTick clocktask;
 
-    public PIA6821MO5(Bus8Motorola bus) {
+    public PIA6821MO5(Bus8Motorola bus, Screen screen) {
         super(0xA7C0, 0xA7C0 + 4);
         this.bus = bus;
-        key = new boolean[KEYS];
-        for (int i = 0; i < KEYS; i++) key[i] = false;
+        this.screen = screen;
 
         LOGGER.debug("Starting heartbeat every 20 milliseconds");
         if (clocktask == null) {
@@ -141,8 +136,10 @@ public class PIA6821MO5 extends MemorySegment {
                 if (isBitOn(controlRegister[A], SELECT_OR)) {
                     if (isBitOn(operation, BIT0)) {
                         outputRegister[A] |= BIT0;
+                        screen.setPixelMemoryActive(true);
                     } else {
                         outputRegister[A] &= ~BIT0;
+                        screen.setPixelMemoryActive(false);
                     }
                     operation |= BIT7 + BIT5; // gestion de ,l'inter optique
                     outputRegister[A] = (outputRegister[A]
@@ -168,7 +165,7 @@ public class PIA6821MO5 extends MemorySegment {
                             & (dataDirectionRegister[B] ^ 0xFF))
                             | (operation & dataDirectionRegister[B]);
                     // Keyboard handler
-                    if (key[outputRegister[B] & 0x7E]) {
+                    if (screen.hasKeyPress(outputRegister[B] & 0x7E)) {
                         outputRegister[B] &= ~BIT7;
                     } else {
                         outputRegister[B] |= BIT7;
@@ -185,13 +182,6 @@ public class PIA6821MO5 extends MemorySegment {
                 break;
             }
 
-    }
-
-    /**
-     * Called from the keyboard event handler.
-     */
-    public void setKey(int i, boolean pressed) {
-        key[i] = pressed;
     }
 
     private void disableIRQ(int side) {

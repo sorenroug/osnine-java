@@ -9,7 +9,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Keyboard listener.
- * This class interfaces to the GUI and tells the PIA what keys are pressed.
+ * This class interfaces to the GUI and tells the screen what keys are pressed.
+ * The keyboard is arranged in a grid layout of 8 rows and columns. These are
+ * connected to the PIA with 3+3 bits for rows and columns respectively.
+ * <pre>
+ *         0       1       2       3       4       5       6       7
+ * 0       N       EFF     J       H       U       Y       7       6
+ * 1       ,       INS     K       G       I       T       8       5
+ * 2       .       BACK    L       F       O       R       9       4
+ * 3       @       RIGHT   M       D       P       E       0       3
+ * 4               DOWN    B       S       Z       /       -       2
+ * 5       X       LEFT    V       Q       *       A       +       1
+ * 6       W       UP      C       RAZ     ENT     CNT     ACC     STOP
+ * 7       SHIFT   BASIC   
+ * </pre> 
+ * 
  */
 public class Keyboard implements KeyListener {
 
@@ -33,8 +47,8 @@ public class Keyboard implements KeyListener {
     private static final int ROW6 = 0x60;
     private static final int ROW7 = 0x70;
 
-    /** Interface to the 6821 PIA. */
-    private PIA6821MO5 pia;
+    /** Interface to the Screen. */
+    private Screen screen;
 
     // translation table from scancode to java keycodes VK_
     private static HashMap<Integer, Integer> ftable = new HashMap(100);
@@ -116,16 +130,17 @@ public class Keyboard implements KeyListener {
 
     /**
      * Constructor.
+     * @param screen - the graphical user interface.
      */
-    public Keyboard(PIA6821MO5 pia) {
-        this.pia = pia;
+    public Keyboard(Screen screen) {
+        this.screen = screen;
     }
 
     public void keyTyped(KeyEvent e) {
     }
 
     private void keyMemory(int key, boolean press) {
-        pia.setKey(key, press);
+        screen.setKey(key, press);
     }
 
     private void keyTranslator(KeyEvent e, boolean press) {
@@ -224,8 +239,7 @@ public class Keyboard implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        for (int i = 0; i < PIA6821MO5.KEYS; i++)
-            pia.setKey(i, false);
+        screen.resetAllKeys();
         keyTranslator(e, true);
     }
 

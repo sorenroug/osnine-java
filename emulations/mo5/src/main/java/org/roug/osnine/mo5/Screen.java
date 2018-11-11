@@ -18,21 +18,27 @@ public class Screen extends JPanel {
     private static final int COLUMNS = 320;
     private static final int ROWS = 200;
 
+    /** Key matrix flattend to one dimension. */
+    public static final int KEYS = 128;
+
     private BufferedImage buffImg;
 
     private WritableRaster raster;
 
-    public boolean mouse_clic = false ;
+    private boolean lightpenButtonPressed = false ;
 
-    public int mouse_X = -1, mouse_Y = -1;
+    private int lightpenX = -1, lightpenY = -1;
 
     private int[] pixels;
 
     public double pixelSize;
 
+    /** Called from PIA to signal which memory bank is active. */
+    private boolean pixelMemoryActive;
+
     /** MO5 16 colour palette. */
     private final int palette[] = {
-        0x000000,
+        0x000000,   // Black
         0xF00000,
         0x00F000,
         0xF0F000,
@@ -53,10 +59,18 @@ public class Screen extends JPanel {
         0xF06300,
     };
 
-    /** Constructor.
+    /** Table of keys that are pressed on the keyboard. */
+    private boolean[] keyMatrix;
+
+    /**
+     * Constructor.
      */
     public Screen() {
         this.pixelSize = 2;
+
+        keyMatrix = new boolean[KEYS];
+        resetAllKeys();
+
         buffImg = new BufferedImage(COLUMNS, ROWS, BufferedImage.TYPE_INT_RGB);
         raster = buffImg.getRaster();
         pixels = new int[COLUMNS * ROWS];
@@ -66,8 +80,12 @@ public class Screen extends JPanel {
         raster.setDataElements(0, 0, COLUMNS, ROWS, pixels);
         buffImg.setData(raster);
 
+        // Hook up the Keyboard to the screen
+        Keyboard keyboard = new Keyboard(this);
+        addKeyListener(keyboard);
+
         // Mouse Event use for Lightpen emulation
-        MouseListener _Click = new MouseListener() {
+        MouseListener mouseClick = new MouseListener() {
             public void mouseClicked(MouseEvent e) {
             }
 
@@ -78,24 +96,24 @@ public class Screen extends JPanel {
             }
 
             public void mousePressed(MouseEvent e) {
-                mouse_X = e.getX();
-                mouse_Y = e.getY();
-                mouse_X = (int)((mouse_X ) / pixelSize);
-                mouse_Y = (int)((mouse_Y ) / pixelSize);
-                mouse_clic = true;
+                lightpenX = e.getX();
+                lightpenY = e.getY();
+                lightpenX = (int)((lightpenX ) / pixelSize);
+                lightpenY = (int)((lightpenY ) / pixelSize);
+                lightpenButtonPressed = true;
             }
 
             public void mouseReleased(MouseEvent e) {
-                mouse_clic = false;
+                lightpenButtonPressed = false;
             }
         };
 
-        MouseMotionListener _Motion = new MouseMotionListener() {
+        MouseMotionListener mouseMotion = new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) {
-              mouse_X = e.getX();
-              mouse_Y = e.getY();
-              mouse_X = (int)((mouse_X ) / pixelSize);
-              mouse_Y = (int)((mouse_Y ) / pixelSize);
+              lightpenX = e.getX();
+              lightpenY = e.getY();
+              lightpenX = (int)((lightpenX ) / pixelSize);
+              lightpenY = (int)((lightpenY ) / pixelSize);
             }
 
             public void mouseMoved(MouseEvent e) {
@@ -103,8 +121,8 @@ public class Screen extends JPanel {
             }
         };
 
-        this.addMouseMotionListener(_Motion);
-        this.addMouseListener(_Click);
+        this.addMouseMotionListener(mouseMotion);
+        this.addMouseListener(mouseClick);
 
     }
 
@@ -116,9 +134,37 @@ public class Screen extends JPanel {
         return pixelSize;
     }
 
+    public void setPixelMemoryActive(boolean flag) {
+        pixelMemoryActive = flag;
+    }
+
+    public boolean isPixelMemoryActive() {
+        return pixelMemoryActive;
+    }
+
+    /**
+     * Called from the keyboard event handler.
+     * @param i - index into key matrix
+     * @param pressed - flag to say if key is on or off.
+     */
+    public void setKey(int i, boolean pressed) {
+        keyMatrix[i] = pressed;
+    }
+
+    public boolean hasKeyPress(int i) {
+        return keyMatrix[i];
+    }
+
+    public void resetAllKeys() {
+        for (int i = 0; i < KEYS; i++) keyMatrix[i] = false;
+    }
+
     /**
      * Change the pixel buffer at the given address.
      * There are always 8 pixels to update.
+     * @param addr - address of screen byte. 0 is pixels 0-7 in top left corner
+     * @param pixelByte - on/off for 8 pixels.
+     * @param colorByte - color index for foreground and background.
      */
     public void updatePixels(int addr, int pixelByte, int colorByte) {
         int offset = addr * 8;

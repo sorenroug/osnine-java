@@ -2,11 +2,10 @@ package org.roug.osnine.mo5;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.Insets;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
@@ -22,6 +21,9 @@ import java.io.FileInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * GUI for Thomson MO5 emulator.
+ */
 public class MO5Emu {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MO5Emu.class);
@@ -46,27 +48,26 @@ public class MO5Emu {
         guiFrame.setJMenuBar(guiMenuBar);
         addFileMenu(guiMenuBar);
 
+        bus = new BusStraight();
+
         // Create screen and attach it to the bus.
         screen = new Screen();
-        bus = new BusStraight();
-        ScreenMemory scrMem = new ScreenMemory(bus, screen);
+        ScreenMemory scrMem = new ScreenMemory(screen);
         bus.addMemorySegment(scrMem);
 
         RandomAccessMemory ram = new RandomAccessMemory(0x2000, bus, "0x8000");
         bus.addMemorySegment(ram);
+
         ReadOnlyMemory rom = new ReadOnlyMemory(0xC000, bus, "0x4000");
         bus.addMemorySegment(rom);
         loadROM("basic5.rom", 0xC000);
         loadROM("mo5.rom", 0xF000);
 
-        pia = new PIA6821MO5(bus);
+        pia = new PIA6821MO5(bus, screen);
         bus.addMemorySegment(pia);
 
         cpu = new MC6809(bus);
 
-        // Hook up the Keyboard to the PIA
-        Keyboard keyboard = new Keyboard(pia);
-        screen.addKeyListener(keyboard);
         guiFrame.add(screen);
         guiFrame.pack();
 
@@ -141,7 +142,7 @@ public class MO5Emu {
         guiMenuBar.add(guiMenuFile);
     }
 
-    private class QuitAction implements ActionListener {
+    private static class QuitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
