@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Keyboard listener.
+ * Keyboard listener for MO5.
  * This class interfaces to the GUI and tells the screen what keys are pressed.
  * The keyboard is arranged in a grid layout of 8 rows and columns. These are
  * connected to the PIA with 3+3 bits for rows and columns respectively.

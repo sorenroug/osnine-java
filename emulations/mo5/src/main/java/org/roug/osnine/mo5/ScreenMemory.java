@@ -35,7 +35,7 @@ public class ScreenMemory extends MemorySegment {
 
     @Override
     protected int load(int addr) {
-        if (screen.isPixelMemoryActive())
+        if (screen.isPixelBankActive())
             return pixels[addr - getStartAddress()] & 0xFF;
         else
             return color[addr - getStartAddress()] & 0xFF;
@@ -45,7 +45,7 @@ public class ScreenMemory extends MemorySegment {
     @Override
     protected void store(int addr, int val) {
         int relAddr = addr - getStartAddress();
-        if (screen.isPixelMemoryActive())
+        if (screen.isPixelBankActive())
             pixels[relAddr] = (byte)(val & 0xFF);
         else
             color[relAddr] = (byte)(val & 0xFF);

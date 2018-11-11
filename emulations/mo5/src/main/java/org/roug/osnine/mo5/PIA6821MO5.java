@@ -136,19 +136,21 @@ public class PIA6821MO5 extends MemorySegment {
                 if (isBitOn(controlRegister[A], SELECT_OR)) {
                     if (isBitOn(operation, BIT0)) {
                         outputRegister[A] |= BIT0;
-                        screen.setPixelMemoryActive(true);
+                        screen.setPixelBankActive(true);
                     } else {
                         outputRegister[A] &= ~BIT0;
-                        screen.setPixelMemoryActive(false);
+                        screen.setPixelBankActive(false);
                     }
-                    operation |= BIT7 + BIT5; // gestion de ,l'inter optique
+                    operation |= BIT7;
                     outputRegister[A] = (outputRegister[A]
                             & (dataDirectionRegister[A] ^ 0xFF))
                             | (operation & dataDirectionRegister[A]);
-//                  if (LightPenClic)
-//                       dataDirectionRegister[A]= outputRegister[A]|BIT5;
-//                  else
+
+                    if (isBitOn(operation, BIT5) && screen.isLightpenButtonPressed())
+                        dataDirectionRegister[A] = outputRegister[A] | BIT5;
+                    else
                         dataDirectionRegister[A] = outputRegister[A] & (0xFF - BIT5);
+
                 } else {
                     dataDirectionRegister[A] = operation;
                 }

@@ -19,7 +19,7 @@ public class Screen extends JPanel {
     private static final int ROWS = 200;
 
     /** Key matrix flattend to one dimension. */
-    public static final int KEYS = 128;
+    private static final int KEYS = 128;
 
     private BufferedImage buffImg;
 
@@ -31,22 +31,22 @@ public class Screen extends JPanel {
 
     private int[] pixels;
 
-    public double pixelSize;
+    private double pixelSize;
 
     /** Called from PIA to signal which memory bank is active. */
-    private boolean pixelMemoryActive;
+    private boolean pixelBankActive;
 
     /** MO5 16 colour palette. */
     private final int palette[] = {
         0x000000,   // Black
-        0xF00000,
-        0x00F000,
-        0xF0F000,
+        0xF00000,   // Red
+        0x00F000,   // Green
+        0xF0F000,   // Yellow
 
-        0x0000F0,
-        0xF000F0,
-        0x00F0F0,
-        0xF0F0F0,
+        0x0000F0,   // Blue
+        0xF000F0,   // Magenta
+        0x00F0F0,   // Cyan
+        0xF0F0F0,   // White
 
         0x636363,
         0xF06363,
@@ -63,7 +63,7 @@ public class Screen extends JPanel {
     private boolean[] keyMatrix;
 
     /**
-     * Constructor.
+     * Create the canvas for pixel (and text graphics).
      */
     public Screen() {
         this.pixelSize = 2;
@@ -134,12 +134,22 @@ public class Screen extends JPanel {
         return pixelSize;
     }
 
-    public void setPixelMemoryActive(boolean flag) {
-        pixelMemoryActive = flag;
+    /**
+     * Tell the screen if pixels or colours are selected in the PIA.
+     */
+    public void setPixelBankActive(boolean flag) {
+        pixelBankActive = flag;
     }
 
-    public boolean isPixelMemoryActive() {
-        return pixelMemoryActive;
+    public boolean isLightpenButtonPressed() {
+        return lightpenButtonPressed;
+    }
+
+    /**
+     * Ask if pixels or colours are selected in the PIA.
+     */
+    public boolean isPixelBankActive() {
+        return pixelBankActive;
     }
 
     /**
@@ -193,7 +203,8 @@ public class Screen extends JPanel {
     protected void paintComponent(Graphics gc) {
         super.paintComponent(gc);
         raster.setDataElements(0, 0, COLUMNS, ROWS, pixels);
-        gc.drawImage(buffImg, 0, 0, (int)(COLUMNS * pixelSize), (int)(ROWS * pixelSize), null);
+        gc.drawImage(buffImg, 0, 0, (int)(COLUMNS * pixelSize),
+                                    (int)(ROWS * pixelSize), null);
     }
 
 }
