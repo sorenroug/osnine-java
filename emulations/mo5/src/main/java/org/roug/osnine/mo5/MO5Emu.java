@@ -29,7 +29,6 @@ public class MO5Emu {
     private static final Logger LOGGER = LoggerFactory.getLogger(MO5Emu.class);
 
     private JFrame guiFrame;
-    private PIA6821MO5 pia;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
@@ -51,9 +50,7 @@ public class MO5Emu {
         bus = new BusStraight();
 
         // Create screen and attach it to the bus.
-        screen = new Screen();
-        ScreenMemory scrMem = new ScreenMemory(screen);
-        bus.addMemorySegment(scrMem);
+        screen = new Screen(bus);
 
         RandomAccessMemory ram = new RandomAccessMemory(0x2000, bus, "0x8000");
         bus.addMemorySegment(ram);
@@ -62,9 +59,6 @@ public class MO5Emu {
         bus.addMemorySegment(rom);
         loadROM("basic5.rom", 0xC000);
         loadROM("mo5.rom", 0xF000);
-
-        pia = new PIA6821MO5(bus, screen);
-        bus.addMemorySegment(pia);
 
         cpu = new MC6809(bus);
 

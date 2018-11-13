@@ -102,31 +102,59 @@ public class PIA6821MO5 extends MemorySegment {
     protected int load(int addr) {
         switch (addr - getStartAddress()) {
             case DDRA:
-                if (isBitOn(controlRegister[A], SELECT_OR))
-                    return outputRegister[A] & 0xFF;
-                else
-                    return dataDirectionRegister[A];
+                return readPeripheralRegister(A);
             case CRA:
                 return readControlRegister(A);
             case DDRB:
-                if (isBitOn(controlRegister[B], SELECT_OR))
-                    return outputRegister[B] & 0xFF;
-                else
-                    return dataDirectionRegister[B];
+                return readPeripheralRegister(B);
             case CRB:
                 return readControlRegister(B);
         }
         return 0;
     }
 
-    private int readControlRegister(int side) {
-        int tmpCR = controlRegister[side];
-        if (isBitOn(controlRegister[side], CIRQ) && activeIRQ[side]) {
+    /**
+     * Deactivate IRQ.
+     */
+    private void deactivateIRQ(int side) {
+        if (activeIRQ[side]) {
             activeIRQ[side] = false;
-            bus.signalIRQ(false);
+            if (side == B) {
+                bus.signalIRQ(false);
+            }
+            else {
+                LOGGER.info("Lower FIRQ");
+                bus.signalFIRQ(false);
+            }
         }
         controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
-        return tmpCR;
+    }
+
+    /**
+     * Read output register.
+     * The interrupt flags are cleared as a result of a read
+     * Peripheral Data Operation.
+     */
+    private int readPeripheralRegister(int side) {
+        deactivateIRQ(side);
+        if (isBitOn(controlRegister[side], SELECT_OR)) {
+            return outputRegister[side] & 0xFF;
+        } else {
+            return dataDirectionRegister[side];
+        }
+    }
+
+    private int readControlRegister(int side) {
+        //deactivateIRQ(side);
+        return controlRegister[side] & 0xFF;
+    }
+
+    /**
+     * Write to a control register.
+     * Bit 6 and 7 are read only.
+     */
+    private void writeControlRegister(int side, int val) {
+        controlRegister[side] = (controlRegister[side] & 0xC0) | (val & 0x3F);
     }
 
     @Override
@@ -141,25 +169,23 @@ public class PIA6821MO5 extends MemorySegment {
                         outputRegister[A] &= ~BIT0;
                         screen.setPixelBankActive(false);
                     }
-                    operation |= BIT7;
+                    // Only write bits that are outputs in the data direction register.
                     outputRegister[A] = (outputRegister[A]
                             & (dataDirectionRegister[A] ^ 0xFF))
                             | (operation & dataDirectionRegister[A]);
-
-                    if (isBitOn(operation, BIT5) && screen.isLightpenButtonPressed())
-                        dataDirectionRegister[A] = outputRegister[A] | BIT5;
-                    else
-                        dataDirectionRegister[A] = outputRegister[A] & (0xFF - BIT5);
-
                 } else {
+                    // Access data direction register
                     dataDirectionRegister[A] = operation;
                 }
                 break;
             case CRA: 
+                LOGGER.info("CRA Store: {} op: {}", addr, operation);
                 if ((operation & CIRQ) == 0) {
                     disableIRQ(A);
+                } else {
+                    enableIRQ(A);
                 }
-                controlRegister[A] = (controlRegister[A] & 0xD0) | (operation & 0x3F);
+                writeControlRegister(A, operation);
                 break;
             case DDRB:
                 if (isBitOn(controlRegister[B], SELECT_OR)) {
@@ -177,19 +203,66 @@ public class PIA6821MO5 extends MemorySegment {
                 }
                 break;
             case CRB:
+                LOGGER.info("CRB Store: {} op: {}", addr, operation);
                 if ((operation & CIRQ) == 0) {
                     disableIRQ(B);
+                } else {
+                    enableIRQ(B);
                 }
-                controlRegister[B] = (controlRegister[B] & 0xD0)|(operation & 0x3F);
+                writeControlRegister(B, operation);
                 break;
             }
 
     }
 
+    /**
+     * Send IRQ signal if the IRQ bit is on.
+     */
+    private void enableIRQ(int side) {
+        if (isBitOn(controlRegister[side], BIT7)) {
+            if (side == B) {
+                activeIRQ[side] = true;
+                LOGGER.info("Signal IRQ");
+                bus.signalIRQ(true);
+            } else {
+                activeIRQ[side] = true;
+                LOGGER.info("Signal FIRQ");
+                bus.signalFIRQ(true);
+            }
+        }
+    }
+
     private void disableIRQ(int side) {
         if (activeIRQ[side]) {
             activeIRQ[side] = false;
-            bus.signalIRQ(false);
+            if (side == B)
+                bus.signalIRQ(false);
+            else
+                bus.signalFIRQ(false);
+        }
+    }
+
+    /**
+     * Activate CA1 IRQ and signal CPU.
+     * If bit 0 in CRB is 0, then IRQs are disabled,
+     * but the status is kept.
+     */
+    void signalCA1(boolean state) {
+        if (state) {
+            controlRegister[A] |= BIT7;
+            if (activeIRQ[A] == false) {
+                if (isBitOn(controlRegister[A], CIRQ)) {
+                    LOGGER.info("SignalCA1 FIRQ");
+                    activeIRQ[A] = true;
+                    bus.signalFIRQ(true);
+                }
+            }
+        } else {
+            controlRegister[A] &= ~BIT7;
+            if (activeIRQ[A] == true) {
+                activeIRQ[A] = false;
+                bus.signalFIRQ(false);
+            }
         }
     }
 
@@ -199,13 +272,25 @@ public class PIA6821MO5 extends MemorySegment {
      * but the status is kept.
      */
     void signalCB1() {
+        controlRegister[B] |= BIT7;
         if (activeIRQ[B] == false) {
-            activeIRQ[B] = true;
             if (isBitOn(controlRegister[B], CIRQ)) {
-                controlRegister[B] |= BIT7;
+                activeIRQ[B] = true;
                 bus.signalIRQ(true);
             }
         }
+    }
+
+  
+    /**
+     * The lightpen button is directly tied to PA5 on Peripheral data port A.
+     * @param state - true = set PA5 to 1.
+     */
+    void setPA5(boolean state) {
+        if (state)
+            outputRegister[A] |= BIT5;
+        else
+            outputRegister[A] &= ~BIT5;
     }
 
     private static boolean isBitOn(int x, int n) {

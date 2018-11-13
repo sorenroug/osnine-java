@@ -8,6 +8,10 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import javax.swing.JPanel;
+import org.roug.osnine.Bus8Motorola;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Graphical screen for Thomson MO5. The dimensions are 320x200 pixels,
@@ -15,11 +19,21 @@ import javax.swing.JPanel;
  */
 public class Screen extends JPanel {
 
+    private static final Logger LOGGER
+                = LoggerFactory.getLogger(Screen.class);
+
     private static final int COLUMNS = 320;
     private static final int ROWS = 200;
 
     /** Key matrix flattend to one dimension. */
     private static final int KEYS = 128;
+
+    private Bus8Motorola bus;
+
+    /** Gate-array chip to track lightpen. */
+    private GateArray gateArray;
+
+    private PIA6821MO5 pia;
 
     private BufferedImage buffImg;
 
@@ -65,8 +79,9 @@ public class Screen extends JPanel {
     /**
      * Create the canvas for pixel (and text graphics).
      */
-    public Screen() {
+    public Screen(Bus8Motorola bus) {
         this.pixelSize = 2;
+        this.bus = bus;
 
         keyMatrix = new boolean[KEYS];
         resetAllKeys();
@@ -80,6 +95,15 @@ public class Screen extends JPanel {
         raster.setDataElements(0, 0, COLUMNS, ROWS, pixels);
         buffImg.setData(raster);
 
+        ScreenMemory scrMem = new ScreenMemory(this);
+        bus.addMemorySegment(scrMem);
+
+        gateArray = new GateArray(this);
+        bus.addMemorySegment(gateArray);
+
+        pia = new PIA6821MO5(bus, this);
+        bus.addMemorySegment(pia);
+
         // Hook up the Keyboard to the screen
         Keyboard keyboard = new Keyboard(this);
         addKeyListener(keyboard);
@@ -90,40 +114,59 @@ public class Screen extends JPanel {
             }
 
             public void mouseEntered(MouseEvent e) {
+                setMouseXY(e);
             }
 
             public void mouseExited(MouseEvent e) {
+                lightpenX = -1;
+                lightpenY = -1;
             }
 
             public void mousePressed(MouseEvent e) {
-                lightpenX = e.getX();
-                lightpenY = e.getY();
-                lightpenX = (int)((lightpenX ) / pixelSize);
-                lightpenY = (int)((lightpenY ) / pixelSize);
+                setMouseXY(e);
                 lightpenButtonPressed = true;
+                //gateArray.setLightpenXY(lightpenX, lightpenY);
+                pia.setPA5(true);
             }
 
             public void mouseReleased(MouseEvent e) {
                 lightpenButtonPressed = false;
+                pia.setPA5(false);
             }
         };
 
         MouseMotionListener mouseMotion = new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) {
-              lightpenX = e.getX();
-              lightpenY = e.getY();
-              lightpenX = (int)((lightpenX ) / pixelSize);
-              lightpenY = (int)((lightpenY ) / pixelSize);
+                setMouseXY(e);
             }
 
             public void mouseMoved(MouseEvent e) {
-
+                setMouseXY(e);
             }
         };
 
         this.addMouseMotionListener(mouseMotion);
         this.addMouseListener(mouseClick);
 
+    }
+
+    private void setMouseXY(MouseEvent e) {
+        LOGGER.info("Setting light pen coords: {},{}", lightpenX, lightpenY);
+        lightpenX = (int)(e.getX() / pixelSize);
+        lightpenY = (int)(e.getY() / pixelSize);
+        pia.signalCA1(true);  // Causes the PIA to send FIRQ to the CPU
+    }
+
+    void signalCA1(boolean state) {
+        pia.signalCA1(state);
+    }
+
+    int getLightpenX() {
+        return lightpenX;
+    }
+
+    int getLightpenY() {
+        return lightpenY;
     }
 
     public void setPixelSize(double ps) {
@@ -177,6 +220,7 @@ public class Screen extends JPanel {
      * @param colorByte - color index for foreground and background.
      */
     public void updatePixels(int addr, int pixelByte, int colorByte) {
+        if (addr >= 8000) {LOGGER.debug("Painting addr: {}", addr); return; }
         int offset = addr * 8;
         int bgInx = colorByte & 0x0F;
         int fgInx = (colorByte & 0xF0) >> 4;
