@@ -27,7 +27,7 @@
         <assemble src="basic09_dragon" home="basic09"/>
         <assemble src="RunB_org" home="basic09"/>
         <assemble src="gfx" home="basic09"/>
-        <assemble src="syscall" home="basic09"/>
+<!--       <assemble src="syscall" home="basic09"/> -->
 
         <assemble src="go51nkb" home="kernel"/>
         <assemble src="go51n" home="kernel"/>
