@@ -8,6 +8,10 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+interface Signal {
+    void send(boolean state);
+}
+
 /**
  * 6821 PIA in a Thomsom MO5.
  * This chip is located at addresses 0xA7C0-0xA7C3.
@@ -36,23 +40,23 @@ import org.slf4j.LoggerFactory;
  *  CB1: 50Hz interrupt (IRQB is wired to 6809 IRQ)
  *  CB2: video incrustation enable (output)
 
- * */
+ */
 public class PIA6821MO5 extends MemorySegment {
 
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(PIA6821MO5.class);
 
-    private static final int A = 0;
-    private static final int B = 1;
+    public static final int A = 0;
+    public static final int B = 1;
 
-    private static final int BIT0 = 0x01;
-    private static final int BIT1 = 0x02;
-    private static final int BIT2 = 0x04;
-    private static final int BIT3 = 0x08;
-    private static final int BIT4 = 0x10;
-    private static final int BIT5 = 0x20;
-    private static final int BIT6 = 0x40;
-    private static final int BIT7 = 0x80;
+    public static final int BIT0 = 0x01;
+    public static final int BIT1 = 0x02;
+    public static final int BIT2 = 0x04;
+    public static final int BIT3 = 0x08;
+    public static final int BIT4 = 0x10;
+    public static final int BIT5 = 0x20;
+    public static final int BIT6 = 0x40;
+    public static final int BIT7 = 0x80;
 
     /** Control bit for IRQ. */
     private static final int CIRQ = 0x01;
@@ -61,12 +65,12 @@ public class PIA6821MO5 extends MemorySegment {
     private static final int SELECT_OR = 0x04;
 
     // NOTE: the MO5 has swapped Register Select 0 and 1.
-    private static final int DDRA = 0;
-    private static final int ORA = 0;
-    private static final int DDRB = 1;
-    private static final int ORB = 1;
-    private static final int CRA = 2;
-    private static final int CRB = 3;
+    protected static final int DDRA = 0;
+    protected static final int ORA = 0;
+    protected static final int DDRB = 1;
+    protected static final int ORB = 1;
+    protected static final int CRA = 2;
+    protected static final int CRB = 3;
 
     private static final int CLOCKDELAY = 500;  // milliseconds
     /** On MO5 the interrupt is 50 times a second. */
@@ -79,6 +83,8 @@ public class PIA6821MO5 extends MemorySegment {
     /** If PIA has raised IRQ on the bus. */
     private boolean[] activeIRQ = new boolean[2];
 
+    private Signal[] irqOut = new Signal[2];
+
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus8Motorola bus;
     private Screen screen;
@@ -86,16 +92,25 @@ public class PIA6821MO5 extends MemorySegment {
     private ClockTick clocktask;
 
     public PIA6821MO5(Bus8Motorola bus, Screen screen) {
+        this(bus, screen, true);
+    }
+
+    public PIA6821MO5(Bus8Motorola bus, Screen screen, boolean startClock) {
         super(0xA7C0, 0xA7C0 + 4);
         this.bus = bus;
         this.screen = screen;
 
-        LOGGER.debug("Starting heartbeat every 20 milliseconds");
-        if (clocktask == null) {
-            clocktask = new ClockTick(this);
-            Timer timer = new Timer("clock", true);
-            timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
+        if (startClock) {
+            LOGGER.debug("Starting heartbeat every 20 milliseconds");
+            if (clocktask == null) {
+                clocktask = new ClockTick(this);
+                Timer timer = new Timer("clock", true);
+                timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
+            }
         }
+        irqOut[A] = (boolean state) -> bus.signalFIRQ(state);
+        irqOut[B] = (boolean state) -> bus.signalIRQ(state);
+        irqOut[A] = (boolean state) -> {};
     }
 
     @Override
@@ -119,13 +134,7 @@ public class PIA6821MO5 extends MemorySegment {
     private void deactivateIRQ(int side) {
         if (activeIRQ[side]) {
             activeIRQ[side] = false;
-            if (side == B) {
-                bus.signalIRQ(false);
-            }
-            else {
-                LOGGER.info("Lower FIRQ");
-                bus.signalFIRQ(false);
-            }
+            irqOut[side].send(false);
         }
         controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
     }
@@ -136,8 +145,8 @@ public class PIA6821MO5 extends MemorySegment {
      * Peripheral Data Operation.
      */
     private int readPeripheralRegister(int side) {
-        deactivateIRQ(side);
         if (isBitOn(controlRegister[side], SELECT_OR)) {
+            deactivateIRQ(side);
             return outputRegister[side] & 0xFF;
         } else {
             return dataDirectionRegister[side];
@@ -145,7 +154,6 @@ public class PIA6821MO5 extends MemorySegment {
     }
 
     private int readControlRegister(int side) {
-        //deactivateIRQ(side);
         return controlRegister[side] & 0xFF;
     }
 
@@ -155,6 +163,7 @@ public class PIA6821MO5 extends MemorySegment {
      */
     private void writeControlRegister(int side, int val) {
         controlRegister[side] = (controlRegister[side] & 0xC0) | (val & 0x3F);
+        LOGGER.info("CR Side: {} new value: {}", side, controlRegister[side]);
     }
 
     @Override
@@ -183,6 +192,8 @@ public class PIA6821MO5 extends MemorySegment {
                 if ((operation & CIRQ) == 0) {
                     disableIRQ(A);
                 } else {
+                    if (screen.getLightpenX() != -1)
+                        controlRegister[A] |= BIT7;
                     enableIRQ(A);
                 }
                 writeControlRegister(A, operation);
@@ -211,8 +222,7 @@ public class PIA6821MO5 extends MemorySegment {
                 }
                 writeControlRegister(B, operation);
                 break;
-            }
-
+        }
     }
 
     /**
@@ -220,25 +230,15 @@ public class PIA6821MO5 extends MemorySegment {
      */
     private void enableIRQ(int side) {
         if (isBitOn(controlRegister[side], BIT7)) {
-            if (side == B) {
-                activeIRQ[side] = true;
-                LOGGER.info("Signal IRQ");
-                bus.signalIRQ(true);
-            } else {
-                activeIRQ[side] = true;
-                LOGGER.info("Signal FIRQ");
-                bus.signalFIRQ(true);
-            }
+            activeIRQ[side] = true;
+            irqOut[side].send(true);
         }
     }
 
     private void disableIRQ(int side) {
         if (activeIRQ[side]) {
             activeIRQ[side] = false;
-            if (side == B)
-                bus.signalIRQ(false);
-            else
-                bus.signalFIRQ(false);
+            irqOut[side].send(false);
         }
     }
 
@@ -254,14 +254,14 @@ public class PIA6821MO5 extends MemorySegment {
                 if (isBitOn(controlRegister[A], CIRQ)) {
                     LOGGER.info("SignalCA1 FIRQ");
                     activeIRQ[A] = true;
-                    bus.signalFIRQ(true);
+                    irqOut[A].send(true);
                 }
             }
         } else {
             controlRegister[A] &= ~BIT7;
             if (activeIRQ[A] == true) {
                 activeIRQ[A] = false;
-                bus.signalFIRQ(false);
+                irqOut[A].send(false);
             }
         }
     }
@@ -276,21 +276,24 @@ public class PIA6821MO5 extends MemorySegment {
         if (activeIRQ[B] == false) {
             if (isBitOn(controlRegister[B], CIRQ)) {
                 activeIRQ[B] = true;
-                bus.signalIRQ(true);
+                irqOut[B].send(true);
             }
         }
     }
 
-  
+ 
     /**
-     * The lightpen button is directly tied to PA5 on Peripheral data port A.
-     * @param state - true = set PA5 to 1.
+     * Set a new state on a line. The line must be configured as input in the
+     * DDR, or it will be ignored.
      */
-    void setPA5(boolean state) {
+    public void setInputLine(int side, int line, boolean state) {
+        int bitMask = 1 << line;
+        if ((dataDirectionRegister[side] & bitMask) == bitMask)
+            return; // Line is output
         if (state)
-            outputRegister[A] |= BIT5;
+            outputRegister[side] |= bitMask;
         else
-            outputRegister[A] &= ~BIT5;
+            outputRegister[side] &= ~bitMask;
     }
 
     private static boolean isBitOn(int x, int n) {
