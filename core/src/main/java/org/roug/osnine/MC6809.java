@@ -26,6 +26,9 @@ public class MC6809 extends USimMotorola {
     /** Addressing mode. */
     private int mode;
 
+    /** Set to true to disassemble executed instruction. */
+    private boolean traceInstructions = false;
+
     /** Stack pointer U. */
     public final Word u = new Word("U");
     /** Stack pointer S. */
@@ -60,6 +63,8 @@ public class MC6809 extends USimMotorola {
     private boolean waitState = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MC6809.class);
+
+    private DisAssembler disAsm = null;
 
     /** The bus the CPU is connected to. */
     private Bus8Motorola bus;
@@ -102,6 +107,13 @@ public class MC6809 extends USimMotorola {
         super(bus);
         this.bus = bus;
         reset();
+    }
+
+    private void setTraceInstructions(boolean value) {
+        traceInstructions = value;
+        if (disAsm == null && value) {
+            disAsm = new DisAssembler(this);
+        }
     }
 
     /**
@@ -155,6 +167,9 @@ public class MC6809 extends USimMotorola {
     public void execute() {
         if (resetSignal) {
             reset();
+        }
+        if (traceInstructions) {
+            disAsm.disasmPC();
         }
         ir = fetch();
 
@@ -1322,9 +1337,11 @@ public class MC6809 extends USimMotorola {
      */
     private void firq() {
         if (!waitState) {
+            cc.setE(0);
             help_psh(0x81, s, u);
         }
         waitState = false;
+        LOGGER.debug("FIRQ received at {}", pc);
         cc.setF(1);
         cc.setI(1);
         pc.set(read_word(FIRQ_ADDR));
@@ -1353,7 +1370,6 @@ public class MC6809 extends USimMotorola {
      * program.
      */
     private void irq() {
-        //LOGGER.debug("IRQ received");
         if (cc.isSetI()) {
             return;
         }
