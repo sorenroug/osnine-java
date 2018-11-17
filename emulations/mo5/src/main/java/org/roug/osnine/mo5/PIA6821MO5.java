@@ -12,6 +12,10 @@ interface Signal {
     void send(boolean state);
 }
 
+interface OutputPins {
+    void send(int side, int mask, int value);
+}
+
 /**
  * 6821 PIA in a Thomsom MO5.
  * This chip is located at addresses 0xA7C0-0xA7C3.
@@ -76,7 +80,7 @@ public class PIA6821MO5 extends MemorySegment {
     /** On MO5 the interrupt is 50 times a second. */
     private static final int CLOCKPERIOD = 20;  // milliseconds
 
-    private int[] outputRegister = new int[2]; 
+    private int[] outputRegister = new int[2];
     private int[] dataDirectionRegister = new int[2];
     private int[] controlRegister = new int[2];
 
@@ -84,6 +88,8 @@ public class PIA6821MO5 extends MemorySegment {
     private boolean[] activeIRQ = new boolean[2];
 
     private Signal[] irqOut = new Signal[2];
+
+    private OutputPins[] pinOuts = new OutputPins[2];
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus8Motorola bus;
@@ -110,7 +116,10 @@ public class PIA6821MO5 extends MemorySegment {
         }
         irqOut[A] = (boolean state) -> bus.signalFIRQ(state);
         irqOut[B] = (boolean state) -> bus.signalIRQ(state);
-        irqOut[A] = (boolean state) -> {};
+        //irqOut[A] = (boolean state) -> {};
+
+        pinOuts[A] = (int side, int mask, int value) -> {};
+        pinOuts[B] = (int side, int mask, int value) -> keyboardMatrix(side, mask, value);
     }
 
     @Override
@@ -169,7 +178,7 @@ public class PIA6821MO5 extends MemorySegment {
     @Override
     protected void store(int addr, int operation) {
         switch (addr - getStartAddress()) {
-            case DDRA: 
+            case DDRA:
                 if (isBitOn(controlRegister[A], SELECT_OR)) {
                     if (isBitOn(operation, BIT0)) {
                         outputRegister[A] |= BIT0;
@@ -187,13 +196,11 @@ public class PIA6821MO5 extends MemorySegment {
                     dataDirectionRegister[A] = operation;
                 }
                 break;
-            case CRA: 
+            case CRA:
                 LOGGER.info("CRA Store: {} op: {}", addr, operation);
                 if ((operation & CIRQ) == 0) {
                     disableIRQ(A);
                 } else {
-                    if (screen.getLightpenX() != -1)
-                        controlRegister[A] |= BIT7;
                     enableIRQ(A);
                 }
                 writeControlRegister(A, operation);
@@ -230,8 +237,11 @@ public class PIA6821MO5 extends MemorySegment {
      */
     private void enableIRQ(int side) {
         if (isBitOn(controlRegister[side], BIT7)) {
-            activeIRQ[side] = true;
-            irqOut[side].send(true);
+            if (activeIRQ[side] == false) {
+                if (side == A) LOGGER.info("enableIRQ FIRQ");
+                activeIRQ[side] = true;
+                irqOut[side].send(true);
+            }
         }
     }
 
@@ -281,7 +291,25 @@ public class PIA6821MO5 extends MemorySegment {
         }
     }
 
- 
+
+    /**
+     * Set value on a number of output lines simultaneously.
+     */
+    private void setOutputOctet(int side, int mask, int value) {
+
+        int outputMask = dataDirectionRegister[side] & mask;
+        outputRegister[side] = (outputRegister[side] & ~outputMask)
+                             | (outputMask & value);
+        pinOuts[side].send(side, mask, value);
+    }
+
+    /**
+     * Scan keyboard matrix for pressed keys. Set input line B7 if so.
+     */
+    private void keyboardMatrix(int side, int mask, int value) {
+        setInputLine(B, 7, screen.hasKeyPress(value & mask));
+    }
+
     /**
      * Set a new state on a line. The line must be configured as input in the
      * DDR, or it will be ignored.

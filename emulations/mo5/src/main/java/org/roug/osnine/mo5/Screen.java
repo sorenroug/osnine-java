@@ -120,18 +120,19 @@ public class Screen extends JPanel {
             public void mouseExited(MouseEvent e) {
                 lightpenX = -1;
                 lightpenY = -1;
+                gateArray.setLightpenXY(lightpenX, lightpenY);
             }
 
             public void mousePressed(MouseEvent e) {
                 setMouseXY(e);
                 lightpenButtonPressed = true;
-                //gateArray.setLightpenXY(lightpenX, lightpenY);
-                pia.setPA5(true);
+                // The lightpen button is directly tied to PA5 on Peripheral data port A.
+                pia.setInputLine(PIA6821MO5.A, 5, true);
             }
 
             public void mouseReleased(MouseEvent e) {
                 lightpenButtonPressed = false;
-                pia.setPA5(false);
+                pia.setInputLine(PIA6821MO5.A, 5, false);
             }
         };
 
@@ -151,9 +152,10 @@ public class Screen extends JPanel {
     }
 
     private void setMouseXY(MouseEvent e) {
-        LOGGER.info("Setting light pen coords: {},{}", lightpenX, lightpenY);
+        //LOGGER.info("Setting light pen coords: {},{}", lightpenX, lightpenY);
         lightpenX = (int)(e.getX() / pixelSize);
         lightpenY = (int)(e.getY() / pixelSize);
+        gateArray.setLightpenXY(lightpenX, lightpenY);
         pia.signalCA1(true);  // Causes the PIA to send FIRQ to the CPU
     }
 
@@ -165,8 +167,16 @@ public class Screen extends JPanel {
         return lightpenX;
     }
 
+    void setLightpenX(int x) {
+        lightpenX = x;
+    }
+
     int getLightpenY() {
         return lightpenY;
+    }
+
+    void setLightpenY(int y) {
+        lightpenY = y;
     }
 
     public void setPixelSize(double ps) {
