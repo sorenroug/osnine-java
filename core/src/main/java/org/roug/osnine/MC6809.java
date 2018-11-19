@@ -1378,7 +1378,6 @@ public class MC6809 extends USimMotorola {
             help_psh(0xff, s, u);
         }
         waitState = false;
-        cc.setF(1);
         cc.setI(1);
         pc.set(read_word(IRQ_ADDR));
     }
