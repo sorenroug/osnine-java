@@ -13,7 +13,7 @@ interface Signal {
 }
 
 interface OutputPins {
-    void send(int side, int mask, int value);
+    void send(int mask, int value, int oldValue);
 }
 
 /**
@@ -118,8 +118,8 @@ public class PIA6821MO5 extends MemorySegment {
         irqOut[B] = (boolean state) -> bus.signalIRQ(state);
         //irqOut[A] = (boolean state) -> {};
 
-        pinOuts[A] = (int side, int mask, int value) -> {};
-        pinOuts[B] = (int side, int mask, int value) -> keyboardMatrix(side, mask, value);
+        pinOuts[A] = (int mask, int value, int oldValue) -> screenMemoryBank(mask, value, oldValue);
+        pinOuts[B] = (int mask, int value, int oldValue) -> keyboardMatrix(mask, value, oldValue);
     }
 
     @Override
@@ -180,17 +180,7 @@ public class PIA6821MO5 extends MemorySegment {
         switch (addr - getStartAddress()) {
             case DDRA:
                 if (isBitOn(controlRegister[A], SELECT_OR)) {
-                    if (isBitOn(operation, BIT0)) {
-                        outputRegister[A] |= BIT0;
-                        screen.setPixelBankActive(true);
-                    } else {
-                        outputRegister[A] &= ~BIT0;
-                        screen.setPixelBankActive(false);
-                    }
-                    // Only write bits that are outputs in the data direction register.
-                    outputRegister[A] = (outputRegister[A]
-                            & (dataDirectionRegister[A] ^ 0xFF))
-                            | (operation & dataDirectionRegister[A]);
+                    setOutputOctet(A, operation);
                 } else {
                     // Access data direction register
                     dataDirectionRegister[A] = operation;
@@ -207,15 +197,7 @@ public class PIA6821MO5 extends MemorySegment {
                 break;
             case DDRB:
                 if (isBitOn(controlRegister[B], SELECT_OR)) {
-                    outputRegister[B] = (outputRegister[B]
-                            & (dataDirectionRegister[B] ^ 0xFF))
-                            | (operation & dataDirectionRegister[B]);
-                    // Keyboard handler
-                    if (screen.hasKeyPress(outputRegister[B] & 0x7E)) {
-                        outputRegister[B] &= ~BIT7;
-                    } else {
-                        outputRegister[B] |= BIT7;
-                    }
+                    setOutputOctet(B, operation);
                 } else {
                     dataDirectionRegister[B] = operation;
                 }
@@ -294,20 +276,43 @@ public class PIA6821MO5 extends MemorySegment {
 
     /**
      * Set value on a number of output lines simultaneously.
+     * The values on input lines may not be modified.
+     *
+     * @param side - A or B side of the PIA.
+     * @param value - new value to set.
      */
-    private void setOutputOctet(int side, int mask, int value) {
+    private void setOutputOctet(int side, int value) {
 
-        int outputMask = dataDirectionRegister[side] & mask;
+        int outputMask = dataDirectionRegister[side];
+        int oldValue = outputRegister[side] & outputMask;
+
         outputRegister[side] = (outputRegister[side] & ~outputMask)
                              | (outputMask & value);
-        pinOuts[side].send(side, mask, value);
+        pinOuts[side].send(outputMask, value, oldValue);
+    }
+
+    /**
+     * Set pixel bank.
+     * @param mask - the data direction mask - 1 = output.
+     * @param value - the new value set in the output registers
+     * @param oldValue - the previous value - for detecting changes.
+     */
+    private void screenMemoryBank(int mask, int value, int oldValue) {
+        if (isBitOn(value, BIT0)) {
+            screen.setPixelBankActive(true);
+        } else {
+            screen.setPixelBankActive(false);
+        }
     }
 
     /**
      * Scan keyboard matrix for pressed keys. Set input line B7 if so.
+     * @param mask - the data direction mask - 1 = output.
+     * @param value - the new value set in the output registers
+     * @param oldValue - the previous value - for detecting changes.
      */
-    private void keyboardMatrix(int side, int mask, int value) {
-        setInputLine(B, 7, screen.hasKeyPress(value & mask));
+    private void keyboardMatrix(int mask, int value, int oldValue) {
+        setInputLine(B, 7, !screen.hasKeyPress(value & 0x7E));
     }
 
     /**
