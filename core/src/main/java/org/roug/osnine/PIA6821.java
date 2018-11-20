@@ -3,14 +3,6 @@ package org.roug.osnine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-interface Signal {
-    void send(boolean state);
-}
-
-interface OutputPins {
-    void send(int mask, int value, int oldValue);
-}
-
 /**
  * Peripheral interface adapter.
  * There are so many ways this adapter can be wired to devices
@@ -47,9 +39,9 @@ public abstract class PIA6821 extends MemorySegment {
     protected int[] dataDirectionRegister = new int[2];
     protected int[] controlRegister = new int[2];
 
-    private Signal[] irqOut = new Signal[2];
+    private PIASignal[] irqOut = new PIASignal[2];
 
-    private OutputPins[] pinOuts = new OutputPins[2];
+    private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
 
     /** Reference to CPU for the purpose of sending IRQ. */
     protected Bus8Motorola bus;
@@ -222,11 +214,11 @@ public abstract class PIA6821 extends MemorySegment {
      * Set up a method to be called when something is written to an output
      * register.
      */
-    protected void setOutputCallback(int side, OutputPins callback) {
+    protected void setOutputCallback(int side, PIAOutputPins callback) {
         pinOuts[side] = callback;
     }
 
-    protected void setIRQCallback(int side, Signal callback) {
+    protected void setIRQCallback(int side, PIASignal callback) {
         irqOut[side] = callback;
     }
 

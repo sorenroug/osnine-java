@@ -11,11 +11,11 @@ class PIADummy extends PIA6821 {
 
     boolean signalReceived = false;
 
-    private OutputPins keyboardMatrix = (int mask, int value, int oldValue) -> {
+    private PIAOutputPins keyboardMatrix = (int mask, int value, int oldValue) -> {
                 outputValue = value & mask;
             };
 
-    private Signal signalOut = (boolean state) -> { signalReceived = state; };
+    private PIASignal signalOut = (boolean state) -> { signalReceived = state; };
 
     PIADummy(int start, Bus8Motorola bus) {
         super(start, bus);

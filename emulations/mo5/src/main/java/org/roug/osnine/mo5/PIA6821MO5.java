@@ -2,19 +2,14 @@ package org.roug.osnine.mo5;
 
 import org.roug.osnine.MemorySegment;
 import org.roug.osnine.Bus8Motorola;
+import org.roug.osnine.PIAOutputPins;
+import org.roug.osnine.PIASignal;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-interface Signal {
-    void send(boolean state);
-}
-
-interface OutputPins {
-    void send(int mask, int value, int oldValue);
-}
 
 /**
  * 6821 PIA in a Thomsom MO5.
@@ -87,9 +82,9 @@ public class PIA6821MO5 extends MemorySegment {
     /** If PIA has raised IRQ on the bus. */
     private boolean[] activeIRQ = new boolean[2];
 
-    private Signal[] irqOut = new Signal[2];
+    private PIASignal[] irqOut = new PIASignal[2];
 
-    private OutputPins[] pinOuts = new OutputPins[2];
+    private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus8Motorola bus;
@@ -116,7 +111,6 @@ public class PIA6821MO5 extends MemorySegment {
         }
         irqOut[A] = (boolean state) -> bus.signalFIRQ(state);
         irqOut[B] = (boolean state) -> bus.signalIRQ(state);
-        //irqOut[A] = (boolean state) -> {};
 
         pinOuts[A] = (int mask, int value, int oldValue) -> screenMemoryBank(mask, value, oldValue);
         pinOuts[B] = (int mask, int value, int oldValue) -> keyboardMatrix(mask, value, oldValue);
