@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * 6       W       UP      C       RAZ     ENT     CNT     ACC     STOP
  * 7       SHIFT   BASIC   
  * </pre> 
- * 
+ * The MO5 does not have lower-case letters.
  */
 public class Keyboard implements KeyListener {
 
@@ -50,82 +50,82 @@ public class Keyboard implements KeyListener {
     /** Interface to the Screen. */
     private Screen screen;
 
-    // translation table from scancode to java keycodes VK_
-    private static HashMap<Integer, Integer> ftable = new HashMap(100);
+    /** Translation table from charcode to MO5 row/column. */
+    private static HashMap<Integer, Integer> charTable = new HashMap(50);
 
-    private static final int EVENT = 0x8000;
+    /** Translation table from scancode to MO5 row/column. */
+    private static HashMap<Integer, Integer> codeTable = new HashMap(50);
+
+    private static final int SHIFT   = 0x10000;
+    private static final int CONTROL = 0x20000;
 
     static {
-        /* 1 .. ACC */
-        ftable.put(Integer.valueOf('1'), ROW5 + COL7);
-        ftable.put(Integer.valueOf('2'), ROW4 + COL7);
-        ftable.put(Integer.valueOf('3'), ROW3 + COL7);
-        ftable.put(Integer.valueOf('4'), ROW2 + COL7);
-        ftable.put(Integer.valueOf('5'), ROW1 + COL7);
-        ftable.put(Integer.valueOf('6'), ROW0 + COL7);
-        ftable.put(Integer.valueOf('7'), ROW0 + COL6);
-        ftable.put(Integer.valueOf('8'), ROW1 + COL6);
-        ftable.put(Integer.valueOf('9'), ROW2 + COL6);
-        ftable.put(Integer.valueOf('0'), ROW3 + COL6);
-        ftable.put(Integer.valueOf('-'), ROW4 + COL6);
-        ftable.put(Integer.valueOf('+'), ROW5 + COL6);
-        //ftable.put(KeyEvent.VK_BACK_SPACE + EVENT, ROW6 + COL6);
-        ftable.put(KeyEvent.VK_BACK_SPACE + EVENT, ROW5 + COL1); // Plain backspace
-        /* A .. --> */
-        ftable.put(Integer.valueOf('a'), ROW5 + COL5);
-        ftable.put(Integer.valueOf('z'), ROW4 + COL5);
-        ftable.put(Integer.valueOf('e'), ROW3 + COL5);
-        ftable.put(Integer.valueOf('r'), ROW2 + COL5);
-        ftable.put(Integer.valueOf('t'), ROW1 + COL5);
-        ftable.put(Integer.valueOf('y'), ROW0 + COL5);
-        ftable.put(Integer.valueOf('u'), ROW0 + COL4);
-        ftable.put(Integer.valueOf('i'), ROW1 + COL4);
-        ftable.put(Integer.valueOf('o'), ROW2 + COL4);
-        ftable.put(Integer.valueOf('p'), ROW3 + COL4);
-        ftable.put(Integer.valueOf('/'), ROW4 + COL4);
-        //ftable.put(Integer.valueOf(')'), ROW5 + COL4);
-        /* Q .. enter */
-        ftable.put(Integer.valueOf('q'), ROW5 + COL3);
-        ftable.put(Integer.valueOf('s'), ROW4 + COL3);
-        ftable.put(Integer.valueOf('d'), ROW3 + COL3);
-        ftable.put(Integer.valueOf('f'), ROW2 + COL3);
-        ftable.put(Integer.valueOf('g'), ROW1 + COL3);
-        ftable.put(Integer.valueOf('h'), ROW0 + COL3);
-        ftable.put(Integer.valueOf('j'), ROW0 + COL2);
-        ftable.put(Integer.valueOf('k'), ROW1 + COL2);
-        ftable.put(Integer.valueOf('l'), ROW2 + COL2);
-        ftable.put(Integer.valueOf('m'), ROW3 + COL2);
-        ftable.put(KeyEvent.VK_ENTER + EVENT, ROW6 + COL4);
-        /* W .. , */
-        ftable.put(Integer.valueOf('w'), ROW6 + COL0);
-        ftable.put(Integer.valueOf('x'), ROW5 + COL0);
-        ftable.put(Integer.valueOf('c'), ROW6 + COL2);
-        ftable.put(Integer.valueOf('v'), ROW5 + COL2);
-        ftable.put(Integer.valueOf('b'), ROW4 + COL2);
-        ftable.put(Integer.valueOf('n'), ROW0 + COL0);
-        ftable.put(Integer.valueOf(','), ROW1 + COL0);
-        ftable.put(Integer.valueOf('.'), ROW2 + COL0);
-        ftable.put(Integer.valueOf('@'), ROW3 + COL0);
-        ftable.put(KeyEvent.VK_SCROLL_LOCK + EVENT, ROW6 + COL7); //STOP
-        ftable.put(Integer.valueOf('*'), ROW5 + COL4);
+        charTable.put(Integer.valueOf('1'), ROW5 + COL7);
+        charTable.put(Integer.valueOf('2'), ROW4 + COL7);
+        charTable.put(Integer.valueOf('3'), ROW3 + COL7);
+        charTable.put(Integer.valueOf('4'), ROW2 + COL7);
+        charTable.put(Integer.valueOf('5'), ROW1 + COL7);
+        charTable.put(Integer.valueOf('6'), ROW0 + COL7);
+        charTable.put(Integer.valueOf('7'), ROW0 + COL6);
+        charTable.put(Integer.valueOf('8'), ROW1 + COL6);
+        charTable.put(Integer.valueOf('9'), ROW2 + COL6);
+        charTable.put(Integer.valueOf('0'), ROW3 + COL6);
+        charTable.put(Integer.valueOf('-'), ROW4 + COL6);
+        charTable.put(Integer.valueOf('+'), ROW5 + COL6);
+        charTable.put(Integer.valueOf('/'), ROW4 + COL4);
+        charTable.put(Integer.valueOf(','), ROW1 + COL0);
+        charTable.put(Integer.valueOf('.'), ROW2 + COL0);
+        charTable.put(Integer.valueOf('@'), ROW3 + COL0);
+        charTable.put(Integer.valueOf('*'), ROW5 + COL4);
+        charTable.put(Integer.valueOf(' '), ROW4 + COL0);
+
+        codeTable.put(KeyEvent.VK_A, ROW5 + COL5);
+        codeTable.put(KeyEvent.VK_B, ROW4 + COL2);
+        codeTable.put(KeyEvent.VK_C, ROW6 + COL2);
+        codeTable.put(KeyEvent.VK_D, ROW3 + COL3);
+        codeTable.put(KeyEvent.VK_E, ROW3 + COL5);
+        codeTable.put(KeyEvent.VK_F, ROW2 + COL3);
+        codeTable.put(KeyEvent.VK_G, ROW1 + COL3);
+        codeTable.put(KeyEvent.VK_H, ROW0 + COL3);
+        codeTable.put(KeyEvent.VK_I, ROW1 + COL4);
+        codeTable.put(KeyEvent.VK_J, ROW0 + COL2);
+        codeTable.put(KeyEvent.VK_K, ROW1 + COL2);
+        codeTable.put(KeyEvent.VK_L, ROW2 + COL2);
+        codeTable.put(KeyEvent.VK_M, ROW3 + COL2);
+        codeTable.put(KeyEvent.VK_N, ROW0 + COL0);
+        codeTable.put(KeyEvent.VK_O, ROW2 + COL4);
+        codeTable.put(KeyEvent.VK_P, ROW3 + COL4);
+        codeTable.put(KeyEvent.VK_Q, ROW5 + COL3);
+        codeTable.put(KeyEvent.VK_R, ROW2 + COL5);
+        codeTable.put(KeyEvent.VK_S, ROW4 + COL3);
+        codeTable.put(KeyEvent.VK_T, ROW1 + COL5);
+        codeTable.put(KeyEvent.VK_U, ROW0 + COL4);
+        codeTable.put(KeyEvent.VK_V, ROW5 + COL2);
+        codeTable.put(KeyEvent.VK_W, ROW6 + COL0);
+        codeTable.put(KeyEvent.VK_X, ROW5 + COL0);
+        codeTable.put(KeyEvent.VK_Y, ROW0 + COL5);
+        codeTable.put(KeyEvent.VK_Z, ROW4 + COL5);
 
         /* Specials keys */
-        ftable.put(KeyEvent.VK_INSERT + EVENT, ROW1 + COL1);
-        ftable.put(KeyEvent.VK_DELETE + EVENT, ROW0 + COL1);
-        ftable.put(KeyEvent.VK_HOME + EVENT, ROW2 + COL1);// Back to top
-        ftable.put(KeyEvent.VK_UP + EVENT, ROW6 + COL1);
-        ftable.put(KeyEvent.VK_LEFT + EVENT, ROW5 + COL1);
-        ftable.put(KeyEvent.VK_RIGHT + EVENT, ROW3 + COL1);
-        ftable.put(KeyEvent.VK_DOWN + EVENT, ROW4 + COL1);
-        /* space */
-        ftable.put(Integer.valueOf(' '), ROW4 + COL0);
+        codeTable.put(KeyEvent.VK_BACK_SPACE, ROW5 + COL1); // Plain backspace
+        codeTable.put(KeyEvent.VK_DELETE, ROW0 + COL1);
+        codeTable.put(KeyEvent.VK_DOWN, ROW4 + COL1);
+        codeTable.put(KeyEvent.VK_ENTER, ROW6 + COL4);
+        codeTable.put(KeyEvent.VK_HOME, ROW2 + COL1);// Back to top
+        codeTable.put(KeyEvent.VK_INSERT, ROW1 + COL1);
+        codeTable.put(KeyEvent.VK_LEFT, ROW5 + COL1);
+        codeTable.put(KeyEvent.VK_RIGHT, ROW3 + COL1);
+        codeTable.put(KeyEvent.VK_SCROLL_LOCK, ROW6 + COL7); //STOP
+        codeTable.put(KeyEvent.VK_UP, ROW6 + COL1);
+
         /* SHIFT + BASIC */
-        ftable.put(KeyEvent.VK_F12 + EVENT, ROW7 + COL0);//Shift
-        ftable.put(KeyEvent.VK_F11 + EVENT, ROW7 + COL1);//Basic
+        codeTable.put(KeyEvent.VK_F12, ROW7 + COL0);//Shift
+        codeTable.put(KeyEvent.VK_F11, ROW7 + COL1);//Basic
 
         /* CNT RAZ */
-        ftable.put(KeyEvent.VK_CONTROL + EVENT, ROW6 + COL5);//CTRL
-        ftable.put(KeyEvent.VK_ESCAPE + EVENT, ROW6 + COL3);//ESCAPE = raz
+        codeTable.put(KeyEvent.VK_CONTROL, ROW6 + COL5);//CTRL
+        codeTable.put(KeyEvent.VK_ESCAPE, ROW6 + COL3); //ESCAPE = raz
+
     }
 
     /**
@@ -145,7 +145,7 @@ public class Keyboard implements KeyListener {
 
     private void keyTranslator(KeyEvent e, boolean press) {
         int tmpChar = e.getKeyChar();
-        int tmpCode = e.getKeyCode() + EVENT;
+        int tmpCode = e.getKeyCode();
 
         LOGGER.debug("Key event {}", tmpCode);
 
@@ -222,20 +222,19 @@ public class Keyboard implements KeyListener {
                 break;
         }
 
-        if (ftable.get(tmpCode) != null) { // Specials keys test
-            keyMemory(ftable.get(tmpCode), press);
+        if (codeTable.get(tmpCode) != null) { // Specials keys test
+            keyMemory(codeTable.get(tmpCode), press);
             return;
         } else {
-            if((tmpChar >= 'A') && (tmpChar <= 'Z')) // Uppercase test
-                tmpChar = tmpChar + 'a' - 'A'; // Convert to lowercase
-            if (ftable.get(tmpChar) != null) {
-                keyMemory(ftable.get(tmpChar), press);
+            if (charTable.get(tmpChar) != null) {
+                keyMemory(charTable.get(tmpChar), press);
                 return;
             }
         }
-        tmpCode -= EVENT;
-        if (tmpCode != KeyEvent.VK_SHIFT && tmpCode != KeyEvent.VK_CONTROL)
-            LOGGER.info("Unrecognized Key code: {}", tmpCode);
+        if (tmpCode != KeyEvent.VK_SHIFT
+                && tmpCode != KeyEvent.VK_CONTROL
+                && tmpCode != KeyEvent.VK_ALT)
+            LOGGER.debug("Unrecognized Key code: {}", tmpCode);
     }
 
     public void keyPressed(KeyEvent e) {
