@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
  * 4               DOWN    B       S       Z       /       -       2
  * 5       X       LEFT    V       Q       *       A       +       1
  * 6       W       UP      C       RAZ     ENT     CNT     ACC     STOP
- * 7       SHIFT   BASIC   
- * </pre> 
+ * 7       SHIFT   BASIC
+ * </pre>
  * The MO5 does not have lower-case letters.
  */
 public class Keyboard implements KeyListener {
@@ -61,23 +61,40 @@ public class Keyboard implements KeyListener {
 
     static {
         charTable.put(Integer.valueOf('1'), ROW5 + COL7);
+        charTable.put(Integer.valueOf('!'), ROW5 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('2'), ROW4 + COL7);
+        charTable.put(Integer.valueOf('"'), ROW4 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('3'), ROW3 + COL7);
+        charTable.put(Integer.valueOf('#'), ROW3 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('4'), ROW2 + COL7);
+        charTable.put(Integer.valueOf('$'), ROW2 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('5'), ROW1 + COL7);
+        charTable.put(Integer.valueOf('%'), ROW1 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('6'), ROW0 + COL7);
+        charTable.put(Integer.valueOf('&'), ROW0 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('7'), ROW0 + COL6);
+        charTable.put(Integer.valueOf('\''), ROW0 + COL6 + SHIFT);
         charTable.put(Integer.valueOf('8'), ROW1 + COL6);
+        charTable.put(Integer.valueOf('('), ROW1 + COL6 + SHIFT);
         charTable.put(Integer.valueOf('9'), ROW2 + COL6);
+        charTable.put(Integer.valueOf(')'), ROW2 + COL6 + SHIFT);
         charTable.put(Integer.valueOf('0'), ROW3 + COL6);
         charTable.put(Integer.valueOf('-'), ROW4 + COL6);
+        charTable.put(Integer.valueOf('='), ROW4 + COL6 + SHIFT);
         charTable.put(Integer.valueOf('+'), ROW5 + COL6);
+        charTable.put(Integer.valueOf(';'), ROW5 + COL6 + SHIFT);
         charTable.put(Integer.valueOf('/'), ROW4 + COL4);
+        charTable.put(Integer.valueOf('?'), ROW4 + COL4 + SHIFT);
         charTable.put(Integer.valueOf(','), ROW1 + COL0);
+        charTable.put(Integer.valueOf('<'), ROW1 + COL0 + SHIFT);
         charTable.put(Integer.valueOf('.'), ROW2 + COL0);
+        charTable.put(Integer.valueOf('>'), ROW2 + COL0 + SHIFT);
         charTable.put(Integer.valueOf('@'), ROW3 + COL0);
+        charTable.put(Integer.valueOf('^'), ROW3 + COL0 + SHIFT);
         charTable.put(Integer.valueOf('*'), ROW5 + COL4);
+        charTable.put(Integer.valueOf(':'), ROW5 + COL4 + SHIFT);
         charTable.put(Integer.valueOf(' '), ROW4 + COL0);
+        charTable.put(Integer.valueOf('©'), ROW6 + COL2 + CONTROL);
 
         codeTable.put(KeyEvent.VK_A, ROW5 + COL5);
         codeTable.put(KeyEvent.VK_B, ROW4 + COL2);
@@ -149,88 +166,19 @@ public class Keyboard implements KeyListener {
 
         LOGGER.debug("Key event {}", tmpCode);
 
-        switch(tmpChar) {
-            case '!':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW5 + COL7, press);//1
-                return;
-            case '"':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW4 + COL7, press);//2
-                return;
-            case '#':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW3 + COL7, press);//3
-                return;
-            case '$':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW2 + COL7, press);//4
-                return;
-            case '%':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW1 + COL7, press);//5
-                return;
-            case '&':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW0 + COL7, press);//6
-                return;
-            case 39://'
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW0 + COL6, press);//7
-                return;
-            case '(':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW1 + COL6, press);//8
-                return;
-            case ')':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW2 + COL6, press);//9
-                return;
-            case '=':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW4 + COL6, press);//-
-                return;
-            case ';':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW5 + COL6, press);//+
-                return;
-            case '?':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW4 + COL4, press);// /
-                return;
-            case ':':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW5 + COL4, press);//*
-                return;
-            case '<':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW1 + COL0, press);//,
-                return;
-            case '>':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW2 + COL0, press);//.
-                return;
-            case '^':
-                keyMemory(ROW7 + COL0, press);//Shift
-                keyMemory(ROW3 + COL0, press);//@
-                return;
-            case '©':
-                keyMemory(ROW6 + COL5, press);//Ctrl
-                keyMemory(ROW6 + COL2, press);//C
-                return;
-            default:
-                break;
+        if (charTable.get(tmpChar) != null) {
+            int k = charTable.get(tmpChar);
+            if ((k & SHIFT) == SHIFT) keyMemory(ROW7 + COL0, press); //Shift
+            if ((k & CONTROL) == CONTROL) keyMemory(ROW6 + COL5, press); //Ctrl
+            keyMemory(k & ~(SHIFT | CONTROL), press);
+            return;
         }
 
         if (codeTable.get(tmpCode) != null) { // Specials keys test
             keyMemory(codeTable.get(tmpCode), press);
             return;
-        } else {
-            if (charTable.get(tmpChar) != null) {
-                keyMemory(charTable.get(tmpChar), press);
-                return;
-            }
         }
+
         if (tmpCode != KeyEvent.VK_SHIFT
                 && tmpCode != KeyEvent.VK_CONTROL
                 && tmpCode != KeyEvent.VK_ALT)
