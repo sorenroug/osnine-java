@@ -7,8 +7,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JPanel;
 import org.roug.osnine.Bus8Motorola;
+import org.roug.osnine.PIA6821;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +30,10 @@ public class Screen extends JPanel {
 
     /** Key matrix flattend to one dimension. */
     private static final int KEYS = 128;
+
+    private static final int CLOCKDELAY = 500;  // milliseconds
+    /** On MO5 the interrupt is 50 times a second. */
+    private static final int CLOCKPERIOD = 20;  // milliseconds
 
     private Bus8Motorola bus;
 
@@ -149,6 +156,15 @@ public class Screen extends JPanel {
         this.addMouseMotionListener(mouseMotion);
         this.addMouseListener(mouseClick);
 
+        LOGGER.debug("Starting heartbeat every 20 milliseconds");
+        TimerTask clocktask = new TimerTask() {
+            public void run() {
+                pia.signalC1(PIA6821.B); // Send signal to PIA CB1
+            }
+        };
+
+        Timer timer = new Timer("clock", true);
+        timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
     }
 
     private void setMouseXY(MouseEvent e) {

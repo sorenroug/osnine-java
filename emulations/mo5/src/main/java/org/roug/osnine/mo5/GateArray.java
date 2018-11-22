@@ -34,8 +34,14 @@ import org.slf4j.LoggerFactory;
  * The algorithm waits for the beam to get under the active area by looking for
  * INITN to go from 0 to 1 to 0. It then activates FIRQ signalling for CA1 in
  * the PIA and sets 0xA7E4 to 1.
+ *
+ * As soon as the 6809 detects the possibility of using the light pen, it
+ * will use a special routine. The latter will set the D0 bit to the $A7E4
+ * address of the gate-array, which will validate the CKLP if it occurs.
  */
 public class GateArray extends MemorySegment {
+
+int dx,dy;
 
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(GateArray.class);
@@ -66,21 +72,18 @@ public class GateArray extends MemorySegment {
         memory = new int[SIZE];
         for (int i = 0; i < SIZE; i++) memory[i] = 0;
         memory[2] = 0x40;
-        memory[3] = INITN; 
+        memory[3] = INITN + 0x40; 
     }
 
     @Override
     protected int load(int addr) {
-        memory[3] ^= INITN;
         int relAddr = addr - getStartAddress();
-//      if (relAddr == 2) {
-//          screen.signalCA1(false);
+        memory[3] ^= INITN;
+//      if (relAddr == 0) {
+//          lightpenX = screen.getLightpenX();
+//          lightpenY = screen.getLightpenY();
+//          setLightpenXY(lightpenX,lightpenY);
 //      }
-        if (relAddr == 0) {
-            lightpenX = screen.getLightpenX();
-            lightpenY = screen.getLightpenY();
-            setLightpenXY(lightpenX,lightpenY);
-        }
         LOGGER.info("Load: {} - {}", relAddr, memory[relAddr] & 0xFF);
         return memory[addr - getStartAddress()] & 0xFF;
     }
@@ -89,7 +92,11 @@ public class GateArray extends MemorySegment {
     protected void store(int addr, int val) {
         int relAddr = addr - getStartAddress();
         LOGGER.info("Store: {} val: {}", relAddr, val);
-        memory[relAddr] = (byte)(val & 0xFF);
+        if (val == 1) {
+            screen.signalCA1(true);
+        }
+
+//      memory[relAddr] = (byte)(val & 0xFF);
     }
 
     /**
@@ -101,7 +108,7 @@ public class GateArray extends MemorySegment {
      * @param x - horisonal coordinate 0 - 319
      * @param y - vertical coordinate 0 - 199
      */
-    private void setLightpenXY(int x, int y) {
+    void setLightpenXY(int x, int y) {
         if (x != -1) {
             y += 56;
             x += 96;
