@@ -89,19 +89,12 @@ public abstract class PIA6821 extends MemorySegment {
      */
     private int readPeripheralRegister(int side) {
         if (isBitOn(controlRegister[side], SELECT_OR)) {
-            deactivateIRQ(side);
+            disableIRQ(side);
+            controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
             return outputRegister[side] & 0xFF;
         } else {
             return dataDirectionRegister[side];
         }
-    }
-
-    /**
-     * Deactivate IRQ.
-     */
-    private void deactivateIRQ(int side) {
-        irqOut[side].send(false);
-        controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
     }
 
     private int readControlRegister(int side) {
@@ -150,6 +143,9 @@ public abstract class PIA6821 extends MemorySegment {
         }
     }
 
+    /**
+     * Deactivate IRQ.
+     */
     private void disableIRQ(int side) {
         irqOut[side].send(false);
     }

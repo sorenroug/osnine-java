@@ -235,17 +235,17 @@ public class PIA6821MO5 extends MemorySegment {
             controlRegister[A] |= BIT7;
             if (activeIRQ[A] == false) {
                 if (isBitOn(controlRegister[A], BIT0)) {
-                    LOGGER.info("SignalCA1 FIRQ");
+//                  LOGGER.info("SignalCA1 FIRQ");
                     activeIRQ[A] = true;
                     irqOut[A].send(true);
                 }
             }
         } else {
-            controlRegister[A] &= ~BIT7;
-            if (activeIRQ[A] == true) {
-                activeIRQ[A] = false;
-                irqOut[A].send(false);
-            }
+//          controlRegister[A] &= ~BIT7;
+//          if (activeIRQ[A] == true) {
+//              activeIRQ[A] = false;
+//              irqOut[A].send(false);
+//          }
         }
     }
 

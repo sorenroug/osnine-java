@@ -69,15 +69,15 @@ public class Screen extends JPanel {
         0x00F0F0,   // Cyan
         0xF0F0F0,   // White
 
-        0x636363,
-        0xF06363,
-        0x63F063,
-        0xF0F063,
+        0x636363,   // Gray
+        0xF06363,   // Pink
+        0x63F063,   // Light green
+        0xF0F063,   // Chicken yellow
 
-        0x0063F0,
-        0xF063F0,
-        0x63F0F0,
-        0xF06300,
+        0x0063F0,   // Light blie
+        0xF063F0,   // Parma pink
+        0x63F0F0,   // Light cyan
+        0xF06300,   // Orange
     };
 
     /** Table of keys that are pressed on the keyboard. */
@@ -130,10 +130,10 @@ public class Screen extends JPanel {
                 gateArray.setLightpenXY(lightpenX, lightpenY);
             }
 
+            // The lightpen button is directly tied to PA5 on Peripheral data port A.
             public void mousePressed(MouseEvent e) {
                 setMouseXY(e);
                 lightpenButtonPressed = true;
-                // The lightpen button is directly tied to PA5 on Peripheral data port A.
                 pia.setInputLine(PIA6821MO5.A, 5, true);
             }
 
@@ -159,6 +159,10 @@ public class Screen extends JPanel {
         LOGGER.debug("Starting heartbeat every 20 milliseconds");
         TimerTask clocktask = new TimerTask() {
             public void run() {
+                if (lightpenX != -1) {
+                    pia.signalCA1(true);  // Causes the PIA to send FIRQ to the CPU
+                    pia.signalCA1(false);
+                }
                 pia.signalC1(PIA6821.B); // Send signal to PIA CB1
             }
         };
@@ -172,11 +176,6 @@ public class Screen extends JPanel {
         lightpenX = (int)(e.getX() / pixelSize);
         lightpenY = (int)(e.getY() / pixelSize);
         gateArray.setLightpenXY(lightpenX, lightpenY);
-        pia.signalCA1(true);  // Causes the PIA to send FIRQ to the CPU
-    }
-
-    void signalCA1(boolean state) {
-        pia.signalCA1(state);
     }
 
     int getLightpenX() {

@@ -72,18 +72,13 @@ int dx,dy;
         memory = new int[SIZE];
         for (int i = 0; i < SIZE; i++) memory[i] = 0;
         memory[2] = 0x40;
-        memory[3] = INITN + 0x40; 
+        memory[3] = INITN + 0x40;
     }
 
     @Override
     protected int load(int addr) {
         int relAddr = addr - getStartAddress();
         memory[3] ^= INITN;
-//      if (relAddr == 0) {
-//          lightpenX = screen.getLightpenX();
-//          lightpenY = screen.getLightpenY();
-//          setLightpenXY(lightpenX,lightpenY);
-//      }
         LOGGER.info("Load: {} - {}", relAddr, memory[relAddr] & 0xFF);
         return memory[addr - getStartAddress()] & 0xFF;
     }
@@ -92,9 +87,6 @@ int dx,dy;
     protected void store(int addr, int val) {
         int relAddr = addr - getStartAddress();
         LOGGER.info("Store: {} val: {}", relAddr, val);
-        if (val == 1) {
-            screen.signalCA1(true);
-        }
 
 //      memory[relAddr] = (byte)(val & 0xFF);
     }
