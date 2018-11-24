@@ -59,7 +59,6 @@ public class PIA6821MO5 extends MemorySegment {
     /** Bit to select between the OR and DDR. */
     private static final int SELECT_OR = 0x04;
 
-    // NOTE: the MO5 has swapped Register Select 0 and 1.
     protected static final int DDRA = 0;
     protected static final int ORA = 0;
     protected static final int DDRB = 1;
@@ -74,12 +73,19 @@ public class PIA6821MO5 extends MemorySegment {
     /** If PIA has raised IRQ on the bus. */
     private boolean[] activeIRQ = new boolean[2];
 
+    /** Current state of control line 1. */
+    private boolean[] currStateC1 = new boolean[2];
+
+    /** Current state of control line 2. */
+    private boolean[] currStateC2 = new boolean[2];
+
     private PIASignal[] irqOut = new PIASignal[2];
 
     private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
 
     /** Reference to CPU for the purpose of sending IRQ. */
     private Bus8Motorola bus;
+
     private Screen screen;
 
     public PIA6821MO5(Bus8Motorola bus, Screen screen) {

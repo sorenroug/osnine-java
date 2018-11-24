@@ -39,6 +39,12 @@ public abstract class PIA6821 extends MemorySegment {
     protected int[] dataDirectionRegister = new int[2];
     protected int[] controlRegister = new int[2];
 
+    /** Current state of control line 1. */
+    private boolean[] currStateC1 = new boolean[2];
+
+    /** Current state of control line 2. */
+    private boolean[] currStateC2 = new boolean[2];
+
     private PIASignal[] irqOut = new PIASignal[2];
 
     private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
@@ -63,12 +69,13 @@ public abstract class PIA6821 extends MemorySegment {
     }
 
     private void reset() {
-        outputRegister[A] = 0;
-        dataDirectionRegister[A] = 0;
-        controlRegister[A] = 0;
-        outputRegister[B] = 0;
-        dataDirectionRegister[B] = 0;
-        controlRegister[B] = 0;
+        for (int side = A; side <= B; side++) {
+            outputRegister[side] = 0;
+            dataDirectionRegister[side] = 0;
+            controlRegister[side] = 0;
+            currStateC1[side] = false;
+            currStateC2[side] = false;
+        }
     }
 
     @Override
@@ -86,6 +93,8 @@ public abstract class PIA6821 extends MemorySegment {
      * Read output register.
      * The interrupt flags are cleared as a result of a read
      * Peripheral Data Operation.
+     *
+     * @param side - A or B side of the PIA.
      */
     private int readPeripheralRegister(int side) {
         if (isBitOn(controlRegister[side], SELECT_OR)) {
@@ -97,6 +106,11 @@ public abstract class PIA6821 extends MemorySegment {
         }
     }
 
+    /**
+     * Read control register.
+     *
+     * @param side - A or B side of the PIA.
+     */
     private int readControlRegister(int side) {
         return controlRegister[side] & 0xFF;
     }
@@ -173,6 +187,9 @@ public abstract class PIA6821 extends MemorySegment {
     /**
      * Set a new state on a line. The line must be configured as input in the
      * DDR, or it will be ignored.
+     *
+     * @param side - A or B side of the PIA.
+     * @param line - Line number from 0 to 7.
      */
     public void setInputLine(int side, int line, boolean state) {
         int bitMask = 1 << line;
@@ -185,14 +202,40 @@ public abstract class PIA6821 extends MemorySegment {
     }
 
     /**
+     * Set interrupt input and cancel signal immediately.
+     * @param side - A or B side
+     */
+    public void signalC1(int side) {
+        signalC1(side, true);
+        signalC1(side, false);
+    }
+
+    /**
+     * Set interrupt input CA1 or CB1 to state.
      * If bit 0 in CR is 0, then IRQs are disabled,
      * but the status is kept.
+     * @param side - A or B side
+     * @param state - true for high, false for low.
      */
-    void signalC1(int side) {
-        controlRegister[side] |= BIT7;
-        if (isBitOn(controlRegister[side], BIT0)) {
-            irqOut[side].send(true);
+    public void signalC1(int side, boolean state) {
+        if (state == currStateC1[side]) return;
+
+        if (state) {
+            if (isBitOn(controlRegister[side], BIT1)) {
+                controlRegister[side] |= BIT7;
+                if (isBitOn(controlRegister[side], BIT0)) {
+                    irqOut[side].send(true);
+                }
+            }
+        } else {
+            if (isBitOff(controlRegister[side], BIT1)) {
+                controlRegister[side] |= BIT7;
+                if (isBitOn(controlRegister[side], BIT0)) {
+                    irqOut[side].send(true);
+                }
+            }
         }
+        currStateC1[side] = state;
     }
 
     /**
@@ -209,11 +252,18 @@ public abstract class PIA6821 extends MemorySegment {
     /**
      * Set up a method to be called when something is written to an output
      * register.
+     *
+     * @param side - A or B side of the PIA.
      */
     protected void setOutputCallback(int side, PIAOutputPins callback) {
         pinOuts[side] = callback;
     }
 
+    /**
+     * Set up a method to be called when an interrupt pin is signalled.
+     *
+     * @param side - A or B side of the PIA.
+     */
     protected void setIRQCallback(int side, PIASignal callback) {
         irqOut[side] = callback;
     }
