@@ -12,16 +12,20 @@ class PIADummy extends PIA6821 {
 
     boolean signalReceived = false;
 
+    boolean outputCA2 = false;
+
     private PIAOutputPins keyboardMatrix = (int mask, int value, int oldValue) -> {
                 outputValue = value & mask;
             };
 
     private PIASignal signalOut = (boolean state) -> { signalReceived = state; };
+    private PIASignal signalCA2 = (boolean state) -> { outputCA2 = state; };
 
     PIADummy(int start, Bus8Motorola bus) {
         super(start, bus);
         setOutputCallback(PIA6821.B, keyboardMatrix);
         setIRQCallback(PIA6821.B, signalOut);
+        setControlCallback(PIA6821.A, signalCA2);
     }
 }
 
@@ -147,4 +151,53 @@ public class PIA6821Test {
         assertTrue(pia.signalReceived);
     }
 
+
+    /**
+     * Block interrupts, and send signal to interrupt line.
+     * Then turn on interrupts.
+     */
+    @Test
+    public void signalCB2withBlockedIRQ() {
+        assertFalse(pia.signalReceived);
+        pia.store(CRB, PIA6821.BIT4); // IRQ on low-to-high
+        pia.signalC2(PIA6821.B, true);
+        assertFalse(pia.signalReceived);
+        pia.store(CRB, PIA6821.BIT4 + PIA6821.BIT3);
+        assertTrue(pia.signalReceived);
+        pia.signalC2(PIA6821.B, false);
+        assertTrue(pia.signalReceived);
+    }
+
+    /**
+     * Use CA2 as output when CA1 goes high.
+     * CA2 goes low when reading output register A.
+     */
+    @Test
+    public void useCA2asOutput() {
+        // Set CA2 as output and OR
+        pia.store(CRA, PIA6821.BIT5 + PIA6821.BIT2 + PIA6821.BIT1);
+        pia.load(ORA);
+        assertFalse(pia.outputCA2);
+        pia.signalC1(PIA6821.A, true);
+        assertTrue(pia.outputCA2);
+        pia.load(ORA);
+        assertFalse(pia.outputCA2);
+    }
+
+    /**
+     * Use CA2 as plain output line.
+     * This happens when bit 4 is high.
+     */
+    @Test
+    public void useCA2asPlainPin() {
+        pia.store(CRA, PIA6821.BIT5 + PIA6821.BIT4 + PIA6821.BIT2 + PIA6821.BIT1);
+        pia.load(ORA);
+        assertFalse(pia.outputCA2);
+        pia.store(CRA, PIA6821.BIT5 + PIA6821.BIT4 + PIA6821.BIT3
+                    + PIA6821.BIT2 + PIA6821.BIT1);
+        
+        assertTrue(pia.outputCA2);
+        pia.store(CRA, PIA6821.BIT5 + PIA6821.BIT4 + PIA6821.BIT2 + PIA6821.BIT1);
+        assertFalse(pia.outputCA2);
+    }
 }

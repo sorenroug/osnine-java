@@ -47,6 +47,9 @@ public abstract class PIA6821 extends MemorySegment {
 
     private PIASignal[] irqOut = new PIASignal[2];
 
+    /** CA2 and CB2 control lines callbacks. */
+    private PIASignal[] controlOut = new PIASignal[2];
+
     private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
 
     /** Reference to CPU for the purpose of sending IRQ. */
@@ -63,11 +66,17 @@ public abstract class PIA6821 extends MemorySegment {
         irqOut[A] = (boolean state) -> {};
         irqOut[B] = (boolean state) -> {};
 
+        controlOut[A] = (boolean state) -> {};
+        controlOut[B] = (boolean state) -> {};
+
         pinOuts[A] = (int mask, int value, int oldValue) -> {};
         pinOuts[B] = (int mask, int value, int oldValue) -> {};
 
     }
 
+    /**
+     * Reset the PIA.
+     */
     private void reset() {
         for (int side = A; side <= B; side++) {
             outputRegister[side] = 0;
@@ -100,6 +109,14 @@ public abstract class PIA6821 extends MemorySegment {
         if (isBitOn(controlRegister[side], SELECT_OR)) {
             disableIRQ(side);
             controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
+            if (side == A && isBitOff(controlRegister[side], BIT4)) {
+                currStateC2[side] = false;
+                controlOut[side].send(false);
+                if (isBitOn(controlRegister[side], BIT3)) {
+                    currStateC2[side] = true;
+                    controlOut[side].send(true);
+                }
+            }
             return outputRegister[side] & 0xFF;
         } else {
             return dataDirectionRegister[side];
@@ -118,13 +135,25 @@ public abstract class PIA6821 extends MemorySegment {
     /**
      * Write to a control register.
      * Bit 6 and 7 are read only.
+     * If bit 5 is high then C2 is an output register.
+     * If bit 4 is low and bit 3 high, then send a pulse to the callback when
+     * output register is read (side A) or written (side B).
+     * If bit 4 is high then the callback is sent the value of bit 3.
+     *
      */
     private void writeControlRegister(int side, int val) {
-        if ((val & BIT0) == 0) {
+        if ((val & (BIT3 | BIT0)) == 0) {
             disableIRQ(side);
         } else {
             enableIRQ(side);
         }
+        if (isBitOn(val, BIT5)) {
+            if (isBitOn(val, BIT4)) {
+                currStateC2[side] = isBitOn(val, BIT3);
+                controlOut[side].send(currStateC2[side]);
+            }
+        }
+
         controlRegister[side] = (controlRegister[side] & 0xC0) | (val & 0x3F);
         LOGGER.debug("CR Side: {} new value: {}", side, controlRegister[side]);
     }
@@ -152,7 +181,8 @@ public abstract class PIA6821 extends MemorySegment {
      * Send IRQ signal if the IRQ bit is on.
      */
     private void enableIRQ(int side) {
-        if (isBitOn(controlRegister[side], BIT7)) {
+        if (isBitOn(controlRegister[side], BIT7)
+          ||isBitOn(controlRegister[side], BIT6)) {
             irqOut[side].send(true);
         }
     }
@@ -179,6 +209,14 @@ public abstract class PIA6821 extends MemorySegment {
             outputRegister[side] = (outputRegister[side] & ~outputMask)
                                  | (outputMask & value);
             pinOuts[side].send(outputMask, value, oldValue);
+            if (side == B && isBitOff(controlRegister[side], BIT4)) {
+                currStateC2[side] = false;
+                controlOut[side].send(false);
+                if (isBitOn(controlRegister[side], BIT3)) {
+                    currStateC2[side] = true;
+                    controlOut[side].send(true);
+                }
+            }
         } else {
             dataDirectionRegister[side] = value;
         }
@@ -212,13 +250,19 @@ public abstract class PIA6821 extends MemorySegment {
 
     /**
      * Set interrupt input CA1 or CB1 to state.
-     * If bit 0 in CR is 0, then IRQs are disabled,
-     * but the status is kept.
+     * If bit 0 in CR is 0, then IRQs are disabled, but the status is kept.
+     *
      * @param side - A or B side
      * @param state - true for high, false for low.
      */
     public void signalC1(int side, boolean state) {
         if (state == currStateC1[side]) return;
+
+        if (isBitOff(controlRegister[side], BIT4)
+                && isBitOff(controlRegister[side], BIT3)) {
+            currStateC2[side] = true;
+            controlOut[side].send(true);
+        }
 
         if (state) {
             if (isBitOn(controlRegister[side], BIT1)) {
@@ -239,14 +283,43 @@ public abstract class PIA6821 extends MemorySegment {
     }
 
     /**
-     * If bit 0 in CR is 0, then IRQs are disabled,
-     * but the status is kept.
+     * Set interrupt input and cancel signal immediately.
+     * @param side - A or B side
      */
-    void signalC2(int side) {
-        controlRegister[side] |= BIT6;
-        if (isBitOn(controlRegister[side], BIT3)) {
-            irqOut[side].send(true);
+    public void signalC2(int side) {
+        signalC2(side, true);
+        signalC2(side, false);
+    }
+
+    /**
+     * Set interrupt input CA2 or CB2 to state.
+     * If bit 3 in CR is 0, then IRQs are disabled, but the status is kept.
+     * If bit 5 in CR is 1 then the interrupt line is an output and
+     * inputs are ignored.
+     *
+     * @param side - A or B side
+     * @param state - true for high, false for low.
+     */
+    public void signalC2(int side, boolean state) {
+        if (isBitOn(controlRegister[side], BIT5)) return;
+        if (state == currStateC2[side]) return;
+
+        if (state) {
+            if (isBitOn(controlRegister[side], BIT4)) {
+                controlRegister[side] |= BIT6;
+                if (isBitOn(controlRegister[side], BIT3)) {
+                    irqOut[side].send(true);
+                }
+            }
+        } else {
+            if (isBitOff(controlRegister[side], BIT4)) {
+                controlRegister[side] |= BIT6;
+                if (isBitOn(controlRegister[side], BIT3)) {
+                    irqOut[side].send(true);
+                }
+            }
         }
+        currStateC2[side] = state;
     }
 
     /**
@@ -257,6 +330,15 @@ public abstract class PIA6821 extends MemorySegment {
      */
     protected void setOutputCallback(int side, PIAOutputPins callback) {
         pinOuts[side] = callback;
+    }
+
+    /**
+     * Set up a method to be called when a control pin is signalled.
+     *
+     * @param side - A or B side of the PIA.
+     */
+    protected void setControlCallback(int side, PIASignal callback) {
+        controlOut[side] = callback;
     }
 
     /**
