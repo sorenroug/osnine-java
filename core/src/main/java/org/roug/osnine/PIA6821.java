@@ -28,12 +28,8 @@ public abstract class PIA6821 extends MemorySegment {
     /** Bit to select between the OR and DDR. */
     protected static final int SELECT_OR = 0x04;
 
-    protected static final int DDRA = 0;
-    protected static final int ORA = 0;
-    protected static final int CRA = 1;
-    protected static final int DDRB = 2;
-    protected static final int ORB = 2;
-    protected static final int CRB = 3;
+    /** The four registers can have different positions in memory. */
+    private int registerLayout = 0;
 
     protected int[] outputRegister = new int[2];
     protected int[] dataDirectionRegister = new int[2];
@@ -75,6 +71,13 @@ public abstract class PIA6821 extends MemorySegment {
     }
 
     /**
+     * Define the order the registers are ordered on the bus.
+     */
+    protected void setLayout(int layout) {
+        registerLayout = layout;
+    }
+
+    /**
      * Reset the PIA.
      */
     private void reset() {
@@ -89,13 +92,41 @@ public abstract class PIA6821 extends MemorySegment {
 
     @Override
     protected int load(int addr) {
-        switch (addr - getStartAddress()) {
-            case DDRA: return readPeripheralRegister(A);
-            case CRA: return readControlRegister(A);
-            case DDRB: return readPeripheralRegister(B);
-            case CRB: return readControlRegister(B);
+        if (registerLayout == 0) {
+            switch (addr - getStartAddress()) {
+                case 0: return readPeripheralRegister(A);
+                case 1: return readControlRegister(A);
+                case 2: return readPeripheralRegister(B);
+                case 3: return readControlRegister(B);
+            }
+        } else {
+            switch (addr - getStartAddress()) {
+                case 0: return readPeripheralRegister(A);
+                case 1: return readPeripheralRegister(B);
+                case 2: return readControlRegister(A);
+                case 3: return readControlRegister(B);
+            }
         }
         return 0;
+    }
+
+    @Override
+    protected void store(int addr, int operation) {
+        if (registerLayout == 0) {
+            switch (addr - getStartAddress()) {
+                case 0: setOutputOctet(A, operation); break;
+                case 1: writeControlRegister(A, operation); break;
+                case 2: setOutputOctet(B, operation); break;
+                case 3: writeControlRegister(B, operation); break;
+            }
+        } else {
+            switch (addr - getStartAddress()) {
+                case 0: setOutputOctet(A, operation); break;
+                case 1: setOutputOctet(B, operation); break;
+                case 2: writeControlRegister(A, operation); break;
+                case 3: writeControlRegister(B, operation); break;
+            }
+        }
     }
 
     /**
@@ -158,42 +189,6 @@ public abstract class PIA6821 extends MemorySegment {
         LOGGER.debug("CR Side: {} new value: {}", side, controlRegister[side]);
     }
 
-
-    @Override
-    protected void store(int addr, int operation) {
-        switch (addr - getStartAddress()) {
-            case DDRA:
-                setOutputOctet(A, operation);
-                break;
-            case CRA:
-                writeControlRegister(A, operation);
-                break;
-            case DDRB:
-                setOutputOctet(B, operation);
-                break;
-            case CRB:
-                writeControlRegister(B, operation);
-                break;
-        }
-    }
-
-    /**
-     * Send IRQ signal if the IRQ bit is on.
-     */
-    private void enableIRQ(int side) {
-        if (isBitOn(controlRegister[side], BIT7)
-          ||isBitOn(controlRegister[side], BIT6)) {
-            irqOut[side].send(true);
-        }
-    }
-
-    /**
-     * Deactivate IRQ.
-     */
-    private void disableIRQ(int side) {
-        irqOut[side].send(false);
-    }
-
     /**
      * Set value on a number of output lines simultaneously.
      * The values on input lines may not be modified.
@@ -220,6 +215,23 @@ public abstract class PIA6821 extends MemorySegment {
         } else {
             dataDirectionRegister[side] = value;
         }
+    }
+
+    /**
+     * Send IRQ signal if the IRQ bit is on.
+     */
+    private void enableIRQ(int side) {
+        if (isBitOn(controlRegister[side], BIT7)
+          ||isBitOn(controlRegister[side], BIT6)) {
+            irqOut[side].send(true);
+        }
+    }
+
+    /**
+     * Deactivate IRQ.
+     */
+    private void disableIRQ(int side) {
+        irqOut[side].send(false);
     }
 
     /**

@@ -32,12 +32,12 @@ class PIADummy extends PIA6821 {
 public class PIA6821Test {
 
     private static final int PIAADDR = 0xF000;
-    private static final int DDRA = PIAADDR + PIA6821.DDRA;
-    private static final int ORA = PIAADDR + PIA6821.ORA;
-    private static final int CRA = PIAADDR + PIA6821.CRA;
-    private static final int DDRB = PIAADDR + PIA6821.DDRB;
-    private static final int ORB = PIAADDR + PIA6821.ORB;
-    private static final int CRB = PIAADDR + PIA6821.CRB;
+    private static final int DDRA = PIAADDR + 0;
+    private static final int ORA = DDRA;
+    private static final int CRA = PIAADDR + 1;
+    private static final int DDRB = PIAADDR + 2;
+    private static final int ORB = DDRB;
+    private static final int CRB = PIAADDR + 3;
 
     private Bus8Motorola bus;
     private PIADummy pia;

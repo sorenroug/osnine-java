@@ -160,8 +160,7 @@ public class Screen extends JPanel {
         TimerTask clocktask = new TimerTask() {
             public void run() {
                 if (lightpenX != -1) {
-                    pia.signalCA1(true);  // Causes the PIA to send FIRQ to the CPU
-                    pia.signalCA1(false);
+                    pia.signalC1(PIA6821MO5.A);  // Causes the PIA to send FIRQ to the CPU
                 }
                 pia.signalC1(PIA6821.B); // Send signal to PIA CB1
             }

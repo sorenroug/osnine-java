@@ -20,6 +20,22 @@ class ScreenMock extends Screen {
     public boolean hasKeyPress(int m) { return false; }
 }
 
+class PIAMock extends PIA6821MO5 {
+
+    public PIAMock(Bus8Motorola bus, Screen screen) {
+        super(bus, screen);
+    }
+
+    protected int load(int addr) {
+        return super.load(addr);
+    }
+
+    protected void store(int addr, int operation) {
+        super.store(addr, operation);
+    }
+    
+}
+
 public class PIA6821MO5Test {
 
     private static final int PIAADDR = 0xA7C0;
@@ -40,7 +56,7 @@ public class PIA6821MO5Test {
     public void inputToPA5() {
         Bus8Motorola bus = new BusStraight();
         ScreenMock screen = new ScreenMock(bus);
-        PIA6821MO5 pia = new PIA6821MO5(null, screen);
+        PIAMock pia = new PIAMock(null, screen);
         pia.store(CRA, 0);     // Select DDRA
         pia.store(DDRA, 0xF0); // Make top 4 bits output, the others input
         pia.store(CRA, 0x04);  // Select output register

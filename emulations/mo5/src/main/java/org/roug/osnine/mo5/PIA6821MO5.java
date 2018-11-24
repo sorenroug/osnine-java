@@ -1,15 +1,10 @@
 package org.roug.osnine.mo5;
 
-import org.roug.osnine.MemorySegment;
 import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.PIAOutputPins;
-import org.roug.osnine.PIASignal;
+import org.roug.osnine.PIA6821;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * 6821 PIA in a Thomsom MO5.
@@ -39,284 +34,59 @@ import org.slf4j.LoggerFactory;
  *  CB2: video incrustation enable (output)
 
  */
-public class PIA6821MO5 extends MemorySegment {
+public class PIA6821MO5 extends PIA6821 {
 
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(PIA6821MO5.class);
 
-    public static final int A = 0;
-    public static final int B = 1;
-
-    public static final int BIT0 = 0x01;
-    public static final int BIT1 = 0x02;
-    public static final int BIT2 = 0x04;
-    public static final int BIT3 = 0x08;
-    public static final int BIT4 = 0x10;
-    public static final int BIT5 = 0x20;
-    public static final int BIT6 = 0x40;
-    public static final int BIT7 = 0x80;
-
-    /** Bit to select between the OR and DDR. */
-    private static final int SELECT_OR = 0x04;
-
-    protected static final int DDRA = 0;
-    protected static final int ORA = 0;
-    protected static final int DDRB = 1;
-    protected static final int ORB = 1;
-    protected static final int CRA = 2;
-    protected static final int CRB = 3;
-
-    private int[] outputRegister = new int[2];
-    private int[] dataDirectionRegister = new int[2];
-    private int[] controlRegister = new int[2];
-
     /** If PIA has raised IRQ on the bus. */
     private boolean[] activeIRQ = new boolean[2];
 
-    /** Current state of control line 1. */
-    private boolean[] currStateC1 = new boolean[2];
-
-    /** Current state of control line 2. */
-    private boolean[] currStateC2 = new boolean[2];
-
-    private PIASignal[] irqOut = new PIASignal[2];
-
-    /** CA2 and CB2 control lines callbacks. */
-    private PIASignal[] controlOut = new PIASignal[2];
-
-    private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
-
-    /** Reference to CPU for the purpose of sending IRQ. */
-    private Bus8Motorola bus;
-
+    /** The event-driven GUI. */
     private Screen screen;
 
     public PIA6821MO5(Bus8Motorola bus, Screen screen) {
-        super(0xA7C0, 0xA7C0 + 4);
-        this.bus = bus;
+        super(0xA7C0, bus);
         this.screen = screen;
+        setLayout(1);
 
-        irqOut[A] = (boolean state) -> signalFIRQ(state);
-        irqOut[B] = (boolean state) -> signalIRQ(state);
+        setIRQCallback(A, (boolean state) -> signalFIRQ(state));
+        setIRQCallback(B, (boolean state) -> signalIRQ(state));
 
-        pinOuts[A] = (int mask, int value, int oldValue)
-                   -> screenMemoryBank(mask, value, oldValue);
-        pinOuts[B] = (int mask, int value, int oldValue)
-                   -> keyboardMatrix(mask, value, oldValue);
+        setOutputCallback(A, (int mask, int value, int oldValue)
+                   -> screenMemoryBank(mask, value, oldValue));
+        setOutputCallback(B, (int mask, int value, int oldValue)
+                   -> keyboardMatrix(mask, value, oldValue));
     }
 
-    @Override
-    protected int load(int addr) {
-        switch (addr - getStartAddress()) {
-            case DDRA:
-                return readPeripheralRegister(A);
-            case CRA:
-                return readControlRegister(A);
-            case DDRB:
-                return readPeripheralRegister(B);
-            case CRB:
-                return readControlRegister(B);
-        }
-        return 0;
-    }
-
-    @Override
-    protected void store(int addr, int operation) {
-        switch (addr - getStartAddress()) {
-            case DDRA:
-                if (isBitOn(controlRegister[A], SELECT_OR)) {
-                    setOutputOctet(A, operation);
-                } else {
-                    dataDirectionRegister[A] = operation;
-                }
-                break;
-            case CRA:
-                LOGGER.debug("CRA Store: {} op: {}", addr, operation);
-                writeControlRegister(A, operation);
-                break;
-            case DDRB:
-                if (isBitOn(controlRegister[B], SELECT_OR)) {
-                    setOutputOctet(B, operation);
-                } else {
-                    dataDirectionRegister[B] = operation;
-                }
-                break;
-            case CRB:
-                LOGGER.debug("CRB Store: {} op: {}", addr, operation);
-                writeControlRegister(B, operation);
-                break;
-        }
-    }
-
-    /**
-     * IRQB is connected to the CPU's IRQ pin.
-     */
-    private void signalIRQ(boolean state) {
-        if (state) {
-            if (!activeIRQ[B]) {
-                activeIRQ[B] = state;
-                bus.signalIRQ(state);
-            }
-        } else {
-            if (activeIRQ[B]) {
-                activeIRQ[B] = state;
-                bus.signalIRQ(state);
-            }
-        }
-    }
-
-    /**
-     * IRQA is connected to the CPU's FIRQ pin.
-     */
-    private void signalFIRQ(boolean state) {
-        if (state) {
-            if (!activeIRQ[A]) {
-                activeIRQ[A] = state;
-                bus.signalFIRQ(state);
-            }
-        } else {
-            if (activeIRQ[A]) {
-                activeIRQ[A] = state;
-                bus.signalFIRQ(state);
-            }
-        }
-    }
-
-    /**
-     * Read output register.
-     * The interrupt flags are cleared as a result of a read
-     * Peripheral Data Operation.
-     */
-    private int readPeripheralRegister(int side) {
-        if (isBitOn(controlRegister[side], SELECT_OR)) {
-            disableIRQ(side);
-            controlRegister[side] &= ~(BIT7 | BIT6); // Turn off IRQ bits.
-            return outputRegister[side] & 0xFF;
-        } else {
-            return dataDirectionRegister[side];
-        }
-    }
-
-    /**
-     * Read control register.
-     *
-     * @param side - A or B side of the PIA.
-     */
-    private int readControlRegister(int side) {
-        return controlRegister[side] & 0xFF;
-    }
-
-    /**
-     * Write to a control register.
-     * Bit 6 and 7 are read only.
-     * If bit 5 is high then C2 is an output register.
-     * If bit 4 is low and bit 3 high, then send a pulse to the callback when
-     * output register is read (side A) or written (side B).
-     * If bit 4 is high then the callback is sent the value of bit 3.
-     *
-     */
-    private void writeControlRegister(int side, int val) {
-        if ((val & BIT0) == 0) {
-            disableIRQ(side);
-        } else {
-            enableIRQ(side);
-        }
-        controlRegister[side] = (controlRegister[side] & 0xC0) | (val & 0x3F);
-        LOGGER.debug("CR Side: {} new value: {}", side, controlRegister[side]);
-    }
-
-    /**
-     * Set value on a number of output lines simultaneously.
-     * The values on input lines may not be modified.
-     *
-     * @param side - A or B side of the PIA.
-     * @param value - new value to set.
-     */
-    private void setOutputOctet(int side, int value) {
-        if (isBitOn(controlRegister[side], SELECT_OR)) {
-            int outputMask = dataDirectionRegister[side];
-            int oldValue = outputRegister[side] & outputMask;
-
-            outputRegister[side] = (outputRegister[side] & ~outputMask)
-                                 | (outputMask & value);
-            pinOuts[side].send(outputMask, value, oldValue);
-        } else {
-            dataDirectionRegister[side] = value;
-        }
-    }
-
-    /**
-     * Send IRQ signal if the IRQ bit is on.
-     */
-    private void enableIRQ(int side) {
-        if (isBitOn(controlRegister[side], BIT7)) {
-            irqOut[side].send(true);
-        }
-    }
-
-    private void disableIRQ(int side) {
-        irqOut[side].send(false);
-    }
-
-    /**
-     * Set a new state on a line. The line must be configured as input in the
-     * DDR, or it will be ignored.
-     */
-    public void setInputLine(int side, int line, boolean state) {
-        int bitMask = 1 << line;
-        if ((dataDirectionRegister[side] & bitMask) == bitMask)
-            return; // Line is output
-        if (state)
-            outputRegister[side] |= bitMask;
-        else
-            outputRegister[side] &= ~bitMask;
-    }
-
-    /**
-     * Activate CA1 IRQ and signal CPU.
-     * If bit 0 in CRB is 0, then IRQs are disabled,
-     * but the status is kept.
-     */
-    void signalCA1(boolean state) {
-        if (state) {
-            controlRegister[A] |= BIT7;
-            if (activeIRQ[A] == false) {
-                if (isBitOn(controlRegister[A], BIT0)) {
-//                  LOGGER.info("SignalCA1 FIRQ");
-                    irqOut[A].send(true);
-                }
-            }
-        } else {
-//          controlRegister[A] &= ~BIT7;
-//          if (activeIRQ[A] == true) {
-//              activeIRQ[A] = false;
-//              irqOut[A].send(false);
-//          }
-        }
-    }
-
-    /**
-     * Activate CB1 IRQ and signal CPU.
-     * If bit 0 in CRB is 0, then IRQs are disabled,
-     * but the status is kept.
-     */
-    void signalC1(int side) {
-        controlRegister[side] |= BIT7;
-        if (activeIRQ[side] == false) {
-            if (isBitOn(controlRegister[side], BIT0)) {
-                irqOut[side].send(true);
-            }
-        }
-    }
 
     private static boolean isBitOn(int x, int n) {
         return (x & n) != 0;
     }
 
-    private static boolean isBitOff(int x, int n) {
-        return (x & n) == 0;
+    /**
+     * IRQB is connected to the CPU's IRQ pin.
+     *
+     * @param state - new state of the interrupt.
+     */
+    private void signalIRQ(boolean state) {
+        if (state != activeIRQ[B]) {
+            activeIRQ[B] = state;
+            bus.signalIRQ(state);
+        }
     }
 
+    /**
+     * IRQA is connected to the CPU's FIRQ pin.
+     *
+     * @param state - new state of the interrupt.
+     */
+    private void signalFIRQ(boolean state) {
+        if (state != activeIRQ[A]) {
+            activeIRQ[A] = state;
+            bus.signalFIRQ(state);
+        }
+    }
 
     /**
      * Set pixel bank.
@@ -325,11 +95,7 @@ public class PIA6821MO5 extends MemorySegment {
      * @param oldValue - the previous value - for detecting changes.
      */
     private void screenMemoryBank(int mask, int value, int oldValue) {
-        if (isBitOn(value, BIT0)) {
-            screen.setPixelBankActive(true);
-        } else {
-            screen.setPixelBankActive(false);
-        }
+        screen.setPixelBankActive(isBitOn(value, BIT0));
     }
 
     /**
@@ -341,5 +107,4 @@ public class PIA6821MO5 extends MemorySegment {
     private void keyboardMatrix(int mask, int value, int oldValue) {
         setInputLine(B, 7, !screen.hasKeyPress(value & 0x7E));
     }
-
 }
