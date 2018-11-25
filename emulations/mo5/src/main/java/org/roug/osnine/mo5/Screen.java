@@ -54,6 +54,8 @@ public class Screen extends JPanel {
 
     private double pixelSize;
 
+    private Timer lightpenTimer;
+
     /** Called from PIA to signal which memory bank is active. */
     private boolean pixelBankActive;
 
@@ -193,6 +195,34 @@ public class Screen extends JPanel {
         lightpenY = y;
     }
 
+    /**
+     * Incrustation is apparently a synchronisation signal.
+     * Here we simulate that the lightpen has seen the beam.
+     */
+    void setIncrustation(boolean state) {
+        if (state) {
+            pia.signalC1(PIA6821MO5.A);  // Causes the PIA to send FIRQ to the CPU
+            TimerTask lptask = new TimerTask() {
+                int countDown = 100;
+                public void run() {
+                    countDown--;
+//                  if (countDown == 0) {
+//                      lightpenTimer.cancel();
+//                  } else {
+                        if (lightpenX != -1) {
+                            pia.signalC1(PIA6821MO5.A);  // Causes the PIA to send FIRQ to the CPU
+                        }
+//                  }
+                }
+            };
+
+            lightpenTimer = new Timer("lightpen", false);
+            lightpenTimer.schedule(lptask, 0, 1);  // Every 5 milliseconds.
+        } else {
+            lightpenTimer.cancel();
+        }
+    }
+
     public void setPixelSize(double ps) {
         pixelSize = ps;
     }
@@ -244,7 +274,7 @@ public class Screen extends JPanel {
      * @param colorByte - color index for foreground and background.
      */
     public void updatePixels(int addr, int pixelByte, int colorByte) {
-        if (addr >= 8000) {LOGGER.debug("Painting addr: {}", addr); return; }
+        if (addr >= 8000) return;
         int offset = addr * 8;
         int bgInx = colorByte & 0x0F;
         int fgInx = (colorByte & 0xF0) >> 4;

@@ -79,14 +79,17 @@ int dx,dy;
     protected int load(int addr) {
         int relAddr = addr - getStartAddress();
         memory[3] ^= INITN;
-        LOGGER.info("Load: {} - {}", relAddr, memory[relAddr] & 0xFF);
+        LOGGER.debug("Load: {} - {}", relAddr, memory[relAddr] & 0xFF);
         return memory[addr - getStartAddress()] & 0xFF;
     }
 
     @Override
     protected void store(int addr, int val) {
         int relAddr = addr - getStartAddress();
-        LOGGER.info("Store: {} val: {}", relAddr, val);
+        LOGGER.debug("Store: {} val: {}", relAddr, val);
+        if (relAddr == 0) {
+            screen.setIncrustation(val == 1);
+        }
 
 //      memory[relAddr] = (byte)(val & 0xFF);
     }

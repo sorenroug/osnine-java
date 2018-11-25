@@ -1,6 +1,7 @@
 # Emulation of Thomson MO5
 
 This is a proof of concept emulation of a Thomson MO5 home computer. Keyboard and screen works, but there is no way to load or save programs.
+The light pen does not work.
 
 ## Screen shot
 

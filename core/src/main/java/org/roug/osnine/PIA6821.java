@@ -74,6 +74,8 @@ public abstract class PIA6821 extends MemorySegment {
      * Define the order the registers are ordered on the bus.
      */
     protected void setLayout(int layout) {
+        if (layout > 1 && layout < 0)
+            throw new IllegalArgumentException("Unsupported layout");
         registerLayout = layout;
     }
 
@@ -107,26 +109,27 @@ public abstract class PIA6821 extends MemorySegment {
                 case 3: return readControlRegister(B);
             }
         }
-        return 0;
+        throw new IndexOutOfBoundsException("Address out of bounds");
     }
 
     @Override
     protected void store(int addr, int operation) {
         if (registerLayout == 0) {
             switch (addr - getStartAddress()) {
-                case 0: setOutputOctet(A, operation); break;
-                case 1: writeControlRegister(A, operation); break;
-                case 2: setOutputOctet(B, operation); break;
-                case 3: writeControlRegister(B, operation); break;
+                case 0: setOutputOctet(A, operation); return;
+                case 1: writeControlRegister(A, operation); return;
+                case 2: setOutputOctet(B, operation); return;
+                case 3: writeControlRegister(B, operation); return;
             }
         } else {
             switch (addr - getStartAddress()) {
-                case 0: setOutputOctet(A, operation); break;
-                case 1: setOutputOctet(B, operation); break;
-                case 2: writeControlRegister(A, operation); break;
-                case 3: writeControlRegister(B, operation); break;
+                case 0: setOutputOctet(A, operation); return;
+                case 1: setOutputOctet(B, operation); return;
+                case 2: writeControlRegister(A, operation); return;
+                case 3: writeControlRegister(B, operation); return;
             }
         }
+        throw new IndexOutOfBoundsException("Address out of bounds");
     }
 
     /**

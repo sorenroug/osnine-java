@@ -79,7 +79,7 @@ public class IRQBeat extends MemorySegment {
         if (clocktask == null) {
             clocktask = new ClockTick(bus);
             Timer timer = new Timer("clock", true);
-            timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
+            timer.scheduleAtFixedRate(clocktask, CLOCKDELAY, CLOCKPERIOD);
         }
     }
 
