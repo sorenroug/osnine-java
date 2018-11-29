@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import javax.swing.JPanel;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.PIA6821;
+import org.roug.osnine.PIASignal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,9 @@ public class Screen extends JPanel {
 
     private double pixelSize;
 
-    private Timer lightpenTimer;
+    private boolean incrustationState;
+
+    private PIASignal callback;
 
     /** Called from PIA to signal which memory bank is active. */
     private boolean pixelBankActive;
@@ -112,6 +115,8 @@ public class Screen extends JPanel {
 
         pia = new PIA6821MO5(bus, this);
         bus.addMemorySegment(pia);
+        // Lines start as input lines
+        pia.setInputLine(PIA6821.A, 7, true); // Plug in the tape drive.
 
         // Hook up the Keyboard to the screen
         Keyboard keyboard = new Keyboard(this);
@@ -136,12 +141,12 @@ public class Screen extends JPanel {
             public void mousePressed(MouseEvent e) {
                 setMouseXY(e);
                 lightpenButtonPressed = true;
-                pia.setInputLine(PIA6821MO5.A, 5, true);
+                pia.setInputLine(PIA6821.A, 5, true);
             }
 
             public void mouseReleased(MouseEvent e) {
                 lightpenButtonPressed = false;
-                pia.setInputLine(PIA6821MO5.A, 5, false);
+                pia.setInputLine(PIA6821.A, 5, false);
             }
         };
 
@@ -161,15 +166,16 @@ public class Screen extends JPanel {
         LOGGER.debug("Starting heartbeat every 20 milliseconds");
         TimerTask clocktask = new TimerTask() {
             public void run() {
-                if (lightpenX != -1) {
-                    pia.signalC1(PIA6821MO5.A);  // Causes the PIA to send FIRQ to the CPU
-                }
+//              if (lightpenX != -1) {
+//                  pia.signalC1(PIA6821.A);  // Causes the PIA to send FIRQ to the CPU
+//              }
                 pia.signalC1(PIA6821.B); // Send signal to PIA CB1
             }
         };
 
         Timer timer = new Timer("clock", true);
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
+        callback = (boolean state) -> signalCA1(state);
     }
 
     private void setMouseXY(MouseEvent e) {
@@ -196,30 +202,25 @@ public class Screen extends JPanel {
     }
 
     /**
+     * Send a signal to PIA every 1000 cycles while in incrustation mode.
+     *
+     * @param state - not used
+     */
+    private void signalCA1(boolean dummyState) {
+        pia.signalC1(PIA6821.A);
+        if (incrustationState) {
+            bus.callbackIn(1000, callback);
+        }
+    }
+
+    /**
      * Incrustation is apparently a synchronisation signal.
      * Here we simulate that the lightpen has seen the beam.
      */
     void setIncrustation(boolean state) {
+        incrustationState = state;
         if (state) {
-            pia.signalC1(PIA6821MO5.A);  // Causes the PIA to send FIRQ to the CPU
-            TimerTask lptask = new TimerTask() {
-                int countDown = 100;
-                public void run() {
-                    countDown--;
-//                  if (countDown == 0) {
-//                      lightpenTimer.cancel();
-//                  } else {
-                        if (lightpenX != -1) {
-                            pia.signalC1(PIA6821MO5.A);  // Causes the PIA to send FIRQ to the CPU
-                        }
-//                  }
-                }
-            };
-
-            lightpenTimer = new Timer("lightpen", false);
-            lightpenTimer.schedule(lptask, 0, 1);  // Every 5 milliseconds.
-        } else {
-            lightpenTimer.cancel();
+            signalCA1(state);
         }
     }
 

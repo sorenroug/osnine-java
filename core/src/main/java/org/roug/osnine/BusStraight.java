@@ -45,10 +45,10 @@ public class BusStraight implements Bus8Motorola {
 
     private void updateCycle() {
         cycleCounter++;
-        if (cycleCounter >= methodTrigger) {
+        if (cycleCounter == methodTrigger) {
             methodTrigger = Long.MAX_VALUE;
             registeredMethod.send(true);
-            registeredMethod = null;
+            //registeredMethod = null;
         }
     }
 
@@ -199,6 +199,7 @@ public class BusStraight implements Bus8Motorola {
 
     @Override
     public void callbackIn(int cycles, PIASignal method) {
+        LOGGER.debug("callbackIn: {}: {}", cycles, method);
         registeredMethod = method;
         methodTrigger = cycleCounter + cycles;
     }

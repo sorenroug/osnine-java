@@ -1,5 +1,8 @@
 package org.roug.osnine.mo5;
 
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.PIA6821;
 
@@ -32,7 +35,6 @@ import org.slf4j.LoggerFactory;
  *  CA2: tape drive motor control (output)
  *  CB1: 50Hz interrupt (IRQB is wired to 6809 IRQ)
  *  CB2: video incrustation enable (output)
-
  */
 public class PIA6821MO5 extends PIA6821 {
 
@@ -44,6 +46,16 @@ public class PIA6821MO5 extends PIA6821 {
 
     /** The event-driven GUI. */
     private Screen screen;
+
+    /** Number of cycles since last callback. */
+    private long lastCounter;
+
+    /** File for cassette storage. */
+    FileOutputStream cassetteOut;
+
+    int cassetteByte;
+    /** How many bits have been saved in the byte. */
+    int cassetteBit;
 
     public PIA6821MO5(Bus8Motorola bus, Screen screen) {
         super(0xA7C0, bus);
@@ -57,6 +69,7 @@ public class PIA6821MO5 extends PIA6821 {
                    -> screenMemoryBank(mask, value, oldValue));
         setOutputCallback(B, (int mask, int value, int oldValue)
                    -> keyboardMatrix(mask, value, oldValue));
+        setControlCallback(A, (boolean state) -> cassetteMotor(state));
     }
 
 
@@ -88,14 +101,58 @@ public class PIA6821MO5 extends PIA6821 {
         }
     }
 
+    /** Start/stop cassette motor.
+     * If state is false, then turn motor on, otherwise turn off motor.
+     */
+    private void cassetteMotor(boolean state) {
+        try {
+            if (state) {
+                if (cassetteOut != null) {
+                    cassetteOut.write(cassetteByte);
+                    cassetteByte = 0;
+                    LOGGER.info("Closing cassette file");
+                    cassetteOut.close();
+                    cassetteOut = null;
+                }
+            } else {
+                lastCounter = bus.getCycleCounter();
+                LOGGER.info("Opening cassette file");
+                cassetteOut = new FileOutputStream("cassette.out", true);
+            }
+        } catch (IOException e) {
+            cassetteOut = null;
+        }
+    }
+
     /**
-     * Set pixel bank.
+     * Set pixel bank and output to casette.
+     * If C2 is off then the tape motor is running.
+     * The program then sends 0 and 1 at timed intervals to
+     * send values to the tape at 1200 baud.
+     *
      * @param mask - the data direction mask - 1 = output.
      * @param value - the new value set in the output registers
      * @param oldValue - the previous value - for detecting changes.
      */
     private void screenMemoryBank(int mask, int value, int oldValue) {
         screen.setPixelBankActive(isBitOn(value, BIT0));
+        long nowCounter = bus.getCycleCounter();
+        long cycleDiff = nowCounter - lastCounter;
+        if (!isC2On(A) && isBitOn(mask, BIT6)) {
+            try {
+                cassetteByte <<= 1;
+                cassetteBit++;
+                if (cycleDiff < 300) cassetteByte |= 1;
+                if (cassetteBit == 8) {
+                    cassetteOut.write(cassetteByte);
+                    cassetteByte = 0;
+                    cassetteBit = 0;
+                }
+            } catch (IOException e) {
+                cassetteOut = null;
+            }
+        lastCounter = nowCounter;
+        }
     }
 
     /**

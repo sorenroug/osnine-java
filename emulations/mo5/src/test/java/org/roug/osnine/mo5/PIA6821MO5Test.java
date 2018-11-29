@@ -56,7 +56,7 @@ public class PIA6821MO5Test {
     public void inputToPA5() {
         Bus8Motorola bus = new BusStraight();
         ScreenMock screen = new ScreenMock(bus);
-        PIAMock pia = new PIAMock(null, screen);
+        PIAMock pia = new PIAMock(bus, screen);
         pia.store(CRA, 0);     // Select DDRA
         pia.store(DDRA, 0xF0); // Make top 4 bits output, the others input
         pia.store(CRA, 0x04);  // Select output register
