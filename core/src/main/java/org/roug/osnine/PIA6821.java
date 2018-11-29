@@ -297,6 +297,10 @@ public abstract class PIA6821 extends MemorySegment {
         currStateC1[side] = state;
     }
 
+    public boolean isC1On(int side) {
+        return currStateC1[side];
+    }
+
     /**
      * Set interrupt input and cancel signal immediately.
      * @param side - A or B side
@@ -335,6 +339,10 @@ public abstract class PIA6821 extends MemorySegment {
             }
         }
         currStateC2[side] = state;
+    }
+
+    public boolean isC2On(int side) {
+        return currStateC2[side];
     }
 
     /**

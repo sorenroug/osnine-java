@@ -23,11 +23,17 @@ public interface Bus8Motorola extends MemoryBus {
 
     /**
      * Accept an FIRQ signal.
+     *
+     * @param state - true if IRQ is raised from the device, false if IRQ is
+     * lowered.
      */
     void signalFIRQ(boolean state);
 
     /**
      * Accept an NMI signal.
+     *
+     * @param state - true if IRQ is raised from the device, false if IRQ is
+     * lowered.
      */
     void signalNMI(boolean state);
 
@@ -45,5 +51,16 @@ public interface Bus8Motorola extends MemoryBus {
      * Do we have active FIRQs?
      */
     boolean isFIRQActive();
+
+    /**
+     * Get the number of read/writes to bus since the start.
+     */
+    long getCycleCounter();
+
+    /**
+     * Ask the bus to call a given method when the number of
+     * read/write operations has reached given number.
+     */
+    void callbackIn(int cycles, PIASignal method);
 }
 

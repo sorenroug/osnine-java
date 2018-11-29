@@ -22,6 +22,13 @@ public class BusStraight implements Bus8Motorola {
     /** Active FIRQ requests. */
     private int activeFIRQs;
 
+    private long cycleCounter;
+
+    /** The memory cycle that will trigger a call to the registered method. */
+    private long methodTrigger = Long.MAX_VALUE;
+
+    private PIASignal registeredMethod;
+
     /**
      * Constructor.
      */
@@ -36,11 +43,21 @@ public class BusStraight implements Bus8Motorola {
         allocate_memory(0, memorySize);
     }
 
+    private void updateCycle() {
+        cycleCounter++;
+        if (cycleCounter >= methodTrigger) {
+            methodTrigger = Long.MAX_VALUE;
+            registeredMethod.send(true);
+            registeredMethod = null;
+        }
+    }
+
     /**
      * Single byte read from memory.
      */
     @Override
     public int read(int offset) {
+        updateCycle();
         return memory.read(offset);
     }
 
@@ -50,6 +67,7 @@ public class BusStraight implements Bus8Motorola {
     @Override
     public void write(int offset, int val) {
         memory.write(offset, val & 0xFF);
+        updateCycle();
     }
 
     /**
@@ -172,6 +190,17 @@ public class BusStraight implements Bus8Motorola {
     public void insertMemorySegment(MemorySegment newMemory) {
         newMemory.insertMemorySegment(memory);
         memory = newMemory;
+    }
+
+    @Override
+    public long getCycleCounter() {
+        return cycleCounter;
+    }
+
+    @Override
+    public void callbackIn(int cycles, PIASignal method) {
+        registeredMethod = method;
+        methodTrigger = cycleCounter + cycles;
     }
 
 }
