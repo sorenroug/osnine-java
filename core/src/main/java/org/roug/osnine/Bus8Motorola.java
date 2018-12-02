@@ -48,6 +48,13 @@ public interface Bus8Motorola extends MemoryBus {
     boolean isNMIActive();
 
     /**
+     * Clear active NMIs as they are latched when the device IRQ changes
+     * from low to high. If the NMI is not cleared then there would be
+     * recursive interrupt handling.
+     */
+    void clearNMI();
+
+    /**
      * Do we have active FIRQs?
      */
     boolean isFIRQActive();

@@ -1469,7 +1469,7 @@ public class MC6809 extends USimMotorola {
      * The Non-Maskable Interrupt (NMI).
      * The non-maskable interrup (NMI) cannot be inhibited by the
      * programmer. It is always accepted by the 6809 upon completion of the
-     * current instruction, assuminig no bus request was received.
+     * current instruction, assuming no bus request was received.
      *
      * The NMI causes the automatic push of the program counter and all
      * other registers (except the S register) onto the hardware stack, S (If an
@@ -1487,6 +1487,7 @@ public class MC6809 extends USimMotorola {
         waitState = false;
         cc.setF(1);
         cc.setI(1);
+        bus.clearNMI();
         pc.set(read_word(NMI_ADDR));
     }
 

@@ -86,8 +86,13 @@ public class BusStraight implements Bus8Motorola {
             activeNMIs++;
             notifyAll();
         } else {
-            activeNMIs--;
+            if (activeNMIs > 0) activeNMIs--;
         }
+    }
+
+    @Override
+    public synchronized void clearNMI() {
+        activeNMIs = 0;
     }
 
     /**

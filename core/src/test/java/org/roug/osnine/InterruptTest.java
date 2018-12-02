@@ -172,6 +172,57 @@ public class InterruptTest extends Framework {
     }
 
     /**
+     * Since NMI can not be disabled, we want to make certain that
+     * the CPU doesn't react to the NMI state while it is dealing with it.
+     */
+    @Test
+    public void checkNoLoopNMI() {
+        // Set register S to point to 517
+        myTestCPU.s.set(517);
+        // Set the registers we want to push
+        setCC(0x0F);
+        setA(1);
+        setB(2);
+        setX(0x0405);
+        setY(0x0607);
+
+        writeword(MC6809.NMI_ADDR, 0x1234); // Set IRQ vector
+        myTestCPU.write(0x1234, 0x12); // NOP
+        myTestCPU.write(0x1235, 0x12); // NOP
+        myTestCPU.write(0x1236, 0x12); // NOP
+        myTestCPU.write(0x1237, 0x3B); // RTI
+
+        setPC(0xB00);
+        writeword(0xB00, 0x10CE); // LDS #$900
+        writeword(0xB02, 0x900);
+        writebyte(0xB04, 0x12); // NOP
+        myTestCPU.getBus().signalNMI(true);
+        myTestCPU.execute();  // Executing LDS then checking for interrupts
+        assertPC(0x1234);
+        myTestCPU.execute(); // Executing NOP
+        assertPC(0x1235);  // Check that the current NMI is ignored
+
+        // Another NMI comes in while processing this one
+        myTestCPU.getBus().signalNMI(true);
+        myTestCPU.execute();
+        assertPC(0x1234);
+        myTestCPU.execute(); // Executing NOP
+        assertPC(0x1235);
+        myTestCPU.execute(); // Executing NOP
+        assertPC(0x1236);
+        myTestCPU.execute(); // Executing NOP
+        assertPC(0x1237);
+        myTestCPU.execute(); // Executing RTI from inner NMI
+
+        assertPC(0x1236); // Back at outer NMI
+        myTestCPU.execute(); // Executing NOP
+        assertPC(0x1237);
+        myTestCPU.execute(); // Executing RTI from outer NMI
+
+        assertPC(0xB04);
+    }
+
+    /**
      * Test fast IRQ pushing CC and PC registers on stack.
      */
     @Test
