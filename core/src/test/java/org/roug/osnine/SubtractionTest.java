@@ -28,7 +28,7 @@ public class SubtractionTest extends Framework {
     }
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
-        myTestCPU.cc.set(cc);
+        setCC(cc);
         setA(a);
         setB(b);
         myTestCPU.dp.set(dp);
@@ -64,9 +64,9 @@ public class SubtractionTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xA1);  // CMPA indexed
         myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB00 + 2, myTestCPU.pc.intValue());
+        assertPC(0xB00 + 2);
         assertEquals(0x206, myTestCPU.y.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(1, myTestCPU.cc.getZ());
@@ -79,7 +79,7 @@ public class SubtractionTest extends Framework {
         setB(0xA0);
         myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
         myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(1, myTestCPU.cc.getZ());
@@ -92,7 +92,7 @@ public class SubtractionTest extends Framework {
         setB(0x70);
         myTestCPU.write(0xB00, 0xC1);  // CMPB immediate
         myTestCPU.write(0xB01, 0xA0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -103,14 +103,14 @@ public class SubtractionTest extends Framework {
     @Test
     public void testCMP16ext() {
         setX(0x5410);
-        myTestCPU.cc.set(0x23);
+        setCC(0x23);
         myTestCPU.write(0x0B33, 0x54);
         myTestCPU.write(0x0B34, 0x10);
 
         myTestCPU.write(0x0B00, 0xBC);
         myTestCPU.write(0x0B01, 0x0B);
         myTestCPU.write(0x0B02, 0x33);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x5410, myTestCPU.x.intValue());
         assertEquals(0x24, myTestCPU.cc.intValue());
@@ -124,7 +124,7 @@ public class SubtractionTest extends Framework {
         myTestCPU.cc.clear();
         setA(0x32);
         myTestCPU.write(0xB00, 0x4A);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x31, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -134,7 +134,7 @@ public class SubtractionTest extends Framework {
 
         // Test 0x80 - special case
         setA(0x80);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x7F, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -144,7 +144,7 @@ public class SubtractionTest extends Framework {
 
         // Test 0x00 - special case
         setA(0x00);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -162,7 +162,7 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB10, 0x7F);
         myTestCPU.write(0xB00, 0x7A);
         writeword(0xB01, 0xB10);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x7E, myTestCPU.read(0x0B10));
         assertEquals(0, myTestCPU.cc.getN());
@@ -186,9 +186,9 @@ public class SubtractionTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xD2);
         myTestCPU.write(0xB01, 0x03);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0x31, myTestCPU.b.intValue());
         assertEquals(0, myTestCPU.cc.getC());
         assertEquals(0, myTestCPU.cc.getV());
@@ -210,7 +210,7 @@ public class SubtractionTest extends Framework {
         setA(0xFF);
         myTestCPU.write(0xB00, 0x82);  // SBCA immediate
         myTestCPU.write(0xB01, 0xFE);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -232,7 +232,7 @@ public class SubtractionTest extends Framework {
         setA(0x00);
         myTestCPU.write(0xB00, 0x82);  // SBCA immediate
         myTestCPU.write(0xB01, 0xFF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x01, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -254,7 +254,7 @@ public class SubtractionTest extends Framework {
         setA(0x00);
         myTestCPU.write(0xB00, 0x82);  // SBCA immediate
         myTestCPU.write(0xB01, 0x01);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -278,7 +278,7 @@ public class SubtractionTest extends Framework {
         setA(0x00);
         myTestCPU.write(0xB00, 0x80);  // SUBA immediate
         myTestCPU.write(0xB01, 0xFF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x01, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -298,7 +298,7 @@ public class SubtractionTest extends Framework {
         setA(0x00);
         myTestCPU.write(0xB00, 0x80);  // SUBA immediate
         myTestCPU.write(0xB01, 0x01);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -318,10 +318,10 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB00, 0xC0); // SUBB
         myTestCPU.write(0xB01, 0xB3);
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x4F, myTestCPU.b.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -339,10 +339,10 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB00, 0xC0); // SUBB
         myTestCPU.write(0xB01, 0x81);
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x81, myTestCPU.b.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getV());
@@ -373,12 +373,12 @@ public class SubtractionTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xA0); // SUBA
         myTestCPU.write(0xB01, 0xE5); // 11100101  B,S
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x210, myTestCPU.s.intValue());
         assertEquals(0x26, myTestCPU.a.intValue());
         assertEquals(0xF2, myTestCPU.b.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getV());
@@ -408,12 +408,12 @@ public class SubtractionTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xE0); // SUBB
         myTestCPU.write(0xB01, 0xE6); // 11100110  A,S
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x210, myTestCPU.s.intValue());
         assertEquals(0xF2, myTestCPU.a.intValue());
         assertEquals(0xCD, myTestCPU.b.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -429,11 +429,11 @@ public class SubtractionTest extends Framework {
     public void testSUBBcommaY() {
         setB(0x03);
         setY(0x0021);
-        myTestCPU.cc.set(0x44);
+        setCC(0x44);
         myTestCPU.write(0x21, 0x21);
         myTestCPU.write(0xB00, 0xE0); // SUBB
         myTestCPU.write(0xB01, 0xA4); // 10100100  ,Y
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xE2, myTestCPU.b.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -459,12 +459,12 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB00, 0x93); //SUBD
         myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x75, myTestCPU.a.intValue());
         assertEquals(0xDF, myTestCPU.b.intValue());
         assertEquals(0x75DF, myTestCPU.d.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -485,10 +485,10 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB00, 0x83); //SUBD
         writeword(0xB01, 0x0123);
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x05E2, myTestCPU.d.intValue());
-        assertEquals(0xB03, myTestCPU.pc.intValue());
+        assertPC(0xB03);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -508,10 +508,10 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB00, 0x83); //SUBD
         writeword(0xB01, 0xF123);
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x15DF, myTestCPU.d.intValue());
-        assertEquals(0xB03, myTestCPU.pc.intValue());
+        assertPC(0xB03);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -526,10 +526,10 @@ public class SubtractionTest extends Framework {
         myTestCPU.write(0xB00, 0x83); //SUBD
         writeword(0xB01, 0x8000);
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x8800, myTestCPU.d.intValue());
-        assertEquals(0xB03, myTestCPU.pc.intValue());
+        assertPC(0xB03);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getV());

@@ -28,7 +28,7 @@ public class ShiftTest extends Framework {
     }
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
-        myTestCPU.cc.set(cc);
+        setCC(cc);
         setA(a);
         setB(b);
         myTestCPU.dp.set(dp);
@@ -58,9 +58,9 @@ public class ShiftTest extends Framework {
         // Write instruction into memory
         myTestCPU.write(0xB00, 0x47); // ASRA
         // Logical Shift Right of 0x3E to 0x1F
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         setA(0x3E);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x1F, myTestCPU.a.intValue());
         assertEquals(0x02, myTestCPU.cc.intValue());
@@ -73,7 +73,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setN(1);
         setB(1);
         myTestCPU.write(0xB00, 0x57); // ASRB
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x1F, myTestCPU.a.intValue());
         assertEquals(0x00, myTestCPU.b.intValue());
@@ -85,7 +85,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
         setB(0xB8);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xDC, myTestCPU.b.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -107,7 +107,7 @@ public class ShiftTest extends Framework {
         myTestCPU.write(0x0402, 0xf1);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2);
         chkCC_A_B_DP_X_Y_S_U(0x09, 0, 0, 4, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0402);
         assertEquals(0xf8, result);
@@ -129,7 +129,7 @@ public class ShiftTest extends Framework {
         // Logical Shift Left of 0xff in register A
         myTestCPU.cc.clear();
         setA(0xFF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFE, myTestCPU.a.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
@@ -140,7 +140,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(1);
         setA(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x02, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.intValue());
@@ -151,7 +151,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
         setA(0xB8);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x70, myTestCPU.a.intValue());
         assertEquals(0x03, myTestCPU.cc.intValue());
@@ -167,9 +167,9 @@ public class ShiftTest extends Framework {
         // Write instruction into memory
         myTestCPU.write(0xB00, 0x44); // LSRA
         // Logical Shift Right of 0x3E to 0x1F
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         setA(0x3E);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x1F, myTestCPU.a.intValue());
         assertEquals(0x02, myTestCPU.cc.intValue());
@@ -181,7 +181,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
         setA(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x00, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getZ());
@@ -192,7 +192,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
         setA(0xB8);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x5C, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -214,7 +214,7 @@ public class ShiftTest extends Framework {
         myTestCPU.write(0x0402, 0xf1);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2);
         chkCC_A_B_DP_X_Y_S_U(0x01, 0, 0, 4, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0402);
         assertEquals(0x78, result);
@@ -236,9 +236,9 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x13, myTestCPU.b.intValue());
         assertEquals(0x03, myTestCPU.cc.intValue());
         assertEquals(1, myTestCPU.cc.getC());
@@ -247,7 +247,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setC(1);
         myTestCPU.cc.setV(1);
         setB(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x03, myTestCPU.b.intValue());
         assertEquals(0, myTestCPU.cc.intValue());
@@ -258,7 +258,7 @@ public class ShiftTest extends Framework {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setV(0);
         setB(0xD8);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xb0, myTestCPU.b.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
@@ -282,9 +282,9 @@ public class ShiftTest extends Framework {
         setB(0x89);
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0xC4, myTestCPU.b.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -294,9 +294,9 @@ public class ShiftTest extends Framework {
         setB(0x89);
         myTestCPU.cc.clear();
         myTestCPU.cc.setC(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x44, myTestCPU.b.intValue());
         assertEquals(0x01, myTestCPU.cc.intValue());
         assertEquals(0, myTestCPU.cc.getN());

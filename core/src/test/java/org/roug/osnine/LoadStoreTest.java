@@ -19,7 +19,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.cc.setZ(0);
         myTestCPU.write(0xB00, 0x86);
         myTestCPU.write(0xB01, 0x00);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertA(0x00);
         assertEquals(0, myTestCPU.cc.getN());
@@ -42,11 +42,11 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB01, 0x99);
         myTestCPU.write(0xB02, 0x00);
         myTestCPU.write(0xB03, 0x10);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertX(0x1000);
         assertA(0xAA);
-        assertEquals(0xB04, myTestCPU.pc.intValue());
+        assertPC(0xB04);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -67,11 +67,11 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB01, 0xD9);
         myTestCPU.write(0xB02, 0xFF);
         myTestCPU.write(0xB03, 0xF0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x1000, myTestCPU.u.intValue());
         assertA(0x7A);
-        assertEquals(0xB04, myTestCPU.pc.intValue());
+        assertPC(0xB04);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -94,11 +94,11 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB00, 0xE6);
         myTestCPU.write(0xB01, 0xE6);
         myTestCPU.cc.clear();
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x200, myTestCPU.s.intValue());
         assertB(0xb3);
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -117,11 +117,11 @@ public class LoadStoreTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xE6);
         myTestCPU.write(0xB01, 0xE6);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x210, myTestCPU.s.intValue());
         assertB(0x73);
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -143,11 +143,11 @@ public class LoadStoreTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xEC);
         myTestCPU.write(0xB01, 0x22);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertY(0x200);
         assertEquals(0xb3ff, myTestCPU.d.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -162,12 +162,12 @@ public class LoadStoreTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xEC);
         myTestCPU.write(0xB01, 0x3E);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertY(0x200);
         assertEquals(0x33ff, myTestCPU.d.intValue());
         assertA(0x33);
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -182,11 +182,11 @@ public class LoadStoreTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0xEC); // LDD
         myTestCPU.write(0xB01, 0xA3);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertY(0x200);
         assertEquals(0x31ff, myTestCPU.d.intValue());
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -201,7 +201,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB00, 0x10); // LDS
         myTestCPU.write(0xB01, 0xCE);
         writeword(0xB02, 0x1234);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.s.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -224,9 +224,9 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB01, 0xBE); // LDY
         myTestCPU.write(0xB02, 0x0E); // Fetch value in 0x0E81
         myTestCPU.write(0xB03, 0x81);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB04, myTestCPU.pc.intValue());
+        assertPC(0xB04);
         assertY(0x0202);
     }
 
@@ -247,9 +247,9 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB02, 0x9F);
         myTestCPU.write(0xB03, 0x0E);
         myTestCPU.write(0xB04, 0x81);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB05, myTestCPU.pc.intValue());
+        assertPC(0xB05);
         assertY(0xB3FF);
     }
 
@@ -264,7 +264,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB00, 0x10); // STS
         myTestCPU.write(0xB01, 0xDF); // STS
         myTestCPU.write(0xB02, 0x9F);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x0AAA, myTestCPU.read_word(0x129F));
         assertEquals(0, myTestCPU.cc.getN());
@@ -286,7 +286,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB00, 0xE7); // STB
         myTestCPU.write(0xB01, 0x98); // 10011000
         myTestCPU.write(0xB02, 0x0F);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xE5, myTestCPU.read(0x03BB));
         assertEquals(1, myTestCPU.cc.getN());
@@ -303,7 +303,7 @@ public class LoadStoreTest extends Framework {
         setA(0xE5);
         myTestCPU.write(0xB00, 0x87); // illegal
         myTestCPU.write(0xB01, 0x20);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -317,7 +317,7 @@ public class LoadStoreTest extends Framework {
         setB(0xE5);
         myTestCPU.write(0xB00, 0xC7); // illegal
         myTestCPU.write(0xB01, 0x20);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -332,7 +332,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB00, 0xCD); // illegal
         myTestCPU.write(0xB01, 0x20);
         myTestCPU.write(0xB02, 0x20);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -348,7 +348,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB01, 0xCF);
         myTestCPU.write(0xB02, 0x20);
         myTestCPU.write(0xB03, 0x20);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -363,7 +363,7 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0xB00, 0x8F); // illegal
         myTestCPU.write(0xB01, 0x20);
         myTestCPU.write(0xB02, 0x20);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }

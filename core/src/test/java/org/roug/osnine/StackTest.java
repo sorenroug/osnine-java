@@ -17,7 +17,7 @@ public class StackTest extends Framework {
 	// Set register S to point to 517
 	myTestCPU.s.set(517);
         // Set the registers we want to push
-	myTestCPU.cc.set(0x0F);
+	setCC(0x0F);
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -25,12 +25,12 @@ public class StackTest extends Framework {
         setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.write(0xB00, 0x34); // PSHS
 	myTestCPU.write(0xB01, 0xFF); // PC,U,Y,X,DP,B,A,CC
 	myTestCPU.execute();
 
-	assertEquals(0xB02, myTestCPU.pc.intValue());
+	assertPC(0xB02);
 	assertEquals(0x0F, myTestCPU.cc.intValue());
         assertA(0x01);
         assertB(0x02);
@@ -57,7 +57,7 @@ public class StackTest extends Framework {
 	// Set register S to point to 517
 	myTestCPU.u.set(517);
         // Set the registers we want to push
-	myTestCPU.cc.set(0x0F);
+	setCC(0x0F);
         setA(0x01);
         setB(0x02);
         myTestCPU.dp.set(0x03);
@@ -65,12 +65,12 @@ public class StackTest extends Framework {
         setY(0x0607);
         myTestCPU.s.set(0x0809);
 
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.write(0xB00, 0x36); // PSHU
 	myTestCPU.write(0xB01, 0xFF); // PC,U,Y,X,DP,B,A,CC
 	myTestCPU.execute();
 
-	assertEquals(0xB02, myTestCPU.pc.intValue());
+	assertPC(0xB02);
 	assertEquals(0x0F, myTestCPU.cc.intValue());
         assertA(1);
         assertB(2);
@@ -106,11 +106,11 @@ public class StackTest extends Framework {
 	writeword(512 - 2, 0x04ff); // Set up stored PC value
 	setY(0x1115); // Set Y to something benign
 	myTestCPU.s.set(500); // Set register S to point to 500
-	myTestCPU.cc.set(0x0f);
+	setCC(0x0f);
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0x35); // PULS
 	myTestCPU.write(0xB01, 0xFF); // PC,U,Y,X,DP,B,A,CC
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x00, myTestCPU.cc.intValue());
         assertA(0x11);
@@ -119,7 +119,7 @@ public class StackTest extends Framework {
         assertX(0x9141);
         assertY(0xA142);
 	assertEquals(0xb140, myTestCPU.u.intValue());
-	assertEquals(0x04ff, myTestCPU.pc.intValue());
+	assertPC(0x04ff);
     }
 
     /**
@@ -139,11 +139,11 @@ public class StackTest extends Framework {
 	writeword(512 - 2, 0x04ff); // Set up stored PC value
 	setY(0x1115); // Set Y to something benign
 	myTestCPU.u.set(500); // Set register U to point to 500
-	myTestCPU.cc.set(0x0f);
+	setCC(0x0f);
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0x37); // PULU
 	myTestCPU.write(0xB01, 0xFF); // PC,U,Y,X,DP,B,A,CC
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
 	assertEquals(0x00, myTestCPU.cc.intValue());
         assertA(0x11);
@@ -152,7 +152,7 @@ public class StackTest extends Framework {
         assertX(0x9141);
         assertY(0xA142);
 	assertEquals(0xb140, myTestCPU.s.intValue());
-	assertEquals(0x04ff, myTestCPU.pc.intValue());
+	assertPC(0x04ff);
     }
 
     /**
@@ -172,14 +172,14 @@ public class StackTest extends Framework {
 	setY(0x1115);
 	// Set register S to point to 0x205
 	myTestCPU.s.set(0x205);
-	myTestCPU.cc.set(0x0f);
+	setCC(0x0f);
 	// Two bytes of instruction
 	myTestCPU.write(0xB00, 0x35); // PUL
 	myTestCPU.write(0xB01, 0xA0); // PC,Y
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
         assertY(0xB140);
-	assertEquals(0x04ff, myTestCPU.pc.intValue());
+	assertPC(0x04ff);
 	assertEquals(0x0f, myTestCPU.cc.intValue());
     }
 

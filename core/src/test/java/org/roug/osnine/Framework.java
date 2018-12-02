@@ -29,12 +29,28 @@ public class Framework {
         assertEquals(exp, myTestCPU.b.intValue());
     }
 
+    void setCC(int value) {
+        myTestCPU.cc.set(value);
+    }
+
+    void assertCC(int exp) {
+        assertEquals(exp, myTestCPU.cc.intValue());
+    }
+
     void setD(int value) {
         myTestCPU.d.set(value);
     }
 
     void assertD(int exp) {
         assertEquals(exp, myTestCPU.d.intValue());
+    }
+
+    void setPC(int value) {
+        myTestCPU.pc.set(value);
+    }
+
+    void assertPC(int exp) {
+        assertEquals(exp, myTestCPU.pc.intValue());
     }
 
     void setX(int value) {

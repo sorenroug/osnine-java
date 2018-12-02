@@ -15,10 +15,10 @@ public class InterruptTest extends Framework {
         myTestCPU = new MC6809(0x2000);
         // Set register S to point to 517
         myTestCPU.s.set(517);
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
     }
 
 
@@ -30,7 +30,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x0F);  // Flag E is off
+        setCC(0x0F);  // Flag E is off
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -45,26 +45,26 @@ public class InterruptTest extends Framework {
         writeword(MC6809.FIRQ_ADDR, 0x1240); // Set FIRQ vector
         myTestCPU.write(0x1240, 0x3B); // RTI
 
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
         assertEquals(0x9F, myTestCPU.cc.intValue()); // Flag E,I is set by IRQ
 
         myTestCPU.getBus().signalFIRQ(true);
         myTestCPU.execute();
-        assertEquals(0x1240, myTestCPU.pc.intValue());
+        assertPC(0x1240);
         assertEquals(0x5F, myTestCPU.cc.intValue()); // Flag E is off by FIRQ
         myTestCPU.getBus().signalFIRQ(false);
         myTestCPU.execute();
-        assertEquals(0x1235, myTestCPU.pc.intValue());
+        assertPC(0x1235);
         assertEquals(0x1F, myTestCPU.cc.intValue()); // Flag I is recovered, E=0
         setA(0x10);
         myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x8F, myTestCPU.cc.intValue()); // Flag E is set by IRQ
         assertA(0x01);
         assertB(0x02);
@@ -79,7 +79,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -89,17 +89,17 @@ public class InterruptTest extends Framework {
 
         writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
         assertEquals(0x9F, myTestCPU.cc.intValue()); // Flag E,I is set by IRQ
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
 
         myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x8F, myTestCPU.cc.intValue()); // Flag E is set by IRQ
         assertA(0x01);
         assertB(0x02);
@@ -126,7 +126,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -136,23 +136,23 @@ public class InterruptTest extends Framework {
 
         writeword(MC6809.NMI_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.getBus().signalNMI(true);
         myTestCPU.execute();
         // S was not set via an instrution so the NMI was ignored
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
 
         writeword(0xB00, 0x10CE); // LDS #$900 sets CC
         writeword(0xB02, 0x900);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
 
         myTestCPU.getBus().signalNMI(false);
         myTestCPU.execute();
-        assertEquals(0xB04, myTestCPU.pc.intValue());
+        assertPC(0xB04);
         assertEquals(0x81, myTestCPU.cc.intValue()); // Flag E is set by IRQ
         assertA(0x01);
         assertB(0x02);
@@ -179,7 +179,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -189,16 +189,16 @@ public class InterruptTest extends Framework {
 
         writeword(MC6809.FIRQ_ADDR, 0x1234); // Set FIRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x12); // NOP
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.getBus().signalFIRQ(true);
         myTestCPU.execute();
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
 
         myTestCPU.getBus().signalFIRQ(false);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x0F, myTestCPU.cc.intValue()); // Flag E is off by FIRQ
         assertA(0x01);
         assertB(0x02);
@@ -216,7 +216,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -226,16 +226,16 @@ public class InterruptTest extends Framework {
 
         writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
         myTestCPU.write(0x1234, 0x3B); // RTI
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x3C); // CWAI
         myTestCPU.write(0xB01, 0x12); // value for CC AND
         myTestCPU.write(0xB02, 0x12); // NOP
         myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
         myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0x82, myTestCPU.cc.intValue()); // Flag E is set by CWAI
         assertEquals(0x02, myTestCPU.read(517 - 1)); // Check that PC-low was pushed.
         assertEquals(0x0B, myTestCPU.read(517 - 2)); // Check that PC-high was pushed.
@@ -264,12 +264,12 @@ public class InterruptTest extends Framework {
         myTestCPU.write(0xB02, 0x12); // NOP
         myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         myTestCPU.cc.setI(false); // IRQ is still raised. Should trigger now
         myTestCPU.execute();
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
         myTestCPU.execute();
-        assertEquals(0x1235, myTestCPU.pc.intValue());
+        assertPC(0x1235);
         assertTrue(myTestCPU.cc.isSetI()); // Check that I-flag is true.
         myTestCPU.getBus().signalIRQ(false);
         myTestCPU.execute();  // Get RTI
@@ -288,12 +288,12 @@ public class InterruptTest extends Framework {
         myTestCPU.write(0xB02, 0x12); // NOP
         myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
         myTestCPU.execute();  // Get NOP
-        assertEquals(0x1235, myTestCPU.pc.intValue());
+        assertPC(0x1235);
         assertTrue(myTestCPU.cc.isSetI()); // Check that I-flag is true.
         myTestCPU.execute();  // Get RTI
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
         myTestCPU.execute();  // Get NOP
         myTestCPU.getBus().signalIRQ(false);
     }
@@ -307,7 +307,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x5F);  // Inhibit FIRQ and IRQ
+        setCC(0x5F);  // Inhibit FIRQ and IRQ
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -315,16 +315,16 @@ public class InterruptTest extends Framework {
         setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x13); // SYNC
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.write(0xB02, 0x12); // NOP
         myTestCPU.write(0xB03, 0x12); // NOP
         myTestCPU.getBus().signalIRQ(true);
         myTestCPU.execute();   // Execute sync
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         myTestCPU.getBus().signalIRQ(false);
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x5F, myTestCPU.cc.intValue()); // Flag E is off by FIRQ
         assertA(0x01);
         assertB(0x02);
@@ -340,7 +340,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x5F);  // Inhibit FIRQ and IRQ
+        setCC(0x5F);  // Inhibit FIRQ and IRQ
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -348,7 +348,7 @@ public class InterruptTest extends Framework {
         setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x13); // SYNC
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.write(0xB02, 0x12); // NOP
@@ -357,9 +357,9 @@ public class InterruptTest extends Framework {
         SendIRQ irqTask = new SendIRQ();
         timer.schedule(irqTask, 100); // miliseconds
         myTestCPU.execute();   // Execute sync
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         myTestCPU.getBus().signalIRQ(false);
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x5F, myTestCPU.cc.intValue()); // Flag E is off by FIRQ
         assertA(0x01);
         assertB(0x02);
@@ -375,7 +375,7 @@ public class InterruptTest extends Framework {
         // Set register S to point to 517
         myTestCPU.s.set(517);
         // Set the registers we want to push
-        myTestCPU.cc.set(0x4F);  // Inhibit FIRQ only
+        setCC(0x4F);  // Inhibit FIRQ only
         setA(1);
         setB(2);
         myTestCPU.dp.set(3);
@@ -383,7 +383,7 @@ public class InterruptTest extends Framework {
         setY(0x0607);
         myTestCPU.u.set(0x0809);
 
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.write(0xB00, 0x13); // SYNC
         myTestCPU.write(0xB01, 0x12); // NOP
         myTestCPU.write(0xB02, 0x12); // NOP
@@ -392,7 +392,7 @@ public class InterruptTest extends Framework {
         SendIRQ irqTask = new SendIRQ();
         timer.schedule(irqTask, 100); // miliseconds
         myTestCPU.execute();   // Execute sync
-        assertEquals(0x1234, myTestCPU.pc.intValue());
+        assertPC(0x1234);
         myTestCPU.getBus().signalIRQ(false);
         assertEquals(0xDF, myTestCPU.cc.intValue()); // Flags E,I,F are on while in IRQ
         assertA(0x01);
@@ -402,7 +402,7 @@ public class InterruptTest extends Framework {
         assertEquals(0x0B, myTestCPU.read(517 - 2)); // Check that PC-high was pushed.
         assertEquals(0x09, myTestCPU.read(517 - 3)); // Check that U-low was pushed.
         myTestCPU.execute();   // Execute RTI
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0xCF, myTestCPU.cc.intValue());  // Flag E is on by IRQ
         assertEquals(517, myTestCPU.s.intValue());
     }

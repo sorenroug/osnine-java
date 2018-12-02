@@ -51,14 +51,14 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setC(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
     }
 
     @Test
@@ -74,27 +74,27 @@ public class BranchAndJumpTest extends Framework {
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
     }
 
     @Test
@@ -111,30 +111,30 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
     }
 
     /**
@@ -147,10 +147,10 @@ public class BranchAndJumpTest extends Framework {
             17 // Jump forward 17 bytes
         };
         loadProg(instructions);
-        myTestCPU.cc.set(CC.Zmask);
+        setCC(CC.Zmask);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2);
     }
 
     /**
@@ -163,10 +163,10 @@ public class BranchAndJumpTest extends Framework {
             0x17 // Jump forward 0x17 bytes
         };
         loadProg(instructions);
-        myTestCPU.cc.set(CC.Nmask + CC.Vmask);
+        setCC(CC.Nmask + CC.Vmask);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 + 0x17, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2 + 0x17);
     }
 
     /**
@@ -179,10 +179,10 @@ public class BranchAndJumpTest extends Framework {
             0x17 // Jump forward 0x17 bytes
         };
         loadProg(instructions);
-        myTestCPU.cc.set(CC.Cmask);
+        setCC(CC.Cmask);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 + 0x17, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2 + 0x17);
     }
 
     @Test
@@ -198,27 +198,27 @@ public class BranchAndJumpTest extends Framework {
 
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setC(1);
         myTestCPU.cc.setZ(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setC(1);
         myTestCPU.cc.setZ(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
     }
 
     @Test
@@ -235,34 +235,34 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(1);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
     }
 
     @Test
@@ -278,27 +278,27 @@ public class BranchAndJumpTest extends Framework {
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setC(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(1);
         myTestCPU.cc.setC(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setZ(1);
         myTestCPU.cc.setC(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
     }
 
     @Test
@@ -314,27 +314,27 @@ public class BranchAndJumpTest extends Framework {
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(BRANCHED, myTestCPU.pc.intValue());
+        assertPC(BRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(UNBRANCHED, myTestCPU.pc.intValue());
+        assertPC(UNBRANCHED);
     }
 
     @Test
@@ -346,7 +346,7 @@ public class BranchAndJumpTest extends Framework {
         loadProg(instructions);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 + 17, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2 + 17);
     }
 
     @Test
@@ -358,7 +358,7 @@ public class BranchAndJumpTest extends Framework {
         loadProg(instructions);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 - 86, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2 - 86);
     }
 
     @Test
@@ -371,7 +371,7 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.s.set(0x300);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 - 86, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2 - 86);
         assertEquals(0x2fe, myTestCPU.s.intValue());
         assertEquals(0x22, myTestCPU.read(0x2ff));
         assertEquals(0x1e, myTestCPU.read(0x2fe));
@@ -387,7 +387,7 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.s.set(0x300);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 2 + 17, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2 + 17);
         assertEquals(0x2fe, myTestCPU.s.intValue());
         assertEquals(0x22, myTestCPU.read(0x2ff));
         assertEquals(0x1e, myTestCPU.read(0x2fe));
@@ -405,7 +405,7 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.s.set(STACKADDR);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 3 - 0x072B, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 3 - 0x072B);
         assertEquals(STACKADDR - 2, myTestCPU.s.intValue());
         assertEquals(LOCATION + 3, myTestCPU.read_word(STACKADDR - 2));
     }
@@ -422,7 +422,7 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.s.set(STACKADDR);
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
-        assertEquals(LOCATION + 3 + 0x0372, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 3 + 0x0372);
         assertEquals(STACKADDR - 2, myTestCPU.s.intValue());
         assertEquals(LOCATION + 3, myTestCPU.read_word(STACKADDR - 2));
     }
@@ -446,41 +446,41 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.write(0xB01, 0xAB);
         myTestCPU.write(0xB02, 0x11); // Junk
         myTestCPU.write(0xB03, 0x22); // Junk
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.cc.clear();
         myTestCPU.execute();
         chkCC_A_B_DP_X_Y_S_U(0, 0x01, 0x05, 0, 0, 0x200, 0x913, 0);
         assertEquals(0x200, myTestCPU.y.intValue());
         assertEquals(0x105, myTestCPU.d.intValue());
         assertEquals(0x913, myTestCPU.s.intValue());
-        assertEquals(0x305, myTestCPU.pc.intValue());
+        assertPC(0x305);
     }
 
     @Test
     public void testLBRAForwards() {
         myTestCPU.write(0xB00, 0x16);
         writeword(0xB01, 0x03FF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
-        assertEquals(0xB00 + 3 + 0x03FF, myTestCPU.pc.intValue());
+        assertPC(0xB00 + 3 + 0x03FF);
     }
 
     @Test
     public void testLBRABackwards() {
         myTestCPU.write(0x1B00, 0x16);
         writeword(0x1B01, 0xF333);
-        myTestCPU.pc.set(0x1B00);
+        setPC(0x1B00);
 	myTestCPU.execute();
-        assertEquals(0x1B00 + 3 - 0xCCD, myTestCPU.pc.intValue());
+        assertPC(0x1B00 + 3 - 0xCCD);
     }
 
     @Test
     public void testLBRNForwards() {
         writeword(0xB00, 0x1021);
         writeword(0xB02, 0x03FF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
-        assertEquals(0xB00 + 4, myTestCPU.pc.intValue());
+        assertPC(0xB00 + 4);
     }
 
     @Test
@@ -488,9 +488,9 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.cc.setC(0);
         writeword(0xB00, 0x1024);
         writeword(0xB02, 0x03FF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
-        assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
+        assertPC(0xB00 + 4 + 0x03FF);
     }
 
     @Test
@@ -498,9 +498,9 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.cc.setZ(1);
         writeword(0xB00, 0x1027);
         writeword(0xB02, 0x03FF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
-        assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
+        assertPC(0xB00 + 4 + 0x03FF);
     }
 
     @Test
@@ -509,18 +509,18 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.cc.setV(1);
         writeword(0xB00, 0x102C);
         writeword(0xB02, 0x03FF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
-        assertEquals(0xB00 + 4 + 0x03FF, myTestCPU.pc.intValue());
+        assertPC(0xB00 + 4 + 0x03FF);
     }
 
     @Test
     public void testJMPExtended() {
         myTestCPU.write(0xB00, 0x7E); // JMP
         writeword(0xB01, 0x102C);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
 	myTestCPU.execute();
-        assertEquals(0x102C, myTestCPU.pc.intValue());
+        assertPC(0x102C);
     }
 
     @Test
@@ -528,9 +528,9 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.s.set(0x300);
         writeword(0x300, 0x102C); // Write return address
         myTestCPU.write(0xB00, 0x39); // RTS
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0x102C, myTestCPU.pc.intValue());
+        assertPC(0x102C);
         assertEquals(0x302, myTestCPU.s.intValue());
     }
 }

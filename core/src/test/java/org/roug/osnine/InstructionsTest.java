@@ -29,7 +29,7 @@ public class InstructionsTest extends Framework {
     }
 
     private void setCC_A_B_DP_X_Y_S_U(int cc, int a, int b, int dp, int x, int y, int s, int u) {
-        myTestCPU.cc.set(cc);
+        setCC(cc);
         setA(a);
         setB(b);
         myTestCPU.dp.set(dp);
@@ -57,7 +57,7 @@ public class InstructionsTest extends Framework {
     public void testIllegal38() {
         myTestCPU.b.set(0xE5);
         myTestCPU.write(0xB00, 0x38); // illegal
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -69,7 +69,7 @@ public class InstructionsTest extends Framework {
     public void testIllegal18() {
         myTestCPU.b.set(0xE5);
         myTestCPU.write(0xB00, 0x18); // illegal
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -78,11 +78,11 @@ public class InstructionsTest extends Framework {
     public void testANDA() {
         setA(0x8B);
         myTestCPU.dp.set(0x0A);
-        myTestCPU.cc.set(0x32);
+        setCC(0x32);
         myTestCPU.write(0x0AEF, 0x0F);
         myTestCPU.write(0x0B00, 0x94);
         myTestCPU.write(0x0B01, 0xEF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x0B, myTestCPU.a.intValue());
         assertEquals(0x30, myTestCPU.cc.intValue());
@@ -90,10 +90,10 @@ public class InstructionsTest extends Framework {
 
     @Test
     public void testANDCC() {
-        myTestCPU.cc.set(0x79);
+        setCC(0x79);
         myTestCPU.write(0x0B00, 0x1C);
         myTestCPU.write(0x0B01, 0xAF);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x29, myTestCPU.cc.intValue());
     }
@@ -101,10 +101,10 @@ public class InstructionsTest extends Framework {
     @Test
     public void testBITimm() {
         setA(0x8B);
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         myTestCPU.write(0x0B00, 0x85);
         myTestCPU.write(0x0B01, 0xAA);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x8B, myTestCPU.a.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
@@ -130,7 +130,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0x0F23, 0xE2);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 3, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 3);
         chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 4, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0F23);
         assertEquals(0, result);
@@ -142,9 +142,9 @@ public class InstructionsTest extends Framework {
     @Test
     public void CLRAccA() {
         setA(0x8B);
-        myTestCPU.cc.set(0x0F);
+        setCC(0x0F);
         myTestCPU.write(0x0B00, 0x4F);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x0, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -167,7 +167,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0x0B23, 0xE2);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2);
         chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 0x0B, 0, 0, 0, 0);
         int result = myTestCPU.read(0x0B23);
         assertEquals(0, result);
@@ -188,7 +188,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0x089A, 0x22);
         myTestCPU.execute();
         assertEquals(instructions[0], myTestCPU.ir);
-        assertEquals(LOCATION + 2, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 2);
         chkCC_A_B_DP_X_Y_S_U(CC.Zmask, 0, 0, 0, 0, 0x89A, 0, 0);
         int result = myTestCPU.read(0x0899);
         assertEquals(0, result);
@@ -206,7 +206,7 @@ public class InstructionsTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0x03); // COM
         myTestCPU.write(0xB01, 0x00); // Direct page addr + 0
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xF8, myTestCPU.read(0x0200));
         assertEquals(1, myTestCPU.cc.getN());
@@ -223,7 +223,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         setA(0x74);
         myTestCPU.write(0xB00, 0x43);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x8B, myTestCPU.a.intValue());
         assertEquals(0x09, myTestCPU.cc.intValue());
@@ -242,7 +242,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0xB00, 0x19);
         myTestCPU.cc.clear();
         setA(0x7f);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x85, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -255,11 +255,11 @@ public class InstructionsTest extends Framework {
     public void testEORAindexed() {
         setY(0x12F0);
         setA(0xF2);
-        myTestCPU.cc.set(0x03);
+        setCC(0x03);
         myTestCPU.write(0x12F8, 0x98);
         myTestCPU.write(0xB00, 0xA8);
         myTestCPU.write(0xB01, 0x28);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x98, myTestCPU.read(0x12F8));
         assertEquals(0x6A, myTestCPU.a.intValue());
@@ -277,7 +277,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.dp.set(0xf6);
         myTestCPU.write(0xB00, 0x1E);
         myTestCPU.write(0xB01, 0x8B);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x7f, myTestCPU.dp.intValue());
         assertEquals(0xf6, myTestCPU.a.intValue());
@@ -293,7 +293,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.d.set(0x117f);
         setX(0xff16);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xff16, myTestCPU.d.intValue());
         assertEquals(0x117f, myTestCPU.x.intValue());
@@ -309,7 +309,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         setA(0x56);
         setX(0x1234);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x34, myTestCPU.a.intValue());
         assertEquals(0xFF56, myTestCPU.x.intValue());
@@ -327,9 +327,9 @@ public class InstructionsTest extends Framework {
         myTestCPU.s.set(0x900);
         myTestCPU.write(0xB00, 0x32);  // LEAS
         myTestCPU.write(0xB01, 0x62);  // SP + 2 (last 5 bits)
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0x902, myTestCPU.s.intValue());
     }
 
@@ -343,9 +343,9 @@ public class InstructionsTest extends Framework {
         myTestCPU.s.set(0x900);
         myTestCPU.write(0xB00, 0x32);  // LEAS
         myTestCPU.write(0xB01, 0x7E);  // SP + 2's complement of last 5 bits.
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0x8FE, myTestCPU.s.intValue());
     }
 
@@ -363,15 +363,15 @@ public class InstructionsTest extends Framework {
         loadProg(instructions);
         myTestCPU.execute();
         assertEquals(LOCATION + 4 - offset, myTestCPU.x.intValue());
-        assertEquals(LOCATION + 4, myTestCPU.pc.intValue());
+        assertPC(LOCATION + 4);
 
         // LEAX        <$93A,PCR
         myTestCPU.write(0x0846, 0x30);
         myTestCPU.write(0x0847, 0x8C);
         myTestCPU.write(0x0848, 0xF1);
-        myTestCPU.pc.set(0x0846);
+        setPC(0x0846);
         myTestCPU.execute();
-        assertEquals(0x0849, myTestCPU.pc.intValue());
+        assertPC(0x0849);
         assertEquals(0x083a, myTestCPU.x.intValue());
     }
 
@@ -393,7 +393,7 @@ public class InstructionsTest extends Framework {
         assertEquals(0x50, myTestCPU.x.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
 
-        myTestCPU.cc.set(0x28);
+        setCC(0x28);
         setX(0x0EFA);
         setY(0x0EF8);
         setA(0xFF);
@@ -417,7 +417,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
         setA(0x0C);
         setB(0x64);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x04B0, myTestCPU.d.intValue());
         assertEquals(0x04, myTestCPU.a.intValue());
@@ -438,7 +438,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
         setA(0x0C);
         setB(0x00);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x0000, myTestCPU.d.intValue());
         assertEquals(0x00, myTestCPU.a.intValue());
@@ -456,21 +456,21 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0xB00, 0x40);
         // Negate 0
         setA(0);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getC());
 
         // Negate 1
         setA(1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getC());
 
         // Negate 2
         setA(2);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFE, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getC());
@@ -478,7 +478,7 @@ public class InstructionsTest extends Framework {
 
         // Negate 0x80
         setA(0x80);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x80, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getC());
@@ -490,19 +490,19 @@ public class InstructionsTest extends Framework {
     @Test
     public void testNOP() {
         myTestCPU.write(0xB00, 0x12);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
     }
 
 
     @Test
     public void testORAimmediate() {
         setA(0xDA);
-        myTestCPU.cc.set(0x43);
+        setCC(0x43);
         myTestCPU.write(0xB00, 0x8A);
         myTestCPU.write(0xB01, 0x0F);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xDF, myTestCPU.a.intValue());
         assertEquals(0x49, myTestCPU.cc.intValue());
@@ -514,9 +514,9 @@ public class InstructionsTest extends Framework {
         setA(0xEE);
         setB(0x76);
         myTestCPU.write(0xB00, 0x1D);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0x0076, myTestCPU.d.intValue());
     }
 
@@ -524,9 +524,9 @@ public class InstructionsTest extends Framework {
     public void testSEXhigh() {
         setB(0xE6);
         myTestCPU.write(0xB00, 0x1D);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB01, myTestCPU.pc.intValue());
+        assertPC(0xB01);
         assertEquals(0xFFE6, myTestCPU.d.intValue());
     }
 
@@ -540,9 +540,9 @@ public class InstructionsTest extends Framework {
         myTestCPU.s.set(0x1000);
         myTestCPU.write(0xB00, 0x11);
         myTestCPU.write(0xB01, 0x3F);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0x0300, myTestCPU.pc.intValue());
+        assertPC(0x0300);
         assertEquals(0x1000 - 12, myTestCPU.s.intValue());
         assertTrue(myTestCPU.cc.isSetE());
     }
@@ -555,9 +555,9 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.d.set(0xABBA);
         setY(0x0101);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0xB02, myTestCPU.pc.intValue());
+        assertPC(0xB02);
         assertEquals(0xABBA, myTestCPU.d.intValue());
         assertEquals(0xABBA, myTestCPU.y.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -572,9 +572,9 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0xB01, 0x45);
         myTestCPU.cc.clear();
         myTestCPU.s.set(0x1BB1);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
-        assertEquals(0x1BB1, myTestCPU.pc.intValue());
+        assertPC(0x1BB1);
         assertEquals(0x1BB1, myTestCPU.s.intValue());
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
@@ -588,7 +588,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.write(0xB01, 0xBA);
         myTestCPU.cc.clear();
         myTestCPU.dp.set(0x1B);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x1B, myTestCPU.dp.intValue());
         assertEquals(0x1B, myTestCPU.cc.intValue());
@@ -607,7 +607,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         setA(0x56);
         setB(0x78);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x56, myTestCPU.a.intValue());
         assertEquals(0xFF56, myTestCPU.x.intValue());
@@ -620,7 +620,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         setX(0x6541);
         setB(0x78);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x41, myTestCPU.b.intValue());
         assertEquals(0x6541, myTestCPU.x.intValue());
@@ -638,7 +638,7 @@ public class InstructionsTest extends Framework {
         // Test a = 0xff
         myTestCPU.cc.clear();
         setA(0xff);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xff, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
@@ -654,7 +654,7 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.clear();
         myTestCPU.cc.setV(1);
         setA(0x01);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x01, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.intValue());
@@ -669,7 +669,7 @@ public class InstructionsTest extends Framework {
         // Test a = 0x00
         myTestCPU.cc.clear();
         setA(0x00);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(1, myTestCPU.cc.getZ());
@@ -686,7 +686,7 @@ public class InstructionsTest extends Framework {
         // Two bytes of instruction
         myTestCPU.write(0xB00, 0x6D);
         myTestCPU.write(0xB01, 0xA4);
-        myTestCPU.pc.set(0xB00);
+        setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFF, myTestCPU.read(0x0205));
         assertEquals(1, myTestCPU.cc.getN());
