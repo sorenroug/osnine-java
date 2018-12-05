@@ -1,12 +1,10 @@
 package org.roug.osnine.mo5;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.PIA6821;
-import org.roug.osnine.PIASignal;
+import org.roug.osnine.Signal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,24 +47,22 @@ public class PIA6821MO5 extends PIA6821 {
     /** The event-driven GUI. */
     private Screen screen;
 
+    private CassetteRecorder tape;
+
     /** Number of cycles since last callback. */
     private long lastCounter;
 
-    /** File for cassette storage. */
-    FileOutputStream cassetteOut;
-
-    FileInputStream cassetteIn;
-
     boolean cassetteBit;
 
-    private PIASignal callback;
+    private Signal callback;
 
     /**
      * Constructor.
      */
-    public PIA6821MO5(Bus8Motorola bus, Screen screen) {
+    public PIA6821MO5(Bus8Motorola bus, Screen screen, CassetteRecorder tape) {
         super(0xA7C0, bus);
         this.screen = screen;
+        this.tape = tape;
         setLayout(1);
 
         setIRQCallback(A, (boolean state) -> signalFIRQ(state));
@@ -109,70 +105,11 @@ public class PIA6821MO5 extends PIA6821 {
     }
 
     /**
-     * Load bit 7 in peripheral register A to load data into cassette port.
-     * Called on a delay from the bus.
-     */
-    private void feedBit7(boolean newstate) {
-        setInputLine(A, 7, cassetteBit);
-        try {
-            int code = getCode();
-            if (code != -1) {
-                cassetteBit = isBitOn(code, 16384);
-                int delay = code & 0x3FFF;
-                LOGGER.debug("cassette code {}", code);
-                callback = (boolean state) -> feedBit7(state);
-                bus.callbackIn(delay, callback);
-            }
-        } catch (IOException e) {
-            cassetteIn = null;
-        }
-    }
-
-    private int getCode() throws IOException {
-        if (cassetteIn == null) return -1;
-
-        int readVal = cassetteIn.read();
-        int code = -1;
-        if (readVal != -1) {
-            code = readVal << 8;
-            readVal = cassetteIn.read();
-            if (readVal != -1) {
-                code += readVal;
-            } else code = -1;
-        }
-        return code;
-    }
-
-    /** Start/stop cassette motor.
+     * Start/stop cassette motor.
      * If state is false, then turn motor on, otherwise turn off motor.
      */
     private void cassetteMotor(boolean state) {
-        try {
-            if (state) {
-                if (cassetteOut != null) {
-                    LOGGER.info("Closing cassette file");
-                    cassetteOut.close();
-                    cassetteOut = null;
-                    cassetteIn.close();
-                    cassetteIn = null;
-                }
-            } else {
-                lastCounter = bus.getCycleCounter();
-                LOGGER.info("Opening cassette file");
-                cassetteOut = new FileOutputStream("cassette.out", true);
-                cassetteIn = new FileInputStream("cassette.in");
-                int code = getCode();
-                if (code != -1) {
-                    cassetteBit = isBitOn(code, 16384);
-                    int delay = code & 0x3FFF;
-                    callback = (boolean dummystate) -> feedBit7(dummystate);
-                    bus.callbackIn(delay, callback);
-                }
-
-            }
-        } catch (IOException e) {
-            cassetteOut = null;
-        }
+        tape.cassetteMotor(state);
     }
 
     /**
@@ -190,19 +127,7 @@ public class PIA6821MO5 extends PIA6821 {
 
         // Write cassette output
         if (!isC2On(A) && isBitOn(mask, BIT6)) {
-            long nowCounter = bus.getCycleCounter();
-            long cycleDiff = nowCounter - lastCounter;
-            int code = (int)(cycleDiff & 0x3FFF);
-            if (isBitOn(value, BIT6)) {
-                code |= 0x4000;
-            }
-            try {
-                cassetteOut.write(code >> 8);
-                cassetteOut.write(code);
-            } catch (IOException e) {
-                cassetteOut = null;
-            }
-            lastCounter = nowCounter;
+            tape.writeToCassette(isBitOn(value, BIT6));
         }
     }
 

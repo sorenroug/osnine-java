@@ -68,6 +68,6 @@ public interface Bus8Motorola extends MemoryBus {
      * Ask the bus to call a given method when the number of
      * read/write operations has reached given number.
      */
-    void callbackIn(int cycles, PIASignal method);
+    void callbackIn(int cycles, Signal method);
 }
 

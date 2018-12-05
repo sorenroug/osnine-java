@@ -27,7 +27,7 @@ public class BusStraight implements Bus8Motorola {
     /** The memory cycle that will trigger a call to the registered method. */
     private long methodTrigger = Long.MAX_VALUE;
 
-    private PIASignal registeredMethod;
+    private Signal registeredMethod;
 
     /**
      * Constructor.
@@ -202,7 +202,7 @@ public class BusStraight implements Bus8Motorola {
     }
 
     @Override
-    public void callbackIn(int cycles, PIASignal method) {
+    public void callbackIn(int cycles, Signal method) {
         LOGGER.debug("callbackIn: {}: {}", cycles, method);
         registeredMethod = method;
         methodTrigger = cycleCounter + cycles;
