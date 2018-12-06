@@ -47,7 +47,7 @@ public class PIA6821MO5 extends PIA6821 {
     /** The event-driven GUI. */
     private Screen screen;
 
-    private CassetteRecorder tape;
+    private TapeRecorder tape;
 
     /** Number of cycles since last callback. */
     private long lastCounter;
@@ -59,7 +59,7 @@ public class PIA6821MO5 extends PIA6821 {
     /**
      * Constructor.
      */
-    public PIA6821MO5(Bus8Motorola bus, Screen screen, CassetteRecorder tape) {
+    public PIA6821MO5(Bus8Motorola bus, Screen screen, TapeRecorder tape) {
         super(0xA7C0, bus);
         this.screen = screen;
         this.tape = tape;

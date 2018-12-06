@@ -46,7 +46,7 @@ public class MO5Emu implements TapeListener {
     /** The display of the MO5. */
     private Screen screen;
 
-    private CassetteRecorder tapeRecorder;
+    private TapeRecorder tapeRecorder;
 
     private final JFileChooser fc = new JFileChooser(new File("."));
 
@@ -66,7 +66,7 @@ public class MO5Emu implements TapeListener {
 
         // Create screen and attach it to the bus.
         screen = new Screen(bus);
-        tapeRecorder = new CassetteRecorder(bus, this);
+        tapeRecorder = new TapeRecorder(bus, this);
 
         pia = new PIA6821MO5(bus, screen, tapeRecorder);
         bus.addMemorySegment(pia);

@@ -14,20 +14,20 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 
+public class TapeRecorderTest {
 
-class TapeMock implements TapeListener {
+    class TapeMock implements TapeListener {
 
-    public boolean readyState;
+        public boolean readyState;
 
-    public void tapestationSignal(boolean state) {
-        readyState = state;
+        public void tapestationSignal(boolean state) {
+            readyState = state;
+        }
     }
-}
 
-public class CassetteRecorderTest {
 
     private File getResourceFile(String filename) throws URISyntaxException {
-        return new File(CassetteRecorderTest.class.getClassLoader().getResource(filename).toURI());
+        return new File(TapeRecorderTest.class.getClassLoader().getResource(filename).toURI());
     }
 
     /**
@@ -37,7 +37,7 @@ public class CassetteRecorderTest {
     public void loadForPlay() throws Exception {
         Bus8Motorola bus = new BusStraight();
         TapeMock tape = new TapeMock();
-        CassetteRecorder cassette = new CassetteRecorder(bus, tape);
+        TapeRecorder cassette = new TapeRecorder(bus, tape);
         assertFalse(tape.readyState);
         cassette.loadForPlay(getResourceFile("cassettetest.out"));
         assertTrue(tape.readyState);

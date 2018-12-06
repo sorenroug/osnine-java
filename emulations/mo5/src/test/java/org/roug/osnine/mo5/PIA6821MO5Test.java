@@ -23,7 +23,7 @@ class ScreenMock extends Screen {
 
 class PIAMock extends PIA6821MO5 {
 
-    public PIAMock(Bus8Motorola bus, Screen screen, CassetteRecorder tape) {
+    public PIAMock(Bus8Motorola bus, Screen screen, TapeRecorder tape) {
         super(bus, screen, tape);
     }
 
@@ -37,12 +37,12 @@ class PIAMock extends PIA6821MO5 {
     
 }
 
-class TapeMock implements TapeListener {
-
-    public void tapestationSignal(boolean state) {}
-}
-
 public class PIA6821MO5Test {
+
+    class TapeMock implements TapeListener {
+
+        public void tapestationSignal(boolean state) {}
+    }
 
     private static final int PIAADDR = 0xA7C0;
 
@@ -58,12 +58,12 @@ public class PIA6821MO5Test {
     /**
      * Set PA5 register to output and then try to write to it.
      */
-    @Ignore @Test
+    @Test
     public void inputToPA5() {
         Bus8Motorola bus = new BusStraight();
         ScreenMock screen = new ScreenMock(bus);
         TapeMock tape = new TapeMock();
-        CassetteRecorder cassette = new CassetteRecorder(bus, tape);
+        TapeRecorder cassette = new TapeRecorder(bus, tape);
 
         PIAMock pia = new PIAMock(bus, screen, cassette);
         pia.store(CRA, 0);     // Select DDRA

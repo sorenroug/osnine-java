@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class CassetteRecorder {
+public class TapeRecorder {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(CassetteRecorder.class);
+                = LoggerFactory.getLogger(TapeRecorder.class);
 
     //private static final int VALUEBIT = 0x4000;
     private static final int VALUEBIT = 0x40000000;
@@ -43,7 +43,7 @@ public class CassetteRecorder {
     /**
      * Constructor.
      */
-    CassetteRecorder(Bus8Motorola bus, TapeListener listener) {
+    TapeRecorder(Bus8Motorola bus, TapeListener listener) {
         this.bus = bus;
         this.listener = listener;
     }
