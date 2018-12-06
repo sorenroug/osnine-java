@@ -38,6 +38,11 @@ public class CassetteRecorder {
     /** Determines if the recording or play button is pressed. */
     private boolean recording;
 
+    private boolean motorOn;
+
+    /**
+     * Constructor.
+     */
     CassetteRecorder(Bus8Motorola bus, TapeListener listener) {
         this.bus = bus;
         this.listener = listener;
@@ -94,7 +99,11 @@ public class CassetteRecorder {
     public void cassetteMotor(boolean state) {
         if (state) {
             LOGGER.info("Turning motor off");
+            if (recording)
+                writeCode(true, 20000);
+            motorOn = false;
         } else {
+            motorOn = true;
             lastCounter = bus.getCycleCounter();
             LOGGER.info("Turning motor on for {}", recording?"record":"playback");
 
@@ -107,15 +116,37 @@ public class CassetteRecorder {
     }
 
     /**
+     * Load bit 7 in peripheral register A to load data into cassette port.
+     * Called on a delay from the bus.
+     */
+    private void feedLine7(boolean newstate) {
+        tapestationReady(cassetteBit);
+        if (!motorOn) return;
+        try {
+            int code = readCode();
+            cassetteBit = isBitOn(code, VALUEBIT);
+            int delay = code & LENGTH_MASK;
+            LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
+            callback = (boolean state) -> feedLine7(state);
+            bus.callbackIn(delay, callback);
+        } catch (IOException e) {
+            LOGGER.debug("End of tape");
+            tapestationReady(false);
+        }
+    }
+
+    /**
      * Rewind the tape.
      */
     public void rewind() {
         try {
-            cassetteStream.seek(0);
+            if (cassetteStream != null) {
+                cassetteStream.seek(0);
+                tapestationReady(true);
+            }
         } catch (IOException e) {
             cassetteStream = null;
         }
-
     }
 
     /**
@@ -123,7 +154,10 @@ public class CassetteRecorder {
      */
     public void seekToEnd() {
         try {
-            cassetteStream.seek(cassetteStream.length());
+            if (cassetteStream != null) {
+                cassetteStream.seek(cassetteStream.length());
+                tapestationReady(true);
+            }
         } catch (IOException e) {
             cassetteStream = null;
         }
@@ -138,29 +172,6 @@ public class CassetteRecorder {
         long cycleDiff = nowCounter - lastCounter;
         writeCode(value, (int)cycleDiff);
         lastCounter = nowCounter;
-    }
-
-    /**
-     * Load bit 7 in peripheral register A to load data into cassette port.
-     * Called on a delay from the bus.
-     */
-    private void feedLine7(boolean newstate) {
-        tapestationReady(cassetteBit);
-        try {
-            int code = readCode();
-            if (code != -1) {
-                cassetteBit = isBitOn(code, VALUEBIT);
-                int delay = code & LENGTH_MASK;
-                LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
-                callback = (boolean state) -> feedLine7(state);
-                bus.callbackIn(delay, callback);
-            } else {
-                tapestationReady(true);
-            }
-        } catch (IOException e) {
-            cassetteStream = null;
-            tapestationReady(true);
-        }
     }
 
     private void writeCode(boolean value, int delay) {
@@ -184,7 +195,7 @@ public class CassetteRecorder {
      * Read bit and delay values from tape.
      */
     private int readCode() throws IOException {
-        if (cassetteStream == null) return -1;
+        if (cassetteStream == null) throw new IOException();
 
         int code = -1;
         code = cassetteStream.readInt();

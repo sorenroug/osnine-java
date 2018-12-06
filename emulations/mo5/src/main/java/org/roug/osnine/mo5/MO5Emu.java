@@ -182,6 +182,10 @@ public class MO5Emu implements TapeListener {
         guiMenuTapeRewind.addActionListener(new RewindAction());
         guiMenuTape.add(guiMenuTapeRewind);
 
+        JMenuItem guiMenuTapeUnload = new JMenuItem("Unload tape");
+        guiMenuTapeUnload.addActionListener(new UnloadAction());
+        guiMenuTape.add(guiMenuTapeUnload);
+
         guiMenuBar.add(guiMenuTape);
     }
 
@@ -226,6 +230,13 @@ public class MO5Emu implements TapeListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             tapeRecorder.rewind();
+        }
+    }
+
+    private class UnloadAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            tapeRecorder.unloadCassetteFile();
         }
     }
 
