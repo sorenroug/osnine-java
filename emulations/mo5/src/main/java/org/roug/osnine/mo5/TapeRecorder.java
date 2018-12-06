@@ -98,14 +98,14 @@ public class TapeRecorder {
      */
     public void cassetteMotor(boolean state) {
         if (state) {
-            LOGGER.info("Turning motor off");
+            LOGGER.debug("Turning motor off");
             if (recording)
                 writeCode(true, 20000);
             motorOn = false;
         } else {
             motorOn = true;
             lastCounter = bus.getCycleCounter();
-            LOGGER.info("Turning motor on for {}", recording?"record":"playback");
+            LOGGER.debug("Turning motor on for {}", recording?"record":"playback");
 
             if (!recording) {
                 tapestationReady(true);

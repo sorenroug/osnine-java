@@ -1,7 +1,8 @@
 # Emulation of Thomson MO5
 
-This is a proof of concept emulation of a Thomson MO5 home computer. Keyboard and screen works, but there is no way to load or save programs.
-The light pen does not work.
+This is a proof of concept emulation of a Thomson MO5 home computer. Keyboard and screen works, but not the lightpen.
+
+You can save and load programs from emulated cassette tapes. These tape files are not compatible with any other MO5 emulator. It should not be too difficult to change if you know the format.
 
 ## Screen shot
 
@@ -10,5 +11,5 @@ The light pen does not work.
 ## Running
 
 ```
-java -jar target/osnine-mo5-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar target/mo5emulator-1.0-jar-with-dependencies.jar
 ```
