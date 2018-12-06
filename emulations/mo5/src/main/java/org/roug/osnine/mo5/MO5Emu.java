@@ -90,7 +90,7 @@ public class MO5Emu implements TapeListener {
         guiFrame.setVisible(true);
         cpu.reset();
 
-        LOGGER.info("Starting CPU");
+        LOGGER.debug("Starting CPU");
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
 

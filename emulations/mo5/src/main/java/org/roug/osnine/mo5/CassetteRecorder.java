@@ -14,7 +14,8 @@ public class CassetteRecorder {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(CassetteRecorder.class);
 
-    private static final int VALUEBIT = 0x4000;
+    //private static final int VALUEBIT = 0x4000;
+    private static final int VALUEBIT = 0x40000000;
     private static final int LENGTH_MASK = VALUEBIT - 1;
 
     private TapeListener listener;
@@ -93,8 +94,6 @@ public class CassetteRecorder {
     public void cassetteMotor(boolean state) {
         if (state) {
             LOGGER.info("Turning motor off");
-            if (cassetteStream != null)
-                writeCode(false, 0x2000);
         } else {
             lastCounter = bus.getCycleCounter();
             LOGGER.info("Turning motor on for {}", recording?"record":"playback");
@@ -148,11 +147,11 @@ public class CassetteRecorder {
     private void feedLine7(boolean newstate) {
         tapestationReady(cassetteBit);
         try {
-            int code = getCode();
+            int code = readCode();
             if (code != -1) {
                 cassetteBit = isBitOn(code, VALUEBIT);
                 int delay = code & LENGTH_MASK;
-                LOGGER.debug("cassette code {}", code);
+                LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
                 callback = (boolean state) -> feedLine7(state);
                 bus.callbackIn(delay, callback);
             } else {
@@ -165,13 +164,17 @@ public class CassetteRecorder {
     }
 
     private void writeCode(boolean value, int delay) {
+        LOGGER.debug("Write {}, delay {}", value, delay);
         int code = (int)(delay & LENGTH_MASK);
         if (value) {
             code |= VALUEBIT;
         }
         try {
+            cassetteStream.writeInt(code);
+        /*
             cassetteStream.write(code >> 8);
             cassetteStream.write(code);
+            */
         } catch (IOException e) {
             cassetteStream = null;
         }
@@ -180,11 +183,13 @@ public class CassetteRecorder {
     /**
      * Read bit and delay values from tape.
      */
-    private int getCode() throws IOException {
+    private int readCode() throws IOException {
         if (cassetteStream == null) return -1;
 
-        int readVal = cassetteStream.read();
         int code = -1;
+        code = cassetteStream.readInt();
+/*
+        int readVal = cassetteStream.read();
         if (readVal != -1) {
             code = readVal << 8;
             readVal = cassetteStream.read();
@@ -192,6 +197,7 @@ public class CassetteRecorder {
                 code += readVal;
             } else code = -1;
         }
+*/
         return code;
     }
 
