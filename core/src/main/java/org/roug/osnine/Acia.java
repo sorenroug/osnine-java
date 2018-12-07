@@ -8,11 +8,16 @@ public interface Acia {
 
     /**
      * Called when remote end sends a character.
+     *
+     * @param receiveData - the byte that was received.
      */
     void dataReceived(int receiveData);
 
     /**
      * The Acia waits for the OS to send a character.
+     *
+     * @return the byte the OS has set
+     * @throws InterruptedException if application is shut down while waiting
      */
     int waitForValueToTransmit() throws InterruptedException;
 

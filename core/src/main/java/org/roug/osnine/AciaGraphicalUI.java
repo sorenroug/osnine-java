@@ -46,6 +46,8 @@ public class AciaGraphicalUI implements Runnable {
 
     /**
      * Constructor.
+     *
+     * @param acia The ACIA the user interface talks to
      */
     public AciaGraphicalUI(Acia acia) {
         this.acia = acia;

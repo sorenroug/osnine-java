@@ -62,6 +62,10 @@ public class VirtualDisk extends MemorySegment {
 
     /**
      * Constructor.
+     *
+     * @param start - First address location of the device.
+     * @param bus - The bus the device is attached to.
+     * @param args - additional arguments
      */
     public VirtualDisk(int start, Bus8Motorola bus, String... args)
                     throws FileNotFoundException, IOException {

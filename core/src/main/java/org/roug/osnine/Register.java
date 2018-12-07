@@ -18,6 +18,7 @@ public interface Register {
     /**
      * Bit test.
      * @param n bit (0-7) to test.
+     * @return more than 0 if the bit is on.
      */
     int btst(int n);
 

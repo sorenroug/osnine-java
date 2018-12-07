@@ -12,14 +12,16 @@ public class Word implements Register {
     private String registerName = "";
 
     /**
-     * Constructor.
+     * Constructor. Sets initial value to 0.
      */
     public Word() {
         value = 0;
     }
 
     /**
-     * Constructor.
+     * Constructor. Sets initial value to 0.
+     *
+     * @param name - name given to the word.
      */
     public Word(String name) {
         value = 0;
@@ -28,6 +30,8 @@ public class Word implements Register {
 
     /**
      * Constructor.
+     *
+     * @param i initial value
      */
     public Word(int i) {
         set(i);

@@ -13,6 +13,10 @@ public class RandomAccessMemory extends MemorySegment {
     /**
      * Constructor.
      * The size of the RAM segment is the first argument.
+     *
+     * @param start - First address location of the segment.
+     * @param bus - The bus the segment is attached to.
+     * @param args - additional arguments
      */
     public RandomAccessMemory(int start, Bus8Motorola bus, String... args) {
         super(start);

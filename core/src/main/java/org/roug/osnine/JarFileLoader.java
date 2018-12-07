@@ -23,6 +23,7 @@ public final class JarFileLoader {
      * Add on JAR file to the Class loader.
      *
      * @param s - the file name of the jar file.
+     * @throws Exception if file name can't be opened or is not a JAR file.
      */
     public static void addPath(String s) throws Exception {
         File f = new File(s);

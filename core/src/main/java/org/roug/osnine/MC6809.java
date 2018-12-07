@@ -102,6 +102,8 @@ public class MC6809 extends USimMotorola {
 
     /**
      * Constructor: Assigned bus.
+     *
+     * @param bus the memory bus the CPU is attached to
      */
     public MC6809(Bus8Motorola bus) {
         super(bus);
@@ -124,7 +126,9 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Constructor: Allocate memory.
+     * Constructor: Allocate memory starting from address 0.
+     *
+     * @param memorySize - amount of memory to allocate
      */
     public MC6809(int memorySize) {
         this();

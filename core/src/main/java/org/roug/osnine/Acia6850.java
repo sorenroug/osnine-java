@@ -61,6 +61,10 @@ public class Acia6850 extends MemorySegment implements Acia {
      * The ACIA appears as two addressable memory locations.
      * The data register is addressed when register select is high.
      * Status/Control register is addressed when the register select is low.
+     *
+     * @param start - First address location of the ACIA.
+     * @param bus - The bus the ACIA is attached to.
+     * @param args - additional arguments
      */
     public Acia6850(int start, Bus8Motorola bus, String... args) {
         super(start, start + 2);
@@ -140,6 +144,8 @@ public class Acia6850 extends MemorySegment implements Acia {
 
     /**
      * Set the End-of-line sequence. In OS-9 this is 0x0D.
+     *
+     * @param token - symbolic name for nl, crnl or cr.
      */
     public void setEol(String token) {
         if ("nl".equalsIgnoreCase(token)) {

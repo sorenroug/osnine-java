@@ -39,11 +39,15 @@ public interface Bus8Motorola extends MemoryBus {
 
     /**
      * Do we have active IRQs?
+     *
+     * @return true if there are active IRQs on the bus.
      */
     boolean isIRQActive();
 
     /**
      * Do we have active NMIs?
+     *
+     * @return true if there are active NMIs on the bus.
      */
     boolean isNMIActive();
 
@@ -56,17 +60,24 @@ public interface Bus8Motorola extends MemoryBus {
 
     /**
      * Do we have active FIRQs?
+     *
+     * @return true if there are active FIRQs on the bus.
      */
     boolean isFIRQActive();
 
     /**
      * Get the number of read/writes to bus since the start.
+     *
+     * @return the number of cycles.
      */
     long getCycleCounter();
 
     /**
      * Ask the bus to call a given method when the number of
      * read/write operations has reached given number.
+     *
+     * @param cycles - the number of cycles to trigger at
+     * @param method - the operation to call.
      */
     void callbackIn(int cycles, Signal method);
 }

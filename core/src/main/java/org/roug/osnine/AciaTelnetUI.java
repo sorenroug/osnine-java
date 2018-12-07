@@ -48,6 +48,8 @@ public class AciaTelnetUI implements Runnable {
 
     /**
      * Constructor.
+     *
+     * @param acia - The ACIA the user interface talks to
      */
     public AciaTelnetUI(Acia acia) {
         this.acia = acia;

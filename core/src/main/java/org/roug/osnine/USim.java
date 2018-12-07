@@ -32,6 +32,7 @@ public abstract class USim implements Runnable {
 
     /**
      * Constructor.
+     *
      * @param bus The memory bus that the CPU is attached to
      */
     public USim(MemoryBus bus) {
@@ -40,6 +41,8 @@ public abstract class USim implements Runnable {
 
     /**
      * Get the memory bus.
+     *
+     * @return the memory bus.
      */
     public MemoryBus getBus() {
         return bus;
@@ -47,6 +50,7 @@ public abstract class USim implements Runnable {
 
     /**
      * Install a memory segment as the last item of the list of segments.
+     *
      * @param newMemory Memory segment to add
      */
     public void addMemorySegment(MemorySegment newMemory) {
@@ -55,6 +59,7 @@ public abstract class USim implements Runnable {
 
     /**
      * Install a memory segment as the first item of the list of segments.
+     *
      * @param newMemory Memory segment to insert
      */
     public void insertMemorySegment(MemorySegment newMemory) {
@@ -63,13 +68,17 @@ public abstract class USim implements Runnable {
 
     /**
      * Read 16-bit word.
+     *
      * @param offset Location in memory to read
+     * @return the two-byte value at the address.
      */
     public abstract int read_word(Word offset);
 
     /**
      * Read 16-bit word.
+     *
      * @param offset Location in memory to read
+     * @return the two-byte value at the address.
      */
     public abstract int read_word(int offset);
 
@@ -132,6 +141,7 @@ public abstract class USim implements Runnable {
             status();
         }
     }
+
     /*
      * Set the halt flag.
      */
@@ -141,6 +151,8 @@ public abstract class USim implements Runnable {
 
     /**
      * Fetch one memory byte from program counter and increment program counter.
+     *
+     * @return the byte value at the program counter address
      */
     public int fetch() {
         int val = read(pc.intValue());
@@ -151,6 +163,8 @@ public abstract class USim implements Runnable {
 
     /**
      * Fetch two memory bytes from program counter.
+     *
+     * @return the two-byte value at the program counter address
      */
     public int fetch_word() {
         int val = read_word(pc.intValue());
@@ -195,6 +209,7 @@ public abstract class USim implements Runnable {
     /**
      * Single byte read from memory.
      * @param offset Location in memory to read
+     * @return the value at the address.
      */
     public int read(int offset) {
         return bus.read(offset & MEM_TOP);
@@ -203,6 +218,7 @@ public abstract class USim implements Runnable {
     /**
      * Single byte read from memory.
      * @param offset Location in memory to read
+     * @return the value at the address.
      */
     public int read(Word offset) {
         return read(offset.intValue());

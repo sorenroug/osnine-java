@@ -63,6 +63,8 @@ public class AciaTextPaneUI implements Runnable {
 
     /**
      * Constructor.
+     *
+     * @param acia - The ACIA the user interface talks to
      */
     public AciaTextPaneUI(Acia acia) {
         this.acia = acia;

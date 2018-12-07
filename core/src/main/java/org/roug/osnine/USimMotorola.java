@@ -7,6 +7,8 @@ public class USimMotorola extends USim {
 
     /**
      * Constructor.
+     *
+     * @param bus the bus that the CPU is attached to.
      */
     public USimMotorola(Bus8Motorola bus) {
         super(bus);

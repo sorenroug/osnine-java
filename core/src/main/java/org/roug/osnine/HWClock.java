@@ -26,6 +26,10 @@ public class HWClock extends MemorySegment {
 
     /**
      * Constructor.
+     *
+     * @param start - First address location of the ACIA.
+     * @param bus - The bus the ACIA is attached to.
+     * @param args - additional arguments
      */
     public HWClock(int start, Bus8Motorola bus, String... args) {
         super(start, start + 6);

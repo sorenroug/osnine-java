@@ -48,6 +48,7 @@ public class RegisterBytePair extends Word implements Register {
 
     /**
      * Constructor.
+     * @param registerName - Calling name for the register.
      * @param regHigh The high byte
      * @param regLow The low byte
      */

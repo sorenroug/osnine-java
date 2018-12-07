@@ -15,7 +15,7 @@ class Opcode {
 }
 
 /**
- * Disassebles 6809 code one instruction at a time.
+ * Disassembles 6809 code one instruction at a time.
  */
 public class DisAssembler {
 
@@ -905,7 +905,8 @@ public class DisAssembler {
       "9C", "9D", "9E", "9F"
     };
 
-    final String[] Inter_Register={"D","X","Y","U","S","PC","??","??","A","B","CC","DP","??","??","??","??"};
+    final String[] Inter_Register={"D","X","Y","U","S","PC","??","??",
+                                   "A","B","CC","DP","??","??","??","??"};
 
     final String[] Indexed_Register={"X","Y","U","S"};
 
@@ -1330,6 +1331,8 @@ public class DisAssembler {
 
     /**
      * Constructor.
+     *
+     * @param cpu the CPU to get status information from.
      */
     public DisAssembler(MC6809 cpu) {
         this.cpu = cpu;
@@ -1354,6 +1357,9 @@ public class DisAssembler {
 
     /**
      * Disassemble a program.
+     *
+     * @param start first address to disassemble
+     * @param end last address to disassemble
      */
     public void disasm(int start, int end) {
         int programCounter;

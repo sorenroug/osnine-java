@@ -7,6 +7,8 @@ public class USimIntel extends USim {
 
     /**
      * Constructor.
+     *
+     * @param bus the bus that the CPU is attached to.
      */
     public USimIntel(MemoryBus bus) {
         super(bus);

@@ -68,6 +68,11 @@ public final class Loader {
      * hexadecimal number: the first ASCII character representing the
      * high-order 4 bits, and the second the low-order 4 bits of the
      * byte.
+     *
+     * @param filename the file containing the S-record content
+     * @param bus the memory bus to write to
+     * @return address of last byte loaded
+     * @throws IOException if there is a problem with the file
      */
     public static int loadSRecord(final String filename, Bus8Motorola bus)
                                     throws IOException {
@@ -80,6 +85,11 @@ public final class Loader {
 
     /**
      * Load file in Motorola S-record format into memory.
+     *
+     * @param fp the input stream containing the S-record content
+     * @param bus the memory bus to write to
+     * @return address of last byte loaded
+     * @throws IOException if there is a problem with the file
      */
     public static int loadSRecord(InputStream fp, Bus8Motorola bus)
                                     throws IOException {
@@ -132,6 +142,11 @@ public final class Loader {
      * next four char. Address
      * next two char.  Record type
      * last two char.  checksum
+     *
+     * @param filename the file containing the Intel hex content
+     * @param bus the memory bus to write to
+     * @return address of last byte loaded
+     * @throws IOException if there is a problem with the file
      */
     public static int loadIntelHex(final String filename, Bus8Motorola bus)
                                 throws IOException {
@@ -144,6 +159,11 @@ public final class Loader {
 
     /**
      * Load file in Intel Hex format into memory.
+     *
+     * @param fp input stream containing the Intel hex content
+     * @param bus the memory bus to write to
+     * @return address of last byte loaded
+     * @throws IOException if there is a problem with the file
      */
     public static int loadIntelHex(InputStream fp, Bus8Motorola bus)
                                 throws IOException {

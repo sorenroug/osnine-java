@@ -11,6 +11,8 @@ public class Console extends MemorySegment {
 
     /**
      * Constructor.
+     *
+     * @param start - the one-byte address the console will be at.
      */
     public Console(int start) {
         super(start, start);

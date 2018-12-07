@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Emulate the 6551 with output going to TCP port 2323.
+ * Rockwell 6551 Asynchronous Communications Interface Adapter (ACIA).
  * The Dragon 64 and Dragon Alpha have a hardware serial port driven
  * by a Rockwell 6551, mapped from $FF04-$FF07.
  */
@@ -67,6 +67,10 @@ public class Acia6551 extends MemorySegment implements Acia {
 
     /**
      * Constructor.
+     *
+     * @param start - First address location of the ACIA.
+     * @param bus - The bus the ACIA is attached to.
+     * @param args - additional arguments
      */
     public Acia6551(int start, Bus8Motorola bus, String... args) {
         super(start, start + 3);
@@ -123,6 +127,8 @@ public class Acia6551 extends MemorySegment implements Acia {
 
     /**
      * Set the End-of-line sequence. In OS-9 this is 0x0D.
+     *
+     * @param token - symbolic name for nl, crnl or cr.
      */
     public void setEol(String token) {
         if ("nl".equalsIgnoreCase(token)) {

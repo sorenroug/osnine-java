@@ -36,7 +36,9 @@ public class BusStraight implements Bus8Motorola {
     }
 
     /**
-     * Constructor: Allocate memory.
+     * Constructor: Create bus and allocate memory from address 0 and up.
+     *
+     * @param memorySize - The size of the memory.
      */
     public BusStraight(int memorySize) {
         this();

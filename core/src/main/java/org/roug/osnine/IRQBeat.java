@@ -53,6 +53,10 @@ public class IRQBeat extends MemorySegment {
 
     /**
      * Constructor.
+     *
+     * @param start - First address location of the ACIA.
+     * @param bus - The bus the ACIA is attached to.
+     * @param args - additional arguments
      */
     public IRQBeat(int start, Bus8Motorola bus, String... args) {
         super(start, start + 1);

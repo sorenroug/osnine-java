@@ -18,8 +18,11 @@ public class MemoryRemap extends MemorySegment {
     /**
      * Constructor.
      * The size of the RAM segment is the first argument.
-     * Second argument is the location to remap to.
-     * (Don't remap with 0 offset.)
+     * Second argument is the location to remap to. (Don't remap with 0 offset.)
+     *
+     * @param start - First address location of the segment.
+     * @param bus - The bus the segment is attached to.
+     * @param args - additional arguments
      */
     public MemoryRemap(int start, Bus8Motorola bus, String... args) {
         super(start);
