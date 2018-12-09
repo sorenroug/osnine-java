@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * GUI for Thomson MO5 emulator.
  */
-public class MO5Emu implements TapeListener {
+public class MO5Emu {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MO5Emu.class);
 
@@ -66,7 +66,8 @@ public class MO5Emu implements TapeListener {
 
         // Create screen and attach it to the bus.
         screen = new Screen(bus);
-        tapeRecorder = new TapeRecorder(bus, this);
+        tapeRecorder = new TapeRecorder(bus);
+        tapeRecorder.setReceiver((boolean state) -> pia.setInputLine(PIA6821.A, 7, state));
 
         pia = new PIA6821MO5(bus, screen, tapeRecorder);
         bus.addMemorySegment(pia);
@@ -261,9 +262,5 @@ public class MO5Emu implements TapeListener {
             screen.setPixelSize(4);
             guiFrame.pack();
         }
-    }
-
-    public void tapestationSignal(boolean newstate) {
-        pia.setInputLine(PIA6821.A, 7, newstate);
     }
 }

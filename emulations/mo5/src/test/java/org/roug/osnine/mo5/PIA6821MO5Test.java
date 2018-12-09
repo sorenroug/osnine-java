@@ -2,6 +2,7 @@ package org.roug.osnine.mo5;
 
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
+import org.roug.osnine.Signal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,9 +40,9 @@ class PIAMock extends PIA6821MO5 {
 
 public class PIA6821MO5Test {
 
-    class TapeMock implements TapeListener {
+    class TapeMock implements Signal {
 
-        public void tapestationSignal(boolean state) {}
+        public void send(boolean state) {}
     }
 
     private static final int PIAADDR = 0xA7C0;
@@ -63,7 +64,8 @@ public class PIA6821MO5Test {
         Bus8Motorola bus = new BusStraight();
         ScreenMock screen = new ScreenMock(bus);
         TapeMock tape = new TapeMock();
-        TapeRecorder cassette = new TapeRecorder(bus, tape);
+        TapeRecorder cassette = new TapeRecorder(bus);
+        cassette.setReceiver(tape);
 
         PIAMock pia = new PIAMock(bus, screen, cassette);
         pia.store(CRA, 0);     // Select DDRA

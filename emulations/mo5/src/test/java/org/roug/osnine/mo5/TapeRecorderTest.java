@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
+import org.roug.osnine.Signal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,11 +17,11 @@ import org.junit.Test;
 
 public class TapeRecorderTest {
 
-    class TapeMock implements TapeListener {
+    class TapeMock implements Signal {
 
         public boolean readyState;
 
-        public void tapestationSignal(boolean state) {
+        public void send(boolean state) {
             readyState = state;
         }
     }
@@ -37,7 +38,8 @@ public class TapeRecorderTest {
     public void loadForPlay() throws Exception {
         Bus8Motorola bus = new BusStraight();
         TapeMock tape = new TapeMock();
-        TapeRecorder cassette = new TapeRecorder(bus, tape);
+        TapeRecorder cassette = new TapeRecorder(bus);
+        cassette.setReceiver(tape);
         assertFalse(tape.readyState);
         cassette.loadForPlay(getResourceFile("cassettetest.out"));
         assertTrue(tape.readyState);

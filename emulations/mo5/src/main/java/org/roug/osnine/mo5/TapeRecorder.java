@@ -18,7 +18,7 @@ public class TapeRecorder {
     private static final int VALUEBIT = 0x40000000;
     private static final int LENGTH_MASK = VALUEBIT - 1;
 
-    private TapeListener listener;
+    private Signal listener;
 
     private Bus8Motorola bus;
 
@@ -43,9 +43,8 @@ public class TapeRecorder {
     /**
      * Constructor.
      */
-    TapeRecorder(Bus8Motorola bus, TapeListener listener) {
+    TapeRecorder(Bus8Motorola bus) {
         this.bus = bus;
-        this.listener = listener;
     }
 
     /**
@@ -83,11 +82,18 @@ public class TapeRecorder {
     }
 
     /**
+     * Set the callback to receive the bit from tape.
+     */
+    public void setReceiver(Signal receiver) {
+        listener = receiver;
+    }
+
+    /**
      * Tell the computer that 'Play' or 'Record' is activated or deactivated.
      * @param newstate - true if button is pressed.
      */
     private void tapestationReady(boolean newstate) {
-        listener.tapestationSignal(newstate);
+        listener.send(newstate);
     }
 
     /**
