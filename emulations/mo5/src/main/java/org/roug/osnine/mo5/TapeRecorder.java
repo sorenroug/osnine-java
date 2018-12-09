@@ -8,16 +8,21 @@ import org.roug.osnine.Signal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * Emulation of tape recorder, which receives timed one-bit
+ * pulses from the computer and sends timed one-bit on play-back.
+ */
 public class TapeRecorder {
 
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(TapeRecorder.class);
 
-    //private static final int VALUEBIT = 0x4000;
+    /** Bit in integer that says if the signal is high or low. */
     private static final int VALUEBIT = 0x40000000;
+
     private static final int LENGTH_MASK = VALUEBIT - 1;
 
+    /** Callback to computer interface for play back. */
     private Signal listener;
 
     private Bus8Motorola bus;
@@ -50,12 +55,20 @@ public class TapeRecorder {
     /**
      * Load a tape and press the Record button. Tape will not move
      * until the computer starts the motor.
+     *
+     * @param filename the name of the file to load
      */
     public void loadForRecord(File filename) throws Exception {
         loadCassetteFile(filename);
         recording = true;
     }
 
+    /**
+     * Load a tape and press the Play button. Tape will not move
+     * until the computer starts the motor.
+     *
+     * @param filename the name of the file to load
+     */
     public void loadForPlay(File filename) throws Exception {
         loadCassetteFile(filename);
         recording = false;
@@ -63,6 +76,8 @@ public class TapeRecorder {
 
     /**
      * Open a file to emulate that the cassette recorder is loaded with a tape.
+     *
+     * @param filename the name of the file to load
      */
     private void loadCassetteFile(File filename) throws Exception {
         if (cassetteStream != null) unloadCassetteFile();
@@ -71,7 +86,11 @@ public class TapeRecorder {
         tapestationReady(true);
     }
 
+    /**
+     * Unload the tape. The tape station is not ready afterwards.
+     */
     public void unloadCassetteFile() {
+        motorOn = false;
         try {
             tapestationReady(false);
             cassetteStream.close();
@@ -188,10 +207,6 @@ public class TapeRecorder {
         }
         try {
             cassetteStream.writeInt(code);
-        /*
-            cassetteStream.write(code >> 8);
-            cassetteStream.write(code);
-            */
         } catch (IOException e) {
             cassetteStream = null;
         }
@@ -205,16 +220,6 @@ public class TapeRecorder {
 
         int code = -1;
         code = cassetteStream.readInt();
-/*
-        int readVal = cassetteStream.read();
-        if (readVal != -1) {
-            code = readVal << 8;
-            readVal = cassetteStream.read();
-            if (readVal != -1) {
-                code += readVal;
-            } else code = -1;
-        }
-*/
         return code;
     }
 
