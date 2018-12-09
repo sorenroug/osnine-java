@@ -1935,499 +1935,855 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         STD     MA802                    ;FC99: FD A8 02
         ASLB                             ;FC9C: 58
         FCB     $01                      ;FC9D: 01
-        NEG     Z0000                    ;FC9E: 00 00
-        NEG     Z0000                    ;FCA0: 00 00
-        NEG     Z0000                    ;FCA2: 00 00
-        NEG     Z0000                    ;FCA4: 00 00
-        NEG     M0010                    ;FCA6: 00 10
-        NEG     M0010                    ;FCA8: 00 10
-        FCB     $10                      ;FCAA: 10
-        FCB     $10                      ;FCAB: 10
-        FCB     $10                      ;FCAC: 10
-        NEG     Z0000                    ;FCAD: 00 00
-        NEG     Z0000                    ;FCAF: 00 00
-        NEG     M0050                    ;FCB1: 00 50
-        BVC     ZFCC9                    ;FCB3: 28 14
-        NEG     M0028                    ;FCB5: 00 28
-ZFCB7   BVC     ZFCB7                    ;FCB7: 28 FE
-ZFCB9   BVC     ZFCB9                    ;FCB9: 28 FE
-        BVC     ZFCE5                    ;FCBB: 28 28
-        NEG     M0010                    ;FCBD: 00 10
-        LDD     M127C                    ;FCBF: FC 12 7C
-        SUBA    M007C                    ;FCC2: 90 7C
-        FCB     $10                      ;FCC4: 10
-        NEG     Z0000                    ;FCC5: 00 00
-        RORA                             ;FCC7: 46
-        BNE     ZFCDA                    ;FCC8: 26 10
-        ASL     M0064                    ;FCCA: 08 64
-        FCB     $62                      ;FCCC: 62
-        NEG     Z0000                    ;FCCD: 00 00
-        ABX                              ;FCCF: 3A
-        INCA                             ;FCD0: 4C
-        DECA                             ;FCD1: 4A
-        LEAX    $08,U                    ;FCD2: 30 48
-        LEAX    $00,X                    ;FCD4: 30 00
-        NEG     Z0000                    ;FCD6: 00 00
-        NEG     Z0000                    ;FCD8: 00 00
-ZFCDA   FCB     $18                      ;FCDA: 18
-        INC     M000C                    ;FCDB: 0C 0C
-        NEG     Z0000                    ;FCDD: 00 00
-        ASL     M0010                    ;FCDF: 08 10
-        FCB     $10                      ;FCE1: 10
-        FCB     $10                      ;FCE2: 10
-        FCB     $10                      ;FCE3: 10
-        ASL     Z0000                    ;FCE4: 08 00
-        NEG     M0010                    ;FCE6: 00 10
-        ASL     M0008                    ;FCE8: 08 08
-        ASL     M0008                    ;FCEA: 08 08
-        FCB     $10                      ;FCEC: 10
-        NEG     Z0000                    ;FCED: 00 00
-        LSRB                             ;FCEF: 54
-        FCB     $38                      ;FCF0: 38
-        INC     -$08,Y                   ;FCF1: 6C 38
-        LSRB                             ;FCF3: 54
-        fcb     $00
-MFCF5   fcb     $00
-        fcb     $00
-        fcb     $10
-        fcb     $10                      ;FCF8: 10
-        INC     M1010                    ;FCF9: 7C 10 10
-        NEG     Z0000                    ;FCFC: 00 00
-        NEG     M0010                    ;FCFE: 00 10
-        INC     M000C                    ;FD00: 0C 0C
-        NEG     Z0000                    ;FD02: 00 00
-        NEG     Z0000                    ;FD04: 00 00
-        NEG     Z0000                    ;FD06: 00 00
-        NEG     M007C                    ;FD08: 00 7C
-        NEG     Z0000                    ;FD0A: 00 00
-        NEG     Z0000                    ;FD0C: 00 00
-        NEG     M0018                    ;FD0E: 00 18
-        FCB     $18                      ;FD10: 18
-        NEG     Z0000                    ;FD11: 00 00
-        NEG     Z0000                    ;FD13: 00 00
-        NEG     M0080                    ;FD15: 00 80
-        NEGA                             ;FD17: 40
-        BRA     ZFD2A                    ;FD18: 20 10
-        ASL     M0004                    ;FD1A: 08 04
-        FCB     $02                      ;FD1C: 02
-        FCB     $01                      ;FD1D: 01
-        NEG     M003C                    ;FD1E: 00 3C
-        FCB     $62                      ;FD20: 62
-        FCB     $52                      ;FD21: 52
-        DECA                             ;FD22: 4A
-        RORA                             ;FD23: 46
-        CWAI    #$00                     ;FD24: 3C 00
-        NEG     M003C                    ;FD26: 00 3C
-        ASL     M0008                    ;FD28: 08 08
-ZFD2A   BVC     ZFD44                    ;FD2A: 28 18
-        ASL     Z0000                    ;FD2C: 08 00
-        NEG     Z007E                    ;FD2E: 00 7E
-        NEGA                             ;FD30: 40
-        CWAI    #$02                     ;FD31: 3C 02
-        FCB     $42                      ;FD33: 42
-        CWAI    #$00                     ;FD34: 3C 00
-        NEG     M003C                    ;FD36: 00 3C
-        FCB     $42                      ;FD38: 42
-        FCB     $02                      ;FD39: 02
-        ANDCC   #$42                     ;FD3A: 1C 42
-        CWAI    #$00                     ;FD3C: 3C 00
-        NEG     M0004                    ;FD3E: 00 04
-        JMP     Z2414                    ;FD40: 7E 24 14
-        INC     M0004                    ;FD43: 0C 04
-        NEG     Z0000                    ;FD45: 00 00
-        CWAI    #$42                     ;FD47: 3C 42
-        FCB     $02                      ;FD49: 02
-        INC     M407E                    ;FD4A: 7C 40 7E
-        NEG     Z0000                    ;FD4D: 00 00
-        CWAI    #$42                     ;FD4F: 3C 42
-        FCB     $42                      ;FD51: 42
-        INC     M201C                    ;FD52: 7C 20 1C
-        NEG     Z0000                    ;FD55: 00 00
-        NEGA                             ;FD57: 40
-        BRA     ZFD6A                    ;FD58: 20 10
-        ASL     M0004                    ;FD5A: 08 04
-        JMP     >Z0000                   ;FD5C: 7E 00 00
-        CWAI    #$42                     ;FD5F: 3C 42
-        FCB     $42                      ;FD61: 42
-        CWAI    #$42                     ;FD62: 3C 42
-        CWAI    #$00                     ;FD64: 3C 00
-        NEG     M0038                    ;FD66: 00 38
-        LSR     M003E                    ;FD68: 04 3E
-ZFD6A   FCB     $42                      ;FD6A: 42
-        FCB     $42                      ;FD6B: 42
-        CWAI    #$00                     ;FD6C: 3C 00
-        NEG     M0018                    ;FD6E: 00 18
-        FCB     $18                      ;FD70: 18
-        NEG     M0018                    ;FD71: 00 18
-        FCB     $18                      ;FD73: 18
-        NEG     Z0000                    ;FD74: 00 00
-        FCB     $10                      ;FD76: 10
-        INC     Z0000                    ;FD77: 0C 00
-        INC     M000C                    ;FD79: 0C 0C
-        NEG     Z0000                    ;FD7B: 00 00
-        NEG     Z0000                    ;FD7D: 00 00
-        ASL     M0010                    ;FD7F: 08 10
-        BRA     ZFDA3                    ;FD81: 20 20
-        FCB     $10                      ;FD83: 10
-        ASL     Z0000                    ;FD84: 08 00
-        NEG     Z0000                    ;FD86: 00 00
-        JMP     >Z007E                   ;FD88: 7E 00 7E
-        NEG     Z0000                    ;FD8B: 00 00
-        NEG     Z0000                    ;FD8D: 00 00
-        FCB     $10                      ;FD8F: 10
-        ASL     M0004                    ;FD90: 08 04
-        LSR     M0008                    ;FD92: 04 08
-        FCB     $10                      ;FD94: 10
-        NEG     Z0000                    ;FD95: 00 00
-        ASL     Z0000                    ;FD97: 08 00
-        ASL     M0004                    ;FD99: 08 04
-        BHI     ZFDB9                    ;FD9B: 22 1C
-        NEG     Z0000                    ;FD9D: 00 00
-        fcb     '>                       ;FD9F: 3E
-        fcb     $5C                      ;FDA0: 5C
-        FCB     $52                      ;FDA1: 52
-        FCB     $5E                      ;FDA2: 5E
-ZFDA3   FCB     $42                      ;FDA3: 42
-        CWAI    #$00                     ;FDA4: 3C 00
-        NEG     M0042                    ;FDA6: 00 42
-        FCB     $42                      ;FDA8: 42
-        JMP     Z4224                    ;FDA9: 7E 42 24
-        FCB     $18                      ;FDAC: 18
-        NEG     Z0000                    ;FDAD: 00 00
-        JMP     Z2222                    ;FDAF: 7E 22 22
-        CWAI    #$22                     ;FDB2: 3C 22
-        INC     >Z0000                   ;FDB4: 7C 00 00
-        CWAI    #$42                     ;FDB7: 3C 42
-ZFDB9   NEGA                             ;FDB9: 40
-        NEGA                             ;FDBA: 40
-        FCB     $42                      ;FDBB: 42
-        CWAI    #$00                     ;FDBC: 3C 00
-        NEG     M007C                    ;FDBE: 00 7C
-        BHI     ZFDE4                    ;FDC0: 22 22
-        BHI     ZFDE6                    ;FDC2: 22 22
-        INC     >Z0000                   ;FDC4: 7C 00 00
-        JMP     Z4040                    ;FDC7: 7E 40 40
-        ASL     M407E                    ;FDCA: 78 40 7E
-        NEG     Z0000                    ;FDCD: 00 00
-        NEGA                             ;FDCF: 40
-        NEGA                             ;FDD0: 40
-        NEGA                             ;FDD1: 40
-        ASL     M407E                    ;FDD2: 78 40 7E
-        NEG     Z0000                    ;FDD5: 00 00
-        CWAI    #$42                     ;FDD7: 3C 42
-        FCB     $4E                      ;FDD9: 4E
-        NEGA                             ;FDDA: 40
-        FCB     $42                      ;FDDB: 42
-        CWAI    #$00                     ;FDDC: 3C 00
-        NEG     M0042                    ;FDDE: 00 42
-        FCB     $42                      ;FDE0: 42
-        FCB     $42                      ;FDE1: 42
-        JMP     Z4242                    ;FDE2: 7E 42 42
-        NEG     Z0000                    ;FDE5: 00 00
-        FCB     $38                      ;FDE7: 38
-        FCB     $10                      ;FDE8: 10
-        FCB     $10                      ;FDE9: 10
-        FCB     $10                      ;FDEA: 10
-        FCB     $10                      ;FDEB: 10
-        FCB     $38                      ;FDEC: 38
-        NEG     Z0000                    ;FDED: 00 00
-        CWAI    #$42                     ;FDEF: 3C 42
-        FCB     $02                      ;FDF1: 02
-        FCB     $02                      ;FDF2: 02
-        FCB     $02                      ;FDF3: 02
-        FCB     $02                      ;FDF4: 02
-        NEG     Z0000                    ;FDF5: 00 00
-        LSRA                             ;FDF7: 44
-        ASLA                             ;FDF8: 48
-        NEGB                             ;FDF9: 50
-        NEG     M4844                    ;FDFA: 70 48 44
-        NEG     Z0000                    ;FDFD: 00 00
-        JMP     Z4040                    ;FDFF: 7E 40 40
-        NEGA                             ;FE02: 40
-        NEGA                             ;FE03: 40
-        NEGA                             ;FE04: 40
-        NEG     Z0000                    ;FE05: 00 00
-        FCB     $42                      ;FE07: 42
-        FCB     $42                      ;FE08: 42
-        FCB     $42                      ;FE09: 42
-        DECB                             ;FE0A: 5A
-        ROR     $02,U                    ;FE0B: 66 42
-        NEG     Z0000                    ;FE0D: 00 00
-        FCB     $42                      ;FE0F: 42
-        RORA                             ;FE10: 46
-        DECA                             ;FE11: 4A
-        FCB     $52                      ;FE12: 52
-        FCB     $62                      ;FE13: 62
-        FCB     $42                      ;FE14: 42
-        NEG     Z0000                    ;FE15: 00 00
-        CWAI    #$42                     ;FE17: 3C 42
-        FCB     $42                      ;FE19: 42
-        FCB     $42                      ;FE1A: 42
-        FCB     $42                      ;FE1B: 42
-        CWAI    #$00                     ;FE1C: 3C 00
-        NEG     M0040                    ;FE1E: 00 40
-        NEGA                             ;FE20: 40
-        INC     Z4242                    ;FE21: 7C 42 42
-        INC     >Z0000                   ;FE24: 7C 00 00
-        ABX                              ;FE27: 3A
-        LSRA                             ;FE28: 44
-        DECA                             ;FE29: 4A
-        FCB     $42                      ;FE2A: 42
-        FCB     $42                      ;FE2B: 42
-        CWAI    #$00                     ;FE2C: 3C 00
-        NEG     M0042                    ;FE2E: 00 42
-        LSRA                             ;FE30: 44
-        INC     Z4242                    ;FE31: 7C 42 42
-        INC     >Z0000                   ;FE34: 7C 00 00
-        CWAI    #$42                     ;FE37: 3C 42
-        FCB     $02                      ;FE39: 02
-        CWAI    #$40                     ;FE3A: 3C 40
-        CWAI    #$00                     ;FE3C: 3C 00
-        NEG     M0010                    ;FE3E: 00 10
-        FCB     $10                      ;FE40: 10
-        FCB     $10                      ;FE41: 10
-        FCB     $10                      ;FE42: 10
-        FCB     $10                      ;FE43: 10
-        INC     >Z0000                   ;FE44: 7C 00 00
-        CWAI    #$42                     ;FE47: 3C 42
-        FCB     $42                      ;FE49: 42
-        FCB     $42                      ;FE4A: 42
-        FCB     $42                      ;FE4B: 42
-        FCB     $42                      ;FE4C: 42
-        NEG     Z0000                    ;FE4D: 00 00
-        FCB     $18                      ;FE4F: 18
-        BCC     ZFE76                    ;FE50: 24 24
-        FCB     $42                      ;FE52: 42
-        FCB     $42                      ;FE53: 42
-        FCB     $42                      ;FE54: 42
-        NEG     Z0000                    ;FE55: 00 00
-        FCB     $42                      ;FE57: 42
-        ROR     -$06,U                   ;FE58: 66 5A
-        FCB     $42                      ;FE5A: 42
-        FCB     $42                      ;FE5B: 42
-        FCB     $42                      ;FE5C: 42
-        NEG     Z0000                    ;FE5D: 00 00
-        FCB     $42                      ;FE5F: 42
-        BCC     ZFE7A                    ;FE60: 24 18
-        FCB     $18                      ;FE62: 18
-        BCC     ZFEA7                    ;FE63: 24 42
-        NEG     Z0000                    ;FE65: 00 00
-        FCB     $10                      ;FE67: 10
-        FCB     $10                      ;FE68: 10
-        FCB     $10                      ;FE69: 10
-        LBVC    Z426E                    ;FE6A: 10 28 44 00
-        NEG     Z007E                    ;FE6E: 00 7E
-        BRA     ZFE82                    ;FE70: 20 10
-        ASL     M0004                    ;FE72: 08 04
-        JMP     >Z0000                   ;FE74: 7E 00 00
-        FCB     $38                      ;FE77: 38
-        BRA     ZFE9A                    ;FE78: 20 20
-ZFE7A   BRA     ZFE9C                    ;FE7A: 20 20
-        FCB     $38                      ;FE7C: 38
-        NEG     M0001                    ;FE7D: 00 01
-        FCB     $02                      ;FE7F: 02
-        LSR     M0008                    ;FE80: 04 08
-ZFE82   FCB     $10                      ;FE82: 10
-        BRA     ZFEC5                    ;FE83: 20 40
-        SUBA    #$00                     ;FE85: 80 00
-        ANDCC   #$04                     ;FE87: 1C 04
-        LSR     M0004                    ;FE89: 04 04
-        LSR     M001C                    ;FE8B: 04 1C
-        NEG     Z0000                    ;FE8D: 00 00
-        FCB     $10                      ;FE8F: 10
-        FCB     $10                      ;FE90: 10
-        FCB     $10                      ;FE91: 10
-        INC     M3810                    ;FE92: 7C 38 10
-        NEG     M00FF                    ;FE95: 00 FF
-        NEG     Z0000                    ;FE97: 00 00
-        NEG     Z0000                    ;FE99: 00 00
-        NEG     Z0000                    ;FE9B: 00 00
-        NEG     Z0000                    ;FE9D: 00 00
-        NEG     Z0000                    ;FE9F: 00 00
-        NEG     M00FF                    ;FEA1: 00 FF
-        NEG     Z0000                    ;FEA3: 00 00
-        NEG     Z0000                    ;FEA5: 00 00
-ZFEA7   ABX                              ;FEA7: 3A
-        LSRA                             ;FEA8: 44
-        FCB     $38                      ;FEA9: 38
-        LSR     M0038                    ;FEAA: 04 38
-        NEG     Z0000                    ;FEAC: 00 00
-        NEG     M005C                    ;FEAE: 00 5C
-        FCB     $62                      ;FEB0: 62
-        FCB     $42                      ;FEB1: 42
-        FCB     $62                      ;FEB2: 62
-        INCB                             ;FEB3: 5C
-        NEGA                             ;FEB4: 40
-        NEG     Z0000                    ;FEB5: 00 00
-        CWAI    #$42                     ;FEB7: 3C 42
-        NEGA                             ;FEB9: 40
-        FCB     $42                      ;FEBA: 42
-        CWAI    #$00                     ;FEBB: 3C 00
-        NEG     Z0000                    ;FEBD: 00 00
-        ABX                              ;FEBF: 3A
-        RORA                             ;FEC0: 46
-        FCB     $42                      ;FEC1: 42
-        RORA                             ;FEC2: 46
-        ABX                              ;FEC3: 3A
-        FCB     $02                      ;FEC4: 02
-ZFEC5   NEG     Z0000                    ;FEC5: 00 00
-        CWAI    #$40                     ;FEC7: 3C 40
-        JMP     Z423C                    ;FEC9: 7E 42 3C
-        NEG     Z0000                    ;FECC: 00 00
-        NEG     M0010                    ;FECE: 00 10
-        FCB     $10                      ;FED0: 10
-        INC     M1012                    ;FED1: 7C 10 12
-        INC     Z0000                    ;FED4: 0C 00
-        CWAI    #$02                     ;FED6: 3C 02
-        ABX                              ;FED8: 3A
-        RORA                             ;FED9: 46
-        RORA                             ;FEDA: 46
-        CWAI    #$00                     ;FEDB: 3C 00
-        NEG     Z0000                    ;FEDD: 00 00
-        FCB     $42                      ;FEDF: 42
-        FCB     $42                      ;FEE0: 42
-        FCB     $42                      ;FEE1: 42
-        FCB     $62                      ;FEE2: 62
-        INCB                             ;FEE3: 5C
-        NEGA                             ;FEE4: 40
-        NEG     Z0000                    ;FEE5: 00 00
-        ANDCC   #$08                     ;FEE7: 1C 08
-        ASL     M0008                    ;FEE9: 08 08
-        FCB     $18                      ;FEEB: 18
-        NEG     M0008                    ;FEEC: 00 08
-        FCB     $38                      ;FEEE: 38
-        LSRA                             ;FEEF: 44
-        LSR     M0004                    ;FEF0: 04 04
-        LSR     M0004                    ;FEF2: 04 04
-        NEG     M0004                    ;FEF4: 00 04
-        NEG     M0022                    ;FEF6: 00 22
-        PSHS    Y,DP                     ;FEF8: 34 28
-        BCC     ZFF1E                    ;FEFA: 24 22
-        BRA     ZFEFE                    ;FEFC: 20 00
-ZFEFE   NEG     M001C                    ;FEFE: 00 1C
-        ASL     M0008                    ;FF00: 08 08
-        ASL     M0008                    ;FF02: 08 08
-        FCB     $18                      ;FF04: 18
-        NEG     Z0000                    ;FF05: 00 00
-        SBCA    M0092                    ;FF07: 92 92
-        SBCA    M00DA                    ;FF09: 92 DA
-        ANDA    $00,X                    ;FF0B: A4 00
-        NEG     Z0000                    ;FF0D: 00 00
-        BHI     ZFF33                    ;FF0F: 22 22
-        BHI     ZFF45                    ;FF11: 22 32
-        INCA                             ;FF13: 4C
-        NEG     Z0000                    ;FF14: 00 00
-        NEG     M003C                    ;FF16: 00 3C
-MFF18   FCB     $42                      ;FF18: 42
-        FCB     $42                      ;FF19: 42
-        FCB     $42                      ;FF1A: 42
-        CWAI    #$00                     ;FF1B: 3C 00
-        NEG     M0040                    ;FF1D: 00 40
-        INCB                             ;FF1F: 5C
-        FCB     $62                      ;FF20: 62
-        FCB     $42                      ;FF21: 42
-        FCB     $62                      ;FF22: 62
-        INCB                             ;FF23: 5C
-        NEG     Z0000                    ;FF24: 00 00
-        FCB     $02                      ;FF26: 02
-        ABX                              ;FF27: 3A
-        RORA                             ;FF28: 46
-        RORA                             ;FF29: 46
-        RORA                             ;FF2A: 46
-        ABX                              ;FF2B: 3A
-        NEG     Z0000                    ;FF2C: 00 00
-        NEG     M0040                    ;FF2E: 00 40
-        NEGA                             ;FF30: 40
-        NEGA                             ;FF31: 40
-        FCB     $62                      ;FF32: 62
-ZFF33   INCB                             ;FF33: 5C
-        NEG     Z0000                    ;FF34: 00 00
-        NEG     M007C                    ;FF36: 00 7C
-        FCB     $02                      ;FF38: 02
-        CWAI    #$40                     ;FF39: 3C 40
-        CWAI    #$00                     ;FF3B: 3C 00
-        NEG     Z0000                    ;FF3D: 00 00
-        INC     M0012                    ;FF3F: 0C 12
-        FCB     $10                      ;FF41: 10
-        FCB     $10                      ;FF42: 10
-        FCB     $38                      ;FF43: 38
-        FCB     $10                      ;FF44: 10
-ZFF45   NEG     Z0000                    ;FF45: 00 00
-        ABX                              ;FF47: 3A
-        RORA                             ;FF48: 46
-        FCB     $42                      ;FF49: 42
-        FCB     $42                      ;FF4A: 42
-        FCB     $42                      ;FF4B: 42
-        NEG     Z0000                    ;FF4C: 00 00
-        NEG     M0018                    ;FF4E: 00 18
-        BCC     ZFF94                    ;FF50: 24 42
-        FCB     $42                      ;FF52: 42
-        FCB     $42                      ;FF53: 42
-        NEG     Z0000                    ;FF54: 00 00
-        NEG     M0024                    ;FF56: 00 24
-        DECB                             ;FF58: 5A
-        FCB     $42                      ;FF59: 42
-        FCB     $42                      ;FF5A: 42
-        FCB     $42                      ;FF5B: 42
-        NEG     Z0000                    ;FF5C: 00 00
-        NEG     M0042                    ;FF5E: 00 42
-        BCC     ZFF7A                    ;FF60: 24 18
-        BCC     ZFFA6                    ;FF62: 24 42
-        NEG     Z0000                    ;FF64: 00 00
-        CWAI    #$42                     ;FF66: 3C 42
-        ORCC    #$66                     ;FF68: 1A 66
-        FCB     $42                      ;FF6A: 42
-        FCB     $42                      ;FF6B: 42
-        NEG     Z0000                    ;FF6C: 00 00
-        NEG     Z007E                    ;FF6E: 00 7E
-        BRA     ZFF8A                    ;FF70: 20 18
-        LSR     Z007E                    ;FF72: 04 7E
-        NEG     Z0000                    ;FF74: 00 00
-        INC     M0008                    ;FF76: 0C 08
-        ASL     M0010                    ;FF78: 08 10
-ZFF7A   ASL     M0008                    ;FF7A: 08 08
-        INC     Z0000                    ;FF7C: 0C 00
-        FCB     $10                      ;FF7E: 10
-        FCB     $10                      ;FF7F: 10
-        FCB     $10                      ;FF80: 10
-        FCB     $10                      ;FF81: 10
-        FCB     $10                      ;FF82: 10
-        FCB     $10                      ;FF83: 10
-        FCB     $10                      ;FF84: 10
-        FCB     $10                      ;FF85: 10
-        LEAX    -$10,X                   ;FF86: 30 10
-        FCB     $10                      ;FF88: 10
-        ASL     M0010                    ;FF89: 08 10
-        FCB     $10                      ;FF8B: 10
-        LEAX    $00,X                    ;FF8C: 30 00
-        NEG     Z0000                    ;FF8E: 00 00
-        NEG     Z0000                    ;FF90: 00 00
-        NEG     Z0000                    ;FF92: 00 00
-ZFF94   NEG     M00FF                    ;FF94: 00 FF
-        STU     MFFFF                    ;FF96: FF FF FF
-        STU     MFFFF                    ;FF99: FF FF FF
-        STU     MFF18                    ;FF9C: FF FF 18
-        CWAI    #$42                     ;FF9F: 3C 42
-        NEGA                             ;FFA1: 40
-        FCB     $42                      ;FFA2: 42
-        CWAI    #$00                     ;FFA3: 3C 00
-        NEG     Z0000                    ;FFA5: 00 00
-        NEG     Z0000                    ;FFA7: 00 00
-        NEG     Z0000                    ;FFA9: 00 00
-        NEG     M0018                    ;FFAB: 00 18
-        LEAX    $00,X                    ;FFAD: 30 00
-        NEG     Z0000                    ;FFAF: 00 00
-        NEG     Z0000                    ;FFB1: 00 00
-        NEG     M0018                    ;FFB3: 00 18
-        INC     Z0000                    ;FFB5: 0C 00
-        NEG     Z0000                    ;FFB7: 00 00
-        NEG     Z0000                    ;FFB9: 00 00
-        NEG     M0024                    ;FFBB: 00 24
-        FCB     $18                      ;FFBD: 18
-        NEG     Z0000                    ;FFBE: 00 00
-        NEG     Z0000                    ;FFC0: 00 00
-        NEG     Z0000                    ;FFC2: 00 00
-        NEG     M0066                    ;FFC4: 00 66
+
+; Characters (upside-down)
+; space
+        fcb %00000000                    ;FC9E: 00
+        fcb %00000000                    ;FC9F: 00
+        fcb %00000000                    ;FCA0: 00
+        fcb %00000000                    ;FCA1: 00
+        fcb %00000000                    ;FCA2: 00
+        fcb %00000000                    ;FCA3: 00
+        fcb %00000000                    ;FCA4: 00
+        fcb %00000000                    ;FCA5: 00
+; !
+        fcb %00000000                    ;FCA6: 00
+        fcb %00010000                    ;FCA7: 10
+        fcb %00000000                    ;FCA8: 00
+        fcb %00010000                    ;FCA9: 10
+        fcb %00010000                    ;FCAA: 10
+        fcb %00010000                    ;FCAB: 10
+        fcb %00010000                    ;FCAC: 10
+        fcb %00000000                    ;FCAD: 00
+; "
+        fcb %00000000                    ;FCAE: 00
+        fcb %00000000                    ;FCAF: 00
+        fcb %00000000                    ;FCB0: 00
+        fcb %00000000                    ;FCB1: 00
+        fcb %01010000                    ;FCB2: 50
+        fcb %00101000                    ;FCB3: 28
+        fcb %00010100                    ;FCB4: 14
+        fcb %00000000                    ;FCB5: 00
+; #
+        fcb %00101000                    ;FCB6: 28
+        fcb %00101000                    ;FCB7: 28
+        fcb %11111110                    ;FCB8: FE
+        fcb %00101000                    ;FCB9: 28
+        fcb %11111110                    ;FCBA: FE
+        fcb %00101000                    ;FCBB: 28
+        fcb %00101000                    ;FCBC: 28
+        fcb %00000000                    ;FCBD: 00
+; $
+        fcb %00010000                    ;FCBE: 10
+        fcb %11111100                    ;FCBF: FC
+        fcb %00010010                    ;FCC0: 12
+        fcb %01111100                    ;FCC1: 7C
+        fcb %10010000                    ;FCC2: 90
+        fcb %01111100                    ;FCC3: 7C
+        fcb %00010000                    ;FCC4: 10
+        fcb %00000000                    ;FCC5: 00
+
+        fcb %00000000                    ;FCC6: 00
+        fcb %01000110                    ;FCC7: 46
+        fcb %00100110                    ;FCC8: 26
+        fcb %00010000                    ;FCC9: 10
+        fcb %00001000                    ;FCCA: 08
+        fcb %01100100                    ;FCCB: 64
+        fcb %01100010                    ;FCCC: 62
+        fcb %00000000                    ;FCCD: 00
+
+        fcb %00000000                    ;FCCE: 00
+        fcb %00111010                    ;FCCF: 3A
+        fcb %01001100                    ;FCD0: 4C
+        fcb %01001010                    ;FCD1: 4A
+        fcb %00110000                    ;FCD2: 30
+        fcb %01001000                    ;FCD3: 48
+        fcb %00110000                    ;FCD4: 30
+        fcb %00000000                    ;FCD5: 00
+
+        fcb %00000000                    ;FCD6: 00
+        fcb %00000000                    ;FCD7: 00
+        fcb %00000000                    ;FCD8: 00
+        fcb %00000000                    ;FCD9: 00
+        fcb %00011000                    ;FCDA: 18
+        fcb %00001100                    ;FCDB: 0C
+        fcb %00001100                    ;FCDC: 0C
+        fcb %00000000                    ;FCDD: 00
+
+        fcb %00000000                    ;FCDE: 00
+        fcb %00001000                    ;FCDF: 08
+        fcb %00010000                    ;FCE0: 10
+        fcb %00010000                    ;FCE1: 10
+        fcb %00010000                    ;FCE2: 10
+        fcb %00010000                    ;FCE3: 10
+        fcb %00001000                    ;FCE4: 08
+        fcb %00000000                    ;FCE5: 00
+
+        fcb %00000000                    ;FCE6: 00
+        fcb %00010000                    ;FCE7: 10
+        fcb %00001000                    ;FCE8: 08
+        fcb %00001000                    ;FCE9: 08
+        fcb %00001000                    ;FCEA: 08
+        fcb %00001000                    ;FCEB: 08
+        fcb %00010000                    ;FCEC: 10
+        fcb %00000000                    ;FCED: 00
+
+        fcb %00000000                    ;FCEE: 00
+        fcb %01010100                    ;FCEF: 54
+        fcb %00111000                    ;FCF0: 38
+        fcb %01101100                    ;FCF1: 6C
+        fcb %00111000                    ;FCF2: 38
+        fcb %01010100                    ;FCF3: 54
+        fcb %00000000                    ;FCF4: 00
+        fcb %00000000                    ;FCF5: 00
+
+        fcb %00000000                    ;FCF6: 00
+        fcb %00010000                    ;FCF7: 10
+        fcb %00010000                    ;FCF8: 10
+        fcb %01111100                    ;FCF9: 7C
+        fcb %00010000                    ;FCFA: 10
+        fcb %00010000                    ;FCFB: 10
+        fcb %00000000                    ;FCFC: 00
+        fcb %00000000                    ;FCFD: 00
+
+        fcb %00000000                    ;FCFE: 00
+        fcb %00010000                    ;FCFF: 10
+        fcb %00001100                    ;FD00: 0C
+        fcb %00001100                    ;FD01: 0C
+        fcb %00000000                    ;FD02: 00
+        fcb %00000000                    ;FD03: 00
+        fcb %00000000                    ;FD04: 00
+        fcb %00000000                    ;FD05: 00
+
+        fcb %00000000                    ;FD06: 00
+        fcb %00000000                    ;FD07: 00
+        fcb %00000000                    ;FD08: 00
+        fcb %01111100                    ;FD09: 7C
+        fcb %00000000                    ;FD0A: 00
+        fcb %00000000                    ;FD0B: 00
+        fcb %00000000                    ;FD0C: 00
+        fcb %00000000                    ;FD0D: 00
+
+        fcb %00000000                    ;FD0E: 00
+        fcb %00011000                    ;FD0F: 18
+        fcb %00011000                    ;FD10: 18
+        fcb %00000000                    ;FD11: 00
+        fcb %00000000                    ;FD12: 00
+        fcb %00000000                    ;FD13: 00
+        fcb %00000000                    ;FD14: 00
+        fcb %00000000                    ;FD15: 00
+
+        fcb %10000000                    ;FD16: 80
+        fcb %01000000                    ;FD17: 40
+        fcb %00100000                    ;FD18: 20
+        fcb %00010000                    ;FD19: 10
+        fcb %00001000                    ;FD1A: 08
+        fcb %00000100                    ;FD1B: 04
+        fcb %00000010                    ;FD1C: 02
+        fcb %00000001                    ;FD1D: 01
+
+        fcb %00000000                    ;FD1E: 00
+        fcb %00111100                    ;FD1F: 3C
+        fcb %01100010                    ;FD20: 62
+        fcb %01010010                    ;FD21: 52
+        fcb %01001010                    ;FD22: 4A
+        fcb %01000110                    ;FD23: 46
+        fcb %00111100                    ;FD24: 3C
+        fcb %00000000                    ;FD25: 00
+
+        fcb %00000000                    ;FD26: 00
+        fcb %00111100                    ;FD27: 3C
+        fcb %00001000                    ;FD28: 08
+        fcb %00001000                    ;FD29: 08
+        fcb %00101000                    ;FD2A: 28
+        fcb %00011000                    ;FD2B: 18
+        fcb %00001000                    ;FD2C: 08
+        fcb %00000000                    ;FD2D: 00
+
+        fcb %00000000                    ;FD2E: 00
+        fcb %01111110                    ;FD2F: 7E
+        fcb %01000000                    ;FD30: 40
+        fcb %00111100                    ;FD31: 3C
+        fcb %00000010                    ;FD32: 02
+        fcb %01000010                    ;FD33: 42
+        fcb %00111100                    ;FD34: 3C
+        fcb %00000000                    ;FD35: 00
+
+        fcb %00000000                    ;FD36: 00
+        fcb %00111100                    ;FD37: 3C
+        fcb %01000010                    ;FD38: 42
+        fcb %00000010                    ;FD39: 02
+        fcb %00011100                    ;FD3A: 1C
+        fcb %01000010                    ;FD3B: 42
+        fcb %00111100                    ;FD3C: 3C
+        fcb %00000000                    ;FD3D: 00
+
+        fcb %00000000                    ;FD3E: 00
+        fcb %00000100                    ;FD3F: 04
+        fcb %01111110                    ;FD40: 7E
+        fcb %00100100                    ;FD41: 24
+        fcb %00010100                    ;FD42: 14
+        fcb %00001100                    ;FD43: 0C
+        fcb %00000100                    ;FD44: 04
+        fcb %00000000                    ;FD45: 00
+
+        fcb %00000000                    ;FD46: 00
+        fcb %00111100                    ;FD47: 3C
+        fcb %01000010                    ;FD48: 42
+        fcb %00000010                    ;FD49: 02
+        fcb %01111100                    ;FD4A: 7C
+        fcb %01000000                    ;FD4B: 40
+        fcb %01111110                    ;FD4C: 7E
+        fcb %00000000                    ;FD4D: 00
+
+        fcb %00000000                    ;FD4E: 00
+        fcb %00111100                    ;FD4F: 3C
+        fcb %01000010                    ;FD50: 42
+        fcb %01000010                    ;FD51: 42
+        fcb %01111100                    ;FD52: 7C
+        fcb %00100000                    ;FD53: 20
+        fcb %00011100                    ;FD54: 1C
+        fcb %00000000                    ;FD55: 00
+
+        fcb %00000000                    ;FD56: 00
+        fcb %01000000                    ;FD57: 40
+        fcb %00100000                    ;FD58: 20
+        fcb %00010000                    ;FD59: 10
+        fcb %00001000                    ;FD5A: 08
+        fcb %00000100                    ;FD5B: 04
+        fcb %01111110                    ;FD5C: 7E
+        fcb %00000000                    ;FD5D: 00
+
+        fcb %00000000                    ;FD5E: 00
+        fcb %00111100                    ;FD5F: 3C
+        fcb %01000010                    ;FD60: 42
+        fcb %01000010                    ;FD61: 42
+        fcb %00111100                    ;FD62: 3C
+        fcb %01000010                    ;FD63: 42
+        fcb %00111100                    ;FD64: 3C
+        fcb %00000000                    ;FD65: 00
+        fcb %00000000                    ;FD66: 00
+        fcb %00111000                    ;FD67: 38
+        fcb %00000100                    ;FD68: 04
+        fcb %00111110                    ;FD69: 3E
+        fcb %01000010                    ;FD6A: 42
+        fcb %01000010                    ;FD6B: 42
+        fcb %00111100                    ;FD6C: 3C
+        fcb %00000000                    ;FD6D: 00
+        fcb %00000000                    ;FD6E: 00
+        fcb %00011000                    ;FD6F: 18
+        fcb %00011000                    ;FD70: 18
+        fcb %00000000                    ;FD71: 00
+        fcb %00011000                    ;FD72: 18
+        fcb %00011000                    ;FD73: 18
+        fcb %00000000                    ;FD74: 00
+        fcb %00000000                    ;FD75: 00
+        fcb %00010000                    ;FD76: 10
+        fcb %00001100                    ;FD77: 0C
+        fcb %00000000                    ;FD78: 00
+        fcb %00001100                    ;FD79: 0C
+        fcb %00001100                    ;FD7A: 0C
+        fcb %00000000                    ;FD7B: 00
+        fcb %00000000                    ;FD7C: 00
+        fcb %00000000                    ;FD7D: 00
+        fcb %00000000                    ;FD7E: 00
+        fcb %00001000                    ;FD7F: 08
+        fcb %00010000                    ;FD80: 10
+        fcb %00100000                    ;FD81: 20
+        fcb %00100000                    ;FD82: 20
+        fcb %00010000                    ;FD83: 10
+        fcb %00001000                    ;FD84: 08
+        fcb %00000000                    ;FD85: 00
+        fcb %00000000                    ;FD86: 00
+        fcb %00000000                    ;FD87: 00
+        fcb %01111110                    ;FD88: 7E
+        fcb %00000000                    ;FD89: 00
+        fcb %01111110                    ;FD8A: 7E
+        fcb %00000000                    ;FD8B: 00
+        fcb %00000000                    ;FD8C: 00
+        fcb %00000000                    ;FD8D: 00
+        fcb %00000000                    ;FD8E: 00
+        fcb %00010000                    ;FD8F: 10
+        fcb %00001000                    ;FD90: 08
+        fcb %00000100                    ;FD91: 04
+        fcb %00000100                    ;FD92: 04
+        fcb %00001000                    ;FD93: 08
+        fcb %00010000                    ;FD94: 10
+        fcb %00000000                    ;FD95: 00
+        fcb %00000000                    ;FD96: 00
+        fcb %00001000                    ;FD97: 08
+        fcb %00000000                    ;FD98: 00
+        fcb %00001000                    ;FD99: 08
+        fcb %00000100                    ;FD9A: 04
+        fcb %00100010                    ;FD9B: 22
+        fcb %00011100                    ;FD9C: 1C
+        fcb %00000000                    ;FD9D: 00
+        fcb %00000000                    ;FD9E: 00
+        fcb %00111110                    ;FD9F: 3E
+        fcb %01011100                    ;FDA0: 5C
+        fcb %01010010                    ;FDA1: 52
+        fcb %01011110                    ;FDA2: 5E
+        fcb %01000010                    ;FDA3: 42
+        fcb %00111100                    ;FDA4: 3C
+        fcb %00000000                    ;FDA5: 00
+        fcb %00000000                    ;FDA6: 00
+        fcb %01000010                    ;FDA7: 42
+        fcb %01000010                    ;FDA8: 42
+        fcb %01111110                    ;FDA9: 7E
+        fcb %01000010                    ;FDAA: 42
+        fcb %00100100                    ;FDAB: 24
+        fcb %00011000                    ;FDAC: 18
+        fcb %00000000                    ;FDAD: 00
+        fcb %00000000                    ;FDAE: 00
+        fcb %01111110                    ;FDAF: 7E
+        fcb %00100010                    ;FDB0: 22
+        fcb %00100010                    ;FDB1: 22
+        fcb %00111100                    ;FDB2: 3C
+        fcb %00100010                    ;FDB3: 22
+        fcb %01111100                    ;FDB4: 7C
+        fcb %00000000                    ;FDB5: 00
+        fcb %00000000                    ;FDB6: 00
+        fcb %00111100                    ;FDB7: 3C
+        fcb %01000010                    ;FDB8: 42
+        fcb %01000000                    ;FDB9: 40
+        fcb %01000000                    ;FDBA: 40
+        fcb %01000010                    ;FDBB: 42
+        fcb %00111100                    ;FDBC: 3C
+        fcb %00000000                    ;FDBD: 00
+        fcb %00000000                    ;FDBE: 00
+        fcb %01111100                    ;FDBF: 7C
+        fcb %00100010                    ;FDC0: 22
+        fcb %00100010                    ;FDC1: 22
+        fcb %00100010                    ;FDC2: 22
+        fcb %00100010                    ;FDC3: 22
+        fcb %01111100                    ;FDC4: 7C
+        fcb %00000000                    ;FDC5: 00
+        fcb %00000000                    ;FDC6: 00
+        fcb %01111110                    ;FDC7: 7E
+        fcb %01000000                    ;FDC8: 40
+        fcb %01000000                    ;FDC9: 40
+        fcb %01111000                    ;FDCA: 78
+        fcb %01000000                    ;FDCB: 40
+        fcb %01111110                    ;FDCC: 7E
+        fcb %00000000                    ;FDCD: 00
+        fcb %00000000                    ;FDCE: 00
+        fcb %01000000                    ;FDCF: 40
+        fcb %01000000                    ;FDD0: 40
+        fcb %01000000                    ;FDD1: 40
+        fcb %01111000                    ;FDD2: 78
+        fcb %01000000                    ;FDD3: 40
+        fcb %01111110                    ;FDD4: 7E
+        fcb %00000000                    ;FDD5: 00
+        fcb %00000000                    ;FDD6: 00
+        fcb %00111100                    ;FDD7: 3C
+        fcb %01000010                    ;FDD8: 42
+        fcb %01001110                    ;FDD9: 4E
+        fcb %01000000                    ;FDDA: 40
+        fcb %01000010                    ;FDDB: 42
+        fcb %00111100                    ;FDDC: 3C
+        fcb %00000000                    ;FDDD: 00
+        fcb %00000000                    ;FDDE: 00
+        fcb %01000010                    ;FDDF: 42
+        fcb %01000010                    ;FDE0: 42
+        fcb %01000010                    ;FDE1: 42
+        fcb %01111110                    ;FDE2: 7E
+        fcb %01000010                    ;FDE3: 42
+        fcb %01000010                    ;FDE4: 42
+        fcb %00000000                    ;FDE5: 00
+        fcb %00000000                    ;FDE6: 00
+        fcb %00111000                    ;FDE7: 38
+        fcb %00010000                    ;FDE8: 10
+        fcb %00010000                    ;FDE9: 10
+        fcb %00010000                    ;FDEA: 10
+        fcb %00010000                    ;FDEB: 10
+        fcb %00111000                    ;FDEC: 38
+        fcb %00000000                    ;FDED: 00
+        fcb %00000000                    ;FDEE: 00
+        fcb %00111100                    ;FDEF: 3C
+        fcb %01000010                    ;FDF0: 42
+        fcb %00000010                    ;FDF1: 02
+        fcb %00000010                    ;FDF2: 02
+        fcb %00000010                    ;FDF3: 02
+        fcb %00000010                    ;FDF4: 02
+        fcb %00000000                    ;FDF5: 00
+        fcb %00000000                    ;FDF6: 00
+        fcb %01000100                    ;FDF7: 44
+        fcb %01001000                    ;FDF8: 48
+        fcb %01010000                    ;FDF9: 50
+        fcb %01110000                    ;FDFA: 70
+        fcb %01001000                    ;FDFB: 48
+        fcb %01000100                    ;FDFC: 44
+        fcb %00000000                    ;FDFD: 00
+        fcb %00000000                    ;FDFE: 00
+        fcb %01111110                    ;FDFF: 7E
+        fcb %01000000                    ;FE00: 40
+        fcb %01000000                    ;FE01: 40
+        fcb %01000000                    ;FE02: 40
+        fcb %01000000                    ;FE03: 40
+        fcb %01000000                    ;FE04: 40
+        fcb %00000000                    ;FE05: 00
+        fcb %00000000                    ;FE06: 00
+        fcb %01000010                    ;FE07: 42
+        fcb %01000010                    ;FE08: 42
+        fcb %01000010                    ;FE09: 42
+        fcb %01011010                    ;FE0A: 5A
+        fcb %01100110                    ;FE0B: 66
+        fcb %01000010                    ;FE0C: 42
+        fcb %00000000                    ;FE0D: 00
+        fcb %00000000                    ;FE0E: 00
+        fcb %01000010                    ;FE0F: 42
+        fcb %01000110                    ;FE10: 46
+        fcb %01001010                    ;FE11: 4A
+        fcb %01010010                    ;FE12: 52
+        fcb %01100010                    ;FE13: 62
+        fcb %01000010                    ;FE14: 42
+        fcb %00000000                    ;FE15: 00
+        fcb %00000000                    ;FE16: 00
+        fcb %00111100                    ;FE17: 3C
+        fcb %01000010                    ;FE18: 42
+        fcb %01000010                    ;FE19: 42
+        fcb %01000010                    ;FE1A: 42
+        fcb %01000010                    ;FE1B: 42
+        fcb %00111100                    ;FE1C: 3C
+        fcb %00000000                    ;FE1D: 00
+        fcb %00000000                    ;FE1E: 00
+        fcb %01000000                    ;FE1F: 40
+        fcb %01000000                    ;FE20: 40
+        fcb %01111100                    ;FE21: 7C
+        fcb %01000010                    ;FE22: 42
+        fcb %01000010                    ;FE23: 42
+        fcb %01111100                    ;FE24: 7C
+        fcb %00000000                    ;FE25: 00
+        fcb %00000000                    ;FE26: 00
+        fcb %00111010                    ;FE27: 3A
+        fcb %01000100                    ;FE28: 44
+        fcb %01001010                    ;FE29: 4A
+        fcb %01000010                    ;FE2A: 42
+        fcb %01000010                    ;FE2B: 42
+        fcb %00111100                    ;FE2C: 3C
+        fcb %00000000                    ;FE2D: 00
+        fcb %00000000                    ;FE2E: 00
+        fcb %01000010                    ;FE2F: 42
+        fcb %01000100                    ;FE30: 44
+        fcb %01111100                    ;FE31: 7C
+        fcb %01000010                    ;FE32: 42
+        fcb %01000010                    ;FE33: 42
+        fcb %01111100                    ;FE34: 7C
+        fcb %00000000                    ;FE35: 00
+        fcb %00000000                    ;FE36: 00
+        fcb %00111100                    ;FE37: 3C
+        fcb %01000010                    ;FE38: 42
+        fcb %00000010                    ;FE39: 02
+        fcb %00111100                    ;FE3A: 3C
+        fcb %01000000                    ;FE3B: 40
+        fcb %00111100                    ;FE3C: 3C
+        fcb %00000000                    ;FE3D: 00
+        fcb %00000000                    ;FE3E: 00
+        fcb %00010000                    ;FE3F: 10
+        fcb %00010000                    ;FE40: 10
+        fcb %00010000                    ;FE41: 10
+        fcb %00010000                    ;FE42: 10
+        fcb %00010000                    ;FE43: 10
+        fcb %01111100                    ;FE44: 7C
+        fcb %00000000                    ;FE45: 00
+        fcb %00000000                    ;FE46: 00
+        fcb %00111100                    ;FE47: 3C
+        fcb %01000010                    ;FE48: 42
+        fcb %01000010                    ;FE49: 42
+        fcb %01000010                    ;FE4A: 42
+        fcb %01000010                    ;FE4B: 42
+        fcb %01000010                    ;FE4C: 42
+        fcb %00000000                    ;FE4D: 00
+        fcb %00000000                    ;FE4E: 00
+        fcb %00011000                    ;FE4F: 18
+        fcb %00100100                    ;FE50: 24
+        fcb %00100100                    ;FE51: 24
+        fcb %01000010                    ;FE52: 42
+        fcb %01000010                    ;FE53: 42
+        fcb %01000010                    ;FE54: 42
+        fcb %00000000                    ;FE55: 00
+        fcb %00000000                    ;FE56: 00
+        fcb %01000010                    ;FE57: 42
+        fcb %01100110                    ;FE58: 66
+        fcb %01011010                    ;FE59: 5A
+        fcb %01000010                    ;FE5A: 42
+        fcb %01000010                    ;FE5B: 42
+        fcb %01000010                    ;FE5C: 42
+        fcb %00000000                    ;FE5D: 00
+        fcb %00000000                    ;FE5E: 00
+        fcb %01000010                    ;FE5F: 42
+        fcb %00100100                    ;FE60: 24
+        fcb %00011000                    ;FE61: 18
+        fcb %00011000                    ;FE62: 18
+        fcb %00100100                    ;FE63: 24
+        fcb %01000010                    ;FE64: 42
+        fcb %00000000                    ;FE65: 00
+        fcb %00000000                    ;FE66: 00
+        fcb %00010000                    ;FE67: 10
+        fcb %00010000                    ;FE68: 10
+        fcb %00010000                    ;FE69: 10
+        fcb %00010000                    ;FE6A: 10
+        fcb %00101000                    ;FE6B: 28
+        fcb %01000100                    ;FE6C: 44
+        fcb %00000000                    ;FE6D: 00
+        fcb %00000000                    ;FE6E: 00
+        fcb %01111110                    ;FE6F: 7E
+        fcb %00100000                    ;FE70: 20
+        fcb %00010000                    ;FE71: 10
+        fcb %00001000                    ;FE72: 08
+        fcb %00000100                    ;FE73: 04
+        fcb %01111110                    ;FE74: 7E
+        fcb %00000000                    ;FE75: 00
+        fcb %00000000                    ;FE76: 00
+        fcb %00111000                    ;FE77: 38
+        fcb %00100000                    ;FE78: 20
+        fcb %00100000                    ;FE79: 20
+        fcb %00100000                    ;FE7A: 20
+        fcb %00100000                    ;FE7B: 20
+        fcb %00111000                    ;FE7C: 38
+        fcb %00000000                    ;FE7D: 00
+        fcb %00000001                    ;FE7E: 01
+        fcb %00000010                    ;FE7F: 02
+        fcb %00000100                    ;FE80: 04
+        fcb %00001000                    ;FE81: 08
+        fcb %00010000                    ;FE82: 10
+        fcb %00100000                    ;FE83: 20
+        fcb %01000000                    ;FE84: 40
+        fcb %10000000                    ;FE85: 80
+        fcb %00000000                    ;FE86: 00
+        fcb %00011100                    ;FE87: 1C
+        fcb %00000100                    ;FE88: 04
+        fcb %00000100                    ;FE89: 04
+        fcb %00000100                    ;FE8A: 04
+        fcb %00000100                    ;FE8B: 04
+        fcb %00011100                    ;FE8C: 1C
+        fcb %00000000                    ;FE8D: 00
+        fcb %00000000                    ;FE8E: 00
+        fcb %00010000                    ;FE8F: 10
+        fcb %00010000                    ;FE90: 10
+        fcb %00010000                    ;FE91: 10
+        fcb %01111100                    ;FE92: 7C
+        fcb %00111000                    ;FE93: 38
+        fcb %00010000                    ;FE94: 10
+        fcb %00000000                    ;FE95: 00
+        fcb %11111111                    ;FE96: FF
+        fcb %00000000                    ;FE97: 00
+        fcb %00000000                    ;FE98: 00
+        fcb %00000000                    ;FE99: 00
+        fcb %00000000                    ;FE9A: 00
+        fcb %00000000                    ;FE9B: 00
+        fcb %00000000                    ;FE9C: 00
+        fcb %00000000                    ;FE9D: 00
+        fcb %00000000                    ;FE9E: 00
+        fcb %00000000                    ;FE9F: 00
+        fcb %00000000                    ;FEA0: 00
+        fcb %00000000                    ;FEA1: 00
+        fcb %11111111                    ;FEA2: FF
+        fcb %00000000                    ;FEA3: 00
+        fcb %00000000                    ;FEA4: 00
+        fcb %00000000                    ;FEA5: 00
+        fcb %00000000                    ;FEA6: 00
+        fcb %00111010                    ;FEA7: 3A
+        fcb %01000100                    ;FEA8: 44
+        fcb %00111000                    ;FEA9: 38
+        fcb %00000100                    ;FEAA: 04
+        fcb %00111000                    ;FEAB: 38
+        fcb %00000000                    ;FEAC: 00
+        fcb %00000000                    ;FEAD: 00
+        fcb %00000000                    ;FEAE: 00
+        fcb %01011100                    ;FEAF: 5C
+        fcb %01100010                    ;FEB0: 62
+        fcb %01000010                    ;FEB1: 42
+        fcb %01100010                    ;FEB2: 62
+        fcb %01011100                    ;FEB3: 5C
+        fcb %01000000                    ;FEB4: 40
+        fcb %00000000                    ;FEB5: 00
+        fcb %00000000                    ;FEB6: 00
+        fcb %00111100                    ;FEB7: 3C
+        fcb %01000010                    ;FEB8: 42
+        fcb %01000000                    ;FEB9: 40
+        fcb %01000010                    ;FEBA: 42
+        fcb %00111100                    ;FEBB: 3C
+        fcb %00000000                    ;FEBC: 00
+        fcb %00000000                    ;FEBD: 00
+        fcb %00000000                    ;FEBE: 00
+        fcb %00111010                    ;FEBF: 3A
+        fcb %01000110                    ;FEC0: 46
+        fcb %01000010                    ;FEC1: 42
+        fcb %01000110                    ;FEC2: 46
+        fcb %00111010                    ;FEC3: 3A
+        fcb %00000010                    ;FEC4: 02
+        fcb %00000000                    ;FEC5: 00
+        fcb %00000000                    ;FEC6: 00
+        fcb %00111100                    ;FEC7: 3C
+        fcb %01000000                    ;FEC8: 40
+        fcb %01111110                    ;FEC9: 7E
+        fcb %01000010                    ;FECA: 42
+        fcb %00111100                    ;FECB: 3C
+        fcb %00000000                    ;FECC: 00
+        fcb %00000000                    ;FECD: 00
+        fcb %00000000                    ;FECE: 00
+        fcb %00010000                    ;FECF: 10
+        fcb %00010000                    ;FED0: 10
+        fcb %01111100                    ;FED1: 7C
+        fcb %00010000                    ;FED2: 10
+        fcb %00010010                    ;FED3: 12
+        fcb %00001100                    ;FED4: 0C
+        fcb %00000000                    ;FED5: 00
+        fcb %00111100                    ;FED6: 3C
+        fcb %00000010                    ;FED7: 02
+        fcb %00111010                    ;FED8: 3A
+        fcb %01000110                    ;FED9: 46
+        fcb %01000110                    ;FEDA: 46
+        fcb %00111100                    ;FEDB: 3C
+        fcb %00000000                    ;FEDC: 00
+        fcb %00000000                    ;FEDD: 00
+        fcb %00000000                    ;FEDE: 00
+        fcb %01000010                    ;FEDF: 42
+        fcb %01000010                    ;FEE0: 42
+        fcb %01000010                    ;FEE1: 42
+        fcb %01100010                    ;FEE2: 62
+        fcb %01011100                    ;FEE3: 5C
+        fcb %01000000                    ;FEE4: 40
+        fcb %00000000                    ;FEE5: 00
+        fcb %00000000                    ;FEE6: 00
+        fcb %00011100                    ;FEE7: 1C
+        fcb %00001000                    ;FEE8: 08
+        fcb %00001000                    ;FEE9: 08
+        fcb %00001000                    ;FEEA: 08
+        fcb %00011000                    ;FEEB: 18
+        fcb %00000000                    ;FEEC: 00
+        fcb %00001000                    ;FEED: 08
+        fcb %00111000                    ;FEEE: 38
+        fcb %01000100                    ;FEEF: 44
+        fcb %00000100                    ;FEF0: 04
+        fcb %00000100                    ;FEF1: 04
+        fcb %00000100                    ;FEF2: 04
+        fcb %00000100                    ;FEF3: 04
+        fcb %00000000                    ;FEF4: 00
+        fcb %00000100                    ;FEF5: 04
+        fcb %00000000                    ;FEF6: 00
+        fcb %00100010                    ;FEF7: 22
+        fcb %00110100                    ;FEF8: 34
+        fcb %00101000                    ;FEF9: 28
+        fcb %00100100                    ;FEFA: 24
+        fcb %00100010                    ;FEFB: 22
+        fcb %00100000                    ;FEFC: 20
+        fcb %00000000                    ;FEFD: 00
+        fcb %00000000                    ;FEFE: 00
+        fcb %00011100                    ;FEFF: 1C
+        fcb %00001000                    ;FF00: 08
+        fcb %00001000                    ;FF01: 08
+        fcb %00001000                    ;FF02: 08
+        fcb %00001000                    ;FF03: 08
+        fcb %00011000                    ;FF04: 18
+        fcb %00000000                    ;FF05: 00
+        fcb %00000000                    ;FF06: 00
+        fcb %10010010                    ;FF07: 92
+        fcb %10010010                    ;FF08: 92
+        fcb %10010010                    ;FF09: 92
+        fcb %11011010                    ;FF0A: DA
+        fcb %10100100                    ;FF0B: A4
+        fcb %00000000                    ;FF0C: 00
+        fcb %00000000                    ;FF0D: 00
+        fcb %00000000                    ;FF0E: 00
+        fcb %00100010                    ;FF0F: 22
+        fcb %00100010                    ;FF10: 22
+        fcb %00100010                    ;FF11: 22
+        fcb %00110010                    ;FF12: 32
+        fcb %01001100                    ;FF13: 4C
+        fcb %00000000                    ;FF14: 00
+        fcb %00000000                    ;FF15: 00
+        fcb %00000000                    ;FF16: 00
+        fcb %00111100                    ;FF17: 3C
+        fcb %01000010                    ;FF18: 42
+        fcb %01000010                    ;FF19: 42
+        fcb %01000010                    ;FF1A: 42
+        fcb %00111100                    ;FF1B: 3C
+        fcb %00000000                    ;FF1C: 00
+        fcb %00000000                    ;FF1D: 00
+        fcb %01000000                    ;FF1E: 40
+        fcb %01011100                    ;FF1F: 5C
+        fcb %01100010                    ;FF20: 62
+        fcb %01000010                    ;FF21: 42
+        fcb %01100010                    ;FF22: 62
+        fcb %01011100                    ;FF23: 5C
+        fcb %00000000                    ;FF24: 00
+        fcb %00000000                    ;FF25: 00
+        fcb %00000010                    ;FF26: 02
+        fcb %00111010                    ;FF27: 3A
+        fcb %01000110                    ;FF28: 46
+        fcb %01000110                    ;FF29: 46
+        fcb %01000110                    ;FF2A: 46
+        fcb %00111010                    ;FF2B: 3A
+        fcb %00000000                    ;FF2C: 00
+        fcb %00000000                    ;FF2D: 00
+        fcb %00000000                    ;FF2E: 00
+        fcb %01000000                    ;FF2F: 40
+        fcb %01000000                    ;FF30: 40
+        fcb %01000000                    ;FF31: 40
+        fcb %01100010                    ;FF32: 62
+        fcb %01011100                    ;FF33: 5C
+        fcb %00000000                    ;FF34: 00
+        fcb %00000000                    ;FF35: 00
+        fcb %00000000                    ;FF36: 00
+        fcb %01111100                    ;FF37: 7C
+        fcb %00000010                    ;FF38: 02
+        fcb %00111100                    ;FF39: 3C
+        fcb %01000000                    ;FF3A: 40
+        fcb %00111100                    ;FF3B: 3C
+        fcb %00000000                    ;FF3C: 00
+        fcb %00000000                    ;FF3D: 00
+        fcb %00000000                    ;FF3E: 00
+        fcb %00001100                    ;FF3F: 0C
+        fcb %00010010                    ;FF40: 12
+        fcb %00010000                    ;FF41: 10
+        fcb %00010000                    ;FF42: 10
+        fcb %00111000                    ;FF43: 38
+        fcb %00010000                    ;FF44: 10
+        fcb %00000000                    ;FF45: 00
+        fcb %00000000                    ;FF46: 00
+        fcb %00111010                    ;FF47: 3A
+        fcb %01000110                    ;FF48: 46
+        fcb %01000010                    ;FF49: 42
+        fcb %01000010                    ;FF4A: 42
+        fcb %01000010                    ;FF4B: 42
+        fcb %00000000                    ;FF4C: 00
+        fcb %00000000                    ;FF4D: 00
+        fcb %00000000                    ;FF4E: 00
+        fcb %00011000                    ;FF4F: 18
+        fcb %00100100                    ;FF50: 24
+        fcb %01000010                    ;FF51: 42
+        fcb %01000010                    ;FF52: 42
+        fcb %01000010                    ;FF53: 42
+        fcb %00000000                    ;FF54: 00
+        fcb %00000000                    ;FF55: 00
+        fcb %00000000                    ;FF56: 00
+        fcb %00100100                    ;FF57: 24
+        fcb %01011010                    ;FF58: 5A
+        fcb %01000010                    ;FF59: 42
+        fcb %01000010                    ;FF5A: 42
+        fcb %01000010                    ;FF5B: 42
+        fcb %00000000                    ;FF5C: 00
+        fcb %00000000                    ;FF5D: 00
+
+        fcb %00000000                    ;FF5E: 00
+        fcb %01000010                    ;FF5F: 42
+        fcb %00100100                    ;FF60: 24
+        fcb %00011000                    ;FF61: 18
+        fcb %00100100                    ;FF62: 24
+        fcb %01000010                    ;FF63: 42
+        fcb %00000000                    ;FF64: 00
+        fcb %00000000                    ;FF65: 00
+
+        fcb %00111100                    ;FF66: 3C
+        fcb %01000010                    ;FF67: 42
+        fcb %00011010                    ;FF68: 1A
+        fcb %01100110                    ;FF69: 66
+        fcb %01000010                    ;FF6A: 42
+        fcb %01000010                    ;FF6B: 42
+        fcb %00000000                    ;FF6C: 00
+        fcb %00000000                    ;FF6D: 00
+
+        fcb %00000000                    ;FF6E: 00
+        fcb %01111110                    ;FF6F: 7E
+        fcb %00100000                    ;FF70: 20
+        fcb %00011000                    ;FF71: 18
+        fcb %00000100                    ;FF72: 04
+        fcb %01111110                    ;FF73: 7E
+        fcb %00000000                    ;FF74: 00
+        fcb %00000000                    ;FF75: 00
+; {
+        fcb %00001100                    ;FF76: 0C
+        fcb %00001000                    ;FF77: 08
+        fcb %00001000                    ;FF78: 08
+        fcb %00010000                    ;FF79: 10
+        fcb %00001000                    ;FF7A: 08
+        fcb %00001000                    ;FF7B: 08
+        fcb %00001100                    ;FF7C: 0C
+        fcb %00000000                    ;FF7D: 00
+; |
+        fcb %00010000                    ;FF7E: 10
+        fcb %00010000                    ;FF7F: 10
+        fcb %00010000                    ;FF80: 10
+        fcb %00010000                    ;FF81: 10
+        fcb %00010000                    ;FF82: 10
+        fcb %00010000                    ;FF83: 10
+        fcb %00010000                    ;FF84: 10
+        fcb %00010000                    ;FF85: 10
+
+        fcb %00110000                    ;FF86: 30
+        fcb %00010000                    ;FF87: 10
+        fcb %00010000                    ;FF88: 10
+        fcb %00001000                    ;FF89: 08
+        fcb %00010000                    ;FF8A: 10
+        fcb %00010000                    ;FF8B: 10
+        fcb %00110000                    ;FF8C: 30
+        fcb %00000000                    ;FF8D: 00
+
+        fcb %00000000                    ;FF8E: 00
+        fcb %00000000                    ;FF8F: 00
+        fcb %00000000                    ;FF90: 00
+        fcb %00000000                    ;FF91: 00
+        fcb %00000000                    ;FF92: 00
+        fcb %00000000                    ;FF93: 00
+        fcb %00000000                    ;FF94: 00
+        fcb %11111111                    ;FF95: FF
+
+        fcb %11111111                    ;FF96: FF
+        fcb %11111111                    ;FF97: FF
+        fcb %11111111                    ;FF98: FF
+        fcb %11111111                    ;FF99: FF
+        fcb %11111111                    ;FF9A: FF
+        fcb %11111111                    ;FF9B: FF
+        fcb %11111111                    ;FF9C: FF
+        fcb %11111111                    ;FF9D: FF
+
+        fcb %00011000                    ;FF9E: 18
+        fcb %00111100                    ;FF9F: 3C
+        fcb %01000010                    ;FFA0: 42
+        fcb %01000000                    ;FFA1: 40
+        fcb %01000010                    ;FFA2: 42
+        fcb %00111100                    ;FFA3: 3C
+        fcb %00000000                    ;FFA4: 00
+        fcb %00000000                    ;FFA5: 00
+
+        fcb %00000000                    ;FFA6: 00
+        fcb %00000000                    ;FFA7: 00
+        fcb %00000000                    ;FFA8: 00
+        fcb %00000000                    ;FFA9: 00
+        fcb %00000000                    ;FFAA: 00
+        fcb %00000000                    ;FFAB: 00
+        fcb %00011000                    ;FFAC: 18
+        fcb %00110000                    ;FFAD: 30
+
+        fcb %00000000                    ;FFAE: 00
+        fcb %00000000                    ;FFAF: 00
+        fcb %00000000                    ;FFB0: 00
+        fcb %00000000                    ;FFB1: 00
+        fcb %00000000                    ;FFB2: 00
+        fcb %00000000                    ;FFB3: 00
+        fcb %00011000                    ;FFB4: 18
+        fcb %00001100                    ;FFB5: 0C
+; ^
+        fcb %00000000                    ;FFB6: 00
+        fcb %00000000                    ;FFB7: 00
+        fcb %00000000                    ;FFB8: 00
+        fcb %00000000                    ;FFB9: 00
+        fcb %00000000                    ;FFBA: 00
+        fcb %00000000                    ;FFBB: 00
+        fcb %00100100                    ;FFBC: 24
+        fcb %00011000                    ;FFBD: 18
+
+        fcb %00000000                    ;FFBE: 00
+        fcb %00000000                    ;FFBF: 00
+        fcb %00000000                    ;FFC0: 00
+        fcb %00000000                    ;FFC1: 00
+        fcb %00000000                    ;FFC2: 00
+        fcb %00000000                    ;FFC3: 00
+        fcb %00000000                    ;FFC4: 00
+        fcb %01100110                    ;FFC5: 66
+
         FCB     $1B                      ;FFC6: 1B
         NEG     -$10,S                   ;FFC7: 60 70
         INC     M0014                    ;FFC9: 0C 14
