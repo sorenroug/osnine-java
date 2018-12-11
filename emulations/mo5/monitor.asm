@@ -2162,6 +2162,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FD63: 42
         fcb %00111100                    ;FD64: 3C
         fcb %00000000                    ;FD65: 00
+
         fcb %00000000                    ;FD66: 00
         fcb %00111000                    ;FD67: 38
         fcb %00000100                    ;FD68: 04
@@ -2170,6 +2171,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FD6B: 42
         fcb %00111100                    ;FD6C: 3C
         fcb %00000000                    ;FD6D: 00
+
         fcb %00000000                    ;FD6E: 00
         fcb %00011000                    ;FD6F: 18
         fcb %00011000                    ;FD70: 18
@@ -2178,6 +2180,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00011000                    ;FD73: 18
         fcb %00000000                    ;FD74: 00
         fcb %00000000                    ;FD75: 00
+
         fcb %00010000                    ;FD76: 10
         fcb %00001100                    ;FD77: 0C
         fcb %00000000                    ;FD78: 00
@@ -2186,6 +2189,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000000                    ;FD7B: 00
         fcb %00000000                    ;FD7C: 00
         fcb %00000000                    ;FD7D: 00
+
         fcb %00000000                    ;FD7E: 00
         fcb %00001000                    ;FD7F: 08
         fcb %00010000                    ;FD80: 10
@@ -2194,6 +2198,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00010000                    ;FD83: 10
         fcb %00001000                    ;FD84: 08
         fcb %00000000                    ;FD85: 00
+
         fcb %00000000                    ;FD86: 00
         fcb %00000000                    ;FD87: 00
         fcb %01111110                    ;FD88: 7E
@@ -2202,6 +2207,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000000                    ;FD8B: 00
         fcb %00000000                    ;FD8C: 00
         fcb %00000000                    ;FD8D: 00
+
         fcb %00000000                    ;FD8E: 00
         fcb %00010000                    ;FD8F: 10
         fcb %00001000                    ;FD90: 08
@@ -2210,6 +2216,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00001000                    ;FD93: 08
         fcb %00010000                    ;FD94: 10
         fcb %00000000                    ;FD95: 00
+
         fcb %00000000                    ;FD96: 00
         fcb %00001000                    ;FD97: 08
         fcb %00000000                    ;FD98: 00
@@ -2218,6 +2225,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100010                    ;FD9B: 22
         fcb %00011100                    ;FD9C: 1C
         fcb %00000000                    ;FD9D: 00
+; @
         fcb %00000000                    ;FD9E: 00
         fcb %00111110                    ;FD9F: 3E
         fcb %01011100                    ;FDA0: 5C
@@ -2226,6 +2234,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FDA3: 42
         fcb %00111100                    ;FDA4: 3C
         fcb %00000000                    ;FDA5: 00
+; A
         fcb %00000000                    ;FDA6: 00
         fcb %01000010                    ;FDA7: 42
         fcb %01000010                    ;FDA8: 42
@@ -2234,6 +2243,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100100                    ;FDAB: 24
         fcb %00011000                    ;FDAC: 18
         fcb %00000000                    ;FDAD: 00
+; B
         fcb %00000000                    ;FDAE: 00
         fcb %01111110                    ;FDAF: 7E
         fcb %00100010                    ;FDB0: 22
@@ -2242,6 +2252,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100010                    ;FDB3: 22
         fcb %01111100                    ;FDB4: 7C
         fcb %00000000                    ;FDB5: 00
+; C
         fcb %00000000                    ;FDB6: 00
         fcb %00111100                    ;FDB7: 3C
         fcb %01000010                    ;FDB8: 42
@@ -2250,6 +2261,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FDBB: 42
         fcb %00111100                    ;FDBC: 3C
         fcb %00000000                    ;FDBD: 00
+; D
         fcb %00000000                    ;FDBE: 00
         fcb %01111100                    ;FDBF: 7C
         fcb %00100010                    ;FDC0: 22
@@ -2258,6 +2270,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100010                    ;FDC3: 22
         fcb %01111100                    ;FDC4: 7C
         fcb %00000000                    ;FDC5: 00
+; E
         fcb %00000000                    ;FDC6: 00
         fcb %01111110                    ;FDC7: 7E
         fcb %01000000                    ;FDC8: 40
@@ -2266,6 +2279,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000000                    ;FDCB: 40
         fcb %01111110                    ;FDCC: 7E
         fcb %00000000                    ;FDCD: 00
+; F
         fcb %00000000                    ;FDCE: 00
         fcb %01000000                    ;FDCF: 40
         fcb %01000000                    ;FDD0: 40
@@ -2274,6 +2288,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000000                    ;FDD3: 40
         fcb %01111110                    ;FDD4: 7E
         fcb %00000000                    ;FDD5: 00
+; G
         fcb %00000000                    ;FDD6: 00
         fcb %00111100                    ;FDD7: 3C
         fcb %01000010                    ;FDD8: 42
@@ -2282,6 +2297,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FDDB: 42
         fcb %00111100                    ;FDDC: 3C
         fcb %00000000                    ;FDDD: 00
+; H
         fcb %00000000                    ;FDDE: 00
         fcb %01000010                    ;FDDF: 42
         fcb %01000010                    ;FDE0: 42
@@ -2290,6 +2306,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FDE3: 42
         fcb %01000010                    ;FDE4: 42
         fcb %00000000                    ;FDE5: 00
+; I
         fcb %00000000                    ;FDE6: 00
         fcb %00111000                    ;FDE7: 38
         fcb %00010000                    ;FDE8: 10
@@ -2298,6 +2315,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00010000                    ;FDEB: 10
         fcb %00111000                    ;FDEC: 38
         fcb %00000000                    ;FDED: 00
+; J
         fcb %00000000                    ;FDEE: 00
         fcb %00111100                    ;FDEF: 3C
         fcb %01000010                    ;FDF0: 42
@@ -2306,6 +2324,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000010                    ;FDF3: 02
         fcb %00000010                    ;FDF4: 02
         fcb %00000000                    ;FDF5: 00
+; K
         fcb %00000000                    ;FDF6: 00
         fcb %01000100                    ;FDF7: 44
         fcb %01001000                    ;FDF8: 48
@@ -2314,6 +2333,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01001000                    ;FDFB: 48
         fcb %01000100                    ;FDFC: 44
         fcb %00000000                    ;FDFD: 00
+; L
         fcb %00000000                    ;FDFE: 00
         fcb %01111110                    ;FDFF: 7E
         fcb %01000000                    ;FE00: 40
@@ -2322,6 +2342,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000000                    ;FE03: 40
         fcb %01000000                    ;FE04: 40
         fcb %00000000                    ;FE05: 00
+; M
         fcb %00000000                    ;FE06: 00
         fcb %01000010                    ;FE07: 42
         fcb %01000010                    ;FE08: 42
@@ -2330,6 +2351,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01100110                    ;FE0B: 66
         fcb %01000010                    ;FE0C: 42
         fcb %00000000                    ;FE0D: 00
+
         fcb %00000000                    ;FE0E: 00
         fcb %01000010                    ;FE0F: 42
         fcb %01000110                    ;FE10: 46
@@ -2338,6 +2360,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01100010                    ;FE13: 62
         fcb %01000010                    ;FE14: 42
         fcb %00000000                    ;FE15: 00
+
         fcb %00000000                    ;FE16: 00
         fcb %00111100                    ;FE17: 3C
         fcb %01000010                    ;FE18: 42
@@ -2346,6 +2369,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE1B: 42
         fcb %00111100                    ;FE1C: 3C
         fcb %00000000                    ;FE1D: 00
+
         fcb %00000000                    ;FE1E: 00
         fcb %01000000                    ;FE1F: 40
         fcb %01000000                    ;FE20: 40
@@ -2354,6 +2378,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE23: 42
         fcb %01111100                    ;FE24: 7C
         fcb %00000000                    ;FE25: 00
+
         fcb %00000000                    ;FE26: 00
         fcb %00111010                    ;FE27: 3A
         fcb %01000100                    ;FE28: 44
@@ -2362,6 +2387,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE2B: 42
         fcb %00111100                    ;FE2C: 3C
         fcb %00000000                    ;FE2D: 00
+
         fcb %00000000                    ;FE2E: 00
         fcb %01000010                    ;FE2F: 42
         fcb %01000100                    ;FE30: 44
@@ -2370,6 +2396,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE33: 42
         fcb %01111100                    ;FE34: 7C
         fcb %00000000                    ;FE35: 00
+
         fcb %00000000                    ;FE36: 00
         fcb %00111100                    ;FE37: 3C
         fcb %01000010                    ;FE38: 42
@@ -2378,6 +2405,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000000                    ;FE3B: 40
         fcb %00111100                    ;FE3C: 3C
         fcb %00000000                    ;FE3D: 00
+
         fcb %00000000                    ;FE3E: 00
         fcb %00010000                    ;FE3F: 10
         fcb %00010000                    ;FE40: 10
@@ -2386,6 +2414,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00010000                    ;FE43: 10
         fcb %01111100                    ;FE44: 7C
         fcb %00000000                    ;FE45: 00
+
         fcb %00000000                    ;FE46: 00
         fcb %00111100                    ;FE47: 3C
         fcb %01000010                    ;FE48: 42
@@ -2394,6 +2423,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE4B: 42
         fcb %01000010                    ;FE4C: 42
         fcb %00000000                    ;FE4D: 00
+
         fcb %00000000                    ;FE4E: 00
         fcb %00011000                    ;FE4F: 18
         fcb %00100100                    ;FE50: 24
@@ -2402,6 +2432,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE53: 42
         fcb %01000010                    ;FE54: 42
         fcb %00000000                    ;FE55: 00
+
         fcb %00000000                    ;FE56: 00
         fcb %01000010                    ;FE57: 42
         fcb %01100110                    ;FE58: 66
@@ -2410,6 +2441,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FE5B: 42
         fcb %01000010                    ;FE5C: 42
         fcb %00000000                    ;FE5D: 00
+
         fcb %00000000                    ;FE5E: 00
         fcb %01000010                    ;FE5F: 42
         fcb %00100100                    ;FE60: 24
@@ -2418,6 +2450,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100100                    ;FE63: 24
         fcb %01000010                    ;FE64: 42
         fcb %00000000                    ;FE65: 00
+; Y
         fcb %00000000                    ;FE66: 00
         fcb %00010000                    ;FE67: 10
         fcb %00010000                    ;FE68: 10
@@ -2426,6 +2459,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00101000                    ;FE6B: 28
         fcb %01000100                    ;FE6C: 44
         fcb %00000000                    ;FE6D: 00
+; Z
         fcb %00000000                    ;FE6E: 00
         fcb %01111110                    ;FE6F: 7E
         fcb %00100000                    ;FE70: 20
@@ -2434,6 +2468,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000100                    ;FE73: 04
         fcb %01111110                    ;FE74: 7E
         fcb %00000000                    ;FE75: 00
+; [
         fcb %00000000                    ;FE76: 00
         fcb %00111000                    ;FE77: 38
         fcb %00100000                    ;FE78: 20
@@ -2442,6 +2477,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100000                    ;FE7B: 20
         fcb %00111000                    ;FE7C: 38
         fcb %00000000                    ;FE7D: 00
+; /
         fcb %00000001                    ;FE7E: 01
         fcb %00000010                    ;FE7F: 02
         fcb %00000100                    ;FE80: 04
@@ -2450,6 +2486,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100000                    ;FE83: 20
         fcb %01000000                    ;FE84: 40
         fcb %10000000                    ;FE85: 80
+
         fcb %00000000                    ;FE86: 00
         fcb %00011100                    ;FE87: 1C
         fcb %00000100                    ;FE88: 04
@@ -2458,6 +2495,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000100                    ;FE8B: 04
         fcb %00011100                    ;FE8C: 1C
         fcb %00000000                    ;FE8D: 00
+
         fcb %00000000                    ;FE8E: 00
         fcb %00010000                    ;FE8F: 10
         fcb %00010000                    ;FE90: 10
@@ -2466,6 +2504,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111000                    ;FE93: 38
         fcb %00010000                    ;FE94: 10
         fcb %00000000                    ;FE95: 00
+
         fcb %11111111                    ;FE96: FF
         fcb %00000000                    ;FE97: 00
         fcb %00000000                    ;FE98: 00
@@ -2474,6 +2513,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000000                    ;FE9B: 00
         fcb %00000000                    ;FE9C: 00
         fcb %00000000                    ;FE9D: 00
+
         fcb %00000000                    ;FE9E: 00
         fcb %00000000                    ;FE9F: 00
         fcb %00000000                    ;FEA0: 00
@@ -2482,6 +2522,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000000                    ;FEA3: 00
         fcb %00000000                    ;FEA4: 00
         fcb %00000000                    ;FEA5: 00
+
         fcb %00000000                    ;FEA6: 00
         fcb %00111010                    ;FEA7: 3A
         fcb %01000100                    ;FEA8: 44
@@ -2490,6 +2531,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111000                    ;FEAB: 38
         fcb %00000000                    ;FEAC: 00
         fcb %00000000                    ;FEAD: 00
+
         fcb %00000000                    ;FEAE: 00
         fcb %01011100                    ;FEAF: 5C
         fcb %01100010                    ;FEB0: 62
@@ -2498,6 +2540,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01011100                    ;FEB3: 5C
         fcb %01000000                    ;FEB4: 40
         fcb %00000000                    ;FEB5: 00
+
         fcb %00000000                    ;FEB6: 00
         fcb %00111100                    ;FEB7: 3C
         fcb %01000010                    ;FEB8: 42
@@ -2506,6 +2549,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111100                    ;FEBB: 3C
         fcb %00000000                    ;FEBC: 00
         fcb %00000000                    ;FEBD: 00
+
         fcb %00000000                    ;FEBE: 00
         fcb %00111010                    ;FEBF: 3A
         fcb %01000110                    ;FEC0: 46
@@ -2514,6 +2558,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111010                    ;FEC3: 3A
         fcb %00000010                    ;FEC4: 02
         fcb %00000000                    ;FEC5: 00
+
         fcb %00000000                    ;FEC6: 00
         fcb %00111100                    ;FEC7: 3C
         fcb %01000000                    ;FEC8: 40
@@ -2522,6 +2567,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111100                    ;FECB: 3C
         fcb %00000000                    ;FECC: 00
         fcb %00000000                    ;FECD: 00
+
         fcb %00000000                    ;FECE: 00
         fcb %00010000                    ;FECF: 10
         fcb %00010000                    ;FED0: 10
@@ -2530,6 +2576,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00010010                    ;FED3: 12
         fcb %00001100                    ;FED4: 0C
         fcb %00000000                    ;FED5: 00
+
         fcb %00111100                    ;FED6: 3C
         fcb %00000010                    ;FED7: 02
         fcb %00111010                    ;FED8: 3A
@@ -2538,6 +2585,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111100                    ;FEDB: 3C
         fcb %00000000                    ;FEDC: 00
         fcb %00000000                    ;FEDD: 00
+
         fcb %00000000                    ;FEDE: 00
         fcb %01000010                    ;FEDF: 42
         fcb %01000010                    ;FEE0: 42
@@ -2546,6 +2594,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01011100                    ;FEE3: 5C
         fcb %01000000                    ;FEE4: 40
         fcb %00000000                    ;FEE5: 00
+
         fcb %00000000                    ;FEE6: 00
         fcb %00011100                    ;FEE7: 1C
         fcb %00001000                    ;FEE8: 08
@@ -2554,6 +2603,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00011000                    ;FEEB: 18
         fcb %00000000                    ;FEEC: 00
         fcb %00001000                    ;FEED: 08
+
         fcb %00111000                    ;FEEE: 38
         fcb %01000100                    ;FEEF: 44
         fcb %00000100                    ;FEF0: 04
@@ -2562,6 +2612,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000100                    ;FEF3: 04
         fcb %00000000                    ;FEF4: 00
         fcb %00000100                    ;FEF5: 04
+
         fcb %00000000                    ;FEF6: 00
         fcb %00100010                    ;FEF7: 22
         fcb %00110100                    ;FEF8: 34
@@ -2570,6 +2621,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00100010                    ;FEFB: 22
         fcb %00100000                    ;FEFC: 20
         fcb %00000000                    ;FEFD: 00
+
         fcb %00000000                    ;FEFE: 00
         fcb %00011100                    ;FEFF: 1C
         fcb %00001000                    ;FF00: 08
@@ -2578,6 +2630,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00001000                    ;FF03: 08
         fcb %00011000                    ;FF04: 18
         fcb %00000000                    ;FF05: 00
+
         fcb %00000000                    ;FF06: 00
         fcb %10010010                    ;FF07: 92
         fcb %10010010                    ;FF08: 92
@@ -2586,6 +2639,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %10100100                    ;FF0B: A4
         fcb %00000000                    ;FF0C: 00
         fcb %00000000                    ;FF0D: 00
+
         fcb %00000000                    ;FF0E: 00
         fcb %00100010                    ;FF0F: 22
         fcb %00100010                    ;FF10: 22
@@ -2594,6 +2648,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01001100                    ;FF13: 4C
         fcb %00000000                    ;FF14: 00
         fcb %00000000                    ;FF15: 00
+
         fcb %00000000                    ;FF16: 00
         fcb %00111100                    ;FF17: 3C
         fcb %01000010                    ;FF18: 42
@@ -2603,6 +2658,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00000000                    ;FF1C: 00
         fcb %00000000                    ;FF1D: 00
         fcb %01000000                    ;FF1E: 40
+
         fcb %01011100                    ;FF1F: 5C
         fcb %01100010                    ;FF20: 62
         fcb %01000010                    ;FF21: 42
@@ -2610,6 +2666,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01011100                    ;FF23: 5C
         fcb %00000000                    ;FF24: 00
         fcb %00000000                    ;FF25: 00
+
         fcb %00000010                    ;FF26: 02
         fcb %00111010                    ;FF27: 3A
         fcb %01000110                    ;FF28: 46
@@ -2618,6 +2675,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111010                    ;FF2B: 3A
         fcb %00000000                    ;FF2C: 00
         fcb %00000000                    ;FF2D: 00
+
         fcb %00000000                    ;FF2E: 00
         fcb %01000000                    ;FF2F: 40
         fcb %01000000                    ;FF30: 40
@@ -2626,6 +2684,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01011100                    ;FF33: 5C
         fcb %00000000                    ;FF34: 00
         fcb %00000000                    ;FF35: 00
+
         fcb %00000000                    ;FF36: 00
         fcb %01111100                    ;FF37: 7C
         fcb %00000010                    ;FF38: 02
@@ -2634,6 +2693,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111100                    ;FF3B: 3C
         fcb %00000000                    ;FF3C: 00
         fcb %00000000                    ;FF3D: 00
+
         fcb %00000000                    ;FF3E: 00
         fcb %00001100                    ;FF3F: 0C
         fcb %00010010                    ;FF40: 12
@@ -2642,6 +2702,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %00111000                    ;FF43: 38
         fcb %00010000                    ;FF44: 10
         fcb %00000000                    ;FF45: 00
+
         fcb %00000000                    ;FF46: 00
         fcb %00111010                    ;FF47: 3A
         fcb %01000110                    ;FF48: 46
@@ -2650,6 +2711,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FF4B: 42
         fcb %00000000                    ;FF4C: 00
         fcb %00000000                    ;FF4D: 00
+
         fcb %00000000                    ;FF4E: 00
         fcb %00011000                    ;FF4F: 18
         fcb %00100100                    ;FF50: 24
@@ -2658,6 +2720,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FF53: 42
         fcb %00000000                    ;FF54: 00
         fcb %00000000                    ;FF55: 00
+
         fcb %00000000                    ;FF56: 00
         fcb %00100100                    ;FF57: 24
         fcb %01011010                    ;FF58: 5A
@@ -2666,7 +2729,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FF5B: 42
         fcb %00000000                    ;FF5C: 00
         fcb %00000000                    ;FF5D: 00
-
+; x
         fcb %00000000                    ;FF5E: 00
         fcb %01000010                    ;FF5F: 42
         fcb %00100100                    ;FF60: 24
@@ -2675,7 +2738,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FF63: 42
         fcb %00000000                    ;FF64: 00
         fcb %00000000                    ;FF65: 00
-
+; y
         fcb %00111100                    ;FF66: 3C
         fcb %01000010                    ;FF67: 42
         fcb %00011010                    ;FF68: 1A
@@ -2684,7 +2747,7 @@ MFC24   INC     MFC18                    ;FC24: 7C FC 18
         fcb %01000010                    ;FF6B: 42
         fcb %00000000                    ;FF6C: 00
         fcb %00000000                    ;FF6D: 00
-
+; z
         fcb %00000000                    ;FF6E: 00
         fcb %01111110                    ;FF6F: 7E
         fcb %00100000                    ;FF70: 20

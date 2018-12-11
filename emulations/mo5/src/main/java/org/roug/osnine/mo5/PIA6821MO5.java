@@ -1,7 +1,5 @@
 package org.roug.osnine.mo5;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.PIA6821;
 import org.roug.osnine.Signal;
@@ -49,15 +47,12 @@ public class PIA6821MO5 extends PIA6821 {
 
     private TapeRecorder tape;
 
-    /** Number of cycles since last callback. */
-    private long lastCounter;
-
-    boolean cassetteBit;
-
-    private Signal callback;
-
     /**
-     * Constructor.
+     * Create PIA and configure the connections to devices.
+     *
+     * @param bus the memory bus to send IRQ and FIRQ signals to.
+     * @param screen the interface to the keyboard
+     * @param tape the interface to tape station
      */
     public PIA6821MO5(Bus8Motorola bus, Screen screen, TapeRecorder tape) {
         super(0xA7C0, bus);
@@ -109,7 +104,7 @@ public class PIA6821MO5 extends PIA6821 {
      * If state is false, then turn motor on, otherwise turn off motor.
      */
     private void cassetteMotor(boolean state) {
-        tape.cassetteMotor(state);
+        tape.cassetteMotor(!state);
     }
 
     /**

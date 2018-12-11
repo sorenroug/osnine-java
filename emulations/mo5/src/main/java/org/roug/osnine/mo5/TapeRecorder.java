@@ -33,6 +33,7 @@ public class TapeRecorder {
     /** File for cassette storage. */
     private RandomAccessFile cassetteStream;
 
+    /** Next value to feed to the PIA. */
     private boolean cassetteBit;
 
     private Signal callback;
@@ -57,6 +58,7 @@ public class TapeRecorder {
      * until the computer starts the motor.
      *
      * @param filename the name of the file to load
+     * @throws Exception if the is a problem with the file.
      */
     public void loadForRecord(File filename) throws Exception {
         loadCassetteFile(filename);
@@ -68,6 +70,7 @@ public class TapeRecorder {
      * until the computer starts the motor.
      *
      * @param filename the name of the file to load
+     * @throws Exception if the is a problem with the file.
      */
     public void loadForPlay(File filename) throws Exception {
         loadCassetteFile(filename);
@@ -78,6 +81,7 @@ public class TapeRecorder {
      * Open a file to emulate that the cassette recorder is loaded with a tape.
      *
      * @param filename the name of the file to load
+     * @throws Exception if the is a problem with the file.
      */
     private void loadCassetteFile(File filename) throws Exception {
         if (cassetteStream != null) unloadCassetteFile();
@@ -91,6 +95,7 @@ public class TapeRecorder {
      */
     public void unloadCassetteFile() {
         motorOn = false;
+        //cassetteMotor(false);
         try {
             tapestationReady(false);
             cassetteStream.close();
@@ -102,6 +107,8 @@ public class TapeRecorder {
 
     /**
      * Set the callback to receive the bit from tape.
+     *
+     * @param receiver method to call
      */
     public void setReceiver(Signal receiver) {
         listener = receiver;
@@ -119,40 +126,45 @@ public class TapeRecorder {
      * Start/stop cassette motor. This is a signal from the computer.
      * If the tape device is set to "play" then start sending bits to line 7.
      *
-     * @param state - if true, then turn motor off, otherwise turn on motor.
+     * @param state - if true, then turn motor on, otherwise turn off motor.
      */
     public void cassetteMotor(boolean state) {
         if (state) {
-            LOGGER.debug("Turning motor off");
-            if (recording)
-                writeCode(true, 20000);
-            motorOn = false;
-        } else {
             motorOn = true;
             lastCounter = bus.getCycleCounter();
             LOGGER.debug("Turning motor on for {}", recording?"record":"playback");
 
             if (!recording) {
                 tapestationReady(true);
-                callback = (boolean dummystate) -> feedLine7(dummystate);
+                callback = (boolean dummystate) -> feedLine(dummystate);
                 bus.callbackIn(0x2000, callback);
             }
+        } else {
+            LOGGER.debug("Turning motor off");
+//          if (motorOn && recording)
+//              writeCode(true, 20000);
+            motorOn = false;
         }
     }
 
     /**
-     * Load bit 7 in peripheral register A to load data into cassette port.
+     * Feed bit from tape into an input line on the PIA.
      * Called on a delay from the bus.
+     *
+     * @param newstate bit received from tape
      */
-    private void feedLine7(boolean newstate) {
+    private void feedLine(boolean newstate) {
         tapestationReady(cassetteBit);
-        if (!motorOn) return;
+        if (!motorOn) {
+            tapestationReady(true);
+            return;
+        }
         try {
             int code = readCode();
             cassetteBit = isBitOn(code, VALUEBIT);
             int delay = code & LENGTH_MASK;
             LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
-            callback = (boolean state) -> feedLine7(state);
+            callback = (boolean state) -> feedLine(state);
             bus.callbackIn(delay, callback);
         } catch (IOException e) {
             LOGGER.debug("End of tape");
@@ -190,9 +202,11 @@ public class TapeRecorder {
 
     /**
      * Write a bit to the tape, but only if 'record' has been pressed.
+     *
+     * @param value the bit to write
      */
     public void writeToCassette(boolean value) {
-        if (!recording) return;
+        if (!motorOn || !recording) return;
         long nowCounter = bus.getCycleCounter();
         long cycleDiff = nowCounter - lastCounter;
         writeCode(value, (int)cycleDiff);

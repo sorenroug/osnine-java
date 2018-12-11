@@ -84,6 +84,8 @@ public class Screen extends JPanel {
 
     /**
      * Create the canvas for pixel (and text graphics).
+     *
+     * @param bus the memory bus to attach devices to.
      */
     public Screen(Bus8Motorola bus) {
         this.pixelSize = 2;
@@ -215,6 +217,8 @@ public class Screen extends JPanel {
 
     /**
      * Tell the screen if pixels or colours are selected in the PIA.
+     *
+     * @param flag true if pixels are chosen, false if colours are chosen
      */
     public void setPixelBankActive(boolean flag) {
         pixelBankActive = flag;
@@ -226,6 +230,8 @@ public class Screen extends JPanel {
 
     /**
      * Ask if pixels or colours are selected in the PIA.
+     *
+     * @return true if pixels are chosen, false if colours are chosen
      */
     public boolean isPixelBankActive() {
         return pixelBankActive;

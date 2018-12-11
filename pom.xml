@@ -45,7 +45,7 @@ You can allocate RAM, load data into the memory and set up devices.</description
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.0</version>
                 <configuration>
                     <compilerVersion>${java_version}</compilerVersion>
                     <source>${java_version}</source>
@@ -76,12 +76,6 @@ You can allocate RAM, load data into the memory and set up devices.</description
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-simple</artifactId>
           <version>1.7.23</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.3</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

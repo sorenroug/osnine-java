@@ -45,6 +45,28 @@ public class TapeRecorderTest {
         assertTrue(tape.readyState);
         cassette.unloadCassetteFile();
         assertFalse(tape.readyState);
+    }
 
+    /**
+     * Load a tape for record and record something.
+     */
+    @Test
+    public void loadForRecord() throws Exception {
+        File tmpFile;
+        Bus8Motorola bus = new BusStraight(0x200);
+        TapeMock tape = new TapeMock();
+        TapeRecorder cassette = new TapeRecorder(bus);
+        cassette.setReceiver(tape);
+        assertFalse(tape.readyState);
+        tmpFile = new File("tmp.out");
+        cassette.loadForRecord(tmpFile);
+        assertTrue(tape.readyState);
+        cassette.cassetteMotor(true); // Turn on motor
+        for (int i = 0; i < 100; i++) bus.read(0x0100); // Wait 100 cycles
+        cassette.writeToCassette(false);
+        cassette.cassetteMotor(false); // Turn off motor
+        cassette.unloadCassetteFile();
+        assertFalse(tape.readyState);
+        tmpFile.delete();
     }
 }

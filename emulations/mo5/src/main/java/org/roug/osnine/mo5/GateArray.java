@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GateArray extends MemorySegment {
 
-int dx,dy;
-
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(GateArray.class);
 
@@ -52,8 +50,6 @@ int dx,dy;
 
     /** Memory space. */
     private int[] memory;
-
-    private int lightpenX, lightpenY;
 
     /** The graphical effect of modifying these bytes. */
     private Screen screen;
@@ -102,6 +98,7 @@ int dx,dy;
      * offset by 96 pixels.
      * @param x - horisonal coordinate 0 - 319
      * @param y - vertical coordinate 0 - 199
+     * FIXME: Make it work.
      */
     void setLightpenXY(int x, int y) {
         if (x != -1) {
