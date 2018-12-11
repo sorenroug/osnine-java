@@ -144,6 +144,7 @@ public class TapeRecorder {
 //          if (motorOn && recording)
 //              writeCode(true, 20000);
             motorOn = false;
+            tapestationReady(true);
         }
     }
 
@@ -168,7 +169,7 @@ public class TapeRecorder {
             bus.callbackIn(delay, callback);
         } catch (IOException e) {
             LOGGER.debug("End of tape");
-            tapestationReady(false);
+            tapestationReady(true);
         }
     }
 

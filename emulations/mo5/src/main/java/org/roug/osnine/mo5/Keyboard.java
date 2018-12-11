@@ -128,19 +128,20 @@ public class Keyboard implements KeyListener {
         codeTable.put(KeyEvent.VK_DELETE, ROW0 + COL1);
         codeTable.put(KeyEvent.VK_DOWN, ROW4 + COL1);
         codeTable.put(KeyEvent.VK_ENTER, ROW6 + COL4);
-        codeTable.put(KeyEvent.VK_HOME, ROW2 + COL1);// Back to top
+        codeTable.put(KeyEvent.VK_HOME, ROW2 + COL1); // Back to top
         codeTable.put(KeyEvent.VK_INSERT, ROW1 + COL1);
         codeTable.put(KeyEvent.VK_LEFT, ROW5 + COL1);
         codeTable.put(KeyEvent.VK_RIGHT, ROW3 + COL1);
         codeTable.put(KeyEvent.VK_SCROLL_LOCK, ROW6 + COL7); //STOP
+        codeTable.put(KeyEvent.VK_PAUSE, ROW6 + COL7); //STOP
         codeTable.put(KeyEvent.VK_UP, ROW6 + COL1);
 
         /* SHIFT + BASIC */
-        codeTable.put(KeyEvent.VK_F12, ROW7 + COL0);//Shift
-        codeTable.put(KeyEvent.VK_F11, ROW7 + COL1);//Basic
+        codeTable.put(KeyEvent.VK_F12, ROW7 + COL0); //Shift
+        codeTable.put(KeyEvent.VK_F11, ROW7 + COL1); //Basic
 
         /* CNT RAZ */
-        codeTable.put(KeyEvent.VK_CONTROL, ROW6 + COL5);//CTRL
+        codeTable.put(KeyEvent.VK_CONTROL, ROW6 + COL5); //CTRL
         codeTable.put(KeyEvent.VK_ESCAPE, ROW6 + COL3); //ESCAPE = raz
 
     }
