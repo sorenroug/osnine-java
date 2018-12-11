@@ -149,6 +149,10 @@ public class MO5Emu {
     private void addFileMenu(JMenuBar guiMenuBar) {
         JMenu guiMenuFile = new JMenu("File");
 
+        JMenuItem guiMenuFileZoom1 = new JMenuItem("Zoom 1x");
+        guiMenuFileZoom1.addActionListener(new Zoom1Action());
+        guiMenuFile.add(guiMenuFileZoom1);
+
         JMenuItem guiMenuFileZoom2 = new JMenuItem("Zoom 2x");
         guiMenuFileZoom2.addActionListener(new Zoom2Action());
         guiMenuFile.add(guiMenuFileZoom2);
@@ -245,6 +249,14 @@ public class MO5Emu {
         @Override
         public void actionPerformed(ActionEvent e) {
             cpu.signalReset();
+        }
+    }
+
+    private class Zoom1Action implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            screen.setPixelSize(1);
+            guiFrame.pack();
         }
     }
 
