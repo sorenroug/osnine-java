@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>ModuleConst xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/org/roug/osnine/os9/ModuleConst.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.roug.osnine.os9;
+<a class="jxr_linenumber" name="2" href="#2">2</a>   
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_javadoccomment"> *     Module Definitions.</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <em class="jxr_javadoccomment"> *     Universal Module Offsets</em>
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../org/roug/osnine/os9/ModuleConst.html">ModuleConst</a> {
+<a class="jxr_linenumber" name="9" href="#9">9</a>       <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_ID = 0x0; <em class="jxr_comment">/*<em class="jxr_comment"> 2 ID Code */</em></em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Size = 0x2; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Module Size */</em></em>
+<a class="jxr_linenumber" name="11" href="#11">11</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Name = 0x4; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Module Name */</em></em>
+<a class="jxr_linenumber" name="12" href="#12">12</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Type = 0x6; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Type / Language */</em></em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Revs = 0x7; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Attributes / Revision Level */</em></em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Parity = 0x8; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Header Parity */</em></em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_IDSize = 0x9;  <em class="jxr_comment">/*<em class="jxr_comment"> Module ID Size */</em></em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="17" href="#17">17</a>      <em class="jxr_comment">//     Type-Dependent Module Offsets</em>
+<a class="jxr_linenumber" name="18" href="#18">18</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="19" href="#19">19</a>      <em class="jxr_comment">//   System, File Manager, Device Driver, Program Module</em>
+<a class="jxr_linenumber" name="20" href="#20">20</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="21" href="#21">21</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Exec = 0x9; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Execution Entry Offset */</em></em>
+<a class="jxr_linenumber" name="22" href="#22">22</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="23" href="#23">23</a>      <em class="jxr_comment">//   Device Driver, Program Module</em>
+<a class="jxr_linenumber" name="24" href="#24">24</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="25" href="#25">25</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Mem = 0xB; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Stack Requirement */</em></em>
+<a class="jxr_linenumber" name="26" href="#26">26</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="27" href="#27">27</a>      <em class="jxr_comment">//   Device Driver, Device Descriptor Module</em>
+<a class="jxr_linenumber" name="28" href="#28">28</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Mode = 0xD; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Device Driver Mode Capabilities */</em></em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="31" href="#31">31</a>      <em class="jxr_comment">//   Device Descriptor Module</em>
+<a class="jxr_linenumber" name="32" href="#32">32</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_FMgr = 0x9; <em class="jxr_comment">/*<em class="jxr_comment"> 2 File Manager Name Offset */</em></em>
+<a class="jxr_linenumber" name="34" href="#34">34</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_PDev = 0xB; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Device Driver Name Offset */</em></em>
+<a class="jxr_linenumber" name="35" href="#35">35</a>      <em class="jxr_comment">// m_Mode (defined above)</em>
+<a class="jxr_linenumber" name="36" href="#36">36</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Port = 0xE; <em class="jxr_comment">/*<em class="jxr_comment"> 3 Port Address */</em></em>
+<a class="jxr_linenumber" name="37" href="#37">37</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> m_Opt = 0x11; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Device Default Options */</em></em>
+<a class="jxr_linenumber" name="38" href="#38">38</a>      <em class="jxr_comment">//static final int m_DTyp = 0; </em><em class="jxr_comment">/*<em class="jxr_comment"> 1 Device Type */</em></em>
+<a class="jxr_linenumber" name="39" href="#39">39</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="40" href="#40">40</a>      <em class="jxr_comment">//   Configuration Module Entry Offsets</em>
+<a class="jxr_linenumber" name="41" href="#41">41</a>      <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="42" href="#42">42</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> MaxMem = 0x9; <em class="jxr_comment">/*<em class="jxr_comment"> 3 Maximum Free Memory */</em></em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> PollCnt = 0xC; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Entries in Interrupt Polling Table */</em></em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> DevCnt = 0xD; <em class="jxr_comment">/*<em class="jxr_comment"> 1 Entries in Device Table */</em></em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> InitStr = 0xE; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Initial Module Name */</em></em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> SysStr = 0x10; <em class="jxr_comment">/*<em class="jxr_comment"> 2 System Device Name */</em></em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> StdStr = 0x12; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Standard I/O Pathlist */</em></em>
+<a class="jxr_linenumber" name="48" href="#48">48</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BootStr = 0x14; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Bootstrap Module name */</em></em>
+<a class="jxr_linenumber" name="49" href="#49">49</a>  }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+
