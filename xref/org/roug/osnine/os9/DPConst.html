@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>DPConst xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/org/roug/osnine/os9/DPConst.html">View Javadoc</a></div><pre>
+
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.roug.osnine.os9;
+<a class="jxr_linenumber" name="2" href="#2">2</a>   
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_comment"> * Locations of page 0 variables.</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../org/roug/osnine/os9/DPConst.html">DPConst</a> {
+<a class="jxr_linenumber" name="7" href="#7">7</a>       <strong class="jxr_keyword">int</strong> D_FMBM   = 32; <em class="jxr_comment">/*<em class="jxr_comment"> Free memory bit map pointers */</em></em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>       <strong class="jxr_keyword">int</strong> D_FMBME  = 34;
+<a class="jxr_linenumber" name="9" href="#9">9</a>       <strong class="jxr_keyword">int</strong> D_MLIM   = 36; <em class="jxr_comment">/*<em class="jxr_comment"> Memory limit */</em></em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>      <strong class="jxr_keyword">int</strong> D_MDir   = 38; <em class="jxr_comment">/*<em class="jxr_comment"> Module directory */</em></em>
+<a class="jxr_linenumber" name="11" href="#11">11</a>      <strong class="jxr_keyword">int</strong> D_MDirE  = 40;
+<a class="jxr_linenumber" name="12" href="#12">12</a>      <strong class="jxr_keyword">int</strong> D_Init   = 42; <em class="jxr_comment">/*<em class="jxr_comment"> Rom base address */</em></em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>      <strong class="jxr_keyword">int</strong> D_SWI3   = 44; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Swi3 vector */</em></em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>      <strong class="jxr_keyword">int</strong> D_SWI2   = 46; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Swi2 vector */</em></em>
+<a class="jxr_linenumber" name="15" href="#15">15</a>      <strong class="jxr_keyword">int</strong> D_FIRQ   = 48; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Firq vector */</em></em>
+<a class="jxr_linenumber" name="16" href="#16">16</a>      <strong class="jxr_keyword">int</strong> D_IRQ    = 50; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Irq vector */</em></em>
+<a class="jxr_linenumber" name="17" href="#17">17</a>      <strong class="jxr_keyword">int</strong> D_SWI    = 52; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Swi vector */</em></em>
+<a class="jxr_linenumber" name="18" href="#18">18</a>      <strong class="jxr_keyword">int</strong> D_NMI    = 54; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Nmi vector */</em></em>
+<a class="jxr_linenumber" name="19" href="#19">19</a>      <strong class="jxr_keyword">int</strong> D_SvcIRQ = 56; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Interrupt service entry */</em></em>
+<a class="jxr_linenumber" name="20" href="#20">20</a>      <strong class="jxr_keyword">int</strong> D_Poll   = 58; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Interrupt polling routine */</em></em>
+<a class="jxr_linenumber" name="21" href="#21">21</a>      <strong class="jxr_keyword">int</strong> D_UsrIRQ = 60; <em class="jxr_comment">/*<em class="jxr_comment"> 2 User irq routine */</em></em>
+<a class="jxr_linenumber" name="22" href="#22">22</a>      <strong class="jxr_keyword">int</strong> D_SysIRQ = 62; <em class="jxr_comment">/*<em class="jxr_comment"> 2 System irq routine */</em></em>
+<a class="jxr_linenumber" name="23" href="#23">23</a>      <strong class="jxr_keyword">int</strong> D_UsrSvc = 64; <em class="jxr_comment">/*<em class="jxr_comment"> 2 User service request routine */</em></em>
+<a class="jxr_linenumber" name="24" href="#24">24</a>      <strong class="jxr_keyword">int</strong> D_SysSvc = 66; <em class="jxr_comment">/*<em class="jxr_comment"> 2 System service request routine */</em></em>
+<a class="jxr_linenumber" name="25" href="#25">25</a>      <strong class="jxr_keyword">int</strong> D_UsrDis = 68; <em class="jxr_comment">/*<em class="jxr_comment"> 2 User service request dispatch table */</em></em>
+<a class="jxr_linenumber" name="26" href="#26">26</a>      <strong class="jxr_keyword">int</strong> D_SysDis = 70; <em class="jxr_comment">/*<em class="jxr_comment"> 2 System service request dispatch table */</em></em>
+<a class="jxr_linenumber" name="27" href="#27">27</a>      <strong class="jxr_keyword">int</strong> D_Slice  = 72; <em class="jxr_comment">/*<em class="jxr_comment"> 1 <a href="../../../../org/roug/osnine/os9/Process.html">Process</a> time slice count */</em></em>
+<a class="jxr_linenumber" name="28" href="#28">28</a>      <strong class="jxr_keyword">int</strong> D_PrcDBT = 73; <em class="jxr_comment">/*<em class="jxr_comment"> 2 <a href="../../../../org/roug/osnine/os9/Process.html">Process</a> descriptor block address */</em></em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>      <strong class="jxr_keyword">int</strong> D_Proc   = 75; <em class="jxr_comment">/*<em class="jxr_comment"> 2 <a href="../../../../org/roug/osnine/os9/Process.html">Process</a> descriptor address */</em></em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>      <strong class="jxr_keyword">int</strong> D_AProcQ = 77; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Active process queue */</em></em>
+<a class="jxr_linenumber" name="31" href="#31">31</a>      <strong class="jxr_keyword">int</strong> D_WProcQ = 79; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Waiting process queue */</em></em>
+<a class="jxr_linenumber" name="32" href="#32">32</a>      <strong class="jxr_keyword">int</strong> D_SProcQ = 81; <em class="jxr_comment">/*<em class="jxr_comment"> 2 Sleeping process queue */</em></em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>  }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+
