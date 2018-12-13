@@ -15,7 +15,12 @@
     <packaging>jar</packaging>
 
     <name>OS-Nine OS9</name>
-    <url>http://www.roug.org</url>
+    <url>http://www.roug.org/retrocomputing</url>
+
+    <scm>
+        <url>https://github.com/sorenroug/osnine-java</url>
+        <connection>scm:git:https://github.com/sorenroug/osnine-java</connection>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

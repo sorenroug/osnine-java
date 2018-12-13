@@ -18,6 +18,11 @@
         <java_version>1.8</java_version>
     </properties>
 
+    <scm>
+        <url>https://github.com/sorenroug/osnine-java</url>
+        <connection>scm:git:https://github.com/sorenroug/osnine-java</connection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>roug.org.osnine</groupId>

@@ -33,6 +33,8 @@ public class TapeRecorderTest {
 
     /**
      * Load a tape for play.
+     *
+     * @throws Exception if there is an I/O error
      */
     @Test
     public void loadForPlay() throws Exception {
@@ -49,6 +51,8 @@ public class TapeRecorderTest {
 
     /**
      * Load a tape for record and record something.
+     *
+     * @throws Exception if there is an I/O error
      */
     @Test
     public void loadForRecord() throws Exception {

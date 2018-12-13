@@ -20,6 +20,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+    <scm>
+        <url>https://github.com/sorenroug/osnine-java</url>
+        <connection>scm:git:https://github.com/sorenroug/osnine-java</connection>
+    </scm>
+
   <build>
     <plugins>
     <!-- Copy media files to target -->

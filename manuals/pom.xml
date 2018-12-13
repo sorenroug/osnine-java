@@ -29,6 +29,11 @@
         <main.basedir>${project.basedir}/..</main.basedir>
     </properties>
 
+    <scm>
+        <url>https://github.com/sorenroug/osnine-java</url>
+        <connection>scm:git:https://github.com/sorenroug/osnine-java</connection>
+    </scm>
+
     <build>
         <plugins>
             <plugin>

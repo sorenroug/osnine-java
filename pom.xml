@@ -12,6 +12,7 @@
     <description>The purpose of this project is to create an 6809 emulator that can
 be configured at runtime with a range of memory mapped devices.
 You can allocate RAM, load data into the memory and set up devices.</description>
+
     <url>https://github.com/sorenroug/osnine-java</url>
 
     <licenses>
@@ -21,6 +22,7 @@ You can allocate RAM, load data into the memory and set up devices.</description
     </licenses>
     
     <scm>
+        <url>https://github.com/sorenroug/osnine-java</url>
         <connection>scm:git:https://github.com/sorenroug/osnine-java</connection>
     </scm>
 
@@ -60,6 +62,31 @@ You can allocate RAM, load data into the memory and set up devices.</description
                     <!-- <effort>Max</effort> -->
                     <threshold>Medium</threshold>
                     <failOnError>true</failOnError>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <configuration>
+                    <message>Creating site for ${project.version}</message>
+                    <server>github</server>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site-deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
                 </configuration>
             </plugin>
         </plugins>
