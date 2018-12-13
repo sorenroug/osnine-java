@@ -187,6 +187,10 @@ public class MO5Emu {
         guiMenuTapeRewind.addActionListener(new RewindAction());
         guiMenuTape.add(guiMenuTapeRewind);
 
+        JMenuItem guiMenuTapeSeekEnd = new JMenuItem("Seek to end of tape");
+        guiMenuTapeSeekEnd.addActionListener(new SeekEndAction());
+        guiMenuTape.add(guiMenuTapeSeekEnd);
+
         JMenuItem guiMenuTapeUnload = new JMenuItem("Unload tape");
         guiMenuTapeUnload.addActionListener(new UnloadAction());
         guiMenuTape.add(guiMenuTapeUnload);
@@ -235,6 +239,13 @@ public class MO5Emu {
         @Override
         public void actionPerformed(ActionEvent e) {
             tapeRecorder.rewind();
+        }
+    }
+
+    private class SeekEndAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            tapeRecorder.seekToEnd();
         }
     }
 

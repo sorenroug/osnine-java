@@ -22,6 +22,9 @@ public class TapeRecorder {
 
     private static final int LENGTH_MASK = VALUEBIT - 1;
 
+    private static final int START_DELAY = 200000;
+    private static final int STOP_DELAY = 100000;
+
     /** Callback to computer interface for play back. */
     private Signal listener;
 
@@ -130,19 +133,21 @@ public class TapeRecorder {
      */
     public void cassetteMotor(boolean state) {
         if (state) {
-            motorOn = true;
-            lastCounter = bus.getCycleCounter();
-            LOGGER.debug("Turning motor on for {}", recording?"record":"playback");
+            if (!motorOn) { // Only if motor is stopped
+                LOGGER.debug("Turning motor on for {}", recording?"record":"playback");
+                lastCounter = 0;
 
-            if (!recording) {
-                tapestationReady(true);
-                callback = (boolean dummystate) -> feedLine(dummystate);
-                bus.callbackIn(0x2000, callback);
+                if (!recording) {
+                    tapestationReady(true);
+                    callback = (boolean dummystate) -> feedLine(dummystate);
+                    bus.callbackIn(0, callback);
+                }
             }
+            motorOn = true;
         } else {
             LOGGER.debug("Turning motor off");
-//          if (motorOn && recording)
-//              writeCode(true, 20000);
+            if (motorOn && recording)
+                writeCode(true, STOP_DELAY);
             motorOn = false;
             tapestationReady(true);
         }
@@ -209,11 +214,18 @@ public class TapeRecorder {
     public void writeToCassette(boolean value) {
         if (!motorOn || !recording) return;
         long nowCounter = bus.getCycleCounter();
+        if (lastCounter == 0)
+            lastCounter = nowCounter - START_DELAY;
         long cycleDiff = nowCounter - lastCounter;
         writeCode(value, (int)cycleDiff);
         lastCounter = nowCounter;
     }
 
+    /**
+     * Write bit and delay values to tape.
+     *
+     * @param value the bit to write
+     */
     private void writeCode(boolean value, int delay) {
         LOGGER.debug("Write {}, delay {}", value, delay);
         int code = (int)(delay & LENGTH_MASK);
@@ -229,6 +241,8 @@ public class TapeRecorder {
 
     /**
      * Read bit and delay values from tape.
+     *
+     * @return the combined bit and value.
      */
     private int readCode() throws IOException {
         if (cassetteStream == null) throw new IOException();
