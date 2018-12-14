@@ -20,7 +20,7 @@
 <a class="jxr_linenumber" name="10" href="#10">10</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_javadoccomment"> * Emulate the OS9 operating system.</em>
 <a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="13" href="#13">13</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/roug/osnine/os9/OS9.html">OS9</a> <strong class="jxr_keyword">extends</strong> MC6809 {
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/roug/osnine/os9/OS9.html">OS9</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../org/roug/osnine/MC6809.html">MC6809</a> {
 <a class="jxr_linenumber" name="14" href="#14">14</a>  
 <a class="jxr_linenumber" name="15" href="#15">15</a>      <em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> Whatever _NFILE is set to in os9's stdio.h. */</em>
 <a class="jxr_linenumber" name="16" href="#16">16</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NUM_PATHS = 16;
@@ -147,7 +147,7 @@
 <a class="jxr_linenumber" name="137" href="#137">137</a>         <strong class="jxr_keyword">return</strong> paths[pathNum];
 <a class="jxr_linenumber" name="138" href="#138">138</a>     }
 <a class="jxr_linenumber" name="139" href="#139">139</a> 
-<a class="jxr_linenumber" name="140" href="#140">140</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../org/roug/osnine/os9/PathDesc.html">PathDesc</a> getPathDesc(Register r) {
+<a class="jxr_linenumber" name="140" href="#140">140</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../org/roug/osnine/os9/PathDesc.html">PathDesc</a> getPathDesc(<a href="../../../../org/roug/osnine/Register.html">Register</a> r) {
 <a class="jxr_linenumber" name="141" href="#141">141</a>         <strong class="jxr_keyword">return</strong> getPathDesc(r.intValue());
 <a class="jxr_linenumber" name="142" href="#142">142</a>     }
 <a class="jxr_linenumber" name="143" href="#143">143</a> 
@@ -608,7 +608,7 @@
 <a class="jxr_linenumber" name="598" href="#598">598</a> <em class="jxr_javadoccomment">     * @param len -- number of bytes to copy</em>
 <a class="jxr_linenumber" name="599" href="#599">599</a> <em class="jxr_javadoccomment">     * @return a new buffer containing the copied bytes.</em>
 <a class="jxr_linenumber" name="600" href="#600">600</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="601" href="#601">601</a>     <strong class="jxr_keyword">private</strong> byte[] copyMemoryToBuffer(Register startAddrReg, Register lenReg) {
+<a class="jxr_linenumber" name="601" href="#601">601</a>     <strong class="jxr_keyword">private</strong> byte[] copyMemoryToBuffer(<a href="../../../../org/roug/osnine/Register.html">Register</a> startAddrReg, <a href="../../../../org/roug/osnine/Register.html">Register</a> lenReg) {
 <a class="jxr_linenumber" name="602" href="#602">602</a>         <strong class="jxr_keyword">int</strong> len = lenReg.intValue();
 <a class="jxr_linenumber" name="603" href="#603">603</a>         <strong class="jxr_keyword">int</strong> startAddr = startAddrReg.intValue();
 <a class="jxr_linenumber" name="604" href="#604">604</a>         byte[] buf = <strong class="jxr_keyword">new</strong> byte[len];
@@ -662,7 +662,7 @@
 <a class="jxr_linenumber" name="652" href="#652">652</a> <em class="jxr_javadoccomment">     * @param useXDir - If set, then prefix execution directory on relative paths.</em>
 <a class="jxr_linenumber" name="653" href="#653">653</a> <em class="jxr_javadoccomment">     * @return value is the end of the path. You usually set register x to that.</em>
 <a class="jxr_linenumber" name="654" href="#654">654</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="655" href="#655">655</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> getpath(Register memReg, StringBuilder unixPath, <strong class="jxr_keyword">boolean</strong> useXDir) {
+<a class="jxr_linenumber" name="655" href="#655">655</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> getpath(<a href="../../../../org/roug/osnine/Register.html">Register</a> memReg, StringBuilder unixPath, <strong class="jxr_keyword">boolean</strong> useXDir) {
 <a class="jxr_linenumber" name="656" href="#656">656</a>         <strong class="jxr_keyword">int</strong> mem = memReg.intValue();
 <a class="jxr_linenumber" name="657" href="#657">657</a>         <strong class="jxr_keyword">int</strong> mp;
 <a class="jxr_linenumber" name="658" href="#658">658</a> 
