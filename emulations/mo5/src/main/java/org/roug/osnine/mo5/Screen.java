@@ -27,15 +27,14 @@ public class Screen extends JPanel {
     private static final int COLUMNS = 320;
     private static final int ROWS = 200;
 
-    /** Key matrix flattend to one dimension. */
-    private static final int KEYS = 128;
-
     private Bus8Motorola bus;
 
     /** Gate-array chip to track lightpen. */
     private GateArray gateArray;
 
     private PIA6821MO5 pia;
+
+    private Keyboard keyboard;
 
     private BufferedImage buffImg;
 
@@ -79,9 +78,6 @@ public class Screen extends JPanel {
         0xF06300,   // Orange
     };
 
-    /** Table of keys that are pressed on the keyboard. */
-    private boolean[] keyMatrix;
-
     /**
      * Create the canvas for pixel (and text graphics).
      *
@@ -90,9 +86,6 @@ public class Screen extends JPanel {
     public Screen(Bus8Motorola bus) {
         this.pixelSize = 2;
         this.bus = bus;
-
-        keyMatrix = new boolean[KEYS];
-        resetAllKeys();
 
         buffImg = new BufferedImage(COLUMNS, ROWS, BufferedImage.TYPE_INT_RGB);
         raster = buffImg.getRaster();
@@ -110,7 +103,7 @@ public class Screen extends JPanel {
         bus.addMemorySegment(gateArray);
 
         // Hook up the Keyboard to the screen
-        Keyboard keyboard = new Keyboard(this);
+        keyboard = new Keyboard();
         addKeyListener(keyboard);
 
         // Mouse Event use for Lightpen emulation
@@ -243,15 +236,11 @@ public class Screen extends JPanel {
      * @param pressed - flag to say if key is on or off.
      */
     public void setKey(int i, boolean pressed) {
-        keyMatrix[i] = pressed;
+        keyboard.setKey(i, pressed);
     }
 
     public boolean hasKeyPress(int i) {
-        return keyMatrix[i];
-    }
-
-    public void resetAllKeys() {
-        for (int i = 0; i < KEYS; i++) keyMatrix[i] = false;
+        return keyboard.hasKeyPress(i);
     }
 
     /**

@@ -1,7 +1,11 @@
 package org.roug.osnine.mo5;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Toolkit;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -48,6 +52,10 @@ public class MO5Emu {
 
     private TapeRecorder tapeRecorder;
 
+    /** Content of clipboard to be sent into the emulator as key events. */
+    private String pasteBuffer;
+    private int pasteIndex;
+
     private final JFileChooser fc = new JFileChooser(new File("."));
 
     public static void main(String[] args) throws Exception {
@@ -60,6 +68,7 @@ public class MO5Emu {
         JMenuBar guiMenuBar = new JMenuBar();
         guiFrame.setJMenuBar(guiMenuBar);
         addFileMenu(guiMenuBar);
+        addEditMenu(guiMenuBar);
         addTapeMenu(guiMenuBar);
 
         bus = new BusStraight();
@@ -96,11 +105,7 @@ public class MO5Emu {
         cpuThread.start();
 
         LOGGER.debug("Starting heartbeat every 20 milliseconds");
-        TimerTask clocktask = new TimerTask() {
-            public void run() {
-                pia.signalC1(PIA6821.B); // Send signal to PIA CB1
-            }
-        };
+        TimerTask clocktask = new ClockTask();
 
         Timer timer = new Timer("clock", true);
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
@@ -172,6 +177,16 @@ public class MO5Emu {
         guiMenuBar.add(guiMenuFile);
     }
 
+    private void addEditMenu(JMenuBar guiMenuBar) {
+        JMenu guiMenu = new JMenu("Edit");
+
+        JMenuItem menuItem = new JMenuItem("Paste text");
+        menuItem.addActionListener(new PasteAction());
+        guiMenu.add(menuItem);
+
+        guiMenuBar.add(guiMenu);
+    }
+
     private void addTapeMenu(JMenuBar guiMenuBar) {
         JMenu guiMenuTape = new JMenu("Cassette");
 
@@ -198,10 +213,61 @@ public class MO5Emu {
         guiMenuBar.add(guiMenuTape);
     }
 
+    /**
+     * Interrupts the CPU 50 times a second.
+     * If the user has clicked 'Paste text' then sends the text one character
+     * at a time to the keyboard input routine.
+     */
+    private class ClockTask extends TimerTask {
+        private static final int PASTE_INTERVAL = 4;
+        private static final int PASTE_RELEASE = PASTE_INTERVAL / 2;
+        private int beats = 0;
+
+        private boolean pasting;
+
+        public void run() {
+            if ((beats % PASTE_INTERVAL) == 0 && pasteBuffer != null) {
+                int code = Keyboard.getKeyForAscii(pasteBuffer.charAt(pasteIndex));
+                pasting = true;
+                LOGGER.debug("Paste {}", code);
+                if (code >= 0)
+                    screen.setKey(code, true);
+            }
+            if ((beats % PASTE_INTERVAL) == PASTE_RELEASE && pasting) {
+                int code = Keyboard.getKeyForAscii(pasteBuffer.charAt(pasteIndex));
+                if (code >= 0)
+                    screen.setKey(code, false);
+                pasting = false;
+                pasteIndex++;
+                if (pasteIndex >= pasteBuffer.length()) {
+                    pasteBuffer = null;
+                    pasteIndex = 0;
+                }
+            }
+
+            pia.signalC1(PIA6821.B); // Send signal to PIA CB1
+            beats++;
+        }
+    }
+
     private static class QuitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.exit(0);
+        }
+    }
+
+    private class PasteAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+            try {
+                pasteBuffer = (String) c.getContents(null).getTransferData(DataFlavor.stringFlavor);
+                LOGGER.debug("To paste:{}", pasteBuffer);
+                pasteIndex = 0;
+            } catch (UnsupportedFlavorException | IOException e1) {
+                LOGGER.error("Unsupported flavor", e1);
+            }
         }
     }
 
