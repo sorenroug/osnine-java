@@ -61,11 +61,13 @@ public class VirtualDisk extends MemorySegment {
     private Bus8Motorola bus;
 
     /**
-     * Constructor.
+     * Open a virtual disk.
      *
      * @param start - First address location of the device.
      * @param bus - The bus the device is attached to.
      * @param args - additional arguments
+     * @throws FileNotFoundException if the disk file does not exist
+     * @throws IOException if the disk can't be opened.
      */
     public VirtualDisk(int start, Bus8Motorola bus, String... args)
                     throws FileNotFoundException, IOException {
@@ -76,6 +78,13 @@ public class VirtualDisk extends MemorySegment {
         }
     }
 
+    /**
+     * Provide file name of disk.
+     *
+     * @param fileName the name of the file.
+     * @throws FileNotFoundException if the disk file does not exist
+     * @throws IOException if the disk can't be opened.
+     */
     public void setDisk(String fileName)
                     throws FileNotFoundException, IOException {
         File diskFile = new File(fileName);

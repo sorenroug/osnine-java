@@ -6,7 +6,22 @@ package org.roug.osnine;
 
 public enum CC {
 
-    C, V, Z, N, I, H, F, E;
+    /** Carry. */
+    C,
+    /** Overflow. */
+    V,
+    /** Zero. */
+    Z,
+    /** Negative. */
+    N,
+    /** IRQ ignore. */
+    I,
+    /** Half-carry. */
+    H,
+    /** FIRQ ignore. */
+    F,
+    /** Entire state pushed. */
+    E;
 
     public static final int Cmask = 1 << C.ordinal();
     public static final int Vmask = 1 << V.ordinal();

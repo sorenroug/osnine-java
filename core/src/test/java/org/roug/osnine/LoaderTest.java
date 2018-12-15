@@ -23,6 +23,8 @@ public class LoaderTest {
     /**
      * Load data from address 0x0000 to 0x0037.
      * See http://www.amelek.gda.pl/avr/uisp/srecord.htm
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void readSRecord() throws IOException {
@@ -49,7 +51,8 @@ public class LoaderTest {
 
     /**
      * Load data from address 0x0000 to 0x0037.
-     * 
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void readIntelHex() throws IOException {

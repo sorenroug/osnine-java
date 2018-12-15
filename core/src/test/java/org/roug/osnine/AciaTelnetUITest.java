@@ -93,7 +93,8 @@ public class AciaTelnetUITest {
     }
 
 
-    private void checkSequence(int[] sequence, int[] expected) throws IOException {
+    private void checkSequence(int[] sequence, int[] expected)
+                                throws IOException {
         AciaTelnetUIMock handler = new AciaTelnetUIMock();
         TelnetState state = TelnetState.NORMAL;
         for (int i = 0; i < sequence.length; i++) {
@@ -105,6 +106,8 @@ public class AciaTelnetUITest {
     /**
      * Client requests suppress go-ahead.
      * Server complies.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void doGoAhead() throws IOException {
@@ -117,6 +120,8 @@ public class AciaTelnetUITest {
     /**
      * Client wants to talk about terminal speed.
      * Server doesn't.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void willTerminalSpeed() throws IOException {
@@ -128,6 +133,8 @@ public class AciaTelnetUITest {
     /**
      * Client wants to talk about environment options followed by text.
      * Server doesn't.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void willEnvironmentAndMore() throws IOException {
@@ -138,7 +145,9 @@ public class AciaTelnetUITest {
 
     /**
      * Client wants to echo.
-     * Server does to.
+     * Server does too.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void willEcho() throws IOException {
@@ -150,6 +159,8 @@ public class AciaTelnetUITest {
     /**
      * Client sends normal text.
      * Server passes it through.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void plainText() throws IOException {
@@ -160,6 +171,8 @@ public class AciaTelnetUITest {
     /**
      * Client sends CR + 0.
      * Server passes it through.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void crNull() throws IOException {
@@ -172,6 +185,8 @@ public class AciaTelnetUITest {
     /**
      * Client DELETE. VT100 backspace.
      * Server gets BACKSPACE.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void deleteKey() throws IOException {
@@ -182,6 +197,8 @@ public class AciaTelnetUITest {
 
     /**
      * Send vt100 cursor up.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void cursorUp() throws IOException {
@@ -192,6 +209,8 @@ public class AciaTelnetUITest {
 
     /**
      * Send vt100 cursor left.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void cursorLeft() throws IOException {
@@ -202,6 +221,8 @@ public class AciaTelnetUITest {
 
     /**
      * Send vt100 function key PF2
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void keyPF2() throws IOException {

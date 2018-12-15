@@ -56,7 +56,7 @@ public class AddTest extends Framework {
      * compatibility with the 6801 microprocessor.
      */
     @Test
-    public void testABX() throws IOException {
+    public void testABX() {
         int instructions[] = {
             0x3a // ABX
         };

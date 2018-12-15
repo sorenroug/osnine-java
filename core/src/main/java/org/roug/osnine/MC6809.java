@@ -91,12 +91,13 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Constructor: Allocate 65.536 bytes of memory and reset the CPU.
+     * Create CPU, the bus it is attached to and 16 bytes of memory for
+     * interrupt vectors.
      */
     public MC6809() {
         super(new BusStraight());
-        bus = (Bus8Motorola)super.getBus();
-        allocate_memory(0xfff0, 16);  // For interrupt vectors
+        bus = (Bus8Motorola) super.getBus();
+        allocate_memory(0xfff0, 16);
         reset();
     }
 
@@ -140,6 +141,11 @@ public class MC6809 extends USimMotorola {
         bus.addMemorySegment(newMemory);
     }
 
+    /**
+     * Send a signal to reset the CPU when it is done with the current
+     * instruction. Program counter is set to the content for the top
+     * two bytes in memory. Direct page register is set to 0.
+     */
     public void signalReset() {
         resetSignal = true;
     }

@@ -9,6 +9,8 @@ public class GO51TerminalTest {
 
     /**
      * Send plain text.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void plainText() throws IOException {
@@ -23,6 +25,8 @@ public class GO51TerminalTest {
 
     /**
      * Underline on.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void underlineOn() throws IOException {
@@ -37,6 +41,8 @@ public class GO51TerminalTest {
 
     /**
      * Reverse on.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void reverseOn() throws IOException {
@@ -51,6 +57,8 @@ public class GO51TerminalTest {
 
     /**
      * Go to location 0,0.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void goHome() throws IOException {
@@ -66,6 +74,8 @@ public class GO51TerminalTest {
 
     /**
      * Go to location 40,20.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void goX40Y20() throws IOException {
@@ -81,6 +91,8 @@ public class GO51TerminalTest {
 
     /**
      * Go to location 33,22.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void goX33Y22() throws IOException {
@@ -97,6 +109,8 @@ public class GO51TerminalTest {
 
     /**
      * Go to location 9,9.
+     *
+     * @throws IOException if there is a failure in the output stream
      */
     @Test
     public void goX9Y9() throws IOException {
@@ -109,6 +123,5 @@ public class GO51TerminalTest {
         term = term.handleCharacter(9, res);
         assertEquals("\033[10;10H", res.toString());
     }
-
 
 }
