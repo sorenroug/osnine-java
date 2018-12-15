@@ -1,0 +1,778 @@
+<?xml version="1.0"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <title>Quick reference guide to BASIC 1.0</title>
+  <para>
+  BASIC 1.0 is the standard BASIC language for Thomson computers (MO5, TO7, etc.), which is the reference for the entire range.
+  This is an implementation of Microsoft BASIC (BASIC-69). On the MO5, the
+  instruction set is reduced and the double precision is not implemented,
+  so that the interpreter fits in only 12 KB of ROM, instead of 16 KB on the TO7.
+  </para>
+  <section>
+    <title>Variable types</title>
+    <informaltable border="1" frame="all" rules="all">
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Range</th>
+      </tr>
+      <tr>
+        <td>Integer</td>
+        <td>AB%</td>
+        <td>-32768 to +32767</td>
+      </tr>
+      <tr>
+        <td>Real</td>
+        <td>AB</td>
+        <td>+/- 9.99999 E +38</td>
+      </tr>
+      <tr>
+        <td>String</td>
+        <td>AB$</td>
+        <td>0 to 255 characters</td>
+      </tr>
+    </informaltable>
+    <para>
+Where A must be a letter, B and following (up to 255) characters are optional and may be a letter or digit.
+Only the first 15 characters are significant.
+</para>
+  </section>
+  <section>
+    <title>Operators</title>
+    <informaltable border="1" frame="all" rules="all">
+      <tr>
+        <th>Symbol</th>
+        <th>Operation</th>
+      </tr>
+      <tr>
+        <td>( )</td>
+        <td>Grouping</td>
+      </tr>
+      <tr>
+        <td>-</td>
+        <td>Negation</td>
+      </tr>
+      <tr>
+        <td>^</td>
+        <td>Exponentiation</td>
+      </tr>
+      <tr>
+        <td>* /</td>
+        <td>Multiplication (*) and division (/)</td>
+      </tr>
+      <tr>
+        <td>@ MOD</td>
+        <td>Integer division (@) and modulus (MOD)</td>
+      </tr>
+      <tr>
+        <td>+ -</td>
+        <td>Addition and subtraction</td>
+      </tr>
+      <tr>
+        <td>&gt; &lt; = &lt;&gt; &gt;= &lt;=</td>
+        <td>Relational operators</td>
+      </tr>
+      <tr>
+        <td>NOT AND EQV IMP OR XOR</td>
+        <td>Logical operators</td>
+      </tr>
+    </informaltable>
+    <section>
+      <title>Logical operator truth table</title>
+      <informaltable border="1" frame="all" rules="all">
+        <tr>
+          <th>A</th>
+          <th>B</th>
+          <th>A AND B</th>
+          <th>A EQV B</th>
+          <th>A IMP B</th>
+          <th>A OR B</th>
+          <th>A XOR B</th>
+        </tr>
+        <tr>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>-1</td>
+          <td>-1</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>0</td>
+          <td>-1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>-1</td>
+          <td>-1</td>
+          <td>-1</td>
+        </tr>
+        <tr>
+          <td>-1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>-1</td>
+          <td>-1</td>
+        </tr>
+        <tr>
+          <td>-1</td>
+          <td>-1</td>
+          <td>-1</td>
+          <td>-1</td>
+          <td>-1</td>
+          <td>-1</td>
+          <td>0</td>
+        </tr>
+      </informaltable>
+    </section>
+  </section>
+  <section>
+    <title>System commands</title>
+    <variablelist>
+      <varlistentry>
+        <term>CONT</term>
+        <listitem>
+          <para>Continues program execution after a STOP statement or pressing the STOP key.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DELETE</term>
+        <listitem>
+          <para>Deletes program lines.
+<simplelist columns="1"><member>DELETE 100-350</member><member>DELETE 10-</member><member>DELETE -80</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LIST</term>
+        <listitem>
+          <para>Displays specified lines on screen<simplelist columns="1"><member>LIST</member><member>LIST 10-95</member><member>LIST -200</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MERGE <replaceable>{"file"}{,R}}</replaceable></term>
+        <listitem>
+          <para>Merges the BASIC program on tape or disk with program in memory. Runs program if <code>,R</code> is given</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>NEW</term>
+        <listitem>
+          <para>Clears program from memory.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RUN</term>
+        <listitem>
+          <para>Executes a program starting at lowest line, specified line or loads program from tape to run. Closes all files unless <code>,R</code> is given
+<simplelist columns="1"><member>RUN</member><member>RUN 250</member><member>RUN "startrek"</member><member>RUN "format",R</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>TRON/TROFF</term>
+        <listitem>
+          <para>Turns on/off program flow trace.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>BASIC language statements</title>
+    <variablelist>
+      <varlistentry>
+        <term>ATTRB <replaceable>x,y</replaceable></term>
+        <listitem>
+          <para>Defines the height and width of the characters. The possible values are 0 and 1.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CLEAR <replaceable>I,J,K</replaceable></term>
+        <listitem>
+          <para>Erases all variables and reserves space for string storage, highest address for BASIC and graphical characters.<simplelist columns="1"><member>CLEAR 500</member><member>CLEAR 200,25000</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CLS</term>
+        <listitem>
+          <para>Clears display</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CONSOLE top,bottom</term>
+        <listitem>
+          <para>Reserves the lines between top and bottom for text.<simplelist columns="1"><member>CONSOLE 5,15</member><member>CONSOLE 0,24</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DATA</term>
+        <listitem>
+          <para>Stores data in program for use by READ statement</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DEFINT/DEFSNG/DEFSTR A</term>
+        <listitem>
+          <para>Declares the type of a variable as either integer, real or string.<simplelist columns="1"><member>DEFINT A-B,O-Q defines A,B,O,P and Q as integer</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DIM</term>
+        <listitem>
+          <para>Dimensions one or more arrays. DIM X(40),A$(7,6),B(10,2)</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>END</term>
+        <listitem>
+          <para>Terminates program execution</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ERL, ERR</term>
+        <listitem>
+          <para>When an error has occurred, the function ERR gives the code number and ERL gives the line number in which the
+error occurred.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ERROR n</term>
+        <listitem>
+          <para>Makes it possible to simulate error number <replaceable>n</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>EXEC <replaceable>address</replaceable></term>
+        <listitem>
+          <para>Transfers control to machine language programs at <replaceable>address</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>FOR TO STEP NEXT</term>
+        <listitem>
+          <para>Creates a program loop which is executed, for specified range of values, STEP indicates the increment. If STEP omitted, one is used.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>GOSUB</term>
+        <listitem>
+          <para>Calls subroutine beginning at specified line number.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>GOTO</term>
+        <listitem>
+          <para>Causes immediate program branch to specified line number.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>IF condition THEN action 1 ELSE action 2</term>
+        <listitem>
+          <para>Tests condition. If true performs action 1 and jumps to next line, if false performs action 2.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INPUT</term>
+        <listitem>
+          <para>Causes program to halt for entry from keyboard.<simplelist columns="1"><member>INPUT"ENTER NAME";N$</member><member>INPUT A,B,C,D</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LET</term>
+        <listitem>
+          <para>Assigns value to variable. LET is not implemented. Use implied assignment<simplelist columns="1"><member>A=42</member><member>Hw$="HELLO WORLD"</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LINE INPUT</term>
+        <listitem>
+          <para>Allows input of line from keyboard, including commas. Line is terminated by [ENTER].</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LOCATE i,j,k</term>
+        <listitem>
+          <para>Place the cursor at location i,j</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ON...GOSUB</term>
+        <listitem>
+          <para>Multiway branch to specified lines<simplelist columns="1"><member>ON I GOSUB 100,200,300</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ON...GOTO</term>
+        <listitem>
+          <para>Multiway branch to specified lines<simplelist columns="1"><member>ON K GOTO 245,187,310</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ON ERROR GOTO</term>
+        <listitem>
+          <para>Directs control to the specified line if a subsequent error is detected.<simplelist columns="1"><member>ON ERROR GOTO 5000</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>POKE location,value</term>
+        <listitem>
+          <para>Places value in specified memory location. Value must be 0 - 255.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PRINT or ?</term>
+        <listitem>
+          <para>Prints content of following list on screen. Comma (,) causes tab to next 12 column print zone. Semicolon (;) holds print head position.<simplelist columns="1"><member>PRINT"THE ANSWER"</member><member>PRINT A,B</member><member>PRINT "YOU'VE HAD";T;"TRIES"</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PRINT TAB</term>
+        <listitem>
+          <para>Moves cursor to specified column position.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PRINT USING</term>
+        <listitem>
+          <para>Prints output in specified format.<simplelist columns="1"><member># number field</member><member>$ dollar sign in front of number.</member><member>* fills leading spaces with asterisks.</member><member>^ prints in exponential format.</member><member>+ causes sign to be printed.</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>READ</term>
+        <listitem>
+          <para>Assigns the next item in a DATA statement to specified variable.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>REM or '</term>
+        <listitem>
+          <para>Allows comments to be inserted in a program. Everything in a line following REM is ignored.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RESTORE</term>
+        <listitem>
+          <para>Resets the data pointer back to the first item in the first DATA statement or the statement at the specified line number.<simplelist columns="1"><member>RESTORE</member><member>RESTORE 200</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RESUME</term>
+        <listitem>
+          <para>Return to the main program after execution of error subroutine.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RETURN</term>
+        <listitem>
+          <para>Returns the program from subroutine to the statement following GOSUB.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>STOP</term>
+        <listitem>
+          <para>Halts execution of program at line containing STOP. Use CONT to continue execution.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>String functions</title>
+    <variablelist>
+      <varlistentry>
+        <term>ASC(<replaceable>X$</replaceable>)</term>
+        <listitem>
+          <para>Returns ASCII code of first character in string</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CHR$(<replaceable>N</replaceable>)</term>
+        <listitem>
+          <para>Returns character for specified ASCII code value.<simplelist columns="1"><member>A$ = CHR$(93)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INKEY$</term>
+        <listitem>
+          <para>Checks keyboard and returns key being pressed.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INSTR(<replaceable>N,X$,Y$</replaceable>)</term>
+        <listitem>
+          <para>Searches for first occurrence of target string at a position (N). Returns position of match.<simplelist columns="1"><member>P = INSTR(8,A$,"TED")</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LEFT$(<replaceable>X$,N</replaceable>)</term>
+        <listitem>
+          <para>Returns the first N characters of string X$.<simplelist columns="1"><member>B$ = LEFT(A$,9)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LEN(<replaceable>X$</replaceable>)</term>
+        <listitem>
+          <para>Returns the length of string X$.<simplelist columns="1"><member>K = LEN(K$)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MID$(<replaceable>X$,N,M</replaceable>)</term>
+        <listitem>
+          <para>Returns substring of X$ of length M, starting from position N.<simplelist columns="1"><member>B$ = MID$(A$,4,1)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RIGHT(<replaceable>X$,N</replaceable>)</term>
+        <listitem>
+          <para>Return the last N characters of string X$.<simplelist columns="1"><member>B$ = RIGHT(A$,9)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>STR$(<replaceable>N</replaceable>)</term>
+        <listitem>
+          <para>Converts N to its string representation.<simplelist columns="1"><member>X$ = STR$(14.4)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>VAL(<replaceable>X$</replaceable>)</term>
+        <listitem>
+          <para>Converts numeric characters of X$ to a number.<simplelist columns="1"><member>P = VAL(D$)</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Numeric functions</title>
+    <variablelist>
+      <varlistentry>
+        <term>ABS(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Computes absolute value of argument.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>COS(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns cosine of angle given in radians.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CSRLIN</term>
+        <listitem>
+          <para>Return the line the cursor is at.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>EXP(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns exponential of number.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>FIX(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns truncated value.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>FRE(0)/FRE(<replaceable>A$</replaceable>)</term>
+        <listitem>
+          <para>Returns the amount of memory available for programs or strings.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INT(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Converts number to integer.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LOG(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns natural logarithm of argument.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PEEK(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns content of specified memory location X.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>POS(<replaceable>d</replaceable>)</term>
+        <listitem>
+          <para>Returns the horizontal position of the cursor of device <replaceable>d</replaceable>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>RND(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Generates random number between 0 and 1. If <replaceable>X</replaceable> is negative, then seeds the random number generator.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SGN(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns sign of number as: 1 positive, 0 zero, -1 negative.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SIN(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns sine of angle given in radians.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SPC(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Writes <replaceable>X</replaceable> spaces.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SQR(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns square root of number.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>TAB(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Moves the cursor to the position given in <replaceable>X</replaceable>. If the cursor is already past, then moves to next line first.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>TAN(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns tangent of angle given in radians.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>VARPTR(<replaceable>X</replaceable>)</term>
+        <listitem>
+          <para>Returns address of pointer to specified variable.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Cassette recorder control statements</title>
+    <variablelist>
+      <varlistentry>
+        <term>CLOSE</term>
+        <listitem>
+          <para>Closes open files.<simplelist columns="1"><member>CLOSE 1,3</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>EOF(channel)</term>
+        <listitem>
+          <para>Returns -1 if end of file has been reached</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INPUT #</term>
+        <listitem>
+          <para>Read from file opened with OPEN.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LINE INPUT #</term>
+        <listitem>
+          <para>Allows input of line from open file, including commas. Line is terminated by [ENTER].</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LOAD</term>
+        <listitem>
+          <para>Load program file from tape. First file encountered will be loaded, unless program name is specified.<simplelist columns="1"><member>LOAD</member><member>LOAD "NAME"</member><member>LOAD "NAME",R</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LOADM</term>
+        <listitem>
+          <para>Load machine language program from tape. Offset to loading address main be given.<simplelist columns="1"><member>LOADM</member><member>LOADM"NAME"</member><member>LOADM"NAME",&amp;H6000</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>MOTORON/MOTOROFF</term>
+        <listitem>
+          <para>Turns tape motor on/off.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>OPEN a,#channel, filename</term>
+        <listitem>
+          <para>Opens a file or device. The argument <replaceable>a</replaceable> must be either "I" for input or "O" for output. <replaceable>Channel</replaceable> must be between 1 and 16.
+The <replaceable>filename</replaceable> specifies device ("KYBD" - keyboard, "SCRN" - screen, "LPRT" - line printer, "CASS" - cassette tape) and if relevant, a file name on the device.
+Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FILE.TWO"</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PRINT #</term>
+        <listitem>
+          <para>Prints content of following list to the specified file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PRINT # USING</term>
+        <listitem>
+          <para>Prints formatted output to the specified file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SAVE</term>
+        <listitem>
+          <para>Transfer BASIC programs from memory to tape.<simplelist columns="1"><member>SAVE "prog"</member><member>SAVE "prog",A</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SAVEM</term>
+        <listitem>
+          <para>Transfer machine code to tape.<simplelist columns="1"><member>SAVEM "codefile",&amp;H6200,&amp;H7520,&amp;H6210</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SKIPF</term>
+        <listitem>
+          <para>Skips to end of specified program on tape.<simplelist columns="1"><member>SKIPF</member><member>SKIPF"NAME"</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Graphics statements</title>
+    <variablelist>
+      <varlistentry>
+        <term>BOX(<replaceable>X1,Y1</replaceable>)-(<replaceable>X2,Y2</replaceable>),C</term>
+        <listitem>
+          <para>Draws a box with corners at (X1,Y1) to (X2,Y2) in colour C.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BOXF(<replaceable>X1,Y1</replaceable>)-(<replaceable>X2,Y2</replaceable>),<replaceable>C</replaceable></term>
+        <listitem>
+          <para>Draws a filled box with corners at (X1,Y1) to (X2,Y2) in colour C.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>COLOR <replaceable>foreground,background,invert</replaceable></term>
+        <listitem>
+          <para>Sets foreground and background colours. If <replaceable>invert</replaceable> is given then foreground and background are swapped.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DEFGR$(<replaceable>N</replaceable>)</term>
+        <listitem>
+          <para>Define a graphics character. N must be from 0 to 127.<simplelist columns="1"><member>DEFGR$(0) = 24,24,255,24,60,36,36,36</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LINE(<replaceable>X1,Y1</replaceable>)-(<replaceable>X2,Y2</replaceable>),<replaceable>C</replaceable></term>
+        <listitem>
+          <para>Draws a line from (X1,Y1) to (X2,Y2) in colour <replaceable>C</replaceable>.<simplelist columns="1"><member>LINE (100,100)-(300,150),2</member><member>LINE -(0,150),2</member><member>LINE (0,10)-(30,10) "+",3,0</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>POINT(<replaceable>X,Y</replaceable>)</term>
+        <listitem>
+          <para>Returns the color of the foreground if the pixel is set, otherwise the background.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PSET(<replaceable>x,y</replaceable>),<replaceable>C</replaceable></term>
+        <listitem>
+          <para>Sets point x,y to colour c. If c is positive, the pixel colour is set, otherwise the background colour.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SCREEN <replaceable>foreground,background,border</replaceable></term>
+        <listitem>
+          <para>Sets the colour scheme for the whole screen.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SCREENPRINT</term>
+        <listitem>
+          <para>Prints the content of the screen.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Sound generation statements</title>
+    <variablelist>
+      <varlistentry>
+        <term>BEEP</term>
+        <listitem>
+          <para>Sounds a "beep".</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PLAY <replaceable>string</replaceable></term>
+        <listitem>
+          <para>Plays music string made of following:
+<simplelist columns="1"><member>DO, RE, MI, FA, SO, LA, SI - note</member><member>O<replaceable>n</replaceable> - octave, n=1 to 5</member><member>A<replaceable>n</replaceable> - attack, n=0 to 255</member><member>L<replaceable>n</replaceable> - note length, n=1 to 96</member><member>P<replaceable>n</replaceable> - pause, n=1 to 255</member><member>T<replaceable>n</replaceable> - temp, n=1 to 255</member><member>Also allows sharps (#) or flats (b).</member></simplelist>
+</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section>
+    <title>Lightpen statements</title>
+    <variablelist>
+      <varlistentry>
+        <term>INPEN <replaceable>X,Y</replaceable></term>
+        <listitem>
+          <para>Reads the x,y coordinate of the lightpen. X,Y are set to -1 if the lightpen is not detected.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>INPUTPEN <replaceable>X,Y</replaceable></term>
+        <listitem>
+          <para>Reads the x,y coordinate of the lightpen at the time the lightpen button is pressed. X,Y are set to -1 if the lightpen is not detected.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PTRIG</term>
+        <listitem>
+          <para>This function indicates the state of the lightpen interrupt.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>TUNE</term>
+        <listitem>
+          <para>For tuning the lightpen</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</article>

@@ -39,6 +39,7 @@
                     <target>${java_version}</target>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.2</version>
@@ -52,6 +53,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -136,6 +138,42 @@
                     <targetJdk>${java_version}</targetJdk>
                 </configuration>
             </plugin>
+      <plugin>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.17</version>
+        <executions>
+
+          <execution>
+            <id>helpmenu</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-javahelp</goal>
+            </goals>
+            <configuration>
+              <includes>quickguide.xml</includes>
+            </configuration>
+          </execution>
+        </executions>
+
+        <configuration>
+            <sourceDirectory>${basedir}/src/help</sourceDirectory>
+            <targetDirectory>${project.build.directory}/classes/javahelp</targetDirectory>
+        </configuration>
+
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>5.0-all</version>
+            <classifier>resources</classifier>
+            <type>zip</type>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+
+      </plugin>
+
         </plugins>
     </build>
 
@@ -144,6 +182,11 @@
             <groupId>roug.org.osnine</groupId>
             <artifactId>osnine-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.help</groupId>
+            <artifactId>javahelp</artifactId>
+            <version>2.0.05</version>
         </dependency>
 
         <dependency>

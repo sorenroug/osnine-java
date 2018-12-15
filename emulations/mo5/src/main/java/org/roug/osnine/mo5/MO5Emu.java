@@ -6,6 +6,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Toolkit;
+import java.net.URL;
+import javax.help.*;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -62,14 +64,19 @@ public class MO5Emu {
         new MO5Emu();
     }
 
+    /**
+     * Create emulator application.
+     */
     public MO5Emu() throws Exception {
         guiFrame = new JFrame("MO5 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
         guiFrame.setJMenuBar(guiMenuBar);
+
         addFileMenu(guiMenuBar);
         addEditMenu(guiMenuBar);
         addTapeMenu(guiMenuBar);
+        addHelpMenu(guiMenuBar);
 
         bus = new BusStraight();
 
@@ -182,6 +189,29 @@ public class MO5Emu {
 
         JMenuItem menuItem = new JMenuItem("Paste text");
         menuItem.addActionListener(new PasteAction());
+        guiMenu.add(menuItem);
+
+        guiMenuBar.add(guiMenu);
+    }
+
+    private void addHelpMenu(JMenuBar guiMenuBar) {
+        String helpHS = "javahelp/jhelpset.hs";
+        ClassLoader cl = MO5Emu.class.getClassLoader();
+        HelpSet hs;
+        try {
+            URL hsURL = HelpSet.findHelpSet(cl, helpHS);
+            hs = new HelpSet(null, hsURL);
+        } catch (Exception ee) {
+            LOGGER.error("HelpSet "+ helpHS +" not found");
+            return;
+        }
+
+        HelpBroker hb = hs.createHelpBroker();
+
+        JMenu guiMenu = new JMenu("Help");
+
+        JMenuItem menuItem = new JMenuItem("Quick Reference");
+        menuItem.addActionListener(new CSH.DisplayHelpFromSource(hb));
         guiMenu.add(menuItem);
 
         guiMenuBar.add(guiMenu);
