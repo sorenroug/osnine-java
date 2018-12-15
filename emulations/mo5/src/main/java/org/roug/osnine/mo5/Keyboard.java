@@ -160,7 +160,6 @@ public class Keyboard implements KeyListener {
         codeTable.put(KeyEvent.VK_BACK_SPACE, ROW5 + COL1); // Plain backspace
         codeTable.put(KeyEvent.VK_DELETE, ROW0 + COL1);
         codeTable.put(KeyEvent.VK_DOWN, ROW4 + COL1);
-        //codeTable.put(KeyEvent.VK_ENTER, ROW6 + COL4);
         codeTable.put(KeyEvent.VK_HOME, ROW2 + COL1); // Back to top
         codeTable.put(KeyEvent.VK_INSERT, ROW1 + COL1);
         codeTable.put(KeyEvent.VK_LEFT, ROW5 + COL1);
@@ -169,11 +168,9 @@ public class Keyboard implements KeyListener {
         codeTable.put(KeyEvent.VK_PAUSE, ROW6 + COL7); //STOP
         codeTable.put(KeyEvent.VK_UP, ROW6 + COL1);
 
-        /* SHIFT + BASIC */
         codeTable.put(KeyEvent.VK_F12, ROW7 + COL0); //Shift
         //codeTable.put(KeyEvent.VK_F11, ROW7 + COL1); //Basic
 
-        /* CNT RAZ */
         codeTable.put(KeyEvent.VK_CONTROL, ROW6 + COL5); //CTRL
         codeTable.put(KeyEvent.VK_ESCAPE, ROW6 + COL3); //ESCAPE = raz
 
@@ -187,7 +184,59 @@ public class Keyboard implements KeyListener {
         resetAllKeys();
     }
 
+    @Override
     public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        resetAllKeys();
+        keyTranslator(e, true);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        keyTranslator(e, false);
+    }
+
+    /**
+     * Returns the matrix address for an ASCII code. Used for paste operation.
+     *
+     * @param charCode the ASCII character to look up.
+     * @return matrix code or -1 if the character doesn't appear on the MO5 keyboard.
+     */
+    public static int getKeyForAscii(int charCode) {
+        Integer k = charTable.get(charCode);
+        if (k == null) return -1;
+        return k;
+    }
+
+    /**
+     * Called from the keyboard event handler.
+     *
+     * @param k - index into key matrix
+     * @param pressed - flag to say if key is on or off.
+     */
+    public void setKey(int k, boolean pressed) {
+        if ((k & SHIFT) == SHIFT) keyMatrix[ROW7 + COL0] = pressed; //Shift
+        if ((k & CONTROL) == CONTROL) keyMatrix[ROW6 + COL5] = pressed; //Ctrl
+        if (basicPressed) keyMatrix[ROW7 + COL1] = pressed; // BASIC
+        k = k & ~(SHIFT | CONTROL);
+        keyMatrix[k] = pressed;
+    }
+
+    /**
+     * Check key matrix for key press.
+     *
+     * @param i - index into key matrix
+     * @return true is key at that index is pressed.
+     */
+    public boolean hasKeyPress(int i) {
+        return keyMatrix[i];
+    }
+
+    private void resetAllKeys() {
+        for (int i = 0; i < KEYS; i++) keyMatrix[i] = false;
     }
 
     private void keyTranslator(KeyEvent e, boolean press) {
@@ -212,42 +261,6 @@ public class Keyboard implements KeyListener {
                 && tmpCode != KeyEvent.VK_CONTROL
                 && tmpCode != KeyEvent.VK_ALT)
             LOGGER.debug("Unrecognized Key code: {}", tmpCode);
-    }
-
-    public void keyPressed(KeyEvent e) {
-        resetAllKeys();
-        keyTranslator(e, true);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        keyTranslator(e, false);
-    }
-
-    public static int getKeyForAscii(int charCode) {
-        Integer k = charTable.get(charCode);
-        if (k == null) return -1;
-        return k;
-    }
-
-    /**
-     * Called from the keyboard event handler.
-     * @param i - index into key matrix
-     * @param pressed - flag to say if key is on or off.
-     */
-    public void setKey(int k, boolean pressed) {
-        if ((k & SHIFT) == SHIFT) keyMatrix[ROW7 + COL0] = pressed; //Shift
-        if ((k & CONTROL) == CONTROL) keyMatrix[ROW6 + COL5] = pressed; //Ctrl
-        if (basicPressed) keyMatrix[ROW7 + COL1] = pressed; // BASIC
-        k = k & ~(SHIFT | CONTROL);
-        keyMatrix[k] = pressed;
-    }
-
-    public boolean hasKeyPress(int i) {
-        return keyMatrix[i];
-    }
-
-    private void resetAllKeys() {
-        for (int i = 0; i < KEYS; i++) keyMatrix[i] = false;
     }
 
 }

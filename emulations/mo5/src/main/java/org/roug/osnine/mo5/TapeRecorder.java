@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Emulation of tape recorder, which receives timed one-bit
- * pulses from the computer and sends timed one-bit on play-back.
+ * pulses from the computer and sends timed one-bit signals on play-back.
  */
 public class TapeRecorder {
 
