@@ -17,12 +17,12 @@ public class TapeRecorder {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(TapeRecorder.class);
 
-    /** Bit in integer that says if the signal is high or low. */
-    private static final int VALUEBIT = 0x40000000;
+    private static final int MAGIC = 0x4d355031; // M5P1: Header MO5 Pulse v.1
 
-    private static final int LENGTH_MASK = VALUEBIT - 1;
-
+    /** Write a stretch of empty while motor starts. */
     private static final int START_DELAY = 200000;
+
+    /** Write a stretch of empty while motor stops. */
     private static final int STOP_DELAY = 100000;
 
     /** Callback to computer interface for play back. */
@@ -39,6 +39,7 @@ public class TapeRecorder {
     /** Next value to feed to the PIA. */
     private boolean cassetteBit;
 
+    /** Tell bus to call me to read next pulse on tape. */
     private Signal callback;
 
     /** File name of cassette file. */
@@ -47,10 +48,13 @@ public class TapeRecorder {
     /** Determines if the recording or play button is pressed. */
     private boolean recording;
 
+    /** Determins if the motor is on. */
     private boolean motorOn;
 
     /**
-     * Constructor.
+     * Create a tape recorder.
+     *
+     * @param bus the bus to get interrupts from.
      */
     TapeRecorder(Bus8Motorola bus) {
         this.bus = bus;
@@ -64,7 +68,8 @@ public class TapeRecorder {
      * @throws Exception if the is a problem with the file.
      */
     public void loadForRecord(File filename) throws Exception {
-        loadCassetteFile(filename);
+        loadCassetteFile(filename, "rw");
+        cassetteStream.writeInt(MAGIC);
         recording = true;
     }
 
@@ -76,7 +81,12 @@ public class TapeRecorder {
      * @throws Exception if the is a problem with the file.
      */
     public void loadForPlay(File filename) throws Exception {
-        loadCassetteFile(filename);
+        loadCassetteFile(filename, "r");
+        int magic = cassetteStream.readInt();
+        if (magic != MAGIC) {
+            LOGGER.info("Unsupported file");
+            cassetteStream = null;
+        }
         recording = false;
     }
 
@@ -86,10 +96,10 @@ public class TapeRecorder {
      * @param filename the name of the file to load
      * @throws Exception if the is a problem with the file.
      */
-    private void loadCassetteFile(File filename) throws Exception {
+    private void loadCassetteFile(File filename, String mode) throws Exception {
         if (cassetteStream != null) unloadCassetteFile();
         cassetteFilename = filename;
-        cassetteStream = new RandomAccessFile(filename, "rw");
+        cassetteStream = new RandomAccessFile(filename, mode);
         tapestationReady(true);
     }
 
@@ -98,7 +108,6 @@ public class TapeRecorder {
      */
     public void unloadCassetteFile() {
         motorOn = false;
-        //cassetteMotor(false);
         try {
             tapestationReady(false);
             cassetteStream.close();
@@ -167,8 +176,8 @@ public class TapeRecorder {
         }
         try {
             int code = readCode();
-            cassetteBit = isBitOn(code, VALUEBIT);
-            int delay = code & LENGTH_MASK;
+            cassetteBit = (code < 0);
+            int delay = (code < 0)?-code:code;
             LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
             callback = (boolean state) -> feedLine(state);
             bus.callbackIn(delay, callback);
@@ -185,6 +194,7 @@ public class TapeRecorder {
         try {
             if (cassetteStream != null) {
                 cassetteStream.seek(0);
+                cassetteStream.readInt();
                 tapestationReady(true);
             }
         } catch (IOException e) {
@@ -213,6 +223,7 @@ public class TapeRecorder {
      */
     public void writeToCassette(boolean value) {
         if (!motorOn || !recording) return;
+
         long nowCounter = bus.getCycleCounter();
         if (lastCounter == 0)
             lastCounter = nowCounter - START_DELAY;
@@ -228,13 +239,13 @@ public class TapeRecorder {
      */
     private void writeCode(boolean value, int delay) {
         LOGGER.debug("Write {}, delay {}", value, delay);
-        int code = (int)(delay & LENGTH_MASK);
-        if (value) {
-            code |= VALUEBIT;
-        }
         try {
-            cassetteStream.writeInt(code);
+            while (delay > 0) {
+                cassetteStream.writeShort(((delay > 0x7FFF)?0x7FFF:delay) * ((value)?-1:1));
+                delay -= 0x7FFF;
+            }
         } catch (IOException e) {
+            LOGGER.error("Unable to write to cassette");
             cassetteStream = null;
         }
     }
@@ -248,7 +259,7 @@ public class TapeRecorder {
         if (cassetteStream == null) throw new IOException();
 
         int code = -1;
-        code = cassetteStream.readInt();
+        code = cassetteStream.readShort();
         return code;
     }
 
