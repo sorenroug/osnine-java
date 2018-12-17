@@ -138,41 +138,88 @@
                     <targetJdk>${java_version}</targetJdk>
                 </configuration>
             </plugin>
-      <plugin>
-        <groupId>com.agilejava.docbkx</groupId>
-        <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.17</version>
-        <executions>
+            <plugin>
+              <groupId>com.agilejava.docbkx</groupId>
+              <artifactId>docbkx-maven-plugin</artifactId>
+              <version>2.0.17</version>
+              <executions>
 
-          <execution>
-            <id>helpmenu</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate-javahelp</goal>
-            </goals>
-            <configuration>
-              <includes>quickguide.xml</includes>
-            </configuration>
-          </execution>
-        </executions>
+                <execution>
+                  <id>helpmenu</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                    <goal>generate-javahelp</goal>
+                  </goals>
+                  <configuration>
+                    <includes>quickguide.xml</includes>
+                    <targetDirectory>${project.build.directory}/classes/javahelp</targetDirectory>
+                  </configuration>
+                </execution>
 
-        <configuration>
-            <sourceDirectory>${basedir}/src/help</sourceDirectory>
-            <targetDirectory>${project.build.directory}/classes/javahelp</targetDirectory>
-        </configuration>
+                <execution>
+                  <id>websitepage</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                    <goal>generate-xhtml5</goal>
+                  </goals>
+                  <configuration>
+                    <includes>quickguide.xml</includes>
+                  </configuration>
+                </execution>
+              </executions>
 
-        <dependencies>
-          <dependency>
-            <groupId>net.sf.docbook</groupId>
-            <artifactId>docbook-xml</artifactId>
-            <version>5.0-all</version>
-            <classifier>resources</classifier>
-            <type>zip</type>
-            <scope>runtime</scope>
-          </dependency>
-        </dependencies>
+              <configuration>
+                  <sourceDirectory>${basedir}/src/help</sourceDirectory>
+              </configuration>
 
-      </plugin>
+              <dependencies>
+                <dependency>
+                  <groupId>net.sf.docbook</groupId>
+                  <artifactId>docbook-xml</artifactId>
+                  <version>5.0-all</version>
+                  <classifier>resources</classifier>
+                  <type>zip</type>
+                  <scope>runtime</scope>
+                </dependency>
+              </dependencies>
+
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <!-- generate the Java Help search index and put it in with the rest of the files -->
+                    <execution>
+                        <id>generate-javahelp-search-index</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/classes/javahelp/JavaHelpSearch"/>
+                                <java classname="com.sun.java.help.search.Indexer" failonerror="true"
+                                  fork="true" dir="${project.build.directory}/classes/javahelp/">
+                                    <arg value="-db"/>
+                                    <arg value="JavaHelpSearch"/>
+                                    <arg value="."/>
+                                    <classpath>
+                                        <pathelement location="${maven.dependency.javax.help.javahelp.jar.path}"/>
+                                    </classpath>
+                                </java>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.help</groupId>
+                        <artifactId>javahelp</artifactId>
+                        <version>2.0.05</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
 
         </plugins>
     </build>
