@@ -80,5 +80,8 @@ public interface Bus8Motorola extends MemoryBus {
      * @param method - the operation to call.
      */
     void callbackIn(int cycles, Signal method);
+
+    void lock();
+    void unlock();
 }
 

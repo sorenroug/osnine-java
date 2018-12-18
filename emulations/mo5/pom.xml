@@ -66,6 +66,7 @@
                     <archive>
                         <manifest>
                             <mainClass>org.roug.osnine.mo5.MO5Emu</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
                 </configuration>
@@ -197,6 +198,7 @@
                         </goals>
                         <configuration>
                             <target>
+                                <delete dir="${project.build.directory}/classes/javahelp/JavaHelpSearch"/>
                                 <mkdir dir="${project.build.directory}/classes/javahelp/JavaHelpSearch"/>
                                 <java classname="com.sun.java.help.search.Indexer" failonerror="true"
                                   fork="true" dir="${project.build.directory}/classes/javahelp/">

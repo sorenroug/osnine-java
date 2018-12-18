@@ -1,5 +1,6 @@
 package org.roug.osnine;
 
+import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,8 @@ public class BusStraight implements Bus8Motorola {
     private long methodTrigger = Long.MAX_VALUE;
 
     private Signal registeredMethod;
+
+    private ReentrantLock lockObject = new ReentrantLock();
 
     /**
      * Constructor.
@@ -58,8 +61,15 @@ public class BusStraight implements Bus8Motorola {
      */
     @Override
     public int read(int offset) {
+        int val;
+        lockObject.lock();
+        try {
+            val = memory.read(offset);
+        } finally {
+            lockObject.unlock();
+        }
         updateCycle();
-        return memory.read(offset);
+        return val;
     }
 
     /**
@@ -67,8 +77,23 @@ public class BusStraight implements Bus8Motorola {
      */
     @Override
     public void write(int offset, int val) {
-        memory.write(offset, val & 0xFF);
+        lockObject.lock();
+        try {
+            memory.write(offset, val & 0xFF);
+        } finally {
+            lockObject.unlock();
+        }
         updateCycle();
+    }
+
+    @Override
+    public void lock() {
+        lockObject.lock();
+    }
+
+    @Override
+    public void unlock() {
+        lockObject.unlock();
     }
 
     /**

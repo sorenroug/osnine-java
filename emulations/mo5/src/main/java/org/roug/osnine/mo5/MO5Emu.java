@@ -7,16 +7,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Toolkit;
 import java.net.URL;
-import javax.help.*;
+import javax.help.CSH;
+import javax.help.HelpBroker;
+import javax.help.HelpSet;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
 import org.roug.osnine.MC6809;
+import org.roug.osnine.Pacer;
 import org.roug.osnine.PIA6821;
 import org.roug.osnine.RandomAccessMemory;
 import org.roug.osnine.ReadOnlyMemory;
@@ -48,6 +52,7 @@ public class MO5Emu {
     private Bus8Motorola bus;
     private MC6809 cpu;
     private PIA6821MO5 pia;
+    private Pacer pace;
 
     /** The display of the MO5. */
     private Screen screen;
@@ -116,6 +121,10 @@ public class MO5Emu {
 
         Timer timer = new Timer("clock", true);
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
+
+        pace = new Pacer(bus);
+        Thread paceThread = new Thread(pace, "throttle");
+        paceThread.start();
     }
 
     /**
@@ -159,29 +168,33 @@ public class MO5Emu {
     }
 
     private void addFileMenu(JMenuBar guiMenuBar) {
-        JMenu guiMenuFile = new JMenu("File");
+        JMenu guiMenu = new JMenu("File");
 
-        JMenuItem guiMenuFileZoom1 = new JMenuItem("Zoom 1x");
-        guiMenuFileZoom1.addActionListener(new Zoom1Action());
-        guiMenuFile.add(guiMenuFileZoom1);
+        JMenuItem menuItem = new JMenuItem("Zoom 1x");
+        menuItem.addActionListener(new Zoom1Action());
+        guiMenu.add(menuItem);
 
-        JMenuItem guiMenuFileZoom2 = new JMenuItem("Zoom 2x");
-        guiMenuFileZoom2.addActionListener(new Zoom2Action());
-        guiMenuFile.add(guiMenuFileZoom2);
+        menuItem = new JMenuItem("Zoom 2x");
+        menuItem.addActionListener(new Zoom2Action());
+        guiMenu.add(menuItem);
 
-        JMenuItem guiMenuFileZoom4 = new JMenuItem("Zoom 4x");
-        guiMenuFileZoom4.addActionListener(new Zoom4Action());
-        guiMenuFile.add(guiMenuFileZoom4);
+        menuItem = new JMenuItem("Zoom 4x");
+        menuItem.addActionListener(new Zoom4Action());
+        guiMenu.add(menuItem);
 
-        JMenuItem guiMenuFileReset = new JMenuItem("Reset CPU");
-        guiMenuFileReset.addActionListener(new ResetAction());
-        guiMenuFile.add(guiMenuFileReset);
+        menuItem = new JMenuItem("Reset CPU");
+        menuItem.addActionListener(new ResetAction());
+        guiMenu.add(menuItem);
 
-        JMenuItem guiMenuFileExit = new JMenuItem("Exit");
-        guiMenuFileExit.addActionListener(new QuitAction());
-        guiMenuFile.add(guiMenuFileExit);
+        menuItem = new JMenuItem("CPU speed");
+        menuItem.addActionListener(new ThrottleDialogAction());
+        guiMenu.add(menuItem);
 
-        guiMenuBar.add(guiMenuFile);
+        menuItem = new JMenuItem("Exit");
+        menuItem.addActionListener(new QuitAction());
+        guiMenu.add(menuItem);
+
+        guiMenuBar.add(guiMenu);
     }
 
     private void addEditMenu(JMenuBar guiMenuBar) {
@@ -214,6 +227,10 @@ public class MO5Emu {
         menuItem.addActionListener(new CSH.DisplayHelpFromSource(hb));
         guiMenu.add(menuItem);
 
+        menuItem = new JMenuItem("About");
+        menuItem.addActionListener(new AboutAction());
+        guiMenu.add(menuItem);
+
         guiMenuBar.add(guiMenu);
     }
 
@@ -240,6 +257,7 @@ public class MO5Emu {
         guiMenuTapeUnload.addActionListener(new UnloadAction());
         guiMenuTape.add(guiMenuTapeUnload);
 
+ 
         guiMenuBar.add(guiMenuTape);
     }
 
@@ -380,6 +398,25 @@ public class MO5Emu {
         public void actionPerformed(ActionEvent e) {
             screen.setPixelSize(4);
             guiFrame.pack();
+        }
+    }
+
+    private class AboutAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(guiFrame,
+                String.format("%s v. %s\nby Søren Roug",
+                    getClass().getPackage().getImplementationTitle(),
+                    getClass().getPackage().getImplementationVersion()));
+        }
+    }
+
+    private class ThrottleDialogAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(guiFrame,
+                String.format("CPU speed: %d cycles per millisecond\n",
+                        pace.cpuSpeed()));
         }
     }
 }
