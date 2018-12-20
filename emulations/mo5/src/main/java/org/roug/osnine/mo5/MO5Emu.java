@@ -415,10 +415,24 @@ public class MO5Emu {
     private class ThrottleDialogAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(guiFrame,
-                String.format("CPU speed: %.1f cycles per millisecond\n"
-                        + "Throttled: %.1f cycles per millisecond",
-                        pace.cpuSpeed(), pace.throttleSpeed()));
+            Object[] options = {"1 MHz", "Max speed", "Cancel"};
+            String msg = String.format("CPU speed: %.1f cycles per millisecond\n"
+                    + "Throttled: %.1f cycles per millisecond\n"
+                    + "Set CPU speed?", pace.cpuSpeed(), pace.throttleSpeed());
+            String tooltip = "Set CPU speed";
+            int answer = JOptionPane.showOptionDialog(guiFrame, msg, tooltip,
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[2]);
+            switch (answer) {
+                case 0: pace.throttle(true);
+                    break;
+                case 1: pace.throttle(false);
+                    break;
+                default:
+            }
         }
     }
 }
