@@ -123,6 +123,7 @@ public class MO5Emu {
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
 
         pace = new Pacer(bus);
+        pace.throttle(false);
         Thread paceThread = new Thread(pace, "throttle");
         paceThread.start();
     }
@@ -415,8 +416,9 @@ public class MO5Emu {
         @Override
         public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(guiFrame,
-                String.format("CPU speed: %d cycles per millisecond\n",
-                        pace.cpuSpeed()));
+                String.format("CPU speed: %.1f cycles per millisecond\n"
+                        + "Throttled: %.1f cycles per millisecond",
+                        pace.cpuSpeed(), pace.throttleSpeed()));
         }
     }
 }
