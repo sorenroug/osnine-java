@@ -89,15 +89,24 @@ Only the first 15 characters are significant.
     <section>
       <title>Logical operator truth table</title>
       <informaltable border="1" frame="all" rules="all">
-        <tr>
-          <th>A</th>
-          <th>B</th>
-          <th>A AND B</th>
-          <th>A EQV B</th>
-          <th>A IMP B</th>
-          <th>A OR B</th>
-          <th>A XOR B</th>
-        </tr>
+        <col align="right"/>
+        <col align="right"/>
+        <col align="right"/>
+        <col align="right"/>
+        <col align="right"/>
+        <col align="right"/>
+        <col align="right"/>
+        <thead>
+          <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>A AND B</th>
+            <th>A EQV B</th>
+            <th>A IMP B</th>
+            <th>A OR B</th>
+            <th>A XOR B</th>
+          </tr>
+        </thead>
         <tr>
           <td>0</td>
           <td>0</td>
@@ -149,16 +158,23 @@ Only the first 15 characters are significant.
       <varlistentry>
         <term>DELETE<indexterm><primary>DELETE</primary></indexterm></term>
         <listitem>
-          <para>Deletes program lines.
-<simplelist columns="1"><member>DELETE 100-350</member><member>DELETE 10-</member><member>DELETE -80</member></simplelist>
-</para>
+          <para>Deletes program lines.</para>
+          <simplelist columns="1">
+            <member>DELETE 100-350</member>
+            <member>DELETE 10-</member>
+            <member>DELETE -80</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>LIST<indexterm><primary>LIST</primary></indexterm></term>
         <listitem>
-          <para>Displays specified lines on screen<simplelist columns="1"><member>LIST</member><member>LIST 10-95</member><member>LIST -200</member></simplelist>
-</para>
+          <para>Displays specified lines on screen.</para>
+          <simplelist columns="1">
+            <member>LIST</member>
+            <member>LIST 10-95</member>
+            <member>LIST -200</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -179,9 +195,13 @@ Only the first 15 characters are significant.
       <varlistentry>
         <term>RUN<indexterm><primary>RUN</primary></indexterm></term>
         <listitem>
-          <para>Executes a program starting at lowest line, specified line or loads program from tape to run. Closes all files unless <code>,R</code> is given
-<simplelist columns="1"><member>RUN</member><member>RUN 250</member><member>RUN "startrek"</member><member>RUN "format",R</member></simplelist>
-</para>
+          <para>Executes a program starting at lowest line, specified line or loads program from tape to run. Closes all files unless <code>,R</code> is given.</para>
+          <simplelist columns="1">
+            <member>RUN</member>
+            <member>RUN 250</member>
+            <member>RUN "startrek"</member>
+            <member>RUN "format",R</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -208,8 +228,11 @@ Only the first 15 characters are significant.
         <term>CLEAR <replaceable>I,J</replaceable><optional><replaceable>,K</replaceable></optional>
           <indexterm><primary>CLEAR</primary></indexterm></term>
         <listitem>
-          <para>Erases all variables and reserves space for string storage, highest address for BASIC and graphical characters.<simplelist columns="1"><member>CLEAR 500</member><member>CLEAR 200,25000</member></simplelist>
-</para>
+          <para>Erases all variables and reserves space for string storage, highest address for BASIC and graphical characters.</para>
+          <simplelist columns="1">
+            <member>CLEAR 500</member>
+            <member>CLEAR 200,25000</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -222,14 +245,20 @@ Only the first 15 characters are significant.
         <term>CONSOLE <replaceable>top,bottom</replaceable>
         <indexterm><primary>CONSOLE</primary></indexterm></term>
         <listitem>
-          <para>Reserves the lines between top and bottom for text.<simplelist columns="1"><member>CONSOLE 5,15</member><member>CONSOLE 0,24</member></simplelist>
-</para>
+          <para>Reserves the lines between top and bottom for text.</para>
+          <simplelist columns="1">
+            <member>CONSOLE 5,15</member>
+            <member>CONSOLE 0,24</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>DATA<indexterm><primary>DATA</primary></indexterm></term>
         <listitem>
           <para>Stores data in program for use by READ statement</para>
+          <simplelist>
+            <member>DATA January, 31, "Martian History Month".</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -241,22 +270,28 @@ Only the first 15 characters are significant.
         </term>
         <listitem>
           <para>Declares the type of a variable as either integer,
-          real or string.<simplelist columns="1"><member>DEFINT A-B,O-Q defines A,B,O,P and Q as integer</member></simplelist>
-</para>
+              real or string.</para>
+          <simplelist columns="1">
+            <member>DEFINT A-B,O-Q defines A,B,O,P and Q as integer</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>DIM
-        <indexterm><primary>DIM</primary></indexterm></term>
+        <term>DIM  <replaceable>VARNAME</replaceable>(<replaceable>SIZE 1</replaceable><optional>,<replaceable>SIZE2</replaceable>...</optional>)
+            <indexterm><primary>DIM</primary></indexterm></term>
         <listitem>
-          <para>Dimensions one or more arrays. DIM X(40),A$(7,6),B(10,2)</para>
+          <para>Dimensions one or more arrays.</para>
+          <simplelist>
+            <member>DIM X(40),A$(7,6),B(10,2)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>END
         <indexterm><primary>END</primary></indexterm></term>
         <listitem>
-          <para>Terminates program execution</para>
+          <para>Terminates program execution.
+              This statement is not required at the end of a program because control flow will end automatically there.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -283,11 +318,12 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>FOR TO <optional>STEP</optional> NEXT
+        <term>FOR <replaceable>VARNAME</replaceable> = <replaceable>START</replaceable>
+              TO <replaceable>END</replaceable>
+              <optional>STEP <replaceable>INCREMENT</replaceable></optional>
           <indexterm><primary>FOR</primary></indexterm>
           <indexterm><primary>TO</primary></indexterm>
           <indexterm><primary>STEP</primary></indexterm>
-          <indexterm><primary>NEXT</primary></indexterm>
           </term>
         <listitem>
           <para>Creates a program loop which is executed, for specified range of values, STEP indicates the increment. If STEP omitted, one is used.</para>
@@ -321,19 +357,29 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>INPUT
+        <term>INPUT <optional><replaceable>PROMPT</replaceable>;</optional> <replaceable>VAR1</replaceable>, <replaceable>VAR2</replaceable>
         <indexterm><primary>INPUT</primary></indexterm>
         </term>
         <listitem>
-          <para>Causes program to halt for entry from keyboard.<simplelist columns="1"><member>INPUT"ENTER NAME";N$</member><member>INPUT A,B,C,D</member></simplelist>
-</para>
+          <para>Causes program to halt for entry from keyboard.
+              The optional prompt string is followed by a question mark and a space. The user may then enter a series of values separated by commas.
+          </para>
+          <simplelist columns="1">
+            <member>INPUT"ENTER NAME";N$</member>
+            <member>INPUT A,B,C,D</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>LET</term>
+        <term>LET <replaceable>VAR</replaceable> = <replaceable>EXPR</replaceable> </term>
         <listitem>
-          <para>Assigns value to variable. LET is not implemented. Use implied assignment<simplelist columns="1"><member>A=42</member><member>Hw$="HELLO WORLD"</member></simplelist>
-</para>
+          <para>
+              Assigns value to variable. LET is not implemented. Use implied assignment.
+          </para>
+          <simplelist columns="1">
+            <member>A=42</member>
+            <member>Hw$="HELLO WORLD"</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -352,22 +398,45 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>ON...GOSUB
-        <indexterm><primary>ON</primary></indexterm>
-        <indexterm><primary>GOSUB</primary></indexterm></term>
+        <term>NEXT <optional><replaceable>VARNAME</replaceable></optional>
+          <indexterm><primary>NEXT</primary></indexterm>
+          </term>
         <listitem>
-          <para>Multiway branch to specified lines<simplelist columns="1"><member>ON I GOSUB 100,200,300</member></simplelist>
-</para>
+          <para>Returns control to a FOR statement to determine whether the loop should be repeated.
+              If the termination condition has not been met, control will proceed with the line following the FOR statement. If the termination condition has been met, control will proceed with the statement following the NEXT.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>ON...GOTO
+        <term>ON <replaceable>EXPR</replaceable> GOSUB
+            <replaceable>LABEL1</replaceable><optional>,<replaceable>LABEL2</replaceable>...</optional>
+        <indexterm><primary>ON</primary></indexterm>
+        <indexterm><primary>GOSUB</primary></indexterm></term>
+        <listitem>
+          <para>
+              Multiway branch to specified lines.
+              Upon encountering a RETURN statement, control will return to the statement following the ON GOSUB.
+              The value of <replaceable>EXPR</replaceable> is rounded up or down to the nearest integer, and is used as an index into the list of labels, starting with 1.
+                If the index is less than 1 or greater than the number of labels, control falls through to the next statement.
+</para>
+          <simplelist columns="1">
+            <member>ON I GOSUB 100,200,300</member>
+          </simplelist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>ON <replaceable>EXPR</replaceable> GOTO
+              <replaceable>LABEL1</replaceable><optional>,<replaceable>LABEL2</replaceable>...</optional>
         <indexterm><primary>ON</primary></indexterm>
         <indexterm><primary>GOTO</primary></indexterm>
         </term>
         <listitem>
-          <para>Multiway branch to specified lines<simplelist columns="1"><member>ON K GOTO 245,187,310</member></simplelist>
-</para>
+          <para>
+                Multiway branch to specified lines. The value of <replaceable>EXPR</replaceable> is rounded up or down to the nearest integer, and is used as an index into the list of labels, starting with 1.
+                If the index is less than 1 or greater than the number of labels, control falls through to the next statement.
+            </para>
+          <simplelist columns="1">
+            <member>ON K GOTO 245,187,310</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -377,8 +446,10 @@ error occurred.</para>
         <indexterm><primary>GOTO</primary></indexterm>
         </term>
         <listitem>
-          <para>Directs control to the specified line if a subsequent error is detected.<simplelist columns="1"><member>ON ERROR GOTO 5000</member></simplelist>
-</para>
+          <para>Directs control to the specified line if a subsequent error is detected.</para>
+          <simplelist columns="1">
+            <member>ON ERROR GOTO 5000</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -390,13 +461,20 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>PRINT or ?
+        <term>PRINT <optional><replaceable>EXPR1</replaceable><optional>;|,</optional><replaceable>EXPR2</replaceable><optional>;|,</optional>...</optional>
         <indexterm><primary>PRINT</primary></indexterm>
         <indexterm><primary>?</primary></indexterm>
         </term>
         <listitem>
-          <para>Prints content of following list on screen. Comma (,) causes tab to next 12 column print zone. Semicolon (;) holds print head position.<simplelist columns="1"><member>PRINT"THE ANSWER"</member><member>PRINT A,B</member><member>PRINT "YOU'VE HAD";T;"TRIES"</member></simplelist>
-</para>
+          <para>
+              Prints content of following list on screen. Expressions can be ended with semicolons, commas or nothing.
+              Comma causes tab to next 12 column print zone. Semicolon holds print head position. '?' is a synonym for PRINT.
+          </para>
+          <simplelist columns="1">
+            <member>PRINT"THE ANSWER"</member>
+            <member>PRINT A,B</member>
+            <member>PRINT "YOU'VE HAD";T;"TRIES"</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -414,12 +492,18 @@ error occurred.</para>
         <indexterm><primary>USING</primary></indexterm>
         </term>
         <listitem>
-          <para>Prints output in specified format.<simplelist columns="1"><member># number field</member><member>$ dollar sign in front of number.</member><member>* fills leading spaces with asterisks.</member><member>^ prints in exponential format.</member><member>+ causes sign to be printed.</member></simplelist>
-</para>
+          <para>Prints output in specified format.</para>
+          <simplelist columns="1">
+            <member># number field</member>
+            <member>$ dollar sign in front of number.</member>
+            <member>* fills leading spaces with asterisks.</member>
+            <member>^ prints in exponential format.</member>
+            <member>+ causes sign to be printed.</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>READ
+        <term>READ <replaceable>VAR1</replaceable><optional>,<replaceable>VAR2</replaceable>...</optional>
         <indexterm><primary>READ</primary></indexterm>
         </term>
         <listitem>
@@ -427,21 +511,26 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>REM or '
+        <term>REM <replaceable>TEXT</replaceable>
         <indexterm><primary>REM</primary></indexterm>
         <indexterm><primary>'</primary></indexterm>
         </term>
         <listitem>
-          <para>Allows comments to be inserted in a program. Everything in a line following REM is ignored.</para>
+          <para>Allows comments to be inserted in a program. Everything in a line following REM is ignored.
+              The quote (') is a synonym for REM.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>RESTORE
+        <term>RESTORE <optional><replaceable>LABEL</replaceable></optional>
         <indexterm><primary>RESTORE</primary></indexterm>
         </term>
         <listitem>
-          <para>Resets the data pointer back to the first item in the first DATA statement or the statement at the specified line number.<simplelist columns="1"><member>RESTORE</member><member>RESTORE 200</member></simplelist>
-</para>
+          <para>Resets the data pointer back to the first item in the first DATA statement or the statement at the specified line number.
+              </para>
+          <simplelist columns="1">
+            <member>RESTORE</member>
+            <member>RESTORE 200</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -465,7 +554,9 @@ error occurred.</para>
         <indexterm><primary>STOP</primary></indexterm>
         </term>
         <listitem>
-          <para>Halts execution of program at line containing STOP. Use CONT to continue execution.</para>
+          <para>Halts execution of program at line containing STOP.
+              Variables are not cleared, so that they can be inspected for debugging purpose.
+              Use CONT to continue execution.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -482,63 +573,83 @@ error occurred.</para>
       <varlistentry>
         <term>CHR$(<replaceable>N</replaceable>)</term>
         <listitem>
-          <para>Returns character for specified ASCII code value.<simplelist columns="1"><member>A$ = CHR$(93)</member></simplelist>
-</para>
+          <para>Returns character for specified ASCII code value.</para>
+          <simplelist columns="1">
+            <member>A$ = CHR$(93)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>INKEY$</term>
         <listitem>
-          <para>Checks keyboard and returns key being pressed.</para>
+          <para>Checks keyboard and returns key being pressed. If no key is pressed then returns the empty string.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>INSTR(<replaceable>N,X$,Y$</replaceable>)</term>
+        <term>INSTR(<replaceable>N</replaceable>,<replaceable>X$</replaceable>,<replaceable>Y$</replaceable>)</term>
         <listitem>
-          <para>Searches for first occurrence of target string at a position (N). Returns position of match.<simplelist columns="1"><member>P = INSTR(8,A$,"TED")</member></simplelist>
-</para>
+          <para>Searches for first occurrence of target string <replaceable>Y$</replaceable> at a position <replaceable>N</replaceable>.
+              Returns position of match.</para>
+          <simplelist columns="1">
+            <member>P = INSTR(8,A$,"TED")</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>LEFT$(<replaceable>X$,N</replaceable>)</term>
+        <term>LEFT$(<replaceable>X$</replaceable>,<replaceable>N</replaceable>)</term>
         <listitem>
-          <para>Returns the first N characters of string X$.<simplelist columns="1"><member>B$ = LEFT(A$,9)</member></simplelist>
-</para>
+          <para>Returns the first <replaceable>N</replaceable> characters of string <replaceable>X$</replaceable>.</para>
+          <simplelist columns="1">
+            <member>B$ = LEFT(A$,9)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>LEN(<replaceable>X$</replaceable>)</term>
         <listitem>
-          <para>Returns the length of string X$.<simplelist columns="1"><member>K = LEN(K$)</member></simplelist>
-</para>
+          <para>Returns the length of string <replaceable>X$</replaceable>.</para>
+          <simplelist columns="1">
+            <member>K = LEN(K$)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>MID$(<replaceable>X$,N,M</replaceable>)</term>
+        <term>MID$(<replaceable>X$</replaceable>,
+            <replaceable>N</replaceable><optional>,<replaceable>M</replaceable></optional>)</term>
         <listitem>
-          <para>Returns substring of X$ of length M, starting from position N.<simplelist columns="1"><member>B$ = MID$(A$,4,1)</member></simplelist>
+          <para>Returns substring of <replaceable>X$</replaceable> of length <replaceable>M</replaceable>, starting from position <replaceable>N</replaceable>. If <replaceable>M</replaceable> is missing, then substring from <replaceable>N</replaceable> to end is returned.
 </para>
+          <simplelist columns="1">
+            <member>B$ = MID$(A$,4,1)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>RIGHT(<replaceable>X$,N</replaceable>)</term>
+        <term>RIGHT(<replaceable>X$</replaceable>,<replaceable>N</replaceable>)</term>
         <listitem>
-          <para>Return the last N characters of string X$.<simplelist columns="1"><member>B$ = RIGHT(A$,9)</member></simplelist>
+          <para>Return the last <replaceable>N</replaceable> characters of string <replaceable>X$</replaceable>.
 </para>
+          <simplelist columns="1">
+            <member>B$ = RIGHT(A$,9)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>STR$(<replaceable>N</replaceable>)</term>
         <listitem>
-          <para>Converts N to its string representation.<simplelist columns="1"><member>X$ = STR$(14.4)</member></simplelist>
-</para>
+          <para>Converts <replaceable>N</replaceable> to its string representation.</para>
+          <simplelist columns="1">
+            <member>X$ = STR$(14.4)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>VAL(<replaceable>X$</replaceable>)</term>
         <listitem>
-          <para>Converts numeric characters of X$ to a number.<simplelist columns="1"><member>P = VAL(D$)</member></simplelist>
-</para>
+          <para>Converts numeric characters of <replaceable>X$</replaceable> to a number.</para>
+          <simplelist columns="1">
+            <member>P = VAL(D$)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -627,11 +738,11 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>RND(<replaceable>X</replaceable>)
+        <term>RND<optional>(<replaceable>X</replaceable>)</optional>
         <indexterm><primary>RND</primary></indexterm>
         </term>
-        <listitem>
-          <para>Generates random number between 0 and 1. If <replaceable>X</replaceable> is negative, then seeds the random number generator.</para>
+        <listitem><para>Generates random number between 0 and 1. If <replaceable>X</replaceable> is negative, then seeds the random number generator.</para>
+          Pseudorandom number generator. The behavior is different depending on the value passed. If the value is positive, the result will be a new random value between 0 and 1 (including 0 but not 1). If the value is zero, the result will be a repeat of the last random number generated. If the value is negative, it will be used to reseed the random number generator. Pseudorandom sequences can be repeated by reseeding with the same number.         
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -663,7 +774,7 @@ error occurred.</para>
         <indexterm><primary>SQR</primary></indexterm>
         </term>
         <listitem>
-          <para>Returns square root of number.</para>
+          <para>Returns square root of number. Argument must be non-negative.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -685,15 +796,17 @@ error occurred.</para>
     </variablelist>
   </section>
   <section>
-    <title>Cassette recorder control statements</title>
+    <title>I/O control statements</title>
     <variablelist>
       <varlistentry>
         <term>CLOSE
         <indexterm><primary>CLOSE</primary></indexterm>
         </term>
         <listitem>
-          <para>Closes open files.<simplelist columns="1"><member>CLOSE 1,3</member></simplelist>
-</para>
+          <para>Closes open files.</para>
+          <simplelist columns="1">
+            <member>CLOSE 1,3</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -704,14 +817,14 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>INPUT #
+        <term>INPUT #<replaceable>CHANNEL</replaceable>
         <indexterm><primary>INPUT</primary></indexterm></term>
         <listitem>
           <para>Read from file opened with OPEN.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>LINE INPUT #
+        <term>LINE INPUT #<replaceable>CHANNEL</replaceable>
         <indexterm><primary>LINE INPUT</primary></indexterm>
         </term>
         <listitem>
@@ -722,8 +835,12 @@ error occurred.</para>
         <term>LOAD
         <indexterm><primary>LOAD</primary></indexterm></term>
         <listitem>
-          <para>Load program file from tape. First file encountered will be loaded, unless program name is specified.<simplelist columns="1"><member>LOAD</member><member>LOAD "NAME"</member><member>LOAD "NAME",R</member></simplelist>
-</para>
+          <para>Load program file from tape. First file encountered will be loaded, unless program name is specified.</para>
+          <simplelist columns="1">
+            <member>LOAD</member>
+            <member>LOAD "NAME"</member>
+            <member>LOAD "NAME",R</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -731,8 +848,12 @@ error occurred.</para>
         <indexterm><primary>LOADM</primary></indexterm>
         </term>
         <listitem>
-          <para>Load machine language program from tape. Offset to loading address main be given.<simplelist columns="1"><member>LOADM</member><member>LOADM"NAME"</member><member>LOADM"NAME",&amp;H6000</member></simplelist>
-</para>
+          <para>Load machine language program from tape. Offset to loading address main be given.</para>
+          <simplelist columns="1">
+            <member>LOADM</member>
+            <member>LOADM"NAME"</member>
+            <member>LOADM"NAME",&amp;H6000</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -752,19 +873,22 @@ error occurred.</para>
           <para>Opens a file or device. The argument <replaceable>A</replaceable> must be either "I" for input or "O" for output. <replaceable>CHANNEL</replaceable> must be between 1 and 16.
 The <replaceable>FILENAME</replaceable> specifies device
 ("KYBD" - keyboard, "SCRN" - screen, "LPRT" - line printer, "CASS" - cassette tape) and if relevant, a file name on the device.
-Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FILE.TWO"</member></simplelist>
+Device defaults to CASS.
 </para>
+          <simplelist columns="1">
+            <member>OPEN "I", #1, "CASS : FILE.TWO"</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>PRINT #
+        <term>PRINT #<replaceable>CHANNEL</replaceable>
         <indexterm><primary>PRINT</primary></indexterm></term>
         <listitem>
           <para>Prints content of following list to the specified file.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>PRINT # USING
+        <term>PRINT #<replaceable>CHANNEL</replaceable> USING
         <indexterm><primary>PRINT</primary></indexterm>
         <indexterm><primary>USING</primary></indexterm>
         </term>
@@ -777,8 +901,11 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <indexterm><primary>SAVE</primary></indexterm>
         </term>
         <listitem>
-          <para>Transfer BASIC programs from memory to tape.<simplelist columns="1"><member>SAVE "prog"</member><member>SAVE "prog",A</member></simplelist>
-</para>
+          <para>Transfer BASIC programs from memory to tape.</para>
+          <simplelist columns="1">
+            <member>SAVE "prog"</member>
+            <member>SAVE "prog",A</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -786,8 +913,10 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <indexterm><primary>SAVEM</primary></indexterm>
         </term>
         <listitem>
-          <para>Transfer machine code to tape.<simplelist columns="1"><member>SAVEM "codefile",&amp;H6200,&amp;H7520,&amp;H6210</member></simplelist>
-</para>
+          <para>Transfer machine code to tape.</para>
+          <simplelist columns="1">
+            <member>SAVEM "codefile",&amp;H6200,&amp;H7520,&amp;H6210</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -795,8 +924,11 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <indexterm><primary>SKIPF</primary></indexterm>
         </term>
         <listitem>
-          <para>Skips to end of specified program on tape.<simplelist columns="1"><member>SKIPF</member><member>SKIPF"NAME"</member></simplelist>
-</para>
+          <para>Skips to end of specified program on tape.</para>
+          <simplelist columns="1">
+            <member>SKIPF</member>
+            <member>SKIPF"NAME"</member>
+          </simplelist>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -833,8 +965,10 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <indexterm><primary>DEFGR$</primary></indexterm>
         </term>
         <listitem>
-          <para>Define a graphics character. N must be from 0 to 127.<simplelist columns="1"><member>DEFGR$(0) = 24,24,255,24,60,36,36,36</member></simplelist>
-</para>
+          <para>Define a graphics character. N must be from 0 to 127.</para>
+          <simplelist columns="1">
+            <member>DEFGR$(0) = 24,24,255,24,60,36,36,36</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -842,8 +976,12 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <indexterm><primary>LINE</primary></indexterm>
         </term>
         <listitem>
-          <para>Draws a line from (X1,Y1) to (X2,Y2) in colour <replaceable>C</replaceable>.<simplelist columns="1"><member>LINE (100,100)-(300,150),2</member><member>LINE -(0,150),2</member><member>LINE (0,10)-(30,10) "+",3,0</member></simplelist>
-</para>
+          <para>Draws a line from (X1,Y1) to (X2,Y2) in colour <replaceable>C</replaceable>.</para>
+          <simplelist columns="1">
+            <member>LINE (100,100)-(300,150),2</member>
+            <member>LINE -(0,150),2</member>
+            <member>LINE (0,10)-(30,10) "+",3,0</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -896,9 +1034,16 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <indexterm><primary>PLAY</primary></indexterm>
         </term>
         <listitem>
-          <para>Plays music string made of following:
-<simplelist columns="1"><member>DO, RE, MI, FA, SO, LA, SI - note</member><member>O<replaceable>n</replaceable> - octave, n=1 to 5</member><member>A<replaceable>n</replaceable> - attack, n=0 to 255</member><member>L<replaceable>n</replaceable> - note length, n=1 to 96</member><member>P<replaceable>n</replaceable> - pause, n=1 to 255</member><member>T<replaceable>n</replaceable> - temp, n=1 to 255</member><member>Also allows sharps (#) or flats (b).</member></simplelist>
-</para>
+          <para>Plays music string made of following:</para>
+          <simplelist columns="1">
+            <member>DO, RE, MI, FA, SO, LA, SI - note</member>
+            <member>O<replaceable>n</replaceable> - octave, n=1 to 5</member>
+            <member>A<replaceable>n</replaceable> - attack, n=0 to 255</member>
+            <member>L<replaceable>n</replaceable> - note length, n=1 to 96</member>
+            <member>P<replaceable>n</replaceable> - pause, n=1 to 255</member>
+            <member>T<replaceable>n</replaceable> - temp, n=1 to 255</member>
+            <member>Also allows sharps (#) or flats (b).</member>
+          </simplelist>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -949,154 +1094,9 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <th>Explanation</th>
       </tr>
       <tr>
-        <td>/0</td>
-        <td>11</td>
-        <td>Division by zero. Not possible.</td>
-      </tr>
-      <tr>
-        <td>AO</td>
-        <td>52</td>
-        <td>Attempt to open a file which is already open. Usually appears after pressing STOP to stop a program using files.</td>
-      </tr>
-      <tr>
-        <td>BD</td>
-        <td>58</td>
-        <td>Bad Data. Caused by trying to read string data into numeric variable.</td>
-      </tr>
-      <tr>
-        <td>BS</td>
-        <td>9</td>
-        <td>Bad Subscript. Usually because the value of subscript is greater than the declared dimension of the array.</td>
-      </tr>
-      <tr>
-        <td>CN</td>
-        <td>17</td>
-        <td>Can't Continue. Trying to use CONT when at END of a program.</td>
-      </tr>
-      <tr>
-        <td>DD</td>
-        <td>10</td>
-        <td>Attempt to redimension an array. Arrays can only be dimensioned once in a program.</td>
-      </tr>
-      <tr>
-        <td>DS</td>
-        <td>56</td>
-        <td>Direct Statement. Usually appears if you attempt to LOAD a data file.</td>
-      </tr>
-      <tr>
-        <td>DU</td>
-        <td>60</td>
-        <td>Device Unavailable.</td>
-      </tr>
-      <tr>
-        <td>EC</td>
-        <td>21</td>
-        <td>ERROR with illegal error code argument.</td>
-      </tr>
-      <tr>
-        <td>FC</td>
-        <td>5</td>
-        <td>Illegal Function Call. Usually parameter is out of range or the wrong variable type.</td>
-      </tr>
-      <tr>
-        <td>FD</td>
-        <td>55</td>
-        <td>Bad File Descriptor.</td>
-      </tr>
-      <tr>
-        <td>FM</td>
-        <td>51</td>
-        <td>Bad File Mode. Trying to INPUT from a file which is OPEN for output (O), or PRINT data to a file OPEN for input (I).</td>
-      </tr>
-      <tr>
-        <td>FN</td>
-        <td>23</td>
-        <td>For Without Next.</td>
-      </tr>
-      <tr>
-        <td>ID</td>
-        <td>12</td>
-        <td>Illegal Direct Statement. Attempt to use a statement which can only be used in a program e.g. INPUT.</td>
-      </tr>
-      <tr>
-        <td>IE</td>
-        <td>54</td>
-        <td>Input Past End. Attempt to input past the end of a file. Use EOF function to check this does not happen.</td>
-      </tr>
-      <tr>
-        <td>IO</td>
-        <td>53</td>
-        <td>Input/Output Error. Cassette not adjusted correctly or bad tape.</td>
-      </tr>
-      <tr>
-        <td>IU</td>
-        <td>59</td>
-        <td>Device In Use.</td>
-      </tr>
-      <tr>
-        <td>LS</td>
-        <td>15</td>
-        <td>String too long. Maximum is 255 characters.</td>
-      </tr>
-      <tr>
-        <td>MO</td>
-        <td>22</td>
-        <td>Missing Operand</td>
-      </tr>
-      <tr>
         <td>NF</td>
         <td>1</td>
         <td>NEXT without FOR. Usually occurs when NEXT statements are reversed in a nested loop.</td>
-      </tr>
-      <tr>
-        <td>NO</td>
-        <td>57</td>
-        <td>File Not Open. Input and output to a data file can only take place after OPEN.</td>
-      </tr>
-      <tr>
-        <td>NR</td>
-        <td>19</td>
-        <td>No RESUME. The RESUME instruction is required if an ON ERROR GOTO is located in the program.</td>
-      </tr>
-      <tr>
-        <td>NU</td>
-        <td>50</td>
-        <td>Not In Use.</td>
-      </tr>
-      <tr>
-        <td>OM</td>
-        <td>7</td>
-        <td>Out of Memory. All available memory is being used or has been reserved.</td>
-      </tr>
-      <tr>
-        <td>OD</td>
-        <td>4</td>
-        <td>Out of Data. A READ statement has read all the DATA statements.</td>
-      </tr>
-      <tr>
-        <td>OS</td>
-        <td>14</td>
-        <td>Out of String Space. Use CLEAR to create more space if available.</td>
-      </tr>
-      <tr>
-        <td>OV</td>
-        <td>6</td>
-        <td>Overflow. The number is too large for the computer to handle.</td>
-      </tr>
-      <tr>
-        <td>PP</td>
-        <td>61</td>
-        <td>Protected Program.</td>
-      </tr>
-      <tr>
-        <td>RE</td>
-        <td>20</td>
-        <td>RESUME Without Error.</td>
-      </tr>
-      <tr>
-        <td>RG</td>
-        <td>3</td>
-        <td>RETURN without GOSUB. Program has most likely fallen through the end of the routine, (use END) or a branch has been made into the subroutine.</td>
       </tr>
       <tr>
         <td>SN</td>
@@ -1104,9 +1104,54 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <td>Syntax Error. Usually caused by typing errors or incorrect punctuation.</td>
       </tr>
       <tr>
-        <td>ST</td>
-        <td>16</td>
-        <td>String formula too complex. Break the operation into smaller steps.</td>
+        <td>RG</td>
+        <td>3</td>
+        <td>RETURN without GOSUB. Program has most likely fallen through the end of the routine, (use END) or a branch has been made into the subroutine.</td>
+      </tr>
+      <tr>
+        <td>OD</td>
+        <td>4</td>
+        <td>Out of Data. A READ statement has read all the DATA statements.</td>
+      </tr>
+      <tr>
+        <td>FC</td>
+        <td>5</td>
+        <td>Illegal Function Call. Usually parameter is out of range or the wrong variable type.</td>
+      </tr>
+      <tr>
+        <td>OV</td>
+        <td>6</td>
+        <td>Overflow. The number is too large for the computer to handle.</td>
+      </tr>
+      <tr>
+        <td>OM</td>
+        <td>7</td>
+        <td>Out of Memory. All available memory is being used or has been reserved.</td>
+      </tr>
+      <tr>
+        <td>UL</td>
+        <td>8</td>
+        <td>Undefined Line. A branching statement has been directed to a line that does not exist.</td>
+      </tr>
+      <tr>
+        <td>BS</td>
+        <td>9</td>
+        <td>Bad Subscript. Usually because the value of subscript is greater than the declared dimension of the array.</td>
+      </tr>
+      <tr>
+        <td>DD</td>
+        <td>10</td>
+        <td>Attempt to redimension an array. Arrays can only be dimensioned once in a program.</td>
+      </tr>
+      <tr>
+        <td>/0</td>
+        <td>11</td>
+        <td>Division by zero. Not possible.</td>
+      </tr>
+      <tr>
+        <td>ID</td>
+        <td>12</td>
+        <td>Illegal Direct Statement. Attempt to use a statement which can only be used in a program e.g. INPUT.</td>
       </tr>
       <tr>
         <td>TM</td>
@@ -1114,14 +1159,114 @@ Device defaults to CASS.<simplelist columns="1"><member>OPEN "I", #1, "CASS : FI
         <td>Type Mismatch. Attempt to assign string data to numeric variable or vice versa.</td>
       </tr>
       <tr>
+        <td>OS</td>
+        <td>14</td>
+        <td>Out of String Space. Use CLEAR to create more space if available.</td>
+      </tr>
+      <tr>
+        <td>LS</td>
+        <td>15</td>
+        <td>String too long. Maximum is 255 characters.</td>
+      </tr>
+      <tr>
+        <td>ST</td>
+        <td>16</td>
+        <td>String formula too complex. Break the operation into smaller steps.</td>
+      </tr>
+      <tr>
+        <td>CN</td>
+        <td>17</td>
+        <td>Can't Continue. Trying to use CONT when at END of a program.</td>
+      </tr>
+      <tr>
         <td>UF</td>
         <td>18</td>
         <td>Undefined User Function.</td>
       </tr>
       <tr>
-        <td>UL</td>
-        <td>8</td>
-        <td>Undefined Line. A branching statement has been directed to a line that does not exist.</td>
+        <td>NR</td>
+        <td>19</td>
+        <td>No RESUME. The RESUME instruction is required if an ON ERROR GOTO is located in the program.</td>
+      </tr>
+      <tr>
+        <td>RE</td>
+        <td>20</td>
+        <td>RESUME Without Error.</td>
+      </tr>
+      <tr>
+        <td>EC</td>
+        <td>21</td>
+        <td>ERROR with illegal error code argument.</td>
+      </tr>
+      <tr>
+        <td>MO</td>
+        <td>22</td>
+        <td>Missing Operand</td>
+      </tr>
+      <tr>
+        <td>FN</td>
+        <td>23</td>
+        <td>For Without Next.</td>
+      </tr>
+      <tr>
+        <td>NU</td>
+        <td>50</td>
+        <td>Not In Use.</td>
+      </tr>
+      <tr>
+        <td>FM</td>
+        <td>51</td>
+        <td>Bad File Mode. Trying to INPUT from a file which is OPEN for output (O), or PRINT data to a file OPEN for input (I).</td>
+      </tr>
+      <tr>
+        <td>AO</td>
+        <td>52</td>
+        <td>Attempt to open a file which is already open. Usually appears after pressing STOP to stop a program using files.</td>
+      </tr>
+      <tr>
+        <td>IO</td>
+        <td>53</td>
+        <td>Input/Output Error. Cassette not adjusted correctly or bad tape.</td>
+      </tr>
+      <tr>
+        <td>IE</td>
+        <td>54</td>
+        <td>Input Past End. Attempt to input past the end of a file. Use EOF function to check this does not happen.</td>
+      </tr>
+      <tr>
+        <td>FD</td>
+        <td>55</td>
+        <td>Bad File Descriptor.</td>
+      </tr>
+      <tr>
+        <td>DS</td>
+        <td>56</td>
+        <td>Direct Statement. Usually appears if you attempt to LOAD a data file.</td>
+      </tr>
+      <tr>
+        <td>NO</td>
+        <td>57</td>
+        <td>File Not Open. Input and output to a data file can only take place after OPEN.</td>
+      </tr>
+      <tr>
+        <td>BD</td>
+        <td>58</td>
+        <td>Bad Data. Caused by trying to read string data into numeric variable.</td>
+      </tr>
+      <tr>
+        <td>IU</td>
+        <td>59</td>
+        <td>Device In Use.</td>
+      </tr>
+      <tr>
+        <td>DU</td>
+        <td>60</td>
+        <td>Device Unavailable.</td>
+      </tr>
+      <tr>
+        <td>PP</td>
+        <td>61</td>
+        <td>Protected Program.</td>
       </tr>
     </informaltable>
   </section>
