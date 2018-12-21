@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
 import org.roug.osnine.MC6809;
-import org.roug.osnine.Pacer;
+//import org.roug.osnine.Throttler;
 import org.roug.osnine.PIA6821;
 import org.roug.osnine.RandomAccessMemory;
 import org.roug.osnine.ReadOnlyMemory;
@@ -52,7 +52,7 @@ public class MO5Emu {
     private Bus8Motorola bus;
     private MC6809 cpu;
     private PIA6821MO5 pia;
-    private Pacer pace;
+    private Throttler pace;
 
     /** The display of the MO5. */
     private Screen screen;
@@ -122,8 +122,8 @@ public class MO5Emu {
         Timer timer = new Timer("clock", true);
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
 
-        pace = new Pacer(bus);
-        pace.throttle(false);
+        pace = new Throttler(bus);
+        pace.throttle(true);
         Thread paceThread = new Thread(pace, "throttle");
         paceThread.start();
     }
@@ -416,8 +416,8 @@ public class MO5Emu {
         @Override
         public void actionPerformed(ActionEvent e) {
             Object[] options = {"1 MHz", "Max speed", "Cancel"};
-            String msg = String.format("CPU speed: %.1f cycles per millisecond\n"
-                    + "Throttled: %.1f cycles per millisecond\n"
+            String msg = String.format("CPU speed: %.2f cycles per millisecond\n"
+                    + "Throttled: %.2f cycles per millisecond\n"
                     + "Set CPU speed?", pace.cpuSpeed(), pace.throttleSpeed());
             String tooltip = "Set CPU speed";
             int answer = JOptionPane.showOptionDialog(guiFrame, msg, tooltip,
