@@ -1,6 +1,6 @@
 <refentry xml:id="list" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>LIST</refname>
+<refname>LIST<indexterm><primary>LIST</primary></indexterm></refname>
 <refpurpose>List the contents of a text file</refpurpose>
 </refnamediv>
 

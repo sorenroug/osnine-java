@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="mfree">
   <refnamediv>
-    <refname>MFREE</refname>
+    <refname>MFREE<indexterm><primary>MFREE</primary></indexterm></refname>
     <refpurpose>Display Free System RAM</refpurpose>
   </refnamediv>
   <refsynopsisdiv>

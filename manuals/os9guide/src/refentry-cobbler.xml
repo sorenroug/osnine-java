@@ -1,6 +1,6 @@
 <refentry xml:id="cobbler" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>COBBLER</refname>
+<refname>COBBLER<indexterm><primary>COBBLER</primary></indexterm></refname>
 <refpurpose>Make a bootstrap file</refpurpose>
 </refnamediv>
 

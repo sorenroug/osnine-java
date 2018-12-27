@@ -1,6 +1,6 @@
 <refentry xml:id="smap" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>SMAP</refname>
+<refname>SMAP<indexterm><primary>SMAP</primary></indexterm></refname>
 <refpurpose>Display System Memory</refpurpose>
 <refclass>OS-9 Level Two</refclass>
 </refnamediv>

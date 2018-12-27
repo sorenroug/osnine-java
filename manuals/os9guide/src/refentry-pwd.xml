@@ -1,6 +1,6 @@
 <refentry xml:id="pwd" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>PWD/PXD</refname>
+<refname>PWD/PXD<indexterm><primary>PWD/PXD</primary></indexterm></refname>
 <refpurpose>Print Working Directory / Print Execution Directory</refpurpose>
 </refnamediv>
 

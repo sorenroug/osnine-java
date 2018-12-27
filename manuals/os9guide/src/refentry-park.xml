@@ -1,6 +1,6 @@
 <refentry xml:id="park" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>PARK</refname>
+<refname>PARK<indexterm><primary>PARK</primary></indexterm></refname>
 <refpurpose>Park the heads on a hard disk device</refpurpose>
 <refclass>OS-9 Level Two</refclass>
 </refnamediv>

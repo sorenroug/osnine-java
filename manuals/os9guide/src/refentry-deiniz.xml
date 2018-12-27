@@ -1,6 +1,6 @@
 <refentry xml:id="deiniz" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>DEINIZ</refname>
+<refname>DEINIZ<indexterm><primary>DEINIZ</primary></indexterm></refname>
 <refpurpose>Detach a device.</refpurpose>
 <refclass>OS-9 Level Two</refclass>
 

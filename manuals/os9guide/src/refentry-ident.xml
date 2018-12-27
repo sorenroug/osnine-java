@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="ident">
   <refnamediv>
-    <refname>IDENT</refname>
+    <refname>IDENT<indexterm><primary>IDENT</primary></indexterm></refname>
     <refpurpose>Print OS-9 module identification</refpurpose>
   </refnamediv>
   <refsynopsisdiv>

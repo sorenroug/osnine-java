@@ -1,6 +1,6 @@
 <refentry xml:id="makdir" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>MAKDIR</refname>
+<refname>MAKDIR<indexterm><primary>MAKDIR</primary></indexterm></refname>
 <refpurpose>Create directory file</refpurpose>
 </refnamediv>
 

@@ -1,6 +1,6 @@
 <refentry xml:id="setime" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>SETIME</refname>
+<refname>SETIME<indexterm><primary>SETIME</primary></indexterm></refname>
 <refpurpose>Activate and set system clock</refpurpose>
 </refnamediv>
 

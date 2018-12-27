@@ -1,6 +1,6 @@
 <refentry xml:id="load" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>LOAD</refname>
+<refname>LOAD<indexterm><primary>LOAD</primary></indexterm></refname>
 <refpurpose>Load module(s) from file into memory</refpurpose>
 </refnamediv>
 

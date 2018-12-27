@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="asm">
   <refnamediv>
-    <refname>ASM</refname>
+    <refname>ASM<indexterm><primary>ASM</primary></indexterm></refname>
     <refpurpose>Assembler</refpurpose>
     <refclass>Editor/Assembler/Debugger</refclass>
   </refnamediv>

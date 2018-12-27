@@ -1,6 +1,6 @@
 <refentry xml:id="backup" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>BACKUP</refname>
+<refname>BACKUP<indexterm><primary>BACKUP</primary></indexterm></refname>
 <refpurpose>Make a backup copy of a disk</refpurpose>
 </refnamediv>
 

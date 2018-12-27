@@ -1,6 +1,6 @@
 <refentry xml:id="verify" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>VERIFY</refname>
+<refname>VERIFY<indexterm><primary>VERIFY</primary></indexterm></refname>
 <refpurpose>Verify or update module header and CRC</refpurpose>
 </refnamediv>
 

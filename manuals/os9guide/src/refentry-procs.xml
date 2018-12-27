@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="procs">
   <refnamediv>
-    <refname>PROCS</refname>
+    <refname>PROCS<indexterm><primary>PROCS</primary></indexterm></refname>
     <refpurpose>Display Processes</refpurpose>
   </refnamediv>
   <refsynopsisdiv>

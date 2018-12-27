@@ -1,6 +1,6 @@
 <refentry xml:id="pmap" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>pMAP</refname>
+<refname>PMAP<indexterm><primary>PMAP</primary></indexterm></refname>
 <refpurpose>Display Process Map</refpurpose>
 <refclass>OS-9 Level Two</refclass>
 </refnamediv>

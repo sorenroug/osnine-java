@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="edit">
   <refnamediv>
-    <refname>EDIT</refname>
+    <refname>EDIT<indexterm><primary>EDIT</primary></indexterm></refname>
     <refpurpose>Text editor</refpurpose>
     <refclass>Editor/Assembler/Debugger</refclass>
   </refnamediv>

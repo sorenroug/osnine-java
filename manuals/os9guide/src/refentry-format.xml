@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="format">
   <refnamediv>
-    <refname>FORMAT</refname>
+    <refname>FORMAT<indexterm><primary>FORMAT</primary></indexterm></refname>
     <refpurpose>Initialize disk media</refpurpose>
   </refnamediv>
   <refsynopsisdiv>

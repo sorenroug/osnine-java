@@ -1,6 +1,6 @@
 <refentry xml:id="disasm" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>DISASM</refname>
+<refname>DISASM<indexterm><primary>DISASM</primary></indexterm></refname>
 <refpurpose>OS-9 Module Disassembler</refpurpose>
 </refnamediv>
 

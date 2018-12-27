@@ -3,7 +3,7 @@
 ]>
 <refentry xml:id="runb" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>RUNB</refname>
+<refname>RUNB<indexterm><primary>RUNB</primary></indexterm></refname>
 <refpurpose>BASIC09 run time package</refpurpose>
 <refclass>Basic09 language system</refclass>
 </refnamediv>

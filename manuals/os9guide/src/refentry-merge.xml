@@ -1,6 +1,6 @@
 <refentry xml:id="merge" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>MERGE</refname>
+<refname>MERGE<indexterm><primary>MERGE</primary></indexterm></refname>
 <refpurpose>Copy and Combine Files to Standard Output</refpurpose>
 </refnamediv>
 

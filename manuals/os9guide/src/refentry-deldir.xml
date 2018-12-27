@@ -1,6 +1,6 @@
 <refentry xml:id="deldir" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>DELDIR</refname>
+<refname>DELDIR<indexterm><primary>DELDIR</primary></indexterm></refname>
 <refpurpose>Delete All Files In a Directory System</refpurpose>
 </refnamediv>
 

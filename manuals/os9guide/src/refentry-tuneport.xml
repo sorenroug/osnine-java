@@ -1,6 +1,6 @@
 <refentry xml:id="tuneport" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>TUNEPORT</refname>
+<refname>TUNEPORT<indexterm><primary>TUNEPORT</primary></indexterm></refname>
 <refpurpose>Tune the printer port on the computer</refpurpose>
 <refclass>TRS-80/Tandy Color Computer</refclass>
 </refnamediv>

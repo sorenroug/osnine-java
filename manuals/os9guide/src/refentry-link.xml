@@ -1,6 +1,6 @@
 <refentry xml:id="link" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>LINK</refname>
+<refname>LINK<indexterm><primary>LINK</primary></indexterm></refname>
 <refpurpose>Link module into memory</refpurpose>
 </refnamediv>
 

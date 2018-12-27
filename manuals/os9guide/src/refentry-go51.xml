@@ -1,6 +1,6 @@
 <refentry xml:id="go51" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>GO51</refname>
+<refname>GO51<indexterm><primary>GO51</primary></indexterm></refname>
 <refpurpose>The 51 Column by 24 Line Video Display</refpurpose>
 </refnamediv>
 

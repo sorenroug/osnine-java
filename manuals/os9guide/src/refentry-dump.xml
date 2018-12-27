@@ -1,6 +1,6 @@
 <refentry xml:id="dump" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>DUMP</refname>
+<refname>DUMP<indexterm><primary>DUMP</primary></indexterm></refname>
 <refpurpose>Formatted File Data Dump in Hexadecimal and ASCII</refpurpose>
 </refnamediv>
 

@@ -1,6 +1,6 @@
 <refentry xml:id="printerr" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>PRINTERR</refname>
+<refname>PRINTERR<indexterm><primary>PRINTERR</primary></indexterm></refname>
 <refpurpose>Print Full Text Error Messages</refpurpose>
 <refclass>OS-9 Level One</refclass>
 </refnamediv>

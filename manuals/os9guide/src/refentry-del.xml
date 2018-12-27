@@ -1,6 +1,6 @@
 <refentry xml:id="del" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>DEL</refname>
+<refname>DEL<indexterm><primary>DEL</primary></indexterm></refname>
 <refpurpose>Delete a file</refpurpose>
 </refnamediv>
 

@@ -1,6 +1,6 @@
 <refentry xml:id="login" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>LOGIN</refname>
+<refname>LOGIN<indexterm><primary>LOGIN</primary></indexterm></refname>
 <refpurpose>Timesharing System Log-In</refpurpose>
 </refnamediv>
 

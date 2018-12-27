@@ -1,6 +1,6 @@
 <refentry xml:id="unlink" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>UNLINK</refname>
+<refname>UNLINK<indexterm><primary>UNLINK</primary></indexterm></refname>
 <refpurpose>Unlink memory module</refpurpose>
 </refnamediv>
 

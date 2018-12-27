@@ -1,6 +1,6 @@
 <refentry xml:id="shell" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>SHELL</refname>
+<refname>SHELL<indexterm><primary>SHELL</primary></indexterm></refname>
 <refpurpose>OS-9 Command Interpreter</refpurpose>
 </refnamediv>
 

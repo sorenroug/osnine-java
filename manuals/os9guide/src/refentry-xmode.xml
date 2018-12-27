@@ -1,6 +1,6 @@
 <refentry xml:id="xmode" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>XMODE</refname>
+<refname>XMODE<indexterm><primary>XMODE</primary></indexterm></refname>
 <refpurpose>Examine or Change Device Initialization Mode</refpurpose>
 </refnamediv>
 

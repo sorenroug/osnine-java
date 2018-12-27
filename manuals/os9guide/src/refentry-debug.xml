@@ -1,6 +1,6 @@
 <refentry xml:id="debug" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>DEBUG</refname>
+<refname>DEBUG<indexterm><primary>DEBUG</primary></indexterm></refname>
 <refpurpose>Interactive Debugger</refpurpose>
 <refclass>Editor/Assembler/Debugger</refclass>
 </refnamediv>

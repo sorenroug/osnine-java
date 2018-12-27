@@ -1,6 +1,6 @@
 <refentry xml:id="iniz" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>INIZ</refname>
+<refname>INIZ<indexterm><primary>INIZ</primary></indexterm></refname>
 <refpurpose>Initialize a device.</refpurpose>
 <refclass>OS-9 Level Two</refclass>
 </refnamediv>

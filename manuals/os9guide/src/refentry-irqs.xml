@@ -1,6 +1,6 @@
 <refentry xml:id="irqs" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>IRQS</refname>
+<refname>IRQS<indexterm><primary>IRQS</primary></indexterm></refname>
 <refpurpose>Show interrupt polling table</refpurpose>
 <refclass>OS-9 Level Two</refclass>
 </refnamediv>

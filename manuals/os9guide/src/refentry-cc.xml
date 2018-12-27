@@ -1,6 +1,6 @@
 <refentry xml:id="cc" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>CC</refname>
+<refname>CC<indexterm><primary>CC</primary></indexterm></refname>
 <refpurpose>C Compiler</refpurpose>
 </refnamediv>
 

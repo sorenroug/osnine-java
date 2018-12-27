@@ -1,6 +1,6 @@
 <refentry xml:id="mdir" xmlns="http://docbook.org/ns/docbook">
 <refnamediv>
-<refname>MDIR</refname>
+<refname>MDIR<indexterm><primary>MDIR</primary></indexterm></refname>
 <refpurpose>Display Module Directory</refpurpose>
 </refnamediv>
 
