@@ -312,18 +312,9 @@ ZF0AE   PULS    U,Y,X,DP,D,CC            ;F0AE: 35 7F
         LEAS    $02,S                    ;F0B0: 32 62
 MF0B2   RTS                              ;F0B2: 39
 
-MF0B3   LDD     M9EFC                    ;F0B3: FC 9E FC
-        LDX     M00F2                    ;F0B6: 9E F2
-        SBCB    #$F0                     ;F0B8: C2 F0
-        ADDD    #hdlr_NMI                ;F0BA: C3 F0 AD
-        SUBB    MADF0                    ;F0BD: F0 AD F0
-        JSR     MF0B2                      ;F0C0: AD F0
-        FCB     $7B                      ;F0C2: 7B
-        SUBB    M03F7                    ;F0C3: F0 03 F7
-        COM     ZFB2C                    ;F0C6: 73 FB 2C
-        ADDB    M23FA                    ;F0C9: FB 23 FA
-        BITB    #$F1                     ;F0CC: C5 F1
-        STD     MF1D2                    ;F0CE: FD F1 D2
+MF0B3   FDB     $FC9E,$FC9E,$F2C0,$F0C3,$F0AD,$F0AD,$F0AD,$F07B
+        FDB     $F003,$F773,$FB2C,$FB23,$FAC5,$F1FD,$F1D2
+
         ANDB    M87F3                    ;F0D1: F4 87 F3
         SUBB    ZF3A2                    ;F0D4: F0 F3 A2
         ADDD    MD5F5                    ;F0D7: F3 D5 F5

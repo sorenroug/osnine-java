@@ -24,8 +24,8 @@ class ScreenMock extends Screen {
 
 class PIAMock extends PIA6821MO5 {
 
-    public PIAMock(Bus8Motorola bus, Screen screen, TapeRecorder tape) {
-        super(bus, screen, tape);
+    public PIAMock(Bus8Motorola bus, Screen screen, TapeRecorder tape, Beeper beeper) {
+        super(bus, screen, tape, beeper);
     }
 
     protected int load(int addr) {
@@ -66,8 +66,9 @@ public class PIA6821MO5Test {
         TapeMock tape = new TapeMock();
         TapeRecorder cassette = new TapeRecorder(bus);
         cassette.setReceiver(tape);
+        Beeper beeper = new Beeper(bus);
 
-        PIAMock pia = new PIAMock(bus, screen, cassette);
+        PIAMock pia = new PIAMock(bus, screen, cassette, beeper);
         pia.store(CRA, 0);     // Select DDRA
         pia.store(DDRA, 0xF0); // Make top 4 bits output, the others input
         pia.store(CRA, 0x04);  // Select output register

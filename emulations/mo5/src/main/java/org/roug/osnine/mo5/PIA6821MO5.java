@@ -47,6 +47,8 @@ public class PIA6821MO5 extends PIA6821 {
 
     private TapeRecorder tape;
 
+    private Beeper beeper;
+
     /**
      * Create PIA and configure the connections to devices.
      *
@@ -54,11 +56,13 @@ public class PIA6821MO5 extends PIA6821 {
      * @param screen the interface to the keyboard
      * @param tape the interface to tape station
      */
-    public PIA6821MO5(Bus8Motorola bus, Screen screen, TapeRecorder tape) {
+    public PIA6821MO5(Bus8Motorola bus, Screen screen, TapeRecorder tape, Beeper beeper) {
         super(0xA7C0, bus);
         this.screen = screen;
         this.tape = tape;
+        this.beeper = beeper;
         setLayout(1);
+
 
         setIRQCallback(A, (boolean state) -> signalFIRQ(state));
         setIRQCallback(B, (boolean state) -> signalIRQ(state));
@@ -134,5 +138,8 @@ public class PIA6821MO5 extends PIA6821 {
      */
     private void keyboardMatrix(int mask, int value, int oldValue) {
         setInputLine(B, 7, !screen.hasKeyPress(value & 0x7E));
+        if (isBitOn(mask, BIT0)) {
+            beeper.send(isBitOn(value, BIT0));
+        }
     }
 }

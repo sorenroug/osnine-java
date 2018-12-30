@@ -57,11 +57,17 @@ public class MO5Emu {
     /** The display of the MO5. */
     private Screen screen;
 
+    /** One-bit sound output. */
+    private Beeper beeper;
+
     private TapeRecorder tapeRecorder;
 
     /** Content of clipboard to be sent into the emulator as key events. */
     private String pasteBuffer;
     private int pasteIndex;
+
+    /** Status of sound - false means no sound. */
+    private boolean soundState;
 
     private final JFileChooser fc = new JFileChooser(new File("."));
 
@@ -85,15 +91,14 @@ public class MO5Emu {
 
         bus = new BusStraight();
 
-        // Create screen and attach it to the bus.
         screen = new Screen(bus);
         tapeRecorder = new TapeRecorder(bus);
         tapeRecorder.setReceiver((boolean state) -> pia.setInputLine(PIA6821.A, 7, state));
+        beeper = new Beeper(bus);
 
-        pia = new PIA6821MO5(bus, screen, tapeRecorder);
+        pia = new PIA6821MO5(bus, screen, tapeRecorder, beeper);
         bus.addMemorySegment(pia);
         screen.connectPIA(pia);
-
 
         RandomAccessMemory ram = new RandomAccessMemory(0x2000, bus, "0x8000");
         bus.addMemorySegment(ram);
@@ -291,6 +296,7 @@ public class MO5Emu {
                 if (pasteIndex >= pasteBuffer.length()) {
                     pasteBuffer = null;
                     pasteIndex = 0;
+                    beeper.setActiveState(soundState);
                 }
             }
 
@@ -314,6 +320,8 @@ public class MO5Emu {
                 pasteBuffer = (String) c.getContents(null).getTransferData(DataFlavor.stringFlavor);
                 LOGGER.debug("To paste:{}", pasteBuffer);
                 pasteIndex = 0;
+                soundState = beeper.getActiveState();
+                beeper.setActiveState(false);
             } catch (UnsupportedFlavorException | IOException e1) {
                 LOGGER.error("Unsupported flavor", e1);
             }

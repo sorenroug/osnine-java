@@ -225,7 +225,7 @@ Only the first 15 characters are significant.
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>CLEAR <replaceable>I,J</replaceable><optional><replaceable>,K</replaceable></optional>
+        <term>CLEAR <replaceable>I</replaceable><optional>,<replaceable>J</replaceable><optional><replaceable>,K</replaceable></optional></optional>
           <indexterm><primary>CLEAR</primary></indexterm></term>
         <listitem>
           <para>Erases all variables and reserves space for string storage, highest address for BASIC and graphical characters.</para>
@@ -1086,186 +1086,282 @@ Device defaults to CASS.
     </variablelist>
   </section>
   <section>
+    <title>Keyboard mapping</title>
+    <informaltable frame="all" colsep="1" rowsep="0">
+      <tgroup cols="3">
+        <colspec colwidth="1.1in" colname="c1"/>
+        <colspec colwidth="1in" colname="c2"/>
+        <colspec colwidth="1in" colname="c3"/>
+        <thead>
+          <row>
+            <entry>PC key</entry>
+            <entry>NORMAL</entry>
+            <entry>BASIC</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>
+              <keycap>Pause/Break</keycap>
+            </entry>
+            <entry>
+              <keycap>STOP</keycap>
+            </entry>
+            <entry>INSTR</entry>
+          </row>
+          <row>
+            <entry>
+              <keycap>Home</keycap>
+            </entry>
+            <entry>
+              <keycap>BACK</keycap>
+            </entry>
+            <entry>MERGE</entry>
+          </row>
+          <row>
+            <entry>
+              <keycap>Delete</keycap>
+            </entry>
+            <entry>
+              <keycap>EFF</keycap>
+            </entry>
+            <entry>SAVE</entry>
+          </row>
+          <row>
+            <entry>
+              <keycap>Insert</keycap>
+            </entry>
+            <entry>
+              <keycap>INS</keycap>
+            </entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>
+              <keycap>Control</keycap>
+            </entry>
+            <entry>
+              <keycap>CNT</keycap>
+            </entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>
+              <keycap>Escape</keycap>
+            </entry>
+            <entry>
+              <keycap>RAZ</keycap>
+            </entry>
+            <entry>CLS</entry>
+          </row>
+          <row>
+            <entry><keycap>SHIFT</keycap> (left)</entry>
+            <entry>
+              <keycap>SHIFT</keycap>
+            </entry>
+            <entry/>
+          </row>
+          <row>
+            <entry><keycap>SHIFT</keycap> (right)</entry>
+            <entry>
+              <keycap>BASIC</keycap>
+            </entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>
+              <keycap>F11</keycap>
+            </entry>
+            <entry>
+              <keycap>ACC</keycap>
+            </entry>
+            <entry>INKEY$</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+  <section>
     <title>Error codes</title>
     <informaltable border="1" frame="all" rules="all">
       <tr>
-        <th>Code</th>
         <th>Number</th>
+        <th>Code</th>
         <th>Explanation</th>
       </tr>
       <tr>
-        <td>NF</td>
         <td>1</td>
+        <td>NF</td>
         <td>NEXT without FOR. Usually occurs when NEXT statements are reversed in a nested loop.</td>
       </tr>
       <tr>
-        <td>SN</td>
         <td>2</td>
+        <td>SN</td>
         <td>Syntax Error. Usually caused by typing errors or incorrect punctuation.</td>
       </tr>
       <tr>
-        <td>RG</td>
         <td>3</td>
+        <td>RG</td>
         <td>RETURN without GOSUB. Program has most likely fallen through the end of the routine, (use END) or a branch has been made into the subroutine.</td>
       </tr>
       <tr>
-        <td>OD</td>
         <td>4</td>
+        <td>OD</td>
         <td>Out of Data. A READ statement has read all the DATA statements.</td>
       </tr>
       <tr>
-        <td>FC</td>
         <td>5</td>
+        <td>FC</td>
         <td>Illegal Function Call. Usually parameter is out of range or the wrong variable type.</td>
       </tr>
       <tr>
-        <td>OV</td>
         <td>6</td>
+        <td>OV</td>
         <td>Overflow. The number is too large for the computer to handle.</td>
       </tr>
       <tr>
-        <td>OM</td>
         <td>7</td>
+        <td>OM</td>
         <td>Out of Memory. All available memory is being used or has been reserved.</td>
       </tr>
       <tr>
-        <td>UL</td>
         <td>8</td>
+        <td>UL</td>
         <td>Undefined Line. A branching statement has been directed to a line that does not exist.</td>
       </tr>
       <tr>
-        <td>BS</td>
         <td>9</td>
+        <td>BS</td>
         <td>Bad Subscript. Usually because the value of subscript is greater than the declared dimension of the array.</td>
       </tr>
       <tr>
-        <td>DD</td>
         <td>10</td>
+        <td>DD</td>
         <td>Attempt to redimension an array. Arrays can only be dimensioned once in a program.</td>
       </tr>
       <tr>
-        <td>/0</td>
         <td>11</td>
+        <td>/0</td>
         <td>Division by zero. Not possible.</td>
       </tr>
       <tr>
-        <td>ID</td>
         <td>12</td>
+        <td>ID</td>
         <td>Illegal Direct Statement. Attempt to use a statement which can only be used in a program e.g. INPUT.</td>
       </tr>
       <tr>
-        <td>TM</td>
         <td>13</td>
+        <td>TM</td>
         <td>Type Mismatch. Attempt to assign string data to numeric variable or vice versa.</td>
       </tr>
       <tr>
-        <td>OS</td>
         <td>14</td>
+        <td>OS</td>
         <td>Out of String Space. Use CLEAR to create more space if available.</td>
       </tr>
       <tr>
-        <td>LS</td>
         <td>15</td>
+        <td>LS</td>
         <td>String too long. Maximum is 255 characters.</td>
       </tr>
       <tr>
-        <td>ST</td>
         <td>16</td>
+        <td>ST</td>
         <td>String formula too complex. Break the operation into smaller steps.</td>
       </tr>
       <tr>
-        <td>CN</td>
         <td>17</td>
+        <td>CN</td>
         <td>Can't Continue. Trying to use CONT when at END of a program.</td>
       </tr>
       <tr>
-        <td>UF</td>
         <td>18</td>
+        <td>UF</td>
         <td>Undefined User Function.</td>
       </tr>
       <tr>
-        <td>NR</td>
         <td>19</td>
+        <td>NR</td>
         <td>No RESUME. The RESUME instruction is required if an ON ERROR GOTO is located in the program.</td>
       </tr>
       <tr>
-        <td>RE</td>
         <td>20</td>
+        <td>RE</td>
         <td>RESUME Without Error.</td>
       </tr>
       <tr>
-        <td>EC</td>
         <td>21</td>
+        <td>EC</td>
         <td>ERROR with illegal error code argument.</td>
       </tr>
       <tr>
-        <td>MO</td>
         <td>22</td>
+        <td>MO</td>
         <td>Missing Operand</td>
       </tr>
       <tr>
-        <td>FN</td>
         <td>23</td>
+        <td>FN</td>
         <td>For Without Next.</td>
       </tr>
       <tr>
-        <td>NU</td>
         <td>50</td>
+        <td>NU</td>
         <td>Not In Use.</td>
       </tr>
       <tr>
-        <td>FM</td>
         <td>51</td>
+        <td>FM</td>
         <td>Bad File Mode. Trying to INPUT from a file which is OPEN for output (O), or PRINT data to a file OPEN for input (I).</td>
       </tr>
       <tr>
-        <td>AO</td>
         <td>52</td>
+        <td>AO</td>
         <td>Attempt to open a file which is already open. Usually appears after pressing STOP to stop a program using files.</td>
       </tr>
       <tr>
-        <td>IO</td>
         <td>53</td>
+        <td>IO</td>
         <td>Input/Output Error. Cassette not adjusted correctly or bad tape.</td>
       </tr>
       <tr>
-        <td>IE</td>
         <td>54</td>
+        <td>IE</td>
         <td>Input Past End. Attempt to input past the end of a file. Use EOF function to check this does not happen.</td>
       </tr>
       <tr>
-        <td>FD</td>
         <td>55</td>
+        <td>FD</td>
         <td>Bad File Descriptor.</td>
       </tr>
       <tr>
-        <td>DS</td>
         <td>56</td>
+        <td>DS</td>
         <td>Direct Statement. Usually appears if you attempt to LOAD a data file.</td>
       </tr>
       <tr>
-        <td>NO</td>
         <td>57</td>
+        <td>NO</td>
         <td>File Not Open. Input and output to a data file can only take place after OPEN.</td>
       </tr>
       <tr>
-        <td>BD</td>
         <td>58</td>
+        <td>BD</td>
         <td>Bad Data. Caused by trying to read string data into numeric variable.</td>
       </tr>
       <tr>
-        <td>IU</td>
         <td>59</td>
+        <td>IU</td>
         <td>Device In Use.</td>
       </tr>
       <tr>
-        <td>DU</td>
         <td>60</td>
+        <td>DU</td>
         <td>Device Unavailable.</td>
       </tr>
       <tr>
-        <td>PP</td>
         <td>61</td>
+        <td>PP</td>
         <td>Protected Program.</td>
       </tr>
     </informaltable>

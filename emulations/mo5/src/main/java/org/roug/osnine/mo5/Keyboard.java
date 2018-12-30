@@ -74,6 +74,7 @@ public class Keyboard implements KeyListener {
         charTable.put(Integer.valueOf('#'), ROW3 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('4'), ROW2 + COL7);
         charTable.put(Integer.valueOf('$'), ROW2 + COL7 + SHIFT);
+        charTable.put(Integer.valueOf('¤'), ROW2 + COL7 + SHIFT); // Scandinavian key
         charTable.put(Integer.valueOf('5'), ROW1 + COL7);
         charTable.put(Integer.valueOf('%'), ROW1 + COL7 + SHIFT);
         charTable.put(Integer.valueOf('6'), ROW0 + COL7);
@@ -97,6 +98,7 @@ public class Keyboard implements KeyListener {
         charTable.put(Integer.valueOf('>'), ROW2 + COL0 + SHIFT);
         charTable.put(Integer.valueOf('@'), ROW3 + COL0);
         charTable.put(Integer.valueOf('^'), ROW3 + COL0 + SHIFT);
+        charTable.put(Integer.valueOf('å'), ROW3 + COL0 + SHIFT); // Scandinavian key
         charTable.put(Integer.valueOf('*'), ROW5 + COL4);
         charTable.put(Integer.valueOf(':'), ROW5 + COL4 + SHIFT);
         charTable.put(Integer.valueOf(' '), ROW4 + COL0);
@@ -157,6 +159,8 @@ public class Keyboard implements KeyListener {
         charTable.put(Integer.valueOf('z'), ROW4 + COL5);
 
         /* Specials keys */
+        codeTable.put(KeyEvent.VK_DEAD_CIRCUMFLEX, ROW3 + COL0 + SHIFT);
+        codeTable.put(KeyEvent.VK_DEAD_DIAERESIS, ROW3 + COL0 + SHIFT);
         codeTable.put(KeyEvent.VK_BACK_SPACE, ROW5 + COL1); // Plain backspace
         codeTable.put(KeyEvent.VK_DELETE, ROW0 + COL1);
         codeTable.put(KeyEvent.VK_DOWN, ROW4 + COL1);
@@ -168,8 +172,8 @@ public class Keyboard implements KeyListener {
         codeTable.put(KeyEvent.VK_PAUSE, ROW6 + COL7); //STOP
         codeTable.put(KeyEvent.VK_UP, ROW6 + COL1);
 
-        codeTable.put(KeyEvent.VK_F12, ROW7 + COL0); //Shift
-        //codeTable.put(KeyEvent.VK_F11, ROW7 + COL1); //Basic
+        //codeTable.put(KeyEvent.VK_F12, ROW7 + COL0); //Shift
+        codeTable.put(KeyEvent.VK_F11, ROW6 + COL6); // ACC
 
         codeTable.put(KeyEvent.VK_CONTROL, ROW6 + COL5); //CTRL
         codeTable.put(KeyEvent.VK_ESCAPE, ROW6 + COL3); //ESCAPE = raz
@@ -244,7 +248,9 @@ public class Keyboard implements KeyListener {
         int tmpCode = e.getKeyCode();
 
         LOGGER.debug("Key event {}", e);
-        if (tmpCode == KeyEvent.VK_ALT) basicPressed = press;
+        if (tmpCode == KeyEvent.VK_SHIFT
+                && e.getKeyLocation() == KeyEvent.KEY_LOCATION_RIGHT)
+                    basicPressed = press;
 
         if (charTable.get(tmpChar) != null) {
             int k = charTable.get(tmpChar);
