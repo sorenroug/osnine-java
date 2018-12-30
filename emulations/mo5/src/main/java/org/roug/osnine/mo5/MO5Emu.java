@@ -241,15 +241,15 @@ public class MO5Emu {
     }
 
     private void addTapeMenu(JMenuBar guiMenuBar) {
-        JMenu guiMenuTape = new JMenu("Cassette");
+        JMenu guiMenuTape = new JMenu("Devices");
 
-        JMenuItem guiMenuTapeRecord = new JMenuItem("Insert tape for record");
-        guiMenuTapeRecord.addActionListener(new RecordAction());
-        guiMenuTape.add(guiMenuTapeRecord);
+        JMenuItem menuItem = new JMenuItem("Insert tape for record");
+        menuItem.addActionListener(new RecordAction());
+        guiMenuTape.add(menuItem);
 
-        JMenuItem guiMenuTapePlay = new JMenuItem("Insert tape for play");
-        guiMenuTapePlay.addActionListener(new PlayAction());
-        guiMenuTape.add(guiMenuTapePlay);
+        menuItem = new JMenuItem("Insert tape for play");
+        menuItem.addActionListener(new PlayAction());
+        guiMenuTape.add(menuItem);
 
         JMenuItem guiMenuTapeRewind = new JMenuItem("Rewind tape");
         guiMenuTapeRewind.addActionListener(new RewindAction());
@@ -263,6 +263,9 @@ public class MO5Emu {
         guiMenuTapeUnload.addActionListener(new UnloadAction());
         guiMenuTape.add(guiMenuTapeUnload);
 
+        menuItem = new JMenuItem("Sound");
+        menuItem.addActionListener(new SoundDialogAction());
+        guiMenuTape.add(menuItem);
  
         guiMenuBar.add(guiMenuTape);
     }
@@ -438,6 +441,29 @@ public class MO5Emu {
                 case 0: pace.throttle(true);
                     break;
                 case 1: pace.throttle(false);
+                    break;
+                default:
+            }
+        }
+    }
+
+    private class SoundDialogAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Object[] options = {"Sound off", "Sound on", "Cancel"};
+            String msg = String.format("Sound device is %s",
+                    beeper.getActiveState()?"ON":"OFF");
+            String tooltip = "Set sound device state";
+            int answer = JOptionPane.showOptionDialog(guiFrame, msg, tooltip,
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[2]);
+            switch (answer) {
+                case 0: beeper.setActiveState(false);
+                    break;
+                case 1: beeper.setActiveState(true);
                     break;
                 default:
             }

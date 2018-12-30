@@ -38,26 +38,20 @@ public class Beeper implements Signal {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(Beeper.class);
 
-    private static int BUFFER_SIZE = 1024; // Buffer size
+    private static final int BUFFER_SIZE = 4096;
 
-    private static float frameRate = 44100f; // 44100 Hz
-    private static int channels = 1; // Mono
+    private static final float FRAME_RATE = 44100f; // We have 5 octaves to generate.
+    private static final int MONO = 1;
+    /** Peak and through of the wave. */
+    private static final int PEAK = 32;
 
-    static double duration = 0.020; // 20ms
-    static int sampleBytes = Short.SIZE / 8; // 8 bits
-    static int frameBytes = sampleBytes * channels;
-    /*
-    static AudioFormat format = new AudioFormat(Encoding.PCM_SIGNED,
-                        frameRate,
-                        Short.SIZE,
-                        channels,
-                        frameBytes,
-                        frameRate,
-                        true);
-    */
-    private static AudioFormat format = new AudioFormat(44100f, 8, channels, true, false);
+    //static double duration = 0.020; // 20ms
+    //static int sampleBytes = Short.SIZE / 8; // 8 bits
+    //static int frameBytes = sampleBytes * MONO;
+
+    private static AudioFormat format = new AudioFormat(FRAME_RATE, 8, MONO, true, false);
     //static int nFrames = (int) Math.ceil(frameRate * duration);
-    //static int nSamples = nFrames * channels;
+    //static int nSamples = nFrames * MONO;
 
     private byte[] soundBuffer;
 
@@ -94,15 +88,15 @@ public class Beeper implements Signal {
             if (oldState != state) {
                 if (state) {
                     // transition from false to true
-                    if (nowCounter - oldCounter > 6000) line.flush();
+                    if (nowCounter - oldCounter > 9000) line.flush();
                     oldCounter = nowCounter;
                 } else {
                     int delta = (int) (nowCounter - oldCounter) / 6;
-                    LOGGER.debug("Beep: {} - {}", state, delta);
+                    LOGGER.debug("Beep: {}", delta << 1);
                     for (int i = 0; i < delta; i++)
-                        soundBuffer[i] = 0x7f;
+                        soundBuffer[i] = PEAK;
                     for (int i = 0; i < delta; i++)
-                        soundBuffer[i + delta] = 0x00;
+                        soundBuffer[i + delta] = -PEAK;
                     line.write(soundBuffer, 0, delta * 2);
                 }
                 oldState = state;
