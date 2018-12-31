@@ -16,7 +16,7 @@ public class ScreenMemory extends MemorySegment {
 
     /** Memory space. */
     private byte[] pixels; // FORME/FOND
-    private byte[] color; // 
+    private byte[] color; //
 
     /** The graphical effect of modifying these bytes. */
     private Screen screen;
@@ -24,6 +24,7 @@ public class ScreenMemory extends MemorySegment {
     /**
      * Constructor.
      * The screen memory is always 8192 bytes, but only uses 8000.
+     *
      * @param screen - Connection to the GUI
      */
     public ScreenMemory(Screen screen) {
@@ -39,7 +40,6 @@ public class ScreenMemory extends MemorySegment {
             return pixels[addr - getStartAddress()] & 0xFF;
         else
             return color[addr - getStartAddress()] & 0xFF;
-        
     }
 
     @Override

@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Throttler implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Throttler.class);
+    private static final Logger LOGGER
+                    = LoggerFactory.getLogger(Throttler.class);
 
     private static final float THROTTLE_TARGET = 1000f;
 
@@ -87,6 +88,8 @@ public class Throttler implements Runnable {
 
     /**
      * Return the speed the CPU runs when not throttled.
+     *
+     * @return the CPU speed
      */
     public float cpuSpeed() {
         //LOGGER.info("Time delta: {}, Cycles delta {}", timeDelta, cyclesDelta);
@@ -95,6 +98,8 @@ public class Throttler implements Runnable {
 
     /**
      * Return actual speed when throttled.
+     *
+     * @return the throttled CPU speed
      */
     public float throttleSpeed() {
         return throttledCPUspeed;
@@ -102,6 +107,8 @@ public class Throttler implements Runnable {
 
     /**
      * Set throttling of the bus.
+     *
+     * @param throttling if true then the CPU will be throttled.
      */
     public void throttle(boolean throttling) {
         this.throttling = throttling;
