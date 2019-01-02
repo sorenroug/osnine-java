@@ -54,10 +54,10 @@ public class Keyboard implements KeyListener {
     private boolean[] keyMatrix;
 
     /** Translation table from charcode to MO5 row/column. */
-    private static HashMap<Integer, Integer> charTable = new HashMap(50);
+    private static HashMap<Integer, Integer> charTable = new HashMap<Integer,Integer>(50);
 
     /** Translation table from scancode to MO5 row/column. */
-    private static HashMap<Integer, Integer> codeTable = new HashMap(50);
+    private static HashMap<Integer, Integer> codeTable = new HashMap<Integer,Integer>(50);
 
     private static final int SHIFT   = 0x10000;
     private static final int CONTROL = 0x20000;
