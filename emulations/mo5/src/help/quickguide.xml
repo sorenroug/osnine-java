@@ -169,11 +169,14 @@ Only the first 15 characters are significant.
       <varlistentry>
         <term>LIST<indexterm><primary>LIST</primary></indexterm></term>
         <listitem>
-          <para>Displays specified lines on screen.</para>
+          <para>Displays all or specified lines of the program currently in memory.
+          By default, LIST displays its output on the screen, but a device can be specified.
+          </para>
           <simplelist columns="1">
             <member>LIST</member>
             <member>LIST 10-95</member>
             <member>LIST -200</member>
+            <member>LIST "LPRT:(80)" - Prints program in 80 column mode.</member>
           </simplelist>
         </listitem>
       </varlistentry>
@@ -872,8 +875,8 @@ error occurred.</para>
         <listitem>
           <para>Opens a file or device. The argument <replaceable>A</replaceable> must be either "I" for input or "O" for output. <replaceable>CHANNEL</replaceable> must be between 1 and 16.
 The <replaceable>FILENAME</replaceable> specifies device
-("KYBD" - keyboard, "SCRN" - screen, "LPRT" - line printer, "CASS" - cassette tape) and if relevant, a file name on the device.
-Device defaults to CASS.
+("KYBD:" - keyboard, "SCRN:" - screen, "LPRT:" - line printer, "CASS:" - cassette tape) and if relevant, a file name on the device.
+Device defaults to CASS:.
 </para>
           <simplelist columns="1">
             <member>OPEN "I", #1, "CASS : FILE.TWO"</member>

@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
-import org.roug.osnine.Signal;
+import org.roug.osnine.BitReceiver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +17,7 @@ import org.junit.Test;
 
 public class TapeRecorderTest {
 
-    class TapeMock implements Signal {
+    class TapeMock implements BitReceiver {
 
         public boolean readyState;
 

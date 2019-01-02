@@ -10,7 +10,7 @@ import java.awt.image.WritableRaster;
 import javax.swing.JPanel;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.PIA6821;
-import org.roug.osnine.Signal;
+import org.roug.osnine.BitReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class Screen extends JPanel {
     /** Gate-array chip to track lightpen. */
     private GateArray gateArray;
 
-    private PIA6821MO5 pia;
+    private PIA6821 pia;
 
     private Keyboard keyboard;
 
@@ -50,7 +50,7 @@ public class Screen extends JPanel {
 
     private boolean incrustationState;
 
-    private Signal callback;
+    private BitReceiver callback;
 
     /** Called from PIA to signal which memory bank is active. */
     private boolean pixelBankActive;
@@ -150,7 +150,7 @@ public class Screen extends JPanel {
         callback = (boolean state) -> signalCA1(state);
     }
 
-    public void connectPIA(PIA6821MO5 pia) {
+    public void connectPIA(PIA6821 pia) {
         this.pia = pia;
     }
 

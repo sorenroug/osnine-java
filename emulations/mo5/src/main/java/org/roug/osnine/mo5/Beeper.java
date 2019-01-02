@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.Signal;
+import org.roug.osnine.BitReceiver;
 
 
 /**
@@ -36,7 +36,7 @@ import org.roug.osnine.Signal;
  * Cycles to generate specific notes: O1LA = 10912, O2LA = 5480, O3LA = 2760
  * O4LA = 1380, O5LA = 690.
  */
-public class Beeper implements Signal {
+public class Beeper implements BitReceiver {
 
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(Beeper.class);

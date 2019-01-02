@@ -1,5 +1,14 @@
 * Disassmbly of mo5.rom
 
+* Monitor subroutines
+
+MENU    EQU     $00
+PUTC    EQU     $02
+FRM0    EQU     $04
+FRM1    EQU     $06
+BIIP    EQU     $08
+GETC    EQU     $0A
+
 *****************************************************
 ** Used Labels                                      *
 *****************************************************
@@ -278,7 +287,7 @@ ZF057   LDU     #PIAPORTA                   ;F057: CE A7 C0
         STA     M0020                    ;F075: 97 20
         JMP     [ZEFFE]                  ;F077: 6E 9F EF FE
 
-* Routine called from IRQ handler
+* Routine called from IRQ and SWI handler
 ZF07B   LDA     ,S                       ;F07B: A6 E4
         ANDA    #$F0                     ;F07D: 84 F0
         STA     ,S                       ;F07F: A7 E4
@@ -303,7 +312,7 @@ MF09D   TFR     CC,A                     ;F09D: 1F A8
         LDX     $0A,S                    ;F0A5: AE 6A
         LDB     ,X+                      ;F0A7: E6 80
         BMI     ZF0AE                    ;F0A9: 2B 03
-        STX     $0A,S                    ;F0AB: AF 6A
+        STX     $0A,S                    ;F0AB: AF 6A  Skip opcode after SWI
 
 * NMI handler
 hdlr_NMI RTI                              ;F0AD: 3B
@@ -639,7 +648,7 @@ ZF2C1   ASLA                             ;F2C1: 48
         PSHS    B                        ;F2FE: 34 04
         LDB     #$14                     ;F300: C6 14
         SWI                              ;F302: 3F
-        FCB     $02                      ;F303: 02
+        FCB     PUTC                     ;F303: 02
         TST     M005D                    ;F304: 0D 5D
         BGT     ZF365                    ;F306: 2E 5D
         BMI     ZF36D                    ;F308: 2B 63
@@ -727,18 +736,18 @@ ZF3A2   BSR     ZF3C5                    ;F3A2: 8D 21
         STA     M002C                    ;F3AA: 97 2C
         LDB     #$1F                     ;F3AC: C6 1F
         SWI                              ;F3AE: 3F
-        FCB     $02                      ;F3AF: 02
+        FCB     PUTC                     ;F3AF: 02
         TFR     Y,D                      ;F3B0: 1F 20
         ADDB    #$40                     ;F3B2: CB 40
         SWI                              ;F3B4: 3F
-        FCB     $02                      ;F3B5: 02
+        FCB     PUTC                     ;F3B5: 02
         TFR     X,D                      ;F3B6: 1F 10
         ADDB    #$40                     ;F3B8: CB 40
         SWI                              ;F3BA: 3F
-        FCB     $02                      ;F3BB: 02
+        FCB     PUTC                     ;F3BB: 02
         LDB     M0036                    ;F3BC: D6 36
         SWI                              ;F3BE: 3F
-        FCB     $02                      ;F3BF: 02
+        FCB     PUTC                     ;F3BF: 02
         PULS    A                        ;F3C0: 35 02
         STA     M002C                    ;F3C2: 97 2C
         RTS                              ;F3C4: 39
@@ -850,6 +859,7 @@ ZF474   STA     M0045                    ;F474: 97 45
         LDX     $0A,S                    ;F481: AE 6A
         STX     M0032                    ;F483: 9F 32
         PULS    PC,X,D                   ;F485: 35 96
+
         LDD     #M0101                   ;F487: CC 01 01
         PSHS    D                        ;F48A: 34 06
         CLRA                             ;F48C: 4F
@@ -1215,7 +1225,8 @@ ZF727   BSR     ZF722                    ;F727: 8D F9
         CMPA    $01,U                    ;F739: A1 41
         BNE     ZF73F                    ;F73B: 26 02
 ZF73D   CLRA                             ;F73D: 4F
-        BRN     ZF783                    ;F73E: 21 43
+        FCB     $21    ; BRN             ;F73E: 21
+ZF73F   COMA                             ;F73F: 43
         RTS                              ;F740: 39
 
 ZF741   LDA     #$04                     ;F741: 86 04
@@ -1368,7 +1379,7 @@ ZF844   RTS                              ;F844: 39
         STB     M002C                    ;F850: D7 2C
 ZF852   LDB     #$20                     ;F852: C6 20
         SWI                              ;F854: 3F
-        FCB     $02                      ;F855: 02
+        FCB     PUTC                     ;F855: 02
         LDB     M001C                    ;F856: D6 1C
         CMPB    #$01                     ;F858: C1 01
         BNE     ZF852                    ;F85A: 26 F6

@@ -2,7 +2,8 @@ package org.roug.osnine.mo5;
 
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
-import org.roug.osnine.Signal;
+import org.roug.osnine.PIA6821;
+import org.roug.osnine.BitReceiver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +23,7 @@ class ScreenMock extends Screen {
     public boolean hasKeyPress(int m) { return false; }
 }
 
-class PIAMock extends PIA6821MO5 {
+class PIAMock extends PIAMain {
 
     public PIAMock(Bus8Motorola bus, Screen screen, TapeRecorder tape, Beeper beeper) {
         super(bus, screen, tape, beeper);
@@ -38,9 +39,9 @@ class PIAMock extends PIA6821MO5 {
     
 }
 
-public class PIA6821MO5Test {
+public class PIAMainTest {
 
-    class TapeMock implements Signal {
+    class TapeMock implements BitReceiver {
 
         public void send(boolean state) {}
     }
@@ -73,10 +74,10 @@ public class PIA6821MO5Test {
         pia.store(DDRA, 0xF0); // Make top 4 bits output, the others input
         pia.store(CRA, 0x04);  // Select output register
         pia.store(ORA, 0xD0);
-        pia.setInputLine(PIA6821MO5.A, 5, false); // This should be ignored
+        pia.setInputLine(PIA6821.A, 5, false); // This should be ignored
         assertEquals(0xD0, pia.load(ORA));
 
-        pia.setInputLine(PIA6821MO5.A, 2, true);
+        pia.setInputLine(PIA6821.A, 2, true);
         assertEquals(0xD4, pia.load(ORA));
     }
 }

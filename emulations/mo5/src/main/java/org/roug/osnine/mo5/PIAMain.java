@@ -2,7 +2,7 @@ package org.roug.osnine.mo5;
 
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.PIA6821;
-import org.roug.osnine.Signal;
+import org.roug.osnine.BitReceiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +34,10 @@ import org.slf4j.LoggerFactory;
  *  CB1: 50Hz interrupt (IRQB is wired to 6809 IRQ)
  *  CB2: video incrustation enable (output)
  */
-public class PIA6821MO5 extends PIA6821 {
+public class PIAMain extends PIA6821 {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(PIA6821MO5.class);
+                = LoggerFactory.getLogger(PIAMain.class);
 
     /** If PIA has raised IRQ on the bus. */
     private boolean[] activeIRQ = new boolean[2];
@@ -56,7 +56,7 @@ public class PIA6821MO5 extends PIA6821 {
      * @param screen the interface to the keyboard
      * @param tape the interface to tape station
      */
-    public PIA6821MO5(Bus8Motorola bus, Screen screen, TapeRecorder tape, Beeper beeper) {
+    public PIAMain(Bus8Motorola bus, Screen screen, TapeRecorder tape, Beeper beeper) {
         super(0xA7C0, bus);
         this.screen = screen;
         this.tape = tape;

@@ -51,7 +51,8 @@ public class MO5Emu {
 
     private Bus8Motorola bus;
     private MC6809 cpu;
-    private PIA6821MO5 pia;
+    /** The PIA located at 0xA7C0 for keyboard, lightpen etc. */
+    private PIA6821 pia;
     private Throttler pace;
 
     /** The display of the MO5. */
@@ -60,6 +61,7 @@ public class MO5Emu {
     /** One-bit sound output. */
     private Beeper beeper;
 
+    /** Cassete recorder device. */
     private TapeRecorder tapeRecorder;
 
     /** Content of clipboard to be sent into the emulator as key events. */
@@ -96,9 +98,12 @@ public class MO5Emu {
         tapeRecorder.setReceiver((boolean state) -> pia.setInputLine(PIA6821.A, 7, state));
         beeper = new Beeper(bus);
 
-        pia = new PIA6821MO5(bus, screen, tapeRecorder, beeper);
+        pia = new PIAMain(bus, screen, tapeRecorder, beeper);
         bus.addMemorySegment(pia);
         screen.connectPIA(pia);
+
+        PIA6821 printerPia = new PIAPrinter(bus, screen);
+        bus.addMemorySegment(printerPia);
 
         RandomAccessMemory ram = new RandomAccessMemory(0x2000, bus, "0x8000");
         bus.addMemorySegment(ram);

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.Signal;
+import org.roug.osnine.BitReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class TapeRecorder {
     private static final int STOP_DELAY = 100000;
 
     /** Callback to computer interface for play back. */
-    private Signal listener;
+    private BitReceiver listener;
 
     private Bus8Motorola bus;
 
@@ -40,7 +40,7 @@ public class TapeRecorder {
     private boolean cassetteBit;
 
     /** Tell bus to call me to read next pulse on tape. */
-    private Signal callback;
+    private BitReceiver callback;
 
     /** File name of cassette file. */
     private File cassetteFilename;
@@ -122,7 +122,7 @@ public class TapeRecorder {
      *
      * @param receiver method to call
      */
-    public void setReceiver(Signal receiver) {
+    public void setReceiver(BitReceiver receiver) {
         listener = receiver;
     }
 
