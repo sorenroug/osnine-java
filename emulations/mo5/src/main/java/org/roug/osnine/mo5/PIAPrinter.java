@@ -50,8 +50,8 @@ public class PIAPrinter extends PIA6821 {
 
     private static final int SCREEN_BYTES = 8000;
 
-    private static final int PRINTER_SPEED = 1000; // Cycles before it reacts
-    private Screen screen;
+    /** Number of cycles it we can send another character to the printer. */
+    private static final int PRINTER_SPEED = 1000;
 
     private BitReceiver callback;
 
@@ -65,11 +65,9 @@ public class PIAPrinter extends PIA6821 {
      * Create PIA and configure the connections to the printer.
      *
      * @param bus the memory bus to send IRQ and FIRQ signals to.
-     * @param screen the interface to the keyboard
      */
-    public PIAPrinter(Bus8Motorola bus, Screen screen) {
+    public PIAPrinter(Bus8Motorola bus) {
         super(0xA7E0, bus);
-        this.screen = screen;
         setLayout(PRA_PRB_CRA_CRB);
 
         setOutputCallback(B, (int mask, int value, int oldValue)

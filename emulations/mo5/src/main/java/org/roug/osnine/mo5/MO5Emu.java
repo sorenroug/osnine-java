@@ -102,7 +102,7 @@ public class MO5Emu {
         bus.addMemorySegment(pia);
         screen.connectPIA(pia);
 
-        PIA6821 printerPia = new PIAPrinter(bus, screen);
+        PIA6821 printerPia = new PIAPrinter(bus);
         bus.addMemorySegment(printerPia);
 
         RandomAccessMemory ram = new RandomAccessMemory(0x2000, bus, "0x8000");
