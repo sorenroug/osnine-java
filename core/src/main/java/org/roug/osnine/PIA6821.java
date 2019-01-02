@@ -84,7 +84,7 @@ public abstract class PIA6821 extends MemorySegment {
      * @param layout - number (0,1) indicating the layout
      */
     protected void setLayout(int layout) {
-        if (layout > 1 && layout < 0)
+        if (layout > 1 || layout < 0)
             throw new IllegalArgumentException("Unsupported layout");
         registerLayout = layout;
     }
