@@ -61,7 +61,7 @@ public class PIAMain extends PIA6821 {
         this.screen = screen;
         this.tape = tape;
         this.beeper = beeper;
-        setLayout(1);
+        setLayout(PRA_PRB_CRA_CRB);
 
 
         setIRQCallback(A, (boolean state) -> signalFIRQ(state));

@@ -28,6 +28,10 @@ public abstract class PIA6821 extends MemorySegment {
     /** Bit to select between the OR and DDR. */
     protected static final int SELECT_OR = 0x04;
 
+    /** PR = Peripheral register, CR = Control register. */
+    protected static final int PRA_CRA_PRB_CRB = 0;
+    protected static final int PRA_PRB_CRA_CRB = 1;
+
     /** The four registers can have different positions in memory. */
     private int registerLayout = 0;
 
