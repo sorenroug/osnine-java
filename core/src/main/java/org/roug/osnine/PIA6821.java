@@ -41,10 +41,10 @@ public abstract class PIA6821 extends MemorySegment {
     /** Current state of control line 2. */
     private boolean[] currStateC2 = new boolean[2];
 
-    private Signal[] irqOut = new Signal[2];
+    private BitReceiver[] irqOut = new BitReceiver[2];
 
     /** CA2 and CB2 control lines callbacks. */
-    private Signal[] controlOut = new Signal[2];
+    private BitReceiver[] controlOut = new BitReceiver[2];
 
     private PIAOutputPins[] pinOuts = new PIAOutputPins[2];
 
@@ -391,7 +391,7 @@ public abstract class PIA6821 extends MemorySegment {
      * @param side - A or B side of the PIA.
      * @param callback - method to call.
      */
-    protected void setControlCallback(int side, Signal callback) {
+    protected void setControlCallback(int side, BitReceiver callback) {
         controlOut[side] = callback;
     }
 
@@ -401,7 +401,7 @@ public abstract class PIA6821 extends MemorySegment {
      * @param side - A or B side of the PIA.
      * @param callback - method to call.
      */
-    protected void setIRQCallback(int side, Signal callback) {
+    protected void setIRQCallback(int side, BitReceiver callback) {
         irqOut[side] = callback;
     }
 

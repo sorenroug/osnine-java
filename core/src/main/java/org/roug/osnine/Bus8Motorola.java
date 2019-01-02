@@ -79,7 +79,7 @@ public interface Bus8Motorola extends MemoryBus {
      * @param cycles - the number of cycles to trigger at
      * @param method - the operation to call.
      */
-    void callbackIn(int cycles, Signal method);
+    void callbackIn(int cycles, BitReceiver method);
 
     void lock();
     void unlock();

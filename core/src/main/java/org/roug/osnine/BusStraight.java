@@ -28,7 +28,7 @@ public class BusStraight implements Bus8Motorola {
     /** The memory cycle that will trigger a call to the registered method. */
     private long methodTrigger = Long.MAX_VALUE;
 
-    private Signal registeredMethod;
+    private BitReceiver registeredMethod;
 
     private ReentrantLock lockObject = new ReentrantLock();
 
@@ -229,7 +229,7 @@ public class BusStraight implements Bus8Motorola {
     }
 
     @Override
-    public void callbackIn(int cycles, Signal method) {
+    public void callbackIn(int cycles, BitReceiver method) {
         LOGGER.debug("callbackIn: {}: {}", cycles, method);
         registeredMethod = method;
         methodTrigger = cycleCounter + cycles;

@@ -14,10 +14,12 @@
   <artifactId>os9guide</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>OS-9 Operating System User's Guide</name>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javahelp_dir>javahelp-os9</javahelp_dir>
+    <javax_help>2.0.05</javax_help>
   </properties>
 
     <scm>
@@ -60,19 +62,31 @@
         <artifactId>docbkx-maven-plugin</artifactId>
         <version>2.0.17</version>
         <executions>
+
           <execution>
-            <id>os9guide</id>
-            <phase>pre-site</phase>
+            <id>pdf</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>generate-pdf</goal>
-              <!--<goal>generate-html</goal>-->
             </goals>
             <configuration>
-              <!-- per execution configuration -->
               <draftMode>no</draftMode>
               <sourceDirectory>${basedir}/src</sourceDirectory>
               <foCustomization>src/style.xslt</foCustomization>
-              <includes>os9guide-book.xml</includes>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>javahelp</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-javahelp</goal>
+            </goals>
+            <configuration>
+              <draftMode>no</draftMode>
+              <sourceDirectory>${basedir}/src</sourceDirectory>
+              <foCustomization>src/style.xslt</foCustomization>
+              <targetDirectory>${project.build.directory}/classes/${javahelp_dir}</targetDirectory>
             </configuration>
           </execution>
         </executions>
@@ -84,6 +98,7 @@
           <highlightSource>0</highlightSource>
           <paperType>A4</paperType>
           <fop1Extensions>1</fop1Extensions>
+          <includes>os9guide-book.xml</includes>
         </configuration>
 
         <dependencies>
@@ -96,8 +111,64 @@
             <scope>runtime</scope>
           </dependency>
         </dependencies>
+      </plugin>
 
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <!-- generate the Java Help search index and put it in with the rest of the files -->
+          <execution>
+            <id>generate-javahelp-search-index</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete dir="${project.build.directory}/classes/${javahelp_dir}/JavaHelpSearch"/>
+                <mkdir dir="${project.build.directory}/classes/${javahelp_dir}/JavaHelpSearch"/>
+                <java classname="com.sun.java.help.search.Indexer" failonerror="true" fork="true" dir="${project.build.directory}/classes/${javahelp_dir}/">
+                  <arg value="-db"/>
+                  <arg value="JavaHelpSearch"/>
+                  <arg value="."/>
+                  <classpath>
+                    <pathelement location="${maven.dependency.javax.help.javahelp.jar.path}"/>
+                  </classpath>
+                </java>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>javax.help</groupId>
+            <artifactId>javahelp</artifactId>
+            <version>${javax_help}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <includes>
+            <include>**/${javahelp_dir}/*</include>
+          </includes>
+        </configuration>
       </plugin>
     </plugins>
+
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.help</groupId>
+      <artifactId>javahelp</artifactId>
+      <version>${javax_help}</version>
+    </dependency>
+  </dependencies>
+
 </project>

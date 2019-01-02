@@ -18,8 +18,8 @@ class PIADummy extends PIA6821 {
                 outputValue = value & mask;
             };
 
-    private Signal signalOut = (boolean state) -> { signalReceived = state; };
-    private Signal signalCA2 = (boolean state) -> { outputCA2 = state; };
+    private BitReceiver signalOut = (boolean state) -> { signalReceived = state; };
+    private BitReceiver signalCA2 = (boolean state) -> { outputCA2 = state; };
 
     PIADummy(int start, Bus8Motorola bus) {
         super(start, bus);

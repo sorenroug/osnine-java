@@ -44,7 +44,7 @@ public class BusTest {
      */
     @Test
     public void checkCallMeBackLater() {
-        Signal signalOut = (boolean state) -> getASignal(state);
+        BitReceiver signalOut = (boolean state) -> getASignal(state);
         bus.callbackIn(2, signalOut);
         bus.read(0x0100);
         assertEquals(0, signalReceived);
@@ -61,7 +61,7 @@ public class BusTest {
     @Test
     public void recursiveCallback() {
         long startCounter = bus.getCycleCounter();
-        Signal signalOut = (boolean state) -> getAndSetCallback(state);
+        BitReceiver signalOut = (boolean state) -> getAndSetCallback(state);
         bus.callbackIn(2, signalOut);
         bus.read(0x0100);
         assertEquals(0, signalReceived);
@@ -75,7 +75,7 @@ public class BusTest {
 
     private void getAndSetCallback(boolean dummystate) {
         signalReceived++;
-        Signal signalOut = (boolean state) -> getASignal(state);
+        BitReceiver signalOut = (boolean state) -> getASignal(state);
         bus.callbackIn(2, signalOut);
     }
 
