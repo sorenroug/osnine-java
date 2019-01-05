@@ -64,6 +64,9 @@ public class Beeper implements BitReceiver {
     /** If false then the sound is turned off. */
     private boolean active = true;
 
+    /** If false then there is no sound device. */
+    private boolean available = true;
+
     private long oldCounter;
     private boolean oldState;
 
@@ -76,16 +79,27 @@ public class Beeper implements BitReceiver {
         this.bus = bus;
         soundBuffer = new byte[BUFFER_SIZE];
 
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+        DataLine.Info info;
+        try {
+            info = new DataLine.Info(SourceDataLine.class, format);
+        } catch (IllegalArgumentException e) {
+            LOGGER.info("Sound unavailable");
+            active = false;
+            available = false;
+            return;
+        }
+
 
         try {
             line = (SourceDataLine) AudioSystem.getLine(info);
             line.open(format, 1000);
             LOGGER.debug("Buffer size {}", line.getBufferSize());
+            line.start();
         } catch (LineUnavailableException e) {
             LOGGER.error("Sound unavailable", e);
+            active = false;
+            available = false;
         }
-        line.start();
     }
 
     /**
@@ -134,5 +148,14 @@ public class Beeper implements BitReceiver {
      */
     public boolean getActiveState() {
         return active;
+    }
+
+    /**
+     * Get the availability of the sound device.
+     *
+     * @return true if the device is available
+     */
+    public boolean isAvailable() {
+        return available;
     }
 }

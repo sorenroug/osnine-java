@@ -456,6 +456,13 @@ public class MO5Emu {
         @Override
         public void actionPerformed(ActionEvent e) {
             Object[] options = {"Sound off", "Sound on", "Cancel"};
+
+            if (!beeper.isAvailable()) {
+                JOptionPane.showMessageDialog(guiFrame,
+                    "No sound device available");
+                return;
+            }
+
             String msg = String.format("Sound device is %s",
                     beeper.getActiveState()?"ON":"OFF");
             String tooltip = "Set sound device state";
