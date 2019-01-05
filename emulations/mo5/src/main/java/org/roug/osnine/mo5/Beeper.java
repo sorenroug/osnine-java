@@ -138,7 +138,7 @@ public class Beeper implements BitReceiver {
      * @param state sound is active if true.
      */
     public void setActiveState(boolean state) {
-        active = state;
+        active = state & available;
     }
 
     /**
