@@ -79,23 +79,14 @@ public class Beeper implements BitReceiver {
         this.bus = bus;
         soundBuffer = new byte[BUFFER_SIZE];
 
-        DataLine.Info info;
-        try {
-            info = new DataLine.Info(SourceDataLine.class, format);
-        } catch (IllegalArgumentException e) {
-            LOGGER.info("Sound unavailable");
-            active = false;
-            available = false;
-            return;
-        }
-
+        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
         try {
             line = (SourceDataLine) AudioSystem.getLine(info);
             line.open(format, 1000);
             LOGGER.debug("Buffer size {}", line.getBufferSize());
             line.start();
-        } catch (LineUnavailableException e) {
+        } catch (Exception e) {
             LOGGER.error("Sound unavailable", e);
             active = false;
             available = false;
