@@ -1,5 +1,7 @@
 # Retrocomputing: A Java-based 6809 emulator
 
+[![Build Status](https://travis-ci.com/sorenroug/osnine-java.svg?branch=master)](https://travis-ci.com/sorenroug/osnine-java)
+
 The purpose of this project is to create an 6809 emulator that can
 be configured at runtime with a range of memory mapped devices.
 You can allocate RAM, load data into the memory and set up devices.
@@ -11,6 +13,7 @@ Devices:
 * IRQBeat sends an IRQ interrupt every 20 milliseconds to the CPU.
 * HWClock makes it possible to get the date and time from the host of the emulator.
 * VirtualDisk interfaces a DSK image to the emulator as a floppy or harddisk.
+* PIA6821 emulates a Motorola 6821 Peripheral Interface Adapter
 
 Because of their modularity, the Microware OS-9 or NitroOS9 operating
 systems can easily be configured to take advantage of these devices.

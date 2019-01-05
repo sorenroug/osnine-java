@@ -87,7 +87,7 @@ public class Beeper implements BitReceiver {
             LOGGER.debug("Buffer size {}", line.getBufferSize());
             line.start();
         } catch (Exception e) {
-            LOGGER.error("Sound unavailable", e);
+            LOGGER.info("Sound unavailable");
             active = false;
             available = false;
         }
