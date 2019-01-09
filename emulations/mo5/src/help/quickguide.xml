@@ -272,10 +272,11 @@ Only the first 15 characters are significant.
         <indexterm><primary>DEFSTR</primary></indexterm>
         </term>
         <listitem>
-          <para>Declares the type of a variable as either integer,
-              real or string.</para>
+          <para>
+          Sets the type that is assumed if no type character (% or $) is specified when a variable name is used. The statement sets the default type for variables starting with a letter from the ranges specified. DEFINT defines an integer, DEFSNG defines a REAL. DEFSTR defines a string variable.
+          </para>
           <simplelist columns="1">
-            <member>DEFINT A-B,O-Q defines A,B,O,P and Q as integer</member>
+            <member>DEFINT A-B,O-Q defines all variables starting with A,B,O,P and Q as integer</member>
           </simplelist>
         </listitem>
       </varlistentry>
