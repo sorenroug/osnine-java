@@ -3,6 +3,20 @@ package org.roug.osnine.mo5;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Arrays;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BitReceiver;
 import org.slf4j.Logger;
@@ -11,13 +25,22 @@ import org.slf4j.LoggerFactory;
 /**
  * Emulation of tape recorder, which receives timed one-bit
  * pulses from the computer and sends timed one-bit signals on play-back.
+ * Duration of pulses in CPU cycles:
+ * 220
+ * 430
  */
 public class TapeRecorder {
 
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(TapeRecorder.class);
 
-    private static final int MAGIC = 0x4d355031; // M5P1: Header MO5 Pulse v.1
+    private static final byte[] M5P1 = {0x4d, 0x35, 0x50, 0x31}; // M5P1: Header MO5 Pulse v.1
+    private static final byte[] RIFF = {0x52, 0x49, 0x46, 0x46};
+
+    private static final int PULSE_FORMAT = 1;
+    private static final int WAVE_FORMAT = 2;
+
+    private int fileFormat = 0;
 
     /** Write a stretch of empty while motor starts. */
     private static final int START_DELAY = 200000;
@@ -34,7 +57,9 @@ public class TapeRecorder {
     private long lastCounter;
 
     /** File for cassette storage. */
-    private RandomAccessFile cassetteStream;
+    private FileOutputStream outStream;
+
+    private BufferedInputStream inStream;
 
     /** Next value to feed to the PIA. */
     private boolean cassetteBit;
@@ -68,9 +93,13 @@ public class TapeRecorder {
      * @throws Exception if the is a problem with the file.
      */
     public void loadForRecord(File filename) throws Exception {
-        loadCassetteFile(filename, "rw");
-        cassetteStream.writeInt(MAGIC);
+        unloadCassetteFile();
+        cassetteFilename = filename;
+        outStream = new FileOutputStream(filename);
+        outStream.write(M5P1);
+        tapestationReady(true);
         recording = true;
+        fileFormat = PULSE_FORMAT;
     }
 
     /**
@@ -81,26 +110,24 @@ public class TapeRecorder {
      * @throws Exception if the is a problem with the file.
      */
     public void loadForPlay(File filename) throws Exception {
-        loadCassetteFile(filename, "r");
-        int magic = cassetteStream.readInt();
-        if (magic != MAGIC) {
-            LOGGER.info("Unsupported file");
-            cassetteStream = null;
-        }
-        recording = false;
-    }
+        byte[] magicBuffer = new byte[4];
 
-    /**
-     * Open a file to emulate that the cassette recorder is loaded with a tape.
-     *
-     * @param filename the name of the file to load
-     * @throws Exception if the is a problem with the file.
-     */
-    private void loadCassetteFile(File filename, String mode) throws Exception {
-        if (cassetteStream != null) unloadCassetteFile();
+        unloadCassetteFile();
         cassetteFilename = filename;
-        cassetteStream = new RandomAccessFile(filename, mode);
+        inStream = new BufferedInputStream(new FileInputStream(filename));
+        inStream.mark(4);
+        inStream.read(magicBuffer, 0, 4);
+        if (Arrays.equals(M5P1, magicBuffer)) {
+            fileFormat = PULSE_FORMAT;
+        } else if (Arrays.equals(RIFF, magicBuffer)) {
+            inStream.reset();
+            fileFormat = WAVE_FORMAT;
+        } else {
+            LOGGER.info("Unsupported file");
+            inStream = null;
+        }
         tapestationReady(true);
+        recording = false;
     }
 
     /**
@@ -110,10 +137,17 @@ public class TapeRecorder {
         motorOn = false;
         try {
             tapestationReady(false);
-            cassetteStream.close();
-            cassetteStream = null;
+            if (inStream != null) {
+                inStream.close();
+                inStream = null;
+            }
+            if (outStream != null) {
+                outStream.close();
+                outStream = null;
+            }
         } catch (IOException e) {
-            cassetteStream = null;
+            inStream = null;
+            outStream = null;
         }
     }
 
@@ -148,7 +182,7 @@ public class TapeRecorder {
 
                 if (!recording) {
                     tapestationReady(true);
-                    callback = (boolean dummystate) -> feedLine(dummystate);
+                    callback = (boolean dummystate) -> feedPulseLine(dummystate);
                     bus.callbackIn(0, callback);
                 }
             }
@@ -168,18 +202,18 @@ public class TapeRecorder {
      *
      * @param newstate bit received from tape
      */
-    private void feedLine(boolean newstate) {
+    private void feedPulseLine(boolean newstate) {
         tapestationReady(cassetteBit);
         if (!motorOn) {
             tapestationReady(true);
             return;
         }
         try {
-            int code = readCode();
+            int code = readPulseCode();
             cassetteBit = (code < 0);
             int delay = (code < 0)?-code:code;
             LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
-            callback = (boolean state) -> feedLine(state);
+            callback = (boolean state) -> feedPulseLine(state);
             bus.callbackIn(delay, callback);
         } catch (IOException e) {
             LOGGER.debug("End of tape");
@@ -192,13 +226,9 @@ public class TapeRecorder {
      */
     public void rewind() {
         try {
-            if (cassetteStream != null) {
-                cassetteStream.seek(0);
-                cassetteStream.readInt();
-                tapestationReady(true);
-            }
-        } catch (IOException e) {
-            cassetteStream = null;
+            loadForPlay(cassetteFilename);
+        } catch (Exception e) {
+            inStream = null;
         }
     }
 
@@ -206,14 +236,16 @@ public class TapeRecorder {
      * Go past the last recording.
      */
     public void seekToEnd() {
+    /*
         try {
-            if (cassetteStream != null) {
-                cassetteStream.seek(cassetteStream.length());
+            if (outStream != null) {
+                outStream.seek(outStream.length());
                 tapestationReady(true);
             }
         } catch (IOException e) {
-            cassetteStream = null;
+            outStream = null;
         }
+    */
     }
 
     /**
@@ -238,15 +270,20 @@ public class TapeRecorder {
      * @param value the bit to write
      */
     private void writeCode(boolean value, int delay) {
+        byte[] buffer = new byte[2];
         LOGGER.debug("Write {}, delay {}", value, delay);
+
         try {
             while (delay > 0) {
-                cassetteStream.writeShort(((delay > 0x7FFF)?0x7FFF:delay) * ((value)?-1:1));
+                int code = ((delay > 0x7FFF)?0x7FFF:delay) * ((value)?-1:1);
+                buffer[0] = (byte) ((code >> 8) & 0xFF);
+                buffer[1] = (byte) (code & 0xFF);
+                outStream.write(buffer);
                 delay -= 0x7FFF;
             }
         } catch (IOException e) {
             LOGGER.error("Unable to write to cassette");
-            cassetteStream = null;
+            outStream = null;
         }
     }
 
@@ -255,11 +292,16 @@ public class TapeRecorder {
      *
      * @return the combined bit and value.
      */
-    private int readCode() throws IOException {
-        if (cassetteStream == null) throw new IOException();
+    private int readPulseCode() throws IOException {
+        byte[] buffer = new byte[2];
+
+        if (inStream == null) throw new IOException();
 
         int code = -1;
-        code = cassetteStream.readShort();
+        int siz = inStream.read(buffer);
+        if (siz == -1) throw new IOException();
+        code = ((buffer[0] & 0xFF) << 8) | (buffer[1] & 0xFF);
+        if ((code & 0x8000) != 0) code |= 0xFFFF0000;
         return code;
     }
 
