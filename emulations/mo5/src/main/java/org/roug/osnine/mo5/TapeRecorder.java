@@ -34,7 +34,10 @@ public class TapeRecorder {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(TapeRecorder.class);
 
-    private static final byte[] M5P1 = {0x4d, 0x35, 0x50, 0x31}; // M5P1: Header MO5 Pulse v.1
+    /** M5P1: Header MO5 Pulse v.1. */
+    private static final byte[] M5P1 = {0x4d, 0x35, 0x50, 0x31};
+
+    /** RIFF: Wav file. */
     private static final byte[] RIFF = {0x52, 0x49, 0x46, 0x46};
 
     private static final int PULSE_FORMAT = 1;
@@ -60,6 +63,8 @@ public class TapeRecorder {
     private FileOutputStream outStream;
 
     private BufferedInputStream inStream;
+
+    private TapeFormat reader;
 
     /** Next value to feed to the PIA. */
     private boolean cassetteBit;
@@ -119,8 +124,16 @@ public class TapeRecorder {
         inStream.read(magicBuffer, 0, 4);
         if (Arrays.equals(M5P1, magicBuffer)) {
             fileFormat = PULSE_FORMAT;
+            reader = new ReadPulseFormat();
         } else if (Arrays.equals(RIFF, magicBuffer)) {
             inStream.reset();
+            try {
+                reader = new ReadWaveFormat();
+            } catch (Exception e) {
+                LOGGER.error("Unsupported format");
+                inStream = null;
+                return;
+            }
             fileFormat = WAVE_FORMAT;
         } else {
             LOGGER.info("Unsupported file");
@@ -177,12 +190,13 @@ public class TapeRecorder {
     public void cassetteMotor(boolean state) {
         if (state) {
             if (!motorOn) { // Only if motor is stopped
-                LOGGER.debug("Turning motor on for {}", recording?"record":"playback");
+                LOGGER.debug("Turning motor on for {}",
+                                recording?"record":"playback");
                 lastCounter = 0;
 
                 if (!recording) {
                     tapestationReady(true);
-                    callback = (boolean dummystate) -> feedPulseLine(dummystate);
+                    callback = (boolean s) -> reader.feedPulseLine(s);
                     bus.callbackIn(0, callback);
                 }
             }
@@ -192,31 +206,6 @@ public class TapeRecorder {
             if (motorOn && recording)
                 writeCode(true, STOP_DELAY);
             motorOn = false;
-            tapestationReady(true);
-        }
-    }
-
-    /**
-     * Feed bit from tape into an input line on the PIA.
-     * Called on a delay from the bus.
-     *
-     * @param newstate bit received from tape
-     */
-    private void feedPulseLine(boolean newstate) {
-        tapestationReady(cassetteBit);
-        if (!motorOn) {
-            tapestationReady(true);
-            return;
-        }
-        try {
-            int code = readPulseCode();
-            cassetteBit = (code < 0);
-            int delay = (code < 0)?-code:code;
-            LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
-            callback = (boolean state) -> feedPulseLine(state);
-            bus.callbackIn(delay, callback);
-        } catch (IOException e) {
-            LOGGER.debug("End of tape");
             tapestationReady(true);
         }
     }
@@ -287,28 +276,131 @@ public class TapeRecorder {
         }
     }
 
-    /**
-     * Read bit and delay values from tape.
-     *
-     * @return the combined bit and value.
-     */
-    private int readPulseCode() throws IOException {
-        byte[] buffer = new byte[2];
-
-        if (inStream == null) throw new IOException();
-
-        int code = -1;
-        int siz = inStream.read(buffer);
-        if (siz == -1) throw new IOException();
-        code = ((buffer[0] & 0xFF) << 8) | (buffer[1] & 0xFF);
-        if ((code & 0x8000) != 0) code |= 0xFFFF0000;
-        return code;
-    }
-
     private static boolean isBitOn(int x, int n) {
         return (x & n) != 0;
     }
 
+    private class ReadPulseFormat implements TapeFormat {
+        /**
+         * Feed bit from tape into an input line on the PIA.
+         * Called on a delay from the bus.
+         *
+         * @param newstate bit received from tape
+         */
+        public void feedPulseLine(boolean newstate) {
+            tapestationReady(cassetteBit);
+            if (!motorOn) {
+                tapestationReady(true);
+                return;
+            }
+            try {
+                int code = readPulseCode();
+                cassetteBit = (code < 0);
+                int delay = (code < 0)?-code:code;
+                LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
+                callback = (boolean state) -> feedPulseLine(state);
+                bus.callbackIn(delay, callback);
+            } catch (IOException e) {
+                LOGGER.debug("End of tape");
+                tapestationReady(true);
+            }
+        }
 
+        /**
+         * Read bit and delay values from tape.
+         *
+         * @return the combined bit and value.
+         */
+        private int readPulseCode() throws IOException {
+            byte[] buffer = new byte[2];
+
+            if (inStream == null) throw new IOException();
+
+            int code = -1;
+            int siz = inStream.read(buffer);
+            if (siz == -1) throw new IOException();
+            code = ((buffer[0] & 0xFF) << 8) | (buffer[1] & 0xFF);
+            if ((code & 0x8000) != 0) code |= 0xFFFF0000;
+            return code;
+        }
+
+    }
+
+    /**
+     * If sample rate = 44100 then multiplier = 12.
+     */
+    private class ReadWaveFormat implements TapeFormat {
+
+        private byte[] soundBuffer;
+        private int frameSize;
+        private AudioInputStream is;
+        private boolean bigEndian;
+        private Encoding encoding;
+        private int multiplier = 0;
+
+        private int readSample() throws Exception {
+            int res = is.read(soundBuffer);
+            if (res == -1) return res;
+
+            if (frameSize == 1) {
+                res = (soundBuffer[0] & 0xFF) << 8;
+
+            } else if (frameSize == 2) {
+                if (bigEndian)
+                    res = soundBuffer[1] + (soundBuffer[0] << 8);
+                else
+                    res = soundBuffer[0] + (soundBuffer[1] << 8);
+            }
+            if (encoding == Encoding.PCM_SIGNED) {
+                res += 32768; // Make it unsigned
+            }
+            return res;
+        }
+
+        public ReadWaveFormat() throws Exception {
+
+            is = AudioSystem.getAudioInputStream(inStream);
+            AudioFormat format = is.getFormat();
+            //System.out.println(format.toString());
+            float sampleRate = format.getSampleRate();
+            frameSize = format.getFrameSize();
+            bigEndian = format.isBigEndian();
+            encoding = format.getEncoding();
+
+            soundBuffer = new byte[frameSize];
+            if (sampleRate == 44100f) multiplier = 12;
+            if (sampleRate == 22050f) multiplier = 48;
+
+        }
+
+        public void feedPulseLine(boolean newstate) {
+            tapestationReady(cassetteBit);
+            if (!motorOn) {
+                tapestationReady(true);
+                return;
+            }
+            try {
+                int b = readSample();
+                int i = 0, delay = 0;
+                int currB = b;
+
+                while (b == currB) {
+                    i++;
+                    b = readSample();
+                    if (b != currB) {
+                        delay =  (i < 10000 * multiplier)?i * multiplier:i;
+                        cassetteBit = currB > 0x2000?true:false;
+                        LOGGER.debug("Read {}, delay {}", cassetteBit, delay);
+                    }
+                }
+                if (b == -1) throw new IOException();
+                callback = (boolean state) -> feedPulseLine(state);
+                bus.callbackIn(delay, callback);
+
+            } catch (Exception e) {
+                LOGGER.debug("End of tape");
+                tapestationReady(true);
+            }
+        }
+    }
 }
-
