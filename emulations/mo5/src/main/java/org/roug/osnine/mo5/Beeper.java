@@ -111,12 +111,14 @@ public class Beeper implements BitReceiver {
                     oldCounter = nowCounter;
                 } else {
                     int delta = (int) (nowCounter - oldCounter) / 6;
-                    LOGGER.debug("Beep: {}", delta << 1);
-                    for (int i = 0; i < delta; i++)
-                        soundBuffer[i] = PEAK;
-                    for (int i = 0; i < delta; i++)
-                        soundBuffer[i + delta] = -PEAK;
-                    line.write(soundBuffer, 0, delta * 2);
+                    if (delta <= BUFFER_SIZE / 2) {
+                        LOGGER.debug("Beep: {}", delta << 1);
+                        for (int i = 0; i < delta; i++)
+                            soundBuffer[i] = PEAK;
+                        for (int i = 0; i < delta; i++)
+                            soundBuffer[i + delta] = -PEAK;
+                        line.write(soundBuffer, 0, delta * 2);
+                    }
                 }
                 oldState = state;
             }

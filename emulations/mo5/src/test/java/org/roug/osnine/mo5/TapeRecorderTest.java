@@ -63,7 +63,7 @@ public class TapeRecorderTest {
         cassette.setReceiver(tape);
         assertFalse(tape.readyState);
         tmpFile = new File("tmp.out");
-        cassette.loadForRecord(tmpFile);
+        cassette.loadForRecord(tmpFile, false);
         assertTrue(tape.readyState);
         cassette.cassetteMotor(true); // Turn on motor
         for (int i = 0; i < 100; i++) bus.read(0x0100); // Wait 100 cycles

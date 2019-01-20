@@ -378,19 +378,22 @@ error occurred.</para>
         <term>LET <replaceable>VAR</replaceable> = <replaceable>EXPR</replaceable> </term>
         <listitem>
           <para>
-              Assigns value to variable. LET is not implemented. Use implied assignment.
+              Assigns value to variable. The keyword LET is not implemented. Use implied assignment.
           </para>
           <simplelist columns="1">
             <member>A=42</member>
-            <member>Hw$="HELLO WORLD"</member>
+            <member>HW$="HELLO WORLD"</member>
           </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>LINE INPUT
+        <term>LINE INPUT <optional><replaceable>prompt</replaceable></optional>; <replaceable>VARNAME</replaceable>
         <indexterm><primary>LINE INPUT</primary></indexterm></term>
         <listitem>
-          <para>Allows input of line from keyboard, including commas. Line is terminated by [ENTER].</para>
+          <para>Allows input of line from keyboard, including commas.
+          Line is terminated by <keycap>ENTER</keycap>.
+          <replaceable>VARNAME</replaceable> must be a string variable.
+          </para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -491,7 +494,7 @@ error occurred.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>PRINT USING
+        <term>PRINT USING <replaceable>format</replaceable>; <replaceable>values</replaceable>
         <indexterm><primary>PRINT</primary></indexterm>
         <indexterm><primary>USING</primary></indexterm>
         </term>
@@ -499,10 +502,14 @@ error occurred.</para>
           <para>Prints output in specified format.</para>
           <simplelist columns="1">
             <member># number field</member>
+            <member>. decimal point</member>
             <member>$ dollar sign in front of number.</member>
             <member>* fills leading spaces with asterisks.</member>
             <member>^ prints in exponential format.</member>
             <member>+ causes sign to be printed.</member>
+          </simplelist>
+          <simplelist columns="1">
+            <member>PRINT USING "#.##"; 3.14159</member>
           </simplelist>
         </listitem>
       </varlistentry>
@@ -889,15 +896,22 @@ Device defaults to CASS:.
         <indexterm><primary>PRINT</primary></indexterm></term>
         <listitem>
           <para>Prints content of following list to the specified file.</para>
+          <simplelist columns="1">
+            <member>PRINT #1</member>
+            <member>PRINT #1, "HELLO WORLD"</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>PRINT #<replaceable>CHANNEL</replaceable> USING
+        <term>PRINT #<replaceable>CHANNEL</replaceable>, USING <replaceable>format</replaceable>; <replaceable>values</replaceable>
         <indexterm><primary>PRINT</primary></indexterm>
         <indexterm><primary>USING</primary></indexterm>
         </term>
         <listitem>
           <para>Prints formatted output to the specified file.</para>
+          <simplelist columns="1">
+            <member>PRINT #4, USING "#.##"; 3.14159</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>

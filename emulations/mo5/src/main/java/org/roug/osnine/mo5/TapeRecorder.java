@@ -97,11 +97,12 @@ public class TapeRecorder {
      * @param filename the name of the file to load
      * @throws Exception if the is a problem with the file.
      */
-    public void loadForRecord(File filename) throws Exception {
+    public void loadForRecord(File filename, boolean append) throws Exception {
         unloadCassetteFile();
         cassetteFilename = filename;
-        outStream = new FileOutputStream(filename);
-        outStream.write(M5P1);
+        outStream = new FileOutputStream(filename, append);
+        if (!append)
+            outStream.write(M5P1);
         tapestationReady(true);
         recording = true;
         fileFormat = PULSE_FORMAT;

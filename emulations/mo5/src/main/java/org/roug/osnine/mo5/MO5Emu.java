@@ -256,17 +256,17 @@ public class MO5Emu {
         menuItem.addActionListener(new PlayAction());
         guiMenuTape.add(menuItem);
 
-        JMenuItem guiMenuTapeRewind = new JMenuItem("Rewind tape");
-        guiMenuTapeRewind.addActionListener(new RewindAction());
-        guiMenuTape.add(guiMenuTapeRewind);
+        menuItem = new JMenuItem("Rewind tape");
+        menuItem.addActionListener(new RewindAction());
+        guiMenuTape.add(menuItem);
 
-        JMenuItem guiMenuTapeSeekEnd = new JMenuItem("Seek to end of tape");
-        guiMenuTapeSeekEnd.addActionListener(new SeekEndAction());
-        guiMenuTape.add(guiMenuTapeSeekEnd);
+        menuItem = new JMenuItem("Record at end of tape");
+        menuItem.addActionListener(new RecordToEndAction());
+        guiMenuTape.add(menuItem);
 
-        JMenuItem guiMenuTapeUnload = new JMenuItem("Unload tape");
-        guiMenuTapeUnload.addActionListener(new UnloadAction());
-        guiMenuTape.add(guiMenuTapeUnload);
+        menuItem = new JMenuItem("Unload tape");
+        menuItem.addActionListener(new UnloadAction());
+        guiMenuTape.add(menuItem);
 
         menuItem = new JMenuItem("Sound");
         menuItem.addActionListener(new SoundDialogAction());
@@ -358,7 +358,7 @@ public class MO5Emu {
                 int returnVal = fc.showSaveDialog(screen);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    tapeRecorder.loadForRecord(file);
+                    tapeRecorder.loadForRecord(file, false);
                 }
             } catch (Exception ex) {
                 LOGGER.error("Unable to load tape", ex);
@@ -373,10 +373,18 @@ public class MO5Emu {
         }
     }
 
-    private class SeekEndAction implements ActionListener {
+    private class RecordToEndAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            tapeRecorder.seekToEnd();
+            try {
+                int returnVal = fc.showSaveDialog(screen);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    tapeRecorder.loadForRecord(file, true);
+                }
+            } catch (Exception ex) {
+                LOGGER.error("Unable to load tape", ex);
+            }
         }
     }
 

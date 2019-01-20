@@ -56,7 +56,8 @@ public class PIAMain extends PIA6821 {
      * @param screen the interface to the keyboard
      * @param tape the interface to tape station
      */
-    public PIAMain(Bus8Motorola bus, Screen screen, TapeRecorder tape, Beeper beeper) {
+    public PIAMain(Bus8Motorola bus, Screen screen, TapeRecorder tape,
+                    Beeper beeper) {
         super(0xA7C0, bus);
         this.screen = screen;
         this.tape = tape;
