@@ -10,8 +10,11 @@ import java.net.URL;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -48,6 +51,8 @@ public class MO5Emu {
     private static final int CLOCKPERIOD = 20;  // milliseconds
 
     private JFrame guiFrame;
+
+    private TapeDialog tapeDialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
@@ -96,6 +101,7 @@ public class MO5Emu {
         screen = new Screen(bus);
         tapeRecorder = new TapeRecorder(bus);
         tapeRecorder.setReceiver((boolean state) -> pia.setInputLine(PIA6821.A, 7, state));
+        tapeDialog = new TapeDialog(guiFrame, screen, tapeRecorder);
         beeper = new Beeper(bus);
 
         pia = new PIAMain(bus, screen, tapeRecorder, beeper);
@@ -248,24 +254,8 @@ public class MO5Emu {
     private void addTapeMenu(JMenuBar guiMenuBar) {
         JMenu guiMenuTape = new JMenu("Devices");
 
-        JMenuItem menuItem = new JMenuItem("Insert tape for record");
-        menuItem.addActionListener(new RecordAction());
-        guiMenuTape.add(menuItem);
-
-        menuItem = new JMenuItem("Insert tape for play");
-        menuItem.addActionListener(new PlayAction());
-        guiMenuTape.add(menuItem);
-
-        menuItem = new JMenuItem("Rewind tape");
-        menuItem.addActionListener(new RewindAction());
-        guiMenuTape.add(menuItem);
-
-        menuItem = new JMenuItem("Record at end of tape");
-        menuItem.addActionListener(new RecordToEndAction());
-        guiMenuTape.add(menuItem);
-
-        menuItem = new JMenuItem("Unload tape");
-        menuItem.addActionListener(new UnloadAction());
+        JMenuItem menuItem = new JMenuItem("Cassette tape");
+        menuItem.addActionListener(new TapeAction());
         guiMenuTape.add(menuItem);
 
         menuItem = new JMenuItem("Sound");
@@ -336,62 +326,10 @@ public class MO5Emu {
         }
     }
 
-    private class PlayAction implements ActionListener {
+    private class TapeAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                int returnVal = fc.showOpenDialog(screen);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fc.getSelectedFile();
-                    tapeRecorder.loadForPlay(file);
-                }
-            } catch (Exception ex) {
-                LOGGER.error("Unable to load tape", ex);
-            }
-        }
-    }
-
-    private class RecordAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                int returnVal = fc.showSaveDialog(screen);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fc.getSelectedFile();
-                    tapeRecorder.loadForRecord(file, false);
-                }
-            } catch (Exception ex) {
-                LOGGER.error("Unable to load tape", ex);
-            }
-        }
-    }
-
-    private class RewindAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            tapeRecorder.rewind();
-        }
-    }
-
-    private class RecordToEndAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                int returnVal = fc.showSaveDialog(screen);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fc.getSelectedFile();
-                    tapeRecorder.loadForRecord(file, true);
-                }
-            } catch (Exception ex) {
-                LOGGER.error("Unable to load tape", ex);
-            }
-        }
-    }
-
-    private class UnloadAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            tapeRecorder.unloadCassetteFile();
+            tapeDialog.setVisible(true);
         }
     }
 

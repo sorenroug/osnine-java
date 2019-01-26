@@ -73,4 +73,15 @@ public class TapeRecorderTest {
         assertFalse(tape.readyState);
         tmpFile.delete();
     }
+
+    @Test
+    public void startWithoutTape() {
+        Bus8Motorola bus = new BusStraight(0x200);
+        TapeMock tape = new TapeMock();
+        TapeRecorder cassette = new TapeRecorder(bus);
+        cassette.setReceiver(tape);
+        assertFalse(tape.readyState);
+        cassette.cassetteMotor(true); // Turn on motor
+        assertFalse(tape.readyState);
+    }
 }

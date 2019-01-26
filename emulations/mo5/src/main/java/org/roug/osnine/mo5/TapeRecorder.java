@@ -149,6 +149,7 @@ public class TapeRecorder {
      */
     public void unloadCassetteFile() {
         motorOn = false;
+        cassetteFilename = null;
         try {
             tapestationReady(false);
             if (inStream != null) {
@@ -185,29 +186,32 @@ public class TapeRecorder {
     /**
      * Start/stop cassette motor. This is a signal from the computer.
      * If the tape device is set to "play" then start sending bits to line 7.
+     * If there is no tape then the motor won't start.
      *
      * @param state - if true, then turn motor on, otherwise turn off motor.
      */
     public void cassetteMotor(boolean state) {
-        if (state) {
-            if (!motorOn) { // Only if motor is stopped
-                LOGGER.debug("Turning motor on for {}",
-                                recording?"record":"playback");
-                lastCounter = 0;
+        if (cassetteFilename != null) {
+            if (state) {
+                if (!motorOn) { // Only if motor is stopped
+                    LOGGER.debug("Turning motor on for {}",
+                                    recording?"record":"playback");
+                    lastCounter = 0;
 
-                if (!recording) {
-                    tapestationReady(true);
-                    callback = (boolean s) -> reader.feedPulseLine(s);
-                    bus.callbackIn(0, callback);
+                    if (!recording) {
+                        tapestationReady(true);
+                        callback = (boolean s) -> reader.feedPulseLine(s);
+                        bus.callbackIn(0, callback);
+                    }
                 }
+                motorOn = true;
+            } else {
+                LOGGER.debug("Turning motor off");
+                if (motorOn && recording)
+                    writeCode(true, STOP_DELAY);
+                motorOn = false;
+                tapestationReady(true);
             }
-            motorOn = true;
-        } else {
-            LOGGER.debug("Turning motor off");
-            if (motorOn && recording)
-                writeCode(true, STOP_DELAY);
-            motorOn = false;
-            tapestationReady(true);
         }
     }
 
@@ -216,7 +220,11 @@ public class TapeRecorder {
      */
     public void rewind() {
         try {
-            loadForPlay(cassetteFilename);
+            if (recording) {
+                loadForRecord(cassetteFilename, false);
+            } else {
+                loadForPlay(cassetteFilename);
+            }
         } catch (Exception e) {
             inStream = null;
         }
@@ -302,8 +310,8 @@ public class TapeRecorder {
                 callback = (boolean state) -> feedPulseLine(state);
                 bus.callbackIn(delay, callback);
             } catch (IOException e) {
-                LOGGER.debug("End of tape");
-                tapestationReady(true);
+                LOGGER.info("End of tape");
+                tapestationReady(false);
             }
         }
 
