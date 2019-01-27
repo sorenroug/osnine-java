@@ -12,7 +12,13 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PrinterDialog {
+
+    private static final Logger LOGGER =
+                    LoggerFactory.getLogger(PrinterDialog.class);
 
     private static final int COLUMNS = 320;
     private static final int ROWS = 200;
@@ -20,8 +26,6 @@ public class PrinterDialog {
     private String newline = "\n";
     private JDialog printerDialog;
     private JTextPane textPane;
-
-    private JButton printButton;
 
     private boolean screenDump = false;
     private int bytesDumped;
@@ -43,9 +47,14 @@ public class PrinterDialog {
 
         printerDialog.add(paneScrollPane);
 
-        printButton = new JButton("Print");
+        JButton printButton = new JButton("Print");
         printButton.addActionListener(new PrintAction());
         printerDialog.add(printButton);
+
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ClearAction());
+        printerDialog.add(clearButton);
+
         printerDialog.pack();
         //printerDialog.setSize(300,300);
 
@@ -64,7 +73,7 @@ public class PrinterDialog {
         return textPane;
     }
 
-    protected void addStylesToDocument(StyledDocument doc) {
+    private void addStylesToDocument(StyledDocument doc) {
         //Initialize some styles.
         Style def = StyleContext.getDefaultStyleContext().
                         getStyle(StyleContext.DEFAULT_STYLE);
@@ -91,14 +100,14 @@ public class PrinterDialog {
         return new ImageIcon(im);
     }
 
-    public void printSegment(String segment) {
+    private void printSegment(String segment) {
         StyledDocument doc = textPane.getStyledDocument();
         try {
             doc.insertString(doc.getLength(), segment, null);
-//                           doc.getStyle("monospace"));
         } catch (BadLocationException ble) {
-            System.err.println("Couldn't insert text into text pane.");
+            LOGGER.error("Couldn't insert text into text pane.", ble);
         }
+        textPane.repaint();
     }
 
     private void createIconStyle() {
@@ -112,11 +121,16 @@ public class PrinterDialog {
         try {
             doc.insertString(doc.getLength(), " ", s);
         } catch (BadLocationException ble) {
-            System.err.println("Couldn't insert image into text pane.");
+            LOGGER.error("Couldn't insert image into text pane.", ble);
         }
         printSegment("\n");
     }
 
+    /**
+     * Print a byte to the text pane. Also executes printer control sequences.
+     *
+     * @param value the character received from the PIA.
+     */
     public void printOneByte(int value) {
             if (screenDump) {
                 pixels[bytesDumped] = (byte) value;
@@ -154,7 +168,19 @@ public class PrinterDialog {
                 textPane.print();
             } catch (Exception pex) {
                 JOptionPane.showMessageDialog(null, "Error while printing");
-                pex.printStackTrace();
+                LOGGER.error("Couldn't print text pane", pex);
+            }
+        }
+    }
+
+    private class ClearAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                StyledDocument doc = textPane.getStyledDocument();
+                doc.remove(0, doc.getLength());
+            } catch (BadLocationException ble) {
+                LOGGER.error("Couldn't clear text pane", ble);
             }
         }
     }
