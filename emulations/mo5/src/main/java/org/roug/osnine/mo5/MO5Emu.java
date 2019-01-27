@@ -53,6 +53,7 @@ public class MO5Emu {
     private JFrame guiFrame;
 
     private TapeDialog tapeDialog;
+    private PrinterDialog printerDialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
@@ -108,7 +109,8 @@ public class MO5Emu {
         bus.addMemorySegment(pia);
         screen.connectPIA(pia);
 
-        PIA6821 printerPia = new PIAPrinter(bus);
+        printerDialog = new PrinterDialog(guiFrame);
+        PIA6821 printerPia = new PIAPrinter(bus, printerDialog);
         bus.addMemorySegment(printerPia);
 
         RandomAccessMemory ram = new RandomAccessMemory(0x2000, bus, "0x8000");
@@ -258,6 +260,10 @@ public class MO5Emu {
         menuItem.addActionListener(new TapeAction());
         guiMenuTape.add(menuItem);
 
+        menuItem = new JMenuItem("Printer");
+        menuItem.addActionListener(new PrinterAction());
+        guiMenuTape.add(menuItem);
+
         menuItem = new JMenuItem("Sound");
         menuItem.addActionListener(new SoundDialogAction());
         guiMenuTape.add(menuItem);
@@ -323,6 +329,13 @@ public class MO5Emu {
             } catch (UnsupportedFlavorException | IOException e1) {
                 LOGGER.error("Unsupported flavor", e1);
             }
+        }
+    }
+
+    private class PrinterAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            printerDialog.setVisible(true);
         }
     }
 

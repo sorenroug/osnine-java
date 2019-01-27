@@ -61,13 +61,16 @@ public class PIAPrinter extends PIA6821 {
     private int bytesDumped;
     private boolean appendMode = false;
 
+    private PrinterDialog printerDialog;
+
     /**
      * Create PIA and configure the connections to the printer.
      *
      * @param bus the memory bus to send IRQ and FIRQ signals to.
      */
-    public PIAPrinter(Bus8Motorola bus) {
+    public PIAPrinter(Bus8Motorola bus, PrinterDialog printerDialog) {
         super(0xA7E0, bus);
+        this.printerDialog = printerDialog;
         setLayout(PRA_PRB_CRA_CRB);
 
         setOutputCallback(B, (int mask, int value, int oldValue)
@@ -98,32 +101,6 @@ public class PIAPrinter extends PIA6821 {
 
     private void sendToPrinter(int mask, int value, int oldValue) {
         LOGGER.debug("Sent to printer: {}", value);
-        try {
-            if (printerFile == null) {
-                openPrinter("printer.txt");
-            }
-
-            if (screenDump) {
-                printerFile.write(value);
-                bytesDumped++;
-                if (bytesDumped == 8000) screenDump = false;
-            } else {
-                if (value == 0xFF) {
-                    openPrinter("printer.txt");
-                    LOGGER.debug("Open printer");
-                } else if (value == 0x07) {
-                    bytesDumped = 0;
-                    screenDump = true;
-                    openPrinter("printer.pbm");
-                    printerFile.write("P4 320 200\n".getBytes(US_ASCII));
-                } else if (value == 0xF5) {
-                   // Continuation of text mode. No action currently.
-                } else {
-                    printerFile.write(value);
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("Unable to open printer file", e);
-        }
+        printerDialog.printOneByte(value);
     }
 }
