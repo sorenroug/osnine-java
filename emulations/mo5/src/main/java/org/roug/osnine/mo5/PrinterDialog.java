@@ -11,6 +11,9 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +40,22 @@ public class PrinterDialog {
         printerDialog = new JDialog(parent, "Printer", false);
         printerDialog.setLayout(new BorderLayout());
 
-        JPanel buttonRow = new JPanel();
-        buttonRow.setLayout(new FlowLayout());
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new FlowLayout());
 
-        printerDialog.add(buttonRow, BorderLayout.PAGE_START);
+        printerDialog.add(buttonPane, BorderLayout.PAGE_START);
 
-        JButton printButton = new JButton("Print");
-        printButton.addActionListener(new PrintAction());
-        buttonRow.add(printButton);
+        JButton button = new JButton("Print");
+        button.addActionListener(new PrintAction());
+        buttonPane.add(button);
 
-        JButton clearButton = new JButton("Clear");
-        clearButton.addActionListener(new ClearAction());
-        buttonRow.add(clearButton);
+        button = new JButton("Clear");
+        button.addActionListener(new ClearAction());
+        buttonPane.add(button);
+
+        button = new JButton("Close");
+        button.addActionListener(new CloseAction());
+        buttonPane.add(button);
 
         //Create a text pane.
         textPane = createTextPane();
@@ -61,7 +68,6 @@ public class PrinterDialog {
         printerDialog.add(paneScrollPane, BorderLayout.CENTER);
 
         printerDialog.pack();
-        //printerDialog.setSize(300,300);
 
     }
 
@@ -169,12 +175,31 @@ public class PrinterDialog {
     private class PrintAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            Paper paper = new Paper();
+            paper.setSize(595.0, 842.0); // A4
+            paper.setImageableArea(9.0, 48.0, 576.0, 746.0);
+            PageFormat pageFormat = new PageFormat();
+            pageFormat.setPaper(paper);
+            PrinterJob pj = PrinterJob.getPrinterJob();
+            pj.setPrintable(textPane.getPrintable(null, null), pageFormat);
+            PageFormat pf = pj.pageDialog(pageFormat);
+//          if (pj.printDialog()) {
+                try {
+                    pj.print();
+                } catch (Exception pex) {
+                    JOptionPane.showMessageDialog(null, "Error while printing");
+                    LOGGER.error("Couldn't print text pane", pex);
+                }
+//          }
+
+/*
             try {
                 textPane.print();
             } catch (Exception pex) {
                 JOptionPane.showMessageDialog(null, "Error while printing");
                 LOGGER.error("Couldn't print text pane", pex);
             }
+*/
         }
     }
 
@@ -187,6 +212,13 @@ public class PrinterDialog {
             } catch (BadLocationException ble) {
                 LOGGER.error("Couldn't clear text pane", ble);
             }
+        }
+    }
+
+    private class CloseAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setVisible(false);
         }
     }
 

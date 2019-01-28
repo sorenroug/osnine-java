@@ -310,7 +310,7 @@ public class TapeRecorder {
                 callback = (boolean state) -> feedPulseLine(state);
                 bus.callbackIn(delay, callback);
             } catch (IOException e) {
-                LOGGER.info("End of tape");
+                LOGGER.debug("End of tape");
                 tapestationReady(false);
             }
         }
