@@ -35,25 +35,30 @@ public class PrinterDialog {
 
     public PrinterDialog(JFrame parent) {
         printerDialog = new JDialog(parent, "Printer", false);
-        printerDialog.setLayout(new FlowLayout());
+        printerDialog.setLayout(new BorderLayout());
+
+        JPanel buttonRow = new JPanel();
+        buttonRow.setLayout(new FlowLayout());
+
+        printerDialog.add(buttonRow, BorderLayout.PAGE_START);
+
+        JButton printButton = new JButton("Print");
+        printButton.addActionListener(new PrintAction());
+        buttonRow.add(printButton);
+
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ClearAction());
+        buttonRow.add(clearButton);
 
         //Create a text pane.
         textPane = createTextPane();
         JScrollPane paneScrollPane = new JScrollPane(textPane);
         paneScrollPane.setVerticalScrollBarPolicy(
                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        paneScrollPane.setPreferredSize(new Dimension(500, 600));
+        paneScrollPane.setPreferredSize(new Dimension(600, 700));
         paneScrollPane.setMinimumSize(new Dimension(100, 100));
 
-        printerDialog.add(paneScrollPane);
-
-        JButton printButton = new JButton("Print");
-        printButton.addActionListener(new PrintAction());
-        printerDialog.add(printButton);
-
-        JButton clearButton = new JButton("Clear");
-        clearButton.addActionListener(new ClearAction());
-        printerDialog.add(clearButton);
+        printerDialog.add(paneScrollPane, BorderLayout.CENTER);
 
         printerDialog.pack();
         //printerDialog.setSize(300,300);
