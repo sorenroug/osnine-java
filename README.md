@@ -30,12 +30,8 @@ bit ASCII and it is not year 2000 aware.
 ## Build instructions
 
 This project uses Maven. You can get the software from https://maven.apache.org/.
-To build the software type:
+To build the software and create the manuals type:
 ```
 mvn install
-```
-To create the PDF editions of the manuals type:
-```
-mvn pre-site
 ```
 Visit the sub-directories to learn how to use the tools.

@@ -8,6 +8,6 @@ Since there have been many editions of these manuals the recreations don't adher
 To generate PDFs, do:
 
 ```
-mvn pre-site
+mvn install
 ```
 

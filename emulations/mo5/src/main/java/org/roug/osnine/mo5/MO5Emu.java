@@ -23,10 +23,10 @@ import javax.swing.JOptionPane;
 import org.roug.osnine.Bus8Motorola;
 import org.roug.osnine.BusStraight;
 import org.roug.osnine.MC6809;
-//import org.roug.osnine.Throttler;
 import org.roug.osnine.PIA6821;
 import org.roug.osnine.RandomAccessMemory;
 import org.roug.osnine.ReadOnlyMemory;
+import org.roug.osnine.Throttler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -140,7 +140,7 @@ public class MO5Emu {
         Timer timer = new Timer("clock", true);
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
 
-        pace = new Throttler(bus);
+        pace = new Throttler(bus, 1000000);
         pace.throttle(true);
         Thread paceThread = new Thread(pace, "throttle");
         paceThread.start();

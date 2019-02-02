@@ -1,4 +1,4 @@
-package org.roug.osnine.mo5;
+package org.roug.osnine;
 
 import org.roug.osnine.Bus8Motorola;
 
@@ -6,16 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Slows down the CPU to the original speed by locking/unlocking the bus.
+ * Slows down the CPU to the desired speed by locking/unlocking the bus.
  * It lets the CPU run for one milli-second, then calculates how many
- * milli-seconds to sleep to emulate a 1 MHz clock.
+ * milli-seconds to sleep to emulate e.g. a 1 MHz clock.
  */
 public class Throttler implements Runnable {
 
     private static final Logger LOGGER
                     = LoggerFactory.getLogger(Throttler.class);
 
-    private static final float THROTTLE_TARGET = 1000f;
+    private float throttleTarget = 1000f;
 
     private static final long NANO_TO_MILLI = 1000000L;
 
@@ -38,8 +38,25 @@ public class Throttler implements Runnable {
     private int unlockTime = 1000;
     private int lockLength = LOCK_GRANULARITY;
 
-    public Throttler(Bus8Motorola bus) {
+    /**
+     * Create a CPU speed throttler.
+     *
+     * @param bus the bus to lock/unlock.
+     * @param speedHz target speed in Hz. On a Dragon 32/64 this would be
+     * 890000 for 0.89 MHz.
+     */
+    public Throttler(Bus8Motorola bus, int speedHz) {
         this.bus = bus;
+        throttleTarget = (float) speedHz / 1000f;
+    }
+
+    /**
+     * Create a CPU speed throttler at 1 MHz.
+     *
+     * @param bus the bus to lock/unlock
+     */
+    public Throttler(Bus8Motorola bus) {
+        this(bus, 1000000);
     }
 
     @Override
@@ -71,7 +88,7 @@ public class Throttler implements Runnable {
                 cyclesBefore = cyclesAfter;
                 // Calculate next sleep time
                 if (throttling) {
-                    float delta = throttledCPUspeed - THROTTLE_TARGET;
+                    float delta = throttledCPUspeed - throttleTarget;
                     if (delta > 200 && sleepTime < 18) {
                         LOGGER.debug("Increase sleep");
                         sleepTime++;

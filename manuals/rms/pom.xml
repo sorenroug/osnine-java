@@ -35,7 +35,7 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <phase>pre-site</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -62,7 +62,7 @@
         <executions>
           <execution>
             <id>rms</id>
-            <phase>pre-site</phase>
+            <phase>compile</phase>
             <goals>
               <goal>generate-pdf</goal>
               <!--<goal>generate-html</goal>-->

@@ -35,7 +35,7 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <phase>pre-site</phase>
+            <phase>compile</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -63,7 +63,7 @@
 
           <execution>
             <id>pascallinking</id>
-            <phase>pre-site</phase>
+            <phase>compile</phase>
             <goals>
               <goal>generate-pdf</goal>
               <!--<goal>generate-html</goal>-->
@@ -75,7 +75,7 @@
 
           <execution>
             <id>interfaceasm</id>
-            <phase>pre-site</phase>
+            <phase>compile</phase>
             <goals>
               <goal>generate-pdf</goal>
             </goals>

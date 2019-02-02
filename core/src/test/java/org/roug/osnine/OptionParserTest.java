@@ -18,6 +18,14 @@ public class OptionParserTest {
     }
 
     @Test
+    public void plainArgumentWithSpace() throws IllegalArgumentException {
+        String[] args = {"-f", "Hello  World", "-o", "argumentO"};
+        OptionParser op = new OptionParser(args, "o:f:");
+        String optionF = op.getOptionArgument("f");
+        assertEquals("Hello  World", optionF);
+    }
+
+    @Test
     public void unusedArguments1() throws IllegalArgumentException {
         String[] args = {"-x", "file1", "file2"};
         OptionParser op = new OptionParser(args, "xyz");
