@@ -143,6 +143,16 @@ public class GUI {
     }
 
     /**
+     * Set the size of the window.
+     *
+     * @param size size of a MO5 pixel in host computer pixels.
+     */
+    void setPixelSize(int size) {
+        screen.setPixelSize(size);
+        guiFrame.pack();
+    }
+
+    /**
      * Open a file to load into RAM.
      * Used to look in the JAR file if the file name doesn't contain a slash.
      * @param fileToLoad Name of file to load
