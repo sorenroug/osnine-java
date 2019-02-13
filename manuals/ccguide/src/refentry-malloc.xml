@@ -20,8 +20,8 @@
 
 <funcprototype>
   <funcdef>char *<function>calloc</function></funcdef>
-  <paramdef>unsigned<parameter>nel</parameter></paramdef>
-  <paramdef>unsigned<parameter>elsize</parameter></paramdef>
+  <paramdef>unsigned <parameter>nel</parameter></paramdef>
+  <paramdef>unsigned <parameter>elsize</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -36,14 +36,14 @@ Free requires a pointer to a block that has been allocated by
 malloc; it frees the space to be allocated again.
 </para>
 <para>
-Calloc allocates space for an array. Nel is the number of
-elements in the arrary, and elsize is the size of each element.
+Calloc allocates space for an array. <replaceable>Nel</replaceable> is the number of
+elements in the arrary, and <replaceable>elsize</replaceable> is the size of each element.
 Calloc initializes the space to zero.
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>
 <para>
-Malloc, free, and calloc return NULL(0) if no free memory can
+Malloc, free, and calloc return NULL (0) if no free memory can
 be found or if there was an error.
 </para>
 </refsect1>

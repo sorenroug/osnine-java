@@ -17,7 +17,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Access returns 0 if the access modes specified in <quote>perm</quote> are
+Access returns 0 if the access modes specified in <quote><replaceable>perm</replaceable></quote> are
 correct for the user to access <quote><replaceable>fname</replaceable></quote>. -1 is returned if the
 file cannot be accessed.
 </para>

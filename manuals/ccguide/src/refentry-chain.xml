@@ -39,7 +39,7 @@ by using <quote>modlink()</quote> or <quote>modload()</quote> followed by an <qu
 <para>
 <quote><replaceable>Modname</replaceable></quote> should point to the name of the desired module.
 <quote><replaceable>Paramsize</replaceable></quote> is the length of the parameter string (which should
-normally be terminated with a <quote>\n</quote>), and <quote>paramptr</quote> points to
+normally be terminated with a <quote>\n</quote>), and <quote><replaceable>paramptr</replaceable></quote> points to
 the parameter string. <quote><replaceable>Type</replaceable></quote> is the module type as found in
 the module header (normally 1: program), and <quote><replaceable>lang</replaceable></quote> should
 match the language nibble in the module header (C programs have 1 for 6809 machine code here).
