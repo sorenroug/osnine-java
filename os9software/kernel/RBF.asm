@@ -1,52 +1,65 @@
+********************************************************************
+
          nam   RBF
-         ttl   os9 file manager     
+         ttl   Disk file manager
 
          ifp1
          use   defsfile
          endc
+
 tylg     set   FlMgr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   0
 size     equ   .
+
 name     equ   *
          fcs   /RBF/
          fcb   $07 
-L0011    fcb   $26
+
+L0011    fcb   DRVMEM
+
+* All routines are entered with
+* (Y) = Path descriptor pointer
+* (U) = Caller's register stack pointer
 start    equ   *
-         lbra  L0039
-         lbra  L0176
-         lbra  L01ED
-         lbra  L0299
-         lbra  L02CF
-         lbra  L0359
-         lbra  L03EA
-         lbra  L0485
-         lbra  L037B
-         lbra  L0465
-         lbra  L0508
-         lbra  L055B
-         lbra  L024A
-L0039    pshs  y
+         lbra  Create
+         lbra  Open
+         lbra  MakDir
+         lbra  ChgDir
+         lbra  Delete
+         lbra  Seek
+         lbra  Read
+         lbra  Write
+         lbra  ReadLn
+         lbra  WriteLn
+         lbra  GetStat
+         lbra  PutStat
+         lbra  Term
+
+********************************************************************
+* Y points to path descriptor
+* U points to something also
+Create   pshs  y
          leas  -$05,s
-         lda   $02,u
-         anda  #$7F
-         sta   $02,u
+         lda   R$B,u
+         anda  #^DIR.
+         sta   R$B,u   save perms back
          lbsr  L05B8
          bcs   L004A
-         ldb   #$DA
-L004A    cmpb  #$D8
+         ldb   #E$CEF
+L004A    cmpb  #E$PNNF
          bne   L0070
-         cmpa  #$2F
+         cmpa  #PDELIM    Compare '/
          beq   L0070
          pshs  x
-         ldx   $06,y
-         stu   $04,x
-         ldb   <$16,y
-         ldx   <$17,y
-         lda   <$19,y
-         ldu   <$1A,y
+         ldx   PD.RGS,y
+         stu   R$X,x
+         ldb   <PD.SBP,y
+         ldx   <PD.SBP+1,y
+         lda   <PD.SSZ,y
+         ldu   <PD.SSZ+1,y
          pshs  u,x,b,a
          clra  
          ldb   #$01
@@ -56,18 +69,18 @@ L004A    cmpb  #$D8
 L0070    leas  $05,s
          lbra  L0275
 L0075    std   $0B,s
-         ldb   <$16,y
-         ldx   <$17,y
+         ldb   <PD.SBP,y
+         ldx   <PD.SBP+1,y
          stb   $08,s
          stx   $09,s
          puls  u,x,b,a
-         stb   <$16,y
-         stx   <$17,y
-         sta   <$19,y
-         stu   <$1A,y
-         ldd   <$3A,y
+         stb   <PD.SBP,y
+         stx   <PD.SBP+1,y
+         sta   <PD.SSZ,y
+         stu   <PD.SSZ+1,y
+         ldd   <PD.DCP,y
          std   $0B,y
-         ldd   <$3C,y
+         ldd   <PD.DCP+2,y
          std   $0D,y
          lbsr  L071C
          bcs   L00A7
@@ -81,7 +94,7 @@ L00A7    cmpb  #$D3
          lbsr  L04AB
          bcs   L0070
          lbsr  L0237
-         lbsr  L0CD5
+         lbsr  L0CD5   Is buffer modified?
          lbsr  L071C
 L00BC    leau  ,x
          lbsr  L015C
@@ -114,41 +127,41 @@ L00CE    clra
          lda   $02,x
          sta   ,u
          ldx   D.Proc
-         ldd   $09,x
-         std   $01,u
-         lbsr  L0286
-         ldd   $03,u
-         std   $0D,u
-         ldb   $05,u
-         stb   $0F,u
+         ldd   P$User,x
+         std   FD.OWN,u
+         lbsr  GetDate
+         ldd   FD.DAT,u
+         std   FD.Creat,u
+         ldb   FD.DAT+2,u
+         stb   FD.Creat+2,u
          ldb   #$01
-         stb   $08,u
+         stb   FD.LNK,u
          ldd   $03,s
          subd  #$0001
          beq   L012B
-         leax  <$10,u
-         std   $03,x
+         leax  <FD.SEG,u
+         std   FDSL.B,x
          ldd   $01,s
          addd  #$0001
-         std   $01,x
+         std   FDSL.A+1,x
          ldb   ,s
          adcb  #$00
-         stb   ,x
+         stb   FDSL.A,x
 L012B    ldb   ,s
          ldx   $01,s
          lbsr  L0CA7
          bcs   L0144
          lbsr  L07B3
-         stb   <$34,y
-         stx   <$35,y
+         stb   <PD.FD,y
+         stx   <PD.FD+1,y
          lbsr  L07A7
          leas  $05,s
          bra   L01BA
 L0144    puls  u,x,a
-         sta   <$16,y
-         stx   <$17,y
-         clr   <$19,y
-         stu   <$1A,y
+         sta   <PD.SBP,y
+         stx   <PD.SBP+1,y
+         clr   <PD.SSZ,y
+         stu   <PD.SSZ+1,y
          pshs  b
          lbsr  L0AD7
          puls  b
@@ -165,23 +178,26 @@ L016D    pshu  x,b,a
          cmpu  $04,s
          bhi   L016D
          puls  pc,u,x,b,a
-L0176    pshs  y
+
+********************************************************************
+* Y points to path descriptor
+Open     pshs  y
          lbsr  L05B8
          bcs   L0159
-         ldu   $06,y
-         stx   $04,u
-         ldd   <$35,y
+         ldu   PD.RGS,y
+         stx   R$X,u
+         ldd   <PD.FD+1,y
          bne   L01B3
          lda   <$34,y
          bne   L01B3
-         ldb   $01,y
-         andb  #$80
+         ldb   PD.MOD,y
+         andb  #DIR.
          lbne  L0273
-         std   <$16,y
-         sta   <$18,y
-         std   <$13,y
-         sta   <$15,y
-         ldx   <$1E,y
+         std   <PD.SBP,y
+         sta   <PD.SBP+2,y
+         std   <PD.SBL,y
+         sta   <PD.SBL+2,y
+         ldx   <PD.DTB,y
          lda   $02,x
          std   <$11,y
          sta   <$1B,y
@@ -193,31 +209,36 @@ L01B3    lda   $01,y
          lbsr  L076D
          bcs   L0159
 L01BA    puls  y
+
+* Copy from file descriptor to path descriptor
+* U = file descriptor, Y = Path descriptor
 L01BC    clra  
          clrb  
-         std   $0B,y
-         std   $0D,y
-         std   <$13,y
-         sta   <$15,y
-         sta   <$19,y
-         lda   ,u
-         sta   <$33,y
-         ldd   <$10,u
-         std   <$16,y
-         lda   <$12,u
-         sta   <$18,y
-         ldd   <$13,u
-         std   <$1A,y
-         ldd   $09,u
-         ldx   $0B,u
-         std   $0F,y
-         stx   <$11,y
+         std   PD.CP,y
+         std   PD.CP+2,y
+         std   <PD.SBL,y
+         sta   <PD.SBL+2,y
+         sta   <PD.SSZ,y
+         lda   FD.ATT,u
+         sta   <PD.ATT,y
+         ldd   <FD.SEG+FDSL.A,u     Copy first segment from file descriptor
+         std   <PD.SBP,y
+         lda   <FD.SEG+FDSL.A+2,u
+         sta   <PD.SBP+2,y
+         ldd   <FD.SEG+FDSL.B,u
+         std   <PD.SSZ+1,y
+         ldd   FD.SIZ,u
+         ldx   FD.SIZ+2,u
+         std   PD.SIZ,y
+         stx   <PD.SIZ+2,y
          clrb  
          rts   
-L01ED    lbsr  L0039
+
+********************************************************************
+MakDir   lbsr  Create
          bcs   L0235
-         ldd   #$0040
-         std   <$11,y
+         ldd   #$0040       Set size for .. and .
+         std   <PD.SIZ+2,y
          bsr   L0247
          bcs   L0235
          lbsr  L07B4
@@ -225,75 +246,84 @@ L01ED    lbsr  L0039
          ldu   $08,y
          lda   ,u
          anda  #$BF
-         ora   #$80
+         ora   #$80    Set the directory flag
          sta   ,u
          bsr   L0237
          bcs   L0235
          lbsr  L0163
-         ldd   #$2EAE
-         std   ,u
-         stb   <$20,u
-         lda   <$37,y
-         sta   <$1D,u
-         ldd   <$38,y
-         std   <$1E,u
-         lda   <$34,y
-         sta   <$3D,u
-         ldd   <$35,y
-         std   <$3E,u
+         ldd   #$2EAE     Add ..
+         std   DIR.NM,u
+         stb   <DIR.SZ+DIR.NM,u   Add .
+         lda   <PD.DFD,y
+         sta   <DIR.FD,u
+         ldd   <PD.DFD+1,y
+         std   <DIR.FD+1,u
+         lda   <PD.FD,y
+         sta   <DIR.SZ+DIR.FD,u
+         ldd   <PD.FD+1,y
+         std   <DIR.SZ+DIR.FD+1,u
          lbsr  L0CA5
-L0235    bra   L0278
+L0235    bra   FreeBuf
+
 L0237    lbsr  L0C43
-L023A    ldx   $08,y
-         ldd   $0F,y
-         std   $09,x
-         ldd   <$11,y
-         std   $0B,x
-         clr   $0A,y
+
+* Write file size in memory to file descriptor
+L023A    ldx   PD.BUF,y
+         ldd   PD.SIZ,y
+         std   FD.SIZ,x
+         ldd   <PD.SIZ+2,y
+         std   FD.SIZ+2,x
+         clr   PD.SMF,y
 L0247    lbra  L0C9D
-L024A    clra  
-         tst   $02,y
+
+* Y points to path descriptor
+Term     clra  
+         tst   PD.CNT,y
          bne   L0272
-         ldb   $01,y
-         bitb  #$02
-         beq   L0278
-         lbsr  L0CD5
-         bcs   L0278
+         ldb   PD.MOD,y
+         bitb  #WRITE.
+         beq   FreeBuf
+         lbsr  L0CD5   Is buffer modified?
+         bcs   FreeBuf
          ldd   <$34,y
          bne   L0264
          lda   <$36,y
-         beq   L0278
-L0264    bsr   L0286
+         beq   FreeBuf
+L0264    bsr   GetDate
          bsr   L023A
          lbsr  L0515
-         bcc   L0278
+         bcc   FreeBuf
          lbsr  L0A18
-         bra   L0278
+         bra   FreeBuf
 L0272    rts   
-L0273    ldb   #$D6
+L0273    ldb   #E$FNA   File not accessible
 L0275    coma  
-L0276    puls  y
-L0278    pshs  b,cc
-         ldu   $08,y
+FreeBufY puls  y
+FreeBuf  pshs  b,cc
+         ldu   PD.BUF,y
          beq   L0284
          ldd   #$0100
          os9   F$SRtMem 
 L0284    puls  pc,b,cc
-L0286    lbsr  L0C43
-         ldu   $08,y
-         lda   $08,u
+
+* Get date
+GetDate  lbsr  L0C43
+         ldu   PD.BUF,y
+         lda   FD.LNK,u   Save link count as it will be overwritten by F$Time
          pshs  a
-         leax  $03,u
+         leax  FD.DAT,u
          os9   F$Time   
          puls  a
-         sta   $08,u
+         sta   FD.LNK,u
          rts   
-L0299    pshs  y
-         lda   $01,y
+
+* Y points to path descriptor
+ChgDir   pshs  y
+         lda   PD.MOD,y
          ora   #$80
-         sta   $01,y
-         lbsr  L0176
-         bcs   L0276
+         sta   PD.MOD,y
+         lbsr  Open
+         bcs   FreeBufY
          ldx   D.Proc
          lda   <$21,y
          ldu   <$35,y
@@ -310,10 +340,12 @@ L02BD    ldb   $01,y
          std   <$22,x
          stu   <$24,x
 L02CC    clrb  
-         bra   L0276
-L02CF    pshs  y
+         bra   FreeBufY
+
+********************************************************************
+Delete   pshs  y
          lbsr  L05B8
-         bcs   L0276
+         bcs   FreeBufY
          ldd   <$35,y
          bne   L02E2
          tst   <$34,y
@@ -346,7 +378,7 @@ L02FD    clra
          std   <$1A,y
          lbsr  L0AD7
 L0323    bcs   L0356
-         lbsr  L0CD5
+         lbsr  L0CD5   Is buffer modified?
          lbsr  L07B3
          lda   <$37,y
          sta   <$34,y
@@ -355,17 +387,19 @@ L0323    bcs   L0356
          lbsr  L07A7
          lbsr  L0C43
          bcs   L0356
-         lbsr  L01BC
+         lbsr  L01BC Copy from file descriptor to path descriptor
          ldd   <$3A,y
-         std   $0B,y
+         std   PD.CP,y
          ldd   <$3C,y
-         std   $0D,y
+         std   PD.CP+2,y
          lbsr  L071C
          bcs   L0356
          clr   ,x
          lbsr  L0CA5
-L0356    lbra  L0276
-L0359    ldb   $0A,y
+L0356    lbra  FreeBufY
+
+********************************************************************
+Seek     ldb   $0A,y
          bitb  #$02
          beq   L0372
          lda   $05,u
@@ -375,14 +409,16 @@ L0359    ldb   $0A,y
          lda   $04,u
          sbca  $0B,y
          beq   L0376
-L036D    lbsr  L0CD5
+L036D    lbsr  L0CD5   Is buffer modified?
          bcs   L037A
 L0372    ldd   $04,u
          std   $0B,y
 L0376    ldd   $08,u
          std   $0D,y
 L037A    rts   
-L037B    bsr   L03B7
+
+********************************************************************
+ReadLn   bsr   L03B7
          bsr   L03A0
          pshs  u,y,x,b,a
          exg   x,u
@@ -435,11 +471,13 @@ L03C0    pshs  b,a
 L03DE    clrb  
          puls  pc,b,a
 L03E1    comb  
-         ldb   #$D3
+         ldb   #E$EOF
 L03E4    leas  $02,s
          rts   
 L03E7    lbra  L04DD
-L03EA    bsr   L03B7
+
+********************************************************************
+Read     bsr   L03B7
          bsr   L03FB
 L03EE    pshs  u,y,x,b,a
          exg   x,u
@@ -459,7 +497,7 @@ L0403    ldd   $04,u
 L0409    lda   $0A,y
          bita  #$02
          bne   L042D
-         lbsr  L0CD5
+         lbsr  L0CD5   Is buffer modified?
          bcs   L0400
          tst   $0E,y
          bne   L0428
@@ -489,7 +527,7 @@ L0440    pshs  b,a
          addb  $0E,y
          stb   $0E,y
          bne   L045C
-         lbsr  L0CD5
+         lbsr  L0CD5   Is buffer modified?
          inc   $0D,y
          bne   L045C
          inc   $0C,y
@@ -499,7 +537,9 @@ L045C    ldd   $04,s
          subd  ,s++
          std   $02,s
          jmp   [<$04,s]
-L0465    pshs  y
+
+********************************************************************
+WriteLn  pshs  y
          clrb  
          ldy   $06,u
          beq   L0483
@@ -516,7 +556,9 @@ L046F    leay  -$01,y
          addd  $06,u
          std   $06,u
 L0483    puls  y
-L0485    ldd   $06,u
+
+********************************************************************
+Write    ldd   $06,u
          beq   L04A9
          bsr   L04AB
          bcs   L04AA
@@ -579,34 +621,36 @@ L0500    cmpx  ,s
          bcs   L04F9
          leas  $02,s
 L0506    puls  pc,u,y,x
-L0508    ldb   $02,u
-         cmpb  #$00
+
+********************************************************************
+GetStat  ldb   $02,u
+         cmpb  #SS.Opt
          beq   L052E
-         cmpb  #$06
+         cmpb  #SS.EOF
          bne   L051A
          clr   $02,u
          clra  
 L0515    ldb   #$01
          lbra  L03C0
-L051A    cmpb  #$01
+L051A    cmpb  #SS.Ready
          bne   L0521
          clr   $02,u
          rts   
-L0521    cmpb  #$02
+L0521    cmpb  #SS.Size
          bne   L052F
          ldd   $0F,y
          std   $04,u
          ldd   <$11,y
          std   $08,u
 L052E    rts   
-L052F    cmpb  #$05
+L052F    cmpb  #SS.Pos
          bne   L053C
          ldd   $0B,y
          std   $04,u
          ldd   $0D,y
          std   $08,u
          rts   
-L053C    cmpb  #$0F
+L053C    cmpb  #SS.FD
          bne   L0556
          lbsr  L0C43
          bcs   L052E
@@ -620,15 +664,17 @@ L054F    ldx   $04,u
          lbra  L03EE
 L0556    lda   #$09
          lbra  L0C64
-L055B    ldb   $02,u
-         cmpb  #$00
+
+********************************************************************
+PutStat  ldb   $02,u
+         cmpb  #SS.Opt
          bne   L056F
          ldx   $04,u
          leax  $02,x
          leau  <$22,y
          ldy   #$000D
          lbra  L04DD
-L056F    cmpb  #$02
+L056F    cmpb  #SS.Size
          bne   L05AF
          ldd   <$35,y
          bne   L057D
@@ -656,13 +702,15 @@ L0596    std   $0F,y
          stu   $0D,y
          rts   
 L05AB    comb  
-         ldb   #$CB
+         ldb   #E$BMode
          rts   
+
 L05AF    lda   #$0C
          lbra  L0C64
 L05B4    comb  
-         ldb   #$D0
+         ldb   #E$UnkSvc
 L05B7    rts   
+
 L05B8    ldd   #$0100
          stb   $0A,y
          os9   F$SRqMem 
@@ -679,7 +727,7 @@ L05B8    ldd   #$0100
          std   <$1C,y
          lda   ,x
          sta   ,s
-         cmpa  #$2F
+         cmpa  #PDELIM
          bne   L05EF
          lbsr  L073C
          sta   ,s
@@ -690,7 +738,7 @@ L05B8    ldd   #$0100
 L05EF    anda  #$7F
          cmpa  #$40
          beq   L0612
-         lda   #$2F
+         lda   #PDELIM
          sta   ,s
          leax  -$01,x
          lda   $01,y
@@ -732,19 +780,19 @@ L0633    lbsr  L0C30
          std   <$35,y
 L0655    stx   $04,s
          stx   $08,s
-L0659    lbsr  L0CD5
+L0659    lbsr  L0CD5   Is buffer modified?
          lbsr  L07A7
          bcs   L06DA
          lda   ,s
-         cmpa  #$2F
+         cmpa  #PDELIM
          bne   L06BC
          clr   $02,s
          clr   $03,s
-         lda   $01,y
+         lda   PD.MOD,y
          ora   #$80
          lbsr  L076D
          bcs   L06D2
-         lbsr  L01BC
+         lbsr  L01BC Copy from file descriptor to path descriptor
          ldx   $08,s
          leax  $01,x
          lbsr  L073C
@@ -789,32 +837,33 @@ L06CC    lda   ,s
 L06D2    cmpb  #$D3
          bne   L06DA
          bsr   L06DD
-         ldb   #$D8
+         ldb   #E$PNNF
 L06DA    coma  
          bra   L06CC
 L06DD    pshs  b,a
          lda   $04,s
-         cmpa  #$2F
+         cmpa  #PDELIM
          beq   L0705
          ldd   $06,s
          bne   L0705
          puls  b,a
 L06EB    pshs  b,a
          stx   $06,s
-         lda   <$34,y
-         sta   <$37,y
-         ldd   <$35,y
-         std   <$38,y
-         ldd   $0B,y
-         std   <$3A,y
-         ldd   $0D,y
-         std   <$3C,y
+         lda   <PD.FD,y
+         sta   <PD.DFD,y
+         ldd   <PD.FD+1,y
+         std   <PD.DFD+1,y
+         ldd   PD.CP,y
+         std   <PD.DCP,y
+         ldd   PD.CP+2,y
+         std   <PD.DCP+2,y
 L0705    puls  pc,b,a
+
 L0707    ldb   $0E,y
          addb  #$20
          stb   $0E,y
          bcc   L071C
-         lbsr  L0CD5
+         lbsr  L0CD5   Is buffer modified?
          inc   $0D,y
          bne   L071C
          inc   $0C,y
@@ -841,7 +890,7 @@ L073C    os9   F$PrsNam
          clrb  
 L0744    pshs  a
          anda  #$7F
-         cmpa  #$2E
+         cmpa  #PDIR
          puls  a
          bne   L075F
          incb  
@@ -851,13 +900,13 @@ L0744    pshs  a
          lda   ,x
          cmpb  #$03
          bcs   L0744
-         lda   #$2F
+         lda   #PDELIM
          decb  
          leax  -$03,x
 L075F    tstb  
          bne   L0767
          comb  
-         ldb   #$D7
+         ldb   #E$BPNam
          puls  pc,x
 L0767    leay  ,x
          andcc #$FE
@@ -885,11 +934,11 @@ L078C    ora   ,s
          anda  ,u
          cmpa  ,s
          beq   L07A5
-         ldb   #$D6
+         ldb   #E$FNA
 L079C    leas  $02,s
          coma  
          puls  pc,x
-         ldb   #$FD
+         ldb   #E$Share
          bra   L079C
 L07A5    puls  pc,x,b,a
 L07A7    clra  
@@ -976,7 +1025,7 @@ L084F    leax  $05,x
          cmpx  ,s
          bcs   L0842
          comb  
-         ldb   #$D9
+         ldb   #E$SLF
 L0858    leas  $02,s
          leax  -$05,x
 L085C    bcs   L08C1
@@ -1178,24 +1227,26 @@ L0A00    lsra
          clrb  
          ldd   <$1A,y
          bra   L0A14
-L0A0A    ldb   #$F8
+L0A0A    ldb   #E$Full
 L0A0C    ldy   <$11,s
          lbsr  L0B7E
          coma  
 L0A14    leas  $0F,s
          puls  pc,u,y,x
+
 L0A18    clra  
-         lda   $01,y
+         lda   PD.MOD,y
          bita  #$80
          bne   L0A7A
-         ldd   $0F,y
-         std   $0B,y
-         ldd   <$11,y
-         std   $0D,y
+         ldd   PD.SIZ,y
+         std   PD.CP,y
+         ldd   <PD.SIZ+2,y
+         std   PD.CP+2,y
          lbsr  L0BD2
          bcc   L0A31
-         cmpb  #$D5
+         cmpb  #E$NES
          bra   L0A72
+
 L0A31    ldd   <$14,y
          subd  $0C,y
          addd  <$1A,y
@@ -1203,7 +1254,7 @@ L0A31    ldd   <$14,y
          beq   L0A40
          subd  #$0001
 L0A40    pshs  b,a
-         ldu   <$1E,y
+         ldu   <PD.DTB,y
          ldd   $06,u
          subd  #$0001
          coma  
@@ -1223,17 +1274,18 @@ L0A40    pshs  b,a
 L0A6A    bsr   L0AD7
          bcc   L0A7B
          leas  $04,s
-         cmpb  #$DB
+         cmpb  #E$IBA
 L0A72    bne   L0A79
 L0A74    lbsr  L0C43
          bcc   L0A84
 L0A79    coma  
 L0A7A    rts   
+
 L0A7B    lbsr  L0C43
          bcs   L0AD4
          puls  x,b,a
          std   $03,x
-L0A84    ldu   $08,y
+L0A84    ldu   PD.BUF,y
          ldd   <$11,y
          std   $0B,u
          ldd   $0F,y
@@ -1303,7 +1355,7 @@ L0AFF    lsra
          lsra  
          rorb  
          tfr   b,a
-         ldb   #$DB
+         ldb   #E$IBA
          cmpa  $04,x
          bhi   L0B46
          cmpa  <$1D,x
@@ -1319,7 +1371,7 @@ L0B25    bsr   L0B49
          ldx   $08,y
          ldd   <$17,y
          anda  #$07
-         ldy   <$1A,y
+         ldy   <PD.SSZ+1,y
          os9   F$DelBit 
          ldy   $03,s
          ldb   ,s
@@ -1327,7 +1379,7 @@ L0B25    bsr   L0B49
          bcc   L0B47
 L0B46    coma  
 L0B47    puls  pc,u,y,x,a
-L0B49    lbsr  L0CD5
+L0B49    lbsr  L0CD5   Is buffer modified?
          bra   L0B53
 L0B4E    os9   F$IOQu   
          bsr   L0B63
@@ -1338,13 +1390,14 @@ L0B53    bcs   L0B62
          lda   $05,y
          sta   <$17,x
 L0B62    rts   
+
 L0B63    ldu   D.Proc
-         ldb   <$36,u
+         ldb   <P$Signal,u
          beq   L0B6E
          cmpb  #$03
          bls   L0B75
 L0B6E    clra  
-         lda   $0D,u
+         lda   P$State,u
          bita  #$02
          beq   L0B76
 L0B75    coma  
@@ -1373,6 +1426,7 @@ L0B96    pshs  u,x
          ora   #$02
          sta   $0A,y
 L0BA7    puls  pc,u,x
+
          pshs  u,x
          lbsr  L0CA5
          bcs   L0BB6
@@ -1380,6 +1434,7 @@ L0BA7    puls  pc,u,x
          anda  #$FE
          sta   $0A,y
 L0BB6    puls  pc,u,x
+
 L0BB8    ldd   $0C,y
          subd  <$14,y
          tfr   d,x
@@ -1392,6 +1447,7 @@ L0BB8    ldd   $0C,y
          bcc   L0BD2
 L0BD0    clrb  
          rts   
+
 L0BD2    pshs  u
          bsr   L0C43
          bcs   L0C2C
@@ -1402,7 +1458,7 @@ L0BD2    pshs  u
          ldu   $08,y
          leax  <$10,u
          lda   $08,y
-         ldb   #$FC
+         ldb   #E$Lock
          pshs  b,a
 L0BEB    ldd   $03,x
          beq   L0C10
@@ -1425,7 +1481,7 @@ L0C10    clra
          sta   <$19,y
          std   <$1A,y
          comb  
-         ldb   #$D5
+         ldb   #E$NES
          bra   L0C2C
 L0C1D    ldd   ,x
          std   <$16,y
@@ -1436,7 +1492,7 @@ L0C1D    ldd   ,x
 L0C2C    leas  $02,s
          puls  pc,u
 L0C30    pshs  x,b
-         lbsr  L0CD5
+         lbsr  L0CD5   Is buffer modified?
          bcs   L0C3F
          clrb  
          ldx   #$0000
@@ -1444,18 +1500,20 @@ L0C30    pshs  x,b
          bcc   L0C41
 L0C3F    stb   ,s
 L0C41    puls  pc,x,b
-L0C43    ldb   $0A,y
+
+* Check/load descriptor sector into buffer
+L0C43    ldb   PD.SMF,y
          bitb  #$04
-         bne   L0BD0
-         lbsr  L0CD5
+         bne   L0BD0      Clear B and return
+         lbsr  L0CD5   Is buffer modified?
          bcs   L0CBD
-         ldb   $0A,y
+         ldb   PD.SMF,y
          orb   #$04
-         stb   $0A,y
-         ldb   <$34,y
-         ldx   <$35,y
+         stb   PD.SMF,y
+         ldb   <PD.FD,y
+         ldx   <PD.FD+1,y
          bra   L0C62
-L0C5C    bsr   L0CD5
+L0C5C    bsr   L0CD5   Is buffer modified?
          bcs   L0CBD
          bsr   L0CBE
 L0C62    lda   #$03
@@ -1463,10 +1521,11 @@ L0C64    pshs  u,y,x,b,a
          ldu   $03,y
          ldu   $02,u
          bra   L0C6F
+
 L0C6C    os9   F$IOQu   
 L0C6F    lda   $04,u
          bne   L0C6C
-         lda   $05,y
+         lda   PD.CPR,y
          sta   $04,u
          ldd   ,s
          ldx   $02,s
@@ -1478,8 +1537,9 @@ L0C6F    lda   $04,u
          bcc   L0C89
          stb   $01,s
 L0C89    puls  pc,u,y,x,b,a
+
 L0C8B    pshs  pc,x,b,a
-         ldx   $03,y
+         ldx   PD.DEV,y
          ldd   ,x
          ldx   ,x
          addd  $09,x
@@ -1487,21 +1547,23 @@ L0C8B    pshs  pc,x,b,a
          adca  #$00
          std   $04,s
          puls  pc,x,b,a
-L0C9D    ldb   <$34,y
-         ldx   <$35,y
+
+L0C9D    ldb   <PD.FD,y
+         ldx   <PD.FD+1,y
          bra   L0CA7
 L0CA5    bsr   L0CBE
 L0CA7    lda   #$06
          pshs  x,b,a
-         ldd   <$1C,y
+         ldd   <PD.DSK,y
          beq   L0CB6
-         ldx   <$1E,y
-         cmpd  $0E,x
+         ldx   <PD.DTB,y
+         cmpd  DD.DSK,x
 L0CB6    puls  x,b,a
          beq   L0C64
          comb  
-         ldb   #$FB
+         ldb   #E$DIDC  Disk ID change
 L0CBD    rts   
+
 L0CBE    ldd   $0C,y
          subd  <$14,y
          tfr   d,x
@@ -1512,18 +1574,20 @@ L0CBE    ldd   $0C,y
          exg   d,x
          adcb  <$16,y
          rts   
+
+* is the buffer modified?
 L0CD5    clrb  
          pshs  u,x
-         ldb   $0A,y
+         ldb   PD.SMF,y
          andb  #$06
          beq   L0CF2
          tfr   b,a
-         eorb  $0A,y
-         stb   $0A,y
+         eorb  PD.SMF,y
+         stb   PD.SMF,y
          andb  #$01
          beq   L0CF2
-         eorb  $0A,y
-         stb   $0A,y
+         eorb  PD.SMF,y
+         stb   PD.SMF,y
          bita  #$02
          beq   L0CF2
          bsr   L0CA5
