@@ -1,14 +1,19 @@
 ********************************************************************
 * progname - program module
 *
-* $Id: d0.asm,v 1.2 2002/04/21 21:46:22 roug Exp $
-*
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
 *
-* $Log: d0.asm,v $
-*
+* Header for : D0
+* Module size: $2E  #46
+* Module CRC : $DC361C (Good)
+* Hdr parity : $CA
+* File Mgr   : RBF
+* Driver     : DDisk
+* Edition    : $52  #82
+* Ty/La At/Rv: $F1 $81
+* Device Descriptor mod, 6809 Obj, re-ent, R/O
 
          nam   D0
          ttl   40-track floppy disk device descriptor
