@@ -23,24 +23,29 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="basic09_tandy" home="basic09"/>
-        <assemble src="basic09_dragon" home="basic09"/>
-        <assemble src="RunB_org" home="basic09"/>
-        <assemble src="gfx" home="basic09"/>
-        <assemble src="syscall" home="basic09"/>
+        <assemble src="DDisk_ed4" home="kernel"/>
+        <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
+        <!--
+        <assemble src="DDisk_3" home="kernel"/>
+        <assemble src="DDisk_4" home="kernel"/>
+        -->
+        <assemble src="RBF_ed6" home="kernel"/>
+        <assemble src="RBF_ed7" home="kernel"/>
+        <assemble src="RBF_ed8" home="kernel"/>
+        <assemble src="IOMan_ed4" home="kernel"/>
 
         <assemble src="go51nkb" home="kernel"/>
         <assemble src="go51n" home="kernel"/>
         <assemble src="go51" home="kernel"/>
-        <assemble src="Acia51" home="kernel"/>
+        <assemble src="Acia51_ed5" home="kernel"/>
         <assemble src="Acia_v2" home="kernel"/>
         <assemble src="Acia_v4" home="kernel"/>
         <assemble src="BootDyn" home="kernel"/>
         <assemble src="Clock_gimix" home="kernel"/>
+        <assemble src="T1" home="kernel"/>
         <assemble src="D0_vdisk" home="kernel"/>
         <assemble src="D1_vdisk" home="kernel"/>
         <assemble src="HWClock" home="kernel"/>
-        <assemble src="IOMan_v4" home="kernel"/>
         <assemble src="KbVdIO" home="kernel"/>
         <assemble src="OS9p1_d64" home="kernel"/>
         <assemble src="OS9p1_gimix" home="kernel"/>
@@ -51,9 +56,8 @@
         <assemble src="Pipe" home="kernel"/>
         <assemble src="PipeMan" home="kernel"/>
         <assemble src="Piper" home="kernel"/>
-        <assemble src="RBF" home="kernel"/> <!-- version 7 -->
-        <assemble src="SCF_v7" home="kernel"/>
-        <assemble src="SCF" home="kernel"/> <!-- version 8 -->
+        <assemble src="SCF_ed7" home="kernel"/>
+        <assemble src="SCF_ed8" home="kernel"/>
         <assemble src="SysGo" home="kernel"/>
         <assemble src="SysGo_login" home="kernel"/>
         <assemble src="VDisk" home="kernel"/>
@@ -61,6 +65,11 @@
         <assemble src="Build" home="utilities"/>
         <assemble src="Setime" home="utilities"/>
 
+        <assemble src="basic09_tandy" home="basic09"/>
+        <assemble src="basic09_dragon" home="basic09"/>
+        <assemble src="RunB_org" home="basic09"/>
+        <assemble src="gfx" home="basic09"/>
+        <assemble src="syscall" home="basic09"/>
     </target>
 
 </project>

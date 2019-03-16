@@ -1,21 +1,29 @@
  nam ACIA51
  ttl Interrupt-Driven Acia driver for Rockwell 6551
 
-* Copyright 1982 by Microware Systems Corporation
-* Reproduced Under License
-
-* This source code is the proprietary confidential property of
-* Microware Systems Corporation, and is provided to licensee
-* solely  for documentation and educational purposes. Reproduction,
-* publication, or distribution in any form to any party other than
-* the licensee is strictly prohibited!
-
+* Extracted from the Eurohard distribution of OS-9.
+* Header for : ACIA51
+* Module size: $2B0  #688
+* Module CRC : $5A98EB (Good)
+* Hdr parity : $69
+* Exec. off  : $0015  #21
+* Data size  : $0103  #259
+* Edition    : $05  #5
+* Ty/La At/Rv: $E1 $81
+* Device Driver mod, 6809 Obj, re-ent, R/O
 
          ifp1
          use   defsfile
          endc
 
-Edition equ 4 Current Edition
+***************
+* Edition History
+
+*  #   date    Comments
+* -- -------- ----------------------------------------------------
+*  5 ??/??/??  Reordering, removed initialization of BAUD
+
+Edition equ 5 Current Edition
 
 ***************
 * Interrupt-driven Acia Device Driver
@@ -27,6 +35,7 @@ OUTSIZ set 140 output buffer size (<=256)
 DataReg         equ   0
 StatReg         equ   1
 CmndReg         equ   2
+CtrlReg         equ   3
 
 IRQReq   set   %10000000 Interrupt Request
 NOTDSR   set   %01000000 not data set ready
@@ -47,20 +56,19 @@ atrv     set   ReEnt+rev
 rev      set   $01
          mod   ACIEND,ACINAM,tylg,atrv,ACIENT,ACIMEM
 
-
 **********
 * Static storage offsets
 *
  org V.SCF room for scf variables
-INXTI rmb 1 input  buffer next-in  ptr
-INXTO rmb 1 input  buffer next-out ptr
-INCNT rmb 1 input char count
-ONXTI rmb 1 output buffer next-in  ptr
-ONXTO rmb 1 output buffer next-out ptr
-HALTED rmb 1 output IRQ's disabled when non-zero
-INHALT rmb 1 input halted
-u0024    rmb   2
-ERRSTAT rmb 1
+INXTI    rmb   1
+INXTO    rmb   1
+INCNT    rmb   1
+ONXTI    rmb   1
+ONXTO    rmb   1
+HALTED    rmb   1
+INHALT    rmb   1
+RDYSGNL    rmb   2
+ERRSTAT    rmb   1
 INPBUF rmb INPSIZ input  buffer
 OUTBUF rmb OUTSIZ output buffer
 ACIMEM     equ   .
@@ -74,19 +82,44 @@ ACINAM fcs "ACIA51"
 
  fcb Edition Current Revision
 
-         
 ACIENT lbra  INIT
  lbra READ
  lbra WRITE
  lbra GETSTA
  lbra PUTSTA
- lbra TRMNAT
+ bra TRMNAT
 
 ACMASK fcb 0 no flip bits
  fcb IRQReq Irq polling mask
  fcb 10 (higher) priority
 
  ttl INTERRUPT-DRIVEN Acia device routines
+ pag
+
+***************
+* Subroutine TRMNAT
+*   Terminate Acia processing
+*
+* Passed: (U)=Static Storage
+* returns: Nothing
+*
+TRMN00 lbsr ACSLEP wait for I/O activity
+TRMNAT ldx D.Proc
+ lda P$ID,X
+ sta V.BUSY,U
+ sta V.LPRC,U
+ ldb ONXTI,U
+ orcc #IntMasks disable interrupts
+ cmpb ONXTO,U output done?
+ bne TRMN00 ..no; sleep a bit
+ lda V.TYPE,U
+ ldx V.PORT,u
+ sta CmndReg,x
+ andcc #^IntMasks enable interrupts
+ ldx #0
+ OS9 F$IRQ remove acia from polling tbl
+ rts
+
  pag
 ***************
 * Init
@@ -96,10 +129,7 @@ INIT ldx V.PORT,U I/o port address
          stb   StatReg,x
  ldb #H.EMPTY
  stb HALTED,U output IRQ's disabled; buffer empty
-         ldd   <$26,y       a=Parity and b=baud rate?
-         andb  #$0F
-         leax  <L007C,pcr
-         ldb   b,x
+         ldd   <$26,y    IT.PAR  a=Parity and b=baud rate
          anda  #$F0
          sta   V.TYPE,u
          ldx   V.PORT,u
@@ -107,36 +137,26 @@ INIT ldx V.PORT,U I/o port address
          lda   DataReg,x
          lda   DataReg,x
  tst StatReg,x interrupt gone?
- lbmi ErrNtRdy ..No; abort
+ bmi ErrNtRdy
  clra
  clrb
  std INXTI,U Initialize buffer ptrs
  std ONXTI,U
  sta INHALT,U flag input not halted
  sta INCNT,U clear in char count
-         std   <u0024,u
+ std <RDYSGNL,U clear signal process
  ldd V.PORT,U
-         addd  #StatReg         Add location of status register
+ addd #StatReg         Add location of status register
  leax ACMASK,PCR
  leay ACIRQ,PCR address of interrupt service routine
  OS9 F$IRQ Add to IRQ polling table
  bcs INIT9 Error - return it
  ldx V.PORT,U
  ldb V.TYPE,U
-         orb   #$01
-         stb   CmndReg,x
+ orb #DTRRDY
+ stb CmndReg,x
  clrb
 INIT9 rts
-
-*
-L007C    fcb   $13        110 baud
-         fcb   $16        300 baud
-         fcb   $17        600 baud
-         fcb   $18       1200 baud
-         fcb   $1A       2400 baud
-         fcb   $1C       4800 baud
-         fcb   $1E       9600 baud
-         fcb   $1F      19200 baud
 
 *****************************
 * READ
@@ -155,12 +175,12 @@ READ lda INHALT,U is input halted?
  orb #Sign set sign bit
  stb INHALT,U flag input resume
  ldb V.TYPE,U get control value
-         orb   #$05
-         ldx   V.PORT,u
-         stb   CmndReg,x
-Read.a    tst   <u0024,u
-         bne   ErrNtRdy
-         ldb   <INXTO,u
+ orb #IRQOUT!DTRRDY enable input & output IRQs
+ ldx V.PORT,u
+ stb CmndReg,x
+Read.a tst <RDYSGNL,u read while waiting for ready?
+ bne ErrNtRdy
+ ldb <INXTO,u
  leax INPBUF,U address of input buffer
  orcc #IntMasks calm interrupts
  cmpb INXTI,U any data available?
@@ -245,12 +265,12 @@ WRIT10 orcc #IntMasks disable interrupts
  sta HALTED,U
  bne Write80 ..Still HALTED; don't enable IRQ
  lda V.TYPE,U Parity control
-         ora   #$05
-         ldx   V.PORT,u
-         sta   CmndReg,x
-Write80    andcc #^IntMasks      Allow I and F interrupts
-Write90  clrb
-         rts
+ ora #IRQOUT!DTRRDY enable input & output IRQs
+ ldx V.PORT,u
+ sta CmndReg,x
+Write80 andcc #^IntMasks      Allow I and F interrupts
+Write90 clrb
+ rts
 
 ***************
 * Getsta/Putsta
@@ -280,48 +300,24 @@ unksvc   comb
 *  Set device Status
 * (U) = Address of device static storage
 
-PUTSTA   cmpa  #SS.SSig   Send signal on data ready
-         bne   SetRel
-         lda   PD.CPR,y
-         ldx   PD.RGS,y
-         ldb   $05,x
-         orcc  #IntMasks       Block I and F interrupts
-         tst   <INCNT,u
-         bne   L015C
-         std   <u0024,u
-         bra   Write80
-L015C    andcc #^IntMasks       Allow I and F interrupts
-         lbra  SendSig
-SetRel   cmpa  #SS.Relea
-         bne   unksvc
-         lda   PD.CPR,y
-         cmpa  <u0024,u
-         bne   STATUS99
-         clr   <u0024,u
-         rts
-
-***************
-* Subroutine TRMNAT
-*   Terminate Acia processing
-*
-* Passed: (U)=Static Storage
-* returns: Nothing
-*
-TRMN00 lbsr ACSLEP wait for I/O activity
-TRMNAT ldx D.Proc
- lda P$ID,X
- sta V.BUSY,U
- sta V.LPRC,U
- ldb ONXTI,U
- orcc #IntMasks disable interrupts
- cmpb ONXTO,U output done?
- bne TRMN00 ..no; sleep a bit
- lda V.TYPE,U
-         ldx   V.PORT,u
-         sta   CmndReg,x
- andcc #^IntMasks enable interrupts
- ldx #0
- OS9 F$IRQ remove acia from polling tbl
+PUTSTA cmpa #SS.SSig   Send signal on data ready
+ bne SetRel
+ lda PD.CPR,y
+ ldx PD.RGS,y
+ ldb R$X+1,x      Signal code
+ orcc #IntMasks       Block I and F interrupts
+ tst <INCNT,u  data ready already?
+ bne PUTS10 ..Yes
+ std <RDYSGNL,u
+ bra Write80
+PUTS10 andcc #^IntMasks       Allow I and F interrupts
+ bra SendSig    send code to process
+SetRel cmpa #SS.Relea
+ bne unksvc
+ lda PD.CPR,y
+ cmpa  <RDYSGNL,u
+ bne STATUS99
+ clr <RDYSGNL,u
  rts
 
 ***************
@@ -372,8 +368,8 @@ OutIRQ1 stb ONXTO,U save updated next-out ptr
 OutIRQ2    lda   <HALTED,u
  ora #H.EMPTY
  sta HALTED,U
-OutIRQ3    ldb   V.TYPE,u
-         orb   #$01
+OutIRQ3 ldb V.TYPE,u
+ orb #DTRRDY  set data terminal ready
  stb CmndReg,x
 
 WAKEUP ldb #S$Wake Wake up signal
@@ -385,7 +381,7 @@ Wake90 clrb return carry clear
  rts
 
 InIRQ bita #OVERUN!FRAME!PARITY check for errors
-         beq   InIRQ0 ..none
+         beq   InIRQ0
          tfr   a,b
          tst   ,x
          anda  #OVERUN!FRAME!PARITY
@@ -431,14 +427,13 @@ InIRQ2 cmpb INXTO,U input overrun?
  orb V.ERR,U
  stb V.ERR,U
  bra WAKEUP throw away character
-
 InIRQ30 stb INXTI,U update next-in ptr
  inc INCNT,U
-         tst   <u0024,u
-         beq   InIRQ4
-         ldd   <u0024,u
-         clr   <u0024,u
-         bra   SendSig
+ tst <RDYSGNL,u  process waiting for signal?
+ beq InIRQ4 ..no
+ ldd <RDYSGNL,u
+ clr <RDYSGNL,u
+ bra SendSig
 
 InIRQ4 lda V.XOFF,U get X-OFF char
  beq WAKEUP branch if not enabled
@@ -485,7 +480,7 @@ InXON99    clrb
 InXOFF lda HALTED,U
  bne InXOFF10 ..already halted, continue
  ldb V.TYPE,U get acia control code
-         orb   #$01
+ orb #DTRRDY
  stb CmndReg,X
 InXOFF10    ora   #$01       set bit 1
  sta HALTED,U restrict output

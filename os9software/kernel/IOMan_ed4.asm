@@ -1,6 +1,15 @@
          nam   IOMan
          ttl   os9 system module    
+
 * This is a disassembly of the IOMan edition 4 distributed with OS-9 for Dragon 64
+
+* Header for : IOMan
+* Module size: $6E7  #1767
+* Module CRC : $BD0579 (Good)
+* Hdr parity : $19
+* Edition    : $04  #4
+* Ty/La At/Rv: $C1 $81
+* System mod, 6809 Obj, re-ent, R/O
 
          ifp1
          use   ../DEFS/os9defs
