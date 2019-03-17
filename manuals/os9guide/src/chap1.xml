@@ -104,11 +104,11 @@ and then ask you to enter the date and time. This allows OS-9 to
 keep track of the date and time of creation of new files and disks.
 Enter the current date and time in the format requested like this:
 <screen>
-             yyyy/mm/dd hh:mm:ss
-     Time ?  2003 03 01 14 20
+             YY/MM/DD HH:MM:SS
+     TIME ?  <userinput>83 7 14 1420</userinput>
 </screen>
-In the example above, the date entered was March 1, 2003. OS-9
-uses 24-hour time so the date entered was 1420 hours or 2:20 PM.
+In the example above, the date entered was July 14, 1983.
+OS-9 uses 24-hour time so the date entered was 1420 hours or 2:20 PM.
 Next, OS-9 will print the shell prompt to let you know it is ready
 for you to type in a command.
 </para>

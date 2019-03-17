@@ -75,7 +75,7 @@ in the disk's allocation map. In addition to the causes mentioned
 in the first paragraph, some sectors may have been excluded from the
 allocation map by the FORMAT program because they were defective or
 they may be the last few sectors of the disk, the sum of which was
-two small to comprise a cluster.
+too small to comprise a cluster.
 </para>
 <para>
 The second message indicates that the cluster starting at sector

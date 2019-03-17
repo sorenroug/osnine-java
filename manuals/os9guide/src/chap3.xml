@@ -1057,7 +1057,7 @@ method for examining the contents of unusually formatted files.
 <title>Record Lockout (Level Two Only)</title>
 <para>
 When a file is accessed by two or more processes simultaneously,
-the possibility exists that they may attept to update the same
+the possibility exists that they may attempt to update the same
 record of the file at the same time, with unpredictable results. To
 avoid this potential problem, OS-9 Level Two automatically <quote>locks</quote>
 sections of all files opened in <quote>update</quote> mode. The lock covers any

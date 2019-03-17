@@ -2022,12 +2022,12 @@ is a single byte value 0 - 255.
       <para>
 If the destination process for the signal is sleeping or waiting, it will
 be activated so that it may process the signal. The signal processing
-routine (intercept) will be ,executed if a signal trap was set up (see
-F$ICPT), otherwise, the signal will abort the destination process, and
+routine (intercept) will be, executed if a signal trap was set up (see
+<xref linkend="f.icpt"/>), otherwise, the signal will abort the destination process, and
 the signal code code becomes the exit status (see WAIT). An exception is
 the WAKEUP signal, which activates a sleeping process but does not cause
 the signal intercept routine to be examined and will not abort a process
-that has not run an F$ICPT..
+that has not run an F$ICPT.
 </para>
       <para>
 Some of the signal codes have meanings defined by convention:
@@ -2037,7 +2037,7 @@ Some of the signal codes have meanings defined by convention:
 <member>0 = System abort (unconditional)</member>
 <member>1 = Wake up process</member>
 <member>2 = Keyboard abort</member>
-<member>3 = Keyboard interrup</member>
+<member>3 = Keyboard interrupt</member>
 <member>128 - 255 = User defined</member>
 </simplelist>
       </para>
@@ -2240,8 +2240,7 @@ occur and will resume execution when it reaches the front of the queue.</para>
             <simplelist>
               <member>(A) = Process ID number.</member>
               <member>(B) = Priority:
-<literallayout>
-          0 = lowest
+<literallayout>          0 = lowest
         255 = highest</literallayout></member>
             </simplelist>
           </listitem>
@@ -3458,7 +3457,7 @@ no use for other applications.
         <varlistentry>
           <term>MACHINE CODE:</term>
           <listitem>
-            <para>103F ZB</para>
+            <para>103F 2B</para>
           </listitem>
         </varlistentry>
         <varlistentry>

@@ -1,0 +1,417 @@
+<?xml version="1.0"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <title>Notes on the Dragon OS-9 system disk</title>
+  <para>
+      The Dragon OS-9 system disk was created in the days around the 25th of November 1983.
+  </para>
+  <para>
+An analysis of the OS-9 system disk for the Dragon 64 home computer shows details on how it was created.
+This is possible as the RBF manager has a tendency to place the files in sequence starting from the top of the disk.
+  </para>
+  <para>
+   When LSN is mentioned then this refers to the Logical Sector Number in hexadecimal, where the file or the file descriptor resides.
+  </para>
+  <section>
+    <title>Deleted programs</title>
+    <para>
+The files in the CMDS directory have creation dates that vary by months. The disk is a backup of another disk, that contained the following files:
+        </para>
+    <simplelist type="horiz" columns="5">
+      <member>asm</member>
+      <member>attr</member>
+      <member>backup</member>
+      <member>binex</member>
+      <member>build</member>
+      <member>cmp</member>
+      <member>cobbler</member>
+      <member>copy</member>
+      <member>date</member>
+      <member>dcheck</member>
+      <member>debug</member>
+      <member>del</member>
+      <member>deldir</member>
+      <member>dir</member>
+      <member>display</member>
+      <member>dsave</member>
+      <member>dump</member>
+      <member>echo</member>
+      <member>edit</member>
+      <member>exbin</member>
+      <member>format</member>
+      <member>free</member>
+      <member>ident</member>
+      <member>link</member>
+      <member>list</member>
+      <member>load</member>
+      <member>login</member>
+      <member>makdir</member>
+      <member>mdir</member>
+      <member>merge</member>
+      <member>mfree</member>
+      <member>os9gen</member>
+      <member>printerr</member>
+      <member>procs</member>
+      <member>pwd</member>
+      <member>pxd</member>
+      <member>rename</member>
+      <member>save</member>
+      <member>setime</member>
+      <member>shell</member>
+      <member>sleep</member>
+      <member>tee</member>
+      <member>tmode</member>
+      <member>tsmon</member>
+      <member>unlink</member>
+      <member>verify</member>
+      <member>xmode</member>
+      <member>go51</member>
+      <member>acia51</member>
+      <member/>
+    </simplelist>
+    <para>
+    Go51 and acia51 were added separately. Their file descriptors are at LSN 001A and LNS 0025 respectively.
+    The modification dates are 83/11/25 15:50 are 83/11/25 16:35 respectively.
+</para>
+<para>
+    At some point the files <filename>asm</filename>, <filename>debug</filename> and <filename>edit</filename> were deleted.
+    This happened rather late in the proces as they are fully recoverable. No sector was overwritten by other save operations.
+    After <filename>asm</filename> was deleted the <filename>RUNB</filename> was added. It occupies the same location in the directory. When <filename>RUNB</filename> was added, the programmer had booted without setting the date on the computer.
+</para>
+    <para>
+The SYS directory was created after the commands were added. It is located at LSN 0175 immediately after Xmode.
+The directory contains the following files, which are then placed immediately after.
+</para>
+    <simplelist type="horiz" columns="5">
+      <member>errmsg</member>
+      <member>password</member>
+      <member>motd</member>
+    </simplelist>
+    <para>
+The DEFS directory was created next.
+</para>
+    <simplelist type="horiz" columns="5">
+      <member>OS9Defs</member>
+      <member>RBFDefs</member>
+      <member>SCFDefs</member>
+      <member>SysType</member>
+    </simplelist>
+    <para>
+Then the startup file in the root directory was added.
+</para>
+    <para>
+Then Cobbler and OS9gen were replaced with new editions that are located at LSN 0209 and LSN 020C. The creation date for both is 83/11/03.
+
+</para>
+    <para>
+What happens next is that a bootfile is copied to the disk. It starts a LSN 024A. It contains the kernel modules mentioned below.
+Immediately after are the kernel modules individually:
+TERM (027A),
+ACIA51 (027B),
+T2 (027E),
+PRINTER (027F),
+P (0280),
+PipeMan (0281),
+Piper (0285, 83/12/05 14:49),
+Pipe, Clock, Sysgo, Shell, T1, P1.
+The directory containing the pointers to the files appears to have been placed at LSN 003B.
+This directory holds deleted entries for D2, D3, SCF, KBVDIO and TERM.
+These files were deleted before RunB was added.
+
+At LSN 0143 there was a file descriptor where the file used 13 sectors.
+At LSN 0144 there was a file descriptor where the file used 4 sectors.
+D0 had a file descriptor at LSN 0145, which means it was added after OS9gen was replaced and deleted before RunB was added. The creation date was 83/11/25 and last modified date 83/12/05.
+D1 had a file descriptor at LSN 0146.
+D2 had a file descriptor at LSN 0147.
+D3 had a file descriptor at LSN 0233, but this has been overwritten by RunB.
+TERM has a file descriptor at LSN 0245, and the segment list points to LSN 027A. The creation date was 83/11/25 and last modified date 83/12/05 14:38.
+</para>
+<para>
+RunB was added. It is located at LSN 0210-23F9. <!-- FIXME 23F9 -->
+</para>
+<para>
+    The OS9Boot was created 83/11/25 16:38.
+</para>
+    <para>
+Then comes a script to copy some files, go51 (LSN 029A, different from the go51 in CMDS), the makeboot file (LSN 02A4), the p1 source file, the defsfile,
+t1 source file and the read.me file. The OBJECT directory was located at LSN 003D, but is partly overwritten.
+</para>
+  </section>
+  <section>
+    <title>Creating the P1 and T1 files</title>
+    <para>This file with an unknown name was created 83/11/25 and last modified 83/12/05 15:36. The file descriptor is at LSN 0298.
+    </para>
+    <programlisting>
+t
+tmode .1 -pause
+load copy
+Chd OBJECT
+Copy   /h0/D64/OBJECT/go51 go51
+Copy   /h0/D64/OBJECT/makeboot makeboot
+Chd ..
+Copy   /h0/D64/p1 p1
+Copy   /h0/D64/defsfile defsfile
+Copy   /h0/D64/t1 t1
+Copy   /h0/D64/read.me read.me
+unlink copy
+tmode .1 pause
+    </programlisting>
+    <section>
+      <title>The Makeboot script</title>
+      <programlisting>
+t
+-x del bootfile
+merge ioman rbf ddisk d0 d1 d2 d3 scf kbvdio term t1 p1 printer \
+      p pipeman piper pipe clock sysgo  shell &gt;bootfile #20k
+</programlisting>
+    </section>
+    <section>
+      <title>The p1 source file</title>
+      <para>It was possible to recover the p1 source file from LSN 02A5.
+      </para>
+      <programlisting>
+ nam p1
+ use defsfile
+ ttl Device Descriptor for the Serial Port
+
+***************
+* /p1 module - serial port
+* for use as a printer port.
+*
+***************
+
+Type set DEVIC+OBJCT
+Revs set REENT+1
+
+ mod P1End,P1Nam,Type,Revs,P1Mgr,P1Drv
+ fcb UPDAT. attributes
+ fcb $FF high byte of 24-bit address
+ fdb $FF04 port address
+ fcb DD.Parms-*-1 option byte count
+OptStrt fcb DT.SCF SCF type device
+
+* Default path options
+
+ fcb 0 case=UPPER and lower
+ fcb 0 backspace=BS only
+ fcb 0 delete=backspace over line
+ fcb 0 auto echo OFF
+ fcb 1 auto line feed ON
+ fcb 0 number of NULLS after CR
+ fcb 0 end of page pause OFF
+ fcb 66 lines per page
+ fcb 0 backspace key
+ fcb 0 delete line key
+ fcb 0 end of record key
+ fcb 0 end of file key
+ fcb 0 redisplay the line
+ fcb 0 repeat the line
+ fcb 0 pause key
+ fcb 0 Keyboard Interrupt key
+ fcb 0 Keyboard Quit key
+ fcb 0 backspace echo character
+ fcb 0 line overflow character
+ fcb 0 no parity specified
+ fcb 3 baud rate = 1200
+ fdb P1Nam offset to pause device name
+ fcb $11 XON
+ fcb $13 XOFF
+DD.Parms equ *
+
+P1Nam fcs 'P1' device name
+P1Mgr fcs 'scf' file manager
+P1Drv fcs 'acia51' device driver
+
+ emod
+
+P1End equ *
+
+ end
+</programlisting>
+    </section>
+    <section>
+      <title>The defsfile file</title>
+      <para>This file is located at LSN 02AA.
+      </para>
+      <programlisting>
+ ifp1
+ use /d0/defs/systype
+ use /d0/defs/os9defs
+ use /d0/defs/scfdefs
+ use /d0/defs/rbfdefs
+ endc
+</programlisting>
+    </section>
+    <section>
+      <title>The t1 source file</title>
+            <para>This file is located at LSN 02AB. The file descriptor is lost.
+      </para>
+
+      <programlisting>
+ nam t1
+ use defsfile
+ ttl Device Descriptor for the Serial Port
+
+***************
+* /t1 module - serial port
+* for use as a terminal port.
+*
+***************
+
+Type set DEVIC+OBJCT
+Revs set REENT+1
+
+ mod T1End,T1Nam,Type,Revs,T1Mgr,T1Drv
+ fcb UPDAT
+ attributes
+ fcb $FF high byte of 24-bit address
+ fdb $FF04 port address
+ fcb DD.Parms-*-1 option byte count
+OptStrt fcb DT.SCF SCF type device
+
+* Default path options
+
+ fcb 0 case=UPPER and lower
+ fcb 1 backspace=BS,SP,BS
+ fcb 0 delete=backspace over line
+ fcb 1 auto echo ON
+ fcb 1 auto line feed ON
+ fcb 0 number of NULLS after CR
+ fcb 1 end of page pause ON
+ fcb 24 lines per page
+ fcb C$BSP backspace key
+ fcb C$DEL delete line key
+ fcb C$CR end of record key
+ fcb C$EOF end of file key
+ fcb C$RPRT redisplay the line
+ fcb C$RPET repeat the line
+ fcb C$PAUS pause key
+ fcb C$INTR Keyboard Interrupt key
+ fcb C$QUIT Keyboard Quit key
+ fcb C$BSP backspace echo character
+ fcb C$BELL line overflow character
+ fcb 0 no parity specified
+ fcb 3 baud rate = 1200
+ fdb T1Nam offset to pause device name
+ fcb $11 XON
+ fcb $13 XOFF
+DD.Parms equ *
+
+T1Nam fcs 'T1' device name
+T1Mgr fcs 'scf' file manager
+T1Drv fcs 'acia51' device driver
+
+ emod
+
+T1End equ *
+
+ end
+</programlisting>
+    </section>
+    <section>
+      <title>The read.me file</title>
+      <para>
+This file is deleted on the disk.
+Note that no line is longer than 51 characters.
+The programmer worked on this file while in 51x24 mode.
+File descriptor at LSN 02B4. Creation date is 83/11/29, last modified 83/12/05 14:36.
+</para>
+      <literallayout>
+This directory contains the source files for the
+device descriptors p1 and t1. The directory
+OBJECT contains the object for these two
+modules, plus the original OS-9 boot file
+broken down into modules. In addition, there
+is a procedure file MAKEBOOT, which merges
+a selection of modules into a file called
+BOOTFILE. This file may then be used with
+the OS9GEN command to make a new boot file
+on the system disk. Example commands:
+  OS9: chd /d1/modules/object
+  OS9: makeboot
+  OS9: os9gen /d0
+       bootfile
+              
+  OS9:
+Note that OS9GEN expects the filename to
+be entered, followed by a blank line to
+terminate (CR only).
+To alter the boot file, it is only necessary
+to edit the MERGE command line in MAKEBOOT
+to merge together the required modules.
+Note that the present bootfile includes
+P1 and T1, though not ACIA51. This is because
+the device descriptors only take up $3A bytes
+in the bootfile, but if loaded after booting
+would each take a full page (256 bytes).
+
+NOTE: I am not sure that the FORMAT program
+puts the boot loading sectors on the disk.
+Therefore when using OS9GEN to create a new
+bootfile, this must be done to a disk that
+is a BACKUP of an existing system disk.
+</literallayout>
+    </section>
+  </section>
+  <section>
+    <title>File modification dates</title>
+    <table>
+      <title>File modification dates</title>
+      <tgroup cols="3">
+        <thead>
+          <row>
+            <entry>Path</entry>
+            <entry>Modified</entry>
+            <entry>Start</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>CMDS</entry>
+            <entry>83/11/03 1553</entry>
+            <entry>4E</entry>
+          </row>
+          <row>
+            <entry>SYS</entry>
+            <entry>83/11/03 1600</entry>
+            <entry>175</entry>
+          </row>
+          <row>
+            <entry>CMDS/GO51</entry>
+            <entry>83/11/25 1550</entry>
+            <entry>1A</entry>
+          </row>
+          <row>
+            <entry>CMDS/Acia51</entry>
+            <entry>83/11/25 1635</entry>
+            <entry>25</entry>
+          </row>
+          <row>
+            <entry>OS9Boot</entry>
+            <entry>83/11/25 1638</entry>
+            <entry>29</entry>
+          </row>
+          <row>
+            <entry>RUN32</entry>
+            <entry>00/00/00 0002</entry>
+            <entry>2A</entry>
+          </row>
+          <row>
+            <entry>RUN51</entry>
+            <entry>00/00/00 0002</entry>
+            <entry>2B</entry>
+          </row>
+          <row>
+            <entry>startup</entry>
+            <entry>00/00/00 0005</entry>
+            <entry>2D</entry>
+          </row>
+          <row>
+            <entry>CMDS/RunB</entry>
+            <entry>00/00/00 0012</entry>
+            <entry>2C</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </section>
+</article>

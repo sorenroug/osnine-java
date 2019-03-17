@@ -2,7 +2,7 @@
 <appendix xmlns="http://docbook.org/ns/docbook">
 <title>RunB</title>
 <para>
-RunB is the the <productname>BASIC09</productname> run-time package.
+RunB is the <productname>BASIC09</productname> run-time package.
 It is similar to <productname>BASIC09</productname> with
 the following exceptions: RunB is about half the size of <productname>BASIC09</productname> and no
 file editing or debugging can be done. The main purpose of RunB is to

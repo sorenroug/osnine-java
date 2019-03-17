@@ -27,16 +27,16 @@ date t &gt;/p (Output is redirected to printer)
 
 OS9: setime
 
-       yyyy/mm/dd hh:mm:ss
-Time ? 2003/04/15 14:19:00
+       YY/MM/DD HH:MM:SS
+TIME ? 81/04/15 14:19:00
 
 OS9:date
 
-April 15, 2003
+April 15, 1981
 
 OS9:date t
 
-April 15, 2003  14:20:20
+April 15, 1981  14:20:20
 </screen>
 </refsect1>
 </refentry>

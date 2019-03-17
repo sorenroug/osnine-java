@@ -429,18 +429,18 @@ section of path descriptors used by RBF.
           <row>
             <entry>PD.SSZ</entry>
             <entry>$19</entry>
-            <entry>2</entry>
+            <entry>3</entry>  <!-- Matches os9defs -->
             <entry>Segment size</entry>
           </row>
           <row>
             <entry>PD.DSK</entry>
-            <entry>$15</entry>
+            <entry>$1C</entry>
             <entry>2</entry>
             <entry>Disk ID (for internal use only)</entry>
           </row>
           <row>
             <entry>PD.DTB</entry>
-            <entry>$lD</entry>
+            <entry>$1E</entry>
             <entry>2</entry>
             <entry>Address of drive table</entry>
           </row>

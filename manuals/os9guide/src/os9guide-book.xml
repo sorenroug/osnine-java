@@ -48,4 +48,7 @@
 <xi:include href="appendix-keys.xml"/>
 <xi:include href="appendix-go51.xml"/>
 <xi:include href="appendix-acia51.xml"/>
+<index>
+<title>Command Summary</title>
+</index>
 </book>

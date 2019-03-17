@@ -84,6 +84,17 @@
             </configuration>
           </execution>
 
+          <execution>
+            <id>dragonsystemdisk</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+            </goals>
+            <configuration>
+              <includes>dragonsystemdisk.xml</includes>
+            </configuration>
+          </execution>
+
         </executions>
 
         <configuration>

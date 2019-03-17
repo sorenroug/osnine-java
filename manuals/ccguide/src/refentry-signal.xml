@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <funcsynopsis>
-<funcsynopsisinfo>
+<funcsynopsisinfo xml:space="preserve">
 #include &lt;signal.h&gt;
 
 typedef int (*sighandler_t)(int);
@@ -123,7 +123,7 @@ Please note that there is another method of trapping signals,
 namely <quote>intercept()</quote> (q.v.). However, since <quote>signal()</quote> and
 <quote>intercept()</quote> are mutually incompatible, calls to both of them
 must not appear in the same program. The link-loader will
-preven the creation of an executable program in which both are
+prevent the creation of an executable program in which both are
 called by aborting with an <quote>entry name clash</quote> error for
 <quote>_sigint</quote>.
 </para>
