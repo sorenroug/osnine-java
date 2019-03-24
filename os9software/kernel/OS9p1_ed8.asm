@@ -6,32 +6,55 @@
 * the MAME emulator. It seems to be edition 8.
 * It doesn't seem to work with OS-9 level I 1.2
 
-         ifp1
-         use   /dd/defs/os9defs
-         endc
-tylg     set   Systm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   OS9End,name,tylg,atrv,COLD,size
-u0000    rmb   0
-size     equ   .
-name     equ   *
-         fcs   /OS9/
-         fcc   "GMX"
-         fcb   8    Edition number
-         fcc   "(C)1981Microware"
+ use defsfile
 
-RamLimit set $E000
+ ttl Names & tables
+ opt -c
+ page
 
+************************************************************
+*                                                          *
+*           OS-9 Level I V1.2 - Kernal, part 1             *
+*                                                          *
+************************************************************
 
-CNFSTR    fcs   "INIT"
-OS9STR    fcs   "OS9P2"
+* Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
+* Reproduced Under License
+
+*
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than 
+* the licensee is strictly prohibited!!
+*
+
+*****
+*
+*  Module Header
+*
+Type set SYSTM+OBJCT
+Revs set REENT+1
+ mod OS9End,OS9Nam,Type,Revs,COLD,0
+OS9Nam fcs /OS9/
+ fcc "GMX"
+ fcb 8 Edition number
+ fcc "(C)1981Microware"
 
 *************************
 *    Edition History
 *
 * Ed.  8 - Beginning of history  (V1.1 final version)
 
+RamLimit set $E000
+
+CNFSTR    fcs   "INIT"
+OS9STR    fcs   "OS9P2"
+
+*****                                                         <
+*                                                             <
+* System Service Routine Table                                <
+*                                                             <
 SVCTBL equ *
  fcb F$LINK
  fdb LINK-*-2
@@ -65,7 +88,9 @@ SVCTBL equ *
  fdb VMOD-*-2
  fcb F$SSVC
  fdb SSVC-*-2
- fcb $80 
+ fcb $80
+
+
 
  ttl COLD Start
  page
@@ -232,10 +257,11 @@ NMI jmp [D.NMI] Go thru page zero vector
 *
 *  Swi3 Handler
 *
-
 SWI3HN pshs B,X,PC Save registers
  ldb #P$SWI3 Use swi3 vector
-         bra   SWIH10
+ bra SWIH10
+
+
 
 *****
 *
@@ -244,7 +270,6 @@ SWI3HN pshs B,X,PC Save registers
 SWI2HN pshs B,X,PC Save registers
  ldb #P$SWI2 Use swi2 vector
  bra SWIH10
-
 
 
 
@@ -263,16 +288,20 @@ FIRQHN rti
 IRQHN jmp [D.SvcIRQ] Go to interrupt service
 
 
+
 *****
 *
 *  Swi Handler
 *
 SWIHN pshs B,X,PC Save registers
  ldb #P$SWI Use swi vector
-SWIH10    ldx   >$004B
-         ldx   b,x
-         stx   $03,s
-         puls  pc,x,b
+SWIH10 ldx >D.PROC Get process descriptor ptr
+ ldx B,X Get entry point address
+ stx 3,S Save it
+ puls B,X,PC Restore registers & jump
+
+
+
 *****
 *
 *  Nmi Handler
@@ -1315,34 +1344,35 @@ PNAM ldx R$X,U Get string ptr
  stx R$X,U Return updated string ptr
  sty R$Y,U Return name end ptr
  std R$D,U Return byte & size
- rts   
+ rts
 
 PRSNAM lda 0,X Get first char
  cmpa #'/ Slash?
  bne PRSNA1 ..no
  leax 1,X ..yes; skip it
-PRSNA1    leay  ,x
+PRSNA1 leay 0,X
  clrb
  lda ,Y+
  anda #$7F
  bsr ALPHA 1st character must be alphabetic
  bcs PRSNA4 Branch if bad name
 PRSNA2 incb INCREMENT Character count
-         tst   -$01,y
-         bmi   L0738
+ tst -1,Y End of name (high bit set)?
+ bmi PRSNA3 ..yes; quit
  lda ,Y+ Get next character
  anda #$7F Strip high order bit
  bsr ALFNUM Alphanumeric?
  bcc PRSNA2 ..yes; count it
-         leay  -$01,y
-L0738    clra  
-         rts   
+ leay -1,Y Backup to unknown
+PRSNA3 clra
+ rts
+
 PRSNA4 cmpa #', Comma (skip if so)?
  bne PRSNA6 ..no
 PRSNA5 lda ,Y+ Get next character
 PRSNA6 cmpa #$20 Space?
  beq PRSNA5 ..yes; skip
- leay  -$01,Y Backup to non-delim char
+ leay -1,Y Backup to non-delim char
  coma (NAME Not found)
  rts RETURN Carry set
 
@@ -1393,7 +1423,7 @@ CHKN10 lda ,Y+ Get (next) char of module name
  eora ,X+ Equal pathname char?
  anda #$FF-$20 Match upper/lower case
  beq CHKN10 ..yes; repeat
-RETCS1 orcc  #CARRY Set carry
+RETCS1 orcc #Carry Set carry
  puls D,X,Y,PC
 CHKN20 decb LAST Char of pathname?
  bne RETCS1 Branch if not
@@ -1433,12 +1463,11 @@ SETSVC ldb ,Y+ Get next routine offset
 DATINT clr $E231 Clear m58167 interrupts
  ldb #$F
  ldx #$0000
-DAT10    stb   ,-x
+DAT10 stb ,-X Init dat register
  decb Next Dat mask
  bpl DAT10 branch if more
  lbra COLD
  emod
-
 OS9End   equ   *
  fcc "999999999999999"
  fcc "9999999999999999"
@@ -1468,4 +1497,3 @@ ROMEnd equ *
 
 
  end
-

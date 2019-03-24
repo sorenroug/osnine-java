@@ -2,10 +2,30 @@
  nam OS-9 Level I V1.2 kernal, part 1
  ttl System Type definitions
 
-         ifp1
-         use   os9defs
-         endc
+ use defsfile
+
 OS9Start equ *
+
+ ttl Names & tables
+ opt -c
+ page
+
+************************************************************
+*                                                          *
+*           OS-9 Level I V1.2 - Kernal, part 1             *
+*                                                          *
+************************************************************
+
+* Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
+* Reproduced Under License
+
+*
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than 
+* the licensee is strictly prohibited!!
+*
 
 *****
 *
@@ -17,10 +37,20 @@ Revs set REENT+1
 OS9Nam fcs /OS9/
  fcb 12 Edition number
 
+*************************
+*    Edition History
+*
+* Ed.  8 - Beginning of history  (V1.1 final version)
+*
+* Ed.  9 - First V1.2 version minor cosmetic changes
+*          Ed byte immediately following module name
+*          Version ID all same length                  WGP  11/25/82
+
 *********
 * Version Id
 *
  fcc   /CC/
+RamLimit set $F000
 
 CNFSTR fcs /INIT/ Configuration module name
 OS9STR fcs /OS9P2/ Kernal, part 2 name
@@ -28,29 +58,62 @@ OS9STR fcs /OS9P2/ Kernal, part 2 name
 
 * Dragon/Coco hardware vectors point to RAM addresses at $100 and up.
 * Copied to $100 and up
-CCVECS    bra   JMPSWI3
-         nop
+CCVECS bra SWI3RQ
+ nop
+ bra SWI2RQ
+ nop
+ bra SWIRQ
+ nop
+ bra NMI
+ nop
+ bra IRQ
+ nop
+ bra FIRQ
+*****
+*
+*  Swi3 Interrupt Routine
+*
+SWI3RQ jmp [D.SWI3] Go thru page zero vector
 
-         bra JMPSWI2
-         nop
 
-         bra JMPSWI
-         nop
 
-         bra JMPNMI
-         nop
+*****
+*
+*  Swi2 Interrupt Routine
+*
+SWI2RQ jmp [D.SWI2] Go thru page zero vector
 
-         bra JMPIRQ
-         nop
 
-         bra JMPFIRQ
 
-JMPSWI3  jmp [D.SWI3]
-JMPSWI2  jmp [D.SWI2]
-JMPSWI   jmp [D.SWI]
-JMPNMI   jmp [D.NMI]
-JMPIRQ   jmp [D.IRQ]
-JMPFIRQ  jmp [D.FIRQ]
+*****
+*
+*  Swi Interrupt Routine
+*
+SWIRQ jmp [D.SWI] Go thru page zero vector
+
+
+
+*****
+*
+*  Nmi Interrupt Routine
+*
+NMI jmp [D.NMI] Go thru page zero vector
+
+
+
+*****
+*
+*  Irq Interrupt Routine
+*
+IRQ jmp [D.IRQ] Go thru page zero vector
+
+
+
+*****
+*
+*  Firq Interrupt Handler
+*
+FIRQ jmp [D.FIRQ] Go thru page zero vector
 
 *****
 *
@@ -100,7 +163,7 @@ SVCTBL equ *
 *
 LORAM set $20
 HIRAM set $400
-
+RAMMSK set $F8 Initial bit map mask
 COLD ldx #LORAM Set ptr
  ldy #HIRAM-LORAM Set byte count
  clra CLEAR D
@@ -109,13 +172,13 @@ COLD05 std ,X++ Clear two bytes
  leay -2,Y Count down
  bne COLD05
  inca ONE Page for direct page
-         inca  
+ inca COCO has the memory bit map one page higher
  std D.FMBM Set free memory bit map
-         addb  #$20
+ addb #BMAPSZ Add map size
  std D.FMBM+2
  addb #2 Reserve i/o routine entry
  std D.SysDis Set system service request table
-         addb  #$70
+ addb #SVCTSZ+2 Add table size
  std D.UsrDis Set user service request table
  clrb SET Module directory address
  inca
@@ -137,7 +200,7 @@ COLD10 leay 0,X Copy current ptr
  bne COLD15 If not, eor
  std 0,Y Replace current value
  leax 256,Y Try next page
-         cmpx  #$F000
+ cmpx #RamLimit
  bcs COLD10 Branch if more
  leay 0,X Copy end-of-ram ptr
 COLD15 leax 0,Y Copy eor ptr
@@ -183,13 +246,13 @@ COLD45 ldd ,Y++ get vector
  leax SYSIRQ,PCR Get system interrupt routine
  stx D.SysIRQ
  stx D.SvcIRQ Set interrupts to system state
-  leax SYSREQ,PCR Get system service routine
+ leax SYSREQ,PCR Get system service routine
  stx D.SysSVC
  stx D.SWI2 Set service to system state
  leax IOPOLL,PCR Set irq polling routine
  stx D.POLL
-         leax  TICK,pcr
-         stx   D.Clock
+ leax TICK,pcr
+ stx D.Clock
 *
 * Initialize Service Routine Dispatch Table
 *
@@ -200,13 +263,13 @@ COLD45 ldd ,Y++ get vector
  OS9 F$LINK Link to configuration module
  lbcs COLD Retry if error
  stu D.Init Save ptr
-         ldd   $0A,u
+ ldd MAXMEM+1,U Get memory limit
  clrb ROUND Down
  cmpd D.MLIM Does ram go that high?
  bcc COLD50 Branch if not
  std D.MLIM Set given memory limit
 COLD50 ldx D.FMBM Get bit map ptr
-         ldb   #$F8
+ ldb #RAMMSK Get initial mask
  stb 0,X
  clra GET Beginning page number
  ldb D.MLIM
@@ -242,12 +305,11 @@ SWI2HN pshs B,X,PC Save registers
 
 
 
-
 *****
 *
 *  Firq Handler
 *
-FIRQHN   rti   
+FIRQHN rti
 
 
 
@@ -255,7 +317,7 @@ FIRQHN   rti
 *
 *  Irq Handler
 *
-IRQHN    jmp   [D.SvcIRQ] Go to interrupt service
+IRQHN jmp [D.SvcIRQ] Go to interrupt service
 
 
 
@@ -263,12 +325,14 @@ IRQHN    jmp   [D.SvcIRQ] Go to interrupt service
 *
 *  Swi Handler
 *
-SWIHN    pshs  pc,x,b
-         ldb   #P$SWI Use swi vector
-SWIH10   ldx   >D.Proc
-         ldx   b,x
-         stx   $03,s
-         puls  pc,x,b
+SWIHN pshs B,X,PC Save registers
+ ldb #P$SWI Use swi vector
+SWIH10 ldx >D.PROC Get process descriptor ptr
+ ldx B,X Get entry point address
+ stx 3,S Save it
+ puls B,X,PC Restore registers & jump
+
+
 
 *****
 *
@@ -471,7 +535,7 @@ DISPCH pshs U Save register ptr
  rorb RE-ADJUST Byte
  ldx -2,Y Get i/o routine
  bra DISP20
-DISP10    cmpb  #$6E
+DISP10 cmpb #SVCTSZ Code in range?
  bcc BADSVC
  ldx B,Y Get routine address
  beq BADSVC Branch if none
@@ -675,6 +739,7 @@ IDCH30 pshs X Save module ptr
  ldy M$SIZE,X Get module size
  bsr CRCCHK Check crc code
  puls X,PC
+
 
 
 *****
@@ -1010,7 +1075,7 @@ SETP15 leay 0,U Copy module ptr
  ldd M$Mem,Y Get memory required
 SETP20 addd #0 Req for zero data mem?
  bne SETP25 bra if not
-*
+
 SETP25 OS9 F$MEM Mem to correct size
  bcs SETP50 Branch if no memory
  subd #R$SIZE Deduct stack room
@@ -1395,7 +1460,7 @@ CHKN10 lda ,Y+ Get (next) char of module name
  eora ,X+ Equal pathname char?
  anda #$FF-$20 Match upper/lower case
  beq CHKN10 ..yes; repeat
-RETCS1    orcc  #$01
+RETCS1 orcc #Carry Set carry
  puls D,X,Y,PC
 CHKN20 decb LAST Char of pathname?
  bne RETCS1 Branch if not
@@ -1419,7 +1484,7 @@ SETS10 tfr B,A copy routine offset
  anda #$7F mask upper bit
  cmpa #$7F Is routine Ioman?
  beq SETS30 Bra if so
-         cmpa  #$37
+ cmpa #SVCTSZ/2 Is routine offset legal?
  bcs SETS30 Bra if so
  comb set carry
  ldb #E$ISWI return error
@@ -1432,22 +1497,24 @@ SETS30 aslb MAKE Table offset
  leax D,Y Get routine address
  stx 0,U Put in system routine table
  bcs SETSVC Branch if system only
-         stx   <$70,u
+ stx SVCTSZ+2,U Put in user routine table
 SETSVC ldb ,Y+ Get next routine offset
  cmpb #$80 End of table code?
  bne SETS10 Branch if not
  rts
  page
 
-         emod
+ emod
 OS9End equ *
 *
 * Os-9 System Entries
 *
-         fdb TICK Clock tick handler
-SYSVEC   fdb SWI3HN
-         fdb SWI2HN
-         fdb FIRQHN
-         fdb IRQHN Irq handler
-         fdb SWIHN Swi handler
-         fdb NMIHN Nmi handler
+ fdb TICK Clock tick handler
+SYSVEC fdb SWI3HN Swi3 handler
+ fdb SWI2HN Swi2 handler
+ fdb FIRQHN Fast irq handler
+ fdb IRQHN Irq handler
+ fdb SWIHN Swi handler
+ fdb NMIHN Nmi handler
+
+ end
