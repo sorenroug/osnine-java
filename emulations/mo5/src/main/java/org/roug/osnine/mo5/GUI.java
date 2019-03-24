@@ -77,6 +77,9 @@ public class GUI {
     /** Status of sound - false means no sound. */
     private boolean soundState;
 
+    /** Status of throttling. */
+    private boolean throttleState;
+
     private final JFileChooser fc = new JFileChooser(new File("."));
 
     /**
@@ -137,7 +140,8 @@ public class GUI {
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
 
         pace = new Throttler(bus, 1000000);
-        pace.throttle(true);
+        throttleState = true;
+        pace.throttle(throttleState);
         Thread paceThread = new Thread(pace, "throttle");
         paceThread.start();
     }
@@ -307,6 +311,7 @@ public class GUI {
                     pasteBuffer = null;
                     pasteIndex = 0;
                     beeper.setActiveState(soundState);
+                    pace.throttle(throttleState);
                 }
             }
 
@@ -332,6 +337,7 @@ public class GUI {
                 pasteIndex = 0;
                 soundState = beeper.getActiveState();
                 beeper.setActiveState(false);
+                pace.throttle(false);
             } catch (UnsupportedFlavorException | IOException e1) {
                 LOGGER.error("Unsupported flavor", e1);
             }
@@ -408,9 +414,13 @@ public class GUI {
                         options,
                         options[2]);
             switch (answer) {
-                case 0: pace.throttle(true);
+                case 0:
+                    throttleState = true;
+                    pace.throttle(throttleState);
                     break;
-                case 1: pace.throttle(false);
+                case 1:
+                    throttleState = false;
+                    pace.throttle(throttleState);
                     break;
                 default:
             }

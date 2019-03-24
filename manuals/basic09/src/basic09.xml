@@ -678,7 +678,7 @@ B: LIST* /p
 This tells <productname>BASIC09</productname> to LIST all procedures in memory to the output
 device <quote>/p</quote> which is the printer device name in most OS-9 systems.
 Like the SAVE command, LIST has several useful variations. If you
-want to list just one procedure (if there are more than on in
+want to list just one procedure (if there are more than one in
 memory) you can type:
 <screen>
 B: LIST procedurename >/P

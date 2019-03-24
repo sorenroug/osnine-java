@@ -138,4 +138,13 @@ public class Throttler implements Runnable {
         }
     }
 
+    /*
+     * Get throttling state.
+     *
+     * @return throttling state.
+     */
+    public boolean isThrottling() {
+        return throttling;
+    }
+
 }

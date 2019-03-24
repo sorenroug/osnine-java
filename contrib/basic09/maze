@@ -1,133 +1,363 @@
 PROCEDURE maze
-    DIM visited(25,25):BOOLEAN
-    DIM cells(25,25):BYTE
-    DIM d(10),dx:BYTE
-    DIM rows,cols,C,R,entry,Q,X,Z,cellinx,totcells:INTEGER
-    DIM bottom:BOOLEAN
-    DIM NO_FLOOR,NO_RIGHT_WALL:BYTE
+    PRINT TAB(27);"MAZE"
+    PRINT TAB(20);"CREATIVE COMPUTING"
+    PRINT TAB(18);"MORRISTOWN, NEW JERSEY"
+    PRINT \ PRINT \ PRINT
+    DIM C,E,H,V,Q,Z,I,J,R,S,X,Y:INTEGER
+    DIM NO_FLOOR,NO_RIGHT_WALL,CRUMB:BYTE
+    DIM W(25,25),cells(25,25):BYTE
 
-    NO_FLOOR = 1 \ NO_RIGHT_WALL = 2
-    LOOP
-      PRINT "WHAT ARE YOUR LENGTH AND WIDTH (E. G. 13,10)"; 
-      INPUT rows,cols
-      EXITIF rows>1 AND rows <= 25 AND cols>1 AND cols <= 25 THEN ENDEXIT
-      PRINT "MEANINGLESS DIMENSIONS.  TRY AGAIN."
+    REM  MOUSE IN MAZE - SOLUTION SECTION BY RICHARD SCHAAL FMCC
+    REM  ORIGINAL MAZE PROGRAM FROM "101 BASIC COMPUTER GAMES"
+
+    NO_FLOOR = 1 \ NO_RIGHT_WALL = 2 \ CRUMB = 4
+
+    PRINT "DO YOU NEED INSTRUCTIONS"; \ INPUT A$
+    A$=LEFT$(A$,1)
+100 LOOP
+      IF A$="Y" OR A$="y" THEN
+        PRINT \ PRINT \ PRINT "THIS PROGRAM WILL SIMULATE A NEAR-SIGHTED MOUSE IN"
+        PRINT "A MAZE.  YOU SELECT THE DIFFICULTY FACTOR -SIZE!"
+        PRINT "YOU MAY HAVE A MAZE OF ANY SIZE PERMITTED BY THE SIZE OF YOUR"
+        PRINT "SYSTEM. DIMENSIONS LESS THAN 5 ARE TOO TRIVIAL."
+        PRINT "EACH MAZE IS DIFFERENT, AND HAS ONLY ONE WAY THROUGH IT."
+      ENDIF
+      PRINT
+      PRINT "WHAT ARE YOUR DIMENSIONS (HORIZONTAL, VERTICAL)";
+      INPUT H,V
+      H=ABS(H) \ V=ABS(V)
+      EXITIF H>=5 AND V>=5 THEN ENDEXIT
+      A$="Y"
     ENDLOOP
-
-    (* Initialize *)
-    LET totcells=rows*cols
-    FOR Q=1 TO rows
-      FOR Z=1 TO cols
-        LET visited(Q,Z)=FALSE
-        LET cells(Q,Z)=0
+    PRINT \ PRINT
+    FOR Q=1 TO V
+      FOR Z=1 TO H
+        LET W(Z,Q)=0
+        LET cells(Z,Q)=0
       NEXT Z
     NEXT Q
-    LET bottom=FALSE
-    LET entry=INT(RND(cols)+1)
-    LET R=1
-    LET C=entry
-    LET cellinx=1
-    LET visited(R,C)=TRUE
+    Q=0 \ Z=0
+    X=INT(RND(H)+1)
+    C=1 \ W(X,1)=C \ C=C+1 \ R=X \ S=1
+    GOTO 470
 
-    REPEAT
-580 LET dx=0
-    IF C<>1 THEN
-      IF visited(R,C-1) = FALSE THEN
-        LET dx=dx+1
-        LET d(dx)=1
-      ENDIF
-    ENDIF
-    IF C<>cols THEN
-      IF visited(R,C+1) = TRUE THEN 750
-      LET dx=dx+1
-      LET d(dx)=2
-    ENDIF
-    IF R>1 THEN
-      IF visited(R-1,C) = FALSE THEN
-        LET dx=dx+1
-        LET d(dx)=3
-      ENDIF
-    ENDIF
-750 IF R < rows THEN
-      IF visited(R+1,C) = TRUE THEN 820
-    ELSE
-      IF bottom=TRUE THEN 820
-    ENDIF
-    LET dx=dx+1
-    LET d(dx)=4
-820 IF dx=0 THEN
-    GOSUB 960
-    GOTO 580
-    ENDIF
-    LET X=INT(RND(dx)+1)
-    IF d(X)=4 THEN
-      LET cells(R,C)= LOR(cells(R,C), NO_FLOOR)
-      LET R=R+1
-      IF R>rows THEN
-        LET bottom=TRUE
-        LET R=1
-        LET C=0
-        GOSUB 960
-        GOTO 580
-      ENDIF
-    ENDIF
-    IF d(X)=3 THEN
-      LET R=R-1
-      LET cells(R,C) = NO_FLOOR
-    ENDIF
-    IF d(X)=2 THEN
-      LET cells(R,C) = LOR(cells(R,C), NO_RIGHT_WALL)
-      LET C=C+1
-    ENDIF
-    IF d(X)=1 THEN
-      LET C=C-1
-      LET cells(R,C)=NO_RIGHT_WALL
-    ENDIF
-
-    LET cellinx=cellinx+1
-    LET visited(R,C)=TRUE
-    UNTIL cellinx >= totcells
-
-    (* Print maze *)
-    PRINT 
-    FOR C=1 TO cols
-      IF C=entry THEN
-        PRINT ".  "; 
+400 REPEAT
+      IF R<>H THEN
+        R=R+1
       ELSE
-        PRINT ".--"; 
+        R=1
+        IF S<>V THEN
+          S=S+1
+        ELSE
+          S=1
+        ENDIF
       ENDIF
-    NEXT C
-    PRINT "."
-    FOR R=1 TO rows
-      PRINT "|"; 
-      FOR C=1 TO cols
-        IF LAND(cells(R,C),NO_RIGHT_WALL) = 0 THEN
-          PRINT "  |"; 
-        ELSE
-          PRINT "   "; 
-        ENDIF
-      NEXT C
-      PRINT 
-      FOR C=1 TO cols
-        IF LAND(cells(R,C),NO_FLOOR) = 0 THEN
-          PRINT ":--"; 
-        ELSE
-          PRINT ":  "; 
-        ENDIF
-      NEXT C
-      PRINT ":"
-    NEXT R
-    END 
+    UNTIL W(R,S)<>0
 
-(* Find a cell that is already visited *)
-960 REPEAT
-      LET C=C+1
-      IF C > cols THEN
-        LET R=R+1
-        IF R > rows THEN
-          LET R=1
-        ENDIF
-        LET C=1
-      ENDIF
-    UNTIL visited(R,C) = TRUE
-    RETURN
+470 IF R=1 THEN 830
+    IF W(R-1,S)>0 THEN 830
+    IF S=1 THEN 640
+    IF W(R,S-1)<>0 THEN 640
+    IF R=H THEN 550
+    IF W(R+1,S)>0 THEN 550
+    X=INT(RND(3)+1)
+    ON X GOTO 1200,1240,1280
+
+550 IF S<>V THEN
+      IF W(R,S+1)>0 THEN 620
+    ELSE
+      IF Z=1 THEN 620
+      Q=1
+    ENDIF
+    X=INT(RND(3)+1)
+    ON X GOTO 1200,1240,1370
+620 X=INT(RND(2)+1)
+    ON X GOTO 1200,1240
+
+640 IF R=H THEN 750
+    IF W(R+1,S)>0 THEN 750
+    IF S<>V THEN
+      IF W(R,S+1)>0 THEN 730
+    ELSE
+      IF Z=1 THEN 730
+      Q=1
+    ENDIF
+    X=INT(RND(3)+1)
+    ON X GOTO 1200,1280,1370
+730 X=INT(RND(2)+1)
+    ON X GOTO 1200,1280
+
+750 IF S<>V THEN
+      IF W(R,S+1)>0 THEN 820
+    ELSE
+      IF Z=1 THEN 820
+      Q=1
+    ENDIF
+    X=INT(RND(2)+1)
+    ON X GOTO 1200,1370
+820 GOTO 1200
+
+830 IF S=1 THEN 1040
+    IF W(R,S-1)>0 THEN 1040
+    IF R=H THEN 960
+    IF W(R+1,S)>0 THEN 960
+    IF S<>V THEN
+      IF W(R,S+1)>0 THEN 940
+    ELSE
+      IF Z=1 THEN 940
+      Q=1
+    ENDIF
+    X=INT(RND(3)+1)
+    ON X GOTO 1240,1280,1370
+940 X=INT(RND(2)+1)
+    ON X GOTO 1240,1280
+
+960 IF S<>V THEN
+      IF W(R,S+1)>0 THEN 1030
+    ELSE
+      IF Z=1 THEN 1030
+      Q=1
+    ENDIF
+     X=INT(RND(2)+1)
+     ON X GOTO 1240,1370
+1030 GOTO 1240
+
+1040 IF R=H THEN 1140
+     IF W(R+1,S)>0 THEN 1140
+     IF S<>V THEN
+       IF W(R,S+1)>0 THEN 1130
+     ELSE
+       IF Z=1 THEN 1130
+       Q=1
+     ENDIF
+     X=INT(RND(2)+1)
+     ON X GOTO 1280,1370
+1130 GOTO 1280
+
+1140 IF S<>V THEN
+       IF W(R,S+1)>0 THEN 400
+     ELSE
+       IF Z=1 THEN 400
+       Q=1
+     ENDIF
+     GOTO 1370
+
+1200 W(R-1,S)=C \ C=C+1 \ cells(R-1,S)=NO_RIGHT_WALL \ R=R-1
+     IF C=H*V+1 THEN 1510
+     Q=0
+     GOTO 470
+1240 W(R,S-1)=C \ C=C+1 \ cells(R,S-1)=NO_FLOOR \ S=S-1
+     IF C=H*V+1 THEN 1510
+     Q=0
+     GOTO 470
+1280 W(R+1,S)=C \ C=C+1
+     cells(R,S)=LOR(cells(R,S), NO_RIGHT_WALL)
+     R=R+1
+     IF C=H*V+1 THEN 1510
+     Q=0
+     GOTO 830
+1370 IF Q=1 THEN 1470
+     W(R,S+1)=C
+     C=C+1
+     cells(R,S)=LOR(cells(R,S),NO_FLOOR)
+     S=S+1
+     IF C=H*V+1 THEN 1510
+     GOTO 470
+1470 Z=1
+     IF cells(R,S)=0 THEN
+       cells(R,S)=NO_FLOOR
+       R=0
+       S=1
+     ELSE
+       cells(R,S)=LOR(NO_FLOOR, NO_RIGHT_WALL)
+     ENDIF
+     Q=0
+     GOTO 400
+
+1510 IF Z=0 THEN
+       R=INT(RND(H))+1 \ S=V
+       cells(R,S)=LOR(cells(R,S),NO_FLOOR)
+     ENDIF
+     FOR I=1 TO H
+       EXITIF W(I,1)=1 THEN S=I \ ENDEXIT
+     NEXT I
+     GOSUB 2600
+     GOSUB 2320
+     PRINT "DO YOU WANT THE SOLUTION"; \ INPUT A$
+     IF LEFT$(A$,1)<>"Y" THEN 2620
+     PRINT "DO YOU WANT TO SEE EACH STEP"; \ INPUT A$ \ PRINT \ PRINT
+
+     REM NOW WE CAN CLEAR W ARRAY AS ENTRY POINT IS FOUND.
+     REM ELEMENTS IN V ARE EITHER 0,1,2 OR 3
+     REM 0 IS CLOSED ON THE RIGHT AND AT THE BOTTOM
+     REM 1 IS CLOSED ON THE RIGHT
+     REM 2 IS CLOSED ON THE BOTTOM
+     REM 3 IS OPEN ON THE RIGHT AND AT THE BOTTOM
+     REM DIRECTIONS WILL BE CODED:
+     REM  1 : UP
+     REM  2 : DOWN
+     REM  4 : RIGHT
+     REM  8 : LEFT
+     REM SCAN V ARRAY FOR POSSIBLE MOVES IN ALL DIRECTIONS
+     FOR I=1 TO H
+       FOR J=1 TO V
+         W(I,J)=0
+         REM TRY UP
+         IF J<>1 THEN
+           IF LAND(cells(I,J-1),NO_FLOOR) <> 0 THEN W(I,J)=W(I,J)+1 \ ENDIF
+         ENDIF
+         REM TRY DOWN
+         IF J<>V THEN
+           IF LAND(cells(I,J),NO_FLOOR) <> 0 THEN W(I,J)=W(I,J)+2 \ ENDIF
+         ENDIF
+         REM TRY RIGHT
+         IF I<>H THEN
+           IF LAND(cells(I,J),NO_RIGHT_WALL) <> 0 THEN W(I,J)=W(I,J)+4 \ ENDIF
+         ENDIF
+         REM TRY LEFT
+         IF I<>1 THEN
+           IF LAND(cells(I-1,J),NO_RIGHT_WALL) <> 0 THEN W(I,J)=W(I,J)+8 \ ENDIF
+         ENDIF
+       NEXT J
+     NEXT I
+     FOR I=1 TO H
+       IF LAND(cells(I,V),NO_FLOOR) <> 0 THEN W(I,V)=W(I,V)+2 \ E=I \ GOTO 1920 \ ENDIF
+     NEXT I
+     REM HAVE TO GO DOWN FIRST
+1920 Y=1 \ X=S
+     cells(X,Y)=LOR(cells(X,Y),CRUMB)
+     REM CHECK FOR POSSIBLE DIRECTIONS NOW...
+1950 IF Y=V AND X=E THEN PRINT \ GOSUB 2250 \ PRINT \ PRINT \ GOTO 2620 \ ENDIF
+     GOSUB 2230
+     REM CHECK POSSIBLE DIRECTIONS
+1980 IF LAND(W(X,Y), 2) <> 0 THEN 2030
+1990 IF LAND(W(X,Y), 4) <> 0 THEN 2080
+2000 IF LAND(W(X,Y), 8) <> 0 THEN 2130
+2010 IF LAND(W(X,Y), 1) <> 0 THEN 2180
+     GOTO 1950
+
+2030 IF (LAND(cells(X,Y+1),CRUMB)<>0) AND (LAND(W(X,Y), LNOT(2))=0) THEN
+       cells(X,Y)=LAND(cells(X,Y),LNOT(CRUMB))
+       W(X,Y)=LAND(W(X,Y), LNOT(2))
+       Y=Y+1
+       W(X,Y)=LAND(W(X,Y), LNOT(1))
+     ELSE
+       IF LAND(cells(X,Y+1),CRUMB)<>0 THEN 1990
+       Y=Y+1
+       cells(X,Y)=LOR(cells(X,Y),CRUMB)
+     ENDIF
+     GOTO 1950
+
+2080 IF (LAND(cells(X+1,Y),CRUMB)<>0) AND (LAND(W(X,Y), LNOT(4))=0) THEN
+       cells(X,Y)=LAND(cells(X,Y),LNOT(CRUMB))
+       W(X,Y)=LAND(W(X,Y), LNOT(4))
+       X=X+1
+       W(X,Y)=LAND(W(X,Y), LNOT(8))
+     ELSE
+       IF LAND(cells(X+1,Y),CRUMB)<>0 THEN 2000
+       X=X+1
+       cells(X,Y)=LOR(cells(X,Y),CRUMB)
+     ENDIF
+     GOTO 1950
+
+2130 IF (LAND(cells(X-1,Y),CRUMB)<>0) AND (LAND(W(X,Y), LNOT(8))=0) THEN
+       cells(X,Y)=LAND(cells(X,Y),LNOT(CRUMB))
+       W(X,Y)=LAND(W(X,Y), LNOT(8))
+       X=X-1
+       W(X,Y)=LAND(W(X,Y), LNOT(4))
+     ELSE
+       IF LAND(cells(X-1,Y),CRUMB)<>0 THEN 2010
+       X=X-1
+       cells(X,Y)=LOR(cells(X,Y),CRUMB)
+     ENDIF
+     GOTO 1950
+
+2180 IF (LAND(cells(X,Y-1),CRUMB)<>0) AND (LAND(W(X,Y), LNOT(1))=0) THEN
+       cells(X,Y)=LAND(cells(X,Y),LNOT(CRUMB))
+       W(X,Y)=LAND(W(X,Y), LNOT(1))
+       Y=Y-1
+       W(X,Y)=LAND(W(X,Y), LNOT(2))
+     ELSE
+       IF LAND(cells(X,Y-1),CRUMB)<>0 THEN 1980
+       Y=Y-1
+       cells(X,Y)=LOR(cells(X,Y),CRUMB)
+     ENDIF
+     GOTO 1950
+
+2230 IF LEFT$(A$,1)<>"Y" THEN RETURN \ ENDIF
+     PRINT
+
+2250 PRINT CHR$(27);"[H"; \ REM RETURN TO TOP LEFT
+     FOR I=1 TO H
+       IF I=S THEN
+         PRINT ":**";
+       ELSE
+         PRINT ":--";
+       ENDIF
+     NEXT I
+     PRINT ":"
+2320 FOR J=1 TO V
+       PRINT "I";
+       FOR I=1 TO H
+         Z=LAND(cells(I,J),LNOT(CRUMB))
+         IF Z<2 THEN
+           IF Z<>cells(I,J) THEN
+             PRINT "**I";
+           ELSE
+             PRINT "  I";
+           ENDIF
+         ELSE
+           IF Z<>cells(I,J) AND cells(I+1,J)>3 THEN
+             PRINT "***";
+           ELSE
+             IF Z<>cells(I,J) THEN
+               PRINT "** ";
+             ELSE
+               PRINT "   ";
+             ENDIF
+           ENDIF
+         ENDIF
+       NEXT I
+       PRINT
+       FOR I=1 TO H
+         Z=LAND(cells(I,J),LNOT(CRUMB))
+         IF Z=0 OR Z=2 THEN
+           PRINT ":--";
+           GOTO 2570
+         ENDIF
+         IF Z<>cells(I,J) AND J=V THEN
+           PRINT ":**";
+           GOTO 2570
+         ENDIF
+         IF J=V THEN
+           PRINT ":  ";
+         ELSE
+           IF Z<>cells(I,J) AND cells(I,J+1)>3 THEN
+             PRINT ":**";
+           ELSE
+             PRINT ":  ";
+           ENDIF
+         ENDIF
+2570   NEXT I
+       PRINT ":"
+     NEXT J
+     PRINT \ PRINT
+     RETURN
+
+2600 PRINT CHR$(27);"[H";CHR$(27);"[2J"; \ REM CLEAR SCREEN
+     FOR I=1 TO H
+       IF I=S THEN
+         PRINT ":  ";
+       ELSE
+         PRINT ":--";
+       ENDIF
+     NEXT I
+     PRINT ":"
+     RETURN
+
+2620 PRINT \ PRINT \ PRINT "DO YOU WANT ANOTHER MAZE"; \ INPUT A$
+     IF LEFT$(A$,1)="Y" THEN
+       A$="N" \ GOTO 100
+     ENDIF
+     PRINT
+     END

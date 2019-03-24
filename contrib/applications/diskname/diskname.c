@@ -49,18 +49,22 @@ main(argc,argv)
     struct ddsect idsector;
 
     pflinit();
-    if (argc < 2) {
+    if (argc > 3) {
         fprintf(stderr, "Usage: %s {disk} [new label]\n", argv[0]);
-        exit(2);
+        exit(0);
     }
 
-    strcpy(buffer, argv[1]);
+    if (argc == 1) {
+        strcpy(buffer, defdrive());
+    } else {
+        strncpy(buffer, argv[1], 8);
+    }
     strcat(buffer, "@");
 
     dfp = fopen(buffer, (argc == 3)?"r+":"r");
     if (dfp == NULL) {
         fprintf(stderr, "Unable to open: %s\n", argv[1]);
-        exit(1);
+        exit(0xd6);
     }
     fread(&idsector, sizeof(idsector), 1, dfp);
 
@@ -82,6 +86,7 @@ main(argc,argv)
     }
     strcpyh(buffer, idsector.dd_name);
     fclose(dfp);
-    printf("Capacity: %ld KB\n", totsect);
     printf("Label: %s\n", buffer);
+    printf("Capacity: %ld KB\n", totsect);
+    printf("ID: %X\n", idsector.dd_dsk);
 }

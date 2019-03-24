@@ -175,7 +175,7 @@ indicating that our C function worked!
 <section>
 <title>Example 2 - More Complex Integer Aritmetic Case</title>
 <para>
-The next example shows how static memeory can be used. Take the
+The next example shows how static memory can be used. Take the
 C function from the previous example and modify it to add the number
 of times it has been entered to the increment:
 </para>

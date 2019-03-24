@@ -24,7 +24,7 @@
     <target name="compile">
         <mkdir dir="${targetdir}"/>
         <assemble src="DDisk_ed4" home="kernel"/>
-        <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
+        <assemble src="DDisk_ed2" home="kernel"/> <!-- verify="65f9fcc1627581c6a9247454ec9bd23d" -->
         <!--
         <assemble src="DDisk_3" home="kernel"/>
         <assemble src="DDisk_4" home="kernel"/>
@@ -50,9 +50,10 @@
         <assemble src="OS9p1_d64" home="kernel"/>
         <assemble src="OS9p1_gimix" home="kernel"/>
         <assemble src="OS9p1_swtc" home="kernel"/>
-        <assemble src="OS9p2" home="kernel"/> <!-- version 9 -->
-        <assemble src="OS9p2_v5" home="kernel"/>
-        <assemble src="OS9p2_v8" home="kernel"/>
+        <assemble src="OS9p1_ed8" home="kernel"/>
+        <assemble src="OS9p2_ed9" home="kernel"/>
+        <assemble src="OS9p2_ed5" home="kernel"/>
+        <assemble src="OS9p2_ed8" home="kernel"/>
         <assemble src="Pipe" home="kernel"/>
         <assemble src="PipeMan" home="kernel"/>
         <assemble src="Piper" home="kernel"/>

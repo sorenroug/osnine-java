@@ -1,0 +1,47 @@
+PROCEDURE clk
+(* Simple Clock Simulator *)
+DIM time(4),last(4),xx(3),yy(3):INTEGER
+DIM x0,y0,radius,bkg:INTEGER
+DIM i,j,x1,y1,x2,y2:INTEGER
+DEG
+bkg=0
+x0=128
+y0=96
+radius=95
+RUN GFX("MODE",1,bkg+1)
+RUN GFX("CLEAR")
+RUN GFX("CIRCLE",x0,y0,radius)
+FOR i=0 to 89 STEP 6
+  x2=SIN(i)*radius
+  y2=COS(i)*radius
+  x1=x2*.9
+  y1=y2*.9
+  j=MOD(i/30,3)+bkg+1
+  RUN GFX("LINE",x0+x1,y0+y1,x0+x2,y0+y2,j)
+  RUN GFX("LINE",x0-x1,y0-y1,x0-x2,y0-y2,j)
+  RUN GFX("LINE",x0+y1,y0-x1,x0+y2,y0-x2,j)
+  RUN GFX("LINE",x0-y1,y0+x1,x0-y2,y0+x2,j)
+NEXT i
+FOR i=1 TO 3
+  time(i)=0
+  xx(i)=x0
+  yy(i)=y0
+NEXT i
+LOOP
+  time$=DATE$
+  last=time
+  time(3)=VAL(MID$(time$,16,2))*6
+  time(2)=VAL(MID$(time$,13,2))*6
+  time(1)=MOD(VAL(MID$(time$,10,2))*30+time(2)/12,360)
+  j=last(3)
+  FOR i=3 TO 1 STEP -1
+    IF i=3 OR j=0 OR ABS(time(i)-last(i+1))<6 OR ABS(time(i)-j)<6 THEN
+      RUN GFX("LINE",x0,y0,xx(i),yy(i),bkg)
+      xx(i)=x0+SIN(time(i))*radius*(.3+i*.2)
+      yy(i)=y0+COS(time(i))*radius*(.3+i*.2)
+      RUN GFX("LINE",x0,y0,xx(i),yy(i),bkg+i)
+    ENDIF
+  NEXT i
+  WHILE time$=DATE$ DO
+  ENDWHILE
+ENDLOOP

@@ -1754,9 +1754,8 @@ conflicts on paths opened for the same file. The <quote>@</quote> file is consid
 different from any other file, and therefore will only conform to record
 lockouts with other users of the <quote>@</quote> file. Writing via the <quote>@</quote> file (to
 patch crashed disks, for example) should only be done in single-user
-mode. The '@' file has been included as a convenience only; it likely
-that problems will eventually occur if it is used in update mode
-regularly.
+mode. The '@' file has been included as a convenience only; it is likely
+that problems will eventually occur if it is used in update mode regularly.
 </para>
       <bridgehead renderas="sect4">Read/ReadLine</bridgehead>
       <para>

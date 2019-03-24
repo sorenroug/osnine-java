@@ -1,0 +1,133 @@
+PROCEDURE anothermaze
+    DIM visited(25,25):BOOLEAN
+    DIM cells(25,25):BYTE
+    DIM d(10),dx:BYTE
+    DIM rows,cols,C,R,entry,Q,X,Z,cellinx,totcells:INTEGER
+    DIM bottom:BOOLEAN
+    DIM NO_FLOOR,NO_RIGHT_WALL:BYTE
+
+    NO_FLOOR = 1 \ NO_RIGHT_WALL = 2
+    LOOP
+      PRINT "WHAT ARE YOUR LENGTH AND WIDTH (E. G. 13,10)"; 
+      INPUT rows,cols
+      EXITIF rows>1 AND rows <= 25 AND cols>1 AND cols <= 25 THEN ENDEXIT
+      PRINT "MEANINGLESS DIMENSIONS.  TRY AGAIN."
+    ENDLOOP
+
+    (* Initialize *)
+    LET totcells=rows*cols
+    FOR Q=1 TO rows
+      FOR Z=1 TO cols
+        LET visited(Q,Z)=FALSE
+        LET cells(Q,Z)=0
+      NEXT Z
+    NEXT Q
+    LET bottom=FALSE
+    LET entry=INT(RND(cols)+1)
+    LET R=1
+    LET C=entry
+    LET cellinx=1
+    LET visited(R,C)=TRUE
+
+    REPEAT
+580 LET dx=0
+    IF C<>1 THEN
+      IF visited(R,C-1) = FALSE THEN
+        LET dx=dx+1
+        LET d(dx)=1
+      ENDIF
+    ENDIF
+    IF C<>cols THEN
+      IF visited(R,C+1) = TRUE THEN 750
+      LET dx=dx+1
+      LET d(dx)=2
+    ENDIF
+    IF R>1 THEN
+      IF visited(R-1,C) = FALSE THEN
+        LET dx=dx+1
+        LET d(dx)=3
+      ENDIF
+    ENDIF
+750 IF R < rows THEN
+      IF visited(R+1,C) = TRUE THEN 820
+    ELSE
+      IF bottom=TRUE THEN 820
+    ENDIF
+    LET dx=dx+1
+    LET d(dx)=4
+820 IF dx=0 THEN
+    GOSUB 960
+    GOTO 580
+    ENDIF
+    LET X=INT(RND(dx)+1)
+    IF d(X)=4 THEN
+      LET cells(R,C)= LOR(cells(R,C), NO_FLOOR)
+      LET R=R+1
+      IF R>rows THEN
+        LET bottom=TRUE
+        LET R=1
+        LET C=0
+        GOSUB 960
+        GOTO 580
+      ENDIF
+    ENDIF
+    IF d(X)=3 THEN
+      LET R=R-1
+      LET cells(R,C) = NO_FLOOR
+    ENDIF
+    IF d(X)=2 THEN
+      LET cells(R,C) = LOR(cells(R,C), NO_RIGHT_WALL)
+      LET C=C+1
+    ENDIF
+    IF d(X)=1 THEN
+      LET C=C-1
+      LET cells(R,C)=NO_RIGHT_WALL
+    ENDIF
+
+    LET cellinx=cellinx+1
+    LET visited(R,C)=TRUE
+    UNTIL cellinx >= totcells
+
+    (* Print maze *)
+    PRINT 
+    FOR C=1 TO cols
+      IF C=entry THEN
+        PRINT ".  "; 
+      ELSE
+        PRINT ".--"; 
+      ENDIF
+    NEXT C
+    PRINT "."
+    FOR R=1 TO rows
+      PRINT "|"; 
+      FOR C=1 TO cols
+        IF LAND(cells(R,C),NO_RIGHT_WALL) = 0 THEN
+          PRINT "  |"; 
+        ELSE
+          PRINT "   "; 
+        ENDIF
+      NEXT C
+      PRINT 
+      FOR C=1 TO cols
+        IF LAND(cells(R,C),NO_FLOOR) = 0 THEN
+          PRINT ":--"; 
+        ELSE
+          PRINT ":  "; 
+        ENDIF
+      NEXT C
+      PRINT ":"
+    NEXT R
+    END 
+
+(* Find a cell that is already visited *)
+960 REPEAT
+      LET C=C+1
+      IF C > cols THEN
+        LET R=R+1
+        IF R > rows THEN
+          LET R=1
+        ENDIF
+        LET C=1
+      ENDIF
+    UNTIL visited(R,C) = TRUE
+    RETURN

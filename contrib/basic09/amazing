@@ -1,0 +1,212 @@
+PROCEDURE amazing
+    DIM visited(25,25):BOOLEAN
+    DIM cells(25,25):BYTE
+    DIM entry,cols,rows,J,I,R,S,X,cellinx,totcells:INTEGER
+    DIM Q,downdone:BOOLEAN
+    DIM NO_FLOOR,NO_RIGHT_WALL:BYTE
+
+    PRINT TAB(28);"AMAZING PROGRAM"
+    PRINT TAB(15);"CREATIVE COMPUTING  MORRISTOWN, NEW JERSEY"
+    PRINT \ PRINT \ PRINT \ PRINT
+
+    NO_FLOOR = 1 \ NO_RIGHT_WALL = 2
+
+    LOOP
+      INPUT "WHAT ARE YOUR WIDTH AND LENGTH ";cols,rows
+      EXITIF cols > 1 AND cols <= 25 AND rows > 1 AND rows <= 25 THEN ENDEXIT
+      PRINT "MEANINGLESS DIMENSIONS.  TRY AGAIN."
+    ENDLOOP
+    PRINT \ PRINT \ PRINT \ PRINT
+    (* Initialize *)
+    totcells = rows*cols
+    FOR J=1 TO rows
+      FOR I=1 TO cols
+        LET visited(J,I)=FALSE
+        LET cells(J,I)=0
+      NEXT I
+    NEXT J
+
+    Q=FALSE
+    downdone=FALSE
+    entry=INT(RND(cols)+1)
+    cellinx=1
+    visited(entry,1)=TRUE
+    cellinx = cellinx + 1
+    R=entry \ S=1 \ GOTO 260
+
+(* Find a cell that is already visited *)
+210 REPEAT
+      IF R < cols THEN
+        R=R+1
+      ELSE
+        IF S < rows THEN
+          R=1
+          S=S+1
+        ELSE
+          R=1
+          S=1
+        ENDIF
+      ENDIF
+    UNTIL visited(R,S)=TRUE
+
+260 IF R-1=0 THEN 530
+    IF visited(R-1,S)=TRUE THEN 530
+    IF S-1=0 THEN 390
+    IF visited(R,S-1)=TRUE THEN 390
+    IF R=cols THEN 330 \ REM exclude right
+    IF visited(R+1,S)=TRUE THEN 330
+    X=INT(RND(3)+1)
+    ON X GOTO 790,820,860 \ REM left,up,right
+
+330 IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 370
+    ELSE
+      IF downdone=TRUE THEN 370
+      Q=TRUE
+    ENDIF
+    X=INT(RND(3)+1)
+    ON X GOTO 790,820,910 \ REM left,up,down
+370 X=INT(RND(2)+1)
+    ON X GOTO 790,820 \ REM left,up
+
+390 IF R=cols THEN 470
+    IF visited(R+1,S)=TRUE THEN 470
+    IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 450
+    ELSE
+      IF downdone=TRUE THEN 450
+      Q=TRUE
+    ENDIF
+    X=INT(RND(3)+1)
+    ON X GOTO 790,860,910 \ REM left,right,down
+450 X=INT(RND(2)+1)
+    ON X GOTO 790,860 \ REM left,right
+
+470 IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 790 \ REM left
+    ELSE
+      IF downdone=TRUE THEN 790 \ REM left
+      Q=TRUE
+    ENDIF
+500 X=INT(RND(2)+1)
+    ON X GOTO 790,910 \ REM left,down
+
+530 IF S-1=0 THEN 670
+    IF visited(R,S-1)=TRUE THEN 670
+    IF R=cols THEN 610
+    IF visited(R+1,S)=TRUE THEN 610
+    IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 590
+    ELSE
+      IF downdone=TRUE THEN 590
+      Q=TRUE
+    ENDIF
+    X=INT(RND(3)+1)
+    ON X GOTO 820,860,910 \ REM up,right,down
+590 X=INT(RND(2)+1)
+    ON X GOTO 820,860 \ REM up,right
+
+610 IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 820
+    ELSE
+      IF downdone=TRUE THEN 820
+      Q=TRUE
+    ENDIF
+    X=INT(RND(2)+1)
+    ON X GOTO 820,910 \ REM up,down
+
+670 IF R=cols THEN 740
+    IF visited(R+1,S)=TRUE THEN 740
+    IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 860
+      X=INT(RND(2)+1)
+      ON X GOTO 860,910 \ REM right,down
+    ELSE
+      IF downdone=TRUE THEN 860
+      Q=TRUE
+      GOTO 830
+    ENDIF
+
+740 IF S < rows THEN
+      IF visited(R,S+1)=TRUE THEN 780
+    ELSE
+      IF downdone=TRUE THEN 780
+      Q=TRUE
+    ENDIF
+    GOTO 910
+780 GOTO 1000
+
+    (* Move left *)
+790 visited(R-1,S)=TRUE
+    cellinx = cellinx + 1
+    cells(R-1,S)=NO_RIGHT_WALL
+    R=R-1
+    IF cellinx > totcells THEN 1010
+    Q=FALSE
+    GOTO 260
+
+    (* Move up *)
+820 visited(R,S-1)=TRUE
+830 cellinx = cellinx + 1
+    cells(R,S-1)=NO_FLOOR
+    S=S-1
+    IF cellinx > totcells THEN 1010
+    Q=FALSE
+    GOTO 260
+
+    (* Move right *)
+860 visited(R+1,S)=TRUE
+    cellinx = cellinx + 1
+    cells(R,S)= LOR(cells(R,S), NO_RIGHT_WALL)
+    R=R+1
+    IF cellinx > totcells THEN 1010
+    GOTO 530
+
+    (* Move down *)
+910 IF Q=TRUE THEN 960
+    visited(R,S+1)=TRUE
+    cellinx = cellinx + 1
+    cells(R,S)= LOR(cells(R,S), NO_FLOOR)
+    S=S+1
+    IF cellinx > totcells THEN 1010
+    GOTO 260
+
+960 downdone=TRUE
+    Q=FALSE
+    IF cells(R,S)=0 THEN
+      cells(R,S)=NO_FLOOR \ R=0 \ S=1
+    ELSE
+      cells(R,S)=LOR(NO_FLOOR,NO_RIGHT_WALL)
+    ENDIF
+1000 GOTO 210
+
+     (* Print maze *)
+1010 FOR I=1 TO cols
+       IF I=entry THEN
+         PRINT ".  ";
+       ELSE
+         PRINT ".--";
+       ENDIF
+     NEXT I
+     PRINT "."
+     FOR J=1 TO rows
+       PRINT "I";
+       FOR I=1 TO cols
+         IF LAND(cells(I,J),NO_RIGHT_WALL) = 0 THEN
+           PRINT "  I";
+         ELSE
+           PRINT "   ";
+         ENDIF
+       NEXT I
+       PRINT
+       FOR I=1 TO cols
+         IF LAND(cells(I,J),NO_FLOOR) = 0 THEN
+           PRINT ":--";
+         ELSE
+           PRINT ":  ";
+         ENDIF
+       NEXT I
+       PRINT ":"
+     NEXT J
+     END
+

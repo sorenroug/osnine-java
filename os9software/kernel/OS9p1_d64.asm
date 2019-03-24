@@ -208,15 +208,15 @@ COLD15 leax 0,Y Copy eor ptr
  stx D.MLIM Set memory limit
 
 * Special for Coco/Dragon hardware
-         pshs  y,x
-         leax  >CCVECS,pcr
-         ldy   #$0100
-         ldb   #$29
-L00D2    lda   ,x+
-         sta   ,y+
-         decb  
-         bne   L00D2
-         puls  y,x
+ pshs y,x
+ leax >CCVECS,pcr
+ ldy #$0100
+ ldb #$29
+COLDCC lda ,x+
+ sta ,y+
+ decb
+ bne COLDCC
+ puls y,x
 *
 * Search Memory For Modules, Build Module Directory
 *
