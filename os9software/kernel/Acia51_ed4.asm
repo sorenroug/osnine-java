@@ -94,19 +94,19 @@ ACMASK fcb 0 no flip bits
 *   Initialize (Terminal) Acia
 *
 INIT ldx V.PORT,U I/o port address
-         stb   StatReg,x
+ stb StatReg,x reset acia
  ldb #H.EMPTY
  stb HALTED,U output IRQ's disabled; buffer empty
-         ldd   <$26,y    IT.PAR  a=Parity and b=baud rate
-         andb  #$0F       mask lower 4 bits of IT.BAU
-         leax  <BAUDTBL,pcr
-         ldb   b,x
-         anda  #$F0
-         sta   V.TYPE,u
-         ldx   V.PORT,u
-         std   CmndReg,x
-         lda   DataReg,x
-         lda   DataReg,x
+ ldd   <$26,y    IT.PAR  a=Parity and b=baud rate
+ andb #$0F       mask lower 4 bits of IT.BAU
+ leax <BAUDTBL,pcr
+ ldb b,x
+ anda #$F0
+ sta V.TYPE,u
+ ldx V.PORT,u
+ std CmndReg,x  configure both command and ctrl register
+ lda DataReg,x
+ lda DataReg,x
  tst StatReg,x interrupt gone?
  lbmi ErrNtRdy ..No; abort
  clra
@@ -273,9 +273,9 @@ STATUS99 clrb
 GETS10 cmpa #SS.EOF End of file?
  beq Write90 ..yes; return carry clear
 
-unksvc   comb
-         ldb   #E$UnkSvc
-         rts
+UNKSVC comb return carry set
+ ldb #E$UnkSvc Unknown service code
+ rts
 **************************
 * PUTSTA
 *  Set device Status
@@ -294,7 +294,7 @@ PUTSTA cmpa #SS.SSig   Send signal on data ready
 PUTS10 andcc #^IntMasks       Allow I and F interrupts
  lbra SendSig    send code to process
 SetRel cmpa #SS.Relea
- bne unksvc
+ bne UNKSVC
  lda PD.CPR,y
  cmpa  <RDYSGNL,u
  bne STATUS99

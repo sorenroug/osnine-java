@@ -37,9 +37,9 @@
         <assemble src="go51nkb" home="kernel"/>
         <assemble src="go51n" home="kernel"/>
         <assemble src="go51" home="kernel"/>
-        <assemble src="Acia51_ed5" home="kernel"/>
-        <assemble src="Acia_v2" home="kernel"/>
-        <assemble src="Acia_v4" home="kernel"/>
+        <assemble src="Acia51_ed4" home="kernel"/>
+        <assemble src="Acia_ed2" home="kernel"/>
+        <assemble src="Acia_ed4" home="kernel"/>
         <assemble src="BootDyn" home="kernel"/>
         <assemble src="Clock_gimix" home="kernel"/>
         <assemble src="T1" home="kernel"/>
