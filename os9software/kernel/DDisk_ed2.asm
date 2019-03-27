@@ -48,14 +48,14 @@ DataReg  EQU   $FF43
 *
 * WD2797 Commands
 *
-FrcInt   EQU   %11010000
-ReadCmnd EQU   %10001000
-RestCmnd EQU   %00000000
-SeekCmnd EQU   %00010000
-StpICmnd EQU   %01000000
-WritCmnd EQU   %10101000
-WtTkCmnd EQU   %11110000
+F.REST EQU   %00000010
+F.STPI EQU   %01000010
+F.SEEK EQU   %00010010
+F.READ equ $88 Read sector command
+F.WRIT equ $A8 Write sector command
 Sid2Sel  EQU   %00000010
+F.TYP1 equ $D0 Force type 1 status
+F.WRTR equ $F0 Write track command
 
 * Disk Status Bits
 BusyMask EQU   %00000001
@@ -73,6 +73,7 @@ NotRMask EQU   %10000000
 *
 *
  mod DSKEND,DSKNAM,DRIVR+OBJCT,REENT+1,DSKENT,DSKSTA
+ fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
 
  pag
 *********************************************************************
@@ -85,13 +86,12 @@ NotRMask EQU   %10000000
 
 CURTBL rmb 2 Ptr to current drive tbl
 CURDRV    rmb   1
-u00AA    rmb   1
+V.DOSK    rmb   1
 u00AB    rmb   1
 u00AC    rmb   1
 V.BUF rmb 2 Local buffer addr
 DSKSTA equ . Total static requirement
 
-         fcb   $FF
 
 DSKNAM fcs "DDisk"
  fcb 2 Edition telltale byte
@@ -104,9 +104,9 @@ DSKNAM fcs "DDisk"
 DSKENT lbra INIDSK Initialize i/o
  lbra READSK Read sector
  lbra WRTDSK Write sector
-         lbra  NoErr
-         lbra  PUTSTA
-         lbra  NoErr
+ lbra  NoErr
+ lbra  PUTSTA
+ lbra  NoErr
 
 
  pag
@@ -125,7 +125,7 @@ INIDSK    clra
          sta   >D.DskTmr
          sta   >SelReg
          ldx   #CmndReg
-         lda   #$D0
+         lda   #F.TYP1
          sta   ,x
          lbsr  L02A3
          lda   ,x
@@ -137,10 +137,10 @@ INILUP    sta   ,x
  leax DRVMEM,X Point to next drive table
  decb DONE
  bne INILUP ...no; inz more.
-         leax  >L0172,pcr
-         stx   >$010A
+         leax  >NMISVC,pcr
+         stx   >NMIVec+1
          lda   #$7E
-         sta   >$0109
+         sta   >NMIVec
  ldd #256 "d" passes memory req size
  pshs U Save "u" we need it later
  OS9 F$SRqMem Request 1 pag of mem
@@ -200,7 +200,7 @@ READSC lbsr SEEK Move head to track
  bcs WRERR9
  ldx PD.BUF,Y Point to buffer
          pshs  y,dp,cc
-         ldb   #$88
+ ldb #F.READ Read sector command
          bsr   L00C6
 L00AE    lda   <$23
          bmi   L00BE
@@ -240,7 +240,7 @@ L00DE    orcc #IRQMask+FIRQMask Disable interrupts
          ldy   #$FFFF
          lda   #$24
          ora   >CURDRV,u
-         stb   <$40
+         stb   <CmndReg
          sta   <$48
          rts
 L0107    lda   >CURDRV,u
@@ -277,11 +277,12 @@ WRTDS1 pshs D,X Save regs
  puls D,X Restore regs
  bcs WRTDS3 Write error; try again.
  tst PD.VFY,Y Verify desired?
-         bne   WRTDS2
+ bne WRTDS2 ...no; all is well.
  lbsr Wrtvfy Go verify sector
-         bcs   WRTDS3
-WRTDS2    clrb
-         rts
+ bcs WRTDS3 ...verify failed
+WRTDS2 clrb
+ rts
+
 WRTDS3 lsra
  lbeq Wrerr Retries done; ...exit
  bcc WRTDS1 Retry without restore
@@ -295,8 +296,8 @@ WRTDS3 lsra
 WRITSC lbsr SEEK
  lbcs WRERR9
  ldx PD.BUF,Y Buffer addr
-         pshs  y,dp,cc
-         ldb   #$A8
+ pshs y,dp,cc
+ ldb #F.WRIT Write function code
 L0155    lbsr  L00C6
          lda   ,x+
 L015A    ldb   <$23
@@ -312,7 +313,7 @@ L016C    sta   <$43
          ldb   <$22
          bra   L0169
 
-L0172    leas  $0C,s
+NMISVC    leas  $0C,s
          bsr   L0107
          puls  y,dp,cc
          ldb   >CmndReg
@@ -374,12 +375,12 @@ WRTVF6 puls d,x,pc
 *   Carry Set
 *   B = Error Code
 *
-SEEK    clr   >u00AA,u
+SEEK clr >V.DOSK,u
  bsr SELECT Select drive
  tstb CHECK Sector bounds
  bne PHYERR  msb must be zero
  tfr X,D Logical sector (os-9)
-         ldx   >CURTBL,u
+ ldx CURTBL,u
  cmpd #0 Logical sector zero?
          beq   L01FB
          cmpd  $01,x
@@ -390,11 +391,11 @@ PHYERR comb
 
 L01DA    clr   ,-s
          bra   L01E0
-L01DE    inc   ,s
-L01E0    subd  #$0012
-         bcc   L01DE
-         addb  #$12
-         puls  a
+PHYSC2 inc 0,S
+L01E0 subd #18 Subtract one track worth of sectors
+ bcc PHYSC2 Repeat until less than 1 track size
+         addb  #18  Add back for sector number
+ puls A Desired track.
          cmpa  #$10
          bls   L01FB
          pshs  a
@@ -406,13 +407,13 @@ L01FB    incb
          stb   >SecReg
 L01FF    ldb   <$15,x
          stb   >TrkReg
-         tst   >u00AA,u
+         tst   >V.DOSK,u
          bne   L0210
          cmpa  <$15,x
          beq   L0225
 L0210    sta   <$15,x
-         sta   >$FF43
-         ldb   #$12
+         sta   >DataReg
+         ldb   #F.SEEK
          bsr   WCR0
          pshs  x
          ldx   #$222E
@@ -421,6 +422,7 @@ L021F    leax  -$01,x
          puls  x
 L0225    clrb
          rts
+
 SELECT    lbsr  L02FD
          lda   <$21,y
          cmpa  #$04
@@ -429,16 +431,16 @@ SELECT    lbsr  L02FD
          ldb   #$F0
          rts
 L0235    pshs  x,b,a
-         sta   >CURDRV,u
+ sta CURDRV,U
  leax DRVBEG,U Table beginning
  ldb #DRVMEM
  mul OFFSET For this drive
  leax D,X
  cmpx CURTBL,U New device call?
-         beq   L0250
+         beq   SELCT5
  stx CURTBL,U Current table ptr
-         com   >u00AA,u
-L0250    puls  pc,x,b,a
+         com   >V.DOSK,u
+SELCT5 puls pc,x,b,a
 
 L0252    bitb  #$F8
          beq   L026A
@@ -532,7 +534,7 @@ L02CD    ldx   >CURTBL,u
          bcs   L02B9
  ldx PD.RGS,Y
  ldx R$X,X Get buffer addr
-         ldb   #$F0
+ ldb #F.WRTR
          pshs  y,dp,cc
          lbra  L0155
  pag
@@ -553,16 +555,16 @@ RESTOR lbsr SELECT Select drive
  ldx CURTBL,U
  clr V.TRAK,X Old track = 0
  lda #5 Repeat five times
-RESTR2    ldb   #$42
+RESTR2 ldb #F.STPI
  pshs A
  lbsr WCR0 Issue command, delay & wait for done.
  puls A
  deca DONE Stepping?
-         bne   RESTR2
-         ldb   #$02
+ bne RESTR2 ...no; step again.
+ ldb #F.REST Restore command
  bra WCR0
 
-
+* Start Drive Motors and wait for them if necessary
 L02FD    pshs  x,b,a
          lda   >D.DskTmr
          bne   L0312
