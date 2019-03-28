@@ -43,8 +43,6 @@
         <assemble src="BootDyn" home="kernel"/>
         <assemble src="Clock_gimix" home="kernel"/>
         <assemble src="T1" home="kernel"/>
-        <assemble src="D0_vdisk" home="kernel"/>
-        <assemble src="D1_vdisk" home="kernel"/>
         <assemble src="HWClock" home="kernel"/>
         <assemble src="KbVdIO" home="kernel"/>
         <assemble src="OS9p1_d64" home="kernel"/>
@@ -61,7 +59,10 @@
         <assemble src="SCF_ed8" home="kernel"/>
         <assemble src="SysGo" home="kernel"/>
         <assemble src="SysGo_login" home="kernel"/>
-        <assemble src="VDisk" home="kernel"/>
+
+        <assemble src="D0_vdisk" home="virtual"/>
+        <assemble src="D1_vdisk" home="virtual"/>
+        <assemble src="VDisk" home="virtual"/>
 
         <assemble src="Build" home="utilities"/>
         <assemble src="Setime" home="utilities"/>
