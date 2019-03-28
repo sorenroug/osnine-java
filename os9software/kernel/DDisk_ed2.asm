@@ -1,3 +1,4 @@
+ nam   DDisk
 ***********************************************
 *
 * Original edition from Dragon Data OS-9 system disk
@@ -14,58 +15,31 @@
 
 * Known bugs: Unable to use two-sided disks
 
-         nam   DDisk
-         TTL   Dragon Disk Driver
+ use   defsfile
 
-         ifp1
-         use   defsfile
-         endc
+ ttl   Driver Module
+ pag
+*******************************************************************
+*
+*                Microware Systems Corporation
+*
+*******************************************************************
 
-NMIVec   EQU   $109
-DriveCnt  EQU   4
-DensMask EQU   %00000001
-T80Mask  EQU   %00000010
+NMIVec equ $109
+DriveCnt equ 4
 
-P1PDRB   EQU   $FF22
-P1PCRB   EQU   $FF23
-P0PCRB   EQU   $FF03
-ACIAStat EQU   $FF05
-ACIACmnd EQU   $FF06
-
-* SelReg Masks
-NMIEn    EQU   %00100000
-WPCEn    EQU   %00010000
-MotorOn  EQU   %00000100
-SDensEn  EQU   %00001000
+P1PDRB equ $FF22
+P1PCRB equ $FF23
+P0PCRB equ $FF03
+ACIAStat equ $FF05
+ACIACmnd equ $FF06
 
 * Disk port locations
-SelReg   EQU   $FF48
-CmndReg  EQU   $FF40
-TrkReg   EQU   $FF41
-SecReg   EQU   $FF42
-DataReg  EQU   $FF43
-
-*
-* WD2797 Commands
-*
-F.REST EQU   %00000010
-F.STPI EQU   %01000010
-F.SEEK EQU   %00010010
-F.READ equ $88 Read sector command
-F.WRIT equ $A8 Write sector command
-Sid2Sel  EQU   %00000010
-F.TYP1 equ $D0 Force type 1 status
-F.WRTR equ $F0 Write track command
-
-* Disk Status Bits
-BusyMask EQU   %00000001
-LostMask EQU   %00000100
-ErrMask  EQU   %11111000
-CRCMask  EQU   %00001000
-RNFMask  EQU   %00010000
-RTypMask EQU   %00100000
-WPMask   EQU   %01000000
-NotRMask EQU   %10000000
+V.SEL equ    $FF48 Drive select reg addr.
+V.CMDR equ   $FF40
+V.TRKR equ   $FF41
+V.SECR equ   $FF42
+V.DATR equ   $FF43
 
 ***************************************************************
 *
@@ -74,6 +48,12 @@ NotRMask EQU   %10000000
 *
  mod DSKEND,DSKNAM,DRIVR+OBJCT,REENT+1,DSKENT,DSKSTA
  fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
+DSKNAM fcs "DDisk"
+
+ fcb 2 Edition telltale byte
+*******************
+* Revision History
+* edition 2: prehistoric
 
  pag
 *********************************************************************
@@ -85,16 +65,13 @@ NotRMask EQU   %10000000
  rmb Drvmem*DriveCnt
 
 CURTBL rmb 2 Ptr to current drive tbl
-CURDRV    rmb   1
-V.DOSK    rmb   1
-u00AB    rmb   1
-u00AC    rmb   1
+CURDRV rmb 1
+V.DOSK rmb 1
+V.PIA rmb 1
+V.ACIA rmb 1
 V.BUF rmb 2 Local buffer addr
 DSKSTA equ . Total static requirement
 
-
-DSKNAM fcs "DDisk"
- fcb 2 Edition telltale byte
 
 
 ******************************************************************
@@ -104,10 +81,21 @@ DSKNAM fcs "DDisk"
 DSKENT lbra INIDSK Initialize i/o
  lbra READSK Read sector
  lbra WRTDSK Write sector
- lbra  NoErr
- lbra  PUTSTA
- lbra  NoErr
+ lbra GETSTA Get status call
+ lbra PUTSTA
+ lbra TERMNT Terminate device use
 
+*
+* WD2797 Commands
+*
+F.REST equ $00
+F.SEEK equ $10
+F.STPI equ $40
+F.READ equ $88 Read sector command
+F.WRIT equ $A8 Write sector command
+F.TYP1 equ $D0 Force type 1 status
+F.WRTR equ $F0 Write track command
+SID2 equ $2
 
  pag
 ****************************************************************
@@ -121,26 +109,26 @@ DSKENT lbra INIDSK Initialize i/o
 *           (Y) Unchanged
 *           (U) Unchanged
 *
-INIDSK    clra
-         sta   >D.DskTmr
-         sta   >SelReg
-         ldx   #CmndReg
-         lda   #F.TYP1
-         sta   ,x
-         lbsr  L02A3
-         lda   ,x
-         lda   #$FF
+INIDSK clra
+ sta >D.DskTmr
+ sta >V.SEL
+ ldx #V.CMDR
+ lda #F.TYP1
+ sta 0,x Send to command register
+ lbsr DELAY1
+ lda 0,x
+ lda #$FF
  ldb #DriveCnt
  leax DRVBEG,U Point to first drive table
-INILUP    sta   ,x
+INILUP sta 0,x
  sta V.TRAK,X Inz to high track count
  leax DRVMEM,X Point to next drive table
  decb DONE
  bne INILUP ...no; inz more.
-         leax  >NMISVC,pcr
-         stx   >NMIVec+1
-         lda   #$7E
-         sta   >NMIVec
+ leax >NMISVC,pcr
+ stx >NMIVec+1
+ lda #$7E Store JMP command
+ sta >NMIVec
  ldd #256 "d" passes memory req size
  pshs U Save "u" we need it later
  OS9 F$SRqMem Request 1 pag of mem
@@ -151,8 +139,9 @@ INILUP    sta   ,x
  clrb
 RETRN1 rts
 
-NoErr    clrb
-         rts
+TERMNT
+GETSTA clrb
+ rts
 *************************************************************
 *
 * Read Sector Command
@@ -169,19 +158,20 @@ NoErr    clrb
 READSK lda #$91 Error retry code
  cmpx #0 Is this sector zero?
  bne RDDSK3 Branch if not
-         bsr   RDDSK3
-         bcs   WRERR9
+ bsr RDDSK3
+ bcs WRERR9
  ldx PD.BUF,Y Point to buffer
-         pshs  y,x
-         ldy   >CURTBL,u
-         ldb   #$14
-L0082    lda   b,x
-         sta   b,y
-         decb
-         bpl   L0082
-         clrb
-         puls  pc,y,x
-WRERR9    rts
+ pshs X,Y
+ ldy CURTBL,u
+ ldb #DD.SIZ-1
+READ01 lda B,X
+ sta B,Y
+ decb
+ bpl READ01
+ clrb
+ puls pc,y,x
+
+WRERR9 rts
 
 RDDSK1 bcc RDDSK3 Retry without restore
  pshs D,X
@@ -199,61 +189,62 @@ RDDSK3 pshs D,X
 READSC lbsr SEEK Move head to track
  bcs WRERR9
  ldx PD.BUF,Y Point to buffer
-         pshs  y,dp,cc
+ pshs y,dp,cc
  ldb #F.READ Read sector command
-         bsr   L00C6
-L00AE    lda   <$23
-         bmi   L00BE
-         leay  -$01,y
-         bne   L00AE
-         bsr   L0107
-         puls  y,dp,cc
-         lbra  RDERR
-L00BD    sync
-L00BE    lda   <$43
-         ldb   <$22
-         sta   ,x+
-         bra   L00BD
-L00C6    lda   #$FF
-         tfr   a,dp
-         lda   <$06
-         sta   >u00AC,u
-         anda  #$FE
-         sta   <$06
-         bita  #$40
-         beq   L00DE
-L00D8    lda   <$05
-         bita  #$10
-         beq   L00D8
-L00DE    orcc #IRQMask+FIRQMask Disable interrupts
-         lda   <$03
-         sta   >u00AB,u
-         lda   #$34
-         sta   <$03
-         lda   <$06
-         anda  #$FE
-         sta   <$06
-         lda   <$23
-         ora   #$03
-         sta   <$23
-         lda   <$22
-         ldy   #$FFFF
-         lda   #$24
-         ora   >CURDRV,u
-         stb   <CmndReg
-         sta   <$48
-         rts
-L0107    lda   >CURDRV,u
-         ora   #$04
-         sta   <$48
-         lda   >u00AB,u
-         sta   <$03
-         lda   <$23
-         anda  #$FC
-         sta   <$23
-         lda   >u00AC,u
-         sta   <$06
-         rts
+ bsr READS3
+READS1 lda <P1PCRB
+ bmi READS2
+ leay -$01,y
+ bne   READS1
+         bsr   RECPER
+ puls  y,dp,cc
+ lbra  RDERR
+SYNCWAIT sync
+READS2 lda <V.DATR
+ ldb <P1PDRB
+ sta ,X+ Store it
+ bra SYNCWAIT
+READS3 lda #$FF
+ tfr a,dp Set DP to $FF
+ lda <ACIACmnd
+ sta >V.ACIA,u
+ anda #$FE
+ sta <ACIACmnd
+ bita  #%01000000
+ beq   READS5
+READS4 lda <ACIAStat
+ bita  #%00010000 Transmit register empty?
+ beq READS4
+READS5 orcc #IRQMask+FIRQMask Disable interrupts
+ lda <P0PCRB
+ sta >V.PIA,u
+ lda #$34
+ sta <P0PCRB
+ lda <ACIACmnd
+ anda #$FE
+ sta <ACIACmnd
+ lda <P1PCRB
+ ora #$03
+ sta <P1PCRB
+ lda <P1PDRB
+ ldy #$FFFF
+ lda #$24 Enable NMI and motor on
+ ora >CURDRV,u
+ stb <V.CMDR
+ sta <V.SEL
+ rts
+
+RECPER lda >CURDRV,u
+ ora #$04   motor on
+ sta <V.SEL
+ lda >V.PIA,u
+ sta <P0PCRB
+ lda <P1PCRB
+ anda #$FC
+ sta <P1PCRB
+ lda >V.ACIA,u
+ sta <ACIACmnd
+ rts
 
 
 ***************************************************************
@@ -298,28 +289,29 @@ WRITSC lbsr SEEK
  ldx PD.BUF,Y Buffer addr
  pshs y,dp,cc
  ldb #F.WRIT Write function code
-L0155    lbsr  L00C6
-         lda   ,x+
-L015A    ldb   <$23
-         bmi   L016C
-         leay  -$01,y
-         bne   L015A
-         bsr   L0107
-         puls  y,dp,cc
-         lbra  WRERR
-L0169    lda   ,x+
-         sync
-L016C    sta   <$43
-         ldb   <$22
-         bra   L0169
+WRITS1 lbsr READS3
+ lda ,x+
+WRITS2 ldb <P1PCRB
+ bmi WRITS4
+ leay -1,y
+ bne WRITS2
+ bsr RECPER
+ puls y,dp,cc
+ lbra WRERR
+WRITS3 lda ,x+
+ sync
+WRITS4 sta <V.DATR
+ ldb <P1PDRB
+ bra WRITS3
 
-NMISVC    leas  $0C,s
-         bsr   L0107
-         puls  y,dp,cc
-         ldb   >CmndReg
-         bitb  #$04
-         lbne  RDERR
-         lbra  L0252
+NMISVC leas R$Size,s
+ bsr RECPER
+ puls y,dp,cc
+ ldb >V.CMDR
+ bitb #$04
+ lbne RDERR
+ lbra STCK
+
 *********************************************
 *
 * Write Verify Routine
@@ -382,79 +374,80 @@ SEEK clr >V.DOSK,u
  tfr X,D Logical sector (os-9)
  ldx CURTBL,u
  cmpd #0 Logical sector zero?
-         beq   L01FB
-         cmpd  $01,x
-         bcs   L01DA
+ beq PHYSC7 ..yes; skip conversion.
+ cmpd DD.TOT+1,X Too high sector number?
+ bcs PHYSC1 ..no
 PHYERR comb
  ldb #E$SECT Error: bad sector number
  rts
 
-L01DA    clr   ,-s
-         bra   L01E0
+PHYSC1 clr ,-s
+ bra PHYSC5
 PHYSC2 inc 0,S
-L01E0 subd #18 Subtract one track worth of sectors
+PHYSC5 subd #18 Subtract one track worth of sectors
  bcc PHYSC2 Repeat until less than 1 track size
-         addb  #18  Add back for sector number
+ addb #18 Add back for sector number
  puls A Desired track.
-         cmpa  #$10
-         bls   L01FB
-         pshs  a
-         lda   >CURDRV,u
-         ora   #$10
-         sta   >CURDRV,u
-         puls  a
-L01FB    incb
-         stb   >SecReg
-L01FF    ldb   <$15,x
-         stb   >TrkReg
-         tst   >V.DOSK,u
-         bne   L0210
-         cmpa  <$15,x
-         beq   L0225
-L0210    sta   <$15,x
-         sta   >DataReg
-         ldb   #F.SEEK
-         bsr   WCR0
-         pshs  x
-         ldx   #$222E
-L021F    leax  -$01,x
-         bne   L021F
-         puls  x
-L0225    clrb
-         rts
+ cmpa  #$10
+ bls PHYSC7
+ pshs a
+ lda >CURDRV,u
+ ora #$10 wpc enable
+ sta >CURDRV,u
+ puls a
+PHYSC7 incb
+ stb V.SECR Put sector (b) in sector reg
+SETRK3 ldb <V.Trak,x
+ stb >V.TRKR
+ tst V.DOSK,U Force seek?
+ bne SETRK4 ..yes; do it.
+ cmpa V.TRAK,X Same track?
+ beq SETRK9 ..yes; skip seek.
+SETRK4 sta V.Trak,x
+ sta >V.DATR Put new trk in data reg
+ ldb #F.SEEK+SID2 Command
+ bsr WCR0 Issue command
+ pshs x
+ ldx #$222E  delay loop
+SETRK8 leax -1,x
+ bne SETRK8
+ puls  x
+SETRK9 clrb
+ rts
 
-SELECT    lbsr  L02FD
-         lda   <$21,y
-         cmpa  #$04
-         bcs   L0235
-         comb
-         ldb   #$F0
-         rts
-L0235    pshs  x,b,a
+SELECT lbsr STARTMOT
+ lda PD.DRV,Y Get drive number
+ cmpa  #4 Drive num ok?
+ bcs SELCT3 ..yes
+ comb
+ ldb #E$UNIT Error: illegal unit (drive)
+ rts
+
+SELCT3 pshs X,D
  sta CURDRV,U
  leax DRVBEG,U Table beginning
  ldb #DRVMEM
  mul OFFSET For this drive
  leax D,X
  cmpx CURTBL,U New device call?
-         beq   SELCT5
+ beq SELCT5 ...no; don't force seek
  stx CURTBL,U Current table ptr
-         com   >V.DOSK,u
+ com V.DOSK,U Set force seek flag
 SELCT5 puls pc,x,b,a
 
-L0252    bitb  #$F8
-         beq   L026A
-         bitb  #$80
-         bne   ERNRDY
-         bitb  #$40
-         bne   WPERR
-         bitb  #$20
-         bne   WRERR
+STCK bitb #%11111000 Any error codes set?
+ beq NOERR
+ bitb #%10000000 Drive ready?
+ bne ERNRDY ..no; error
+ bitb #%01000000 Write protected?
+ bne WPERR ..yes; return error
+ bitb  #%00100000 Head loaded?
+ bne WRERR ..yes; return error.
  bitb #%00010000 Seek error?
  bne ERSEEK ..yes; return error
  bitb #%00001000 Check sum ok?
  bne ERRCRC ..no; return error
-L026A    clrb
+NOERR clrb
  rts
 
 
@@ -480,22 +473,22 @@ RDERR comb
  ldb #E$Read
  rts
 
-WCR0    bsr   L02A1
-L0286    ldb   >CmndReg
-         bitb  #$01
-         beq   DELAY4
-         lda   #$F0
-         sta   >D.DskTmr
-         bra   L0286
-L0294    lda   #$04
-         ora   >CURDRV,u
-         sta   >SelReg
-         stb   >CmndReg
-         rts
-L02A1    bsr   L0294
-L02A3    lbsr  L02A6
-L02A6    lbsr  DELAY4
-DELAY4    rts
+WCR0 bsr DELAY
+WCR02 ldb   >V.CMDR
+ bitb #%00000001 Busy?
+ beq DELAY4 ..yes; wait for it.
+ lda #$F0
+ sta >D.DskTmr
+ bra WCR02
+WCR lda #$04  motor on
+ ora >CURDRV,u
+ sta >V.SEL
+ stb >V.CMDR
+ rts
+DELAY bsr WCR
+DELAY1 lbsr DELAY2
+DELAY2 lbsr DELAY4
+DELAY4 rts
 
  pag
 ************************************************************
@@ -512,7 +505,7 @@ PUTSTA ldx PD.RGS,Y Point to parameters
  beq WRTTRK ..yes; do it.
  comb ...NO; Error
  ldb #E$UnkSvc Error code
-L02B9    rts
+RETRN2    rts
 
 
 *****************************************************************
@@ -523,20 +516,20 @@ L02B9    rts
 *         (U)=Global Storage
 *
 WRTTRK lbsr SELECT Select drive
-         lda   $09,x
-         cmpa  #$10
-         bls   L02CD
-         ldb   >CURDRV,u
-         orb   #$10
-         stb   >CURDRV,u
-L02CD    ldx   >CURTBL,u
-         lbsr  L01FF
-         bcs   L02B9
+ lda R$U+1,X Track number
+ cmpa #$10
+ bls WRTRK2
+ ldb CURDRV,u
+ orb #$10  wpc enable
+ stb CURDRV,u
+WRTRK2 ldx Curtbl,u Point to drive table
+ lbsr SETRK3
+ bcs RETRN2
  ldx PD.RGS,Y
  ldx R$X,X Get buffer addr
  ldb #F.WRTR
-         pshs  y,dp,cc
-         lbra  L0155
+ pshs y,dp,cc
+ lbra WRITS1
  pag
 *********************************************************
 *
@@ -555,29 +548,29 @@ RESTOR lbsr SELECT Select drive
  ldx CURTBL,U
  clr V.TRAK,X Old track = 0
  lda #5 Repeat five times
-RESTR2 ldb #F.STPI
+RESTR2 ldb #F.STPI+SID2
  pshs A
  lbsr WCR0 Issue command, delay & wait for done.
  puls A
  deca DONE Stepping?
  bne RESTR2 ...no; step again.
- ldb #F.REST Restore command
+ ldb #F.REST+SID2 Restore command
  bra WCR0
 
 * Start Drive Motors and wait for them if necessary
-L02FD    pshs  x,b,a
-         lda   >D.DskTmr
-         bne   L0312
-         lda   #$04
-         sta   >SelReg
-         ldx   #$A000
-L030C    nop
-         nop
-         leax  -$01,x
-         bne   L030C
-L0312    lda   #$F0
-         sta   >D.DskTmr
-         puls  pc,x,b,a
+STARTMOT pshs  X,D
+ lda >D.DskTmr
+ bne START10
+ lda #$04
+ sta >V.SEL
+ ldx #$A000
+WAITLOOP nop
+ nop
+ leax  -$01,x
+ bne WAITLOOP
+START10 lda #$F0
+ sta >D.DskTmr
+ puls pc,X,D
 
  emod
 
