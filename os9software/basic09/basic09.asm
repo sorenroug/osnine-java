@@ -584,630 +584,678 @@ L03F2    fcs   'DIR'
 L03F5    fcb   $40        ???
          fdb   $0000
 
+         fcb   $00        ???
+         fdb   L0142-*    PARAM ($fd49)
+
          fcb   $00
-         fcb   $FD
-         fcb   $49 I
+         fdb   L0149-*    TYPE  ($fd4d)
+
          fcb   $00
-         fcb   $FD
-         fcb   $4D M
+         fdb   L014F-*    DIM   ($fd50)
+
          fcb   $00
-         fcb   $FD
-         fcb   $50 P
+         fdb   L0154-*    DATA  ($fd52)
+
+
          fcb   $00
-         fcb   $FD
-         fcb   $52 R
+         fdb   L015A-*    STOP  ($fd55)
+
          fcb   $00
-         fcb   $FD
-         fcb   $55 U
+         fdb   L0160-*    BYE   ($fd58)
+
          fcb   $00
-         fcb   $FD
-         fcb   $58 X
+         fdb   L0165-*    TRON  ($fd5a)
+
          fcb   $00
-         fcb   $FD
-         fcb   $5A Z
+         fdb   L016B-*    TROFF ($fd5d)
+
          fcb   $00
-         fcb   $FD
-         fcb   $5D ]
+         fdb   L0172-*    PAUSE ($fd61)
+
          fcb   $00
-         fcb   $FD
-         fcb   $61 a
+         fdb   L0179-*    DEG   ($fd65)
+
          fcb   $00
-         fcb   $FD
-         fcb   $65 e
+         fdb   L017E-*    RAD   ($fd67)
+
          fcb   $00
-         fcb   $FD
-         fcb   $67 g
+         fdb   L0183-*    RETURN ($fd69)
+
          fcb   $00
-         fcb   $FD
-         fcb   $69 i
+         fdb   L018B-*    LET    ($fd6e)
+
+         fcb   $40        ???
+         fdb   $0000
+
          fcb   $00
-         fcb   $FD
-         fcb   $6E n
-         fcb   $40 @
+         fdb   L0190-*    POKE   ($fd6d)
+
          fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $FD
-         fcb   $6D m
-         fcb   $00
-         fcb   $FD
-         fcb   $70 p
-         fcb   $63 c
-         fcb   $FD
-         fcb   $71 q
+         fdb   L0196-*    IF     ($fd70)
+
+         fcb   $63
+         fdb   L019A-*    ELSE   ($fd71)
+
          fcb   $02
-         fcb   $FD
-         fcb   $74 t
+         fdb   L01A0-*    ENDIF  ($fd74)
+
          fcb   $01
-         fcb   $FD
-         fcb   $78 x
-         fcb   $22 "
-         fcb   $0F
-         fcb   $E7 g
+         fdb   L01A7-*    FOR    ($fd78)
+
+         fcb   $22
+         fdb   L1419-*    (something with NEXT in it) ($0fe7)
+
          fcb   $01
-         fcb   $FD
-         fcb   $7D ý
-         fcb   $62 b
-         fcb   $FD
-         fcb   $81
+         fdb   L01B2-*    WHILE ($fd7d)
+
+         fcb   $62
+         fdb   L01B9-*    ENDWHILE ($fd81)
+
          fcb   $01
-         fcb   $FD
-         fcb   $88
+         fdb   L01C3-*    REPEAT ($fd88)
+
          fcb   $02
-         fcb   $FD
-         fcb   $8D
+         fdb   L01CB-*    UNTIL ($fd8d)
+
          fcb   $01
-         fcb   $FD
-         fcb   $91
-         fcb   $62 b
-         fcb   $FD
-         fcb   $94
+         fdb   L01D2-*    LOOP ($fd91)
+
+         fcb   $62
+         fdb   L01D8-*    ENDLOOP ($fd94)
+
          fcb   $02
-         fcb   $FD
-         fcb   $9A
-         fcb   $63 c
-         fcb   $FD
-         fcb   $9F
+         fdb   L01E1-*    EXITIF ($fd9a)
+
+         fcb   $63
+         fdb   L01E9-*    ENDEXIT ($fd9f)
+
          fcb   $00
-         fcb   $FD
-         fcb   $A5 %
+         fdb   L01F2-*    ON ($fda5)
+
          fcb   $00
-         fcb   $FD
-         fcb   $A6 &
+         fdb   L01F6-*    ERROR ($fda6)
+
          fcb   $20
-         fcb   $0F
-         fcb   $76 v
+         fdb   L13C9-*    Point to something with GOTO ($0f76)
+
          fcb   $20
-         fcb   $0F
-         fcb   $73 s
+         fdb   L13C9-*    Point to something with GOTO ($0f73)
+
          fcb   $20
-         fcb   $0F
-         fcb   $6A j
+         fdb   L13C3-*    Point to something with GOSUB ($0f6a)
+
          fcb   $20
-         fcb   $0F
-         fcb   $67 g
+         fdb   L13C3-*    Point to something with GOSUB ($0f67)
+
          fcb   $20
-         fcb   $0F
-         fcb   $B0 0
+         fdb   L140F-*    Point to something with RUN ($0fb0)
+
          fcb   $00
-         fcb   $FD
-         fcb   $AD -
+         fdb   L020F-*    KILL ($fdad)
+
          fcb   $00
-         fcb   $FD
-         fcb   $B0 0
+         fdb   L0215-*    INPUT ($fdb0)
+
          fcb   $00
-         fcb   $FD
-         fcb   $B4 4
+         fdb   L021C-*    PRINT ($fdb4)
+
          fcb   $00
-         fcb   $FD
-         fcb   $B8 8
+         fdb   L0223-*    CHD ($fdb8)
+
          fcb   $00
-         fcb   $FD
-         fcb   $BA :
+         fdb   L0228-*    CHX ($fdba)
+
          fcb   $00
-         fcb   $FD
-         fcb   $BC <
+         fdb   L022D-*    CREATE ($fdbc)
+
          fcb   $00
-         fcb   $FD
-         fcb   $C1 A
+         fdb   L0235-*    OPEN ($fdc1)
+
          fcb   $00
-         fcb   $FD
-         fcb   $C4 D
+         fdb   L023B-*    SEEK ($fdc4)
+
          fcb   $00
-         fcb   $FD
-         fcb   $C7 G
+         fdb   L0241-*    READ ($fdc7)
+
          fcb   $00
-         fcb   $FD
-         fcb   $CA J
+         fdb   L0247-*    WRITE ($fdca)
+
          fcb   $00
-         fcb   $FD
-         fcb   $CE N
+         fdb   L024E-*    GET ($fdce)
+
          fcb   $00
-         fcb   $FD
-         fcb   $D0 P
+         fdb   L0253-*    PUT ($fdd0)
+
          fcb   $00
-         fcb   $FD
-         fcb   $D2 R
+         fdb   L0258-*    CLOSE ($fdd2)
+
          fcb   $00
-         fcb   $FD
-         fcb   $D6 V
+         fdb   L025F-*    RESTORE ($fdd6)
+
          fcb   $00
-         fcb   $FD
-         fcb   $DC \
+         fdb   L0268-*    DELETE ($fddc)
+
          fcb   $00
-         fcb   $FD
-         fcb   $E1 a
+         fdb   L0270-*    CHAIN ($fde1)
+
          fcb   $00
-         fcb   $FD
-         fcb   $E5 e
+         fdb   L0277-*    SHELL ($fde5)
+
          fcb   $20
-         fcb   $0F
-         fcb   $6D m
+         fdb   L1402-*    Points to something with BASE ($0f6d)
+
          fcb   $20
-         fcb   $0F
-         fcb   $6A j
+         fdb   L1402-*    Points to something with BASE ($0f6a)
+
          fcb   $20
-         fcb   $0F
-         fcb   $A1 !
+         fdb   L143C-*    Points to something with REM ($0fa1)
+
          fcb   $20
-         fcb   $0F
-         fcb   $98
+         fdb   L1436-*    Points to something with (* ($0f98)
+
          fcb   $00
-         fcb   $FD
-         fcb   $E8 h
+         fdb   L0289-*    END ($fde8)
+
          fcb   $20
-         fcb   $0F
-         fcb   $2B +
+         fdb   L13CF-*    ??? end of goto/gosub routine ($0f2b)
+
          fcb   $20
-         fcb   $0F
-         fcb   $28 (
-         fcb   $40 @
-         fcb   $00
-         fcb   $00
+         fdb   L13CF-*    ??? end of goto/gosub routine ($0f28)
+
+         fcb   $40        ???
+         fdb   $0000
+
          fcb   $20
-         fcb   $0F
-         fcb   $96
-         fcb   $40 @
+         fdb   L1443-*    ??? end of REM routine ($0f96)
+
+         fcb   $40
+         fcc   ' \'       Command statement separator literal
+
          fcb   $20
-         fcb   $5C \
-         fcb   $20
-         fcb   $0E
-         fcb   $21 !
+         fdb   L12D4-*    ??? ($0e21)
+
          fcb   $10
-         fcb   $FD
-         fcb   $D8 X
+         fdb   L028E-*    BYTE ($fdd8)
+
          fcb   $10
-         fcb   $FD
-         fcb   $DB [
+         fdb   L0294-*    INTEGER ($fddb)
+
          fcb   $10
-         fcb   $FD
-         fcb   $E1 a
+         fdb   L029D-*    REAL ($fde1)
+
          fcb   $10
-         fcb   $FD
-         fcb   $E4 d
+         fdb   L02A3-*    BOOLEAN ($fde4)
+
          fcb   $10
-         fcb   $FD
-         fcb   $EA j
+         fdb   L02AC-*    STRING ($fdea)
+
          fcb   $20
-         fcb   $0F
-         fcb   $5F _
-         fcb   $60 `
-         fcb   $FD
-         fcb   $F2 r
-         fcb   $60 `
-         fcb   $FD
-         fcb   $F3 s
+         fdb   L1424-*    ??? Something that points to 'THEN' ($0f5f)
+
+         fcb   $60
+         fdb   L02BA-*    TO ($fdf2)
+
+         fcb   $60
+         fdb   L02BE-*    STEP ($fdf3)
+
          fcb   $00
-         fcb   $FD
-         fcb   $F6 v
+         fdb   L02C4-*    DO ($fdf6)
+
          fcb   $00
-         fcb   $FD
-         fcb   $F7 w
+         fdb   L02C8-*    USING ($fdf7)
+
          fcb   $20
-         fcb   $0F
-         fcb   $8A
-         fcb   $40 @
-         fcb   $2C ,
+         fdb   L145E-*    ??? Something with file access modes ($0f8a)
+
+         fcb   $40
+         fcc   ','        comma
          fcb   $00
-         fcb   $40 @
-         fcb   $3A :
+
+         fcb   $40
+         fcc   ':'        colon
          fcb   $00
-         fcb   $40 @
-         fcb   $28 (
+
+         fcb   $40
+         fcc   '('        Left parenthesis
          fcb   $00
-         fcb   $40 @
-         fcb   $29 )
+
+         fcb   $40
+         fcc   ')'        Right parenthesis
          fcb   $00
-         fcb   $40 @
-         fcb   $5B [
+
+         fcb   $40
+         fcc   '['        Left bracket
          fcb   $00
-         fcb   $40 @
-         fcb   $5D ]
+
+         fcb   $40
+         fcc   ']'        Right bracket
          fcb   $00
-         fcb   $40 @
-         fcb   $3B ;
-         fcb   $20
-         fcb   $40 @
-         fcb   $3A :
-         fcb   $3D =
-         fcb   $40 @
-         fcb   $3D =
+
+         fcb   $40
+         fcc   '; '       semi-colon with space
+
+         fcb   $40
+         fcc   ':='       := (pascal like equals)
+
+         fcb   $40
+         fcc   '='        Equals sign
          fcb   $00
-         fcb   $40 @
-         fcb   $23 #
+
+         fcb   $40
+         fcc   '#'        number sign
          fcb   $00
+
          fcb   $20
-         fcb   $15
-         fcb   $EC l
+         fdb   L1AE1-*    ??? Bump Y up by 2 & return ($15ec)
+
+* Guess: These following have to do with printing numeric values???
          fcb   $20
-         fcb   $0E
-         fcb   $92
+         fdb   L138A-*    ??? ($0E92)
+
          fcb   $20
-         fcb   $0E
-         fcb   $8F
+         fdb   L138A-*    ??? ($0E8F)
+
          fcb   $20
-         fcb   $0E
-         fcb   $8C
+         fdb   L138A-*    ??? ($0E8c)
+
          fcb   $20
-         fcb   $0E
-         fcb   $89
+         fdb   L138A-*    ??? ($0E89)
+
          fcb   $20
-         fcb   $0E
-         fcb   $86
+         fdb   L138A-*    ??? ($0E86)
+
          fcb   $20
-         fcb   $0E
-         fcb   $83
-         fcb   $21 !
-         fcb   $0E
+         fdb   L138A-*    ??? ($0E83)
+
+         fcb   $21
+         fdb   L138A-*    ??? ($0E80)
+
+         fcb   $22
+         fdb   L138A-*    ??? ($0E7D)
+
+         fcb   $23
+         fdb   L138A-*    ??? ($0E7A)
+
+         fcb   $20
+         fdb   L1386-*    ??? (Appends period, does 138A routine) ($0E73)
+
+         fcb   $21
+         fdb   L1386-*    ??? (Appends period, does 138A routine) ($0E70)
+
+         fcb   $22
+         fdb   L1386-*    ??? (Appends period, does 138A routine) ($0E6d)
+
+         fcb   $23
+         fdb   L1386-*    ??? (Appends period, does 138A routine) ($0E6a)
+
+         fcb   $26
+         fdb   L13BE-*    ??? (print single byte numeric?) ($0E9f)
+
+         fcb   $27
+         fdb   L13CF-*    ??? (print 2 byte integer numeric?) ($0Ead)
+
+         fcb   $24
+         fdb   L13A0-*    ??? (possibly something with reals?) ($0E7b)
+
+         fcb   $24
+         fdb   L13E1-*    ??? (string, puts " in) ($0Eb9)
+
+         fcb   $27
+         fdb   L13F6-*    ??? (string, puts $ in) ($0Ecb)
+
+         fcb   $11
+         fdb   L02DA-*    ADDR ($FDac)
+
+         fcb   $80        ???
+         fdb   $0000
+
+         fcb   $11
+         fdb   L02E0-*    SIZE ($FDAC)
+
          fcb   $80
-         fcb   $22 "
-         fcb   $0E
-         fcb   $7D ý
-         fcb   $23 #
-         fcb   $0E
-         fcb   $7A z
-         fcb   $20
-         fcb   $0E
-         fcb   $73 s
-         fcb   $21 !
-         fcb   $0E
-         fcb   $70 p
-         fcb   $22 "
-         fcb   $0E
-         fcb   $6D m
-         fcb   $23 #
-         fcb   $0E
-         fcb   $6A j
-         fcb   $26 &
-         fcb   $0E
-         fcb   $9F
-         fcb   $27 '
-         fcb   $0E
-         fcb   $AD -
-         fcb   $24 $
-         fcb   $0E
-         fcb   $7B û
-         fcb   $24 $
-         fcb   $0E
-         fcb   $B9 9
-         fcb   $27 '
-         fcb   $0E
-         fcb   $CB K
-         fcb   $11
-         fcb   $FD
-         fcb   $AC ,
-         fcb   $80
-         fcb   $00
-         fcb   $00
-         fcb   $11
-         fcb   $FD
-         fcb   $AC ,
-         fcb   $80
-         fcb   $00
-         fcb   $00
+         fdb   $0000      ???
+
          fcb   $10
-         fcb   $FD
-         fcb   $AC ,
+         fdb   L02E6-*    POS ($FDAC)
+
          fcb   $10
-         fcb   $FD
-         fcb   $AE .
+         fdb   L02EB-*    ERR ($FDAE)
+
          fcb   $12
-         fcb   $FD
-         fcb   $B0 0
+         fdb   L02F0-*    MOD ($FDB0)
+
          fcb   $12
-         fcb   $FD
-         fcb   $AD -
+         fdb   L02F0-*    MOD ($FDAD)
+
          fcb   $11
-         fcb   $FD
-         fcb   $AF /
+         fdb   L02F5-*    RND ($FDAF)
+
          fcb   $10
-         fcb   $FD
-         fcb   $B9 9
+         fdb   L0302-*    PI ($FDB9)
+
          fcb   $12
-         fcb   $FD
-         fcb   $AE .
+         fdb   L02FA-*    SUBSTR ($FDAE)
+
          fcb   $11
-         fcb   $FD
-         fcb   $E6 f
+         fdb   L0335-*    SGN ($FDE6)
+
          fcb   $11
-         fcb   $FD
-         fcb   $E3 c
+         fdb   L0335-*    SGN ($FDE3)
+
          fcb   $11
-         fcb   $FD
-         fcb   $B1 1
+         fdb   L0306-*    SIN ($FDB1)
+
          fcb   $11
-         fcb   $FD
-         fcb   $B3 3
+         fdb   L030B-*    COS ($FDB3)
+
          fcb   $11
-         fcb   $FD
-         fcb   $B5 5
+         fdb   L0310-*    TAN ($FDB5)
+
          fcb   $11
-         fcb   $FD
-         fcb   $B7 7
+         fdb   L0315-*    ASN ($FDB7)
+
          fcb   $11
-         fcb   $FD
-         fcb   $B9 9
+         fdb   L031A-*    ACS ($FDB9)
+
          fcb   $11
-         fcb   $FD
-         fcb   $BB ;
+         fdb   L031F-*    ATN ($FDbb)
+
          fcb   $11
-         fcb   $FD
-         fcb   $BD =
+         fdb   L0324-*    EXP ($FDBD)
+
          fcb   $11
-         fcb   $FD
-         fcb   $D0 P
+         fdb   L033A-*    ABS ($FDD0)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CD M
+         fdb   L033A-*    ABS ($FDCD)
+
          fcb   $11
-         fcb   $FD
-         fcb   $B9 9
+         fdb   L0329-*    LOG ($FDB9)
+
          fcb   $11
-         fcb   $FD
-         fcb   $BB ;
+         fdb   L032E-*    LOG10 ($FDBB)
+
          fcb   $11
-         fcb   $FD
-         fcb   $C9 I
+         fdb   L033F-*    SQRT ($FDC9)
+
          fcb   $11
-         fcb   $FD
-         fcb   $C6 F
+         fdb   L033F-*    SQRT ($FDC6)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CE N
+         fdb   L034A-*    INT ($FDCE)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CB K
+         fdb   L034A-*    INT ($FDCB)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CD M
+         fdb   L034F-*    FIX ($FDCD)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CA J
+         fdb   L034F-*    FIX ($FDCA)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CC L
+         fdb   L0354-*    FLOAT ($FDCC)
+
          fcb   $11
-         fcb   $FD
-         fcb   $C9 I
+         fdb   L0354-*    FLOAT ($FDC9)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CD M
+         fdb   L035B-*    SQ ($FDCD)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CA J
+         fdb   L035B-*    SQ ($FDCA)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CB K
+         fdb   L035F-*    PEEK ($FDCB)
+
          fcb   $11
-         fcb   $FD
-         fcb   $CE N
+         fdb   L0365-*    LNOT ($FDCE)
+
          fcb   $11
-         fcb   $FD
-         fcb   $D1 Q
+         fdb   L036B-*    VAL ($FDD1)
+
          fcb   $11
-         fcb   $FD
-         fcb   $D3 S
+         fdb   L0370-*    LEN ($FDD3)
+
          fcb   $11
-         fcb   $FD
-         fcb   $D5 U
+         fdb   L0375-*    ASC ($FDD5)
+
          fcb   $12
-         fcb   $FD
-         fcb   $D7 W
+         fdb   L037A-*    LAND ($FDD7)
+
          fcb   $12
-         fcb   $FD
-         fcb   $DA Z
+         fdb   L0380-*    LOR ($FDDA)
+
          fcb   $12
-         fcb   $FD
-         fcb   $DC \
+         fdb   L0385-*    LXOR ($FDDC)
+
          fcb   $10
-         fcb   $FD
-         fcb   $DF _
+         fdb   L038B-*    TRUE ($FDDF)
+
          fcb   $10
-         fcb   $FD
-         fcb   $E2 b
+         fdb   L0391-*    FALSE ($FDE2)
+
          fcb   $11
-         fcb   $FD
-         fcb   $E6 f
+         fdb   L0398-*    EOF ($FDE6)
+
          fcb   $11
-         fcb   $FD
-         fcb   $E8 h
+         fdb   L039D-*    TRIM$ ($FDE8)
+
          fcb   $13
-         fcb   $FD
-         fcb   $EC l
+         fdb   L03A4-*    MID$ ($FDEC)
+
          fcb   $12
-         fcb   $FD
-         fcb   $EF o
+         fdb   L03AA-*    LEFT$ ($FDEF)
+
          fcb   $12
-         fcb   $FD
-         fcb   $F3 s
+         fdb   L03B1-*    RIGHT$ ($FDF3)
+
          fcb   $11
-         fcb   $FD
-         fcb   $F8 x
+         fdb   L03B9-*    CHR$ ($FDF8)
+
          fcb   $11
-         fcb   $FD
-         fcb   $FB
+         fdb   L03BF-*    STR$ ($FDFB)
+
          fcb   $11
-         fcb   $FD
-         fcb   $F8 x
+         fdb   L03BF-*    STR$ ($FDF8)
+
          fcb   $10
-         fcb   $FD
-         fcb   $FB
+         fdb   L03C5-*    DATE$ ($FDFB)
+
          fcb   $11
-         fcb   $FD
-         fcb   $FF
+         fdb   L03CC-*    TAB ($FDFF)
+
          fcb   $80
-         fcb   $00
-         fcb   $00
+         fdb   $0000
+
          fcb   $80
-         fcb   $00
-         fcb   $00
+         fdb   $0000
+
          fcb   $80
-         fcb   $00
-         fcb   $00
+         fdb   $0000
+
          fcb   $80
-         fcb   $00
-         fcb   $00
+         fdb   $0000
+
          fcb   $80
-         fcb   $00
-         fcb   $00
+         fdb   $0000
+
          fcb   $11
-         fcb   $FD
-         fcb   $F2 r
-         fcb   $51 Q
-         fcb   $2D -
+         fdb   L03D1-*    NOT ($FDF2)
+
+         fcb   $51
+         fcc   '-'        ??? (Sign as opposed to subtract?)
          fcb   $00
-         fcb   $51 Q
-         fcb   $2D -
+
+         fcb   $51
+         fcc   '-'        ??? (Sign as opposed to subtract?)
          fcb   $00
+
          fcb   $0A
-         fcb   $FD
-         fcb   $EE n
+         fdb   L03D6-*    AND ($FDEE)
+
          fcb   $09
-         fcb   $FD
-         fcb   $F0 p
+         fdb   L03DB-*    OR ($FDF0)
+
          fcb   $09
-         fcb   $FD
-         fcb   $F1 q
-         fcb   $4B K
-         fcb   $3E >
+         fdb   L03DF-*    XOR ($FDF1)
+
+* Would presume that the different duplicates are for different data types
+* It appears that BYTE & INTEGER use the same routines, REAL is different,
+* STRING/TYPE use a third, and BOOLEAN would be a rarely used 4th
+* Order appears to be : REAL/(INTEGER or BYTE)/STRING/BOOLEAN
+* 3 - real/integer/string
+
+         fcb   $4B
+         fcc   '>'        greater than
          fcb   $00
-         fcb   $4B K
-         fcb   $3E >
+
+         fcb   $4B
+         fcc   '>'        greater than
          fcb   $00
-         fcb   $4B K
-         fcb   $3E >
+
+         fcb   $4B
+         fcc   '>'        greater than
          fcb   $00
-         fcb   $4B K
-         fcb   $3C <
+
+* 3 - real/integer/string
+         fcb   $4B
+         fcc   '<'        less than
          fcb   $00
-         fcb   $4B K
-         fcb   $3C <
+
+         fcb   $4B
+         fcc   '<'        less than
          fcb   $00
-         fcb   $4B K
-         fcb   $3C <
+
+         fcb   $4B
+         fcc   '<'        less than
          fcb   $00
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3E >
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3E >
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3E >
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3E >
-         fcb   $4B K
-         fcb   $3D =
+
+* 4 - real/integer/string/boolean
+         fcb   $4B
+         fcc   '<>'       not equal to
+
+         fcb   $4B
+         fcc   '<>'       not equal to
+
+         fcb   $4B
+         fcc   '<>'       not equal to
+
+         fcb   $4B
+         fcc   '<>'       not equal to
+
+* 4 - real/integer/string/boolean
+         fcb   $4B
+         fcc   '='        equal to
          fcb   $00
-         fcb   $4B K
-         fcb   $3D =
+
+         fcb   $4B
+         fcc   '='        equal to
          fcb   $00
-         fcb   $4B K
-         fcb   $3D =
+
+         fcb   $4B
+         fcc   '='        equal to
          fcb   $00
-         fcb   $4B K
-         fcb   $3D =
+
+         fcb   $4B
+         fcc   '='        equal to
          fcb   $00
-         fcb   $4B K
-         fcb   $3E >
-         fcb   $3D =
-         fcb   $4B K
-         fcb   $3E >
-         fcb   $3D =
-         fcb   $4B K
-         fcb   $3E >
-         fcb   $3D =
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3D =
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3D =
-         fcb   $4B K
-         fcb   $3C <
-         fcb   $3D =
-         fcb   $4C L
-         fcb   $2B +
+
+* 3 - real/integer/string
+         fcb   $4B
+         fcc   '>='       greater than or equal to
+
+         fcb   $4B
+         fcc   '>='       greater than or equal to
+
+         fcb   $4B
+         fcc   '>='       greater than or equal to
+
+* 3 - real/integer/string
+         fcb   $4B
+         fcc   '<='       less than or equal to
+
+         fcb   $4B
+         fcc   '<='       less than or equal to
+
+         fcb   $4B
+         fcc   '<='       less than or equal to
+
+* 3 - real/integer/string
+         fcb   $4c
+         fcc   '+'        plus
          fcb   $00
-         fcb   $4C L
-         fcb   $2B +
+
+         fcb   $4c
+         fcc   '+'        plus
          fcb   $00
-         fcb   $4C L
-         fcb   $2B +
+
+         fcb   $4c
+         fcc   '+'        plus
          fcb   $00
-         fcb   $4C L
-         fcb   $2D -
+
+* 2 - real/integer
+         fcb   $4C
+         fcc   '-'        minus
          fcb   $00
-         fcb   $4C L
-         fcb   $2D -
+
+         fcb   $4C
+         fcc   '-'        minus
          fcb   $00
-         fcb   $4D M
-         fcb   $2A *
+
+* 2 - real/integer
+         fcb   $4D
+         fcc   '*'        multiply
          fcb   $00
-         fcb   $4D M
-         fcb   $2A *
+
+         fcb   $4D
+         fcc   '*'        multiply
          fcb   $00
-         fcb   $4D M
-         fcb   $2F /
+
+* 2 - real/integer
+         fcb   $4D
+         fcc   '/'        divide
          fcb   $00
-         fcb   $4D M
-         fcb   $2F /
+
+         fcb   $4D
+         fcc   '/'        divide
          fcb   $00
-         fcb   $4E N
-         fcb   $5E ^
+
+* 1 - real
+         fcb   $4E
+         fcc   '^'        exponent
          fcb   $00
-         fcb   $4E N
-         fcb   $2A *
-         fcb   $2A *
+
+* 1 - real
+         fcb   $4E
+         fcc   '**'       exponent (2nd version)
+
          fcb   $20
-         fcb   $0D
-         fcb   $3C <
-         fcb   $21 !
-         fcb   $0D
-         fcb   $39 9
-         fcb   $22 "
-         fcb   $0D
-         fcb   $36 6
-         fcb   $23 #
-         fcb   $0D
-         fcb   $33 3
+         fdb   L138A-*    ??? ($0D3c)
+
+         fcb   $21
+         fdb   L138A-*    ??? ($0D39)
+
+         fcb   $22
+         fdb   L138A-*    ??? ($0D36)
+
+         fcb   $23
+         fdb   L138A-*    ??? ($0D33)
+
          fcb   $20
-         fcb   $0D
-         fcb   $2C ,
-         fcb   $21 !
-         fcb   $0D
-         fcb   $29 )
-         fcb   $22 "
-         fcb   $0D
-         fcb   $26 &
-         fcb   $23 #
-         fcb   $0D
-         fcb   $23 #
-         fcb   $00
+         fdb   L1386-*    ??? (Adds period, does 138A) ($0D2C)
+
+         fcb   $21
+         fdb   L1386-*    ??? (Adds period, does 138A) ($0D29)
+
+         fcb   $22
+         fdb   L1386-*    ??? (Add period, does 138A) ($0D26)
+
+         fcb   $23
+         fdb   L1386-*    ??? (Add period, does 138A) ($0D23)
+
 * System Mode commands
-         fcb   2          # commands this table
+         fdb   2          # commands this table
          fcb   2          # bytes to first command string
 L0668    fdb   L09F9-L0668
          fcs   '$'
@@ -1218,207 +1266,101 @@ L066B    fdb   L094F-L066B
          fcb   2          # bytes to first command string
 L0671    fdb   L0E6D-L0671
          fcs   'BYE'
-         fcb   $02
-         fcb   $D4 T
-         fcb   $44 D
-         fcb   $49 I
-         fcb   $D2 R
-         fcb   $0F
-         fcb   $15
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $49 I
-         fcb   $D4 T
-         fcb   $0F
-         fcb   $0F
-         fcb   $C5 E
-         fcb   $06
-         fcb   $7E
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $53 S
-         fcb   $D4 T
-         fcb   $07
-         fcb   $3D =
-         fcb   $52 R
-         fcb   $55 U
-         fcb   $CE N
-         fcb   $08
-         fcb   $09
-         fcb   $4B K
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $CC L
-         fcb   $06
-         fcb   $5F _
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $C5 E
-         fcb   $04
-         fcb   $28 (
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $41 A
-         fcb   $C4 D
-         fcb   $03
-         fcb   $91
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $C5 E
-         fcb   $04
-         fcb   $A8 (
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $CB K
-         fcb   $02
-         fcb   $69 i
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $CD M
-         fcb   $03
-         fcb   $70 p
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $C4 D
-         fcb   $03
-         fcb   $6F o
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $D8 X
-         fcb   $00
-         fcb   $02
-         fcb   $02
-L06C1    fcb   $03
-         fcb   $38 8
-         fcb   $A4 $
-         fcb   $09
-         fcb   $C7 G
-         fcb   $8D
-         fcb   $00
-         fcb   $0E
-         fcb   $02
-         fcb   $09
-         fcb   $D0 P
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $D4 T
-         fcb   $02
-         fcb   $7A z
-         fcb   $44 D
-         fcb   $49 I
-         fcb   $D2 R
-         fcb   $09
-         fcb   $93
-         fcb   $D1 Q
-         fcb   $0A
-         fcb   $0C
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $53 S
-         fcb   $D4 T
-         fcb   $0A
-         fcb   $B7 7
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $D4 T
-         fcb   $0B
-         fcb   $25 %
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $C5 E
-         fcb   $0A
-         fcb   $A9 )
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $CE N
-         fcb   $0A
-         fcb   $A3 #
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $C6 F
-         fcb   $0A
-         fcb   $9C
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $C7 G
-         fcb   $0A
-         fcb   $97
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $C4 D
-         fcb   $0A
-         fcb   $92
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $D4 T
-         fcb   $09
-         fcb   $74 t
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $D0 P
-         fcb   $0B
-         fcb   $18
-         fcb   $42 B
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $CB K
-         fcb   $00
-         fcb   $08
-         fcb   $02
-L0718    fcb   $0F
-         fcb   $86
-         fcb   $CC L
-         fcb   $0F
-         fcb   $83
-         fcb   $EC l
-         fcb   $12
-         fcb   $7C
-         fcb   $C4 D
-         fcb   $12
-         fcb   $79 y
-         fcb   $E4 d
-         fcb   $0E
-         fcb   $C3 C
-         fcb   $AB +
-         fcb   $0E
-         fcb   $C0 @
-         fcb   $AD -
-         fcb   $0E
-         fcb   $BD =
-         fcb   $8D
-         fcb   $0E
-         fcb   $D4 T
-         fcb   $A0
-         fcb   $00
-         fcb   $04
-         fcb   $02
-         fcb   $10
-         fcb   $28 (
-         fcb   $D3 S
-         fcb   $10
-         fcb   $28 (
-         fcb   $C3 C
-         fcb   $11
-         fcb   $A6 &
-         fcb   $D2 R
-         fcb   $12
-         fcb   $57 W
-         fcb   $D1 Q
+L0676    fdb   L094A-L0676
+         fcs   'DIR'
+L067B    fdb   L1590-L067B
+         fcs   'EDIT'
+L0681    fdb   L1590-L0681
+         fcs   'E'
+L0684    fdb   L0D02-L0684
+         fcs   'LIST'
+L068A    fdb   L0DC7-L068A
+         fcs   'RUN'
+L068F    fdb   L0E98-L068F
+         fcs   'KILL'
+L0695    fdb   L0CF4-L0695
+         fcs   'SAVE'
+L069B    fdb   L0AC3-L069B
+         fcs   'LOAD'
+L06A1    fdb   L0A32-L06A1
+         fcs   'RENAME'
+L06A9    fdb   L0B51-L06A9
+         fcs   'PACK'
+L06AF    fdb   L0918-L06AF
+         fcs   'MEM'
+L06B4    fdb   L0A24-L06B4
+         fcs   'CHD'
+L06B9    fdb   L0A28-L06B9
+         fcs   'CHX'
+
+* Debug mode commands (offsets done by current base + offset)
+         fdb   2          # of entries this table (-3,x)
+         fcb   2          # of bytes to start of next entry (-1,x)
+L06C1    fdb   L09F9-L06C1 base ptr goes here (0,x)
+         fcs   '$'        base ptr+(-1,x) above points here
+L06C4    fdb   L108B-L06C4
+         fcb   C$CR+$80   (Carriage return)
+
+L06C7    fdb   14         # of entries this table (but 13?)
+         fcb   2          # bytes to next entry
+* Debug set #2?
+L06CA    fdb   L109A-L06CA
+         fcs   'CONT'
+L06D0    fdb   L094A-L06D0
+         fcs   'DIR'
+L06D5    fdb   L1068-L06D5
+         fcs   'Q'
+L06D8    fdb   L10E4-L06D8
+         fcs   'LIST'
+L06DE    fdb   L1195-L06DE
+         fcs   'PRINT'
+L06E5    fdb   L120A-L06E5
+         fcs   'STATE'
+L06EC    fdb   L1195-L06EC
+         fcs   'TRON'
+L06F2    fdb   L1195-L06F2
+         fcs   'TROFF'
+L06F9    fdb   L1195-L06F9
+         fcs   'DEG'
+L06FE    fdb   L1195-L06FE
+         fcs   'RAD'
+L0703    fdb   L1195-L0703
+         fcs   'LET'
+L0708    fdb   L107C-L0708
+         fcs   'STEP'
+L070E    fdb   L1226-L070E
+         fcs   'BREAK'
+* Some edit mode stuff?
+         fdb   8          # entries this table
+         fcb   2          # bytes to start entry
+L0718    fdb   L169E-L0718
+         fcs   'L'
+L071B    fdb   L169E-L071B
+         fcs   'l'
+L071E    fdb   L199A-L071E
+         fcs   'D'
+L0721    fdb   L199A-L0721
+         fcs   'd'
+L0724    fdb   L15E7-L0724
+         fcs   '+'
+L0727    fdb   L15E7-L0727
+         fcs   '-'
+L072A    fdb   L15E7-L072A
+         fcb   C$CR+$80
+L072D    fdb   L1601-L072D
+         fcb   C$SPAC+$80
+
+         fdb   4          # entries
+         fcb   2          # bytes to first entry
+L0733    fdb   L175B-L0733
+         fcs   'S'
+L0736    fdb   L175E-L0736
+         fcs   'C'
+L0739    fdb   L18DF-L0739
+         fcs   'R'
+L073C    fdb   L1993-L073C
+         fcs   'Q'
+
 L073F
          ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   $0E    Control code to display alpha
@@ -1623,7 +1565,8 @@ L090F    ldd   ,x
          jmp   d,x
 L0915    coma
          puls  pc,y,x
-         lbsr  L0A90
+
+L0918    lbsr  L0A90
          bne   L093C
          leax  ,y
          ldd   <u0008
@@ -1750,14 +1693,17 @@ L0A17    os9   F$Wait
          tstb
          bne   L0A86
          rts
-         lda   #$83
+
+L0A24    lda   #$83
          bra   L0A2A
-         lda   #$84
+
+L0A28    lda   #$84
 L0A2A    leax  ,y
          os9   I$ChgDir
          bcs   L0A86
          rts
-         bsr   L0A9D
+
+L0A32    bsr   L0A9D
          lbsr  L0F6E
          bcs   L0A8C
          pshs  x
@@ -1895,7 +1841,8 @@ L0B43    lda   ,x+
          bpl   L0B43
          clra
 L0B50    rts
-         lbsr  L0C83
+
+L0B51    lbsr  L0C83
          ldu   <u0046
          bra   L0B79
 L0B58    ldy   ,y
@@ -2085,13 +2032,15 @@ L0CE1    stx   ,--u
 L0CF0    clra
          clrb
          bra   L0CB4
-         tst   <u000C
+
+L0CF4    tst   <u000C
          lbeq  L0F69
          lda   #$80
          sta   <u0084
          bsr   L0C83
          bra   L0D06
-         bsr   L0C9D
+
+L0D02    bsr   L0C9D
          leax  ,y
 L0D06    stx   <u005C
          bsr   L0D5F
@@ -2509,15 +2458,19 @@ L1074    inca
          cmpa  #$10
          bcs   L106D
          lbra  L088F
-         lbsr  L0A90
+
+* Debug STEP command
+* Entry: Y=Ptr to next char on line entered by user
+L107C    lbsr  L0A90
          bne   L108E
          leax  ,y
          lbsr  L1748
          bcc   L1091
          rts
 L1089    bsr   L1091
-         clrb
+L108B    clrb
          bra   L1090
+
 L108E    ldb   #$01
 L1090    clra
 L1091    std   <u00B3
@@ -2525,7 +2478,8 @@ L1091    std   <u00B3
          coma
          ror   <u0034
          bra   L10A6
-         lbsr  L0DBB
+
+L109A    lbsr  L0DBB
          lsl   <u0034
          lsr   <u0034
          ldd   #$0001
@@ -2636,7 +2590,8 @@ L1183    lbsr  L0DBB
          dec   <u0083
 L1190    lbsr  L1264
 L1193    puls  pc,u,y,x
-         ldx   <u002F
+
+L1195    ldx   <u002F
          tst   <$17,x
          bpl   L119E
          coma
@@ -2689,7 +2644,7 @@ L11F2    pshs  u,y,x,b,a
          ldy   <u000A
          pshu  y,x,b,a
          bra   L11EB
-         ldy   <u0031
+L120A    ldy   <u0031
          leax  >L0756,pcr
 L1211    bsr   L1223
          lbsr  L135A
@@ -2699,7 +2654,8 @@ L1211    bsr   L1223
          ldy   $07,y
          bne   L1211
 L1223    lbra  L0DBB
-         lbsr  L010D
+
+L1226    lbsr  L010D
          beq   L1249
          lbsr  L0F6E
          bcs   L1249
@@ -2776,7 +2732,8 @@ L12C7    cmpy  <u0060
 L12CC    sty   <u005C
 L12CF    lda   #$0D
          lbra  L1373
-         leas  $02,s
+
+L12D4    leas  $02,s
          bra   L12CC
 L12D8    sta   ,-s
          bmi   L12F6
@@ -2868,7 +2825,8 @@ L1377    sta   ,u+
          inc   <u007D
          stu   <u0082
 L1384    puls  pc,u,b,a
-         lda   #$2E
+
+L1386    lda   #$2E
          bsr   L1373
 L138A    ldx   ,y++
          ldd   <u0062
@@ -2881,7 +2839,8 @@ L1394    lda   ,x
          tst   ,x+
          bpl   L1394
          puls  pc,x
-         ldb   #$03
+
+L13A0    ldb   #$03
          ldx   <u0044
          pshs  y,b
          leay  -$01,y
@@ -2896,12 +2855,15 @@ L13AC    ldd   $04,y
          leay  ,x
          puls  b
          bra   L13DC
-         ldb   ,y
+
+L13BE    ldb   ,y
          clra
          bra   L13D1
-         leax  >L0203,pcr
+
+L13C3    leax  >L0203,pcr
          bra   L13CD
-         leax  >L01FD,pcr
+
+L13C9    leax  >L01FD,pcr
 L13CD    bsr   L1358
 L13CF    ldd   ,y++
 L13D1    pshs  y
@@ -2921,26 +2883,31 @@ L13E3    lda   ,y+
          bra   L13E1
 L13F1    lda   #$22
 L13F3    lbra  L1373
-         lda   #$24
+
+L13F6    lda   #$24
          bsr   L13F3
          ldb   #$14
          lbsr  L011F
          leay  $02,y
          rts
-         leax  >L027E,pcr
+
+L1402    leax  >L027E,pcr
          lbsr  L135A
          lda   -$01,y
          adda  #$FB
          bra   L13F3
-         leax  >L020A,pcr
+
+L140F    leax  >L020A,pcr
 L1413    lbsr  L135A
          lbra  L138A
-         leax  >L01AC,pcr
+
+L1419    leax  >L01AC,pcr
          leay  $01,y
          bsr   L1413
          leay  $06,y
          rts
-         leax  >L02B4,pcr
+
+L1424    leax  >L02B4,pcr
          lbsr  L1358
          lda   ,y
          cmpa  #$3A
@@ -2951,9 +2918,10 @@ L1434    fcs   '(*'
 
 L1436    leax  >L1434,pc  Point to alternative REM statement
          bra   L1440
-         leax  >L0284,pcr
+
+L143C    leax  >L0284,pcr
 L1440    lbsr  L135A
-         ldb   ,y+
+L1443    ldb   ,y+
 L1445    decb
          beq   L1433
          lda   ,y+
@@ -3125,7 +3093,8 @@ L1581    ldx   ,s
          ldx   #$4DFF
          stx   ,--y
          rts
-         lbsr  L0A9D
+
+L1590    lbsr  L0A9D
          lbsr  L0EFD
          ldy   ,x
          tst   $06,y
@@ -3160,7 +3129,8 @@ L15B3    leax  >L07A6,pcr
          bra   L1601
 L15E5    coma
          rts
-         leax  -$01,y
+
+L15E7    leax  -$01,y
          lsl   ,x
          asr   ,x
          lbsr  L16F2
@@ -3244,7 +3214,8 @@ L1697    sty   <u005C
          stx   <u00B5
          clra
          rts
-         bsr   L16CE
+
+L169E    bsr   L16CE
          bsr   L16BD
          cmpx  <u005E
          bhi   L16AD
@@ -3337,9 +3308,11 @@ L1748    ldy   <u0046
          bne   L175A
 L1759    coma
 L175A    rts
-         clrb
+
+L175B    clrb
          bra   L1760
-         ldb   #$01
+
+L175E    ldb   #$01
 L1760    leas  -$0F,s
          stb   ,s
          lda   ,y
@@ -3506,8 +3479,9 @@ L18D2    cmpy  ,s
 L18DA    puls  y,x
          clra
          puls  pc,b,a
-         ldd   #$0064
-         ldx   #$000A
+
+L18DF    ldd   #$0064
+         ldx   #10
          pshs  x,b,a
          leax  ,y
          ldy   <u00B5
@@ -3590,7 +3564,8 @@ L1993    leas  $04,s
 L1995    lbsr  L0128
          clra
          rts
-         lbsr  L16CE
+
+L199A    lbsr  L16CE
          lbsr  L16BD
          bsr   L19A5
          lbra  L15F3
@@ -6406,14 +6381,18 @@ L2FD4    ldd   <u0060
          ldb   #$01
 L2FDA    clra
          lbra  L2578
-L2FDE    neg   <u0049
-         neg   <u005C
-         neg   <u0060
-         neg   <u006A
-         neg   <u0066
-         neg   <u0072
-         neg   <u0072
-         neg   <u0076
+
+* Jump tables (NOTE:SINCE ALL ARE <$80, USE 8 BIT INSTEAD OF 16 BIT OFFSET)
+L2FDE    fdb   L3027-L2FDE $0049
+         fdb   L303A-L2FDE $005c
+         fdb   L303E-L2FDE $0060
+         fdb   L3048-L2FDE $006a
+
+L2FE6    fdb   L304C-L2FE6 $0066
+         fdb   L3058-L2FE6 $0072
+         fdb   L3058-L2FE6 $0072
+         fdb   L305C-L2FE6 $0076
+
 L2FEE    pshs  u,y,x
          leay  <L2FDE,pcr
          ldb   ,x
@@ -6442,7 +6421,8 @@ L301D    ldd   $04,y
 L3021    ldd   ,y
 L3023    jsr   d,y
 L3025    puls  pc,u,y,x
-         lda   ,x
+
+L3027    lda   ,x
          anda  #$07
          leay  $01,x
          bsr   L3083
@@ -6452,25 +6432,32 @@ L302F    pshs  b,a
          addd  ,s++
          std   <u00C1
          rts
-         bsr   L3069
+
+L303A    bsr   L3069
          bra   L302F
-         bsr   L3069
+
+L303E    bsr   L3069
          addd  <u0066
          tfr   d,x
          ldd   ,x
          bra   L302F
-         bsr   L3060
+
+L3048    bsr   L3060
          bra   L302F
-         leay  $01,x
+
+L304C    leay  $01,x
 L304E    ldd   <u00C3
          std   ,y
          addd  #$0004
          std   <u00C3
          rts
-         bsr   L3069
+
+L3058    bsr   L3069
          bra   L304E
-         bsr   L3060
+
+L305C    bsr   L3060
          bra   L304E
+
 L3060    ldd   $01,x
          addd  <u0066
          tfr   d,y
