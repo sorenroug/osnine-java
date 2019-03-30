@@ -248,29 +248,37 @@ L0022    fdb   $1607      Edition #22 ($16)
 
 * Intro screen
 
-L0024    fcb   $0C
+L0024
+         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+         fcb   C$FORM   Clear screen on 32x16 display
+         endc
          fcc   '            BASIC09'
-         fcb   $0A
+         fcb   C$LF
          ifeq RESELLER-TANDY
          fcc   '      RS VERSION 01.00.00'
-         fcb   $0A
+         fcb   C$LF
          endc
          fcc   'COPYRIGHT 1980 BY MOTOROLA INC.'
-         fcb   $0A
-         fcc   '  AND MICROWARE SYSTEMS CORP.'
-         fcb   $0A
+         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+         fcb   C$LF
+         fcb   C$SPAC
+         endc
+         fcc   ' AND MICROWARE SYSTEMS CORP.'
+         fcb   C$LF
+         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcc   '   REPRODUCED UNDER LICENSE'
-         fcb   $0A
+         fcb   C$LF
+         endc
          ifeq RESELLER-TANDY
          fcc   '       TO TANDY CORP.'
-         fcb   $0A
+         fcb   C$LF
          endc
          ifeq RESELLER-DRAGON
          fcc   '     TO DRAGON DATA LTD.'
-         fcb   $0A
+         fcb   C$LF
          endc
          fcc   '    ALL RIGHTS RESERVED.'
-         fcb   $8A
+         fcb   $80+C$LF   Line feed
 
 * Jump vector @ $1B goes here
 L00DC    pshs  x,d        Preserve regs
@@ -1225,7 +1233,7 @@ L0671    fdb   L0E6D-L0671
          fcb   $0F
          fcb   $C5 E
          fcb   $06
-         fcb   $7E þ
+         fcb   $7E
          fcb   $4C L
          fcb   $49 I
          fcb   $53 S
@@ -1379,7 +1387,7 @@ L0718    fcb   $0F
          fcb   $83
          fcb   $EC l
          fcb   $12
-         fcb   $7C ü
+         fcb   $7C
          fcb   $C4 D
          fcb   $12
          fcb   $79 y
@@ -1411,137 +1419,56 @@ L0718    fcb   $0F
          fcb   $12
          fcb   $57 W
          fcb   $D1 Q
-L073F    fcb   $0E
-         fcb   $52 R
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $F9 y
-L0745    fcb   $57 W
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $BF ?
-L074A    fcb   $20
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $E5 e
-L074F    fcb   $50 P
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $ED m
-L0756    fcb   $50 P
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $55 U
-         fcb   $52 R
-         fcb   $C5 E
-         fcb   $0D
-L0760    fcb   $0A
-         fcb   $20
-         fcb   $20
-         fcb   $4E N
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $2D -
-         fcb   $53 S
-         fcb   $69 i
-         fcb   $7A z
-         fcb   $65 e
-         fcb   $20
-         fcb   $20
-         fcb   $44 D
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $2D -
-         fcb   $53 S
-         fcb   $69 i
-         fcb   $7A z
-         fcb   $E5 e
-L0781    fcb   $52 R
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $3A :
-         fcb   $20
+L073F
+         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+         fcb   $0E    Control code to display alpha
+         endc
+         ifeq RESELLER-OTHER
+         fcb   C$CR
+         endc
+         fcs   'Ready'
+L0745    fcs   'What?'
+L074A    fcs   ' free'
+L074F    fcs   'Program'
+L0756    fcs   'PROCEDURE'
+         fcb   C$CR
+L0760    fcb   C$LF
+         fcs   '  Name      Proc-Size  Data-Size'
+L0781    fcc   'Rewrite?: '
 L078B    fcb   $52 R
          fcb   $41 A
          fcb   $4E N
          fcb   $47 G
          fcb   $45 E
          fcb   $87
-L0791    fcb   $0E
-         fcb   $42 B
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $4B K
-         fcb   $3A :
-         fcb   $A0
-L0799    fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20
-         fcb   $62 b
-         fcb   $F9 y
-L07A2    fcb   $6F o
-         fcb   $EB k
-L07A4    fcb   $44 D
-         fcb   $BA :
-L07A6    fcb   $45 E
-         fcb   $BA :
-L07A8    fcb   $42 B
-         fcb   $BA :
-L07AA    fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $27 '
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $BA :
-L07B5    fcb   $A6 &
-         fcb   $63 c
-         fcb   $1F
-         fcb   $8B
-         fcb   $D7 W
-         fcb   $35 5
-         fcb   $08
-         fcb   $34 4
-         fcb   $43 C
-         fcb   $06
-         fcb   $34 4
-         fcb   $3B ;
-start    equ   *
+L0791
+         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+         fcb   $0E    Control code to display alpha
+         endc
+         ifeq RESELLER-OTHER
+         fcb   C$CR
+         endc
+         fcs   'BREAK: '
+L0799    fcs   'called by'
+L07A2    fcs   'ok'
+L07A4    fcs   'D:'
+L07A6    fcs   'E:'
+L07A8    fcs   'B:'
+L07AA    fcs   "can't find:"
+
+* F$Icpt routine
+L07B5    lda   R$DP,s     Get DP register from stack
+         tfr   a,dp       Put into real DP
+         stb   <u0035     Save signal code
+
+         lsl   <u0034     Set high bit (flag signal was received)
+         coma
+         ror   <u0034
+
+         rti              Return to normal BASIC09
+
+* BASIC09 INIT
+start
          pshs  u
          leau  >u0100,u
          clra
