@@ -392,7 +392,7 @@ PHYSC5 subd #18 Subtract one track worth of sectors
  bls PHYSC7
  pshs a
  lda >CURDRV,u
- ora #$10 wpc enable
+ ora #$10 Write Precompensation enable
  sta >CURDRV,u
  puls a
 PHYSC7 incb
@@ -520,7 +520,7 @@ WRTTRK lbsr SELECT Select drive
  cmpa #$10
  bls WRTRK2
  ldb CURDRV,u
- orb #$10  wpc enable
+ orb #$10  Write Precompensation enable
  stb CURDRV,u
 WRTRK2 ldx Curtbl,u Point to drive table
  lbsr SETRK3

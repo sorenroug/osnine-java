@@ -6,6 +6,7 @@
     <macrodef name="assemble">
         <attribute name="src" />
         <attribute name="home" />
+        <attribute name="verify" default=""/>
         <sequential>
             <echo message="Assembling: @{src}"/>
             <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
@@ -18,18 +19,27 @@
                 <arg value="o=a.out"/>
             </java>
             <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+            <local name="calculated"/>
+            <checksum file="${targetdir}/@{src}" property="calculated"/>
+            <echo message="Checksum: ${calculated}"/>
+            <fail>
+                <condition>
+                   <not>
+                       <or>
+                           <equals arg1="@{verify}" arg2=""/>
+                           <equals arg1="@{verify}" arg2="${calculated}"/>
+                       </or>
+                   </not>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="DDisk_ed4" home="kernel"/>
-        <assemble src="DDisk_ed2" home="kernel"/> <!-- verify="65f9fcc1627581c6a9247454ec9bd23d" -->
-        <!--
-        <assemble src="DDisk_3" home="kernel"/>
-        <assemble src="DDisk_4" home="kernel"/>
-        -->
-        <assemble src="RBF_ed6" home="kernel"/>
+        <assemble src="DDisk_ed4" home="kernel" verify="085c24996a2d560cbc5641e39c1b710f"/>
+        <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
+        <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
         <assemble src="RBF_ed7" home="kernel"/>
         <assemble src="RBF_ed8" home="kernel"/>
         <assemble src="IOMan_ed4" home="kernel"/>
@@ -45,7 +55,7 @@
         <assemble src="T1" home="kernel"/>
         <assemble src="HWClock" home="kernel"/>
         <assemble src="KbVdIO" home="kernel"/>
-        <assemble src="OS9p1_d64" home="kernel"/>
+        <assemble src="OS9p1_d64" home="kernel" verify="523b00da5aa39530ea3e2ae2364ec0e6"/>
         <assemble src="OS9p1_gimix" home="kernel"/>
         <assemble src="OS9p1_swtc" home="kernel"/>
         <assemble src="OS9p1_ed8" home="kernel"/>
@@ -64,12 +74,13 @@
         <assemble src="D1_vdisk" home="virtual"/>
         <assemble src="VDisk" home="virtual"/>
 
-        <assemble src="Build" home="utilities"/>
+        <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
         <assemble src="Setime" home="utilities"/>
 
-        <assemble src="basic09_tandy" home="basic09"/>
-        <assemble src="basic09_dragon" home="basic09"/>
-        <assemble src="RunB_org" home="basic09"/>
+        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
+        <assemble src="basic09_dragon" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
+        <assemble src="basic09_other" home="basic09"/>
+        <assemble src="RunB_org" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
         <assemble src="gfx" home="basic09"/>
         <assemble src="syscall" home="basic09"/>
     </target>

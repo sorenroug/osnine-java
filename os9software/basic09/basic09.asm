@@ -249,34 +249,34 @@ L0022    fdb   $1607      Edition #22 ($16)
 * Intro screen
 
 L0024
-         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+       ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   C$FORM   Clear screen on 32x16 display
-         endc
          fcc   '            BASIC09'
          fcb   C$LF
-         ifeq RESELLER-TANDY
+       endc
+       ifeq RESELLER-TANDY
          fcc   '      RS VERSION 01.00.00'
          fcb   C$LF
-         endc
+       endc
          fcc   'COPYRIGHT 1980 BY MOTOROLA INC.'
-         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+       ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   C$LF
          fcb   C$SPAC
-         endc
+       endc
          fcc   ' AND MICROWARE SYSTEMS CORP.'
          fcb   C$LF
-         ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+       ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcc   '   REPRODUCED UNDER LICENSE'
          fcb   C$LF
-         endc
-         ifeq RESELLER-TANDY
+       endc
+       ifeq RESELLER-TANDY
          fcc   '       TO TANDY CORP.'
          fcb   C$LF
-         endc
-         ifeq RESELLER-DRAGON
+       endc
+       ifeq RESELLER-DRAGON
          fcc   '     TO DRAGON DATA LTD.'
          fcb   C$LF
-         endc
+       endc
          fcc   '    ALL RIGHTS RESERVED.'
          fcb   $80+C$LF   Line feed
 
@@ -1365,9 +1365,9 @@ L073F
          ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   $0E    Control code to display alpha
          endc
-         ifeq RESELLER-OTHER
-         fcb   C$CR
-         endc
+*        ifeq RESELLER-OTHER
+*        fcb   C$CR
+*        endc
          fcs   'Ready'
 L0745    fcs   'What?'
 L074A    fcs   ' free'
@@ -1387,9 +1387,9 @@ L0791
          ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   $0E    Control code to display alpha
          endc
-         ifeq RESELLER-OTHER
-         fcb   C$CR
-         endc
+*        ifeq RESELLER-OTHER
+*        fcb   C$CR
+*        endc
          fcs   'BREAK: '
 L0799    fcs   'called by'
 L07A2    fcs   'ok'

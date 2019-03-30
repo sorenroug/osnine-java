@@ -6,8 +6,7 @@
          ttl A Device Driver for a virtual disk
 
          ifp1
-         use ../DEFS/os9defs
-         use ../DEFS/rbfdefs
+         use defsfile
          endc
 
 Revision equ 1
