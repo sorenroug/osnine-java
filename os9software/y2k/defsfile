@@ -1,0 +1,6 @@
+* OS-9 Level and Version equates
+Level    equ   1
+
+ use ../DEFS/os9defs
+ use ../DEFS/rbfdefs
+ use ../DEFS/scfdefs
