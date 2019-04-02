@@ -92,8 +92,10 @@ STimEnt cmpd #2 More than cr?
  OS9 I$ReadLn Get time line
 STim10 leas -Time,S get scratch
  bsr NXTNUM Get year
+ cmpb #0 Did the user just hit return?
+ beq STim15 ..Yes, don't add 100
  addb #100 Add 100
- stb Year,S
+STim15 stb Year,S
  bsr NXTNUM Get month
  stb Month,S
  bsr NXTNUM Get day
