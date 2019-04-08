@@ -14,6 +14,8 @@
 * Ty/La At/Rv: $11 $81
 * Prog mod, 6809 Obj, re-ent, R/O
 
+Y2K equ 0
+
        org 1
 TANDY  rmb 1
 DRAGON  rmb 1
