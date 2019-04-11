@@ -10,6 +10,7 @@
 * Prog mod, 6809 Obj, re-ent, R/O
 
 Y2K equ 0
+B09EXEC equ 1
 
        org 1
 TANDY  rmb 1
