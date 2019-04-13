@@ -1,5 +1,8 @@
+********************************************************************
+* Basic09 Runtime
+*
          nam   Basic09
-         ttl   program module
+         ttl   Basic09
 
          ifp1
          use   defsfile
@@ -7,6 +10,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
+
 L0000    mod   eom,B09NAME,tylg,atrv,start,dsize
 
          org 0
@@ -6731,7 +6735,6 @@ L322A    jsr   <u0027
          fcb   $0e
 L322D    jsr   <u0027     Use module header jump vector #5
          fcb   $00        Function code
-
 L3230    jsr   <u002A     Use module header jump vector #6
          fcb   $02        Function code
 * DIFFERENCE
@@ -7329,12 +7332,12 @@ L366D    ldu   <u0031
          bne   L3682
          ldd   $02,x
          addd  <u005E
-         std   <u0011,u
+         std   <$11,u
          lda   #$01
-         sta   <u0013,u
+         sta   <$13,u
          leax  $05,x
          rts
-L3682    clr   <u0013,u
+L3682    clr   <$13,u
          leax  $02,x
          rts
 
@@ -7946,9 +7949,9 @@ L3B23    lbsr  L3A73
          lbsr  L3A69
          lda   ,u
          sta   <u0034
-L3B3C    ldd   u000D,u
+L3B3C    ldd   $D,u
          std   <u004A
-         ldd   u000F,u
+         ldd   $F,u
          std   <u0040
          ldd   9,u
          std   <DATAPtr
@@ -7957,7 +7960,7 @@ L3B3C    ldd   u000D,u
          std   <u0042
          ldx   3,u
          lbsr  L3351
-         ldx   u000B,u
+         ldx   $B,u
          ldd   <u0044
          subd  <u004A
          std   <FREEMEM
@@ -8109,8 +8112,8 @@ L3C32    jsr   <u001B
          fdb   LANDB-L3CB5 Byte - LAND
          fdb   LORB-L3CB5 Byte - LOR
          fdb   LXORB-L3CB5 Byte - LXOR
-         fdb   L43FF-L3CB5 > : Integer/Byte relational
-         fdb   L4443-L3CB5 > : Real relational
+         fdb   Igt-L3CB5 > : Integer/Byte relational
+         fdb   Rgt-L3CB5 > : Real relational
          fdb   L43D1-L3CB5 > : String relational
          fdb   L43D7-L3CB5 < : Integer/Byte relational
          fdb   L4425-L3CB5 < : Real relational
@@ -8123,7 +8126,7 @@ L3C32    jsr   <u001B
          fdb   L4437-L3CB5 = : Real relational
          fdb   L43BF-L3CB5 = : String relational
          fdb   L4415-L3CB5 = : Boolean relational
-         fdb   L43F7-L3CB5 >= or => : Integer/Byte relational
+         fdb   Ige-L3CB5 >= or => : Integer/Byte relational
          fdb   L443D-L3CB5 >= or => : Real relational
          fdb   L43CB-L3CB5 >= or => : String Relational
          fdb   L43DF-L3CB5 <= or =< : Integer/Byte relational
@@ -8131,7 +8134,7 @@ L3C32    jsr   <u001B
          fdb   L43B9-L3CB5 <= or =< : String Relational
          fdb   INTADD-L3CB5 Integer - Add
          fdb   RLADD-L3CB5 Real - Add
-         fdb   L44E5-L3CB5 String add
+         fdb   STRconc-L3CB5 String add
          fdb   INTSUB-L3CB5 Integer - Subtract
          fdb   L3FAB-L3CB5 Real - Subtract
          fdb   INTMUL-L3CB5 Integer - Multiply
@@ -8185,8 +8188,8 @@ L3CB5    fdb   BCPVAR-L3CB5 Copy BYTE var to temp pool
          fdb   RND-L3CB5 RND
          fdb   PI-L3CB5 PI
          fdb   SUBSTR-L3CB5 SUBSTR
-         fdb   L45D5-L3CB5 SGN for Integer
-         fdb   L45C7-L3CB5 SGN for Real
+         fdb   SGNint-L3CB5 SGN for Integer
+         fdb   SGNrl-L3CB5 SGN for Real
          fdb   L4A82-L3CB5 Transcendental ???
          fdb   L4AAF-L3CB5 Transcendental ???
          fdb   L4ABD-L3CB5 Transcendental ???
@@ -9194,13 +9197,13 @@ L43EF    ldd   7,y
          bra   L4409
 
 * Integer/Byte compare: >= or =>
-L43F7    ldd   7,y
+Ige      ldd   7,y
          subd  $01,y
          bge   L4405
          bra   L4409
 
 * Integer/Byte compare: >
-L43FF    ldd   7,y        Get original var
+Igt      ldd   7,y        Get original var
          subd  $01,y
          ble   L4409
 L4405    ldb   #$FF
@@ -9251,7 +9254,7 @@ L443D    bsr   RLCMP
          bge   L4405
          bra   L4409
 * Real > compare
-L4443    bsr   RLCMP
+Rgt      bsr   RLCMP
          bgt   L4405
          bra   L4409
 
@@ -9317,7 +9320,7 @@ L44BB    stu   <u0048
          lda   #$04
          sta   ,y
          rts
-L44C2    ldb   #$2F
+L44C2    ldb   #E$StrOvf
          lbra  L3C2C
 
 SCPVAR   ldd   ,x++
@@ -9336,7 +9339,7 @@ L44DF    leax  ,u
          bsr   L449A
          puls  pc,x
 
-L44E5    ldu   $01,y
+STRconc  ldu   $01,y
          leay  $06,y
 L44E9    lda   ,u+
          sta   -2,u
@@ -9431,7 +9434,7 @@ L4581    ldd   $02,y
          bpl   L4591
          addd  #$0001
          bvc   L4591
-L458C    ldb   #$34
+L458C    ldb   #E$ValRng
          lbra  L3C2C
 
 L4591    ror   $05,y
@@ -9472,7 +9475,7 @@ PEEK     clra
          std   $01,y
          rts
 
-L45C7    lda   $02,y
+SGNrl    lda   $02,y
          beq   L45DB
          lda   $05,y
          anda  #$01
@@ -9480,7 +9483,7 @@ L45C7    lda   $02,y
 L45D1    ldb   #$01
          bra   L45E0
 
-L45D5    ldd   $01,y
+SGNint   ldd   $01,y
          bmi   L45DE
          bne   L45D1
 L45DB    clrb
@@ -9502,6 +9505,7 @@ L45F0    rts
 POS      ldb   <u007D
          bra   L45E7
 
+SQRT
 L45F5    ldb   $05,y
          asrb
          lbcs  ERR67
@@ -9686,11 +9690,7 @@ L4746    lda   #$01
          leax  $01,x
          rts
 
-* Table to numeric variable type sizes in bytes? (duplicates earlier table @
-*  L3B5B)
-* Can either leave table here, change leau below to 8 bit pc (faster/1 byte
-*   shorter), or eliminate table and point to 3B5B table (4 bytes shorter/same
-*   speed)
+* Table of var type sizes
 L474D    fcb   $01        Byte             (type=0)
          fcb   $02        Integer size     (type=1)
          fcb   $05        Real size        (type=2)
@@ -9835,6 +9835,8 @@ L485C    andb  #$FE
          orb   ,s
          stb   $05,y
          puls  pc,b,a
+
+EXP
 L4864    pshs  x
          ldb   $01,y
          beq   L4880
@@ -9919,7 +9921,7 @@ L4909    lda   #$01
          lbra  L4B97
 L491C    leay  -$06,y
          lbpl  L40DD
-         ldb   #$32
+         ldb   #E$FltOvf
          lbra  L3C2C
 
 L4927    pshs  x
@@ -10084,6 +10086,7 @@ L4A8F    sta   $05,y
 L4A91    lda   #$02
          sta   ,y
          puls  pc,x
+
 L4A97    leau  <$1B,y
          lbsr  L4BCC
          lbsr  L4CE1
@@ -10221,6 +10224,7 @@ L4BC2    jsr   [<$19,y]
          dec   <u0099
          bne   L4B9D
          rts
+
 L4BCC    pshs  y,x
          lda   ,x
          ldy   $01,x
@@ -11196,7 +11200,7 @@ L537F    stx   <u0082
 
 * validate characters
 L5384    lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC                  space?
          bne   L5396
          bsr   L5390
          bcc   L53A5
@@ -11392,7 +11396,7 @@ L54F1    exg   d,u
          rol   <u007B
          rts
 
-READLN    pshs  y,x
+READLN   pshs  y,x
          ldx   <u0080
          stx   <u0082
          lda   #$01

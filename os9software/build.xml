@@ -37,7 +37,19 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="Login_ed10" home="y2k" verify="3269cd10bee3f11ea606db9a90b3a92f"/>
+        <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
+        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
+        <assemble src="basic09_dragon" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
+        <assemble src="basic09_other" home="basic09"/>
+        <assemble src="Dir_normal_ed3" home="utilities" verify="65c719c5dd0c511a2cc51a4243a081e9"/>
+        <assemble src="Dir_small_ed3" home="utilities" verify="d7e0e580d1bdd1f38eb029fbd9e9ea64"/>
+        <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
+        <assemble src="Dir_normal_ed5" home="y2k" verify="fb0a982ace14691577771b4aaeb45dca"/>
+        <assemble src="Dir_small_ed5" home="y2k" verify="68111b8e4c25b715085c85833acee3c3"/>
+        <assemble src="Free_ed7" home="y2k" />
+        <assemble src="Setime_ed12" home="y2k" verify="0299b94d5f67ff057c003d641d80f465"/>
+        <assemble src="Login_normal_ed10" home="y2k" verify="3269cd10bee3f11ea606db9a90b3a92f"/>
+        <assemble src="Login_small_ed10" home="y2k" verify="8e4f6948f7683bb31424520a5cba63e0"/>
         <assemble src="Date_ed5" home="y2k" verify="a4b5cad5ff8d614a6313d865362e4b09"/>
         <assemble src="DDisk_ed4" home="kernel" verify="085c24996a2d560cbc5641e39c1b710f"/>
         <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
@@ -78,13 +90,7 @@
 
         <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
         <assemble src="Setime" home="utilities"/>
-        <assemble src="Setime_ed11" home="y2k" verify="241e7ef327aec473f321e85587cdfb97"/>
-        <assemble src="Setime_ed12" home="y2k" verify="5a758408cd0791232a26e393bbfc95b6"/>
 
-        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
-        <assemble src="basic09_dragon" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
-        <assemble src="basic09_other" home="basic09"/>
-        <assemble src="RunB_org" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
         <assemble src="gfx" home="basic09"/>
         <assemble src="syscall" home="basic09"/>
     </target>

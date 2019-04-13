@@ -9,8 +9,8 @@
 * Acquired Tandy/Microware version.
 *
 *          2003/05/13  Robert Gault
-* Tables L000D, L00E9 removed some UNID, translated jump
-* vectors L00D9, L0442.
+* Tables L000D, L00EC removed some UNID, translated jump
+* vectors L00DC, L0442.
 *
 * 06/07/14 - Minor change to Date$ to accommodate F$Time Y2K changes. RG
          nam   RunB
@@ -27,7 +27,7 @@ edition  set   22
 
 L0000    mod   eom,name,tylg,atrv,start,dsize
 
-membase  rmb   2
+membase  rmb   2          Start of data memory / DP pointer
 memsize  rmb   2
 moddir   rmb   4
 restop   rmb   2                        top of reserved space
@@ -218,7 +218,7 @@ u0500    rmb   $100       I-Code buffer (for running)
 u0600    rmb   $1000-.    Default buffer for BASIC09 programs & data
 dsize    equ   .
 
-L000D    fdb   L00D9
+L000D    fdb   L00DC
          fdb   L0468
          fdb   L06D8
          fdb   L31E8      $24 jump vector
@@ -247,23 +247,23 @@ name     fcs   /RunB/
          fcb   $8A
 
 * Jump vector @ $1B goes here
-L00D9    pshs  d,x
-         ldb   [$04,s]
-         leax  <L00E9,pcr
+L00DC    pshs  x,d        Preserve regs
+         ldb   [<$04,s]   Get function offset
+         leax  <L00EC,pcr
          ldd   b,x
          leax  d,x
          stx   $04,s
          puls  d,x,pc
 
-L00E9    fdb   L03E9-L00E9
-         fdb   L040E-L00E9
-         fdb   L024E-L00E9
-         fdb   L0244-L00E9
-         fdb   L0412-L00E9
-         fdb   L0365-L00E9
-         fdb   BYE-L00E9
-         fdb   L0381-L00E9
-         fdb   L0433-L00E9
+L00EC    fdb   L03E9-L00EC
+         fdb   L040E-L00EC
+         fdb   L024E-L00EC
+         fdb   L0244-L00EC
+         fdb   L0412-L00EC
+         fdb   L0365-L00EC
+         fdb   BYE-L00EC
+         fdb   L0381-L00EC
+         fdb   L0433-L00EC
 
 J010A    jsr   <u001E
          fcb   $04
@@ -904,7 +904,7 @@ LAX2     bsr   SkipSpac
          leay  $01,y
 L0631    incb
          lda   ,y+
-         bsr   L065C
+         bsr   L246A
          bcc   L0631
          cmpa  #$24
          bne   L0643
@@ -927,7 +927,7 @@ SkipSpac lda   ,y+
          leay  -$01,y
          rts
 
-L065C    bsr   IsAlpha
+L246A    bsr   IsAlpha
          bcc   L2493
 IsNum    cmpa  #$30             0??
          bcs   L2493
@@ -1030,30 +1030,30 @@ L3209    jsr   <u001B
          fcb   $0C
 L320C    jsr   <u001B
          fcb   $0E
-L0712    jsr   <u001B
+L320F    jsr   <u001B
          fcb   $02
-L0715    jsr   <u001B
+L3212    jsr   <u001B
          fcb   $00
-L0718    jsr   <u001B
+L3215    jsr   <u001B
          fcb   $0A
-L071B    jsr   <u001B
+L3218    jsr   <u001B
          fcb   $10
-L071E    jsr   <u001E
+L321B    jsr   <u001E
          fcb   $06
-L0721    jsr   <u0027
+L321E    jsr   <u0027
          fcb   $04
-L0724    jsr   <u0027
+L3221    jsr   <u0027
          fcb   $0A
-L0727    jsr   <u0027
+L3224    jsr   <u0027
          fcb   $02
-L072A    jsr   <u0027
+L3227    jsr   <u0027
          fcb   $0C
-L072D    jsr   <u0027
+L322A    jsr   <u0027
          fcb   $0E
-L0730    jsr   <u0027
+L322D    jsr   <u0027
          fcb   $00
-L0733    jsr   <u002A
-         fcb   $02
+L3230    jsr   <u002A     Use module header jump vector #6
+         fcb   $02        Function code
 
 L323F    fdb   L3A51-L323F
          fdb   L3A51-L323F              PARAM
@@ -1346,7 +1346,7 @@ REALSt1P
          clrb
          std   $03,y
          sta   $05,y
-         lbsr  L0721
+         lbsr  L321E
          bsr   L34DC
          ldd   $01,y
          std   ,u
@@ -1357,7 +1357,7 @@ REALSt1P
 L347E    ldb   #$02             incrementing
          bsr   L348E
          leax  $06,x
-         lbsr  L0724
+         lbsr  L3221
          lble  GOTO             loop again
          leax  $03,x
          rts
@@ -1384,7 +1384,7 @@ REALStXP ldy   <u0046
          bsr   L348E
          lda   4,u
          sta   <u00D1
-         lbsr  L0721            increment counter
+         lbsr  L321E            increment counter
          bsr   L34DC
          ldu   <u00D2
          ldd   $01,y
@@ -1398,7 +1398,7 @@ REALStXP ldy   <u0046
 L34CC    ldb   #$02             decrementing
          bsr   L348E
          leax  $06,x
-         lbsr  L0724
+         lbsr  L3221
          lbge  GOTO             loop again
          leax  $03,x
          rts
@@ -1527,7 +1527,7 @@ L35AA    lda   ,y+
 L35B9    clra
          rts
 
-CpMarray lbsr  L0727
+CpMarray lbsr  L3224
          lbra  L352F
 
 L35C1    puls  u,b,a
@@ -1536,7 +1536,7 @@ L35C1    puls  u,b,a
          ldd   $03,y
 L35CA    ldy   $01,y
          exg   y,u
-         lbra  L071E
+         lbra  L321B
 
 POKE     jsr   <u0016
          ldd   $01,y
@@ -1634,12 +1634,12 @@ L3682    clr   <$13,u
          leax  $02,x
          rts
 
-CREATE   bsr   L0B87
+CREATE   bsr   L36A6
          ldb   #PREAD.+UPDAT.
          os9   I$Create
          bra   L3696
 
-OPEN     bsr   L0B87
+OPEN     bsr   L36A6
          os9   I$Open
 L3696    lbcs  L39FB
          puls  u,b
@@ -1648,15 +1648,15 @@ L3696    lbcs  L39FB
          clr   ,u+
 L36A2    sta   ,u
          puls  pc,x
-L0B87    leax  $01,x
+L36A6    leax  $01,x
          lbsr  GETVAR
          leax  $01,x
          jsr   <u0016
          lda   #$03
          cmpb  #$4A
-         bne   L0B98
+         bne   L36B7
          lda   ,x++
-L0B98    ldu   $03,s
+L36B7    ldu   $03,s
          stx   $03,s
          ldx   $01,y
          jmp   ,u
@@ -1664,7 +1664,7 @@ L0B98    ldu   $03,s
 SEEK     lbsr  SETPATH
          jsr   <u0016
          ldb   #$0E
-         lbsr  L0733
+         lbsr  L3230
          lbcs  L39FD
          rts
 
@@ -1699,7 +1699,7 @@ L0BEF    bsr   SPRINT
          lda   <u002D
          sta   <u007F
 L0BFD    ldb   #$06
-L0BFF    lbsr  L0733
+L0BFF    lbsr  L3230
          bcc   L0C11
          cmpb  #$03
          lbne  L39FD
@@ -1719,7 +1719,7 @@ L0C24    bsr   GETVAR
          ldb   ,s
          addb  #$07
          ldy   <u0046
-         lbsr  L0733
+         lbsr  L3230
          lbcc  L353D
          lda   ,s
 L0C36    cmpa  #$04
@@ -1737,9 +1737,9 @@ SPRINT   pshs  y
          ldd   <u0080
          std   <u0082
          ldb   #$05
-         lbsr  L0733
+         lbsr  L3230
          ldb   #$00
-         lbsr  L0733
+         lbsr  L3230
          leas  $06,s
          puls  pc,y
 
@@ -1752,7 +1752,7 @@ L0C64    suba  #$80
          cmpa  #$04
          bcs   L0C7F
          beq   L0C71
-         lbsr  L0727
+         lbsr  L3224
          bra   L0C89
 L0C71    ldd   ,x++
          addd  <u0066
@@ -1797,7 +1797,7 @@ READ     ldb   ,x
          bne   L0CBC
          leax  -$01,x
 L0CBC    ldb   #$06
-         lbsr  L0733
+         lbsr  L3230
          bcc   L0CCF
          cmpb  #$E4
          beq   L0CBC
@@ -1830,11 +1830,11 @@ L0CF9    ldb   #$47
 L0CFD    lda   ,y
          cmpa  #$02
          bne   L0CF9
-         lbsr  L072A
+         lbsr  L3227
          lbra  L353D
 L0D09    cmpa  ,y
          bcs   L0CF9
-         lbsr  L072D
+         lbsr  L322A
          lbra  L353D
 L0D13    leax  $01,x
 L0D15    pshs  x
@@ -1892,7 +1892,7 @@ L388F    ldb   #$00
          tsta
          bne   L38A0
 L0D7B    rts
-L389B    lbsr  L0733
+L389B    lbsr  L3230
          bcc   L0D7B
 L38A0    lbra  L39FD
 L38A3    jsr   <u0016
@@ -1912,7 +1912,7 @@ L38B5    ldb   -$01,x
          beq   L38D2
          leax  -$01,x
          ldb   #$11
-         lbsr  L0733
+         lbsr  L3230
          bcc   L38B5
          puls  u,b,a
          std   <u004A
@@ -1941,12 +1941,12 @@ WRITE    lda   <errpath
 
 L38FA    clra
          ldb   #$12
-         lbsr  L0733
+         lbsr  L3230
          bcs   L38A0
 L3902    jsr   <u0016
          ldb   ,y
          addb  #$01
-         lbsr  L0733
+         lbsr  L3230
          bcs   L38A0
          ldb   -$01,x
          lbsr  NextInst
@@ -2085,7 +2085,7 @@ L39FD    ldu   <u0031
 L3A14    bsr   L3A23
          bsr   L0F49
          lbra  L3206            exit
-L3A1B    lbsr  L0712
+L3A1B    lbsr  L320F
          lbra  L3206            exit
 
 L3A21    fcb   14,255           Force text mode in VDGINT
@@ -2118,7 +2118,7 @@ UNK3     exg   x,pc
          rts
 
 L3A51    leay  ,x
-         lbsr  L071B
+         lbsr  L3218
          leax  ,y
          rts
 
@@ -2154,7 +2154,7 @@ L0F51    sta   <u0034
          std   <u0019
 L0F5F    rts
 
-RUN      lbsr  L0727
+RUN      lbsr  L3224
          pshs  x
          ldb   <u00CF
          cmpb  #$A0
@@ -2171,14 +2171,14 @@ L0F70    lda   ,u+
 L0F7E    ora   #$80
          sta   ,y
          ldy   <u0048
-         lbsr  L0715
+         lbsr  L3212
          bcs   L0FCA
          leau  ,x
 L0F8C    ldd   ,u
          bne   L0F9E
          ldy   <u00D2
          leay  $03,y
-         lbsr  L0715
+         lbsr  L3212
          bcs   L0FCA
          ldd   ,x
          std   ,u
@@ -2195,7 +2195,7 @@ L0F9E    ldx   ,s
          std   $F,u
          ldd   <DATAPtr
          std   9,u
-         bsr   L1035
+         bsr   L3B5F
          stx   $B,u
          puls  x
          lda   $06,x
@@ -2225,7 +2225,7 @@ L0FCF    ldd   5,u
          lds   5,u
          puls  x
          stx   5,u
-         bcc   L1012
+         bcc   L3B3C
          bra   L0FCC
 L0FF9    lbsr  L0F49
          lda   <u0034
@@ -2234,11 +2234,11 @@ L0FF9    lbsr  L0F49
          lbsr  L32DD
          lda   ,u
          bita  #$01
-         beq   L1012
+         beq   L3B3C
          lbsr  L0F3F
          lda   ,u
          sta   <u0034
-L1012    ldd   $D,u
+L3B3C    ldd   $D,u
          std   <u004A
          ldd   $F,u
          std   <u0040
@@ -2265,74 +2265,74 @@ L3B5B    fcb   1          Byte    (type 0)
 * Entry: U=
 *        X=
 UNK7
-L1035    pshs  u
+L3B5F    pshs  u
          ldb   ,x+
          clra
          pshs  x,a
          cmpb  #$4D
-         bne   L10B7
+         bne   L3BE1
          leay  ,s
-L1042    pshs  y
+L3B6C    pshs  y
          ldb   ,x
          cmpb  #$0E
-         beq   L1079
+         beq   L3BA3
          jsr   <u0016
          leax  -$01,x
          cmpa  #$02
-         beq   L105C
+         beq   L3B86
          cmpa  #$04
-         beq   L1069
+         beq   L3B93
          ldd   $01,y
          std   $04,y
          lda   ,y
-L105C    ldb   #$06
+L3B86    ldb   #$06
          leau  <L3B5B,pcr
          subb  a,u
          leau  b,y
          stu   <u0046
-         bra   L107D
-L1069    ldu   $01,y
+         bra   L3BA7
+L3B93    ldu   $01,y
          ldd   <u0048
          subd  <u004A
          std   <u003E
          ldd   <u0048
          std   <u004A
          lda   #$04
-         bra   L107D
-L1079    leax  $01,x
+         bra   L3BA7
+L3BA3    leax  $01,x
          jsr   <u0016
-L107D    puls  y
+L3BA7    puls  y
          inc   ,y
          cmpa  #$04
-         bcs   L1089
+         bcs   L3BB3
          pshs  u
          ldu   <u003E
-L1089    pshs  u,a
+L3BB3    pshs  u,a
          ldb   ,x+
          cmpb  #$4B
-         beq   L1042
+         beq   L3B6C
          leax  $01,x
          stx   $01,y
          leax  <L3B5B,pcr
          ldu   <u0046
          stu   <u0040
-L109C    puls  b
+L3BC6    puls  b
          cmpb  #$04
-         bcs   L10A6
+         bcs   L3BD0
          puls  b,a
-         bra   L10A9
-L10A6    ldb   b,x
+         bra   L3BD3
+L3BD0    ldb   b,x
          clra
-L10A9    std   ,--u
+L3BD3    std   ,--u
          puls  b,a
          std   ,--u
          dec   ,y
-         bne   L109C
+         bne   L3BC6
          leay  ,u
-         bra   L10BD
-L10B7    ldy   <u0046
+         bra   L3BE7
+L3BE1    ldy   <u0046
          sty   <u0040
-L10BD    tfr   y,d
+L3BE7    tfr   y,d
          subd  <u004A
          lbcs  L3302
          std   <FREEMEM
@@ -2341,10 +2341,10 @@ L10BD    tfr   y,d
 KILL     jsr   <u0016
          ldy   $01,y
          pshs  x
-         lbsr  L0718
+         lbsr  L3215
          puls  pc,x
 
-UNK5     lbsr  L0730
+UNK5     lbsr  L322D
          leax  >L323F,pcr
          stx   <table1
          rts
@@ -2362,7 +2362,7 @@ L3C19    fdb   UNK12-L3C19
          fdb   L3D80-L3C19
          fdb   RLADD-L3C19 4 Real # add
          fdb   L15A6-L3C19
-         fdb   L1707-L3C19
+         fdb   L4234-L3C19
          fdb   RLCMP-L3C19 A Set flags for Real comparison
          fdb   FIX-L3C19 C FIX (Round & convert REAL to INTEGER)
          fdb   FLOAT-L3C19
@@ -2440,7 +2440,7 @@ L3C2F    jsr   <u002A
 
 L3CB5    fdb   BCPVAR-L3CB5 Copy BYTE var to temp pool
          fdb   ICPVAR-L3CB5
-         fdb   L2102-L3CB5
+         fdb   L3F8D-L3CB5
          fdb   BlCPVAR-L3CB5
          fdb   SCPVAR-L3CB5
          fdb   L3D59-L3CB5
@@ -2469,12 +2469,12 @@ L3CB5    fdb   BCPVAR-L3CB5 Copy BYTE var to temp pool
          fdb   SUBSTR-L3CB5
          fdb   SGNint-L3CB5
          fdb   SGNrl-L3CB5
-         fdb   L2122-L3CB5
-         fdb   L2123-L3CB5
-         fdb   L2124-L3CB5
-         fdb   L2125-L3CB5
-         fdb   L2126-L3CB5
-         fdb   L2127-L3CB5
+         fdb   L4A82-L3CB5
+         fdb   L4AAF-L3CB5
+         fdb   L4ABD-L3CB5
+         fdb   L4927-L3CB5
+         fdb   L4968-L3CB5
+         fdb   L4A03-L3CB5
          fdb   EXP-L3CB5
          fdb   ABSint-L3CB5
          fdb   ABSrl-L3CB5
@@ -2484,10 +2484,10 @@ L3CB5    fdb   BCPVAR-L3CB5 Copy BYTE var to temp pool
          fdb   SQRT-L3CB5
          fdb   FLOAT-L3CB5
          fdb   INTrl-L3CB5
-         fdb   L1AC3-L3CB5
+         fdb   L45F0-L3CB5
          fdb   FIX-L3CB5
          fdb   FLOAT-L3CB5
-         fdb   L1AC3-L3CB5
+         fdb   L45F0-L3CB5
          fdb   SQint-L3CB5
          fdb   SQrl-L3CB5
          fdb   PEEK-L3CB5
@@ -2820,7 +2820,7 @@ L1434    dec   $03,y
          bne   L1424
 L1438    std   $09,y
          tst   ,y
-         bpl   L144C
+         bpl   L3F79
          nega
          negb
          sbca  #$00
@@ -2830,7 +2830,7 @@ L1438    std   $09,y
          negb
          sbca  #$00
          std   $07,y
-L144C    leay  $06,y
+L3F79    leay  $06,y
          rts
 
 RCPCNST  leay  -$06,y       Make room for temp var
@@ -2844,7 +2844,7 @@ RCPCNST  leay  -$06,y       Make room for temp var
          rts
 
 * Copy REAL # from variable pool (pointed to by X) into temp var
-L2102    ldd   ,x++
+L3F8D    ldd   ,x++       Get offset into var space for REAL var
          addd  <u0031
          tfr   d,u
 * Copy REAL # constant from within BASIC09 (pointed to by U) into temp var
@@ -3209,13 +3209,13 @@ L16F5    orb   ,y
          clrb
          puls  pc,x
 
-RLDIV    bsr   L1707
+RLDIV    bsr   L4234
          lbcs  L3C2C
-L1706    rts
-L1707    comb
+L4233    rts
+L4234    comb
          ldb   #$2D
          tst   $02,y
-         beq   L1706
+         beq   L4233
          pshs  x
          tst   $08,y
          lbeq  L15B0
@@ -3240,18 +3240,18 @@ L1707    comb
          rora
          rorb
          clr   $0B,y
-         bra   L1742
-L1740    exg   d,x
-L1742    subd  $04,y
+         bra   L426F
+L426D    exg   d,x
+L426F    subd  $04,y
          exg   d,x
-         bcc   L174B
+         bcc   L4278
          subd  #$0001
-L174B    subd  $02,y
-         beq   L177E
-         bmi   L177A
-L1751    orcc  #Carry
-L1753    dec   ,y
-         beq   L17CB
+L4278    subd  $02,y
+         beq   L42AB
+         bmi   L42A7
+L427E    orcc  #Carry
+L4280    dec   ,y
+         beq   L42F8
          rol   $0B,y
          rol   $0A,y
          rol   $09,y
@@ -3262,61 +3262,61 @@ L1753    dec   ,y
          exg   d,x
          rolb
          rola
-         bcc   L1740
+         bcc   L426D
          exg   d,x
          addd  $04,y
          exg   d,x
-         bcc   L1774
+         bcc   L42A1
          addd  #$0001
-L1774    addd  $02,y
-         beq   L177E
-         bpl   L1751
-L177A    andcc #^Carry
-         bra   L1753
-L177E    leax  ,x
-         bne   L1751
+L42A1    addd  $02,y
+         beq   L42AB
+         bpl   L427E
+L42A7    andcc #^Carry
+         bra   L4280
+L42AB    leax  ,x
+         bne   L427E
          ldb   ,y
          decb
          subb  #$10
-         blt   L17A0
+         blt   L42CD
          subb  #$08
-         blt   L1795
+         blt   L42C2
          stb   ,y
          lda   $0B,y
          ldb   #$80
-         bra   L17BE
-L1795    addb  #$08
+         bra   L42EB
+L42C2    addb  #$08
          stb   ,y
          ldd   #$8000
          ldx   $0A,y
-         bra   L17C0
-L17A0    addb  #$08
-         blt   L17AE
+         bra   L42ED
+L42CD    addb  #$08
+         blt   L42DB
          stb   ,y
          ldx   $09,y
          lda   $0B,y
          ldb   #$80
-         bra   L17C0
-L17AE    addb  #$07
+         bra   L42ED
+L42DB    addb  #$07
          stb   ,y
          ldx   $08,y
          ldd   $0A,y
          orcc  #Carry
-L17B8    rolb
+L42E5    rolb
          rola
          exg   d,x
          rolb
          rola
-L17BE    exg   d,x
-L17C0    andcc #^Carry
+L42EB    exg   d,x
+L42ED    andcc #^Carry
          dec   ,y
-         bpl   L17B8
+         bpl   L42E5
          exg   d,x
          tsta
-         bra   L17CF
-L17CB    ldx   $0A,y
+         bra   L42FC
+L42F8    ldx   $0A,y
          ldd   $08,y
-L17CF    bmi   L17DF
+L42FC    bmi   L430C
          exg   d,x
          rolb
          rola
@@ -3325,16 +3325,16 @@ L17CF    bmi   L17DF
          rola
          dec   $07,y
          lbvs  L15B0
-L17DF    exg   d,x
+L430C    exg   d,x
          addd  #$0001
          exg   d,x
-         bcc   L17F4
+         bcc   L4321
          addd  #$0001
-         bcc   L17F4
+         bcc   L4321
          rora
          inc   $07,y
          lbvs  L15C2
-L17F4    std   $08,y
+L4321    std   $08,y
          tfr   x,d
          andb  #$FE
          orb   $01,y
@@ -3371,7 +3371,7 @@ L434F    std   $01,y
          puls  x
          lbsr  LOG
          lbsr  RLMUL
-         lbra  L1D37
+         lbra  L4864
 
 BlCPVAR  ldd   ,x++
          addd  <u0031
@@ -3386,15 +3386,15 @@ L4374    ldb   ,u
 
 LANDB    ldb   $08,y
          andb  $02,y
-         bra   L1863
+         bra   L4390
 
 LORB     ldb   $08,y
          orb   $02,y
-         bra   L1863
+         bra   L4390
 
 LXORB    ldb   $08,y
          eorb  $02,y
-L1863    leay  $06,y
+L4390    leay  $06,y
          std   $01,y
          rts
 
@@ -3405,72 +3405,72 @@ StrCMP   pshs  y,x
          ldx   $01,y
          ldy   $07,y
          sty   <u0048
-L1875    lda   ,y+
+L43A2    lda   ,y+
          cmpa  ,x+
-         bne   L187F
+         bne   L43AC
          cmpa  #$FF
-         bne   L1875
-L187F    inca
+         bne   L43A2
+L43AC    inca
          inc   -$01,x
          cmpa  -$01,x
          puls  pc,y,x
 
 Slo      bsr   StrCMP
-         bcs   L18D8
-         bra   L18DC
+         bcs   L4405
+         bra   L4409
 
 Sle      bsr   StrCMP
-         bls   L18D8
-         bra   L18DC
+         bls   L4405
+         bra   L4409
 
 Seq      bsr   StrCMP
-         beq   L18D8
-         bra   L18DC
+         beq   L4405
+         bra   L4409
 
 Sne      bsr   StrCMP
-         bne   L18D8
-         bra   L18DC
+         bne   L4405
+         bra   L4409
 
 Sge      bsr   StrCMP
-         bcc   L18D8
-         bra   L18DC
+         bcc   L4405
+         bra   L4409
 
 Sgt      bsr   StrCMP
-         bhi   L18D8
-         bra   L18DC
+         bhi   L4405
+         bra   L4409
 
 Ilo      ldd   $07,y
          subd  $01,y
-         blt   L18D8
-         bra   L18DC
+         blt   L4405
+         bra   L4409
 
 Ile      ldd   $07,y
          subd  $01,y
-         ble   L18D8
-         bra   L18DC
+         ble   L4405
+         bra   L4409
 
 Ine      ldd   $07,y
          subd  $01,y
-         bne   L18D8
-         bra   L18DC
+         bne   L4405
+         bra   L4409
 
 Ieq      ldd   $07,y
          subd  $01,y
-         beq   L18D8
-         bra   L18DC
+         beq   L4405
+         bra   L4409
 
 Ige      ldd   $07,y
          subd  $01,y
-         bge   L18D8
-         bra   L18DC
+         bge   L4405
+         bra   L4409
 
 Igt      ldd   $07,y
          subd  $01,y
-         ble   L18DC
-L18D8    ldb   #$FF
-         bra   L18DE
-L18DC    ldb   #$00
-L18DE    clra
+         ble   L4409
+L4405    ldb   #$FF
+         bra   L440B
+L4409    ldb   #$00
+L440B    clra
          leay  $06,y
          std   $01,y
          lda   #$03
@@ -3479,129 +3479,129 @@ L18DE    clra
 
 Beq      ldb   $08,y
          cmpb  $02,y
-         beq   L18D8
-         bra   L18DC
+         beq   L4405
+         bra   L4409
 
 Bne      ldb   $08,y
          cmpb  $02,y
-         bne   L18D8
-         bra   L18DC
+         bne   L4405
+         bra   L4409
 
 Rlo      bsr   RLCMP
-         blt   L18D8
-         bra   L18DC
+         blt   L4405
+         bra   L4409
 
 Rle      bsr   RLCMP
-         ble   L18D8
-         bra   L18DC
+         ble   L4405
+         bra   L4409
 
 Rne      bsr   RLCMP
-         bne   L18D8
-         bra   L18DC
+         bne   L4405
+         bra   L4409
 
 Req      bsr   RLCMP
-         beq   L18D8
-         bra   L18DC
+         beq   L4405
+         bra   L4409
 
 Rge      bsr   RLCMP
-         bge   L18D8
-         bra   L18DC
+         bge   L4405
+         bra   L4409
 
 Rgt      bsr   RLCMP
-         bgt   L18D8
-         bra   L18DC
+         bgt   L4405
+         bra   L4409
 
 RLCMP    pshs  y
          andcc #Entire+FIRQMask+HalfCrry+IRQMask
          lda   $08,y
-         bne   L1934
+         bne   L4461
          lda   $02,y
-         beq   L1932
-L1928    lda   $05,y
-L192A    anda  #$01
-         bne   L1932
-L192E    andcc #Entire+FIRQMask+HalfCrry+IRQMask
+         beq   L445F
+L4455    lda   $05,y
+L4457    anda  #$01
+         bne   L445F
+L445B    andcc #Entire+FIRQMask+HalfCrry+IRQMask
          orcc  #Negative
-L1932    puls  pc,y
-L1934    lda   $02,y
-         bne   L193E
+L445F    puls  pc,y
+L4461    lda   $02,y
+         bne   L446B
          lda   $0B,y
          eora  #$01
-         bra   L192A
-L193E    lda   $0B,y
+         bra   L4457
+L446B    lda   $0B,y
          eora  $05,y
          anda  #$01
-         bne   L1928
+         bne   L4455
          leau  $06,y
          lda   $05,y
          anda  #$01
-         beq   L1950
+         beq   L447D
          exg   u,y
-L1950    ldd   1,u
+L447D    ldd   1,u
          cmpd  $01,y
-         bne   L1932
+         bne   L445F
          ldd   3,u
          cmpd  $03,y
-         bne   L1964
+         bne   L4491
          lda   5,u
          cmpa  $05,y
-         beq   L1932
-L1964    bcs   L192E
+         beq   L445F
+L4491    bcs   L445B
          andcc #Entire+FIRQMask+HalfCrry+IRQMask
          puls  pc,y
 
 SCPCNST  clrb
          stb   <u003E
-L196D    ldu   <u0048
+L449A    ldu   <u0048
          leay  -$06,y
          stu   $01,y
          sty   <u0044
-L1976    cmpu  <u0044
-         bcc   L1995
+L44A3    cmpu  <u0044
+         bcc   L44C2
          lda   ,x+
          sta   ,u+
          cmpa  #$FF
-         beq   L198E
+         beq   L44BB
          decb
-         bne   L1976
+         bne   L44A3
          dec   <u003E
-         bpl   L1976
+         bpl   L44A3
          lda   #$FF
          sta   ,u+
-L198E    stu   <u0048
+L44BB    stu   <u0048
          lda   #$04
          sta   ,y
          rts
-L1995    ldb   #$2F
+L44C2    ldb   #E$StrOvf
          lbra  L3C2C
 
 SCPVAR   ldd   ,x++
          addd  <u0066
          tfr   d,u
-L19A0    ldd   ,u
+L44CD    ldd   ,u
          addd  <u0031
          ldu   2,u
          stu   <u003E
          tfr   d,u
-L44D7      pshs  x
+L44D7    pshs  x
          ldb   <u003F
-         bne   L19B2
+         bne   L44DF
          dec   <u003E
-L19B2    leax  ,u
-         bsr   L196D
+L44DF    leax  ,u
+         bsr   L449A
          puls  pc,x
 
 STRconc  ldu   $01,y
          leay  $06,y
-L19BC    lda   ,u+
+L44E9    lda   ,u+
          sta   -2,u
          cmpa  #$FF
-         bne   L19BC
+         bne   L44E9
          leau  -1,u
          stu   <u0048
          rts
 
-L44F6      ldd   <u003E
+L44F6    ldd   <u003E
          leay  -$06,y
          std   $03,y
          stu   $01,y
@@ -3613,29 +3613,29 @@ FLOAT    clra
          clrb
          std   $04,y
          ldd   $01,y
-         bne   L19E5
+         bne   L4512
          stb   $03,y
          lda   #$02
          sta   ,y
          rts
-L19E5    ldu   #$0210
+L4512    ldu   #$0210
          tsta
-         bpl   L19F1
+         bpl   L451E
          nega
          negb
          sbca  #$00
          inc   $05,y
-L19F1    tsta
-         bne   L19F9
+L451E    tsta
+         bne   L4526
          ldu   #$0208
          exg   a,b
-L19F9    tsta
-         bmi   L1A02
-L19FC    leau  -1,u
+L4526    tsta
+         bmi   L452F
+L4529    leau  -1,u
          lslb
          rola
-         bpl   L19FC
-L1A02    std   $02,y
+         bpl   L4529
+L452F    std   $02,y
          stu   ,y
          rts
 
@@ -3645,56 +3645,56 @@ FLOAT2   leay  $06,y
          rts
 
 FIX      ldb   $01,y
-         bgt   L1A21
-         bmi   L1A1D
+         bgt   L454E
+         bmi   L454A
          lda   $02,y
-         bpl   L1A1D
+         bpl   L454A
          ldd   #$0001
-         bra   L1A64
+         bra   L4591
 
-L1A1D    clra
+L454A    clra
          clrb
-         bra   L1A6C
+         bra   L4599
 
-L1A21    subb  #$10
-         bhi   L1A5F
-         bne   L1A39
+L454E    subb  #$10
+         bhi   L458C
+         bne   L4566
          ldd   $02,y
          ror   $05,y
-         bcc   L1A6C
+         bcc   L4599
          cmpd  #$8000
-         bne   L1A5F
+         bne   L458C
          tst   $04,y
-         bpl   L1A6C
-         bra   L1A5F
-L1A39    cmpb  #$F8
-         bhi   L1A4B
+         bpl   L4599
+         bra   L458C
+L4566    cmpb  #$F8
+         bhi   L4578
          pshs  b
          ldd   $02,y
          std   $03,y
          clr   $02,y
          puls  b
          addb  #$08
-         beq   L1A54
-L1A4B    lsr   $02,y
+         beq   L4581
+L4578    lsr   $02,y
          ror   $03,y
          ror   $04,y
          incb
-         bne   L1A4B
-L1A54    ldd   $02,y
+         bne   L4578
+L4581    ldd   $02,y
          tst   $04,y
-         bpl   L1A64
+         bpl   L4591
          addd  #$0001
-         bvc   L1A64
-L1A5F    ldb   #$34
+         bvc   L4591
+L458C    ldb   #E$ValRng
          lbra  L3C2C
 
-L1A64    ror   $05,y
-         bcc   L1A6C
+L4591    ror   $05,y
+         bcc   L4599
          nega
          negb
          sbca  #$00
-L1A6C    std   $01,y
+L4599    std   $01,y
          lda   #$01
          sta   ,y
          rts
@@ -3715,12 +3715,12 @@ ABSrl    lda   $05,y
          rts
 
 ABSint   ldd   $01,y
-         bpl   L1A92
+         bpl   L45BF
          nega
          negb
          sbca  #$00
          std   $01,y
-L1A92    rts
+L45BF    rts
 
 PEEK     clra
          ldb   [<$01,y]
@@ -3728,74 +3728,74 @@ PEEK     clra
          rts
 
 SGNrl    lda   $02,y
-         beq   L1AAE
+         beq   L45DB
          lda   $05,y
          anda  #$01
-         bne   L1AB1
-L1AA4    ldb   #$01
-         bra   L1AB3
+         bne   L45DE
+L45D1    ldb   #$01
+         bra   L45E0
 
 SGNint   ldd   $01,y
-         bmi   L1AB1
-         bne   L1AA4
-L1AAE    clrb
-         bra   L1AB3
+         bmi   L45DE
+         bne   L45D1
+L45DB    clrb
+         bra   L45E0
 
-L1AB1    ldb   #$FF
-L1AB3    sex
-         bra   L1ABD
+L45DE    ldb   #$FF
+L45E0    sex
+         bra   L45EA
 
 ERR      ldb   <errcode
          clr   <errcode
-L1ABA    clra
+L45E7    clra
          leay  -$06,y
-L1ABD    std   $01,y
+L45EA    std   $01,y
          lda   #$01
          sta   ,y
-L1AC3    rts
+L45F0    rts
 
 POS      ldb   <u007D
-         bra   L1ABA
+         bra   L45E7
 
 SQRT
-L1AC8    ldb   $05,y
+L45F5    ldb   $05,y
          asrb
          lbcs  ERR67
          ldb   #$1F
          stb   <u006E
          ldd   $01,y
-         beq   L1AC3
+         beq   L45F0
          inca
          asra
          sta   $01,y
          ldd   $02,y
-         bcs   L1AE9
+         bcs   L4616
          lsra
          rorb
          std   -$04,y
          ldd   $04,y
          rora
          rorb
-         bra   L1AED
-L1AE9    std   -$04,y
+         bra   L461A
+L4616    std   -$04,y
          ldd   $04,y
-L1AED    std   -$02,y
+L461A    std   -$02,y
          clra
          clrb
          std   $02,y
          std   $04,y
          std   -$06,y
          std   -$08,y
-         bra   L1B0B
-L1AFB    orcc  #Carry
+         bra   L4638
+L4628    orcc  #Carry
          rol   $05,y
          rol   $04,y
          rol   $03,y
          rol   $02,y
          dec   <u006E
-         beq   L1B4D
-         bsr   L1B62
-L1B0B    ldb   -$04,y
+         beq   L467A
+         bsr   L468F
+L4638    ldb   -$04,y
          subb  #$40
          stb   -$04,y
          ldd   -$06,y
@@ -3806,15 +3806,15 @@ L1B0B    ldb   -$04,y
          sbcb  $03,y
          sbca  $02,y
          std   -$08,y
-         bpl   L1AFB
-L1B23    andcc #^Carry
+         bpl   L4628
+L4650    andcc #^Carry
          rol   $05,y
          rol   $04,y
          rol   $03,y
          rol   $02,y
          dec   <u006E
-         beq   L1B4D
-         bsr   L1B62
+         beq   L467A
+         bsr   L468F
          ldb   -$04,y
          addb  #$C0
          stb   -$04,y
@@ -3826,22 +3826,22 @@ L1B23    andcc #^Carry
          adcb  $03,y
          adca  $02,y
          std   -$08,y
-         bmi   L1B23
-         bra   L1AFB
-L1B4D    ldd   $02,y
-         bra   L1B57
-L1B51    dec   $01,y
+         bmi   L4650
+         bra   L4628
+L467A    ldd   $02,y
+         bra   L4684
+L467E    dec   $01,y
          lbvs  L15B0
-L1B57    lsl   $05,y
+L4684    lsl   $05,y
          rol   $04,y
          rolb
          rola
-         bpl   L1B51
+         bpl   L467E
          std   $02,y
          rts
 
-L1B62    bsr   L1B64
-L1B64    lsl   -$01,y
+L468F    bsr   L4691
+L4691    lsl   -$01,y
          rol   -$02,y
          rol   -$03,y
          rol   -$04,y
@@ -3857,50 +3857,50 @@ MODint   lbsr  INTDIV
          rts
 
 MODrl
-L1B7D    leau  -$0C,y
+L46AA    leau  -$0C,y
          pshs  y
-L1B81    ldd   ,y++
+L46AE    ldd   ,y++
          std   ,u++
          cmpu  ,s
-         bne   L1B81
+         bne   L46AE
          leas  $02,s
          leay  -$C,u
          lbsr  RLDIV
-         bsr   L1B99
+         bsr   L46C6
          lbsr  RLMUL
          lbra  L147E
 
 INTrl
-L1B99    lda   $01,y
-         bgt   L1BA6
+L46C6    lda   $01,y
+         bgt   L46D3
          clra
          clrb
          std   $01,y
          std   $03,y
          stb   $05,y
-L1BA5    rts
-L1BA6    cmpa  #$1F
-         bcc   L1BA5
+L46D2    rts
+L46D3    cmpa  #$1F
+         bcc   L46D2
          leau  $06,y
          ldb   -1,u
          andb  #$01
          pshs  u,b
          leau  $01,y
-L1BB4    leau  1,u
+L46E1    leau  1,u
          suba  #$08
-         bcc   L1BB4
-         beq   L1BC8
+         bcc   L46E1
+         beq   L46F5
          ldb   #$FF
-L1BBE    lslb
+L46EB    lslb
          inca
-         bne   L1BBE
+         bne   L46EB
          andb  ,u
          stb   ,u+
-         bra   L1BCC
-L1BC8    leau  1,u
-L1BCA    sta   ,u+
-L1BCC    cmpu  $01,s
-         bne   L1BCA
+         bra   L46F9
+L46F5    leau  1,u
+L46F7    sta   ,u+
+L46F9    cmpu  $01,s
+         bne   L46F7
          puls  u,b
          orb   $05,y
          stb   $05,y
@@ -3939,31 +3939,34 @@ VAL      ldd   <u0080
 ADDR     lbsr  L1224
          leay  -$06,y
          stu   $01,y
-L1C19    lda   #$01
+L4746    lda   #$01
          sta   ,y
          leax  $01,x
          rts
 
 * Table of var type sizes
-L1C20    fcb   1,2,5,1
+L474D    fcb   $01        Byte             (type=0)
+         fcb   $02        Integer size     (type=1)
+         fcb   $05        Real size        (type=2)
+         fcb   $01        Boolean          (type=3)
 
 SIZE     lbsr  L1224
          leay  -$06,y
          cmpa  #$04
-         bcc   L1C36
-         leau  >L1C20,pcr
+         bcc   L4763
+         leau  >L474D,pcr
          ldb   a,u
          clra
-         bra   L1C38
-L1C36    ldd   <u003E
-L1C38    std   $01,y
-         bra   L1C19
+         bra   L4765
+L4763    ldd   <u003E
+L4765    std   $01,y
+         bra   L4746
 
 equTRUE  ldd   #$00FF
-         bra   L1C44
+         bra   L4771
 
 equFALSE ldd   #$0000
-L1C44    leay  -$06,y
+L4771    leay  -$06,y
          std   $01,y
          lda   #$03
          sta   ,y
@@ -3976,24 +3979,24 @@ LNOTI    com   $01,y
 LANDI    ldd   $01,y
          anda  $07,y
          andb  $08,y
-         bra   L1C68
+         bra   L4795
 
 LXORI    ldd   $01,y
          eora  $07,y
          eorb  $08,y
-         bra   L1C68
+         bra   L4795
 
 LORI     ldd   $01,y
          ora   $07,y
          orb   $08,y
-L1C68    std   $07,y
+L4795    std   $07,y
          leay  $06,y
          rts
 
-L1C6D    fcb   255,222,91,216,170 ??? (.434294482)
+L479A    fcb   255,222,91,216,170 ??? (.434294482)
 
 LOG10    bsr   LOG
-         leau  >L1C6D,pcr
+         leau  >L479A,pcr
          lbsr  RCPVAR
          lbra  RLMUL
 
@@ -4009,20 +4012,20 @@ LOG      pshs  x
          leay  <-$1A,y
          leax  <$1B,y
          leau  ,y
-         lbsr  L209F
-         lbsr  L219A
+         lbsr  L4BCC
+         lbsr  L4CC7
          clra
          clrb
          std   <$14,y
          std   <$16,y
          sta   <$18,y
-         leax  >L2152,pcr
+         leax  >L4C7F,pcr
          stx   <$19,y
-         lbsr  L1DDC
+         lbsr  L4909
          leax  <$14,y
          leau  <$1B,y
-         lbsr  L209F
-         lbsr  L21B4
+         lbsr  L4BCC
+         lbsr  L4CE1
          leay  <$1A,y
          ldb   #$02
          stb   ,y
@@ -4030,23 +4033,23 @@ LOG      pshs  x
          orb   #$01
          stb   $05,y
          puls  b
-         bsr   L1CDD
+         bsr   L480A
          puls  x
          lbra  RLADD
 
-L1CD8    fcb   $00,$b1,$72,$17,$f8 (.693147181) LOG(2) in REAL format
+L4805    fcb   $00,$b1,$72,$17,$f8 (.693147181) LOG(2) in REAL format
 
-L1CDD    sex              Convert to 16 bit number
-         bpl   L1CE1      If positive, skip ahead
+L480A    sex              Convert to 16 bit number
+         bpl   L480E      If positive, skip ahead
          negb
-L1CE1    anda  #$01
+L480E    anda  #$01
          pshs  b,a
-         leau  >L1CD8,pcr
+         leau  >L4805,pcr
          lbsr  RCPVAR
          ldb   $05,y
          lda   $01,s
          cmpa  #$01
-         beq   L1D2F
+         beq   L485C
          mul
          stb   $05,y
          ldb   $04,y
@@ -4069,43 +4072,43 @@ L1CE1    anda  #$01
          mul
          addb  $02,y
          adca  #$00
-         beq   L1D2B
-L1D1E    inc   $01,y
+         beq   L4858
+L484B    inc   $01,y
          lsra
          rorb
          ror   $03,y
          ror   $04,y
          ror   $05,y
          tsta
-         bne   L1D1E
-L1D2B    stb   $02,y
+         bne   L484B
+L4858    stb   $02,y
          ldb   $05,y
-L1D2F    andb  #$FE
+L485C    andb  #$FE
          orb   ,s
          stb   $05,y
          puls  pc,b,a
 
 EXP
-L1D37    pshs  x
+L4864    pshs  x
          ldb   $01,y
-         beq   L1D53
+         beq   L4880
          cmpb  #$07
-         ble   L1D4A
+         ble   L4877
          ldb   $05,y
          rorb
          rorb
          eorb  #$80
-         lbra  L1DEF
-L1D4A    cmpb  #$E4
+         lbra  L491C
+L4877    cmpb  #$E4
          lble  L4342
          tstb
-         bpl   L1D5D
-L1D53    clr   ,-s
+         bpl   L488A
+L4880    clr   ,-s
          ldb   $05,y
          andb  #$01
          beq   L48CD
-         bra   L1D8E
-L1D5D    lda   #$71
+         bra   L48BB
+L488A    lda   #$71
          mul
          adda  $01,y
          ldb   $05,y
@@ -4114,15 +4117,15 @@ L1D5D    lda   #$71
          eorb  $05,y
          stb   $05,y
          ldb   ,s
-L1D6E    lbsr  L1CDD
+L489B    lbsr  L480A
          lbsr  L147E
          ldb   $01,y
-         ble   L1D80
+         ble   L48AD
          addb  ,s
          stb   ,s
          ldb   $01,y
-         bra   L1D6E
-L1D80    puls  b,a
+         bra   L489B
+L48AD    puls  b,a
          pshs  a
          tstb
          beq   L48CD
@@ -4130,121 +4133,121 @@ L1D80    puls  b,a
          sta   ,s
          orb   $05,y
          stb   $05,y
-L1D8E    leau  >L1CD8,pcr
+L48BB    leau  >L4805,pcr
          lbsr  RCPVAR
          lbsr  RLADD
          dec   ,s
          ldb   $05,y
          andb  #$01
-         bne   L1D8E
+         bne   L48BB
 L48CD    leay  <-$1A,y
          leax  <$1B,y
          leau  <$14,y
-         lbsr  L209F
-         lbsr  L219A
+         lbsr  L4BCC
+         lbsr  L4CC7
          ldd   #$1000
          std   ,y
          clra
          std   $02,y
          sta   $04,y
-         leax  >L2134,pcr
+         leax  >L4C61,pcr
          stx   <$19,y
-         bsr   L1DDC
+         bsr   L4909
          leax  ,y
          leau  <$1B,y
-         lbsr  L209F
-         lbsr  L21B4
+         lbsr  L4BCC
+         lbsr  L4CE1
          leay  <$1A,y
          puls  b
          addb  $01,y
-         bvs   L1DEF
+         bvs   L491C
          lda   #$02
          std   ,y
          puls  pc,x
-L1DDC    lda   #$01
+L4909    lda   #$01
          sta   <u009A
          leax  >L4D6F,pcr
          stx   <u0095
          leax  >$005F,x
          stx   <u0097
-         lbra  L206A
-L1DEF    leay  -$06,y
+         lbra  L4B97
+L491C    leay  -$06,y
          lbpl  L15B0
          ldb   #E$FltOvf
          lbra  L3C2C
 
-L2125    pshs  x
-         bsr   L1E30
+L4927    pshs  x
+         bsr   L495D
          ldd   $01,y
-         lbeq  L1F64
+         lbeq  L4A91
          cmpd  #$0180
-         bgt   L1E16
-         bne   L1E19
+         bgt   L4943
+         bne   L4946
          ldd   $03,y
-         bne   L1E16
+         bne   L4943
          lda   $05,y
-         lbeq  L1EE1
-L1E16    lbra  ERR67
+         lbeq  L4A0E
+L4943    lbra  ERR67
 
-L1E19    lbsr  L1E9E
+L4946    lbsr  L49CB
          leay  <-$14,y
          leax  <$15,y
          leau  ,y
-         lbsr  L209F
-         lbsr  L219A
+         lbsr  L4BCC
+         lbsr  L4CC7
          leax  <$1B,y
-         lbra  L1F11
-L1E30    ldb   $05,y
+         lbra  L4A3E
+L495D    ldb   $05,y
          andb  #$01
          stb   <u006D
          eorb  $05,y
          stb   $05,y
          rts
 
-L2126    leau  <L1E7E,pcr
+L4968    leau  <L49AB,pcr
          pshs  u,x
-         bsr   L1E30
+         bsr   L495D
          ldd   $01,y
-         lbeq  L1EE1
+         lbeq  L4A0E
          cmpd  #$0180
-         bgt   L1E16
-         bne   L1E68
+         bgt   L4943
+         bne   L4995
          ldd   $03,y
-         bne   L1E16
+         bne   L4943
          lda   $05,y
-         bne   L1E16
+         bne   L4943
          lda   <u006D
-         bne   L1E61
+         bne   L498E
          clrb
          std   $01,y
          puls  pc,u,x
-L1E61    leay  $06,y
+L498E    leay  $06,y
          puls  u,x
          lbra  PI
-L1E68    bsr   L1E9E
+L4995    bsr   L49CB
          leay  <-$14,y
          leax  <$1B,y
          leau  ,y
-         lbsr  L209F
-         lbsr  L219A
+         lbsr  L4BCC
+         lbsr  L4CC7
          leax  <$15,y
-         lbra  L1F11
-L1E7E    lda   $05,y
+         lbra  L4A3E
+L49AB    lda   $05,y
          bita  #$01
-         beq   L1E98
+         beq   L49C5
          ldu   <u0031
          tst   1,u
-         beq   L1E92
-         leau  <L1E99,pcr
+         beq   L49BF
+         leau  <L49C6,pcr
          lbsr  RCPVAR
-         bra   L1E95
-L1E92    lbsr  PI
-L1E95    lbra  RLADD
-L1E98    rts
+         bra   L49C2
+L49BF    lbsr  PI
+L49C2    lbra  RLADD
+L49C5    rts
 
-L1E99    fcb   $08,$b4,$00,$00,$00 180
+L49C6    fcb   $08,$b4,$00,$00,$00 180
 
-L1E9E    lda   <u006D
+L49CB    lda   <u006D
          pshs  a
          leay  <-$12,y
          ldd   #$0201
@@ -4265,134 +4268,134 @@ L1E9E    lda   <u006D
          std   $0A,y
          lbsr  RLMUL
          lbsr  L147E
-         lbsr  L1AC8
+         lbsr  L45F5
          puls  a
          sta   <u006D
          rts
 
-L2127    pshs  x
-         lbsr  L1E30
+L4A03    pshs  x
+         lbsr  L495D
          ldb   $01,y
          cmpb  #$18
-         blt   L1EEA
-L1EE1    leay  $06,y
+         blt   L4A17
+L4A0E    leay  $06,y
          lbsr  PI
          dec   $01,y
-         bra   L1F3D
-L1EEA    leay  <-$1A,y
+         bra   L4A6A
+L4A17    leay  <-$1A,y
          ldd   #$1000
          std   ,y
          clra
          std   $02,y
          sta   $04,y
          ldb   <$1B,y
-         bra   L1F07
-L1EFC    asr   ,y
+         bra   L4A34
+L4A29    asr   ,y
          ror   $01,y
          ror   $02,y
          ror   $03,y
          ror   $04,y
          decb
-L1F07    cmpb  #$02
-         bgt   L1EFC
+L4A34    cmpb  #$02
+         bgt   L4A29
          stb   <$1B,y
          leax  <$1B,y
-L1F11    leau  $0A,y
-         lbsr  L209F
-         lbsr  L219A
+L4A3E    leau  $0A,y
+         lbsr  L4BCC
+         lbsr  L4CC7
          clra
          clrb
          std   <$14,y
          std   <$16,y
          sta   <$18,y
-         leax  >L20FF,pcr
+         leax  >L4C2C,pcr
          stx   <$19,y
-         lbsr  L205C
+         lbsr  L4B89
          leax  <$14,y
          leau  <$1B,y
-         lbsr  L209F
-         lbsr  L21B4
+         lbsr  L4BCC
+         lbsr  L4CE1
          leay  <$1A,y
-L1F3D    lda   $05,y
+L4A6A    lda   $05,y
          ora   <u006D
          sta   $05,y
          ldu   <u0031
          tst   1,u
-         beq   L1F64
-         leau  >L1FD1,pcr
+         beq   L4A91
+         leau  >L4AFE,pcr
          lbsr  RCPVAR
          lbsr  RLMUL
-         bra   L1F64
+         bra   L4A91
 
-L2122    pshs  x
+L4A82    pshs  x
          lbsr  PIX
          leax  $0A,y
-         bsr   L1F6A
+         bsr   L4A97
          lda   $05,y
-L1F60    eora  <u009C
-L1F62    sta   $05,y
-L1F64    lda   #$02
+L4A8D    eora  <u009C
+L4A8F    sta   $05,y
+L4A91    lda   #$02
          sta   ,y
          puls  pc,x
 
-L1F6A    leau  <$1B,y
-         lbsr  L209F
-         lbsr  L21B4
+L4A97    leau  <$1B,y
+         lbsr  L4BCC
+         lbsr  L4CE1
          leay  <$14,y
          leax  >L4D6A,pcr
          leau  $01,y
-         lbsr  L209F
+         lbsr  L4BCC
          lbra  RLMUL
 
-L2123    pshs  x
+L4AAF    pshs  x
          bsr   PIX
          leax  ,y
-         bsr   L1F6A
+         bsr   L4A97
          lda   $05,y
          eora  <u009B
-         bra   L1F62
+         bra   L4A8F
 
-L2124    pshs  x
+L4ABD    pshs  x
          bsr   PIX
          leax  $0A,y
          leau  <$1B,y
-         lbsr  L209F
-         lbsr  L21B4
+         lbsr  L4BCC
+         lbsr  L4CE1
          leax  ,y
          leay  <$14,y
          leau  $01,y
-         lbsr  L209F
-         lbsr  L21B4
+         lbsr  L4BCC
+         lbsr  L4CE1
          ldd   $01,y
-         bne   L1FBE
+         bne   L4AEB
          leay  $06,y
          ldd   #$7FFF
-L1FB5    std   $01,y
+L4AE2    std   $01,y
          lda   #$FF
          std   $03,y
          deca
-         bra   L1FC3
-L1FBE    lbsr  RLDIV
+         bra   L4AF0
+L4AEB    lbsr  RLDIV
          lda   $05,y
-L1FC3    eora  <u009B
-         bra   L1F60
+L4AF0    eora  <u009B
+         bra   L4A8D
 
-L1FC7    fcb   $02,$c9,$0f,$da,$a2 PI (3.14159265)
+L4AF4    fcb   $02,$c9,$0f,$da,$a2 PI (3.14159265)
 
-L1FCC    fcb   $fb,$8e,$fa,$35,$12 -1.74532925 E-02  (Degrees)
+L4AF9    fcb   $fb,$8e,$fa,$35,$12 -1.74532925 E-02  (Degrees)
 
-L1FD1    fcb   $06,$e5,$2e,$e0,$d4 57.2957795 (radians)
+L4AFE    fcb   $06,$e5,$2e,$e0,$d4 57.2957795 (radians)
 
-PI       leau  >L1FC7,pcr
+PI       leau  >L4AF4,pcr
          lbra  RCPVAR
 
 PIX      ldu   <u0031
          tst   1,u
-         beq   L1FED
-         leau  >L1FCC,pcr
-         lbsr  RCPVAR
+         beq   L4B1A
+         leau  >L4AF9,pcr
+         lbsr  RCPVAR      Copy 5 bytes from u to 1,y (0,y=2)
          lbsr  RLMUL
-L1FED    clr   <u009B
+L4B1A    clr   <u009B
          ldb   $05,y
          andb  #$01
          stb   <u009C
@@ -4401,22 +4404,22 @@ L1FED    clr   <u009B
          bsr   PI
          inc   $01,y
          lbsr  RLCMP
-         blt   L2009
-         lbsr  L1B7D
+         blt   L4B36
+         lbsr  L46AA
          bsr   PI
-         bra   L200B
-L2009    dec   $01,y
-L200B    lbsr  RLCMP
-         blt   L201D
+         bra   L4B38
+L4B36    dec   $01,y
+L4B38    lbsr  RLCMP
+         blt   L4B4A
          inc   <u009B
          lda   <u009C
          eora  #$01
          sta   <u009C
          lbsr  L147E
          bsr   PI
-L201D    dec   $01,y
+L4B4A    dec   $01,y
          lbsr  RLCMP
-         ble   L2037
+         ble   L4B64
          lda   <u009B
          eora  #$01
          sta   <u009B
@@ -4426,13 +4429,13 @@ L201D    dec   $01,y
          sta   $0B,y
          lbsr  RLADD
          leay  -$06,y
-L2037    leay  <-$14,y
-         leax  >L21O6,pcr
+L4B64    leay  <-$14,y
+         leax  >L4C33,pcr
          stx   <$19,y
          leax  <$1B,y
          leau  <$14,y
-         bsr   L209F
-         lbsr  L219A
+         bsr   L4BCC
+         lbsr  L4CC7
          ldd   #$1000
          std   ,y
          clra
@@ -4441,38 +4444,39 @@ L2037    leay  <-$14,y
          std   $0A,y
          std   $0C,y
          sta   $0E,y
-L205C    leax  >L4D29,pcr
+L4B89    leax  >L4D29,pcr
          stx   <u0095
          leax  >$0041,x
          stx   <u0097
          clr   <u009A
-L206A    ldb   #$25
+L4B97    ldb   #$25
          stb   <u0099
          clr   <u009D
-L2070    leau  <$1B,y
+L4B9D    leau  <$1B,y
          ldx   <u0095
          cmpx  <u0097
-         bcc   L2081
-         bsr   L209F
+         bcc   L4BAE
+         bsr   L4BCC
          leax  $05,x
          stx   <u0095
-         bra   L2085
-L2081    ldb   #$01
-         bsr   L20F1
-L2085    leax  ,y
+         bra   L4BB2
+L4BAE    ldb   #$01
+         bsr   L4C1E
+L4BB2    leax  ,y
          leau  $05,y
-         bsr   L20B1
+         bsr   L4BDE
          tst   <u009A
-         bne   L2095
+         bne   L4BC2
          leax  $0A,y
          leau  $0F,y
-         bsr   L20B1
-L2095    jsr   [<$19,y]
+         bsr   L4BDE
+L4BC2    jsr   [<$19,y]
          inc   <u009D
          dec   <u0099
-         bne   L2070
+         bne   L4B9D
          rts
-L209F    pshs  y,x
+
+L4BCC    pshs  y,x
          lda   ,x
          ldy   $01,x
          ldx   $03,x
@@ -4480,161 +4484,161 @@ L209F    pshs  y,x
          sty   1,u
          stx   3,u
          puls  pc,y,x
-L20B1    ldb   ,x
+L4BDE    ldb   ,x
          sex
          ldb   <u009D
          lsrb
          lsrb
          lsrb
-         bcc   L20BC
+         bcc   L4BE9
          incb
-L20BC    pshs  b
-         beq   L20C5
-L20C0    sta   ,u+
+L4BE9    pshs  b
+         beq   L4BF2
+L4BED    sta   ,u+
          decb
-         bne   L20C0
-L20C5    ldb   #$05
+         bne   L4BED
+L4BF2    ldb   #$05
          subb  ,s+
-         beq   L20D2
-L20CB    lda   ,x+
+         beq   L4BFF
+L4BF8    lda   ,x+
          sta   ,u+
          decb
-         bne   L20CB
-L20D2    leau  -5,u
+         bne   L4BF8
+L4BFF    leau  -5,u
          ldb   <u009D
          andb  #$07
-         beq   L20FE
+         beq   L4C2B
          cmpb  #$04
-         bcs   L20F1
+         bcs   L4C1E
          subb  #$08
          lda   ,x
-L20E2    lsla
+L4C0F    lsla
          rol   4,u
          rol   3,u
          rol   2,u
          rol   1,u
          rol   ,u
          incb
-         bne   L20E2
+         bne   L4C0F
          rts
-L20F1    asr   ,u
+L4C1E    asr   ,u
          ror   1,u
          ror   2,u
          ror   3,u
          ror   4,u
          decb
-         bne   L20F1
-L20FE    rts
-L20FF    lda   $0A,y
+         bne   L4C1E
+L4C2B    rts
+L4C2C    lda   $0A,y
          eora  ,y
          coma
-         bra   L2109
-L21O6    lda   <$14,y
-L2109    tsta
-         bpl   L2120
+         bra   L4C36
+L4C33    lda   <$14,y
+L4C36    tsta
+         bpl   L4C4D
          leax  ,y
          leau  $0F,y
-         bsr   L2162
+         bsr   L4C8F
          leax  $0A,y
          leau  $05,y
-         bsr   L217E
+         bsr   L4CAB
          leax  <$14,y
          leau  <$1B,y
-         bra   L2162
-L2120    leax  ,y
+         bra   L4C8F
+L4C4D    leax  ,y
          leau  $0F,y
-         bsr   L217E
+         bsr   L4CAB
          leax  $0A,y
          leau  $05,y
-         bsr   L2162
+         bsr   L4C8F
          leax  <$14,y
          leau  <$1B,y
-         bra   L217E
-L2134    leax  <$14,y
+         bra   L4CAB
+L4C61    leax  <$14,y
          leau  <$1B,y
-         bsr   L217E
-         bmi   L2162
-         bne   L214C
+         bsr   L4CAB
+         bmi   L4C8F
+         bne   L4C79
          ldd   $01,x
-         bne   L214C
+         bne   L4C79
          ldd   $03,x
-         bne   L214C
+         bne   L4C79
          ldb   #$01
          stb   <u0099
-L214C    leax  ,y
+L4C79    leax  ,y
          leau  $05,y
-         bra   L2162
-L2152    leax  ,y
+         bra   L4C8F
+L4C7F    leax  ,y
          leau  $05,y
-         bsr   L2162
+         bsr   L4C8F
          cmpa  #$20
-         bcc   L217E
+         bcc   L4CAB
          leax  <$14,y
          leau  <$1B,y
-L2162    ldd   $03,x
+L4C8F    ldd   $03,x
          addd  3,u
          std   $03,x
          ldd   $01,x
-         bcc   L2173
+         bcc   L4CA0
          addd  #$0001
-         bcc   L2173
+         bcc   L4CA0
          inc   ,x
-L2173    addd  1,u
+L4CA0    addd  1,u
          std   $01,x
          lda   ,x
          adca  ,u
          sta   ,x
          rts
-L217E    ldd   $03,x
+L4CAB    ldd   $03,x
          subd  3,u
          std   $03,x
          ldd   $01,x
-         bcc   L218F
+         bcc   L4CBC
          subd  #$0001
-         bcc   L218F
+         bcc   L4CBC
          dec   ,x
-L218F    subd  1,u
+L4CBC    subd  1,u
          std   $01,x
          lda   ,x
          sbca  ,u
          sta   ,x
          rts
-L219A    ldb   ,u
+L4CC7    ldb   ,u
          clr   ,u
          addb  #$04
-         bge   L21B1
+         bge   L4CDE
          negb
-         lbra  L20F1
-L21A6    lsl   4,u
+         lbra  L4C1E
+L4CD3    lsl   4,u
          rol   3,u
          rol   2,u
          rol   1,u
          rol   ,u
          decb
-L21B1    bne   L21A6
+L4CDE    bne   L4CD3
          rts
-L21B4    lda   ,u
-         bpl   L21C1
+L4CE1    lda   ,u
+         bpl   L4CEE
          clra
          clrb
          std   ,u
          std   2,u
          sta   4,u
          rts
-L21C1    ldd   #$2004
-L21C4    decb
+L4CEE    ldd   #$2004
+L4CF1    decb
          lsl   4,u
          rol   3,u
          rol   2,u
          rol   1,u
          rol   ,u
-         bmi   L21D8
+         bmi   L4D05
          deca
-         bne   L21C4
+         bne   L4CF1
          clrb
          std   ,u
          rts
-L21D8    lda   ,u
+L4D05    lda   ,u
          stb   ,u
          ldb   1,u
          sta   1,u
@@ -4644,32 +4648,50 @@ L21D8    lda   ,u
          addd  #$0001
          andb  #$FE
          std   3,u
-         bcc   L21FB
+         bcc   L4D28
          inc   2,u
-         bne   L21FB
+         bne   L4D28
          inc   1,u
-         bne   L21FB
+         bne   L4D28
          ror   1,u
          inc   ,u
-L21FB    rts
+L4D28    rts
 
 * Data (all 5 byte entries for real #'s???)
-L4D29    fdb   $0c90,$fdaa
-         fdb   $2207,$6b19,$c158,$03eb,$6ebf,$2601,$fd5b,$a9ab
-         fdb   $00ff,$aadd,$b900,$7ff5,$56ef,$003f,$feaa,$b700
-         fdb   $1fff,$d556,$000f,$fffa,$ab00,$07ff,$ff55,$0003
-         fdb   $ffff,$eb00,$01ff,$fffd,$0001,$0000
-         fcb   $00
-L4D6A    fcb   $00
-         fdb   $9b74
-         fdb   $eda8
-L4D6F    fdb   $0b17,$217f,$7e06,$7cc8,$fb30,$0391,$fef8
-         fdb   $f301,$e270,$76e3,$00f8,$5186,$0100,$7e0a,$6c3a
-         fdb   $003f,$8151,$6200,$1fe0,$2a6b,$000f,$f805,$5100
-         fdb   $07fe,$00aa,$0003,$ff80,$1500,$01ff,$e003,$0000
-         fdb   $fff8,$0000,$007f,$fe00,$0000,$3fff,$8000,$001f
-         fdb   $ffe0,$0000,$0fff,$f800,$0007,$fffe,$0000,$0400
-         fcb   $00
+L4D29    fcb   $0c,$90,$fd,$aa,$22 2319.85404
+         fcb   $07,$6b,$19,$c1,$58 53.5503032
+         fcb   $03,$eb,$6e,$bf,$26 7.35726888
+         fcb   $01,$fd,$5b,$a9,$ab -1.97935983
+         fcb   $00,$ff,$aa,$dd,$b9
+         fcb   $00,$7f,$f5,$56,$ef
+         fcb   $00,$3f,$fe,$aa,$b7
+         fcb   $00,$1f,$ff,$d5,$56
+         fcb   $00,$0f,$ff,$fa,$ab
+         fcb   $00,$07,$ff,$ff,$55
+         fcb   $00,$03,$ff,$ff,$eb
+         fcb   $00,$01,$ff,$ff,$fd
+         fcb   $00,$01,$00,$00,$00
+
+L4D6A    fcb   $00,$9b,$74,$ed,$a8 .607252935
+L4D6F    fcb   $0b,$17,$21,$7f,$7e 0185.04681
+         fcb   $06,$7c,$c8,$fb,$30
+         fcb   $03,$91,$fe,$f8,$f3
+         fcb   $01,$e2,$70,$76,$e3
+         fcb   $00,$f8,$51,$86,$01
+         fcb   $00,$7e,$0a,$6c,$3a
+         fcb   $00,$3f,$81,$51,$62
+         fcb   $00,$1f,$e0,$2a,$6b
+         fcb   $00,$0f,$f8,$05,$51
+         fcb   $00,$07,$fe,$00,$aa
+         fcb   $00,$03,$ff,$80,$15
+         fcb   $00,$01,$ff,$e0,$03
+         fcb   $00,$00,$ff,$f8,$00
+         fcb   $00,$00,$7f,$fe,$00
+         fcb   $00,$00,$3f,$ff,$80
+         fcb   $00,$00,$1f,$ff,$e0
+         fcb   $00,$00,$0f,$ff,$f8
+         fcb   $00,$00,$07,$ff,$fe
+         fcb   $00,$00,$04,$00,$00
 
 L4DCE    fdb   $0E12,$14A2,$BB40,$E62D,$3619,$62E9
 
@@ -4680,12 +4702,12 @@ RND      clra
          std   <u004E
          pshs  a
          lda   $02,y
-         beq   L22CF
+         beq   L4DFC
          ldb   $05,y
          bitb  #$01
          bne   L4DF0
          com   ,s
-         bra   L22CF
+         bra   L4DFC
 
 L4DF0    addb  #$FE
          addb  $01,y
@@ -4693,7 +4715,7 @@ L4DF0    addb  #$FE
          std   <u0052
          ldd   $02,y
          std   <u0050
-L22CF    lda   <u0053
+L4DFC    lda   <u0053
          ldb   <u0057
          mul
          std   <u004E
@@ -4701,16 +4723,16 @@ L22CF    lda   <u0053
          ldb   <u0057
          mul
          addd  <u004D
-         bcc   L22E1
+         bcc   L4E0E
          inc   <u004C
-L22E1    std   <u004D
+L4E0E    std   <u004D
          lda   <u0053
          ldb   <u0056
          mul
          addd  <u004D
-         bcc   L22EE
+         bcc   L4E1B
          inc   <u004C
-L22EE    std   <u004D
+L4E1B    std   <u004D
          lda   <u0051
          ldb   <u0057
          mul
@@ -4754,30 +4776,31 @@ L22EE    std   <u004D
          adca  <u0058
          std   <u0050
          tst   ,s+
-         bne   L236B
+         bne   L4E98
          ldd   <u0050
          std   $02,y
          ldd   <u0052
          std   $04,y
          clr   $01,y
-L234B    lda   #$1F
+L4E78    lda   #$1F
          pshs  a
          ldd   $02,y
-         bmi   L2361
-L2353    dec   ,s
-         beq   L2361
+         bmi   L4E8E
+L4E80    dec   ,s
+         beq   L4E8E
          dec   $01,y
          lsl   $05,y
          rol   $04,y
          rolb
          rola
-         bpl   L2353
-L2361    std   $02,y
+         bpl   L4E80
+L4E8E    std   $02,y
          ldb   $05,y
          andb  #$FE
          stb   $05,y
          puls  pc,b
-L236B    ldd   <u0052
+
+L4E98    ldd   <u0052
          andb  #$FE
          std   ,--y
          ldd   <u0050
@@ -4785,7 +4808,7 @@ L236B    ldd   <u0052
          clra
          clrb
          std   ,--y
-         bsr   L234B
+         bsr   L4E78
          lbra  RLMUL
 
 LEN      ldd   <u0048
@@ -4813,7 +4836,7 @@ CHR$     ldd   $01,y
          lbsr  L4FEA
          sty   <u0044
          cmpu  <u0044
-         lbcc  L1995
+         lbcc  L44C2
          rts
 
 LEFT$    ldd   $01,y
@@ -4822,13 +4845,13 @@ LEFT$    ldd   $01,y
          tfr   d,u
          cmpd  <u0048
          bcc   L4EF1
-         bsr   L2443
+         bsr   L4F70
 L4EF1    leay  $06,y
          rts
 
 IsNull   leay  $06,y
          ldu   $01,y
-         bra   L2443
+         bra   L4F70
 
 RIGHT$   ldd   $01,y
          ble   IsNull
@@ -4851,46 +4874,46 @@ L4F1A    leay  $06,y
 MID$     ldd   $01,y                    size of piece
          ble   L4F26
          ldd   $07,y                    starting offset
-         bgt   L2401
+         bgt   L4F2E
 L4F26    ldd   $01,y                    = LEFT$
          leay  $06,y
          std   $01,y
          bra   LEFT$
 
-L2401    subd  #$0001
+L4F2E    subd  #$0001
          beq   L4F26
          addd  $0D,y                    start address piece
          cmpd  <u0048
-         bcs   L2411                    piece exists
+         bcs   L4F3E                    piece exists
          leay  $06,y
          bra   IsNull
-L2411    pshs  x
+L4F3E    pshs  x
          tfr   d,x
          ldb   $02,y
          ldu   $0D,y
-L2419    lda   ,x+
+L4F46    lda   ,x+
          sta   ,u+
          cmpa  #$FF
-         beq   L242C
+         beq   L4F59
          decb
-         bne   L2419
+         bne   L4F46
          dec   $01,y
-         bpl   L2419
+         bpl   L4F46
          lda   #$FF
          sta   ,u+
-L242C    stu   <u0048
+L4F59    stu   <u0048
          leay  $0C,y
          puls  pc,x
 
 TRIM$    ldu   <u0048
          leau  -1,u
-L2436    cmpu  $01,y
-         beq   L2443
+L4F63    cmpu  $01,y
+         beq   L4F70
          lda   ,-u
          cmpa  #$20
-         beq   L2436
+         beq   L4F63
          leau  1,u
-L2443    lda   #$FF
+L4F70    lda   #$FF
          sta   ,u+
          stu   <u0048
          rts
@@ -4903,15 +4926,15 @@ SUBSTR   pshs  y,x
          ldx   $07,y
          ldy   $01,y
          lbsr  L3C29
-         bcc   L2463
+         bcc   L4F90
          clra
          clrb
-         bra   L246C
-L2463    tfr   y,d
+         bra   L4F99
+L4F90    tfr   y,d
          ldx   $02,s
          subd  $01,x
          addd  #$0001
-L246C    puls  y,x
+L4F99    puls  y,x
          std   $07,y
          lda   #$01
          sta   $06,y
@@ -4952,7 +4975,7 @@ L4FDB    cmpb  <u007D
          decb
          cmpu  <u0044
          bcs   L4FDB
-         lbra  L1995
+         lbra  L44C2
 L4FEA    pshs  x
 L4FEC    lda   #$FF
          sta   ,u+
@@ -5140,7 +5163,7 @@ AtoITR   pshs  u
          std   $04,y
          std   $02,y
          sta   $01,y
-         lbsr  L285D
+         lbsr  L5390
          bcc   L5172
          leax  -$01,x
          cmpa  #$2C
@@ -5339,7 +5362,7 @@ L52F0    puls  pc,x
 L52F2    cmpa  #$02
          beq   L52F9
          lbsr  Flote
-L52F9    lbsr  L2851
+L52F9    lbsr  L5384
          bcs   L5305
          ldb   #E$Illinp
          stb   <errcode
@@ -5379,7 +5402,7 @@ L5331    pshs  u,x
          sta   ,y
          ldx   <u0082
 L533F    lda   ,x+
-         bsr   L2863
+         bsr   L5396
          bcs   L5349
          sta   ,u+
          bra   L533F
@@ -5398,51 +5421,51 @@ L5354    pshs  x
          sta   ,y
          clr   $02,y
          ldx   <u0082
-         bsr   L285D
-         bcs   L284C
+         bsr   L5390
+         bcs   L537F
          cmpa  #$54
-         beq   L2846
+         beq   L5379
          cmpa  #$74
-         beq   L2846
+         beq   L5379
          eora  #$46
          anda  #$DF
-         beq   L2848
+         beq   L537B
          ldb   #E$IOMism
          stb   <errcode
          coma
          puls  pc,x
 
-L2846    com   $02,y
-L2848    bsr   L2851
-         bcc   L2848
-L284C    stx   <u0082
+L5379    com   $02,y
+L537B    bsr   L5384
+         bcc   L537B
+L537F    stx   <u0082
          clra
          puls  pc,x
 
 * validate characters
-L2851    lda   ,x+
+L5384    lda   ,x+
          cmpa  #C$SPAC                  space?
-         bne   L2863
-         bsr   L285D
-         bcc   L2872
-         bra   L2874
-L285D    lda   ,x+
+         bne   L5396
+         bsr   L5390
+         bcc   L53A5
+         bra   L53A7
+L5390    lda   ,x+
          cmpa  #C$SPAC                  space?
-         beq   L285D                    skip them
-L2863    cmpa  <u00DD
-         beq   L2874
+         beq   L5390                    skip them
+L5396    cmpa  <u00DD
+         beq   L53A7
          cmpa  #C$CR                    CR?
-         beq   L2872
+         beq   L53A5
          cmpa  #$FF                     end of string?
-         beq   L2872
+         beq   L53A5
          andcc #^Carry
          rts
-L2872    leax  -$01,x
-L2874    orcc  #Carry
+L53A5    leax  -$01,x
+L53A7    orcc  #Carry
          rts
 
 * integer to ASCII
-L2877    pshs  u,x
+L53AA    pshs  u,x
          clra
          sta   $03,y
          sta   <u0076
@@ -5450,32 +5473,32 @@ L2877    pshs  u,x
          lda   #$04
          sta   <u007E
          ldd   $01,y
-         bpl   L288E
+         bpl   L53C1
          nega
          negb
          sbca  #$00
          inc   <u0078
-L288E    leau  >L50DA,pcr
-L2892    clr   <u007A
+L53C1    leau  >L50DA,pcr
+L53C5    clr   <u007A
          leau  2,u
-L2896    subd  ,u
-         bcs   L289E
+L53C9    subd  ,u
+         bcs   L53D1
          inc   <u007A
-         bra   L2896
-L289E    addd  ,u
+         bra   L53C9
+L53D1    addd  ,u
          tst   <u007A
-         bne   L28A8
+         bne   L53DB
          tst   $03,y
-         beq   L28B3
-L28A8    inc   $03,y
+         beq   L53E6
+L53DB    inc   $03,y
          pshs  a
          lda   <u007A
-         lbsr  L29B7
+         lbsr  L54EA
          puls  a
-L28B3    dec   <u007E
-         bne   L2892
+L53E6    dec   <u007E
+         bne   L53C5
          tfr   b,a
-         lbsr  L29B7
+         lbsr  L54EA
          leay  $06,y
          puls  pc,u,x
 
@@ -5488,25 +5511,25 @@ RtoA     pshs  u,x
          clr   <u0076
          leau  ,x
          ldd   #$0A30
-L28D3    stb   ,u+
+L5406    stb   ,u+
          deca
-         bne   L28D3
+         bne   L5406
          ldd   $01,y
-         bne   L28E0
+         bne   L5413
          inca
-         lbra  L29B1
-L28E0    ldb   $05,y
+         lbra  L54E4
+L5413    ldb   $05,y
          bitb  #$01
-         beq   L28EC
+         beq   L541F
          stb   <u0078
          andb  #$FE
          stb   $05,y
-L28EC    ldd   $01,y
-         bpl   L28F3
+L541F    ldd   $01,y
+         bpl   L5426
          inc   <u0075
          nega
-L28F3    cmpa  #$03
-         bls   L2924
+L5426    cmpa  #$03
+         bls   L5457
          ldb   #$9A
          mul
          lsra
@@ -5514,58 +5537,58 @@ L28F3    cmpa  #$03
          nop
          tfr   a,b
          tst   <u0075
-         beq   L2904
+         beq   L5437
          negb
-L2904    stb   <u0079
+L5437    stb   <u0079
          cmpa  #$13
-         bls   L2917
+         bls   L544A
          pshs  a
          leau  >L513E,pcr
          lbsr  L529B
          puls  a
          suba  #$13
-L2917    leau  >L50E4,pcr
+L544A    leau  >L50E4,pcr
          deca
          ldb   #$05
          mul
          leau  d,u
          lbsr  L529B
-L2924    ldd   $02,y
+L5457    ldd   $02,y
          tst   $01,y
-         beq   L2950
-         bpl   L293C
-L292C    lsra
+         beq   L5483
+         bpl   L546F
+L545F    lsra
          rorb
          ror   $04,y
          ror   $05,y
          ror   <u007C
          inc   $01,y
-         bne   L292C
+         bne   L545F
          std   $02,y
-         bra   L2950
-L293C    lsl   $05,y
+         bra   L5483
+L546F    lsl   $05,y
          rol   $04,y
          rolb
          rola
          rol   <u007B
          dec   $01,y
-         bne   L293C
+         bne   L546F
          std   $02,y
          inc   <u0079
          lda   <u007B
-         bsr   L29B7
-L2950    ldd   $02,y
+         bsr   L54EA
+L5483    ldd   $02,y
          ldu   $04,y
-L2954    clr   <u007B
-         bsr   L29BE
+L5487    clr   <u007B
+         bsr   L54F1
          std   $02,y
          stu   $04,y
          pshs  a
          lda   <u007B
          sta   <u007C
          puls  a
-         bsr   L29BE
-         bsr   L29BE
+         bsr   L54F1
+         bsr   L54F1
          exg   d,u
          addd  $04,y
          exg   d,u
@@ -5574,41 +5597,41 @@ L2954    clr   <u007B
          pshs  a
          lda   <u007B
          adca  <u007C
-         bsr   L29B7
+         bsr   L54EA
          lda   <u0076
          cmpa  #$09
          puls  a
-         beq   L298E
+         beq   L54C1
          cmpd  #$0000
-         bne   L2954
+         bne   L5487
          cmpu  #$0000
-         bne   L2954
-L298E    sta   ,y
+         bne   L5487
+L54C1    sta   ,y
          lda   <u0076
          cmpa  #$09
-         bcs   L29AF
+         bcs   L54E2
          ldb   ,y
-         bpl   L29AF
-L299A    lda   ,-x
+         bpl   L54E2
+L54CD    lda   ,-x
          inca
          sta   ,x
          cmpa  #$39
-         bls   L29AF
+         bls   L54E2
          lda   #$30
          sta   ,x
          cmpx  ,s
-         bne   L299A
+         bne   L54CD
          inc   ,x
          inc   <u0079
-L29AF    lda   #$09
-L29B1    sta   <u0076
+L54E2    lda   #$09
+L54E4    sta   <u0076
          leay  $06,y
          puls  pc,u,x
-L29B7    ora   #$30
+L54EA    ora   #$30
          sta   ,x+
          inc   <u0076
          rts
-L29BE    exg   d,u
+L54F1    exg   d,u
          lslb
          rola
          exg   d,u
@@ -5625,20 +5648,20 @@ READLN   pshs  y,x
          ldy   #$0100
          lda   <u007F
          os9   I$ReadLn
-         bra   L29F1
+         bra   L5524
 
 WRITLN   pshs  y,x
          ldd   <u0082
          subd  <u0080
-         beq   L29F5
+         beq   L5528
          tfr   d,y
          ldx   <u0080
          stx   <u0082
          lda   <u007F
          os9   I$WritLn
-L29F1    bcc   L29F5
+L5524    bcc   L5528
          stb   <errcode
-L29F5    puls  pc,y,x
+L5528    puls  pc,y,x
 
 SETFP    pshs  u,x
          lda   ,y               type of file pointer
@@ -5832,7 +5855,7 @@ PRbool    pshs  x
 PRintg   pshs  u,x
          leas  -$05,s
          leax  ,s
-         lbsr  L2877
+         lbsr  L53AA
          bsr   L5643
          lda   <u0076
          leax  ,s
@@ -6165,7 +6188,7 @@ FMTint   jsr   <u0016
 L58BE    pshs  u,x
          leas  -$05,s
          leax  ,s
-         lbsr  L2877
+         lbsr  L53AA
          ldb   <u0086
          decb
          subb  <u0076
