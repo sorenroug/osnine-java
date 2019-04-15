@@ -24,4 +24,4 @@ OTHER   rmb 1
 
 RESELLER equ OTHER
 
- use basic09.asm
+ use basic09.inc

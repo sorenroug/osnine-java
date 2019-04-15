@@ -8,4 +8,4 @@ OTHER   rmb 1
 
 RESELLER equ TANDY
 
-    use basic09.asm
+    use basic09.inc

@@ -9,4 +9,4 @@ OTHER   rmb 1
 
 RESELLER equ DRAGON
 
- use basic09.asm
+ use basic09.inc
