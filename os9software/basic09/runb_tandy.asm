@@ -8,4 +8,4 @@ OTHER   rmb 1
 
 RESELLER equ TANDY
 
-    use runb.asm
+    use basic09.asm

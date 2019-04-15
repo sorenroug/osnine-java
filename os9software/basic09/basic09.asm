@@ -28,23 +28,17 @@ FREEMEM  rmb   2
 table1   rmb   2
 table2   rmb   2
 table3   rmb   2
-u0014    rmb   1
-u0015    rmb   1
+u0014    rmb   2
 u0016    rmb   1
-u0017    rmb   1
-u0018    rmb   1
-u0019    rmb   1
-u001A    rmb   1
+u0017    rmb   2
+u0019    rmb   2
 u001B    rmb   1
 u001C    rmb   2
 u001E    rmb   1
-u001F    rmb   1
-u0020    rmb   1
+u001F    rmb   2
 u0021    rmb   1
-u0022    rmb   1
-u0023    rmb   1
-u0024    rmb   1
-u0025    rmb   1
+u0022    rmb   2
+u0024    rmb   2
 u0026    rmb   1
 u0027    rmb   3
 u002A    rmb   3
@@ -59,21 +53,17 @@ u0034    rmb   1
 u0035    rmb   1
 errcode  rmb   1          Error code
 u0037    rmb   2
-DATAPtr  rmb   1
-u003A    rmb   1
+DATAPtr  rmb   2
 u003B    rmb   1
-u003C    rmb   1
-u003D    rmb   1
+u003C    rmb   2
 u003E    rmb   1
 u003F    rmb   1
 u0040    rmb   2
 u0042    rmb   1
 u0043    rmb   1
-u0044    rmb   1
-u0045    rmb   1
+u0044    rmb   2
 u0046    rmb   2
-u0048    rmb   1
-u0049    rmb   1
+u0048    rmb   2
 u004A    rmb   1
 u004B    rmb   1
 u004C    rmb   1
@@ -93,20 +83,17 @@ u005A    rmb   2
 u005C    rmb   2
 u005E    rmb   1
 u005F    rmb   1
-u0060    rmb   1
-u0061    rmb   1
+u0060    rmb   2
 u0062    rmb   2
 u0064    rmb   2
 u0066    rmb   1
 u0067    rmb   1
-u0068    rmb   1
-u0069    rmb   1
+u0068    rmb   2
 u006A    rmb   1
 u006B    rmb   1
 u006C    rmb   1
 u006D    rmb   1
-u006E    rmb   1
-u006F    rmb   1
+u006E    rmb   2
 u0070    rmb   2
 u0072    rmb   2
 u0074    rmb   1
@@ -123,8 +110,7 @@ u007E    rmb   1
 u007F    rmb   1
 u0080    rmb   1
 u0081    rmb   1
-u0082    rmb   1
-u0083    rmb   1
+u0082    rmb   2
 u0084    rmb   1
 u0085    rmb   1
 u0086    rmb   1
@@ -141,18 +127,15 @@ u0092    rmb   2
 u0094    rmb   1
 u0095    rmb   1
 u0096    rmb   1
-u0097    rmb   1
-u0098    rmb   1
+u0097    rmb   2
 u0099    rmb   1
 u009A    rmb   1
 u009B    rmb   1
 u009C    rmb   1
 u009D    rmb   1
-u009E    rmb   1
-u009F    rmb   1
+u009E    rmb   2
 u00A0    rmb   1
-u00A1    rmb   1
-u00A2    rmb   1
+u00A1    rmb   2
 u00A3    rmb   1
 u00A4    rmb   1
 u00A5    rmb   1
@@ -165,8 +148,7 @@ u00AB    rmb   1
 u00AC    rmb   1
 u00AD    rmb   1
 u00AE    rmb   1
-u00AF    rmb   1
-u00B0    rmb   1
+u00AF    rmb   2
 u00B1    rmb   2
 u00B3    rmb   1
 u00B4    rmb   1
@@ -199,21 +181,10 @@ u00D4    rmb   2
 u00D6    rmb   2
 u00D8    rmb   1
 u00D9    rmb   1
-u00DA    rmb   1
-u00DB    rmb   1
+u00DA    rmb   2
 u00DC    rmb   1
 u00DD    rmb   1
-u00DE    rmb   1
-u00DF    rmb   1
-u00E0    rmb   1
-u00E1    rmb   1
-u00E2    rmb   2
-u00E4    rmb   1
-u00E5    rmb   1
-u00E6    rmb   2
-u00E8    rmb   2
-u00EA    rmb   1
-u00EB    rmb   21
+u00DE    rmb   34
 u0100    rmb   $100       256 byte temporary buffer for various things
 u0200    rmb   $100       ??? ($200-$2ff) built backwards 2 bytes/time
 u0300    rmb   $100       BASIC09 stack area ($300-$3ff)
@@ -1517,7 +1488,9 @@ L08A6    leax  >L0024,pcr
          bsr   L08D0
          leax  >B09NAME,pcr
          bsr   L08D0
+ endc
 L08B2    bsr   L086D
+ ifeq B09EXEC-true
          leax  >L073F,pcr
          bsr   L08D0
          leax  >L07A8,pcr
@@ -1735,7 +1708,8 @@ L0A62    lda   ,x+
          addd  <u005E
          std   <u005E
 L0A81    lbra  L1995
-
+ else
+         lbra  BYE
  endc B09EXEC
 
 L0A84    ldb   #$2C       Multiply-defined procedure error
@@ -1992,13 +1966,16 @@ L0C83    bsr   L0C9D
          lbsr  L12CF
 L0C9A    leax  ,y
          rts
+ endc
 
 L0C9D    ldu   <u0046
          stu   <u0044
+  ifeq B09EXEC-true
          lbsr  L0A90
          beq   L0CC6
          cmpb  #$2A
          bne   L0CCB
+  endc
          ldx   <moddir
 L0CAC    ldd   ,x
          beq   L0CB4
@@ -2013,6 +1990,8 @@ L0CB4    std   ,--u
          leay  $01,y
 L0CC2    sty   <u0082
          rts
+
+  ifeq B09EXEC-true
 L0CC6    lbsr  J010D
          bne   L0CD9
 L0CCB    sty   <u0082
@@ -2304,14 +2283,14 @@ L0F18    incb
 L0F1F    incb
          leax  -$01,x
          beq   L0F69
-         inc   <u0018,u
+         inc   <$18,u
          lda   ,y+
          sta   b,u
          bpl   L0F1F
          incb
          stx   <FREEMEM
          clra
-         std   <u0015,u
+         std   <$15,u
          std   9,u
          std   $F,u
          stu   [,s]
@@ -2379,7 +2358,6 @@ L0F96    pshs  u,y,x
 L0FB0    stx   $02,s
          stu   [,s]
 L0FB4    puls  pc,u,y,x
-
 
  ifeq B09EXEC-true
 L0FB6    pshs  y,x
@@ -2601,7 +2579,7 @@ L1183    lbsr  L0DBB
          lbsr  L1AC6
          lbsr  L128B
          bsr   L11D5
-         dec   <u0083
+         dec   <u0082+1
 L1190    lbsr  L1264
 L1193    puls  pc,u,y,x
 
@@ -2717,6 +2695,7 @@ L1285    puls  pc,y,x,b,a
 L1287    os9   F$PErr
          rts
 
+ ifeq B09EXEC-true
 L128B    ldy   <u005C
          cmpy  <u0060
          bcc   L12CF
@@ -3479,6 +3458,7 @@ L18AD    cmpa  #$0D
 L18B9    clr   -$01,y
          com   -$01,y
          rts
+ endc
 
 L18BE    pshs  b,a
          bra   L18D2
@@ -3499,6 +3479,7 @@ L18DA    puls  y,x
          clra
          puls  pc,b,a
 
+ ifeq B09EXEC-true
 L18DF    ldd   #$0064
          ldx   #10
          pshs  x,b,a
@@ -3713,7 +3694,7 @@ L1A9E    ldx   <u0066
          addd  <FREEMEM
          std   <FREEMEM
          clr   <u0068
-         clr   <u0069
+         clr   <u0068+1
          puls  pc,u,y,x,b,a
 L1AB2    ldb   ,y+
          bpl   L1AB8
@@ -3862,7 +3843,6 @@ L1B9F    fcb   $3E
 L1BA0    fcb   $3F
          fcb   $FF
 
- ifeq B09EXEC-true
 L1BA2    pshs  u,x,d
          leau  <L1B9F,pcr
          bra   L1B8B
@@ -3909,6 +3889,7 @@ L0460    tst   ,y+
 L0466    puls  pc,x,b,a
  endc
 
+ ifeq B09EXEC-true
 L1BA9    pshs  u,x,b,a
          leau  <L1BA0,pcr
          bra   L1B8B
@@ -3944,7 +3925,7 @@ L1BD5    fcb   $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
          fcb   $00,$00,$00,$00,$00,$b0,$00,$00,$00,$00,$b0,$c0,$00,$b0,$c0,$00
          fcb   $b0,$c0,$d0,$00,$b0,$c0,$d0,$00,$b0,$c0,$00,$b0,$c0,$00,$b0,$c0
          fcb   $00,$b0,$00,$b0,$00,$b0,$00,$00,$e2,$e2,$e2,$e2,$e2,$e2,$e2,$e2
-
+ endc
 L1CA5    pshs  x,d        Preserve regs
          ldb   [<4,s]     Get function code
          leax  <L1CB5,pc  Point to table
@@ -3959,8 +3940,10 @@ L1CB5    fdb   LAX1-L1CB5 $00 function
          fdb   LAX2-L1CB5 $02 function
          fdb   L252A-L1CB5 $04 function
          fdb   L2508-L1CB5 $06 function
+ ifeq B09EXEC-true
          fdb   L24BD-L1CB5 $08 function
          fdb   L1E29-L1CB5 $0A function
+ endc
 
 L1CC1    jsr   <u001B     Print error code to screen
          fcb   $02
@@ -3970,13 +3953,18 @@ L1CC7    jsr   <u001B     ??? Reset temp buff to defaults, SP restore from B7
          fcb   $06
 L1CCA    jsr   <u002A
          fcb   $00
+ ifeq B09EXEC-true
 L1CCD    jsr   <u001B
          fcb   $12
+ endc
+
 * Data of some sort: Appears to be special symbols
-L1CD0    fdb   33         (# of entries-33)
+         fdb   (SYMONE-L1CD3)/5+(SYMEND-SYMONE)/4
          fcb   $03        (# bytes to skip to start of next?)
 
-L1CD3    fcb   L2368-L239D
+L1CD3
+ ifeq B09EXEC-true
+         fcb   L2368-L239D
          fcb   $d9,$0a    (token & type of operator???)
          fcs   '<>'
 
@@ -4011,7 +3999,9 @@ L1CD3    fcb   L2368-L239D
          fcb   L2368-L239D
          fcb   $38,$01
          fcs   '(*'
-
+ endc
+SYMONE
+ ifeq B09EXEC-true
          fcb   L2368-L239D
          fcb   $3e,$02
          fcs   '\'
@@ -4079,7 +4069,7 @@ L1CD3    fcb   L2368-L239D
          fcb   L233E-L239D Recurse to the search routine again (eat LF)
          fcb   $00,$0c
          fcb   $80+C$LF   Line feed
-
+ endc
          fcb   L2368-L239D
          fcb   $4b,$0c
          fcs   ','
@@ -4107,7 +4097,9 @@ L1CD3    fcb   L2368-L239D
          fcb   L2368-L239D
          fcb   $3f,$02
          fcb   $80+C$CR   Carriage return
+SYMEND   equ *
 
+ ifeq B09EXEC-true
 * Jump table for type 1 commands (see L0140)
 *                           Command  Token
 L1D60    fdb   L211B-L1D60 ???      0   Illegal statement construction error
@@ -4168,6 +4160,7 @@ L1D60    fdb   L211B-L1D60 ???      0   Illegal statement construction error
          fdb   L20F8-L1D60 REM      37 (Also '!')
          fdb   L20F8-L1D60 (*       38
          fdb   L2029-L1D60 END      39
+ endc
 
 L1DD4    lda   <u000A+1   Get LSB of # bytes used by all programs (not data)
 L1DD6    pshs  a          Save it
@@ -4187,7 +4180,11 @@ L1DDC    lsl   ,x
          ldy   <u00A7
          lda   #$3D
          lbsr  L2415
+ ifeq B09EXEC-true
          lbsr  L20F8
+ else
+         lda   #$3F
+ endc
          lbsr  L2415
          lda   #$20
          ldx   <u0080
@@ -4209,6 +4206,7 @@ PrintErr ldy   #$0100
          os9   I$WritLn
          rts
 
+ ifeq B09EXEC-true
 L1E29    puls  x
          lbsr  L1CC4
          lbsr  L1F90
@@ -4384,7 +4382,8 @@ L1F7C    inc   [,s]
 L1F87    lbsr  L210E
 L1F8A    lbsr  L2156
 L1F8D    lbra  L210B
-
+ endc
+**** decode passed parameters ****
 L1F90    sty   <u00A7
          ldx   <u004A
          stx   <u00AF
@@ -4403,15 +4402,18 @@ LAX1     bsr   L1F90
          lbne  L1DD4
 L1FB1    lbra  L2415
 
+ ifeq B09EXEC-true
 L1FB4    lbsr  L210E
          pshs  x
          lbsr  L2193
          ldb   #$23
          stb   [,s++]
+ endc
 L1FC0    cmpa  #$4D
          bne   L1FF5
 L1FC4    bsr   L1FB1
          ldd   <u00AB
+ ifeq B09EXEC-true
          pshs  y,b,a
          lbsr  L233E
          ldd   #$0005
@@ -4427,12 +4429,20 @@ L1FDB    puls  y,b,a
          beq   L1FE8
          lbsr  L225D
 L1FE8    lbsr  L2314
+ else
+         lbsr  L233E
+         ldb   <u00A4
+         cmpb  #$06
+         bne   L1FF5
+         lbsr  L210B
+ endc
          lbsr  L21A1
          beq   L1FC4
          pshs  a
          lbra  L22F7
 L1FF5    rts
 
+ ifeq B09EXEC-true
 L1FF6    sty   <u00A9
          lbsr  L2186
          bne   L2007
@@ -4567,12 +4577,15 @@ L20FE    lbsr  L2415
          cmpa  #$0D
          bne   L20FE
          leay  -$01,y
+ endc
+
 L210B    lbsr  L233E
 L210E    ldx   <u00AD
          stx   <u00AB
          lda   <u00A3
 L2114    rts
 
+ ifeq B09EXEC-true
 L2115    lda   <u00A4
          cmpa  #$00
          beq   L2114
@@ -4642,10 +4655,12 @@ L2198    lbra  L210B
 L219B    lda   <u00A3
          cmpa  #$51
          beq   L21A5
+ endc
 L21A1    lda   <u00A3
          cmpa  #$4B
 L21A5    rts
 
+ ifeq B09EXEC-true
 L21A6    bsr   L21A1
          beq   L21A5
          lda   #$1D
@@ -4782,6 +4797,7 @@ L22B0    cmpa  #$39
 L22B8    lda   <u00A3
 L22BA    std   ,--x
          stx   <u0044
+ endc
 L22BE    rts
 
 L22BF    lda   <u00A3
@@ -4789,6 +4805,8 @@ L22BF    lda   <u00A3
          beq   L22BE
 L22C5    lda   #$25
 L22C7    lbra  L1DD6
+
+ ifeq B09EXEC-true
 L22CA    lbsr  L1E68
          lda   <u00A3
          pshs  a
@@ -4810,10 +4828,14 @@ L22CA    lbsr  L1E68
          cmpb  #$BE
          beq   L2326
          bra   L2312
+ endc
+
 L22F7    bsr   L22BF
          puls  a
          lbsr  L2415
 L22FE    lbra  L210B
+
+ ifeq B09EXEC-true
 L2301    lda   <u00A3
          cmpa  #$4D
          beq   L22BE
@@ -4844,6 +4866,7 @@ L2331    bsr   L2301
          incb
          lbsr  L2413
          lbra  L2180
+ endc
 
 L233A    lda   #E$UnkSym
          bra   L22C7
@@ -4852,8 +4875,10 @@ L233E    ldd   <u00AB
          std   <u00AD
          lbsr  SkipSpac
          sty   <u00B9
+ ifeq B09EXEC-true
          lbsr  LAX2
          lbne  L23E1
+ endc
          lda   ,y
          lbsr  IsNum
          bcc   L237A
@@ -4931,6 +4956,7 @@ L23DA    lbra  L1DD6
 L23DD    lda   #E$UndVar
          bra   L23DA
 
+ ifeq B09EXEC-true
 L23E1    ldx   <u009E
          lbsr  L2528
          beq   L23EF
@@ -4956,6 +4982,7 @@ L240C    bsr   L2415
          rts
 
 L2413    tfr   b,a
+ endc
 L2415    pshs  x,b,a
          ldx   <u00AB
          sta   ,x+
@@ -5029,6 +5056,7 @@ L248E    orcc  #Carry           no
 L2491    andcc #^Carry          yes
 L2493    rts
 
+ ifeq B09EXEC-true
 L2494    ldx   <u0062
          ldd   -$03,x
          addd  #$0001
@@ -5086,6 +5114,7 @@ L24EE    pshs  u,b,a
          std   <u0064
          leax  ,u
          puls  pc,u
+ endc
 
 L2508    pshs  x,b,a
          leax  d,u
@@ -5145,11 +5174,18 @@ L255A    pshs  x,b,a
          puls  pc,x,b,a
 
 * Jump table
-L256A    fdb   L2C50-L256A $06e6
+L256A
+ ifeq B09EXEC-true
+         fdb   L2C50-L256A $06e6
          fdb   L30A0-L256A $0b36
          fdb   L2692-L256A $0128
          fdb   L26FD-L256A $0193
+ else
+         fdb   L256C-L256A  $0002
+L256C    rts
+ endc
 
+ ifeq B09EXEC-true
 L2572    jsr   <u001B     Print error code to screen
          fcb   $02
 
@@ -5285,7 +5321,7 @@ L26A9    tst   <u00C7
          subd  <u005E
          subd  #$0001
          ldu   <pgmaddr
-         std   <u0015,u
+         std   <$15,u
          puls  b,a
 L26BF    jmp   d,x
 
@@ -6728,6 +6764,7 @@ L31DE    lda   ,u+
 L31E2    cmpu  <u004A
          bcs   L3188
          rts
+ endc
 
 * Called by <$24 JMP vector
 * Entry: X=byte after the last vector installed ($2D)
@@ -6771,7 +6808,6 @@ L321E    jsr   <u0027
          fcb   $04
 L3221    jsr   <u0027
          fcb   $0A
-* Copy DIM'd array
 L3224    jsr   <u0027
          fcb   $02
 L3227    jsr   <u0027
@@ -6782,7 +6818,7 @@ L322D    jsr   <u0027     Use module header jump vector #5
          fcb   $00        Function code
 L3230    jsr   <u002A     Use module header jump vector #6
          fcb   $02        Function code
-
+ ifeq B09EXEC-true
 L3233    jsr   <u001B     Use module header jump vector #1
          fcb   $18
 L3236    jsr   <u001B
@@ -6791,6 +6827,7 @@ L3239    jsr   <u001B
          fcb   $1A
 L323C    jsr <u001B
          fcb   $1C
+ endc
 
 * Jump table (from L323F+offset)
 L323F    fdb   L3A51-L323F
@@ -6939,14 +6976,16 @@ L3351    stx   <pgmaddr
          std   <u0044
          rts
 L3371    stx   <u005C
-
-
-         lda   <u0034
-         beq   L338F
+         lda   <u0034           check if signal received
+         beq   L338F            no, execute next instruction
+ ifeq B09EXEC-true
          bpl   L3382
+ else
+         bpl   L338F            else flag signal received
+ endc
          anda  #$7F
          sta   <u0034
-* DIFFERENCE FROM RUNB
+ ifeq B09EXEC-true
          lbsr  L3233
          lda   <u0034
 L3382    rora
@@ -6955,8 +6994,10 @@ L3382    rora
          lbsr  L3218
          clr   <u0074
          lbsr  L3236
-
-* END DIFFERENCE FROM RUNB
+ else
+         ldb   <u0035
+         bra   L3304            process it
+ endc
 L338F    bsr   L33AE
 L3391    cmpx  <u0060
          bcs   L3371
@@ -6973,7 +7014,6 @@ L33A1    lbsr  L3A73
 L33AB    rts
 
 L33AC    leax  $02,x
-
 L33AE    ldb   ,x+
          bpl   L33B4
          addb  #$40
@@ -6991,7 +7031,7 @@ IF       jsr   <u0016           if...
          cmpb  #$3B
          bne   L33AB
          leax  $01,x            ELSE
- 
+
 GOTO     ldd   ,x
          addd  <u005E
          tfr   d,x
@@ -7151,9 +7191,13 @@ L34CC    ldb   #$02             decrementing
 L34DB    rts
 
 L34DC    ldb   <u0034
+ ifeq B09EXEC-true
          bitb  #$01
          beq   L34DB
          lbra  L323C
+ else
+         rts
+ endc
 
 ******** table for FOR ********
 L34E5    fdb   INTStp1-L34E5
@@ -7166,7 +7210,7 @@ FOR      ldb   ,x+
          beq   L3515
          bsr   CpMint
          bsr   L3508
-         ldb   -$01,x
+         ldb   -1,x
          cmpb  #$47
          bne   L34FF
          bsr   L3508
@@ -7278,6 +7322,7 @@ L35B9    clra
 
 CpMarray lbsr  L3224
          lbra  L352F
+
 L35C1    puls  u,b,a
          cmpd  $03,y
          bls   L35CA
@@ -7304,8 +7349,11 @@ STOP     lbsr  PRINT
 UNK1     lbra  L3209
 
 PAUSE    lbsr  PRINT
-* DIFFERENCE FROM RUNB
+ ifeq B09EXEC-true
          lbra  L3233
+ else
+         rts
+ endc
 
 GOSUB    ldd   ,x
          leax  $03,x
@@ -7491,6 +7539,7 @@ SPRINT   pshs  y
          lbsr  L3230
          leas  $06,s
          puls  pc,y
+
 GETVAR   lda   ,x+
          cmpa  #$0E
          bne   L3783
@@ -7801,7 +7850,7 @@ L39CC    os9   F$Wait
          bne   L39FB
          puls  pc,u,x
 
-L39DA    fcc   'SHELL'
+L39DA    fcc   "SHELL"
          fcb   C$CR
 
 * Entry: Y=Ptr to parameter area
@@ -7819,7 +7868,7 @@ L39E0    ldx   <u0048
          rts
 
 ERROR    jsr   <u0016
-         ldb   $02,y
+         ldb   2,y
 
 L39FB    stb   <errcode
 L39FD    ldu   <u0031
@@ -7842,6 +7891,7 @@ L3A21    fcb   14,255           Force text mode in VDGINT
 
 L3A23    leax  <L3A21,pcr
          lbsr  SPRINT
+ ifeq B09EXEC-true
          ldx   <u005C
          leay  ,x
          lbsr  L3218
@@ -7850,6 +7900,12 @@ L3A23    leax  <L3A21,pcr
          ldb   <errcode
          lbsr  L320F
          lbra  L3233
+ else
+         lbsr  L320C
+         ldb   <errcode
+         os9   F$Exit
+         rts
+ endc
 
 BASE0    clrb             Save 0 in <42, incx, return
          bra   L3A42
@@ -8126,11 +8182,10 @@ L3C2C    jsr   <u0024     Report error
 
 L3C2F    jsr   <u002A
          fcb   $02
-
-* DIFFERENCE FROM RUNB
-
+ ifeq B09EXEC-true
 L3C32    jsr   <u001B
          fcb   $1a
+ endc
 
 * Function routines
 * Negative offsets from base of table @ L3CB5
@@ -8155,29 +8210,29 @@ L3C32    jsr   <u001B
          fdb   LXORB-L3CB5 Byte - LXOR
          fdb   Igt-L3CB5 > : Integer/Byte relational
          fdb   Rgt-L3CB5 > : Real relational
-         fdb   L43D1-L3CB5 > : String relational
-         fdb   L43D7-L3CB5 < : Integer/Byte relational
-         fdb   L4425-L3CB5 < : Real relational
-         fdb   L43B3-L3CB5 < : String relational
-         fdb   L43E7-L3CB5 <> or >< : Integer/Byte relational
-         fdb   L4431-L3CB5 <> or >< : Real relational
-         fdb   L43C5-L3CB5 <> or >< : String relational
-         fdb   L441D-L3CB5 <> or >< : Boolean relational
-         fdb   L43EF-L3CB5 = : Integer/Byte relational
-         fdb   L4437-L3CB5 = : Real relational
-         fdb   L43BF-L3CB5 = : String relational
-         fdb   L4415-L3CB5 = : Boolean relational
+         fdb   Sgt-L3CB5 > : String relational
+         fdb   Ilo-L3CB5 < : Integer/Byte relational
+         fdb   Rlo-L3CB5 < : Real relational
+         fdb   Slo-L3CB5 < : String relational
+         fdb   Ine-L3CB5 <> or >< : Integer/Byte relational
+         fdb   Rne-L3CB5 <> or >< : Real relational
+         fdb   Sne-L3CB5 <> or >< : String relational
+         fdb   Bne-L3CB5 <> or >< : Boolean relational
+         fdb   Ieq-L3CB5 = : Integer/Byte relational
+         fdb   Req-L3CB5 = : Real relational
+         fdb   Seq-L3CB5 = : String relational
+         fdb   Beq-L3CB5 = : Boolean relational
          fdb   Ige-L3CB5 >= or => : Integer/Byte relational
-         fdb   L443D-L3CB5 >= or => : Real relational
-         fdb   L43CB-L3CB5 >= or => : String Relational
-         fdb   L43DF-L3CB5 <= or =< : Integer/Byte relational
-         fdb   L442B-L3CB5 <= or =< : Real relational
-         fdb   L43B9-L3CB5 <= or =< : String Relational
+         fdb   Rge-L3CB5 >= or => : Real relational
+         fdb   Sge-L3CB5 >= or => : String Relational
+         fdb   Ile-L3CB5 <= or =< : Integer/Byte relational
+         fdb   Rle-L3CB5 <= or =< : Real relational
+         fdb   Sle-L3CB5 <= or =< : String Relational
          fdb   INTADD-L3CB5 Integer - Add
          fdb   RLADD-L3CB5 Real - Add
          fdb   STRconc-L3CB5 String add
          fdb   INTSUB-L3CB5 Integer - Subtract
-         fdb   L3FAB-L3CB5 Real - Subtract
+         fdb   RLSUB-L3CB5 Real - Subtract
          fdb   INTMUL-L3CB5 Integer - Multiply
          fdb   RLMUL-L3CB5 Real Multiply
          fdb   INTDIV-L3CB5 Integer - Divide
@@ -8225,7 +8280,7 @@ L3CB5    fdb   BCPVAR-L3CB5 Copy BYTE var to temp pool
          fdb   POS-L3CB5 POS
          fdb   ERR-L3CB5 ERR
          fdb   MODint-L3CB5 MOD for Integer #'s
-         fdb   L46AA-L3CB5 MOD for Real #'s
+         fdb   MODrl-L3CB5 MOD for Real #'s
          fdb   RND-L3CB5 RND
          fdb   PI-L3CB5 PI
          fdb   SUBSTR-L3CB5 SUBSTR
@@ -8237,15 +8292,15 @@ L3CB5    fdb   BCPVAR-L3CB5 Copy BYTE var to temp pool
          fdb   L4927-L3CB5 Transcendental ???
          fdb   L4968-L3CB5 Transcendental ???
          fdb   L4A03-L3CB5 Transcendental ???
-         fdb   L4864-L3CB5 EXP
+         fdb   EXPON-L3CB5 EXP
          fdb   ABSint-L3CB5 ABS for Integer #'s
          fdb   ABSrl-L3CB5 ABS for Real #'s
          fdb   LOG-L3CB5 LOG
          fdb   LOG10-L3CB5 LOG10
-         fdb   L45F5-L3CB5 SQR \ Square root
-         fdb   L45F5-L3CB5 SQRT/
+         fdb   SQRT-L3CB5 SQR \ Square root
+         fdb   SQRT-L3CB5 SQRT/
          fdb   FLOAT-L3CB5 FLOAT
-         fdb   L46C6-L3CB5 INT (of real #)
+         fdb   INTrl-L3CB5 INT (of real #)
          fdb   L45F0-L3CB5 ??? RTS
          fdb   FIX-L3CB5 FIX
          fdb   FLOAT-L3CB5 FLOAT
@@ -8273,9 +8328,9 @@ L3D35    fdb   BtoI-L3D35 Convert Byte to Int (into temp var)
          fdb   L44D7-L3D35 ??? Copy string to expression stack
          fdb   L44F6-L3D35 ??? Copy D&U regs into temp var type 5
 
-L3D41    ldy   <u0046
+L3D41    ldy   <u0046           = table4
          ldd   <u004A
-         std   <u0048
+         std   <u0048           clear expression stack
          bra   L3D51
 
 L3D4A    lslb
@@ -8299,7 +8354,7 @@ L3D5B    pshs  pc,u
          stu   $02,s
          puls  pc,u
 
-* Copy PARAM array to temp var pool
+* Get size of PARAM array
 L3D68    bsr   L3D78
          bra   L3D5B
 
@@ -8554,9 +8609,10 @@ INTDIV   bsr   L3EFD
          ldd   #$0000
          rolb
          bra   L3F65
+
 L3F2E    ldd   $01,y
          bne   L3F37
-         ldb   #$2D
+         ldb   #E$DivZer
          lbra  L3C2C
 L3F37    ldd   $07,y
          bne   L3F40
@@ -8631,9 +8687,11 @@ NEGrl    lda   5,y        Get LSB of mantissa & sign bit
          eora  #$01
          sta   $05,y
          rts
-L3FAB    ldb   $05,y
+
+RLSUB    ldb   $05,y
          eorb  #$01
          stb   $05,y
+
 RLADD    pshs  x
          tst   $02,y
          beq   L3FC7
@@ -9136,7 +9194,7 @@ L434F    std   $01,y
          puls  x
          lbsr  LOG
          lbsr  RLMUL
-         lbra  L4864
+         lbra  EXPON
 
 BlCPVAR  ldd   ,x++
          addd  <u0031
@@ -9153,7 +9211,7 @@ LANDB    ldb   $08,y
          andb  $02,y
          bra   L4390
 
-LORB    ldb   $08,y
+LORB     ldb   $08,y
          orb   $02,y
          bra   L4390
 
@@ -9166,7 +9224,7 @@ L4390    leay  $06,y
 LNOTB    com   $02,y
          rts
 
-StrCMP    pshs  y,x
+StrCMP   pshs  y,x
          ldx   $01,y
          ldy   $07,y
          sty   <u0048
@@ -9181,57 +9239,57 @@ L43AC    inca             Inc last char checked
          puls  pc,y,x
 
 * String compare: < (?)
-L43B3    bsr   StrCMP      Go do string compare
+Slo      bsr   StrCMP      Go do string compare
          bcs   L4405
          bra   L4409
 
 * String compare: <= or =< (?)
-L43B9    bsr   StrCMP
+Sle      bsr   StrCMP
          bls   L4405
          bra   L4409
 
 * String compare: =
-L43BF    bsr   StrCMP
+Seq      bsr   StrCMP
          beq   L4405
          bra   L4409
 
 * String compare: <> or ><
-L43C5    bsr   StrCMP
+Sne      bsr   StrCMP
          bne   L4405
          bra   L4409
 
 * String compare: >= or => (?)
-L43CB    bsr   StrCMP
+Sge      bsr   StrCMP
          bcc   L4405
          bra   L4409
 
 * String compare: > (?)
-L43D1    bsr   StrCMP
+Sgt      bsr   StrCMP
          bhi   L4405
          bra   L4409
 
 * For Integer/Byte compares below: Works for signed Integer as well
 *  as unsigned Byte
 * Integer/Byte compare: <
-L43D7    ldd   7,y
+Ilo      ldd   7,y
          subd  $01,y
          blt   L4405
          bra   L4409
 
 * Integer/Byte compare: <= or =<
-L43DF    ldd   7,y
+Ile      ldd   7,y
          subd  $01,y
          ble   L4405
          bra   L4409
 
 * Integer/Byte compare: <> or ><
-L43E7    ldd   7,y
+Ine      ldd   7,y
          subd  $01,y
          bne   L4405
          bra   L4409
 
 * Integer/Byte compare: =
-L43EF    ldd   7,y
+Ieq      ldd   7,y
          subd  $01,y
          beq   L4405
          bra   L4409
@@ -9258,41 +9316,42 @@ L440B    clra
          rts
 
 * BOOLEAN = compare
-L4415    ldb   8,y        Get original BOOLEAN value
+Beq      ldb   8,y        Get original BOOLEAN value
          cmpb  $02,y
          beq   L4405
          bra   L4409
 
 * BOOLEAN <> or >< compare
-L441D    ldb   8,y        Get original BOOLEAN value
+Bne      ldb   8,y        Get original BOOLEAN value
          cmpb  $02,y
          bne   L4405
          bra   L4409
 
 * Real < compare
-L4425    bsr   RLCMP      Go compute flags between real #'s
+Rlo      bsr   RLCMP      Go compute flags between real #'s
          blt   L4405
          bra   L4409
 
 * Real <= or =< compare
-L442B    bsr   RLCMP
+Rle      bsr   RLCMP
          ble   L4405
          bra   L4409
 
 * Real <> or >< compare
-L4431    bsr   RLCMP
+Rne      bsr   RLCMP
          bne   L4405
          bra   L4409
 
 * Real = compare
-L4437    bsr   RLCMP
+Req      bsr   RLCMP
          beq   L4405
          bra   L4409
 
 * Real >= or => compare
-L443D    bsr   RLCMP
+Rge      bsr   RLCMP
          bge   L4405
          bra   L4409
+
 * Real > compare
 Rgt      bsr   RLCMP
          bgt   L4405
@@ -9545,8 +9604,7 @@ L45F0    rts
 POS      ldb   <u007D
          bra   L45E7
 
-SQRT
-L45F5    ldb   $05,y
+SQRT     ldb   $05,y
          asrb
          lbcs  ERR67
          ldb   #$1F
@@ -9644,7 +9702,7 @@ MODint   lbsr  INTDIV
          std   $01,y
          rts
 
-L46AA    leau  -$0C,y
+MODrl    leau  -$0C,y
          pshs  y
 L46AE    ldd   ,y++
          std   ,u++
@@ -9653,11 +9711,11 @@ L46AE    ldd   ,y++
          leas  $02,s
          leay  -$C,u
          lbsr  RLDIV
-         bsr   L46C6
+         bsr   INTrl
          lbsr  RLMUL
-         lbra  L3FAB
+         lbra  RLSUB
 
-L46C6    lda   $01,y
+INTrl    lda   $01,y
          bgt   L46D3
          clra
          clrb
@@ -9697,7 +9755,7 @@ SQint    leay  -$06,y
          std   $01,y
          lbra  INTMUL
 
-SQrl    leay  -$06,y
+SQrl     leay  -$06,y
          ldd   $0A,y
          std   $04,y
          ldd   $08,y
@@ -9735,7 +9793,6 @@ L474D    fcb   $01        Byte             (type=0)
          fcb   $02        Integer size     (type=1)
          fcb   $05        Real size        (type=2)
          fcb   $01        Boolean          (type=3)
-
 
 SIZE     lbsr  L3D51
          leay  -6,y       ??? Size of variable packets?
@@ -9876,8 +9933,7 @@ L485C    andb  #$FE
          stb   $05,y
          puls  pc,b,a
 
-EXP
-L4864    pshs  x
+EXPON    pshs  x
          ldb   $01,y
          beq   L4880
          cmpb  #$07
@@ -9906,7 +9962,7 @@ L488A    lda   #$71
          stb   $05,y
          ldb   ,s
 L489B    lbsr  L480A
-         lbsr  L3FAB
+         lbsr  RLSUB
          ldb   $01,y
          ble   L48AD
          addb  ,s
@@ -10055,8 +10111,8 @@ L49CB    lda   <u006D
          std   $04,y
          std   $0A,y
          lbsr  RLMUL
-         lbsr  L3FAB
-         lbsr  L45F5
+         lbsr  RLSUB
+         lbsr  SQRT
          puls  a
          sta   <u006D
          rts
@@ -10066,7 +10122,6 @@ L4A03    pshs  x
          ldb   $01,y
          cmpb  #$18
          blt   L4A17
-
 L4A0E    leay  $06,y
          lbsr  PI
          dec   $01,y
@@ -10194,7 +10249,7 @@ L4B1A    clr   <u009B
          inc   $01,y
          lbsr  RLCMP
          blt   L4B36
-         lbsr  L46AA
+         lbsr  MODrl
          bsr   PI
          bra   L4B38
 L4B36    dec   $01,y
@@ -10204,7 +10259,7 @@ L4B38    lbsr  RLCMP
          lda   <u009C
          eora  #$01
          sta   <u009C
-         lbsr  L3FAB
+         lbsr  RLSUB
          bsr   PI
 L4B4A    dec   $01,y
          lbsr  RLCMP
@@ -10637,7 +10692,7 @@ LEFT$    ldd   $01,y
 L4EF1    leay  $06,y
          rts
 
-IsNull    leay  $06,y
+IsNull   leay  $06,y
          ldu   $01,y
          bra   L4F70
 
@@ -10659,22 +10714,23 @@ L4F10    lda   ,x+
 L4F1A    leay  $06,y
          puls  pc,x
 
-MID$     ldd   $01,y
+MID$     ldd   $01,y                    size of piece
          ble   L4F26
-         ldd   $07,y
+         ldd   $07,y                    starting offset
          bgt   L4F2E
-L4F26    ldd   $01,y
+L4F26    ldd   $01,y                    = LEFT$
          leay  $06,y
          std   $01,y
          bra   LEFT$
 
 L4F2E    subd  #$0001
          beq   L4F26
-         addd  $0D,y
+         addd  $0D,y                    start address piece
          cmpd  <u0048
-         bcs   L4F3E
+         bcs   L4F3E                    piece exists
          leay  $06,y
          bra   IsNull
+
 L4F3E    pshs  x
          tfr   d,x
          ldb   $02,y
@@ -10811,7 +10867,7 @@ L501F    sta   ,u+
 *
 PRTNUM   lda   ,x+
          ldb   #'0-1
-PRTN10   incb
+PRTN10   incb  Form Hundreds digit
          suba  #10
          bcc   PRTN10
          stb   ,u+
@@ -10855,8 +10911,10 @@ L505E    ldd   ,x++
          sta   <u0016
          leax  >L3D41,pcr
          stx   <u0017
+ ifeq B09EXEC-true
          leax  >L3C32,pcr
          stx   <u0019
+ endc
          puls  pc,y,x,b
 
 L5084    pshs  x,b,a
@@ -10871,9 +10929,9 @@ L5094    fdb   AtoITR-L5094 Function 0
          fdb   L50A4-L5094 Function 2
 
 L5098    jsr   <u0027
-         fcb   $0c
+         fcb   $0C
 Flote    jsr   <u0027
-         fcb   $0e
+         fcb   $0E
 L509E    jsr   <u0027
          fcb   $08
 L50A1    jsr   <u0027
@@ -10945,9 +11003,8 @@ TRUESTR  fcc   'True'
 FALSESTR fcc   'False'
          fcb   $ff
 
-
 * <u0024 function 2
-AtoITR    pshs  u
+AtoITR   pshs  u
          leay  -6,y       Make room for temp var
          clra
          clrb
@@ -10963,7 +11020,7 @@ AtoITR    pshs  u
          bcc   L5172
          leax  -$01,x
          cmpa  #$2C
-         bne   err59
+         bne   ERR59
          lbra  L51FB
 
 L5172    cmpa  #$24
@@ -10977,7 +11034,7 @@ L5182    lda   ,x+
 L5184    cmpa  #$2E
          bne   L5190
          tst   <u0077
-         bne   err59
+         bne   ERR59
          inc   <u0077
          bra   L5182
 L5190    lbsr  L57DE
@@ -11021,7 +11078,8 @@ L51D6    leas  $02,s
 L51D8    leas  $01,s
 L51DA    ldb   #$3C
          bra   L51E0
-err59    ldb   #$3B
+
+ERR59    ldb   #E$IONum
 L51E0    stb   <errcode
          coma
          puls  pc,u
@@ -11031,7 +11089,7 @@ L51E5    eora  #$45
          leax  -$01,x
          tst   <u0076
          bne   L51F3
-         bra   err59
+         bra   ERR59
 L51F3    tst   <u0077
          bne   L523C
          ldd   $02,y
@@ -11054,7 +11112,7 @@ L520E    lda   ,x
          inc   <u0075
 L521A    leax  $01,x
 L521C    lbsr  L57DC
-         bcs   err59
+         bcs   ERR59
          tfr   a,b
          lbsr  L57DC
          bcc   L522C
@@ -11147,7 +11205,7 @@ L52CB    lsl   $02,y
          bra   L52B2
 L52DC    leax  -$01,x
          tst   <u0076
-         lbeq  err59
+         lbeq  ERR59
          lbra  L5209
 
 L52E7    pshs  x
@@ -11160,7 +11218,7 @@ L52F2    cmpa  #$02
          lbsr  Flote
 L52F9    lbsr  L5384
          bcs   L5305
-         ldb   #$3D
+         ldb   #E$Illinp
          stb   <errcode
          coma
          puls  pc,x
@@ -11184,7 +11242,7 @@ L531D    pshs  x
          bcs   L52F0
          cmpa  #$01
          beq   L52F9
-ERR58    ldb   #$3A
+ERR58    ldb   #E$IOMism
          stb   <errcode
          coma
          puls  pc,x
@@ -11226,7 +11284,7 @@ L5354    pshs  x
          eora  #$46
          anda  #$DF
          beq   L537B
-         ldb   #$3A
+         ldb   #E$IOMism
          stb   <errcode
          coma
          puls  pc,x
@@ -11247,7 +11305,7 @@ L5384    lda   ,x+
          bra   L53A7
 L5390    lda   ,x+
          cmpa  #C$SPAC                  space?
-         beq   L5390
+         beq   L5390                    skip them
 L5396    cmpa  <u00DD
          beq   L53A7
          cmpa  #C$CR                    CR?
@@ -11446,7 +11504,7 @@ READLN   pshs  y,x
          os9   I$ReadLn
          bra   L5524
 
-WRITLN    pshs  y,x
+WRITLN   pshs  y,x
          ldd   <u0082
          subd  <u0080
          beq   L5528
@@ -11632,12 +11690,14 @@ L5655    lda   ,x+
          bne   L5653
          rts
 
+* print string
 PRstring pshs  x
          ldx   $01,y
 L5660    bsr   L5655
          clra
          puls  pc,x
 
+* print boolean
 PRbool   pshs  x
          leax  >TRUESTR,pcr
          lda   $02,y
@@ -11645,6 +11705,7 @@ PRbool   pshs  x
          leax  >FALSESTR,pcr
          bra   L5660
 
+* print integers
 PRintg   pshs  u,x
          leas  -$05,s
          leax  ,s
@@ -11823,7 +11884,8 @@ L5796    pshs  a
          bne   L5796
 L57A7    ldb   #$3F
          bra   L57AD
-L57AB    ldb   #$3E
+
+L57AB    ldb   #E$IOFRpt
 L57AD    stb   <errcode
          coma
          puls  pc,y,x
@@ -12027,7 +12089,7 @@ FMTbool  jsr   <u0016
 
 FMTstr   jsr   <u0016
          cmpa  #$04
-         bne   L58B1
+         bne   L58B1                    wrong type
          pshs  u,x
          ldx   $01,y
          ldd   <u0048
