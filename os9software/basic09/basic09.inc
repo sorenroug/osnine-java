@@ -14,7 +14,12 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   22
+
+ ifeq Y2K-true
+Edition  set   23
+ else
+Edition  set   22
+ endc
 
 L0000    mod   eom,B09NAME,tylg,atrv,start,dsize
 
@@ -206,11 +211,11 @@ L000D    fdb   L00DC      $1b jump vector
 B09NAME
  ifeq B09EXEC-true
   fcs   /Basic09/
-         fcb   22      Edition #22 ($16)
+         fcb   Edition
          fcb   $07
  else
   fcs   /RunB/
-         fcb   22      Edition #22 ($16)
+         fcb   Edition
          fcb   $06
  endc B09EXEC
 
@@ -1601,6 +1606,7 @@ L099F    ldd   <FREEMEM
          leax  >L074A,pcr
          lbsr  L1261
          lbra  L0D51
+
 L09AD    pshs  b
          ldb   #$10
          lbsr  J011F
@@ -2672,6 +2678,7 @@ L1256    pshs  x
          leax  <$19,x
          bsr   L1261
          puls  pc,x
+
 L125F    bsr   L1223
 L1261    lbsr  L1392
 L1264    lbsr  L1371
@@ -2810,7 +2817,9 @@ L135C    pshs  u,b,a
          cmpu  <u0080
          bne   L1377
 L136F    puls  pc,u,b,a
+
 L1371    lda   #$0D
+* Print character in A
 L1373    pshs  u,b,a
          ldu   <u0082
 L1377    sta   ,u+
@@ -10835,19 +10844,7 @@ DATE$    pshs  x
          stu   $01,y
          os9   F$Time
          bcs   L4FEC
- ifeq Y2K-true
-* Correction for Y2000 changes.
-         lda   ,x+
-         ldb   #'0-1
-         cmpa  #100
-         blo   Y19
-cnty     suba  #100
-         bhs   cnty
-         adda  #100
-Y19      bsr   PRTN10
- else
          bsr   PRTNUM
- endc
          lda   #'/
          bsr   L501F
          lda   #'/
@@ -10867,7 +10864,12 @@ L501F    sta   ,u+
 *
 PRTNUM   lda   ,x+
          ldb   #'0-1
-PRTN10   incb  Form Hundreds digit
+ ifeq Y2K-true     Correction for Y2000 changes.
+PRTN100  suba  #100  Subtract 100 until below 0
+         bhs   PRTN100
+         adda  #100
+ endc
+PRTN10   incb  Form Tens digit
          suba  #10
          bcc   PRTN10
          stb   ,u+

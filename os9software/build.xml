@@ -37,10 +37,14 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+        <assemble src="basic09_d64_y2k" home="basic09"/>
+        <assemble src="runb_tandy_y2k" home="basic09" />
+        <assemble src="runb_generic_y2k" home="basic09" />
+        <assemble src="basic09_generic_y2k" home="basic09"/>
         <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
         <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
-        <assemble src="basic09_dragon" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
-        <assemble src="basic09_other" home="basic09"/>
+        <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
+        <assemble src="basic09_generic" home="basic09"/>
         <assemble src="Dir_normal_ed3" home="utilities" verify="65c719c5dd0c511a2cc51a4243a081e9"/>
         <assemble src="Dir_small_ed3" home="utilities" verify="d7e0e580d1bdd1f38eb029fbd9e9ea64"/>
         <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
