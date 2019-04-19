@@ -11,9 +11,23 @@
          use   defsfile
          endc
 
-tylg     set   Prgrm+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
+C$CR set $0D
+C$LF set $0A
+C$SPAC set $20
+C$COMA set ',
+C$SLSH set '/
+C$COLN set ':
+C$EOS set $FF
+C$FORM set $0C
+
+BYTETYPE equ 0
+INTGTYPE  equ 1
+REALTYPE equ 2
+BOOLTYPE equ 3
+STRTYPE equ 4
+
+B.FALSE equ $00
+B.TRUE equ $FF
 
  ifeq Y2K-true
 Edition  set   23
@@ -21,7 +35,7 @@ Edition  set   23
 Edition  set   22
  endc
 
-L0000    mod   eom,B09NAME,tylg,atrv,start,dsize
+L0000    mod   B09END,B09NAME,Prgrm+Objct,ReEnt+1,start,dsize
 
          org 0
 membase  rmb   2          Start of data memory / DP pointer
@@ -112,10 +126,10 @@ u007B    rmb   1
 u007C    rmb   1
 u007D    rmb   1
 u007E    rmb   1
-u007F    rmb   1
+u007F    rmb   1 path number
 u0080    rmb   1
 u0081    rmb   1
-u0082    rmb   2
+u0082    rmb   2 current position in temp buffer
 u0084    rmb   1
 u0085    rmb   1
 u0086    rmb   1
@@ -164,7 +178,7 @@ u00BA    rmb   1
 u00BB    rmb   1
 u00BC    rmb   1
 u00BD    rmb   1
-u00BE    rmb   1
+u00BE    rmb   1  Duplicate of path #2
 u00BF    rmb   2
 u00C1    rmb   2
 u00C3    rmb   2
@@ -221,7 +235,7 @@ B09NAME
 
 * Intro screen
 
-L0024
+INTRO
        ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   C$FORM   Clear screen on 32x16 display
          fcc   '            BASIC09'
@@ -270,7 +284,7 @@ L00EC    fdb   L0F91-L00EC Function 0
          fdb   L088F-L00EC Function 6
          fdb   L18BE-L00EC Function 8
          fdb   L0E73-L00EC Function A
-         fdb   BYE-L00EC Function C
+         fdb   S.BYE-L00EC Function C
          fdb   L0E8F-L00EC Function E
          fdb   L1BA2-L00EC Function 10
  ifeq B09EXEC-true
@@ -546,9 +560,9 @@ L03DB    fcs   'OR'
 L03DF    fcs   'XOR'
          fdb   $F703
 L03E4    fcs   'UPDATE'
-         fdb   $f803
+         fdb   $F803
 L03EC    fcs   'EXEC'
-         fdb   $f903
+         fdb   $F903
 L03F2    fcs   'DIR'
 
 * 3 byte packets used by <u001B calls - Function $12
@@ -1155,15 +1169,15 @@ L03F5    fcb   $40        ???
          fcc   '<='       less than or equal to
 
 * 3 - real/integer/string
-         fcb   $4c
+         fcb   $4C
          fcc   '+'        plus
          fcb   $00
 
-         fcb   $4c
+         fcb   $4C
          fcc   '+'        plus
          fcb   $00
 
-         fcb   $4c
+         fcb   $4C
          fcc   '+'        plus
          fcb   $00
 
@@ -1237,33 +1251,33 @@ L066B    fdb   L094F-L066B
 
          fdb   14         # commands this table
          fcb   2          # bytes to first command string
-L0671    fdb   BYE-L0671
+L0671    fdb   S.BYE-L0671
          fcs   'BYE'
-L0676    fdb   L094A-L0676
+L0676    fdb   S.DIR-L0676
          fcs   'DIR'
-L067B    fdb   L1590-L067B
+L067B    fdb   S.EDIT-L067B
          fcs   'EDIT'
-L0681    fdb   L1590-L0681
+L0681    fdb   S.EDIT-L0681
          fcs   'E'
-L0684    fdb   L0D02-L0684
+L0684    fdb   S.LIST-L0684
          fcs   'LIST'
-L068A    fdb   L0DC7-L068A
+L068A    fdb   S.RUN-L068A
          fcs   'RUN'
-L068F    fdb   L0E98-L068F
+L068F    fdb   S.KILL-L068F
          fcs   'KILL'
-L0695    fdb   L0CF4-L0695
+L0695    fdb   S.SAVE-L0695
          fcs   'SAVE'
-L069B    fdb   L0AC3-L069B
+L069B    fdb   S.LOAD-L069B
          fcs   'LOAD'
-L06A1    fdb   L0A32-L06A1
+L06A1    fdb   S.RENAME-L06A1
          fcs   'RENAME'
-L06A9    fdb   L0B51-L06A9
+L06A9    fdb   S.PACK-L06A9
          fcs   'PACK'
-L06AF    fdb   L0918-L06AF
+L06AF    fdb   S.MEM-L06AF
          fcs   'MEM'
-L06B4    fdb   L0A24-L06B4
+L06B4    fdb   S.CHD-L06B4
          fcs   'CHD'
-L06B9    fdb   L0A28-L06B9
+L06B9    fdb   C.CHX-L06B9
          fcs   'CHX'
 
 * Debug mode commands (offsets done by current base + offset)
@@ -1279,7 +1293,7 @@ L06C7    fdb   14         # of entries this table (but 13?)
 * Debug set #2?
 L06CA    fdb   L109A-L06CA
          fcs   'CONT'
-L06D0    fdb   L094A-L06D0
+L06D0    fdb   S.DIR-L06D0
          fcs   'DIR'
 L06D5    fdb   L1068-L06D5
          fcs   'Q'
@@ -1306,19 +1320,19 @@ L070E    fdb   L1226-L070E
 * Some edit mode stuff?
          fdb   8          # entries this table
          fcb   2          # bytes to start entry
-L0718    fdb   L169E-L0718
+L0718    fdb   E.LIST-L0718
          fcs   'L'
-L071B    fdb   L169E-L071B
+L071B    fdb   E.LIST-L071B
          fcs   'l'
-L071E    fdb   L199A-L071E
+L071E    fdb   E.DELETE-L071E
          fcs   'D'
-L0721    fdb   L199A-L0721
+L0721    fdb   E.DELETE-L0721
          fcs   'd'
-L0724    fdb   L15E7-L0724
+L0724    fdb   E.MOVE-L0724
          fcs   '+'
-L0727    fdb   L15E7-L0727
+L0727    fdb   E.MOVE-L0727
          fcs   '-'
-L072A    fdb   L15E7-L072A
+L072A    fdb   E.MOVE-L072A
          fcb   C$CR+$80
 L072D    fdb   L1601-L072D
          fcb   C$SPAC+$80
@@ -1454,7 +1468,7 @@ L082E    lda   #$7E
          bsr   L0870
          lbsr  L0F91
          bcc   L088F
-         lbsr  L0AC3
+         lbsr  S.LOAD
          bra   L088F
 L0860    puls  y
  endc B09EXEC
@@ -1462,7 +1476,7 @@ L0860    puls  y
          ldx   <moddir
          ldd   ,x
          std   <pgmaddr
-         lbsr  L0DC7
+         lbsr  S.RUN
 L086D    leax  <L08B2,pcr
 L0870    puls  u
          bsr   L0899
@@ -1489,7 +1503,7 @@ L0899    ldd   <u00B7
          stx   $02,s
          tfr   d,pc
  ifeq B09EXEC-true
-L08A6    leax  >L0024,pcr
+L08A6    leax  >INTRO,pcr
          bsr   L08D0
          leax  >B09NAME,pcr
          bsr   L08D0
@@ -1539,7 +1553,8 @@ L090F    ldd   ,x
 L0915    coma
          puls  pc,y,x
 
-L0918    lbsr  L0A90
+* MEM command
+S.MEM    lbsr  L0A90  Get next non-space char
          bne   L093C
          leax  ,y
          ldd   <restop
@@ -1564,7 +1579,7 @@ L0948    coma
          rts
 
 * Debug & System mode - DIR
-L094A    leax  ,y
+S.DIR    leax  ,y
          lbsr  L0D5F
 * System mode - <CR>
 L094F    leax  >L0760,pc  Point to basic09 DIR header
@@ -1576,12 +1591,12 @@ L095B    pshs  y,x
          tst   $06,x
          beq   L0965
          lda   #$2D
-L0965    lbsr  L1373
+L0965    lbsr  OUTCHAR
          lda   #$20
          cmpx  <pgmaddr
          bne   L0970
          lda   #$2A
-L0970    lbsr  L1373
+L0970    lbsr  OUTCHAR
          ldd   $04,x
          leax  d,x
          lbsr  L135A
@@ -1594,7 +1609,7 @@ L0970    lbsr  L1373
          cmpd  <FREEMEM
          bcs   L0993
          lda   #$3F
-         lbsr  L1373
+         lbsr  OUTCHAR
 L0993    bsr   L0943
          puls  y,x
          tst   <u0035
@@ -1628,10 +1643,10 @@ L09C6    leax  >$0100,x
          beq   L09E6
          cmpd  #$3000
          beq   L09C1
-         lbsr  L1373
+         lbsr  OUTCHAR
          ldx   #$2F01
          bra   L09C4
-L09E6    lbsr  L1373
+L09E6    lbsr  OUTCHAR
          leas  $02,s
          puls  pc,y,x,b,a
 
@@ -1668,23 +1683,25 @@ L0A17    os9   F$Wait
          bne   L0A86
          rts
 
-L0A24    lda   #$83
+* CHD command
+S.CHD    lda   #DIR.+UPDAT.
          bra   L0A2A
 
-L0A28    lda   #$84
+* CHX command
+C.CHX    lda   #DIR.+EXEC.
 L0A2A    leax  ,y
          os9   I$ChgDir
          bcs   L0A86
          rts
 
-L0A32    bsr   L0A9D
+S.RENAME    bsr   L0A9D
          lbsr  L0F6E
          bcs   L0A8C
          pshs  x
          ldx   ,x
          tst   $06,x
          bne   L0A8C
-         bsr   L0A90
+         bsr   L0A90  Get next non-space char
          beq   L0A48
 L0A45    comb
          puls  pc,x
@@ -1715,7 +1732,7 @@ L0A62    lda   ,x+
          std   <u005E
 L0A81    lbra  L1995
  else
-         lbra  BYE
+         lbra  S.BYE
  endc B09EXEC
 
 L0A84    ldb   #$2C       Multiply-defined procedure error
@@ -1730,9 +1747,9 @@ L0A8C    ldb   #$2B       Unknown procedure error
 * Exit:  Y=Ptr to char (or up 1 char if space/comma found)
 *        B=Char found
 L0A90    ldb   ,y+        Get char
-         cmpb  #$2C
+         cmpb  #',
          beq   L0A9C
-         cmpb  #$20
+         cmpb  #C$SPAC
          beq   L0A9C
          leay  -$01,y
 L0A9C    rts
@@ -1757,7 +1774,7 @@ L0AB7    pshs  b
 L0ABD    cmpb  #E$EOF     End of file error?
          beq   L0A89
          bra   L0A86
-L0AC3    leax  ,y
+S.LOAD    leax  ,y
          lda   #$01
          os9   I$Open
          bcs   L0ABD
@@ -1772,7 +1789,7 @@ L0AD4    lbsr  J010D
          bcs   L0AE8
          ldy   ,s
          leay  -$01,y
-         lbsr  L0E98
+         lbsr  S.KILL
 L0AE8    ldy   ,s
          lbsr  L0EFD
          lbsr  L1A2E
@@ -1821,11 +1838,12 @@ L0B43    lda   ,x+
          clra
 L0B50    rts
 
-L0B51    lbsr  L0C83
+* Pack command
+S.PACK    lbsr  L0C83
          ldu   <u0046
          bra   L0B79
 L0B58    ldy   ,y
-         tst   $06,y
+         tst   6,y
          lbne  L0E68
          lda   <$17,y
          rora
@@ -1977,9 +1995,9 @@ L0C9A    leax  ,y
 L0C9D    ldu   <u0046
          stu   <u0044
   ifeq B09EXEC-true
-         lbsr  L0A90
+         lbsr  L0A90 Get next non-space char
          beq   L0CC6
-         cmpb  #$2A
+         cmpb  #'*
          bne   L0CCB
   endc
          ldx   <moddir
@@ -2010,7 +2028,7 @@ L0CD9    lbsr  L0F6E
          sty   <u0082
 L0CE1    stx   ,--u
          ldy   <u0082
-         lbsr  L0A90
+         lbsr  L0A90  Get next non-space char
          bne   L0CF0
          lbsr  J010D
          bne   L0CD9
@@ -2018,14 +2036,15 @@ L0CF0    clra
          clrb
          bra   L0CB4
 
-L0CF4    tst   <FREEMEM
+* Save command
+S.SAVE    tst   <FREEMEM
          lbeq  L0F69
          lda   #$80
          sta   <u0084
          bsr   L0C83
          bra   L0D06
 
-L0D02    bsr   L0C9D
+S.LIST    bsr   L0C9D
          leax  ,y
 L0D06    stx   <u005C
          bsr   L0D5F
@@ -2044,7 +2063,7 @@ L0D11    pshs  y
          ldd   $0D,y
          addd  <pgmaddr
          std   <u0062
-         tst   $06,y
+         tst   6,y
          bne   L0D47
          leax  <L0D3B,pcr
          lbsr  L0899
@@ -2060,13 +2079,14 @@ L0D49    ldx   ,--y
          bne   L0D11
 L0D4D    bsr   L0D51
          bra   L0D38
+
 L0D51    pshs  b
          lda   #$02
          os9   I$Close
          lda   <u00BE
          os9   I$Dup
          puls  pc,b
-L0D5F    lbsr  L0A90
+L0D5F    lbsr  L0A90  Get next non-space char
          cmpb  #$0D
          beq   L0DB5
          stx   <u0082
@@ -2114,7 +2134,7 @@ L0DBB    clr   <u007D
          stx   <u0082
          puls  pc,x
 
-L0DC7    lbsr  J010D
+S.RUN    lbsr  J010D
          bne   L0DDF
          pshs  y
          lbsr  L0A9D
@@ -2190,7 +2210,7 @@ L0E68    ldb   #E$LnComp  Line with compiler error
          lbra  L0A86      Go report it
 
 * System mode - BYE
-BYE      bsr   L0E8F
+S.BYE    bsr   L0E8F
          clrb             Exit without error
          os9   F$Exit
 
@@ -2216,7 +2236,7 @@ L0E8F    ldy   <u0082
          lda   #$2A
          sta   ,y
          sta   <u0035
-L0E98    lbsr  L0C9D
+S.KILL   lbsr  L0C9D
          clr   <pgmaddr
          clr   <u0030
 L0E9F    ldu   <u0046
@@ -2498,7 +2518,7 @@ L10B1    pshs  u,y,x,b,a
          stu   <u0080
          lbsr  L0DBB
          lda   #$3D
-         lbsr  L1373
+         lbsr  OUTCHAR
          ldb   ,y
          addb  #$01
          cmpb  #$06
@@ -2552,7 +2572,7 @@ L110C    pshs  u,y,x
          cmpy  <u005C
          bls   L113F
 L113D    lda   #$2A
-L113F    lbsr  L1373
+L113F    lbsr  OUTCHAR
          cmpx  <u0060
          bcc   L1158
          tfr   x,d
@@ -2734,7 +2754,7 @@ L12C7    cmpy  <u0060
          bcs   L12B8
 L12CC    sty   <u005C
 L12CF    lda   #$0D
-         lbra  L1373
+         lbra  OUTCHAR
 
 L12D4    leas  $02,s
          bra   L12CC
@@ -2788,12 +2808,12 @@ L132A    cmpa  #$20
 L1332    bsr   L133A
          bsr   L1336
 L1336    lda   ,x+
-         bne   L1373
+         bne   OUTCHAR
 L133A    lda   <u007D
          cmpa  #$41
          bcs   L1357
          lda   #$0A
-         bsr   L1373
+         bsr   OUTCHAR
          clr   <u007D
          tst   <u0084
          bmi   L1357
@@ -2805,22 +2825,23 @@ L134E    lsla
          lbsr  J011F
          clra
 L1357    rts
+
 L1358    bsr   L135C
 L135A    bsr   L1392
 L135C    pshs  u,b,a
          bsr   L133A
          bcc   L136F
          ldu   <u0082
-         lda   #$20
+         lda   #C$SPAC
          cmpa  -1,u
          beq   L136F
          cmpu  <u0080
          bne   L1377
 L136F    puls  pc,u,b,a
 
-L1371    lda   #$0D
+L1371    lda   #C$CR
 * Print character in A
-L1373    pshs  u,b,a
+OUTCHAR  pshs  u,b,a
          ldu   <u0082
 L1377    sta   ,u+
          ldd   <u0082
@@ -2831,8 +2852,8 @@ L1377    sta   ,u+
          stu   <u0082
 L1384    puls  pc,u,b,a
 
-L1386    lda   #$2E
-         bsr   L1373
+L1386    lda   #'.
+         bsr   OUTCHAR
 L138A    ldx   ,y++
          ldd   <u0062
          leax  d,x
@@ -2840,7 +2861,7 @@ L138A    ldx   ,y++
 L1392    pshs  x
 L1394    lda   ,x
          anda  #$7F
-         bsr   L1373
+         bsr   OUTCHAR
          tst   ,x+
          bpl   L1394
          puls  pc,x
@@ -2873,23 +2894,25 @@ L13CD    bsr   L1358
 L13CF    ldd   ,y++
 L13D1    pshs  y
          ldy   <u0044
-         leay  -$06,y
+         leay  -6,y
          std   $01,y
          ldb   #$02
 L13DC    lbsr  J011F
          puls  pc,y
+* Print string
 L13E1    bsr   L13F1
 L13E3    lda   ,y+
-         cmpa  #$FF
+         cmpa  #C$EOS
          beq   L13F1
-         bsr   L1373
-         cmpa  #$22
+         bsr   OUTCHAR
+         cmpa  #'"
          bne   L13E3
          bra   L13E1
-L13F1    lda   #$22
-L13F3    lbra  L1373
 
-L13F6    lda   #$24
+L13F1    lda   #'"
+L13F3    lbra  OUTCHAR
+
+L13F6    lda   #'$
          bsr   L13F3
          ldb   #$14
          lbsr  J011F
@@ -2909,7 +2932,7 @@ L1413    lbsr  L135A
 L1419    leax  >L01AC,pcr
          leay  $01,y
          bsr   L1413
-         leay  $06,y
+         leay  6,y
          rts
 
 L1424    leax  >L02B4,pcr
@@ -2919,6 +2942,7 @@ L1424    leax  >L02B4,pcr
          beq   L1433
          inc   <u0074
 L1433    rts
+
 L1434    fcs   '(*'
 
 L1436    leax  >L1434,pc  Point to alternative REM statement
@@ -3099,10 +3123,10 @@ L1581    ldx   ,s
          stx   ,--y
          rts
 
-L1590    lbsr  L0A9D
+S.EDIT   lbsr  L0A9D
          lbsr  L0EFD
          ldy   ,x
-         tst   $06,y
+         tst   6,y
          bne   L15E5
          pshs  x
          lbsr  L1A2E
@@ -3135,7 +3159,7 @@ L15B3    leax  >L07A6,pcr
 L15E5    coma
          rts
 
-L15E7    leax  -$01,y
+E.MOVE   leax  -$01,y
          lsl   ,x
          asr   ,x
          lbsr  L16F2
@@ -3197,10 +3221,12 @@ L1660    ldy   <u005C
          leay  ,x
 L166E    clra
          rts
+
 L1670    ldb   #E$MFull
          lbsr  L1287
          coma
          rts
+
 L1677    lda   ,x
          cmpa  #$3A
          bne   L167F
@@ -3220,7 +3246,7 @@ L1697    sty   <u005C
          clra
          rts
 
-L169E    bsr   L16CE
+E.LIST    bsr   L16CE
          bsr   L16BD
          cmpx  <u005E
          bhi   L16AD
@@ -3261,26 +3287,28 @@ L16E1    leax  -$01,y
          exg   x,y
          clra
 L16F1    rts
+
+* How many lines to move
 L16F2    clr   ,-s
          ldd   ,x
-         cmpa  #$2B
+         cmpa  #'+
          bne   L1707
          ldy   <u0060
-L16FD    cmpb  #$2A
+L16FD    cmpb  #'*
          bne   L1712
          leax  $02,x
          stx   <u0082
          puls  pc,a
-L1707    cmpa  #$2D
+L1707    cmpa  #'-
          bne   L1714
          inc   ,s
          ldy   <u005E
          bra   L16FD
 L1712    leax  $01,x
 L1714    lda   ,x
-         cmpa  #$30
+         cmpa  #'0
          bcs   L171E
-         cmpa  #$39
+         cmpa  #'9
          bls   L1723
 L171E    ldd   #$0001
          bra   L1727
@@ -3395,7 +3423,7 @@ L17D3    tst   <u0035
          pshs  x,b,a
 L180B    lda   ,u+
          sta   ,y+
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L180B
          leay  -$01,y
          ldd   ,s++
@@ -3474,7 +3502,7 @@ L18BE    pshs  b,a
 
 L18C2    pshs  y,x
 L18C4    lda   ,x+
-         cmpa  #$FF
+         cmpa  #C$EOS
          beq   L18DA
          cmpa  ,y+
          beq   L18C4
@@ -3574,7 +3602,7 @@ L1995    lbsr  L0128
          clra
          rts
 
-L199A    lbsr  L16CE
+E.DELETE    lbsr  L16CE
          lbsr  L16BD
          bsr   L19A5
          lbra  L15F3
@@ -3776,7 +3804,7 @@ L1B0F    leay  $05,y
          rts
 
 L1B12    lda   ,y+
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L1B12
          rts
 
@@ -3848,9 +3876,9 @@ L1B93    tfr   y,x
          leau  >L1B93,pcr
          bra   L1B8B
 
-L1B9F    fcb   $3E
-L1BA0    fcb   $3F
-         fcb   $FF
+L1B9F    fcb   '>
+L1BA0    fcb   '?
+         fcb   C$EOS
 
 L1BA2    pshs  u,x,d
          leau  <L1B9F,pcr
@@ -4698,7 +4726,7 @@ L21CE    cmpa  #$CD
          lda   ,y
          lbsr  IsNum
          bcc   L21ED
-         cmpa  #$2E
+         cmpa  #'.
          beq   L21ED
          lda   #$CE
 L21E3    ldb   #$07
@@ -5017,10 +5045,10 @@ LAX2     bsr   SkipSpac
          leay  $01,y
 L243F    incb
          lda   ,y+
-         bsr   L246A
-         bcc   L243F
-         cmpa  #$24
-         bne   L2451
+         bsr   L246A is alpha or number?
+         bcc   L243F .. yes
+         cmpa  #'$   is dollar?
+         bne   L2451 .. no
          incb
          leay  $01,y
          lda   #$04
@@ -5040,24 +5068,26 @@ SkipSpac lda   ,y+
          leay  -$01,y
          rts
 
+* Is alpha or numeric*
 L246A    bsr   IsAlpha
          bcc   L2493
+
 IsNum    cmpa  #'0
          bcs   L2493
          cmpa  #'9
          bls   L2491
          bra   L248E
 
-IsAlpha  anda  #$7F
-         cmpa  #$41
+IsAlpha  anda  #$7F  Strip high bit
+         cmpa  #'A
          bcs   L2493
-         cmpa  #$5A
+         cmpa  #'Z
          bls   L2491
-         cmpa  #$5F
+         cmpa  #'_
          beq   L2493
-         cmpa  #$61
+         cmpa  #'a
          bcs   L2493
-         cmpa  #$7A
+         cmpa  #'z
          bls   L2491
 L248E    orcc  #Carry           no
          rts
@@ -6344,7 +6374,7 @@ L2E8F    leay  $06,y
          lda   #$02
          bra   L2E3B
 L2E95    ldb   ,y+
-         cmpb  #$FF
+         cmpb  #C$EOS
          bne   L2E95
          lda   #$04
          bra   L2E3B
@@ -6503,7 +6533,7 @@ L2FD4    ldd   <u0060
 L2FDA    clra
          lbra  L2578
 
-* Jump tables (NOTE:SINCE ALL ARE <$80, USE 8 BIT INSTEAD OF 16 BIT OFFSET)
+* Jump tables
 L2FDE    fdb   L3027-L2FDE $0049
          fdb   L303A-L2FDE $005c
          fdb   L303E-L2FDE $0060
@@ -6910,8 +6940,8 @@ L323F    fdb   L3A51-L323F
          fdb   CpMstrin-L323F
          fdb   CpMarray-L323F
 
-L32CB    fcc   "STOP Encountered"
-         fcb   C$LF,$FF
+STOPMSG  fcc   "STOP Encountered"
+         fcb   C$LF,C$EOS
 
 * Vector #2 from table at L31F8 comes here
 
@@ -7135,7 +7165,7 @@ REALSt1P
          ldy   <u0046
          clrb
          bsr   L348E
-         leay  -$06,y
+         leay  -6,y
          ldd   #$0180           step 1 (save in temp var)
          std   $01,y
          clra
@@ -7161,8 +7191,8 @@ L347E    ldb   #$02             incrementing
 L348E    ldd   b,x              copy number
          addd  <u0031
          tfr   d,u
-         leay  -$06,y
-         lda   #$02
+         leay  -6,y
+         lda   #REALTYPE
          ldb   ,u
          std   ,y
          ldd   1,u
@@ -7183,11 +7213,11 @@ REALStXP ldy   <u0046
          lbsr  L321E            increment counter
          bsr   L34DC
          ldu   <u00D2
-         ldd   $01,y
-         std   ,u
-         ldd   $03,y
+         ldd   1,y
+         std   0,u
+         ldd   3,y
          std   2,u
-         lda   $05,y
+         lda   5,y
          sta   4,u
          lsr   <u00D1           check sign
          bcc   L347E
@@ -7320,7 +7350,7 @@ L35A2    sta   <u003E
          sty   <u0048
 L35AA    lda   ,y+
          sta   ,u+
-         cmpa  #$FF
+         cmpa  #C$EOS
          beq   L35B9
          decb
          bne   L35AA
@@ -7350,8 +7380,8 @@ POKE     jsr   <u0016
 
 STOP     lbsr  PRINT
          lda   <errpath
-         sta   <u007F
-         leax  >L32CB,pcr
+         sta   <u007F  set path number
+         leax  >STOPMSG,pcr
          lbsr  SPRINT
          lbra  L3206                    exit
 
@@ -7445,6 +7475,7 @@ CREATE   bsr   L36A6
          os9   I$Create
          bra   L3696
 
+* Open file
 OPEN     bsr   L36A6
          os9   I$Open
 L3696    lbcs  L39FB
@@ -7454,6 +7485,7 @@ L3696    lbcs  L39FB
          clr   ,u+
 L36A2    sta   ,u
          puls  pc,x
+
 L36A6    leax  $01,x
          lbsr  GETVAR
          leax  $01,x
@@ -7475,11 +7507,11 @@ SEEK     lbsr  SETPATH
          rts
 
 INPUTPMT fcc   /? /
-         fcb   $ff
+         fcb   C$EOS
 
 * Illegal input error message
 L36D1    fcc   "** Input error - reenter **"
-         fcb   C$CR,$ff
+         fcb   C$CR,C$EOS
 
 INPUT    lda   <errpath
          lbsr  SETPATH
@@ -7499,7 +7531,7 @@ L3709    pshs  x
          leax  <INPUTPMT,pcr
 L370E    bsr   SPRINT
          puls  x
-         lda   <u007F
+         lda   <u007F  get path number
          cmpa  <errpath
          bne   L371C
          lda   <u002D
@@ -7591,7 +7623,7 @@ SETPATH  ldb   ,x
          beq   L37C6
          leax  -$01,x
 L37C6    lda   $02,y
-L37C8    sta   <u007F
+L37C8    sta   <u007F  set path number
          rts
 
 READ     ldb   ,x
@@ -7783,7 +7815,7 @@ L392A    lbsr  SETPATH
          bra   L3945
 L3943    puls  y
 L3945    puls  x
-         lda   <u007F
+         lda   <u007F  get path number
 L3949    rts
 
 CLOSE    lbsr  SETPATH
@@ -7826,8 +7858,8 @@ CHX      jsr   <u0016
 
          lbsr  GETVAR
          ldy   <u0046
-         leay  -$06,y
-         ldb   <u007F
+         leay  -6,y
+         ldb   <u007F  get path number
          clra
          std   $01,y
          lbra  L353D
@@ -7982,7 +8014,7 @@ L3A9A    lda   ,u+
          leax  -$01,x
          beq   L3AA8
          sta   ,y+
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L3A9A
          lda   ,--y
 L3AA8    ora   #$80
@@ -8414,7 +8446,7 @@ L3D86    ldd   ,x++
          clra
          clrb
          bra   L3E17
-L3DC4    leay  -$06,y
+L3DC4    leay  -6,y
          clra
          clrb
          std   $01,y
@@ -8448,13 +8480,13 @@ L3DFF    ldd   $07,y
 L3E03    ldd   $07,y
          lslb
          rola
-L3E07    leay  $0C,y
+L3E07    leay  12,y
          bra   L3E17
 L3E0B    ldd   #$0005
 L3E0E    std   $01,y
          lbsr  INTMUL
          ldd   $01,y
-         leay  $06,y
+         leay  6,y
 L3E17    tst   <u00CE
          bne   L3E33
          pshs  b,a
@@ -8472,7 +8504,7 @@ L3E33    addd  <u003C
          tst   <u003B
          bne   L3E71
 L3E39    addd  $01,y
-         leay  $06,y
+         leay  6,y
          bra   L3E73
 L3E3F    lda   ,s
          cmpa  #$04
@@ -8514,9 +8546,9 @@ BCPVAR   ldd   ,x++
          tfr   d,u
 BtoI     ldb   ,u
          clra
-         leay  -$06,y
+         leay  -6,y
          std   $01,y
-         lda   #$01
+         lda   #INTGTYPE
          sta   ,y
          rts
 
@@ -8529,9 +8561,9 @@ ICPVAR   ldd   ,x++       Get offset to var we want
          addd  <u0031
          tfr   d,u
 INTCPY   ldd   ,u
-         leay  -$06,y
+         leay  -6,y
          std   $01,y
-         lda   #$01
+         lda   #INTGTYPE
          sta   ,y
          rts
 
@@ -8545,14 +8577,14 @@ NEGint   clra
 * INTEGER ADD
 INTADD   ldd   7,y        Get integer
          addd  $01,y
-         leay  $06,y
+         leay  6,y
          std   $01,y
          rts
 
 * INTEGER SUBTRACT
 INTSUB   ldd   7,y        Get integer
          subd  $01,y
-         leay  $06,y
+         leay  6,y
          std   $01,y
          rts
 
@@ -8668,7 +8700,7 @@ L3F79    leay  $06,y
 * Copy REAL # from X (moving X to after real number) to temp var
 RCPCNST  leay  -6,y       Make room for temp var
          ldb   ,x+
-         lda   #$02
+         lda   #REALTYPE
          std   ,y
          ldd   ,x++
          std   $02,y
@@ -8682,7 +8714,7 @@ L3F8D    ldd   ,x++       Get offset into var space for REAL var
          tfr   d,u
 * Copy REAL # constant from within BASIC09 (pointed to by U) into temp var
 RCPVAR   leay  -6,y       Make room for temp var
-         lda   #$02
+         lda   #REALTYPE
          ldb   ,u
          std   ,y
          ldd   1,u
@@ -8867,7 +8899,7 @@ L40DD    clra
          std   $07,y
          std   $09,y
          sta   $0B,y
-         leay  $06,y
+         leay  6,y
          puls  pc,x
 L40E9    lda   $01,y
          adda  $07,y
@@ -9173,7 +9205,7 @@ L4321    std   $08,y
          std   $0A,y
          inc   $07,y
          lbvs  L40EF
-L4331    leay  $06,y
+L4331    leay  6,y
          clrb
          puls  pc,x
 
@@ -9182,7 +9214,7 @@ POWERS   pshs  x
          beq   L4331
          ldx   $01,y
          bne   L434F
-         leay  $06,y
+         leay  6,y
 L4342    ldd   #$0180
          std   $01,y
          clr   $03,y
@@ -9210,9 +9242,9 @@ BlCPVAR  ldd   ,x++
          tfr   d,u
 L4374    ldb   ,u
          clra
-         leay  -$06,y
+         leay  -6,y
          std   $01,y
-         lda   #$03
+         lda   #BOOLTYPE
          sta   ,y
          rts
 
@@ -9226,7 +9258,7 @@ LORB     ldb   $08,y
 
 LXORB    ldb   $08,y
          eorb  $02,y
-L4390    leay  $06,y
+L4390    leay  6,y
          std   $01,y
          rts
 
@@ -9240,7 +9272,7 @@ StrCMP   pshs  y,x
 L43A2    lda   ,y+
          cmpa  ,x+
          bne   L43AC
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L43A2
 L43AC    inca             Inc last char checked
          inc   -$01,x
@@ -9313,14 +9345,14 @@ Ige      ldd   7,y
 Igt      ldd   7,y        Get original var
          subd  $01,y
          ble   L4409
-L4405    ldb   #$FF
+L4405    ldb   #B.TRUE
          bra   L440B
 
-L4409    ldb   #$00
+L4409    ldb   #B.FALSE
 L440B    clra
-         leay  $06,y
+         leay  6,y
          std   $01,y
-         lda   #$03
+         lda   #BOOLTYPE
          sta   ,y
          rts
 
@@ -9409,20 +9441,20 @@ L4491    bcs   L445B
 SCPCNST  clrb
          stb   <u003E
 L449A    ldu   <u0048
-         leay  -$06,y
+         leay  -6,y
          stu   $01,y
          sty   <u0044
 L44A3    cmpu  <u0044
          bcc   L44C2
          lda   ,x+
          sta   ,u+
-         cmpa  #$FF
+         cmpa  #C$EOS
          beq   L44BB
          decb
          bne   L44A3
          dec   <u003E
          bpl   L44A3
-         lda   #$FF
+         lda   #C$EOS
          sta   ,u+
 L44BB    stu   <u0048
          lda   #$04
@@ -9448,17 +9480,17 @@ L44DF    leax  ,u
          puls  pc,x
 
 STRconc  ldu   $01,y
-         leay  $06,y
+         leay  6,y
 L44E9    lda   ,u+
          sta   -2,u
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L44E9
          leau  -1,u
          stu   <u0048
          rts
 
 L44F6    ldd   <u003E
-         leay  -$06,y
+         leay  -6,y
          std   $03,y
          stu   $01,y
          lda   #$05
@@ -9471,7 +9503,7 @@ FLOAT    clra
          ldd   $01,y
          bne   L4512
          stb   $03,y
-         lda   #$02
+         lda   #REALTYPE
          sta   ,y
          rts
 L4512    ldu   #$0210
@@ -9495,9 +9527,9 @@ L452F    std   $02,y
          stu   ,y
          rts
 
-FLOAT2   leay  $06,y
+FLOAT2   leay  6,y
          bsr   FLOAT
-         leay  -$06,y
+         leay  -6,y
          rts
 
 FIX      ldb   $01,y
@@ -9551,18 +9583,18 @@ L4591    ror   $05,y
          negb
          sbca  #$00
 L4599    std   $01,y
-         lda   #$01
+         lda   #INTGTYPE
          sta   ,y
          rts
 
-fixN1    leay  $06,y
+fixN1    leay  6,y
          bsr   FIX
-         leay  -$06,y
+         leay  -6,y
          rts
 
-fixN2    leay  $0C,y
+fixN2    leay  12,y
          bsr   FIX
-         leay  -$0C,y
+         leay  -12,y
          rts
 
 ABSrl    lda   $05,y
@@ -9604,9 +9636,9 @@ L45E0    sex
 ERR      ldb   <errcode
          clr   <errcode
 L45E7    clra
-         leay  -$06,y
+         leay  -6,y
 L45EA    std   $01,y
-         lda   #$01
+         lda   #INTGTYPE
          sta   ,y
 L45F0    rts
 
@@ -9711,7 +9743,7 @@ MODint   lbsr  INTDIV
          std   $01,y
          rts
 
-MODrl    leau  -$0C,y
+MODrl    leau  -12,y
          pshs  y
 L46AE    ldd   ,y++
          std   ,u++
@@ -9732,6 +9764,7 @@ INTrl    lda   $01,y
          std   $03,y
          stb   $05,y
 L46D2    rts
+
 L46D3    cmpa  #$1F
          bcc   L46D2
          leau  $06,y
@@ -9759,17 +9792,17 @@ L46F9    cmpu  $01,s
          stb   $05,y
          rts
 
-SQint    leay  -$06,y
+SQint    leay  -6,y
          ldd   $07,y
          std   $01,y
          lbra  INTMUL
 
-SQrl     leay  -$06,y
+SQrl     leay  -6,y
          ldd   $0A,y
          std   $04,y
          ldd   $08,y
          std   $02,y
-         ldd   $06,y
+         ldd   6,y
          std   ,y
          lbra  RLMUL
 
@@ -9780,7 +9813,7 @@ VAL      ldd   <u0080
          std   <u0080
          std   <u0082
          std   <u0048
-         leay  $06,y
+         leay  6,y
          ldb   #$09
          lbsr  L3C2F
          puls  u,b,a
@@ -9790,9 +9823,9 @@ VAL      ldd   <u0080
          rts
 
 ADDR     lbsr  L3D51
-         leay  -$06,y
+         leay  -6,y
          stu   $01,y
-L4746    lda   #$01
+L4746    lda   #INTGTYPE
          sta   ,y
          leax  $01,x
          rts
@@ -9816,35 +9849,36 @@ L4765    std   $01,y
          bra   L4746
 
 * BOOLEAN - TRUE
-equTRUE  ldd   #$00FF     $FF in boolean is True flag
+equTRUE  ldd   #B.TRUE
          bra   L4771
 
-equFALSE ldd   #$0000     CLRD ($00 in boolean is False)
-L4771    leay  -$06,y
+equFALSE ldd   #B.FALSE
+L4771    leay  -6,y
          std   $01,y
-         lda   #$03
+         lda   #BOOLTYPE
          sta   ,y
          rts
 
-LNOTI    com   1,y        Leave as LDD 1,y/COMD/STD 1,y is same speed
+* Invert integer
+LNOTI    com   1,y
          com   2,y
          rts
 
 LANDI    ldd   1,y        Get value to AND with out of integer var.
          anda  7,y        ANDD (with value in variable)
-         andb  $08,y
+         andb  8,y
          bra   L4795
 
 LXORI    ldd   1,y
-         eora  $07,y
-         eorb  $08,y
+         eora  7,y
+         eorb  8,y
          bra   L4795
 
 LORI     ldd   1,y
-         ora   $07,y
-         orb   $08,y
-L4795    std   $07,y
-         leay  $06,y
+         ora   7,y
+         orb   8,y
+L4795    std   7,y
+         leay  6,y
          rts
 
 L479A    fcb   $ff,$de,$5b,$d8,$aa ??? (.434294482)
@@ -9858,7 +9892,7 @@ LOG      pshs  x
          ldb   $05,y
          asrb
          lbcs  ERR67
-         ldd   $01,y
+         ldd   1,y
          lbeq  ERR67
          pshs  a
          ldb   #$01
@@ -9881,7 +9915,7 @@ LOG      pshs  x
          lbsr  L4BCC
          lbsr  L4CE1
          leay  <$1A,y
-         ldb   #$02
+         ldb   #REALTYPE
          stb   ,y
          ldb   $05,y
          orb   #$01
@@ -10014,7 +10048,7 @@ L48CD    leay  <-$1A,y
          puls  b
          addb  $01,y
          bvs   L491C
-         lda   #$02
+         lda   #REALTYPE
          std   ,y
          puls  pc,x
 L4909    lda   #$01
@@ -10024,7 +10058,7 @@ L4909    lda   #$01
          leax  >$005F,x
          stx   <u0097
          lbra  L4B97
-L491C    leay  -$06,y
+L491C    leay  -6,y
          lbpl  L40DD
          ldb   #E$FltOvf
          lbra  L3C2C
@@ -10074,7 +10108,7 @@ L4968    leau  <L49AB,pcr
          clrb
          std   $01,y
          puls  pc,u,x
-L498E    leay  $06,y
+L498E    leay  6,y
          puls  u,x
          lbra  PI
 L4995    bsr   L49CB
@@ -10104,7 +10138,7 @@ L49CB    lda   <u006D
          pshs  a
          leay  <-$12,y
          ldd   #$0201
-         std   $0C,y
+         std   12,y
          lda   #$80
          clrb
          std   $0E,y
@@ -10131,7 +10165,7 @@ L4A03    pshs  x
          ldb   $01,y
          cmpb  #$18
          blt   L4A17
-L4A0E    leay  $06,y
+L4A0E    leay  6,y
          lbsr  PI
          dec   $01,y
          bra   L4A6A
@@ -10187,7 +10221,7 @@ L4A82    pshs  x
          lda   $05,y
 L4A8D    eora  <u009C
 L4A8F    sta   $05,y
-L4A91    lda   #$02
+L4A91    lda   #REALTYPE
          sta   ,y
          puls  pc,x
 
@@ -10221,7 +10255,7 @@ L4ABD    pshs  x
          lbsr  L4CE1
          ldd   $01,y
          bne   L4AEB
-         leay  $06,y
+         leay  6,y
          ldd   #$7FFF
 L4AE2    std   $01,y
          lda   #$FF
@@ -10281,7 +10315,7 @@ L4B4A    dec   $01,y
          ora   #$01
          sta   $0B,y
          lbsr  RLADD
-         leay  -$06,y
+         leay  -6,y
 L4B64    leay  <-$14,y
          leax  >L4C33,pcr
          stx   <$19,y
@@ -10669,10 +10703,11 @@ LEN      ldd   <u0048
          subd  #$0001
          stu   <u0048
 L4EB6    std   $01,y
-         lda   #$01
+         lda   #INTGTYPE
          sta   ,y
          rts
 
+* Get ASCII code of character
 ASC      ldd   $01,y
          std   <u0048
          ldb   [<$01,y]
@@ -10698,10 +10733,10 @@ LEFT$    ldd   $01,y
          cmpd  <u0048
          bcc   L4EF1
          bsr   L4F70
-L4EF1    leay  $06,y
+L4EF1    leay  6,y
          rts
 
-IsNull   leay  $06,y
+IsNull   leay  6,y
          ldu   $01,y
          bra   L4F70
 
@@ -10717,10 +10752,10 @@ RIGHT$   ldd   $01,y
          ldu   $07,y
 L4F10    lda   ,x+
          sta   ,u+
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L4F10
          stu   <u0048
-L4F1A    leay  $06,y
+L4F1A    leay  6,y
          puls  pc,x
 
 MID$     ldd   $01,y                    size of piece
@@ -10728,7 +10763,7 @@ MID$     ldd   $01,y                    size of piece
          ldd   $07,y                    starting offset
          bgt   L4F2E
 L4F26    ldd   $01,y                    = LEFT$
-         leay  $06,y
+         leay  6,y
          std   $01,y
          bra   LEFT$
 
@@ -10737,7 +10772,7 @@ L4F2E    subd  #$0001
          addd  $0D,y                    start address piece
          cmpd  <u0048
          bcs   L4F3E                    piece exists
-         leay  $06,y
+         leay  6,y
          bra   IsNull
 
 L4F3E    pshs  x
@@ -10746,16 +10781,16 @@ L4F3E    pshs  x
          ldu   $0D,y
 L4F46    lda   ,x+
          sta   ,u+
-         cmpa  #$FF
+         cmpa  #C$EOS
          beq   L4F59
          decb
          bne   L4F46
          dec   $01,y
          bpl   L4F46
-         lda   #$FF
+         lda   #C$EOS
          sta   ,u+
 L4F59    stu   <u0048
-         leay  $0C,y
+         leay  12,y
          puls  pc,x
 
 TRIM$    ldu   <u0048
@@ -10763,10 +10798,10 @@ TRIM$    ldu   <u0048
 L4F63    cmpu  $01,y
          beq   L4F70
          lda   ,-u
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L4F63
          leau  1,u
-L4F70    lda   #$FF
+L4F70    lda   #C$EOS
          sta   ,u+
          stu   <u0048
          rts
@@ -10790,8 +10825,8 @@ L4F90    tfr   y,d
 L4F99    puls  y,x
          std   $07,y
          lda   #$01
-         sta   $06,y
-         leay  $06,y
+         sta   6,y
+         leay  6,y
          rts
 
 STR$int  ldb   #$02
@@ -10804,7 +10839,7 @@ L4FAA    lda   <u007D
          lbsr  L3C2F
          bcs   ERR67
          ldx   <u0082
-         lda   #$FF
+         lda   #C$EOS
          sta   ,x
          ldx   $03,s
          lbsr  SCPCNST
@@ -10812,16 +10847,17 @@ L4FAA    lda   <u007D
          sta   <u007D
          stu   <u0082
          rts
+
 ERR67    ldb   #$43
          lbra  L3C2C
 
 TAB      pshs  x
-         ldd   $01,y
+         ldd   $01,y get function argument
          blt   ERR67
          sty   <u0044
          ldu   <u0048
          stu   $01,y
-         lda   #$20
+         lda   #C$SPAC
 L4FDB    cmpb  <u007D
          bls   L4FEC
          sta   ,u+
@@ -10829,19 +10865,20 @@ L4FDB    cmpb  <u007D
          cmpu  <u0044
          bcs   L4FDB
          lbra  L44C2
+
 L4FEA    pshs  x
-L4FEC    lda   #$FF
+L4FEC    lda   #C$EOS
          sta   ,u+
          stu   <u0048
-         lda   #$04
+         lda   #STRTYPE
          sta   ,y
          puls  pc,x
 
 DATE$    pshs  x
-         leay  -$06,y
-         leax  -$06,y
+         leay  -6,y
+         leax  -6,y
          ldu   <u0048
-         stu   $01,y
+         stu   1,y
          os9   F$Time
          bcs   L4FEC
          bsr   PRTNUM
@@ -10880,18 +10917,18 @@ L502E    decb
          stb   ,u+
          rts
 
-EOF      lda   $02,y
+EOF      lda   $02,y  Get file path number
          ldb   #SS.EOF    Check if we are at end of file
          os9   I$GetStt
          bcc   L5046
          cmpb  #E$EOF
          bne   L5046
-         ldb   #$FF
+         ldb   #B.TRUE
          bra   L5048
-L5046    ldb   #$00
+L5046    ldb   #B.FALSE
 L5048    clra
          std   $01,y
-         lda   #$03
+         lda   #BOOLTYPE
          sta   ,y
          rts
 
@@ -11000,10 +11037,10 @@ L50E4    fcb   $04,$a0,$00,$00,$00 10
 L513E    fcb   $40,$8a,$c7,$23,$04 10 quintillion
 
 TRUESTR  fcc   'True'
-         fcb   $ff
+         fcb   C$EOS
 
 FALSESTR fcc   'False'
-         fcb   $ff
+         fcb   C$EOS
 
 * <u0024 function 2
 AtoITR   pshs  u
@@ -11085,6 +11122,7 @@ ERR59    ldb   #E$IONum
 L51E0    stb   <errcode
          coma
          puls  pc,u
+
 L51E5    eora  #$45
          anda  #$DF
          beq   L520E
@@ -11171,11 +11209,11 @@ L528B    lda   $05,y
          anda  #$FE
          ora   <u0078
          sta   $05,y
-L5293    lda   #$02
+L5293    lda   #REALTYPE
 L5295    sta   ,y
          andcc #^Carry
          puls  pc,u
-L529B    leay  -$06,y
+L529B    leay  -6,y
          ldd   ,u
          std   $01,y
          ldd   2,u
@@ -11251,10 +11289,10 @@ ERR58    ldb   #E$IOMism
 
 * verify string
 L5331    pshs  u,x
-         leay  -$06,y
+         leay  -6,y
          ldu   <u004A
          stu   $01,y
-         lda   #$04
+         lda   #STRTYPE
          sta   ,y
          ldx   <u0082
 L533F    lda   ,x+
@@ -11272,16 +11310,16 @@ L5349    stx   <u0082
 
 * Boolean -> internal repr.
 L5354    pshs  x
-         leay  -$06,y
-         lda   #$03
+         leay  -6,y
+         lda   #BOOLTYPE
          sta   ,y
          clr   $02,y
          ldx   <u0082
          bsr   L5390
          bcs   L537F
-         cmpa  #$54
+         cmpa  #'T
          beq   L5379
-         cmpa  #$74
+         cmpa  #'t
          beq   L5379
          eora  #$46
          anda  #$DF
@@ -11312,7 +11350,7 @@ L5396    cmpa  <u00DD
          beq   L53A7
          cmpa  #C$CR                    CR?
          beq   L53A5
-         cmpa  #$FF                     end of string?
+         cmpa  #C$EOS                     end of string?
          beq   L53A5
          andcc #^Carry
          rts
@@ -11355,9 +11393,10 @@ L53E6    dec   <u007E
          bne   L53C5
          tfr   b,a
          lbsr  L54EA
-         leay  $06,y
+         leay  6,y
          puls  pc,u,x
 
+* Real to ASCII
 RtoA     pshs  u,x
          clr   <u0075
          clr   <u0078
@@ -11481,7 +11520,7 @@ L54CD    lda   ,-x
          inc   <u0079
 L54E2    lda   #$09
 L54E4    sta   <u0076
-         leay  $06,y
+         leay  6,y
          puls  pc,u,x
 L54EA    ora   #$30
          sta   ,x+
@@ -11502,7 +11541,7 @@ READLN   pshs  y,x
          lda   #$01
          sta   <u007D
          ldy   #$0100
-         lda   <u007F
+         lda   <u007F  get path number
          os9   I$ReadLn
          bra   L5524
 
@@ -11513,7 +11552,7 @@ WRITLN   pshs  y,x
          tfr   d,y
          ldx   <u0080
          stx   <u0082
-         lda   <u007F
+         lda   <u007F  get path number
          os9   I$WritLn
 L5524    bcc   L5528
          stb   <errcode
@@ -11521,11 +11560,12 @@ L5528    puls  pc,y,x
 
 SETFP    pshs  u,x
          lda   ,y               type of file pointer
-         cmpa  #$02
+         cmpa  #REALTYPE
          beq   L5536            real
          ldu   $01,y            else integer
          bra   L553D
 
+* Seek with real argument
 L5536    lda   $01,y            if exponent is <=0, Seek to 0
          bgt   L5542            positive value, go calculate logint for SEEK
          ldu   #$0000
@@ -11536,7 +11576,7 @@ L5542    ldx   $02,y
          ldu   $04,y
          suba  #$20
          bcs   L554F
-         ldb   #$4E
+         ldb   #E$SeekRg  Seek out of range
          coma
          bra   L5565
 
@@ -11550,14 +11590,14 @@ L554F    exg   x,d
          exg   x,u
          inca
          bne   L554F
-L555E    lda   <u007F
+L555E    lda   <u007F  get path number
          os9   I$Seek
          bcc   L5567
 L5565    stb   <errcode
 L5567    puls  pc,u,x
 
 * print real numbers
-PRreal    pshs  u,x
+PRreal   pshs  u,x
          leas  -$0A,s
          leax  ,s
          lbsr  RtoA
@@ -11688,7 +11728,7 @@ Spacing  lda   #C$SPAC
 
 L5653    bsr   L5614
 L5655    lda   ,x+
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L5653
          rts
 
@@ -11773,7 +11813,7 @@ L56DE    stb   <u0087
          lda   ,x+
 L56E2    cmpa  #$2C
          beq   L571E
-         cmpa  #$FF
+         cmpa  #C$EOS
          bne   L56FC
          lda   <u0094
          beq   L56F2
@@ -11842,7 +11882,7 @@ ARGUS4   bsr   L56E2
          bra   L5772
 
 * print literal string
-ARGUS5   cmpa  #$FF                     end of string?
+ARGUS5   cmpa  #C$EOS                     end of string?
          beq   L57A7
          cmpa  #$27
          bne   L5765
@@ -11963,7 +12003,7 @@ L5826    jsr   <u0016
          ldu   $01,y
          clrb
 L582F    lda   ,u+
-         cmpa  #$FF
+         cmpa  #C$EOS
          beq   L5838
          incb
          bne   L582F
@@ -12078,19 +12118,19 @@ L58FF    leas  $05,s
          puls  pc,u,x
 
 FMTbool  jsr   <u0016
-         cmpa  #$03
+         cmpa  #BOOLTYPE
          bne   L58B1                    wrong type
          pshs  u,x
          leax  >TRUESTR,pcr
-         ldb   #$04
+         ldb   #$04   length of 'true'
          lda   $02,y
          bne   L5932
          leax  >FALSESTR,pcr
-         ldb   #$05
+         ldb   #$05   length of 'false'
          bra   L5932
 
 FMTstr   jsr   <u0016
-         cmpa  #$04
+         cmpa  #STRTYPE
          bne   L58B1                    wrong type
          pshs  u,x
          ldx   $01,y
@@ -12304,5 +12344,5 @@ ERR48    ldb   #E$NoRout        Unimplemented routine error
          rts
 
          emod
-eom      equ   *
+B09END   equ   *
          end
