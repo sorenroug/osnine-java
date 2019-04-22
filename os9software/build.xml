@@ -37,6 +37,8 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+        <assemble src="dynacalc" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
+        <assemble src="Dynacalc.trm" home="dynacalc" verify="db3ec467b7535f9cdf3750f65f5799a1"/>
         <assemble src="basic09_d64_y2k" home="basic09"/>
         <assemble src="runb_tandy_y2k" home="basic09" />
         <assemble src="runb_generic_y2k" home="basic09" />

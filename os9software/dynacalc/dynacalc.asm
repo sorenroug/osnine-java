@@ -1335,7 +1335,7 @@ L0958    pshs  b
          os9   I$WritLn
          puls  b
          os9   F$Exit
-L096A    tfr   u,x
+L096A    tfr   u,x       Load the Dynacalc.trm file into the memory area
          ldy   #$3200
          os9   I$Read
          bcs   L0958

@@ -72,14 +72,13 @@ u0034    rmb   1
 u0035    rmb   1
 errcode  rmb   1          Error code
 u0037    rmb   2
-DATAPtr  rmb   2
+DATAPtr  rmb   2     location of DATA values
 u003B    rmb   1
 u003C    rmb   2
 u003E    rmb   1
 u003F    rmb   1
 u0040    rmb   2
-u0042    rmb   1
-u0043    rmb   1
+u0042    rmb   2 BASE 0 or 1
 u0044    rmb   2
 u0046    rmb   2
 u0048    rmb   2
@@ -2467,6 +2466,7 @@ L104E    leax  >L07A4,pcr
          bra   L104E
 L1064    cmpa  #$02
          bne   L1041
+* Debug QUIT command
 L1068    lbsr  L0134
          lda   #$03
 L106D    cmpa  <u00BE
@@ -2497,6 +2497,7 @@ L1091    std   <u00B3
          ror   <u0034
          bra   L10A6
 
+* Debug CONT command
 L109A    lbsr  L0DBB
          lsl   <u0034
          lsr   <u0034
@@ -4641,7 +4642,7 @@ L2126    bsr   L2115
 L212D    lda   <u00A3
          cmpa  #$52
          beq   L2139
-         cmpa  #$DD
+         cmpa  #$DD   Equals token
          bne   L211F
          lda   #$53
 L2139    lbsr  L2415
@@ -6357,6 +6358,7 @@ L2E5F    cmpb  #$85
          leau  <L2E75,pcr
          lslb
          jmp   b,u
+
 L2E75    bra   L2E87
          bra   L2E89
          bra   L2E8F
@@ -6366,6 +6368,7 @@ L2E75    bra   L2E87
          bra   L2EA8
          bra   L2E9F
          bra   L2EA8
+
 L2E87    leay  -$01,y
 L2E89    leay  $03,y
          lda   #$01
@@ -6972,7 +6975,7 @@ L3307    std   <FREEMEM
          std   7,u
          stx   3,u
 L3316    ldd   #$0001
-         std   <u0042
+         std   <u0042  Set base 1
          sta   1,u
          sta   <$13,u
          stu   <$14,u
@@ -7626,6 +7629,7 @@ L37C6    lda   $02,y
 L37C8    sta   <u007F  set path number
          rts
 
+* READ statement
 READ     ldb   ,x
          cmpb  #$54
          bne   L37F5
@@ -7681,6 +7685,7 @@ L3834    pshs  x
          ldb   #E$NoData
 L383C    lbra  L39FB
 
+* Read next value from DATA declaration
 L383F    jsr   <u0016
          cmpb  #$4B
          beq   L384B
@@ -7705,9 +7710,9 @@ PRINT    lda   <errpath
          beq   L38A3
 L3865    bsr   NextInst
          beq   L388B
-L3869    cmpb  #$4B
+L3869    cmpb  #$4B  Comma
          beq   L387F
-         cmpb  #$51
+         cmpb  #$51  Semi colon
          beq   L3883
          leax  -$01,x
          jsr   <u0016
@@ -8036,14 +8041,14 @@ L3AC8    ldx   ,s
          ldu   <u0031
          lda   <u0034
          sta   ,u
-         ldb   <u0043
-         stb   2,u
+         ldb   <u0042+1
+         stb   2,u    Store BASE declaration
          ldd   <u004A
          std   $D,u
          ldd   <u0040
          std   $F,u
          ldd   <DATAPtr
-         std   9,u
+         std   9,u     Reset to first location of DATA statement
          bsr   L3B5F
          stx   $B,u
          puls  x
@@ -8207,7 +8212,7 @@ L3C09    pshs  x,b,a
          puls  pc,x,b,a
 
 L3C19    fdb   UNK12-L3C19 0
-         fdb   L3D80-L3C19 2 Copy DIM'd arrary to temp var pool
+         fdb   L3D80-L3C19 2 Copy DIM'd array to temp var pool
          fdb   RLADD-L3C19 4 Real # add
          fdb   L40D3-L3C19 6 Real # multiply
          fdb   L4234-L3C19 8 Real # divide
@@ -8591,8 +8596,8 @@ INTSUB   ldd   7,y        Get integer
 * INTEGER MULTIPLY
 INTMUL   ldd   7,y        Get value that result will go into
          beq   L3EFA
-         cmpd  #$0002
-         bne   L3ECF
+         cmpd  #$0002  Multiplying by 2?
+         bne   L3ECF .. no
          ldd   $01,y
          bra   L3EDB
 
@@ -10714,16 +10719,17 @@ ASC      ldd   $01,y
          clra
          bra   L4EB6
 
-CHR$     ldd   $01,y
-         tsta
-         lbne  ERR67
-         ldu   <u0048
+* Create character from integer argument.
+CHR$     ldd   $01,y  Get integer argument
+         tsta         more than 255?
+         lbne  ERR67  ..yes
+         ldu   <u0048 get pointer to string buffer
          stu   $01,y
          stb   ,u+
-         lbsr  L4FEA
+         lbsr  L4FEA  Add end-of-string and set type
          sty   <u0044
          cmpu  <u0044
-         lbcc  L44C2
+         lbcc  L44C2  String overflow
          rts
 
 LEFT$    ldd   $01,y
@@ -10864,7 +10870,7 @@ L4FDB    cmpb  <u007D
          decb
          cmpu  <u0044
          bcs   L4FDB
-         lbra  L44C2
+         lbra  L44C2   String overflow
 
 L4FEA    pshs  x
 L4FEC    lda   #C$EOS
@@ -11062,15 +11068,15 @@ AtoITR   pshs  u
          bne   ERR59
          lbra  L51FB
 
-L5172    cmpa  #$24
+L5172    cmpa  #$24  $
          lbeq  L52B2
-         cmpa  #$2B
+         cmpa  #$2B  +
          beq   L5182
-         cmpa  #$2D
+         cmpa  #$2D  -
          bne   L5184
          inc   <u0078
 L5182    lda   ,x+
-L5184    cmpa  #$2E
+L5184    cmpa  #$2E  .
          bne   L5190
          tst   <u0077
          bne   ERR59
@@ -11145,9 +11151,9 @@ L5207    std   $01,y
 L5209    lda   #$01
          lbra  L5295
 L520E    lda   ,x
-         cmpa  #$2B
+         cmpa  #$2B  +
          beq   L521A
-         cmpa  #$2D
+         cmpa  #$2D  -
          bne   L521C
          inc   <u0075
 L521A    leax  $01,x
@@ -11159,7 +11165,7 @@ L521C    lbsr  L57DC
          leax  -$01,x
          bra   L5233
 L522C    pshs  a
-         lda   #$0A
+         lda   #10
          mul
          addb  ,s+
 L5233    tst   <u0075
@@ -11223,14 +11229,16 @@ L529B    leay  -6,y
          lda   <u0075
          lbeq  L509E
          lbra  L50A1
-L52B2    lbsr  L57DC
+
+* Read hex digit
+L52B2    lbsr  L57DC  Read number
          bcc   L52C7
-         cmpa  #$61
+         cmpa  #'a
          bcs   L52BD
          suba  #$20
-L52BD    cmpa  #$41
+L52BD    cmpa  #'A
          bcs   L52DC
-         cmpa  #$46
+         cmpa  #'F
          bhi   L52DC
          suba  #$37
 L52C7    inc   <u0076
@@ -11956,6 +11964,7 @@ L57C2    bsr   L57DC
 L57D8    lda   ,x+
          bra   L57E8
 
+* Parse digit. Sets carry if it is not a digit.
 L57DC    lda   ,x+
 L57DE    cmpa  #'0
          bcs   L57EB
