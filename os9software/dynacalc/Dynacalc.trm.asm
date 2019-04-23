@@ -162,7 +162,7 @@ M00B0    fcb   $1B
          fcb   $83 
          fcb   $00 
          fcb   $3F ?
-         fcb   $0C 
+M0100    fcb   $0C 
          fcb   $0A 
          fcb   $18 
          fcb   $09 
@@ -178,7 +178,7 @@ M00B0    fcb   $1B
          fcb   $18 
          fcb   $32 2
          fcb   $0F 
-         fcb   $03 
+M0110    fcb   $03 
          fcb   $05 
          fcb   $00 
          fcb   $00 
@@ -194,7 +194,7 @@ M00B0    fcb   $1B
          fcb   $FF 
          fcb   $FF 
          fcb   $FF 
-         fcb   $FF 
+M0120    fcb   $FF 
          fcb   $04 
          fcb   $FF 
          fcb   $04 
@@ -210,7 +210,7 @@ M00B0    fcb   $1B
          fcb   $22 "
          fcb   $67 g
          fcb   $36 6
-         fcb   $5B [
+M0130    fcb   $5B [
          fcb   $31 1
          fcb   $67 g
          fcb   $36 6
@@ -1284,24 +1284,7 @@ M01F0    fcb   $FF
          fcb   $20 
          fcb   $34 4
          fcb   $39 9
-         fcb   $20 
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $31 1
-         fcb   $33 3
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $38 8
-         fcb   $33 3
+M0562    fcc   " December 13, 1983"
          fcb   $00 
 M0575    fcb   $08 
          fcb   $00 
@@ -1499,7 +1482,7 @@ M0677    fcb   $30 0
          fcb   $00 
          fcb   $00 
          fcb   $00 
-         fcb   $2F /
+M0680    fcb   $2F /
          fcb   $50 P
          fcb   $20 
          fcb   $00 
@@ -2427,181 +2410,87 @@ M0AA0
          os9   I$GetStt
          bra   M0AB2
 M0AB2
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $FB 
-         fcb   $CA J
-         fcb   $86 
-         fcb   $02 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $84 
-         fcb   $24 $
-         fcb   $13 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $FB 
-         fcb   $BF ?
-         fcb   $86 
-         fcb   $02 
-         fcb   $C6 F
-         fcb   $1B 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $83 
-         fcb   $24 $
-         fcb   $06 
-         fcb   $6F o
-         fcb   $8D 
-         fcb   $FB 
-         fcb   $B2 2
-         fcb   $20 
-         fcb   $35 5
-M0AD0    fcb   $97 
-         fcb   $12 
-         fcb   $9E 
-         fcb   $30 0
-         fcb   $5F _
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8D 
-         fcb   $25 %
-         fcb   $20 
-         fcb   $9E 
-         fcb   $30 0
-         fcb   $5F _
-         fcb   $A6 &
-         fcb   $84 
-         fcb   $27 '
-         fcb   $13 
-         fcb   $4A J
-         fcb   $26 &
-         fcb   $16 
-         fcb   $96 
-         fcb   $12 
-         fcb   $C6 F
-         fcb   $02 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8D 
-         fcb   $25 %
-         fcb   $0D 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $88 
-         fcb   $25 %
-         fcb   $08 
-         fcb   $C6 F
-         fcb   $FF 
-         fcb   $D7 W
-         fcb   $13 
-         fcb   $26 &
-         fcb   $0D 
-         fcb   $20 
-         fcb   $04 
-         fcb   $6F o
-         fcb   $8D 
-         fcb   $FB 
-         fcb   $82 
-         fcb   $96 
-         fcb   $12 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8F 
-         fcb   $0F 
-         fcb   $12 
-         fcb   $9E 
-         fcb   $30 0
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $15 
-         fcb   $31 1
-         fcb   $8D 
-         fcb   $FA z
-         fcb   $54 T
-         fcb   $A6 &
-         fcb   $01 
-         fcb   $4A J
-         fcb   $81 
-         fcb   $0B 
-         fcb   $23 #
-         fcb   $01 
-         fcb   $4F O
-         fcb   $C6 F
-         fcb   $09 
-         fcb   $3D =
-         fcb   $33 3
-         fcb   $8D 
-         fcb   $01 
-         fcb   $CE N
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $C6 F
-         fcb   $09 
-         fcb   $A6 &
-         fcb   $C0 @
-         fcb   $A7 '
-         fcb   $A0 
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $F9 y
-         fcb   $86 
-         fcb   $20 
-         fcb   $A7 '
-         fcb   $A0 
-         fcb   $E6 f
-         fcb   $02 
-         fcb   $8D 
-         fcb   $14 
-         fcb   $CC L
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $ED m
-         fcb   $A1 !
-         fcb   $CC L
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $ED m
-         fcb   $A1 !
-         fcb   $9E 
-         fcb   $30 0
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $8D 
-         fcb   $04 
-         fcb   $6F o
-         fcb   $A4 $
-         fcb   $20 
-         fcb   $1C 
-         fcb   $4F O
-         fcb   $CE N
-         fcb   $07 
-         fcb   $00 
-         fcb   $DF _
-         fcb   $44 D
-         fcb   $EE n
-         fcb   $8D 
-         fcb   $FA z
-         fcb   $27 '
-         fcb   $AD -
-         fcb   $C9 I
-         fcb   $47 G
-         fcb   $80 
-         fcb   $CE N
-         fcb   $07 
-         fcb   $00 
-         fcb   $DF _
-         fcb   $44 D
-         fcb   $DC \
-         fcb   $1A 
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $EC l
-         fcb   $43 C
-         fcb   $ED m
-         fcb   $A1 !
-         fcb   $39 9
-         fcb   $10 
+         leax  >M0680,pcr
+         lda   #$02
+         os9   I$Open
+         bcc   M0AD0
+         leax  >M0680,pcr
+         lda   #$02
+         ldb   #%00011011 File permissions for new file
+         os9   I$Create
+         bcc   M0AD0
+         clr   >M0680,pcr
+         bra   M0B05
+M0AD0    sta   <$0012
+M0AD2    ldx   <$0030
+         clrb
+         os9   I$GetStt
+         bcs   M0AFA
+         ldx   <$0030
+         clrb
+         lda   ,x
+M0ADF    beq   M0AF4
+         deca  
+         bne   M0AFA
+         lda   <$0012
+         ldb   #$02      Get file size
+         os9   I$GetStt 
+         bcs   M0AFA
+         os9   I$Seek   
+         bcs   M0AFA
+         ldb   #$FF
+M0AF4    stb   <$0013
+         bne   M0B05
+         bra   M0AFE
+M0AFA    clr   >M0680,pcr
+M0AFE    lda   <$0012
+M0B00    os9   I$Close
+         clr   <$0012
+M0B05    ldx   <$0030
+         os9   F$Time
+         leay  >M0562,pcr
+         lda   $01,x
+         deca
+         cmpa  #11
+         bls   M0B16
+         clra
+M0B16    ldb   #$09
+         mul
+         leau  >M0CEB,pcr  Calendar months
+         leau  d,u
+M0B1F    ldb   #$09
+M0B21    lda   ,u+
+         sta   ,y+
+         decb
+         bne   M0B21
+         lda   #$20
+         sta   ,y+
+         ldb   $02,x
+         bsr   M0B44
+         ldd   #$2C20
+         std   ,y++
+         ldd   #$3139   string '19'
+         std   ,y++
+         ldx   <$0030
+         ldb   ,x
+         bsr   M0B44
+         clr   ,y
+         bra   M0B60
+
+M0B44    clra
+         ldu   #$0700
+         stu   <$0044
+         ldu   >M0575,pcr
+         jsr   >$4780,u
+         ldu   #$0700
+         stu   <$0044
+         ldd   <$001A
+         leau  d,u
+         ldd   $03,u
+         std   ,y++
+         rts
+
+M0B60    fcb   $10 
          fcb   $AE .
          fcb   $8D 
          fcb   $FA z
@@ -2996,9 +2885,8 @@ M0AD0    fcb   $97
          fcb   $80 
          fcb   $03 
          fcb   $80 
-         fcb   $20 
-         fcb   $20 
-         fcc   "January February    March    April      May     "
+
+M0CEB    fcc   "  January February    March    April      May     "
          fcc   "June     July   AugustSeptember  October November December      "
 M0D5D    fcc   "**** DYNACALC ****"
          fcb   0
@@ -3682,267 +3570,23 @@ M0DC8    fcc   "      Loading "
          fcb   $39 9
 M1071    fcc   "A  set Attributes"
          fcb   $0D 
-         fcb   $42 B
-         fcb   $20 
-         fcb   $20 
-         fcb   $42 B
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6B k
-         fcb   $20 
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
+M1083    fcc   "B  Blank current cell"
          fcb   $0D 
-         fcb   $43 C
-         fcb   $20 
-         fcb   $20 
-         fcb   $43 C
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $20 
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $77 w
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $73 s
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $74 t
+M1099    fcc   "C  Clear entire worksheet"
          fcb   $0D 
-         fcb   $44 D
-         fcb   $20 
-         fcb   $20 
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $77 w
+M10B3    fcc   "D  Delete current column or row"
          fcb   $0D 
-         fcb   $45 E
-         fcb   $20 
-         fcb   $20 
-         fcb   $45 E
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20 
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
+M10D3    fcc   "E  Edit contents of current cell"
          fcb   $0D 
-         fcb   $46 F
-         fcb   $20 
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $20 
-         fcb   $46 F
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20 
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
+M10F4    fcc   "F  set Format of current cell"
          fcb   $0D 
-         fcb   $49 I
-         fcb   $20 
-         fcb   $20 
-         fcb   $49 I
-         fcb   $6E n
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $77 w
-         fcb   $20 
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
+M1112    fcc   "I  Insert new column or row at current position"
          fcb   $0D 
-         fcb   $4C L
-         fcb   $20 
-         fcb   $20 
-         fcb   $4C L
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
+M1142    fcc   "L  Locate specified label "
          fcb   $0D 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $28 (
-         fcb   $3F ?
-         fcb   $3D =
-         fcb   $22 "
-         fcb   $57 W
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $64 d
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $64 d
-         fcb   $22 "
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $40 @
-         fcb   $3D =
-         fcb   $22 "
-         fcb   $44 D
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $27 '
-         fcb   $74 t
-         fcb   $20 
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $22 "
-         fcb   $29 )
+M115D    fcc   /   (?="Wild card", @="Don't ignore case")/
          fcb   $0D 
-         fcb   $4D M
+M1187    fcb   $4D M
          fcb   $20 
          fcb   $20 
          fcb   $4D M
