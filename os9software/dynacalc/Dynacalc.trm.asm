@@ -90,7 +90,7 @@ M00B0    fcb   $1B
          fcb   $00 
          fcb   $00 
          fcb   $00 
-         fcb   $1B 
+M00B8    fcb   $1B 
          fcb   $42 B
          fcb   $FF 
          fcb   $00 
@@ -114,7 +114,7 @@ M00B0    fcb   $1B
          fcb   $47 G
          fcb   $FF 
          fcb   $00 
-         fcb   $00 
+M00D0    fcb   $00 
          fcb   $00 
          fcb   $00 
          fcb   $00 
@@ -130,7 +130,7 @@ M00B0    fcb   $1B
          fcb   $00 
          fcb   $20 
          fcb   $20 
-         fcb   $20 
+M00E0    fcb   $20 
          fcb   $20 
          fcb   $20 
          fcb   $20 
@@ -146,22 +146,22 @@ M00B0    fcb   $1B
          fcb   $20 
          fcb   $00 
          fcb   $00 
+M00F0    fcb   $00 
          fcb   $00 
          fcb   $00 
          fcb   $00 
          fcb   $00 
          fcb   $00 
          fcb   $00 
+M00F7    fcb   $04 
+M00F8    fcb   $00 
          fcb   $00 
-         fcb   $04 
-         fcb   $00 
-         fcb   $00 
-         fcb   $00 
+M00FA    fcb   $00 
          fcb   $00 
          fcb   $FF 
          fcb   $83 
          fcb   $00 
-         fcb   $3F ?
+         fcb   $3F
 M0100    fcb   $0C 
          fcb   $0A 
          fcb   $18 
@@ -2490,137 +2490,57 @@ M0B44    clra
          std   ,y++
          rts
 
-M0B60    fcb   $10 
-         fcb   $AE .
-         fcb   $8D 
-         fcb   $FA z
-         fcb   $10 
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0E 
-         fcb   $2F /
-         fcb   $E6 f
-         fcb   $01 
-         fcb   $26 &
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $8D 
-         fcb   $F5 u
-         fcb   $87 
-         fcb   $27 '
-         fcb   $04 
-         fcb   $E7 g
-         fcb   $8D 
-         fcb   $F5 u
-         fcb   $83 
-         fcb   $6F o
-         fcb   $0C 
-         fcb   $0D 
-         fcb   $43 C
-         fcb   $26 &
-         fcb   $0B 
-         fcb   $6F o
-         fcb   $0F 
-         fcb   $6F o
-         fcb   $88 
-         fcb   $10 
-         fcb   $6F o
-         fcb   $88 
-         fcb   $11 
-         fcb   $6F o
-         fcb   $88 
-         fcb   $16 
-         fcb   $6F o
-         fcb   $04 
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0E 
-         fcb   $3A :
-         fcb   $CE N
-         fcb   $01 
-         fcb   $F1 q
-         fcb   $DF _
-         fcb   $EB k
-         fcb   $0F 
-         fcb   $E0 `
-         fcb   $0F 
-         fcb   $E8 h
-         fcb   $0F 
-         fcb   $C4 D
-         fcb   $6D m
-         fcb   $8D 
-         fcb   $F5 u
-         fcb   $1B 
-         fcb   $2A *
-         fcb   $02 
-         fcb   $0A 
-         fcb   $0E 
-         fcb   $6D m
-         fcb   $8D 
-         fcb   $F5 u
-         fcb   $52 R
-         fcb   $26 &
-         fcb   $06 
-         fcb   $86 
-         fcb   $04 
-         fcb   $A7 '
-         fcb   $8D 
-         fcb   $F5 u
-         fcb   $4A J
-         fcb   $86 
-         fcb   $90 
-         fcb   $10 
-         fcb   $AE .
-         fcb   $8D 
-         fcb   $F9 y
-         fcb   $C1 A
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0D 
-         fcb   $AF /
-         fcb   $86 
-         fcb   $FF 
-         fcb   $97 
-         fcb   $F0 p
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0D 
-         fcb   $21 !
-         fcb   $DC \
-         fcb   $0D 
-         fcb   $83 
-         fcb   $0A 
-         fcb   $26 &
-         fcb   $44 D
-         fcb   $54 T
-         fcb   $DD ]
-         fcb   $BD =
-         fcb   $C6 F
-         fcb   $04 
-         fcb   $33 3
-         fcb   $8D 
-         fcb   $01 
-         fcb   $88 
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0D 
-         fcb   $42 B
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1A 
-         fcb   $A4 $
-         fcb   $0C 
-         fcb   $BD =
-         fcb   $0C 
-         fcb   $BD =
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $F1 q
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0D 
-         fcb   $42 B
-         fcb   $DC \
+M0B60    ldy   >M0575,pcr
+         jsr   >$0E2F,y
+         ldb   $01,x
+         bne   M0B73
+         ldb   >M00F8,pcr
+         beq   M0B77
+M0B73    stb   >M00FA,pcr
+M0B77    clr   $0C,x
+         tst   <$0043
+         bne   M0B88
+         clr   $0F,x
+M0B7F    clr   <$10,x
+         clr   <$11,x
+         clr   <$16,x
+M0B88    clr   $04,x
+         jsr   >$0E3A,y
+         ldu   #$01F1
+         stu   <$00EB
+         clr   <$00E0
+         clr   <$00E8
+         clr   <$00C4
+         tst   >M00B8,pcr
+         bpl   M0BA1
+M0B9F    dec   <$000E
+M0BA1    tst   >M00F7,pcr
+         bne   M0BAD
+         lda   #$04
+         sta   >M00F7,pcr
+M0BAD    lda   #$90
+         ldy   >M0575,pcr
+         jsr   >$0DAF,y
+         lda   #$FF
+         sta   <$00F0
+         jsr   >$0D21,y
+M0BC0    ldd   <$000D
+         subd  #$0A26
+         lsra
+         lsrb
+         std   <$00BD
+         ldb   #$04
+         leau  >M0D57,pcr
+M0BCF    jsr   >$0D42,y
+         jsr   >$1AA4,y
+         inc   <$00BD
+         inc   <$00BD
+         decb
+         bne   M0BCF
+         jsr   >$0D42,y
+
+
+M0BE2    fcb   $DC \
          fcb   $C1 A
          fcb   $10 
          fcb   $83 
@@ -2886,9 +2806,19 @@ M0B60    fcb   $10
          fcb   $03 
          fcb   $80 
 
-M0CEB    fcc   "  January February    March    April      May     "
-         fcc   "June     July   AugustSeptember  October November December      "
-M0D5D    fcc   "**** DYNACALC ****"
+M0CEB    fcc   "  January"
+         fcc   " February"
+         fcc   "    March"
+         fcc   "    April"
+         fcc   "      May"
+         fcc   "     June"
+         fcc   "     July"
+         fcc   "   August"
+         fcc   "September"
+         fcc   "  October"
+         fcc   " November"
+         fcc   " December"
+M0D57    fcc   "      **** DYNACALC ****"
          fcb   0
 
          fcc   "                              "
@@ -3291,34 +3221,7 @@ M0DC8    fcc   "      Loading "
          fcb   $A9 )
          fcb   $3A :
          fcb   $E1 a
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $73 s
-         fcb   $3A :
-         fcb   $20 
-         fcb   $41 A
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $79 y
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $20 
-         fcb   $73 s
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20 
+M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00 
          fcb   $34 4
          fcb   $20 
