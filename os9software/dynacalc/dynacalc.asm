@@ -267,7 +267,7 @@ size     equ   .
 name     equ   *
          fcs   /Dynacalc/
 
-         lbra  L057F
+PGBEGIN  lbra  L057F
          lbra  L057F
 L001B    lbra  L03EE
 L001E    lbra  L0550
@@ -1340,7 +1340,7 @@ L096A    tfr   u,x       Load the Dynacalc.trm file into the memory area
          os9   I$Read
          bcs   L0958
          tfr   pc,x
-         os9   I$Close
+PCSAVEPT os9   I$Close
          bcs   L0958
          ldd   #$0473
          jmp   >u0A08,u

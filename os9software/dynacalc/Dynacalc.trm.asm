@@ -1,4 +1,6 @@
- use /d0/defs/os9defs
+ ifp1
+ use defsfile
+ endc
  org 0
          fcb   $59,$A6,$59,$00,$00,$00,$00,$00,$87,$41,$0D,$09,$40,$01,$04,$09
          fcc   "DYNACALC, Version 4.7:3              "
@@ -2357,7 +2359,10 @@ M09F0    nop
          nop
 M0A05    lbra  M0A27
 
+* Entry point for start routine in dynacalc program
+* X contains the program counter a few instructions before the jump.
 M0A08    lbra  M0A21
+
          pshs  x,a
          tfr   pc,x
          leax  >-$5A0F,x
