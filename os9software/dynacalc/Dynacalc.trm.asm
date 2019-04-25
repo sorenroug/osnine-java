@@ -1,5 +1,6 @@
+ opt m
  ifp1
- use defsfile
+ use dynacalc.asm
  endc
  org 0
          fcb   $59,$A6,$59,$00,$00,$00,$00,$00,$87,$41,$0D,$09,$40,$01,$04,$09
@@ -1286,8 +1287,10 @@ M01F0    fcb   $FF
          fcb   $20
          fcb   $34 4
          fcb   $39 9
+
 M0562    fcc   " December 13, 1983"
          fcb   $00
+
 M0575    fcb   $08
          fcb   $00
          fcb   $30 0
@@ -2371,6 +2374,7 @@ M0A08    lbra  M0A21
          sta   >$0143,u
          puls  x,a
          bra   M0A74
+
 M0A21    cmpd  #$0473   version number test
          beq   M0A6A
 M0A27    lda   #$02
@@ -2383,7 +2387,7 @@ M0A27    lda   #$02
 M0A38    fcc   "DYNACALC and DYNACALC.TRM are different versions."
          fcb   $0D
 
-M0A6A    leax  >-$0962,x
+M0A6A    leax  >L002A-PCSAVEPT,x
          stx   >M0575,pcr
          puls  u,y,x,b,a
 M0A74    std   >$01C1,u

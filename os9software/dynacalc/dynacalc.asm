@@ -37,7 +37,7 @@ u0019    rmb   1
 u001A    rmb   1
 u001B    rmb   1
 u001C    rmb   1
-u001D    rmb   1
+u001D    rmb   1   Flag for help text discarded
 u001E    rmb   2
 u0020    rmb   1
 u0021    rmb   1
@@ -1339,11 +1339,11 @@ L096A    tfr   u,x       Load the Dynacalc.trm file into the memory area
          ldy   #$3200
          os9   I$Read
          bcs   L0958
-         tfr   pc,x
-PCSAVEPT os9   I$Close
+PCSAVEPT tfr   pc,x
+         os9   I$Close
          bcs   L0958
          ldd   #$0473
-         jmp   >u0A08,u
+         jmp   >$0A08,u
 
 L0983    fcc   "Can't load "
 L098E    fcc   "Dynacalc.trm"
@@ -4100,6 +4100,7 @@ L20A1    tst   <u001D
          pshs  u
          jsr   [,s++]
          bra   L2070
+
 L20AD    leau  >L20BC,pcr
          lbsr  L2234
          lbsr  L213B
