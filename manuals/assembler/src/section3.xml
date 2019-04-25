@@ -33,7 +33,7 @@ OS9: debug
       <title>Basic Concepts</title>
       <para>
 The debugger operates in response to single line commands typed in
-from the keyboard. You can tell when you are communicating with_the
+from the keyboard. You can tell when you are communicating with the
 debugger because it always displays a <quote>DB:</quote> prompt when it expects a
 command line.
 </para>
@@ -86,7 +86,7 @@ numbers is therefore zero to 65535. Two's complement addition and
 subtraction is performed correctly, but will print out as large positive
 numbers in decimal form. Some commands require byte values and an error
 message will be given if the result of the expression is too large to be
-stored in a byte (when the result &gt; 255 ). Also, some operands are only
+stored in a byte (when the result &gt; 255). Also, some operands are only
 a byte long (such as individual memory locations and some registers).
 These are automatically converted to 16-bit <quote>words</quote> without sign
 extension. Spaces may be used between operators and operands as desired
@@ -518,12 +518,12 @@ Several forms of the <quote>:</quote> register command can be used to examine on
 or all registers, or to change a specific register's contents.
 </para>
       <para>
-The <quote>registers</quote> affected by these commands, are actually stored
-copies in memory (<quote>images</quote>) of the register values of_the.program under
+The <quote>registers</quote> affected by these commands are actually stored
+copies in memory (<quote>images</quote>) of the register values of the program under
 test. They are stored on the stack when the program is stopped by a
 breakpoint or other interrupt. The value shown for the stack pointer
-register is the address ,of the stack where the register values are
-stored. Before the program under test is first executed, the register
+register is the address of the stack where the register values are stored.
+Before the program under test is first executed, the register
 images must be made valid using the <quote>E</quote> command.
 </para>
       <para>
@@ -606,8 +606,8 @@ automatically inserted and removed by the debugger at the right time so
 you will not see them in memory.
 </para>
       <para>
-When a SWI is executed it interrupts.the program and saves the
-register contents .on the stack so they can be examined or changed using
+When a SWI is executed it interrupts the program and saves the
+register contents on the stack so they can be examined or changed using
 the <quote>:</quote> command. Because SWIs operate by temporarily replacing an
 instruction opcode, there are three restrictions on their use:
 </para>

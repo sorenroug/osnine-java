@@ -1,6 +1,6 @@
 <refentry xmlns="http://docbook.org/ns/docbook" xml:id="strass">
 <refnamediv>
-<refname>Strass</refname>
+<refname>_strass</refname>
 <refpurpose>byte by byte copy</refpurpose>
 </refnamediv>
 
@@ -19,12 +19,12 @@
 <refsect1><title>Description</title>
 <para>
 Until such time as the compiler can deal with structure
-assignment, this function is useful for copying one structure
-to another.
+assignment, this function is useful for copying one structure to another.
 </para>
 <para>
-<quote><replaceable>Count</replaceable></quote> bytes are copied from memory location at <quote><replaceable>s2</replaceable></quote> to memory
-as <quote><replaceable>s1</replaceable></quote> regardless of the contents.
+<quote><replaceable>Count</replaceable></quote> bytes are copied from memory location at
+<quote><replaceable>s2</replaceable></quote> to memory at
+<quote><replaceable>s1</replaceable></quote> regardless of the contents.
 </para>
 </refsect1>
 </refentry>
