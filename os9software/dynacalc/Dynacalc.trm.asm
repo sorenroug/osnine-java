@@ -1,7 +1,7 @@
- opt m
  ifp1
  use dynacalc.asm
  endc
+ opt m
  org 0
          fcb   $59,$A6,$59,$00,$00,$00,$00,$00,$87,$41,$0D,$09,$40,$01,$04,$09
          fcc   "DYNACALC, Version 4.7:3              "
@@ -2387,7 +2387,7 @@ M0A27    lda   #$02
 M0A38    fcc   "DYNACALC and DYNACALC.TRM are different versions."
          fcb   $0D
 
-M0A6A    leax  >L002A-PCSAVEPT,x
+M0A6A    leax  >PGBEGIN-PCSAVEPT,x     >-$0962,x   PGBEGIN-PCSAVEPT = $15
          stx   >M0575,pcr
          puls  u,y,x,b,a
 M0A74    std   >$01C1,u
@@ -2489,7 +2489,7 @@ M0B44    clra
          ldu   #$0700
          stu   <$0044
          ldu   >M0575,pcr
-         jsr   >$4780,u
+         jsr   L4795-PGBEGIN,u   >$4780,u  = L4795
          ldu   #$0700
          stu   <$0044
          ldd   <$001A
@@ -2499,7 +2499,7 @@ M0B44    clra
          rts
 
 M0B60    ldy   >M0575,pcr
-         jsr   >$0E2F,y
+         jsr   >L0E44-PGBEGIN,y     >$0E2F,y
          ldb   $01,x
          bne   M0B73
          ldb   >M00F8,pcr
@@ -2528,7 +2528,7 @@ M0BA1    tst   >M00F7,pcr
          sta   >M00F7,pcr
 M0BAD    lda   #$90
          ldy   >M0575,pcr
-         jsr   >$0DAF,y
+         jsr   >L0DC4-PGBEGIN,y   >$0DAF,y
          lda   #$FF
          sta   <$00F0
          jsr   >$0D21,y
@@ -2569,7 +2569,7 @@ M0C0A    tst   <$00ED
          beq   M0C35
          leau  >M0DC8,pcr
          ldy   >M0575,pcr
-         jsr   >$1AA4,y
+         jsr   >L1AB9-PGBEGIN,y    >$1AA4,y
          bra   M0C5B
 M0C1D    lda   ,y+
          cmpa  #$20
@@ -2582,7 +2582,7 @@ M0C25    ldb   $01,y
          sta   >M00FB,pcr
          bra   M0C0A
 M0C35    ldy   >M0575,pcr
-         jsr   >$1AA4,y
+         jsr   >L1AB9-PGBEGIN,y    >$1AA4,y
          ldb   #$04
          stb   <$0025
          clr   >M05FF,pcr
@@ -2632,7 +2632,7 @@ M0C68    lda   ,x+
          leax  -$02,x
          clr   <$001D
          ldy   >M0575,pcr
-         jsr   >$3AEA,y
+         jsr   >L3AFF-PGBEGIN,y   >$3AEA,y
 M0CB6    nop
          tfr   x,d
          std   <$001E
@@ -2642,7 +2642,7 @@ M0CB6    nop
          addd  <$0017
          std   <$0023
          ldu   >M0575,pcr
-         jmp   >$4EB2,u
+         jmp   >L4EC7-PGBEGIN,u    >$4EB2,u
 
 
 M0CCB    fdb   $0381
@@ -3346,419 +3346,34 @@ M1142    fcc   "L  Locate specified label "
          fcb   $0D
 M115D    fcc   /   (?="Wild card", @="Don't ignore case")/
          fcb   $0D
-M1187    fcb   $4D M
-         fcb   $20
-         fcb   $20
-         fcb   $4D M
-         fcb   $6F o
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $20
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $6E n
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $77 w
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
+M1187    fcc   "M  Move column or row to new position"
          fcb   $0D
-         fcb   $50 P
-         fcb   $20
-         fcb   $20
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20
-         fcb   $77 w
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $73 s
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
+M11AD    fcc   "P  Print all or portion of worksheet to"
          fcb   $0D
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $73 s
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $74 t
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
+         fcc   "   system printer or textfile"
          fcb   $0D
-         fcb   $51 Q
-         fcb   $20
-         fcb   $20
-         fcb   $51 Q
-         fcb   $75 u
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $44 D
-         fcb   $59 Y
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $43 C
-         fcb   $20
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $20
-         fcb   $67 g
-         fcb   $6F o
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $53 S
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $70 p
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $2D -
-         fcb   $39 9
+         fcc   "Q  Quit DYNACALC and go to Sleep or to OS-9"
          fcb   $0D
-         fcb   $52 R
-         fcb   $20
-         fcb   $20
-         fcb   $52 R
-         fcb   $65 e
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $67 g
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $70 p
-         fcb   $20
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $73 s
+         fcc   "R  Replicate cell or group of cells"
          fcb   $0D
-         fcb   $53 S
-         fcb   $20
-         fcb   $20
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $53 S
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $20
-         fcb   $66 f
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
+         fcc   "S  call System function"
          fcb   $0D
-         fcb   $54 T
-         fcb   $20
-         fcb   $20
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $20
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $6E n
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $77 w
-         fcb   $20
-         fcb   $54 T
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
+         fcc   "T  set column or row Titles"
          fcb   $0D
-         fcb   $57 W
-         fcb   $20
-         fcb   $20
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $6A j
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $79 y
-         fcb   $20
-         fcb   $57 W
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $6F o
-         fcb   $77 w
-         fcb   $28 (
-         fcb   $73 s
-         fcb   $29 )
+         fcc   "W  adjust display Window(s)"
          fcb   $0D
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $48 H
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $40 @
-         fcb   $20
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $20
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20
-         fcb   $46 F
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $53 S
+         fcc   "   Hit @ for help with FUNCTIONS"
          fcb   $0D
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $3E >
-         fcb   $20
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $20
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $53 S
+         fcc   "       > for help with ERRORS"
          fcb   $0D
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $47 G
-         fcb   $20
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $73 s
+         fcc   "       G for general helps"
          fcb   $0D
          fcb   $00
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $20
-         fcb   $41 A
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $3A :
+
+M12EE    fcc   "Set Attributes:"
          fcb   $0D
          fcb   $0A
-         fcb   $42 B
-         fcb   $20
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $67 g
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20
-         fcb   $42 B
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $2F /
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $66 f
-         fcb   $20
-         fcb   $28 (
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $66 f
-         fcb   $61 a
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $74 t
-         fcb   $20
-         fcb   $3D =
-         fcb   $20
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $29 )
+         fcc   "B  toggles Bell on/off (default = on)"
          fcb   $0D
          fcb   $44 D
          fcb   $20
@@ -7594,48 +7209,10 @@ M20EB    fcc   "  @COS      @ACOS "
          fcb   $29 )
          fcb   $0D
          fcb   $0A
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $48 H
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $79 y
-         fcb   $20
-         fcb   $6B k
-         fcb   $65 e
-         fcb   $79 y
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $20
-         fcb   $32 2
+         fcc   "               Hit any key to see page 2"
          fcb   $0D
          fcb   $11
+
          fcb   $53 S
          fcb   $65 e
          fcb   $72 r

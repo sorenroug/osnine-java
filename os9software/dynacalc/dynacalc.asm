@@ -280,6 +280,7 @@ L0030    lbra  L003C
 L0033    lbra  L0377
 L0036    lbra  L0867
 L0039    lbra  L0869
+
 L003C    lda   #$14
          sta   <u0061
          lbsr  L08F2
@@ -965,10 +966,10 @@ L05BF    inca
 L05D7    fcc   "Recalc ..."
          fcb   $00
 
-L05E2    fcb   $8D
-         fcb   $03,$16,$FB,$07
-L05E7    fcb   $A6,$4F
+L05E2    fcb   $8D,$03   jsr   L05E7
+         lbra  L00EE
 
+L05E7    lda   $0F,u
          suba  #$80
          bhi   L05F1
          lbsr  L2ADB
@@ -1270,8 +1271,15 @@ L088B    fcc   "Off"
 L0892    fcc   "Radian mode "
          fcb   $00
 
-L089F    fcb   $f9,$51,$f9,$39,$f9,$2B,$f9,$59,$f9,$71,$ff,$90
-         fcb   $f9,$75
+* Table
+L089F    fdb   $f951
+         fdb   $f939
+         fdb   $f92B
+         fdb   $f959
+         fdb   $f971
+         fdb   $ff90
+         fdb   $f975
+
 L08AD    fcb   $fd,$70,$fd,$6e,$fd,$da,$fe,$16,$fd,$35,$fe,$31,$fe,$39
          fcb   $fe,$58,$fe,$3d,$f9,$d1,$f9,$89,$d7,$20
 
@@ -1339,11 +1347,11 @@ L096A    tfr   u,x       Load the Dynacalc.trm file into the memory area
          ldy   #$3200
          os9   I$Read
          bcs   L0958
-PCSAVEPT tfr   pc,x
-         os9   I$Close
+         tfr   pc,x
+PCSAVEPT os9   I$Close
          bcs   L0958
-         ldd   #$0473
-         jmp   >$0A08,u
+         ldd   #$0473    Version number
+         jmp   >$0A08,u  Jump into the Dynacalc.trm code
 
 L0983    fcc   "Can't load "
 L098E    fcc   "Dynacalc.trm"
@@ -1501,6 +1509,7 @@ L0ACB    lbsr  L0B89
          cmpa  #$41
          lbge  L12B4
          lbra  L10D9
+
          ldx   #$03C4
          lbsr  L0D41
          ldy   <u00E9
@@ -1557,6 +1566,7 @@ L0B81    incb
          cmpa  b,x
          bne   L0B81
          lbra  L134C
+
 L0B89    ldx   <u001A
          leax  >$014B,x
          ldb   #$0B
@@ -1567,12 +1577,13 @@ L0B92    sta   b,x
          sta   <u003A
          sta   <u002F
 L0B9B    rts
+
 L0B9C    fcb   $2B,$2D,$2A,$2F
          fcb   $5E
          fcb   $3E,$3C,$3D
          fcb   $28,$29,$2E,$2C,$3F
-L0BA9    fcb   $32 2
-         fcb   $62 b
+
+L0BA9    leas  $02,s
 L0BAB    lda   <u0093
          lbsr  L0DE3
          ldb   <u0059
@@ -1630,11 +1641,15 @@ L0C22    puls  b
          lbra  L17F4
 
 L0C27    fcb   $02,$fd
-L0C29    fcb   $10,$9e,$a2,$ae,$36,$af,$3c,$17
-         fcb   $01,$22,$9e,$7e,$26,$04
 
+L0C29    ldy   <u00A2
+         ldx   -$0A,y
+         stx   -$04,y
+         lbsr  L0D55
+         ldx   <u007E
+         bne   L0C3B
          leax  >L0C27,pcr
-         leax  $01,x
+L0C3B    leax  $01,x
          lda   ,x
          anda  #$07
          bne   L0C45
@@ -1816,6 +1831,7 @@ L0DBA    sta   <u0059
          stb   a,y
          stb   <u005A
 L0DC2    puls  pc,b,a
+
 L0DC4    pshs  b
          tfr   a,b
          clra
@@ -1835,6 +1851,7 @@ L0DD3    lda   ,u+
 L0DE2    rts
 L0DE3    bsr   L0DE8
          lbra  L3AF3
+
 L0DE8    tst   <u00E0
          bne   L0E24
          pshs  x,b,a
@@ -2091,12 +2108,13 @@ L0FCB    pshs  pc,b,a,cc
          leax  >L109D,pcr
          ldd   b,x
          pshs  pc
-         addd  ,s++
+L0FE1    addd  ,s++
          std   $03,s
          ldx   <u001A
          leax  >$037F,x
          stx   <u0057
          puls  pc,b,a,cc
+
 L0FEF    tst   <u0061
          bne   L0FF7
          tst   <u008B
@@ -2141,73 +2159,46 @@ L1043    sta   <u0088
          sta   <u00AE
          lbra  L1AAA
 
-L1057    leax  -$10,y
-         leas  -$10,y
-         leas  -$0C,y
-         abx
-         fcb   $38
-         pshu  y,x
-         inc   <u000C
-         dec   <u0008
-         dec   <u0000
-         exg   x,s
-         neg   <u0000
-         inc   <u000C
-         fcb   $18
-         fcb   $18
-         fcb   $18
-         fcb   $18
-         fcb   $18
-         lsr   <u0018
-         neg   <u000A
-         neg   <u000A
-         jmp   <u000A
-         jmp   <u000E
-         neg   <u000E
-         neg   <u001C
-         andcc #$1A
-         orcc  #$1A
-         orcc  #$1A
-         orcc  #$00
-         neg   <u0000
-         neg   <u0000
-         lsl   <u0012
-         fcb   $12,$20,$02,$16,$00,$24,$24,$18,$22,$22
-         fcb   $00,$00,$00,$00
-         fcb  0
+L1057    fcb   $30,$30,$32,$30,$32,$34,$3A
+         fcb   $38,$36,$30,$0c,$0c
+         fcb   $0A,$08,$0A,$00,$1E,$14,$00,$00,$0C,$0C
+         fcb   $18,$18,$18,$18,$18,$04,$18,$00,$0A,$00
+         fcb   $0A,$0E,$0A,$0E,$0E,$00,$0E,$00,$1C,$1C
+         fcb   $1A,$1A,$1A,$1A,$1A,$1A,$00,$00,$00,$00
+         fcb   $00,$08,$12,$12,$20,$02,$16,$00,$24,$24
+         fcb   $18,$22,$22,$00,$00,$00,$00,$00
 
-L109D    fcb   $fc
-         fcb   $14
-         addb  >$F4FB
-         ldb   $05,x
-         ldb   $04,x
-         inc   >$00F8
-         fcb   $02
-         addd  <u0001
-         nega
-         subb  >$34FB
-         rts
-         lsr   <u006B
-         fcb   $05
-         andb  <u0003
-         lsl   <u0003
-L10B8    jsr   >$FF9D
-         com   <u0095
-         com   <u009D
-         lsl   <u00EC
-         fcb   $02
-         stb   <u00F0
-         pshs  pc,u,y,x
-         pshs  pc,u,y,x
-         pshs  pc,u,y,x
-L10CA    pshs  pc,u,y,x
-         pshs  pc,u,y,x,dp,a,cc
-         bls   L10CA
-         ldu   <u000A
-         ldb   #$0A
-         fcb   $CF
-         dec   <u00BA
-         rol   <u003D
+L109D    fdb   L0BF5-L0FE1  ($FC14)
+         fdb   $FBF4
+         fdb   $FBE6
+         fdb   $05E6
+         fdb   $047C
+         fdb   $00F8
+         fdb   $02D3
+         fdb   $0140
+         fdb   $F034
+         fdb   $FB39
+         fdb   $046B
+         fdb   $05D4
+         fdb   $0308
+         fdb   $03BD
+         fdb   $FF9D
+         fdb   $0395
+         fdb   $039D
+         fdb   $08EC
+         fdb   $02D7
+         fdb   PGBEGIN-L0FE1 ($F034)
+         fdb   PGBEGIN-L0FE1 ($F034)
+         fdb   PGBEGIN-L0FE1 ($F034)
+         fdb   PGBEGIN-L0FE1 ($F034)
+         fdb   PGBEGIN-L0FE1 ($F034)
+         fdb   $FB23
+         fdb   $FADE
+         fdb   $0AC6
+         fdb   $0ACF
+         fdb   $0ABA
+         fdb   $093D
+
 L10D9    ldb   #$1E
          stb   <u0061
          cmpa  #$30
@@ -3158,9 +3149,8 @@ L18AC    lbsr  L17DC
 L18B1    fcc   "- Overlay"
          fcb  0
 
-L18BB    fcb  $86   lda here
-         cwai  #$97
-         fcb   $61 a
+L18BB    lda   #$3C
+         sta   <u0061
          lbsr  L146E
          lbsr  L0D95
          clr   <u00EF
@@ -3438,6 +3428,7 @@ L1B36    puls  pc,u,a
 L1B38    bsr   L1B3A
 L1B3A    lda   #$20
 L1B3C    lbra  L093A
+
 L1B3F    bsr   L1B3C
          tfr   b,a
 L1B43    lbra  L091C
@@ -3910,128 +3901,99 @@ L1F0D    pshs  u
 L1F16    fcc   "Commands"
          fcb   $00
 
-         fcb   $41
-         fcb   $05,$a2,$42,$06,$cc,$43,$07,$20,$44,$25,$d0,$45
-         fcb   $07,$62,$46,$0c,$1b,$49,$25,$d0,$4c,$25,$d5,$4d
-         fcb   $25,$d0,$50,$2d,$03
-         fcb   $51 Q
-         fcb   $05
-         fcb   $87
-L1F40    fcb   $52
-         fcb   $25,$d0,$53
-         fcb   $05,$93,$54
-L1F47    fcb   $05,$99,$57
-         fcb   $05,$a8,$3f,$80
+         fcb   'A,$05,$a2
+         fcb   'B,$06,$cc
+         fcb   'C,$07,$20
+         fcb   'D,$25,$d0
+         fcb   'E,$07,$62
+         fcb   'F,$0c,$1b
+         fcb   'I,$25,$d0
+         fcb   'L,$25,$d5  (Not in the manual?)
+         fcb   'M,$25,$d0
+         fcb   'P,$2d,$03
+         fcb   'Q,$05,$87
+         fcb   'R,$25,$d0
+         fcb   'S,$05,$93
+         fcb   'T,$05,$99
+         fcb   'W,$05,$a8
+         fcb   '?,$80
 
 L1F4E    fcc   "Attributes"
          fcb   0
-         fcb   $42
 
-         ror   <u0051
-         lsra
-         jmp   <u00FA
-         asra
-         jmp   <u00B0
-         lsla
-         ror   <u003C
-         inca
-         ror   <u0067
-         tsta
-L1F69    lsl   <u00CA
-         clra
-         ror   <u00C4
-         negb
-         bge   L1F69
-         fcb   $52,$06,$c0,$53,$25,$d0
-         lsrb
-         ror   <u005D
-         asrb
-         fcb   $05,$8d,$3F,$82
+         fcb   'B,$06,$51
+         fcb   'D,$0E,$FA
+         fcb   'G,$0E,$B0
+         fcb   'H,$06,$3C
+         fcb   'L,$06,$67
+         fcb   'M,$08,$CA
+         fcb   'O,$06,$C4
+         fcb   'P,$2C,$F8
+         fcb   'R,$06,$C0
+         fcb   'S,$25,$D0
+         fcb   'T,$06,$5D
+         fcb   'W,$05,$8D
+         fcb   '?,$82
+
 L1F7F    fcc   "Formats"
          fcb   0
 
-L1F87    lsra
-         inc   <u006D
-         asra
-         inc   <u006D
-         fcb   $52 R
-         inc   <u006D
-         inca
-         inc   <u006D
-         negb
-         inc   <u006D
-         rola
-         inc   <u006D
-         fcb   $24,$0c
-         tst   u0003,u
-         inc   <u006D
-         swi
-         fcb   $88
+L1F87    fcb   'D,$0C,$6D
+         fcb   $47,$0C,$6D
+         fcb   $52,$0C,$6D
+         fcb   $4C,$0C,$6D
+         fcb   $50,$0C,$6D
+         fcb   $49,$0C,$6D
+         fcb   $24,$0C,$6D
+         fcb   $43,$0C,$6D
+         fcb   '?,$88
+
 L1FA1    fcc   "Windows"
          fcb   $00
 
-         lsra
-         ror   <u0070
-         rora
-         inc   <u0039
-         lsla
-         inc   <u0091
-         fcb   $4E N
-         tst   <u0078
-         comb
-         tst   <u009D
-         fcb   $55 U
-         tst   <u00BD
-         rorb
-         inc   <u00AA
-         swi
-         fcb   $8A
+         fcb   'D,$06,$70
+         fcb   $46,$0C,$39
+         fcb   $48,$0C,$91
+         fcb   $4E,$0D,$78
+         fcb   $53,$0D,$9D
+         fcb   $55,$0D,$BD
+         fcb   $56,$0C,$AA
+         fcb   '?,$8A
+
 L1FC0    fcc   " In "
 L1FC4    fcc   "Titles"
          fcb   $00
 
-         fcb   $42
-         inc   <u00FE
-         lsla
-         tst   <u0000
-         fcb   $4E N
-         tst   <u0036
-         rorb
-         tst   <u0002
-         swi
-         fcb   $8C
+         fcb   'B,$0C,$FE
+         fcb   $48,$0D,$00
+         fcb   $4E,$0D,$36
+         fcb   $56,$0D,$02
+         fcb   '?,$8C
+
 L1FD9    fcc   "System"
          fcb   $00
 
-         coma
-         jmp   <u00D2
-         inca
-         jmp   <u00F1
-         comb
-         jmp   <u00F4
-         lslb
-         jmp   <u00F7
-         fcb   $23,$2c
-         fcb   $f8,$3f,$8e
+         fcb   $43,$0E,$D2
+         fcb   $4C,$0E,$F1
+         fcb   $53,$0E,$F4
+         fcb   'X,$0E,$F7
+         fcb   '#,$2C,$F8
+         fcb   '?,$8E
 
 L1FF1    fcc   "Column width"
          fcb  0
 
-         coma
-         tst   <u00C2
-         asrb
-         jmp   <u0083
-         swi
-         fcb   $90
-L2006    fcb   $51 Q
-         fcb   $75 u
-         rol   -$0C,s
-         neg   <u004F
-         ror   <u00F9
-         comb
-         asr   <u0017
-         swi
-         fcb   $92
+         fcb  $43,$0D,$C2
+         fcb  $57,$0E,$83
+         fcb  '?,$90
+
+L2006    fcc   "Quit"
+         fcb  0
+
+         fcb  'O,$06,$F9
+         fcb  'S,$07,$17
+         fcb  '?,$92
+
 L2013    ldx   #$011A
          lbsr  L21E6
          sta   <u0092
@@ -4065,7 +4027,7 @@ L2057    lda   ,u
          tst   <u001D
          bne   L2064
 L2061    lbsr  L1B3C
-L2064    leau  u0003,u
+L2064    leau  3,u
          cmpa  #$3F
          bne   L2057
          lbsr  L20DD
@@ -4178,8 +4140,10 @@ L216E    lda   #$0D
          stb   <u0074
          sta   <u00AE
          lbra  L1C4D
+
 L217E    fcc   "Clear Worksheet"
          fcb 0
+
          fcb $33
 L218F    bsr   L218F
          lsr   >$8D34
@@ -4200,6 +4164,7 @@ L2196    clr   <u00ED
          bsr   L21C8
          lbeq  L08C5
          lbra  L1D0C
+
 L21C2    leau  >L21E1,pcr
          bra   L21D1
 L21C8    lbsr  L2013
@@ -4209,15 +4174,13 @@ L21D1    bsr   L2234
          lbsr  L1F0D
          sta   <u009A
          lbsr  L0904
-         cmpa  #$59
+         cmpa  #'Y
          rts
-L21DE    abx
-         bra   L2234
-L21E1    fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         swi
+
+L21DE    fcc   ": S"
+L21E1    fcc   "ure?"
          fcb   $00
+
 L21E6    lbsr  L20E3
 L21E9    lbra  L1F0D
 L21EC    lda   #$20
@@ -4682,6 +4645,7 @@ L25A7    bita  #$08
          leay  >u0550,u
          lbsr  L2AA8
          puls  pc,y
+
 L25C1    tst   $01,x
          bmi   L25EF
          ldb   <u0020
@@ -4695,7 +4659,7 @@ L25C1    tst   $01,x
          lda   $01,x
          cmpa  #$0C
          bls   L25DE
-         lda   #$0C
+         lda   #$0C    General error
 L25DE    lsla
          leau  >L264B,pcr
          ldd   a,u
@@ -4748,31 +4712,9 @@ L263B    lda   ,x+
          bne   L263B
          ldx   <u006C
          bra   L2637
-L264B    fcb   $4E N
-         fcb   $41 A
-         lsra
-         leax  -u000D,u
-         fcb   $4E N
-         fcb   $52 R
-         fcb   $4E N
-         clra
-         rorb
-         fcb   $4E N
-         fcb   $52 R
-         inca
-         fcb   $4E N
-         fcb   $45 E
-         lslb
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $45 E
-         lslb
-         fcb   $41 A
-         lsla
-         clra
-         fcb   $45 E
-         fcb   $52 R
+
+L264B    fcc   "NAD0SNRNOVNRLNEXREAEXAHOER"  Error codes
+
 L2665    pshs  y,b,a
          lda   #$FF
          sta   <u007C
@@ -5206,6 +5148,7 @@ L2A76    fcb   $DE   LDU here
          fcb   $26,$dc
 L2A8C    cmpu  <u00B1
 L2A8F    rts
+
          leax  >L2F47,pcr
          fcb   $8d,$d8
          bhi   L2A9A
@@ -5235,6 +5178,7 @@ L2ABC    jmp   $0A,x
          neg   <u0000
          neg   <u0000
          neg   <u0000
+
 L2ACF    lbra  L2FDD
 L2AD2    lbra  L2B53
 L2AD5    lbra  L2AF3
@@ -5882,6 +5826,7 @@ L2FBE    ldd   u000D,u
          adca  ,u
          std   u0008,u
          rts
+
 L2FDD    ldd   $06,x
          std   u0006,u
          ldd   $04,x
@@ -5891,6 +5836,7 @@ L2FDD    ldd   $06,x
          ldd   ,x
          std   ,u
          rts
+
          leax  u0008,u
          clr   $02,x
          clr   $03,x
@@ -7761,9 +7707,9 @@ L4039    rts
 L403A    bsr   L4024
          lbsr  L1AA4
          lbra  L1A9E
-L4042    fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-         fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-         fcb  $00,$20,$06
+L4042    fcb   $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+         fcb   $00,$20,$06
 
 L4067    fcb   $16
          fcb   $02
@@ -8506,13 +8452,20 @@ L46CA    fcc   "Search for? "
 L46D7    fcc   "Delete"
          fcb 0
 
-         fcb   $43,$29,$e3,$52,$29,$df,$3f,$96
+         fcb   $43,$29,$e3
+         fcb   $52,$29,$df
+         fcb   $3f,$96
 L46E6    fcc   "Insert"
          fcb 0
-         fcb   $43,$29,$e3,$52,$29,$df,$3f,$98
+         fcb   $43,$29,$e3
+         fcb   $52,$29,$df
+         fcb   $3f,$98
 L46F5    fcc   "Move"
          fcb 0
-         fcb   $41,$2A,$80,$44,$2A,$7E,$4D,$2A,$22,$3F,$A0
+         fcb   $41,$2A,$80
+         fcb   $44,$2A,$7E
+         fcb   $4D,$2A,$22
+         fcb   $3F,$A0
 L4705    fcc   "Replicate - "
          fcb 0
 L4712    fcc   "  Destination"
@@ -9094,6 +9047,7 @@ L4C4D    bsr   L4C22
          cmpa  #$2A
          beq   L4C4B
          rts
+
 L4C54    fcc  "Print"
          fcb   $00
 L4C5A    fcc   "Block"
@@ -9121,22 +9075,29 @@ L4CB7    fcc   "/Row"
 
 L4CBC    fcc   "Data file"
          fcb   $00
-         fcb   $4C,$30,$e7,$53,$2f,$f4,$3f,$86
+
+         fcb   'L,$30,$e7
+         fcb   'S,$2f,$f4
+         fcb   $3f,$86
 
 L4CCE    fcc   "Order"
          fcb   $00
-         fcb   $43,$2f,$e8,$44,$2f,$c7,$52,$2f,$f0,$3f,$a2
+         fcb   'C,$2f,$e8
+         fcb   $44,$2f,$c7
+         fcb   $52,$2f,$f0
+         fcb   $3f,$a2
 
 L4CDF    fcc   "Printer"
          fcb   $00
-         fcb   $42
+         fcb   'B,$32,$6F
+         fcb   'C,$30,$b7
+         fcb   'L,$32,$dc
+         fcb   $50,$32,$66
+         fcb   $53
+         fcb   $33,$12
+         fcb   $57,$32,$d3
+         fcb   $3f,$94
 
-         leas  $0F,s
-         coma
-
-         fcb   $30,$b7,$4c,$32,$dc,$50,$32,$66,$53
-         fcb   $33,$12,$57,$32,$d3,$3f
-         fcb   $94
          ldx   #$00FE
          leau  >L4DC5,pcr
          bra   L4D0B
@@ -9306,18 +9267,17 @@ L4EAC    fcb   $ef,$ff
          fcb   $ef,$ff
          fcb   $ef
 
-L4EB5    fcb   $16,$00,$24
+L4EB5    lbra  L4EDC
 
 L4EB8    rts
 
          fcb   $ff,$ff
 
-L4EBB    fcb  $16,$01,$37
-L4EBE    fcb  $16,$00,$70
-
+L4EBB    lbra  L4FF5
+L4EBE    lbra  L4F31
 L4EC1    lbra  L4F6B
 L4EC4    lbra  L4EEE
-         lbra  L08C5
+L4EC7    lbra  L08C5
          rts
 
 L4ECB    fdb   $FFFF
@@ -9327,10 +9287,13 @@ L4ED0    rts
          fdb   $FFFF
 L4ED3    rts
          fdb   $FFFF
-L4ED6    fcb   $16
-         fcb   $01,$21
 
-L4ED9    fcb   $9F,$FA,$39,$DC,$41
+L4ED6    lbra  L4FFA
+
+L4ED9    stx   <u00FA
+         rts
+
+L4EDC    ldd   <u0041
          subd  <u00C5
          addd  #$0001
          pshs  b,a
@@ -9468,24 +9431,28 @@ L4FC0    subd  <u006C
          lbsr  L3AFF
          clra
          puls  pc,u,y,x,b,a
-         ldd   <u0017
+
+L4FF5    ldd   <u0017
          std   <u0081
          rts
-         ldx   <u0051
+
+L4FFA    ldx   <u0051
          ldb   ,x
          clra
          leau  d,x
          stu   <u0051
          cmpx  <u0081
          rts
+
          lbsr  L1AEC
          lbra  L1937
-         clra
-         fcb   $4B K
-         neg   <u0042
-         fcb   $41 A
-         lsra
-         neg   <u0002
+
+         fcc   "OK"
+         fcb   0
+         fcc   "BAD"
+         fcb   0
+
+         fcb   $02
          fcb   $08
          emod
 eom      equ   *
