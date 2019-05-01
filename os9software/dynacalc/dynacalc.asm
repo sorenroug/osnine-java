@@ -34,8 +34,7 @@ u0016    rmb   1
 u0017    rmb   1
 u0018    rmb   1
 u0019    rmb   1
-u001A    rmb   1
-u001B    rmb   1
+MEMPTR   rmb   2
 u001C    rmb   1
 u001D    rmb   1   Flag for help text discarded
 u001E    rmb   2
@@ -69,8 +68,7 @@ u003D    rmb   1
 u003E    rmb   1
 u003F    rmb   1
 u0040    rmb   1
-u0041    rmb   1
-u0042    rmb   1
+PARAMS   rmb   2
 u0043    rmb   1
 u0044    rmb   1
 u0045    rmb   1
@@ -304,13 +302,13 @@ L0058    stx   <u00AF
 L0069    lbsr  L4ECD
          ldb   #$80
          sta   b,y
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  >u02F8,u
          sts   <u00CE
          lbsr  L2ADB
          leau  u0008,u
          lbsr  L2ADB
-         ldu   <u001A
+         ldu   <MEMPTR
 L0083    lbsr  L055A
          clr   <u0076
          clr   <u00D9
@@ -601,7 +599,7 @@ L02FD    pshs  u
 L0301    lda   #$07
 L0303    sta   <u0025
 L0305    pshs  u
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  u0008,u
 L030B    lda   ,u
          anda  #$80
@@ -624,7 +622,7 @@ L0325    lda   b,u
          cmpb  <u0025
          bne   L0325
 L0330    puls  pc,u
-L0332    ldu   <u001A
+L0332    ldu   <MEMPTR
          ldb   ,x
          pshs  u,x,b
          leau  >u0400,u
@@ -675,11 +673,11 @@ L038F    pshs  a
          lsra
          lsra
          lsra
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  >$02FF,x
          clr   a,x
          puls  a
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  a,x
          rts
 L03A5    bsr   L0349
@@ -733,7 +731,7 @@ L0408    std   <u00F4
          ldu   <u00F4
          lbsr  L0375
          bne   L041A
-         ldu   <u001A
+         ldu   <MEMPTR
          lbsr  L2AA5
          ldx   <u00D3
          jsr   ,x
@@ -767,7 +765,7 @@ L044A    pshs  u,x,b
          leax  >L2AB1,pcr
          ldd   a,x
          pshs  y
-         ldy   <u001A
+         ldy   <MEMPTR
          leay  >$0550,y
          jsr   d,x
          puls  y
@@ -813,7 +811,7 @@ L04B0    tst   <u00C3
          bne   L04DD
          bsr   L04AA
          ldb   #$04
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  u0008,u
          lda   #$FF
          leay  $02,x
@@ -1043,6 +1041,7 @@ L0680    lda   u0008,u
          eora  #$80
          sta   u0008,u
          rts
+
          bsr   L06AF
          lbsr  L05BA
          lda   #$08
@@ -1151,7 +1150,7 @@ L077D    stu   <u00F4
          leau  d,u
          cmpu  <u00F6
          bls   L075E
-         ldu   <u001A
+         ldu   <MEMPTR
          tst   <u00FB
          lbne  L00EE
 L0790    tst   <u00FC
@@ -1195,19 +1194,19 @@ L07C7    lbsr  L1ACB
          cmpu  $03,x
          beq   L07F1
 L07E8    stu   $03,x
-         ldu   <u001A
+         ldu   <MEMPTR
          lda   #$FF
          lbra  L0478
 L07F1    lbra  L04DF
 L07F4    lbsr  L025B
          bra   L07FC
 L07F9    lbsr  L037E
-L07FC    ldu   <u001A
+L07FC    ldu   <MEMPTR
          lbsr  L2AA5
          lbra  L00EE
 
 L0804    pshs  u
-         ldu   <u001A
+         ldu   <MEMPTR
          lbsr  L2AA5
          ldx   <u00F8
          lbsr  L2ACF
@@ -1250,7 +1249,7 @@ L0867    ldb   #$FF
 L0869    stb   <u0025
          pshs  u,x
          lbsr  L1AB3
-         ldx   <u001A
+         ldx   <MEMPTR
          puls  u,b,a
          leax  d,x
          lbsr  L1AB9
@@ -1357,7 +1356,7 @@ L0983    fcc   "Can't load "
 L098E    fcc   "Dynacalc.trm"
          fcb   $0D
 
-L099B    ldy   <u001A
+L099B    ldy   <MEMPTR  beginning of data
          ldb   #$91
          leax  >$0157,y
 L09A4    clr   ,x+
@@ -1375,10 +1374,10 @@ L09B1    stu   b,x
          clr   <u001C
          stu   >$0580,y
          stu   >$05FE,y
-         ldd   <u001A
+         ldd   <MEMPTR
          adda  #$02
          sta   <u008C
-         leau  >$0090,y
+         leau  >$0090,y   Terminal setup
          lbsr  L0DD3
          leax  >$0510,y
          stx   <u00A2
@@ -1424,7 +1423,7 @@ L0A20    ldu   <u006E
          beq   L0A40
          clr   <u0092
          bsr   L0A82
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  >u03B8,u
          lbsr  L1AB9
 L0A40    tst   <u00C8
@@ -1434,7 +1433,7 @@ L0A47    tst   <u00CC
          bne   L0A4E
          lbsr  L1ADA
 L0A4E    bsr   L0A8B
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  >u0398,u
          stu   <u0057
          clrb
@@ -1460,7 +1459,7 @@ L0A4E    bsr   L0A8B
 L0A82    ldx   #$011A
 L0A85    lbsr  L0D55
          lbra  L1A19
-L0A8B    ldx   <u001A
+L0A8B    ldx   <MEMPTR  beginning of data
          tst   >$00F4,x
          beq   L0ABE
          ldx   #$0200
@@ -1477,7 +1476,7 @@ L0A98    clra
          sta   <u005B
          sta   <u00AD
          sta   <u00BB
-         ldy   <u001A
+         ldy   <MEMPTR  beginning of data
          sta   >$027F,y
          deca
          sta   <u005C
@@ -1567,7 +1566,7 @@ L0B81    incb
          bne   L0B81
          lbra  L134C
 
-L0B89    ldx   <u001A
+L0B89    ldx   <MEMPTR  beginning of data
          leax  >$014B,x
          ldb   #$0B
          clra
@@ -1768,6 +1767,7 @@ L0D23    ldb   <u0059
          rts
 L0D31    ldx   #$0200
          bra   L0D39
+
 L0D36    ldx   #$0000
 L0D39    bsr   L0D55
          lbsr  L19DB
@@ -1776,7 +1776,7 @@ L0D41    stx   <u006C
          lbsr  L1AB3
          sta   <u00C4
          ldd   <u006C
-         ldy   <u001A
+         ldy   <MEMPTR  beginning of data
          leau  d,y
          lbsr  L1AB9
          ldx   #$0200
@@ -1792,7 +1792,7 @@ L0D57    pshs  u,x,b
          lbsr  L1B13
 L0D6A    stb   <u00E5
          addd  <u000A
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  >u00B0,u
          tst   ,u
          lbmi  L1A50
@@ -1806,6 +1806,7 @@ L0D6A    stb   <u00E5
          clr   <u00E4
 L0D8A    lda   #$04
          puls  pc,u,x,b
+
 L0D8E    lda   <u0093
          bsr   L0DE3
          lbra  L0CBA
@@ -1832,10 +1833,12 @@ L0DBA    sta   <u0059
          stb   <u005A
 L0DC2    puls  pc,b,a
 
+* Print control sequence
+* address of sequence is stored in register B
 L0DC4    pshs  b
          tfr   a,b
          clra
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  d,u
          puls  b
          bra   L0DD3
@@ -1849,15 +1852,17 @@ L0DD3    lda   ,u+
          bls   L0DE2
          dec   <u00E4
 L0DE2    rts
+
 L0DE3    bsr   L0DE8
          lbra  L3AF3
 
+* Output a character
 L0DE8    tst   <u00E0
          bne   L0E24
          pshs  x,b,a
          cmpa  #$0A
          bne   L0DF4
-         inc   <u00BD
+         inc   <u00BD   vertical pos
 L0DF4    cmpa  #$0D
          bne   L0DFC
          clr   <u00E5
@@ -1872,28 +1877,30 @@ L0DFC    cmpa  #$20
          cmpa  b,x
          bls   L0E10
          sta   b,x
-L0E10    ldx   <u001A
+L0E10    ldx   <MEMPTR  beginning of data
          tst   >$00FA,x
          puls  x,b,a
          beq   L0E24
-         cmpa  #$61
+         cmpa  #'a
          bcs   L0E24
-         cmpa  #$7A
+         cmpa  #'z
          bhi   L0E24
          anda  #$5F
+* Write  char
 L0E24    tst   <u00E0
          beq   L0E2C
          cmpa  #$20
          bcs   L0E33
 L0E2C    anda  #$7F
          pshs  x
-         lbsr  L3AE7
+         lbsr  L3AE7 write char
 L0E33    puls  pc,x
+
 L0E35    lda   <u00E4
          adda  <u00E5
-         ldx   <u001A
+         ldx   <MEMPTR  beginning of data
          leax  >$00F2,x
-         ldb   <u00BD
+         ldb   <u00BD   vertical pos
          cmpb  #$03
          rts
 
@@ -1942,12 +1949,15 @@ L0E8D    bsr   L0EC3
          ldb   -$01,x
          cmpb  -$02,x
          rts
+
+* Test for ready from keyboard
 L0E96    pshs  b,a
          clra
          ldb   #$01
          os9   I$GetStt
          puls  pc,b,a
-L0EA0    ldx   <u001A
+
+L0EA0    ldx   <MEMPTR  beginning of data
          leax  >$0600,x
          rts
 
@@ -1955,7 +1965,7 @@ L0EA0    ldx   <u001A
 L0EA7    pshs  u,y,b
          clra
          ldy   #$0001
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leax  >u015E,u
          os9   I$Read
          bcc   L0EBD
@@ -1966,7 +1976,7 @@ L0EBD    lda   <u005E
          puls  pc,u,y,b
 
 L0EC3    bsr   L0E96
-         bcs   L0EE7
+         bcs   L0EE7  not ready
 L0EC7    bsr   L0EA7
          lbsr  L479E
          bsr   L0EA0
@@ -1984,6 +1994,7 @@ L0EDA    cmpb  -$01,x
 L0EE3    stb   -$02,x
          sta   b,x
 L0EE7    rts
+
 L0EE8    tst   <u0091
          bne   L0EF4
          lbsr  L3AF3
@@ -2110,7 +2121,7 @@ L0FCB    pshs  pc,b,a,cc
          pshs  pc
 L0FE1    addd  ,s++
          std   $03,s
-         ldx   <u001A
+         ldx   <MEMPTR  beginning of data
          leax  >$037F,x
          stx   <u0057
          puls  pc,b,a,cc
@@ -2237,7 +2248,7 @@ L1121    cmpa  #$2C
          beq   L111E
 L1129    cmpa  #$28
          beq   L111E
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  >u0320,u
          leax  <u0010,u
          stx   <u00FD
@@ -2340,7 +2351,7 @@ L11F1    ldb   <u0027
          incb
          stb   <u0039
          pshs  y
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leay  >u0550,u
          lbsr  L2AD2
          lbsr  L2AD5
@@ -2362,7 +2373,7 @@ L1223    sta   <u0022
          sta   <u0065
          stb   <u0020
          sta   <u004A
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          rts
 L1230    bsr   L121F
          ldb   <u005A
@@ -2385,7 +2396,7 @@ L1254    leax  >L2ADE,pcr
          leax  d,x
 L125C    ldy   <u00E9
          lbsr  L0D23
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  u0008,u
          lbsr  L2ACF
          bra   L1208
@@ -2501,7 +2512,7 @@ L134C    ldx   <u0073
 L134E    stb   ,x+
          clr   <u00AE
 L1352    pshs  x
-         ldx   <u001A
+         ldx   <MEMPTR  beginning of data
          leax  >$04F3,x
          cmpx  ,s
          puls  x
@@ -2646,7 +2657,7 @@ L147B    cmpa  #$0D
          beq   L14A2
 L147F    cmpa  #$0D
          lbeq  L15C7
-L1485    ldx   <u001A
+L1485    ldx   <MEMPTR  beginning of data
          leau  >$0100,x
          leax  >$0171,x
          ldb   #$FE
@@ -2812,7 +2823,7 @@ L15DE    stb   <u0072
          stb   <u005B
          bra   L15DE
 L15E9    sta   b,y
-         ldx   <u001A
+         ldx   <MEMPTR  beginning of data
          leax  >$0400,x
          stx   <u0073
          lbsr  L0A98
@@ -2826,7 +2837,7 @@ L1601    tst   <u00C3
          clr   <u0064
          tst   <u00AE
          bne   L1620
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leay  >u047F,u
          ldb   <u0074
          subb  #$7F
@@ -2855,7 +2866,7 @@ L163E    tfr   y,d
          stb   <u008D
          ldd   <u00E9
          std   <u005B
-         ldu   <u001A
+         ldu   <MEMPTR  beginning of data
          leau  >u03B1,u
          ldb   $01,y
          stb   <u001C
@@ -2886,7 +2897,7 @@ L167B    cmpb  #$40
          leay  $08,y
          com   <u004A
          pshs  y
-         ldy   <u001A
+         ldy   <MEMPTR  beginning of data
          leay  >$0550,y
          lbsr  L2AA8
          puls  y
@@ -3277,8 +3288,8 @@ L19C5    incb
          pshs  x
 L19D5    lbra  L1A19
 L19D8    lbra  L19DB
-L19DB    ldu   <u001A
-         leau  >u00BE,u
+L19DB    ldu   <MEMPTR  beginning of data
+         leau  >u00BE,u  Cursor clear to end of screen
          tst   ,u
          lbpl  L0DD3
          ldu   <u00BD
@@ -3318,8 +3329,8 @@ L1A24    abx
          sta   ,x
          subb  ,x
 L1A2F    sta   <u00BE
-         ldu   <u001A
-         leau  >u00B8,u
+         ldu   <MEMPTR  beginning of data
+         leau  >u00B8,u   Cursor clear to EOL
          tst   ,u
          bmi   L1A40
          puls  x,b
@@ -3331,23 +3342,25 @@ L1A42    lbsr  L0DE8
          lbsr  L0D57
          lbsr  L3AF3
 L1A4E    puls  pc,x,b
+
+* VT100 Escape for 'HOME'
 L1A50    ldu   <u006C
          ldb   <u0025
          pshs  u,b
          ldu   <u00BD
          ldd   <u00BD
          exg   a,b
-         lda   #$1B
+         lda   #$1B   escape
          bsr   L1A82
-         lda   #$5B
+         lda   #$5B   '[
          bsr   L1A82
          clr   <u00BD
          bsr   L1A85
-         lda   #$3B
+         lda   #$3B   ';
          bsr   L1A82
          tfr   u,d
          bsr   L1A85
-         lda   #$48
+         lda   #$48   'H
          bsr   L1A82
          clr   <u00E4
          stu   <u00BD
@@ -3356,7 +3369,7 @@ L1A50    ldu   <u006C
          stb   <u0025
          stu   <u006C
          puls  pc,u,x,b
-L1A82    lbra  L0E24
+L1A82    lbra  L0E24 Write char
 L1A85    clra
          incb
          stb   <u0025
@@ -3427,6 +3440,7 @@ L1B2D    tst   <u00E0
 L1B36    puls  pc,u,a
 L1B38    bsr   L1B3A
 L1B3A    lda   #$20
+* out character
 L1B3C    lbra  L093A
 
 L1B3F    bsr   L1B3C
@@ -3552,7 +3566,7 @@ L1C1D    tst   <u007D
          lda   ,x
          sta   ,u+
 L1C25    rts
-L1C26    ldx   <u001A
+L1C26    ldx   <MEMPTR  beginning of data
          leax  >$0400,x
          stx   <u0089
          leax  >L2AAE,pcr
@@ -3562,7 +3576,7 @@ L1C26    ldx   <u001A
          beq   L1C3E
          clr   <u0074
          ldx   <u0089
-L1C3E    ldu   <u001A
+L1C3E    ldu   <MEMPTR  beginning of data
          leau  u0008,u
          lbsr  L2ACF
          clr   <u00AE
@@ -3673,14 +3687,14 @@ L1D1B    tfr   x,d
          ldx   <u00AF
          lbra  L1CBC
 L1D28    stx   <u00AF
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  <$20,x
          pshs  x
          tfr   u,x
          tfr   a,b
          abx
          stx   <u0051
-         ldx   <u001A
+         ldx   <MEMPTR
          ldd   <$64,x
          subd  <u006E
          std   <u00F2
@@ -3737,8 +3751,9 @@ L1DAC    lbsr  L1B3C
          bra   L1D62
 L1DB8    lda   <u00ED
          beq   L1DC2
-         ldx   <u001A
-         jmp   >$0608,x
+         ldx   <MEMPTR
+         jmp   >$0608,x   Print out of memory
+
 L1DC2    inca
          sta   <u00EF
          lbsr  L3AEA
@@ -3898,6 +3913,7 @@ L1F0D    pshs  u
          lbsr  L19D5
          lda   #$04
          puls  pc,u
+
 L1F16    fcc   "Commands"
          fcb   $00
 
@@ -3908,7 +3924,7 @@ L1F16    fcc   "Commands"
          fcb   'E,$07,$62
          fcb   'F,$0c,$1b
          fcb   'I,$25,$d0
-         fcb   'L,$25,$d5  (Not in the manual?)
+         fcb   'L,$25,$d5  (Locate-Not in the manual)
          fcb   'M,$25,$d0
          fcb   'P,$2d,$03
          fcb   'Q,$05,$87
@@ -4008,9 +4024,9 @@ L2013    ldx   #$011A
          leau  >L1FC4,pcr
          ldy   <u00A2
          bra   L2047
-         leau  >L1F4E,pcr
+         leau  >L1F4E,pcr   Attributes
          bra   L2047
-         leau  >L1FA1,pcr
+         leau  >L1FA1,pcr   Windows
          bra   L2047
 
 L2043    leau  >L1F16,pcr
@@ -4077,6 +4093,7 @@ L20D1    tst   <u001D
          ldu   <u001E
          leau  u0003,u
          tfr   u,pc
+
 L20DD    lbsr  L1F0D
 L20E0    ldx   #$0200
 L20E3    lbra  L08CE
@@ -4189,6 +4206,7 @@ L21F0    lbsr  L1B3C
 L21F3    decb
          bpl   L21F0
          rts
+
          tst   <u0080
          lbeq  L215E
          tst   <u00CD
@@ -4229,7 +4247,7 @@ L224A    ldu   $04,y
          clra
          clrb
          std   $06,y
-L2254    lda   #$C4
+L2254    lda   #$C4   Location of reverse on
          bsr   L22C6
          lbsr  L234E
          ldb   <u0098
@@ -4282,7 +4300,8 @@ L22B8    sta   <u00BE
          negb
          lbsr  L2245
          bra   L2269
-L22C4    lda   #$CC
+
+L22C4    lda   #$CC   Location of reverse off
 L22C6    lbra  L093D
 L22C9    clr   -$02,y
 L22CB    lda   <u0070
@@ -4314,7 +4333,7 @@ L22F7    decb
          stb   <u00BE
 L2303    lbra  L08E9
 L2306    clr   <u00BA
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  >$0580,x
          stx   <u0046
 L2310    ldb   ,x+
@@ -4350,7 +4369,7 @@ L2331    ldb   <u0021
          dec   <u0099
 L234B    ldb   <u0025
          rts
-L234E    ldy   <u001A
+L234E    ldy   <MEMPTR
          leay  >$0530,y
          sty   <u004F
          leay  <-$20,y
@@ -4636,7 +4655,7 @@ L257F    lda   ,x
          puls  pc,y
 L25A7    bita  #$08
          bne   L25C1
-         ldu   <u001A
+         ldu   <MEMPTR
          leax  $01,x
          lbsr  L2AA5
          clr   <u004B
@@ -4752,7 +4771,7 @@ L26A4    stb   <u0025
          lda   <u0093
          lbsr  L1B43
          lbra  L1D0C
-         ldu   <u001A
+         ldu   <MEMPTR
          leay  >u0113,u
          lbsr  L2013
          bsr   L26DD
@@ -4792,7 +4811,7 @@ L26FB    leau  >L1F7F,pcr
          rts
 L270D    ldd   <u0097
          bne   L278C
-         ldu   <u001A
+         ldu   <MEMPTR
          leay  >u0510,u
          leau  <$10,y
          lda   #$20
@@ -4831,7 +4850,7 @@ L271C    clr   ,u+
          beq   L278C
          ldb   $01,y
          leay  $01,y
-L275F    ldu   <u001A
+L275F    ldu   <MEMPTR
          leau  >u0530,u
          std   ,u
          lda   $06,y
@@ -4912,7 +4931,7 @@ L27F5    ldu   <u0097
          ldb   <u00A3
          cmpb  #$10
          beq   L2829
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  >u0520,u
          leax  <-u0020,u
          ldb   #$20
@@ -5184,7 +5203,7 @@ L2AD2    lbra  L2B53
 L2AD5    lbra  L2AF3
 L2AD8    lbra  L2B2B
 L2ADB    lbra  L2FAC
-L2ADE    clr   <u001A
+L2ADE    clr   <MEMPTR
          nop
 L2AE1    clr   <u000F
          nop
@@ -5314,10 +5333,11 @@ L2B61    bsr   L2B35
          sta   u0008,u
          lbcs  L3008
          lbra  L2B61
+
 L2BD9    ldx   u0008,u
          stx   <u0018,u
          ldx   u000A,u
-         stx   <u001A,u
+         stx   <MEMPTR,u
          ldx   u000C,u
          stx   <u001C,u
          ldx   u000E,u
@@ -5325,7 +5345,7 @@ L2BD9    ldx   u0008,u
          rts
 L2BEE    ldx   <u0018,u
          stx   u0008,u
-         ldx   <u001A,u
+         ldx   <MEMPTR,u
          stx   u000A,u
          ldx   <u001C,u
          stx   u000C,u
@@ -7156,7 +7176,7 @@ L3B6A    clra
          leax  $01,x
          ldb   ,u+
          addd  #$00F0
-         addd  <u001A
+         addd  <MEMPTR
          tfr   d,y
          tst   <u00EF
          bne   L3B81
@@ -7278,7 +7298,7 @@ L3C6E    bsr   L3C72
 L3C72    lbra  L3EA9
 L3C75    lbra  L1AFB
 L3C78    lbsr  L3B95
-         ldx   <u001A
+         ldx   <MEMPTR
          lda   #$21
          sta   <u0040
          ldd   #$FFFF
@@ -7377,6 +7397,7 @@ L3D37    cmpa  #$2F
          lbsr  L3F61
          addb  #$0C
          bra   L3DB9
+
 L3D4C    ldb   <u00ED
          bne   L3D54
          ldb   <u0019
@@ -7463,7 +7484,7 @@ L3DF0    lbsr  L3C07
          bne   L3E4B
          bsr   L3E15
          pshs  u
-         ldx   <u001A
+         ldx   <MEMPTR
          leau  >$0580,x
 L3E09    bsr   L3E20
          sta   ,u+
@@ -7502,7 +7523,7 @@ L3E4B    com   <u00BC
 L3E52    tst   <u00A7
          bne   L3E1F
 L3E56    pshs  u,y,x,b,a
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  >u0700,u
          stu   <u00D1
          ldx   <u0044
@@ -7529,15 +7550,16 @@ L3E88    lbcs  L3C23
          tfr   y,d
          cmpd  #$0200
          beq   L3E9E
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  >$0700,x
          clr   d,x
          com   d,x
 L3E9E    ldx   #$0700
          stx   <u0044
 L3EA3    puls  pc,u,y,x,b,a
+
 L3EA5    tst   <u00A7
-         bne   L3ED6
+         bne   L3ED6  call os9 write
 L3EA9    pshs  x,b
          ldx   <u0044
          cmpx  #$0900
@@ -7545,7 +7567,7 @@ L3EA9    pshs  x,b
          bsr   L3E56
          ldx   <u0044
 L3EB6    pshs  a
-         ldd   <u001A
+         ldd   <MEMPTR
          leax  d,x
          puls  a
          tst   <u00EE
@@ -7603,7 +7625,7 @@ L3F20    lbsr  L3EA9
 L3F2A    ldu   <u006E
          cmpu  #$FFFF
          lbne  L3F52
-         ldu   <u001A
+         ldu   <MEMPTR
          leax  >u0292,u
          leau  >u06C0,u
          bsr   L3F61
@@ -7647,7 +7669,7 @@ L3F8E    lbsr  L0922
 L3F93    leau  >L3FEF,pcr
          bsr   L3FC3
          clra
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  >$0200,x
          tfr   x,u
          ldy   #$01FF
@@ -7720,7 +7742,7 @@ L4067    fcb   $16
          lbsr  L1AB3
          leau  >L408B,pcr
          lbsr  L40BF
-         ldu   <u001A
+         ldu   <MEMPTR
          leay  >u01BF,u
          clrb
          lbsr  L429C
@@ -7750,7 +7772,7 @@ L40B4    ldd   ,y
 L40BF    lbra  L1AB9
 L40C2    lbsr  L0901
 L40C5    lbra  L1B0A
-L40C8    ldx   <u001A
+L40C8    ldx   <MEMPTR
          leau  <$20,x
          stu   <u00F4
          leau  <$60,x
@@ -7849,7 +7871,7 @@ L41AB    sta   ,u+
          cmpu  <u00FA
          bne   L4199
 L41B2    puls  x,b,a
-         ldu   <u001A
+         ldu   <MEMPTR
          lbsr  L2AA5
          clr   <u00AE
          subb  #$08
@@ -7861,7 +7883,7 @@ L41BF    subb  #$02
          lsrb
          ror   <u007D
          std   <u006C
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  >u0400,u
          stu   <u0089
          lda   <u001C
@@ -8098,7 +8120,7 @@ L43CE    lbsr  L4ED6
          bcs   L43E9
          tst   <u00B3
          bne   L43C6
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  >$0580,x
 L43DD    ldb   ,x+
          beq   L43C6
@@ -8170,7 +8192,7 @@ L445D    leau  >L46D7,pcr
          bra   L4467
 L4463    leau  >L46E6,pcr
 L4467    stu   <u00AF
-         ldx   <u001A
+         ldx   <MEMPTR
          leay  >$0180,x
          clr   <u00B3
 L4471    lbra  L1AEF
@@ -8212,7 +8234,7 @@ L44B4    lbra  L4088
          bcs   L44CB
          inc   <u00E1
 L44CB    clr   <u00B3
-         ldu   <u001A
+         ldu   <MEMPTR
          leay  >u0180,u
          cmpa  <u00B1
          bne   L44DD
@@ -8301,7 +8323,7 @@ L458F    beq   L4556
          eora  <u00DE
          tfr   a,cc
          bcc   L4556
-         ldx   <u001A
+         ldx   <MEMPTR
          ldx   <$64,x
          ldu   $04,y
          stx   <u00B1
@@ -8409,11 +8431,11 @@ L466B    decb
          bra   L4613
 L4670    leas  $07,s
          clr   <u00CC
-         lda   <u001A
+         lda   <MEMPTR
          adda  #$04
          sta   <u008C
          lbsr  L1ADA
-L467D    lda   <u001A
+L467D    lda   <MEMPTR
          adda  #$02
          sta   <u008C
          lbsr  L1AB3
@@ -8649,7 +8671,7 @@ L48D8    lbsr  L49B2
          clrb
          std   <u0097
          pshs  u,x
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  >$0500,x
          leay  <$10,x
          ldd   #$FB28
@@ -8711,7 +8733,7 @@ L4970    lda   <u003B
          sta   <u009B
          lbsr  L1AD1
 L4977    lds   <u00CE
-         ldx   <u001A
+         ldx   <MEMPTR
          leax  <$28,x
          ldd   #$04D8
          bsr   L494B
@@ -8731,7 +8753,7 @@ L4977    lds   <u00CE
          lbne  L4D82
          lbra  L4B50
 L49AA    lda   #$20
-         lbsr  L3AE7
+         lbsr  L3AE7 write char
          decb
          bne   L49AA
 L49B2    lbra  L3AF3
@@ -8740,12 +8762,12 @@ L49B8    clr   <u00E0
          leau  >L4E24,pcr
          bsr   L49B5
          inc   <u00E0
-         ldu   <u001A
+         ldu   <MEMPTR
          leau  >u0400,u
          bsr   L49B5
          ldb   <u00F1
          bsr   L49AA
-L49CE    ldu   <u001A
+L49CE    ldu   <MEMPTR
          leau  >u0562,u
          bsr   L49B5
          tst   <u0091
@@ -8755,7 +8777,7 @@ L49CE    ldu   <u001A
          beq   L49EA
          ldb   #$04
          bsr   L49AA
-         leau  >L4E1F,pcr
+         leau  >L4E1F,pcr   point to "PAGE"
 L49EA    bsr   L49B5
          inc   <u00F5
          ldb   <u00F5
@@ -9105,7 +9127,7 @@ L4CDF    fcc   "Printer"
          leau  >L4DB8,pcr
 L4D0B    pshs  u,x
          lbsr  L1AB3
-         ldx   <u001A
+         ldx   <MEMPTR
          puls  u,b,a
          leax  d,x
          lbsr  L49B5
@@ -9212,7 +9234,7 @@ L4E33    bsr   L4E46
          pshs  cc
 L4E3D    inc   <u006D
 L4E3F    adda  #$30
-         lbsr  L3AE7
+         lbsr  L3AE7 write char
 L4E44    puls  pc,a
 L4E46    clr   <u006C
 L4E48    inc   <u006C
@@ -9248,7 +9270,7 @@ L4E7A    sta   <u006D
          puls  y
          bsr   L4E2F
          stu   <u0044
-         ldd   <u001A
+         ldd   <MEMPTR
          leau  d,u
          ldb   #$05
 L4E9A    lda   ,u+
@@ -9293,7 +9315,7 @@ L4ED6    lbra  L4FFA
 L4ED9    stx   <u00FA
          rts
 
-L4EDC    ldd   <u0041
+L4EDC    ldd   <PARAMS
          subd  <u00C5
          addd  #$0001
          pshs  b,a
@@ -9387,8 +9409,8 @@ L4F95    puls  pc,u,x,b,a
 L4F97    pshs  u,y,x,b,a
          ldd   #$0F00
          std   <u0046
-L4F9E    ldd   <u0041
-         subd  <u001A
+L4F9E    ldd   <PARAMS
+         subd  <MEMPTR
          tst   <u0043
          beq   L4FA9
          addd  #$5800
@@ -9412,7 +9434,7 @@ L4FC0    subd  <u006C
          ldd   <u0046
          addd  <u001E
          std   <u001E
-         ldd   <u0041
+         ldd   <PARAMS
          subd  <u00C5
          addd  #$0002
          clr   <u007D
@@ -9423,9 +9445,9 @@ L4FC0    subd  <u006C
          ldd   <u0046
          addd  <u00C5
          std   <u00C5
-         ldu   <u0041
+         ldu   <PARAMS
          leax  -$01,y
-         stx   <u0041
+         stx   <PARAMS
          tfr   y,x
          leau  u0001,u
          lbsr  L3AFF

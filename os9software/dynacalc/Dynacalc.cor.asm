@@ -37,7 +37,7 @@
          fcb   $00
          fcb   $83
          fcb   $09
-         fcb   $82
+M0080    fcb   $82
          fcb   $20
          fcb   $00
          fcb   $00
@@ -45,93 +45,25 @@
          fcb   $00
          fcb   $00
          fcb   $00
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-M00A0    fcb   $FF
-         fcb   $FF
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $1B
-         fcb   $43 C
-         fcb   $FF
-         fcb   $FF
-         fcb   $1B
-         fcb   $4E N
-         fcb   $FF
-         fcb   $FF
+M0088    fcb   $FF,$FF,$FF,$FF    Cursor on
+M008C    fcb   $FF,$FF,$FF,$FF    Cursor off
+M0090    fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00   Terminal setup
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00
+M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
+M00A8    fcb   $FF,$FF,$00,$00    Cursor right
+         fcb   $FF,$FF,$00,$00    Cursor ??
 M00B0    fcb   $1B,$41,$06,$0F    Cyrsor XY
          fcb   $FF,$00,$00,$00
 M00B8    fcb   $1B,$42,$FF,$00,$00,$00    Cursor clear to EOL
-         fcb   $1B,$4A,$FF,$00,$00,$00    Cursor clear to end of screen
-         fcb   $1B
-         fcb   $46 F
-         fcb   $FF
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $1B
-         fcb   $47 G
-         fcb   $FF
-         fcb   $00
-M00D0    fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $08
-         fcb   $20
-         fcb   $08
-         fcb   $FF
-         fcb   $00
-         fcb   $00
-         fcb   $08
-         fcb   $FF
-         fcb   $00
-         fcb   $00
-         fcb   $20
-         fcb   $20
-M00E0    fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $00
+M00BE    fcb   $1B,$4A,$FF,$00,$00,$00    Cursor clear to end of screen
+M00C4    fcb   $1B,$46,$FF,$00    Reverse on
+         fcb   $00,$00,$00,$00
+M00CC    fcb   $1B,$47,$FF,$00    Reverse off
+M00D0    fcb   $00,$00,$00,$00
+         fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
+M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
+M00DE    fcc   "                "  Terminal name (16 chars)
+M00EE    fcb   $00
          fcb   $00
 M00F0    fcb   $00
          fcb   $00
@@ -140,33 +72,33 @@ M00F0    fcb   $00
          fcb   $00
          fcb   $00
          fcb   $00
-M00F7    fcb   $04
-M00F8    fcb   $00
-         fcb   $00
+M00F7    fcb   $04  Log-off key
+M00F8    fcb   $00  Upper case only
+         fcb   $00  line feeds after each line
 M00FA    fcb   $00
-M00FB    fcb   $00
-         fcb   $FF
-         fcb   $83
-         fcb   $00
-         fcb   $3F
-M0100    fcb   $0C
-         fcb   $0A
-         fcb   $18
-         fcb   $09
-         fcb   $1C
-         fcb   $19
-         fcb   $07
-         fcb   $1A
-         fcb   $03
-         fcb   $08
-         fcb   $00
-         fcb   $00
-         fcb   $02
-         fcb   $18
-         fcb   $32 2
-         fcb   $0F
+M00FB    fcb   $00  keep helps  T/F
+         fcb   $FF  print borders  T/F
+         fcb   79  printer page width
+         fcb   $00  Pagination  T/F
+M00FF    fcb   57  Lines per page
+M0100    fcb   $0C     Up-arrow
+         fcb   $0A     Down-arrow
+         fcb   $18     Left-arrow
+         fcb   $09     Right-arrow
+         fcb   $1C     Home key
+         fcb   $19     Jump window (Ctrl-Y)
+M0106    fcb   $07   Bell character
+         fcb   $1A   Get address (Ctrl-Z)
+         fcb   $03   Flush type-ahead buffer (Ctrl-C)
+         fcb   $08   Backspace key
+         fcb   $00   direct cursor addressing row offset
+         fcb   $00   direct cursor addressing columns offset
+M010C    fcb   $02
+         fcb   24   number of rows on screen
+         fcb   50  number of columns on screen
+         fcb   $0F  Edit overlay (Ctrl-O)
 M0110    fcb   $03
-         fcb   $05
+         fcb   $05  Edit from entry level (Ctrl-E)
          fcb   $00
          fcb   $00
          fcb   $00
@@ -2492,7 +2424,7 @@ M0B88    clr   $04,x
          clr   <$00E0
          clr   <$00E8
          clr   <$00C4
-         tst   >M00B8,pcr
+         tst   >M00B8,pcr    Cursor control sequences
          bpl   M0BA1
 M0B9F    dec   <$000E
 M0BA1    tst   >M00F7,pcr
@@ -2975,17 +2907,11 @@ M0DC8    fcc   "      Loading "
          fcb   $16
          fcb   $01
          fcb   $39 9
-         fcb   $DE ^
-         fcb   $1A
-         fcb   $10
-         fcb   $AE .
-         fcb   $C9 I
-         fcb   $05
-         fcb   $75 u
-         fcb   $33 3
-         fcb   $8D
-         fcb   $00
-         fcb   $44 D
+
+M0F0D    ldu   <$001A
+         ldy   >$0575,u
+         leau  >M0F5C,pcr
+
          fcb   $AD -
          fcb   $A9 )
          fcb   $1A
@@ -3054,47 +2980,29 @@ M0DC8    fcc   "      Loading "
          fcb   $A9 )
          fcb   $3A :
          fcb   $E1 a
+
 M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00
-         fcb   $34 4
-         fcb   $20
-         fcb   $10
-         fcb   $9E
-         fcb   $1A
-         fcb   $10
-         fcb   $AE .
-         fcb   $A9 )
-         fcb   $05
-         fcb   $75 u
-         fcb   $E6 f
-         fcb   $84
-         fcb   $C1 A
-         fcb   $88
-         fcb   $26 &
-         fcb   $08
-         fcb   $0D
-         fcb   $E1 a
-         fcb   $27 '
-         fcb   $04
-         fcb   $C6 F
-         fcb   $9A
-         fcb   $0F
-         fcb   $E1 a
-         fcb   $D7 W
-         fcb   $25 %
-         fcb   $DE ^
-         fcb   $B1 1
-         fcb   $96
-         fcb   $B3 3
-         fcb   $D6 V
-         fcb   $75 u
-         fcb   $34 4
-         fcb   $46 F
-         fcb   $17
-         fcb   $00
-         fcb   $A4 $
-         fcb   $86
-         fcb   $0A
+
+M0F79    pshs  y
+         ldy   <$001A
+         ldy   >$0575,y
+         ldb   ,x
+         cmpb  #$88
+         bne   M0F91
+         tst   <$00E1
+         beq   M0F91
+         ldb   #$9A
+         clr   <$00E1
+M0F91    stb   <$0025
+         ldu   <$00B1
+         lda   <$00B3
+         ldb   <$0075
+         pshs  u,b,a
+         lbsr  M1042
+         lda   #$0A
+
+
          fcb   $AD -
          fcb   $A9 )
          fcb   $09
@@ -3257,7 +3165,7 @@ M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $75 u
          fcb   $35 5
          fcb   $A0
-         fcb   $6E n
+M1042    fcb   $6E n
          fcb   $A9 )
          fcb   $09
          fcb   $1C
