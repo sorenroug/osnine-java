@@ -1358,26 +1358,12 @@ M0608    ldy   #$004E
          leax  >M0629,pcr
          lda   #$02
          os9   I$Write
-         fcb   $4F
-         fcb   $30
-         fcb   $8D
-         fcb   $00
-         fcb   $0F
-         fcb   $10
-         fcb   $8E
-         fcb   $00
-         fcb   $01
-         fcb   $10
-         fcb   $3F
-         fcb   $89
-         fcb   $EE
-         fcb   $8D
-         fcb   $FF
-         fcb   $50
-         fcb   $6E
-         fcb   $C9
-         fcb   $3A
-         fcb   $D5
+         clra
+         leax  >M0629,pcr
+         ldy   #$0001
+         os9   I$Read
+         ldu   >M0575,pcr
+         jmp   >$3AD5,u
 
 M0629    fcb   $0D
          fcb   $0A
@@ -1386,6 +1372,7 @@ M062C    fcc   "OUT OF MEMORY- Worksheet not completely loaded."
          fcb   $0D
          fcb   $0A
 M065D    fcc   "Press any key to continue."
+
 M0677    fcb   $30 0
          fcb   $2D -
          fcb   $34 4
@@ -2911,75 +2898,37 @@ M0DC8    fcc   "      Loading "
 M0F0D    ldu   <$001A
          ldy   >$0575,u
          leau  >M0F5C,pcr
-
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1A
-         fcb   $A4 $
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $08
-         fcb   $EF o
-         fcb   $81
-         fcb   $59 Y
-         fcb   $27 '
-         fcb   $04
-         fcb   $6E n
-         fcb   $A9 )
-         fcb   $1A
-         fcb   $89
-         fcb   $DE ^
-         fcb   $1E
-         fcb   $9E
-         fcb   $41 A
-         fcb   $30 0
-         fcb   $01
-         fcb   $9F
-         fcb   $1E
-         fcb   $34 4
-         fcb   $50 P
-         fcb   $03
-         fcb   $1D
-         fcb   $DC \
-         fcb   $41 A
-         fcb   $93
-         fcb   $17
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $D3 S
-         fcb   $17
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $4E N
-         fcb   $B5 5
-         fcb   $1F
-         fcb   $30 0
-         fcb   $93
-         fcb   $C5 E
-         fcb   $DD ]
-         fcb   $6C l
-         fcb   $DC \
-         fcb   $1E
-         fcb   $93
-         fcb   $6C l
-         fcb   $DD ]
-         fcb   $C5 E
-         fcb   $DC \
-         fcb   $6C l
-         fcb   $0F
-         fcb   $7D
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $06
-         fcb   $7D
-         fcb   $DD ]
-         fcb   $6C l
-         fcb   $35 5
-         fcb   $50 P
-         fcb   $6E n
-         fcb   $A9 )
-         fcb   $3A :
-         fcb   $E1 a
+         jsr   >$1AA4,y
+         jsr   >$08EF,y
+         cmpa  #$59
+         beq   M0F28
+         jmp   >$1A89,y
+M0F28    ldu   <$001E
+         ldx   <$0041
+         leax  $01,x
+         stx   <$001E
+         pshs  u,x
+         com   <$001D
+         ldd   <$0041
+         subd  <$0017
+         lsra
+         rorb
+         addd  <$0017
+         jsr   >$4EB5,y
+         tfr   u,d
+         subd  <$00C5
+         std   <$006C
+         ldd   <$001E
+         subd  <$006C
+         std   <$00C5
+         ldd   <$006C
+         clr   <$007D
+         lsra  
+         rorb  
+         ror   <$007D
+         std   <$006C
+         puls  u,x
+         jmp   >$3AE1,y
 
 M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00
@@ -2999,219 +2948,98 @@ M0F91    stb   <$0025
          lda   <$00B3
          ldb   <$0075
          pshs  u,b,a
-         lbsr  M1042
+M0F9B    lbsr  M1042
          lda   #$0A
 
+         jsr   >$0925,y
+         leax  >M2CC3,pcr
+         ldb   <$0025
+         abx
+         ldd   ,x
+         leau  >M1071,pcr
+         leau  d,u
+M0FB3    lda   ,u+
+         beq   M0FEA
+         cmpa  #$11
+         bne   M0FDE
+         jsr   >$3ADE,y
+         jsr   >$0901,y
+         ldb   -$01,x
+         incb
+         lda   b,x
+         pshs  a
+         clr   b,x
 
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $09
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $8D
-         fcb   $1D
-         fcb   $1B
-         fcb   $D6 V
-         fcb   $25 %
-         fcb   $3A :
-         fcb   $EC l
-         fcb   $84
-         fcb   $33 3
-         fcb   $8D
-         fcb   $00
-         fcb   $C0 @
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $A6 &
-         fcb   $C0 @
-         fcb   $27 '
-         fcb   $33 3
-         fcb   $81
-         fcb   $11
-         fcb   $26 &
-         fcb   $23 #
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $3A :
-         fcb   $DE ^
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $09
-         fcb   $01
-         fcb   $E6 f
-         fcb   $1F
-         fcb   $5C \
-         fcb   $A6 &
-         fcb   $85
-         fcb   $34 4
-         fcb   $02
-         fcb   $6F o
-         fcb   $85
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $08
-         fcb   $EF o
-         fcb   $35 5
-         fcb   $02
-         fcb   $81
-         fcb   $1B
-         fcb   $27 '
-         fcb   $47 G
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $8D
-         fcb   $68 h
-         fcb   $35 5
-         fcb   $40 @
-         fcb   $20
-         fcb   $08
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $09
-         fcb   $25 %
-         fcb   $81
-         fcb   $0D
-         fcb   $26 &
-         fcb   $CD M
-         fcb   $86
-         fcb   $0A
-         fcb   $20
-         fcb   $F4 t
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $3A :
-         fcb   $DE ^
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $09
-         fcb   $01
-         fcb   $96
-         fcb   $25 %
-         fcb   $81
-         fcb   $80
-         fcb   $26 &
-         fcb   $25 %
-         fcb   $E6 f
-         fcb   $1F
-         fcb   $5C \
-         fcb   $A6 &
-         fcb   $85
-         fcb   $81
-         fcb   $40 @
-         fcb   $26 &
-         fcb   $04
-         fcb   $C6 F
-         fcb   $9C
-         fcb   $20
-         fcb   $06
-         fcb   $81
-         fcb   $3E >
-         fcb   $26 &
-         fcb   $0A
-         fcb   $C6 F
-         fcb   $9E
-         fcb   $D7 W
-         fcb   $25 %
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $08
-         fcb   $EF o
-         fcb   $20
-         fcb   $88
-         fcb   $84
-         fcb   $5F _
-         fcb   $81
-         fcb   $47 G
-         fcb   $26 &
-         fcb   $04
-         fcb   $C6 F
-         fcb   $84
-         fcb   $20
-         fcb   $EE n
-         fcb   $8D
-         fcb   $23 #
-         fcb   $0F
-         fcb   $AC ,
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1A
-         fcb   $BC <
-         fcb   $10
-         fcb   $9E
-         fcb   $1A
-         fcb   $10
-         fcb   $AE .
-         fcb   $A9 )
-         fcb   $05
-         fcb   $75 u
-         fcb   $8E
-         fcb   $02
-         fcb   $00
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $08
-         fcb   $B9 9
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $3A :
-         fcb   $DE ^
-         fcb   $35 5
-         fcb   $46 F
-         fcb   $97
-         fcb   $B3 3
-         fcb   $DF _
-         fcb   $B1 1
-         fcb   $D7 W
-         fcb   $75 u
-         fcb   $35 5
-         fcb   $A0
-M1042    fcb   $6E n
-         fcb   $A9 )
-         fcb   $09
-         fcb   $1C
-         fcb   $DE ^
-         fcb   $1A
-         fcb   $10
-         fcb   $AE .
-         fcb   $C9 I
-         fcb   $05
-         fcb   $75 u
-         fcb   $CC L
-         fcb   $2C ,
-         fcb   $20
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1A
-         fcb   $8C
-         fcb   $D6 V
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $8D
-         fcb   $1C
-         fcb   $7B
-         fcb   $C0 @
-         fcb   $C8 H
-         fcb   $C1 A
-         fcb   $35 5
-         fcb   $23 #
-         fcb   $02
-         fcb   $C6 F
-         fcb   $36 6
-         fcb   $58 X
-         fcb   $3A :
-         fcb   $EC l
-         fcb   $84
-         fcb   $33 3
-         fcb   $8D
-         fcb   $18
-         fcb   $55 U
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $3F ?
-         fcb   $AE .
-         fcb   $39 9
+         jsr   >$08EF,y
+         puls  a
+         cmpa  #$1B
+         beq   M101D
+         pshs  u
+         bsr   M1042
+         puls  u
+         bra   M0FE6
+M0FDE    jsr   >$0925,y
+         cmpa  #$0D
+         bne   M0FB3
+M0FE6    lda   #$0A
+         bra   M0FDE
+M0FEA    jsr   >$3ADE,y
+         jsr   >$0901,y
+         lda   <$0025
+         cmpa  #$80
+         bne   M101D
+         ldb   -$01,x
+         incb
+         lda   b,x
+         cmpa  #$40
+         bne   M1005
+         ldb   #$9C
+         bra   M100B
+M1005    cmpa  #$3E
+         bne   M1013
+         ldb   #$9E
+M100B    stb   <$0025
+         jsr   >$08EF,y
+         bra   M0F9B
+M1013    anda  #$5F
+         cmpa  #$47
+         bne   M101D
+         ldb   #$84
+         bra   M100B
+
+M101D    bsr   M1042
+         clr   <$00AC
+         jsr   >$1ABC,y
+         ldy   <$001A
+         ldy   >$0575,y
+         ldx   #$0200
+         jsr   >$08B9,y
+         jsr   >$3ADE,y
+         puls  u,b,a
+         sta   <$00B3
+         stu   <$00B1
+         stb   <$0075
+         puls  pc,y
+
+M1042    jmp   >$091C,y
+         ldu   <$001A
+         ldy   >$0575,u
+         ldd   #$2C20
+         jsr   >$1A8C,y
+         ldb   <$0025
+         leax  >M2CD5,pcr
+         subb  #$C8
+         cmpb  #$35
+         bls   M1062
+         ldb   #$36
+M1062    lslb
+         abx
+         ldd   ,x
+         leau  >M28BF,pcr
+         leau  d,u
+         jsr   >$3FAE,y
+         rts
+
 M1071    fcc   "A  set Attributes"
          fcb   $0D
 M1083    fcc   "B  Blank current cell"
@@ -3658,7 +3486,7 @@ M270D    fcc   "       DYNACALC Error Messages"
          fcc   "      Hit any key to exit Help"
          fcb   $0D
          fcb   $00
-         fcc   "Path table full."
+M28BF    fcc   "Path table full."
          fcb   $00
          fcc   "Illegal path number."
          fcb   $00
@@ -3756,10 +3584,11 @@ M270D    fcc   "       DYNACALC Error Messages"
          fcb   $00
          fcc   "Indirect file was accessed."
          fcb   $00
-M2CC1    fcc   "Unknown error code."
+M2CC1    fcc   "Un"
+M2CC3    fcc   "known error code."
          fcb   $00
 
-         fcb   $00
+M2CD5    fcb   $00
          fcb   $00
          fcb   $00
          fcb   $11
