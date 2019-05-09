@@ -1,0 +1,350 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>The OS-9 Unified Input/Output System</title>
+
+<para>OS-9 has a unified I/O system that provides system-wide
+hardware-independent I/O services for user programs and OS-9 itself.
+All I/O service requests (system call) are received by the kernel and
+passed to the Input/Output Manager (IOMAN) module for processing
+IOMAN performs some processing (such as allocating data structures
+for the I/O path) and calls the file managers and device drivers to
+do much of the actual work. File manager, device driver, and device
+descriptor modules are standard memory modules that can be loaded
+into memory from files and used while the system is running.</para>
+
+<para>The structural organization of I/O-related modules in an OS-9
+system is hierarchical, as illustrated below:</para>
+<informalfigure>
+<screen>
+               +-----------------------+
+               !                       !
+               ! Input/Output Manager  !
+               !       (IOMAN)         !
+               !                       !
+               +-----------------------+
+                  !                 !
+                  !                 !
+ +--------------------+       +--------------------+
+ !                    !       !                    !
+ ! Disk File Manager  !       ! Char. File Manager !    More
+ !      (RBFMAN)      !       !      (SCFMAN)      ! -&gt; opt.
+ !                    !       !                    !
+ +--------------------+       +--------------------+
+      !          !                !           !
+      !          !                !           !
+ +--------+  +--------+       +--------+  +--------+
+ !        !  !        !       !        !  !        !
+ !  Disk  !  !  Disk  !       !  ACIA  !  !  PIA   !    More
+ ! Driver !  ! Driver !       ! Driver !  ! Driver ! -&gt; opt.
+ !        !  !        !       !        !  !        !
+ +--------+  +--------+       +--------+  +--------+
+   !     !     !     !          !     !     !     !
+   !     !     !     !          !     !     !     !
++---+ +---+  +---+ +---+     +---+ +---+  +---+ +---+
+!D0 ! !D1 !  !D2 ! !D3 !     !T1 ! !T2 !  !P1 ! !P2 !-&gt; More
++---+ +---+  +---+ +---+     +---+ +---+  +---+ +---+   opt.
+ RBF Device Descriptors        SCF Device Descriptors
+</screen>
+</informalfigure>
+
+<sect1>
+<title>The Input/Output Manager (IOMAN)</title>
+
+<para>The Input/output Manager (IOMAN) module provides the first level
+of service for I/O system calls by routing data on I/O paths from
+processes to/from the appropriate file managers and device drivers.
+It maintains two important internal OS-9 data structures: the device
+table and the path table. This module is used in all OS-9 Level One
+systems and should never be modified.</para>
+
+<para>When a path is opened, IOMAN attempts to link to a memory module
+having the device name given (or implied) in the pathlist. This
+module is the device's descriptor, which contains the names of the
+device driver and file manager for the device. This information is
+saved by IOMAN so subsequent system calls can be routed to these
+modules.</para>
+</sect1>
+
+<sect1>
+<title>File Managers</title>
+
+<para>OS-9 systems can have any number of File Manager modules. The
+function of a file manager is to process the raw data stream to or
+from device drivers for a similar class of devices to conform to the
+OS-9 standard I/O and file structure, removing as many unique device
+operational characteristics as possible from I/O operations. They are
+also responsible for mass storage allocation and directory processing
+if applicable to the class of devices they service.</para>
+
+<para>File managers usually buffer the data stream and issue requests to
+the kernel for dynamic allocation of buffer memory. They may also
+monitor and process the data stream, for example, adding line feed
+characters after carriage return characters.
+</para>
+
+<para>The file managers are reentrant and one file manager may be used
+for an entire class of devices having similar operational
+characteristics. The two standard OS-9 file managers are:
+</para>
+
+<para>RBFMAN: The Random Block File Manager which operates random-access,
+block-structured devices such as disk systems, bubble memories, etc.</para>
+
+<para>SCFMAN: Sequential Character File Manager which is used with
+single-character-oriented devices such as
+CRT or hardcopy terminals, printers, modems etc.</para>
+</sect1>
+
+<sect1>
+<title>Device Driver Modules</title>
+
+<para>The device driver modules are subroutine packages that perform
+basic, low-level I/O transfers to or from a specific type of I/O
+device hardware controller. These modules are reentrant so one copy
+of the module can simultaneously run several different devices which
+use identical I/O controllers. For example the device driver for 6850
+serial interfaces is called <quote>ACIA</quote> and can communicate to
+any number of serial terminals.</para>
+
+<para>Device driver modules use a standard module header and are given a
+module type of <quote>device driver</quote> (code $E).The
+execution offset address in the module header points to a branch
+table that has a minimum of six (three-byte) entries.Each
+entry is typically a LBRA to the corresponding subroutine. The File
+Managers call specific routines in the device driver through this
+table, passing a pointer to a path descriptor and the hardware control
+register address in the MPU registers. The branch table looks like:
+</para>
+<literallayout>
++0 = Device Initialization Routine
++3 = Read From Device
++6 = Write to Device
++9 = Get Device Status
++$C = Set Device Status
++$F = Device Termination Routine
+</literallayout>
+
+<para>For a complete description of the parameters passed to these
+subroutines see the file manager descriptions. Also see
+the appendices on writing device drivers.</para>
+</sect1>
+
+<sect1>
+<title>Device Descriptor Modules</title>
+
+<para>Device descriptor modules are small, non-executable modules that
+provide information that associates a specific I/O device with its
+logical name, hardware controller address(es), device driver name,
+file manager name, and initialization parameters.</para>
+
+<para>Recall that device drivers and file managers both operate on
+general classes of devices, not specific I/O ports. The
+device descriptor modules tailor their functions to a specific I/O
+device. One device descriptor module must exist for each I/O device
+in the system.</para>
+
+<para>The name of the module is the name the device is known by to the
+system and user (i.e. it is the device name given in pathlists). Its
+format consists of a standard module header that has a type <quote>device
+descriptor</quote> (code $F). The rest of the device descriptor header
+consists of:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.2in" align="right"/>
+<colspec colwidth="5in"/>
+<tbody>
+<row>
+<entry>$9,$A =</entry>
+<entry>File manager name string relative address.</entry>
+</row>
+<row>
+<entry>$B,$C =</entry>
+<entry>Device driver name string relative address</entry>
+</row>
+<row>
+<entry>$D =</entry>
+<entry>Mode/Capabilities. (D S PE PW PR E W R)</entry>
+</row>
+<row>
+<entry>$E,$F,$10 =</entry>
+<entry>Device controller absolute physical (24-bit) address</entry>
+</row>
+<row>
+<entry>$11 =</entry>
+<entry>Number of bytes ( <quote>n</quote> bytes in initialization
+table)</entry>
+</row>
+<row>
+<entry>$12,$12+n =</entry>
+<entry>Initialization table</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>The initialization table is copied into the <quote>option section</quote>
+of the path descriptor when a path to the device is opened. The
+values in this table may be used to define the operating parameters
+that are changeable by the OS9 <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/> service requests.
+For example, a terminal's initialization parameters define which
+control characters are used for backspace, delete, etc. The maximum
+size of initialization table which may be used is 32 bytes. If the
+table is less than 32 bytes long, the remaining values in the path
+descriptor will be set to zero.</para>
+
+<para>You may wish to add additional devices to your system. If a
+similar device controller already exists, all you need to do is add
+the new hardware and load another device descriptor. Device
+descriptors can be in ROM or loaded into RAM from mass-storage files
+while the system is running.</para>
+
+<para>The diagram on the next page illustrates the device descriptor
+module format.</para>
+<informalfigure>
+<screen>
+MODULE     DEVICE DESCRIPTOR MODULE FORMAT
+OFFSET
+
+           +-----------------------------+  ---+--------+---
+  $0       |                             |     |        |
+           +--   Sync Bytes ($87CD)    --+     |        |
+  $1       |                             |     |        |
+           +-----------------------------+     |        |
+  $2       |                             |     |        |
+           +--   Module Size (bytes)   --+     |        |
+  $3       |                             |     |        |
+           +-----------------------------+     |        |
+  $4       |                             |     |        |
+           +-- Offset to Module Name   --+   header     |
+  $5       |                             |   parity     |
+           +-----------------------------+     |        |
+  $6       | $F (TYPE)   |  $1 (LANG)    |     |        |
+           +-----------------------------+     |        |
+  $7       | Attributes  |   Revision    |     |        |
+           +-----------------------------+  ---+--    module
+  $8       |  Header Parity Check        |             CRC
+           +-----------------------------+              |
+  $9       |                             |              |
+           +--  Offset to File Manager --+              |
+  $A       |         Name String         |              |
+           +-----------------------------+              |
+  $B       |                             |              |
+           +-- Offset to Device Driver --+              |
+  $C       |         Name String         |              |
+           +-----------------------------+              |
+  $D       |        Mode Byte            |              |
+           +-----------------------------+              |
+  $E       |                             |              |
+           +--    Device Controller    --+              |
+  $F       | Absolute Physical Address   |              |
+           +--       (24 bit)          --+              |
+ $10       |                             |              |
+           +-----------------------------+              |
+ $11       |  Initialization Table Size  |              |
+           +-----------------------------+              |
+$12,$12+N  |                             |              |
+           |  (Initialization Table)     |              |
+           |                             |              |
+           +-----------------------------+              |
+           |    (Name Strings etc)       |              |
+           +-----------------------------+              |
+           |      CRC Check Value        |              |
+           +-----------------------------+  ------------+---
+</screen>
+</informalfigure>
+</sect1>
+
+<sect1>
+<title>Path Descriptors</title>
+
+<para>Every open path is represented by a data structure called a path
+descriptor (<quote>PD</quote>). It contains the information required by
+the file managers and device drivers to perform I/O functions. Path
+descriptors are exactly 64 bytes long and are dynamically allocated
+and deallocated by IOMAN as paths are opened and closed.</para>
+
+<para>PDs are INTERNAL data structures that are not normally referenced
+from user or applications programs. In fact, it is almost impossible
+to locate a path's PD when OS-9 is in user mode. The description of
+PDs is mostly of interest to, and presented here for those
+programmers who need to write custom file managers, device drivers,
+or other extensions to OS-9.</para>
+
+<para>PDs have three sections: the first 10-byte section is defined
+universally for all file managers and device drivers, as shown below.</para>
+
+<table frame="none" rowsep="0" colsep="0">
+<title>Universal Path Descriptor Definitions</title>
+<tgroup cols="4">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in" align="right"/>
+<colspec colwidth="4in"/>
+<thead>
+<row rowsep="1">
+<entry>Name</entry>
+<entry>Addr</entry>
+<entry>Size</entry>
+<entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>PD.PD</entry><entry>$00</entry><entry>1</entry>
+<entry>Path number</entry>
+</row>
+<row>
+<entry>PD.MOD</entry><entry>$01</entry><entry>1</entry>
+<entry>Access mode: 1=read 2=write 3=update</entry>
+</row>
+<row>
+<entry>PD.CNT</entry><entry>$02</entry><entry>1</entry>
+<entry>Number of paths using this PD</entry>
+</row>
+<row>
+<entry>PD.DEV</entry><entry>$03</entry><entry>2</entry>
+<entry>Address of associated device table entry</entry>
+</row>
+<row>
+<entry>PD.CPR</entry><entry>$05</entry><entry>1</entry>
+<entry>Requester's process ID</entry>
+</row>
+<row>
+<entry>PD.RGS</entry><entry>$06</entry><entry>2</entry>
+<entry>Caller's MPU register stack address</entry>
+</row>
+<row>
+<entry>PD.BUF</entry><entry>$08</entry><entry>2</entry>
+<entry>Address of 236-byte data buffer (if used)</entry>
+</row>
+<row>
+<entry>PD.FST</entry><entry>$0A</entry><entry>22</entry>
+<entry>Defined by file manager</entry>
+</row>
+<row>
+<entry>PD.OPT</entry><entry>$20</entry><entry>32</entry>
+<entry>Reserved for GETSTAT/SETSTAT options</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+<para>The 22-byte section called <quote>PD.FST</quote> is reserved for and
+defined by each type of file manager for file pointers, permanent
+variables, etc.</para>
+
+<para>The 32-byte section called <quote>PD.OPT</quote> is used as an
+<quote>option</quote> area for dynamically-alterable operating
+parameters for the file or device. These variables are initialized at
+the time the path is opened by copying the initialization table
+contained in the device descriptor module, and can be altered later
+by user programs by means of the <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/> system calls.</para>
+
+<para>These two sections are defined each file manager's in the assembly
+language equate file (<filename>SCFDefs</filename> for SCFMAN and
+<filename>RBFDefs</filename> for RBFMAN).</para>
+</sect1>
+</chapter>
+

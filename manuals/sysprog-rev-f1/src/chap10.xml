@@ -1,0 +1,3447 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>OS-9 Service Request Descriptions</title>
+
+<para>System calls are used to communicate between the OS-9 operating
+system and assembly-language-level programs. There are three general
+categories:</para>
+
+<para><literallayout>
+1. User mode function requests
+2. System mode function requests
+3. I/O requests
+</literallayout></para>
+
+<para>System mode function requests are privileged and may be executed
+only while OS-9 is in the system state (when it is processinq another
+service request, executing a file manager, device drivers, etc.).
+They are included in this manual primarily for the benefit of those
+programmers who will be writing device drivers and other system-level
+applications.</para>
+
+<para>The system calls are performed by loading the MPU registers with
+the appropriate parameters (if any), and executing a SWI2
+instruction immediately followed by a constant byte which is the
+request code. Parameters (if any) will be returned in the MPU
+registers after OS-9 has processed the service request. A standard
+convention for reporting errors is used in all system calls; if an
+error occurred, the <quote>C bit</quote> of the condition code register will be
+set and accumulator B will contain the appropriate error code. This
+permits a BCS or BCC instruction immediately following the system
+call to branch on error/no error.</para>
+
+<para>Here is an example system call for the <xref linkend="i.close"/> service request:</para>
+
+<programlisting>
+LDA PATHNUM 
+SWI2 
+FCB $8B 
+BCS ERROR 
+</programlisting>
+
+<para>Using the assembler's <quote>OS9</quote> directive simplifies the call:</para>
+
+<programlisting>
+LDA PATHNUM 
+OS9 I$Close 
+BCS ERROR 
+</programlisting>
+
+<para>The I/O service requests are simpler to use than in many other
+operating systems because the calling program does not have to
+allocate and set up <quote>file control blocks</quote>, <quote>sector
+buffers</quote>, etc. Instead OS-9 will return a one byte path number
+when a path to a file/device is opened or created; then this path
+number may be used in subsequent I/O requests to identify the
+file/device until the path is closed. OS-9 internally allocates and
+maintains its
+own data structures and users never have to deal
+with them: in fact attempts to do so are memory violations.</para>
+
+<para>All system calls have a mnemonic name that starts with <quote>F$</quote>
+for system functions, or <quote>I$</quote> for I/O related requests.
+These are defined in the assembler-input equate file
+called <filename>OS9Defs</filename>.</para>
+
+<para>In the service request descriptions which follow, registers not
+explicitly specified as input or output parameters are not altered.
+Strings passed as parameters are normally terminated by having bit
+seven of the last character set, a space character, or an end of line
+character.</para>
+
+<sect1>
+<title>User Mode Service Requests</title>
+
+<sect2>
+<title>F$AllBit - Set bits in an allocation bit map</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$AllBit</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 13</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Base address of allocation bit map.
+(D) = Bit number of first bit to set.
+(Y) = Bit count (number of bits to set)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request sets bits in the allocation bit
+map specified by the X register.</para>
+
+<para>Bit numbers range from 0..N-1, where N is the number of bits in
+the allocation bit map.</para>
+</sect2>
+
+<sect2 xml:id="f.chain" xreflabel="F$Chain">
+<title>F$Chain - Load and execute a new primary module</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Chain</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 05</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of module name or file name
+(Y) = Parameter area size (256 byte pages)
+(U) = Beginning address of parameter area
+(A) = Language / type code
+(B) = Optional data area size (256 byte pages)</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call is similar to <xref linkend="f.fork"/>, but it does not create a new
+process. It effectively <quote>resets</quote> the calling process' program and
+data memory areas and begins execution of a new primary module. Open
+paths are not closed or otherwise affected.</para>
+
+<para>This system call is used when it is necessary to execute an
+entirely new program, but without the overhead of creating a new
+process. It is functionally similar to a <xref linkend="f.fork"/> followed by an
+<xref linkend="f.exit"/>, but with less processing overhead.</para>
+
+<para>The sequence of operations taken by <xref linkend="f.chain"/> is as follows:
+</para>
+
+<para>1. The system parses the name string of the new process'
+<quote>primary module</quote> - the program that will initially be executed. Then
+the system module directory is searched to see if a module with the
+same name and type / language is already in memory. If so it is
+linked to. If not, the name string is used as the pathlist of a file
+which is to be loaded into memory. Then the first module in this file
+is linked to (several modules may have been loaded from a single
+file).</para>
+
+<para>2. The process' old primary module is
+<emphasis>unlinked</emphasis>.</para>
+
+<para>3. The data memory area is reconfigured to the size specified in
+the new primary module's header.</para>
+
+<para>The diagram below shows how <xref linkend="f.chain"/> sets up the
+data memory area and registers for the new module.</para>
+<informalfigure>
+<screen>
+   +-----------------+  &lt;--  Y          (highest address)
+   !                 !
+   !   Parameter     !
+   !     Area        !
+   !                 !
+   +-----------------+  &lt;-- X, SP
+   !                 !
+   !                 !
+   !   Data Area     !
+   !                 !
+   !                 !
+   +-----------------+
+   !   Direct Page   !
+   +-----------------+  &lt;-- U, DP       (lowest address)
+
+   D = parameter area size
+  PC = module entry point abs. address
+  CC = F=0, I=0, others undefined
+</screen>
+</informalfigure>
+
+<para>Y (top of memory pointer) and U (bottom of memory pointer) will
+always have a values at 256-byte page boundaries. If the parent does
+not specify a parameter area, Y, X, and SP will be the same, and D
+will equal zero. The minimum overall data area size is one page (256
+bytes).</para>
+
+<warning>
+<para>
+The hardware stack pointer (SP) should be located
+somewhere in the direct page before the <xref linkend="f.chain"/> service request is
+executed to prevent a <quote>suicide attempt</quote> error or an actual suicide
+(system crash). This will prevent a suicide from occurring in case
+the new module requires a smaller data area than what is currently
+being used. You should allow approximately 200 bytes of stack space
+for execution of the <xref linkend="f.chain"/> service request and other system
+<quote>overhead</quote>.</para>
+</warning>
+
+<para>
+For more information, please see the <xref linkend="f.fork"/> service request
+description.</para>
+</sect2>
+
+<sect2>
+<title>F$CmpNam - Compare two names</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$CmpNam</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 11</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of first name.
+(B) = Length of first name.
+(Y) = Address of second name.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(CC) = C bit clear if the strings match.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+Given the address and length of a string, and the address of a
+second string, compares them and indicates whether they match.
+Typically used in conjunction with <quote>parsename</quote>.</para>
+
+<para>The second name must have the sign bit (bit 7) of the last
+character set.</para>
+</sect2>
+
+<sect2 xml:id="f.crc" xreflabel="F$CRC">
+<title>F$CRC - Compute CRC</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$CRC</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 17</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Starting byte address.
+(Y) = Byte count.
+(U) = Address of 3 byte CRC accumulator.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>CRC accumulator is updated.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This service request calculates the CRC (cyclic redundancy count)
+for use by compilers, assemblers, or other module generators. The CRC
+is calculated starting at the source address over <quote>byte count</quote> bytes,
+it is not necessary to cover an entire module in one call, since the
+CRC may be <quote>accumulated</quote> over several calls. The CRC accumulator can
+be any three byte memory location and must be initialized to $FFFFFF
+before the first F$CRC call.</para>
+
+<para>The last three bytes in the module (where the three CRC bytes will
+be stored) are not included in the CRC generation.
+</para>
+<para>
+The value of the CRC accumulator after calculation must
+be complemented before being stored in the module.
+When checking a module CRC, the CRC calculation should be
+performed on the entire module (including the module CRC).
+The CRC accumulator will contain the CRC constant bytes
+if the module CRC is correct.
+</para>
+<para>
+Example C code of CRC algorithm (with 32-bit longs):
+<programlisting>
+unsigned long compute_crc()
+    unsigned long crc;
+    unsigned char *octets;
+    int len;
+{
+    int i;
+
+    while (len--) {
+        crc ^= (*octets++) &lt;&lt; 16;
+        for (i = 0; i &lt; 8; i++) {
+            crc &lt;&lt;= 1;
+            if (crc &amp; 0x1000000L)
+                crc ^= 0x800063L;
+        }
+    }
+    return crc &amp; 0xffffffL;
+}
+</programlisting>
+</para>
+</sect2>
+
+<sect2>
+<title>F$DelBit - Deallocate in a bit map</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$DelBit</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 14</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Base address of an allocation bit map.
+(D) = Bit number of first bit to clear.
+(Y) = Bit count (number of bits to clear).</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request is used to clear bits in the
+allocation bit map pointed to by X.</para>
+
+<para>Bit numbers range from 0..N-1, where N is the number of bits in
+the allocation bit map.</para>
+</sect2>
+
+<sect2 xml:id="f.exit" xreflabel="F$Exit">
+<title>F$Exit - Terminate the calling process</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Exit</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 06</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(B) = Status code to be returned to the parent process</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>Process is terminated.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This call kills the calling process and is the only means by which
+a process can terminate itself. Its data memory area is deallocated,
+and its primary module is UNLINKed. All open paths are automatically
+closed.</para>
+
+<para>The death of the process can be detected by the parent executing a
+<xref linkend="f.wait"/> call, which returns to the parent the status byte passed by the
+child in its <xref linkend="f.exit"/> call. The status byte can be an OS-9 error code the
+terminating process wishes to pass back to its parent process (the
+shell assumes this), or can be used to pass a user-defined status
+value. Processes to be called directly by the shell should only
+return an OS-9 error code or zero if no error occurred.</para>
+</sect2>
+
+<sect2 xml:id="f.fork" xreflabel="F$Fork">
+<title>F$Fork - Create a new process</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Fork</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 03</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of module name or file name.
+(Y) = Parameter area size.
+(U) = Beginning address of the parameter area.
+(A) = Language / Type code.
+(B) = Optional data area size (pages).</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = Updated past the name string.
+(A) = New process ID number.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call creates a new process which becomes a <quote>child</quote> of
+the caller, and sets up the new process' memory and MPU registers.</para>
+
+<para>The system parses the name string of the new process' <quote>primary
+module</quote> - the program that will initially be executed. Then the
+system module directory is searched to see if the program is already
+in memory. If so, the module is linked to and executed. If not, the
+name string is used as the pathlist of the file which is to loaded
+into memory. Then the first module in this file is linked to and
+executed (several modules may have been loaded from a single file).</para>
+
+<para>The primary module's module header is used to determine the
+process' initial data area size. OS-9 then attempts to allocate a
+contiguous RAM area equal to the required data storage size,
+(includes the parameter passing area, which is copied from the parent
+process' data area). The new process' registers are set up as shown
+in the diagram on the next page. The execution offset given in the
+module header is used to set the PC to the module's entry point.</para>
+
+<para>When the <application>shell</application> processes a command line it passes a string in the
+parameter area which is a copy of the parameter part (if any) of the
+command line. It also inserts an end-of-line character at the end of
+the parameter string to simplify string-oriented processing. The X
+register will point to the beginning of the parameter string. If the
+command line included the optional memory size specification (#n or
+#nK), the <application>shell</application> will pass that size as the requested memory size when
+executing the <xref linkend="f.fork"/>.</para>
+
+<para>If any of the above operations are unsuccessful, the <xref linkend="f.fork"/> is
+aborted and the caller is returned an error.</para>
+
+<para>The diagram below
+shows how <xref linkend="f.fork"/> sets up the data memory area and registers for a
+newly-created process.</para>
+
+<informalfigure>
+<screen>
+   +-----------------+  &lt;--  Y          (highest address)
+   !                 !
+   !   Parameter     !
+   !     Area        !
+   !                 !
+   +-----------------+  &lt;-- X, SP
+   !                 !
+   !                 !
+   !   Data Area     !
+   !                 !
+   !                 !
+   +-----------------+
+   !   Direct Page   !
+   +-----------------+  &lt;-- U, DP       (lowest address)
+
+   D = parameter area size
+  PC = module entry point abs. address
+  CC = F=0, I=0, others undefined
+</screen>
+</informalfigure>
+
+<para>Y (top of memory pointer) and U (bottom of memory pointer) will
+always have a values at 256-byte page boundaries. If the parent does
+not specify a parameter area, Y, X, and SP will be the same, and D
+will equal zero. The minimum overall data area size is one page (256
+bytes). <application>Shell</application> will always pass at least an end of line character in
+the parameter area.</para>
+
+<para>NOTE: Both the child and parent process will execute
+concurrently. If the parent executes a <xref linkend="f.wait"/> call
+immediately after the fork, it will wait until the child dies before
+it resumes execution. Caution should be exercised when recursively
+calling a program that uses the <xref linkend="f.fork"/> service request since another
+child may be created with each <quote>incarnation</quote>. This will
+continue until the process table becomes full.</para>
+</sect2>
+
+<sect2 xml:id="f.icpt" xreflabel="F$ICPT">
+<title>F$ICPT - Set up a signal intercept trap</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$ICPT</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 09</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of the intercept routine.
+(U) = Address of the intercept routine local storage.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call tells OS-9 to set a signal intercept trap, where
+X contains the address of the signal handler routine, and U contains
+the base address of the routine's storage area. After a signal trap
+has been set, whenever the process receives a signal, its intercept
+routine will be executed. A signal will abort any process which has
+not used the <xref linkend="f.icpt"/> service request to set a signal trap, and its
+termination status (B register) will be the signal code. Many
+interactive programs will set up an intercept routine to handle
+keyboard abort (<keycombo action="simul">
+  <keycap>control<keycap></keycap>Q</keycap></keycombo>),
+and keyboard interrupt (<keycombo action="simul">
+    <keycap>control<keycap></keycap>C</keycap></keycombo>).</para>
+
+<para>The intercept routine is entered asynchronously because a signal
+may be sent at any time (it is like an interrupt) and is passed the
+following: 
+</para>
+
+<para>U = Address of intercept routine local storage.</para>
+
+<para>B = Signal code.</para>
+
+<para>NOTE: The value of DP may not be the same as it was when the
+<xref linkend="f.icpt"/> call was made.</para>
+
+<para>Whenever a signal is received. OS-9 will pass the signal code and
+the base address of its data area (which was defined by a <xref linkend="f.icpt"/>
+service request) to the signal intercept routine. The base address of
+the data area is selected by the user and is typically a pointer to
+the process' data area.</para>
+
+<para>The intercept routine is activated when a signal is received, then
+it takes some action based upon the value of the signal code such as
+setting a flag in the process' data area. After the signal has been
+processed, the handler routine should terminate with an RTI
+instruction.</para>
+</sect2>
+
+<sect2>
+<title>F$ID - Get process ID / user ID</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$ID</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 0C</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>None</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(A) = Process ID.
+(Y) = User ID.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Returns the caller's process ID number, which is a byte value in
+the range of 1 to 255, and the user ID which is a integer in the
+range 0 to 65535. The process ID is assigned by OS-9 and is unique to
+the process. The user ID is defined in the system password file, and
+is used by the file security system and a few other functions.
+Several processes can have the same user ID.</para>
+</sect2>
+
+<sect2 xml:id="f.link" xreflabel="F$Link">
+<title>F$Link - Link to memory module</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$LINK</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 00</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of the module name string.
+(A) = Module type / language byte.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = Advanced past the module name.
+(Y) = Module entry point absolute address.
+(U) = Module header absolute address.
+(A) = Module type / language.
+(B) = Module attributes / revision level.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call causes OS-9 to search the module directory for a
+module having a name, language and type as given in the parameters.
+If found, the address of the module's header is returned in U, and
+the absolute address of the module's execution entry point is
+returned in Y (as a convenience: this and other information can be
+obtained from the module header). The module's link count' is
+incremented whenever a <xref linkend="f.link"/> references its name, thus keeping track
+of how many processes are using the module. If the module requested
+has an attribute byte indicating it is not sharable (meaning it is
+not reentrant) only one process may link to it at a time.</para>
+
+<para>Possible errors:</para>
+
+<para>(A) Module not found.</para>
+
+<para>(B) Module busy (not sharable and in use).</para>
+
+<para>(C) Incorrect or defective module header.</para>
+</sect2>
+
+<sect2 xml:id="f.load" xreflabel="F$Load">
+<title>F$Load - Load module(s) from a file</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$LOAD</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 01</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of pathlist (file name)
+(A) = Language / type (0 = any language / type)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = Advanced past pathlist
+(Y) = Primary module entry point address
+(U) = Address of module header
+(A) = Language / type
+(B) = Attributes / revision level</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Opens a file specified by the pathlist, reads one or more memory
+modules from the file into memory, then closes the file. All modules
+loaded are added to the system module directory, and the first
+module read is LINKed. The parameters returned are the same as the
+<xref linkend="f.link"/> call and apply only to the first module loaded.</para>
+
+<para>In order to be loaded, the file must have the <quote>execute</quote>
+permission and contain a module or modules that have a proper module
+header. The file will be loaded from the working execution directory
+unless a complete pathlist is given.</para>
+
+<para>Possible errors: module directory full; memory full; plus errors
+that occur on <xref linkend="i.open"/>,
+<xref linkend="i.read"/>, <xref linkend="i.close"/> and <xref linkend="f.link"/> system calls.</para>
+</sect2>
+
+<sect2 xml:id="f.mem" xreflabel="F$Mem">
+<title>F$Mem - Resize data memory area</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Mem</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 07</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(D) = Desired new memory area size in bytes</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(Y) = Address of new memory area upper bound
+(D) = Actual new memory area size in bytes</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Used to expand or contract the process' data memory area. The new
+size requested is rounded up to the next 256-byte page boundary.
+Additional memory is allocated contiguously upward (towards higher
+addresses), or deallocated downward from the old highest address. If
+D = 0, then the current upper bound and size will be returned.</para>
+
+<para>This request can never return all of a process' memory, or the
+page in which its SP register points to.</para>
+
+<para>In Level One systems, the request may return an error upon an
+expansion request even though adequate free memory exists. This is
+because the data area is always made contiguous, and memory requests
+by other processes may fragment free memory into smaller, scattered
+blocks that are not adjacent to the caller's present data area. Level
+Two systems do not have this restriction because of the availability
+of hardware for memory relocation, and because each process has its
+own <quote>address space</quote>.</para>
+</sect2>
+
+<sect2>
+<title>F$PErr - Print error message</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$PErr</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 0F</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Output path number.
+(B) = Error code.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This is the system's error reporting utility. It writes an error
+message to the output path specified. Most OS-9 systems will display:</para>
+
+<para>ERROR #&lt;decimal number&gt;
+</para>
+
+<para>by default. The error reporting routine is vectored and can be
+replaced with a more elaborate reporting module. To replace this
+routine use the <xref linkend="f.ssvc"/> service request.</para>
+</sect2>
+
+<sect2>
+<title>F$PrsNam - Parse a path name</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$PrsNam</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 10</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of the pathlist</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = Updated past the optional <quote>/</quote>
+(Y) = Address of the last character of the name + 1.
+(B) = Length of the name
+</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.
+(X) = Updated past space characters.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Parses the input text string for a legal OS-9 name. The name is
+terminated by any character that is not a legal component character.
+This system call is useful for processing pathlist arguments passed
+to new processes. Also if X was at the end of a pathlist, a bad name
+error will be returned and X will be moved past any space characters
+so that the next pathlist in a command line may be parsed.</para>
+
+<para>Note that this system call processes only one name, so several
+calls may be needed to process a pathlist that has more than one name.</para>
+
+<para>BEFORE F$PrsNam CALL:</para>
+<screen>
++---+---+---+---+---+---+---+---+---+---+---+---+---
+! / ! D ! 0 ! / ! F ! I ! L ! E !   !   !   !   !
++---+---+---+---+---+---+---+---+---+---+---+---+---
+  ^
+  X
+</screen>
+<para>AFTER THE F$PrsNam CALL:</para>
+<screen>
++---+---+---+---+---+---+---+---+---+---+---+---+---
+! / ! D ! 0 ! / ! F ! I ! L ! E !   !   !   !   !
++---+---+---+---+---+---+---+---+---+---+---+---+---
+      ^       ^
+      X       Y       (B) = 2
+</screen>
+</sect2>
+
+<sect2>
+<title>F$SchBit - Search bit map for a free area</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$SchBit</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 12</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Beginning address of a bit map.
+(D) = Beginning bit number.
+(Y) = Bit count (free bit block size).
+(U) = End of bit map address.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(D) = Beginning bit number.
+(Y) = Bit count.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request searches the specified allocation
+bit map starting at the <quote>beginning bit number</quote> for a free
+block (cleared bits) of the required length.</para>
+
+<para>If no block of the specified size exists, it returns with the
+carry set, beginning bit number and size of the largest block.</para>
+</sect2>
+
+<sect2 xml:id="f.send" xreflabel="F$Send">
+<title>F$Send - Send a signal to another process</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Send</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 08</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Receiver's process ID number.
+ (B) = Signal code.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call sends a <quote>signal</quote> to the process
+specified. The signal code is a single byte value of 1 - 255.</para>
+
+<para>If the signal's destination process is sleeping or waiting, it
+will be activated so that it may process the signal. The signal
+processing routine (intercept) will be executed if a signal trap was
+set up (see <xref linkend="f.icpt"/>),
+otherwise the signal will abort the destination
+process, and the signal code becomes the exit status (see <xref linkend="f.wait"/>). An
+exception is the WAKEUP signal, which activates a sleeping process
+but does not cause the signal intercept routine to be executed.</para>
+
+<para>Some of the signal codes have meanings defined by convention: 
+</para>
+
+<literallayout>
+0 = System Abort (cannot be intercepted)
+1 = Wake Up Process
+2 = Keyboard Abort
+3 = Keyboard Interrupt
+4-255 = user defined
+</literallayout>
+
+<para>If an attempt is made to send a signal to a process that has an
+unprocessed, previous signal pending, the current <quote>send</quote>
+request will be canceled and an error will be returned. An attempt
+can be made to re-send the signal later. It is good practice to issue
+a <quote>sleep</quote> call for a few ticks before a retry to avoid
+wasting MPU time.</para>
+
+<para>For related information see the <xref linkend="f.icpt"/>,
+<xref linkend="f.wait"/> and <xref linkend="f.sleep"/> service
+request descriptions.</para>
+</sect2>
+
+<sect2 xml:id="f.sleep" xreflabel="F$Sleep">
+<title>F$Sleep - Put calling process to sleep</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Sleep</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 0A</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Sleep time in ticks (0 = indefinitely)</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(X) = Decremented by the number of ticks that the process was asleep.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This call deactivates the calling process for a specified time, or
+indefinitely if X = 0. If X = 1, the effect is to have the caller
+give up its current time slice. The process will be activated before
+the full time interval if a signal is received, therefore sleeping
+indefinitely is a good way to wait for a signal or interrupt without
+wasting CPU time.</para>
+
+<para>The duration of a <quote>tick</quote> is system dependent but is most commonly
+100 milliseconds.</para>
+
+<para>Due to the fact that it is not known when the <xref linkend="f.sleep"/> request was
+made during the current tick, <xref linkend="f.sleep"/> can not be used for precise
+timing. A sleep of one tick is effectively a <quote>give up remaining
+time slice</quote> request; the process is immediately inserted into
+the active process queue and will resume execution when it reaches
+the front of the queue. A sleep of two or more ticks causes the
+process to be inserted into the active process queue after N-1 ticks
+occur and will resume execution when it reaches the front of the
+queue.</para>
+</sect2>
+
+<sect2>
+<title>F$SPrior - Set process priority</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$SPrior</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 0D</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Process ID number.
+(B) = Priority:
+       0 = lowest
+       255 - highest</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Changes the process' priority to the new value given. $FF is the
+highest possible priority, $00 is the lowest. A process can change
+another process' priority only if it has the same user ID.</para>
+</sect2>
+
+<sect2 xml:id="f.ssvc" xreflabel="F$SSVC">
+<title>F$SSVC - Install function request</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$SSVC</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 32</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(Y) = Address of service request initialization table.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request is used to add a new function
+request to OS-9's user and privileged system service request tables,
+or to replace an old one. The Y register passes the address of a
+table which contains the function codes and offsets to the
+corresponding service request handler routines. This table has the
+following format:</para>
+
+<screen>
+OFFSET
+
+          +----------------------+
+ $00      !     Function Code    !  &lt;--- First entry
+          +----------------------+
+ $01      ! Offset From Byte 3   !
+          +--                  --+
+ $02      !  To Function Handler !
+          +----------------------+
+ $03      !     Function Code    !  &lt;--- Second entry
+          +----------------------+
+ $04      ! Offset From Byte 6   !
+          +--                  --+
+ $05      !  To Function Handler !
+          +----------------------+
+          !                      !   &lt;--- Third entry etc.
+          !     MORE ENTRIES     !
+          !                      !
+          !                      !
+          +----------------------+
+          !         $80          !   &lt;--- End of table mark
+          +----------------------+
+</screen>
+
+<para>NOTE: If the sign bit of the function code is set, only the system
+table will be updated. Otherwise both the system and user tables will
+be updated. Privileged system service requests may be called only
+while executing a system routine.</para>
+
+<para>The service request handler
+routine should process the service request and return from subroutine
+with an RTS instruction. They may alter all MPU registers (except for
+SP). The U register will pass the address of the register stack to
+the service request handler as shown in the following diagram:
+</para>
+<informalfigure>
+<screen>
+                         OFFSET   OS9Defs
+                                  MNEMONIC
+        +------+
+U ---&gt;  !  CC  !            $0      R$CC
+        +------+            $1      R$D
+        !  A   !            $1      R$A
+        +------+
+        !  B   !            $2      R$B
+        +------+
+        !  DP  !            $3      R$DP
+        +------+------+
+        !      X      !     $4      R$X
+        +-------------+
+        !      Y      !     $6      R$Y
+        +-------------+
+        !      U      !     $8      R$U
+        +-------------+
+        !      PC     !     $A      R$PC
+        +-------------+
+</screen>
+</informalfigure>
+<para>
+The R$CC and R$B locations are set by the OS-9
+service routine dispatcher. The user service routine should
+set CC and B to the appropriate values and return with RTS.
+The service dispatcher will then set the values in the
+user's register stack.
+</para>
+
+<para>Function request codes are broken into the two categories
+as shown below:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+<entry>$00 - $27</entry>
+<entry>User mode service request codes.</entry>
+</row>
+<row>
+<entry>$29 - $37</entry>
+<entry>
+Privileged system mode service request codes.
+ANY service request code with the sign bit
+set will be placed in the system table only.
+</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+NOTE: These categories are defined by convention and are not
+enforced by OS-9. Any service code can be made privileged by setting the sign bit.
+</para>
+<para>
+Codes $23..$27, and $36..$37 will not be used by MICROWARE and
+are free for user definition.</para>
+</sect2>
+
+<sect2 xml:id="f.sswi" xreflabel="F$SSWI">
+<title>F$SSWI - Set SWI vector</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$SSWI</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 0E</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = SWI type code.
+(X) = Address of user SWI service routine.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Sets up the interrupt vectors for SWI, SWI2 and SWI3 instructions.
+Each process has its own local vectors. Each F$SSWI call sets up one
+type of vector according to the code number passed in A.</para>
+
+<literallayout>
+1 = SWI 
+2 = SWI2 
+3 = SWI3 
+</literallayout>
+
+<para>When a process is created, all three vectors are initialized with
+the address of the OS-9 service call processor.</para>
+
+<warning>
+<para>Software built for OS-9 uses SWI2 to call OS-9. If
+you reset this vector these programs will not work. If you change all
+three vectors, you will not be able to call OS-9 at all.</para>
+</warning>
+</sect2>
+
+<sect2>
+<title>F$STime - Set system date and time</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$STime</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 16</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of time packet (see below)</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>Time/date is set.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This service request is used to set the current system date/time
+and start the system real-time clock. The date and time are passed in
+a time packet as follows:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1in"/>
+<colspec colwidth="1.5in"/>
+<thead>
+<row rowsep="1">
+  <entry>OFFSET</entry>
+  <entry>VALUE</entry>
+</row>
+</thead>
+
+<tbody>
+<row>
+  <entry colsep="1">0</entry> <entry>year</entry>
+</row>
+<row>
+  <entry colsep="1">1</entry> <entry>month</entry>
+</row>
+<row>
+  <entry colsep="1">2</entry> <entry>day</entry>
+</row>
+<row>
+  <entry colsep="1">3</entry> <entry>hours</entry>
+</row>
+<row>
+  <entry colsep="1">4</entry> <entry>minutes</entry>
+</row>
+<row>
+  <entry colsep="1">5</entry> <entry>seconds</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>F$Time - Get system date and time</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Time</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 15</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of place to store the time packet.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>Time packet (see below).</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This returns the current system date and time in the form of a six
+byte packet (in binary). The packet is copied to the address passed
+in X. The packet looks like:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1in"/>
+<colspec colwidth="1.5in"/>
+<thead>
+<row rowsep="1">
+  <entry>OFFSET</entry>
+  <entry>VALUE</entry>
+</row>
+</thead>
+
+<tbody>
+<row>
+  <entry colsep="1">0</entry> <entry>year</entry>
+</row>
+<row>
+  <entry colsep="1">1</entry> <entry>month</entry>
+</row>
+<row>
+  <entry colsep="1">2</entry> <entry>day</entry>
+</row>
+<row>
+  <entry colsep="1">3</entry> <entry>hours</entry>
+</row>
+<row>
+  <entry colsep="1">4</entry> <entry>minutes</entry>
+</row>
+<row>
+  <entry colsep="1">5</entry> <entry>seconds</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>F$Unlink - Unlink a module</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Unlink</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 02</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(U) = Address of the module header.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Tells OS-9 that the module is no longer needed by the calling
+process. The module's link count is decremented, and the module is
+destroyed and its memory deallocated when the link count equals zero.
+The module will not be destroyed if in use by any other process(es)
+because its link count will be non-zero. In Level Two systems, the
+module is usually switched out of the process' address space.</para>
+
+<para>Device driver modules in use or certain system modules cannot he
+unlinked. ROMed modules can be unlinked but cannot be deleted from
+the module directory.</para>
+</sect2>
+
+<sect2 xml:id="f.wait" xreflabel="F$Wait">
+<title>F$Wait - Wait for child process to die</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Wait</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 04</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>None</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(A) = Deceased child process' process ID
+(B) = Child process' exit status code</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>The calling process is deactivated until a child process
+terminates by executing an <xref linkend="f.exit"/>
+system call, or by receiving a
+signal. The child's ID number and exit status is returned to the
+parent. If the child died due to a signal, the exit status byte (B
+register) is the signal code.</para>
+
+<para>If the caller has several children, the caller is activated when
+the first one dies, so one <xref linkend="f.wait"/>
+system call is required to detect
+termination of each child.</para>
+
+<para>If a child died before the <xref linkend="f.wait"/> call, the caller is reactivated
+almost immediately. <xref linkend="f.wait"/> will return an error if the caller has no
+children.</para>
+
+<para>See the <xref linkend="f.exit"/> description for more related information.</para>
+</sect2>
+</sect1>
+
+<sect1>
+<title>System Mode Service Requests</title>
+
+<sect2 xml:id="f.all64" xreflabel="F$All64">
+<title>F$All64 - Allocate a 64 byte memory block</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$All64</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 30</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Base address of page table (zero if the page table
+has not yet been allocated).</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(A) = Block number
+(X) = Base address of page table
+(Y) = Address of block.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request is used to dynamically allocate
+64 byte blocks of memory by splitting whole pages (256 byte) into
+four sections. The first 64 bytes of the base page are used as a
+<quote>page table</quote>, which contains the MSB of all pages in the
+memory structure. Passing a value of zero in the X register will
+cause the <xref linkend="f.all64"/> service request to allocate a new base page and the
+first 64 byte memory block. Whenever a new page is needed, an
+<xref linkend="f.srqmem"/>
+service request will automatically be executed. The first byte of
+each block contains the block number; routines using this service
+request should not alter it. Below is a diagram to show how 7 blocks
+might be allocated:</para>
+<informalfigure>
+<screen>
+                   ANY 256 BYTE            ANY 256 BYTE
+                   MEMORY PAGE             MEMORY PAGE
+BASE PAGE  ---&gt;   +-------------+         +-------------+
+                  !             !         !X            !
+                  !  PAGE TABLE !         !   BLOCK 4   !
+                  !  (64 bytes) !         !  (64 bytes) !
+                  +-------------+         +-------------+
+                  !X            !         !X            !
+                  !   BLOCK 1   !         !   BLOCK 5   !
+                  !  (64 bytes) !         !  (64 bytes) !
+                  +-------------+         +-------------+
+                  !X            !         !X            !
+                  !   BLOCK 2   !         !   BLOCK 6   !
+                  !  (64 bytes) !         !  (64 bytes) !
+                  +-------------+         +-------------+
+                  !X            !         !X            !
+                  !   BLOCK 3   !         !   BLOCK 7   !
+                  !  (64 bytes) !         !  (64 bytes) !
+                  +-------------+         +-------------+
+</screen>
+</informalfigure>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$AProc - Insert process in active process queue</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$AProc</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 2C</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of process descriptor.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request inserts a process into the active
+process queue so that it may be scheduled for execution.</para>
+
+<para>All processes already in the active process queue are aged, and
+the age of the specified process is set to its priority. If the
+process is in system state, it is inserted after any other process's
+also in system state, but before any process in user state. If the
+process is in user state, it is inserted according to its age.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$Find64 - Find a 64 byte memory block</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Find64</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 2F</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of base page.
+(A) = Block number.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(Y) = Address of block.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request will return the address of a 64
+byte memory block as described in the <xref linkend="f.all64"/> service request. OS-9
+uses this service request to find process descriptors and path
+descriptors when given their number.</para>
+
+<para>Block numbers range from 1..N</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$IODel - Delete I/O device from system</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$IODel</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 33</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of an I/O module, (see description).</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request is used to determine whether or
+not an I/O module is being used. The X register passes the address of
+a device descriptor module, device driver module, or file manager
+module. The address is used to search the device table, and if found
+the use count is checked to see if it is zero. If it is not zero, an
+error condition is returned.</para>
+
+<para>This service request is used primarily by IOMAN and may be of
+limited or no use for other applications.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$IOQU - Enter I/O queue</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$IOQU</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 2B</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(A) = Process Number.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request links the calling process into
+the I/O queue of the specified process and performs an untimed sleep.
+It is assumed that routines associated with the specified process
+will send a wakeup signal to the calling process.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2 xml:id="f.irq" xreflabel="F$IRQ">
+<title>F$IRQ - Add or remove device from IRQ table</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$IRQ</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 2A</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Zero to remove device from table, or the address of a
+packet as defined below to add a device to the IRQ polling table:
+
+        [X] = flip byte
+        [X+1] = mask byte
+        [X+2] = priority
+(U) = Address of service routine's static storage area.
+(Y) = Device IRQ service routine address.
+(D) = Address of the device status register.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This service request is used to add a device to or remove a device
+from the IRQ polling table. To remove a device from the table the
+input should be (X)=0, (U)= Addr of service routine's static storage.
+This service request is primarily used by device driver routines. See
+the text of this manual for a complete discussion of the interrupt
+polling system.</para>
+
+<para>PACKET DEFINITIONS:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+<entry>Flip Byte</entry>
+<entry>This byte selects whether the bits in the device status
+register are active when set or active when
+cleared. A set bit(s) identifies the active bit(s).</entry>
+</row>
+
+<row>
+<entry>Mask Byte</entry>
+<entry>This byte selects one or more bits within the device
+status register that are interrupt request flag(s). A set bit
+identifies an active bit(s)</entry>
+</row>
+
+<row>
+<entry>Priority</entry>
+<entry><literallayout>The device priority number:
+          0 = lowest
+        255 = highest</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$NProc - Start next process</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$NProc</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 2D</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>Control does not return to caller.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request takes the next process out of the
+Active Process Queue and initiates its execution. If there is no
+process in the queue, OS-9 waits for an interrupt, and then checks the
+active process queue again.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$Ret64 - Deallocate a 64 byte memory block</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$Ret64</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 31</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of the base page.
+(A) = Block number.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request deallocates a 64 byte block of
+memory as described in the <xref linkend="f.all64"/> service request.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2 xml:id="f.srqmem" xreflabel="F$SRqMem">
+<title>F$SRqMem - System memory request</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$SRqMem</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 28</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(D) = Byte count.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(U) = Beginning address of memory area.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system mode service request allocates a block of memory from
+the top of available RAM of the specified size. The size requested is
+rounded to the next 256 byte page boundary.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$SRtMem - Return System Memory</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$SRtMem</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 29</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(U) = Beginning address of memory to return.
+(D) = Number of bytes to return.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+This system mode service request is used to deallocate a block of contiguous 256 byte pages.
+The U register must point to an even page boundary.
+</para>
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+
+<sect2>
+<title>F$VModul - Verify module</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 F$VModul</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 2E</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of module to verify</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(U) = Address of module directory entry</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>This system mode service request checks the module header parity
+and CRC bytes of an OS-9 module. If these values are valid, then
+the module directory is searched for a module with the same name.
+If a module with the same name exists, the one with the highest
+revision level is retained in the module directory. Ties are
+broken in favor of the established module.</para>
+
+<note><para>This is a privileged system mode service request.</para></note>
+</sect2>
+</sect1>
+
+<sect1>
+<title>I/O Service Requests</title>
+
+<sect2 xml:id="i.attach" xreflabel="I$Attach">
+<title>I$Attach - Attach a new device to the system</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Attach</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 80</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of device name string
+(A) = Access mode.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(U) = Address of device table entry</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This service request is used to attach a new device to the system,
+or verify that it is already attached. The device's name string is
+used to search the system module directory to see if a device
+descriptor module with the same name is in memory (this is the name
+the device will be known by). The descriptor module will contain the
+name of the device's file manager, device driver and other related
+information. It it is found and the device is not already attached,
+OS-9 will link to its file manager and device driver, and then place
+their address' in a new device table entry. Any permanent storage
+needed by the device driver is allocated, and the driver's
+initialization routine is called (which usually initializes the
+hardware).</para>
+
+<para>If the device has already been attached, it will not be
+reinitialized.</para>
+
+<para>An I$Attach system call is not required to perform routine I/O. It
+does <emphasis>not</emphasis> <quote>reserve</quote> the device in question - it just prepares it for
+subsequent use by any process. Most devices are automatically
+installed, so it is used mostly when devices are dynamically
+installed or to verify the existence of a device.</para>
+
+<para>The access mode parameter specifies which subsequent read and/or
+write operations will be permitted as follows:
+</para>
+
+<para>0 = Use device capabilities.</para>
+
+<para>1 = Read only.</para>
+
+<para>2 = Write only.</para>
+
+<para>3 = Both read and write.</para>
+</sect2>
+
+<sect2>
+<title>I$ChgDir - Change working directory</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$ChgDir</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 86</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of the pathlist.
+(A) = Access mode.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Changes a process' working directory to another directory file
+specified by the pathlist. Depending on the access mode given, the
+current execution or the current data directory may be changed (but
+only one may be changed per call). The file specified must be a
+directory file, and the caller must have read permission for it
+(public read if not owned by the calling process).</para>
+
+<para>ACCESS MODES
+</para>
+
+<para>1 = Read</para>
+
+<para>2 = Write</para>
+
+<para>3 = Update (read or write)</para>
+
+<para>4 = Execute</para>
+
+<para>If the access mode is read, write, or update the current data
+directory is changed. If the access mode is execute, the current
+execution directory is changed.</para>
+</sect2>
+
+<sect2 xml:id="i.close" xreflabel="I$Close">
+<title>I$Close - Close a path to a file/device</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Close</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8F</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(A) = Path number.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Terminates the I/O path specified by the path number. I/O can no
+longer be performed to the file/device, unless another <xref linkend="i.open"/> or
+<xref linkend="i.create"/>
+call is used. Devices that are non-sharable become available to other
+requesting processes. All OS-9 internally managed buffers and
+descriptors are deallocated.</para>
+
+<para>Note: Because the OS9 F$Exit service request automatically closes
+all open paths (except the standard I/O paths), it may not he
+necessary to close them individually with the OS9 <xref linkend="i.close"/> service request.</para>
+
+<para>Standard I/O paths are not typically closed except when it is
+desired to change the files/devices they correspond to.</para>
+</sect2>
+
+<sect2 xml:id="i.create" xreflabel="I$Create">
+<title>I$Create - Create a path to a new file</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Create</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 83</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of the pathlist.
+(A) = Access mode.
+(B) = File attributes.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = Updated past the pathlist (trailing blanks skipped)
+(A) = Path number.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Used to create a new file on a multifile mass storage device.
+The pathlist is parsed, and the new file name is entered in the
+specified (or default working) directory. The file is given the
+attributes passed in the B register, which has individual bits
+defined as follows:</para>
+<literallayout>
+bit 0 = read permit
+bit 1 = write permit
+bit 2 = execute permit
+bit 3 = public read permit
+bit 4 = public write permit
+bit 5 - public execute permit
+bit 6 = sharable file
+</literallayout>
+
+<para>The access mode parameter passed in register A must be either
+<quote>WRITE</quote> or <quote>UPDATE</quote>. This only affects the file
+until it is closed; it can be reopened later in any access mode
+allowed by the file attributes (see <xref linkend="i.open"/>).
+Files open for <quote>WRITE</quote>
+may allow faster data transfer than <quote>UPDATE</quote>, which
+sometimes needs to preread sectors. These access codes are defined
+as given below:
+</para>
+<literallayout>
+2 = Write only
+3 = Update (read and write)
+</literallayout>
+
+<para>NOTE: If the execute bit (bit 2) is set, the file will be created
+in the working execution directory instead of the working data
+directory.</para>
+
+<para>The path number returned by OS-9 is used to identify the file in
+subsequent I/O service requests until the file is closed.</para>
+
+<para>No data storage is initially allocated for the file at the time it
+is created; this is done automatically by <xref linkend="i.write"/>
+or explicitly by the <xref linkend="i.setstt"/> call.</para>
+
+<para>An error will occur if the file name already exists in the
+directory. <xref linkend="i.create"/> calls that specify non-multiple file devices (such
+as printers, terminals, etc.) work correctly: the <xref linkend="i.create"/> behaves the
+same as <xref linkend="i.open"/>. Create cannot be used to make directory files (see
+<xref linkend="i.makdir"/>).</para>
+</sect2>
+
+<sect2>
+<title>I$Delete - Delete a file</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Delete</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 87</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(X) = Address of pathlist.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(X) = Updated past pathlist (trailing spaces skipped).</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This service request deletes the file specified by the pathlist.
+The file must have write permission attributes (public write if not
+the owner), and reside on a multifile mass storage device. Attempts
+to delete devices will result in an error.</para>
+</sect2>
+
+<sect2 xml:id="i.detach" xreflabel="I$Detach">
+<title>I$Detach - Remove a device from the system</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Detach</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 81</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(U) = Address of the device table entry.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Removes a device from the system device table if not in use by any
+other process. The device driver's termination routine is called,
+then any permanent storage assigned to the driver is deallocated. The
+device driver and file manager modules associated with the device are
+unlinked (and may be destroyed if not in use by another process.</para>
+
+<para>The <xref linkend="i.detach"/> service request must be used to un-attach devices that
+were attached with the <xref linkend="i.attach"/> service request. Both of these are used
+mainly by IOMAN and are of limited (or no use) to the typical user.
+SCFMAN also uses <xref linkend="i.attach"/>/<xref linkend="i.detach"/>
+to setup its second (echo) device.</para>
+</sect2>
+
+<sect2>
+<title>I$Dup Duplicate a path</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Dup</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 82</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(A) = Path number of path to duplicate.</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(A) = New path number.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Given the number of an existing path, returns another synonymous
+path number for the same file or device. <application>Shell</application> uses this service
+request when it redirects I/O. Service requests using either the old
+or new path numbers operate on the same file or device.</para>
+
+<para>
+NOTE: This only increments the <quote>use count</quote> of a path
+descriptor and returns the synonymous path number. The path
+descriptor is not copied.</para>
+</sect2>
+
+<sect2 xml:id="i.getstt" xreflabel="I$GetStt">
+<title>I$GetStt - Get file/device status</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$GetStt</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8D</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number.
+(B) Function code.
+(Other registers depend upon status code)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(depends upon status code)</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system is a <quote>wild card</quote> call used to handle individual
+device parameters that:</para>
+<orderedlist numeration="loweralpha">
+<listitem><para>are not uniform on all devices</para></listitem>
+<listitem><para>are highly hardware dependent</para></listitem>
+<listitem><para>need to be user-changeable</para></listitem>
+</orderedlist>
+
+<para>The exact operation of this call depends on the device driver and
+file manager associated with the path. A typical use is to
+determine a terminal's parameters for backspace character, delete
+character, echo on/off, null padding, paging, etc. It is commonly
+used in conjunction with the <xref linkend="i.setstt"/>
+service request which is
+used to set the device operating parameters. Below are presently
+defined function codes for <xref linkend="i.getstt"/>:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="3">
+<colspec colwidth="1.2in"/>
+<colspec colwidth="1in"/>
+<colspec colwidth="3.5in"/>
+<thead>
+<row rowsep="1">
+<entry>MNEMONIC</entry>
+<entry>CODE</entry>
+<entry>FUNCTION</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>SS.Opt</entry>
+<entry>0</entry>
+<entry>Read the 32 byte option section of the path descriptor.</entry>
+</row>
+<row>
+<entry>SS.Ready</entry>
+<entry>1</entry>
+<entry>Test for data ready on SCFMAN-type device.</entry>
+</row>
+<row>
+<entry>SS.Size</entry>
+<entry>2</entry>
+<entry>Return current file size (on RBFMAN-type devices).</entry>
+</row>
+<row>
+<entry>SS.Pos</entry>
+<entry>5</entry>
+<entry>Get current file position.</entry>
+</row>
+<row>
+<entry>SS.EOF</entry>
+<entry>6</entry>
+<entry>Test for end of file.</entry>
+</row>
+<row>
+<entry>SS.ScSiz</entry>
+<entry>38</entry>
+<entry>Width of screen in characters.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>CODES 7-127 Reserved for future use.</para>
+
+<para>CODES 128-255 These getstat codes and their parameter passing
+conventions are user definable (see the sections of this manual on
+writing device drivers). The function code and register stack are
+passed to the device driver.</para>
+
+<para>Parameter Passing Conventions</para>
+
+<para>The parameter passing conventions for each of these function codes
+are given below:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Opt (code 0):</entry>
+	<entry>Read option section of the path descriptor.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 0
+(X) = Address of place to put a 32 byte status packet.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>Status packet.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This getstat function reads the option section of the path
+descriptor and copies it into the 32 byte area pointed to by the X
+register. It is typically used to determine the current settings for
+echo, auto line feed, etc. For a complete description of the
+status packet, please see the section of this manual on path
+descriptors.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Ready (code 1):</entry>
+	<entry>Test for data available on SCFMAN supported devices.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 1</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entrytbl cols="4">
+	<thead>
+	<row><entry rowsep="1"></entry>
+	<entry rowsep="1">Ready</entry>
+	<entry rowsep="1">Not Ready</entry>
+	<entry rowsep="1">Error</entry></row>
+	</thead>
+	<tbody>
+	<row><entry rowsep="1">(CC)</entry>
+	<entry rowsep="1">C bit clear</entry>
+	<entry rowsep="1">C bit set</entry>
+	<entry rowsep="1">C bit set</entry></row>
+	<row><entry rowsep="1">(B)</entry>
+	<entry rowsep="1">zero</entry>
+	<entry rowsep="1">$F6 (<errorcode>E$NotRdy</errorcode>)</entry>
+	<entry rowsep="1">ERROR Code</entry></row>
+	</tbody>
+	</entrytbl>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Size (code 2):</entry>
+	<entry>Get current file size (RBFMAN supported devices only)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 2</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = M.S. 16 bits of current file size.
+(U) = L.S. 16 bits of current file size.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Pos (code 5):</entry>
+	<entry>Get current file position (RBFMAN supported devices only)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 5</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = M.S. 16 bits of current file position.
+(U) = L.S. 16 bits of current file position.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.EOF (code 6):</entry>
+	<entry>Test for end of file.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 6</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entrytbl cols="4">
+	<thead>
+	<row><entry rowsep="1"></entry>
+	<entry rowsep="1">Not EOF</entry>
+	<entry rowsep="1">EOF</entry>
+	<entry rowsep="1">Error</entry></row>
+	</thead>
+	<tbody>
+	<row><entry rowsep="1">(CC)</entry>
+	<entry rowsep="1">C bit clear</entry>
+	<entry rowsep="1">C bit set</entry>
+	<entry rowsep="1">C bit set</entry></row>
+	<row><entry rowsep="1">(B)</entry>
+	<entry rowsep="1">zero</entry>
+	<entry rowsep="1">$D3 (<errorcode>E$EOF</errorcode>)</entry>
+	<entry rowsep="1">ERROR Code</entry></row>
+	</tbody>
+	</entrytbl>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.ScSiz (code 38):</entry>
+	<entry>Return screen size for COCO (SCFMAN supported devices only)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 38</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(X) = Width of screen in characters. Typically 32 or 80.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2 xml:id="i.makdir" xreflabel="I$MakDir">
+<title>I$MakDir - Make a new directory</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$MakDir</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 85</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of pathlist.
+(B) = Directory attributes.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(X) = Updated path pathlist (trailing spaces skipped).</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para><xref linkend="i.makdir"/> is the only way a new directory file can be created. It
+will create and initialize a new directory as specified by the
+pathlist. The new directory file contains no entries, except for
+an entry for itself (".") and its parent directory ("..")</para>
+
+<para>The caller is made the owner of the directory. <xref linkend="i.makdir"/> does not
+return a path number because directory files are not <quote>opened</quote> by
+this request (use <xref linkend="i.open"/> to do so). The new directory will
+automatically have its <quote>directory</quote> bit set in the access
+permission attributes. The remaining attributes are specified by
+the byte passed in the B register, which has individual bits
+defined as follows:</para>
+
+<literallayout>
+bit 0 = read permit
+bit 1 = write permit
+bit 2 = execute permit
+bit 3 = public read permit
+bit 4 = public write permit
+bit 5 - public execute permit
+bit 6 = sharable file
+bit 7 = (don't care)
+</literallayout>
+</sect2>
+
+<sect2 xml:id="i.open" xreflabel="I$Open">
+<title>I$Open - Open a path to a file or device</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Open</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 84</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of pathlist.
+(A) = Access mode (D S PE PW PR E W R)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = Updated past pathlist (trailing spaces skipped).
+(A) = Path number.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Opens a path to an existing file or device as specified by the
+pathlist. A path number is returned which is used in subsequent
+service requests to identify the file.</para>
+
+<para>The access mode parameter specifies which subsequent read and/or
+write operation are permitted as follows:</para>
+
+<literallayout>
+1 = read mode
+2 = write mode
+3 = update mode (both read and write)
+</literallayout>
+
+<para>Update mode can be slightly slower because pre-reading of sectors
+may be required for random access of bytes within sectors. The
+access mode must conform to the access permission attributes
+associated with the file or device (see <xref linkend="i.create"/>). Only the owner
+may access a file unless the appropriate <quote>public permit</quote> bits are
+set.</para>
+
+<para>Files can be opened by several processes (users) simultaneously.
+Devices have an attribute that specifies whether or not they are
+sharable on an individual basis.</para>
+
+<para>NOTES:</para>
+
+<para>If the execution bit is set in the access mode, OS-9 will begin
+searching for the file in the working execution directory (unless
+the pathlist begins with a slash).</para>
+
+<para>The sharable bit (bit 6) in the access mode can not lock other
+users out of  file in OS-9 Level I. It is present only for
+upward compatibility with OS-9 Level II.</para>
+
+<para>Directory files may be read or written if the D bit (bit 7) is set
+in the access mode.</para>
+</sect2>
+
+<sect2 xml:id="i.read" xreflabel="I$Read">
+<title>I$Read - Read data from a file or device</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Read</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 89</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address to store data.
+(Y) = Number of bytes to read.
+(A) = Path number.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(Y) = Number of bytes actually read.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Reads a specified number of bytes from the path number given. The
+path must previously have been opened in READ or UPDATE mode. The
+data is returned exactly as read from the file/device without
+additional processing or editing such as backspace, line delete,
+end-of-file, etc.</para>
+
+<para>After all data in a file has been read, the next <xref linkend="i.read"/> service
+request will return an end of file error.</para>
+
+<para>NOTES:</para>
+
+<para>The keyboard abort, keyboard interrupt, and end-of-file characters
+may be filtered out of the input data on SCFMAN-type devices
+unless the corresponding entries in the path descriptor have been
+set to zero. It may be desirable to modify the device descriptor
+so that these values in the path descriptor are initialized to
+zero when the path is opened.</para>
+
+<para>The number of bytes requested will be read unless:</para>
+<literallayout>
+A. An end-of-file occurs
+B. An end-of-record occurs (SCFMAN only)
+C. An error condition occurs.
+</literallayout>
+</sect2>
+
+<sect2 xml:id="i.readln" xreflabel="I$ReadLn">
+<title>I$ReadLn - Read a text line with editing</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$ReadLn</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8B</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address to store data.
+(Y) = Number of bytes to read.
+(A) = Path number.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(Y) = Actual number of bytes read.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call is the same as <xref linkend="i.read"/>
+except it reads data from
+the input file or device until a carriage return character is
+encountered or until the maximum byte count specified is reached,
+and that line editing will occur on SCFMAN-type devices. Line
+editing refers to backspace, line delete, echo automatic line
+feed, etc.</para>
+
+<para>SCFMAN requires that the last byte entered be an end-of-record
+character (normally carriage return). If more data is entered
+than the maximum specified, it will not be accepted and a PD.OVF
+character (normally bell) will be echoed.</para>
+
+<para>After all data in the file has been read, the next <xref linkend="i.readln"/> service
+request will return an end of file error.</para>
+
+<para>NOTE: For more information on line editing, see 7.1.</para>
+</sect2>
+
+<sect2>
+<title>I$Seek - Reposition the logical file pointer</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Seek</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 88</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number.
+(X) = M.S. 16 bits of desired file position.
+(U) = L.S. 16 bits of desired file position.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call repositions the path's <quote>file pointer</quote>; which is
+the 32-bit address of the next byte in the file to be read
+from or written to.</para>
+
+<para>A seek may be performed to any value even if the file is not large
+enough. Subsequent WRITEs will automatically expand the file to
+the required size (if possible), but READs will return an end-of-file
+condition. Note that a SEEK to address zero is the same as a
+<quote>rewind</quote> operation.</para>
+
+<para>Seeks to non-random access devices are usually ignored and return
+without error.</para>
+</sect2>
+
+<sect2 xml:id="i.setstt" xreflabel="I$SetStt">
+<title>I$SetStt - Set file/device status</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$SetStt</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8E</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number.
+(B) Function code.
+(Other registers depend upon function code)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(depends upon function code)</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>This system is a <quote>wild card</quote> call used to handle individual
+device parameters that:</para>
+<orderedlist numeration="loweralpha">
+<listitem><para>are not uniform on all devices</para></listitem>
+<listitem><para>are highly hardware dependent</para></listitem>
+<listitem><para>need to be user-changeable</para></listitem>
+</orderedlist>
+
+<para>The exact operation of this call depends on the device driver and
+file manager associated with the path. A typical use is to
+set a terminal's parameters for backspace character, delete
+character, echo on/off, null padding, paging, etc. It is commonly
+used in conjunction with the <xref linkend="i.getstt"/>
+service request which is
+used to read the device operating parameters. Below are presently
+defined function codes:</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="3">
+<colspec colwidth="1.2in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="3.5in"/>
+<thead>
+<row rowsep="1">
+<entry>MNEMONIC</entry>
+<entry>CODE</entry>
+<entry>FUNCTION</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>SS.Opt</entry>
+<entry>$0</entry>
+<entry>Write the 32 byte option section of the path descriptor</entry>
+</row>
+<row>
+<entry>SS.Size</entry>
+<entry>$2</entry>
+<entry>Set the file size (RBF)</entry>
+</row>
+<row>
+<entry>SS.Reset</entry>
+<entry>$3</entry>
+<entry>Restore head to track zero (RBF)</entry>
+</row>
+<row>
+<entry>SS.WRT</entry>
+<entry>$4</entry>
+<entry>Write (format) track (RBF)</entry>
+</row>
+<row>
+<entry>SS.Feed</entry>
+<entry>$9</entry>
+<entry>Issue Form Feed (SCF)</entry>
+</row>
+<row>
+<entry>SS.FRZ</entry>
+<entry>$A</entry>
+<entry>Freeze DD. Information (RBF)</entry>
+</row>
+<row>
+<entry>SS.SPT</entry>
+<entry>$B</entry>
+<entry>Set Sectors per track (RBF)</entry>
+</row>
+<row>
+<entry>SS.SQD</entry>
+<entry>$C</entry>
+<entry>Sequence down disk drive (RBF)</entry>
+</row>
+<row>
+<entry>SS.Dcmd</entry>
+<entry>$D</entry>
+<entry>Direct command to hard disk controller (RBF)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Codes 128 through 255  their parameter passing
+conventions are user definable (see the sections of this manual on
+writing device drivers). The function code and register stack are
+passed to the device driver.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Opt (code 0):</entry>
+	<entry>Write option section of the path descriptor.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 0
+(X) = Address of a 32 byte status packet.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This setstat function writes the option section of the path
+descriptor from the 32 byte status packet pointed to by the X
+register. It is typically used to set the device operating
+parameters, such as echo, auto line feed, etc.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Size (code 2):</entry>
+	<entry>Set the file size (RBFMAN-type devices)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 2
+(X) = M.S. 16 bits of desired file size.
+(U) = L.S. 16 bits of desired file size.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This setstat function is used to change the file's size.</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.Reset (code 3):</entry>
+	<entry>Restore head to track zero.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 3</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Home disk head to track zero. Used for formatting and
+for error recovery.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.WTrk (code 4):</entry>
+	<entry>Write track</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 4
+(X) = Address of track buffer.
+(U) = Track number (L.S. 8 bits)
+(Y) = Side/density
+         Bit B0 = SIDE (0 = side zero, 1 = side one)
+	 Bit B1 = DENSITY (0 = single, 1 = double)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This code causes a format track (most floppy disks)
+operation to occur. For hard disks or floppy disks with a <quote>format
+entire disk</quote> command, this command should format the entire media
+only when the track number equals zero.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.FRZ (code $A):</entry>
+	<entry>Freeze DD. Information</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>none</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>none</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Inhibits the reading of identification sector (LSN 0) to
+DD.xxx variables (that define disk formats) so non-standard disks
+may be read.</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
+<tbody>
+<row>
+	<entry>SS.SPT (code $B):</entry>
+	<entry>Set Sectors Per Track</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>X = new sectors per track</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2 xml:id="i.write" xreflabel="I$Write">
+<title>I$Write - Write data to file or device</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$Write</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8A</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of data to write.
+(Y) = Number of bytes to write.
+(A) = Path number.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(Y) = Number of bytes actually written.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para><xref linkend="i.write"/> outputs one or more bytes to a file or device associated
+with the path
+number specified. The path must have been OPENed or CREATEd in the
+WRITE or UPDATE access modes.</para>
+
+<para>Data is written to the file or device without processing or
+editing. If data is written past the present end-of-file, the file is
+automatically expanded.</para>
+</sect2>
+
+<sect2 xml:id="i.writln" xreflabel="I$WritLn">
+<title>I$WritLn - Write line of text with editing</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$WritLn</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8C</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) = Address of data to write.
+(Y) = Maximum number of bytes to write.
+(A) = Path number.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(Y) = Actual number of bytes written.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This system call is similar to <xref linkend="i.write"/> except it writes data until a
+carriage return character is encountered. Line editing
+is also activated for character-oriented devices such as terminals,
+printers, etc. The line editing refers to auto line feed, null
+padding at end of line, etc.</para>
+
+<para>For more information about line editing, see section 7.1.</para>
+
+</sect2>
+</sect1>
+</chapter>
