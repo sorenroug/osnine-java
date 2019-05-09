@@ -3,7 +3,9 @@
 
          ifp1
          use   defsfile
+         use   Dynacalc.cor.inc
          endc
+         opt -m
 
 C$EOT    set   $04
 TRMBASE  equ   $14C
@@ -138,8 +140,8 @@ L012A    ldy   <u0028
          clr   PD.EKO-PD.OPT,x    $04,x
          clr   PD.EOF-PD.OPT,x    $0C,x
          clr   PD.PSC-PD.OPT,x    $0F,x   pause character
-         clr   PD.INT-PD.OPT,x     <$10,x  interrupt character
-         clr   PD.QUT-PD.OPT,x   quit echo
+         clr   PD.INT-PD.OPT,x    <$10,x  interrupt character
+         clr   PD.QUT-PD.OPT,x   quit
          clr   <$16,x
          os9   I$SetStt
          lbcs  FATAL
@@ -340,7 +342,7 @@ L0336    lda   #$FF
          inc   <u0020
          lbsr  L0505
          clr   <u0020
-         leau  >$B0+TRMBASE,y
+         leau  >CURSPOS+TRMBASE,y
          ldb   #$FF
 L0351    incb
          lda   b,u
@@ -1011,39 +1013,52 @@ L0FFA    fcc   "The function of the key will be displayed, along with"
          fcc   "press the appropriate key. If if's O.K., just press space"
          fcb   $0D
          fcc   "Up arrow- "
-         fcb   C$EOT,$01,$00
+         fcb   C$EOT
+         fdb   $0100
          fcb   $01
 L10B2    fcc   "Down arrow- "
-         fcb   C$EOT,$01,$01
+         fcb   C$EOT
+         fdb   $0101
          fcb   $01
 L10C2    fcc   "Left arrow- "
-         fcb   C$EOT,$01,$02
+         fcb   C$EOT
+         fdb   $0102
          fcb   $01
 L10D2    fcc   "Right arrow- "
-         fcb   C$EOT,$01,$03
+         fcb   C$EOT
+         fdb   $0103
          fcb   $01
 L10E3    fcc   "Home- "
-         fcb   C$EOT,$01,$04
+         fcb   C$EOT
+         fdb   $0104
          fcb   $01
 L10ED    fcc   "Jump window- "
-         fcb   C$EOT,$01,$05
+         fcb   C$EOT
+         fdb   $0105
          fcb   $01
 L10FE    fcc   "Get address- "
-         fcb   C$EOT,$01,$07
+         fcb   C$EOT
+         fdb   GETADDR
          fcb   $01
 L110F    fcc   "Flush type-ahead buffer- "
-         fcb   C$EOT,$01,$08
+         fcb   C$EOT
+         fdb   $0108
          fcb   $01
 L112C    fcc   "Log-off- "
-         fcb   C$EOT,$00,$F7,$01
+         fcb   C$EOT
+         fdb   $00F7
+         fcb   $01
 L1139    fcc   "Backspace- "
-         fcb   C$EOT,$01,$09
+         fcb   C$EOT
+         fdb   $0109
          fcb   $01
 L1148    fcc   "Edit (From entry level)- "
-         fcb   C$EOT,$01,$11
+         fcb   C$EOT
+         fdb   $0111
          fcb   $01
 L1165    fcc   "Edit overlay- "
-         fcb   C$EOT,$01,$0F
+         fcb   C$EOT
+         fdb   $010F
          fcb   $01
          fcb   $FF
 
@@ -1055,22 +1070,28 @@ L1178    fcc   "The individual attributes will be displayed, along with"
          fcc   "the new value. Press space if it's O.K. the way it is."
          fcb   $0D
 L121A    fcc   "Bell character- "
-         fcb   C$EOT,$01,$06
+         fcb   C$EOT
+         fdb   $0106
          fcb   $01
 L122E    fcc   "Direct cursor addressing row offset- "
-         fcb   C$EOT,$01,$0A
+         fcb   C$EOT
+         fdb   $010A
          fcb   $01
          fcc   "Column offset- "
-         fcb   C$EOT,$01,$0B
+         fcb   C$EOT
+         fdb   $010B
          fcb   $01
 L126A    fcc   "Number of columns (Limit 127)- "
-         fcb   C$EOT,$01,$0E
+         fcb   C$EOT
+         fdb   $010E
          fcb   $05
 L128D    fcc   "Number of rows - "
-         fcb   C$EOT,$01,$0D
+         fcb   C$EOT
+         fdb   $010D
          fcb   $03
 L12A2    fcc   "Use UPPER CASE only (regardless of TMODE flag)"
-         fcb   C$EOT,$00,$F8
+         fcb   C$EOT
+         fdb   $00F8
          fcb   $02
          fcb   $FF
 
@@ -1094,18 +1115,22 @@ L13A6    fcc   "Lines per page- "
          fdb   $00FF
          fcb   $05
 L13BA    fcc   "Printer width- "
-         fcb   C$EOT,$00,$FD
+         fcb   C$EOT
+         fdb   $00FD
          fcb   $05
 L13CD    fcc   "Line feeds after each line-"
          fcb   $0D
          fcc   "(Range 1 to 8)- "
-         fcb   C$EOT,$00,$F9
+         fcb   C$EOT
+         fdb   $00F9
          fcb   $05
 L13FD    fcc   "Do you want pagination"
-         fcb   C$EOT,$00,$FE
+         fcb   C$EOT
+         fdb   $00FE
          fcb   $02
 L1417    fcc   "Do you want to print borders"
-         fcb   C$EOT,$00,$FC
+         fcb   C$EOT
+         fdb   $00FC
          fcb   $02
          fcb   $FF
 
@@ -1121,7 +1146,9 @@ L1438    fcc   "Enter the character strings needed for your terminal."
          fdb   $0090
          fcb   $F4
 L14EA    fcc   'Terminal "Kiss-Off" (7 CHAR.):'
-         fcb   C$EOT,$00,$A0,$74
+         fcb   C$EOT
+         fdb   $00A0
+         fcb   $74
 L150C    fcc   "Direct cursor addr. Enter the correct sequence for your"
          fcb   $0D
          fcc   'terminal, typing a "*" where the column position goes and'
@@ -1129,7 +1156,9 @@ L150C    fcc   "Direct cursor addr. Enter the correct sequence for your"
          fcc   'a "+" where the row position goes. If you need to enter'
          fcb   $0D
          fcc   'the * or + as a character, preceed with "&". (7 CHAR.):'
-         fcb   C$EOT,$00,$B0,$70
+         fcb   C$EOT
+         fdb   CURSPOS
+         fcb   $70
 L15F1    fcc   "Erase to end of line (Just type period if your terminal"
          fcb   $0D
          fcc   "does not have this feature) (5 CHAR.):"
@@ -1139,14 +1168,16 @@ L15F1    fcc   "Erase to end of line (Just type period if your terminal"
 L1653    fcc   "Erase to end of page (Just type period if your terminal"
          fcb   $0D
          fcc   "does not have this feature) (5 CHAR.):"
-         fcb   C$EOT,$00,$BE,$54
+         fcb   C$EOT
+         fdb   $00BE
+         fcb   $54
 L16B5    fcc   "Hilite on (Period if not used) (7 CHAR.):"
          fcb   C$EOT
-         fdb   $00C4
+         fdb   REVON
          fcb   $74
 L16E2    fcc   "Hilite off (Period if not used) (7 CHAR.):"
          fcb   C$EOT
-         fdb   $00CC
+         fdb   REVOFF
          fcb   $74
 L1710    fcc   "Following are the terminal cursor on/off strings."
          fcb   $0D
@@ -1163,11 +1194,15 @@ L1812    fcb   C$EOT
          fdb   $0088
          fcb   $34
          fcc   "Cursor off (3 CHAR.):"
-L182B    fcb   C$EOT,$00,$8c,$34
+L182B    fcb   C$EOT
+         fdb   $008C
+         fcb   $34
          fcc   "Destructive backspace -"
-         fcb   $0d
+         fcb   $0D
          fcc   "On most terminals, &H,&(space),&H (5 CHAR.):"
-L1873    fcb   C$EOT,$00,$D4,$54
+L1873    fcb   C$EOT
+         fdb   $00D4
+         fcb   $54
          fcc   "Non-destructive backspace, usually &H (3 CHAR.):"
          fcb   C$EOT
          fdb   $00DA
