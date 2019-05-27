@@ -95,6 +95,17 @@
             </configuration>
           </execution>
 
+          <execution>
+            <id>review-os9-cobol</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+            </goals>
+            <configuration>
+              <includes>review-os9-cobol.xml</includes>
+            </configuration>
+          </execution>
+
         </executions>
 
         <configuration>
