@@ -1,0 +1,1116 @@
+<?xml version="1.0"?>
+<!DOCTYPE book [
+<!ENTITY ansileft "-[">
+<!ENTITY ansiright "]-">
+]>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="ciscobol" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <info>
+    <title>CIS COBOL Language Reference Manual</title>
+    <subtitle>(For 8-bit computer architectures)</subtitle>
+    <copyright>
+      <year>1978</year>
+      <year>1980</year>
+      <year>1982</year>
+      <year>1983</year>
+      <holder>Micro Focus Limited</holder>
+    </copyright>
+    <legalnotice>
+      <para>
+Neither the whole nor any part of the information contained in, or the
+product described in, this manual may be adapted or reproduced in any
+material form except with the prior written approval of Acorn Computers
+Limited (Acorn Computers).
+</para>
+      <para>
+The product described in this manual and products for use with it are
+subject to continuous development and improvement. All information of
+a technical nature and particulars of the product and its use (including
+the information and particulars in this manual) are given by Acorn
+Computers in good faith. However, it is acknowledged that there may be
+errors or omissions in this manual. A list of details of any amendments
+or revisions to this manual can be obtained upon request from Acorn
+Computers Technical Enquiries. Acorn Computers welcome comments and
+suggestions relating to the product and this manual.
+</para>
+      <para>
+All correspondence should be addressed to:
+<address><otheraddr>Micro Focus Limited</otheraddr><street>26 West street</street><city>Newbury Berkshire</city><postcode>RG13 1JT</postcode></address>
+</para>
+      <para>CIS COBOL, LEVEL II COBOL, FORMS-2 ANIMATOR and FILESHARE are trademarks of Micro Focus Ltd</para>
+      <para><trademark class="registered">CP/M</trademark> and <trademark class="registered">CP/M-86</trademark> are registered trademarks of Digital Research Inc</para>
+      <para><trademark class="registered">Z80</trademark> is a registered trademark of Zilog Inc</para>
+      <para><trademark class="trade">ADM-3A</trademark> is a trademark of Lear Siegler Inc</para>
+      <para><trademark class="registered">8080</trademark> is a registered trademark of Intel Corp</para>
+      <!--
+<para>First published 1984</para>
+-->
+    </legalnotice>
+    <revhistory>
+      <revision>
+        <revnumber>4.5</revnumber>
+        <date>November 1982</date>
+      </revision>
+    </revhistory>
+    <publisher>
+      <publishername>Micro Focus Limited</publishername>
+    </publisher>
+    <subjectset>
+      <subject>
+        <subjectterm>COBOL</subjectterm>
+      </subject>
+      <subject>
+        <subjectterm>software</subjectterm>
+      </subject>
+    </subjectset>
+  </info>
+  <acknowledgements>
+    <para>
+  COBOL is an industry language and is not the property of any company or
+  group of companies, or of any organization or group of organizations.
+  No warranty, expressed or implied, is made by any contributor or by the
+  CODASYL Programming Language Committee as to the accuracy and functioning of
+  the programing system and language. Moreover, no responsibility is assumed
+  by any contributor, or by the committee, in connection herewith.
+</para>
+    <para>
+  The authors and copyright holders of the copyrighted material used
+  herein:
+</para>
+    <para>
+FLOW-MATIC (Trademark for Sperry Rand Corporation) Programming for the
+<trademark class="registered">Univac</trademark> I and II,
+Data Automation Systems copyrighted 1958, 1959, by
+Sperry Rand Corporation; IBM Commercial Translator Form No. F28-8013,
+copyrighted 1959 by IBM; FACT, DSI27A5260-2760, copyrighted 1960 by
+Minneapolis-Honeywell.
+</para>
+    <para>
+have specifically authorized the use of this material in whole or in part,
+in the COBOL specifications. Such authorization extends to the reproduction
+and use of COBOL specifications in programming manuals or similar publications.
+</para>
+  </acknowledgements>
+  <preface>
+    <title>PREFACE</title>
+    <para>
+This manual describes the Compact Interactive Standard COBOL (CIS COBOL)
+language for programming microcomputers. CIS COBOL is based on the ANSI
+COBOL standard X3.23 (1974) (see Acknowledgement). It also describes the
+additional CIS COBOL features that exploit the capabilities of
+microprocessors.
+</para>
+    <para>
+Each release of CIS COBOL is characterized by a two-digit code in the form of
+</para>
+    <para>
+      "Version number". "Release number within version"
+  </para>
+    <section>
+      <title>AUDIENCE</title>
+      <para>
+This manual is intended for programmers already familiar with COBOL on other equipment.
+</para>
+    </section>
+    <section>
+      <title>MANUAL ORGANIZATION</title>
+      <para>
+Chapters 1 through 4 of the manual apply to all users and describe basic
+ features of the language. Chapters 5 through 7 describe language features
+ for programming the three file organization formats supported: sequential,
+ relative and indexed.
+</para>
+      <para>
+ Chapters 8 through 11 apply to all users and describe additional features
+ and facilities available with the standard language. The appendices supply
+ reference information pertinent to all systems.
+</para>
+      <para>
+The manual contains the following chapters and appendices:
+</para>
+      <para>
+"Chapter 1. Introduction", which gives a general description of the
+language, including a broad outline of ANSI COBOL features included and
+omitted and additional features of CIS COBOL.
+</para>
+      <para>
+"Chapter 2. COBOL Concepts", which describes general concepts of the COBOL
+language including program structure, and details of statement components
+and notation.
+</para>
+      <para>
+"Chapter 3. Nucleus", which describes the nucleus of all COBOL programs and
+the layout of each program division in the nucleus.
+</para>
+      <para>
+"Chapter 4. Table Handling", which describes the handling of data tables in
+the Data and Procedure divisions of a COBOL program.
+</para>
+      <para>
+"Chapter 5. Sequential Input and Output", which describes the programming of
+input and output of data in files with sequential format.
+</para>
+      <para>
+"Chapter 6. Relative Input and Output", which describes the programming of
+input and output of data in files with relative format.
+</para>
+      <para>
+"Chapter 7. Indexed Input and Output", which describes the programming of
+input and output of data in files with indexed format.
+</para>
+      <para>
+"Chapter 8. Segmentation", which describes the facility for specifying
+permanent and independent object program segments.
+</para>
+      <para>
+"Chapter 9. Library", which describes the source library maintenance feature
+of COBOL.
+</para>
+      <para>
+"Chapter 10. Debug and Interactive Debugging", which describes the basic and
+interactive debugging features available in CIS COBOL.
+</para>
+      <para>
+"Chapter 11. Interprogram Communication", which describes the ability of CIS
+COBOL programs to interface during running and to access common data,
+  enabling modular programming.
+</para>
+      <para>
+"Chapter 12. Programming Techniques and Sizing", which describes the means
+available for CIS COBOL programmers to estimate object program size and
+includes programming techniques in CIS COBOL.
+</para>
+      <para>
+"Appendix A. Reserved Word Table", which lists words reserved for CIS COBOL
+functions within a program.
+</para>
+      <para>
+"Appendix B. Character Set and Collating Sequence", which lists all
+characters available and their collating sequence.
+</para>
+      <para>
+"Appendix C. Glossary", which lists specific terms used in CIS COBOL.
+</para>
+      <para>
+"Appendix D. Compile - Time Errors", which lists all errors that can be
+signalled during program compilation.
+</para>
+      <para>
+"Appendix E. Run-Time Errors", which lists all errors that can be signalled
+during program execution.
+</para>
+      <para>
+"Appendix F. Syntax Summary", which summarizes the syntax used in CIS COBOL
+programming.
+</para>
+      <para>
+"Appendix G. Summary of Extensions to ANSI COBOL", which summarizes all
+extensions to ANSI COBOL provided by CIS COBOL.
+</para>
+      <para>
+"Appendix H. System Dependent Language Features", which describes the
+system dependent CIS COBOL entries for use with microcomputers and those
+features not included because of hardware requirements.
+</para>
+      <para>
+"Appendix I. Language Specification", which is an overall specification of
+the CIS COBOL language.
+</para>
+    </section>
+    <section>
+      <title>RELATED PUBLICATIONS</title>
+      <para>
+No discussion of operating the CIS COBOL Compiler or Run-Time system is
+incorporated in this manual. Please refer to document:
+</para>
+      <para><citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
+                    (for use with the relevant Operating System)
+                </para>
+    </section>
+    <section>
+      <title>NOTATION IN THIS MANUAL</title>
+      <para>
+Throughout this manual, the following notation is used to describe the
+format of COBOL statements:
+</para>
+      <orderedlist>
+        <listitem>
+          <para>
+All words printed in capital letters which are underlined must always
+be present when the functions of which they are a part are used. An
+error printout will occur during compilation if the underlined words
+are absent or incorrectly spelled. The underlining is not necessary
+when writing a COBOL source program.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+All words printed in capital letters which are not underlined are used
+for readability only. They may be written, or not, as the programmer wishes.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+All words printed in small letters are generic terms representing names
+which will be devised by the programmer.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+When material is enclosed in braces { } , a choice must be made from
+the options within them.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+When material is enclosed in square brackets [ ], it is an indication
+that the material is an option which may be included or omitted as required.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+When material is enclosed in square brackets crossed &ansileft; &ansiright;, it is an
+indication that the material is mandatory when the ANSI switch is set
+(see Chapter 2) but optional otherwise.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Language features that are shaded in the text are language extensions
+which exceed the ANSI standard.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+In text, the ellipsis (...) shows the omission of a portion of a source
+program or a sequence. This meaning becomes apparent in context.
+ </para>
+          <para>
+In the general formats, the ellipsis represents the position at which
+repetition may occur at the user's option. The portion of the format
+that may be repeated is determined as follows:
+ </para>
+          <para>
+Given ... in a clause or statement format, scanning right to left,
+determine the { or [ immediately to the left of the  ...; continue
+scanning right to left and determine the logically matching } or ]; the
+... applies to the words between the determined pair of delimiters.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+The term identifier means either a data-name or a  subscripted
+     data-name. An identifier takes the following form:
+</para>
+          <para>
+          data-name-1              [ ({data-name-2 | literal-1}) ]
+</para>
+          <para>
+data-name-2 or literal-1 must be a positive integer in the range 1
+to the number of elements in the table.
+</para>
+        </listitem>
+      </orderedlist>
+      <para>
+
+Readings are presented in this manual in the following order of importance:
+     CHAPTER  N  
+                   Chapter Heading
+     TITLE
+     
+ORDER ONE HEADING
+ORDER TWO HEADING
+Order Three Heading      Text two lines down
+Order Four Heading
+Order Five Heading:      Text on same line
+</para>
+      <para>
+Numbers one (1) to nine (9) are written in text as letters, e.g. one.
+</para>
+      <para>
+Numbers ten (10) upwards are written in text as numbers, e.g. 12.
+</para>
+      <para>
+The phrase "For documentation purposes only" in the text of this manual
+means that the associated coding is accepted syntactically by the Compiler,
+but is ignored when producing the object program.
+</para>
+    </section>
+  </preface>
+  <xi:include href="chapter01.xml"/>
+  <xi:include href="chapter02.xml"/>
+  <xi:include href="chapter03.xml"/>
+  <xi:include href="chapter04.xml"/>
+  <xi:include href="chapter05.xml"/>
+  <xi:include href="chapter06.xml"/>
+  <xi:include href="chapter07.xml"/>
+  <xi:include href="chapter08.xml"/>
+  <xi:include href="chapter09.xml"/>
+  <xi:include href="chapter10.xml"/>
+  <xi:include href="chapter11.xml"/>
+  <xi:include href="chapter12.xml"/>
+  <xi:include href="appendixa.xml"/>
+  <xi:include href="appendixb.xml"/>
+  <xi:include href="appendixc.xml"/>
+  <xi:include href="appendixd.xml"/>
+  <appendix>
+    <title>RUN-TIME ERRORS</title>
+    <para>
+Run-time error messages are preceded by the name and segment number of
+the currently executing intermediate code file.
+</para>
+    <para>
+There are two types of runtime errors:   Recoverable and Fatal.
+</para>
+    <para>
+(a)  Recoverable errors
+</para>
+    <para>
+If the programmer has specified the STATUS clause in the FILE-CONTROL
+paragraph of a program error handling is the programmer's responsibility.
+This will generally or.ly apply to errors that are not considered fatal
+by the operating system. (See <emphasis role="underline">File Status</emphasis> in Chapters 5, 6 and 7)
+</para>
+    <para>
+(b)  Fatal errors
+</para>
+    <para>
+All errors except those above are fatal. They may come from the operating
+system or from the run-time system. Fatal errors cause a message to be
+output to the console which includes a 3-digit error code and reference to
+the COBOL statement subsequent to that in which the error occurred. These
+fall into two classes:
+</para>
+    <variablelist>
+      <varlistentry>
+        <term>(i)  Exceptions</term>
+        <listitem>
+          <para>
+These cover arithmetic overflow, subscript out of range, too many levels of perform nesting.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>(ii) I-O errors</term>
+        <listitem>
+          <para>
+These exclude those for which STATUS is not selected as above.
+</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <informaltable frame="all" colsep="1" rowsep="1">
+      <tgroup cols="2">
+        <colspec colnum="1" align="left"/>
+        <thead>
+          <row>
+            <entry>Error</entry>
+            <entry>Description</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>151</entry>
+            <entry>Random read on sequential file</entry>
+          </row>
+          <row>
+            <entry>152</entry>
+            <entry>REWRITE on file not open I-O</entry>
+          </row>
+          <row>
+            <entry>153</entry>
+            <entry>Subscript out of range</entry>
+          </row>
+          <row>
+            <entry>154</entry>
+            <entry>Perform nesting exceeds 22 levels</entry>
+          </row>
+          <row>
+            <entry>156</entry>
+            <entry>Invalid file operation</entry>
+          </row>
+          <row>
+            <entry>157</entry>
+            <entry>Object file too large</entry>
+          </row>
+          <row>
+            <entry>158</entry>
+            <entry>REWRITE on line-sequential file</entry>
+          </row>
+          <row>
+            <entry>159</entry>
+            <entry>Malformed line-sequential file</entry>
+          </row>
+          <row>
+            <entry>161</entry>
+            <entry>Illegal intermediate code</entry>
+          </row>
+          <row>
+            <entry>162</entry>
+            <entry>Arithmetic overflow or underflow</entry>
+          </row>
+          <row>
+            <entry>164</entry>
+            <entry>Specified CALL code not supplied or Attempt to call a COBOL module recusively (i.e when is already active)</entry>
+          </row>
+          <row>
+            <entry>165</entry>
+            <entry>Incompatible releases of compiler and run-time system</entry>
+          </row>
+          <row>
+            <entry>168</entry>
+            <entry>Memory arrangement failure</entry>
+          </row>
+          <row>
+            <entry>169</entry>
+            <entry>Invalid indirect sequential file key length (&gt;32 characters)</entry>
+          </row>
+          <row>
+            <entry>170</entry>
+            <entry>Illegal operation in Indexed Sequential</entry>
+          </row>
+          <row>
+            <entry>171</entry>
+            <entry>Attempt to read I-S record in output/extend mode</entry>
+          </row>
+          <row>
+            <entry>172</entry>
+            <entry>Attempt to delete I-S record in non I-O mode</entry>
+          </row>
+          <row>
+            <entry>173</entry>
+            <entry>Attempt to write I-S record in input mode</entry>
+          </row>
+          <row>
+            <entry>174</entry>
+            <entry>Attempt to CALL/CANCEL on active program</entry>
+          </row>
+          <row>
+            <entry>176</entry>
+            <entry>Illegal inter-segment reference</entry>
+          </row>
+          <row>
+            <entry>180</entry>
+            <entry>COBOL file malformed</entry>
+          </row>
+          <row>
+            <entry>181</entry>
+            <entry>Fatal file malformation</entry>
+          </row>
+          <row>
+            <entry>194 (CP/M 1.4 only)</entry>
+            <entry>File size too large (&gt;0.5MB) or Failure to Open on Extent</entry>
+          </row>
+          <row>
+            <entry>195</entry>
+            <entry>DELETE/REWRTTE not preceded by a READ</entry>
+          </row>
+          <row>
+            <entry>196</entry>
+            <entry>Relative (or Indexed) - Record number too large (&gt;65535)</entry>
+          </row>
+          <row>
+            <entry>197</entry>
+            <entry>File save failure</entry>
+          </row>
+          <row>
+            <entry>198</entry>
+            <entry>Program load failure (using CHAIN)</entry>
+          </row>
+          <row>
+            <entry>199</entry>
+            <entry>Indexed sequentia1 file name too long ( &gt;20 characters)</entry>
+          </row>
+          <row>
+            <entry>200</entry>
+            <entry>Insufficient space to load Animator</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>
+See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle> specific to your operating system.
+</para>
+  </appendix>
+  <appendix>
+    <title>SYNTAX SUMMARY</title>
+    <para>
+     All the syntax for CIS COBOL is summarized below.
+ </para>
+    <para>
+     E denotes that the feature is a CIS COBOL extension to ANSI COBOL.
+</para>
+    <para>
+     D denotes that the feature is documentary only in CIS COBOL.
+</para>
+    <!--
+     GENERAL FORMAT FOR IDENTIFICATION DIVISION
+     fiDENTIFICATION DIVISION.f
+     fPROGRAM-ID.     program namef
+     [AUTHOR.               [comment entry] ... ]
+     [INSTALLATION.         [comment entry] ... ]
+     [DATE-WRITTEN.         [comment entry] ... ]
+     [DATE-COMPILED.        [comment entry] ... ]
+     [SECURITY.             [comment entry] ... ]
+
+
+
+   GENERAL FORMAT FOR ENVIRONMENT DIVISION
+        ENVIRONMENT DIVISION.
+        CONFIGURATION SECTION.
+        SOURCE-COMPUTER.        source-computer-entry    [WITH DEBUGGING MODE].
+        OBJECT-COMPUTER.        object-computer-entry
+             [.MEMORY SIZE integer
+                                           IWORDS
+                                            CHARACTERS
+                                            MODULE~
+                                                        !]
+                                                                                         l
+               [,PROGRAM COLLATING SEQUENCE IS     alphabet-name].
+r       SPECIAL-NAMES.
+               SWIT~
+                             0                         ON STATUS IS condition-name-l
+                                                      [OFF STATUS IS condition-name-2]
+            [                     [}i mnemonic-name]   OFF-sTATUS IS conditional-name-2
+                                                      -[ON STATUSIS conditional-name-l]
+            n{ ,S.YSIN }.  . is   mnemonic-name ]                          D
+            V ,SYSOUT -
+               (  TAB ,ll mnemonic-name 1                                 D
+               [,CURRENCY SIGN }i literal-9]
+                (,DECIMAL-POINT }i COMMA}
+               W-J:~~
+                                                  E
+                                                  E
+        INPUT-OUTPUT SECTION.
+        FILE-CONTROL.
+r-
+1              file-control-entry
+r
+r                                           269
+   [   H)-CONTROL.
+          T;t   !!!!!!!_fOB ..l f i - 1 '
+                     :l         ~~~
+                                                      f]
+                                                          -
+                                                              '
+                    .      miR't    - ~ t.~:88~1~s I                             file-name-2
+            , ,                          integer-2 CLOCK-UNITS
+                                         eondition-name
+          : : :[;{~~:'; ARP.A   Fofi file-urae~l,  . l.,fi:l~~r2  (. ~      .J..  ].
+GENERAL FORMAT FOR FILE-CONTROL ENTRY
+Sequential SELECT:
+       SELECT file-name
+       ASSIGN TO        external-file-name-literal~             ~;.[  ~sexte~nal-file~"OSme-literal~]
+                      l file-identifier                     S    ( lfile.-.identifier
+                                                                :: :.  . .   :.
+                                                                                                   S
+     [;ORGANIZATION IS
+                                                                                E
+       [;ACCESS MODE IS SEQUENTIAL]
+       [;FILE STATUS IS data-name]
+Relative Select:
+       SELECT file-name
+       ASSIGN TO
+       ORGANIZATION IS RELATIVE
+     [ ;ACCESS MODE IS
+                                 ~ SEQUENTIAL
+       (;FILE STATUS IS data-name]
+                                   {RANDOM }
+                                     DYNAMIC
+                                                      (,RELATIVE KEY IS data-name]
+                                                        ,RELATIVE KEY IS data-name
+                                                                                             !J
+                                                  270
+  Indexed Select:
+        SELECT file-name
+                      j ~~~=~~:!~!~~~:~»me-literal! ?[~-1"~ft1t,~'~\'
+        ASSIGN TO
+        ;ORGANIZATION IS INDEXED
+      [;ACCESS MODE IS
+                            lSEQUENTIAL
+                             RANDOM
+                             DYNAMIC
+                                        l]
+        ;RECORD KEY IS data-name
+        [;FILE STATUS IS data-name]
+r
+r
+r                                       271
+GENERAL FORMAT FOR THE DATA DIVISION
+                                                                               D
+                                                                               D
+                                                                               D
+                                                                               D
+                                                                               D
+                                                                               D
+      [record-description-entry] .. ] .
+   [ WORKING-STORAGE SECTION
+      77-level-description-entry]             )
+    [ record-description-entry
+   [ LINKAGE SECTION
+      77-level-description-entry]    )
+    [ record-description-entry
+GENERAL FORMAT FOR DATA DESCRIPTION ENTRY
+      level-number {data-name}
+                          FILLER
+              [;REDEFINES data-name]
+                 PICTURE}      .               ]
+                        )~~M:~~:~;:~:ringl
+           [ {
+              ; PIC
+          [
+             US GE IS
+            , ___A___
+                         ~UTATIONAL-3l
+                         COMP-3
+                         DISPLAY
+          [ (; SIGN IS]       { LEADING
+                                 TRAILING
+                                          }    [SEPARATE CHARACTER]]
+           [ ;OCCURS integer TIMES          INDEXED BY index-name-1  [, index-name-2] . ]
+         ::p ~~~~~aJ.'. '":  '}:. {i~=-~J                                      D
+           [ ;{ ~~~~IFIED}            RIGHT ]
+            {;BLANK WHEN ZERO]
+            [;VALUE IS literal]
+                                              272
+   GENERAL FORMAT FOR PROCEDURE DIVISION
+   Declarative format:
+         PROCEDURE DIVISION (usiNG data-name-1             [. data-name-2] .. ].
+         DECLARATIVES.
+       {section-name SECTION segment-number.             declarative-sentence
+          [paragraph-name. [sentence] ...         J ... }...
+         END DECLARATIVES.
+       { section-name SECTION        [segment-number]
+          [paragraph-name [sentence]  J ... } ...
+   Non-declarative format:
+         PROCEDURE DIVISION ( ~ data-name-1                  [,data-name-2]    ... ] .
+          {paragraph-name [sentence]            J
+   GENERAL FORMAT FOR VERBS
+         ACCEPT    dataname-1  IAT       ~~::;~~[;J-lt ~at ,   .                E
+         ACCEPT identifier       [FROM CONSOLE]
+         ADD  sidentifier-1~    Sidentifier-2~ ...      TO identifier [ROUNDED)
+              lliteral-1     S lliteral-2        S
+                           [; ON SIZE ERROR imperative-statement]
+              s identifier-1~ sidentifier-2l [ sidentifier-3i]
+         ADD lliteral-1      S' lliteral-2        S 'lliteral-3        S
+                          GIVING identifier        (ROUNDED]
+                           [; ON SIZE ERROR       imperative-statement]
+~
+I        ALTER   ~procedure-name-1      TO [PROCEED TO  J procedure-name-2
+         CALL Si~entifier-ll [USING         data-name-1       [, data-name-2]   .. J
+        - - l hteral-1        S
+         CANCEL Sidentifier-1l           identifier-2]
+        - - - lliteral-1         S    [ ,literal-2
+                                       D                   D                          D
+                                                               ~ , file-name
+r-
+1
+         DELETE    file-name    RECORD     [; INVALID KEY     imperative-statement]
+         DISPLAY sidentifier-1~ , Sidentifier-2l             . [UPON CONSOLE]
+        - - - hiteral-1            S    luteral-2        S
+                                                273
+                                                                                                                         E
+     DIVIDE Sidentifier-ll                                            INTO 'd        'f' -2             [ROUNDED]
+              hiteral-1                                        ~      - - 1 ent1 1er
+                  [;ON SIZE ERROR                                           imperative-statement]
+     DIVIDE Si~entifier- 1 l INTO                                             Sidentifier- 2 l GIVING           identifier-2   [ROUNDED]
+              l h teral-1                                      S            lliteral-2             ~ -
+                  [;ON SIZE ERROR                                           imperative-statement]
+     DIVIDE Sidentifier-ll BY Si~entifier- 2 l                                                       GIVING   identifier-3   [ROUNDED]
+              lliteral-1                                       S - - l11tera1-2                  S
+                  [;ON SIZE ERROR                                           imperative-statement]
+: . :d;.;: ;~~-~~~     ...
+                   :. : :::- ::.:  :; ,: ......:.:,..::~ ::;
+                                                                  .  t~@f.~li~~~ ~ ~ l.    ;  .K                      D
+     EXIT [PROGRAM].
+     GO TO procedure-name.                                                                                                               ~
+     GO TO procedure-name-1                                             , procedure-name-2
+            DEPENDING ON identifier
+              . .                     { statement-1                              }       ; ELSE statement-2 }
+     IF cond 1 t 1on;                          NEXT SENTENCE                           { ; ELSE NEXT SENTENCE
+     INSPECT     identifier-1 TALLYING
+     -~                                                                     ){ALL            }      Sidentifier-3l~
+            identifier-2 FOR                                              ,     LEADING             lliteral-2      ~
+               [{BEFORE}
+                  AFTER
+                                                               INITIAL Sidentifier-4l]
+                                                                              lliteral-3
+                                                                                            CHARACTERS
+                                                                                                      S
+                                                                                                          I
+     INSPECT identifier-1 REPLACING
+            CHARACTERS BY
+         [,)l~~ING ~
+              FIRST
+                  BEFORE} INITIAL
+                                         ~
+                                                       ,
+                                                                Sidentifier-6l
+                                                                lliteral-4
+                                                              ~i~entifier-5 ~
+                                                               11teral-3
+                                                                                     ~
+                                                                                         BY
+
+                                                                              S i~entifier-7l]
+                                                                                                  sidentifier-6l
+                                                                                                   lliteral-4     S
+                                                                                                                    I
+               [{ AFTER                                                       l l1teral-S             ~
+                                                                                   274
+         INSPECT identifier TALLYING tally-clause REPLACING replacing-clause
+         MOVESi~entifier-ll TO identifier-2             [, identifier-3]
+        lh.teral-1          ~
+               sidentifier-ll                         [ROUNDED]
+   MULTIPLY lliteral-l        S BY identifier-2
+           (;ON SIZE ERROR        imperative-statement)
+   MULTIPLY    )~~~~~!~~7r-lt BY~~~~:~!~~;r- 2 (      GIVING identifier-3     [ROUNDED]
+            [; ON SIZE ERROR       imperative-statement]
+   OPEN  ~~ ~~~~~T I file-name-1
+         ll EXTEND ~                       ,file-name-2     l
+   PERFORM     procedure-name-1 { ~   THROUGH} procedure-name-2
+                                                                     Sidentifier-ll
+   PERFORM     procedure-name-1 { THROUGH}
+                                      THRU       procedure-name-2    lliteral-1    ~
+   PERFORM     procedure-name-1 { ~   THROUGH} procedure-name-2       UNTIL condition
+   READ file-name       [NEXT)       RECORD     (INTO identifier]
+               [;AT END imperative-statement]
+   READ file-name      RECORD      [INTO identifier]
+r-
+1
+               [;INVALID KEY imperative-statement)
+   REWRITE     record-name    [FROM identifier]
+               [;INVALID KEY imperative-statement]
+                                                            l Il
+         Sidentifier-ll S[identifier-2]l                                   identifier-3 ~
+                                                             TO
+                                                             UP BY         index-name-3
+         lindex-name-lS l[index-name-2]S
+                                                             DOWN BY       integer-1
+   START    file-name [KEY      ~ i~ :       ~                  data-name]
+                                ~IS   NOT &lt; ~
+                 [;INVALID  KEY      imperative-statement]
+                                                  275
+ SUBTRACT ~identifer-ll [ ~identifier-2l]               FROM identifier-) [ROUNDED]
+          lliteral-1 ~       lliteral-2     S
+           [; ON SIZE ERROR    imperative-statement]
+ SUBTRACT Sidentifier-ll , Sidentifier-2l          FROMSi~entifier-3l
+          lliteral-1    S lliteral-2       S    hl.teral-3       S
+           GIVING  identifier 4     [ROUNDED]
+           [; ON SIZE ERROR    imperative-statement]
+                                                              file-name
+                                                              INPUT
+ USE AFTER STANDARD {EXCEPTION}      PROCEDURE ON             OUTPUT
+-                    ERROR
+                                                              r:o-
+                                                              EXTEND
+USE FOR DEBUGGING {procedure-name-1       [, procedure-name-2]}
+-                    ALL PROCEDURES
+~ITE   l;;;;;:; F::~::::tif ie;~;}er                { LINE
+                                                      LINES } l         E
+WRITE record-name [FROM identifier]
+           [;INVALID KEY imperative-statement]
+GENERAL FORM FOR COPY STATEMENT
+          ~text-name                    l
+          lexternal-file-name-literal S
+-->
+  </appendix>
+  <appendix>
+    <title>SUMMARY OF EXTENSIONS TO ANSI COBOL</title>
+    <para>
+  CIS COBOL is oriented to microcomputer users with the system readily accessable
+  and usually with a CRT. CIS COBOL therefore provides extensions for
+  interactive working, program control of files, text file handling and rapid
+  development and testing. These facilities are summarized below.
+</para>
+    <!--
+  SCREEN FORMATTING AND DATA ENTRY
+  THE ACCEPT STATEMENT
+  An additional format for the ACCEPT statement is provided as follows:
+                                  Ida ta:::me-2l
+         ACCEPT   dataname-l [ ATiliteral-l 1
+  data-name-2       allows the start of screen to be changed dynamically. It
+                    refers to a PIC 9999 field where the most significant 99 is a
+                    line count l-25 and the least significant 99 is a charact~r
+                    position 1-80.
+  da ta-name-1      refers to a record, group or elementary item but may not be
+                    subscripted.
+   literal-1        is a numeric literal
+  NOTE:       See Chapter 3 for description. See also Appendix H for
+               Environment Division changes.
+  THE DISPLAY STATEMENT
+~        An additional format for the DISPLAY statement is provided as follows:
+I
+   Format
+         DISPLAY !data-name-ll[AT
+         -        lliteral-3 I -
+                                        sdataname-2l]
+                                        lliteral-1 I
+                                                           UPON ~CRT     I
+                                                           - - ~CRT-UNDER~
+   literal-3         is an alphanumeric literal
+   dataname-1      refers to a record, group or elementary item but may not be
+                    subscripted
+   dataname-2       defines the left-most position on the screen. It refers to a
+                     PIC 9999 field where the most significant 99 is a line count
+                     l-25 and the least significant 99 is a character position
+                     l-80.
+   NOTE:       See Chapter 3 for description.
+                                          277
+DISK FILES
+      Two extensions are offered by CIS COBOL file processing; these are as
+follows:
+1.    Line sequential files
+2.    Run time input of filenames
+LINE SEQUENTIAL FILES
+      When LINE SEQUENTIAL ORGANIZATION is specified in the FILE CONTROL
+paragraph ORGANIZATION IS entry, the file is treated as consisting of
+variable length records separated by the lir.c delimiter characters.
+lra111ng spaces in output records are replaced by a record terminator which
+is operating system dependent.
+RUN TIME INPUT OF FILENANES
+      The ASSIGNed name in the SELECT statement for a file is processed on
+OPENing as follows:
+      When the INPUT or OUTPUT phrase is specified, execution of OPEN causes
+checking of the file names in accordance with the operating system
+conventions for opening an input or output file. The full operating system
+features for file reallocation and device control are therefore available to
+the CIS COBOL program.
+LOWER CASE CHARACTERS
+      The full alphanumeric lower case a to z is available in CIS COBOL.
+Reserved and user word characters are read as their upper case equivalents
+ (A to Z).
+HEXADECIMAL VALUES
+      Hexadecimal binary values can be attributed to non-numeric literals in
+CIS COBOL by expressing them as X "xx", where x is a hexadecimal character
+in the set 0-9, A-F; xx can be repeated up to 120 times, but the number of
+hexadecimal digits must be even.
+ INTERACTIVE DEBUGGING
+      There is a Run-Time Debug Package to provide break-point facilities in
+ the user's program. Programs may be run from the start until a specified
+break-point is reached, when control is passed back to the user. At this
+ point, data areas may be inspected or changed.
+      The Debug package is entered as an option by the user and the user
+ program is then tested line by line, paragraph by paragraph and so on as
+ required. The commands to the package can reference procedure statements
+and data areas by means of a 4-digit hexadecimal code output by the compiler
+against each line of the compilation listing. Powerful macros of commands
+ can be used to give very sophisticated debugging facilities. The precise
+ details for using the package vary according to the host operating system
+ and are described in the appropriate Operating Guide.
+-->
+  </appendix>
+  <appendix>
+    <title>SYSTEM DEPENDENT LANGUAGE FEATURES</title>
+    <para>
+         This Appendix summarizes those parts of a COBOL program that need to be
+    changed to run them as CIS COBOL programs and those parts that do not need
+    changing specifically but are ignored by the CIS COBOL compiler when
+    generating the object program.
+</para>
+    <!--
+    MANDATORY CHANGES
+    ENVIRONMENT DIVISION
+         The only statements in the environment division that must be
+    specialized for CIS COBOL are shown below:
+    Configuration Section
+         SPECIAL-NAMES. special names entry
+    special names entry must include the following:
+                   IS data-name-1
+    The CURSOR IS data-name-1 clause specifies the data-name which will contain
+    the CRT cursor address as used by ACCEPT statements. Data-name-1 must be
+    declared in the Working-Storage section as a 4 character item. The
+    interpretation of the 4 characters is given in the ACCEPT statement
+    description.
+    Input-Output Section
+          File names must be as described in Appendix F of the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+    STATEMENTS COMPILED AS DOCUMENTATION ONLY
+    COBOL programs not specifically written for compilation as CIS COBOL on
+    microcomputers can still be compiled. Statements using features that are
+    not available are treated as documentary only, and are not compiled. A
+    summary of these features follows:
+    ENVIRONMENT DIVISION
+    I-O-Control Paragraph
+          The clauses that refer to a real time clock and magnetic tape in this
+    paragraph are ignored by the compiler during compilation but do not cause
+    compile times errors. These clauses are as follows:
+         ~ OF ~ REEL l of file-name-2
+r                 l UNIT~
+                                          279
+                                                 (no magnetic tape)
+      integer-2  ~UNITS                      (no clock)
+DATA DIVISION
+File Description Paragraph
+      The following cauplete statements in the fUe description are ignored
+by the compiler during compilation but da not cause compile time errors:
+      ~      CONTAINS     integer-1  I£    integer-2
+                                      ~~           l
+                                     i CH.ARACfERS S
+      CODE-SET    IS  alphabet~c-name
+                   \~IS         l    \STANDARD l
+                   l~ARES            l~S
+      VALUE OF tmplementor-name-1      IS   liter al-l
+      - - - - [ , implementor-name-2   IS   literal-2]
+ffiOCEDURE DIVIS ION
+CLOSE Statement
+      The following phrases in the CLOSE statement are ignored by the
+compiler during compilation but do not cause compiler-time errors:
+                                       (No magnetic tape)
+                                                                             ,..,,
+-->
+  </appendix>
+  <appendix>
+    <title>LANGUAGE SPECIFICATION</title>
+    <para>
+     CIS COBOL is ANSI COBOL as given in "American Natioual Standard Programming
+     Language COBOL" (ANSI X.3.23 1974). CIS COBOL implements both levels of
+     ANSI COBOL. The following modules are fully implemented at Level 1:
+ </para>
+    <itemizedlist>
+      <listitem>
+        <para>Nucleus</para>
+      </listitem>
+      <listitem>
+        <para>Table Handling</para>
+      </listitem>
+      <listitem>
+        <para>Sequential Input and Output</para>
+      </listitem>
+      <listitem>
+        <para>Relative Input and Output</para>
+      </listitem>
+      <listitem>
+        <para>Indexed Input and Output</para>
+      </listitem>
+      <listitem>
+        <para>Segmentation</para>
+      </listitem>
+      <listitem>
+        <para>Library</para>
+      </listitem>
+      <listitem>
+        <para>Inter-Program Communication</para>
+      </listitem>
+      <listitem>
+        <para>Debug</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+In addition many Level 2 features are Unplemented such as:
+</para>
+    <itemizedlist>
+      <listitem>
+        <para>Nucleus - Nested IF, PERFORM UNTIL</para>
+      </listitem>
+      <listitem>
+        <para>Relative and Indexed sequential I/O - START statement</para>
+      </listitem>
+      <listitem>
+        <para>Inter-Program Communication - Fully implemented at level 2</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+     This appendix specifies the implementation of Version 4.3 CIS COBOL. The
+     implementation of each of the eight standard COBOL modules listed above is
+     given under the following headings as applicable:
+</para>
+    <!--
+               Level 1 Implementation
+               Level 2 Implementation
+               CIS COBOL Extensions
+     Appendix F in this manual is a CIS COBOL syntax summary.
+
+
+                                        281
+NUCLEUS
+Level One Implementation
+Fully implemented to Level One.
+Level Two Implementation
+1.   DATE-COMPILED in the Identification Division is accepted for documentation purposes only.
+2.   Up to 49 Level Numbers are permitted and 1-9 can be a single digit.
+3.   The characters , and ; are permitted as separators
+4.   The character  '>'. '=' and '&lt;' are permitted in relative conditions.
+5.   The PERFORM ... THROUGH ... UNTIL feature is implemented.
+6.   Plural forms of the figurative constants can be used.
+7.   IF statements can be nested.
+8.   Mnemonic names are permitted in ACCEPT and DISPLAY statements (See CIS COBOL extensions 6 and 7 below).
+9.    Procedure names can be all digits.
+10.  REDEFINES clauses can be nested.
+11.  Non-numeric operands can be compared.
+
+CIS COBOL Extensions
+
+1.   Lower case letters a to z are read as upper case letters A to Z.
+2.   Hexadecimal binary values can be attributed to non-numeric values by expressing literals as X"nn".
+3.   Reserved word SPACE can be used to clear the whole CRT screen.
+4.   ANS switch not set enables omission of certain ANSI required "red tape" paragraphs and statements.
+5.   COMPUTATIONAL-3 or COMP-3 can be specified in the USAGE clause to specify packed internal decimal storage, (BCD).
+6.   ACCEPT data-name-1 [ AT lliteral- 1 S  sdata-name-2l]   FROM CRT
+      gives enhanced CRT input features
+
+7. DISPLAY sdata-name-1l[AT~data-name-2l]           SCRT       l
+                  t literal-1 ~     lliteral-2 ~    UPONlCRT-UNDERS
+       gives enhanced CRT output facilities.
+8.    'CURSOR IS data-name' can be specified in SPECIAL-NAMES and 'data-name'
+       in WORKING-STORAGE section to specify CRT cursor address for ACCEPT statements
+
+  SEQUENTIAL, RELATIVE AND INDEXED I-O
+  Level One Implementation
+  Fully implemented to Level One.
+  Level Two Implementation
+
+  1.    The START statement is fully supported for Relative and Indexed files.
+  2.    In sequential files, EXTEND is supported.
+  3.    In OPEN and CLOSE statements:
+             REEL
+             UNIT
+        are accepted for documentation purposes only.
+  4.    LOCK in the CLOSE statement is treated as documentary only.
+  5.    Dynamic access 1110de and READ NEXT are supported for relative and indexed files.
+  6.    Only the first assignment in each ASSIGN is actioned, others are treated as documentary only at compilation.
+  7.    The I-O-CONTROL paragraph is treated as documentary only as are its RERUN and SAME AREA clauses.
+  8.  The following are treated as documentary only in the FD clause:
+        BLOCK CONTAINS
+        CODE-SET
+        DATA RECORDS
+        LABEL RECORDS
+        RECORDS CONTAINS
+        VALUE OF
+
+CIS COBOL Extensions
+
+1.  Run Time allocation of file-names. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+2.  LINE SEQUENTIAL is an additional file type.
+3. All File Description (FD) clauses are optional when ANS switch is unset.
+4. Tabbing is available, specified by TAB in the WRITE statement.
+
+TABLE HANDLING
+Level One Implementation
+Fully implemented to Level One.
+CIS COBOL Extensions
+
+1.    Items can be accessed in tables up to 49 dimensions. This extension is
+      restricted to three dimensions if the ANS switch is set.
+
+SEGMENTATION
+Level One Implementation
+Fully implemented to Level One
+
+LIBRARY
+Level One Implementation
+Fully implemented to Level One
+
+DEBUG
+Level One Implementation
+Fully implemented to Level 1 plus an additional Interactive Run-Time Debug package.
+
+CIS COBOL Extensions
+A powerful Run-Time Debug package is available. See Chapter 3 in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+
+INTER-PROGRAM COMMUNICAIION
+Level Two Implementation
+ -->
+    <para>
+  Fully implemented to Level Two.
+  </para>
+  </appendix>
+</book>

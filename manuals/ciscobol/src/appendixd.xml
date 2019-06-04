@@ -1,0 +1,506 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <title>COMPILE-TIME ERRORS</title>
+  <para>
+The error descriptions that correspond to error numbers as printed on
+listings produced by the CIS COBOL compiler are as follows:
+</para>
+  <informaltable frame="all" colsep="1" rowsep="0">
+    <tgroup cols="2">
+      <colspec colnum="1" align="left"/>
+      <thead>
+        <row>
+          <entry>ERROR</entry>
+          <entry>DESCRIPTION</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>01</entry>
+          <entry>Compiler Error; consult your Technical Support Service</entry>
+        </row>
+        <row>
+          <entry>02</entry>
+          <entry>Illegal format of data-name</entry>
+        </row>
+        <row>
+          <entry>03</entry>
+          <entry>Illegal format of literal or invalid use of 'ALL'</entry>
+        </row>
+        <row>
+          <entry>04</entry>
+          <entry>Illegal format of character</entry>
+        </row>
+        <row>
+          <entry>05</entry>
+          <entry>Data-name declared twice</entry>
+        </row>
+        <row>
+          <entry>06</entry>
+          <entry>Too many data or procedure names have been declared - compilation abandoned</entry>
+        </row>
+        <row>
+          <entry>07</entry>
+          <entry>Illegal character in column 7, or continuation line error</entry>
+        </row>
+        <row>
+          <entry>08</entry>
+          <entry>Nested COPY statement or unknown file specified</entry>
+        </row>
+        <row>
+          <entry>09</entry>
+          <entry>'.' missing</entry>
+        </row>
+        <row>
+          <entry>10</entry>
+          <entry>The statement starts in the wrong area of the source line</entry>
+        </row>
+        <row>
+          <entry>22</entry>
+          <entry>'DIVISION' missing</entry>
+        </row>
+        <row>
+          <entry>23</entry>
+          <entry>'SECTION' missing</entry>
+        </row>
+        <row>
+          <entry>24</entry>
+          <entry>'IDENTIFICATION' missing</entry>
+        </row>
+        <row>
+          <entry>25</entry>
+          <entry>'PROGRAM-ID' missing</entry>
+        </row>
+        <row>
+          <entry>26</entry>
+          <entry>'AUTHOR' missing</entry>
+        </row>
+        <row>
+          <entry>27</entry>
+          <entry>'INSTALLATION' missing</entry>
+        </row>
+        <row>
+          <entry>28</entry>
+          <entry>'DATE-WRITTEN' missing</entry>
+        </row>
+        <row>
+          <entry>29</entry>
+          <entry>'SECURITY' missing</entry>
+        </row>
+        <row>
+          <entry>30</entry>
+          <entry>'ENVIRONMENT' missing</entry>
+        </row>
+        <row>
+          <entry>31</entry>
+          <entry>'CONFIGURATION' missing</entry>
+        </row>
+        <row>
+          <entry>32</entry>
+          <entry>'SOURCE-COMPUTER' missing</entry>
+        </row>
+        <row>
+          <entry>33</entry>
+          <entry>OBJECT-COMPUTER or SPECIAL-NAMES clause in error</entry>
+        </row>
+        <row>
+          <entry>34</entry>
+          <entry>'OBJECT-COMPUTER' missing</entry>
+        </row>
+        <row>
+          <entry>36</entry>
+          <entry>'SPECIAL-NAMES' missing</entry>
+        </row>
+        <row>
+          <entry>37</entry>
+          <entry>SWITCH Clause in error</entry>
+        </row>
+        <row>
+          <entry>38</entry>
+          <entry>DECIMAL-POINT Clause in error</entry>
+        </row>
+        <row>
+          <entry>39</entry>
+          <entry>CONSOLE Clause in error</entry>
+        </row>
+        <row>
+          <entry>40</entry>
+          <entry>Illegal currency symbol</entry>
+        </row>
+        <row>
+          <entry>42</entry>
+          <entry>'DIVISION' missing</entry>
+        </row>
+        <row>
+          <entry>43</entry>
+          <entry>'SECTION' missing</entry>
+        </row>
+        <row>
+          <entry>44</entry>
+          <entry>'INPUT-OUTPUT' missing</entry>
+        </row>
+        <row>
+          <entry>45</entry>
+          <entry>'FILE-CONTROL' missing</entry>
+        </row>
+        <row>
+          <entry>46</entry>
+          <entry>'ASSIGN' missing</entry>
+        </row>
+        <row>
+          <entry>47</entry>
+          <entry>'SEQUENTIAL' oc 'RELATIVE' or 'INDEXED' missing</entry>
+        </row>
+        <row>
+          <entry>48</entry>
+          <entry>'ACCESS' missing on indexed or relative file</entry>
+        </row>
+        <row>
+          <entry>49</entry>
+          <entry>'SEQUENTIAL' or 'DYNAMIC' missing</entry>
+        </row>
+        <row>
+          <entry>50</entry>
+          <entry>Illegal combination ORGANIZATION/ACCESS/KEY</entry>
+        </row>
+        <row>
+          <entry>51</entry>
+          <entry>Unrecognised clause in SELECT statement</entry>
+        </row>
+        <row>
+          <entry>52</entry>
+          <entry>RERUN clause contains syntax error</entry>
+        </row>
+        <row>
+          <entry>53</entry>
+          <entry>SAME AREA clause contains syntax error</entry>
+        </row>
+        <row>
+          <entry>54</entry>
+          <entry>File-name missing or illegal</entry>
+        </row>
+        <row>
+          <entry>55</entry>
+          <entry>'DATA DIVISION' missing</entry>
+        </row>
+        <row>
+          <entry>56</entry>
+          <entry>'PROCEDURE DIVISION' missing or unknown statement</entry>
+        </row>
+        <row>
+          <entry>57  *</entry>
+          <entry>'EXCLUSIVE', 'AUTOMATIC' or 'MANUAL' missing</entry>
+        </row>
+        <row>
+          <entry>58  *</entry>
+          <entry>Non-exclusive lock mode specified for restricted file</entry>
+        </row>
+        <row>
+          <entry>62</entry>
+          <entry>'DIVISION' missing</entry>
+        </row>
+        <row>
+          <entry>63</entry>
+          <entry>'SECTION' missing</entry>
+        </row>
+        <row>
+          <entry>64</entry>
+          <entry>File-name not specified in SELECT statement</entry>
+        </row>
+        <row>
+          <entry>65</entry>
+          <entry>RECORD SIZE integer missing</entry>
+        </row>
+        <row>
+          <entry>66</entry>
+          <entry>Illegal level number or level 01 required</entry>
+        </row>
+        <row>
+          <entry>67</entry>
+          <entry>FD qualification contains syntax error</entry>
+        </row>
+        <row>
+          <entry>68</entry>
+          <entry>'WORKING-STORAGE' missing</entry>
+        </row>
+        <row>
+          <entry>69</entry>
+          <entry>'PROCEDURE DIVISION' missing or unknown statement</entry>
+        </row>
+        <row>
+          <entry>70</entry>
+          <entry>Unrecognized clause in Data Description or previous'.' missing</entry>
+        </row>
+        <row>
+          <entry>71</entry>
+          <entry>Incompatible clauses in Data Description</entry>
+        </row>
+        <row>
+          <entry>72</entry>
+          <entry>BLANK is illegal with non-numeric data-item</entry>
+        </row>
+        <row>
+          <entry>73</entry>
+          <entry>PICTURE clause too long</entry>
+        </row>
+        <row>
+          <entry>74</entry>
+          <entry>VALUE with non-elementary item, wrong data-type or value truncated</entry>
+        </row>
+        <row>
+          <entry>75</entry>
+          <entry>VALUE clause in error or illegal for PICTURE type</entry>
+        </row>
+        <row>
+          <entry>76</entry>
+          <entry>FILLER/SYNCHRONIZED/JUSTIFIED/BLANK clause for non-elementary item</entry>
+        </row>
+        <row>
+          <entry>77</entry>
+          <entry>Preceding item at this level has 0 or more than 8192 bytes</entry>
+        </row>
+        <row>
+          <entry>78</entry>
+          <entry>REDEFINES of different levels or unequal field lengths.</entry>
+        </row>
+        <row>
+          <entry>79</entry>
+          <entry>Data Division exceeds 32K and data-item has address above 7FFF</entry>
+        </row>
+        <row>
+          <entry>81</entry>
+          <entry>Data Description clause inappropriate or repeated</entry>
+        </row>
+        <row>
+          <entry>82</entry>
+          <entry>REDEFINES data-name not declared</entry>
+        </row>
+        <row>
+          <entry>83</entry>
+          <entry>USAGE must be COHP, DISPLAY or INDEX</entry>
+        </row>
+        <row>
+          <entry>84</entry>
+          <entry>SIGN must be LEADING or TRAILING</entry>
+        </row>
+        <row>
+          <entry>85</entry>
+          <entry>SYNCHRONIZED must be LEFT or RIGHT</entry>
+        </row>
+        <row>
+          <entry>86</entry>
+          <entry>JUSTIFIED must be RIGHT</entry>
+        </row>
+        <row>
+          <entry>87</entry>
+          <entry>BLANK must be ZERO</entry>
+        </row>
+        <row>
+          <entry>88</entry>
+          <entry>OCCURS must be numeric, non-zero and unsigned</entry>
+        </row>
+        <row>
+          <entry>89</entry>
+          <entry>VALUE must be a literal, numeric literal or figurative constant</entry>
+        </row>
+        <row>
+          <entry>90</entry>
+          <entry>PICTURE string has illegal precedence or illegal character</entry>
+        </row>
+        <row>
+          <entry>91</entry>
+          <entry>INDEXEO data-name missing or already declared</entry>
+        </row>
+        <row>
+          <entry>92</entry>
+          <entry>Numeric edited PICTURE string is too large</entry>
+        </row>
+        <row>
+          <entry>101</entry>
+          <entry>Unrecognised verb</entry>
+        </row>
+        <row>
+          <entry>102</entry>
+          <entry>IF ELSE mismatch</entry>
+        </row>
+        <row>
+          <entry>103</entry>
+          <entry>Data-item has wrong data-type or is not declared</entry>
+        </row>
+        <row>
+          <entry>104</entry>
+          <entry>Procedure name has been declared twice</entry>
+        </row>
+        <row>
+          <entry>10S</entry>
+          <entry>Procedure name is the same as a data-name</entry>
+        </row>
+        <row>
+          <entry>106</entry>
+          <entry>Name required</entry>
+        </row>
+        <row>
+          <entry>107</entry>
+          <entry>Wrong combination of data-types</entry>
+        </row>
+        <row>
+          <entry>108</entry>
+          <entry>Conditional statement not allowed; imperative statement expected</entry>
+        </row>
+        <row>
+          <entry>109</entry>
+          <entry>Malformed subscript</entry>
+        </row>
+        <row>
+          <entry>110</entry>
+          <entry>ACCEPT or DISPLAY wrong</entry>
+        </row>
+        <row>
+          <entry>111</entry>
+          <entry>Illegal syntax used with I-O verb</entry>
+        </row>
+        <row>
+          <entry>112  *</entry>
+          <entry>LOCK clause specified for file with lock mode EXCLUSIVE</entry>
+        </row>
+        <row>
+          <entry>113  *</entry>
+          <entry>KEPT specified for uncommittable file</entry>
+        </row>
+        <row>
+          <entry>115  *</entry>
+          <entry>KEPT omitted for comittable file</entry>
+        </row>
+        <row>
+          <entry>116</entry>
+          <entry>IF statements nested too deep (maximum 8)</entry>
+        </row>
+        <row>
+          <entry>117</entry>
+          <entry>Structure of Procedure Division wrong (e.g. DECLARATIVES not first)</entry>
+        </row>
+        <row>
+          <entry>118</entry>
+          <entry>Reserved Word missing or incorrectly used</entry>
+        </row>
+        <row>
+          <entry>119</entry>
+          <entry>Too many subscripts in one statement</entry>
+        </row>
+        <row>
+          <entry>120</entry>
+          <entry>Too many operands in one statement</entry>
+        </row>
+        <row>
+          <entry>141</entry>
+          <entry>Inter-segment procedure name declared twice</entry>
+        </row>
+        <row>
+          <entry>142</entry>
+          <entry>IF ELSE mismatch at the end of source input</entry>
+        </row>
+        <row>
+          <entry>143</entry>
+          <entry>Data-Item has wrong data-type or is not declared</entry>
+        </row>
+        <row>
+          <entry>144</entry>
+          <entry>Procedure name undeclared</entry>
+        </row>
+        <row>
+          <entry>145</entry>
+          <entry>INDEX name declared twice</entry>
+        </row>
+        <row>
+          <entry>146</entry>
+          <entry>Cursor address field not declared or not 4 bytes long</entry>
+        </row>
+        <row>
+          <entry>147</entry>
+          <entry>KEY declaration missing or FD missing</entry>
+        </row>
+        <row>
+          <entry>148</entry>
+          <entry>STATUS declaration missing</entry>
+        </row>
+        <row>
+          <entry>149</entry>
+          <entry>FILE STATUS data-item has the wrong format</entry>
+        </row>
+        <row>
+          <entry>150</entry>
+          <entry>Paragraph to be ALTERed is not declared</entry>
+        </row>
+        <row>
+          <entry>151</entry>
+          <entry>PROCEDURE DIVISION in error</entry>
+        </row>
+        <row>
+          <entry>152</entry>
+          <entry>USING parameter is not declared in the linkage section</entry>
+        </row>
+        <row>
+          <entry>153</entry>
+          <entry>USING parameter is not level 01 or 77</entry>
+        </row>
+        <row>
+          <entry>154</entry>
+          <entry>USING parameter is used twice in the parameter list</entry>
+        </row>
+        <row>
+          <entry>157</entry>
+          <entry>Structure of Procedure Division wrong (e.g. DECLARATIVES not first)</entry>
+        </row>
+        <row>
+          <entry>160</entry>
+          <entry>Too many operands in one statement</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para>
+* The error codes marked by an asterisk apply only when the optional FILESHARE product is in use.
+</para>
+  <para>
+In addition to these numbered error messages, the following message can be
+displayed with subsequent termination of the compilation:
+</para>
+  <screen>
+            FATAL I-O ERROR:  filename
+</screen>
+  <para>
+           where filename is the erroneous file.
+</para>
+  <para>
+           Any intermediate code file produced is not usable.
+</para>
+  <para>
+           The following conditions will cause this error:
+</para>
+  <itemizedlist mark="none" spacing="compact">
+    <listitem>
+      <para>Disk overflow</para>
+    </listitem>
+    <listitem>
+      <para>File directory overflow</para>
+    </listitem>
+    <listitem>
+      <para>File full</para>
+    </listitem>
+    <listitem>
+      <para>Impossible I-O device usage</para>
+    </listitem>
+  </itemizedlist>
+  <para>
+Other operating system dependent conditions can also cause this error.
+</para>
+  <note>
+    <para>
+You will notice that the numbers of the numbered error messages listed
+above are not continuous, i.e., there are gaps in the numbering. The
+compiler should never have cause to generate an error message with a
+number not listed above. If you ever encounter such a number, consult
+your Micro Focus Product Technical Support office.
+</para>
+  </note>
+</appendix>

@@ -1,0 +1,2102 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter [
+<!ENTITY ansileft "-[">
+<!ENTITY ansiright "]-">
+]>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>COBOL Concepts</title>
+  <section>
+    <title>LANGUAGE CONCEPTS</title>
+    <section>
+      <title>CHARACTER SET</title>
+      <para>
+The most basic and indivisible unit of the language is the character.
+The set of characters used to form CIS COBOL character-strings and
+separators includes the letters of the alphabet, digits and special
+characters. The character set consists of the characters defined below:
+</para>
+      <informaltable frame="none" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="0.6in" colname="c1"/>
+          <colspec colwidth="3.8in" colname="c2"/>
+          <spanspec spanname="all" namest="c1" nameend="c2"/>
+          <tbody>
+            <row>
+              <entry spanname="all">0 to 9</entry>
+            </row>
+            <row>
+              <entry spanname="all">A to Z</entry>
+            </row>
+            <row>
+              <entry spanname="all">
+                <phrase role="extension">a to z (Reserved and User-defined Word Characters read as: A to Z)</phrase>
+              </entry>
+            </row>
+            <row>
+              <entry spanname="all">Space</entry>
+            </row>
+            <row>
+              <entry>+</entry>
+              <entry>Plus sign</entry>
+            </row>
+            <row>
+              <entry>-</entry>
+              <entry>Minus sign or hyphen</entry>
+            </row>
+            <row>
+              <entry>*</entry>
+              <entry>Asterisk</entry>
+            </row>
+            <row>
+              <entry>/</entry>
+              <entry>Oblique Stroke/Slash</entry>
+            </row>
+            <row>
+              <entry>=</entry>
+              <entry>Equal sign</entry>
+            </row>
+            <row>
+              <entry>$</entry>
+              <entry>Dollar sign</entry>
+            </row>
+            <row>
+              <entry>.</entry>
+              <entry>Full stop or decimal point</entry>
+            </row>
+            <row>
+              <entry>,</entry>
+              <entry>Comma or decimal point</entry>
+            </row>
+            <row>
+              <entry>;</entry>
+              <entry>Semicolon</entry>
+            </row>
+            <row>
+              <entry>"</entry>
+              <entry>Quotation mark</entry>
+            </row>
+            <row>
+              <entry>(</entry>
+              <entry>Left Parenthesis</entry>
+            </row>
+            <row>
+              <entry>)</entry>
+              <entry>Right Parenthesis</entry>
+            </row>
+            <row>
+              <entry>&gt;</entry>
+              <entry>Greater than symbol</entry>
+            </row>
+            <row>
+              <entry>&lt;</entry>
+              <entry>Less than symbol</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+The CIS COBOL language is restricted to the above character set ,but
+the content of non-numeric literals, comment lines and data may include any
+of the characters from the ASCII character set. See Appendix B.
+</para>
+    </section>
+    <section>
+      <title>LANGUAGE STRUCTURE</title>
+      <para>
+The individual characters of the language are concatenated to form
+character-strings and separators. A separator may be concatenated with
+another separator or with a character- string. A character-string may only
+be conca t enated with a separator. The concatenation of character-strings
+and separators forms the text of a source program.
+</para>
+      <section>
+        <title>Separators</title>
+        <para>
+A separator is a string of one or more punctuation characters. The
+rules for formation of separators are:
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
+The punctuation character space is a separator. Anywhere a space is
+used as a separator, more than one space may be used.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The punctuation characters comma,  semicolon and period,  when
+immediately followed by a space, are separators. These separators
+may appear in a COBOL source program only where explicitly permitted by
+the general formats, by format punctuation rules (see
+FORMATS AND RULES in Chapter 1), by statement and sentence structure
+definitions (see STATEMENTS AND SENTENCES in this Chapter), or
+reference format rules (see REFERENCE FORMAT in this Chapter).
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The punctuation characters right and left parenthesis are separators.
+Parenthesis may appear only in balanced pairs of left and right
+parentheses delimiting subscripts, indices, arithmetic expressions, or
+conditions.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The punctuation character quotation mark is a separator. An opening
+quotation mark must be immediately preceded by a space or left
+parenthesis; a closing quotation mark must be immediately followed by
+one of the separators space, comma, semicolon, period, or right
+parenthesis.
+       </para>
+            <para>
+Quotation marks may appear only in balanced pairs delimiting nonnumeric
+literals except when the literal is continued.   (See
+CONTINUATION OF LINES in this Chapter).
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The separator space may optionally immediately precede all separators except the following:
+       </para>
+            <orderedlist numeration="loweralpha">
+              <listitem>
+                <para>
+As specified by reference format rules see REFERENCE FORMAT in this Chapter.
+</para>
+              </listitem>
+              <listitem>
+                <para>
+The separator closing quotation mark. In this case, a preceding space is
+considered as part of the nonnumeric literal and not as a separator.
+</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+          <listitem>
+            <para>
+The separator space is optional and can immediately follow any
+separator except the opening quotation mark. In this case, a following
+space is considered as part of the nonnumeric literal and not as a separator.
+</para>
+          </listitem>
+        </orderedlist>
+        <para>
+Any punctuation character which appears as part of the specification of
+a PICTURE character-string (see Chapter 3) or numeric literal is not
+considered as a punctuation character, but rather as a symbol used in the
+specification of that PICTURE character-string or numeric literal. PICTURE
+character-strings are delimited only by the separators space, comma,
+semicolon, or period.
+</para>
+        <para>
+The rules established for the formation of separators do not apply to
+the characters which comprise the contents of nonnumeric literals,
+comment-entries, or comment lines.
+</para>
+      </section>
+      <section>
+        <title>Character-Strings</title>
+        <para>
+A character-string is a character or a sequence of contiguous
+characters which forms a CIS COBOL word, a literal, a PICTURE
+character-string, or a comment-entry. A character-string is delillited by
+separators.
+</para>
+        <section>
+          <title>COBOL Words</title>
+          <para>
+A COBOL word is a character-string of not more than 30 characters which
+forms a user defined word, a system-name, or a reserved word. Within a
+given source program these classes form disjoint sets; a COBOL word may
+belong to one and only one of these classes.
+</para>
+          <para>
+User-Defined Words:  A user-defined word is a COBOL word that must be
+supplied by the user to satisfy the format of a clause or statement. Each
+character of a user-defined word is selected from the set of characters 'A',
+'B', 'C', ... 'Z', <phrase role="extension">'a', 'b', 'c', ... 'z'</phrase>, '0', ... '9', and '-', except that
+the '-' may not appear as the first or last character. <phrase role="extension">The exception to
+this rule is an external file-name-literal which must be a normal alphanumeric literal.</phrase>
+</para>
+          <para>
+User-defined word types which are implemented are as follows:
+</para>
+          <simplelist>
+            <member>alphabet-name</member>
+            <member>condition-name</member>
+            <member>data-name</member>
+            <member>
+              <phrase role="extension">external-file-name-literal</phrase>
+            </member>
+            <member>file-name</member>
+            <member>index-name</member>
+            <member>level-number</member>
+            <member>mnemonic-name</member>
+            <member>paragraph-name</member>
+            <member>program-name</member>
+            <member>record-name</member>
+            <member>section-name</member>
+            <member>segment-number</member>
+            <member>text-name</member>
+          </simplelist>
+          <para>
+Within a given source program, ten of these 12 types of user-defined
+words are grouped into nine disjoint sets. The disjoint sets are:
+</para>
+          <simplelist>
+            <member>alphabet-names</member>
+            <member>condition-names, data-names, and record-names</member>
+            <member>file-names</member>
+            <member>index-names</member>
+            <member>mnemonic-names</member>
+            <member>paragraph-names</member>
+            <member>program-names</member>
+            <member>section-names</member>
+            <member>text-names</member>
+          </simplelist>
+          <para>
+All user-defined words, except segment-numbers and level-numbers, can
+belong to one and only one of these disjoint sets. Further, all
+user-defined words within a given disjoint set must be unique.
+(See UNIQUENESS OF REFERENCE in this Section).
+</para>
+          <para>
+With the exception of paragraph-name, section-name, level-number and
+segment-number, all user-defined words mus t contain at least one alphabetic
+character. Segment-numbers and level-numbers need not be unique; a given
+specification of a segment-number or level-number may be ir!entical to any
+other segment-number or level-number and may even be identical to a
+paragraph-name or section-name.
+</para>
+          <variablelist>
+            <varlistentry>
+              <term>Condition-Name:</term>
+              <listitem>
+                <para>A condition-name is a name which is assigned to a
+          specific value, set of values, or range of values,
+          within a complete set of values that a data item may
+          assume. The data item itself is called a conditional
+          variable.
+      </para>
+                <para>
+          Condition-names may be defined in the Data Division or
+          in the SPECIAL-NAMES paragraph within the Environment
+          Division where a condition-name must be assigned to the
+          ON STATUS or OFF STATUS, or both, of the run time
+          switches.
+      </para>
+                <para>
+          A condition-name is used only in the RERUN clause or in
+          conditions as an abbreviation for the relation
+          condition; this relation condition posits that the
+          associated conditional variable is equal to one of the
+          set of values to which that condition-name is assigned.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Mnemonic-Name:</term>
+              <listitem>
+                <para>      A mnemonic-name assigns a user-defined word to an
+          implementor-name. These associations are established in
+          the SPECIAL-NAMES paragraph of the Environment Division.
+          (See SPECIAL-NAMES in Chapter 3).</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Paragraph-Name:</term>
+              <listitem>
+                <para>     A paragraph-name is a word which names a paragraph in
+          the Procedure Division. Paragraph-names are equivalent
+          if, and only if, they are composed of the same sequence
+          of the same number of digits and/or characters.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Section-Name:</term>
+              <listitem>
+                <para>       A section-name is a word which names a section in the
+          Procedure Division. Section names are equivalent if, and
+          only if, they are composed of the same sequence of the
+          same number of digits and/or characters.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Other User-Defined Names:</term>
+              <listitem>
+                <para>See the glossary in Appendix C for definitions of all
+          other types of user-defined words.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>System-Names:</term>
+              <listitem>
+                <para>A system-name is a COBOL word which is used to
+         communicate with the operating environment. Each
+          character used in the formation of a system-name must be
+          selected from the set of characters 'A', 'B' , 'C', ...
+          'Z', <phrase role="extension">'a','b', ... 'z',</phrase> '0' ... '9' and'-', except that
+          the '- ' may not appear as the first or last character.
+      </para>
+                <para>
+          There are three types of system-names:
+      </para>
+                <orderedlist spacing="compact">
+                  <listitem>
+                    <para>computer-name</para>
+                  </listitem>
+                  <listitem>
+                    <para>implementor-name</para>
+                  </listitem>
+                  <listitem>
+                    <para>language-name</para>
+                  </listitem>
+                </orderedlist>
+                <para>
+          Within a given implementation these three types of
+        system-names form disjoint seta; a given system-name may
+        belong to one and only one of them.
+        The system-names listed above are individually defined
+        in the glossary in Appendix C.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Reserved Words:</term>
+              <listitem>
+                <para>     A reserved word is a COBOL word that is one of a
+        specified list of words which may be used in COBOL
+        source programs, but which must not appear in the
+        programs as user-defined words or system-names.
+        Reserved words can only be used as specified in the
+        general formats. (See Appendix A).
+      </para>
+                <para>
+        There are six types of reserved words:
+      </para>
+                <orderedlist spacing="compact">
+                  <listitem>
+                    <para>Key words</para>
+                  </listitem>
+                  <listitem>
+                    <para>Optional words</para>
+                  </listitem>
+                  <listitem>
+                    <para>Connectives</para>
+                  </listitem>
+                  <listitem>
+                    <para>Special registers</para>
+                  </listitem>
+                  <listitem>
+                    <para>Figurative constants</para>
+                  </listitem>
+                  <listitem>
+                    <para>Special-character words</para>
+                  </listitem>
+                </orderedlist>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Key Words:</term>
+              <listitem>
+                <para>A key word is a word whose presence is required when the
+        format in which the word appears is used in a source
+        program. Within each format, such words are uppercase
+        and underlined.
+      </para>
+                <para>
+        Key words are of three types:
+      </para>
+                <orderedlist spacing="compact">
+                  <listitem>
+                    <para>Verbs such as ADD, READ, and ENTER.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Required words, which appear in statement and entry formats.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Words which have a specific functional meaning such as NEGATIVE, SECTION, etc.</para>
+                  </listitem>
+                </orderedlist>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Optional Words:</term>
+              <listitem>
+                <para>Within each format, uppercase words that are not
+        underlined are called optional words and may appear at
+        the user's option. The presence or absence of an
+        optional word does not alter the semantics of the COBOL
+        program in which it appears.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Connectives:</term>
+              <listitem>
+                <para>Series connectives link two or more consecutive
+        operands:  , (separator comma)  or ; (separator semicolon).</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Figurative Constants:</term>
+              <listitem>
+                <para> Certain reserved words are used to name and reference
+specific constant values. These reserved words are
+specified under Figurative Constant Values in this chapter.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+        <section>
+          <title>Literals</title>
+          <para>
+A literal is a character-string whose value is implied by an ordered
+set of characters of which the literal is composed or by specification of a
+reserved word which references a figurative constant. Every literal belongs
+to one of two types, nonnumeric or numeric.
+</para>
+          <variablelist>
+            <varlistentry>
+              <term>Nonnumeric Literals</term>
+              <listitem>
+                <para>
+A nonnumeric literal is a character-string delimited on
+both ends by quotation marks and consisting of any
+allowable character in the computer's character set.
+Allowed are nonnumeric literals of 1 through 128
+characters in length. To represent a single quotation
+mark character within a nonnumeric literal, two
+contiguous quotation marks must be used. The value of a
+nonnumeric literal in the object program is the string
+of characters itself, except:
+        </para>
+                <orderedlist>
+                  <listitem>
+                    <para>The delimiting quotation marks are excluded, and</para>
+                  </listitem>
+                  <listitem>
+                    <para>Each embedded pair of contiguous quotation marks represents a single quotation mark character.</para>
+                  </listitem>
+                </orderedlist>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <para>
+All other punctuation characters are part of the value of the nonnumeric
+literal rather than separators; all nonnumric literal are category alphanumeric.
+(See The PICTURE Clause in chapter 3). <phrase role="extension">In addition, hexadecimal
+binary values can be attributed to non-numeric literals by, expressing
+literals as: X"nn", where n is a hexadecimal character in the set 0-9 A-F;
+nn may be repeated up to 128 times, but the number of hex digits must be even.</phrase>
+</para>
+          <variablelist>
+            <varlistentry>
+              <term>Numeric Literals</term>
+              <listitem>
+                <para>A numeric literal is a character-string whose characters
+are selected from the digits '0' through '9', the plus
+sign, the minus sign, and/or the decimal point. The
+implementation allows for numeric literals of 1 through
+18 digits in length. The rules for the formation of
+numeric literals are as follows:
+</para>
+                <orderedlist>
+                  <listitem>
+                    <para>A literal must contain at least one digit.</para>
+                  </listitem>
+                  <listitem>
+                    <para>A literal must not contain more than one sign
+        character. If a sign is used, it must appear as
+        the leftmost character of the literal. If the
+        literal is unsigned, the literal is positive.</para>
+                  </listitem>
+                  <listitem>
+                    <para>A literal must not contain more than one decimal
+        point. The decimal point is treated as an assumed
+        decimal point, and may appear anywhere within the
+        literal except as the rightmost character. If the
+        literal contains no decimal point, the literal is
+        an integer.
+        </para>
+                    <para>
+        If a literal conforms to the rules for the
+        formation of numeric literals, but is enclosed in
+        quotation marks, it is a nonnumeric literal and it
+        is treated as such by the compiler.</para>
+                  </listitem>
+                  <listitem>
+                    <para>The value of a numeric literal is the algebraic
+        quality represented by the characters in the
+        numeric literal. Every numeric literal is category
+        numeric. (See THE PICTURE CLAUSE in Chapter 3).
+        The size of a numeric literal in standard data
+        format characters is equal to the number of digits
+        specified by the user.</para>
+                  </listitem>
+                </orderedlist>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+        <section>
+          <title>Figurative Constant Values</title>
+          <para>
+Figurative Constant Values are generated by the compiler and referenced
+through the use of the reserved words given below. These words must not be
+bounded by quotation marks when used as figurative constants. The singular
+and plural forms of figurative constants are equivalent and may be used
+interchangeably.
+</para>
+          <para>
+The figurative constant values and the reserved words used to reference them
+are shown in Table 2-1.
+</para>
+          <table frame="none" colsep="0" rowsep="0">
+            <title>Figurative Constants and their Reserved Words</title>
+            <tgroup cols="2">
+              <colspec colwidth="2in" colname="c1"/>
+              <colspec colwidth="3in" colname="c2"/>
+              <thead>
+                <row>
+                  <entry>CONSTANT</entry>
+                  <entry>REPRESENTATION</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>ZERO</entry>
+                  <entry morerows="2">Represents the value '0', or one or more of the character '0' depending on context.</entry>
+                </row>
+                <row>
+                  <entry>ZEROS</entry>
+                </row>
+                <row>
+                  <entry>ZEROES</entry>
+                </row>
+                <row>
+                  <entry>SPACE</entry>
+                  <entry morerows="1">Represents one or more of the character space from the computer's character set.</entry>
+                </row>
+                <row>
+                  <entry>SPACES</entry>
+                </row>
+                <row>
+                  <entry>HIGH-VALUE</entry>
+                  <entry morerows="1">Represents one or more of the character that has the highest ordinal position in the program collating sequence.</entry>
+                </row>
+                <row>
+                  <entry>HIGH-VALUES</entry>
+                </row>
+                <row>
+                  <entry>LOW-VALUE</entry>
+                  <entry morerows="1">Represents one or more of the character that has the lowest ordinal position in the program collating sequence.</entry>
+                </row>
+                <row>
+                  <entry>LOW-VALUES</entry>
+                </row>
+                <row>
+                  <entry>QUOTE</entry>
+                  <entry morerows="1">Represents one or more of the character ' " '.
+                                The word QUOTE or QUOTES cannot be used in
+                                place of a quotation mark in a source program
+                                to bound a nonnumeric literal. Thus, QUOTE
+                                ABD QUOTE is incorrect as a way of stating
+                                the nonnumeric literal "ABD".</entry>
+                </row>
+                <row>
+                  <entry>QUOTES</entry>
+                </row>
+                <row>
+                  <entry>ALL literal</entry>
+                  <entry><phrase role="extension">Represents one of more repetitions of the
+                                single character comprising the literal
+                                (literal may not be more than one character
+                                in length).</phrase> The literal must be either a
+                                nonnumeric literal or a figurative constant
+                                other than ALL literal. When a figurative
+                                constant is used, the word ALL is redundant
+                                and is used for readability only.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+          <para>
+When a figurative constant represents a string of one or more characters,
+the length of the string i s determined by the compiler from context
+according to the following rules:
+</para>
+          <orderedlist>
+            <listitem>
+              <para>
+When a figurative constant is associated with another data item, as
+when the figurative constant is moved to or compared with another data
+item, the string of characters specified by the figurative constant is
+repeated character by character on the right until the size of the
+resultant string is equal to the size in characters of the associated
+data item. This is done prior to and independent of the application of
+any JUSTIFIED clause that may be associated with the data item.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+When a figurative constant is not associated with another data item, as
+when the figurative constant appears in a DISPLAY or STOP statement,
+the length of the string is one character.
+<phrase role="extension">DISPLAY SPACE is, of course, an exception.</phrase>
+</para>
+            </listitem>
+          </orderedlist>
+          <para>
+A figurative constant may be used wherever a literal appears in a
+format, except that whenever the literal is restricted to having only
+numeric characters in it, the only figurative constant permitted is ZERO
+(ZEROS, ZEROES).
+</para>
+          <para>
+When the figurative constants HIGH-VALUE(S) or LOW-VALUE(S) are used in
+the source program, the artual character associated with each figurative
+constant depends upon the program collating sequence specified. (See
+THE OBJECT-COMPUTER PARAGRAPH, and THE SPECIAL-NAMES PARAGRAPH in Chapter 3).
+</para>
+          <para>
+        Each reserved word which is used to reference a figurative constant
+      value is a distinct character-string with the exception of the construction
+      'ALL literal' which is composed of two distinct character-strings.
+  </para>
+        </section>
+        <section>
+          <title>PICTURE Character-Strings</title>
+          <para>
+A PICTURE character-string consists of certain combinations of
+characters in the COBOL character set used as symbols. See
+The PICTURE Clause for the PICTURE character-string and for the rules that
+govern their use.
+</para>
+          <para>
+           Any punctuation character which appears as part of the specification of
+      a PICTURE character-string is not considered as a punctuation character, but
+      rather as a symbol used in the specification of that PICTURE
+      character-string.
+  </para>
+        </section>
+        <section>
+          <title>Comment-Entries</title>
+          <para>
+ A comment-entry is an entry in the Identification Division that may be
+      any combination of characters from the computer's character set.
+  </para>
+        </section>
+      </section>
+    </section>
+    <section>
+      <title>CONCEPT OF COMPUTER INDEPENDENT DATA DESCRIPTION</title>
+      <para>
+           To make data as computer independent as possible, the characteristics
+      or properties of the data are described in relation to a standard data
+      format rather than an equipment-oriented format. This standard data format
+      is oriented to general data processing applications and uses the deci'DB.l
+      system to represent numbers (regardless of the radix used by the compute~)
+      and the remaining characters in the CIS COBOL character set to describe
+      nonnumeric data items.
+  </para>
+      <section>
+        <title>Concept of Levels</title>
+        <para>
+A level concept is inherent in the structure of a logical record. This
+concept arises from the need to specify subdivisions of a record for the
+purpose of data reference. Once a subdivision has been specified, it may be
+further subdivided to permit more detailed data referral.
+</para>
+        <para>
+The most basic subdivisions of a record, that is, those not further
+subdivided, are called elementary items; consequently, a record is said to
+consist of a sequence of elementary items, or the record itself may be an
+elementary item.
+</para>
+        <para>
+      In order to refer to a set of elementary items, the elementary items
+are combined into groups. Each group consists of a named sequence of one or
+more elementary items. Groups, in turn, may be combined into groups of two
+or more groups, etc. Thus, an elementary item may belong to more than one
+group.
+  </para>
+        <section>
+          <title>Level-Numbers</title>
+          <para>
+      A system of level-numbers shows the organization of elementary items
+and group items. Since records are the most inclusive data items,
+level-numbers for records start at 01. Less inclusive data items are
+assigned higher (not necessarily successive) level-numbers not greater in
+value than 49. A maximum of 49 levels in a record is allowed. There is a
+special level-number, 77, which is an exception to this rule (see below).
+Separate entries are written in the source program for each level-number used.
+</para>
+          <para>
+      A group includes all group and elementary items following it until a
+level-number less than or equal to the level-number of that group is
+encountered. All items which are immediately subordinate to a given group
+item must be described using identical level-numbers greater than the
+level-number used to describe that group item.
+<phrase role="extension">Note that group items must not exceed 8192 Bytes in length.</phrase>
+</para>
+          <para>
+Two types of entries exist for which there is no true concept of  level.
+These are:
+</para>
+          <orderedlist>
+            <listitem>
+              <para>
+Entries that specify noncontiguous working storage and linkage data items
+</para>
+            </listitem>
+            <listitem>
+              <para>
+Entries that specify condition-names.
+</para>
+            </listitem>
+          </orderedlist>
+          <para>
+Entries that specify noncontiguous data items, which are not
+subdivisions of other items, and are not themselves subdivided, have been
+assigned the special level-number 77.
+</para>
+        </section>
+      </section>
+      <section>
+        <title>Concept of Classes of Data</title>
+        <para>
+      The five categories of data items (see THE PICTURE CLAUSE in Chapter 3)
+are grouped into three classes : alphabetic, numeric, and alphanumeric. For
+alphabetic and numeric, the classes and categories are synonymous. The
+alphanumeric class includes the categories of alphanumeric edited, numeric
+edited and alphanumeric (without editing). Every elementary item except for
+an index data item belongs to one of the classes and to one of the
+categories. The class of a group item is treated at object time as
+alphanumeric regardless of the class of elementary items subnrdinate to that
+group item. Table 2-2 depicts the relationship of the class and categories
+of data items.
+</para>
+        <table frame="all" colsep="1" rowsep="1">
+          <title>Data Levels, classes and categories</title>
+          <tgroup cols="3">
+            <colspec colwidth="1.8in" align="center"/>
+            <colspec colwidth="1.5in" align="center"/>
+            <colspec colwidth="1.5in" align="center"/>
+            <thead>
+              <row>
+                <entry>LEVEL OF ITEM</entry>
+                <entry>CLASS</entry>
+                <entry>CATEGORY</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry morerows="2" valign="middle">Elementary</entry>
+                <entry>Alphabetic</entry>
+                <entry>Alphabetic</entry>
+              </row>
+              <row>
+                <entry>Numeric</entry>
+                <entry>Numeric</entry>
+              </row>
+              <row>
+                <entry valign="middle">Alphanumeric</entry>
+                <entry>
+                  <simplelist>
+                    <member>Numeric Edited</member>
+                    <member>Alphanumeric Edited</member>
+                    <member>Alphanumeric</member>
+                  </simplelist>
+                </entry>
+              </row>
+              <row>
+                <entry valign="middle">Non-Elementary Group</entry>
+                <entry valign="middle">Alphanumeric</entry>
+                <entry>
+                  <simplelist>
+                    <member>Alphabetic</member>
+                    <member>Numeric</member>
+                    <member>Numeric Edited</member>
+                    <member>Alphanumeric Edited</member>
+                    <member>Alphanumeric</member>
+                  </simplelist>
+                </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </section>
+      <section>
+        <title>Selection of Character Representation and Radix</title>
+        <para>
+        The value of a numeric item may be represented in either binary or
+   decimal form, depending on the equipment. In addition, there are several
+   ways of expressing decimal. Since these representations are actually
+   combinations of bits, they are commonly called binary-coded decimal forms.
+   The four standard formats used for storing numeric data in CIS COBOL are as
+   follows:
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
+  1. As alphanumeric characters stored one per byte in ASCII representation.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+   2. As numeric characters defined by USAGE IS DISPLAY (See The USAGE Clause
+        in Chapter 3) one per byte in ASCII representation. If they are signed
+        and the sign is specified as rNCLUDED, bit 6 of the leading or trailing
+        byte of the field is set for negative, depending on the field
+        definition. rf a SEPARATE sign is specified as a one byte ASCII + or
+          , a sign is added as the leading or trailing byte. If no SIGN clause
+        is specified, bit 6 of the trailing digit is set to indicate negative
+        by default.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+   3. As numeric characters defined by USAGE IS COMP or COMPUTATIONAL in pure
+        binary form. If the field is signed the number is held in its
+        twos-complement form. Storage is then dependent on the number of 9's
+        in the PICTURE clause (see The PICTURE Clause in Chapter 3) and on
+        whether the field is SIGNed or not (see The SIGN Clause in Chapter 3).
+        Table 2-3 shows the storage requirements for each COMP(UTATIONAL)
+        PICTURE Clause.
+    </para>
+            <table frame="all" colsep="1" rowsep="1">
+              <title>Numeric Data Storage for the COMP(UTATIONAL) PICTURE Clause.</title>
+              <tgroup cols="3">
+                <colspec colwidth="1.8in" align="center"/>
+                <colspec colwidth="1.2in" align="center" colname="c2"/>
+                <colspec colwidth="1.2in" align="center" colname="c3"/>
+                <spanspec spanname="join" namest="c2" nameend="c3"/>
+                <thead>
+                  <row>
+                    <entry morerows="1">Bytes Required</entry>
+                    <entry>Number of Characters</entry>
+                  </row>
+                  <row>
+                    <entry spanname="join">Number of Characters</entry>
+                  </row>
+                  <row>
+                    <entry>Signed</entry>
+                    <entry>Unsigned</entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry>1</entry>
+                    <entry>1-2</entry>
+                    <entry>1-2</entry>
+                  </row>
+                  <row>
+                    <entry>2</entry>
+                    <entry>3-4</entry>
+                    <entry>3-4</entry>
+                  </row>
+                  <row>
+                    <entry>3</entry>
+                    <entry>5-6</entry>
+                    <entry>5-7</entry>
+                  </row>
+                  <row>
+                    <entry>4</entry>
+                    <entry>7-9</entry>
+                    <entry>8-9</entry>
+                  </row>
+                  <row>
+                    <entry>5</entry>
+                    <entry>10-11</entry>
+                    <entry>10-12</entry>
+                  </row>
+                  <row>
+                    <entry>6</entry>
+                    <entry>12-14</entry>
+                    <entry>12-14</entry>
+                  </row>
+                  <row>
+                    <entry>7</entry>
+                    <entry>15-16</entry>
+                    <entry>15-16</entry>
+                  </row>
+                  <row>
+                    <entry>8</entry>
+                    <entry>17-18</entry>
+                    <entry>17-18</entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
+          </listitem>
+          <listitem>
+            <para>
+As numeric characters defined by USAGE IS COMPUTATIONAL-3 or USAGE IS
+   COMP-3 in packed internal decimal form. Storage is dependent on the
+   number of 9's in the PICTURE clause. The decimal numbers are stored as
+   signed strings of variable length of 1 through 18 digits. The sign of
+   the packed decimal number is always stored in place of the least
+   significant quartet of the low order byte. Each byte contains :wo
+   decimal positions (four bits per digit) and the digits (0 - 9) are
+   encoded as BCD numbers (0000 - 1001). Numbers are represented in the
+   field as right-justified values with a + or - sign as shown in the
+   example below. The maximum number of digits permitted in arithmetic
+   operands is LB.
+   </para>
+            <para>
+   EXAMPLE:
+   </para>
+            <orderedlist>
+              <listitem>
+                <para>
+   a. For COMPUTATIONAL-3 and PICTURE 9999, the number +1234 would be stored as follows:
+   </para>
+                <programlisting>
+       ...      0     1     2      3      4      F
+              0000   0001  0010   0011   0100   1111
+                                          +---------+
+                                             1 byte
+   </programlisting>
+                <para>
+         where F represents the non-printing plus sign.
+ </para>
+              </listitem>
+              <listitem>
+                <para>
+   b. For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be
+          stored as follows:
+          Storage would be as in a above except that the least significant
+          digit would be replaced by C (1100) representing the plus sign.
+ </para>
+              </listitem>
+              <listitem>
+                <para>
+   c. For COMPUTATIONAL-) and PICTURE S9999, the number -1234 would be stored as follows:
+   </para>
+                <para>
+          Storage would be as in a above except that the least significant
+          byte would be replace~ by D (1101) representing the minus sign.
+ </para>
+              </listitem>
+            </orderedlist>
+            <para>
+Table 2-4 shows the storage requirements for each COMP-3 clause.
+   </para>
+            <table frame="all" colsep="1" rowsep="1">
+              <title>Numeric Data Storage for the COMPUTATION-3 PICTURE Clause.</title>
+              <tgroup cols="2">
+                <colspec colwidth="1.8in" align="center"/>
+                <colspec colwidth="2.2in" align="center" colname="c2"/>
+                <thead>
+                  <row>
+                    <entry>Bytes Required</entry>
+                    <entry>Number of Digits (Signed or Unsigned)</entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry>1</entry>
+                    <entry>1</entry>
+                  </row>
+                  <row>
+                    <entry>2</entry>
+                    <entry>2-3</entry>
+                  </row>
+                  <row>
+                    <entry>3</entry>
+                    <entry>4-5</entry>
+                  </row>
+                  <row>
+                    <entry>4</entry>
+                    <entry>6-7</entry>
+                  </row>
+                  <row>
+                    <entry>5</entry>
+                    <entry>8-9</entry>
+                  </row>
+                  <row>
+                    <entry>6</entry>
+                    <entry>10-11</entry>
+                  </row>
+                  <row>
+                    <entry>7</entry>
+                    <entry>12-13</entry>
+                  </row>
+                  <row>
+                    <entry>8</entry>
+                    <entry>14-15</entry>
+                  </row>
+                  <row>
+                    <entry>9</entry>
+                    <entry>16-17</entry>
+                  </row>
+                  <row>
+                    <entry>10</entry>
+                    <entry>18</entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
+          </listitem>
+        </orderedlist>
+      </section>
+      <section>
+        <title>Algebraic Signs</title>
+        <para>
+      Algebraic signs fall into two categories: operational signs, which are
+associated with signed numeric data items and signed numeric literals to
+indicate their algebraic properties; and editing signs, which appear on
+edited reports to identify the sign of the item.
+</para>
+        <para>
+      The SIGN Clause permits the programmer to state explicitly, the
+location of the operational sign. The Clause is optional; if it is not used
+operational signs will be represented as defined by setting bit 6 of the
+ trailing digit for ASCII numbers. (see above).
+</para>
+        <para>
+      Editing signs are inserted into a data item through the use of the sign
+control symbols of THE PICTURE CLAUSE.
+  </para>
+      </section>
+      <section>
+        <title>Standard Alignment Rules</title>
+        <para>
+      The standard rules for positioning data within an elementary item
+depend on the category of the receiving item. These rules are:
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
+1. If the receiving data item is described as numeric:
+</para>
+            <orderedlist>
+              <listitem>
+                <para>
+       a. The data is aligned by decimal point and is moved to the receiving
+             character positions with zero fill or truncation on either end as required.
+</para>
+              </listitem>
+              <listitem>
+                <para>
+       b. When an assumed decimal point is not explicitly specified, the
+             data item is treated as if it had an assumed decimal point
+             immediately following its rightmost character and is aligned as in
+             paragraph a. above.
+</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+          <listitem>
+            <para>
+ 2. If the receiving data item is a numeric edited data item, the data
+       moved to the edited item is aligned by decimal point with zero fill or
+       truncation at either end as required within the receiving character
+       positions of the data item, except where editing requirements cause
+       replacement of the leading zeros.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+3. If the receiving data item is alphanumeric (other than a numeric edited
+      data item), alphanumeric edited or alphabetic, the sending data is
+     moved to the receiving character positions and aligned at the leftmost
+      character position in the data item with space fill or truncation to
+      the right, as required.
+</para>
+          </listitem>
+        </orderedlist>
+        <para>
+      If the JUSTIFIED Clause is specified for the receiving item, these
+standard rules are modified as described in THE JUSTIFIED CLAUSE in Chapter 3.
+  </para>
+      </section>
+      <section>
+        <title>Uniqueness of Reference</title>
+        <section>
+          <title>Subscripting</title>
+          <para>
+      Subscripts can be used only when reference is made to an individual
+element within a list or table of like elements that have not been assigned
+individual data-names (see THE OCCURS CLAUSE in Chapter 4). The subscript
+can be represented either by a numeric literal that is an integer or by a
+data-name, The data-name must be a numeric elementary item that represents
+an integer. The subscript may be signed and, if signed, it must be
+positive. The lowest possible subscript value is 1. This value points to
+the first element of the table. The next sequential elements of the table
+are pointed to by subscripts whose values are 2, 3, ... . The highest
+permissible subscript value, in any particular case, is the maximum number
+of occurrences of the item as specified in the OCCURS clause.
+</para>
+          <para>
+      The subscript, or set of subscripts, that identifies the table element
+is delimited by the balanced pair of separators left parenthesis and right
+parenthesis following the table element data-name. The table element
+data-name appended with a subscript is called a subscripted data-name or an
+identifier. When more than one subscript is required, they are written in
+the order of successively less inclusive dimensions of the data
+organization.
+</para>
+          <para>
+The format is:
+</para>
+          <para>
+           data-name (subscript-1    [, subscript-2 [, subscript-3 ]])
+  </para>
+        </section>
+        <section>
+          <title>Indexing</title>
+          <para>
+      References can be made to individual elements within a table of like
+elements by specifying indexing for that reference. An index is assigned to
+that level of the table by using the INDEXED BY phrase in the definition of
+a table. A name given in the INDEXED BY phrase is known as an index-name
+and is used to refer to the assigned index. The value of an index
+corresponds to the occurrence number of an element in the associated table.
+An index-name must be initialized before it is used as a table reference.
+An index-name can be given an initial value by a SET statement.
+</para>
+          <para>
+      Direct indexing is specified by using an index-name in the form of a
+subscript. Relative indexing is specified when the index-name is followed
+by the operator + or -, followed by an unsigned integer numeric literal all
+delimited by the balanced pair of separators left parenthesis and right
+parenthesis following the table element data-name. The occurrence number
+resulting from relative indexing is determined by incrementing (where the
+operator + is used) or decrementing (when the operator - is used), by the
+value of the literal, the occurrence number represented by the value of the
+index. When more than one index-name is required, they are written in the
+order of successively less inclusive dimensions of the data organization.
+</para>
+          <para>
+At the time of execution of a statement which refers to an indexed
+table element, the value contained in the index referenced by the index-name
+associated with the table element must neither correspond to a value less
+than one nor to a value greater than the highest permissible occurrence
+number of an element of the associated table. This restriction also applies
+to the value resultant from relative indexing.
+</para>
+          <para>
+          The general format for indexing is:
+</para>
+          <cmdsynopsis>
+            <group>
+              <arg choice="req">
+                <replaceable>data-name</replaceable>
+              </arg>
+              <arg choice="req">
+                <replaceable>condition-name</replaceable>
+              </arg>
+            </group>
+            <arg choice="plain">(</arg>
+            <group>
+              <arg choice="plain">
+                <replaceable>index-name-1</replaceable>
+              </arg>
+              <arg choice="plain">
+                <replaceable>literal-1</replaceable>
+              </arg>
+            </group>
+            <arg choice="opt">
+              <group>
+                <arg choice="plain">+</arg>
+                <arg choice="plain">-</arg>
+              </group>
+              <arg>
+                <replaceable>literal-2</replaceable>
+              </arg>
+            </arg>
+            <arg choice="opt">
+              <arg choice="plain">,</arg>
+              <group>
+                <arg choice="plain">
+                  <replaceable>index-name-2</replaceable>
+                </arg>
+                <arg choice="plain">
+                  <replaceable>literal-3</replaceable>
+                </arg>
+              </group>
+              <arg choice="opt">
+                <group>
+                  <arg choice="plain">+</arg>
+                  <arg choice="plain">-</arg>
+                </group>
+                <arg>
+                  <replaceable>literal-4</replaceable>
+                </arg>
+              </arg>
+              <arg choice="opt">
+                <arg choice="plain">,</arg>
+                <group>
+                  <arg choice="plain">
+                    <replaceable>index-name-3</replaceable>
+                  </arg>
+                  <arg choice="plain">
+                    <replaceable>literal-5</replaceable>
+                  </arg>
+                </group>
+                <arg choice="opt">
+                  <group>
+                    <arg choice="plain">+</arg>
+                    <arg choice="plain">-</arg>
+                  </group>
+                  <arg>
+                    <replaceable>literal-6</replaceable>
+                  </arg>
+                </arg>
+              </arg>
+            </arg>
+            <arg choice="plain">)</arg>
+          </cmdsynopsis>
+        </section>
+        <section>
+          <title>Identifier</title>
+          <para>
+          An identifier is a term used to reflect that a data-name, if not unique
+     in a program, must be followed by a syntactically correct combination of
+     subscripts or indices necessary to ensure uniqueness.
+</para>
+          <para>
+          The general formats for identifiers are:
+     Format 1:
+                data-name-1    [ (subscript - 1 [,    subscript-2     [, subscript-3]] ]
+     Format 2:
+                                              ( j index-name-11 [{+t literal- 2]
+                data-name-1
+                                                ) literal-1
+         [.    jindex-name-2/[{+\
+               )literal-3     r -     literal-4]     [  ) literal-5    r
+                                                         jindex-name-31[{ rliteral-6
+                                                                            t          J]] )
+          Restrictions on subscripting and indexing are:
+</para>
+          <orderedlist>
+            <listitem>
+              <para>
+     1. A data-name must not itself be subscripted nor indexed when that
+          data-name is being used as an index, or subscript.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+     2. Indexing is not permitted where subscripting is not permitted.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+3. An index may be modified only by the SET, SEARCH, and PERFORM
+statements. Data items described by the USAGE IS INDEX clause permit
+storage of the values associated with index-names as data in a form
+specified by the implementor. Such data items are called index data items.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+4. Literal-1, literal-3, literal-5, in the above format must be positive
+numeric integers. Literal-2, literal-4 , literal-6 must be unsigned
+numeric integers.
+</para>
+            </listitem>
+          </orderedlist>
+        </section>
+        <section>
+          <title>Condition-Name</title>
+          <para>
+Each condition-name must be unique.
+</para>
+        </section>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>PROGRAM STRUCTURE</title>
+    <para>
+          A CIS COBOL program consists of four divisions:
+</para>
+    <orderedlist>
+      <listitem>
+        <para>
+1. IDENTIFICATION DIVISION - An identification of the program.
+</para>
+      </listitem>
+      <listitem>
+        <para>
+2. ENVIRONMENT DIVISION - A description of the equipment to be used to compile and run the program.
+</para>
+      </listitem>
+      <listitem>
+        <para>
+3. DATA DIVISION - A description of the data to be processed.
+</para>
+      </listitem>
+      <listitem>
+        <para>
+4. PROCEDURE DIVISION - A set of procedures to specify the operations to be performed on the data.
+</para>
+      </listitem>
+    </orderedlist>
+    <para>
+Each division, is divided into sections which are further divided into
+paragraphs, which in turn are made up of sentences.
+</para>
+    <section>
+      <title>
+        THE "ANSI SWITCH" COMPILER DIRECTIVE
+      </title>
+      <para>
+        <phrase role="extension">Some of the 'red-tape' statements required By a strict ANSI interpretation,
+are optional under CIS COBOL. It is possible to force the compiler to
+insist on a strict ANSI interpretation by using the "FLAG" directive. In
+the remainder of <emphasis role="underline">this Chapter</emphasis> these statements are marked &ansileft; &ansiright;. Elsewhere in
+this manual a reference is made to the ANSI switch when this applies.</phrase>
+      </para>
+      <para>
+        <phrase role="extension">If the operator enters the FLAG directive at compile time ANSI requirements
+implemented in CIS COBOL are mandatory depending on their level as specified
+by the Federal Compiler Testing Center under the direction of the General
+Services Administration (GSA). See the description of the Compiler FLAG
+directive in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.</phrase>
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>IDENTIFICATION DIVISION</title>
+    <section>
+      <title>GENERAL DESCRIPTION</title>
+      <para>
+The Identification Division must be included in every ANSI COBOL source
+program, This division identifies both the source program and the resultant
+output listing. In addition, the user may include the date the program is
+written, the date the compilation of the source program is accomplished and
+such other information as desired under the paragraphs in the general format shown below.
+  </para>
+    </section>
+    <section>
+      <title>ORGANISATION</title>
+      <para>
+Paragraph headers identify the type of information contained in the
+paragraph. The name of the program must be given in the first paragraph,
+which is the PROCRAM-ID paragraph. The other paragraphs are optional and
+may be included in this division at the user's choice, in order of
+presentation shown by the format below.
+  </para>
+    </section>
+    <section>
+      <title>STRUCTURE</title>
+      <para>
+The following is the general format of the paragraphs in the
+Identification Division and it defines the order of presentation in the source program.
+   </para>
+      <section>
+        <title>General format</title>
+        <para>
+             &ansileft;IDENTIFICATION DIVISION.&ansiright;
+   </para>
+        <para>
+             &ansileft;PROGRAN-ID. program-name.&ansiright;
+   </para>
+        <para>
+           [AUTHOR.  [comment-entry)   ... ]
+   </para>
+        <para>
+           [INSTALLATION.    [comment-entry]      ... ]
+   </para>
+        <para>
+           [DATE-WRITTEN.    [comment-entry]      ... ]
+   </para>
+        <para>
+           [DATE-COMPILED.   [comment-entry]      ... ]
+   </para>
+        <para>
+           [SECURITY.     [comment-entry]     ... ]
+  </para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>ENVIRONMENT DIVISION</title>
+    <section>
+      <title>GENERAL DESCRIPTION</title>
+      <para>
+      The Environment Division specifies a standard method of expressing
+those aspects of a data processing problem that are dependent upon the
+physical characteristics of a specific computer. This division allows
+specification of the configuration of the compiling computer and the object
+computer. In addition, information relating to input-output control,
+special hardware characteristics and control techniques can be given.
+</para>
+      <para>
+The Environment Division must be included in every COBOL source program.
+</para>
+    </section>
+    <section>
+      <title>ORGANIZATION</title>
+      <para>
+      Two sections make up the Environment Division: the Configuration
+Section and the Input-Output Section.
+</para>
+      <para>
+      The Configuration Section deals with the characteristics of the source
+computer and the object computer. This section is divided into three
+paragraphs: the SOURCE-COMPUTER paragraph, which describes the computer
+configuration on which the source program is compiled; the OBJECT-COMPUTER
+paragraph, which describes the computer configuration on which the object
+program produced by the compiler is to be run; and the SPECIAL-NAMES
+paragraph, which relates the implementation-names used by the compiler to
+the mnemonic-names used in the source program.
+ </para>
+      <para>
+     The Input-Output Section deals with the information needed to control
+transmission and handling of data between external media and the object
+program. This section is divided into two paragraphs: the FILE-CONTROL para
+graph which names and associates the files with external media; and the
+I-O-CONTROL paragraph which defines special control techniques to be used in
+the object program.
+   </para>
+    </section>
+    <section>
+      <title>STRUCTURE</title>
+      <para>
+The following is the general format of the sections and paragraphs in
+the Environment Division, and defines the order of presentation in the source program.
+   </para>
+      <section>
+        <title>General Format</title>
+        <para>
+      &ansileft; ENVIRONMENT DIVISION. &ansiright;
+   </para>
+        <para>
+      &ansileft; CONFIGURATION SECTION. &ansiright;
+   </para>
+        <para>
+      &ansileft; SOURCE-COMPUTER. source-computer-entry &ansiright;
+   </para>
+        <para>
+      &ansileft; OBJECT-COMPUTER. object-computer-entry &ansiright;
+   </para>
+        <para>
+      [ SPECIAL-NAMES. special-names-entry ]
+   </para>
+        <para>
+      &ansileft; INPUT-OUTPUT SECTION. &ansiright;
+   </para>
+        <para>
+      &ansileft; FILE-CONTROL.&ansiright;    {file-control-entry} ...
+   </para>
+        <para>
+      [ I-O-CONTROL.  input-output-control-entry ]
+  </para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>DATA DIVISION</title>
+    <section>
+      <title>OVERALL APPROACH</title>
+      <para>
+            The Data Division describes the data that the object program is to
+      accept as input, to manipulate, to create, or to produce as output, Data to
+      be processed falls into three categories:
+</para>
+      <para>
+</para>
+      <orderedlist>
+        <listitem>
+          <para>
+      1. That which is contained in files and enters or leaves the internal
+            memory of the computer from a specified area or areas.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+      2. That which is developed internally and placed into intermediate or
+            working storage, or placed into specific format for output reporting
+            purposes.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+      3. Constants which are defined by the user.
+  </para>
+        </listitem>
+      </orderedlist>
+    </section>
+    <section>
+      <title>PHYSICAL AND LOGICAL ASPECTS OF DATA DESCRIPTION</title>
+      <section>
+        <title>Data Division Organization</title>
+        <para>
+The DATA DIVISION which is one of the required divisions in a program,
+is subdivided into sections. These are the File, Working-Storage and
+Linkage sections.
+</para>
+        <para>
+The FILE SECTION defines the structure of data files. Each file is
+defined by a file description entry and one or more record descriptions, or
+by a file description entry and one or more report description entries.
+Record descriptions are written immediately following the file description
+entry. The WORKING-STORAGE SECTION describes records and noncontiguous data
+items which are not part of external data files but are developed and
+processed internally. It also describes data items whose values are
+assigned in the source program and do not change during the execution of the
+object program. The LINKAGE SECTION appears in the called program and
+describes data items that are to be referred to by the calling program and
+the called program. Its structure is the same as the WORKING-STORAGE SECTION.
+</para>
+      </section>
+      <section>
+        <title>General Format</title>
+        <para>
+             The following gives the general fonnat of the sections in the Data
+Division, and defines the order of their presentation in the source program.
+             &ansileft; DATA DIVISION. &ansiright;
+         [FILE SECTION. [file-description-entry  [record-description-entry]...]...]
+         [WORKING-STORAGE SECTION.
+         [{ 77-level-desciription-entry } J ...  ]
+             record-description-entry
+          [LINKAGE-SECTION.
+         [{ 77-level-description-entry
+             record-description-entry         ...   J
+  </para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>PROCEDURE DIVISION</title>
+    <section>
+      <title>GENERAL DESCRIPTION</title>
+      <para>
+      The Procedure Division must be included in every COBOL source program.
+This division may contain declarative procedures.
+</para>
+      <section>
+        <title>Declaratives</title>
+        <para>
+      Declarative sections must be grouped at the beginning of the Procedure
+Division preceded by the key word DECLARATIVES and followed by the key words
+END DECLARATIVES. (See descriptions of the USE statement in Chapters 5, 6
+and 7 and the Debug Chapter 10).
+</para>
+      </section>
+      <section>
+        <title>Procedures</title>
+        <para>
+A  procedure is composed of a paragraph, or group of successive
+paragraphs <phrase role="extension">(the first paragraph-name is optional)</phrase>,
+or a section, or a group
+of successive sections within the Procedure Division. If one paragraph is in
+a section, then all paragraphs must be in sections. A procedure-name is a
+word used to refer to a paragraph or section in the source program in which
+it occurs. It consists of a paragraph-name (which may be qualified), or a
+section-name.
+</para>
+        <para>
+      The end of the Procedure Divis i on and the physical end of the program
+is that physical position in a COBOL source program after which no further
+procedures appear.
+</para>
+        <para>
+      A section consists of a section header followed by zero, one, or more
+successive paragraphs. A section ends immediately before the next section
+or at the end of the Procedure Division or, in the declaratives portion of
+the Procedure Division, at the key words END DECLARATIVES.
+</para>
+        <para>
+      A paragraph consists of a paragraph-name followed by a period and a
+space and by zero, one, or more successiv e sentences. A paragraph ends
+immediately before the next paragraph-name or section-name or at the end of
+the Procedure Division or, in the declaratives portion of the Procedure
+Division, at the key words END DECLARATIVES.
+</para>
+        <para>
+          <phrase role="extension">In CIS COBOL paragraph names may be entirely omitted. If paragraph
+        names are used then they may be mixed with section names as required, in any
+        order. Note that is is not possible to GO TO or PERFORM a piece of code
+        unless it has either a section or a paragraph name.</phrase>
+        </para>
+        <para>
+      A sentence consists of one or more statements and is terminated by a
+period followed by a space.
+</para>
+        <para>
+A statement is a syntactically valid combination of words and symbols
+beginning with a COBOL verb.
+</para>
+        <para>
+      The term 'identifier' is defined as the word or words necessary to make
+unique reference to a data item.
+</para>
+      </section>
+      <section>
+        <title>Execution</title>
+        <para>
+       Execution begins with the first statement of the Procedure Division,
+excluding declaratives. Statements are then executed in the order in which
+they are presented for compilation, except where the rules indicate some
+other order.
+
+</para>
+      </section>
+      <section>
+        <title>General Format</title>
+        <section>
+          <title>Procedure Division Header</title>
+          <para>
+       The Procedure Division is identified by and must begin with the following header:
+       </para>
+          <para>
+             PROCEDURE DIVISION (USING data-name-1 [, data-name-2]   ...] .
+</para>
+        </section>
+        <section>
+          <title>Procedure Division Body</title>
+          <para>
+       The body of the Procedure Division must conform to one of the following formats:
+Format 1:
+     [DECLARATIVE$.
+     ) section-name SECTION    [segment-number).       declarative-sentence
+     [paragraph-name.     [sentence]    ..  ]       ! ...
+       END DECLARATIVE$.]
+    ){section-name SECTION      [segment-number]}.                                     ....I
+                                               J ... !
+    [ paragraph-name-}
+Format 2 :
+    ) paragraph-name.}
+                          [sentence]
+                          [sentence]
+
+</para>
+        </section>
+      </section>
+    </section>
+    <section>
+      <title>STATEMENTS AND SENTENCES</title>
+      <para>
+       There are three types of statements:
+       </para>
+      <orderedlist spacing="compact">
+        <listitem>
+          <para>
+1. Conditional statements,
+       </para>
+        </listitem>
+        <listitem>
+          <para>
+2. Compiler directing statements,
+       </para>
+        </listitem>
+        <listitem>
+          <para>
+3. Imperative statements.
+       </para>
+        </listitem>
+      </orderedlist>
+      <para>
+       There are three types of sentences:
+       </para>
+      <orderedlist spacing="compact">
+        <listitem>
+          <para>
+1. Conditional sentences,
+       </para>
+        </listitem>
+        <listitem>
+          <para>
+2. Compiler directing sentences,
+       </para>
+        </listitem>
+        <listitem>
+          <para>
+3. Imperative sentences.
+</para>
+        </listitem>
+      </orderedlist>
+      <section>
+        <title>Conditional Statement</title>
+        <para>
+     A conditional statement specifies that the truth value of a condition
+is to be determined and that the subsequent action of the object program is
+dependent on this truth value.
+</para>
+        <para>
+     A conditional statement is one of the following:
+</para>
+        <itemizedlist>
+          <listitem>
+            <para>
+An IF statement.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+A READ statement that specifies the AT END or INVALID KEY phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+A WRITE statement that specifies the INVALID KEY phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+A START, REWRITE or DELETE statement that specifies the INVALID KEY phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+An arithmetic statement (ADD, DIVIDE, MULTIPLY, SUBTRACT) that specifies the SIZE ERROR phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+A CALL statement that specifies the ON OVERFLOW phrase.
+</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Conditional Sentence</title>
+        <para>
+     A conditional sentence is a conditional statement, optionally preceded
+by an imperative statement, terminated by a period followed by a space.
+</para>
+      </section>
+      <section>
+        <title>Compiler Directing Statement</title>
+        <para>
+     A compiler directing statement consists of a compiler directing verb
+and its operands. The compiler directing verbs are COPY, ENTER and USE (see
+THE COPY STATEMENT in Chapter 9, THE ENTER STATEMENT in Chapter 3, and THE
+USE STATEMENT in Chapters 5, 6 and 7). A compiler directing statement
+causes the compiler to take a specified action during compilation.
+</para>
+      </section>
+      <section>
+        <title>Compiler Directing Sentence</title>
+        <para>
+     A compiler directing sentence is a single compiler directing statement
+terminated by a period followed by a space.
+</para>
+      </section>
+      <section>
+        <title>Imperative Statement</title>
+        <para>
+     An Imperative statement indicates a specific unconditional action to be
+taken by the object program. An imperative statement is any stat~mPnt that
+is neither a conditional statement, nor a compiler directing statement. An
+imperative statement may consist of a sequence of imperative statements,
+each possibly separated from the next by a separator.
+</para>
+        <para>
+The imperative verbs are:
+</para>
+        <simplelist type="vert" columns="3">
+          <member>ACCEPT</member>
+          <member>ADD<superscript>1</superscript></member>
+          <member>ALTER</member>
+          <member>CALL<superscript>3</superscript></member>
+          <member>CANCEL</member>
+          <member>CLOSE</member>
+          <member>DELETE<superscript>2</superscript></member>
+          <member>DISPLAY</member>
+          <member>DIVIDE<superscript>1</superscript></member>
+          <member>EXIT</member>
+          <member>GO</member>
+          <member>INSPECT</member>
+          <member>MOVE</member>
+          <member>MULTIPLY<superscript>1</superscript></member>
+          <member>OPEN</member>
+          <member>PERFORM</member>
+          <member>READ<superscript>4</superscript></member>
+          <member>REWRITE<superscript>2</superscript></member>
+          <member>SET</member>
+          <member>START<superscript>2</superscript></member>
+          <member>STOP</member>
+          <member>SUBTRACT<superscript>1</superscript></member>
+          <member>WRITE<superscript>5</superscript></member>
+        </simplelist>
+        <orderedlist spacing="compact">
+          <listitem>
+            <para>
+Without the optional SIZE ERROR phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Without the optional INVALID KEY phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Without the optional ON OVERFLOW phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Without the optional AT END phrase or INVALID KEY phrase.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Without the optional INVALID KEY phrase or END-OF-PAGE phrase.
+</para>
+          </listitem>
+        </orderedlist>
+        <para>
+When 'imperative-statement' appears in the general format of
+statements, 'imperative-statement' refers to that sequence of consecutive
+imperative statements that m1111t be ended by a period or an ELSE phrase
+associated with a previous IF statement.
+</para>
+      </section>
+      <section>
+        <title>Imperative Sentence</title>
+        <para>
+An imperative sentence is an imperative statement terminated by a period followed by a space.
+</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>REFERENCE FORMAT</title>
+    <section>
+      <title>GENERAL DESCRIPTION</title>
+      <para>
+The reference format, which provides a standard method for describing
+COBOL source programs, is described in terms of character positions in a
+line on an input-output medium. The CIS COBOL compiler accepts source
+programs written in reference format and produces an output listing of the
+source program input in reference fonnat.
+</para>
+      <para>
+The rules for spacing given in the discussion of the reference format
+take precedence over all other rules for spacing.
+</para>
+      <para>
+The divisions of a source program must be ordered as follows: the
+Identification Division, then the Environment Divisi n, then the Data
+Division, then the Procedure Division. Each division must be written
+according to the rules for the reference format.
+</para>
+    </section>
+    <section>
+      <title>REFERENCE FORMAT REPRESENTATION</title>
+      <para>
+The reference format for a line is represented as in Figure 2-1.
+                                    I                   I
+                        MargiJ      Margin         Margin                     Margin
+                              c     A                   B                          R
+                            _:l                  ~     ~1
+             3   _4_ _ s__
+      Sequence Number Area
+                                -
+                                +
+                                    1a      9
+                                            Area A
+                                                                  3
+                                                             Area B
+                                                                                   I
+                          Indicator Area
+</para>
+      <para>
+Margin L is immediately to the left of the leftmost character position of a line.
+</para>
+      <para>
+Margin C is between the 6th and 7th character positions of a line.
+</para>
+      <para>
+Margin A is between the 7th and 8th character positions of a line.
+</para>
+      <para>
+Margin B is between the 11th and 12th character positions of a line.
+</para>
+      <para>
+Margin R is immediately to the right of the rightmost character position of a line.
+</para>
+      <para>
+The sequence number area occupies six character positions (1-6), and is between Margin L and Margin C.
+</para>
+      <para>
+The indicator area is the 7th character position of a line.
+</para>
+      <para>
+Area A occupies character positions 8, 9, 10 and 11, and is between margin A and margin B.
+</para>
+      <para>
+Area B occupies character positions 12 through 72 inclusive; it begins immediately to the right of Margin 8 and terminates immediately to the left of Margin R.
+</para>
+      <para>
+
+Figure 2-1. Reference Format for a COBOL Source Line.
+
+</para>
+      <section>
+        <title>Sequence Numbers</title>
+        <para>
+A sequence number, consisting of six digits in the sequence area, may
+be used to label a source program line.
+</para>
+      </section>
+      <section>
+        <title>Continuation of Lines</title>
+        <para>
+Whenever a sentence, entry, phrase, or clause requires more than one
+line, it may be continued by starting subsequent line(s) in area B. These
+subsequent lines are called the continuation line(s). The line being
+continued is called the continued line. Any word or literal may be broken
+in such a way that part of it appears on a continuation line.
+</para>
+        <para>
+     A hyphen in the indicator area of a line indicates that the first
+nonblank character in area B of the current line is the successor of the
+last nonblank character of the preceding line without any intervening space.
+However, if the continued line contains a nonnumeric literal without closing
+quotation mark, the first nonblank character in area B on the continuation
+line must be a quotation mark, and the continuation starts with the
+character immediately after that quotation mark. All spaces at the end of
+the continued line are considered part of the literal. Area A of a
+continuation line must be blank.
+</para>
+        <para>
+     If there is no hyphen in the indicator area of a line, it is assumed
+that the last character in the preceding line is followed by a space.
+</para>
+      </section>
+      <section>
+        <title>Blank Lines</title>
+        <para>
+     A blank line is one that is blank from margin C to margin R, inclusive.
+A blank line can appear anywhere in the source program, except immediately
+preceding a continuation line. (See Figure 2-1).
+</para>
+      </section>
+    </section>
+    <section>
+      <title>DIVISION, SECTION, PARAGRAPH FORMATS</title>
+      <section>
+        <title>Division Header</title>
+        <para>
+     The division header must start in area A.  (See Figure 2-1).
+</para>
+      </section>
+      <section>
+        <title>Section Header</title>
+        <para>
+     The section header must start in area A.  (See Figure 2-1).
+</para>
+        <para>
+     A section consists of paragraphs in the Environment and Procedure
+Divisions and Data Division entries in the Data Division.
+</para>
+      </section>
+      <section>
+        <title>Paragraph Header, Paragraph-Name and Paragraph</title>
+        <para>
+     A paragraph consists of a paragraph-name followed by a period and a
+space and by zero, one or more sentences, or a paragraph header followed by
+one or more entries. Comment entries may be included within a paragraph.
+The paragraph header or paragraph-name starts in area A of any line
+following the first line of a division or a section.
+</para>
+        <para>
+       The first sentence or entry in a paragraph begins either on the same
+  line as the paragraph header or paragraph-name or in area B of the next
+  nonblank line that is not a comment line. Successive sentences or entries
+  either begin in area B of the same line as the preceding sentence or entry
+  or in area B of the next nonblank line that is not a comment line.
+</para>
+        <para>
+          <phrase role="extension">Note that in CIS COBOL program sentences may commence anywhere in Area A or Area B.</phrase>
+        </para>
+        <para>
+When the sentences or entries of a paragraph require more than one line
+  they may be continued as described in CONTINUATION OF LINES in this Chapter.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>DATA DIVISION ENTRIES</title>
+      <para>
+        Each Data Division entry begins with a level indicator or a
+  level-number, followed by a space, follo~ed by its associated name (except
+  in the Report Section), followed by a sequence of independent descriptive
+  clauses. Each clause, except the last clause of an entry, may be terminated
+  by either the separator semicolon or the separator comma. The last clause
+  is always terminated by a period followed by a space.
+<para>
+</para>
+        There are two types of Data Division entries: those which begin with a
+  level indicator and those which begin with a level-number.
+<para>
+</para>
+A level indicator is the indicator:  FD (see THE FILE DESCRIPTION
+- COMPLETE ENTRY SKELETON in Chapters 5, 6 and 7)
+<para>
+</para>
+        In those Data Division entries that begin with a level indicator, the
+  level indicator begins in area A followed by a space and followed in area B
+  with its associated name and appropriate descriptive information.
+<para>
+</para>
+        Those Data Division entries that begin with level-numbers are called
+  data description entries.
+</para>
+      <para>
+A level-number has a value taken from the set of values 1 through 49,
+77. Level-numbers in the range 1 through 9 may be written either as a
+single digit or as a zero followed by a significant digit. At least one
+space must separate a level-number from the word following the level-number.
+</para>
+      <para>
+In those data description entries that begin with level-number 01 or
+  77, the level-number begins in area A followed by a space and followed in
+  area B by its associated record-name or item-name and appropriate
+  descriptive information.
+</para>
+      <para>
+    Successive data description entries may have the same format as the
+  first or may be indented according to level-number. The entries in the
+  output listing need be indented only if the input is indented. Indentation
+  does not affect the magnitude of a level-number.
+</para>
+      <para>
+When level-numbers are to be indented, each new level-number may begin
+any number of spaces to tile right of margin A. The extent of indentation to
+the right is determined only by the width of the physical medium.
+</para>
+    </section>
+    <section>
+      <title>DECLARATIVES</title>
+      <para>
+The key word DECLARATIVES and the key words END DECLARATIVES that
+precede and follow, respectively, the declaratives portion of the Procedure
+Division must each appear on a line by themselves, Each must begin in area
+A and be followed by a period and a space (see Figure 2-1).
+</para>
+    </section>
+    <section>
+      <title>COMMENT LINES</title>
+      <para>
+A comment line is any line with an asterisk in the continuation
+indicator area of the line. A comment line can appear as any line in a
+source program after the Identification Division header. Any combination of
+characters from the computer's character set may be included in area A and
+area B of that line (see Figure 2-1). The asterisk and the characters in
+area A and area B will be produced on the listing but serve as documentation
+only. A special form of comment line represented by a stroke in the
+indicator area of the line causes page ejection prior to printing the
+comment.
+</para>
+      <para>
+      Successive comment lines are allowed. Continuation of comment lines is
+permitted, except that each continuation line must contain an '*' in the
+indicator area.
+  </para>
+    </section>
+  </section>
+  <section>
+    <title>RESERVED WORDS</title>
+    <para>
+A full list of reserved words is given in Appendix A.
+</para>
+  </section>
+</chapter>

@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>SEGMENTATION</title>
+  <section>
+    <title>INTRODUCTION TO THE SEGMENTATION MODULE</title>
+    <para>
+      The Segmentation module provides a capability to specify object program
+overlay requirements.
+</para>
+    <para>
+      Segmentation provides a facility for specifying permanent and
+independent segments. All sections with the same segment-number must be
+contiguous in the source program. All segments specified as permanent
+segments must be continuous in the source program.
+</para>
+  </section>
+  <section>
+    <title>GENERAL DESCRIPTION OF SEGMENTATION</title>
+    <para>
+      COBOL segmentation is a facility that provides a means by which the
+user may communicate with the compiler to specify object program overlay
+requirements.
+      </para>
+    <para>
+      COBOL segmentation deals only with segmentation of procedures. As
+such, only the Procedure Division is considered in determining segmentation
+requirements for an object program.
+      </para>
+    <section>
+      <title>ORGANIZATION</title>
+      <section>
+        <title>Program Segments</title>
+        <para>
+       Although it is not mandatory, the Procedure Division for a source
+ program is usually written as a consecutive group of sections, each of which
+ is composed of a series of closely related operations that are designed to
+ collectively perform a particular function. However, when segmentation is
+ used, the entire Procedure Division must be in sections. In addition, each
+ section must be classified as belonging either to the fixed portion or to
+ one of the independent segments of the object program.
+     </para>
+      </section>
+      <section>
+        <title>Fixed Portion</title>
+        <para>
+       The fixed portion is defined as that part of the object program which
+ is logically treated as if it were always in memory. This portion of the
+ program is composed of fixed permanent segments.
+        </para>
+        <para>
+       A fixed permanent segment is a segment in the fixed portion which
+ cannot be overlaid by any other part of the program.
+        </para>
+      </section>
+      <section>
+        <title>Independent Segments</title>
+        <para>
+An independent segment is defined as part of the object program which
+can overlay, and can be overlaid by another independent segment. An
+independent segment is in its initial state whenever control is transferred
+(either implicitly or explicitly) to that segment for the first time during
+the execution of a program. On subsequent transfers of control to the
+segment, an independent segment is also in its initial state when:
+</para>
+<orderedlist>
+<listitem>
+<para>
+1.   Control is transferred to that segment as a result of the implicit
+     transfer of control between consecutive statements from a segment with
+     a different segment-number.
+</para>
+</listitem>
+<listitem>
+<para>
+2.   Control is transferred explicitly to that segment from a segment with a
+     different segment-number (with the exception noted in paragraph 2
+     below).
+</para>
+</listitem>
+</orderedlist>
+<para>
+     On subsequent transfer of control to the segment, an independent
+segment is in its last-used state when:
+</para>
+<orderedlist>
+<listitem>
+<para>
+1.   Control is transferred implicitly to that segment from a segment with a
+     different segment-number (except as noted in paragraphJ),
+</para>
+</listitem>
+<listitem>
+<para>
+2.   Control is transferred explicitly to that segment as the result of the
+     execution of an EXIT PROGRAM statement.
+</para>
+</listitem>
+</orderedlist>
+      </section>
+    </section>
+    <section>
+      <title>SEGMENTATION CLASSIFICATION</title>
+      <para>
+     Sections which are to be segmented are classified, using a system of
+segment-numbers and the following criteria:
+</para>
+<orderedlist>
+<listitem>
+<para>
+1.   Logic Requirements - Sections which must be available for reference at
+     all times, or which are referred to very frequently, are normally
+     classified as belonging to one of the permanent segments; sections
+     which are used less frequently are normally classified as belonging to
+     one of the independent segments, depending on logic requirements.
+</para>
+</listitem>
+<listitem>
+<para>
+2.   Frequency of Use - Generally, the more frequently a section is referred
+     to, the lower its segment-number, the less frequently it is referred
+     to, the higher its segment-number,
+</para>
+</listitem>
+<listitem>
+<para>
+3.   Relationship to Other Sections - Sections which frequently communicate
+     with one another should be given the same segment-numbers
+</para>
+</listitem>
+</orderedlist>
+    </section>
+    <section>
+      <title>SEGMENTATION CONTROL</title>
+      <para>
+     The logical sequence of the program is the same as the physical
+sequence except for specific transfers of control. Control may be
+transferred within a source program to any paragraph in a section; that is,
+it is not mandatory to transfer control to the beginning of a section.
+</para>
+    </section>
+  </section>
+  <section>
+    <title>STRUCTURE OF PROGRAM SEGMENTS</title>
+    <section>
+      <title>SEGMENT-NUMBERS</title>
+      <para>
+Section classification is accomplished by means of a system of
+segment-numbers. The segment-number is included in the section header.
+     </para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT</title>
+      <!--
+     section-name  SECTION    [segment-number]
+     -->
+    </section>
+    <section>
+      <title>SYNTAX RULES</title>
+      <orderedlist>
+        <listitem>
+          <para>
+1.   The segment-number must be an integer ranging in value from 0 through
+     gg,
+</para>
+        </listitem>
+        <listitem>
+          <para>
+2.   If the segment-number is omitted from the section header, the
+     segment-number is assumed to be 0.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+3.   Sections in the declaratives must contain segment-numbers less than 50.
+</para>
+        </listitem>
+      </orderedlist>
+    </section>
+    <section>
+      <title>GENERAL RULES</title>
+      <orderedlist>
+        <listitem>
+          <para>
+1.   All sections which have the same segment-number constitute a program
+     segment. All sections which have the same segment-number must be
+     together in the source program.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+2.   Segments with segment-number 0 through 49 belong to the fixed portion
+     of the object program. All sections with segment-number 0 through 49
+     must be together in the source program.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+3.   Segments with segment-number 50 through 99 are independent segments.
+</para>
+        </listitem>
+      </orderedlist>
+    </section>
+  </section>
+  <section>
+    <title>RESTRICTIONS ON PROGRAM FLOW</title>
+    <para>
+      When segmentation is used, the following restrictions are placed on the ALTER and PERFORM statement.
+     </para>
+    <section>
+      <title>THE ALTER STATEMENT</title>
+      <para>
+     A GO TO statement in a section whose segment-number is greater than or
+equal to 50 must not be referred to by an ALTER statement in a section with
+a different segment-number.
+     </para>
+    </section>
+    <section>
+      <title>THE PERFORM STATEMENT</title>
+      <para>
+     A PERFORM statement that appears in a section that is not in an
+independent segment can have within its range, in addition to any
+declarative sections whose execution is caused within that range, only one
+of the following:
+</para>
+      <itemizedlist>
+        <listitem>
+          <para>
+           Sections and/or paragraphs wholly contained in one or more
+           non-independent segments.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+           Sections and/or paragraph wholly contained in a single independent
+           segment.
+</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+      A PERFORM statement that appears in an independent segment can have
+within its range, in addition to any declarative sections whose execution is
+caused within that range, only one of the following:
+</para>
+      <orderedlist numeration="loweralpha">
+        <listitem>
+          <para>
+      a.   Sections and/or paragraphs wholly contained in one or more
+           non-independent segments.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+      b.   Sections and/or paragraphs wholly contained in the same
+           independent segment as that PERFORM statement.
+</para>
+        </listitem>
+      </orderedlist>
+    </section>
+  </section>
+  <section>
+    <title>EXTRA INTERMEDIATE CODE FILES</title>
+    <para>
+When segmentation is used, extra intermediate code files are generated
+by the compiler as follows:
+</para>
+    <para>
+XXXXXXXXXX
+</para>
+    <note>
+      <para>
+<phrase role="extension">The filename.Dnn files are written and used solely by the compiler, and
+need not be retained after compilation. The filename.Inn files and the
+filename.ISR file must be retained as part of the object program and
+must also be copied when the program is copied.</phrase>
+</para>
+    </note>
+  </section>
+</chapter>

@@ -1,0 +1,1809 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <title>GLOSSARY</title>
+  <section>
+    <title>INTRODUCTION</title>
+    <para>
+The terms in this Chapter are defined in accon'.ance with their meaning as
+used in this document describing CIS COBOL and may not have the same meaning
+for other languages.
+</para>
+    <para>
+These definitions are also intended to be either reference material or
+introductory material to be reviewed prior to reading the detailed language
+specifications that are contained in this manual. For this reason, these
+definitions are, in most instances, brief and do not include detailed
+syntactical rules.
+</para>
+  </section>
+  <section>
+    <title>DEFINITIONS</title>
+    <variablelist>
+      <varlistentry>
+        <term>Access Mode.</term>
+        <listitem>
+          <para>The manner in which records are to be operated upon within a file
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Actual Decimal Point.</term>
+        <listitem>
+          <para>The physical representation, using either of the
+           decimal point characters . (period) or , (comma) of the decimal
+           point position in a data item.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Alphabet-Name.</term>
+        <listitem>
+          <para>A user-defined word in the SPECIAL-NAMES paragraph of the
+           EnvironmP.nt Division that assigns a name to a specific character
+           set and/or collating sequence.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Alphabetic Character.</term>
+        <listitem>
+          <para>A character that belongs to the following set. of
+           letters: A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z and
+           the space. <phrase role="extension">Also a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,x,y and z
+           which are converted to their upper case equivalents.</phrase>
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Abhanumeric Character.</term>
+        <listitem>
+          <para>Any character in the computer's character set.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Arithmetic Expression.</term>
+        <listitem>
+          <para>An arithmetic expression can be an identifier or a
+           numeric elementary item, a nwneric literal, such identifiers and
+           literals separated by arithmetic operators, two arithmetic
+           expressions separated by an arithmetic operator, or an arithmetic
+           expression enclosed in parentheses.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Arithmetic Operator.</term>
+        <listitem>
+          <para>A single character, or a fixed two-character combin-
+           ation, that. belongs to the following set:
+           Character                        Meaning
+                    +                       Addition
+                                            Subtraction
+                    *                       Multiplication
+                                            Division
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Ascending Key.</term>
+        <listitem>
+          <para>A key upon the values of which data is ordered starting with
+           the lowest value of key up to thP. highest value of key in
+           accordance with the rules for comparison of the data items.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Assumed Decimal Point.</term>
+        <listitem>
+          <para>A decimal point position which does not involve the
+           existence of an actual character in a data item. The assumed
+           decimal point has logical meaning but no physical representation.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>At End Condition.</term>
+        <listitem>
+          <para>A condition caused in one of two circumstances:
+           1.    During the execution of a READ statement for a sequentially
+                 accessed file.
+           2.    During the execution of a RETURN statement when no next
+                 logical record exists for the associated sort or merge file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Called Program.</term>
+        <listitem>
+          <para>A program which is the object of a CALL statement combined
+           at run time with the calling program to produce a run unit.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Calling Program.</term>
+        <listitem>
+          <para>A program which executes a CALL to another program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Character.</term>
+        <listitem>
+          <para>The basic indivisible unit of the language.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Character Set (CIS COBOL).</term>
+        <listitem>
+          <para>The complete CIS COBOL character set consists
+           of all characters listed below:
+           Character                       Meaning
+           0,1, ... ,9                     Numeric digit
+           A,B,  ,z                     Uppercase alphabetic
+          a,b,:~~  -;~;: .          ... : Lowercase alphabetic
+                                           Space (Blank)
+           +                               Plus Sign
+                                           Minus Sign
+           *                               Asterisk
+                                           Stroke (Virgule or Slash)
+                                           Equal Sign
+           $                               Currency Sign
+                                           Comma
+                                           Semicolon
+                                           Period (Decimal Point, Fullstop)
+                                           Quotation Mark
+           (                               Left Parenthesis
+           )                               Right Parenthesis
+           &gt;                               Greater Than Symbol
+           &lt;                               Less Than Symbol
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Character Position.</term>
+        <listitem>
+          <para>A character position is the amount of physical storage
+           required to store a single standard data format character
+           described as usage in DISPLAY. Further characteristics of the
+           physical storage are defined by the implementor.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Character-String.</term>
+        <listitem>
+          <para>A sequence of contiguous characters which form a
+           CIS COBOL word, a literal, a PICTURE character-string or a
+           comment-entry.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Class Condition.</term>
+        <listitem>
+          <para>The proposition, for which a truth value can be determined,
+           that the content of an item is wholly alphabetic or is wholly
+           numeric.
+           A clause is au ordered set of consecutive CIS COBOL character-
+           strings whose purpose is to specify an attribute of an entry.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Collating Sequence.</term>
+        <listitem>
+          <para>The sequence in which the characters that are
+          acceptable in a computer are ordered for purposes of sorting,
+          merging and or comparing.
+          A character position within a print line. The columns are
+          numbered from one, by one, starting at the left-most character
+           position of the print line and extending to the right-most
+          character position of the print line.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Comment Entry.</term>
+        <listitem>
+          <para>An entry in the Identification Division tliat may be any
+          combination of characters from the computer character set.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Comment Line.</term>
+        <listitem>
+          <para>A source program line represented by an asterisk in the
+           indicator area of the line and any characters from the computer's
+           character set in area A and area B of that line. The comment line
+           serves only for documentation in a program. A special form of
+           comment line represented by a stroke (/) in the indicator area of
+           the line and any characters from the computer's character set in
+           area A and area B of that line causes page ejection before
+           printing the comment.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Compile Time.</term>
+        <listitem>
+          <para>The time at which an CIS COBOL source program is translated
+           by the compiler to an CIS COBOL intermediate code program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Compiler-Directing Statement.</term>
+        <listitem>
+          <para>A statement, beginning with a
+           compiler-directing verb, that causes the compiler to take a
+           specific action during compilation.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Computer-Name.</term>
+        <listitem>
+          <para>A system-name that identifies the computer upon which the
+           program is to be compiled or run.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Condition.</term>
+        <listitem>
+          <para>A status of a program at execution time for which a truth value
+can be determined. Where the term "condition" (condition-1,
+condition-2,) appears in these language specifications in or 1n
+reference to "condition" (condition-1, condition-2, ...) of a
+general format, it is a conditional expression consisting of
+either a simple condition optionally parenthesised, or a negated
+simple condition.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Condition-Name.</term>
+        <listitem>
+          <para>The user-defined word assigned to a   status of an
+           implementor-defined switch or device.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Conditional Expression.</term>
+        <listitem>
+          <para>A simple condition specified in an IF, or PERFORM.
+           (See Simple Condition and Complex Condition.)
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Conditional Statement.</term>
+        <listitem>
+          <para>A conditional statement specifies that the truth
+           value of a condition is to be determined, and that the subsequent
+           action of the run-time program is dependent on this truth value.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Configuration Section.</term>
+        <listitem>
+          <para>A section of tne Environment Division tnat describes
+           overall specifications of source and run computers.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Connective.</term>
+        <listitem>
+          <para>A reserved word that is used to:
+          </para>
+          <orderedlist>
+            <listitem>
+              <para>
+              1. Associate a data-name, paragraph-name, condition-name, or text-name with its qualifier.
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+              2. Link two or more operands written in a series.
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+              3. Form conditions (logical connectives). (See Logical Operator.)
+</para>
+            </listitem>
+          </orderedlist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Contiguous Items.</term>
+        <listitem>
+          <para>
+Items that are described by consecutive entries in
+the Data Division, and that bear a definite hierarchic
+relationship to one another.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Counter.</term>
+        <listitem>
+          <para>    A data item used for storing numbers or number representations in
+              a manner that permits these numbers t o be increased o r decr eased
+              Dy c[a~. vaiue of another numbr:r, or t o be cnange d or reset to ze ro
+              or t o an arbitrary positive or nega tive value.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>CRT.</term>
+        <listitem>
+          <para>
+            <phrase role="extension">An interactive input/output device comprising a cathode ray tupe
+              and a keyboard by which an Operator can enter and receive visual
+              data.</phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Currency Sign.</term>
+        <listitem>
+          <para>The character "$" (dollar sign) in the CIS COBOL character set.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Currency Symbol.</term>
+        <listitem>
+          <para>The character defined by the CURRENCY SIGN clause in the
+              SPECIAL- NAMES paragraph. If no CURRENCY SIGN clause is present in
+              a CIS COBOL source program, the currency symbol is identical to
+              the currency sign.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Current Record.</term>
+        <listitem>
+          <para>The record which is available in the record area associated with the file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Current Record Pointer.</term>
+        <listitem>
+          <para>A conceptual entity that is used in the selec tion
+              of the next record.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Cursor.</term>
+        <listitem>
+          <para>
+The indicator on a CRT screen that marks the line and character
+position which the input/output control is currently referencing.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Data Clause.</term>
+        <listitem>
+          <para>A clause that appears in a da t a descrip tion en t ry in the Data
+              Di visio n and provides information describ ing a   particular
+              a ttribut e of a da t a item.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Data Description Entry .</term>
+        <listitem>
+          <para>An en tr y i n the Da t a Division that is composed of a
+              l evel -numbe r followed by a data- name , i f requir ed, and then
+              fol l owed by a set of data c l auses as required.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Data Dictionary.</term>
+        <listitem>
+          <para>A dictionary file of user def in ed names constructed by the
+              Compiler containing the number of bytes for each entry.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Data Item.</term>
+        <listitem>
+          <para>A c haracter or se t of con t iguous charac t ers (excluding in ei ther
+              case literals) defi ned as a unit of data by the CIS COBOL program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Data - name.</term>
+        <listitem>
+          <para>A user-defined word that names a data item described in a da t a
+              description entry in t he Data Division. When used in the general
+              formats , "data - name " rep r esents a wo r d tvhich can ne it her be
+              subscripted , no r indexed unle s s specifically permitted ty the
+              rules for that forma t.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Debugging Line.</term>
+        <listitem>
+          <para>A debugging line is any line w1 th "D" in the indicator area
+           of the line.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Declaratives.</term>
+        <listitem>
+          <para>A set of one or more special purpose sections written at the
+           beginning of the Procedure Division, the first of which is
+           preceded by the key word DECLARATIVES and the last of which is
+           followed by the key words END DECLARATIVES. A declarative is
+           composed of a section header, followed by a USE compiler directing
+           sequence, followed by a set of associated paragraphs (0 or more).
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Declarative-Sentence.</term>
+        <listitem>
+          <para>A compiler-directing sentence consisting of a single
+           USE statement terminated by the separator period (.).
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Default Disk.</term>
+        <listitem>
+          <para>
+            <phrase role="extension">The disk from which the compiler or run-time system is loaded
+          and from which, in the absence of a specific drive identifier, any
+          copy file or called code will be loaded if required.</phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Delimiter.</term>
+        <listitem>
+          <para>    A character (or sequence of contiguous characters) that
+           identifies the end of a string of characters, and separates that
+           string of characters from the following string of characters. A
+           delimiter is not part of the string of characters that it 
+           delimits.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Descending Key.</term>
+        <listitem>
+          <para>A key upon the values of which data is ordered starting
+           with the highest value of key down to the lowest value of key, in
+           accordance with the rules for comparing data items.                 I
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Digit Position.</term>
+        <listitem>
+          <para>A digit position is the amount of physical storage
+           required to store a single digit. This amount varies depending on
+           the usage of the data item describing the digit position. Further
+           charactersitics of the physical storage are defined by the
+           implementor.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Division.</term>
+        <listitem>
+          <para>   A set of sections or paragraphs (0 or more) that are formed and
+           combined in accordance with a specific set of rules is called a
+           division body. There are four divisions in a CIS COBOL program:
+           Identification, Environment, Data and Procedure.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Division Header.</term>
+        <listitem>
+          <para>A combination of words followed by a period and a space
+           that indicate the beginning of a division. The division headers
+           are:
+                 IDENTIFICATION DIVISION.
+                 ENVIRONMENT DIVISION.
+                DATA DIVISION.
+                 PROCEDURE DIVISION    USING data-name-1  data-name-2 ... .
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Dynamic Access.</term>
+        <listitem>
+          <para>An access mode in which specific logical records can be
+           obtained from or placed into a disk file in a non-sequential
+           manner (see Random Access) and obtained from a file in a
+           sequential manner (see Sequential Access) during the scope of the
+           same OPEN statement.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Editing Character.</term>
+        <listitem>
+          <para>A single character or a fixed two character combination
+           belonging to the same set:
+           </para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Character</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>B</entry>
+                  <entry>Space</entry>
+                </row>
+                <row>
+                  <entry>0</entry>
+                  <entry>Zero</entry>
+                </row>
+                <row>
+                  <entry>+</entry>
+                  <entry>Plus</entry>
+                </row>
+                <row>
+                  <entry>-</entry>
+                  <entry>Minus</entry>
+                </row>
+                <row>
+                  <entry>CR</entry>
+                  <entry>Credit</entry>
+                </row>
+                <row>
+                  <entry>DB</entry>
+                  <entry>Debit</entry>
+                </row>
+                <row>
+                  <entry>Z</entry>
+                  <entry>Zero Suppress</entry>
+                </row>
+                <row>
+                  <entry>*</entry>
+                  <entry>Check Protect</entry>
+                </row>
+                <row>
+                  <entry>$</entry>
+                  <entry>Currency Sign</entry>
+                </row>
+                <row>
+                  <entry>,</entry>
+                  <entry>Comma</entry>
+                </row>
+                <row>
+                  <entry>.</entry>
+                  <entry>Period (Decimal Point)</entry>
+                </row>
+                <row>
+                  <entry>/</entry>
+                  <entry>Stroke (Virgule, Slash)</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Elementary Item.</term>
+        <listitem>
+          <para>A data item         that is described as not being further
+                   logically subdivided.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>End of Procedure Division.</term>
+        <listitem>
+          <para>The physical position in a CIS COBOL source
+                   program after which no further procedures appear.
+                   Any descriptive set of consecutf". a clauses terminated by a
+                   period (.) and written in the Identification Division, Environment
+                   Division or Data Division of an CIS COBOL source program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Environment Clause.</term>
+        <listitem>
+          <para>A clause that appears as part of an Environment Division entry.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Extend Mode.</term>
+        <listitem>
+          <para>    With the EXTEND phrase specified, the state of a file after
+                   execution of an OPEN statement, and before the execution of a
+                   CLOSE statement for the file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Figurative Constant.</term>
+        <listitem>
+          <para>A compiler-generated value referenced through the use
+                   of certain reserved words.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>File.</term>
+        <listitem>
+          <para>A collection of records.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>File Clause.</term>
+        <listitem>
+          <para>A clause that appears as part of any of the following Data
+                   Division entries:
+                          File Description (FD)
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>FILE-CONTROL.</term>
+        <listitem>
+          <para>The name of an Environment Division paragraph in which the
+                   data files for a given source program are declared.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>File Description Entry.</term>
+        <listitem>
+          <para>An entry in the File Section of the Data Division
+                   that is composed of the level indicator FD, followed by a
+                   file-name, and then followed by a set of file clauses as required.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>File-Name.</term>
+        <listitem>
+          <para>A user-defined word that names a file described in a file
+                   description entry or a sort-merge file description entry within
+                   the File Section of the Data Division.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>File Organization.</term>
+        <listitem>
+          <para>The permanent logical file structure established at the
+          time that a file is created.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>File Section.</term>
+        <listitem>
+          <para>   The section of the Data Divisionthat contains file
+          description entries together with their associated record
+          descriptions.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Format.</term>
+        <listitem>
+          <para>A specific arrangement of a set of data.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>FORMS Program.</term>
+        <listitem>
+          <para>
+            <phrase role="extension">A screen formatting program that automatically generates CIS COBOL
+          CRT input/output coding from actual screen layout.</phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Group Item.</term>
+        <listitem>
+          <para>  A named contiguous set of elementary or group it~ms.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>High Order End.</term>
+        <listitem>
+          <para>  The leftmost character of a string of characters.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>I-O-CONTROL.</term>
+        <listitem>
+          <para>   The name of an Environment Division paragraph in which object
+          program requirements for specific input/output techniques, rerun
+          points, sharing of same areas by several data files, and multiple
+          file storage on a single input/output device are specified.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>I-O Mode.</term>
+        <listitem>
+          <para>The state of a file after execution of an OPEN statement, with the
+          I-O phrase specified for that file, and before the execution of a
+          CLOSE statement for that file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Identifier.</term>
+        <listitem>
+          <para>   A data-name, followed as required by the syntactically
+          correct combination of subscripts and indices necessary to make
+          unique reference to a data item.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Imperative Statement.</term>
+        <listitem>
+          <para>A statement that begins with an imperative verb and
+          specifies an unconditional action to be taken. An imperative
+          statement may consist of a sequence of imperative statements.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Implementor-Name.</term>
+        <listitem>
+          <para>A system-name that refers to a particular feature avail-
+          able on the implementors computing system.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Index.</term>
+        <listitem>
+          <para>   A computer storage position or register, the contents of which
+          represent the identification of a particular element in a table.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Index Data Item.</term>
+        <listitem>
+          <para>A data item in which the value associated with an
+          index-name can be stored in a form specified by the implementor.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Indexed File.</term>
+        <listitem>
+          <para>  A file with indexed organization.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Indexed Organization.</term>
+        <listitem>
+          <para>The permanent logical file structure in which each
+          record is identified by the value of one or more keys within that
+          record.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Indicator Area.</term>
+        <listitem>
+          <para>   The leftmost parameter position of a CIS COBOL source
+          record that indicates the use of the record.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Input File.</term>
+        <listitem>
+          <para>     A file that is opened in the input mode.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Input Mode.</term>
+        <listitem>
+          <para>The state of a file af ter execu tion of an OPEN stateme nt, with
+              the INPUT phrase specified, for that file and before the execution
+              of a CLOSE s t a tement for that file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Input - Output File.</term>
+        <listitem>
+          <para>      A file that is opened in the I-O mode.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Input - Output Section.</term>
+        <listitem>
+          <para>     The section of the Environment Division that names
+              the files and the external media used by a program and which
+              provides information required for transmission and handling of
+              data during execution of the run-time program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Integer.</term>
+        <listitem>
+          <para>     A   numeric literal or a numeric data item that does not
+              include any character positions to the right of the assumed
+              decimal point. W here the term 'integer' appears in general
+              formats, integer must not be a numeric data item, and must not be
+              signed, nor zero unless explicitly allowed by the rules of that format.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Intermediate Code</term>
+        <listitem>
+          <para>
+            <phrase role="extension">The code produced by the CIS COBOL compiler from the source code entered,
+        and which the Run Time System 'fast loads' for execution.</phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Invalid Key Condition.</term>
+        <listitem>
+          <para>A condition, at object time, caused when a specified
+              value of the key associated with an indexed or relative file is
+              determined to be invalid.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Issue Disk.</term>
+        <listitem>
+          <para>      The flexible diskette or which th e CIS COBOL software is
+              supplied to users.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Key.</term>
+        <listitem>
+          <para>A data item which identifies the location of a record, or a set of
+              data items which serve to identify the ordering of data.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Key of Reference.</term>
+        <listitem>
+          <para>        The key currently being used to access records within an
+              indexed file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Key Word.</term>
+        <listitem>
+          <para>A reserved word whose presence is required when the format in
+              which the word appears is used in a source program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Level-Number.</term>
+        <listitem>
+          <para>A user-defined word which indicates the position of a data
+              item in the hierarchical structure of a logical record or which
+              indicates special properties of a data description entry. A
+              level-number is expressed as a  one or two digit number.
+              Level-numbers in the range 1 through 49 indicate the position of a
+              data item in the hierarchical structure of a logical record.
+              Level-numbers in the range 1 through 9 may be written either as a
+              single digit or as a zero followed by a significant digit.
+              Level-number 77 identifies special properties of a data
+              description entry.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Library-Name.</term>
+        <listitem>
+          <para>A user-defined word tha t names a    CIS COBOL library
+              source file that is to be used by the compiler for a given source
+              program compilation.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Library-Text.</term>
+        <listitem>
+          <para>        A sequence of character-strings and/or separators in a
+            COBOL library.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Line Sequential File Organization</term>
+        <listitem>
+          <para>
+            <phrase role="extension">A sequential file containing variable length records separated
+by the C/R (carriage return) and L/F (line feed) characters.</phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Linkage Section.</term>
+        <listitem>
+          <para>The section in the Data Division of the called program
+            that describes data items available from the calling program.
+            These data items may be referred to by both the calling and called
+            program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Literal.</term>
+        <listitem>
+          <para>   A character-string whose value is implied by the ordered set of
+            characters comprising the string.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Logical Operator.</term>
+        <listitem>
+          <para>The reserved word 'NOT'. It can be used for logical negation.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Logical Record.</term>
+        <listitem>
+          <para>The most inclusive data item. The level-number for a record is 01.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Low Order End.</term>
+        <listitem>
+          <para>The rightmost character of a string of characters.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Mnemonic-Name.</term>
+        <listitem>
+          <para>A User-defined word that is associated in the Environment
+            Division with a specified implementor-name.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Native Character Set.</term>
+        <listitem>
+          <para>The implementor-defined character set associated with
+            the cauputer specified in the OBJECi'-C MPIJl'ER paragraph.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Native Collating Sequence.</term>
+        <listitem>
+          <para>The implementor-defined collating sequence
+            associated with the computer specified in the OBJECT-C MPtrrER
+            paragraph.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Negated Simple Condition.</term>
+        <listitem>
+          <para>The 'NOT' logical operator immediately followed
+            by a simple condition.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Next Executable Sentence.</term>
+        <listitem>
+          <para>The next sentence to which control will be
+            transferred after execution of the current statement is complete.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Next Executable Statement.</term>
+        <listitem>
+          <para>The next statement to which control will be
+             transferred after execution of the current statement is complete.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Next  Record.</term>
+        <listitem>
+          <para>The record which logically follows the current record of a
+            file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Non contiguous Items.</term>
+        <listitem>
+          <para>          Elementary data items, t.n the Working-Storage and
+            Linkage Sections, which bear no hierarchic relationship to other
+            data items.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Nonnumeric Item.</term>
+        <listitem>
+          <para>A data item whose description permits its contents to be
+             composed of any combination of characters taken from the
+             computer's character set. Certain categories of nonnumeric items
+             may be formed from more restricted character sets.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Nonnumeric Literal.</term>
+        <listitem>
+          <para>   A character-string bounded by quotation marks. The
+           string of characters may include any character in the
+           canputer's character set. To represent a single quota.:ion mark
+           character lli.thin a nonnumeric literal, two contiguous quotation
+           marks Must be used.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Numeric Character.</term>
+        <listitem>
+          <para>A character that belongs to the following set of digits:
+           0, 1, 2, 3, 4, 5, 6, 7, 8, 9.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Numeric Item.</term>
+        <listitem>
+          <para>   A data item whose description restricts its contents to a
+          value represented by characters chosen from the digits '0' through
+         '9'; if signed, the item may also contain a '+', '-' or other
+           representation of an operational sign.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Numeric Literal.</term>
+        <listitem>
+          <para>A literal composed of one or more numeric characters that
+           also may contain either a deciMal point, or an algebraic sign, or
+           both. The decimal point must not be the righmost character. The
+           algebraic sign, if present, Must be the leftmost character.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>OBJECT-COMPUTER.</term>
+        <listitem>
+          <para>The name of an Environment Division paragraph in which the
+           computer environment, within which the run-time program is
+           executed, is described.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Open Mode.</term>
+        <listitem>
+          <para>The state of a file after execution of an OPEN statement for that
+           file and before the execution of a CLOSE stateMent for that file.
+          The particular open mode is specified in the OPEN statement as
+          either INPtrr, OUTPUT, I-o or ElCl'END.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Operand.</term>
+        <listitem>
+          <para>  Whereas the general definition of operand is 'that component which
+           is operated upon', for the purposes of this publication, any
+           lowercase word (or words) that appears in a statement or entry
+           format may be considered to be an operand and, as such, is an
+           implied reference to the data indicated by the operand.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Operational Sign.</term>
+        <listitem>
+          <para>An algebraic sign, associated lli.th a numeric data item or
+           a numeric literal, to indicate whether its value is positive or negative.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Optional Word.</term>
+        <listitem>
+          <para>A reserved word that is included in a specified forMat only
+           to improve the readability of the language and whose presence is
+           optional to the user when the forMat in which the word appears is
+           used in a source program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Output File.</term>
+        <listitem>
+          <para>   A file that is opened in either the output mode or extend mode.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Output-Mode.</term>
+        <listitem>
+          <para>  The state of a file after execution of an OPEN statement, with
+           the OUTPUT or EXIEND phrase specified for that file and before the
+           execution of a CLOSE statement for that file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Paragraph.</term>
+        <listitem>
+          <para>In the Procedure Division, a paragraph-name followed by a period
+           and a space and optionally by one, or more sentences. In the
+           Identification and Environment Divisions, a paragraph header
+           followed by zero, one, or more entries.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Paragraph Header.</term>
+        <listitem>
+          <para>A reserved word, followed by a period and a space that
+           indicates the beginning of a paragraph in the Identification and
+           Environment Divisions. The permissible paragrapt headers are:
+     In the Identification Division:
+     PROGRAM-ID.
+     AUTHOR.
+     INSTALLATION.
+     DATE-WRITTEN.
+     DATE-COMPILED.
+     SECURITY.
+     In the Environment Division:
+     SOURCE-COMPUTER.
+     OBJECT-COMPUTER.
+     SPECIAL-NAMES.
+     FILE-CONTROL.
+     I-O-CONTROL.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Paragraph-Name.</term>
+        <listitem>
+          <para>  A user-defined word that identifies and begins a paragraph
+           in the Procedure Division.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Phrase.</term>
+        <listitem>
+          <para>   A phrase is an ordered set of one or more consecutive COBOL
+           character-strings that form a portion of a CIS COBOL procedural
+           statement or of a COBOL clause.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Prime Record Key.</term>
+        <listitem>
+          <para>A key whose contents uniquely identify a record within an
+           indexed file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure.</term>
+        <listitem>
+          <para>  A paragraph or group of logically successive paragraphs, or a
+           section or group of logically successive sections, within the
+           Procedure Division.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Procedure-Name.</term>
+        <listitem>
+          <para>A user-defined word which is used to name a paragraph or
+           section in the Procedure Division. It consists of a paragraph-name or a section-name.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Punctuation Character.</term>
+        <listitem>
+          <para>A character that belongs to the following set:
+             Character
+                                              comma
+                                              semicolon
+                                              period
+                                              quotation mark
+                                               left parenthesis
+                                               right parenthesis
+                                              space
+                                              equal sign
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Random Access.</term>
+        <listitem>
+          <para>An access mode in which the program-specified value of a key
+             data item identifies the logical record that is obtained from,
+             deleted from or placed into a relative or indexed file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Record.</term>
+        <listitem>
+          <para>
+             (see Logical Record)
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Record Area.</term>
+        <listitem>
+          <para>A storage area allocated for the purpose of processing the
+             record described in a record description entry in the File
+             Section.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Record Description.</term>
+        <listitem>
+          <para>(See Record Description Entry)
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Record Description Entry.</term>
+        <listitem>
+          <para>The total set of data description entries
+             associated with a particular record.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Record Key.</term>
+        <listitem>
+          <para>A key, either the prime record key or an alternate record key,
+             whose contents identify a record within an indexed file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Record-Name.</term>
+        <listitem>
+          <para>A user-defined word that names a record described in a record
+             description entry in the Data Division.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Reference-Format.</term>
+        <listitem>
+          <para>A format that provides a standard method for describing
+             COBOL source programs.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relation.</term>
+        <listitem>
+          <para>(See Relational Operator)
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relation Character.</term>
+        <listitem>
+          <para>  A character that belongs to the following set:
+    Character
+        &gt;                              greater than
+        &lt;                              less than
+                                       equal to
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relation Condition.</term>
+        <listitem>
+          <para>The proposition, for which a truth value can be
+             determined, that the value of an arithmetic expression or data
+             item has a specified relationship to the value of another
+             arithmetic expression or data item. (See Relational Operator),
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relational Operator.</term>
+        <listitem>
+          <para>A reserved word, a relation character, a group of
+          consecutive reserved words, or a group of consecutive reserved
+          words and relation characters used in the construction of a
+          relation condition. The permissible operators and their meaning
+          are:
+      Relational  O~erator           Meaning
+      IS  NOT   GREATER THAN         Greater than or not greater than
+      IS  NOT   &gt;
+      IS  NOT   LESS THAN            Less than or not less than
+      IS  NOT   &lt;
+      IS  NOT   EQUAL TO             Equal to or not equal to
+      IS  NOT
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relative File.</term>
+        <listitem>
+          <para>  A file with relative organization.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relative Key.</term>
+        <listitem>
+          <para>A key whose contents identify a logical record in a relative
+          file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Relative Organization.</term>
+        <listitem>
+          <para>The permanent logical file structure in which each
+          record is uniquely identified by an integer value greater than
+          zero, which specifies the record's logical ordinal position in the
+          file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Reserved Word.</term>
+        <listitem>
+          <para>A COBOL word specified in the list of words which may be
+          used in COBOL source programs, but which must not appear in the
+          programs as user-defined words or system-names.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Routine-Name.</term>
+        <listitem>
+          <para>A user-defined word that identifies a procedure written in a
+          language other than COBOL:
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Run Time Debug.</term>
+        <listitem>
+          <para>
+            <phrase role="extension">An option available to CIS COBOL...
+          </phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Run Time.</term>
+        <listitem>
+          <para>
+            <phrase role="extension">The time at which ...
+          </phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Run Time System(RTS).</term>
+        <listitem>
+          <para>
+            <phrase role="extension">The software...
+          </phrase>
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Run Unit.</term>
+        <listitem>
+          <para>A set of one or more intermediate code programs which function, at
+          run time, as a unit to provide problem solutions.
+          A set of none, one, or more paragraphs or entries, called a
+          section body, the first of which is preceded by a section header.
+          Each section consists of the section header and the related
+          section body.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Section Header.</term>
+        <listitem>
+          <para>A combination of words followed by a period and a space that
+                indicates the beginning of a section in the Environment, Data and
+                Procedure Division.
+  In the Environment and Data Divisions, a section header is composed of
+  reserved words followed by a period and a space. The permissible section
+  headers are:
+        In the Environment Division:
+        CONFIGURATION SECTION
+        INPUT-OUTPUT SECT ION
+
+        In the Data Division:
+        FILE SECTION
+        WORKING-STORAGE SECTION
+        LINKAGE SECTION
+
+  In the Procedure Division, a section header is composed of a section-name,
+  followed by the reserved word SECTION, followed by a segment-number
+  (optional), followed by a period and a space.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Section-Name.</term>
+        <listitem>
+          <para>A user-defined word which names a section in the Procedure
+                Division.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Segment-Number.</term>
+        <listitem>
+          <para>A user-defined word which classifies sections in the
+                Procedure Division for purposes of segmentation. Segment-numbers
+                may contain only the characters '0',           1
+                                                                 1', ... , '9'.   A
+                segment-number may be expressed either as a one or two digit
+                number, and is checked for syntax only.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Sentence.</term>
+        <listitem>
+          <para>A sequence of one or more statements, the last of which is
+                terminated by a period followed by a space.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Separator.</term>
+        <listitem>
+          <para>A punctuation character used to delimit character-strings.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Sequential Access.</term>
+        <listitem>
+          <para>An access mode in which logical records are obtained from
+                or placed into a file in a consecutive predecessor-to-successor
+                logical record sequence dete~ined by the order of records in the file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Sequential File.</term>
+        <listitem>
+          <para>A file with sequential organization.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Sequential Organization.</term>
+        <listitem>
+          <para>The permanent logical file structure in which a
+                record is identified by a predecessor-successor relationship
+                established when the record is placed into the file.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Sign Condition.</term>
+        <listitem>
+          <para>The proposition, for which a truth value can be determined,
+                 that the algebraic value of a data item or an arithmetic
+                 expression is either less than, greater than, or equal to zero.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Simple Condition.</term>
+        <listitem>
+          <para>  Any single condition chosen from the set:
+     relation condition
+     class condition
+     switch-status condition
+     sign condition
+     (simple-condition)
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SOURCE-COMPUTER.</term>
+        <listitem>
+          <para>    The name of an Environment Division paragraph in which
+          the computer environment, within which the source program is
+          compiled, is described.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Source Program.</term>
+        <listitem>
+          <para>Although it is recognised that a source program may be
+           represented by other forms and symbols, in this document it always
+           refers to a syntactically correct set of COBOL statements
+           beginning with an Identification Division and ending with the end
+           of the Procedure Division. In contexts where there is no danger
+           of ambiguity, the word 'program' alone may be used in place of the
+           phrase 'source program'.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Special Character.</term>
+        <listitem>
+          <para>   A character that belongs to the following set:
+  Character
+      +                     plus sign
+                            minus sign
+      *                     asterisk
+                            stroke (virgule, slash)
+                            equal sign
+                            currency sign
+                            comma (decimal point)
+                            semicolon
+                            period (decimal point)
+                            quotation mark
+       (                    left parenthesis
+       )                    right parenthesis
+      &gt;                     greater than symbol
+      &lt;                     less than symbol
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Special-Character Word.</term>
+        <listitem>
+          <para>A reserved word which is an arithmetic operator or
+           a relation character.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SPECIAL-NAMES.</term>
+        <listitem>
+          <para>The name of an Environment Division paragraph in which
+           implementor-names are related to user specified mnemonic-names.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Special Registers.</term>
+        <listitem>
+          <para>Compiler generated storage areas whose prtmary use is to
+           store information produced in conjunction with the user of
+           specified COBOL features.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Standard Data Format.</term>
+        <listitem>
+          <para>The concept used in describing the characteristics of
+              data in a COBOL Data Division under which the charactcListics or
+              properties of the data are expressed in a form oriented to the
+              appearance of the data on a printed page of infinite length and
+              breadth, rather than a form oriented to the manner in which the
+              data is stored internally in the computer, or on a particular
+              external medium.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Statement.</term>
+        <listitem>
+          <para>A syntactically valid combination of words and symbols written in
+              the Proc~dure Division beginning with a verb.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Subprogram.</term>
+        <listitem>
+          <para>   (See Called Program).
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Subscript.</term>
+        <listitem>
+          <para>  An integer whose value identifies a particular element in a
+              table.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Subscripted Data-Name.</term>
+        <listitem>
+          <para>An identifier that is composed of a data-name
+              followed by one or more subscripts enclosed in parenthesis.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Switch-Status Condition.</term>
+        <listitem>
+          <para>The proposition, for which a truth value can be
+              determined, that an implementor-defined switch, capable of being
+              set to an 'on' or 'off' status, has been set to a specified status.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Symbol Function.</term>
+        <listitem>
+          <para>The use of specified characters in the PICTURE clause to
+              represent data types.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>System-Name.</term>
+        <listitem>
+          <para>A COBOL word which is used to communicate with the operating
+              environment.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Syntax.</term>
+        <listitem>
+          <para>   The order in which elements must be put together to form a program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Table.</term>
+        <listitem>
+          <para>
+              A set of logically consecutive items of data that are defined in
+              the Data Division by means of the OCCURS clause.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Table Element.</term>
+        <listitem>
+          <para>A data item that belongs to the set of repeated items
+              comprising a table.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Text-Name.</term>
+        <listitem>
+          <para>    A user-defined word which identifies library text.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Text-Word.</term>
+        <listitem>
+          <para>  Any character-string or separator, except space, in a COBOL
+              library or in pseudo-text.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Unary Operator.</term>
+        <listitem>
+          <para>A plus (+) or a minus (-) sign, which precedes a variable
+              or a left parenthesis in an arithmetic expression and which has
+              the effect of multiplying the expression of +1 or -1 respectively.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>User-Defined Word.</term>
+        <listitem>
+          <para>A COBOL word that must be supplied by the user to
+              satisfy the format of a clause or statement.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Variable.</term>
+        <listitem>
+          <para>A data item whose value may be changed by execution of the object
+              program. A variable used in an arithmetic expression must be a
+              numeric elementary item.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Verb.</term>
+        <listitem>
+          <para>A word that expresses an action to be taken by a COBOL compiler or
+          run time program.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Word.</term>
+        <listitem>
+          <para>A character-string of not more than 30 characters which forms a
+          user-defined word, a system-name, or a reserved word.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Working-Storage Section.</term>
+        <listitem>
+          <para>The section of the Data Division that describes
+          working storage data items, composed either of noncontigu~us items
+          or of working storage records or of both.
+</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>77 Level-Description-Entry.</term>
+        <listitem>
+          <para>A data description entry  that describes  a
+          noncontiguous data item with the level-number 77.
+</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</appendix>
