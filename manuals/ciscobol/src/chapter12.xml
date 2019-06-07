@@ -172,8 +172,8 @@ required will result in an undefined file being accessed at run time.
               </simplelist>
             </entry>
           </row>
-          <row namest="c1" nameend="c2">
-            <entry>
+          <row>
+            <entry namest="c1" nameend="c2">
               <orderedlist>
                 <listitem>
                   <para>

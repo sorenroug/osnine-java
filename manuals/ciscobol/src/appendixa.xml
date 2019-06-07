@@ -233,6 +233,8 @@ SPACE and SPACES are reserved words.
     <member>&lt;</member>
     <member>=</member>
     <member>&gt;</member>
+    <member>/</member>
+    <member>*</member>
   </simplelist>
   <para>
 Note that the Level II COBOL product contains the following additional
@@ -264,6 +266,7 @@ upward compatible with Level II COBOL do not use these words as user-names.
     <member>ENABLE</member>
     <member>END-OF-PAGE</member>
     <member>EOP</member>
+    <member>EMI</member>
     <member>ESI</member>
     <member>FOOTING</member>
     <member>IN</member>

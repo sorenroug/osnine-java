@@ -3761,21 +3761,29 @@ INITIAL "L".
 editing, to one or more data areas.
 </para>
       </section>
-      <!--
       <section>
         <title>General Format</title>
+        <para>
 Format 1
-     MOVE      j identifier-!!     TO  identifier-2    [,  identifier-3 J ...
-                 literal
-</section>
--->
+</para>
+        <cmdsynopsis>
+          <command>MOVE</command>
+          <group>
+            <arg>identifier-1</arg>
+            <arg>literal</arg>
+          </group>
+          <arg>TO</arg>
+          <arg>identifier-2</arg>
+          <arg choice="opt">,  identifier-3  ...</arg>
+        </cmdsynopsis>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
           <listitem>
             <para>
 1.   Identifier-1 and literal represent the sending area;  identifier-2,
-     identifier-3,         represent the receiving area.
+     identifier-3, ... represent the receiving area.
 </para>
           </listitem>
           <listitem>
@@ -3792,20 +3800,32 @@ Format 1
           <listitem>
             <para>
 1.   The data designated by the literal or identifier-1 is moved first to
-     identifier-2, then to identifier-3,               The rules referring to
+     identifier-2, then to identifier-3, ... . The rules referring to
      identifier-2 also apply to the other receiving areas. Any subscripting
-     or indexing associated with identifier-2,  , is evaluated immediately
+     or indexing associated with identifier-2, ..., is evaluated immediately
      before the data is moved to the respective data item.
+     </para>
+            <para>
      Any subscripting or indexing associated "ii'ith identifier-1 is evaluated
      only once, immediately before data is moved to the first of the
      receiving operands. The result of the statement:
-                       MOVE a (b) TO b, c (b)
+     </para>
+            <programlisting>
+           MOVE a (b) TO b, c (b)
+                       </programlisting>
+            <para>
      is equivalent to:
-                       MOVE a (b) TO temp
-                       MOVE temp TO b
-                       MOVE temp TO c (b)
-     where 1 temp 1    is an intermediate result item provided by the
+     </para>
+            <programlisting>
+           MOVE a (b) TO temp
+           MOVE temp TO b
+           MOVE temp TO c (b)
+                       </programlisting>
+            <para>
+     where 'temp' is an intermediate result item provided by the
       implementor.
+      </para>
+            <para>
      See Incompatible Data in this Chapter.
 </para>
           </listitem>
@@ -3944,25 +3964,79 @@ zero is not used as an edited character.
    statements. The general rule reference indicates the rule that
    prohibits the move or the behavior of a legal move.
 </para>
-            <para>
-     Table 3-6. MOVE Statement Data Categories.
-     Category of Sending Category of Receiving Data Item I
-     Data Item
-                                                            Numeric
-                                            Alphanumeric     Integer
-                                             Edited         Numeric         Numeric
-                              Alphabetic    Alphanumeric    Non-Integer     Edited
-     ALPHABETIC               Yes/3c        Yes/3a          No/2a           No/2a
-
-     ALPHANUMERIC             Yes/3c        Yes/3a          Yes/3b          Yes/3b
-     ALPHANUMERIC EDITED      Yes/3c        Yes/3a          No/2a           No/2a
-              INTEGER         No/2b         Yes/3a          Yes/3b          Yes/3b
-     NUMERIC NON-INTEGER                                    Yes/3b
-                              No/2b          No/2c                          Yes/3b
-     NUMERIC EDITED           No/2b         Yes/3a         Yes/2d          No/2a
-     1
-        -   The relevant rule number is quoted in these columns
-    </para>
+            <table>
+              <title>MOVE Statement Data Categories.</title>
+              <tgroup cols="5">
+                <colspec colwidth="2.0in" colname="c1"/>
+                <colspec colwidth="1.0in" colname="c2"/>
+                <colspec colwidth="1.0in" colname="c3"/>
+                <colspec colwidth="1.0in" colname="c4"/>
+                <colspec colwidth="1.0in" colname="c5"/>
+                <thead>
+                  <row>
+                    <entry>Category of Sending Data Item</entry>
+                    <entry namest="c2" nameend="c5">Category of Receiving Data Item<superscript>1</superscript></entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry morerows="2">ALPHABETIC</entry>
+                    <entry morerows="1">Alphabetic</entry>
+                    <entry>Alphanumeric Edited</entry>
+                    <entry>Numeric Integer</entry>
+                    <entry morerows="1">Numeric Edited</entry>
+                  </row>
+                  <row>
+                    <entry>Alphanumeric</entry>
+                    <entry>Numeric Non-Integer</entry>
+                  </row>
+                  <row>
+                    <entry>Yes/3c</entry>
+                    <entry>Yes/3a</entry>
+                    <entry>No/2a</entry>
+                    <entry>No/2a</entry>
+                  </row>
+                  <row>
+                    <entry>ALPHANUMERIC</entry>
+                    <entry>Yes/3c</entry>
+                    <entry>Yes/3a</entry>
+                    <entry>Yes/3b</entry>
+                    <entry>Yes/3b</entry>
+                  </row>
+                  <row>
+                    <entry>ALPHANUMERIC EDITED</entry>
+                    <entry>Yes/3c</entry>
+                    <entry>Yes/3a</entry>
+                    <entry>No/2a</entry>
+                    <entry>No/2a</entry>
+                  </row>
+                  <row>
+                    <entry>NUMERIC INTEGER</entry>
+                    <entry>No/2b</entry>
+                    <entry>Yes/3a</entry>
+                    <entry>Yes/3b</entry>
+                    <entry>Yes/3b</entry>
+                  </row>
+                  <row>
+                    <entry>NUMERIC NON-INTEGER</entry>
+                    <entry>No/2b</entry>
+                    <entry>No/2c</entry>
+                    <entry>Yes/3b</entry>
+                    <entry>Yes/3b</entry>
+                  </row>
+                  <row>
+                    <entry>NUMERIC EDITED</entry>
+                    <entry>No/2b</entry>
+                    <entry>Yes/3a</entry>
+                    <entry>Yes/2d</entry>
+                    <entry>No/2a</entry>
+                  </row>
+                  <row>
+                    <entry namest="c1" nameend="c5">1 - The relevant rule number is quoted in these columns</entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
           </listitem>
         </orderedlist>
       </section>

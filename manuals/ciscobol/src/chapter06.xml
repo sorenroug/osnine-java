@@ -901,27 +901,123 @@ organization or access.
          access mode given for that row, may be used with the relative file
          organization and the open mode given at the top of the column.
 </para>
-            <para>
-Table 6-1.   Permissible Combinations of Statements and Open Modes for
-             Relative I/O
-File Access                                      Open Mode
-   Mode      Statement        Input           Output       Input-Output
-Sequential        READ           X                                X
-                  WRITE                           X
-                  REWRITE                                         X
-                  START          X                                X
-                  DELETE                                         -l{
-Random            READ           X                                X
-                  WRITE                          X                X
-                  REWRITE                                          X
-                  START
-                  DELETE                                          X
-Dynamic           READ           X                                X
-                  WRITE                          X                X
-                  REWRITE                                          X
-                  START          X                                X
-                  DELETE                                          X
-</para>
+            <table>
+              <title>Permissible Combinations of Statements and Open Modes for Relative I/O</title>
+              <tgroup cols="5">
+                <colspec colwidth="1.0in" colname="c1"/>
+                <colspec colwidth="1.0in" colname="c2"/>
+                <colspec colwidth="1.0in" colname="c3"/>
+                <colspec colwidth="1.0in" colname="c4"/>
+                <colspec colwidth="1.0in" colname="c5"/>
+                <thead>
+                  <row>
+                    <entry morerows="1">File Access Mode</entry>
+                    <entry morerows="1">Statement</entry>
+                    <entry namest="c3" nameend="c5">Open Mode</entry>
+                  </row>
+                  <row>
+                    <entry>Input</entry>
+                    <entry>Ouput</entry>
+                    <entry>Input-Output</entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry morerows="4">Sequential</entry>
+                    <entry>READ</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>WRITE</entry>
+                    <entry/>
+                    <entry>X</entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>REWRITE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>START</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>DELETE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry morerows="4">Random</entry>
+                    <entry>READ</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>WRITE</entry>
+                    <entry/>
+                    <entry>X</entry>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>REWRITE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>START</entry>
+                    <entry/>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>DELETE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry morerows="4">Dynamic</entry>
+                    <entry>READ</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>WRITE</entry>
+                    <entry/>
+                    <entry>X</entry>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>REWRITE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>START</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>DELETE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
           </listitem>
           <listitem>
             <para>
@@ -988,7 +1084,7 @@ specified record from a disk file.
 Format 1
          READ file-name [NEXT] RECORD [INTO identifier] [; A.T END imperative-statement]
 Format 2
-         READ file-name RECORD [INTO identifier] [;!NVALI.&#xA3; KEY imperative-statment]
+         READ file-name RECORD [INTO identifier] [;INVALID KEY imperative-statement]
 </para>
       </section>
       <section>
@@ -1034,7 +1130,7 @@ Format 2
           <listitem>
             <para>
 1.      The associated files must be open in the INPUT or I-O mode at the time
-         this statement is executed. See THE OPEN STATEMENT in this Chapter
+         this statement is executed. See THE OPEN STATEMENT in this Chapter.
 </para>
           </listitem>
           <listitem>
@@ -1340,14 +1436,14 @@ The REWRITE statement logically replaces a record existing in a disk file.
         <para>
                              IS EQUAL TO
                              IS =
-                             IS GUATER
-                             IS_&gt;_ __ THAN
+                             IS GREATER
+                             IS &gt; THAN
                              IS NOT LESS THAN
-                             IS NOT- -
+                             IS NOT &lt;
         (; INVALID KEY imperative-statement]
   NOTE:      The required relational characters '&gt;', and '&lt;' and '='
               are not underlined to avoid confusion with other symbols
-              such as '&gt;' (greater than or equal to).
+              such as '&#x2265;' (greater than or equal to).
 </para>
       </section>
       <section>

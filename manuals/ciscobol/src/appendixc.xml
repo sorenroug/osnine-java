@@ -39,7 +39,7 @@ syntactical rules.
         <term>Alphabet-Name.</term>
         <listitem>
           <para>A user-defined word in the SPECIAL-NAMES paragraph of the
-           EnvironmP.nt Division that assigns a name to a specific character
+           Environment Division that assigns a name to a specific character
            set and/or collating sequence.
 </para>
         </listitem>
@@ -75,14 +75,36 @@ syntactical rules.
       <varlistentry>
         <term>Arithmetic Operator.</term>
         <listitem>
-          <para>A single character, or a fixed two-character combin-
-           ation, that. belongs to the following set:
-           Character                        Meaning
-                    +                       Addition
-                                            Subtraction
-                    *                       Multiplication
-                                            Division
-</para>
+          <para>A single character, or a fixed two-character combination, that belongs to the following set:
+          </para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Character</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>+</entry>
+                  <entry>Addition</entry>
+                </row>
+                <row>
+                  <entry>-</entry>
+                  <entry>Subtraction</entry>
+                </row>
+                <row>
+                  <entry>*</entry>
+                  <entry>Multiplication</entry>
+                </row>
+                <row>
+                  <entry>/</entry>
+                  <entry>Division</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -141,26 +163,95 @@ syntactical rules.
         <listitem>
           <para>The complete CIS COBOL character set consists
            of all characters listed below:
-           Character                       Meaning
-           0,1, ... ,9                     Numeric digit
-           A,B,  ,z                     Uppercase alphabetic
-          a,b,:~~  -;~;: .          ... : Lowercase alphabetic
-                                           Space (Blank)
-           +                               Plus Sign
-                                           Minus Sign
-           *                               Asterisk
-                                           Stroke (Virgule or Slash)
-                                           Equal Sign
-           $                               Currency Sign
-                                           Comma
-                                           Semicolon
-                                           Period (Decimal Point, Fullstop)
-                                           Quotation Mark
-           (                               Left Parenthesis
-           )                               Right Parenthesis
-           &gt;                               Greater Than Symbol
-           &lt;                               Less Than Symbol
-</para>
+          </para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Character</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0,1, ... ,9</entry>
+                  <entry>Numeric digit</entry>
+                </row>
+                <row>
+                  <entry>A,B ... ,Z</entry>
+                  <entry>Uppercase alphabetic</entry>
+                </row>
+                <row>
+                  <entry>
+                    <phrase role="extension">a,b ... ,z</phrase>
+                  </entry>
+                  <entry>
+                    <phrase role="extension">Lowercase alphabetic</phrase>
+                  </entry>
+                </row>
+                <row>
+                  <entry/>
+                  <entry>Space (Blank)</entry>
+                </row>
+                <row>
+                  <entry>+</entry>
+                  <entry>Plus Sign</entry>
+                </row>
+                <row>
+                  <entry>-</entry>
+                  <entry>Minus Sign</entry>
+                </row>
+                <row>
+                  <entry>*</entry>
+                  <entry>Asterisk</entry>
+                </row>
+                <row>
+                  <entry>/</entry>
+                  <entry>Stroke (Virgule or Slash)</entry>
+                </row>
+                <row>
+                  <entry>=</entry>
+                  <entry>Equal Sign</entry>
+                </row>
+                <row>
+                  <entry>$</entry>
+                  <entry>Currency Sign</entry>
+                </row>
+                <row>
+                  <entry>,</entry>
+                  <entry>Comma</entry>
+                </row>
+                <row>
+                  <entry>;</entry>
+                  <entry>Semicolon</entry>
+                </row>
+                <row>
+                  <entry>.</entry>
+                  <entry>Period (Decimal Point, Fullstop)</entry>
+                </row>
+                <row>
+                  <entry>'</entry>
+                  <entry>Quotation Mark</entry>
+                </row>
+                <row>
+                  <entry>(</entry>
+                  <entry>Left Parenthesis</entry>
+                </row>
+                <row>
+                  <entry>)</entry>
+                  <entry>Right Parenthesis</entry>
+                </row>
+                <row>
+                  <entry>&gt;</entry>
+                  <entry>Greater Than Symbol</entry>
+                </row>
+                <row>
+                  <entry>&lt;</entry>
+                  <entry>Less Than Symbol</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -337,9 +428,9 @@ relationship to one another.
         <term>Counter.</term>
         <listitem>
           <para>    A data item used for storing numbers or number representations in
-              a manner that permits these numbers t o be increased o r decr eased
-              Dy c[a~. vaiue of another numbr:r, or t o be cnange d or reset to ze ro
-              or t o an arbitrary positive or nega tive value.
+              a manner that permits these numbers to be increased or decreased
+              by the value of another number, or to be changed or reset to zero
+              or to an arbitrary positive or negative value.
 </para>
         </listitem>
       </varlistentry>
@@ -380,8 +471,7 @@ relationship to one another.
       <varlistentry>
         <term>Current Record Pointer.</term>
         <listitem>
-          <para>A conceptual entity that is used in the selec tion
-              of the next record.
+          <para>A conceptual entity that is used in the selection of the next record.
 </para>
         </listitem>
       </varlistentry>
@@ -389,26 +479,26 @@ relationship to one another.
         <term>Cursor.</term>
         <listitem>
           <para>
-The indicator on a CRT screen that marks the line and character
-position which the input/output control is currently referencing.
-</para>
+            <phrase role="extension">The indicator on a CRT screen that marks the line and character
+position which the input/output control is currently referencing.</phrase>
+          </para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>Data Clause.</term>
         <listitem>
-          <para>A clause that appears in a da t a descrip tion en t ry in the Data
-              Di visio n and provides information describ ing a   particular
-              a ttribut e of a da t a item.
+          <para>A clause that appears in a data description entry in the Data
+              Division and provides information describing a particular
+              attribute of a data item.
 </para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>Data Description Entry .</term>
         <listitem>
-          <para>An en tr y i n the Da t a Division that is composed of a
-              l evel -numbe r followed by a data- name , i f requir ed, and then
-              fol l owed by a set of data c l auses as required.
+          <para>An entry in the Data Division that is composed of a
+              level-number followed by a data-name, if required, and then
+              followed by a set of data clauses as required.
 </para>
         </listitem>
       </varlistentry>
@@ -423,26 +513,26 @@ position which the input/output control is currently referencing.
       <varlistentry>
         <term>Data Item.</term>
         <listitem>
-          <para>A c haracter or se t of con t iguous charac t ers (excluding in ei ther
-              case literals) defi ned as a unit of data by the CIS COBOL program.
+          <para>A character or set of contiguous characters (excluding in either
+              case literals) defined as a unit of data by the CIS COBOL program.
 </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>Data - name.</term>
+        <term>Data-name.</term>
         <listitem>
-          <para>A user-defined word that names a data item described in a da t a
-              description entry in t he Data Division. When used in the general
-              formats , "data - name " rep r esents a wo r d tvhich can ne it her be
-              subscripted , no r indexed unle s s specifically permitted ty the
-              rules for that forma t.
+          <para>A user-defined word that names a data item described in a data
+              description entry in the Data Division. When used in the general
+              formats , "data-name " represents a word which can neither be
+              subscripted, nor indexed unless specifically permitted by the
+              rules for that format.
 </para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>Debugging Line.</term>
         <listitem>
-          <para>A debugging line is any line w1 th "D" in the indicator area
+          <para>A debugging line is any line with "D" in the indicator area
            of the line.
 </para>
         </listitem>
@@ -844,14 +934,14 @@ position which the input/output control is currently referencing.
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>Input - Output File.</term>
+        <term>Input-Output File.</term>
         <listitem>
-          <para>      A file that is opened in the I-O mode.
+          <para>A file that is opened in the I-O mode.
 </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>Input - Output Section.</term>
+        <term>Input-Output Section.</term>
         <listitem>
           <para>     The section of the Environment Division that names
               the files and the external media used by a program and which
@@ -1346,12 +1436,31 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
       <varlistentry>
         <term>Relation Character.</term>
         <listitem>
-          <para>  A character that belongs to the following set:
-    Character
-        &gt;                              greater than
-        &lt;                              less than
-                                       equal to
-</para>
+          <para>  A character that belongs to the following set:</para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Character</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>&gt;</entry>
+                  <entry>greater than</entry>
+                </row>
+                <row>
+                  <entry>&lt;</entry>
+                  <entry>less than</entry>
+                </row>
+                <row>
+                  <entry>=</entry>
+                  <entry>equal to</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1370,16 +1479,41 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
           <para>A reserved word, a relation character, a group of
           consecutive reserved words, or a group of consecutive reserved
           words and relation characters used in the construction of a
-          relation condition. The permissible operators and their meaning
-          are:
-      Relational  O~erator           Meaning
-      IS  NOT   GREATER THAN         Greater than or not greater than
-      IS  NOT   &gt;
-      IS  NOT   LESS THAN            Less than or not less than
-      IS  NOT   &lt;
-      IS  NOT   EQUAL TO             Equal to or not equal to
-      IS  NOT
-</para>
+          relation condition. The permissible operators and their meaning are:
+          </para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Relational Operator</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>IS NOT GREATER THAN</entry>
+                  <entry morerows="1">Greater than or not greater than</entry>
+                </row>
+                <row>
+                  <entry>IS NOT &gt;</entry>
+                </row>
+                <row>
+                  <entry>IS NOT LESS THAN</entry>
+                  <entry morerows="1">Less than or not less than</entry>
+                </row>
+                <row>
+                  <entry>IS NOT &lt;</entry>
+                </row>
+                <row>
+                  <entry>IS NOT EQUAL THAN</entry>
+                  <entry morerows="1">Equal to or not equal to</entry>
+                </row>
+                <row>
+                  <entry>IS NOT =</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1428,7 +1562,8 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Run Time Debug.</term>
         <listitem>
           <para>
-            <phrase role="extension">An option available to CIS COBOL...
+            <phrase role="extension">An option available to CIS COBOL programmers entered as a
+            user option enabling break-point facilities in run time programs.
           </phrase>
           </para>
         </listitem>
@@ -1437,16 +1572,19 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Run Time.</term>
         <listitem>
           <para>
-            <phrase role="extension">The time at which ...
+            <phrase role="extension">The time at which the intermediate code produced by the compiler
+            is interpreted by the Run Time System for execution.
           </phrase>
           </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>Run Time System(RTS).</term>
+        <term>Run Time System-(RTS).</term>
         <listitem>
           <para>
-            <phrase role="extension">The software...
+            <phrase role="extension">The software that interprets the intermediate code
+            produced by the CIS COBOL compiler and enables it to be executed by providing
+            interfaces to the operating system and CRT.
           </phrase>
           </para>
         </listitem>
@@ -1456,6 +1594,13 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <listitem>
           <para>A set of one or more intermediate code programs which function, at
           run time, as a unit to provide problem solutions.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Section.</term>
+        <listitem>
+          <para>
           A set of none, one, or more paragraphs or entries, called a
           section body, the first of which is preceded by a section header.
           Each section consists of the section header and the related
@@ -1469,20 +1614,30 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
           <para>A combination of words followed by a period and a space that
                 indicates the beginning of a section in the Environment, Data and
                 Procedure Division.
+                </para>
+          <para>
   In the Environment and Data Divisions, a section header is composed of
   reserved words followed by a period and a space. The permissible section
   headers are:
+  </para>
+          <para>
         In the Environment Division:
+  </para>
+          <screen>
         CONFIGURATION SECTION
-        INPUT-OUTPUT SECT ION
-
+        INPUT-OUTPUT SECTION
+</screen>
+          <para>
         In the Data Division:
+  </para>
+          <screen>
         FILE SECTION
         WORKING-STORAGE SECTION
         LINKAGE SECTION
-
-  In the Procedure Division, a section header is composed of a section-name,
-  followed by the reserved word SECTION, followed by a segment-number
+</screen>
+          <para>
+In the Procedure Division, a section header is composed of a section-name,
+followed by the reserved word SECTION, followed by a segment-number
   (optional), followed by a period and a space.
 </para>
         </listitem>
@@ -1500,8 +1655,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <listitem>
           <para>A user-defined word which classifies sections in the
                 Procedure Division for purposes of segmentation. Segment-numbers
-                may contain only the characters '0',           1
-                                                                 1', ... , '9'.   A
+                may contain only the characters '0', '1', ... , '9'.   A
                 segment-number may be expressed either as a one or two digit
                 number, and is checked for syntax only.
 </para>
@@ -1560,12 +1714,14 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Simple Condition.</term>
         <listitem>
           <para>  Any single condition chosen from the set:
-     relation condition
-     class condition
-     switch-status condition
-     sign condition
-     (simple-condition)
-</para>
+          </para>
+          <simplelist>
+            <member>relation condition</member>
+            <member>class condition</member>
+            <member>switch-status condition</member>
+            <member>sign condition</member>
+            <member>(simple-condition)</member>
+          </simplelist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1594,22 +1750,75 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Special Character.</term>
         <listitem>
           <para>   A character that belongs to the following set:
-  Character
-      +                     plus sign
-                            minus sign
-      *                     asterisk
-                            stroke (virgule, slash)
-                            equal sign
-                            currency sign
-                            comma (decimal point)
-                            semicolon
-                            period (decimal point)
-                            quotation mark
-       (                    left parenthesis
-       )                    right parenthesis
-      &gt;                     greater than symbol
-      &lt;                     less than symbol
-</para>
+          </para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Character</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>+</entry>
+                  <entry>Plus Sign</entry>
+                </row>
+                <row>
+                  <entry>-</entry>
+                  <entry>Minus Sign</entry>
+                </row>
+                <row>
+                  <entry>*</entry>
+                  <entry>Asterisk</entry>
+                </row>
+                <row>
+                  <entry>/</entry>
+                  <entry>Stroke (Virgule or Slash)</entry>
+                </row>
+                <row>
+                  <entry>=</entry>
+                  <entry>Equal Sign</entry>
+                </row>
+                <row>
+                  <entry>$</entry>
+                  <entry>Currency Sign</entry>
+                </row>
+                <row>
+                  <entry>,</entry>
+                  <entry>Comma</entry>
+                </row>
+                <row>
+                  <entry>;</entry>
+                  <entry>Semicolon</entry>
+                </row>
+                <row>
+                  <entry>.</entry>
+                  <entry>Period (Decimal Point, Fullstop)</entry>
+                </row>
+                <row>
+                  <entry>'</entry>
+                  <entry>Quotation Mark</entry>
+                </row>
+                <row>
+                  <entry>(</entry>
+                  <entry>Left Parenthesis</entry>
+                </row>
+                <row>
+                  <entry>)</entry>
+                  <entry>Right Parenthesis</entry>
+                </row>
+                <row>
+                  <entry>&gt;</entry>
+                  <entry>Greater Than Symbol</entry>
+                </row>
+                <row>
+                  <entry>&lt;</entry>
+                  <entry>Less Than Symbol</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1641,7 +1850,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Standard Data Format.</term>
         <listitem>
           <para>The concept used in describing the characteristics of
-              data in a COBOL Data Division under which the charactcListics or
+              data in a COBOL Data Division under which the characteristics or
               properties of the data are expressed in a form oriented to the
               appearance of the data on a printed page of infinite length and
               breadth, rather than a form oriented to the manner in which the
@@ -1668,8 +1877,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
       <varlistentry>
         <term>Subscript.</term>
         <listitem>
-          <para>  An integer whose value identifies a particular element in a
-              table.
+          <para>  An integer whose value identifies a particular element in a table.
 </para>
         </listitem>
       </varlistentry>

@@ -891,28 +891,124 @@ checking and/or writing of labels and other input-output operations.
      specified statement, used in the access mode given for that row, may be
      used with the indexed file organisation and the open mode given at the
      top of the column.
-
-  Table 7-1 . Permissible Combinations of Statements and Open Modes for
-                 Indexed I/O
-                                                    Open Mode
-  File Access
-     Mode          Statement             Input          Output      Input-Output
-  Sequential           READ                l\                                X
-                       WRITE                                 X
-                       REWRITE                                               X
-                       START               X                                 X
-                       DELETE                                                X
-  Random               READ                X                                 X
-                       WRITE                                 X               X
-                       REWRITE                                               X
-I                      START
-                       DELETE                                                X
-  Dynamic              READ                X                                 X
-                       WRITE                                 X               X
-                       REWRITE                                               X
-                       START               X                                 X
-                       DELETE                                                X
-</para>
+     </para>
+            <table>
+              <title>Permissible Combinations of Statements and Open Modes for Indexed I/O</title>
+              <tgroup cols="5">
+                <colspec colwidth="1.0in" colname="c1"/>
+                <colspec colwidth="1.0in" colname="c2"/>
+                <colspec colwidth="1.0in" colname="c3"/>
+                <colspec colwidth="1.0in" colname="c4"/>
+                <colspec colwidth="1.0in" colname="c5"/>
+                <thead>
+                  <row>
+                    <entry morerows="1">File Access Mode</entry>
+                    <entry morerows="1">Statement</entry>
+                    <entry namest="c3" nameend="c5">Open Mode</entry>
+                  </row>
+                  <row>
+                    <entry>Input</entry>
+                    <entry>Ouput</entry>
+                    <entry>Input-Output</entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry morerows="4">Sequential</entry>
+                    <entry>READ</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>WRITE</entry>
+                    <entry/>
+                    <entry>X</entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>REWRITE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>START</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>DELETE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry morerows="4">Random</entry>
+                    <entry>READ</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>WRITE</entry>
+                    <entry/>
+                    <entry>X</entry>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>REWRITE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>START</entry>
+                    <entry/>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>DELETE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry morerows="4">Dynamic</entry>
+                    <entry>READ</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>WRITE</entry>
+                    <entry/>
+                    <entry>X</entry>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>REWRITE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>START</entry>
+                    <entry>X</entry>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                  <row>
+                    <entry>DELETE</entry>
+                    <entry/>
+                    <entry/>
+                    <entry>X</entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
           </listitem>
           <listitem>
             <para>
@@ -963,7 +1059,7 @@ I                      START
   9.    For files being opened with the INPUT or I-O phrase, the OPEN statement
         sets the current record pointer to the first record currently existing
         within the file. If no records exist in the file, the current record
-        pointer is set such that the next executed Format 1                       READ statement for
+        pointer is set such that the next executed Format 1 READ statement for
         the file will result in an AT END condition. <phrase role="extension">If the file does not
      exist, INPUT will cause an error status.</phrase>
 </para>

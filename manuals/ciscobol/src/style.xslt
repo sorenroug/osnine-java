@@ -12,7 +12,7 @@
   <xsl:param name="paper.type" select="'A4'"/>
   <xsl:param name="double.sided" select="1"/>
   <xsl:param name="chapter.autolabel" select="1"/>
-  <xsl:param name="generate.toc" select="'book toc'"/>
+  <xsl:param name="generate.toc" select="'book toc,title,figure,table'"/>
   <xsl:param name="toc.section.depth" select="5"/>
 
 <xsl:attribute-set name="toc.line.properties">

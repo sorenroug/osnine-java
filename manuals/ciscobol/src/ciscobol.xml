@@ -544,7 +544,7 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
 </para>
     <!--
      GENERAL FORMAT FOR IDENTIFICATION DIVISION
-     fiDENTIFICATION DIVISION.f
+     fIDENTIFICATION DIVISION.f
      fPROGRAM-ID.     program namef
      [AUTHOR.               [comment entry] ... ]
      [INSTALLATION.         [comment entry] ... ]
@@ -566,7 +566,7 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
                                                         !]
                                                                                          l
                [,PROGRAM COLLATING SEQUENCE IS     alphabet-name].
-r       SPECIAL-NAMES.
+        SPECIAL-NAMES.
                SWIT~
                              0                         ON STATUS IS condition-name-l
                                                       [OFF STATUS IS condition-name-2]
@@ -582,10 +582,10 @@ r       SPECIAL-NAMES.
                                                   E
         INPUT-OUTPUT SECTION.
         FILE-CONTROL.
-r-
-1              file-control-entry
-r
-r                                           269
+  
+               file-control-entry
+ 
+                                            269
    [   H)-CONTROL.
           T;t   !!!!!!!_fOB ..l f i - 1 '
                      :l         ~~~
@@ -822,74 +822,132 @@ GENERAL FORM FOR COPY STATEMENT
   interactive working, program control of files, text file handling and rapid
   development and testing. These facilities are summarized below.
 </para>
-    <!--
-  SCREEN FORMATTING AND DATA ENTRY
-  THE ACCEPT STATEMENT
+    <section>
+      <title>SCREEN FORMATTING AND DATA ENTRY</title>
+      <section>
+        <title>THE ACCEPT STATEMENT</title>
+        <para>
   An additional format for the ACCEPT statement is provided as follows:
-                                  Ida ta:::me-2l
-         ACCEPT   dataname-l [ ATiliteral-l 1
+  </para>
+        <cmdsynopsis>
+          <command>ACCEPT</command>
+          <arg>data-name-1</arg>
+          <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+          <arg>FROM CRT</arg>
+        </cmdsynopsis>
+        <para>
   data-name-2       allows the start of screen to be changed dynamically. It
                     refers to a PIC 9999 field where the most significant 99 is a
                     line count l-25 and the least significant 99 is a charact~r
                     position 1-80.
-  da ta-name-1      refers to a record, group or elementary item but may not be
-                    subscripted.
+  data-name-1      refers to a record, group or elementary item but may not be subscripted.
    literal-1        is a numeric literal
   NOTE:       See Chapter 3 for description. See also Appendix H for
                Environment Division changes.
-  THE DISPLAY STATEMENT
-~        An additional format for the DISPLAY statement is provided as follows:
-I
+</para>
+      </section>
+      <section>
+        <title>THE DISPLAY STATEMENT</title>
+        <para>
+An additional format for the DISPLAY statement is provided as follows:
+</para>
+        <para>
    Format
-         DISPLAY !data-name-ll[AT
-         -        lliteral-3 I -
-                                        sdataname-2l]
-                                        lliteral-1 I
-                                                           UPON ~CRT     I
-                                                           - - ~CRT-UNDER~
+</para>
+        <cmdsynopsis>
+          <command>DISPLAY</command>
+          <group>
+            <arg>data-name-1</arg>
+            <arg>literal-3</arg>
+          </group>
+          <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+          <arg>UPON</arg>
+          <group>
+            <arg>CRT</arg>
+            <arg>CRT-UNDER</arg>
+          </group>
+        </cmdsynopsis>
+        <para>
    literal-3         is an alphanumeric literal
    dataname-1      refers to a record, group or elementary item but may not be
                     subscripted
    dataname-2       defines the left-most position on the screen. It refers to a
                      PIC 9999 field where the most significant 99 is a line count
-                     l-25 and the least significant 99 is a character position
-                     l-80.
-   NOTE:       See Chapter 3 for description.
-                                          277
-DISK FILES
-      Two extensions are offered by CIS COBOL file processing; these are as
-follows:
+                     1-25 and the least significant 99 is a character position 1-80.
+</para>
+        <para>
+NOTE:  See Chapter 3 for description.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>DISK FILES</title>
+      <para>
+Two extensions are offered by CIS COBOL file processing; these are as follows:
+</para>
+      <orderedlist spacing="compact">
+        <listitem>
+          <para>
 1.    Line sequential files
+</para>
+        </listitem>
+        <listitem>
+          <para>
 2.    Run time input of filenames
-LINE SEQUENTIAL FILES
-      When LINE SEQUENTIAL ORGANIZATION is specified in the FILE CONTROL
+</para>
+        </listitem>
+      </orderedlist>
+      <section>
+        <title>LINE SEQUENTIAL FILES</title>
+        <para>
+When LINE SEQUENTIAL ORGANIZATION is specified in the FILE CONTROL
 paragraph ORGANIZATION IS entry, the file is treated as consisting of
-variable length records separated by the lir.c delimiter characters.
-lra111ng spaces in output records are replaced by a record terminator which
+variable length records separated by the lire delimiter characters.
+Trailing spaces in output records are replaced by a record terminator which
 is operating system dependent.
-RUN TIME INPUT OF FILENANES
-      The ASSIGNed name in the SELECT statement for a file is processed on
+</para>
+      </section>
+      <section>
+        <title>RUN TIME INPUT OF FILENANES</title>
+        <para>
+The ASSIGNed name in the SELECT statement for a file is processed on
 OPENing as follows:
-      When the INPUT or OUTPUT phrase is specified, execution of OPEN causes
+</para>
+        <para>
+When the INPUT or OUTPUT phrase is specified, execution of OPEN causes
 checking of the file names in accordance with the operating system
 conventions for opening an input or output file. The full operating system
 features for file reallocation and device control are therefore available to
 the CIS COBOL program.
-LOWER CASE CHARACTERS
-      The full alphanumeric lower case a to z is available in CIS COBOL.
-Reserved and user word characters are read as their upper case equivalents
- (A to Z).
-HEXADECIMAL VALUES
-      Hexadecimal binary values can be attributed to non-numeric literals in
+</para>
+      </section>
+    </section>
+    <section>
+      <title>LOWER CASE CHARACTERS</title>
+      <para>
+The full alphanumeric lower case a to z is available in CIS COBOL.
+Reserved and user word characters are read as their upper case equivalents (A to Z).
+</para>
+    </section>
+    <section>
+      <title>HEXADECIMAL VALUES</title>
+      <para>
+Hexadecimal binary values can be attributed to non-numeric literals in
 CIS COBOL by expressing them as X "xx", where x is a hexadecimal character
 in the set 0-9, A-F; xx can be repeated up to 120 times, but the number of
 hexadecimal digits must be even.
- INTERACTIVE DEBUGGING
-      There is a Run-Time Debug Package to provide break-point facilities in
+</para>
+    </section>
+    <section>
+      <title>INTERACTIVE DEBUGGING</title>
+      <para>
+There is a Run-Time Debug Package to provide break-point facilities in
  the user's program. Programs may be run from the start until a specified
 break-point is reached, when control is passed back to the user. At this
  point, data areas may be inspected or changed.
-      The Debug package is entered as an option by the user and the user
+ </para>
+      <para>
+The Debug package is entered as an option by the user and the user
  program is then tested line by line, paragraph by paragraph and so on as
  required. The commands to the package can reference procedure statements
 and data areas by means of a 4-digit hexadecimal code output by the compiler
@@ -897,66 +955,149 @@ against each line of the compilation listing. Powerful macros of commands
  can be used to give very sophisticated debugging facilities. The precise
  details for using the package vary according to the host operating system
  and are described in the appropriate Operating Guide.
--->
+ </para>
+    </section>
   </appendix>
   <appendix>
     <title>SYSTEM DEPENDENT LANGUAGE FEATURES</title>
     <para>
-         This Appendix summarizes those parts of a COBOL program that need to be
-    changed to run them as CIS COBOL programs and those parts that do not need
-    changing specifically but are ignored by the CIS COBOL compiler when
-    generating the object program.
+This Appendix summarizes those parts of a COBOL program that need to be
+changed to run them as CIS COBOL programs and those parts that do not need
+changing specifically but are ignored by the CIS COBOL compiler when
+generating the object program.
 </para>
-    <!--
-    MANDATORY CHANGES
-    ENVIRONMENT DIVISION
-         The only statements in the environment division that must be
-    specialized for CIS COBOL are shown below:
-    Configuration Section
-         SPECIAL-NAMES. special names entry
-    special names entry must include the following:
-                   IS data-name-1
-    The CURSOR IS data-name-1 clause specifies the data-name which will contain
-    the CRT cursor address as used by ACCEPT statements. Data-name-1 must be
-    declared in the Working-Storage section as a 4 character item. The
-    interpretation of the 4 characters is given in the ACCEPT statement
-    description.
-    Input-Output Section
-          File names must be as described in Appendix F of the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
-    STATEMENTS COMPILED AS DOCUMENTATION ONLY
-    COBOL programs not specifically written for compilation as CIS COBOL on
-    microcomputers can still be compiled. Statements using features that are
-    not available are treated as documentary only, and are not compiled. A
-    summary of these features follows:
-    ENVIRONMENT DIVISION
-    I-O-Control Paragraph
-          The clauses that refer to a real time clock and magnetic tape in this
-    paragraph are ignored by the compiler during compilation but do not cause
-    compile times errors. These clauses are as follows:
-         ~ OF ~ REEL l of file-name-2
-r                 l UNIT~
-                                          279
-                                                 (no magnetic tape)
-      integer-2  ~UNITS                      (no clock)
-DATA DIVISION
-File Description Paragraph
-      The following cauplete statements in the fUe description are ignored
-by the compiler during compilation but da not cause compile time errors:
-      ~      CONTAINS     integer-1  I£    integer-2
-                                      ~~           l
-                                     i CH.ARACfERS S
-      CODE-SET    IS  alphabet~c-name
-                   \~IS         l    \STANDARD l
-                   l~ARES            l~S
-      VALUE OF tmplementor-name-1      IS   liter al-l
-      - - - - [ , implementor-name-2   IS   literal-2]
-ffiOCEDURE DIVIS ION
-CLOSE Statement
-      The following phrases in the CLOSE statement are ignored by the
+    <section>
+      <title>MANDATORY CHANGES</title>
+      <section>
+        <title>ENVIRONMENT DIVISION</title>
+        <para>
+The only statements in the environment division that must be
+specialized for CIS COBOL are shown below:
+</para>
+        <section>
+          <title>Configuration Section</title>
+          <screen>
+SPECIAL-NAMES. special names entry
+</screen>
+          <para>
+special names entry must include the following:
+</para>
+          <screen>
+CURSOR IS data-name-1
+</screen>
+          <para>
+The CURSOR IS data-name-1 clause specifies the data-name which will contain
+the CRT cursor address as used by ACCEPT statements. Data-name-1 must be
+declared in the Working-Storage section as a 4 character item. The
+interpretation of the 4 characters is given in the ACCEPT statement description.
+</para>
+        </section>
+        <section>
+          <title>Input-Output Section</title>
+          <para>
+File names must be as described in Appendix F of the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+</para>
+        </section>
+      </section>
+    </section>
+    <section>
+      <title>STATEMENTS COMPILED AS DOCUMENTATION ONLY</title>
+      <para>
+COBOL programs not specifically written for compilation as CIS COBOL on
+microcomputers can still be compiled. Statements using features that are
+not available are treated as documentary only, and are not compiled. A
+summary of these features follows:
+</para>
+      <section>
+        <title>ENVIRONMENT DIVISION</title>
+        <section>
+          <title>I-O-Control Paragraph</title>
+          <para>
+The clauses that refer to a real time clock and magnetic tape in this
+paragraph are ignored by the compiler during compilation but do not cause
+compile times errors. These clauses are as follows:
+</para>
+          <cmdsynopsis>
+            <arg>END OF</arg>
+            <group>
+              <arg>REEL</arg>
+              <arg>UNIT</arg>
+            </group>
+            <arg>of file-name-2</arg>
+          </cmdsynopsis>
+          <para>
+(no magnetic tape)
+</para>
+          <cmdsynopsis>
+            <arg>integer-2</arg>
+            <arg>CLOCK  UNITS</arg>
+          </cmdsynopsis>
+          <para>
+(no clock)
+</para>
+        </section>
+      </section>
+      <section>
+        <title>DATA DIVISION</title>
+        <section>
+          <title>File Description Paragraph</title>
+          <para>
+The following complete statements in the file description are ignored
+by the compiler during compilation but do not cause compile time errors:
+</para>
+          <cmdsynopsis>
+            <arg>BLOCK</arg>
+            <arg>CONTAINS</arg>
+            <arg>integer-1</arg>
+            <arg>TO</arg>
+            <arg>integer-2</arg>
+            <group>
+              <arg>RECORDS</arg>
+              <arg>CHARACTERS</arg>
+            </group>
+          </cmdsynopsis>
+          <cmdsynopsis>
+            <arg>CODE-SET IS</arg>
+            <arg>alphabetic-name</arg>
+          </cmdsynopsis>
+          <cmdsynopsis>
+            <arg>LABEL</arg>
+            <group>
+              <arg>RECORD IS</arg>
+              <arg>RECORDS ARE</arg>
+            </group>
+            <group>
+              <arg>STANDARD</arg>
+              <arg>OMITTED</arg>
+            </group>
+          </cmdsynopsis>
+          <cmdsynopsis>
+            <arg>VALUE OF</arg>
+            <arg>implementor-name-1 IS literal-1</arg>
+            <arg choice="opt">, implementor-name-2 IS literal-2</arg>
+          </cmdsynopsis>
+        </section>
+      </section>
+      <section>
+        <title>PROOCEDURE DIVISION</title>
+        <section>
+          <title>CLOSE Statement</title>
+          <para>
+The following phrases in the CLOSE statement are ignored by the
 compiler during compilation but do not cause compiler-time errors:
-                                       (No magnetic tape)
-                                                                             ,..,,
--->
+</para>
+          <cmdsynopsis>
+            <group>
+              <arg>REEL</arg>
+              <arg>UNIT</arg>
+            </group>
+          </cmdsynopsis>
+          <para>
+(No magnetic tape)
+</para>
+        </section>
+      </section>
+    </section>
   </appendix>
   <appendix>
     <title>LANGUAGE SPECIFICATION</title>
@@ -1013,104 +1154,303 @@ In addition many Level 2 features are Unplemented such as:
      implementation of each of the eight standard COBOL modules listed above is
      given under the following headings as applicable:
 </para>
-    <!--
-               Level 1 Implementation
-               Level 2 Implementation
-               CIS COBOL Extensions
-     Appendix F in this manual is a CIS COBOL syntax summary.
-
-
-                                        281
-NUCLEUS
-Level One Implementation
-Fully implemented to Level One.
-Level Two Implementation
-1.   DATE-COMPILED in the Identification Division is accepted for documentation purposes only.
-2.   Up to 49 Level Numbers are permitted and 1-9 can be a single digit.
-3.   The characters , and ; are permitted as separators
-4.   The character  '>'. '=' and '&lt;' are permitted in relative conditions.
-5.   The PERFORM ... THROUGH ... UNTIL feature is implemented.
-6.   Plural forms of the figurative constants can be used.
-7.   IF statements can be nested.
-8.   Mnemonic names are permitted in ACCEPT and DISPLAY statements (See CIS COBOL extensions 6 and 7 below).
-9.    Procedure names can be all digits.
-10.  REDEFINES clauses can be nested.
-11.  Non-numeric operands can be compared.
-
-CIS COBOL Extensions
-
-1.   Lower case letters a to z are read as upper case letters A to Z.
-2.   Hexadecimal binary values can be attributed to non-numeric values by expressing literals as X"nn".
-3.   Reserved word SPACE can be used to clear the whole CRT screen.
-4.   ANS switch not set enables omission of certain ANSI required "red tape" paragraphs and statements.
-5.   COMPUTATIONAL-3 or COMP-3 can be specified in the USAGE clause to specify packed internal decimal storage, (BCD).
-6.   ACCEPT data-name-1 [ AT lliteral- 1 S  sdata-name-2l]   FROM CRT
-      gives enhanced CRT input features
-
-7. DISPLAY sdata-name-1l[AT~data-name-2l]           SCRT       l
-                  t literal-1 ~     lliteral-2 ~    UPONlCRT-UNDERS
-       gives enhanced CRT output facilities.
-8.    'CURSOR IS data-name' can be specified in SPECIAL-NAMES and 'data-name'
-       in WORKING-STORAGE section to specify CRT cursor address for ACCEPT statements
-
-  SEQUENTIAL, RELATIVE AND INDEXED I-O
-  Level One Implementation
-  Fully implemented to Level One.
-  Level Two Implementation
-
-  1.    The START statement is fully supported for Relative and Indexed files.
-  2.    In sequential files, EXTEND is supported.
-  3.    In OPEN and CLOSE statements:
-             REEL
-             UNIT
-        are accepted for documentation purposes only.
-  4.    LOCK in the CLOSE statement is treated as documentary only.
-  5.    Dynamic access 1110de and READ NEXT are supported for relative and indexed files.
-  6.    Only the first assignment in each ASSIGN is actioned, others are treated as documentary only at compilation.
-  7.    The I-O-CONTROL paragraph is treated as documentary only as are its RERUN and SAME AREA clauses.
-  8.  The following are treated as documentary only in the FD clause:
-        BLOCK CONTAINS
-        CODE-SET
-        DATA RECORDS
-        LABEL RECORDS
-        RECORDS CONTAINS
-        VALUE OF
-
-CIS COBOL Extensions
-
-1.  Run Time allocation of file-names. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
-2.  LINE SEQUENTIAL is an additional file type.
-3. All File Description (FD) clauses are optional when ANS switch is unset.
-4. Tabbing is available, specified by TAB in the WRITE statement.
-
-TABLE HANDLING
-Level One Implementation
-Fully implemented to Level One.
-CIS COBOL Extensions
-
-1.    Items can be accessed in tables up to 49 dimensions. This extension is
-      restricted to three dimensions if the ANS switch is set.
-
-SEGMENTATION
-Level One Implementation
-Fully implemented to Level One
-
-LIBRARY
-Level One Implementation
-Fully implemented to Level One
-
-DEBUG
-Level One Implementation
-Fully implemented to Level 1 plus an additional Interactive Run-Time Debug package.
-
-CIS COBOL Extensions
-A powerful Run-Time Debug package is available. See Chapter 3 in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
-
-INTER-PROGRAM COMMUNICAIION
-Level Two Implementation
- -->
+    <simplelist>
+      <member>Level 1 Implementation</member>
+      <member>Level 2 Implementation</member>
+      <member>CIS COBOL Extensions</member>
+    </simplelist>
     <para>
-  Fully implemented to Level Two.
+Appendix F in this manual is a CIS COBOL syntax summary.
+</para>
+    <section>
+      <title>NUCLEUS</title>
+      <section>
+        <title>Level One Implementation</title>
+        <para>
+Fully implemented to Level One.
+</para>
+      </section>
+      <section>
+        <title>Level Two Implementation</title>
+        <orderedlist>
+          <listitem>
+            <para>
+1.   DATE-COMPILED in the Identification Division is accepted for documentation purposes only.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+2.   Up to 49 Level Numbers are permitted and 1-9 can be a single digit.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+3.   The characters , and ; are permitted as separators
+</para>
+          </listitem>
+          <listitem>
+            <para>
+4.   The character  '&gt;', '=' and '&lt;' are permitted in relative conditions.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+5.   The PERFORM ... THROUGH ... UNTIL feature is implemented.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+6.   Plural forms of the figurative constants can be used.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+7.   IF statements can be nested.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+8.   Mnemonic names are permitted in ACCEPT and DISPLAY statements (See CIS COBOL extensions 6 and 7 below).
+</para>
+          </listitem>
+          <listitem>
+            <para>
+9.    Procedure names can be all digits.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+10.  REDEFINES clauses can be nested.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+11.  Non-numeric operands can be compared.
+</para>
+          </listitem>
+        </orderedlist>
+      </section>
+      <section>
+        <title>CIS COBOL Extensions</title>
+        <orderedlist>
+          <listitem>
+            <para>
+Lower case letters a to z are read as upper case letters A to Z.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Hexadecimal binary values can be attributed to non-numeric values by expressing literals as X"nn".
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Reserved word SPACE can be used to clear the whole CRT screen.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+ANS switch not set enables omission of certain ANSI required "red tape" paragraphs and statements.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+COMPUTATIONAL-3 or COMP-3 can be specified in the USAGE clause to specify packed internal decimal storage, (BCD).
+</para>
+          </listitem>
+          <listitem>
+            <cmdsynopsis>
+              <command>ACCEPT</command>
+              <arg>data-name-1</arg>
+              <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+              <arg>FROM CRT</arg>
+            </cmdsynopsis>
+            <para>
+gives enhanced CRT input features
+</para>
+          </listitem>
+          <listitem>
+            <cmdsynopsis>
+              <command>DISPLAY</command>
+              <group>
+                <arg>data-name-1</arg>
+                <arg>literal-1</arg>
+              </group>
+              <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-2</arg></group></arg>
+              <arg>UPON</arg>
+              <group>
+                <arg>CRT</arg>
+                <arg>CRT-UNDER</arg>
+              </group>
+            </cmdsynopsis>
+            <para>
+gives enhanced CRT output facilities.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+8.    'CURSOR IS data-name' can be specified in SPECIAL-NAMES and 'data-name'
+       in WORKING-STORAGE section to specify CRT cursor address for ACCEPT statements.
+</para>
+          </listitem>
+        </orderedlist>
+      </section>
+    </section>
+    <section>
+      <title>SEQUENTIAL, RELATIVE AND INDEXED I-O</title>
+      <section>
+        <title>Level One Implementation</title>
+        <para>
+Fully implemented to Level One.
+</para>
+      </section>
+      <section>
+        <title>Level Two Implementation</title>
+        <orderedlist>
+          <listitem>
+            <para>
+The START statement is fully supported for Relative and Indexed files.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+In sequential files, EXTEND is supported.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+In OPEN and CLOSE statements:
+</para>
+            <simplelist>
+              <member>REEL</member>
+              <member>UNIT</member>
+            </simplelist>
+            <para>
+        are accepted for documentation purposes only.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+LOCK in the CLOSE statement is treated as documentary only.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Dynamic access mode and READ NEXT are supported for relative and indexed files.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Only the first assignment in each ASSIGN is actioned, others are treated as documentary only at compilation.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The I-O-CONTROL paragraph is treated as documentary only as are its RERUN and SAME AREA clauses.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The following are treated as documentary only in the FD clause:
   </para>
+            <simplelist>
+              <member>BLOCK CONTAINS</member>
+              <member>CODE-SET</member>
+              <member>DATA RECORDS</member>
+              <member>LABEL RECORDS</member>
+              <member>RECORDS CONTAINS</member>
+              <member>VALUE OF</member>
+            </simplelist>
+          </listitem>
+        </orderedlist>
+      </section>
+      <section>
+        <title>CIS COBOL Extensions</title>
+        <orderedlist>
+          <listitem>
+            <para>
+1.  Run Time allocation of file-names. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+2.  LINE SEQUENTIAL is an additional file type.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+3. All File Description (FD) clauses are optional when ANS switch is unset.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+4. Tabbing is available, specified by TAB in the WRITE statement.
+</para>
+          </listitem>
+        </orderedlist>
+      </section>
+    </section>
+    <section>
+      <title>TABLE HANDLING</title>
+      <section>
+        <title>Level One Implementation</title>
+        <para>
+Fully implemented to Level One.
+</para>
+      </section>
+      <section>
+        <title>CIS COBOL Extensions</title>
+        <orderedlist>
+          <listitem>
+            <para>
+Items can be accessed in tables up to 49 dimensions. This extension is
+restricted to three dimensions if the ANS switch is set.
+</para>
+          </listitem>
+        </orderedlist>
+      </section>
+    </section>
+    <section>
+      <title>SEGMENTATION</title>
+      <section>
+        <title>Level One Implementation</title>
+        <para>
+Fully implemented to Level One.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>LIBRARY</title>
+      <section>
+        <title>Level One Implementation</title>
+        <para>
+Fully implemented to Level One.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>DEBUG</title>
+      <section>
+        <title>Level One Implementation</title>
+        <para>
+Fully implemented to Level 1 plus an additional Interactive Run-Time Debug package.
+</para>
+      </section>
+      <section>
+        <title>CIS COBOL Extensions</title>
+        <para>
+A powerful Run-Time Debug package is available. See Chapter 3 in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+</para>
+      </section>
+    </section>
+    <section>
+      <title>INTER-PROGRAM COMMUNICAIION</title>
+      <section>
+        <title>Level Two Implementation</title>
+        <para>
+Fully implemented to Level Two.
+  </para>
+      </section>
+    </section>
   </appendix>
 </book>

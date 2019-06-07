@@ -218,9 +218,9 @@ other file-related information.       (See also Appendix I in this manual).
           </section>
           <section>
             <title>General Format</title>
-            <para>
-     FILE-CONTROL.          j file-control-entry j
-     </para>
+            <cmdsynopsis>
+     <command>FILE-CONTROL.</command>  <arg rep="repeat">file-control-entry</arg>
+     </cmdsynopsis>
           </section>
         </section>
         <section>
@@ -237,7 +237,7 @@ The file control entry names a file and may specify other file-related informati
      SELECT        file-name
            ASSIGN TO jexternal-file-name-literal![, external-file-name-literal!]
                   file-ident1fier             I   !file-identifier           I
-          [ ; ORGANIZATION IS     ),;;I:6,L-!]
+          [ ; ORGANIZATION IS     )
             [; ACCESS MODE IS SEQUENTIAL)
             [; FILE STATUS IS data-name-1)
 </para>
@@ -247,33 +247,32 @@ The file control entry names a file and may specify other file-related informati
             <orderedlist>
               <listitem>
                 <para>
-1.   The SELECT clause must be specified first in the file control entry.
+The SELECT clause must be specified first in the file control entry.
      The clauses which follow the SELECT clause may appear in any order.
           </para>
               </listitem>
               <listitem>
                 <para>
-2.    Each file described in the Data Division must be named once and only
-     once as file-name in the FILE-CONTROL paragraph. Each file specified
-      in the file control entry must have a file description entry in the
-     Data Division.
+Each file described in the Data Division must be named once and only
+once as file-name in the FILE-CONTROL paragraph. Each file specified
+in the file control entry must have a file description entry in the Data Division.
           </para>
               </listitem>
               <listitem>
                 <para>
-3.    If the ACCESS MODE clause is not specified, the ACCESS MODE IS
+If the ACCESS MODE clause is not specified, the ACCESS MODE IS
      SEQUENTIAL clause is implied.
           </para>
               </listitem>
               <listitem>
                 <para>
-4.   Data-name-1 must be defined in the Data Division as a two-character
+Data-name-1 must be defined in the Data Division as a two-character
      data item of the category alphanumeric and must not be defined in the File Section.
           </para>
               </listitem>
               <listitem>
                 <para>
-5    When the ORGANIZATION IS SEQUENTIAL clause is not specified, the
+When the ORGANIZATION IS SEQUENTIAL clause is not specified, the
       ORGANIZATION IS SEQUENTIAL clause is implied.
           </para>
               </listitem>
@@ -284,43 +283,43 @@ The file control entry names a file and may specify other file-related informati
             <orderedlist>
               <listitem>
                 <para>
- 1.   The ASSIGN clause specifies the association of the file referenced by
+The ASSIGN clause specifies the association of the file referenced by
  file-name to a storage medium. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
  The first assignment takes effect. Subsequent assignments within any one ASSIGN clause are for documentation purposes only.
           </para>
               </listitem>
               <listitem>
                 <para>
- 2.   The ORGANIZATION clause specifies the logical structure of a file. The
+The ORGANIZATION clause specifies the logical structure of a file. The
       file organization is established at the time a file is created and
       cannot subsequently be changed.
           </para>
               </listitem>
               <listitem>
                 <para>
- 3.   When LINE SEQUENTIAL ORGANIZATION is speficied, the file is treated as
- consisting of variable length records, each record containing one line of data.
- The definition of a line of data varies with different operating systems.
- Some terminate line "records" with the Carriage Return and Line Feed characters,
- or one of them, and some pad out as fixed length records. CIS COBOL therefore
- is always compatible with the Editor software in any Operating System in this respect.
+When LINE SEQUENTIAL ORGANIZATION is speficied, the file is treated as
+consisting of variable length records, each record containing one line of data.
+The definition of a line of data varies with different operating systems.
+Some terminate line "records" with the Carriage Return and Line Feed characters,
+or one of them, and some pad out as fixed length records. CIS COBOL therefore
+is always compatible with the Editor software in any Operating System in this respect.
           </para>
               </listitem>
               <listitem>
                 <para>
- 4.   Records in the file are accessed in the sequence dictated by the file
-      organization, This sequence is specified by predecessor-successor
-      record relationships established by the execution of WRITE statements
-      when the file is created or extended.
+Records in the file are accessed in the sequence dictated by the file
+organization, This sequence is specified by predecessor-successor
+record relationships established by the execution of WRITE statements
+when the file is created or extended.
           </para>
               </listitem>
               <listitem>
                 <para>
- 5.   When the FILE STATUS clause is specified, a value will be moved by the
-      operating system into the data item specified by data-name-1 after the
-      execution of every statement that references that file either
-      explicitly or implicitly. This value indicates the status of execution
-      of the statement (See I-O STATUS in this Chapter).
+When the FILE STATUS clause is specified, a value will be moved by the
+operating system into the data item specified by data-name-1 after the
+execution of every statement that references that file either
+explicitly or implicitly. This value indicates the status of execution
+of the statement (See I-O STATUS in this Chapter).
           </para>
               </listitem>
             </orderedlist>
@@ -359,34 +358,34 @@ the location of files on a multiple file reel.
             <orderedlist>
               <listitem>
                 <para>
-1.      The I-O-CONTROL paragraph is optional. The whole clause is for documentation only when present.
+The I-O-CONTROL paragraph is optional. The whole clause is for documentation only when present.
           </para>
               </listitem>
               <listitem>
                 <para>
-2.      File-name-1 must be a sequentially organized file.
+File-name-1 must be a sequentially organized file.
           </para>
               </listitem>
               <listitem>
                 <para>
-3.       The END OF REEL/UNIT clause may only be used if file-name-2 is a
+The END OF REEL/UNIT clause may only be used if file-name-2 is a
 sequentially organized file and is for documentation purposes only.
           </para>
               </listitem>
               <listitem>
                 <para>
-4.       When either the integer-1 RECORDS clause or the integer-2 CLOCK-UNITS
+When either the integer-1 RECORDS clause or the integer-2 CLOCK-UNITS
  clause is specified, implementor-name must be given in the RERUN clause.
           </para>
               </listitem>
               <listitem>
                 <para>
-5.       More than one RERUN clause may be specified for a given file-name-2.
+More than one RERUN clause may be specified for a given file-name-2.
           </para>
               </listitem>
               <listitem>
                 <para>
-6.       The files referenced in the SAME AREA clause need not all have the same organization or access.
+The files referenced in the SAME AREA clause need not all have the same organization or access.
           </para>
               </listitem>
             </orderedlist>
@@ -475,20 +474,20 @@ description are shown in the Data Description - Complete Entry Skeleton in Chapt
           <orderedlist>
             <listitem>
               <para>
-   1.    The level indicator FD identifies the beginning of a file description
+   The level indicator FD identifies the beginning of a file description
          and must precede the file-name.
 </para>
             </listitem>
             <listitem>
               <para>
-   2.    The clauses which follow the name of the file are optional in many cases,
+   The clauses which follow the name of the file are optional in many cases,
           and their order of appearance is immaterial. All clauses are
         optional when the ANSI switch is unset (See Chapter 2).
 </para>
             </listitem>
             <listitem>
               <para>
-   3.    One or more record description entries must follow the file description
+   One or more record description entries must follow the file description
          entry.
 </para>
             </listitem>
@@ -538,20 +537,20 @@ data on the external media.
           <orderedlist>
             <listitem>
               <para>
-1.    When the CODE-SET clause is specified for a file, all data in that file
+When the CODE-SET clause is specified for a file, all data in that file
       must be described as usage is DISPLAY and any signed numeric data must
       be described with the SIGN IS SEPARATE clause.
 </para>
             </listitem>
             <listitem>
               <para>
-2.    The alphabet-name clause referenced by the CODE-SET clause must not
+The alphabet-name clause referenced by the CODE-SET clause must not
       specify the literal phrase.
 </para>
             </listitem>
             <listitem>
               <para>
-3.    The CODE-SET clause may only be specified for non-disk files.
+The CODE-SET clause may only be specified for non-disk files.
 </para>
             </listitem>
           </orderedlist>
@@ -958,9 +957,13 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-        READ file-name RECORD [INTO identifier] [; AT END imperative- statement]
-</para>
+        <cmdsynopsis>
+          <command>READ</command>
+          <arg>file-name</arg>
+          <arg>RECORD</arg>
+          <arg choice="opt">INTO identifier</arg>
+          <arg choice="opt">; AT END imperative- statement</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1156,9 +1159,11 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-      REWRITE record-name       (FROM identifier]
-</para>
+        <cmdsynopsis>
+          <command>REWRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1341,24 +1346,30 @@ can also be used for vertical positioning of lines within a logical page.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-      WRITE record-name      [~    identifiet-1]
-    -[                                      integer  r l
-                                                     L.
-                                                       LINE
-                                                       LTNES.J
-          l ~~
-            AfTER       ADVANCING
-                                            'fA!;
-                                             PAGE
-</para>
+        <cmdsynopsis>
+          <command>WRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier-1</arg>
+          <arg choice="opt">
+            <group>
+              <arg>BEFORE</arg>
+              <arg>AFTER</arg>
+            </group>
+            <arg>ADVANCING</arg>
+            <group>
+              <arg>integer <group><arg>LINE</arg><arg>LINES</arg></group></arg>
+              <arg>TAB</arg>
+              <arg>PAGE</arg>
+            </group>
+          </arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
           <listitem>
             <para>
-1.     Record-name and identifier-1 must not reference the same storage area.
+Record-name and identifier-1 must not reference the same storage area.
 </para>
           </listitem>
           <listitem>
@@ -1369,12 +1380,12 @@ standard vertical tabulation position.</phrase>
           </listitem>
           <listitem>
             <para>
-3.     The record-name is the name of a logical record in the File Section cf the Data Division.
+The record-name is the name of a logical record in the File Section cf the Data Division.
 </para>
           </listitem>
           <listitem>
             <para>
-4.     Integer may be zero.
+Integer may be zero.
 </para>
           </listitem>
         </orderedlist>
