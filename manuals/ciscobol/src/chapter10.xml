@@ -128,17 +128,17 @@ debugging lines and sections are compiled as if they were comment lines.
           <orderedlist>
             <listitem>
               <para>
- 1.   If the WITH DEBUGGING MODE clause is specified in the SOURCE-COMPUTER
+If the WITH DEBUGGING MODE clause is specified in the SOURCE-COMPUTER
       paragraph of the Configuration Section, of a program, all USE FOR
       DEBUGGING statements and all debugging lines are compiled.
             </para>
             </listitem>
             <listitem>
               <para>
- 2.   If the WITH DEBUGGING MODE clause is not specified in the
-      SOURCE-COMPUTER paragraph of the Configuration Section of a program,
-      any USE FOR DEBUGGING statements and all associated debugging sections,
-      and any debugging lines are compiled as if they were comment lines.
+If the WITH DEBUGGING MODE clause is not specified in the
+SOURCE-COMPUTER paragraph of the Configuration Section of a program,
+any USE FOR DEBUGGING statements and all associated debugging sections,
+and any debugging lines are compiled as if they were comment lines.
 </para>
             </listitem>
           </orderedlist>
@@ -253,9 +253,9 @@ Immediately after the execution of an ALTER statement which references procedure
             </listitem>
             <listitem>
               <para>
-The ALL PROCEDURES phrase causes the effects described in general rule
-   3 to occur for every procedure-name in the program, except those
-   appearing within a debugging section.
+The ALL PROCEDURES phrase causes the effects described in general
+rule 3 to occur for every procedure-name in the program, except those
+appearing within a debugging section.
 </para>
             </listitem>
             <listitem>
@@ -334,31 +334,30 @@ required by the following general rules.
             </listitem>
             <listitem>
               <para>
-   12. If the first execution of the first nondeclarative procedure in the
-       program causes the debugging sEction to be executed, the following
-       conditions exist:
+f the first execution of the first nondeclarative procedure in the
+program causes the debugging sEction to be executed, the following conditions exist:
             </para>
               <orderedlist numeration="loweralpha" spacing="compact">
                 <listitem>
                   <para>
-       a.     DEBUG-LINE identifies the first statement of that procedure.
+DEBUG-LINE identifies the first statement of that procedure.
 </para>
                 </listitem>
                 <listitem>
                   <para>
-       b.     DEBUG-NAME contains the name of that procedure.
+DEBUG-NAME contains the name of that procedure.
 </para>
                 </listitem>
                 <listitem>
                   <para>
-       c.     DEBUG-CONTENTS contains 'START PROGRAM'.
+DEBUG-CONTENTS contains 'START PROGRAM'.
 </para>
                 </listitem>
               </orderedlist>
             </listitem>
             <listitem>
               <para>
-   13. If a reference to procedure-name-1 in an ALTER statement causes the
+ If a reference to procedure-name-1 in an ALTER statement causes the
        debugging section to be executed, the following conditions exist:
             </para>
               <orderedlist numeration="loweralpha" spacing="compact">
@@ -381,9 +380,8 @@ DEBUG-CONTENTS contains the applicable procedure-name associated with the TO phr
             </listitem>
             <listitem>
               <para>
-   14. If the transfer of control associated with the execution of a GO TO
-       statement causes the debugging section to be executed, the following
-       conditions exist:
+ If the transfer of control associated with the execution of a GO TO
+statement causes the debugging section to be executed, the following conditions exist:
             </para>
               <orderedlist numeration="loweralpha" spacing="compact">
                 <listitem>
@@ -400,9 +398,9 @@ DEBUG-NAME contains procedure-name-1.
             </listitem>
             <listitem>
               <para>
-   15. If the transfer to control from the control mechanism associated with a
-       PERFORM statement causes the debugging section associated with
-       procedure-name-1 to be executed, thP following conditions exist:
+If the transfer to control from the control mechanism associated with a
+PERFORM statement causes the debugging section associated with
+procedure-name-1 to be executed, the following conditions exist:
        </para>
               <orderedlist numeration="loweralpha" spacing="compact">
                 <listitem>
@@ -424,7 +422,7 @@ DEBUG-CONTENTS contains 'PERFORM LOOP'.
             </listitem>
             <listitem>
               <para>
-16.  If procedure-name-1 is a USE procedure that is to be executed, the
+If procedure-name-1 is a USE procedure that is to be executed, the
      following conditions exist:
        </para>
               <orderedlist numeration="loweralpha" spacing="compact">
@@ -447,9 +445,9 @@ DEBUG-CONTENTS contains 'USE PROCEDURE'.
             </listitem>
             <listitem>
               <para>
-17.  If an implicit transfer of control from the previous sequential
-     paragraph to procedure-name-1 causes the debugging section to be
-     executed, the following conditions exist:
+If an implicit transfer of control from the previous sequential
+paragraph to procedure-name-1 causes the debugging section to be
+executed, the following conditions exist:
        </para>
               <orderedlist numeration="loweralpha" spacing="compact">
                 <listitem>

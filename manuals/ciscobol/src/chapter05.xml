@@ -10,7 +10,7 @@ writing the records to the file. It also provides for the specification of
 re-run points and the sharing of memory areas among files.
 </para>
     <section>
-      <title>LANGUAGE CONCEPTS</title>
+      <title>LANGUAGE CONCEPTS<indexterm><primary>Language Concepts</primary></indexterm></title>
       <section>
         <title>Organization</title>
         <para>
@@ -39,7 +39,7 @@ opened in the output mode. The setting of the current record pointer is
 affected only by the OPEN and READ statements.
 </para>
       </section>
-      <section>
+      <section xml:id="sec5.i.o">
         <title>I-O Status</title>
         <para>
 If the FILE STATUS clause is specified in a file control entry, a value
@@ -171,11 +171,11 @@ indicates a valid permissible combination.
                   <entry>Status Key 2</entry>
                 </row>
                 <row>
-                  <entry>No Further Information</entry>
+                  <entry>No Further Information (0)</entry>
                 </row>
                 <row>
                   <entry>Successful Completion (0)</entry>
-                  <entry>(0)  X</entry>
+                  <entry>X</entry>
                 </row>
                 <row>
                   <entry>At End (1)</entry>
@@ -194,11 +194,11 @@ indicates a valid permissible combination.
           </informaltable>
         </section>
         <section>
-          <title>The AT END Condition</title>
+          <title>The AT END Condition<indexterm><primary>AT END Condition</primary></indexterm></title>
           <para>
  The AT END condition can occur as a result of the execution of a READ
-statement. For details of the causes of the condition, see THE READ
-STATEMENT later in this Chapter.
+statement. For details of the causes of the condition,
+see THE READ STATEMENT later in this Chapter.
 </para>
         </section>
       </section>
@@ -284,8 +284,9 @@ When the ORGANIZATION IS SEQUENTIAL clause is not specified, the
               <listitem>
                 <para>
 The ASSIGN clause specifies the association of the file referenced by
- file-name to a storage medium. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
- The first assignment takes effect. Subsequent assignments within any one ASSIGN clause are for documentation purposes only.
+file-name to a storage medium. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+<phrase role="extension">The first assignment takes effect.
+Subsequent assignments within any one ASSIGN clause are for documentation purposes only.</phrase>
           </para>
               </listitem>
               <listitem>
@@ -297,12 +298,12 @@ The ORGANIZATION clause specifies the logical structure of a file. The
               </listitem>
               <listitem>
                 <para>
-When LINE SEQUENTIAL ORGANIZATION is speficied, the file is treated as
+<phrase role="extension">When LINE SEQUENTIAL ORGANIZATION is specified, the file is treated as
 consisting of variable length records, each record containing one line of data.
 The definition of a line of data varies with different operating systems.
 Some terminate line "records" with the Carriage Return and Line Feed characters,
 or one of them, and some pad out as fixed length records. CIS COBOL therefore
-is always compatible with the Editor software in any Operating System in this respect.
+is always compatible with the Editor software in any Operating System in this respect.</phrase>
           </para>
               </listitem>
               <listitem>
@@ -319,7 +320,7 @@ When the FILE STATUS clause is specified, a value will be moved by the
 operating system into the data item specified by data-name-1 after the
 execution of every statement that references that file either
 explicitly or implicitly. This value indicates the status of execution
-of the statement (See I-O STATUS in this Chapter).
+of the statement (See <xref linkend="sec5.i.o"/> in this Chapter).
           </para>
               </listitem>
             </orderedlist>
@@ -358,7 +359,8 @@ the location of files on a multiple file reel.
             <orderedlist>
               <listitem>
                 <para>
-The I-O-CONTROL paragraph is optional. The whole clause is for documentation only when present.
+The I-O-CONTROL paragraph is optional.
+<phrase role="extension">The whole clause is for documentation only when present.</phrase>
           </para>
               </listitem>
               <listitem>
@@ -394,12 +396,13 @@ The files referenced in the SAME AREA clause need not all have the same organiza
             <title>General Rules</title>
             <orderedlist>
               <listitem>
-                <para>The RERUN clause is treated as for documentation purposes only.
+                <para>
+<phrase role="extension">The RERUN clause is treated as for documentation purposes only.</phrase>
 </para>
               </listitem>
               <listitem>
                 <para>
-The SAME AREA clause is treated as for documentation purposes only.
+<phrase role="extension">The SAME AREA clause is treated as for documentation purposes only.</phrase>
 </para>
               </listitem>
             </orderedlist>
@@ -433,7 +436,7 @@ description has a hierarchical structure and therefore the clauses used with
 an entry may vary considerably, depending upon whether or not it is followed
 by subordinate entries. The structure of a record description is defined in
 CUNCEPT OF LEVELS in Chapter 2, while the elements allowed in a record
-description are shown in the Data Description - Complete Entry Skeleton in Chapter 3.
+description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
 
 </para>
       </section>
@@ -442,7 +445,7 @@ description are shown in the Data Description - Complete Entry Skeleton in Chapt
         <section>
           <title>Function</title>
           <para>
-        The file description furnishes information cuncerning the physical
+        The file description furnishes information concerning the physical
    structure, identification, and record names pertaining to a given file.
 </para>
         </section>
@@ -513,7 +516,7 @@ description are shown in the Data Description - Complete Entry Skeleton in Chapt
         <section>
           <title>General Rule</title>
           <para>
-      This clause is required for documentation purposes only.
+<phrase role="extension">This clause is required for documentation purposes only.</phrase>
 </para>
         </section>
       </section>
@@ -555,6 +558,12 @@ The CODE-SET clause may only be specified for non-disk files.
             </listitem>
           </orderedlist>
         </section>
+        <section>
+          <title>General Rule</title>
+          <para>
+<phrase role="extension">The CODE-SET clause is specified for documentation purposes only.</phrase>
+          </para>
+        </section>
       </section>
       <section>
         <title>THE DATA RECORDS CLAUSE</title>
@@ -586,7 +595,7 @@ data records with their associated file.
           <orderedlist>
             <listitem>
               <para>
-1.   The presence of more than one data-name indicates that the file
+   The presence of more than one data-name indicates that the file
      contains more than one type of data record. These records may be of
      differing sizes, different formats, etc. The order in which they are
      listed is not significant.
@@ -594,7 +603,7 @@ data records with their associated file.
             </listitem>
             <listitem>
               <para>
-2.   Conceptually, all data records within a file share the same area. This
+   Conceptually, all data records within a file share the same area. This
      is in no way altered by the presence of more than one type of data
      record within the file.
 </para>
@@ -607,7 +616,7 @@ data records with their associated file.
         <section>
           <title>Function</title>
           <para>
-The LABEL RECORDS clause specifies whether labels are present.
+<phrase role="extension">The LABEL RECORDS clause specifies whether labels are present.</phrase>
 </para>
         </section>
         <section>
@@ -620,14 +629,14 @@ The LABEL RECORDS clause specifies whether labels are present.
         <section>
           <title>Syntax Rule</title>
           <para>
-     This clause is required in every file description entry, when the ANSI
-     switch is set.
+This clause is required in every file description entry,
+<phrase role="extension">when the ANSI switch is set.</phrase>
 </para>
         </section>
         <section>
           <title>General Rule</title>
           <para>
-          This clause is used for documentation purposes only.
+<phrase role="extension">This clause is used for documentation purposes only.</phrase>
 </para>
         </section>
       </section>
@@ -649,8 +658,8 @@ The LABEL RECORDS clause specifies whether labels are present.
           <title>General Rule</title>
           <para>
      The size of each data record is completely defined   within the record
-     description entry, therefore this clause is never required. The RECORD
-     CONTAINS clause is specified for documentation purposes only.
+     description entry, therefore this clause is never required.
+<phrase role="extension">The RECORD CONTAINS clause is specified for documentation purposes only.</phrase>
 </para>
         </section>
       </section>
@@ -676,12 +685,12 @@ records associated with a file.
           <orderedlist>
             <listitem>
               <para>
-1.   This clause is used for documentation purposes only.
+<phrase role="extension">This clause is used for documentation purposes only.</phrase>
 </para>
             </listitem>
             <listitem>
               <para>
-2.   A figurative constant may be substituted in the format above wherever a
+   A figurative constant may be substituted in the format above wherever a
      literal is specified.
 </para>
             </listitem>
@@ -693,7 +702,7 @@ records associated with a file.
       <title>PROCEDURE DIVISION IN THE SEQUENTIAL I-O MODULE</title>
     </section>
     <section>
-      <title>THE CLOSE STATEMENT</title>
+      <title>THE CLOSE STATEMENT<indexterm><primary>CLOSE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -719,12 +728,12 @@ for documenation purposes only.
         <orderedlist>
           <listitem>
             <para>
-1.   A CLOSE statement may only be executed for a file in an open mode.
+   A CLOSE statement may only be executed for a file in an open mode.
       </para>
           </listitem>
           <listitem>
             <para>
-2.   The action taken if the file is in the open mode when a STOP RUN
+   The action taken if the file is in the open mode when a STOP RUN
      statement is executed is to close the file. The action taken for a file
      that has been opened in a called program and not closed in that program
      prior to the execution of a CANCEL statement for that program is to
@@ -733,7 +742,7 @@ for documenation purposes only.
           </listitem>
           <listitem>
             <para>
-3.   If a CLOSE statement has been executed for a file, no other statement
+   If a CLOSE statement has been executed for a file, no other statement
      can be executed that references that file, either explicitly or
      implicitly, unless an intervening OPEN statement for that file is
      executed.
@@ -741,7 +750,7 @@ for documenation purposes only.
           </listitem>
           <listitem>
             <para>
-4.   Following the successful execution of a CLOSE statement the record area
+   Following the successful execution of a CLOSE statement the record area
      associated with file-name is no longer available. The unsuccessful
      execution of such a CLOSE statement leaves the availability of the
      record area undefined.
@@ -751,7 +760,7 @@ for documenation purposes only.
       </section>
     </section>
     <section>
-      <title>THE OPEN STATEMENT</title>
+      <title>THE OPEN STATEMENT<indexterm><primary>OPEN Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -789,26 +798,26 @@ The EXTEND phrase can only by used for sequential files and line sequential file
         <orderedlist>
           <listitem>
             <para>
-1.   The successful execution of an OPEN statement determines the avail-
+   The successful execution of an OPEN statement determines the avail-
      ability of the file and results in the file being in an open mode.
       </para>
           </listitem>
           <listitem>
             <para>
-2.   The successful execution of an OPEN statement makes the associated
+   The successful execution of an OPEN statement makes the associated
      record area available to the program.
       </para>
           </listitem>
           <listitem>
             <para>
-3.   Prior to the successful execution of an OPEN statement for a given
+   Prior to the successful execution of an OPEN statement for a given
      file, no statement can be executed that references that file, either
      explicitly or implicitly.
       </para>
           </listitem>
           <listitem>
             <para>
-4.   An OPEN statement must be successfully executed prior to the execution
+   An OPEN statement must be successfully executed prior to the execution
      of any of the permissible input-output statements. In Table 5-1, 'X'
      at an intersect i on indicates that the specified statement, used in the
      sequential access mode, may be used with the sequential file
@@ -865,7 +874,7 @@ The EXTEND phrase can only by used for sequential files and line sequential file
           </listitem>
           <listitem>
             <para>
-5.    A file may be opened with the INPUT, OUTPUT, EXTEND and I-O phrases in
+    A file may be opened with the INPUT, OUTPUT, EXTEND and I-O phrases in
       the same program. Following the init ial execution of an OPEN statement
       for a file, each subsequent OPEN statement execution for that same file
       must be preceded by the execution of a CLOSE statement, for that file.
@@ -873,26 +882,25 @@ The EXTEND phrase can only by used for sequential files and line sequential file
           </listitem>
           <listitem>
             <para>
-6.    Execution of the OPEN statement does not obtain or release the first
-      data record.
+Execution of the OPEN statement does not obtain or release the first data record.
       </para>
           </listitem>
           <listitem>
             <para>
-7.    The ASSIGNed name in the SELECT statement for a file is processed as
+    The ASSIGNed name in the SELECT statement for a file is processed as
       follows:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-      a.   When the INPUT phrase is specified, the execution of the OPEN
+         When the INPUT phrase is specified, the execution of the OPEN
            statement causes the ASSIGNed name to be checked in accordance
            with the operating system conventions for opening files for input.
 </para>
               </listitem>
               <listitem>
                 <para>
-      b.   When the OUTPUT phrase is specified, the execution of the OPEN
+         When the OUTPUT phrase is specified, the execution of the OPEN
            statement causes the ASSIGNed name to be written in accordance
            with the operating system conventions for opening files for
            output.
@@ -902,19 +910,19 @@ The EXTEND phrase can only by used for sequential files and line sequential file
           </listitem>
           <listitem>
             <para>
-8.    The file description entry for file-name-1, file-name-5, must be
+    The file description entry for file-name-1, file-name-5, must be
       equivalent to that used when this file was created.
       </para>
           </listitem>
           <listitem>
             <para>
-9.    If the storage medium for the file permits rewinding, execution of the
+    If the storage medium for the file permits rewinding, execution of the
       OPEN statement causes the file to be positioned at its beginning.
       </para>
           </listitem>
           <listitem>
             <para>
-10.   For files being opened with the INPUT or I-O phrase, the OPEN statement
+   For files being opened with the INPUT or I-O phrase, the OPEN statement
       sets the current record pointer to the first record currently existing
       within the file. If no records exist in the file, the current record
       pointer is set such that the next executed READ statement for the file
@@ -924,7 +932,7 @@ The EXTEND phrase can only by used for sequential files and line sequential file
           </listitem>
           <listitem>
             <para>
-11.   When the EXTEND phrase is specified, the OPEN statement positions the
+  When the EXTEND phrase is specified, the OPEN statement positions the
       file immediately following the last logical record of that file.
       Subsequent WRITE statements referencing the file will add records to
       the file as though the file had been opened with the OUTPUT phrase.
@@ -933,13 +941,13 @@ The EXTEND phrase can only by used for sequential files and line sequential file
           </listitem>
           <listitem>
             <para>
-12. The I-O phrase permits the opening of a disk for both input and output
+The I-O phrase permits the opening of a disk for both input and output
 operation except for file in ORGANIZATION LINE SEQUENTIAL.
       </para>
           </listitem>
           <listitem>
             <para>
-13. Upon successful execution of an OPEN statement with the OUTPUT phrase
+Upon successful execution of an OPEN statement with the OUTPUT phrase
     specified, a file is created. At that time the associated file
     contains no data records.
       </para>
@@ -948,7 +956,7 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
       </section>
     </section>
     <section>
-      <title>THE READ STATEMENT</title>
+      <title>THE READ STATEMENT<indexterm><primary>READ Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -970,16 +978,16 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
         <orderedlist>
           <listitem>
             <para>
-    1.  The INTO phrase must not be used when the input file contains logical
-        records of various sizes as indicated by their record descriptions.
-        The storage area associated with identifier and the record area
-        associated with file-name must not be the same storage area.
+The INTO phrase must not be used when the input file contains logical
+records of various sizes as indicated by their record descriptions.
+The storage area associated with identifier and the record area
+associated with file-name must not be the same storage area.
 </para>
           </listitem>
           <listitem>
             <para>
-    2.  The AT END phrase must be specified if no applicable USE procedure is
-        specified for file-name,
+The AT END phrase must be specified if no applicable USE procedure is
+specified for file-name,
 </para>
           </listitem>
         </orderedlist>
@@ -989,25 +997,25 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
         <orderedlist>
           <listitem>
             <para>
-    1.  The associated file must be open in the INPUT or I-O mode at the time
-         this statement is executed. (See THE OPEN STATEMENT in this Chapter).
+The associated file must be open in the INPUT or I-O mode at the time
+this statement is executed. (See THE OPEN STATEMENT in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-    2.  The record to be made available by the READ statement is determined as follows:
+The record to be made available by the READ statement is determined as follows:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-         a.   If the current record pointer was positioned by the execution of
+            If the current record pointer was positioned by the execution of
                the OPEN statement, the record pointed to by the current record
               pointer is made available.
 </para>
               </listitem>
               <listitem>
                 <para>
-         b.    If the current record pointer was positioned by the execution of a
+             If the current record pointer was positioned by the execution of a
                previous READ statement, the current record pointer is updated to
                point to the next existing record in the file and then that record
                is made available.
@@ -1017,14 +1025,14 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
           </listitem>
           <listitem>
             <para>
-     3.  The execution of the READ statement causes the value of the FILE STATUS
+       The execution of the READ statement causes the value of the FILE STATUS
          data item, if any, associated with file-name to be updated.
-         (See I-O STATUS in this Chapter)
+         (See <xref linkend="sec5.i.o"/> in this Chapter)
 </para>
           </listitem>
           <listitem>
             <para>
-    4.   Regardless of the method used to overlap access time with processing
+       Regardless of the method used to overlap access time with processing
          time, the concept of the READ statement is unchanged in that a record
          is available to the object program prior to the execution of any
          statement following the READ statement.
@@ -1032,7 +1040,7 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
           </listitem>
           <listitem>
             <para>
-     5.  When the logical records of a file are described with more than one
+       When the logical records of a file are described with more than one
          record description, these records automatically share the same storage
          area; this is equivalent to an implicit redefinition of the area. The
           contents of any data items which lie beyond the range of the current
@@ -1042,7 +1050,7 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
           </listitem>
           <listitem>
             <para>
-6.   If the INTO phrase is specified, the record being read is moved from
+   If the INTO phrase is specified, the record being read is moved from
      the record area to the area specified by identifier according to the
      rules specified for the MOVE statement. The implied MOVE does not
      occur if the execution of the READ statement was unsuccessful. Any
@@ -1052,105 +1060,103 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
           </listitem>
           <listitem>
             <para>
-7.   When the INTO phrase is used, the record being read is available in
+   When the INTO phrase is used, the record being read is available in
      both the input record area and the data area associated with identifier.
 </para>
           </listitem>
           <listitem>
             <para>
-8   If, at the time of execution of a READ statement, the position of
+   If, at the time of execution of a READ statement, the position of
      current record pointer for that file is undefined, the execution of
      that READ statement is unsuccessful.
 </para>
           </listitem>
           <listitem>
             <para>
-9.   If the end of a reel or unit is recognized during the execution of a
+   If the end of a reel or unit is recognized during the execution of a
      READ statement, an end-of-file status condition exists.
 </para>
             <orderedlist>
               <listitem>
                 <para>
-     a.     The standard ending reel/unit label procedure.
+          The standard ending reel/unit label procedure.
 </para>
               </listitem>
               <listitem>
                 <para>
-     b.     A reel/unit swap.
+          A reel/unit swap.
 </para>
               </listitem>
               <listitem>
                 <para>
-     c.     The standard beginning reel/unit label procedure.
+          The standard beginning reel/unit label procedure.
 </para>
               </listitem>
               <listitem>
                 <para>
-     d.     The first data record of the new reel/unit is made available.
+          The first data record of the new reel/unit is made available.
 </para>
               </listitem>
             </orderedlist>
           </listitem>
           <listitem>
             <para>
-11.   If, at the time of the execution of a READ statement, no next logical
-      record exists in the file, the AT END condition occurs, and the
-      execution of the READ statement is considered unsuccessful.     (See I-O STATUS).
+If, at the time of the execution of a READ statement, no next logical
+record exists in the file, the AT END condition occurs, and the
+execution of the READ statement is considered unsuccessful. (See <xref linkend="sec5.i.o"/>).
 </para>
           </listitem>
           <listitem>
             <para>
-12.   When the AT END condition is recognized the following actions are taken
-      in the specified order:
+When the AT END condition is recognized the following actions are taken in the specified order:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-      a.    A value is placed into the FILE STATUS data item, if specified for
-            this file, to indicate an AT END condition. (See I-O STATUS).
+A value is placed into the FILE STATUS data item, if specified for
+this file, to indicate an AT END condition. (See <xref linkend="sec5.i.o"/>).
 </para>
               </listitem>
               <listitem>
                 <para>
-      b.    If the AT END phrase is specified in the statement causing the
-            condition, control is transferred to the AT END
-            imperative-statement. Any USE procedure specified for this file
-            is not executed.
+If the AT END phrase is specified in the statement causing the
+condition, control is transferred to the AT END
+imperative-statement. Any USE procedure specified for this file is not executed.
 </para>
               </listitem>
               <listitem>
                 <para>
-      c.    If the AT END phrase is not specified, then a USE procedure must
-            be specified, either explicitly or implicitly, for this file and
-            that procedure is executed.
+If the AT END phrase is not specified, then a USE procedure must
+be specified, either explicitly or implicitly, for this file and
+that procedure is executed.
 </para>
                 <para>
-            When the AT END condition occurs, execution of the input-output
-            statement which caused the condition is unsuccessful.
+When the AT END condition occurs, execution of the input-output
+statement which caused the condition is unsuccessful.
 </para>
               </listitem>
             </orderedlist>
           </listitem>
           <listitem>
             <para>
- 13.  Following the unsuccessful execution of any READ statement, the
-      contents of the associated record area and the position of the current
-      record pointer are undefined.
+Following the unsuccessful execution of any READ statement, the
+contents of the associated record area and the position of the current
+record pointer are undefined.
 </para>
           </listitem>
           <listitem>
             <para>
- 14.  When the AT END condition has been recognized, a READ statement for
-       that file must not be executed without first executing a successful
-      CLOSE statement followed by the execution of a successful OPEN
-       statement for that file.
+When the AT END condition has been recognized, a READ statement for
+that file must not be executed without first executing a successful
+CLOSE statement followed by the execution of a successful OPEN
+statement for that file.
 </para>
           </listitem>
         </orderedlist>
       </section>
     </section>
     <section>
-      <title>THE REWRITE STATEMENT</title>
+      <title>THE REWRITE STATEMENT<indexterm><primary>REWRITE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1170,13 +1176,13 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
         <orderedlist>
           <listitem>
             <para>
-1.    Record-name and identifier must not refer to the same storage area.
+Record-name and identifier must not refer to the same storage area.
 </para>
           </listitem>
           <listitem>
             <para>
-2.    Record-name is the name of a logical record in the File Section of the
-      Data Division and may be qualified.
+Record-name is the name of a logical record in the File Section of the
+Data Division and may be qualified.
 </para>
           </listitem>
         </orderedlist>
@@ -1186,74 +1192,72 @@ operation except for file in ORGANIZATION LINE SEQUENTIAL.
         <orderedlist>
           <listitem>
             <para>
-1.    The file associated with record-name must be a disk file and must be
-      open in the I-O mode at the time of execution of this statement. (See
-      THE OPEN STATEMENT in this Chapter),
+The file associated with record-name must be a disk file and must be
+open in the I-O mode at the time of execution of this statement.
+(See THE OPEN STATEMENT in this Chapter),
 </para>
           </listitem>
           <listitem>
             <para>
-2.    The last input-output statement executed for the associated file prior
-      to the execution of the REWRITE statement must have been a successfully
-      executed READ statement. The operating system logically replaces the
-      record that was accessed by the READ statement.
+The last input-output statement executed for the associated file prior
+to the execution of the REWRITE statement must have been a successfully
+executed READ statement. The operating system logically replaces the
+record that was accessed by the READ statement.
 </para>
           </listitem>
           <listitem>
             <para>
-3.    The number of character positions in the record referenced by
-      record-name must be equal to the number of character positions in the
-      record being replaced.
+The number of character positions in the record referenced by
+record-name must be equal to the number of character positions in the
+record being replaced.
 </para>
           </listitem>
           <listitem>
             <para>
-4.    The logical record released by a successful execution of the REWRITE
-      statement is no longer available in the record area,
+The logical record released by a successful execution of the REWRITE
+statement is no longer available in the record area,
 </para>
           </listitem>
           <listitem>
             <para>
-5.    The execution of a REWRITE statement with the FROM phrase is equivalent
-      to the execution of:
+The execution of a REWRITE statement with the FROM phrase is equivalent to the execution of:
 </para>
             <programlisting>
                       MOVE identifier TO record-name
 </programlisting>
             <para>
-      followed by the execution of the same REWRITE statement without the
-      FROM phrase. The contents of the record area prior to the execution of
-      the implicit HOVE statement have no effect on the execution of the
-      REWRITE statement.
+followed by the execution of the same REWRITE statement without the
+FROM phrase. The contents of the record area prior to the execution of
+the implicit HOVE statement have no effect on the execution of the
+REWRITE statement.
 </para>
           </listitem>
           <listitem>
             <para>
-6.    The current record pointer is not affected by the execution of a
-      REWRITE statement.
+The current record pointer is not affected by the execution of a REWRITE statement.
 </para>
           </listitem>
           <listitem>
             <para>
-7.    The execution of the REWRITE statement causes the value of the FILI:
-      STATUS data item, if any, associated with the file to be updated. (See
-      I-O STATUS in this Chapter).
+The execution of the REWRITE statement causes the value of the FILI:
+STATUS data item, if any, associated with the file to be updated.
+(See <xref linkend="sec5.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-8.   The REWRITE statement cannot be used with line sequention files.
+The REWRITE statement cannot be used with line sequention files.
     </para>
           </listitem>
         </orderedlist>
       </section>
     </section>
     <section>
-      <title>THE USE STATEMENT</title>
+      <title>THE USE STATEMENT<indexterm><primary>USE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
-     The USE statement specifies procedures for input-output error handling
+The USE statement specifies procedures for input-output error handling
 that are in addition to the standard procedures provided by the input-output
 control system.
 </para>
@@ -1283,16 +1287,16 @@ control system.
         <orderedlist>
           <listitem>
             <para>
-1.   A USE statement, when present, must immediately follow a section header
-     in the declarat ives section and must be followed by a period followed
-     by a space. The remainder of the section must consist of zero, one or
-     more procedural paragraphs that define the procedure to be used.
+A USE statement, when present, must immediately follow a section header
+in the declarat ives section and must be followed by a period followed
+by a space. The remainder of the section must consist of zero, one or
+more procedural paragraphs that define the procedure to be used.
 </para>
           </listitem>
           <listitem>
             <para>
-2. The USE statement itself is never executed; it merely defines the
-     conditions calling for the execution of the USE procedures.
+The USE statement itself is never executed; it merely defines the
+ conditions calling for the execution of the USE procedures.
 </para>
           </listitem>
         </orderedlist>
@@ -1302,41 +1306,39 @@ control system.
         <orderedlist>
           <listitem>
             <para>
- 1.  If the AT END phase has not been specified in the input-output
-     statement, the designated procedures are executed by the input-output
-     system after completing the standard input-output error routine upon
-     recognition of the AT END condition
+If the AT END phase has not been specified in the input-output
+statement, the designated procedures are executed by the input-output
+system after completing the standard input-output error routine upon
+recognition of the AT END condition
 </para>
           </listitem>
           <listitem>
             <para>
- 2.  After execution of a USE procedure, control is returned to the invoking
-     routine.
+After execution of a USE procedure, control is returned to the invoking routine.
 </para>
           </listitem>
           <listitem>
             <para>
- 3.  Within a USE procedure, there must not be any reference to any non-
-     declarative procedures. Conversely, in the nondeclarative portion
-      there must be no reference to procedure-names that appear in the
-     declarative portion, except that PERFORM statements may refer to a USE
-      statement or to the procedures associated with such a USE statement.
+Within a USE procedure, there must not be any reference to any
+non-declarative procedures. Conversely, in the nondeclarative portion
+there must be no reference to procedure-names that appear in the
+declarative portion, except that PERFORM statements may refer to a USE
+statement or to the procedures associated with such a USE statement.
 </para>
           </listitem>
           <listitem>
             <para>
- 4.  Within a USE procedure, there must not be the execution of any state-
-     ment that would cause the execution of a USE procedure that had
-      previously been invoked and had not yet returned control to the
-      invoking routine.
+Within a USE procedure, there must not be the execution of any statement
+that would cause the execution of a USE procedure that had
+previously been invoked and had not yet returned control to the
+invoking routine.
 </para>
           </listitem>
         </orderedlist>
-        <!-- Page 158 -->
       </section>
     </section>
     <section>
-      <title>THE WRITE STATEMENT</title>
+      <title>THE WRITE STATEMENT<indexterm><primary>WRITE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1395,21 +1397,21 @@ Integer may be zero.
         <orderedlist>
           <listitem>
             <para>
-1.     The associated file must be open in the OUTPUT mode at the time of the
-      execution of this statement. (See THE OPEN STATEMENT in this Chapter).
+The associated file must be open in the OUTPUT mode at the time of the
+execution of this statement. (See THE OPEN STATEMENT in this Chapter).
           </para>
           </listitem>
           <listitem>
             <para>
-2.     The logical record released by the execution of the WRITE statement is
-      no longer available in the record area unless the execution of the
-      WRITE statement was unsuccessful due to a boundary violation.
+The logical record released by the execution of the WRITE statement is
+no longer available in the record area unless the execution of the
+WRITE statement was unsuccessful due to a boundary violation.
           </para>
           </listitem>
           <listitem>
             <para>
-3.     The results of the execution of the WRITE statement with the FROM
-      phrase is equivalent to the execution of:
+The results of the execution of the WRITE statement with the FROM
+phrase is equivalent to the execution of:
       </para>
             <orderedlist>
               <listitem>
@@ -1442,80 +1444,79 @@ implicit MOVE statement have no effect on the execution of this WRITE statement.
           </listitem>
           <listitem>
             <para>
-4. The current record pointer is unaffected by the execution of a WRITE
-   statement.
+The current record pointer is unaffected by the execution of a WRITE statement.
           </para>
           </listitem>
           <listitem>
             <para>
-5. The execution of the WRITE stateme nt causes the value of the FILE
+The execution of the WRITE stateme nt causes the value of the FILE
    STATUS data item, if any, associated with the file to be updated.
-(See I-O STATUS in this Chapter).
+(See <xref linkend="sec5.i.o"/> in this Chapter).
           </para>
           </listitem>
           <listitem>
             <para>
-6. The maximum record size for a file is established at the time the file
+The maximum record size for a file is established at the time the file
    is created and must not subsequently be changed.
           </para>
           </listitem>
           <listitem>
             <para>
-7. The number of character positions on a disk required to store a logical
-   record in a file may or may not be equal to the number of character
-   positions defined by the logical description of that record in the program.
+The number of character positions on a disk required to store a logical
+record in a file may or may not be equal to the number of character
+positions defined by the logical description of that record in the program.
           </para>
           </listitem>
           <listitem>
             <para>
-8. The execution of the WRITE statement releases a logical record to the operating system.
+The execution of the WRITE statement releases a logical record to the operating system.
           </para>
           </listitem>
           <listitem>
             <para>
-9. The ADVANCING phrase allows control of the vertical positioning of each
-   line on a representation of a printed page.
+The ADVANCING phrase allows control of the vertical positioning of each
+line on a representation of a printed page.
    </para>
             <orderedlist>
               <listitem>
                 <para>
-   a. With ORGANIZATION SEQUENTIAL if the ADVANCING phrase is not used,
-         automatic advancing is provided when output is directed to a
-         list-device to act as if the user had specified AFTER
-         ADVANCING 1 LINE. If the ADVANCING phrase is used, advancing is
-         provided as follows:
+With ORGANIZATION SEQUENTIAL if the ADVANCING phrase is not used,
+automatic advancing is provided when output is directed to a
+list-device to act as if the user had specified AFTER
+ADVANCING 1 LINE. If the ADVANCING phrase is used, advancing is
+provided as follows:
          </para>
                 <orderedlist>
                   <listitem>
                     <para>
-         i.    If integer is specified, the representation of the printed
-               page is advanced the number of lines equal to the value of integer.
+If integer is specified, the representation of the printed
+page is advanced the number of lines equal to the value of integer.
           </para>
                   </listitem>
                   <listitem>
                     <para>
-        ii.    If the BEFORE phrase is used, the line is presented before
-               the representation of the printed page is advanced.
+If the BEFORE phrase is used, the line is presented before
+the representation of the printed page is advanced.
           </para>
                   </listitem>
                   <listitem>
                     <para>
-        iii.  If the AFTER phrase is used, the line is presented after the
-               representation of the printed page is advanced.
+If the AFTER phrase is used, the line is presented after the
+representation of the printed page is advanced.
           </para>
                   </listitem>
                   <listitem>
                     <para>
-        iv.   If PAGE is specified, the record is presented on the logical
-               page before or after (depending on the phrase used) the
-               device is repositioned to the next logical page.
+If PAGE is specified, the record is presented on the logical
+page before or after (depending on the phrase used) the
+device is repositioned to the next logical page.
           </para>
                   </listitem>
                 </orderedlist>
               </listitem>
               <listitem>
                 <para>
-b. With ORGANIZATION LINE SEQUENTIAL, if the ADVANCING phrase is not used,
+With ORGANIZATION LINE SEQUENTIAL, if the ADVANCING phrase is not used,
 automatic advancing of one line is provided to act in accordance with
 the convention of your operating system text editor (usually as if the user
 had specified BEFORE ADVANCING 1 LINE).
@@ -1546,7 +1547,7 @@ contents of the record area are unaffected. The following action takes place:
                 <para>
 The value of the FILE STATUS data item, if any, of the associated
 file is set to a value indicating a boundary violation.
-(See I-O STATUS in this Chapter).
+(See <xref linkend="sec5.i.o"/> in this Chapter).
           </para>
               </listitem>
               <listitem>

@@ -129,11 +129,19 @@ syntactical rules.
         <term>At End Condition.</term>
         <listitem>
           <para>A condition caused in one of two circumstances:
-           1.    During the execution of a READ statement for a sequentially
-                 accessed file.
-           2.    During the execution of a RETURN statement when no next
-                 logical record exists for the associated sort or merge file.
-</para>
+          </para>
+          <orderedlist spacing="compact">
+            <listitem>
+              <para>
+During the execution of a READ statement for a sequentially accessed file.
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+During the execution of a RETURN statement when no next logical record exists for the associated sort or merge file.
+          </para>
+            </listitem>
+          </orderedlist>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -398,17 +406,17 @@ simple condition.
           <orderedlist>
             <listitem>
               <para>
-              1. Associate a data-name, paragraph-name, condition-name, or text-name with its qualifier.
+Associate a data-name, paragraph-name, condition-name, or text-name with its qualifier.
           </para>
             </listitem>
             <listitem>
               <para>
-              2. Link two or more operands written in a series.
+Link two or more operands written in a series.
           </para>
             </listitem>
             <listitem>
               <para>
-              3. Form conditions (logical connectives). (See Logical Operator.)
+Form conditions (logical connectives). (See Logical Operator.)
 </para>
             </listitem>
           </orderedlist>
@@ -583,7 +591,7 @@ position which the input/output control is currently referencing.</phrase>
         <listitem>
           <para>A key upon the values of which data is ordered starting
            with the highest value of key down to the lowest value of key, in
-           accordance with the rules for comparing data items.                 I
+           accordance with the rules for comparing data items.
 </para>
         </listitem>
       </varlistentry>
@@ -612,13 +620,14 @@ position which the input/output control is currently referencing.</phrase>
         <term>Division Header.</term>
         <listitem>
           <para>A combination of words followed by a period and a space
-           that indicate the beginning of a division. The division headers
-           are:
-                 IDENTIFICATION DIVISION.
-                 ENVIRONMENT DIVISION.
-                DATA DIVISION.
-                 PROCEDURE DIVISION    USING data-name-1  data-name-2 ... .
-</para>
+           that indicate the beginning of a division. The division headers are:
+           </para>
+          <programlisting>
+    IDENTIFICATION DIVISION.
+    ENVIRONMENT DIVISION.
+    DATA DIVISION.
+    PROCEDURE DIVISION    USING data-name-1  data-name-2 ... .
+</programlisting>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -712,10 +721,10 @@ position which the input/output control is currently referencing.</phrase>
         <term>End of Procedure Division.</term>
         <listitem>
           <para>The physical position in a CIS COBOL source
-                   program after which no further procedures appear.
-                   Any descriptive set of consecutf". a clauses terminated by a
-                   period (.) and written in the Identification Division, Environment
-                   Division or Data Division of an CIS COBOL source program.
+program after which no further procedures appear.
+Any descriptive set of consecutive clauses terminated by a
+period (.) and written in the Identification Division, Environment
+Division or Data Division of an CIS COBOL source program.
 </para>
         </listitem>
       </varlistentry>
@@ -927,9 +936,9 @@ position which the input/output control is currently referencing.</phrase>
       <varlistentry>
         <term>Input Mode.</term>
         <listitem>
-          <para>The state of a file af ter execu tion of an OPEN stateme nt, with
+          <para>The state of a file after execution of an OPEN statement, with
               the INPUT phrase specified, for that file and before the execution
-              of a CLOSE s t a tement for that file.
+              of a CLOSE statement for that file.
 </para>
         </listitem>
       </varlistentry>
@@ -955,7 +964,7 @@ position which the input/output control is currently referencing.</phrase>
         <listitem>
           <para>     A   numeric literal or a numeric data item that does not
               include any character positions to the right of the assumed
-              decimal point. W here the term 'integer' appears in general
+              decimal point. Where the term 'integer' appears in general
               formats, integer must not be a numeric data item, and must not be
               signed, nor zero unless explicitly allowed by the rules of that format.
 </para>
@@ -998,8 +1007,7 @@ position which the input/output control is currently referencing.</phrase>
       <varlistentry>
         <term>Key of Reference.</term>
         <listitem>
-          <para>        The key currently being used to access records within an
-              indexed file.
+          <para>        The key currently being used to access records within an indexed file.
 </para>
         </listitem>
       </varlistentry>
@@ -1030,17 +1038,15 @@ position which the input/output control is currently referencing.</phrase>
       <varlistentry>
         <term>Library-Name.</term>
         <listitem>
-          <para>A user-defined word tha t names a    CIS COBOL library
-              source file that is to be used by the compiler for a given source
-              program compilation.
+          <para>A user-defined word that names a CIS COBOL library
+  source file that is to be used by the compiler for a given source program compilation.
 </para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>Library-Text.</term>
         <listitem>
-          <para>        A sequence of character-strings and/or separators in a
-            COBOL library.
+          <para>        A sequence of character-strings and/or separators in a COBOL library.
 </para>
         </listitem>
       </varlistentry>
@@ -1058,8 +1064,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <listitem>
           <para>The section in the Data Division of the called program
             that describes data items available from the calling program.
-            These data items may be referred to by both the calling and called
-            program.
+            These data items may be referred to by both the calling and called program.
 </para>
         </listitem>
       </varlistentry>
@@ -1104,7 +1109,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Native Character Set.</term>
         <listitem>
           <para>The implementor-defined character set associated with
-            the cauputer specified in the OBJECi'-C MPIJl'ER paragraph.
+            the cauputer specified in the OBJECT-COMPUTER paragraph.
 </para>
         </listitem>
       </varlistentry>
@@ -1112,8 +1117,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Native Collating Sequence.</term>
         <listitem>
           <para>The implementor-defined collating sequence
-            associated with the computer specified in the OBJECT-C MPtrrER
-            paragraph.
+            associated with the computer specified in the OBJECT-COMPUTER paragraph.
 </para>
         </listitem>
       </varlistentry>
@@ -1144,17 +1148,15 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
       <varlistentry>
         <term>Next  Record.</term>
         <listitem>
-          <para>The record which logically follows the current record of a
-            file.
+          <para>The record which logically follows the current record of a file.
 </para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>Non contiguous Items.</term>
         <listitem>
-          <para>          Elementary data items, t.n the Working-Storage and
-            Linkage Sections, which bear no hierarchic relationship to other
-            data items.
+          <para>          Elementary data items, in the Working-Storage and
+            Linkage Sections, which bear no hierarchic relationship to other data items.
 </para>
         </listitem>
       </varlistentry>
@@ -1172,10 +1174,10 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Nonnumeric Literal.</term>
         <listitem>
           <para>   A character-string bounded by quotation marks. The
-           string of characters may include any character in the
-           canputer's character set. To represent a single quota.:ion mark
-           character lli.thin a nonnumeric literal, two contiguous quotation
-           marks Must be used.
+string of characters may include any character in the
+computer's character set. To represent a single quotation mark
+character within a nonnumeric literal, two contiguous quotation
+marks must be used.
 </para>
         </listitem>
       </varlistentry>
@@ -1191,9 +1193,9 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Numeric Item.</term>
         <listitem>
           <para>   A data item whose description restricts its contents to a
-          value represented by characters chosen from the digits '0' through
-         '9'; if signed, the item may also contain a '+', '-' or other
-           representation of an operational sign.
+value represented by characters chosen from the digits '0' through
+'9'; if signed, the item may also contain a '+', '-' or other
+representation of an operational sign.
 </para>
         </listitem>
       </varlistentry>
@@ -1201,9 +1203,9 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Numeric Literal.</term>
         <listitem>
           <para>A literal composed of one or more numeric characters that
-           also may contain either a deciMal point, or an algebraic sign, or
-           both. The decimal point must not be the righmost character. The
-           algebraic sign, if present, Must be the leftmost character.
+also may contain either a deciMal point, or an algebraic sign, or
+both. The decimal point must not be the righmost character. The
+algebraic sign, if present, Must be the leftmost character.
 </para>
         </listitem>
       </varlistentry>
@@ -1220,9 +1222,9 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Open Mode.</term>
         <listitem>
           <para>The state of a file after execution of an OPEN statement for that
-           file and before the execution of a CLOSE stateMent for that file.
+           file and before the execution of a CLOSE statement for that file.
           The particular open mode is specified in the OPEN statement as
-          either INPtrr, OUTPUT, I-o or ElCl'END.
+          either INPUT, OUTPUT, I-O or EXTEND.
 </para>
         </listitem>
       </varlistentry>
@@ -1240,7 +1242,7 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
       <varlistentry>
         <term>Operational Sign.</term>
         <listitem>
-          <para>An algebraic sign, associated lli.th a numeric data item or
+          <para>An algebraic sign, associated with a numeric data item or
            a numeric literal, to indicate whether its value is positive or negative.
 </para>
         </listitem>
@@ -1248,9 +1250,9 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
       <varlistentry>
         <term>Optional Word.</term>
         <listitem>
-          <para>A reserved word that is included in a specified forMat only
+          <para>A reserved word that is included in a specified format only
            to improve the readability of the language and whose presence is
-           optional to the user when the forMat in which the word appears is
+           optional to the user when the format in which the word appears is
            used in a source program.
 </para>
         </listitem>
@@ -1286,21 +1288,29 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <listitem>
           <para>A reserved word, followed by a period and a space that
            indicates the beginning of a paragraph in the Identification and
-           Environment Divisions. The permissible paragrapt headers are:
+           Environment Divisions. The permissible paragraph headers are:
+           </para>
+          <para>
      In the Identification Division:
+     </para>
+          <programlisting>
      PROGRAM-ID.
      AUTHOR.
      INSTALLATION.
      DATE-WRITTEN.
      DATE-COMPILED.
      SECURITY.
+     </programlisting>
+          <para>
      In the Environment Division:
+     </para>
+          <programlisting>
      SOURCE-COMPUTER.
      OBJECT-COMPUTER.
      SPECIAL-NAMES.
      FILE-CONTROL.
      I-O-CONTROL.
-</para>
+     </programlisting>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1349,16 +1359,51 @@ by the C/R (carriage return) and L/F (line feed) characters.</phrase>
         <term>Punctuation Character.</term>
         <listitem>
           <para>A character that belongs to the following set:
-             Character
-                                              comma
-                                              semicolon
-                                              period
-                                              quotation mark
-                                               left parenthesis
-                                               right parenthesis
-                                              space
-                                              equal sign
-</para>
+          </para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <thead>
+                <row>
+                  <entry>Character</entry>
+                  <entry>Meaning</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>,</entry>
+                  <entry>comma</entry>
+                </row>
+                <row>
+                  <entry>;</entry>
+                  <entry>semicolon</entry>
+                </row>
+                <row>
+                  <entry>.</entry>
+                  <entry>period</entry>
+                </row>
+                <row>
+                  <entry>"</entry>
+                  <entry>quotation mark</entry>
+                </row>
+                <row>
+                  <entry>(</entry>
+                  <entry>left parenthesis</entry>
+                </row>
+                <row>
+                  <entry>)</entry>
+                  <entry>right parenthesis</entry>
+                </row>
+                <row>
+                  <entry> </entry>
+                  <entry>space</entry>
+                </row>
+                <row>
+                  <entry>=</entry>
+                  <entry>equal sign</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1680,8 +1725,8 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Sequential Access.</term>
         <listitem>
           <para>An access mode in which logical records are obtained from
-                or placed into a file in a consecutive predecessor-to-successor
-                logical record sequence dete~ined by the order of records in the file.
+or placed into a file in a consecutive predecessor-to-successor
+logical record sequence determined by the order of records in the file.
 </para>
         </listitem>
       </varlistentry>
@@ -1696,8 +1741,8 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Sequential Organization.</term>
         <listitem>
           <para>The permanent logical file structure in which a
-                record is identified by a predecessor-successor relationship
-                established when the record is placed into the file.
+record is identified by a predecessor-successor relationship
+established when the record is placed into the file.
 </para>
         </listitem>
       </varlistentry>
@@ -1705,8 +1750,8 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Sign Condition.</term>
         <listitem>
           <para>The proposition, for which a truth value can be determined,
-                 that the algebraic value of a data item or an arithmetic
-                 expression is either less than, greater than, or equal to zero.
+ that the algebraic value of a data item or an arithmetic
+ expression is either less than, greater than, or equal to zero.
 </para>
         </listitem>
       </varlistentry>
@@ -1737,12 +1782,12 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Source Program.</term>
         <listitem>
           <para>Although it is recognised that a source program may be
-           represented by other forms and symbols, in this document it always
-           refers to a syntactically correct set of COBOL statements
-           beginning with an Identification Division and ending with the end
-           of the Procedure Division. In contexts where there is no danger
-           of ambiguity, the word 'program' alone may be used in place of the
-           phrase 'source program'.
+represented by other forms and symbols, in this document it always
+refers to a syntactically correct set of COBOL statements
+beginning with an Identification Division and ending with the end
+of the Procedure Division. In contexts where there is no danger
+of ambiguity, the word 'program' alone may be used in place of the
+phrase 'source program'.
 </para>
         </listitem>
       </varlistentry>
@@ -1850,12 +1895,12 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Standard Data Format.</term>
         <listitem>
           <para>The concept used in describing the characteristics of
-              data in a COBOL Data Division under which the characteristics or
-              properties of the data are expressed in a form oriented to the
-              appearance of the data on a printed page of infinite length and
-              breadth, rather than a form oriented to the manner in which the
-              data is stored internally in the computer, or on a particular
-              external medium.
+data in a COBOL Data Division under which the characteristics or
+properties of the data are expressed in a form oriented to the
+appearance of the data on a printed page of infinite length and
+breadth, rather than a form oriented to the manner in which the
+data is stored internally in the computer, or on a particular
+external medium.
 </para>
         </listitem>
       </varlistentry>
@@ -1863,7 +1908,7 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Statement.</term>
         <listitem>
           <para>A syntactically valid combination of words and symbols written in
-              the Proc~dure Division beginning with a verb.
+  the Procedure Division beginning with a verb.
 </para>
         </listitem>
       </varlistentry>
@@ -1933,8 +1978,7 @@ followed by the reserved word SECTION, followed by a segment-number
       <varlistentry>
         <term>Table Element.</term>
         <listitem>
-          <para>A data item that belongs to the set of repeated items
-              comprising a table.
+          <para>A data item that belongs to the set of repeated items comprising a table.
 </para>
         </listitem>
       </varlistentry>
@@ -1999,7 +2043,7 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>Working-Storage Section.</term>
         <listitem>
           <para>The section of the Data Division that describes
-          working storage data items, composed either of noncontigu~us items
+          working storage data items, composed either of noncontiguous items
           or of working storage records or of both.
 </para>
         </listitem>
@@ -2008,7 +2052,7 @@ followed by the reserved word SECTION, followed by a segment-number
         <term>77 Level-Description-Entry.</term>
         <listitem>
           <para>A data description entry  that describes  a
-          noncontiguous data item with the level-number 77.
+noncontiguous data item with the level-number 77.
 </para>
         </listitem>
       </varlistentry>

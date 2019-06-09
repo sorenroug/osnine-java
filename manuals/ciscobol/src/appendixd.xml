@@ -7,7 +7,8 @@ listings produced by the CIS COBOL compiler are as follows:
 </para>
   <informaltable frame="all" colsep="1" rowsep="0">
     <tgroup cols="2">
-      <colspec colnum="1" align="left"/>
+      <colspec colwidth="1in" align="left"/>
+      <colspec colwidth="3in" align="left"/>
       <thead>
         <row>
           <entry>ERROR</entry>

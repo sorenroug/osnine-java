@@ -6,7 +6,7 @@
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="ciscobol" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
   <info>
     <title>CIS COBOL Language Reference Manual</title>
-    <subtitle>(For 8-bit computer architectures)</subtitle>
+    <subtitle>Version 4.5</subtitle>
     <copyright>
       <year>1978</year>
       <year>1980</year>
@@ -41,9 +41,6 @@ All correspondence should be addressed to:
       <para><trademark class="registered">Z80</trademark> is a registered trademark of Zilog Inc</para>
       <para><trademark class="trade">ADM-3A</trademark> is a trademark of Lear Siegler Inc</para>
       <para><trademark class="registered">8080</trademark> is a registered trademark of Intel Corp</para>
-      <!--
-<para>First published 1984</para>
--->
     </legalnotice>
     <revhistory>
       <revision>
@@ -312,7 +309,9 @@ to the number of elements in the table.
       </orderedlist>
       <para>
 
-Readings are presented in this manual in the following order of importance:
+Headings are presented in this manual in the following order of importance:
+</para>
+      <para>
      CHAPTER  N  
                    Chapter Heading
      TITLE
@@ -400,7 +399,8 @@ These exclude those for which STATUS is not selected as above.
     </variablelist>
     <informaltable frame="all" colsep="1" rowsep="1">
       <tgroup cols="2">
-        <colspec colnum="1" align="left"/>
+        <colspec colwidth="1in" align="left"/>
+        <colspec colwidth="3in" align="left"/>
         <thead>
           <row>
             <entry>Error</entry>
@@ -542,10 +542,11 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
     <para>
      D denotes that the feature is documentary only in CIS COBOL.
 </para>
-    <!--
-     GENERAL FORMAT FOR IDENTIFICATION DIVISION
-     fIDENTIFICATION DIVISION.f
-     fPROGRAM-ID.     program namef
+    <section>
+      <title>GENERAL FORMAT FOR IDENTIFICATION DIVISION</title>
+      <para>
+     &ansileft;IDENTIFICATION DIVISION.&ansiright;
+     &ansileft;PROGRAM-ID.     program name&ansiright;
      [AUTHOR.               [comment entry] ... ]
      [INSTALLATION.         [comment entry] ... ]
      [DATE-WRITTEN.         [comment entry] ... ]
@@ -554,30 +555,34 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
 
 
 
-   GENERAL FORMAT FOR ENVIRONMENT DIVISION
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT FOR ENVIRONMENT DIVISION</title>
+      <para>
         ENVIRONMENT DIVISION.
         CONFIGURATION SECTION.
         SOURCE-COMPUTER.        source-computer-entry    [WITH DEBUGGING MODE].
         OBJECT-COMPUTER.        object-computer-entry
-             [.MEMORY SIZE integer
-                                           IWORDS
+             [,MEMORY SIZE integer
+                                           WORDS
                                             CHARACTERS
-                                            MODULE~
+                                            MODULES
                                                         !]
-                                                                                         l
                [,PROGRAM COLLATING SEQUENCE IS     alphabet-name].
         SPECIAL-NAMES.
-               SWIT~
-                             0                         ON STATUS IS condition-name-l
+               SWITCH
+                             0                         ON STATUS IS condition-name-1
                                                       [OFF STATUS IS condition-name-2]
             [                     [}i mnemonic-name]   OFF-sTATUS IS conditional-name-2
-                                                      -[ON STATUSIS conditional-name-l]
-            n{ ,S.YSIN }.  . is   mnemonic-name ]                          D
-            V ,SYSOUT -
-               (  TAB ,ll mnemonic-name 1                                 D
-               [,CURRENCY SIGN }i literal-9]
-                (,DECIMAL-POINT }i COMMA}
-               W-J:~~
+                                                      -[ON STATUSIS conditional-name-1]
+            n{ ,SYSIN }  IS   mnemonic-name ]                          D
+            V ,SYSOUT
+               [,TAB IS mnemonic-name 1                                 D
+               [,CURRENCY SIGN IS literal-9]
+                [,DECIMAL-POINT IS COMMA]
+               [,CURSOR IS data-name-1]
+               [,CONSOLE IS CRT]
                                                   E
                                                   E
         INPUT-OUTPUT SECTION.
@@ -585,18 +590,15 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
   
                file-control-entry
  
-                                            269
-   [   H)-CONTROL.
-          T;t   !!!!!!!_fOB ..l f i - 1 '
-                     :l         ~~~
-                                                      f]
-                                                          -
-                                                              '
-                    .      miR't    - ~ t.~:88~1~s I                             file-name-2
+
+   [I-O-CONTROL.
             , ,                          integer-2 CLOCK-UNITS
-                                         eondition-name
-          : : :[;{~~:'; ARP.A   Fofi file-urae~l,  . l.,fi:l~~r2  (. ~      .J..  ].
-GENERAL FORMAT FOR FILE-CONTROL ENTRY
+                                         condition-name
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT FOR FILE-CONTROL ENTRY</title>
+      <para>
 Sequential SELECT:
        SELECT file-name
        ASSIGN TO        external-file-name-literal~             ~;.[  ~sexte~nal-file~"OSme-literal~]
@@ -619,10 +621,10 @@ Relative Select:
                                                       (,RELATIVE KEY IS data-name]
                                                         ,RELATIVE KEY IS data-name
                                                                                              !J
-                                                  270
+
   Indexed Select:
         SELECT file-name
-                      j ~~~=~~:!~!~~~:~»me-literal! ?[~-1"~ft1t,~'~\'
+                      j ~~~=~~:!~!~~~:~&#xBB;me-literal! ?[~-1"~ft1t,~'~\'
         ASSIGN TO
         ;ORGANIZATION IS INDEXED
       [;ACCESS MODE IS
@@ -632,10 +634,11 @@ Relative Select:
                                         l]
         ;RECORD KEY IS data-name
         [;FILE STATUS IS data-name]
-r
-r
-r                                       271
-GENERAL FORMAT FOR THE DATA DIVISION
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT FOR THE DATA DIVISION</title>
+      <para>
                                                                                D
                                                                                D
                                                                                D
@@ -649,7 +652,11 @@ GENERAL FORMAT FOR THE DATA DIVISION
    [ LINKAGE SECTION
       77-level-description-entry]    )
     [ record-description-entry
-GENERAL FORMAT FOR DATA DESCRIPTION ENTRY
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT FOR DATA DESCRIPTION ENTRY</title>
+      <para>
       level-number {data-name}
                           FILLER
               [;REDEFINES data-name]
@@ -671,8 +678,12 @@ GENERAL FORMAT FOR DATA DESCRIPTION ENTRY
            [ ;{ ~~~~IFIED}            RIGHT ]
             {;BLANK WHEN ZERO]
             [;VALUE IS literal]
-                                              272
-   GENERAL FORMAT FOR PROCEDURE DIVISION
+
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT FOR PROCEDURE DIVISION</title>
+      <para>
    Declarative format:
          PROCEDURE DIVISION (usiNG data-name-1             [. data-name-2] .. ].
          DECLARATIVES.
@@ -684,7 +695,11 @@ GENERAL FORMAT FOR DATA DESCRIPTION ENTRY
    Non-declarative format:
          PROCEDURE DIVISION ( ~ data-name-1                  [,data-name-2]    ... ] .
           {paragraph-name [sentence]            J
-   GENERAL FORMAT FOR VERBS
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORMAT FOR VERBS</title>
+      <para>
          ACCEPT    dataname-1  IAT       ~~::;~~[;J-lt ~at ,   .                E
          ACCEPT identifier       [FROM CONSOLE]
          ADD  sidentifier-1~    Sidentifier-2~ ...      TO identifier [ROUNDED)
@@ -694,20 +709,18 @@ GENERAL FORMAT FOR DATA DESCRIPTION ENTRY
          ADD lliteral-1      S' lliteral-2        S 'lliteral-3        S
                           GIVING identifier        (ROUNDED]
                            [; ON SIZE ERROR       imperative-statement]
-~
-I        ALTER   ~procedure-name-1      TO [PROCEED TO  J procedure-name-2
+
+         ALTER   ~procedure-name-1      TO [PROCEED TO  J procedure-name-2
          CALL Si~entifier-ll [USING         data-name-1       [, data-name-2]   .. J
         - - l hteral-1        S
          CANCEL Sidentifier-1l           identifier-2]
         - - - lliteral-1         S    [ ,literal-2
                                        D                   D                          D
                                                                ~ , file-name
-r-
-1
          DELETE    file-name    RECORD     [; INVALID KEY     imperative-statement]
          DISPLAY sidentifier-1~ , Sidentifier-2l             . [UPON CONSOLE]
         - - - hiteral-1            S    luteral-2        S
-                                                273
+
                                                                                                                          E
      DIVIDE Sidentifier-ll                                            INTO 'd        'f' -2             [ROUNDED]
               hiteral-1                                        ~      - - 1 ent1 1er
@@ -718,15 +731,12 @@ r-
      DIVIDE Sidentifier-ll BY Si~entifier- 2 l                                                       GIVING   identifier-3   [ROUNDED]
               lliteral-1                                       S - - l11tera1-2                  S
                   [;ON SIZE ERROR                                           imperative-statement]
-: . :d;.;: ;~~-~~~     ...
-                   :. : :::- ::.:  :; ,: ......:.:,..::~ ::;
-                                                                  .  t~@f.~li~~~ ~ ~ l.    ;  .K                      D
      EXIT [PROGRAM].
      GO TO procedure-name.                                                                                                               ~
      GO TO procedure-name-1                                             , procedure-name-2
             DEPENDING ON identifier
               . .                     { statement-1                              }       ; ELSE statement-2 }
-     IF cond 1 t 1on;                          NEXT SENTENCE                           { ; ELSE NEXT SENTENCE
+     IF condition;                          NEXT SENTENCE                           { ; ELSE NEXT SENTENCE
      INSPECT     identifier-1 TALLYING
      -~                                                                     ){ALL            }      Sidentifier-3l~
             identifier-2 FOR                                              ,     LEADING             lliteral-2      ~
@@ -775,8 +785,6 @@ r-
    READ file-name       [NEXT)       RECORD     (INTO identifier]
                [;AT END imperative-statement]
    READ file-name      RECORD      [INTO identifier]
-r-
-1
                [;INVALID KEY imperative-statement)
    REWRITE     record-name    [FROM identifier]
                [;INVALID KEY imperative-statement]
@@ -789,7 +797,7 @@ r-
    START    file-name [KEY      ~ i~ :       ~                  data-name]
                                 ~IS   NOT &lt; ~
                  [;INVALID  KEY      imperative-statement]
-                                                  275
+
  SUBTRACT ~identifer-ll [ ~identifier-2l]               FROM identifier-) [ROUNDED]
           lliteral-1 ~       lliteral-2     S
            [; ON SIZE ERROR    imperative-statement]
@@ -809,10 +817,15 @@ USE FOR DEBUGGING {procedure-name-1       [, procedure-name-2]}
                                                       LINES } l         E
 WRITE record-name [FROM identifier]
            [;INVALID KEY imperative-statement]
-GENERAL FORM FOR COPY STATEMENT
-          ~text-name                    l
-          lexternal-file-name-literal S
--->
+</para>
+    </section>
+    <section>
+      <title>GENERAL FORM FOR COPY STATEMENT</title>
+      <para>
+  COPY    text-name
+          external-file-name-literal .
+</para>
+    </section>
   </appendix>
   <appendix>
     <title>SUMMARY OF EXTENSIONS TO ANSI COBOL</title>
@@ -835,15 +848,31 @@ GENERAL FORM FOR COPY STATEMENT
           <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
           <arg>FROM CRT</arg>
         </cmdsynopsis>
+        <variablelist termlength="11" spacing="compact">
+          <varlistentry>
+            <term>data-name-2</term>
+            <listitem>
+              <para>allows the start of screen to be changed dynamically. It
+refers to a PIC 9999 field where the most significant 99 is a
+line count 1-25 and the least significant 99 is a character position 1-80.
+</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>data-name-1</term>
+            <listitem>
+              <para>refers to a record, group or elementary item but may not be subscripted.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>literal-1</term>
+            <listitem>
+              <para>is a numeric literal</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
         <para>
-  data-name-2       allows the start of screen to be changed dynamically. It
-                    refers to a PIC 9999 field where the most significant 99 is a
-                    line count l-25 and the least significant 99 is a charact~r
-                    position 1-80.
-  data-name-1      refers to a record, group or elementary item but may not be subscripted.
-   literal-1        is a numeric literal
-  NOTE:       See Chapter 3 for description. See also Appendix H for
-               Environment Division changes.
+NOTE: See Chapter 3 for description. See also Appendix H for Environment Division changes.
 </para>
       </section>
       <section>
@@ -867,14 +896,28 @@ An additional format for the DISPLAY statement is provided as follows:
             <arg>CRT-UNDER</arg>
           </group>
         </cmdsynopsis>
-        <para>
-   literal-3         is an alphanumeric literal
-   dataname-1      refers to a record, group or elementary item but may not be
-                    subscripted
-   dataname-2       defines the left-most position on the screen. It refers to a
-                     PIC 9999 field where the most significant 99 is a line count
-                     1-25 and the least significant 99 is a character position 1-80.
-</para>
+        <variablelist termlength="11" spacing="compact">
+          <varlistentry>
+            <term>literal-3</term>
+            <listitem>
+              <para>is an alphanumeric literal</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>dataname-1</term>
+            <listitem>
+              <para>refers to a record, group or elementary item but may not be subscripted</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>dataname-2</term>
+            <listitem>
+              <para>defines the left-most position on the screen.
+It refers to a PIC 9999 field where the most significant 99 is a line count 1-25
+and the least significant 99 is a character position 1-80.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
         <para>
 NOTE:  See Chapter 3 for description.
 </para>
@@ -888,12 +931,12 @@ Two extensions are offered by CIS COBOL file processing; these are as follows:
       <orderedlist spacing="compact">
         <listitem>
           <para>
-1.    Line sequential files
+Line sequential files
 </para>
         </listitem>
         <listitem>
           <para>
-2.    Run time input of filenames
+Run time input of filenames
 </para>
         </listitem>
       </orderedlist>
@@ -942,19 +985,19 @@ hexadecimal digits must be even.
       <title>INTERACTIVE DEBUGGING</title>
       <para>
 There is a Run-Time Debug Package to provide break-point facilities in
- the user's program. Programs may be run from the start until a specified
+the user's program. Programs may be run from the start until a specified
 break-point is reached, when control is passed back to the user. At this
- point, data areas may be inspected or changed.
+point, data areas may be inspected or changed.
  </para>
       <para>
 The Debug package is entered as an option by the user and the user
- program is then tested line by line, paragraph by paragraph and so on as
- required. The commands to the package can reference procedure statements
+program is then tested line by line, paragraph by paragraph and so on as
+required. The commands to the package can reference procedure statements
 and data areas by means of a 4-digit hexadecimal code output by the compiler
 against each line of the compilation listing. Powerful macros of commands
- can be used to give very sophisticated debugging facilities. The precise
- details for using the package vary according to the host operating system
- and are described in the appropriate Operating Guide.
+can be used to give very sophisticated debugging facilities. The precise
+details for using the package vary according to the host operating system
+and are described in the appropriate Operating Guide.
  </para>
     </section>
   </appendix>
@@ -1102,9 +1145,9 @@ compiler during compilation but do not cause compiler-time errors:
   <appendix>
     <title>LANGUAGE SPECIFICATION</title>
     <para>
-     CIS COBOL is ANSI COBOL as given in "American Natioual Standard Programming
-     Language COBOL" (ANSI X.3.23 1974). CIS COBOL implements both levels of
-     ANSI COBOL. The following modules are fully implemented at Level 1:
+CIS COBOL is ANSI COBOL as given in "American Natioual Standard Programming
+Language COBOL" (ANSI X.3.23 1974). CIS COBOL implements both levels of
+ANSI COBOL. The following modules are fully implemented at Level 1:
  </para>
     <itemizedlist>
       <listitem>
@@ -1175,57 +1218,57 @@ Fully implemented to Level One.
         <orderedlist>
           <listitem>
             <para>
-1.   DATE-COMPILED in the Identification Division is accepted for documentation purposes only.
+DATE-COMPILED in the Identification Division is accepted for documentation purposes only.
 </para>
           </listitem>
           <listitem>
             <para>
-2.   Up to 49 Level Numbers are permitted and 1-9 can be a single digit.
+Up to 49 Level Numbers are permitted and 1-9 can be a single digit.
 </para>
           </listitem>
           <listitem>
             <para>
-3.   The characters , and ; are permitted as separators
+The characters , and ; are permitted as separators
 </para>
           </listitem>
           <listitem>
             <para>
-4.   The character  '&gt;', '=' and '&lt;' are permitted in relative conditions.
+The character  '&gt;', '=' and '&lt;' are permitted in relative conditions.
 </para>
           </listitem>
           <listitem>
             <para>
-5.   The PERFORM ... THROUGH ... UNTIL feature is implemented.
+The PERFORM ... THROUGH ... UNTIL feature is implemented.
 </para>
           </listitem>
           <listitem>
             <para>
-6.   Plural forms of the figurative constants can be used.
+Plural forms of the figurative constants can be used.
 </para>
           </listitem>
           <listitem>
             <para>
-7.   IF statements can be nested.
+IF statements can be nested.
 </para>
           </listitem>
           <listitem>
             <para>
-8.   Mnemonic names are permitted in ACCEPT and DISPLAY statements (See CIS COBOL extensions 6 and 7 below).
+Mnemonic names are permitted in ACCEPT and DISPLAY statements (See CIS COBOL extensions 6 and 7 below).
 </para>
           </listitem>
           <listitem>
             <para>
-9.    Procedure names can be all digits.
+ Procedure names can be all digits.
 </para>
           </listitem>
           <listitem>
             <para>
-10.  REDEFINES clauses can be nested.
+REDEFINES clauses can be nested.
 </para>
           </listitem>
           <listitem>
             <para>
-11.  Non-numeric operands can be compared.
+Non-numeric operands can be compared.
 </para>
           </listitem>
         </orderedlist>
@@ -1289,7 +1332,7 @@ gives enhanced CRT output facilities.
           </listitem>
           <listitem>
             <para>
-8.    'CURSOR IS data-name' can be specified in SPECIAL-NAMES and 'data-name'
+'CURSOR IS data-name' can be specified in SPECIAL-NAMES and 'data-name'
        in WORKING-STORAGE section to specify CRT cursor address for ACCEPT statements.
 </para>
           </listitem>
@@ -1369,22 +1412,22 @@ The following are treated as documentary only in the FD clause:
         <orderedlist>
           <listitem>
             <para>
-1.  Run Time allocation of file-names. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+Run Time allocation of file-names. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
 </para>
           </listitem>
           <listitem>
             <para>
-2.  LINE SEQUENTIAL is an additional file type.
+LINE SEQUENTIAL is an additional file type.
 </para>
           </listitem>
           <listitem>
             <para>
-3. All File Description (FD) clauses are optional when ANS switch is unset.
+All File Description (FD) clauses are optional when ANS switch is unset.
 </para>
           </listitem>
           <listitem>
             <para>
-4. Tabbing is available, specified by TAB in the WRITE statement.
+Tabbing is available, specified by TAB in the WRITE statement.
 </para>
           </listitem>
         </orderedlist>
@@ -1453,4 +1496,5 @@ Fully implemented to Level Two.
       </section>
     </section>
   </appendix>
+  <index/>
 </book>

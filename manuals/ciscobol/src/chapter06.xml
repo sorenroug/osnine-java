@@ -50,7 +50,7 @@ opened in the output mode. The setting of the current record pointer is
 affected only by the OPEN, START and READ statements.
 </para>
       </section>
-      <section>
+      <section xml:id="sec6.i.o">
         <title>I-O Status</title>
         <para>
 If the FTLE STATUS clause is specified in a file control entry, a value is
@@ -62,93 +62,237 @@ status of that input-output operation.
         <section>
           <title>Status Key 1</title>
           <para>
-The leftmost character position of the FILE STATUS data item is known as
-status key 1 and is set to indicate one of the following conditions upon
+The leftmost character position of the FILE STATUS data item is known
+as Status Key 1 and is set to indicate one of the following conditions upon
 completion of the input-output operation.
-        'O' -  indicates Successful Completion
-        '1' -  indicates At End
-        '2' -  indicates Invalid Key
-        '3' -  indicates Permanent Error
-        '9' -  indicates an Operating System Error Message
-        The meaning of the above indications are as follows:
-        '0' - Successful Completion. The input-output statement was
-              successfully executed.
-        '1' -At End. The Format 1 READ statement was unsuccessfully
+</para>
+          <itemizedlist mark="none" spacing="compact">
+            <listitem>
+              <para>
+            '0' -     indicates Successful Completion
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+            '1' -    indicates At End
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+            '2' -    indicates Invalid Key
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+            '3' -     indicates Permanent Error
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+            '9' -     indicates an Operating System Error Message
+          </para>
+            </listitem>
+          </itemizedlist>
+          <para>
+     The meaning of the above indications are as follows:
+</para>
+          <variablelist>
+            <varlistentry>
+              <term>0</term>
+              <listitem>
+                <para>Successful Completion. The input-output statement was
+               successfully executed.
+               </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>1</term>
+              <listitem>
+                <para>At End. The Format 1 READ statement was unsuccessfully
                executed as a result of an attempt to read a record when no
                next logical record exists in the file.
-        '2' - Invalid Key. The input-output statement was unsuccessfully
+               </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>2</term>
+              <listitem>
+                <para>Invalid Key. The input-output statement was unsuccessfully
               executed as a result of one of the following:
-                   Duplicate Key
-              *    No Record Found
-              *    Boundary Violation
-              *
-        '3' - Permanent Error. The input-output statement was unsuccessfully
+          </para>
+                <itemizedlist spacing="compact">
+                  <listitem>
+                    <para>
+Duplicate Key
+               </para>
+                  </listitem>
+                  <listitem>
+                    <para>
+No Record Found
+               </para>
+                  </listitem>
+                  <listitem>
+                    <para>
+Boundary Violation
+               </para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>3</term>
+              <listitem>
+                <para>Permanent Error. The input-output statement was unsuccessfully
               executed as the reult of an input-output error, such as data
               check, parity error or transmission error.
-        '9' - Operating System Error Message. The input-output statement was
-              unsuccessfully executed as the result of a condition that is
-              specified by the Operating System. This value is used only to
-              indicate a condition not indicated by other defined values of
-              status key 1, or by specified combinations of the values of status
-              key 1 and status key 2.
-</para>
+               </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>9</term>
+              <listitem>
+                <para>Operating System Error Message. The input-output statement
+               was unsuccessfully executed as a result of a condition that
+               is specified by the Operating System Error Message. This
+               value is used only to indicate a condition not indicated by
+               other defined values of status key 1, or by specified
+               combinations of the values of status key 1 and status key 2.
+               </para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
         </section>
         <section>
           <title>Status Key 2</title>
           <para>
-        The rightmost character position of the FILE STATUS data item is known
-   as status key 2 and is used to further describe the reults of the
-   input-output operation. This character contains a value as follows:
-        *     If no further information is available concerning the input-output
-              operation, then status key 2 contains a value of '0'
-     *     When status key 1 contains a value of 1 2' indicating an INVALID
+The rightmost character position of the FILE STATUS data item is known
+as status key 2 and is used to further describe the reults of the
+input-output operation. This character contains a value as follows:
+   </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+If no further information is available concerning the input-output
+operation, then status key 2 contains a value of '0'
+</para>
+            </listitem>
+            <listitem>
+              <para>
+     *     When status key 1 contains a value of '2' indicating an INVALID
            KEY condition, status key 2 is used to designate the cause of that
            condition by the following values:
-           2         Indicates a duplicate key value. An attempt has been
+</para>
+              <variablelist termlength="3" spacing="compact">
+                <varlistentry>
+                  <term>2 -</term>
+                  <listitem>
+                    <para>Indicates a duplicate key value. An attempt has been
                      made to write a record that would create a duplicate key
                      in a relative file.
-           3         Indicates no record found. An attempt has been made to
+</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>3 -</term>
+                  <listitem>
+                    <para>Indicates no record found. An attempt has been made to
                      access a record, identified by a key, and that record
                      does not exist in the file,
-           4         Indicates a boundary violation. An attempt has been
+</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>4 -</term>
+                  <listitem>
+                    <para>Indicates a boundary violation. An attempt has been
                      made to write beyond the externally-defined boundaries
                      of a relative file. This is normally treated as a fatal
                      error by the Operation System.
-     *     When status key 1 contains a value of 1 9 1 the value of status key
-           2 is the operating system error message number (for those
-           operating systems which designate errors numerically),
-           The <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
-           specific to your operating system contains
-           details of the status-key-2 representation.
-           Note that it is not possible to eKtract this number directly.
 </para>
+                  </listitem>
+                </varlistentry>
+              </variablelist>
+            </listitem>
+            <listitem>
+              <para>
+When status key 1 contains a value of '9' the value of status key 2
+is the operating system error message number (for those
+operating systems which designate errors numerically),
+The <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
+specific to your operating system contains
+details of the status-key-2 representation.
+Note that it is not possible to extract this number directly.
+</para>
+            </listitem>
+          </itemizedlist>
         </section>
         <section>
           <title>Valid Combinations of Status Keys 1 and 2</title>
           <para>
      The valid permissible combinations of the values of status key 1 and
-status key2 are shown in the table. An 'X 1 at an intersection indicates a
+status key2 are shown in the table. An 'X' at an intersection indicates a
 valid permissible combination.
-     Status Key 1                          Status Key 2
-                     ~o Further Duplicate No Record       Boundary
-                     Information    Key         Found         Violation
-                     (0)             (2)        (3)           (4)
-Successful
-Completion (0)            X
-At End (1)                X
-Invalid Key (2)                            X          X            X
-Permanent
-Error (3)                 X
-Implementor
-Defined (9)               Operating System Error Message Number
-
 </para>
+          <informaltable frame="all" colsep="1" rowsep="1">
+            <tgroup cols="5">
+              <colspec colwidth="1.2in" align="left" colname="c1"/>
+              <colspec colwidth=".7in" align="left" colname="c2"/>
+              <colspec colwidth=".7in" align="left" colname="c3"/>
+              <colspec colwidth=".7in" align="left" colname="c4"/>
+              <colspec colwidth=".7in" align="left" colname="c5"/>
+              <tbody>
+                <row>
+                  <entry morerows="1">Status Key 1</entry>
+                  <entry namest="c2" nameend="c5">Status Key 2</entry>
+                </row>
+                <row>
+                  <entry>No Further Information (0)</entry>
+                  <entry>Duplicate Key (2)</entry>
+                  <entry>No Record Found (3)</entry>
+                  <entry>Boundary Violation (4)</entry>
+                </row>
+                <row>
+                  <entry>Successful Completion (0)</entry>
+                  <entry>X</entry>
+                  <entry></entry>
+                  <entry></entry>
+                  <entry></entry>
+                </row>
+                <row>
+                  <entry>At End (1)</entry>
+                  <entry>X</entry>
+                  <entry></entry>
+                  <entry></entry>
+                  <entry></entry>
+                </row>
+                <row>
+                  <entry>Invalid Key (2)</entry>
+                  <entry></entry>
+                  <entry>X</entry>
+                  <entry>X</entry>
+                  <entry>X</entry>
+                </row>
+                <row>
+                  <entry>Permanent Error (3)</entry>
+                  <entry>X</entry>
+                  <entry></entry>
+                  <entry></entry>
+                  <entry></entry>
+                </row>
+                <row>
+                  <entry>Implementor Defined (9)</entry>
+                  <entry namest="c2" nameend="c5">Operating System Error Message Number</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+
         </section>
-        <section>
+        <section xml:id="sec6.inv.key">
           <title>The INVALID KEY Condition</title>
           <para>
 The INVALID KEY condition can occur as a result of the execution of a START,
-READ, WRITE, REWRITE or DllLETE statement. For details of the causes of the
+READ, WRITE, REWRITE or DELETE statement. For details of the causes of the
 condition, see The START Statement, The READ Statement, The WRITE Statement,
 The REWRITE Statement, and The DELETE Statement later in this chapter.
 </para>
@@ -159,22 +303,22 @@ these actions in the following order:
           <orderedlist>
             <listitem>
               <para>
-1.   A value is placed into the FILE STATUS data item, if specified for this
-      file, to indicate an INVALID KEY condition.   (See I-O Status in this Chapter).
+A value is placed into the FILE STATUS data item, if specified for this
+file, to indicate an INVALID KEY condition.   (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
             </listitem>
             <listitem>
               <para>
-2.   If   the INVALID KEY phrase is specified in the statement causing the
-     condition, control is transferred to the INVALID KEY imperative
-     statement. Any USE procedure specified for this file is not executed.
+If the INVALID KEY phrase is specified in the statement causing the
+condition, control is transferred to the INVALID KEY imperative
+statement. Any USE procedure specified for this file is not executed.
 </para>
             </listitem>
             <listitem>
               <para>
-3.    If  the INVALID KEY phrase is not specified, but a USE procedure is
-      specified, either explicitly or implicitly, for this file, that
-      procedure is executed.
+If  the INVALID KEY phrase is not specified, but a USE procedure is
+specified, either explicitly or implicitly, for this file, that
+procedure is executed.
 </para>
             </listitem>
           </orderedlist>
@@ -185,11 +329,11 @@ not affected.
 </para>
         </section>
         <section>
-          <title>The AT END Condition</title>
+          <title>The AT END Condition<indexterm><primary>AT END Condition</primary></indexterm></title>
           <para>
 The AT END condition can occur as a result of the execution of a READ
-statement. For details of the causes of the condition, see The READ
-Statement later in this chapter.
+statement. For details of the causes of the condition,
+see The READ Statement later in this chapter.
 </para>
         </section>
       </section>
@@ -212,7 +356,7 @@ other file-related information. (See also Appendix F in the
         <section>
           <title>General Format</title>
           <para>
-       FILE-CONTROL    j file-control-entry!
+       FILE-CONTROL    { file-control-entry } ...
 </para>
         </section>
       </section>
@@ -221,7 +365,7 @@ other file-related information. (See also Appendix F in the
         <section>
           <title>Function</title>
           <para>
-The file cuntrol entry names a file and may specify other file-related information.
+The file control entry names a file and may specify other file-related information.
 </para>
         </section>
         <section>
@@ -249,13 +393,13 @@ The file cuntrol entry names a file and may specify other file-related informati
           <orderedlist>
             <listitem>
               <para>
-  1.    The SELECT clause must be specified first in the file control entry.
+    The SELECT clause must be specified first in the file control entry.
         The clauses which follow the SELECT clause may appear in any order.
 </para>
             </listitem>
             <listitem>
               <para>
-  2.    Each file described in the Data Division must be named once and only
+    Each file described in the Data Division must be named once and only
         once as file-name in the FILE-cONTROL paragraph. Each file specified
         in the file control entry must have a file description entry in the
         Data Division.
@@ -263,27 +407,26 @@ The file cuntrol entry names a file and may specify other file-related informati
             </listitem>
             <listitem>
               <para>
-  3.    If the ACCESS MODE clause is not specified, the ACCESS MODE IS
+    If the ACCESS MODE clause is not specified, the ACCESS MODE IS
         SEQUENTIAL clause is implied.
 </para>
             </listitem>
             <listitem>
               <para>
-  4.   Data-name-2 must be defined in the Data Division as a two-character
-       data item of the category alphanumeric and must not be defined in the
-       File Section, the Report Section, or the Communication Section.
+Data-name-2 must be defined in the Data Division as a two-character
+data item of the category alphanumeric and must not be defined in the
+File Section, the Report Section, or the Communication Section.
 </para>
             </listitem>
             <listitem>
               <para>
-  5.   Data-name-1 must not be defined in a record description entry
+   Data-name-1 must not be defined in a record description entry
        associated with that file-name.
 </para>
             </listitem>
             <listitem>
               <para>
-  6.   The data item referenced by data-name-1 must be defined as an unsigned
-       integer.
+The data item referenced by data-name-1 must be defined as an unsigned integer.
 </para>
             </listitem>
           </orderedlist>
@@ -308,29 +451,29 @@ cannot subsequently be changed.
             </listitem>
             <listitem>
               <para>
-  3.  When the access mode is sequential , records in the file are accessed in
+  When the access mode is sequential , records in the file are accessed in
        the sequence dictated by the file organ i zation. This sequence is the
        order of ascending relative record numbers of existing records in the file.
 </para>
             </listitem>
             <listitem>
               <para>
-  4.   When the FILE STATUS clause is specified, a value will be moved by the
+   When the FILE STATUS clause is specified, a value will be moved by the
        operating system into the data item specified by data-name-2 after the
        execution of every statement that references that file either
        explicitly or implicitly. This value indicates the status of execution
-       of the statement. (See I-O Status in this Chapter).
+       of the statement. (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
             </listitem>
             <listitem>
               <para>
-  5.   If the access mode is random, the value of the RELATIVE KEY data item
+   If the access mode is random, the value of the RELATIVE KEY data item
        indicates the record to be accessed.
 </para>
             </listitem>
             <listitem>
               <para>
-  6.   When the access made is dynamic, records in the file may be assessed
+  When the access made is dynamic, records in the file may be assessed
        sequentially and/or randomly. (See General Rules 3 and 5) .
 </para>
             </listitem>
@@ -377,46 +520,46 @@ established and the memory area which is to be shared by different files.
           <orderedlist>
             <listitem>
               <para>
-1.    The I-O-CONTROL paragraph is optional. <phrase role="extension">The whole clause is for
+    The I-O-CONTROL paragraph is optional. <phrase role="extension">The whole clause is for
 documentation purposes only.</phrase>
 </para>
             </listitem>
             <listitem>
               <para>
-2.    File-name-1 must be a sequentially organized file.
+    File-name-1 must be a sequentially organized file.
 </para>
             </listitem>
             <listitem>
               <para>
-3.    When either the integer-1 RECORDS clause or the integer-2 CLOCK-UNITS
-      clause is specified, implementor-name must be given in the RERUN
-      clause.
+    When either the integer-1 RECORDS clause or the integer-2 CLOCK-UNITS
+      clause is specified, implementor-name must be given in the RERUN clause.
 </para>
             </listitem>
             <listitem>
               <para>
-4.    More than one RERUN clause may be specified for a given file-name-2,
-      subject to the following restriction:
+More than one RERUN clause may be specified for a given file-name-2,
+subject to the following restriction:
+      </para>
+      <para>
               When multiple integer-1 RECORDS clauses are specified, no two of
               them may specify the same file-name-2.
 </para>
             </listitem>
             <listitem>
               <para>
-5.    Only one RERUN clause containing the CLOCK-UNITS clause may be
-      specified.
+Only one RERUN clause containing the CLOCK-UNITS clause may be specified.
 </para>
             </listitem>
             <listitem>
               <para>
- 6.   More than one SAME clause may be included in a program but file-name
-      must not appear in more than one SAME AREA clause.
+More than one SAME clause may be included in a program but file-name
+must not appear in more than one SAME AREA clause.
 </para>
             </listitem>
             <listitem>
               <para>
- 7.   The files referenced in the SAME AREA clause need not all have the same
-      organization or access.
+The files referenced in the SAME AREA clause need not all have the same
+organization or access.
 </para>
             </listitem>
           </orderedlist>
@@ -465,7 +608,7 @@ description has a hierarchical structure and therefore the clauses used with
 an entry may vary considerably, depending upon whether or not it is followed
 by subordinate entries. The structure of a record description is defined in
 CONCEPTS OF LEVELS in Chapter 2 while the elements allowed in a record
-description are shown in the DATA DESCRIPTION-cOMPLETE ENTRY SKELETON in Chapter 3.
+description are shown in <xref linkend="c03.skeleton"/> in Chapter 3.
 </para>
     </section>
     <section>
@@ -494,7 +637,6 @@ FD    file-name
                   RECORD IS !
                 ! RECORDS ARE
                                  data-name-3      [, data-name-4]   ; ... ] .
-                                       169
 </para>
       </section>
       <section>
@@ -502,19 +644,19 @@ FD    file-name
         <orderedlist>
           <listitem>
             <para>
-1.    The level indicator FD identifies the beginning of a file description
+   The level indicator FD identifies the beginning of a file description
       and must precede the file-name.
 </para>
           </listitem>
           <listitem>
             <para>
-2.    The clauses which follow the name of the file are
+   The clauses which follow the name of the file are
       cases, and their order of appearance is immaterial.
 </para>
           </listitem>
           <listitem>
             <para>
-3.    One or more re'c ord description entries must follow the file description
+   One or more re'c ord description entries must follow the file description
       entry.
 </para>
           </listitem>
@@ -571,7 +713,7 @@ FD    file-name
         <orderedlist>
           <listitem>
             <para>
-       1.    The presence of more than one data-name indicates that the file
+The presence of more than one data-name indicates that the file
              contains more than one type of data record. These records may be of
              differing sizes, different formats, etc. The order in which they are
              listed is not significant.
@@ -579,7 +721,7 @@ FD    file-name
           </listitem>
           <listitem>
             <para>
-       2.    Conceptually, all data records within a file share the same area. This
+Conceptually, all data records within a file share the same area. This
              is in no way altered by the presence of more than one type of data
              record within the file.
 </para>
@@ -658,14 +800,14 @@ records associated with a file.
         <orderedlist>
           <listitem>
             <para>
-1.   Data-name-1, data-name-2, etc, should be qualified when necessary, but
+  Data-name-1, data-name-2, etc, should be qualified when necessary, but
      cannot be subscripted or indexed, nor can they be items described with
      the USAGE IS  INDEX clause
 </para>
           </listitem>
           <listitem>
             <para>
-2.   Data-name-1, data-name-2 etc, must be in the Working-Storage Section
+  Data-name-1, data-name-2 etc, must be in the Working-Storage Section
 </para>
           </listitem>
         </orderedlist>
@@ -690,7 +832,7 @@ A figurative constant may be substituted in the format above wherever a literal 
   <section>
     <title>PROCEDURE DIVISION IN THE RELATIVE I-O MODULE</title>
     <section>
-      <title>THE CLOSE STATEMENT</title>
+      <title>THE CLOSE STATEMENT<indexterm><primary>CLOSE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -716,12 +858,12 @@ organization or access.
         <orderedlist>
           <listitem>
             <para>
-     1.   A CLOSE statement may only be executed for a file in an open mode.
+A CLOSE statement may only be executed for a file in an open mode.
 </para>
           </listitem>
           <listitem>
             <para>
-     2.   The action taken i f a file is in the open mode when a STOP RUN
+The action taken i f a file is in the open mode when a STOP RUN
           statement is executed is to close the file.      The action taken for a
           file that has been dpened in a called program and not closed in that
           program prior to the execution of a CANCEL statement for the program is
@@ -730,7 +872,7 @@ organization or access.
           </listitem>
           <listitem>
             <para>
-     3.   If a CLOSE statement has been executed for a file, no other statement
+If a CLOSE statement has been executed for a file, no other statement
           can be executed that references that file, either explicitly or
           implicitly, unless an intervening OPEN statement for that file is
           executed.
@@ -738,7 +880,7 @@ organization or access.
           </listitem>
           <listitem>
             <para>
-     4.   Following the successful execution of a CLOSE statement, the record
+Following the successful execution of a CLOSE statement, the record
           area associated with file-name is no longer available. The
           unsuccessful execution of such a CLOSE statement leaves the
           availability of the record area undefined.
@@ -748,7 +890,7 @@ organization or access.
       </section>
     </section>
     <section>
-      <title>THE DELETE STATEMENT</title>
+      <title>THE DELETE STATEMENT<indexterm><primary>DELETE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -766,13 +908,13 @@ DELETE file-name RECORD (;INVALID KEY imperative-statement]
         <orderedlist>
           <listitem>
             <para>
-1.    The INVALID KEY phrase must not be specified for a DELETE statement
+   The INVALID KEY phrase must not be specified for a DELETE statement
       which references a file which is in sequential access mode.
 </para>
           </listitem>
           <listitem>
             <para>
-2.    The INVALID KEY phrase must be specified for a DELETE statement which
+   The INVALID KEY phrase must be specified for a DELETE statement which
       references a file which is not in sequential access mode and for which
       an applicable USE procedure is not specified
 </para>
@@ -784,13 +926,13 @@ DELETE file-name RECORD (;INVALID KEY imperative-statement]
         <orderedlist>
           <listitem>
             <para>
-1.    The associated file must be open in the I-O mode at the time of the
+   The associated file must be open in the I-O mode at the time of the
       execution of this statement.     (See THE OPEN STATEMENT later in this Chapter)
 </para>
           </listitem>
           <listitem>
             <para>
-2.    For files in the sequential access mode, the last input-output
+   For files in the sequential access mode, the last input-output
       statement executed for file-name prior to the execution of the DELETE
       statement must have been a successfully executed READ statement. The
       Operating System logically removes from the file the record that was
@@ -799,44 +941,44 @@ DELETE file-name RECORD (;INVALID KEY imperative-statement]
           </listitem>
           <listitem>
             <para>
-3.    For a file in random or dynamic access mode, the Operating System
+   For a file in random or dynamic access mode, the Operating System
       logically removes from the file that record identified by the contents
       of the RELATIVE KEY data item associated with file-name. If the file
       does not contain the record specified by the key, an INVALID key
-      condition exists. (See The INVALID KEY Condition in this Chapter).
+      condition exists. (See <xref linkend="sec6.inv.key"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-4.    After the successful execution of a DELETE statement, the identified
+   After the successful execution of a DELETE statement, the identified
       record has been logically removed from the file and can no longer be
       accessed.
 </para>
           </listitem>
           <listitem>
             <para>
-5.    The execution of a DELETE statement does not affect the contents of the
+   The execution of a DELETE statement does not affect the contents of the
       record area associated with file-name.
 </para>
           </listitem>
           <listitem>
             <para>
-6.    The current record pointer is not affected by the execution of a DELETE
+   The current record pointer is not affected by the execution of a DELETE
       statement.
 </para>
           </listitem>
           <listitem>
             <para>
-7.    The execution of the DELETE statement causes the value of the specified
+   The execution of the DELETE statement causes the value of the specified
       FILE STATUS data item, i f any, associated with the file-name to be
-      updated. See I-0 STATUS in this chapter.
+      updated. See <xref linkend="sec6.i.o"/> in this chapter.
 </para>
           </listitem>
         </orderedlist>
       </section>
     </section>
     <section>
-      <title>THE OPEN STATEMENT</title>
+      <title>THE OPEN STATEMENT<indexterm><primary>OPEN Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -876,26 +1018,26 @@ organization or access.
         <orderedlist>
           <listitem>
             <para>
-    1.   The successful execution of an OPEN statement determines the
+The successful execution of an OPEN statement determines the
          availability of tHe file and results in the file being in an open mode.
 </para>
           </listitem>
           <listitem>
             <para>
-    2.   The successful execution of the OPEN statement makes the associated
+The successful execution of the OPEN statement makes the associated
          record area available to the program.
 </para>
           </listitem>
           <listitem>
             <para>
-    3.   Prior to the successful execution of an OPEN statement for a given
+Prior to the successful execution of an OPEN statement for a given
          file, no statement can be executed that references that file, either
          explicitly or implicitly.
 </para>
           </listitem>
           <listitem>
             <para>
-    4.   An OPEN statement must be successfully executed prior to the execution
+An OPEN statement must be successfully executed prior to the execution
          of any of the permissible input-output statements. In Table 6-1, 'X'
          at an intersection indicates that the specified statement, used in the
          access mode given for that row, may be used with the relative file
@@ -1021,7 +1163,7 @@ organization or access.
           </listitem>
           <listitem>
             <para>
-5.   A file may be opened with the INPUT, OUTPUT, AND I-O phrases in the
+  A file may be opened with the INPUT, OUTPUT, AND I-O phrases in the
      same program. Following the initial execution of an OPEN statement for
       a file, each subsequent execution for that sane file must be preceded
       by the execution of a CLOSE statement, for that file.
@@ -1029,19 +1171,19 @@ organization or access.
           </listitem>
           <listitem>
             <para>
-6.    Execution of the OPEN statement does not obtain or release the first
+   Execution of the OPEN statement does not obtain or release the first
       data record.
 </para>
           </listitem>
           <listitem>
             <para>
-7.    The file description entry for file-name-1, file-name-2, file-name-5 or
+   The file description entry for file-name-1, file-name-2, file-name-5 or
       file-name-6 must be equivalent to that used when this file was created.
 </para>
           </listitem>
           <listitem>
             <para>
-8.    For files being opened with the INPUT or I-O phrase, the OPEN statement
+   For files being opened with the INPUT or I-O phrase, the OPEN statement
       sets the current record pointer to the first record
       currently existing within the file. If no records exist in the file,
       the current record pointer is set such that the next executed Format 1
@@ -1051,7 +1193,7 @@ organization or access.
           </listitem>
           <listitem>
             <para>
-9.   The I-O phrase permits the opening of a file for both input and output
+  The I-O phrase permits the opening of a file for both input and output
    operations. <phrase role="extension">If the file does not exist, it will be created. In
    sequential access mode it will then be used for input; any attempt to
    WRITE to it will cause an error.</phrase>
@@ -1059,7 +1201,7 @@ organization or access.
           </listitem>
           <listitem>
             <para>
-10. Upon successful execution of an OPEN statement with the OUTPUT phrase
+ Upon successful execution of an OPEN statement with the OUTPUT phrase
 specified, a file is created. At the time the associated file 
 contains no data. <phrase role="extension">If a file of the same number exists it will
 be deleted. If write protected, an error status occurs.</phrase>
@@ -1069,7 +1211,7 @@ be deleted. If write protected, an error status occurs.</phrase>
       </section>
     </section>
     <section>
-      <title>THE READ STATEMENT</title>
+      <title>THE READ STATEMENT<indexterm><primary>READ Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1092,7 +1234,7 @@ Format 2
         <orderedlist>
           <listitem>
             <para>
-1.      The INTO phrase must not be used when the input file contains logical
+     The INTO phrase must not be used when the input file contains logical
         records of various sizes as indicated by their record descriptions. The
         storage area associated with identifier and the record area associated
         with file-name must not be the same storage area.
@@ -1100,25 +1242,25 @@ Format 2
           </listitem>
           <listitem>
             <para>
-2.      Format must be used    (without the NEXT phrase) for all files in
+     Format must be used    (without the NEXT phrase) for all files in
         sequential access mode.
 </para>
           </listitem>
           <listitem>
             <para>
-3.      The NEXT phrase must be specified for files in dynamic access mode,
+     The NEXT phrase must be specified for files in dynamic access mode,
         when records are to be retrieved sequentially.
 </para>
           </listitem>
           <listitem>
             <para>
-4.       Format 2 i.s used for files in random access :node or for files in
+      Format 2 i.s used for files in random access :node or for files in
         dynamic access mode when records are to be retrieved randomly.
 </para>
           </listitem>
           <listitem>
             <para>
-5.      The INVALID KEY phrase or the AT END phrase must be specified if no
+     The INVALID KEY phrase or the AT END phrase must be specified if no
         applicable USE procedure is specified for file-name.
 </para>
           </listitem>
@@ -1129,13 +1271,13 @@ Format 2
         <orderedlist>
           <listitem>
             <para>
-1.      The associated files must be open in the INPUT or I-O mode at the time
+     The associated files must be open in the INPUT or I-O mode at the time
          this statement is executed. See THE OPEN STATEMENT in this Chapter.
 </para>
           </listitem>
           <listitem>
             <para>
-2.      The record to be made available by a Format 1 READ statement is
+     The record to be made available by a Format 1 READ statement is
          determined as follows:
 </para>
             <orderedlist>
@@ -1163,14 +1305,14 @@ Format 2
           </listitem>
           <listitem>
             <para>
-   3.  The execution of the READ statement causes the value of the FILE STATUS
-       data item, if any, associated with filename to be updated. (See I- l
-       Status in this Chapter).
+The execution of the READ statement causes the value of the FILE STATUS
+       data item, if any, associated with filename to be updated.
+       (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-   4.  Regardless of the method used to overlap access time with processing
+Regardless of the method used to overlap access time with processing
        time, the concept of the READ statement is unchanged in that a record
        is available to the object program prior to the execution of any
        statement tollow1ng the READ statement.
@@ -1178,7 +1320,7 @@ Format 2
           </listitem>
           <listitem>
             <para>
-   5.  When the logical records of a file are described with more than one
+When the logical records of a file are described with more than one
        record description, these records automatically share the same storage
        area; this is equivalant to an implicit redefinition of the area. The
        contents of any data items which lie beyond the range of the current
@@ -1188,7 +1330,7 @@ Format 2
           </listitem>
           <listitem>
             <para>
-   6.  If the I-O phrase is specified, the record being read is :noved from
+If the I-O phrase is specified, the record being read is :noved from
        the record area to the area specified by identifier according to the
        rules specified for the MOVE statement without the CORRESPONDING
        phrase. The implied MOVE does not occur if the execution of the READ
@@ -1199,37 +1341,37 @@ Format 2
           </listitem>
           <listitem>
             <para>
-   7.  When the INTO phrase is used, the record being read is available in
+When the INTO phrase is used, the record being read is available in
        both the input record area and the data area associated with
        identifier.
 </para>
           </listitem>
           <listitem>
             <para>
-   8.  If, at the time of execution of a Format l READ statement, the position
+If, at the time of execution of a Format l READ statement, the position
        of current record pointer for that file is undefined, the execution of
        that READ statement is unsuccessful.
 </para>
           </listitem>
           <listitem>
             <para>
-   9.  If, at the time of the execution of a Format 1 READ statement, no next
+If, at the time of the execution of a Format 1 READ statement, no next
        logical record exists in the file, the AT END condition occurs, and the
-       execution of the READ statement is considered unsuccessful. (See I-O
-       Status in this Chapter).
+       execution of the READ statement is considered unsuccessful.
+       (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-   10. When the AT END condition is recognized the following actions are taken
+When the AT END condition is recognized the following actions are taken
        in the specified order:
 </para>
             <orderedlist>
               <listitem>
                 <para>
        a.    A value is placed into the FILE STATUS data item, if specified for
-             this file, to indicate an AT END condition.      (See I- l Status in
-             this Chapter)
+             this file, to indicate an AT END condition.
+             (See <xref linkend="sec6.i.o"/> in this Chapter)
 </para>
               </listitem>
               <listitem>
@@ -1253,14 +1395,14 @@ Format 2
           </listitem>
           <listitem>
             <para>
-11. Following the unsuccessful execution of any READ statement, the
+ Following the unsuccessful execution of any READ statement, the
     contents of the associated record area and the position of the current
     record pointer are undefined.
 </para>
           </listitem>
           <listitem>
             <para>
-12. When the AT END condition has been recognised, a Format l READ
+ When the AT END condition has been recognised, a Format l READ
     statement for that file must not be executed without first executing
     one of the following:
 </para>
@@ -1285,14 +1427,14 @@ Format 2
           </listitem>
           <listitem>
             <para>
-13. For a file for which dynanic access mode is specified, a Format 1 READ
+ For a file for which dynanic access mode is specified, a Format 1 READ
     statement with the NEXT phrase specified causes the next logical record
     to be retrieved from the file as described in general rule 2.
 </para>
           </listitem>
           <listitem>
             <para>
-14. If the RELATIVE KEY phrase is specified, the execution of a Format 1
+ If the RELATIVE KEY phrase is specified, the execution of a Format 1
     READ statement updates the contents of the RELATIVE KEY data item such
     that it contains the relative record number of the record made
     available,
@@ -1300,19 +1442,19 @@ Format 2
           </listitem>
           <listitem>
             <para>
-15. The execution of a Format 2 READ statement sets the currt!nt record
+ The execution of a Format 2 READ statement sets the currt!nt record
     pointer to, and makes available, the record whose relative record
     number is contained in the data item named in the RELATIVE KEY phrase
     for the file. If the file does not contain such a record, the INVALID
     KEY condition exists and execution of the READ statement is
-    unsuccessful. (See The INVALID KEY Condition in this Chapter).
+    unsuccessful. (See <xref linkend="sec6.inv.key"/> in this Chapter).
 </para>
           </listitem>
         </orderedlist>
       </section>
     </section>
     <section>
-      <title>THE REWRITE STATEMENT</title>
+      <title>THE REWRITE STATEMENT<indexterm><primary>REWRITE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1330,18 +1472,18 @@ The REWRITE statement logically replaces a record existing in a disk file.
         <orderedlist>
           <listitem>
             <para>
-       1.   Record-name and identifier must not refer to the same storage area.
+Record-name and identifier must not refer to the same storage area.
 </para>
           </listitem>
           <listitem>
             <para>
-       2.   Record-name is the name of a logical record in the File Section of the
+Record-name is the name of a logical record in the File Section of the
             Data Division.
 </para>
           </listitem>
           <listitem>
             <para>
-       3.   The INVALID KEY phrase must be specified in the REWRITE statement for
+The INVALID KEY phrase must be specified in the REWRITE statement for
             files in the random 9r dynamic access mode for which an appropriate USE
             procedure is not specified.
 </para>
@@ -1353,14 +1495,14 @@ The REWRITE statement logically replaces a record existing in a disk file.
         <orderedlist>
           <listitem>
             <para>
-1.   The file associated with record-name must be open in the I-O mode at
-    the time of execution of this statement. (See THE OPEN STATEMENT in
-    this Chapter)
+  The file associated with record-name must be open in the I-O mode at
+    the time of execution of this statement.
+    (See THE OPEN STATEMENT in this Chapter)
 </para>
           </listitem>
           <listitem>
             <para>
-2.   For files in the sequential access mode, the last input-output
+  For files in the sequential access mode, the last input-output
     statement executed for the associated file prior to the execution of
     the REWRITE statement must have been a successfully executed READ
     statement. The Operating System logically replaces the record that was
@@ -1369,20 +1511,20 @@ The REWRITE statement logically replaces a record existing in a disk file.
           </listitem>
           <listitem>
             <para>
-3.  The number of character positions in the record referenced by
+ The number of character positions in the record referenced by
     record-name must be equal to the number of character positions in the
     record being replaced.
 </para>
           </listitem>
           <listitem>
             <para>
-4.  The logical record released by a successful execution of the REWRITE
+ The logical record released by a successful execution of the REWRITE
     statement is no longer available in the record area.
 </para>
           </listitem>
           <listitem>
             <para>
-5.  The execution of a REWRITE statement with the FROM phrase is equivalent
+ The execution of a REWRITE statement with the FROM phrase is equivalent
      to the execution of:
 </para>
             <programlisting>
@@ -1397,24 +1539,24 @@ The REWRITE statement logically replaces a record existing in a disk file.
           </listitem>
           <listitem>
             <para>
-6. The current record pointer is not affected by the execution of a
+The current record pointer is not affected by the execution of a
    REWRITE statement.
 </para>
           </listitem>
           <listitem>
             <para>
-7. The execution of the REWRITE statement causes the value oi the FILE
-   STATUS data item, i.f any, associated with the file to be updated. (See
-   I-O STATUS in this Chapter).
+The execution of the REWRITE statement causes the value oi the FILE
+   STATUS data item, i.f any, associated with the file to be updated.
+   (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-8. For a file accessed in either random or dynamic access mode, the
+For a file accessed in either random or dynamic access mode, the
    Operating System logically replaces the record specified by the
    contents of the RELATIVE KEY data item associated w1 th th&#xA3; file. If
    the file does not contain the record specified by the key, the INVALID
-   KEY condition exists. (See THE INVALID KEY CONDITION in this Cha!)ter).
+   KEY condition exists. (See <xref linkend="sec6.inv.key"/> in this Chapter).
    The updating operation does not take place and the data in the record
    area is unaffected.
 </para>
@@ -1423,7 +1565,7 @@ The REWRITE statement logically replaces a record existing in a disk file.
       </section>
     </section>
     <section>
-      <title>THE START STATEMENT</title>
+      <title>THE START STATEMENT<indexterm><primary>START Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1451,23 +1593,23 @@ The REWRITE statement logically replaces a record existing in a disk file.
         <orderedlist>
           <listitem>
             <para>
-   1.   File-name must be the name of a file with sequential or dynamic access.
+File-name must be the name of a file with sequential or dynamic access.
 </para>
           </listitem>
           <listitem>
             <para>
-   2.   Data-name may be qualified.
+Data-name may be qualified.
 </para>
           </listitem>
           <listitem>
             <para>
-   3.   The INVALID KEY phrase must be specified if no applicable USE procedure
+The INVALID KEY phrase must be specified if no applicable USE procedure
         is specified for file-name.
 </para>
           </listitem>
           <listitem>
             <para>
-   4.   Data-name, if specified, must be the data item specified in the
+Data-name, if specified, must be the data item specified in the
         RELATIVE KEY phrase of the associated file control entry.
 </para>
           </listitem>
@@ -1478,19 +1620,19 @@ The REWRITE statement logically replaces a record existing in a disk file.
         <orderedlist>
           <listitem>
             <para>
-   1.   File-name must be open in the INPUT or I-O mode at the time that the
+File-name must be open in the INPUT or I-O mode at the time that the
         START statement is executed. (See THE OPEN STATEMENT in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-   2.   If the KEY phrase is not specified the relational operator 'IS EQUAL
+If the KEY phrase is not specified the relational operator 'IS EQUAL
         TO' is implied.
 </para>
           </listitem>
           <listitem>
             <para>
-   3.   The type of comparison specified by the relational operator in the KEY
+The type of comparison specified by the relational operator in the KEY
         phrase occurs between a key associated with a record in the file
         referenced by file-name and a data item as specified in general Rule 5.
 </para>
@@ -1507,21 +1649,21 @@ The REWRITE statement logically replaces a record existing in a disk file.
    b.   If the comparison is not sattsfi.ed by any record in the file, an
         INVALID KEY condition exists, the execution of the START statement
         is unsuccessful, and the position of the current record pointer is
-        undefined. (See The INVALID KEY Condition in this Chapter).
+        undefined. (See <xref linkend="sec6.inv.key"/> in this Chapter).
 </para>
               </listitem>
             </orderedlist>
           </listitem>
           <listitem>
             <para>
-4. The execution of the START statement causes the value of the FILE
+The execution of the START statement causes the value of the FILE
    STATUS data item, if any, associated with file-name to be updated.
-   (See I-O STATUS in this Chapter).
+   (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-5. The comparison described in general rule 3 uses the data item
+The comparison described in general rule 3 uses the data item
    referenced by the RELATIVE KEY clause associated with file-name.
 
 </para>
@@ -1530,7 +1672,7 @@ The REWRITE statement logically replaces a record existing in a disk file.
       </section>
     </section>
     <section>
-      <title>THE USE STATEMENT</title>
+      <title>THE USE STATEMENT<indexterm><primary>USE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1555,7 +1697,7 @@ are in addition to the standard procedures provided by the input-output control 
         <orderedlist>
           <listitem>
             <para>
-      1.      A USE statement, when present, mcst immediately follow a section header
+A USE statement, when present, mcst immediately follow a section header
             in the declaratives section and must be followed by a period followed
               by a space. The remainder of the section must consist of zero, one or
               more procedural paragraphs that define the procedures to be used.
@@ -1563,7 +1705,7 @@ are in addition to the standard procedures provided by the input-output control 
           </listitem>
           <listitem>
             <para>
-      2.      The USE statement itself is never executed; it merely defines the
+The USE statement itself is never executed; it merely defines the
               conditions calling for the execution of the USE procedures.
 </para>
           </listitem>
@@ -1574,7 +1716,7 @@ are in addition to the standard procedures provided by the input-output control 
         <orderedlist>
           <listitem>
             <para>
-      1.      If the INVALID KEY or AT END phrases have not been specified in the
+If the INVALID KEY or AT END phrases have not been specified in the
               input-output statement, the designated procedures are executed by the
               input-output system after completing the standard input-output error
               routine, or upon recognition of the INVALID KEY or AT END conditions.
@@ -1582,12 +1724,12 @@ are in addition to the standard procedures provided by the input-output control 
           </listitem>
           <listitem>
             <para>
-      2.      After execution of a USE procedure, control is returned to the invoking routine.
+After execution of a USE procedure, control is returned to the invoking routine.
 </para>
           </listitem>
           <listitem>
             <para>
-      3.      Within a USE procedure, there must not be any reference to any
+Within a USE procedure, there must not be any reference to any
               nondeclarative procedures. Conversely, in the nondeclarative portion
               there must be no reference to procedure-names in the declarative
               portion, except that PERFORM statements may refer to a USE statement or
@@ -1596,7 +1738,7 @@ are in addition to the standard procedures provided by the input-output control 
           </listitem>
           <listitem>
             <para>
-      4.      Within a USE procedure, there must not be the execution of any
+Within a USE procedure, there must not be the execution of any
               statement that would cause the execution of a USE procedure that had
               previously been invoked and had not yet returned control to the
               invoking routine.
@@ -1606,7 +1748,7 @@ are in addition to the standard procedures provided by the input-output control 
       </section>
     </section>
     <section>
-      <title>THE WRITE STATEMENT</title>
+      <title>THE WRITE STATEMENT<indexterm><primary>WRITE Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
         <para>
@@ -1624,18 +1766,18 @@ The WRITE statement releases a logical record for an output or input-output file
         <orderedlist>
           <listitem>
             <para>
-1.    Record-name and identifier mst not reference the same storage area.
+   Record-name and identifier mst not reference the same storage area.
 </para>
           </listitem>
           <listitem>
             <para>
-2.    The record-name is the name of a logical record in the File Section of
+   The record-name is the name of a logical record in the File Section of
       the Data Division.
 </para>
           </listitem>
           <listitem>
             <para>
-3.    The INVALID KEY phrase must be specified if an applicable USE procedure
+   The INVALID KEY phrase must be specified if an applicable USE procedure
       is not specified for the associated file.
 </para>
           </listitem>
@@ -1646,26 +1788,26 @@ The WRITE statement releases a logical record for an output or input-output file
         <orderedlist>
           <listitem>
             <para>
-1.    The associated file must be open in the OUTPUT or I-O mode at the time
+   The associated file must be open in the OUTPUT or I-O mode at the time
       of the execution of this statement. (See THE OPEN STATEMENT Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-2.    The logical record released by the execution of the WRITE statement is
+   The logical record released by the execution of the WRITE statement is
       no longer available in the record area unless the execution of the
       WRITE statement is unsuccessful due to an INVALID KEY condition.
 </para>
           </listitem>
           <listitem>
             <para>
- 3.   The results of the execution of. the WRITE statement with the FROM
+The results of the execution of. the WRITE statement with the FROM
       phrase is equivalent to the execution of
 </para>
             <orderedlist>
               <listitem>
                 <para>
-      a.   The statement:
+The statement:
 </para>
                 <programlisting>
            MOVE identifier TO record-name
@@ -1676,7 +1818,7 @@ The WRITE statement releases a logical record for an output or input-output file
               </listitem>
               <listitem>
                 <para>
-      b.   The same WRITE statement without the FROM phrase.
+The same WRITE statement without the FROM phrase.
 </para>
                 <para>
            The contents of the record area prior to the execution of the
@@ -1694,26 +1836,26 @@ The WRITE statement releases a logical record for an output or input-output file
           </listitem>
           <listitem>
             <para>
- 4.   The current record pointer is unaffected by the execution of a WRITE
+   The current record pointer is unaffected by the execution of a WRITE
       statement.
 </para>
           </listitem>
           <listitem>
             <para>
-5.   The execution of the WRITE statement causes the value of the FILE
-     STATUS data item, if any, associated with the file to be updated. (See
-     I-O Status in this Chapter).
+  The execution of the WRITE statement causes the value of the FILE
+     STATUS data item, if any, associated with the file to be updated.
+     (See <xref linkend="sec6.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-6.   The maximum record size for a file ts established at the time the file
+  The maximum record size for a file ts established at the time the file
      is created and must not subsequently be changed.
 </para>
           </listitem>
           <listitem>
             <para>
-7.   The number of character positions on a mass storage device required to
+  The number of character positions on a mass storage device required to
      store a logical record in a file may or may not be equal to the number
      of character positions defined by the logical description of that
      record in the program.
@@ -1721,19 +1863,19 @@ The WRITE statement releases a logical record for an output or input-output file
           </listitem>
           <listitem>
             <para>
-8.  The execution of the WRITE statement releases a logical record to the
+ The execution of the WRITE statement releases a logical record to the
      operating system.
 </para>
           </listitem>
           <listitem>
             <para>
-9.   When a file is opened in the output mode, records may be placed into
+  When a file is opened in the output mode, records may be placed into
      the file by one of the following:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-     a.    If the access mode is sequential, the WRITE statement will cause a
+If the access mode is sequential, the WRITE statement will cause a
            record to be released to the Operating System. The first record
            wil.l have a relative record number of one and subsequent records
            released will have relative record numbers of 2, 3, 4.  If the
@@ -1746,7 +1888,7 @@ The WRITE statement releases a logical record for an output or input-output file
               </listitem>
               <listitem>
                 <para>
-      b.   If the access mode is random or dynamic, prior to the execution of
+If the access mode is random or dynamic, prior to the execution of
            the WRITE statement the value of the RELATIVE KEY data item must
            be initialised in the program with the relative record number of
            be associated with the record in the record area. That record is
@@ -1758,7 +1900,7 @@ The WRITE statement releases a logical record for an output or input-output file
           </listitem>
           <listitem>
             <para>
- 10.  When a file is opened in the I-O mode and the access mode is random or
+When a file is opened in the I-O mode and the access mode is random or
       dynamic, records are to be inserted in the associated file. The value
       of the RELATIVE KEY data item must be initialised by the program with
       the relative record number to be associated with the record in the
@@ -1768,18 +1910,18 @@ The WRITE statement releases a logical record for an output or input-output file
           </listitem>
           <listitem>
             <para>
- 11.  The INVALID KEY condition exists under the following circumstances:
+The INVALID KEY condition exists under the following circumstances:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-      a.   When the access mode is random or dynamic, and the RELATIVE KEY
+When the access mode is random or dynamic, and the RELATIVE KEY
            data item specifies a record which already exists in the file, or
 </para>
               </listitem>
               <listitem>
                 <para>
-      b.   When an attempt is made to write beyond the externally defined
+When an attempt is made to write beyond the externally defined
             boundaries of the file.
 </para>
               </listitem>
@@ -1787,13 +1929,12 @@ The WRITE statement releases a logical record for an output or input-output file
           </listitem>
           <listitem>
             <para>
- 12.  When the INVALID KEY condition is recognised, the executior. of the
+When the INVALID KEY condition is recognised, the executior. of the
       WRITE statement is unsuccessful, the contents of the record area are
       unaffected, and the FILF. STATUS data item, if any, of the, associated
       file is set to a value indicating th" cause of the condition.
-      Execution of the program proceeds according to the rules stated in The
-      INVALID KEY Condition in this Chapter see also I-O Status tn this
-      Chapter).
+      Execution of the program proceeds according to the rules stated in
+      <xref linkend="sec6.inv.key"/> in this Chapter (see also <xref linkend="sec6.i.o"/> in this Chapter).
   </para>
           </listitem>
         </orderedlist>

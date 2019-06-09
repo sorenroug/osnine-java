@@ -838,12 +838,12 @@ of data items.
         <orderedlist>
           <listitem>
             <para>
-  1. As alphanumeric characters stored one per byte in ASCII representation.
+As alphanumeric characters stored one per byte in ASCII representation.
 </para>
           </listitem>
           <listitem>
             <para>
-   2. As numeric characters defined by USAGE IS DISPLAY (See The USAGE Clause
+As numeric characters defined by USAGE IS DISPLAY (See The USAGE Clause
         in Chapter 3) one per byte in ASCII representation. If they are signed
         and the sign is specified as rNCLUDED, bit 6 of the leading or trailing
         byte of the field is set for negative, depending on the field
@@ -855,7 +855,7 @@ of data items.
           </listitem>
           <listitem>
             <para>
-   3. As numeric characters defined by USAGE IS COMP or COMPUTATIONAL in pure
+As numeric characters defined by USAGE IS COMP or COMPUTATIONAL in pure
         binary form. If the field is signed the number is held in its
         twos-complement form. Storage is then dependent on the number of 9's
         in the PICTURE clause (see The PICTURE Clause in Chapter 3) and on
@@ -873,9 +873,6 @@ of data items.
                 <thead>
                   <row>
                     <entry morerows="1">Bytes Required</entry>
-                    <entry>Number of Characters</entry>
-                  </row>
-                  <row>
                     <entry spanname="join">Number of Characters</entry>
                   </row>
                   <row>
@@ -948,7 +945,7 @@ As numeric characters defined by USAGE IS COMPUTATIONAL-3 or USAGE IS
             <orderedlist>
               <listitem>
                 <para>
-   a. For COMPUTATIONAL-3 and PICTURE 9999, the number +1234 would be stored as follows:
+For COMPUTATIONAL-3 and PICTURE 9999, the number +1234 would be stored as follows:
    </para>
                 <programlisting>
        ...      0     1     2      3      4      F
@@ -962,7 +959,7 @@ As numeric characters defined by USAGE IS COMPUTATIONAL-3 or USAGE IS
               </listitem>
               <listitem>
                 <para>
-   b. For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be
+ For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be
           stored as follows:
           Storage would be as in a above except that the least significant
           digit would be replaced by C (1100) representing the plus sign.
@@ -970,7 +967,7 @@ As numeric characters defined by USAGE IS COMPUTATIONAL-3 or USAGE IS
               </listitem>
               <listitem>
                 <para>
-   c. For COMPUTATIONAL-) and PICTURE S9999, the number -1234 would be stored as follows:
+For COMPUTATIONAL-) and PICTURE S9999, the number -1234 would be stored as follows:
    </para>
                 <para>
           Storage would be as in a above except that the least significant
@@ -1067,18 +1064,18 @@ depend on the category of the receiving item. These rules are:
         <orderedlist>
           <listitem>
             <para>
-1. If the receiving data item is described as numeric:
+If the receiving data item is described as numeric:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-       a. The data is aligned by decimal point and is moved to the receiving
+        The data is aligned by decimal point and is moved to the receiving
              character positions with zero fill or truncation on either end as required.
 </para>
               </listitem>
               <listitem>
                 <para>
-       b. When an assumed decimal point is not explicitly specified, the
+        When an assumed decimal point is not explicitly specified, the
              data item is treated as if it had an assumed decimal point
              immediately following its rightmost character and is aligned as in
              paragraph a. above.
@@ -1088,25 +1085,25 @@ depend on the category of the receiving item. These rules are:
           </listitem>
           <listitem>
             <para>
- 2. If the receiving data item is a numeric edited data item, the data
-       moved to the edited item is aligned by decimal point with zero fill or
-       truncation at either end as required within the receiving character
-       positions of the data item, except where editing requirements cause
-       replacement of the leading zeros.
+If the receiving data item is a numeric edited data item, the data
+moved to the edited item is aligned by decimal point with zero fill or
+truncation at either end as required within the receiving character
+positions of the data item, except where editing requirements cause
+replacement of the leading zeros.
 </para>
           </listitem>
           <listitem>
             <para>
-3. If the receiving data item is alphanumeric (other than a numeric edited
-      data item), alphanumeric edited or alphabetic, the sending data is
-     moved to the receiving character positions and aligned at the leftmost
-      character position in the data item with space fill or truncation to
-      the right, as required.
+If the receiving data item is alphanumeric (other than a numeric edited
+data item), alphanumeric edited or alphabetic, the sending data is
+moved to the receiving character positions and aligned at the leftmost
+character position in the data item with space fill or truncation to
+the right, as required.
 </para>
           </listitem>
         </orderedlist>
         <para>
-      If the JUSTIFIED Clause is specified for the receiving item, these
+If the JUSTIFIED Clause is specified for the receiving item, these
 standard rules are modified as described in THE JUSTIFIED CLAUSE in Chapter 3.
   </para>
       </section>
@@ -1176,7 +1173,7 @@ number of an element of the associated table. This restriction also applies
 to the value resultant from relative indexing.
 </para>
           <para>
-          The general format for indexing is:
+The general format for indexing is:
 </para>
           <cmdsynopsis>
             <group>
@@ -1272,18 +1269,18 @@ to the value resultant from relative indexing.
           <orderedlist>
             <listitem>
               <para>
-     1. A data-name must not itself be subscripted nor indexed when that
+A data-name must not itself be subscripted nor indexed when that
           data-name is being used as an index, or subscript.
 </para>
             </listitem>
             <listitem>
               <para>
-     2. Indexing is not permitted where subscripting is not permitted.
+ Indexing is not permitted where subscripting is not permitted.
 </para>
             </listitem>
             <listitem>
               <para>
-3. An index may be modified only by the SET, SEARCH, and PERFORM
+An index may be modified only by the SET, SEARCH, and PERFORM
 statements. Data items described by the USAGE IS INDEX clause permit
 storage of the values associated with index-names as data in a form
 specified by the implementor. Such data items are called index data items.
@@ -1291,7 +1288,7 @@ specified by the implementor. Such data items are called index data items.
             </listitem>
             <listitem>
               <para>
-4. Literal-1, literal-3, literal-5, in the above format must be positive
+Literal-1, literal-3, literal-5, in the above format must be positive
 numeric integers. Literal-2, literal-4 , literal-6 must be unsigned
 numeric integers.
 </para>
@@ -1315,22 +1312,22 @@ Each condition-name must be unique.
     <orderedlist>
       <listitem>
         <para>
-1. IDENTIFICATION DIVISION - An identification of the program.
+IDENTIFICATION DIVISION - An identification of the program.
 </para>
       </listitem>
       <listitem>
         <para>
-2. ENVIRONMENT DIVISION - A description of the equipment to be used to compile and run the program.
+ENVIRONMENT DIVISION - A description of the equipment to be used to compile and run the program.
 </para>
       </listitem>
       <listitem>
         <para>
-3. DATA DIVISION - A description of the data to be processed.
+DATA DIVISION - A description of the data to be processed.
 </para>
       </listitem>
       <listitem>
         <para>
-4. PROCEDURE DIVISION - A set of procedures to specify the operations to be performed on the data.
+PROCEDURE DIVISION - A set of procedures to specify the operations to be performed on the data.
 </para>
       </listitem>
     </orderedlist>
@@ -1447,10 +1444,9 @@ the mnemonic-names used in the source program.
       <para>
      The Input-Output Section deals with the information needed to control
 transmission and handling of data between external media and the object
-program. This section is divided into two paragraphs: the FILE-CONTROL para
-graph which names and associates the files with external media; and the
-I-O-CONTROL paragraph which defines special control techniques to be used in
-the object program.
+program. This section is divided into two paragraphs: the FILE-CONTROL
+paragraph which names and associates the files with external media; and the
+I-O-CONTROL paragraph which defines special control techniques to be used in the object program.
    </para>
     </section>
     <section>
@@ -1502,20 +1498,20 @@ the Environment Division, and defines the order of presentation in the source pr
       <orderedlist>
         <listitem>
           <para>
-      1. That which is contained in files and enters or leaves the internal
+That which is contained in files and enters or leaves the internal
             memory of the computer from a specified area or areas.
 </para>
         </listitem>
         <listitem>
           <para>
-      2. That which is developed internally and placed into intermediate or
+That which is developed internally and placed into intermediate or
             working storage, or placed into specific format for output reporting
             purposes.
 </para>
         </listitem>
         <listitem>
           <para>
-      3. Constants which are defined by the user.
+Constants which are defined by the user.
   </para>
         </listitem>
       </orderedlist>
@@ -1648,18 +1644,26 @@ other order.
 </para>
         </section>
         <section>
-          <title>Procedure Division Body</title>
+          <title>Procedure Division Body<indexterm><primary>Body, Procedure Division</primary></indexterm></title>
           <para>
        The body of the Procedure Division must conform to one of the following formats:
+       </para>
+       <para>
 Format 1:
-     [DECLARATIVE$.
+       </para>
+       <para>
+     [DECLARATIVES.
      ) section-name SECTION    [segment-number).       declarative-sentence
      [paragraph-name.     [sentence]    ..  ]       ! ...
        END DECLARATIVE$.]
     ){section-name SECTION      [segment-number]}.                                     ....I
                                                J ... !
     [ paragraph-name-}
+       </para>
+       <para>
 Format 2 :
+       </para>
+       <para>
     ) paragraph-name.}
                           [sentence]
                           [sentence]
@@ -1676,17 +1680,17 @@ Format 2 :
       <orderedlist spacing="compact">
         <listitem>
           <para>
-1. Conditional statements,
+Conditional statements,
        </para>
         </listitem>
         <listitem>
           <para>
-2. Compiler directing statements,
+Compiler directing statements,
        </para>
         </listitem>
         <listitem>
           <para>
-3. Imperative statements.
+Imperative statements.
        </para>
         </listitem>
       </orderedlist>
@@ -1696,24 +1700,24 @@ Format 2 :
       <orderedlist spacing="compact">
         <listitem>
           <para>
-1. Conditional sentences,
+Conditional sentences,
        </para>
         </listitem>
         <listitem>
           <para>
-2. Compiler directing sentences,
+Compiler directing sentences,
        </para>
         </listitem>
         <listitem>
           <para>
-3. Imperative sentences.
+Imperative sentences.
 </para>
         </listitem>
       </orderedlist>
       <section>
-        <title>Conditional Statement</title>
+        <title>Conditional Statement<indexterm><primary>Statements, Conditional</primary></indexterm></title>
         <para>
-     A conditional statement specifies that the truth value of a condition
+ A conditional statement specifies that the truth value of a condition
 is to be determined and that the subsequent action of the object program is
 dependent on this truth value.
 </para>
@@ -1778,7 +1782,7 @@ terminated by a period followed by a space.
 </para>
       </section>
       <section>
-        <title>Imperative Statement</title>
+        <title>Imperative Statement<indexterm><primary>Statements, Imperative</primary></indexterm></title>
         <para>
      An Imperative statement indicates a specific unconditional action to be
 taken by the object program. An imperative statement is any stat~mPnt that
@@ -1962,9 +1966,9 @@ that the last character in the preceding line is followed by a space.
 </para>
       </section>
       <section>
-        <title>Blank Lines</title>
+        <title>Blank Lines<indexterm><primary>Blank Lines</primary></indexterm></title>
         <para>
-     A blank line is one that is blank from margin C to margin R, inclusive.
+A blank line is one that is blank from margin C to margin R, inclusive.
 A blank line can appear anywhere in the source program, except immediately
 preceding a continuation line. (See Figure 2-1).
 </para>
@@ -2028,8 +2032,8 @@ When the sentences or entries of a paragraph require more than one line
   level indicator and those which begin with a level-number.
 <para>
 </para>
-A level indicator is the indicator:  FD (see THE FILE DESCRIPTION
-- COMPLETE ENTRY SKELETON in Chapters 5, 6 and 7)
+A level indicator is the indicator:  FD
+(see THE FILE DESCRIPTION - COMPLETE ENTRY SKELETON in Chapters 5, 6 and 7)
 <para>
 </para>
         In those Data Division entries that begin with a level indicator, the
@@ -2065,7 +2069,7 @@ the right is determined only by the width of the physical medium.
 </para>
     </section>
     <section>
-      <title>DECLARATIVES</title>
+      <title>DECLARATIVES<indexterm><primary>Declaratives</primary></indexterm></title>
       <para>
 The key word DECLARATIVES and the key words END DECLARATIVES that
 precede and follow, respectively, the declaratives portion of the Procedure
@@ -2074,7 +2078,7 @@ A and be followed by a period and a space (see Figure 2-1).
 </para>
     </section>
     <section>
-      <title>COMMENT LINES</title>
+      <title>COMMENT LINES<indexterm><primary>Comment Lines</primary></indexterm></title>
       <para>
 A comment line is any line with an asterisk in the continuation
 indicator area of the line. A comment line can appear as any line in a
@@ -2094,7 +2098,7 @@ indicator area.
     </section>
   </section>
   <section>
-    <title>RESERVED WORDS</title>
+    <title>RESERVED WORDS<indexterm><primary>Reserved Words</primary></indexterm></title>
     <para>
 A full list of reserved words is given in Appendix A.
 </para>

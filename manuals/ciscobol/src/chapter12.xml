@@ -54,8 +54,8 @@ nonnumeric field of one character,
 e.g, <code>PIC X "7F"</code>
 </para>
         <para>
-This is an extension to the ANSI COBOL standard X3.23 (1974). (See under
-Nonnumeric Literals in Chapter 2).
+This is an extension to the ANSI COBOL standard X3.23 (1974).
+(See under Nonnumeric Literals in Chapter 2).
 </para>
         <para>
 Note, however, that the rules for moving such a field comply with the ANSI
@@ -91,8 +91,8 @@ default case.
       <listitem>
         <para>
 By use of the ACCEPT FROM CONSOLE facility it is easy to pass
-parameters to your program via the Run conunand line. See THE ACCEPT
-STATEMENT in Chapter 3.
+parameters to your program via the Run command line.
+See THE ACCEPT STATEMENT in Chapter 3.
 </para>
       </listitem>
       <listitem>
