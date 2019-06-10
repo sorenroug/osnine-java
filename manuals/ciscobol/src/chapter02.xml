@@ -693,8 +693,8 @@ govern their use.
            To make data as computer independent as possible, the characteristics
       or properties of the data are described in relation to a standard data
       format rather than an equipment-oriented format. This standard data format
-      is oriented to general data processing applications and uses the deci'DB.l
-      system to represent numbers (regardless of the radix used by the compute~)
+      is oriented to general data processing applications and uses the decimal
+      system to represent numbers (regardless of the radix used by the computer)
       and the remaining characters in the CIS COBOL character set to describe
       nonnumeric data items.
   </para>
@@ -959,19 +959,20 @@ For COMPUTATIONAL-3 and PICTURE 9999, the number +1234 would be stored as follow
               </listitem>
               <listitem>
                 <para>
- For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be
-          stored as follows:
-          Storage would be as in a above except that the least significant
-          digit would be replaced by C (1100) representing the plus sign.
+ For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be stored as follows:
+ </para>
+                <para>
+Storage would be as in a above except that the least significant
+digit would be replaced by C (1100) representing the plus sign.
  </para>
               </listitem>
               <listitem>
                 <para>
-For COMPUTATIONAL-) and PICTURE S9999, the number -1234 would be stored as follows:
+For COMPUTATIONAL-3 and PICTURE S9999, the number -1234 would be stored as follows:
    </para>
                 <para>
-          Storage would be as in a above except that the least significant
-          byte would be replace~ by D (1101) representing the minus sign.
+Storage would be as in a above except that the least significant
+byte would be replaced by D (1101) representing the minus sign.
  </para>
               </listitem>
             </orderedlist>
@@ -1648,10 +1649,10 @@ other order.
           <para>
        The body of the Procedure Division must conform to one of the following formats:
        </para>
-       <para>
+          <para>
 Format 1:
        </para>
-       <para>
+          <para>
      [DECLARATIVES.
      ) section-name SECTION    [segment-number).       declarative-sentence
      [paragraph-name.     [sentence]    ..  ]       ! ...
@@ -1660,10 +1661,10 @@ Format 1:
                                                J ... !
     [ paragraph-name-}
        </para>
-       <para>
+          <para>
 Format 2 :
        </para>
-       <para>
+          <para>
     ) paragraph-name.}
                           [sentence]
                           [sentence]
@@ -1785,7 +1786,7 @@ terminated by a period followed by a space.
         <title>Imperative Statement<indexterm><primary>Statements, Imperative</primary></indexterm></title>
         <para>
      An Imperative statement indicates a specific unconditional action to be
-taken by the object program. An imperative statement is any stat~mPnt that
+taken by the object program. An imperative statement is any statement that
 is neither a conditional statement, nor a compiler directing statement. An
 imperative statement may consist of a sequence of imperative statements,
 each possibly separated from the next by a separator.
@@ -1886,53 +1887,48 @@ according to the rules for the reference format.
       <title>REFERENCE FORMAT REPRESENTATION</title>
       <para>
 The reference format for a line is represented as in Figure 2-1.
-                                    I                   I
-                        MargiJ      Margin         Margin                     Margin
-                              c     A                   B                          R
-                            _:l                  ~     ~1
-             3   _4_ _ s__
-      Sequence Number Area
-                                -
-                                +
-                                    1a      9
-                                            Area A
-                                                                  3
-                                                             Area B
-                                                                                   I
-                          Indicator Area
 </para>
-      <para>
+      <figure>
+        <title>Reference Format for a COBOL Source Line.</title>
+        <programlisting width="80"><![CDATA[
+|                         |      |                 |                      |
+Margin               Margin      Margin       Margin                 Margin
+L                         C      A                 B                      R
+|                         |      |           1    1|   1    1   .  .  .   |
+| 1  2    3    4    5    6|   7  | 8    9    0    1|   2    3             |
+<------------------------> <----> <---------------> <------------------->
+  Sequence Number Area       ^          Area A         Area B
+                             |
+                       Indicator Area
+]]></programlisting>
+        <para>
 Margin L is immediately to the left of the leftmost character position of a line.
 </para>
-      <para>
+        <para>
 Margin C is between the 6th and 7th character positions of a line.
 </para>
-      <para>
+        <para>
 Margin A is between the 7th and 8th character positions of a line.
 </para>
-      <para>
+        <para>
 Margin B is between the 11th and 12th character positions of a line.
 </para>
-      <para>
+        <para>
 Margin R is immediately to the right of the rightmost character position of a line.
 </para>
-      <para>
+        <para>
 The sequence number area occupies six character positions (1-6), and is between Margin L and Margin C.
 </para>
-      <para>
+        <para>
 The indicator area is the 7th character position of a line.
 </para>
-      <para>
+        <para>
 Area A occupies character positions 8, 9, 10 and 11, and is between margin A and margin B.
 </para>
-      <para>
+        <para>
 Area B occupies character positions 12 through 72 inclusive; it begins immediately to the right of Margin 8 and terminates immediately to the left of Margin R.
 </para>
-      <para>
-
-Figure 2-1. Reference Format for a COBOL Source Line.
-
-</para>
+      </figure>
       <section>
         <title>Sequence Numbers</title>
         <para>
@@ -2021,7 +2017,7 @@ When the sentences or entries of a paragraph require more than one line
       <title>DATA DIVISION ENTRIES</title>
       <para>
         Each Data Division entry begins with a level indicator or a
-  level-number, followed by a space, follo~ed by its associated name (except
+  level-number, followed by a space, followed by its associated name (except
   in the Report Section), followed by a sequence of independent descriptive
   clauses. Each clause, except the last clause of an entry, may be terminated
   by either the separator semicolon or the separator comma. The last clause

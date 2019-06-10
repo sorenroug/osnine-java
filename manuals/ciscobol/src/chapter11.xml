@@ -149,7 +149,7 @@ Format 1
           </para>
         <para>
      CALL       identifier-1
-                 literal-1      [~ data-name-1       [, data-name-2] )
+                 literal-1      [ data-name-1       [, data-name-2] )
           [ON OVERFLOW imperative-statement]
           </para>
         <para>

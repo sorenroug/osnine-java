@@ -56,22 +56,24 @@ All correspondence should be addressed to:
         <subjectterm>COBOL</subjectterm>
       </subject>
       <subject>
+        <subjectterm>programming language</subjectterm>
+      </subject>
+      <subject>
         <subjectterm>software</subjectterm>
       </subject>
     </subjectset>
   </info>
   <acknowledgements>
     <para>
-  COBOL is an industry language and is not the property of any company or
-  group of companies, or of any organization or group of organizations.
-  No warranty, expressed or implied, is made by any contributor or by the
-  CODASYL Programming Language Committee as to the accuracy and functioning of
-  the programing system and language. Moreover, no responsibility is assumed
-  by any contributor, or by the committee, in connection herewith.
+COBOL is an industry language and is not the property of any company or
+group of companies, or of any organization or group of organizations.
+No warranty, expressed or implied, is made by any contributor or by the
+CODASYL Programming Language Committee as to the accuracy and functioning of
+the programing system and language. Moreover, no responsibility is assumed
+by any contributor, or by the committee, in connection herewith.
 </para>
     <para>
-  The authors and copyright holders of the copyrighted material used
-  herein:
+  The authors and copyright holders of the copyrighted material used herein:
 </para>
     <para>
 FLOW-MATIC (Trademark for Sperry Rand Corporation) Programming for the
@@ -93,8 +95,7 @@ and use of COBOL specifications in programming manuals or similar publications.
 This manual describes the Compact Interactive Standard COBOL (CIS COBOL)
 language for programming microcomputers. CIS COBOL is based on the ANSI
 COBOL standard X3.23 (1974) (see Acknowledgement). It also describes the
-additional CIS COBOL features that exploit the capabilities of
-microprocessors.
+additional CIS COBOL features that exploit the capabilities of microprocessors.
 </para>
     <para>
 Each release of CIS COBOL is characterized by a two-digit code in the form of
@@ -112,14 +113,14 @@ This manual is intended for programmers already familiar with COBOL on other equ
       <title>MANUAL ORGANIZATION</title>
       <para>
 Chapters 1 through 4 of the manual apply to all users and describe basic
- features of the language. Chapters 5 through 7 describe language features
- for programming the three file organization formats supported: sequential,
- relative and indexed.
+features of the language. Chapters 5 through 7 describe language features
+for programming the three file organization formats supported: sequential,
+relative and indexed.
 </para>
       <para>
- Chapters 8 through 11 apply to all users and describe additional features
- and facilities available with the standard language. The appendices supply
- reference information pertinent to all systems.
+Chapters 8 through 11 apply to all users and describe additional features
+and facilities available with the standard language. The appendices supply
+reference information pertinent to all systems.
 </para>
       <para>
 The manual contains the following chapters and appendices:
@@ -601,7 +602,7 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
       <para>
 Sequential SELECT:
        SELECT file-name
-       ASSIGN TO        external-file-name-literal~             ~;.[  ~sexte~nal-file~"OSme-literal~]
+       ASSIGN TO        external-file-name-literal~             ~;.[  external-file-name-literal]
                       l file-identifier                     S    ( lfile.-.identifier
                                                                 :: :.  . .   :.
                                                                                                    S
@@ -624,7 +625,7 @@ Relative Select:
 
   Indexed Select:
         SELECT file-name
-                      j ~~~=~~:!~!~~~:~&#xBB;me-literal! ?[~-1"~ft1t,~'~\'
+
         ASSIGN TO
         ;ORGANIZATION IS INDEXED
       [;ACCESS MODE IS
@@ -1497,4 +1498,12 @@ Fully implemented to Level Two.
     </section>
   </appendix>
   <index/>
+  <colophon>
+    <para>This book was reconstructred into DocBook format from a scanned PDF found on the Internet.
+  The PDF file already had OCR performed and the text was embedded in the file.
+  </para>
+    <para>
+  The original was published by Acorn Computers Limited in cooperation with the British Broadcasting Corporation.
+  </para>
+  </colophon>
 </book>

@@ -4418,31 +4418,36 @@ allow control to pass to the exit of the other active PERFORM
 statement; furthermore, two or more such active PERFORM statements may
 not have a common exit. See Figure 3-1.
 </para>
+<figure>
+<title>PERFORM Statement in Sequence.</title>
             <programlisting>
-            X
-            a
-                    PERFORM a THRU 111           X
-                                                 a
-                                                      PERFORM a THRU m
-            d       PERFORM f THRU j             d    PERFORM f THRU j
+            x   PERFORM a THRU m             x   PERFORM a THRU m
 
-            f                                    h
-                ..                 )             m
-            m                                    f
-                                                 j
-            X       PERFORM a THRU m
+            a   -------------------+         a   -------------------+
+                                   |                                |
+            d   PERFORM f THRU j   |         d   PERFORM f THRU j   |
+                                   |                                |
+            f   ---------------+   |         h                      |
+                               |   |                                |
+            j   &lt;--------------+   |         m   &lt;------------------+
+                                   |
+            m   &lt;------------------+         f  -------------------+
+                                                                   |
+                                             j  &lt;------------------+
+
+            x   PERFORM a THRU m
   
-            a
-            f
-            m   ..
-                                   )
-                                        J
-                ...
-            d       PERFORM f THRU j
+            a   -------------------+
+
+            f   ---------------+   |
+                               |
+            m   &lt;------------------+
+                               |
+            j   &lt;--------------+
+
+            d   PERFORM f THRU j
 </programlisting>
-            <para>
-       Fig. 3-1. PERFORM Statement in Sequence.
-    </para>
+    </figure>
           </listitem>
           <listitem>
             <para>

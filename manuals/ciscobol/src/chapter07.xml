@@ -383,7 +383,7 @@ other file-related information. (See also appendix F in the
                ORGANIZATION IS
            [; ACCESS NODE IS SEQUENTIAL
                                     DYNAMIC
-                                                   ~ J
+
                                    tRANnCiM
              ; RECORD KEY IS data-name-1
              (; FILE STATUS IS data-name-3]

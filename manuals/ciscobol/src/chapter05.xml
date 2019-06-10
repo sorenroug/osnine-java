@@ -464,7 +464,7 @@ description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
                   [, data-name-2   IS       literal-2]     ]
           ,  DATA
 
-                    {~IS
+                    {IS
                      RECORDS ARE
                                  }
                                       data-name-3      [, data-name-4] . ]

@@ -830,7 +830,7 @@ Division or Data Division of an CIS COBOL source program.
       <varlistentry>
         <term>Group Item.</term>
         <listitem>
-          <para>  A named contiguous set of elementary or group it~ms.
+          <para>  A named contiguous set of elementary or group items.
 </para>
         </listitem>
       </varlistentry>
