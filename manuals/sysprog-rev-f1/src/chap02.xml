@@ -1,0 +1,102 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Basic System Organization</title>
+
+<para>OS-9 is composed of a group of modules, each of which provides
+specific functions. When OS-9 is configured for a specific system
+various modules are selected to provide a given level of
+functionality. For example, a small control computer without a disk
+does not need the disk-related OS-9 modules. Most examples in this
+manual describe a fully-configured OS-9 system.</para>
+
+<figure>
+<title>OS-9 Component Module Organization</title>
+<screen>
+                 +-----------------------+
++----------+     !                       !     +----------+
+!          !     !                       !     !          !
+!   INIT   ! - - !     OS-9 KERNEL       ! - - !  Clock   !
+!          !     !        (ROM)          !     !          !
++----------+     !                       !     +----------+
+                 +-----------------------+
+                             !
+                             !
+                 +-----------------------+
+                 !                       !
+                 ! Input/Output Manager  !
+                 !       (IOMAN)         !
+                 !                       !
+                 +-----------------------+
+                    !                 !
+                    !                 !
+   +--------------------+       +--------------------+
+   !                    !       !                    !
+   ! Disk File Manager  !       ! Char. File Manager !    More
+   !      (RBFMAN)      !       !      (SCFMAN)      ! -&gt; opt.
+   !                    !       !                    !
+   +--------------------+       +--------------------+
+        !          !                !           !
+        !          !                !           !
+   +--------+  +--------+       +--------+  +--------+
+   !        !  !        !       !        !  !        !
+   !  Disk  !  !  Disk  !       !  ACIA  !  !  PIA   !    More
+   ! Driver !  ! Driver !       ! Driver !  ! Driver ! -&gt; opt.
+   !        !  !        !       !        !  !        !
+   +--------+  +--------+       +--------+  +--------+
+     !     !     !     !          !     !     !     !
+     !     !     !     !          !     !     !     !
+   +---+ +---+  +---+ +---+     +---+ +---+  +---+ +---+
+   !D0 ! !D1 !  !D2 ! !D3 !     !T1 ! !T2 !  !P1 ! !P2 !-&gt; More
+   +---+ +---+  +---+ +---+     +---+ +---+  +---+ +---+   opt.
+    RBF Device Descriptors        SCF Device Descriptors
+</screen>
+</figure>
+
+
+<para>Notice that the diagram on the previous page indicates a
+multilevel organization.</para>
+
+<para>The first level is the KERNEL and the CLOCK MODULE. The kernel
+provide basic system services such as multitasking, memory
+management, and links all other system modules. The CLOCK module is a
+software handler for the specific real-time-clock hardware. INIT is
+an initialization table used by the kernel during system startup. It
+specifies initial table sizes, initial system device names, etc.</para>
+
+<para>The second level is the Input/Output Manager. It provides common
+processing all I/O operations. It is required if any OS-supported I/O
+is to be performed.</para>
+
+<para>The third level is the File Manager level. File managers perform
+I/O request processing for similar classes of I/O devices. The Random
+Block File Manager (RBFMAN) processes all disk-type device
+functions, and the Sequential Character File Manager (SCFMAN) handles
+all non-mass storage devices that basically operate a character at a
+time, such as terminals and printers. The user can add additional
+File Managers to handle classes of devices not covered by SCFMAN or
+RBFMAN.</para>
+
+<para>The fourth level is the Device Driver Level. Device drivers handle
+basic physical I/O functions for specific I/O controller hardware.
+Standard OS-9 systems are typically supplied with a disk driver, a
+ACIA driver for terminals and serial printers, and a PIA driver for
+parallel printers. Many users add customized drivers of their own
+design or purchased from a hardware vendor.</para>
+
+<para>The fifth level is the Device Descriptor Level. These modules are
+small tables that are associate specific I/O ports with their logical
+names, and the port's device driver and file manager. They also
+contain the physical address of the port and initialization data. By
+use of device descriptors, only one copy of each driver is required
+for each specific type of I/O controller regardless of how many
+controllers the system uses.</para>
+
+<para>One important component not shown is the <application>shell</application>, which is the
+command interpreter. It is technically a program and not part of the
+operating system itself, and is described fully in the
+<citetitle pubwork="book">OS-9 Users Manual</citetitle>.</para>
+
+<para>Even though all modules can be resident in ROM, generally only the
+KERNEL and INIT modules are ROMed in disk-based systems. All other
+modules are loaded into RAM during system startup by a disk bootstrap
+module (not shown on diagram) which is also resident in ROM.</para>
+</chapter>

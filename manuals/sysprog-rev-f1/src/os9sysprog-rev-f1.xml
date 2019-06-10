@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="os9sysprog" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+<info>
+ <title>OS-9 Operating System</title>
+ <subtitle>System Programmer's Manual</subtitle>
+ <titleabbrev>OS-9 System Programmer's Manual</titleabbrev>
+
+<copyright>
+<year>1980</year>
+<year>1982</year>
+<holder>Microware Systems Corporation</holder>
+</copyright>
+
+<legalnotice>
+
+<para>All rights reserved.</para>
+
+<para>This manual, the OS-9 Program, and any information  contained
+herein is the copyrighted property of Microware Systems Corporation.
+Reproduction of this manual in part or whole by any means, electrical
+or otherwise, is prohibited, except by written permission from
+Microware Systems Corporation.</para>
+
+<para>The information contained herein is believed to be accurate as of
+the date of publication, however, Microware will not be liable for
+any damages, including indirect or consequential, related to use of
+the OS-9 Operating System or of this documentation. The information
+contained herein is subject to change without notice.</para>
+</legalnotice>
+    <edition>F-1</edition>
+    <pubdate>January 1983</pubdate>
+    <releaseinfo>
+Revision F-1
+</releaseinfo>
+
+<revhistory>
+<revision>
+<revnumber>F-1</revnumber>
+<date>January 1983</date>
+<revremark>Original Microware edition</revremark>
+</revision>
+</revhistory>
+</info>
+
+  <xi:include href="chap01.xml"/>
+  <xi:include href="chap02.xml"/>
+  <xi:include href="chap03.xml"/>
+  <xi:include href="chap04.xml"/>
+  <xi:include href="chap05.xml"/>
+  <xi:include href="chap06.xml"/>
+  <xi:include href="chap07.xml"/>
+  <xi:include href="chap08.xml"/>
+  <xi:include href="chap09.xml"/>
+  <xi:include href="chap10.xml"/>
+  <xi:include href="diagrams.xml"/>
+  <xi:include href="floppyformats.xml"/>
+  <xi:include href="syscallsummary.xml"/>
+  <xi:include href="errorcodes.xml"/>
+  <xi:include href="level2syscalls.xml"/>
+
+</book>

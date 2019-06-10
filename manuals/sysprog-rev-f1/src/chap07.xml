@@ -1,0 +1,884 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Sequential Character File Manager</title>
+
+<para>The Sequential Character File Manager (SCFMAN) is the OS-9 file
+manager module that supports devices that operate on a
+character-by-character basis, such as terminals, printers, modems, etc. SCFMAN
+can handle any number or type of such devices. It is a reentrant
+subroutine package called by IOMAN for I/O service requests to
+sequential character-oriented devices. It includes the extensive
+input and output editing functions typical of line-oriented
+operation such as: backspace, line delete, repeat line, auto line
+feed. Screen pause, return delay padding, etc.</para>
+
+<para>Standard OS-9 systems are supplied with SCFMAN and two SCF-type
+device driver modules: ACIA, which run 6850 serial interfaces, and
+PIA, which drives a 6821-type parallel interface for printers.</para>
+
+<sect1>
+<title>SCFMAN Line Editing Functions</title>
+
+<para><xref linkend="i.read"/> and <xref linkend="i.write"/>
+service requests (which correspond to Basic09
+GET and PUT statements) to SCFMAN-type devices pass data to/from the
+device without any modification, except that keyboard interrupt,
+keyboard abort, and pause character are filtered out of the input
+(editing is disabled if the corresponding character in the path
+descriptor contains a zero). In particular, carriage returns are not
+automatically followed by line feeds or nulls, and the high order
+bits are passed as sent/received.</para>
+
+<para><xref linkend="i.readln"/> and <xref linkend="i.writln"/>
+service requests (which correspond to Basic09
+INPUT, PRINT, READ and WRITE statements) to SCFMAN-type devices
+perform full line editing of all functions enabled for the particular
+device. These functions are initialized when the device is first used
+by copying the option table from the device descriptor table
+associated with the specific device. They may be altered anytime
+afterwards from assembly language programs using the <xref linkend="i.setstt"/> and
+<xref linkend="i.getstt"/> service requests,
+or from the keyboard using the <command>tmode</command>
+command. Also, all bytes transferred in this mode will have the high
+order bit cleared.</para>
+
+<para>The following path descriptor values control the line editing
+functions:
+</para>
+
+<para>If PD.UPC &lt;&gt; 0 bytes input or output in the range <quote>a..z</quote> are made
+<quote>A..Z</quote></para>
+
+<para>If PD.EKO &lt;&gt; 0, input bytes are echoed, except that
+undefined control characters in the range $0..$1F print as <quote>.</quote>
+</para>
+
+<para>If PD.ALF &lt;&gt; 0, carriage returns are automatically followed
+by line feeds.</para>
+
+<para>If PD.NUL &lt;&gt; 0, After each CR/LF a PD.NUL <quote>nulls</quote> (always
+$00) are sent.</para>
+
+<para>If PD.PAU &lt;&gt; 0, Auto page pause will occur after every
+PD.PAU lines since the last input.</para>
+
+<para>If PD.BSP &lt;&gt; 0, SCF will recognize PD.BSP as the <quote>input</quote>
+backspace character, and will echo PD.BSE (the backspace echo
+character) if PD.BSO = 0, or PD.BSE, space, PD.BSE if PD.BSO &lt;&gt; 0.</para>
+
+<para>If PD.DEL &lt;&gt; 0, SCF will recognize PD.DEL the delete line
+character (on input), and echo the backspace sequence over the entire
+line if PD.DLO = 0, or echo CR/LF if PD.DLO &lt;&gt; 0.</para>
+
+<para>PD.EOR defines the end of record character. This is the last
+character an each line entered (<xref linkend="i.readln"/>), and terminates the output
+(<xref linkend="i.writln"/>) when this character is sent. Normally PD.EOR will be set
+to $0D. If it is set to zero, SCF's <xref linkend="i.readln"/> will NEVER terminate,
+unless an EOF occurs.</para>
+
+<para>If PD.EOF &lt;&gt; 0, it defines the end of file character. SCFMAN
+will return an end-of-file error on <xref linkend="i.read"/> or <xref linkend="i.readln"/> if this is the
+first (and only) character input. It can be disabled by setting its
+value to zero.</para>
+
+<para>If PD.RPR &lt;&gt; 0, SCF (<xref linkend="i.readln"/>) will, upon receipt of this
+character, echo a carriage return [optional line feed], and then
+reprint the current line.</para>
+
+<para>If PD.DUP &lt;&gt; 0, SCF (<xref linkend="i.readln"/>) will duplicate whatever is in
+the input buffer through the first <quote>PD.EOR</quote> character.</para>
+
+<para>If PD.PSC &lt;&gt; 0, output is suspended before the next <quote>PD.EOR</quote>
+character when this character is input. This will also delete any
+<quote>type ahead</quote> input for <xref linkend="i.readln"/>.</para>
+
+<para>If PD.INT &lt;&gt; 0, and is received on input, a keyboard
+interrupt signal is sent to the last user of this path. Also it will
+terminate the current I/O request (it any) with an error identical to
+the keyboard interrupt signal code. This location normally is set to
+a <keycombo action="simul">
+  <keycap>control</keycap><keycap>C</keycap></keycombo> character.</para>
+
+<para>If PD.QUT &lt;&gt; 0, and is received on input, a keyboard abort
+signal is sent to the last user of this path. Also it will terminate
+the current I/O request (if any) with an error code identical to the
+keyboard interrrupt signal code. This location is normally set to a
+<keycombo action="simul">
+  <keycap>control</keycap><keycap>Q</keycap></keycombo> character.</para>
+
+<para>If PD.OVF &lt;&gt; 0, It is echoed when <xref linkend="i.readln"/> has satisfied its
+input byte count without finding a <quote>PD.EOR</quote> character.</para>
+
+<para>NOTE: It is possible to disable most of these special editing
+functions by setting the corresponding control character in the path
+descriptor to zero by using the <xref linkend="i.setstt"/> service request, or by running
+the <command>tmode</command> utility. A more permanent solution may be had by setting
+the corresponding control character value in the device descriptor
+module to zero.</para>
+
+<para>
+Device descriptors may be inspected to determine the default
+settings for these values for specific devices.</para>
+</sect1>
+
+<sect1>
+<title>SCFMAN Definitions of The Path Descriptor</title>
+
+<para>The table below describes the path descriptors used by SCFMAN and
+SCFMAN-type device drivers.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="4">
+<colspec colwidth="1in" colname="c1"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in" align="right"/>
+<colspec colwidth="4in" colname="c4"/>
+<spanspec spanname="all" namest="c1" nameend="c4"/>
+<thead>
+<row rowsep="1">
+    <entry>Name</entry>
+    <entry>Offset</entry>
+    <entry>Size</entry>
+    <entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+    <entry spanname="all">Universal Section (same for all file managers)</entry>
+</row>
+<row>
+    <entry>PD.PD</entry>
+    <entry>$00</entry>
+    <entry>1</entry>
+    <entry>Path number</entry>
+</row>
+<row>
+    <entry>PD.MOD</entry>
+    <entry>$01</entry>
+    <entry>1</entry>
+    <entry>Mode (read/write/update)</entry>
+</row>
+<row>
+    <entry>PD.CNT</entry>
+    <entry>$02</entry>
+    <entry>1</entry>
+    <entry>Number of open images</entry>
+</row>
+<row>
+    <entry>PD.DEV</entry>
+    <entry>$03</entry>
+    <entry>2</entry>
+    <entry>Address of device table entry</entry>
+</row>
+<row>
+    <entry>PD.CPR</entry>
+    <entry>$05</entry>
+    <entry>1</entry>
+    <entry>Current process ID</entry>
+</row>
+<row>
+    <entry>PD.RGS</entry>
+    <entry>$06</entry>
+    <entry>2</entry>
+    <entry>Address of callers register stack</entry>
+</row>
+<row>
+    <entry>PD.BUF</entry>
+    <entry>$08</entry>
+    <entry>2</entry>
+    <entry>Buffer address</entry>
+</row>
+<row>
+    <entry spanname="all">SCFMAN Path Descriptor Definitions</entry>
+</row>
+
+<row><entry>PD.DV2</entry><entry>$0A</entry><entry>2</entry><entry>Device table addr of 2nd (echo) device</entry></row>
+<row><entry>PD.RAW</entry><entry>$0C</entry><entry>1</entry><entry>Edit flag: 0=raw mode, 1=edit mode</entry></row>
+<row><entry>PD.MAX</entry><entry>$0D</entry><entry>2</entry><entry>Readline maximum character count</entry></row>
+<row><entry>PD.MIN</entry><entry>$0F</entry><entry>1</entry><entry>Devices are <quote>mine</quote> if cleared</entry></row>
+<row><entry>PD.STS</entry><entry>$10</entry><entry>2</entry><entry>Status routine module address</entry></row>
+<row><entry>PD.STM</entry><entry>$12</entry><entry>2</entry><entry>Reserved for status routine </entry></row>
+
+<row><entry spanname="all">SCFMAN Option Section Definition</entry></row>
+
+<row><entry></entry><entry>$20</entry><entry>1</entry><entry>Device class 0=SCF 1=RBF 2=PIPE 3=SBF</entry></row>
+<row><entry>PD.UPC</entry><entry>$21</entry><entry>1</entry><entry>Case (0=BOTH, 1=UPPER ONLY)</entry></row>
+<row><entry>PD.BSO</entry><entry>$22</entry><entry>1</entry><entry>Backsp (0=BSE, 1=BSE SP BSE)</entry></row>
+<row><entry>PD.DLO</entry><entry>$23</entry><entry>1</entry><entry>Delete (0 = BSE over line, 1=CR LF)</entry></row>
+<row><entry>PD.EKO</entry><entry>$24</entry><entry>1</entry><entry>Echo (0=no echo)</entry></row>
+<row><entry>PD.ALF</entry><entry>$25</entry><entry>1</entry><entry>Auto LF (0=no auto LF)</entry></row>
+<row><entry>PD.NUL</entry><entry>$26</entry><entry>1</entry><entry>End of line null count</entry></row>
+<row><entry>PD.PAU</entry><entry>$27</entry><entry>1</entry><entry>Pause (0= no end of page pause)</entry></row>
+<row><entry>PD.PAG</entry><entry>$28</entry><entry>1</entry><entry>Lines per page</entry></row>
+<row><entry>PD.BSP</entry><entry>$29</entry><entry>1</entry><entry>Backspace character</entry></row>
+<row><entry>PD.DEL</entry><entry>$2A</entry><entry>1</entry><entry>Delete line character</entry></row>
+<row><entry>PD.EOR</entry><entry>$25</entry><entry>1</entry><entry>End of record character (read only)</entry></row>
+<row><entry>PD.EOF</entry><entry>$2C</entry><entry>1</entry><entry>End of file character (read only)</entry></row>
+<row><entry>PD.RPR</entry><entry>$2D</entry><entry>1</entry><entry>Reprint line character</entry></row>
+<row><entry>PD.DUP</entry><entry>$25</entry><entry>1</entry><entry>Duplicate last line character</entry></row>
+<row><entry>PD.PSC</entry><entry>$2F</entry><entry>1</entry><entry>Pause character</entry></row>
+<row><entry>PD.INT</entry><entry>$30</entry><entry>1</entry><entry>Keyboard interrupt character (CTL C)</entry></row>
+<row><entry>PD.QUT</entry><entry>$31</entry><entry>1</entry><entry>Keyboard abort character (CTL Q)</entry></row>
+<row><entry>PD.BSE</entry><entry>$32</entry><entry>1</entry><entry>Backspace echo character (BSE)</entry></row>
+<row><entry>PD.OVF</entry><entry>$33</entry><entry>1</entry><entry>Line overflow character (bell)</entry></row>
+<row><entry>PD.PAR</entry><entry>$34</entry><entry>1</entry><entry>Device initialization value (parity)</entry></row>
+<row><entry>PD.BAU</entry><entry>$35</entry><entry>1</entry><entry>Software settable baud rate</entry></row>
+<row><entry>PD.D2P</entry><entry>$36</entry><entry>2</entry><entry>Offset to 2nd device name string</entry></row>
+<row><entry>PD.STN</entry><entry>$38</entry><entry>2</entry><entry>Offset of status routine name</entry></row>
+<row><entry>PD.ERR</entry><entry>$3A</entry><entry>1</entry><entry>Most recent I/O error status</entry></row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>The first section is universal for all file managers, the second
+and third section are specific for SCFMAN and SCFMAN-type device
+drivers. The option section of the path descriptor contains many
+device operating parameters which may be read or written by the OS9
+<xref linkend="i.getstt"/> or <xref linkend="i.setstt"/> service requests. IOMAN initializes this section
+when a path is opened to a device by copying the corresponding device
+descriptor initialization table. Any values not determined by this
+table will default to zero.</para>
+
+<para>Special editing functions may be disabled by setting the
+corresponding control character value to zero.</para>
+</sect1>
+
+<sect1>
+<title>SCF Device Descriptor Modules</title>
+
+<para>Device descriptor modules for SCF-type devices contain the device
+address and an initialization table which defines initial values for
+the I/O editing features, as listed below.</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="4">
+<colspec colwidth="0.9in"/>
+<colspec colwidth="1.1in"/>
+<colspec colwidth="0.7in"/>
+<colspec colwidth="5in"/>
+<thead>
+<row>
+<entry>MODULE OFFSET</entry>
+<entry></entry>
+<entry>ORG $12</entry>
+<entry></entry>
+</row>
+</thead>
+<tbody>
+<row><entry></entry><entry>TABLE</entry><entry>EQU .</entry>
+<entry>BEGINNING OF OPTION TABLE</entry></row>
+<row><entry>$12</entry><entry>IT.DVC</entry><entry>RMB 1</entry>
+<entry>DEVICE CLASS (0=SCF 1=RBF 2=PIPE 3=SBF)</entry></row>
+<row><entry>$13</entry><entry>IT.UPC</entry><entry>RMB 1</entry>
+<entry>CASE (0=BOTH, 1=UPPER ONLY)</entry></row>
+<row><entry>$14</entry><entry>IT.BSO</entry><entry>RMB 1</entry>
+<entry>BACK SPACE (0=BSE, 1=BSE,SP,BSE)</entry></row>
+<row><entry>$15</entry><entry>IT.DLO</entry><entry>RMB 1</entry>
+<entry>DELETE (0=BSE OVER LINE, 1=CR)</entry></row>
+<row><entry>$16</entry><entry>IT.EKO</entry><entry>RMB 1</entry>
+<entry>ECHO (0=NO ECHO)</entry></row>
+<row><entry>$17</entry><entry>IT.ALF</entry><entry>RMB 1</entry>
+<entry>AUTO LINE FEED (0= NO AUTO LF)</entry></row>
+<row><entry>$18</entry><entry>IT.NUL</entry><entry>RMB 1</entry>
+<entry>END OF LINE NULL COUNT</entry></row>
+<row><entry>$19</entry><entry>IT.PAU</entry><entry>RMB 1</entry>
+<entry>PAUSE (0= NO END OF PAGE PAUSE)</entry></row>
+<row><entry>$1A</entry><entry>IT.PAG</entry><entry>RMB 1</entry>
+<entry>LINES PER PAGE</entry></row>
+<row><entry>$1B</entry><entry>IT.BSP</entry><entry>RMB 1</entry>
+<entry>BACKSPACE CHARACTER</entry></row>
+<row><entry>$1C</entry><entry>IT.DEL</entry><entry>RMB 1</entry>
+<entry>DELETE LINE CHARACTER</entry></row>
+<row><entry>$1D</entry><entry>IT.EOR</entry><entry>RMB 1</entry>
+<entry>END OF RECORD CHARACTER</entry></row>
+<row><entry>$1E</entry><entry>IT.EOF</entry><entry>RMB 1</entry>
+<entry>END OF FILE CHARACTER</entry></row>
+<row><entry>$1F</entry><entry>IT.RPR</entry><entry>RMB 1</entry>
+<entry>REPRINT LINE CHARACTER</entry></row>
+<row><entry>$20</entry><entry>IT.DUP</entry><entry>RMB 1</entry>
+<entry>DUP LAST LINE CHARACTER</entry></row>
+<row><entry>$21</entry><entry>IT.PSC</entry><entry>RMB 1</entry>
+<entry>PAUSE CHARACTER</entry></row>
+<row><entry>$22</entry><entry>IT.INT</entry><entry>RMB 1</entry>
+<entry>INTERRUPT CHARACTER</entry></row>
+<row><entry>$23</entry><entry>IT.QUT</entry><entry>RMB 1</entry>
+<entry>QUIT CHARACTER</entry></row>
+<row><entry>$24</entry><entry>IT.BSE</entry><entry>RMB 1</entry>
+<entry>BACKSPACE ECHO CHARACTER</entry></row>
+<row><entry>$25</entry><entry>IT.OVF</entry><entry>RMB 1</entry>
+<entry>LINE OVERFLOW CHARACTER (BELL)</entry></row>
+<row><entry>$26</entry><entry>IT.PAR</entry><entry>RMB 1</entry>
+<entry>INITIALIZATION VALUE (PARITY)</entry></row>
+<row><entry>$27</entry><entry>IT.BAU</entry><entry>RMB 1</entry>
+<entry>BAUD RATE</entry></row>
+<row><entry>$28</entry><entry>IT.D2P</entry><entry>RMB 2</entry>
+<entry>ATTACHED DEVICE NAME STRING OFFSET</entry></row>
+<row><entry>$2A</entry><entry>IT.STN</entry><entry>RMB 2</entry>
+<entry>OFFSET TO STATUS ROUTINE</entry></row>
+<row><entry>$2C</entry><entry>IT.ERR</entry><entry>RMB 1</entry>
+<entry>INITIAL ERROR STATUS</entry></row>
+</tbody></tgroup></informaltable>
+
+<para>NOTES:</para>
+
+<para>SCF editing functions will be <quote>turned off</quote> if the corresponding
+special character is a zero. For example, it IT.EOF was a zero, there
+would be no end of file character.</para>
+
+<para>IT.PAR is typically used to initialize the device's control
+register when a path is opened to it.</para>
+</sect1>
+
+<sect1>
+<title>SCF Device Driver Storage Definitions</title>
+
+<para>An SCFMAN-type device driver module contains a package of
+subroutines that perform raw I/O transfers to or from a specific
+hardware controller. These modules are usually reentrant so that one
+copy of the module can simultaneously run several different devices
+that use identical I/O controllers. For each
+<quote>incarnation</quote> of the driver, IOMAN will allocate a static storage
+area for that device. The size of the storage area is given in
+the device driver module header. Some
+of this storage area will be used by IOMAN and SCFMAN, the device
+driver is free to use the remainder in any way (typically as
+variables and butters). This static storage is defined as:
+</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="4">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.9in"/>
+<colspec colwidth="0.7in"/>
+<colspec colwidth="2.8in"/>
+<thead>
+<row>
+<entry>OFFSET</entry>
+<entry></entry>
+<entry>ORG 0</entry>
+<entry></entry>
+</row>
+</thead>
+<tbody>
+<row><entry>$0</entry><entry>V.PAGE</entry><entry>RMB 1</entry>
+<entry>PORT EXTENDED ADDRESS</entry></row>
+<row><entry>$1</entry><entry>V.PORT</entry><entry>RMB 2</entry>
+<entry>DEVICE BASE ADDRESS</entry></row>
+<row><entry>$3</entry><entry>V.LPRC</entry><entry>RMB 1</entry>
+<entry>LAST ACTIVE PROCESS ID</entry></row>
+<row><entry>$4</entry><entry>V.BUSY</entry><entry>RMB 1</entry>
+<entry>ACTIVE PROCESS ID (0 NOT BUSY)</entry></row>
+<row><entry>$5</entry><entry>V.WAKE</entry><entry>RMB 1</entry>
+<entry>PROCESS ID TO REAWAKEN</entry></row>
+<row><entry></entry><entry>V.USER</entry><entry>EQU .</entry>
+<entry>END OF OS9 DEFINITIONS</entry></row>
+<row><entry>$6</entry><entry>V.TYPE</entry><entry>RMB 1</entry>
+<entry>DEVICE TYPE OR PARITY</entry></row>
+<row><entry>$7</entry><entry>V.LINE</entry><entry>RMB 1</entry>
+<entry>LINES LEFT TILL END OF PAGE</entry></row>
+<row><entry>$8</entry><entry>V.PAUS </entry><entry>RMB 1</entry>
+<entry>PAUSE REQUEST (0 = NO PAUSE)</entry></row>
+<row><entry>$9</entry><entry>V.DEV2</entry><entry>RMB 2</entry>
+<entry>ATTACHED DEVICE STATIC STORAGE</entry></row>
+<row><entry>$B</entry><entry>V.INTR</entry><entry>RMB 1</entry>
+<entry>INTERRUPT CHARACTER</entry></row>
+<row><entry>$C</entry><entry>V.QUIT</entry><entry>RMB 1</entry>
+<entry>QUIT CHARACTER</entry></row>
+<row><entry>$D</entry><entry>V.PCHR</entry><entry>RMB 1</entry>
+<entry>PAUSE CHARACTER</entry></row>
+<row><entry>$E</entry><entry>V.ERR</entry><entry>RMB 1</entry>
+<entry>ERROR ACCUMULATOR</entry></row>
+<row><entry>$F</entry><entry>V.SCF</entry><entry>EQU .</entry>
+<entry>END OF SCFMAN DEFINITIONS</entry></row>
+<row><entry></entry><entry>FREE</entry><entry>EQU .</entry>
+<entry>FREE FOR DEVICE DRIVER TO USE</entry></row>
+</tbody></tgroup>
+</informaltable>
+
+<para>V.PAGE, V.PORT These three bytes are defined by IOMAN to be the 24
+bit device address.</para>
+
+<para>V.LPRC This location contains the process ID of the last process
+to use the device. The IRQ service routine is responsible for sending
+this process the proper signal in case a <quote>QUIT</quote> character
+or an <quote>INTERRUPT</quote> character is received. Defined by SCFMAN.</para>
+
+<para>V. BUSY This location contains the process ID of the process
+currently using the device (zero if it is not being used). This is
+used by SCFMAN to prevent more than one process from using the
+device at the same moment. Defined by SCFMAN.</para>
+
+<para>V.WAKE This location contains the process ID of any process that
+is waiting for the device to complete I/O (or zero if there is none
+waiting). The interrupt service routine should check this location to
+see if a process is waiting and if so, send it a wake up signal.
+Defined by the device driver.</para>
+
+<para>V.TYPE This location contains any special characteristics of a
+device. It is typically used as a value to initialize the device
+control register, for parity etc. It is defined by SCFMAN which
+copies its value from PD.PAR in the path descriptor.</para>
+
+<para>V.LINE This location contains the number of lines left till end of
+page. Paging is handled by SCFMAN and not by the device driver.</para>
+
+<para>V.PAUS This location is a flag used by SCFMAN to indicate that a
+pause character has been received. Setting its value to anything
+other than zero will cause SCFMAN to stop transmitting characters at
+the end of the next line. Device driver input routines must set
+V.PAUS in the ECHO device's static storage area. SCFMAN will check
+this value in the ECHO device's static storage when output is sent.</para>
+
+<para>V.DEV2 This location contains the address of the ECHO (attached)
+device's static storage area. Typically the device and the attached
+device are one and the same. However they may be different as in the
+case of a keyboard and a memory mapped video display. Defined by
+SCFMAN.</para>
+
+<para>V.INTR Keyboard interrupt character. It is defined by SCFMAN,
+which copies its value from PD.INT in the path descriptor.</para>
+
+<para>V.QUIT Keyboard abort character. It is defined by SCFMAN which
+copies its value from PD.QUT in the path descriptor.</para>
+
+<para>V.PCHR Pause character. It is defined by SCFMAN which copies its
+value from PD.PSC in the path descriptor.</para>
+
+<para>V.ERR This location is used to accumulate I/O errors. Typically it
+is used by the IRQ service routine to record errors so that they may
+be reported later when SCFMAN calls one of the device driver routines.</para>
+</sect1>
+
+<sect1>
+<title>SCFMAN Device Driver Subroutines</title>
+
+<para>As with all device drivers. SCFMAN device drivers use a standard
+executable memory module format with a module type of
+<quote>device driver</quote> (CODE $5). The execution offset address in the
+module
+header points to a branch table that has six three byte entries. Each
+entry is typically a LBRA to the corresponding subroutine. The branch
+table is as follows:</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="4">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="1.6in"/>
+<tbody>
+<row>
+	<entry morerows="5">ENTRY</entry>
+	<entry>LBRA</entry>
+	<entry>INIT</entry>
+	<entry>INITIALIZE DEVICE</entry>
+</row>
+<row>
+	<entry>LBRA</entry>
+	<entry>READ</entry>
+	<entry>READ CHARACTER</entry>
+</row>
+<row>
+	<entry>LBRA</entry>
+	<entry>WRITE</entry>
+	<entry>WRITE CHARACTER</entry>
+</row>
+<row>
+	<entry>LBRA</entry>
+	<entry>GETSTA</entry>
+	<entry>GET DEVICE STATUS</entry>
+</row>
+<row>
+	<entry>LBRA</entry>
+	<entry>SETSTA</entry>
+	<entry>SET DEVICE STATUS</entry>
+</row>
+<row>
+	<entry>LBRA</entry>
+	<entry>TERM</entry>
+	<entry>TERMINATE DEVICE</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+Each subroutine should exit with the condition code register C
+bit cleared it no error occurred. Otherwise the C bit should be set
+and an appropriate error code returned in the B register. Below is a
+description of each subroutine, its input parameters and its output
+parameters.</para>
+
+<sect2>
+<title>NAME: INIT</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
+<tbody>
+<row>
+	<entry>NAME:</entry>
+	<entry>INIT</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(U) = ADDRESS OF DEVICE STATIC STORAGE
+(Y) = ADDRESS OF DEVICE DESCRIPTOR MODULE</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>NONE</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>INITIALIZE DEVICE AND ITS STATIC STORAGE</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>1. Initialize the device static storage.</para>
+
+<para>2. Place the IRQ service routine on the IRQ polling list by using
+the OS9 <xref linkend="f.irq"/> service request.</para>
+
+<para>3. Initialize the device control registers (enable interrupts if
+necessary).</para>
+
+<para>NOTE: Prior to being called, the device static storage will be
+cleared (set to zero) except for V.PAGE and V.PORT which will contain
+the 24 bit device address. There is no need to initialize the portion
+of static storage used by IOMAN and SCFMAN.</para>
+</sect2>
+
+<sect2>
+<title>NAME: READ</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
+<tbody>
+<row>
+	<entry>NAME:</entry>
+	<entry>READ</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(U) = ADDRESS OF DEVICE STATIC STORAGE
+(Y) = ADDRESS OF PATH DESCRIPTOR</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(A) = CHARACTER READ</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>GET NEXT CHARACTER</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This routine should get the next character from the input
+buffer. If there is no data ready, this routine should copy its
+process ID from V.BUSY into V.WAKE and then use the <xref linkend="f.sleep"/>
+service request to put itself to sleep.</para>
+
+<para>Later when data is received, the IRQ service routine will leave
+the data in a buffer, then check V.WAKE to see if any process is
+waiting for the device to complete I/O. If so, the IRQ service
+routine should send a wakeup signal to it.</para>
+
+<para>NOTE: Data buffers are <emphasis>not</emphasis> automatically allocated. It any are
+used, they should be defined in the device's static storage area.</para>
+</sect2>
+
+<sect2>
+<title>NAME: WRITE</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
+<tbody>
+<row>
+	<entry>NAME:</entry>
+	<entry>WRITE</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(U) = ADDRESS OF DEVICE STATIC STORAGE
+(Y) = ADDRESS OF THE PATH DESCRIPTOR
+(A) = CHAR TO WRITE</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>NONE</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>OUTPUT A CHARACTER</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This routine places a data byte into an output buffer and enables
+the device output interrupts. It the data buffer is already full,
+this routine should copy its process ID from V.BUSY into V.WAKE and
+then put itself to sleep.</para>
+
+<para>Later when the IRQ service routine transmits a character and makes
+room for more data in the buffer, it will check V.WAKE to see if
+there is a process waiting for the device to complete I/O. It there
+is, it will send a wake up signal to that process.</para>
+
+<para>NOTE: This routine must ensure that the IRQ service routine will
+start up when data is placed into the buffer. After an interrupt is
+generated the IRQ service routine will continue to transmit data
+until the data butter is empty, and then it will disable the device's
+<quote>ready to transmit</quote> interrupts.</para>
+
+<para>NOTE: Data buffers are <emphasis>not</emphasis> automatically allocated. If any are
+used, they should be defined in the device's static storage.</para>
+</sect2>
+
+<sect2>
+<title>NAME: GETSTA/SETSTA</title>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
+<tbody>
+<row>
+	<entry>NAME:</entry>
+	<entry>GETSTA/SETSTA</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(U) = ADDRESS OF DEVICE STATIC STORAGE
+(Y) = ADDRESS OF PATH DESCRIPTOR
+(B) = STATUS CODE</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>DEPENDS UPON FUNCTION CODE</entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>GET/SET DEVICE STATUS</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+This routine is a wild card call used to get (set) the device
+parameters specified in the <xref linkend="i.getstt"/>
+and <xref linkend="i.setstt"/> service requests.
+Currently all of the function codes defined by Microware for SCF-type
+devices are handled by IOMAN or SCFMAN. Any codes not defined
+by Microware will be passed to the device driver.</para>
+
+<para>It may be necessary to examine or change the register packet which
+contains the values of the 6809 registers at the time the OS9 service
+request was issued. The address of the register packet may be found
+in PD.RGS, which is located in the path descriptor. The following
+offsets may be used to access any particular value in the register
+packet:</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="5">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.5in"/>
+<colspec colwidth="0.3in" colname="c4"/>
+<colspec colwidth="2.5in" colname="c5"/>
+<thead>
+    <row>
+	<entry>OFFSET</entry>
+	<entry align="left" nameend="c4">MNEMONIC</entry>
+	<entry namest="c5">MPU REGISTER</entry>
+    </row>
+</thead>
+<tbody>
+<row>
+    <entry>$0</entry>
+    <entry>R$CC</entry>
+    <entry>RMB</entry>
+    <entry>1</entry>
+    <entry>CONDITIONS CODE REGISTER</entry>
+</row>
+<row>
+    <entry>$1</entry>
+    <entry>R$D</entry>
+    <entry>EQU</entry>
+    <entry>.</entry>
+    <entry>D REGISTER</entry>
+</row>
+<row>
+    <entry>$1</entry>
+    <entry>R$A</entry>
+    <entry>RMB</entry>
+    <entry>1</entry>
+    <entry>A REGISTER</entry>
+</row>
+<row>
+    <entry>$2</entry>
+    <entry>R$B</entry>
+    <entry>RMB</entry>
+    <entry>1</entry>
+    <entry>B REGISTER</entry>
+</row>
+<row>
+    <entry>$3</entry>
+    <entry>R$DP</entry>
+    <entry>RMB</entry>
+    <entry>1</entry>
+    <entry>DP REGISTER</entry>
+</row>
+<row>
+    <entry>$4</entry>
+    <entry>R$X</entry>
+    <entry>RMB</entry>
+    <entry>2</entry>
+    <entry>X REGISTER</entry>
+</row>
+<row>
+    <entry>$6</entry>
+    <entry>R$Y</entry>
+    <entry>RMB</entry>
+    <entry>2</entry>
+    <entry>Y REGISTER</entry>
+</row>
+<row>
+    <entry>$8</entry>
+    <entry>R$U</entry>
+    <entry>RMB</entry>
+    <entry>2</entry>
+    <entry>U REGISTER</entry>
+</row>
+<row>
+    <entry>$A</entry>
+    <entry>R$PC</entry>
+    <entry>RMB</entry>
+    <entry>2</entry>
+    <entry>PROGRAM COUNTER</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>NAME: TERM</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
+<tbody>
+<row>
+	<entry>NAME:</entry>
+	<entry>TERM</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(U) = PTR TO DEVICE STATIC STORAGE</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>NONE</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>TERMINATE DEVICE</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This routine is called when a device is no longer in use, defined
+as when its device descriptor module's link count becomes zero). It
+must perform the following:</para>
+
+<para>1. Wait until the output buffer has been emptied (by the IRQ
+service routine)</para>
+
+<para>2. Disable device interrupts.</para>
+
+<para>3. Remove device from the IRQ polling list.</para>
+
+<para>
+NOTE: Static storage used by device drivers is never returned
+to the free memory pool. Therefore, it is desirable to NEVER
+terminate any device that might be used again. Modules contained in
+the <filename>Boot</filename> file will NEVER be terminated.</para>
+</sect2>
+
+<sect2>
+<title>NAME: IRQ SERVICE ROUTINE</title>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
+<tbody>
+<row>
+	<entry>NAME:</entry>
+	<entry>IRQ SERVICE ROUTINE</entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>SERVICE DEVICE INTERRUPTS</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+Although this routine is not included in the device drivers
+branch table and not called directly from SCFMAN, it is an important
+routine in device drivers. The main things that it does are:</para>
+<orderedlist numeration="arabic">
+<listitem>
+<para>Service the device interrupts (receive data from device or send
+data to it). This routine should put its data into and get its data
+from buffers which are defined in the device static storage.</para>
+</listitem>
+<listitem>
+<para>Wake up any process waiting for I/O to complete by checking
+to see if there is a process ID in V.WAKE (non-zero) and it so
+send a wakeup signal to that process.</para>
+</listitem>
+<listitem>
+<para>If the device is ready to send more data and the output buffer
+is empty, disable the device's <quote>ready to transmit</quote>
+interrupts.</para>
+</listitem>
+<listitem>
+<para>If a pause character is received, set V.PAUS in the attached
+device static storage to a non-zero value. The address of the
+attached device static storage is in V.DEV2.</para>
+</listitem>
+</orderedlist>
+<para>
+When the IRQ service routine finishes servicing an interrupt,
+it must clear the carry and exit with an RTS instruction.</para>
+</sect2>
+</sect1>
+</chapter>

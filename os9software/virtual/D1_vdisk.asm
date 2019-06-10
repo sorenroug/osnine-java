@@ -5,7 +5,7 @@
          ttl   320-track disk device descriptor
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 harddisk equ   %10000000
 bit5on   equ   %00100000

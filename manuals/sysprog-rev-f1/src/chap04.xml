@@ -1,0 +1,403 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Memory Modules</title>
+
+<para>Any object to be loaded into the memory of an OS-9 system must use
+the memory module format and conventions. The memory module concept
+allows OS-9 to manage the logical contents as well as the physical
+contents of memory. The basic idea is that all programs are
+individual, named objects.</para>
+
+<para>The operating system keeps track of modules which are in memory at
+all times by use of a <quote>module directory</quote> . It contains the addresses
+and a count of how many processes are using each module. When modules
+are loaded into memory, they are added to the directory. When they
+are no longer needed, their memory is deallocated and their name
+removed from the directory (except ROMs, which are discussed later).
+In many respects, modules and memory in general, are managed just
+like a disk. In fact, the disk and memory management sections of OS-9
+share many subroutines.</para>
+
+<para>Each module has three parts; a module header, module body and a
+cyclic-redundancy-check (CRC) value. The header contains information
+that describes the module and its use. This information includes: the
+modules size, its type (machine language. BASIC09 compiled code,
+etc); attributes (executable, reentrant, etc), data storage memory
+requirements, execution starting address, etc. The CRC value is used
+to verify the integrity of a module.</para>
+
+<para>There are several different kinds of modules, each type having a
+different usage and function. Modules do not have to be complete
+programs, or even 6809 machine language. They may contain BASIC09
+<quote>I-code</quote>, constants, single subroutines, subroutine packages, etc. The
+main requirements are that modules do not modify themselves and that
+they be position-independent so OS-9 can load or relocate them
+wherever memory space is available. In this respect, the module
+format is the OS-9 equivalent of <quote>load records</quote> used in
+older-style operating systems.</para>
+
+<sect1>
+<title>Memory Module Structure</title>
+
+<para>At the beginning (lowest address) of the module is the module
+header, which can have several forms depending on the module's
+usage. OS-9 family software such as BASIC09, Pascal, C, the
+assembler, and many utility programs automatically generate modules
+and headers. Following the header is the program/constant section
+which is usually pure code. The module name string is included
+somewhere in this area. The last three bytes of the module are a
+three-byte Cyclic Redundancy Check (CRC) value used to verify the
+integrity of the module.</para>
+<table>
+<title>Module Format</title>
+<tgroup cols="1">
+<colspec colwidth="1.5in"/>
+    <tbody>
+    <row rowsep="1">
+	<entry align="center">MODULE HEADER</entry>
+    </row>
+    <row rowsep="1">
+	<entry align="center">PROGRAM OR CONSTANTS</entry>
+    </row>
+    <row rowsep="1">
+	<entry align="center">CRC</entry>
+    </row>
+</tbody>
+</tgroup>
+</table>
+
+<para>The 24-bit CRC is performed over the entire module from the first
+byte of the module header to the byte just before the CRC itself. The
+CRC polynomial used is $800063. (See <xref linkend="f.crc"/>)</para>
+
+<para>Because most OS-9 family software (such as the assembler)
+automatically generate the module header and CRC values, the
+programmer usually does not have to be concerned with writing
+routines to generate them.</para>
+</sect1>
+
+<sect1>
+<title>Module Header Definitions</title>
+
+<para>The first nine bytes of all module headers are identical:
+</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="0.9in" align="right"/>
+<colspec colwidth="4in"/>
+<thead>
+<row>
+	<entry>MODULE OFFSET</entry>
+	<entry>DESCRIPTION</entry>
+</row>
+</thead>
+<tbody>
+<row>
+	<entry>$0,$1 =</entry>
+	<entry>Sync Bytes ($87,$CD). These two constant bytes are used to
+	locate modules.</entry>
+</row>
+
+<row>
+<entry>$2,$3 =</entry>
+<entry>Module Size. The overall size of the module in bytes (includes
+CRC).</entry>
+</row>
+
+<row>
+<entry>$4,$5 =</entry>
+<entry>Offset to Module Name. The address of the module name string
+relative to the start (first sync byte) of the module. The name
+string can be located anywhere in the module and consists of a string
+of ASCII characters having the sign bit set on the last character.
+</entry>
+</row>
+
+<row>
+	<entry>$6 =</entry>
+	<entry>Module Type/Language Type. See text.</entry>
+</row>
+
+<row>
+	<entry>$7 =</entry>
+	<entry>Attributes/Revision Level. See text.</entry>
+</row>
+
+<row>
+	<entry>$8 =</entry>
+	<entry>Header Check. The one's compliment of (the vertical parity
+	(exclusive OR) of) the previous eight bytes</entry>
+</row>
+
+</tbody>
+</tgroup>
+</informaltable>
+
+<sect2>
+<title>Type/Language Byte</title>
+
+<para>The module type is coded into the four most significant bits of
+byte 6 of the module header. Eight types are pre-defined by
+convention, some of which are for OS-9's internal use only. The type
+codes are:</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="0.9in" align="right"/>
+<colspec colwidth="3in"/>
+	<tbody>
+		<row>
+				<entry>$1</entry>
+				<entry>Program module</entry>
+		</row>
+		<row>
+				<entry>$2</entry>
+				<entry>Subroutine module</entry>
+		</row>
+		<row>
+				<entry>$3</entry>
+				<entry>Multi-module (for future use)</entry>
+		</row>
+		<row>
+				<entry>$4</entry>
+				<entry>Data module</entry>
+		</row>
+		<row>
+				<entry>$5-$B</entry>
+				<entry>User-definable</entry>
+		</row>
+		<row>
+				<entry>$C</entry>
+				<entry>OS-9 System module</entry>
+		</row>
+		<row>
+				<entry>$D</entry>
+				<entry>OS-9 File Manager module</entry>
+		</row>
+		<row>
+				<entry>$E</entry>
+				<entry>OS-9 Device Driver module</entry>
+		</row>
+		<row>
+				<entry>$F</entry>
+				<entry>OS-9 Device Descriptor module</entry>
+		</row>
+	</tbody>
+    </tgroup>
+</informaltable>
+
+<note><para>0 is not a legal type code.</para></note>
+
+<para>
+The four least significant bits of byte 6 describe the language type as
+listed below:
+</para>
+
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+    <colspec colwidth="0.9in" align="right"/>
+    <colspec colwidth="4in"/>
+    <tbody>
+        <row>
+            <entry>0</entry>
+            <entry>Data (non-executable)</entry>
+        </row>
+        <row>
+            <entry>1</entry>
+            <entry>6809 object code</entry>
+        </row>
+        <row>
+            <entry>2</entry>
+            <entry>BASIC09 I-code</entry>
+        </row>
+        <row>
+            <entry>3</entry>
+            <entry>PASCAL P-code</entry>
+        </row>
+        <row>
+            <entry>4</entry>
+            <entry>C I-code</entry>
+        </row>
+        <row>
+            <entry>5</entry>
+            <entry>COBOL I-code</entry>
+        </row>
+        <row>
+            <entry>6</entry>
+            <entry>FORTRAN I-code</entry>
+        </row>
+	</tbody>
+    </tgroup>
+</informaltable>
+
+<para>
+The purpose of the language type is so high-level language run-time systems can
+verify that a module is of the correct type before execution is attempted.
+BASIC09, for example, may run either I-code or 6809 machine language procedures
+arbitrarily by checking the language type code.
+</para>
+
+</sect2>
+<sect2>
+<title>Attribute/Revision Byte</title>
+
+<para>
+The upper four bits of this byte are reserved for module attributes. Currently,
+only bit 7 is defined, and when set indicates the module is reentrant and
+therefore <quote>sharable</quote>.
+</para>
+<para>
+The lower four bits are a revision level from zero (lowest) to
+fifteen. If more than one module has the same name, type, language,
+etc., OS-9 only keeps in the module directory the module having the
+highest revision level. This is how ROMed modules can be replaced or
+patched: you load a new equivalent module having a higher revision
+level. Because all modules locate each other by using the LINK system
+call which searches the module directory by name, it always returns the
+latest revision of the module, wherever it may be.
+</para>
+<para>
+NOTE: A previously linked module can not be replaced until all processes
+which linked to it have unlinked it (after its link count goes to zero).
+</para>
+</sect2>
+</sect1>
+
+<sect1>
+<title>Typed Module Headers</title>
+<para>
+As mentioned before, the first nine bytes of the module header are
+defined identically for all module types. There is usually more header
+information immediately following, the layout and meaning varies
+depending on the specific module type. Module types $C - $F are used
+exclusively by OS-9. Their format is given elsewhere in this manual.
+</para>
+
+<para>
+The module type illustrated below is the general purpose <quote>user</quote> format
+that is commonly user for OS-9 programs that are called using the FORK or
+CHAIN system calls. These modules are the
+<quote>user-defined</quote> types having type codes of 5 through B. They
+have four more bytes in their headers defined as follows:
+</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="0.9in" align="right"/>
+<colspec colwidth="4in"/>
+	<thead>
+		<row>
+			<entry>MODULE OFFSET</entry>
+			<entry>DESCRIPTION</entry>
+		</row>
+	</thead>
+	<tbody>
+		<row>
+	<entry>$9,$A =</entry>
+	<entry>Execution Offset. The program or subroutine's starting
+	address, relative to the first byte of the sync code. Modules
+	having multiple entry points (cold start, warm start, etc.) may
+	have a branch table starting at this address.</entry>
+		</row>
+		<row>
+    <entry>$B,$C =</entry>
+    <entry><para>Permanent Storage Requirement. This is the minimum number of
+    bytes of data storage required to run. This is the number used by
+    <xref linkend="f.fork"/> and <xref linkend="f.chain"/>
+    to allocate a process' data area.</para><para>
+    If the module will not be directly executed by a <xref linkend="f.chain"/>
+    or <xref linkend="f.fork"/>
+    service request (for instance a subroutine package), this entry
+    is not used by OS-9. It is commonly used to specify the maximum
+    stack size required by reentrant subroutine modules. The calling
+    program can check this value to determine if the subroutine has
+    enough stack space.</para></entry>
+		</row>
+	</tbody>
+    </tgroup>
+</informaltable>
+</sect1>
+
+<sect1>
+<title>Executable Memory Module Format</title>
+<informalfigure>
+<screen>
+Relative            Usage                    Check Range
+Address
+
+        +------------------------------+  ---+--------+---
+ $00    |                              |     |        |
+        +--    Sync Bytes ($87CD)    --+     |        |
+ $01    |                              |     |        |
+        +------------------------------+     |        |
+ $02    |                              |     |        |
+        +--   Module Size (bytes)    --+     |        |
+ $03    |                              |     |        |
+        +------------------------------+     |        |
+ $04    |                              |     |        |
+        +--   Module Name Offset     --+   header     |
+ $05    |                              |   parity     |
+        +------------------------------+     |        |
+ $06    |     Type     |   Language    |     |        |
+        +------------------------------+     |        |
+ $07    |  Attributes  |   Revision    |     |        |
+        +------------------------------+  ---+--    module
+ $08    |     Header Parity Check      |             CRC
+        +------------------------------+              |
+ $09    |                              |              |
+        +--     Execution Offset     --+              |
+ $0A    |                              |              |
+        +------------------------------+              |
+ $0B    |                              |              |
+        +--  Permanent Storage Size  --+              |
+ $0C    |                              |              |
+        +------------------------------+              |
+ $0D    |                              |              |
+        |  (Add'l optional header      |              |
+        |   extensions located here    |              |
+        |                              |              |
+        |  .  .  .  .  .  .  .  .  .   |              |
+        |                              |              |
+        |                              |              |
+        |       Module Body            |              |
+        | object code, constants, etc. |              |
+        |                              |              |
+        |                              |              |
+        +------------------------------+              |
+        |                              |              |
+        +--                          --+              |
+        |       CRC Check Value        |              |
+        +--                          --+              |
+        |                              |              |
+        +------------------------------+  ------------+---
+</screen>
+</informalfigure>
+</sect1>
+
+<sect1>
+<title>ROMed Memory Modules</title>
+
+<para>When OS-9 starts after a system reset, it searches the entire
+memory space for ROMed modules. It detects them by looking for the
+module header sync code ($87,$CD) which are unused 6809 opcodes. When
+this byte pattern is detected, the header check is performed to
+verify a correct header. If this test succeeds, the module size is
+obtained from the header and a 24-bit CRC is performed over the
+entire module. If the CRC matches correctly, the module is considered
+valid, and it is entered into the module directory. The chances of
+detecting a <quote>false module</quote> are virtually nil.</para>
+
+<para>In this manner all ROMed modules present in the system at startup
+are automatically included in the system module directory. Some of
+the modules found initially are various parts of OS-9: file managers,
+device driver, the configuration module, etc.</para>
+
+<para>After the module search OS-9 links to whichever of its component
+modules that it found. This is the secret of OS-9's extraordinary
+adaptability to almost any 6809 computer; it automatically locates
+its required and optional component modules, wherever they are, and
+rebuilds the system each time that it is started.</para>
+
+<para>ROMs containing non-system modules are also searched so any
+user-supplied software is located during the start-up process and
+entered into the module directory.</para>
+</sect1>
+</chapter>

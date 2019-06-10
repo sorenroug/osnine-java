@@ -6,6 +6,7 @@
     <macrodef name="assemble">
         <attribute name="src" />
         <attribute name="home" />
+        <attribute name="verify" default=""/>
         <sequential>
             <echo message="Assembling: @{src}"/>
             <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
@@ -18,18 +19,48 @@
                 <arg value="o=a.out"/>
             </java>
             <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+            <local name="calculated"/>
+            <checksum file="${targetdir}/@{src}" property="calculated"/>
+            <echo message="Checksum: ${calculated}"/>
+            <fail>
+                <condition>
+                   <not>
+                       <or>
+                           <equals arg1="@{verify}" arg2=""/>
+                           <equals arg1="@{verify}" arg2="${calculated}"/>
+                       </or>
+                   </not>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="DDisk_ed4" home="kernel"/>
-        <assemble src="DDisk_ed2" home="kernel"/> <!-- verify="65f9fcc1627581c6a9247454ec9bd23d" -->
-        <!--
-        <assemble src="DDisk_3" home="kernel"/>
-        <assemble src="DDisk_4" home="kernel"/>
-        -->
-        <assemble src="RBF_ed6" home="kernel"/>
+        <assemble src="install.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
+        <assemble src="dynacalc" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
+        <assemble src="Dynacalc.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
+        <assemble src="basic09_d64_y2k" home="basic09"/>
+        <assemble src="runb_tandy_y2k" home="basic09" />
+        <assemble src="runb_generic_y2k" home="basic09" />
+        <assemble src="basic09_generic_y2k" home="basic09"/>
+        <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
+        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
+        <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
+        <assemble src="basic09_generic" home="basic09"/>
+        <assemble src="Dir_normal_ed3" home="utilities" verify="65c719c5dd0c511a2cc51a4243a081e9"/>
+        <assemble src="Dir_small_ed3" home="utilities" verify="d7e0e580d1bdd1f38eb029fbd9e9ea64"/>
+        <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
+        <assemble src="Dir_normal_ed5" home="y2k" verify="fb0a982ace14691577771b4aaeb45dca"/>
+        <assemble src="Dir_small_ed5" home="y2k" verify="68111b8e4c25b715085c85833acee3c3"/>
+        <assemble src="Free_ed7" home="y2k" />
+        <assemble src="Setime_ed12" home="y2k" verify="0299b94d5f67ff057c003d641d80f465"/>
+        <assemble src="Login_normal_ed10" home="y2k" verify="3269cd10bee3f11ea606db9a90b3a92f"/>
+        <assemble src="Login_small_ed10" home="y2k" verify="8e4f6948f7683bb31424520a5cba63e0"/>
+        <assemble src="Date_ed5" home="y2k" verify="a4b5cad5ff8d614a6313d865362e4b09"/>
+        <assemble src="DDisk_ed4" home="kernel" verify="085c24996a2d560cbc5641e39c1b710f"/>
+        <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
+        <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
         <assemble src="RBF_ed7" home="kernel"/>
         <assemble src="RBF_ed8" home="kernel"/>
         <assemble src="IOMan_ed4" home="kernel"/>
@@ -43,11 +74,9 @@
         <assemble src="BootDyn" home="kernel"/>
         <assemble src="Clock_gimix" home="kernel"/>
         <assemble src="T1" home="kernel"/>
-        <assemble src="D0_vdisk" home="kernel"/>
-        <assemble src="D1_vdisk" home="kernel"/>
         <assemble src="HWClock" home="kernel"/>
         <assemble src="KbVdIO" home="kernel"/>
-        <assemble src="OS9p1_d64" home="kernel"/>
+        <assemble src="OS9p1_d64" home="kernel" verify="523b00da5aa39530ea3e2ae2364ec0e6"/>
         <assemble src="OS9p1_gimix" home="kernel"/>
         <assemble src="OS9p1_swtc" home="kernel"/>
         <assemble src="OS9p1_ed8" home="kernel"/>
@@ -61,14 +90,14 @@
         <assemble src="SCF_ed8" home="kernel"/>
         <assemble src="SysGo" home="kernel"/>
         <assemble src="SysGo_login" home="kernel"/>
-        <assemble src="VDisk" home="kernel"/>
 
-        <assemble src="Build" home="utilities"/>
+        <assemble src="D0_vdisk" home="virtual"/>
+        <assemble src="D1_vdisk" home="virtual"/>
+        <assemble src="VDisk" home="virtual"/>
+
+        <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
         <assemble src="Setime" home="utilities"/>
 
-        <assemble src="basic09_tandy" home="basic09"/>
-        <assemble src="basic09_dragon" home="basic09"/>
-        <assemble src="RunB_org" home="basic09"/>
         <assemble src="gfx" home="basic09"/>
         <assemble src="syscall" home="basic09"/>
     </target>

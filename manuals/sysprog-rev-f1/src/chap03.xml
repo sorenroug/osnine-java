@@ -1,0 +1,650 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Basic Functions of the Kernel</title>
+
+<para>The nucleus of OS-9 is the <quote>kernel</quote>, which serves as the
+system administrator, supervisor, and resource manager. It is about
+3K bytes long and normally resides in two 2K byte ROMs: <quote>P1</quote>
+residing at addresses $F800 - $FFFF, and <quote>P2</quote>, which is
+position-independent. P2 only occupies about half (1K) of the ROM,
+the other space in the ROM is reserved for the disk bootstrap module.</para>
+
+<para>The kernel's main functions are:</para>
+<orderedlist  numeration="arabic">
+        <listitem><para>System initialization after restart.</para></listitem>
+	<listitem><para>Service request processing.</para></listitem>
+	<listitem><para>Memory management.</para></listitem>
+	<listitem><para>MPU management (multiprogramming).</para></listitem>
+	<listitem><para>Basic interrupt processing.</para></listitem>
+</orderedlist>
+
+<para>Notice that input/output functions were not included in the list
+above; this is because the kernel does not directly process them. The
+kernel passes I/O service requests directly to another the
+Input/Output Manager (IOMAN) module for processing.</para>
+
+<para>After a hardware reset, the kernel will initialize the system
+which involves: locating ROMs in memory, determining the amount of
+RAM available, loading any required modules not already in ROM from
+the bootstrap device, and running the system startup task (<quote>SYSGO</quote>).
+The INIT module is a table used during startup to specify initial
+table sizes and system device names.</para>
+
+<sect1>
+<title>Kernel Service Request Processing</title>
+
+<para>Service requests (system calls) are used to communicate between
+OS-9 and assembly-language-level programs for such things as
+allocating memory, creating new processes, etc. System calls use the
+SWI2 instruction followed by a constant byte representing the code.
+Parameters for system calls are usually passed in MPU registers.
+In addition to I/O and memory management functions, there are
+other service request functions including interprocess control and
+timekeeping.</para>
+
+<para>A system-wide assembly language equate file called <filename>OS9Defs</filename> defines
+symbolic names for all service requests. This file is included when
+assembling hand-written or compiler-generated code. The OS-9
+Assembler has a built-in macro to generate system calls, for example:</para>
+
+<informalexample>
+<programlisting>
+OS9 I$Read
+</programlisting>
+</informalexample>
+
+<para>is recognized and assembled as the equivalent to:</para>
+<informalexample>
+<programlisting>
+SWI2
+FCB  I$Read
+</programlisting>
+</informalexample>
+
+<para>Service requests are divided into two categories:</para>
+
+<para>I/O REQUESTS perform various input/output functions. Requests of
+this type are passed by the kernel to IOMAN for processing. The
+symbolic names for this category have a <quote>I$</quote> prefix, for example,
+the <quote>read</quote> service request is called <xref linkend="i.read"/>.</para>
+
+<para>FUNCTION REQUESTS perform memory management, multiprogramming, and
+miscellaneous functions. Most are processed by the kernel. The
+symbolic names for this category begins with <quote>F$</quote>.
+</para>
+</sect1>
+
+<sect1>
+<title>Kernel Memory Management Functions</title>
+
+<para>Memory management is an important operating system function. OS-9
+manages both the physical assignment of memory to programs <emphasis>and</emphasis>
+the logical contents of memory, by using entities called <quote>memory
+modules</quote>. All programs are loaded in memory module format,
+allowing OS-9 to maintain a directory which contains the name,
+address, and other related information about each module in memory.
+These structures are the foundation of OS-9's modular software
+environment. Some of its advantages are: automatic run-time <quote>linking</quote>
+of programs to libraries of utility modules; automatic <quote>sharing</quote>
+of reentrant programs; replacement of small sections of large
+programs for update or correction (even when in ROM); etc.</para>
+</sect1>
+
+<sect1>
+<title>Memory Utilization</title>
+
+<para>All usable RAM memory must be contiguous from address 0 upward.
+During the OS-9 start-up sequence the upper bound of RAM is determined
+by an automatic search, or from the configuration module. Some RAM is
+reserved by OS-9 for its own data structures at the top and bottom of
+memory. The exact amount depends on the sizes of system tables that
+are specified in the configuration module.</para>
+
+<para>All other RAM memory is pooled into a <quote>free memory</quote>
+space. Memory space is dynamically taken from and returned to this
+pool as it is allocated or deallocated for various purposes. The
+basic unit of memory allocation is the 256-byte page . Memory is
+always allocated in whole numbers of pages.</para>
+
+<para>The data structure used to keep track of memory allocation is a
+32-byte bit-map located at addresses $0100 - $011F. Each bit in this
+table is associated with a specific page of memory. Bits are cleared
+to indicate that the page is free and available for assignment, or
+set to indicate that the page is in use or that no RAM memory is
+present at that address.</para>
+
+<para>Automatic memory allocation occurs when:</para>
+<orderedlist numeration="arabic">
+<listitem><para>Program modules are loaded into RAM.</para></listitem>
+
+<listitem><para>Processes are created.</para></listitem>
+
+<listitem><para>Processes request additional RAM.</para></listitem>
+
+<listitem><para>OS-9 needs I/O buffers, larger tables, etc.</para></listitem>
+</orderedlist>
+<para>All of the above usually have inverse functions that cause
+previously allocated memory to be deallocated and returned to the
+free memory pool.</para>
+
+<para>In general, memory is allocated for program modules and buffers
+from high addresses downward, and for process data areas from lower
+addresses upward.</para>
+<informalfigure>
+<screen>
+   TYPICAL MEMORY MAP
+
+
++-----------------------+  &lt;- $FFFF
+|                       |
+|     OS-9 ROMS (4K)    |
+|                       |
++-----------------------+  &lt;- $F000
+|                       | 
+|  I/O DEVICE ADDRESSES |
+|                       | 
++-----------------------+  &lt;- $E000
+|                       | 
+|    SPACE FOR MORE     |
+|    OPTIONAL ROMS      |
+|                       | 
++-----------------------+  &lt;- END OF RAM MEMORY
+|                       | 
+|    FILE MANAGERS      |
+|  DEVICE DRIVERS, ETC. |
+|   (APPROXIMATELY 6K)  |
+|                       |
++-----------------------+
+|                       |
+|      SHELL (1K)       |
+|                       |
++-----------------------+
+|                       |
+| OS-9 DATA STRUCTURES  |
+|  (APPROXIMATELY 1K)   |
+|                       |
++-----------------------+
+|                       |
+|    FREE MEMORY FOR    |
+|     GENERAL USE       |
+|                       |
++-----------------------+ &lt;- $0400
+|                       |
+| OS-9 DATA STRUCTURES  |
+|   AND DIRECT PAGE     |
+|                       |
++-----------------------+ &lt;- $0000 BEGINNING OF RAM MEMORY
+</screen>
+</informalfigure>
+
+<para>
+The map above is for a <quote>typical</quote> system. Actual memory
+sizes and addresses may vary depending on the exact system
+configuration.</para>
+</sect1>
+
+<sect1>
+<title>Overview of Multiprogramming</title>
+
+<para>OS-9 is a multiprogramming operating system, which allows several
+independent programs called <quote>processes</quote> can be executed
+simultaneously. Each process can have access to any system resource
+by issuing appropriate service requests to OS-9. Multiprogramming
+functions use a hardware real-time clock that generates interrupts at
+a regular rate of about 10 times per second. MPU time is therefore
+divided into periods typically 100 milliseconds in duration. This
+basic time unit is called a tick . Processes that are <quote>active</quote>
+(meaning not waiting for some event) are run for a specific
+system-assigned period called a <quote>time slice</quote>. The duration of
+the time slice depends on a process's priority value relative to the
+priority of all other active processes. Many OS-9 service requests
+are available to create, terminate, and control processes.</para>
+</sect1>
+
+<sect1>
+<title>Process Creation</title>
+
+<para>New processes are created when an existing process executes a
+<xref linkend="f.fork"/>
+service request. Its main argument is the name of the program module
+(called the <quote>primary module</quote>) that the new process is to
+initially execute. OS-9 first attempts to find the module in the
+<quote>module directory</quote>, which includes the names of all program
+modules already present in memory. If the module cannot be found
+there. OS-9 usually attempts to load into memory a mass-storage file
+using the requested module name as a file name.</para>
+
+<para>Once the module has been located, a data structure called a
+<quote>process descriptor</quote> is assigned to the new process. The process
+descriptor is a 64-byte package that contains information about the
+process, its state, memory allocations, priority, queue pointers,
+etc. The process descriptor is automatically initialized and
+maintained by OS-9. The process itself has no need, and is not
+permitted to access the descriptor.</para>
+
+<para>The next step in the creation of a new process is allocation of
+data storage (RAM) memory for the process. The primary module's
+header contains a storage size value that is used unless the
+<xref linkend="f.fork"/>
+system call requested an optionally larger size. OS-9 then attempts
+to allocate a CONTIGUOUS memory area of this size from the free
+memory space.</para>
+
+<para>If any of the previous steps cannot be performed, creation of the
+new process is aborted, and the process that originated the
+<xref linkend="f.fork"/>
+is informed of the error. Otherwise, the new process is added to the
+active process queue for execution scheduling.</para>
+
+<para>The new process is also assigned a unique number called a <quote>process
+ID</quote> which is used as its identifier. Other processes can
+communicate with it by referring to its ID in various system
+calls. The process also has associated with it a <quote>user ID</quote> which
+is used to identify all processes and files belonging to a
+particular user. The user ID is inherited from the parent process.</para>
+
+<para>Processes terminate when they execute an <xref linkend="f.exit"/> system service
+request, or when they receive fatal signals. The process termination
+closes any open paths, deallocates its memory, and unlinks its
+primary module.</para>
+</sect1>
+
+<sect1>
+<title>Process States</title>
+
+<para>At any instant, a process can be in one of three states:</para>
+
+<para>ACTIVE - The process is active and ready for execution.
+</para>
+
+<para>WAITING - The process is suspended until a child process
+terminates or a signal is received.
+</para>
+
+<para>SLEEPING - The process is suspended for a specific period of time
+or until a signal is received.
+</para>
+
+<para>There is a queue for each process state. The queue is a linked
+list of the <quote>process descriptors</quote> of processes in the
+corresponding state. State changes are performed by moving a process
+descriptor to another queue.</para>
+
+<sect2>
+<title>The Active State</title>
+
+<para>This state includes all <quote>runnable</quote> processes, which are given
+time slices for execution according to their relative priority with
+respect to all other active processes. The scheduler uses a
+pseudo-round-robin scheme that gives all active processes some CPU
+time, even if they have a very low relative priority.</para>
+</sect2>
+
+<sect2>
+<title>The Wait State</title>
+
+<para>This state is entered when a process executes a <xref linkend="f.wait"/> system
+service request. The process remains suspended until the death of any
+of its descendant processes, or, until it receives a signal.</para>
+</sect2>
+
+<sect2>
+<title>The Sleeping State</title>
+
+<para>This state is entered when a process executes a <xref linkend="f.sleep"/> service
+request, which specifies a time interval. (a specific number of
+ticks) for which the process is to remain suspended. The process
+remains asleep until the specified time has elapsed, or until a
+signal is received.</para>
+</sect2>
+</sect1>
+
+<sect1>
+<title>Execution Scheduling</title>
+
+<para>The kernel contains a scheduler that is responsible for allocation
+of CPU time to active processes. OS-9 uses a scheduling algorithm
+that ensures all processes get some execution time.</para>
+
+<para>All active processes are members of the active process queue,
+which is kept sorted by process <quote>age</quote>. Age is a count of
+how many process switches have occurred since the process' last time
+slice. When a process is moved to the active process queue from
+another queue, its <quote>age</quote> is initialized by setting it to
+the process' assigned priority, i.e., processes having relatively
+higher priority are placed in the queue with an artificially higher
+age. Also, whenever a new process is activated, the ages of all other
+processes are incremented.</para>
+
+<para>Upon conclusion of the currently executing process' time slice,
+the scheduler selects the process having the highest age to be
+executed next. Because the queue is kept sorted by age, this process
+will be at the bead of the queue. At this time the ages of all other
+active processes are incremented (ages are never incremented beyond
+255).</para>
+
+<para>An exception is newly-active processes that were previously
+deactivated while they were in the system state. These processes are
+noted and given higher priority than others because they are usually
+executing critical routines that affect shared system resources and
+therefore could be blocking other unrelated processes.</para>
+
+<para>When there are no active processes, the kernel will set itself up
+to handle the next interrupt and then execute a CWAI instruction,
+which decreases interrupt latency time.</para>
+</sect1>
+
+<sect1>
+<title>Signals</title>
+
+<para><quote>Signals</quote> are an asynchronous control mechanism used for
+interprocess communication and control. A signal behaves like a
+software interrupt in that it can cause a process to suspend a
+program, execute a specific routine, and afterward return to the
+interrupted program. Signals can be sent from one process to another
+process (by means of the SEND service request), or they can be sent
+from OS-9 system routines to a process.</para>
+
+<para>Status information can be conveyed by the signal in the form of a
+one-byte numeric value. Some of the signal <quote>codes</quote> (values)
+have predefined meanings, but all the rest are user-defined. The
+defined signal codes are: 
+</para>
+
+<informalexample>
+<para>0 = KILL (non-interceptable process abort)</para>
+
+<para>1 = WAKEUP - wake up sleeping process</para>
+
+<para>2 = KEYBOARD ABORT</para>
+
+<para>3 = KEYBOARD INTERRUPT</para>
+
+<para>4 - 255 USER DEFINED</para>
+</informalexample>
+
+<para>When a signal is sent to a process, the signal is noted and saved
+in the process descriptor. If the process is in the sleeping or
+waiting state, it is changed to the active state. It then becomes
+eligible for execution according to the usual MPU scheduler criteria.
+When it gets its next time slice, the signal is processed.</para>
+
+<para>What happens next depends on whether or not the process had
+previously set up a <quote>signal trap</quote> (signal service routine) by
+executing an <xref linkend="f.icpt"/> service request. If it had not, the process is
+immediately aborted. It is also aborted if the signal code is zero.
+The abort will be deferred if the process is in system mode: the
+process dies upon its return to user state.</para>
+
+<para>If a signal intercept trap has been set up, the process resumes
+execution at the address given in the <xref linkend="f.icpt"/> service request. The
+signal code is passed to this routine, which should terminate with an
+RTI instruction to resume normal execution of the process.</para>
+
+<para>NOTE: <quote>Wakeup</quote> signals activate a sleeping process: they <emphasis>do
+not</emphasis> vector through the intercept routine.</para>
+
+<para>If a process has a signal pending (usually because it has not been
+assigned a time slice since the signal was received), and some other
+process attempts to send it another signal, the new signal is aborted
+and the <quote>send</quote> service request will return an error status. The
+sender should then execute a sleep service request for a few ticks
+before attempting to resend the signal, so the destination process
+has an opportunity to process the previously pending signal.</para>
+</sect1>
+
+<sect1>
+<title>Interrupt Processing</title>
+
+<para>Interrupt processing is another important function of the kernel.
+All hardware interrupts are vectored to specific processing routines.
+IRQ interrupts are handled by a prioritized polling system (actually
+part of IOMAN) which automatically identifies the source of the
+interrupt and dispatches to the associated user or system defined
+service routine. The real-time clock will generate IRQ interrupts.
+SWI, SWI2, and SWI3 interrupts are vectored to user-definable
+addresses which are <quote>local</quote> to each procedure, except that SWI2
+is normally used for OS-9 service requests calls. The NMI and FIRQ
+interrupts are not normally used and are vectored through a RAM
+address to an RTI instruction.</para>
+
+<sect2>
+<title>Physical Interrupt Processing</title>
+
+<para>The OS-9 kernel. ROMs contain the hardware vectors required by the
+6809 MPU at addresses $FFF0 through $FFFF. These vectors each
+point to jump-extended-indirect instruction which vector the MPU to
+the actual interrupt service routine. A RAM vector table in page zero
+of memory contains the target addresses of the jump instructions as
+follows:
+</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.1in" colname="c1"/>
+<colspec colwidth="1.1in" colname="c2"/>
+   <thead>
+	    <row>
+			    <entry>INTERRUPT</entry>
+			    <entry>ADDRESS</entry>
+	    </row>
+    </thead>
+    <tbody>
+	    <row>
+			    <entry>SWI3</entry>
+			    <entry>$002C</entry>
+	    </row>
+	    <row>
+			    <entry>SWI2</entry>
+			    <entry>$002E</entry>
+	    </row>
+	    <row>
+			    <entry>FIRQ</entry>
+			    <entry>$0030</entry>
+	    </row>
+	    <row>
+			    <entry>IRQ</entry>
+			    <entry>$0032</entry>
+	    </row>
+	    <row>
+			    <entry>SWI</entry>
+			    <entry>$0034</entry>
+	    </row>
+	    <row>
+			    <entry>NMI</entry>
+			    <entry>$0036</entry>
+	    </row>
+    </tbody>
+</tgroup>
+</informaltable>
+
+<para>OS-9 initializes each of these locations after reset to point to a
+specific service routine in the kernel. The SWI, SWI2, and SWI3
+vectors point to specific routines which in turn read the
+corresponding pseudo vector from the process' process descriptor and
+dispatch to it. This is why the <xref linkend="f.sswi"/> service request to be local to
+a process since it only changes a pseudo vector in the process
+descriptor. The IRQ routine points directly to the IRQ polling
+system, or to it indirectly via the real-time clock device service
+routine. The FIRQ and NMI vectors are not normally used by OS-9 and
+point to RTI instructions.</para>
+
+<para>A secondary vector table located at $FFE0 contains the addresses
+of the routines that the RAM vectors are initialized to. They may be
+used when it is necessary to restore the original service routines
+after altering the RAM vectors. On the next page are the definitions
+of both the actual hardware interrupt vector table, and the
+secondary vector table:
+</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="3">
+<colspec colwidth="1.1in" colname="c1"/>
+<colspec colwidth="1.1in" colname="c2"/>
+<colspec colwidth="2.8in" colname="c3"/>
+<spanspec spanname="two" namest="c1" nameend="c2"/>
+    <thead>
+	    <row>
+			    <entry>VECTOR</entry>
+			    <entry>ADDRESS</entry>
+			    <entry></entry>
+	    </row>
+    </thead>
+    <tbody>
+	    <row>
+			    <entry spanname="two">Secondary Vector Table</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>TICK</entry>
+			    <entry>$FFE0</entry>
+			    <entry>Clock Tick Service Routine</entry>
+	    </row>
+	    <row>
+			    <entry>SWI3</entry>
+			    <entry>$FFE2</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>SWI2</entry>
+			    <entry>$FFE4</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>FIRQ</entry>
+			    <entry>$FFE6</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>IRQ</entry>
+			    <entry>$FFE8</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>SWI</entry>
+			    <entry>$FFEA</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>NMI</entry>
+			    <entry>$FFEC</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>WARM</entry>
+			    <entry>$FFEE</entry>
+			    <entry>Reserved for warm-start</entry>
+	    </row>
+	    <row>
+			    <entry spanname="two">Hardware Vector Table</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>SWI3</entry>
+			    <entry>$FFF2</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>SWI2</entry>
+			    <entry>$FFF4</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>FIRQ</entry>
+			    <entry>$FFF6</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>IRQ</entry>
+			    <entry>$FFF8</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>SWI</entry>
+			    <entry>$FFFA</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>NMI</entry>
+			    <entry>$FFFC</entry>
+			    <entry></entry>
+	    </row>
+	    <row>
+			    <entry>RESTART</entry>
+			    <entry>$FFFE</entry>
+			    <entry></entry>
+	    </row>
+    </tbody>
+</tgroup>
+</informaltable>
+
+<para>If it is necessary to alter the RAM vectors use the secondary
+vector table to exit the substitute routine. The technique of
+altering the IRQ pointer is usually used by the clock service
+routines to reduce latency time of this frequent interrupt source.</para>
+</sect2>
+
+<sect2>
+<title>Logical Interrupt Polling System</title>
+
+<para>In OS-9 systems, most I/O devices use IRQ-type interrupts, so OS-9
+includes a sophisticated polling system that automatically identifies
+the source of the interrupt and dispatches to its associated
+user-defined service routine. The information required for IRQ
+polling is maintained in a data structure called the <quote>IRQ
+polling table</quote>. The table has a 9-byte entry for each possible
+IRQ-generating device. The table size is static and defined by an
+initialization constant in the System Configuration Module.</para>
+
+<para>The polling system is prioritized so devices having a relatively
+greater importance (i.e., interrupt frequency) are polled before
+those of lesser priority. This is accomplished by keeping the entries
+sorted by priority, which is a number between 0 (lowest) and 255
+(highest). Each entry in the table has 6 variables:
+</para>
+<orderedlist  numeration="arabic">
+	<listitem><para>POLLING ADDRESS: The address of the device's status register,
+	which must have a bit or bits that indicate it is the source of an
+	interrupt.</para></listitem>
+	<listitem><para>MASK BYTE; This byte selects one or more bits within the
+	device status register that are interrupt request flag(s). A set bit
+	identifies the active bit(s).</para></listitem>
+	<listitem><para>FLIP BYTE: This byte selects whether the bits in the device
+	status register are true when set or true when cleared. Cleared bits
+	indicate active when set.</para></listitem>
+	<listitem><para>SERVICE ROUTINE ADDRESS: The user-supplied address of the
+	device's interrupt service routine.</para></listitem>
+	<listitem><para>STATIC STORAGE ADDRESS: a user-supplied pointer to the permanent
+	storage required by the device service routine.</para></listitem>
+	<listitem><para>PRIORITY; The device priority number: 0 to 255. This value
+	determines the order in which the devices in the polling table will
+	be polled. Note: this is not the same as a process priority which is
+	used by the execution scheduler to decide which process gets the
+	next time slice for MPU execution.</para></listitem>
+</orderedlist>
+
+<para>When an IRQ interrupt occurs, the polling system is entered via
+the corresponding RAM interrupt vector. It starts polling the
+devices, using the entries in the polling table in priority order.
+For each entry, the status register address is loaded into
+accumulator A using the device address from the table. An
+exclusive-or operation using the flip-byte is executed, followed by a
+logical-and operation using the mask byte. If the result is non-zero,
+the device is assumed to be the cause of the interrupt.</para>
+
+<para>The device's static storage address and service routine address is
+read from the table and executed.</para>
+
+<note>
+<para>The interrupt service routine should terminate with
+an an <emphasis>RTS</emphasis>, not an RTI instruction.</para></note>
+
+<para>Entries can be made to the IRQ polling table by use of a special
+OS-9 service request called <xref linkend="f.irq"/>. This is a privileged
+service request that can be executed only when OS-9 is in System Mode
+(which is the case when device drivers are executed).</para>
+
+<note>
+<para>The actual code for the interrupt polling system is
+located in the IOMAN module. The kernel P1 and P2 modules contain
+the physical interrupt processing routines.</para></note>
+</sect2>
+</sect1>
+</chapter>

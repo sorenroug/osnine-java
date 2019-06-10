@@ -1,0 +1,136 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Introduction</title>
+
+<para>OS-9 Level One is a versatile multiprogramming/multitasking
+operating system for computers utilizing the Motorola 6809
+microprocessor,. It is well-suited for a wide range of applications
+on 6809 computers of almost any size or complexity.
+Its main features are:</para>
+
+<itemizedlist mark="bullet">
+	<listitem><para>Comprehensive management of all system resources: memory,
+	input/output and CPU time.</para></listitem>
+	<listitem><para>A powerful user interface that is easy to learn and use.</para></listitem>
+	<listitem><para>True multiprogramming operation.</para></listitem>
+	<listitem><para>Efficient operation in typical microcomputer configurations.</para></listitem>
+	<listitem><para>Expandable, device-independent unified I/O system.</para></listitem>
+	<listitem><para>Full support for modular ROMed software.</para></listitem>
+	<listitem><para>Upward and downward compatibility with OS-9 Level Two.</para></listitem>
+</itemizedlist>
+
+<para>This manual is intended to provide the information necessary to
+install, maintain, expand, or write assembly-language software for
+OS-9 systems. It assumes that the reader is familiar with the 6809
+architecture, instruction set, and assembly language.</para>
+
+<sect1>
+<title>History And Design Philosophy</title>
+
+<para>OS-9 Level One is one of the products of the BASIC09 Advanced 6809
+Programming Language development effort undertaken by Microware and
+Motorola from 1978 to 1980. During the course of the project it
+became evident that a fairly sophisticated operating system would be
+required to support BASIC09 and similar high-performance 6809
+software.</para>
+
+<para>OS-9's design was modeled after Bell Telephone
+Laboratories' <trademark class="registered">UNIX</trademark> operating system, which is becoming
+widely recognized as a standard for mini and micro multiprogramming
+operating systems because of its versatility and relatively simple,
+yet elegant structure. Even though a <quote>clone</quote> of UNIX for
+the 6809 is relatively easy to implement, there are a number of
+problems with this approach. UNIX was designed for fairly large-scale
+minicomputers (such as large PDP-11s) that have high CPU throughput,
+large fast disk storage devices and a static I/O environment. Also,
+UNIX is not particularly time or disk-storage efficient, especially
+when used with low-cost disk drives.</para>
+
+<para>For these reasons, OS-9 was designed to retain the overall concept
+and user interface of UNIX, but its implementation is considerably
+different. OS-9's design is tailored to typical microcomputer
+performance ranges and operational environments. As an example, OS-9,
+unlike UNIX, does not dynamically swap running programs on and off
+disk This is because floppy disks and many lower-cost Winchester-type
+hard disks are simply too slow to do this efficiently. Instead, OS-9
+always keeps running programs in memory and emphasizes more efficient
+use of available ROM or RAM.</para>
+
+<para>OS-9 also introduces some important new features that are intended
+to make the most of the capabilities of third-generation
+microprocessors, such as support of reentrant, position-independent
+software that can be shared by several users simultaneously to reduce
+overall memory requirements.</para>
+
+<para>Perhaps the most innovative part of OS-9 is its <quote>memory
+module</quote> management system, which provides extensive support for
+modular software, particularly ROMed software. This will play an
+increasingly important role in the future as a method of reducing
+software costs. The <quote>memory module</quote> and LINK capabilities of OS-9
+permit modules to be automatically identified, linked together,
+shared, updated or repaired. Individual modules in ROM which are
+defective may be repaired (without reprogramming the ROM) by placing
+a <quote>fixed</quote> module, with the same name, but a higher revision number
+into memory. Memory modules have many other advantages, for example,
+OS-9 can allow several programs to share a common math subroutine
+module. The same module could automatically be replaced with a module
+containing drivers for a hardware arithmetic processor without any
+change to the programs which call the module.</para>
+
+<para>Users experienced with UNIX should have little difficulty adapting
+to OS-9. Here are some of the main differences between the two
+systems: 
+</para>
+<orderedlist  numeration="arabic">
+<listitem><para>OS-9 is written in 6809 assembly language, not C. This
+improves program size and speed characteristics.</para></listitem>
+<listitem><para>OS-9 was designed for a mixed RAM/ROM microcomputer memory
+environment and more effectively supports reentrant,
+position-independent code.</para></listitem>
+<listitem><para>OS-9 introduces the <quote>memory module</quote> concept for
+organizing object code with built-in dynamic inter-module linkage.</para></listitem>
+<listitem><para>OS-9 supports multiple file managers, which are modules that
+interface a class of devices to the file system.</para></listitem>
+<listitem><para><quote>Fork</quote> and <quote>Execute</quote> calls are faster and
+more memory efficient than the UNIX equivalents.</para></listitem>
+</orderedlist>
+</sect1>
+
+<sect1>
+<title>System Hardware Requirements</title>
+
+<para>The OS-9 Operating system consists of building blocks called
+memory modules, which are automatically located and linked together
+when the system starts up. This makes it extremely easy to
+reconfigure the system. For example, reconfiguring the system to
+handle additional devices is simply a matter of placing the
+corresponding modules into memory. Because OS-9 is so flexible, the
+minimum hardware requirements are difficult to define. A bare-bones
+LEVEL I system requires 4K of ROM and 2K of RAM, which may be
+expanded to 56K RAM.</para>
+
+<para>Shown below are the requirements for a typical OS-9 software
+development system. Actual hardware requirements may vary depending
+upon the particular application.</para>
+<itemizedlist mark="bullet">
+<listitem><para>6809 MPU 
+</para></listitem>
+<listitem><para>24K Bytes RAM Memory for Assembly Language Development. 40K
+Bytes RAM Memory for High Level Languages such as BASIC09 (RAM Must
+Be Contiguous From Address Zero Upward) 
+</para></listitem>
+<listitem><para>4K Bytes of ROM: 2K must be addressed at $F800 - $FFFF, the
+other 2K is position-independent and self-locating. Some disk
+systems may require three 2K ROMs.</para></listitem>
+<listitem><para>Console terminal and interface using serial, parallel, or
+memory mapped video.</para></listitem>
+<listitem><para>Optional printer using serial or parallel interface.</para></listitem>
+<listitem><para>Optional real-time clock hardware.</para></listitem>
+</itemizedlist>
+
+<para>I/O device controller addresses can be located anywhere in the
+memory space, however it is good practice to place them as high as
+possible to maximize RAM expansion capability. Standard
+OS-9 packages for computers made by popular
+manufacturers usually conform to the system's customary memory map.</para>
+</sect1>
+</chapter>

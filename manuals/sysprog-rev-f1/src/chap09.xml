@@ -1,0 +1,236 @@
+<chapter xmlns="http://docbook.org/ns/docbook">
+<title>Adapting OS-9 to a New System</title>
+
+<para>Thanks to OS-9's modular structure, it is easily portable to
+almost any 6809-based computer, and in fact it has been installed on
+an incredible variety of hardware. Usually only device driver and
+device descriptor modules need by rewritten or modified for the
+target system's specific hardware devices. The larger and more
+complex kernel and file manager modules almost never need adaptation.</para>
+
+<para>One essential point is that you will need a functional OS-9
+development system to use during installation of OS-9 on a new target
+system. Although it is possible to use a non-OS-9 system, or if you
+are truly masochistic, the target system itself, lack of facilities
+to generate and test memory modules and create system disks can make
+an otherwise straightforward job a time-consuming headache that is
+seldom less costly than a commercial OS-9-equipped computer. Over a
+dozen manufacturers offer OS-9 based development systems in all price
+ranges with an excellent selection of time-saving options such as
+hard disks, line printers. PROM programmers, etc.</para>
+
+<para>Microware sell source code for standard I/O drivers, and a
+<quote>User Source Code Package</quote> (on OS-9 format disk only) which
+contains source code to the Kernel, Shell, INIT, SYSGO, device
+driver and descriptor modules, and a selection of utility commands
+which can be useful when moving OS-9 to a new target system.</para>
+
+<warning>
+<para>Standard OS-9 software packages are licensed for use on
+a single system. OS-9 cannot be resold or otherwise distributed
+(even if modified) without a license. Contact Microware for
+information regarding software licenses.</para>
+</warning>
+
+<para>A group of OS-9 aficionados has over the years first written
+an alternative to OS-9 called NitrOS9, then also disassembled all
+the original Microware code and commented the source code.
+The software is available on the Internet.</para>
+
+<sect1>
+<title>Adapting OS-9 to Disk-based Systems</title>
+
+<para>Usually, most of the work in moving OS-9 to a disk-based target
+system is writing a device driver module for the target system's disk
+controller. Part of this task involves producing a subset of the
+driver (mostly disk read functions) for use as a bootstrap module.</para>
+
+<para>If terminal and/or parallel I/O for terminals, printers, etc.,
+will use ACIA and/or PIA-type devices, the standard ACIA and PIA
+device driver modules may be used, or device drivers of your own
+design may be used in place of or in addition to these standard
+modules Device descriptor modules may also require adaptation to
+match device addresses and initialization required by the target
+system.</para>
+
+<para>A CLOCK module may be adapted from a standard version, or a new
+one may be created. All other component modules, such as IOMAN,
+RBFMAN, SCFMAN, Shell, and utilities seldom require modification.</para>
+</sect1>
+
+<sect1>
+<title>Using OS-9 in ROM-based Systems</title>
+
+<para>One of OS-9's major features is its ability to reside in ROM
+memory and work effectively with ROMed applications programs written
+in assembler or high-level languages such as Basic09, Pascal, and C.</para>
+
+<para>All the component modules of OS-9 (including all commands and
+utilities) are directly ROMable without modification. In some cases,
+particularly when the target system is to automatically execute an
+application program upon system start-up, it may be necessary to
+reassemble the two modules used during system startup, INIT and SYSGO.</para>
+
+<para>The first step in designing a ROM-based system is to select which
+OS-9 modules to include in ROM. The following checklist is designed
+to help you do so:</para>
+<orderedlist  numeration="loweralpha">
+    <listitem><para>Include OS9P1, OS9P2, SYSGO, and INIT. These modules are
+    required in any OS-9 system.</para></listitem>
+
+    <listitem><para>If the target system is perform any I/O or interrupt
+    functions include IOMAN.</para></listitem>
+
+    <listitem><para>If the target system is to perform I/O to character-oriented
+    I/O devices using ACIAs, PIAs, etc., include SCFMAN, required
+    device drivers (such as ACIA and PIA, and/or your own), and device
+    descriptors as needed (such as TERM, T1, P, and/or your own). If
+    device addresses and/or initialization functions need to be changed,
+    the device descriptor modules must be modified before being ROMed.</para></listitem>
+
+    <listitem><para>If the target system is to perform disk I/O, include RBFMAN,
+    and appropriate disk driver and device descriptor modules. As in (c)
+    above, change device addresses and initialization if needed. If
+    RBFMAN <emphasis>will not</emphasis> be included, the INIT and SYSGO modules
+    <emphasis>must</emphasis> be
+    altered to remove references to disk files.</para></listitem>
+
+    <listitem><para>If the target system requires multiprogramming, time-of-day,
+    or other time-related functions, include a CLOCK module for the
+    target system's real-time clock. Also consider how the clock is to
+    be started,. You may want to ROM the <command>setime</command> command, or
+    have SYSGO start the clock.</para></listitem>
+
+    <listitem><para>It the target system will receive commands manually, or if
+    any application program uses <application>Shell</application> functions, include the SHELL and
+    SYSGO modules, otherwise include a modified SYSGO module which calls
+    your application program instead of <application>Shell</application>.</para></listitem>
+</orderedlist>
+</sect1>
+
+<sect1>
+<title>Adapting the Initialization Module</title>
+
+<para>INIT is a module that contains system startup parameters.
+It <emphasis>must</emphasis> be
+in ROM in any OS-9 system (it usually resides in the same ROM as the
+kernel). It is a non-executable module named <quote>INIT</quote> and has type
+<quote>system</quote> (code $C). It is scanned once during the system startup. It
+begins with the standard header followed by:</para>
+<informaltable frame="none" rowsep="0" colsep="0">
+<tgroup cols="2">
+<colspec colwidth="1.1in"/>
+<colspec colwidth="3.9in"/>
+<thead>
+<row>
+<entry>MODULE OFFSET</entry>
+<entry></entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>$9,$A,$B</entry>
+<entry>This location contains an upper limit RAM memory address
+used to override OS-9's automatic end-of-RAM search so that memory
+may be reserved for I/O device addresses or other special purposes.</entry>
+</row>
+<row>
+<entry>$C</entry>
+<entry>Number of entries to create in the IRQ polling table. One entry is
+required for each interrupt- generating device control register.</entry>
+</row>
+<row>
+<entry>$D</entry>
+<entry>Number of entries to create in the system device table. One entry
+is required for each device in the system.</entry>
+</row>
+<row>
+<entry>$E,$F</entry>
+<entry>Offset to a string which is the name of the first module to
+be executed after startup, usually <quote>SYSGO</quote>. There must
+always be a startup module.</entry>
+</row>
+<row>
+<entry>$10,$11</entry>
+<entry>Offset to the default
+directory name string (normally /D0). This device is assumed when
+device names are omitted from pathlists. If the system will not use
+disks (e.g., RBFMAN will not be used) this offset <emphasis>must</emphasis>be
+zero.</entry>
+</row>
+<row>
+<entry>$12,$13</entry>
+<entry>Offset to the initial standard path string
+(typically /TERM). This path is opened as the standard paths for the
+initial startup module. This offset <emphasis>must</emphasis> contain zero if there
+is none.</entry>
+</row>
+<row>
+<entry>$14,$15</entry>
+<entry>Offset to bootstrap module name string. If OS-9 does not
+find IOMAN in ROM during the start-up module search, it will execute
+the bootstrap module named to load additional modules from a file on
+a mass-storage device.</entry>
+</row>
+<row>
+<entry>$16 to N</entry>
+<entry>All name strings referred to above go here. Each must
+have the sign bit (bit 7) of the last character set.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect1>
+
+<sect1>
+<title>Adapting the SYSGO Module</title>
+
+<para>SYSGO is a program which is the first process started after the
+system start-up sequence. Its function is threefold:</para>
+
+<itemizedlist mark="bullet">
+<listitem><para>It does additional high-level system initialization, for
+example, disk system SYSGO call the <application>shell</application> to process the
+<filename>Startup</filename> shell procedure file.</para></listitem>
+
+<listitem><para>It starts the first <quote>user</quote> process.</para></listitem>
+
+<listitem><para>It thereafter remains in a <quote>wait</quote> state as insurance against all
+user processes terminating, thus leaving the system halted. If this
+happens. SYSGO can restart the first user program.</para></listitem>
+</itemizedlist>
+
+<para>The standard SYSGO module for disk systems cannot be used on
+non-disk based systems unless it is modified to:</para>
+
+<orderedlist  numeration="arabic">
+<listitem><para>Remove initialization of the working execution directory.</para></listitem>
+
+<listitem><para>Remove processing of the <filename>Startup</filename> procedure file.</para></listitem>
+
+<listitem><para>Possibly change the name of the first user program from <application>Shell</application>
+to the name of a applications program. Here are some example name strings:</para>
+
+    <informaltable frame="none" rowsep="0" colsep="0">
+    <tgroup cols="2">
+    <tbody>
+    <row>
+	<entry>fcs /userpqm/</entry>
+	<entry>(object code module <quote>userpgm</quote>)</entry>
+    </row>
+    <row>
+	<entry>fcs /RunB userpgm/</entry>
+	<entry>(compiled Basie09 program using RunB run-time-only system)</entry>
+    </row>
+    <row>
+	<entry>fcs /Basic09 userpgm/</entry>
+	<entry>(compiled Basic09 program using Basic09)</entry>
+    </row>
+    </tbody>
+    </tgroup>
+    </informaltable>
+</listitem>
+</orderedlist>
+</sect1>
+</chapter>
+
