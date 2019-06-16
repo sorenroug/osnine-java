@@ -219,8 +219,9 @@ other file-related information.       (See also Appendix I in this manual).
           <section>
             <title>General Format</title>
             <cmdsynopsis>
-     <command>FILE-CONTROL.</command>  <arg rep="repeat">file-control-entry</arg>
-     </cmdsynopsis>
+              <command>FILE-CONTROL.</command>
+              <arg rep="repeat">file-control-entry</arg>
+            </cmdsynopsis>
           </section>
         </section>
         <section>
@@ -233,14 +234,31 @@ The file control entry names a file and may specify other file-related informati
           </section>
           <section>
             <title>General Format</title>
-            <para>
-     SELECT        file-name
-           ASSIGN TO jexternal-file-name-literal![, external-file-name-literal!]
-                  file-ident1fier             I   !file-identifier           I
-          [ ; ORGANIZATION IS     )
-            [; ACCESS MODE IS SEQUENTIAL)
-            [; FILE STATUS IS data-name-1)
-</para>
+            <cmdsynopsis>
+              <command>SELECT</command>
+              <arg>file-name</arg>
+              <arg>ASSIGN TO</arg>
+              <group choice="req">
+                <arg>external-file-name-literal</arg>
+                <arg>file-identifier</arg>
+              </group>
+              <arg choice="opt">
+                <arg>,</arg>
+                <group>
+                  <arg>external-file-name-literal</arg>
+                  <arg>file-identifier</arg>
+                </group>
+              </arg>
+              <arg choice="opt">
+                <arg>; ORGANIZATION IS</arg>
+                <group>
+                  <arg>SEQUENTIAL</arg>
+                  <arg>LINE SEQUENTIAL</arg>
+                </group>
+              </arg>
+              <arg choice="opt">; ACCESS MODE IS SEQUENTIAL</arg>
+              <arg choice="opt">; FILE STATUS IS data-name-1</arg>
+            </cmdsynopsis>
           </section>
           <section>
             <title>Syntax Rules</title>
@@ -298,13 +316,13 @@ The ORGANIZATION clause specifies the logical structure of a file. The
               </listitem>
               <listitem>
                 <para>
-<phrase role="extension">When LINE SEQUENTIAL ORGANIZATION is specified, the file is treated as
+                  <phrase role="extension">When LINE SEQUENTIAL ORGANIZATION is specified, the file is treated as
 consisting of variable length records, each record containing one line of data.
 The definition of a line of data varies with different operating systems.
 Some terminate line "records" with the Carriage Return and Line Feed characters,
 or one of them, and some pad out as fixed length records. CIS COBOL therefore
 is always compatible with the Editor software in any Operating System in this respect.</phrase>
-          </para>
+                </para>
               </listitem>
               <listitem>
                 <para>
@@ -338,21 +356,40 @@ the location of files on a multiple file reel.
           </section>
           <section>
             <title>General Format</title>
-            <para>
-     I-O-CONTROL.
-   [ '. -E
-        RERUNrON     jfile-name-l
-                       implementor-name
-                                        !] EVERY
-
-                                                           [- END OF] {REEL l
-                                                                     - UNITf
-                                                          integer-1 RECORDS
-                                                   integer-2 CL0CK=UNITS 0'
-                                                   condition-name
-                                                                                      t
-   [!;{SAME        AREA FOR file-name-3 ), file-name-4!                    . }      ... ] .
-</para>
+            <cmdsynopsis>
+              <command>I-O-CONTROL.</command>
+              <arg choice="opt" rep="repeat">
+                <arg>; RERUN</arg>
+                <arg choice="opt">
+                  <arg>ON</arg>
+                  <group choice="req">
+                    <arg>file-name-1</arg>
+                    <arg>implementor-name</arg>
+                  </group>
+                </arg>
+                <arg>EVERY</arg>
+                <group choice="req">
+                  <group choice="req">
+                    <arg>
+                      <arg choice="opt">END OF</arg>
+                      <group choice="req">
+                        <arg>REEL</arg>
+                        <arg>UNIT</arg>
+                      </group>
+                    </arg>
+                    <arg>integer-1 RECORDS</arg>
+                  </group>
+                  <arg>OF file-name-2</arg>
+                  <arg>integer-2 CLOCK-UNITS</arg>
+                  <arg>condition-name</arg>
+                </group>
+              </arg>
+              <arg choice="opt" rep="repeat">
+                <arg>; SAME AREA FOR file-name-3</arg>
+                <arg choice="opt" rep="repeat">, file-name-4</arg>
+              </arg>
+              <arg>.</arg>
+            </cmdsynopsis>
           </section>
           <section>
             <title>Syntax Rules</title>
@@ -397,13 +434,13 @@ The files referenced in the SAME AREA clause need not all have the same organiza
             <orderedlist>
               <listitem>
                 <para>
-<phrase role="extension">The RERUN clause is treated as for documentation purposes only.</phrase>
-</para>
+                  <phrase role="extension">The RERUN clause is treated as for documentation purposes only.</phrase>
+                </para>
               </listitem>
               <listitem>
                 <para>
-<phrase role="extension">The SAME AREA clause is treated as for documentation purposes only.</phrase>
-</para>
+                  <phrase role="extension">The SAME AREA clause is treated as for documentation purposes only.</phrase>
+                </para>
               </listitem>
             </orderedlist>
           </section>
@@ -415,7 +452,7 @@ The files referenced in the SAME AREA clause need not all have the same organiza
       <section>
         <title>FILE SECTION</title>
         <para>
-  In a CIS COBOL program the file description entry (FD) represents the
+In a CIS COBOL program the file description entry (FD) represents the
 highest level of organisation in the File Section. The File Section header
 is followed by a file description entry consisting of a level indicator
 (FD), a file-name and a series of independent clauses. The FD clauses
@@ -435,7 +472,7 @@ required, followed by a series of independent clauses as required. A record
 description has a hierarchical structure and therefore the clauses used with
 an entry may vary considerably, depending upon whether or not it is followed
 by subordinate entries. The structure of a record description is defined in
-CUNCEPT OF LEVELS in Chapter 2, while the elements allowed in a record
+CONCEPT OF LEVELS in Chapter 2, while the elements allowed in a record
 description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
 
 </para>
@@ -451,34 +488,54 @@ description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-   FD    file-name
-                                                {RECORDS     }]
-       [;    BLOCK CONTAINS    integer-2        1CHARACTERS
-         [;   RECORD CONTAINS (integer-3 TO    J integer-4   CHARACTERS]
-             LABEL {RECORD IS } {STANDARD}}
-            - - RECORDS ARE           OMITTED
-                     -         -
-             VALUE OF  data-name-1 IS            literal-1
-
-                  [, data-name-2   IS       literal-2]     ]
-          ,  DATA
-
-                    {IS
-                     RECORDS ARE
-                                 }
-                                      data-name-3      [, data-name-4] . ]
-       [
-       (;    CODE-SET IS alphabet-name]
-</para>
+          <cmdsynopsis>
+            <command>FD</command>
+            <arg>file-name</arg>
+            <arg choice="opt">
+              <arg>; BLOCK CONTAINS integer-2</arg>
+              <group choice="req">
+                <arg>RECORDS</arg>
+                <arg>CHARACTERS</arg>
+              </group>
+            </arg><sbr/>
+            <arg choice="opt">
+              <arg>; RECORD CONTAINS</arg>
+              <arg choice="opt">integer-3 TO</arg>
+              <arg>integer-4 CHARACTERS</arg>
+            </arg><sbr/>
+            <arg choice="opt">
+              <arg>; LABEL</arg>
+              <group choice="req">
+                <arg>RECORD IS</arg>
+                <arg>RECORDS ARE</arg>
+              </group>
+              <group choice="req">
+                <arg>STANDARD</arg>
+                <arg>OMITTED</arg>
+              </group>
+            </arg><sbr/>
+            <arg choice="opt">
+              <arg>; VALUE OF data-name-1 IS literal-1</arg>
+              <arg choice="opt" rep="repeat">, data-name-2 IS literal-2</arg>
+            </arg>
+            <arg choice="opt">
+              <arg>; DATA</arg>
+              <group choice="req">
+                <arg>RECORD IS</arg>
+                <arg>RECORDS ARE</arg>
+              </group>
+              <arg>data-name-3</arg>
+              <arg choice="opt">, data-name-4</arg>
+            </arg><sbr/>
+            <arg choice="opt">; CODE-SET IS alphabet-name</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rules</title>
           <orderedlist>
             <listitem>
               <para>
-   The level indicator FD identifies the beginning of a file description
-         and must precede the file-name.
+The level indicator FD identifies the beginning of a file description and must precede the file-name.
 </para>
             </listitem>
             <listitem>
@@ -516,8 +573,8 @@ description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
         <section>
           <title>General Rule</title>
           <para>
-<phrase role="extension">This clause is required for documentation purposes only.</phrase>
-</para>
+            <phrase role="extension">This clause is required for documentation purposes only.</phrase>
+          </para>
         </section>
       </section>
       <section>
@@ -561,7 +618,7 @@ The CODE-SET clause may only be specified for non-disk files.
         <section>
           <title>General Rule</title>
           <para>
-<phrase role="extension">The CODE-SET clause is specified for documentation purposes only.</phrase>
+            <phrase role="extension">The CODE-SET clause is specified for documentation purposes only.</phrase>
           </para>
         </section>
       </section>
@@ -616,8 +673,8 @@ data records with their associated file.
         <section>
           <title>Function</title>
           <para>
-<phrase role="extension">The LABEL RECORDS clause specifies whether labels are present.</phrase>
-</para>
+            <phrase role="extension">The LABEL RECORDS clause specifies whether labels are present.</phrase>
+          </para>
         </section>
         <section>
           <title>General Format</title>
@@ -636,8 +693,8 @@ This clause is required in every file description entry,
         <section>
           <title>General Rule</title>
           <para>
-<phrase role="extension">This clause is used for documentation purposes only.</phrase>
-</para>
+            <phrase role="extension">This clause is used for documentation purposes only.</phrase>
+          </para>
         </section>
       </section>
       <section>
@@ -685,8 +742,8 @@ records associated with a file.
           <orderedlist>
             <listitem>
               <para>
-<phrase role="extension">This clause is used for documentation purposes only.</phrase>
-</para>
+                <phrase role="extension">This clause is used for documentation purposes only.</phrase>
+              </para>
             </listitem>
             <listitem>
               <para>
@@ -774,7 +831,7 @@ checking and/or writing of labels and other input-output operations.
                INPUT file-name-1    [, file-name-2]
                OUTPUT file-name-3   [, file-name-4]
      OPEN
-               I-O file-name - 5    [, file-name-6]
+               I-O file-name-5    [, file-name-6]
                EXTEND file-name-7   [, file-name-S]
       </para>
       </section>
@@ -798,30 +855,30 @@ The EXTEND phrase can only by used for sequential files and line sequential file
         <orderedlist>
           <listitem>
             <para>
-   The successful execution of an OPEN statement determines the avail-
-     ability of the file and results in the file being in an open mode.
+The successful execution of an OPEN statement determines the avail-
+ability of the file and results in the file being in an open mode.
       </para>
           </listitem>
           <listitem>
             <para>
-   The successful execution of an OPEN statement makes the associated
-     record area available to the program.
+The successful execution of an OPEN statement makes the associated
+record area available to the program.
       </para>
           </listitem>
           <listitem>
             <para>
-   Prior to the successful execution of an OPEN statement for a given
-     file, no statement can be executed that references that file, either
-     explicitly or implicitly.
+Prior to the successful execution of an OPEN statement for a given
+file, no statement can be executed that references that file, either
+explicitly or implicitly.
       </para>
           </listitem>
           <listitem>
             <para>
-   An OPEN statement must be successfully executed prior to the execution
-     of any of the permissible input-output statements. In Table 5-1, 'X'
-     at an intersect i on indicates that the specified statement, used in the
-     sequential access mode, may be used with the sequential file
-     organization and open mode given at the top of the column.
+An OPEN statement must be successfully executed prior to the execution
+of any of the permissible input-output statements. In Table 5-1, 'X'
+at an intersect i on indicates that the specified statement, used in the
+sequential access mode, may be used with the sequential file
+organization and open mode given at the top of the column.
 </para>
             <table frame="all" colsep="1" rowsep="1">
               <title>Permissable Combinations of Statements and OPEN Modes for Sequential I/O.</title>
@@ -874,10 +931,10 @@ The EXTEND phrase can only by used for sequential files and line sequential file
           </listitem>
           <listitem>
             <para>
-    A file may be opened with the INPUT, OUTPUT, EXTEND and I-O phrases in
-      the same program. Following the init ial execution of an OPEN statement
-      for a file, each subsequent OPEN statement execution for that same file
-      must be preceded by the execution of a CLOSE statement, for that file.
+A file may be opened with the INPUT, OUTPUT, EXTEND and I-O phrases in
+the same program. Following the init ial execution of an OPEN statement
+for a file, each subsequent OPEN statement execution for that same file
+must be preceded by the execution of a CLOSE statement, for that file.
       </para>
           </listitem>
           <listitem>
@@ -887,56 +944,54 @@ Execution of the OPEN statement does not obtain or release the first data record
           </listitem>
           <listitem>
             <para>
-    The ASSIGNed name in the SELECT statement for a file is processed as
-      follows:
+The ASSIGNed name in the SELECT statement for a file is processed as follows:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-         When the INPUT phrase is specified, the execution of the OPEN
-           statement causes the ASSIGNed name to be checked in accordance
-           with the operating system conventions for opening files for input.
+When the INPUT phrase is specified, the execution of the OPEN
+statement causes the ASSIGNed name to be checked in accordance
+with the operating system conventions for opening files for input.
 </para>
               </listitem>
               <listitem>
                 <para>
-         When the OUTPUT phrase is specified, the execution of the OPEN
-           statement causes the ASSIGNed name to be written in accordance
-           with the operating system conventions for opening files for
-           output.
+When the OUTPUT phrase is specified, the execution of the OPEN
+statement causes the ASSIGNed name to be written in accordance
+with the operating system conventions for opening files for output.
       </para>
               </listitem>
             </orderedlist>
           </listitem>
           <listitem>
             <para>
-    The file description entry for file-name-1, file-name-5, must be
-      equivalent to that used when this file was created.
+The file description entry for file-name-1, file-name-5, must be
+equivalent to that used when this file was created.
       </para>
           </listitem>
           <listitem>
             <para>
-    If the storage medium for the file permits rewinding, execution of the
-      OPEN statement causes the file to be positioned at its beginning.
+If the storage medium for the file permits rewinding, execution of the
+OPEN statement causes the file to be positioned at its beginning.
       </para>
           </listitem>
           <listitem>
             <para>
-   For files being opened with the INPUT or I-O phrase, the OPEN statement
-      sets the current record pointer to the first record currently existing
-      within the file. If no records exist in the file, the current record
-      pointer is set such that the next executed READ statement for the file
-      will result in an AT END condition. If the file does not exist, OPEN
-      INPUT will cause an error status.
+For files being opened with the INPUT or I-O phrase, the OPEN statement
+sets the current record pointer to the first record currently existing
+within the file. If no records exist in the file, the current record
+pointer is set such that the next executed READ statement for the file
+will result in an AT END condition. If the file does not exist, OPEN
+INPUT will cause an error status.
       </para>
           </listitem>
           <listitem>
             <para>
-  When the EXTEND phrase is specified, the OPEN statement positions the
-      file immediately following the last logical record of that file.
-      Subsequent WRITE statements referencing the file will add records to
-      the file as though the file had been opened with the OUTPUT phrase.
-      <phrase role="extension">If the file does not exist it will be created.</phrase>
+When the EXTEND phrase is specified, the OPEN statement positions the
+file immediately following the last logical record of that file.
+Subsequent WRITE statements referencing the file will add records to
+the file as though the file had been opened with the OUTPUT phrase.
+  <phrase role="extension">If the file does not exist it will be created.</phrase>
       </para>
           </listitem>
           <listitem>
@@ -1060,15 +1115,15 @@ The record to be made available by the READ statement is determined as follows:
           </listitem>
           <listitem>
             <para>
-   When the INTO phrase is used, the record being read is available in
-     both the input record area and the data area associated with identifier.
+When the INTO phrase is used, the record being read is available in
+both the input record area and the data area associated with identifier.
 </para>
           </listitem>
           <listitem>
             <para>
-   If, at the time of execution of a READ statement, the position of
-     current record pointer for that file is undefined, the execution of
-     that READ statement is unsuccessful.
+If, at the time of execution of a READ statement, the position of
+current record pointer for that file is undefined, the execution of
+that READ statement is unsuccessful.
 </para>
           </listitem>
           <listitem>
@@ -1079,22 +1134,22 @@ The record to be made available by the READ statement is determined as follows:
             <orderedlist>
               <listitem>
                 <para>
-          The standard ending reel/unit label procedure.
+The standard ending reel/unit label procedure.
 </para>
               </listitem>
               <listitem>
                 <para>
-          A reel/unit swap.
+A reel/unit swap.
 </para>
               </listitem>
               <listitem>
                 <para>
-          The standard beginning reel/unit label procedure.
+The standard beginning reel/unit label procedure.
 </para>
               </listitem>
               <listitem>
                 <para>
-          The first data record of the new reel/unit is made available.
+The first data record of the new reel/unit is made available.
 </para>
               </listitem>
             </orderedlist>

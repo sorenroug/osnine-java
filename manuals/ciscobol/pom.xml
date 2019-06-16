@@ -12,7 +12,7 @@
 
   <groupId>roug.org.osnine</groupId>
   <artifactId>ciscobol</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
   <name>CIS COBOL Reference Manual</name>
   <packaging>pom</packaging>
 
@@ -65,7 +65,7 @@
             <phase>compile</phase>
             <goals>
               <goal>generate-pdf</goal>
-              <goal>generate-xhtml5</goal>
+              <!--<goal>generate-xhtml5</goal>-->
             </goals>
             <configuration>
               <!-- per execution configuration -->

@@ -12,7 +12,7 @@ is suggested that these should include the following:
       <listitem>
         <para>
 Use of the first 256 bytes of working-storage for variables which are
-     frequently referenced will produce more compact and efficient code.
+frequently referenced will produce more compact and efficient code.
 </para>
       </listitem>
       <listitem>

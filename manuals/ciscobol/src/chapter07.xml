@@ -185,12 +185,12 @@ condition as follows:
               <listitem>
                 <para>
 Indicates a sequence error for a sequentially accessed
-               indexed file. The ascending sequence requirements of
-               successive record key values have been violated
-               (see The WRITE Statement later in this Chapter), or the record key
-               value has been changed by the COBOL program between the
-               successful execution of a READ statement and the execution of
-               the next REWRITE statement for that file.
+indexed file. The ascending sequence requirements of
+successive record key values have been violated
+(see The WRITE Statement later in this Chapter), or the record key
+value has been changed by the COBOL program between the
+successful execution of a READ statement and the execution of
+the next REWRITE statement for that file.
 </para>
               </listitem>
             </varlistentry>
@@ -224,11 +224,11 @@ Indicates a sequence error for a sequentially accessed
             </varlistentry>
           </variablelist>
           <para>
-     When status key 1 contains a value of '9' the value of status key 2 is
-     the operating system error message number (for those operating systems
-     which designate errors numerically). The <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
-     specific to your operating system contains details of the status-key-2
-     representation.
+When status key 1 contains a value of '9' the value of status key 2 is
+the operating system error message number (for those operating systems
+which designate errors numerically). The <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
+specific to your operating system contains details of the status-key-2
+representation.
 </para>
           <para>
      Note that it is not possible to extract this number directly.
@@ -377,16 +377,16 @@ other file-related information. (See also appendix F in the
           <para>
             SELECT file-name
                   ASSIGN TO  j external-file-name-literal!
-                               f ile-iden t if ie r
+                               file-identifier
                                external-file-name-literal!]
                           [!' file-identifier                 I
                ORGANIZATION IS
            [; ACCESS NODE IS SEQUENTIAL
                                     DYNAMIC
 
-                                   tRANnCiM
+                                   RANDOM
              ; RECORD KEY IS data-name-1
-             (; FILE STATUS IS data-name-3]
+             [; FILE STATUS IS data-name-3]
 </para>
         </section>
         <section>
@@ -413,8 +413,8 @@ other file-related information. (See also appendix F in the
             </listitem>
             <listitem>
               <para>The data items referenced by data-name-1 must each be defined as a data
-    item of the category alphanumeric within a record description entry
-   associated with that file-name.</para>
+item of the category alphanumeric within a record description entry
+associated with that file-name.</para>
             </listitem>
           </orderedlist>
         </section>
@@ -424,9 +424,9 @@ other file-related information. (See also appendix F in the
             <listitem>
               <para>
 The ASSIGN clause specifies the association of the file referenced by
-            file-name to a storage medium. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
-            <phrase role="extension">The first assignment takes effect. Subsequent
-                assignments within any one ASSIGN clause are for documentation purposes only.</phrase>
+file-name to a storage medium. See Appendix F in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
+<phrase role="extension">The first assignment takes effect. Subsequent
+assignments within any one ASSIGN clause are for documentation purposes only.</phrase>
 </para>
             </listitem>
             <listitem>
@@ -491,18 +491,30 @@ established and the memory area which is to be shared by different files.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-  I-O-CONTROL
-[
-  ;  ~       ON     !file-name-1          1
-                     lmpl.::w..ntor-n..mt!
-                                               ~ERY     ( integer-1 RECORDS OF file-name-2)
-                                                        jinteger-2 l:LOCK-Ul'U'l'S
-                                                        (condition-name
-                                                                                             IJ1
-  
-[; SAME AREA FOR file-name-3            G file-name-4]   ]    ..
-</para>
+          <cmdsynopsis>
+            <command>I-O-CONTROL.</command>
+            <arg choice="opt" rep="repeat">
+              <arg>; RERUN</arg>
+              <arg choice="opt">
+                <arg>ON</arg>
+                <group choice="req">
+                  <arg>file-name-1</arg>
+                  <arg>implementor-name</arg>
+                </group>
+              </arg>
+              <arg>EVERY</arg>
+              <group choice="req">
+                <arg>integer-1 RECORDS OF file-name-2</arg>
+                <arg>integer-2 CLOCK-UNITS</arg>
+                <arg>condition-name</arg>
+              </group>
+            </arg>
+            <arg choice="opt" rep="repeat">
+              <arg>; SAME AREA FOR file-name-3</arg>
+              <arg choice="opt" rep="repeat">, file-name-4</arg>
+            </arg>
+            <arg>.</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rules</title>
@@ -654,10 +666,13 @@ The BLOCK CONTAINS clause specifies the size of a physical record.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-           BLOCK CONTAINS integer-2{         }
-                                   CHARACTERS
-</para>
+        <cmdsynopsis>
+          <arg>BLOCK CONTAINS integer-2</arg>
+          <group choice="req">
+            <arg>RECORDS</arg>
+            <arg>CHARACTERS</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>General Rule</title>
@@ -824,9 +839,9 @@ A CLOSE statement may only be executed for a file in an open mode.
           <listitem>
             <para>
 The action taken if a file is in the open mode when a STOP RUN
-statement is executed is to close the fil e. The action taken for a file
+statement is executed is to close the file. The action taken for a file
 that has been opened in a called program and not closed in that program
-prior to the execution of a CANCEL statement for that program is to close the file
+prior to the execution of a CANCEL statement for that program is to close the file.
 </para>
           </listitem>
           <listitem>
@@ -1189,7 +1204,7 @@ For sequential access, the READ statement makes available the neJCt
 logical record from a file. For random access, the READ statement makes
 available a specified record from a mass storage file.
 </para>
-</section>
+      </section>
       <section>
         <title>General Format</title>
         <para>

@@ -101,24 +101,24 @@ description of the item if necessary.
 The Procedure Division is identified by and must begin with the following
 header:
 </para>
-<programlisting>
+      <programlisting>
       PROCEDURE DIVISION  [USING data-name-1  [, data-name-2]  ...]
 </programlisting>
-<para>
+      <para>
 The USING phrase is present if and only if the object program is to function
 under the control of a CALL statement, and the CALL statement in the calling
 program contains a USING phrase.
 </para>
-<para>
+      <para>
 Each of the operands in the USING phrase of the Procedure Division header
 must be defined as a data item in the Linkage Section of the program in
 which this header occurs, and it must have a 01 or 77 level-number.
 </para>
-<para>
+      <para>
 Within a called program, Linkage Section data items are processed according
 to their data descriptions given in the called program.
 </para>
-<para>
+      <para>
 When the USING phrase is present, the object program operates as if
 data-name-1 of the Procedure Division header in the called program and
 data-name-1 in the USING phrase of the CALL statement in the calling program
@@ -147,17 +147,32 @@ to another, within the run unit.
         <para>
 Format 1
           </para>
-        <para>
-     CALL       identifier-1
-                 literal-1      [ data-name-1       [, data-name-2] )
-          [ON OVERFLOW imperative-statement]
-          </para>
+        <cmdsynopsis>
+          <command>CALL</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg choice="opt">
+            <arg>USING data-name-1</arg>
+            <arg choice="opt" rep="repeat">, data-name-2</arg>
+          </arg>
+          <arg choice="opt">ON OVERFLOW imperative-statement</arg>
+        </cmdsynopsis>
         <para>
 Format 2
       </para>
-        <para>
-CALL literal-2 identifier-2 [USING data-name-3 [,data-name-4]  ...]
-      </para>
+        <cmdsynopsis role="extension">
+          <command>CALL</command>
+          <group choice="req">
+            <arg>literal-2</arg>
+            <arg>identifier-2</arg>
+          </group>
+          <arg choice="opt">
+            <arg>USING data-name-3</arg>
+            <arg choice="opt" rep="repeat">, data-name-4</arg>
+          </arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -287,12 +302,19 @@ The CANCEL statement releases the memory areas occupied by the referred to progr
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     CANCEL    !identifier-1!
-                 literal-1           [
-                                        ) identifier-21]
-                                          literal-2      .
-</para>
+        <cmdsynopsis>
+          <command>CANCEL</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg choice="opt" rep="repeat">
+            <group choice="req">
+              <arg>identifier-2</arg>
+              <arg>literal-2</arg>
+            </group>
+          </arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>

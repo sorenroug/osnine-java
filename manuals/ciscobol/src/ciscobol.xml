@@ -266,7 +266,7 @@ that the material is an option which may be included or omitted as required.
         </listitem>
         <listitem>
           <para>
-When material is enclosed in square brackets crossed &ansileft; &ansiright;, it is an
+When material is enclosed in square brackets crossed <arg choice="ansi"> </arg>, it is an
 indication that the material is mandatory when the ANSI switch is set
 (see Chapter 2) but optional otherwise.
 </para>
@@ -545,18 +545,18 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
 </para>
     <section>
       <title>GENERAL FORMAT FOR IDENTIFICATION DIVISION</title>
-      <para>
-     &ansileft;IDENTIFICATION DIVISION.&ansiright;
-     &ansileft;PROGRAM-ID.     program name&ansiright;
-     [AUTHOR.               [comment entry] ... ]
-     [INSTALLATION.         [comment entry] ... ]
-     [DATE-WRITTEN.         [comment entry] ... ]
-     [DATE-COMPILED.        [comment entry] ... ]
-     [SECURITY.             [comment entry] ... ]
+      <cmdsynopsis>
+     <arg choice="ansi">IDENTIFICATION DIVISION.</arg><sbr/>
+     <arg choice="ansi">PROGRAM-ID. program name</arg><sbr/>
+     <arg choice="opt">AUTHOR.               <arg choice="opt">comment entry</arg> ... </arg><sbr/>
+     <arg choice="opt">INSTALLATION.         <arg choice="opt">comment entry</arg> ... </arg><sbr/>
+     <arg choice="opt">DATE-WRITTEN.         <arg choice="opt">comment entry</arg> ... </arg><sbr/>
+     <arg choice="opt">DATE-COMPILED.        <arg choice="opt">comment entry</arg> ... </arg><sbr/>
+     <arg choice="opt">SECURITY.             <arg choice="opt">comment entry</arg> ... </arg><sbr/>
 
 
 
-</para>
+</cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR ENVIRONMENT DIVISION</title>
@@ -846,7 +846,7 @@ WRITE record-name [FROM identifier]
         <cmdsynopsis>
           <command>ACCEPT</command>
           <arg>data-name-1</arg>
-          <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+          <arg choice="opt">AT <group choice="req"><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
           <arg>FROM CRT</arg>
         </cmdsynopsis>
         <variablelist termlength="11" spacing="compact">
@@ -886,13 +886,13 @@ An additional format for the DISPLAY statement is provided as follows:
 </para>
         <cmdsynopsis>
           <command>DISPLAY</command>
-          <group>
+          <group choice="req">
             <arg>data-name-1</arg>
             <arg>literal-3</arg>
           </group>
-          <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+          <arg choice="opt">AT <group choice="req"><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
           <arg>UPON</arg>
-          <group>
+          <group choice="req">
             <arg>CRT</arg>
             <arg>CRT-UNDER</arg>
           </group>
@@ -1063,7 +1063,7 @@ compile times errors. These clauses are as follows:
 </para>
           <cmdsynopsis>
             <arg>END OF</arg>
-            <group>
+            <group choice="req">
               <arg>REEL</arg>
               <arg>UNIT</arg>
             </group>
@@ -1095,7 +1095,7 @@ by the compiler during compilation but do not cause compile time errors:
             <arg>integer-1</arg>
             <arg>TO</arg>
             <arg>integer-2</arg>
-            <group>
+            <group choice="req">
               <arg>RECORDS</arg>
               <arg>CHARACTERS</arg>
             </group>
@@ -1106,11 +1106,11 @@ by the compiler during compilation but do not cause compile time errors:
           </cmdsynopsis>
           <cmdsynopsis>
             <arg>LABEL</arg>
-            <group>
+            <group choice="req">
               <arg>RECORD IS</arg>
               <arg>RECORDS ARE</arg>
             </group>
-            <group>
+            <group choice="req">
               <arg>STANDARD</arg>
               <arg>OMITTED</arg>
             </group>
@@ -1131,7 +1131,7 @@ The following phrases in the CLOSE statement are ignored by the
 compiler during compilation but do not cause compiler-time errors:
 </para>
           <cmdsynopsis>
-            <group>
+            <group choice="req">
               <arg>REEL</arg>
               <arg>UNIT</arg>
             </group>
@@ -1306,7 +1306,7 @@ COMPUTATIONAL-3 or COMP-3 can be specified in the USAGE clause to specify packed
             <cmdsynopsis>
               <command>ACCEPT</command>
               <arg>data-name-1</arg>
-              <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+              <arg choice="opt">AT <group choice="req"><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
               <arg>FROM CRT</arg>
             </cmdsynopsis>
             <para>
@@ -1316,13 +1316,13 @@ gives enhanced CRT input features
           <listitem>
             <cmdsynopsis>
               <command>DISPLAY</command>
-              <group>
+              <group choice="req">
                 <arg>data-name-1</arg>
                 <arg>literal-1</arg>
               </group>
-              <arg choice="opt">AT <group><arg>data-name-2</arg><arg>literal-2</arg></group></arg>
+              <arg choice="opt">AT <group choice="req"><arg>data-name-2</arg><arg>literal-2</arg></group></arg>
               <arg>UPON</arg>
-              <group>
+              <group choice="req">
                 <arg>CRT</arg>
                 <arg>CRT-UNDER</arg>
               </group>
@@ -1504,6 +1504,8 @@ Fully implemented to Level Two.
   </para>
     <para>
   The original was published by Acorn Computers Limited in cooperation with the British Broadcasting Corporation.
+  </para>
+  <para>Source version: <?eval ${project.version}?>
   </para>
   </colophon>
 </book>

@@ -1,8 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter [
-<!ENTITY ansileft "-[">
-<!ENTITY ansiright "]-">
-]>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude">
   <title>THE NUCLEUS</title>
   <section>
@@ -42,15 +38,21 @@ given below and shows the order of presentation in the source program.
       </section>
       <section>
         <title>General Format</title>
-        <programlisting>
-  &ansileft;     IDENTIFICATION DIVISION     &ansiright;
-  &ansileft;     PROGRAM-ID.   program-name.   &ansiright;
-  [   AUTHOR.    [comment-entry]          ... ]
-  [   INSTALLATION.     [comment-entry]     ... ]
-  [   DATE-WRITTEN.     [comment-entry]    ... ]
-  [   DATE-COMPILED.      [comment-entry]  ...    ]
-  [   SECURITY.    [comment-entry]     ...  ]
-  </programlisting>
+        <cmdsynopsis>
+          <arg choice="ansi">IDENTIFICATION DIVISION</arg>
+          <sbr/>
+          <arg choice="ansi">PROGRAM-ID.   program-name.</arg>
+          <sbr/>
+          <arg choice="opt">AUTHOR.    <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">INSTALLATION.     <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">DATE-WRITTEN.     <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">DATE-COMPILED.      <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">SECURITY.    <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -209,9 +211,9 @@ The OBJECT-COMPUTER Paragraph identifies the computer on which the program is to
             <command>OBJECT-COMPUTER.</command>
             <arg choice="plain">computer-name.</arg>
             <arg choice="opt">,MEMORY SIZE <replaceable>integer</replaceable>
-              <group><arg>WORDS</arg><arg>CHARACTERS</arg><arg>MODULES</arg></group>
-            </arg>
-            <arg choice="opt">,PROGRAM COLLATING SEQUENCE IS <replaceable>alphabet-name</replaceable></arg>
+              <group choice="req"><arg>WORDS</arg><arg>CHARACTERS</arg><arg>MODULES</arg></group>
+            </arg><sbr/>
+            <arg choice="opt">,PROGRAM COLLATING SEQUENCE IS <replaceable>alphabet-name</replaceable></arg><sbr/>
             <arg choice="opt">,SEGMENT-LIMIT IS <replaceable>segment-number</replaceable></arg>
           </cmdsynopsis>
         </section>
@@ -289,20 +291,45 @@ alphabet-names to character sets and/or collating sequences.
         <section>
           <title>General Format</title>
           <cmdsynopsis>
-            <command>SPECIAL-NAMES.</command>
-            <arg>
-       SWITCH mnemonic-name] ,ON STATUS IS condition- name - !
-                                                  ~OFF STATUS ~ condition- name - 2]
-                                                 ,OFF STATUS IS condition- name- 2
-                                                  ~ON STATUs-Is condition- name-!]
-      I, SYSIN   l   IS
-    [ /, SYSOUT  ~
-          ,TAB    IS    mnemonic - name]
-      [.  alphabet-name IS
-                                    STANDARD-!}]
-                                  { NATIVE
-          [, CURRENCY     SIGN~     literal-9]
-      </arg>
+            <command>SPECIAL-NAMES.</command><sbr/>
+            <arg>SWITCH</arg>
+            <group choice="req">
+              <arg>0</arg>
+              <arg>.</arg>
+              <arg>.</arg>
+              <arg>7</arg>
+            </group>
+            <arg choice="opt">IS mnemonic-name</arg>
+            <group choice="req">
+              <arg>,ON STATUS IS condition-name-1</arg>
+              <arg choice="opt">,OFF STATUS IS condition-name-2</arg>
+              <arg>,OFF STATUS IS condition-name-2</arg>
+              <arg choice="opt">,ON STATUS IS condition-name-1</arg>
+            </group><sbr/>
+            <arg choice="opt">
+              <group choice="req">
+                <arg>,SYSIN</arg>
+                <arg>,SYSOUT</arg>
+              </group>
+              <arg>IS mnemonic-name</arg>
+            </arg><sbr/>
+            <arg choice="opt">, TAB IS mnemonic-name</arg><sbr/>
+            <arg choice="opt">
+              <arg>, alphabet-name IS</arg>
+              <group choice="req">
+                <arg>STANDARD-1</arg>
+                <arg>NATIVE</arg>
+              </group>
+            </arg><sbr/>
+            <arg choice="opt">, CURRENCY SIGN IS literal-9</arg><sbr/>
+            <arg choice="opt">, DECIMAL-POINT IS COMMA</arg><sbr/>
+            <arg choice="opt">
+              <phrase role="extension">, CONSOLE IS CRT</phrase>
+            </arg><sbr/>
+            <arg choice="opt">
+              <phrase role="extension">, CURSOR IS data-name-1</phrase>
+            </arg>
+            <arg>.</arg>
           </cmdsynopsis>
         </section>
         <section>
@@ -504,7 +531,7 @@ The initial value of any index data item is unpredictable.
 </para>
       </section>
     </section>
-      <section xml:id="c03.skeleton">
+    <section xml:id="c03.skeleton">
       <title>THE DATA DESCRIPTION - COMPLETE ENTRY SKELETON</title>
       <section>
         <title>Function</title>
@@ -515,25 +542,68 @@ item of data.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-      level-number { data-name-1}
-                      FILLER
-           [; REDEFINES data-name-2]
-           ~ {:i~URE}          IS character-string]
-                              COMPUTATIONAL      ]
-           [                ( COMP
-                        lS )?CoMPUTATlONAL-3
-                              COMP-3
-                              DISPLAY
-                              LEADING }
-                (SIGN IS] { TRAI'i:ING       [SEPARATE CHARACTER)]
-                SYNCHRONIZED} { LEFT } ]
-              { SYNC                RIGHT
-                 JUSTIFIED }
-               { JUST              RIGHT]
-           (;    BLANK WHEN ZERO]
-           [;    VALUE IS literal]
-      </para>
+        <cmdsynopsis>
+          <arg>level-number</arg>
+          <group choice="req">
+            <arg>data-name-1</arg>
+            <arg>FILLER</arg>
+          </group><sbr/>
+          <arg choice="opt">; REDEFINES data-name-2</arg><sbr/>
+          <arg choice="opt">
+            <group choice="req">
+              <arg>PICTURE</arg>
+              <arg>PIC</arg>
+            </group>
+            <arg>IS character-string</arg>
+          </arg><sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg choice="opt">USAGE IS</arg>
+            <group choice="req">
+              <arg>COMPUTATIONAL</arg>
+              <arg>COMP</arg>
+              <arg>COMPUTATIONAL-3</arg>
+              <arg>COMP-3</arg>
+              <arg>DISPLAY</arg>
+            </group>
+          </arg><sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg choice="opt">SIGN IS</arg>
+            <group choice="req">
+              <arg>LEADING</arg>
+              <arg>TRAILING</arg>
+            </group>
+            <arg choice="opt">SEPARATE CHARACTER</arg>
+          </arg><sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <group choice="req">
+              <arg>SYNCHRONIZED</arg>
+              <arg>SYNC</arg>
+            </group>
+            <group choice="req">
+              <arg>LEFT</arg>
+              <arg>RIGHT</arg>
+            </group>
+          </arg><sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <group choice="req">
+              <arg>JUSTIFIED</arg>
+              <arg>JUST</arg>
+            </group>
+            <arg>RIGHT</arg>
+          </arg>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg>BLANK WHEN ZERO</arg>
+          </arg><sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg>VALUE IS literal</arg>
+          </arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -616,10 +686,12 @@ referred to explicitly.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-          data-name}
-        { FILLER
-      </para>
+        <cmdsynopsis>
+          <group choice="req">
+            <arg>data-name</arg>
+            <arg>FILLER</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rule</title>
@@ -627,8 +699,8 @@ referred to explicitly.
           <listitem>
             <para>
 In the File, Working-Storage, Communication and Linkage Sections, a
-       data-name or the key word FILLER must be the first word following the
-       level-number in each data description entry.
+data-name or the key word FILLER must be the first word following the
+level-number in each data description entry.
         </para>
           </listitem>
         </orderedlist>
@@ -656,10 +728,13 @@ a receiving data item.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-             JUSTIFIED}  RIGHT
-           { JUST
-        </para>
+        <cmdsynopsis>
+          <group choice="req">
+            <arg>JUSTIFIED</arg>
+            <arg>JUST</arg>
+          </group>
+          <arg>RIGHT</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -780,10 +855,13 @@ requirements of an elementary item.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-        { PICTURE
-          PIC } IS character-string
-        </para>
+        <cmdsynopsis>
+          <group choice="req">
+            <arg>PICTURE</arg>
+            <arg>PIC</arg>
+          </group>
+          <arg>IS character-string</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -899,15 +977,15 @@ the following symbols:  'A', 'X', '9', 'B', '0', and'/' as follows:
               <orderedlist>
                 <listitem>
                   <para>
-     a.   The character-strinc must contain at least one 'B' and at least
-          one 'X' or at least one '0' (zero) and at least one 'X' or at
-          least one '/' (stroke) and at least one 'X'; or
+The character-strinc must contain at least one 'B' and at least
+one 'X' or at least one '0' (zero) and at least one 'X' or at
+least one '/' (stroke) and at least one 'X'; or
 </para>
                 </listitem>
                 <listitem>
                   <para>
-     b.   The character-string must contain at least one '0' (zero) and at
-          least one 'A' or at least one '/' (stroke) and at least one 'A'.
+The character-string must contain at least one '0' (zero) and at
+least one 'A' or at least one '/' (stroke) and at least one 'A'.
 </para>
                 </listitem>
               </orderedlist>
@@ -934,14 +1012,14 @@ rules as follows:
               <orderedlist>
                 <listitem>
                   <para>
-     a.   The number of digit positions that can be represented in the
-          PICTURE character-string must range from 1 to 18 inclusive.
+The number of digit positions that can be represented in the
+PICTURE character-string must range from 1 to 18 inclusive.
 </para>
                 </listitem>
                 <listitem>
                   <para>
-     b.   The character-string must contain at least one '0', 'B', '/', 'Z',
-          '*', '+', ',', '.', '-', 'CR', 'DB', or currency symbol.
+The character-string must contain at least one '0', 'B', '/', 'Z',
+'*', '+', ',', '.', '-', 'CR', 'DB', or currency symbol.
 </para>
                 </listitem>
               </orderedlist>
@@ -1033,11 +1111,12 @@ CHARACTER phrase. (See the SIGN Clause in this Chapter.)
             <varlistentry>
               <term>V -</term>
               <listitem>
-                <para>   The 'V' is used in a character-string to indicate the location of the
-        assumed decimal point and may only appear once in a character-string.
-        The 'V' does not represent a character position and therefore is not
-        counted in the size of the elementary item. When the assumed decimal
-        point is to the right of the rightmost symbol in the string the 'V' is
+                <para>
+The 'V' is used in a character-string to indicate the location of the
+assumed decimal point and may only appear once in a character-string.
+The 'V' does not represent a character position and therefore is not
+counted in the size of the elementary item. When the assumed decimal
+point is to the right of the rightmost symbol in the string the 'V' is
         redundant.
         </para>
               </listitem>
@@ -1045,28 +1124,29 @@ CHARACTER phrase. (See the SIGN Clause in this Chapter.)
             <varlistentry>
               <term>X -</term>
               <listitem>
-                <para>   Each 'X' in the character-string is used to represent a character
-     position which contains any allowable character from the computer's
-     character set.
-        </para>
+                <para>
+Each 'X' in the character-string is used to represent a character
+position which contains any allowable character from the computer's
+character set.
+</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Z -</term>
               <listitem>
                 <para>  Each 'Z' in a character-string may only be used to represent the
-     leftmost numeric character positions which will be replaced by a space
-     character when the contents of that character position is zero. Each
-     'Z' is counted in the size of the item.
-        </para>
+leftmost numeric character positions which will be replaced by a space
+character when the contents of that character position is zero. Each
+'Z' is counted in the size of the item.
+</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>9 -</term>
               <listitem>
                 <para>  Each '9' in the character-string represents a character position which
-     contains a numeral and is counted in the size of the item.
-        </para>
+contains a numeral and is counted in the size of the item.
+</para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -1447,9 +1527,9 @@ described by different data description entries.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-      level-number data-name-1; REDEFINES data-name-2
-      </para>
+        <cmdsynopsis>
+          <arg>level-number data-name-1; REDEFINES data-name-2</arg>
+        </cmdsynopsis>
         <para>
 NOTE:       Level-number, data-name-1 are shown in the above format to improve
             clarity. Level-number and data-name-1 are not part of the
@@ -1546,17 +1626,20 @@ Multiple level 01 entries subordinate to any given level indicator
       <section>
         <title>Function</title>
         <para>
-      The SIGN clause specifies the position and the mode of representation
-of the operational sign when it is necessary to describe these properties
-explicitly.
+The SIGN clause specifies the position and the mode of representation
+of the operational sign when it is necessary to describe these properties explicitly.
 </para>
       </section>
       <section>
         <title>General Format</title>
-        <para>
-                    LEADING } [SEPARATE CHARACTER]
-      [SIGN IS] { TRAILING
-        </para>
+        <cmdsynopsis>
+          <arg choice="opt">SIGN IS</arg>
+          <group choice="req">
+            <arg>LEADING</arg>
+            <arg>TRAILING</arg>
+          </group>
+          <arg choice="opt">SEPARATE CHARACTER</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1564,14 +1647,14 @@ explicitly.
           <listitem>
             <para>
 The SIGN clause may be specified only for a numeric data description
-      entry whose PICTURE contains the character 'S', or a group item
-      containing at least one such numeric data description entry.
+entry whose PICTURE contains the character 'S', or a group item
+containing at least one such numeric data description entry.
  </para>
           </listitem>
           <listitem>
             <para>
 The numeric data description entries to which the SIGN clause applies
-      must be described as USAGE IS DISPLAY.
+must be described as USAGE IS DISPLAY.
  </para>
           </listitem>
           <listitem>
@@ -1594,71 +1677,68 @@ described with the SIGN IS SEPARATE clause.
           <listitem>
             <para>
 The optional SIGN clause, if present, specifies the position and the
-      mode of representation of the operational sign for the numeric data
-      description entry to which it applies, or for each numeric data
-      description entry subordinate to the group to which it applies. Tlu,
-      SIGN clause applies only to numeric data description entries whose
-      PICTURE contains the character 'S'; the 'S' indicates the presence of,
-      but neither the representation nor, necessarily, the position of the
-      operational sign.
+mode of representation of the operational sign for the numeric data
+description entry to which it applies, or for each numeric data
+description entry subordinate to the group to which it applies. Tlu,
+SIGN clause applies only to numeric data description entries whose
+PICTURE contains the character 'S'; the 'S' indicates the presence of,
+but neither the representation nor, necessarily, the position of the
+operational sign.
 </para>
           </listitem>
           <listitem>
             <para>
 A numeric data description entry whose picture contains the character
-      'S', but to which no optional SIGN clause applies, has an operational
-      sign, but neither the representation nor, necessarily, the position of
-      the operational sign is specified by the character 'S'           In this
-      (default) case, general rules 3 through 5 do not apply to such signed
-      numeric data items. The representation of the default operational sign
-      is defined in Chapter 2, Selection of Character Representation and Radix.
+'S', but to which no optional SIGN clause applies, has an operational
+sign, but neither the representation nor, necessarily, the position of
+the operational sign is specified by the character 'S'           In this
+(default) case, general rules 3 through 5 do not apply to such signed
+numeric data items. The representation of the default operational sign
+is defined in Chapter 2, Selection of Character Representation and Radix.
 </para>
           </listitem>
           <listitem>
             <para>
-3. If the optional SEPARATE CHARACTER phrase is not present, then:
+If the optional SEPARATE CHARACTER phrase is not present, then:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-   a.   The operational sign will be presumed to be associated with the
-        leading (or, respectively, trailing) digit position of the
-        elementary numeric data item.
+The operational sign will be presumed to be associated with the
+leading (or, respectively, trailing) digit position of the
+elementary numeric data item.
 </para>
               </listitem>
               <listitem>
                 <para>
-   b.   The letter 'S' in a PICTURE character-string is not counted in
-        determining the size of the item (in terms of standard data format
-        characters).
+The letter 'S' in a PICTURE character-string is not counted in
+determining the size of the item (in terms of standard data format characters).
 </para>
               </listitem>
             </orderedlist>
           </listitem>
           <listitem>
             <para>
-4. If the optional SEPARATE CHARACTER phrase is present,  then:
+If the optional SEPARATE CHARACTER phrase is present,  then:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-   a.   The operational sign will be presumed to be the leading (or,
-        respectively, trailing) character pos1t1on of the elementary
-        numeric data item; this character position is not a digit
-        position.
+The operational sign will be presumed to be the leading (or,
+respectively, trailing) character pos1t1on of the elementary
+numeric data item; this character position is not a digit position.
 </para>
               </listitem>
               <listitem>
                 <para>
-   b.   The letter 'S' in a PICTURE character-string is counted in
-        determining the size of the item (in terms of standard data format
-        characters).
+The letter 'S' in a PICTURE character-string is counted in
+determining the size of the item (in terms of standard data format characters).
 </para>
               </listitem>
               <listitem>
                 <para>
-   c.   The operational signs for positive and negative are the standard
-        data format characters '+' and '-', respectively.
+The operational signs for positive and negative are the standard
+data format characters '+' and '-', respectively.
 </para>
               </listitem>
             </orderedlist>
@@ -1684,21 +1764,32 @@ The SYNCHRONIZED clause specifies the alignment of an elementary item
 on the natural boundaries of the computer memory.
 </para>
       </section>
-      <section><title>General Format</title>
-      SYNCHRONIZED} [{LEFT }]
-    { SYNC              RIGHT
-    </section>
+      <section>
+        <title>General Format</title>
+        <cmdsynopsis>
+          <group choice="req">
+            <arg>SYNCHRONIZED</arg>
+            <arg>SYNC</arg>
+          </group>
+          <arg choice="opt">
+            <group choice="req">
+              <arg>LEFT</arg>
+              <arg>RIGHT</arg>
+            </group>
+          </arg>
+        </cmdsynopsis>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
           <listitem>
             <para>
-1.    This clause may only appear with an elementary item.
+This clause may only appear with an elementary item.
  </para>
           </listitem>
           <listitem>
             <para>
-2.    SYNC is an abbreviation for SYNCHRONIZED.
+SYNC is an abbreviation for SYNCHRONIZED.
  </para>
           </listitem>
         </orderedlist>
@@ -1714,25 +1805,25 @@ on the natural boundaries of the computer memory.
           <listitem>
             <para>
 This clause specifies that the subject data item is to be aligned in
-      the computer such that no other data item occupies any of the character
-      positions between the leftmost and rightmost natural boundaries
-      delimiting this data item. If the number of character positions
-      required to store this data item is less than the number of character
-      positions between those natural boundaries, the unused character
-      positions (or portions thereof) must not be used for any other data
-      item. Such unused character positions, however, are included in:
+the computer such that no other data item occupies any of the character
+positions between the leftmost and rightmost natural boundaries
+delimiting this data item. If the number of character positions
+required to store this data item is less than the number of character
+positions between those natural boundaries, the unused character
+positions (or portions thereof) must not be used for any other data
+item. Such unused character positions, however, are included in:
       </para>
             <orderedlist>
               <listitem>
                 <para>
-      a.   The size of any group item(s)  to which the elementary item
-           belongs; and
+The size of any group item(s)  to which the elementary item
+belongs; and
 </para>
               </listitem>
               <listitem>
                 <para>
-      b.   The character positions redefined when this data item is the
-           object of a REDEFINES clause.
+The character positions redefined when this data item is the
+object of a REDEFINES clause.
 </para>
               </listitem>
             </orderedlist>
@@ -1740,47 +1831,47 @@ This clause specifies that the subject data item is to be aligned in
           <listitem>
             <para>
 SYNCHRONIZED not followed by either RIGHT or LEFT specifies that the
-      elementary item is to be positioned between natural boundaries in such
-      a way as to effect efficient utilization of the elementary data item.
+elementary item is to be positioned between natural boundaries in such
+a way as to effect efficient utilization of the elementary data item.
 </para>
           </listitem>
           <listitem>
             <para>
 SYNCHRONIZED LEFT specifies that the elementary item is to be
-      positioned such that it will begin at the left character position of
-      the natural boundary in which the elementary item is placed.
+positioned such that it will begin at the left character position of
+the natural boundary in which the elementary item is placed.
 </para>
           </listitem>
           <listitem>
             <para>
 SYNCHRONIZED RIGHT specifies that the elementary item is to be
-      positioned such that it will terminate on the right character position
-      of the natural boundary i.n which the elementary item is placed.
+positioned such that it will terminate on the right character position
+of the natural boundary i.n which the elementary item is placed.
 </para>
           </listitem>
           <listitem>
             <para>
 Whenever a SYNCHRONIZED item is referenced in the source program, the
-      original size of the item, as shown in the PICTURE clause, is used in
-      determining any action that depends on size, such as justification,
-      truncation or overflow.
+original size of the item, as shown in the PICTURE clause, is used in
+determining any action that depends on size, such as justification,
+truncation or overflow.
 </para>
           </listitem>
           <listitem>
             <para>
 If the data description of an item contains the SYNCHRONIZED clause and
-   an operational sign, the sign of the item appears in the normal
-   operational sign position, regardless of whether the item is
-   SYNCHRONIZED LEFT or SYNCHRONIZED RIGHT.
+an operational sign, the sign of the item appears in the normal
+operational sign position, regardless of whether the item is
+SYNCHRONIZED LEFT or SYNCHRONIZED RIGHT.
 </para>
           </listitem>
           <listitem>
             <para>
 When the SYNCHRONIZED clause is specified in a data description entry
-   of a data item that also contains an OCCURS clause, or in a data
-   description entry of a data item subordinate to a data description
-   entry that contains an OCCURS clause, then:
-   </para>
+of a data item that also contains an OCCURS clause, or in a data
+description entry of a data item subordinate to a data description
+entry that contains an OCCURS clause, then:
+</para>
             <orderedlist>
               <listitem>
                 <para>
@@ -1815,7 +1906,7 @@ This clause is hardware dependent.
         <title>General Format</title>
         <cmdsynopsis>
           <arg choice="opt">USAGE IS</arg>
-          <group>
+          <group choice="req">
             <arg>COMPUTATIONAL</arg>
             <arg>COMP</arg>
             <arg>DISPLAY</arg>
@@ -2072,11 +2163,11 @@ USAGE IS DISPLAY).
 The general format of a relation condition is as follows:
 </para>
           <cmdsynopsis>
-            <group>
+            <group choice="req">
               <arg>identifier-1</arg>
               <arg>literal-1</arg>
             </group>
-            <group>
+            <group choice="req">
               <arg>IS [NOT] GREATER THAN</arg>
               <arg>IS [NOT] LESS THAN</arg>
               <arg>IS [NOT] EQUAL TO</arg>
@@ -2084,7 +2175,7 @@ The general format of a relation condition is as follows:
               <arg>IS [NOT] &lt;</arg>
               <arg>IS [NOT] =</arg>
             </group>
-            <group>
+            <group choice="req">
               <arg>identifier-2</arg>
               <arg>literal-2</arg>
             </group>
@@ -2172,8 +2263,8 @@ for purposes of comparison.
 For nonnumeric operands, or one numeric
 and one nonnumeric operand, a comparison is made with respect to a specified
 collating sequence of characters (see The OBJECT-COMPUTER Paragraph in this
-          Chapter). If one of the operands is specified as numeric, it must be an
-          integer data item or an integer literal and:
+Chapter). If one of the operands is specified as numeric, it must be an
+integer data item or an integer literal and:
 </para>
             <orderedlist>
               <listitem>
@@ -2248,11 +2339,17 @@ without the operational sign, or alphabetic, that is, consists entirely of
 the characters 'A', 'B', 'C', ..., 'Z', space. The general format for the
 class condition is as follows:
 </para>
+          <cmdsynopsis>
+            <arg>identifier</arg>
+            <arg>IS</arg>
+            <arg choice="opt">NOT</arg>
+            <group choice="req">
+              <arg>NUMERIC</arg>
+              <arg>ALPHABETIC</arg>
+            </group>
+          </cmdsynopsis>
           <para>
-     identifier IS   [NOT]  {TIC       }
-</para>
-          <para>
-     The usage of the operand being tested must be described as display.
+The usage of the operand being tested must be described as display.
 When used, 'NOT' and the next key word specify one class condition that
 defines the class test to be executed for truth value; e.g. 'NOT NUMERIC'
 is a truth test for determining that an operand is nonnumeric.
@@ -2286,9 +2383,9 @@ characters 'A' thru 'Z' and the space.
       paragraph of the Environment Division. The general format for the
       switch-status condition is as follows:
       </para>
-          <para>
-           condition-name
-           </para>
+          <cmdsynopsis>
+            <arg>condition-name</arg>
+          </cmdsynopsis>
           <para>
            The result of the test is true if the switch is set to the specified
       position corresponding to the condition-name.
@@ -2377,7 +2474,7 @@ The maximum size of each operand is 18 decimal digits. The composite
 of operands, which is a hypothetical data item resulting from the
 superimposition of specified operands in a statement aligned on their
 decimal points
-(See THE ADD STATEMENT, THE DIVIDE STATEMENT, THE MULTIPLY STATEMENT and THE SUBTRACT STATEMENT later in this Chapter)
+(See <xref linkend="c03.add"/>, THE DIVIDE STATEMENT, THE MULTIPLY STATEMENT and THE SUBTRACT STATEMENT later in this Chapter)
 must not contain more than 18 decimal digits.
 </para>
           </listitem>
@@ -2391,7 +2488,7 @@ INSPECT, MOVE, SET, statement share a part of their storage areas, the
 result of the execution of such a statement is undefined.
 </para>
       </section>
-      <section>
+      <section xml:id="c03.incom">
         <title>Incompatible Data</title>
         <para>
 Except for the class condition (See Class Condition in this Chapter),
@@ -2433,25 +2530,25 @@ available to the program in a specified data item
       </section>
       <section>
         <title>General Formats</title>
-        <variablelist>
-          <varlistentry>
-            <term>Format 1</term>
-            <listitem>
-              <cmdsynopsis>
-     ACCEPT identifier       [FROM CONSOLE]
-</cmdsynopsis>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>Format 2</term>
-            <listitem>
-              <cmdsynopsis>
-     ACCEPT data-name-1   AT        data-name-2
-                                    literal-1    FROM CRT
-</cmdsynopsis>
-            </listitem>
-          </varlistentry>
-        </variablelist>
+        <para>Format 1</para>
+        <cmdsynopsis>
+          <command>ACCEPT</command>
+          <arg>identifier</arg>
+          <arg choice="opt">FROM CONSOLE</arg>
+        </cmdsynopsis>
+        <para>Format 2</para>
+        <cmdsynopsis>
+          <command>ACCEPT</command>
+          <arg>data-name-1</arg>
+          <arg choice="opt">
+            <arg>AT</arg>
+            <group choice="req">
+              <arg>data-name-2</arg>
+              <arg>literal-1</arg>
+            </group>
+          </arg>
+          <arg>FROM CRT</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rule</title>
@@ -2723,7 +2820,7 @@ NOTE: The actual key identification and functions shown in this table
         </table>
       </section>
     </section>
-    <section>
+    <section xml:id="c03.add">
       <title>THE ADD STATEMENT<indexterm><primary>ADD Statement</primary></indexterm></title>
       <section>
         <title>Function</title>
@@ -2752,7 +2849,7 @@ Format 2
      GIVING identifier-m [ROUNDED] [, identifier-n [ROUNDED]]
           [; ON SIZE ERROR imperative-statement]
 </para>
-</section>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
@@ -2798,7 +2895,7 @@ In Format 2 the composite of operands is determined by using all
           <listitem>
             <para>
 See <xref linkend="c03.rounded"/>, The Size Error Phrase,
-The Arithmetic Statements, Overlapping Operands and Incompatible Data in this Chapter.
+The Arithmetic Statements, Overlapping Operands and <xref linkend="c03.incom"/> in this Chapter.
 </para>
           </listitem>
           <listitem>
@@ -2877,25 +2974,44 @@ items to the CRT screen.
       </section>
       <section>
         <title>General Formats</title>
-        <variablelist>
-          <varlistentry>
-            <term>Format 1</term>
-            <listitem>
-              <cmdsynopsis>
-     DISPLAY identifier-1       [UPON CONSOLE]
-</cmdsynopsis>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>Format 2</term>
-            <listitem>
-              <cmdsynopsis>
-     DISPLAT data-name-1   AT        data-name-2
-                                    literal-1    UPON CRT
-</cmdsynopsis>
-            </listitem>
-          </varlistentry>
-        </variablelist>
+        <para>
+Format 1</para>
+        <cmdsynopsis>
+          <command>DISPLAY</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg choice="opt" rep="repeat">
+            <arg>,</arg>
+            <group choice="req">
+              <arg>identifier-2</arg>
+              <arg>literal-2</arg>
+            </group>
+          </arg>
+          <arg choice="opt">UPON CONSOLE</arg>
+        </cmdsynopsis>
+        <para>
+Format 2</para>
+        <cmdsynopsis role="extension">
+          <command>DISPLAY</command>
+          <group choice="req">
+            <arg>data-name-1</arg>
+            <arg>literal-3</arg>
+          </group>
+          <arg choice="opt">
+            <arg>AT</arg>
+            <group choice="req">
+              <arg>data-name-2</arg>
+              <arg>literal-4</arg>
+            </group>
+          </arg>
+          <arg>UPON</arg>
+          <group choice="req">
+            <arg>CRT</arg>
+            <arg>CRT-UNDER</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -2905,12 +3021,12 @@ Format 1
         <orderedlist>
           <listitem>
             <para>
-Each literal may be any figura tiv e constant, excep t ALL.
+Each literal may be any figurative constant, except ALL.
  </para>
           </listitem>
           <listitem>
             <para>
- If the literal is numeric, it must be an unsigned integer.
+If the literal is numeric, it must be an unsigned integer.
  </para>
           </listitem>
         </orderedlist>
@@ -2920,13 +3036,13 @@ Format 2
         <orderedlist continuation="continues">
           <listitem>
             <para>
-Literal-3 must be alphanumeric. Literal-4 must be numeric.
- </para>
+              <phrase role="extension">Literal-3 must be alphanumeric. Literal-4 must be numeric.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-data-name-1 may refer to a record, group or elementary item, but it must not be subscripted.
- </para>
+              <phrase role="extension">data-name-1 may refer to a record, group or elementary item, but it must not be subscripted.</phrase>
+            </para>
           </listitem>
         </orderedlist>
       </section>
@@ -2935,18 +3051,18 @@ data-name-1 may refer to a record, group or elementary item, but it must not be 
         <orderedlist>
           <listitem>
             <para>
-Format 1 is the standard ANSI DISPLAY statement.
-</para>
+              <phrase role="extension">Format 1 is the standard ANSI DISPLAY statement.</phrase>
+            </para>
             <para>
-Format 2 is the extended DISPLAY format.
- </para>
+              <phrase role="extension">Format 2 is the extended DISPLAY format.</phrase>
+            </para>
             <para>
-The two formats are distinguised by their UPON phrases and the default
+              <phrase role="extension">The two formats are distinguised by their UPON phrases and the default
 assumes UPON CONSOLE. The default can, however, be changed by
 specifying CONSOLE IS CRT in the SPECIAL-NAMES clause so the UPON CRT
 becomes the default. This changed default is not shown in the syntax above.
-Note: Specifying the AT phrase implies Format 2, even if the UPON phrase is omitted.
- </para>
+Note: Specifying the AT phrase implies Format 2, even if the UPON phrase is omitted.</phrase>
+            </para>
           </listitem>
         </orderedlist>
         <para>
@@ -2967,13 +3083,13 @@ The size of the data transfer can be up to 132 bytes.
           <listitem>
             <para>
 If a figurative constant is specified as one of the operands, only a
-        single occurrence of the figurative constant is displayed.
+single occurrence of the figurative constant is displayed.
  </para>
           </listitem>
           <listitem>
             <para>
-If the CRT is capable of diplaying data of the same size as the data
-     item being output, the data item is transferred.
+If the CRT is capable of displaying data of the same size as the data
+item being output, the data item is transferred.
  </para>
           </listitem>
           <listitem>
@@ -3011,60 +3127,60 @@ the operands are encountered.
         <para>
 Format 2
 </para>
-        <orderedlist continuation="continues">
+        <orderedlist continuation="continues" role="extension">
           <listitem>
             <para>
-   The DISPLAY statement is used to output data to the CRT in the screen
-      positions specified.
- </para>
+              <phrase role="extension">The DISPLAY statement is used to output data to the CRT in the screen
+positions specified.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-data-name-1 is taken as a definition of the screen area into which data
-     items that correspond to areas on the screen are moved. FILLER fields
-     correspond to areas on the screen into which data is not moved.
- </para>
+              <phrase role="extension">data-name-1 is taken as a definition of the screen area into which data
+items that correspond to areas on the screen are moved. FILLER fields
+correspond to areas on the screen into which data is not moved.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-Elementary data items within data-name-1 may be alphanumeric, integer
-      numeric, numeric or edited.
- </para>
+              <phrase role="extension">Elementary data items within data-name-1 may be alphanumeric, integer
+numeric, numeric or edited.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-AT data-name-2 or literal-4 defines the position on the screen of the
-      leftmost character of the. data. Either form must refer to a PIC 9999
-      field. The most significant 99 is taken as a line count in the range
-     one to the maximum number of lines on the user screen. The least
-      significant 99 is taken as a character position in the range one to the
-      maximum of characters per line on the user screen.
- </para>
+              <phrase role="extension">AT data-name-2 or literal-4 defines the position on the screen of the
+leftmost character of the. data. Either form must refer to a PIC 9999
+field. The most significant 99 is taken as a line count in the range
+one to the maximum number of lines on the user screen. The least
+significant 99 is taken as a character position in the range one to the
+maximum of characters per line on the user screen.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-data-name-1 may refer to a record, group or elementary item, but it may
+              <phrase role="extension">data-name-1 may refer to a record, group or elementary item, but it may
 not be subscripted. REDEFINES may be used, in which case the first
 description of the data is used and subsequent descriptions are
 ignored. OCCURS and nested OCCURS may also be used with the effect that
 the repeated data-item is expanded into the full number of times it
-occurs and one definition is thus automatically repeated for many fields.
- </para>
+occurs and one definition is thus automatically repeated for many fields.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-DISPLAY SPACE has the effect of clearing the screen at run time (i.e.
+              <phrase role="extension">DISPLAY SPACE has the effect of clearing the screen at run time (i.e.
 filling the whole screen with spaces). DISPLAY " " (one space
-character), however, displays only one space character.
- </para>
+character), however, displays only one space character.</phrase>
+            </para>
           </listitem>
           <listitem>
             <para>
-The CRT-UNDER phcase causes the, eiementary items moved to the CRT to be
+              <phrase role="extension">The CRT-UNDER phrase causes the, elementary items moved to the CRT to be
 displayed with the underline feature present.  This feature is
 dependent on the CRT hardware functions and is not available on all makes of CRT
- (see the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>).
- </para>
+ (see the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>).</phrase>
+            </para>
           </listitem>
         </orderedlist>
       </section>
@@ -3082,10 +3198,16 @@ the values of data items equal to the quotient.
         <title>General Format</title>
         <para>
 Format 1
+        </para>
+        <para>
                Iidentifier-1!
                 literal-1       INTO        identifier-2    [~)
      [. identifier-3
+        </para>
+        <para>
 Format 2
+        </para>
+        <para>
                          (ROUNDED)]         [;ON SIZE ERROR imperative-statement]
 
                 identifier-11
@@ -3094,7 +3216,11 @@ Format 2
                                             literal-2
           GIVING     identifier-3    [ROUNDED)   (,identifier-4    (ROUNDED] ] ...
           [;ON SIZE ERROR imperative-statement]
+        </para>
+        <para>
 Format 3
+        </para>
+        <para>
                                       identifier-21
                lidentifier-11
                 literal-1    I
@@ -3109,9 +3235,9 @@ Format 3
         <orderedlist>
           <listitem>
             <para>
-   Each identifier must refer to an elementary numeric item, except that
-     any identifier associated with the GIVING phrase must refer to either
-     an elementary numeric item or an elementary numeric edited item.
+Each identifier must refer to an elementary numeric item, except that
+any identifier associated with the GIVING phrase must refer to either
+an elementary numeric item or an elementary numeric edited item.
  </para>
           </listitem>
           <listitem>
@@ -3127,29 +3253,28 @@ Each literal must be a numeric literal.
           <listitem>
             <para>
 See <xref linkend="c03.rounded"/>, The Size Error Phrase,
-The Arithmetic Statements, Overlapping Operands and Incompatible Data in this Chapter
+The Arithmetic Statements, Overlapping Operands and <xref linkend="c03.incom"/> in this Chapter
      for a description of these functions.
 </para>
           </listitem>
           <listitem>
             <para>
 When Format is used, the value of identifier-1 or literal-1 is
-    divided into the value of identifier-2. The value of "h" dividend
-    (identifier-2) is replaced by this quotient.
+divided into the value of identifier-2. The value of the dividend
+(identifier-2) is replaced by this quotient.
 </para>
           </listitem>
           <listitem>
             <para>
 When Format 2 is used, the value of identifier-1 or literal-1 is
-    divided into identifier-2 or literal-2 and the result i s stored in
-    identifier-3.
+divided into identifier-2 or literal-2 and the result is stored in identifier-3.
 </para>
           </listitem>
           <listitem>
             <para>
 When Format 3 is used, the value of identifier-1 or literal-1 is
-    divided by the value of identifier-2 or literal-2 and the result is
-    stored in ideutifier-3.
+divided by the value of identifier-2 or literal-2 and the result is
+stored in ideutifier-3.
 </para>
           </listitem>
         </orderedlist>
@@ -3160,7 +3285,7 @@ When Format 3 is used, the value of identifier-1 or literal-1 is
       <section>
         <title>Function</title>
         <para>
-     The ENTER statement provides a means of allowing the use of more than
+ The ENTER statement provides a means of allowing the use of more than
 one language in the same program.
 </para>
       </section>
@@ -3175,8 +3300,8 @@ one language in the same program.
         <orderedlist>
           <listitem>
             <para>
-This statement is for documentation purposes only.
-</para>
+              <phrase role="extension">This statement is for documentation purposes only.</phrase>
+            </para>
           </listitem>
         </orderedlist>
       </section>
@@ -3196,14 +3321,14 @@ Access to other languages can be achieved by means of CALL.
       <section>
         <title>Function</title>
         <para>
-     The EXIT statement provides a  common end point for  a  series of procedures.
+The EXIT statement provides a common end point for a series of procedures.
      </para>
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     EXIT
-        </para>
+        <cmdsynopsis>
+          <command>EXIT</command>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -3223,9 +3348,9 @@ The EXIT sentence must be the only sentence in the paragraph.
       <section>
         <title>General Rule</title>
         <para>
-     An EXIT statement serves only to enable the user :o assign a
-     procedure-name to a given point in a program. Such an EXIT statement
-     has no other effect on the compilation or execution of the program.
+An EXIT statement serves only to enable the user :o assign a
+procedure-name to a given point in a program. Such an EXIT statement
+has no other effect on the compilation or execution of the program.
      </para>
       </section>
     </section>
@@ -3234,7 +3359,7 @@ The EXIT sentence must be the only sentence in the paragraph.
       <section>
         <title>Function</title>
         <para>
-     The GO TO statement causes control to be transferred from one part of
+The GO TO statement causes control to be transferred from one part of
 the Procedure Division to another.
 </para>
       </section>
@@ -3270,9 +3395,9 @@ can consist only of a paragraph header followed by a Format 1 GO TO statement.
           </listitem>
           <listitem>
             <para>
-  If a GO TO statement represented by Format 1 appears in a consecutive
-     sequence of imperative statements within a sentence, it appears as the
-     last statement in that sequence.
+If a GO TO statement represented by Format 1 appears in a consecutive
+sequence of imperative statements within a sentence, it appears as the
+last statement in that sequence.
 </para>
           </listitem>
         </orderedlist>
@@ -3313,19 +3438,29 @@ depends on whether the value of the condition is true or false.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-   IF condition;  THEN       statement-1 }     J,: ELSE statement-2 }
-                           { NEXT SENTENCE     )   ELSE NEXT SENTENCE.
-    </para>
-</section>
+        <cmdsynopsis>
+          <command>IF</command>
+          <arg>condition;</arg>
+          <phrase role="extension">
+            <arg choice="opt">THEN</arg>
+          </phrase>
+          <group choice="req">
+            <arg>statement-1</arg>
+            <arg>NEXT SENTENCE</arg>
+          </group>
+          <group choice="req">
+            <arg>; ELSE statement-2</arg>
+            <arg>; ELSE NEXT SENTENCE</arg>
+          </group>
+        </cmdsynopsis>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
           <listitem>
             <para>
-   Statement-1 and statement-2 represent either an imperative statement or
-   a conditional statement, and either may be followed by a conditional
-   statement.
+Statement-1 and statement-2 represent either an imperative statement or
+a conditional statement, and either may be followed by a conditional statement.
 </para>
           </listitem>
           <listitem>
@@ -3341,57 +3476,58 @@ the terminal period of the sentence.
         <orderedlist>
           <listitem>
             <para>
-1.   When an IF statement is executed, the following transfers of control occur:
+When an IF statement is executed, the following transfers of control occur:
 </para>
             <orderedlist>
               <listitem>
                 <para>
-   a.   If the condition is true, statement-1 is executed if specified. If
-        statement-1   contains a procedure branching or conditional
-        statement, control is explicitly transferred in accordance with
-        the rules of that statement. If statement-1 does not contain a
-        procedure branching or conditional statement, the ELSE phrase, if
-        specified, is ignored and control passes to the next executable
-        sentence.
+If the condition is true, statement-1 is executed if specified. If
+statement-1   contains a procedure branching or conditional
+statement, control is explicitly transferred in accordance with
+the rules of that statement. If statement-1 does not contain a
+procedure branching or conditional statement, the ELSE phrase, if
+specified, is ignored and control passes to the next executable sentence.
+      </para>
+              </listitem>
+              <listitem>
+                <para>
+If the condition is true and the NEXT SENTENCE phrase is specified
+instead of statement-1, the ELSE phrase, if specified, is ignored
+and control passes to the next executable sentence.
           </para>
               </listitem>
               <listitem>
                 <para>
-   b.   If the condition is true and the NEXT SENTENCE phrase is specified
-        instead of statement-1, the ELSE phrase, if specified, is ignored
-        and control passes to the next executable sentence.
+If the condition is false, statement-1 or its surrogate NEXT
+SENTENCE is ignored, and statement-2, if specified, is executed.
+If statement-2 contains a procedure branching or conditional
+statement, control is explicitly transferred in accordance with
+the rules of that statement. If statement-2 does not contain a
+procedure branching or conditional statement, control passes to
+the next executable sentence. If the ELSE statement-2 phrase is
+not specified, statement-1 is ignored and control passes to the
+next executable 3entence.
           </para>
               </listitem>
               <listitem>
                 <para>
-   c.   If the condition is false, statement-1 or its surrogate NEXT
-        SENTENCE is ignored, and statement-2, if specified, is executed.
-        If statement-2 contains a procedure branching or conditional
-        statement, control is explicitly transferred in accordance with
-        the rules of that statement. If statement-2 does not contain a
-        procedure branching or conditional statement, control passes to
-        the next executable sentence. If the ELSE statement-2 phrase is
-        not specified, statement-1 is ignored and control passes to the
-        next executable 3entence.
-          </para>
-              </listitem>
-              <listitem>
-                <para>
- d.     If the condition is false, and the ELSE NEXT SENTENCE phrase is
-      specified, statement-1 is ignored, if specified, and control
-      passes to the next executable sentence.
+If the condition is false, and the ELSE NEXT SENTENCE phrase is
+specified, statement-1 is ignored, if specified, and control
+passes to the next executable sentence.
 </para>
               </listitem>
             </orderedlist>
           </listitem>
           <listitem>
             <para>
-2.   Statement-1 and/or statement-2 may contain an IF statement. In this
-     case the IF statement is said to be nested.
-     IF statements within IF statements may be considered as paired IF and
+Statement-1 and/or statement-2 may contain an IF statement. In this
+case the IF statement is said to be nested.
+</para>
+            <para>
+IF statements within IF statements may be considered as paired IF and
 ELSE combinations, proceeding from left to right. Thus, any ELSE
 encountered is considered to apply to the immediately preceding IF that has
-not been already pai red with an ELSE.
+not been already paired with an ELSE.
 </para>
           </listitem>
         </orderedlist>
@@ -3409,20 +3545,40 @@ in a data item.
       </section>
       <section>
         <title>General Format</title>
-<para>
+        <para>
 Format 1
 </para>
-<para>
-INSPECT    identifier-1       TALLYING
-        identifier-2 FOR          , \ ~~~ING       ~~ identifier-3!
-                                    /CHARACTERs! literal-1
-     BEFORE}    INITIAL        identifier-71]
- [{ AFTER                    l literal-5       I
-</para>
-<para>
+        <cmdsynopsis>
+          <command>INSPECT</command>
+          <arg>identifier-1</arg>
+          <arg>TALLYING</arg>
+          <arg>, identifier-2 FOR</arg>
+          <arg>,</arg>
+          <group choice="req">
+            <arg>ALL</arg>
+            <arg>LEADING</arg>
+            <arg>CHARACTERS</arg>
+          </group>
+          <group choice="req">
+            <arg>identifier-3</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg choice="opt">
+            <group choice="req">
+              <arg>BEFORE</arg>
+              <arg>AFTER</arg>
+            </group>
+            <arg>INITIAL</arg>
+            <group choice="req">
+              <arg>identifier-7</arg>
+              <arg>literal-5</arg>
+            </group>
+          </arg>
+        </cmdsynopsis>
+        <para>
 Format 2
 </para>
-<para>
+        <para>
 INSPECT    identifier-1       REPLACING
      CHARACTERS    BY identifier-61
                    -     hteral-4         I
@@ -3432,10 +3588,10 @@ INSPECT    identifier-1       REPLACING
      BEFORE}    INITIAL        identifier-71]
  [{ AFTER                    l literal-5       I
 </para>
-<para>
+        <para>
 Format 3
 </para>
-<para>
+        <para>
 INSPECT    identifier-1      TALLYING
 identifier- 2 FOR \      LE~~NG        jidentifier-3~     [ {BEFORE} INITIAL ~i~entifier-4!]
                      ~CHARACTERS      literal-1            AFTER            l1tera1-2
@@ -3450,7 +3606,7 @@ identifier- 2 FOR \      LE~~NG        jidentifier-3~     [ {BEFORE} INITIAL ~i~
       BEFORE} INITIAL lidentifier-71]
    [{ AFTER                literal-5        I
 </para>
-</section>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <para>
@@ -3546,37 +3702,37 @@ Inspection (which includes the comparison cycle, the establishment of
           </listitem>
           <listitem>
             <para>
- For use in the INSPECT statement, the contents of the data item
-     referenced by identifier-1, identifier-3, identifier-4, identifier-5,
-     identifier-6 or identifier-7 will be treated as follows:
-     </para>
+For use in the INSPECT statement, the contents of the data item
+referenced by identifier-1, identifier-3, identifier-4, identifier-5,
+identifier-6 or identifier-7 will be treated as follows:
+</para>
             <orderedlist>
               <listitem>
                 <para>
-         If any of identifier-1, identifier-3, identifier-4, identifier-5,
-           identifier-6 or identifier-7 are described as alphanumeric, the
-           INSPECT statement treats the contents of each such identifier as a
-          character-string.
+If any of identifier-1, identifier-3, identifier-4, identifier-5,
+identifier-6 or identifier-7 are described as alphanumeric, the
+INSPECT statement treats the contents of each such identifier as a
+character-string.
 </para>
               </listitem>
               <listitem>
                 <para>
-         If any of identifier-1, identifier-3, identifier-4, identifier-5,
-           identifier-6 or identifier-7 are described as alphanumeric edited,
-          numeric edited or unsigned numeric, the data item is inspected as
-           though it had been redefined as alphanumeric (see general rule 2a)
-          and the INSPECT statement had been written to reference the
-           redefined data item.
+If any of identifier-1, identifier-3, identifier-4, identifier-5,
+identifier-6 or identifier-7 are described as alphanumeric edited,
+numeric edited or unsigned numeric, the data item is inspected as
+though it had been redefined as alphanumeric (see general rule 2a)
+and the INSPECT statement had been written to reference the
+redefined data item.
 </para>
               </listitem>
               <listitem>
                 <para>
-         If any of the identifier-1,   identifier-3,  identifier-4,
-           identifier-5, identifier-6 or identifier-7 are described as signed
-          numeric, the data item is inspected as though it had been moved to
-          an unsigned numeric data item of the same length and then the
-           rules in general rule 2b had been applied.
-           (See THE MOVE STATEMENT later in this Chapter).
+If any of the identifier-1,   identifier-3,  identifier-4,
+identifier-5, identifier-6 or identifier-7 are described as signed
+numeric, the data item is inspected as though it had been moved to
+an unsigned numeric data item of the same length and then the
+rules in general rule 2b had been applied.
+(See THE MOVE STATEMENT later in this Chapter).
            </para>
               </listitem>
             </orderedlist>
@@ -3584,19 +3740,19 @@ Inspection (which includes the comparison cycle, the establishment of
           <listitem>
             <para>
 In general rules 4 through 11 all references to literal-1, literal-2,
-     literal-3, literal-4, and literal-5 apply equally to the contents of
-     the data item referenced by identifier-3, identifier-4, identifier-5,
-     identifier-6, and identifier-7, respectively.
+literal-3, literal-4, and literal-5 apply equally to the contents of
+the data item referenced by identifier-3, identifier-4, identifier-5,
+identifier-6, and identifier-7, respectively.
 </para>
           </listitem>
           <listitem>
             <para>
 During inspection of the contents of the data item referenced by
-     identifier-1, each properly matched occurrence of literal-1 is tallied
-     (Formats 1 and 3) and/or each properly matched occurrence of literal-3
-     is replaced by literal-4 (Formats 2 and 3). Data items to be
-     referenced by the INSPECT verb should be placed such that they Lie
-     within the first 10,000 bytes of intermediate code.
+identifier-1, each properly matched occurrence of literal-1 is tallied
+(Formats 1 and 3) and/or each properly matched occurrence of literal-3
+is replaced by literal-4 (Formats 2 and 3). Data items to be
+referenced by the INSPECT verb should be placed such that they Lie
+within the first 10,000 bytes of intermediate code.
 </para>
           </listitem>
           <listitem>
@@ -3899,7 +4055,7 @@ Format 1
 </para>
         <cmdsynopsis>
           <command>MOVE</command>
-          <group>
+          <group choice="req">
             <arg>identifier-1</arg>
             <arg>literal</arg>
           </group>
@@ -3914,7 +4070,7 @@ Format 1
           <listitem>
             <para>
 Identifier-1 and literal represent the sending area;  identifier-2,
-     identifier-3, ... represent the receiving area.
+identifier-3, ... represent the receiving area.
 </para>
           </listitem>
           <listitem>
@@ -3931,15 +4087,15 @@ An index data item cannot appear as an operand of a MOVE statement.
           <listitem>
             <para>
 The data designated by the literal or identifier-1 is moved first to
-     identifier-2, then to identifier-3, ... . The rules referring to
-     identifier-2 also apply to the other receiving areas. Any subscripting
-     or indexing associated with identifier-2, ..., is evaluated immediately
-     before the data is moved to the respective data item.
+identifier-2, then to identifier-3, ... . The rules referring to
+identifier-2 also apply to the other receiving areas. Any subscripting
+or indexing associated with identifier-2, ..., is evaluated immediately
+before the data is moved to the respective data item.
      </para>
             <para>
-     Any subscripting or indexing associated "ii'ith identifier-1 is evaluated
-     only once, immediately before data is moved to the first of the
-     receiving operands. The result of the statement:
+Any subscripting or indexing associated with identifier-1 is evaluated
+only once, immediately before data is moved to the first of the
+receiving operands. The result of the statement:
      </para>
             <programlisting>
            MOVE a (b) TO b, c (b)
@@ -3953,11 +4109,10 @@ The data designated by the literal or identifier-1 is moved first to
            MOVE temp TO c (b)
                        </programlisting>
             <para>
-     where 'temp' is an intermediate result item provided by the
-      implementor.
+where 'temp' is an intermediate result item provided by the implementor.
       </para>
             <para>
-     See Incompatible Data in this Chapter.
+See <xref linkend="c03.incom"/> in this Chapter.
 </para>
           </listitem>
           <listitem>
@@ -3988,35 +4143,35 @@ item or a numeric edited data item must not be moved to an alphabetic data item.
               </listitem>
               <listitem>
                 <para>
-A non-integer numeric liter al or a non-integer numeric data item
+A non-integer numeric literal or a non-integer numeric data item
 must not be moved to an alphanumeric or alphanumeric edited data item.
 </para>
               </listitem>
               <listitem>
                 <para>
-A move from a numeric edited field to a numeric field will work provided:
-</para>
+                  <phrase role="extension">A move from a numeric edited field to a numeric field will work provided:</phrase>
+                </para>
                 <orderedlist>
                   <listitem>
                     <para>
-the source field is not blank
-</para>
+                      <phrase role="extension">the source field is not blank</phrase>
+                    </para>
                   </listitem>
                   <listitem>
                     <para>
-the source field does not contain non-stored editing characters i.e. P, S or V
-</para>
+                      <phrase role="extension">the source field does not contain non-stored editing characters i.e. P, S or V</phrase>
+                    </para>
                   </listitem>
                   <listitem>
                     <para>
-zero is not used as an edited character.
-</para>
+                      <phrase role="extension">zero is not used as an edited character.</phrase>
+                    </para>
                   </listitem>
                 </orderedlist>
               </listitem>
               <listitem>
                 <para>
-All other elementary movea are legal and a re performed according
+All other elementary movea are legal and are performed according
 to the rules given in general rule 4.
 </para>
               </listitem>
@@ -4025,8 +4180,8 @@ to the rules given in general rule 4.
           <listitem>
             <para>
 Any necessary conversion of data from one form of internal
-   representation to another t akes place during legal elementary moves,
-   along with any editing spec ified for the re ceiving data item:
+representation to another takes place during legal elementary moves,
+along with any editing specified for the receiving data item:
 </para>
             <orderedlist>
               <listitem>
@@ -4053,7 +4208,7 @@ except where zeroes are replaced because of editing requirements.
 When a signed numeric item is the receiving item, the sign of the
 sending item is placed in the receiving item.
 (See THE SIGN CLAUSE in this Chapter). Conversion of the representation of
-the sign takes place as neces-sary. If the sending item is
+the sign takes place as necessary. If the sending item is
 unsigned, a positive sign is generated for the receiving item.
 </para>
                 <para>
@@ -4182,23 +4337,23 @@ sets the values of data items equal to the results.
       </section>
       <section>
         <title>General Format</title>
-<para>
+        <para>
      Format 1
 </para>
-<para>
+        <para>
           MULTIPLY !identifier-1!     BY identifier-2     (ROUNDED)
                       literal-1   I
           [ , identifier-3    (ROUNDED)]         [; ON SIZE~         imperative-statement)
 </para>
-<para>
+        <para>
 Format 2
 </para>
-<para>
-MULTIPLY li?entifier-lt  BY   lidentifier-2t   GIVING  identifier-) [ROUNDED]
-          lHeral-1     I       literal-2    I
+        <para>
+MULTIPLY identifier-1  BY   identifier-2   GIVING  identifier-3 [ROUNDED]
+          literal-1     I       literal-2    I
    [ identifier-4   (ROUNDED]]      (;ON SIZE ERROR imperative-statement]
 </para>
-</section>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
@@ -4222,7 +4377,7 @@ Each literal must be a numeric literal.
           <listitem>
             <para>
 See <xref linkend="c03.rounded"/>, The Size Error Phrase,
-The Arithmetic Statements, Overlapping Operands and Incompatible Data in this Chapter.
+The Arithmetic Statements, Overlapping Operands and <xref linkend="c03.incom"/> in this Chapter.
 </para>
           </listitem>
           <listitem>
@@ -4255,29 +4410,29 @@ specified procedure is complete.
       </section>
       <section>
         <title>General Format</title>
-<para>
+        <para>
   Format 1
 </para>
-<para>
+        <para>
          PERFORM procedure-name-1  THROUGH
                                    THRU               procedure-name-2
 </para>
-<para>
+        <para>
    Format 2
 </para>
-<para>
-                                    THROUGH1
+        <para>
+                                    THROUGH
          PERFORM procedure-name-1 THRU        procedure-name-2
                                                                    identifier-1 TIMES
                                                                       integer-1
 </para>
-<para>
+        <para>
    Format 3
 </para>
-<para>
+        <para>
         PERFORM procedure-name-1 THROUGH              procedure-name-2   UNTIL condition-1
 </para>
-</section>
+      </section>
       <section>
         <title>Syntax Rules</title>
         <orderedlist>
@@ -4418,9 +4573,9 @@ allow control to pass to the exit of the other active PERFORM
 statement; furthermore, two or more such active PERFORM statements may
 not have a common exit. See Figure 3-1.
 </para>
-<figure>
-<title>PERFORM Statement in Sequence.</title>
-            <programlisting>
+            <figure>
+              <title>PERFORM Statement in Sequence.</title>
+              <programlisting>
             x   PERFORM a THRU m             x   PERFORM a THRU m
 
             a   -------------------+         a   -------------------+
@@ -4447,7 +4602,7 @@ not have a common exit. See Figure 3-1.
 
             d   PERFORM f THRU j
 </programlisting>
-    </figure>
+            </figure>
           </listitem>
           <listitem>
             <para>
@@ -4513,10 +4668,13 @@ execution of the object program.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     STOP       RUN     }
-              { literal
-</para>
+        <cmdsynopsis>
+          <command>STOP</command>
+          <group choice="req">
+            <arg>RUN</arg>
+            <arg>literal</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -4572,21 +4730,53 @@ or more items equal to the results.
         <para>
 Format 1
         </para>
-        <para>
-     SUBTRACT )identifier-11       )identifier-21
-                  literal-1          literal-2
-            identifier-m    [ROUNDED]       [  identifier-n
-            [;   ON ~ ~          imperative-statement]
-        </para>
+        <cmdsynopsis>
+          <command>SUBTRACT</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg>,</arg>
+          <group choice="req" rep="repeat">
+            <arg>identifier-2</arg>
+            <arg>literal-2</arg>
+          </group>
+          <arg>...</arg>
+          <arg>FROM</arg>
+          <arg>identifier-m</arg>
+          <arg choice="opt">ROUNDED</arg>
+          <arg choice="opt" rep="repeat">
+            <arg>, identifier-n</arg>
+            <arg choice="opt">ROUNDED</arg>
+          </arg>
+          <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+        </cmdsynopsis>
         <para>
 Format 2
         </para>
-        <para>
-     SUBTRACT lidentifier-11       )identifier-21        ~    identifier-m
-                  literal-1    I     literal-2
-          ~       identifier-n        [~]         [ identifier-a   [ROUNDED] ]
-          [; ON  ~ ~        imperative-statement]
-        </para>
+        <cmdsynopsis>
+          <command>SUBTRACT</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg>,</arg>
+          <group choice="req" rep="repeat">
+            <arg>identifier-2</arg>
+            <arg>literal-2</arg>
+          </group>
+          <arg>...</arg>
+          <arg>FROM</arg>
+          <arg>identifier-m</arg>
+          <arg>GIVING</arg>
+          <arg>identifier-n</arg>
+          <arg choice="opt">ROUNDED</arg>
+          <arg choice="opt" rep="repeat">
+            <arg>, identifier-o</arg>
+            <arg choice="opt">ROUNDED</arg>
+          </arg>
+          <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -4630,7 +4820,7 @@ of the operands in a given statement excluding the data items that follow the wo
           <listitem>
             <para>
 See <xref linkend="c03.rounded"/>, The Size Error Phrase,
-The Arithmetic Statement, Overlapping Operands and Incompatible Data in this Chapter.
+The Arithmetic Statement, Overlapping Operands and <xref linkend="c03.incom"/> in this Chapter.
 </para>
           </listitem>
           <listitem>

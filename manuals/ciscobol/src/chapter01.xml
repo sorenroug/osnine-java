@@ -19,7 +19,7 @@ Programming Language COBOL" (ANSI X3.23 1974). The CIS COBOL implementation
 has been selected from both levels of ANSI COBOL. The following modules are
 fully implemented at Level 1:
 </para>
-    <itemizedlist>
+    <itemizedlist spacing="compact">
       <listitem>
         <para>Nucleus</para>
       </listitem>
@@ -51,7 +51,7 @@ fully implemented at Level 1:
     <para>
       In addition many Level 2 features are implemented such as:
 </para>
-    <itemizedlist>
+    <itemizedlist spacing="compact">
       <listitem>
         <para>Nucleus -Nested IF, PERFORM UNTIL</para>
       </listitem>
@@ -81,29 +81,29 @@ output (DISPLAY and ACCEPT), READ and WRITE text files efficiently and
 define external file names at run time.
 </para>
     <para>
-      The programmer   wishing to transport an existing COBOL program to run
- under CIS COBOL must  check that the individual language features he has used
- are supported by      CIS COBOL.     The COBOL SECTION statements in the
- Segmentation feature  can be performed using the PERFORM statement.
+The programmer wishing to transport an existing COBOL program to run
+under CIS COBOL must  check that the individual language features he has used
+are supported by CIS COBOL. The COBOL SECTION statements in the
+Segmentation feature can be performed using the PERFORM statement.
 </para>
     <para>
-     A compile time ANSI switch can be set that makes certain COBOL source
+A compile time ANSI switch can be set that makes certain COBOL source
 mandatory, whereas if not set it is optional. (See Chapter 2).
 </para>
     <para>
-     The CIS COBOL compiler is designed to enable programs to be developed
+The CIS COBOL compiler is designed to enable programs to be developed
 in a 48K machine. The Compiler supports sequential, relative and indexed
 sequential files, as well as interactive communications via the ACCEPT and
 DISPLAY verbs.
 </para>
     <para>
-     The CIS COBOL System also contains a powerful utility called FORMS-2
-that enables the Operator to define screen layouts from a screen "module"
+The CIS COBOL System also contains a powerful utility called FORMS-2
+that enables the Operator to define screen layouts from a screen <quote>module</quote>
 and produce automatically the data description for direct inclusion in a
 CIS COBOL program. This is described in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
 </para>
     <para>
-     CIS COBOL programs are created using a conventional text editor, The
+CIS COBOL programs are created using a conventional text editor, The
 Compiler compiles the programs and the Run-Time system links with the
 compiled output to form a running user program. A listing of the CIS COBOL
 program is provided by the Compiler during compilation. Error messages are
@@ -111,7 +111,7 @@ inserted in the listing. Interactive Debugging facilities are provided for
 run-time use, and these are described in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>.
 </para>
     <para>
-      CIS COBOL is designed to be interfaced easily to any microprocessor
+CIS COBOL is designed to be interfaced easily to any microprocessor
 operating system. Detailed operating characteristics are dependent on the
 particular host operating system used and are defined in the appropriate
 Operating Guide.
@@ -210,11 +210,32 @@ special characters (see Chapter 2),
     <para>
      The COBOL source format divides each COBOL source record into 72
 columns. These columns are used in the following way:
-           Columns 1 - 6     Sequence number
-           Column  7           Indicator area
-           Columns 8 - 11      Area A
-           Columns 12 -72      Area B
-           </para>
+</para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <colspec colwidth="2in" align="right"/>
+              <colspec colwidth="2in"/>
+              <tbody>
+                <row>
+                  <entry>Columns 1 - 6</entry>
+                  <entry>Sequence number</entry>
+                </row>
+                <row>
+                  <entry>Column  7</entry>
+                  <entry>Indicator area</entry>
+                </row>
+                <row>
+                  <entry>Columns 8 - 11</entry>
+                  <entry>Area A</entry>
+                </row>
+                <row>
+                  <entry>Columns 12 -72</entry>
+                  <entry>Area B</entry>
+                </row>
+              </tbody>
+            </tgroup>
+            </informaltable>
+
     <section>
       <title>SEQUENCE NUMBER</title>
       <para>

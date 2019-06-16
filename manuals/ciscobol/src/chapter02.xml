@@ -1177,7 +1177,7 @@ to the value resultant from relative indexing.
 The general format for indexing is:
 </para>
           <cmdsynopsis>
-            <group>
+            <group choice="req">
               <arg choice="req">
                 <replaceable>data-name</replaceable>
               </arg>
@@ -1186,7 +1186,7 @@ The general format for indexing is:
               </arg>
             </group>
             <arg choice="plain">(</arg>
-            <group>
+            <group choice="req">
               <arg choice="plain">
                 <replaceable>index-name-1</replaceable>
               </arg>
@@ -1195,7 +1195,7 @@ The general format for indexing is:
               </arg>
             </group>
             <arg choice="opt">
-              <group>
+              <group choice="req">
                 <arg choice="plain">+</arg>
                 <arg choice="plain">-</arg>
               </group>
@@ -1205,7 +1205,7 @@ The general format for indexing is:
             </arg>
             <arg choice="opt">
               <arg choice="plain">,</arg>
-              <group>
+              <group choice="req">
                 <arg choice="plain">
                   <replaceable>index-name-2</replaceable>
                 </arg>
@@ -1214,7 +1214,7 @@ The general format for indexing is:
                 </arg>
               </group>
               <arg choice="opt">
-                <group>
+                <group choice="req">
                   <arg choice="plain">+</arg>
                   <arg choice="plain">-</arg>
                 </group>
@@ -1224,7 +1224,7 @@ The general format for indexing is:
               </arg>
               <arg choice="opt">
                 <arg choice="plain">,</arg>
-                <group>
+                <group choice="req">
                   <arg choice="plain">
                     <replaceable>index-name-3</replaceable>
                   </arg>
@@ -1233,7 +1233,7 @@ The general format for indexing is:
                   </arg>
                 </group>
                 <arg choice="opt">
-                  <group>
+                  <group choice="req">
                     <arg choice="plain">+</arg>
                     <arg choice="plain">-</arg>
                   </group>
@@ -1344,7 +1344,7 @@ paragraphs, which in turn are made up of sentences.
         <phrase role="extension">Some of the 'red-tape' statements required By a strict ANSI interpretation,
 are optional under CIS COBOL. It is possible to force the compiler to
 insist on a strict ANSI interpretation by using the "FLAG" directive. In
-the remainder of <emphasis role="underline">this Chapter</emphasis> these statements are marked &ansileft; &ansiright;. Elsewhere in
+the remainder of <emphasis role="underline">this Chapter</emphasis> these statements are marked <arg choice="ansi"> </arg>. Elsewhere in
 this manual a reference is made to the ANSI switch when this applies.</phrase>
       </para>
       <para>
@@ -1386,27 +1386,22 @@ Identification Division and it defines the order of presentation in the source p
    </para>
       <section>
         <title>General format</title>
-        <para>
-             &ansileft;IDENTIFICATION DIVISION.&ansiright;
-   </para>
-        <para>
-             &ansileft;PROGRAN-ID. program-name.&ansiright;
-   </para>
-        <para>
-           [AUTHOR.  [comment-entry)   ... ]
-   </para>
-        <para>
-           [INSTALLATION.    [comment-entry]      ... ]
-   </para>
-        <para>
-           [DATE-WRITTEN.    [comment-entry]      ... ]
-   </para>
-        <para>
-           [DATE-COMPILED.   [comment-entry]      ... ]
-   </para>
-        <para>
-           [SECURITY.     [comment-entry]     ... ]
-  </para>
+        <cmdsynopsis>
+          <arg choice="ansi">IDENTIFICATION DIVISION.</arg>
+          <sbr/>
+          <arg choice="ansi">PROGRAM-ID. program-name.</arg>
+          <sbr/>
+          <arg choice="opt">AUTHOR. <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">INSTALLATION. <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">DATE-WRITTEN. <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">DATE-COMPILED. <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+          <arg choice="opt">SECURITY. <arg choice="opt" rep="repeat">comment-entry</arg></arg>
+          <sbr/>
+        </cmdsynopsis>
       </section>
     </section>
   </section>
@@ -1458,30 +1453,24 @@ the Environment Division, and defines the order of presentation in the source pr
    </para>
       <section>
         <title>General Format</title>
-        <para>
-      &ansileft; ENVIRONMENT DIVISION. &ansiright;
-   </para>
-        <para>
-      &ansileft; CONFIGURATION SECTION. &ansiright;
-   </para>
-        <para>
-      &ansileft; SOURCE-COMPUTER. source-computer-entry &ansiright;
-   </para>
-        <para>
-      &ansileft; OBJECT-COMPUTER. object-computer-entry &ansiright;
-   </para>
-        <para>
-      [ SPECIAL-NAMES. special-names-entry ]
-   </para>
-        <para>
-      &ansileft; INPUT-OUTPUT SECTION. &ansiright;
-   </para>
-        <para>
-      &ansileft; FILE-CONTROL.&ansiright;    {file-control-entry} ...
-   </para>
-        <para>
-      [ I-O-CONTROL.  input-output-control-entry ]
-  </para>
+        <cmdsynopsis>
+          <arg choice="ansi">ENVIRONMENT DIVISION.</arg>
+          <sbr/>
+          <arg choice="ansi">CONFIGURATION SECTION.</arg>
+          <sbr/>
+          <arg choice="ansi">SOURCE-COMPUTER. source-computer-entry</arg>
+          <sbr/>
+          <arg choice="ansi">OBJECT-COMPUTER. object-computer-entry</arg>
+          <sbr/>
+          <arg choice="opt">SPECIAL-NAMES. special-names-entry</arg>
+          <sbr/>
+          <arg choice="ansi">INPUT-OUTPUT SECTION.</arg>
+          <sbr/>
+          <arg choice="ansi">FILE-CONTROL.</arg>
+          <arg choice="req" rep="repeat">file-control-entry</arg>
+          <sbr/>
+          <arg choice="opt">I-O-CONTROL.  input-output-control-entry</arg>
+        </cmdsynopsis>
       </section>
     </section>
   </section>
@@ -1543,17 +1532,23 @@ the called program. Its structure is the same as the WORKING-STORAGE SECTION.
       <section>
         <title>General Format</title>
         <para>
-             The following gives the general fonnat of the sections in the Data
-Division, and defines the order of their presentation in the source program.
-             &ansileft; DATA DIVISION. &ansiright;
-         [FILE SECTION. [file-description-entry  [record-description-entry]...]...]
-         [WORKING-STORAGE SECTION.
-         [{ 77-level-desciription-entry } J ...  ]
-             record-description-entry
-          [LINKAGE-SECTION.
-         [{ 77-level-description-entry
-             record-description-entry         ...   J
-  </para>
+The following gives the general fonnat of the sections in the Data Division,
+and defines the order of their presentation in the source program.
+</para>
+        <cmdsynopsis>
+          <arg choice="ansi">DATA DIVISION.</arg>
+          <sbr/>
+          <arg choice="opt">FILE SECTION.<sbr/>
+<arg choice="opt" rep="repeat">file-description-entry  <arg choice="opt" rep="repeat">record-description-entry</arg></arg></arg>
+          <sbr/>
+          <arg choice="opt">WORKING-STORAGE SECTION.<sbr/>
+    <arg choice="opt" rep="repeat"><group><arg>77-level-desciription-entry</arg><arg>record-description-entry</arg></group></arg>
+</arg>
+          <sbr/>
+          <arg choice="opt">LINKAGE-SECTION.<sbr/>
+    <arg choice="opt" rep="repeat"><group><arg>77-level-desciription-entry</arg><arg>record-description-entry</arg></group></arg>
+</arg>
+        </cmdsynopsis>
       </section>
     </section>
   </section>
@@ -1562,13 +1557,13 @@ Division, and defines the order of their presentation in the source program.
     <section>
       <title>GENERAL DESCRIPTION</title>
       <para>
-      The Procedure Division must be included in every COBOL source program.
+The Procedure Division must be included in every COBOL source program.
 This division may contain declarative procedures.
 </para>
       <section>
         <title>Declaratives</title>
         <para>
-      Declarative sections must be grouped at the beginning of the Procedure
+Declarative sections must be grouped at the beginning of the Procedure
 Division preceded by the key word DECLARATIVES and followed by the key words
 END DECLARATIVES. (See descriptions of the USE statement in Chapters 5, 6
 and 7 and the Debug Chapter 10).
@@ -1652,24 +1647,37 @@ other order.
           <para>
 Format 1:
        </para>
-          <para>
-     [DECLARATIVES.
-     ) section-name SECTION    [segment-number).       declarative-sentence
-     [paragraph-name.     [sentence]    ..  ]       ! ...
-       END DECLARATIVE$.]
-    ){section-name SECTION      [segment-number]}.                                     ....I
-                                               J ... !
-    [ paragraph-name-}
-       </para>
+          <cmdsynopsis>
+            <arg choice="opt">
+              <arg>DECLARATIVES.</arg>
+              <arg choice="req" rep="repeat">
+                <arg>section-name SECTION</arg>
+                <arg choice="opt">segment-number</arg>
+                <arg>.   declarative-sentence</arg>
+                <sbr/>
+                <arg choice="opt" rep="repeat">paragraph-name.     <arg choice="opt" rep="repeat">sentence</arg></arg>
+              </arg>
+              <sbr/>
+              <arg>END DECLARATIVES.</arg>
+            </arg>
+            <arg choice="req">
+              <arg choice="ansi">section-name SECTION      <arg choice="opt">segment-number</arg></arg>
+              <sbr/>
+              <arg choice="opt">
+                <arg choice="ansi"> paragraph-name</arg>
+                <arg choice="opt" rep="repeat">sentence</arg>
+              </arg>
+            </arg>
+          </cmdsynopsis>
           <para>
 Format 2 :
        </para>
-          <para>
-    ) paragraph-name.}
-                          [sentence]
-                          [sentence]
-
-</para>
+          <cmdsynopsis>
+            <arg choice="req" rep="repeat">
+              <arg choice="ansi">paragraph-name</arg>
+              <arg choice="opt" rep="repeat">sentence</arg>
+            </arg>
+          </cmdsynopsis>
         </section>
       </section>
     </section>

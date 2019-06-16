@@ -119,9 +119,12 @@ debugging lines and sections are compiled as if they were comment lines.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-      SOURCE-COMPUTER. computer-name  [WITH DEBUGGING MODE].
-</para>
+          <cmdsynopsis>
+            <command>SOURCE-COMPUTER.</command>
+            <arg>computer-name</arg>
+            <arg choice="opt">WITH DEBUGGING MODE</arg>
+            <arg>.</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>General Rules</title>
@@ -158,13 +161,23 @@ monitored by the associated debugging section.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-     section-name SECTION [segment number].
-            USE FOR DEBUGGING ON { procedure-name-1}
-                                 ALL PROCEDURES
-                    ,procedure-name-2]
-                 [ ALL PROCEDURES   ...
-</para>
+          <cmdsynopsis>
+            <arg>section-name SECTION</arg>
+            <arg choice="opt">segment number</arg>
+            <arg>.</arg>
+            <arg>USE FOR DEBUGGING ON</arg>
+            <group choice="req">
+              <arg>procedure-name-1</arg>
+              <arg>ALL PROCEDURES</arg>
+            </group>
+            <arg choice="opt">
+              <arg>,</arg>
+              <group choice="req" rep="repeat">
+                <arg>procedure-name-2</arg>
+                <arg>ALL PROCEDURES</arg>
+              </group>
+            </arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rules</title>
