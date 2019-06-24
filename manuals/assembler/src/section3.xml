@@ -578,7 +578,7 @@ and the register is not changed.
 Here are some examples:
 </para>
         <screen>
-DB::X #4096 <keycap>RETURN</keycap> Set x register to 4096
+DB::X #4096 <keycap>RETURN</keycap> Set X register to 4096
 
 DB::DP 0        Set DP register to 0
 
@@ -592,11 +592,11 @@ DB::D 24CF+:Y  Set D register to 24CF plus contents of Y register
 Breakpoints allow you to specify address(es) where execution of the
 program under test is to be suspended and the debugger re-entered. When
 a breakpoint is encountered, the values of the MPU registers and the
-<quote>DB:</quote> prompt will be displayed. After a breakpoint is reached,-registers
+<quote>DB:</quote> prompt will be displayed. After a breakpoint is reached, registers
 can be examined or changed, memory can be altered, or any other debugger
 command can be used. Program execution can be resumed from the
-breakpoint location using the <quote>G</quote> command. Breakpoints may be inserted
-at up to 12 different addresses.
+breakpoint location using the <quote>G</quote> command.
+Breakpoints may be inserted at up to 12 different addresses.
 </para>
       <para>
 The debugger uses the 6809 SWI instruction for breakpoints. They
@@ -636,7 +636,7 @@ is displayed using the same format as the <quote>display register</quote> comman
       <section>
         <title><quote>B</quote> Set or Display Breakpoints Command</title>
         <para>
-The B command-will insert a breakpoint if followed by an expression,
+The B command will insert a breakpoint if followed by an expression,
 or will display all present breakpoint addresses if used alone.
 </para>
         <screen>
@@ -994,7 +994,7 @@ DB:E EXAMPLE <keycap>RETURN</keycap>                     <lineannotation>prepare
       SP  CC  A  B  DP  X    Y    U    PC
      0DF3 C8 00 01  0D 0DFF 0E00 0D00 9214
 
-DB:B .+ZE <keycap>RETURN</keycap>                        <lineannotation>set breakpoint at 9223</lineannotation>
+DB:B .+2E <keycap>RETURN</keycap>                        <lineannotation>set breakpoint at 9223</lineannotation>
 DB:G <keycap>RETURN</keycap>                             <lineannotation>run program</lineannotation>
 HELLO WORLD
 hello computer
@@ -1007,7 +1007,7 @@ DB:M :U :U+20 <keycap>RETURN</keycap>                    <lineannotation>display
 
 0D00 FA31 6865 6C6C 6F20 636F 6D70 7574 6572 .1hello computer
 0D10 0DDF C005 E9F1 95FA 4C0D 1DFA 0AC4 5900 ........L.....Y.
-0D20 0B64 360B CFB1 0091 F820 SAE2 5AF8 5AF8 .d6...... Z.Z.Z.
+0D20 0B64 360B CFB1 0091 F820 5AE2 5AF8 5AF8 .d6...... Z.Z.Z.
 
 DB:. :U+2 <keycap>RETURN</keycap>                        <lineannotation>display relative data</lineannotation>
     0D02 68                             <lineannotation>area offset 2</lineannotation>
