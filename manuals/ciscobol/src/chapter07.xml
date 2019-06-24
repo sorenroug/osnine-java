@@ -30,10 +30,10 @@ See the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle> for the 
 </para>
       </section>
       <section>
-        <title>Access Modes</title>
+        <title>Access Modes<indexterm><primary>Access Mode</primary></indexterm></title>
         <para>
 In the sequential access mode, the sequence in which records are
-accessed is the ascending order of tle record key values.
+accessed is the ascending order of the record key values.
 </para>
         <para>
      In the random access mode, the sequence in which records are accessed
@@ -47,9 +47,9 @@ statements.
 </para>
       </section>
       <section>
-        <title>Current Record Pointer</title>
+        <title>Current Record Pointer<indexterm><primary>Current Record Pointer</primary></indexterm></title>
         <para>
-     The current record pointer is a conceptual entity used in tllis document
+     The current record pointer is a conceptual entity used in this document
 to facilitate specification of the next record to be accessed w1thin a given
 file. The concept of the current record pointer has no meaning for a file
 opened only in the output mode. The setting of the current record pointer
@@ -69,7 +69,7 @@ the status or that input-output operation.
           <title>Status Key 1</title>
           <para>
 The leftmost character position of the FILE STATUS data item is known
-as status key 1 and is set to indicate one of the tollowing conditions upon
+as status key 1 and is set to indicate one of the following conditions upon
 completion of the input-output operation.
 </para>
           <itemizedlist mark="none" spacing="compact">
@@ -144,7 +144,7 @@ Boundary Violation
               <term>3</term>
               <listitem>
                 <para>Permanent Error. The input-output statement was unsuccessfully
-              executed as the reult of an input-output error, such as data
+              executed as the result of an input-output error, such as data
               check, parity error or transmission error.
                </para>
               </listitem>
@@ -359,9 +359,10 @@ other file-related information. (See also appendix F in the
         </section>
         <section>
           <title>General Format</title>
-          <para>
-      FILE-CONTROL. {file-control-entry}
-</para>
+          <cmdsynopsis>
+            <command>FILE-CONTROL</command>
+            <arg choice="req" rep="repeat">file-control-entry</arg>
+          </cmdsynopsis>
         </section>
       </section>
       <section>
@@ -374,20 +375,38 @@ other file-related information. (See also appendix F in the
         </section>
         <section>
           <title>General Format</title>
-          <para>
-            SELECT file-name
-                  ASSIGN TO  j external-file-name-literal!
-                               file-identifier
-                               external-file-name-literal!]
-                          [!' file-identifier                 I
-               ORGANIZATION IS
-           [; ACCESS NODE IS SEQUENTIAL
-                                    DYNAMIC
-
-                                   RANDOM
-             ; RECORD KEY IS data-name-1
-             [; FILE STATUS IS data-name-3]
-</para>
+          <cmdsynopsis>
+            <command>SELECT</command>
+            <arg>file-name</arg>
+            <sbr/>
+            <arg>ASSIGN TO</arg>
+            <group choice="req">
+              <arg>external-file-name-literal</arg>
+              <arg>file-identifier</arg>
+            </group>
+            <arg choice="opt">
+              <arg>,</arg>
+              <group choice="req">
+                <arg>external-file-name-literal</arg>
+                <arg>file-identifier</arg>
+              </group>
+            </arg>
+            <sbr/>
+            <arg>; ORGANIZATION IS INDEXED</arg>
+            <sbr/>
+            <arg choice="opt">
+              <arg>; ACCESS MODE IS</arg>
+              <group choice="req">
+                <arg>SEQUENTIAL</arg>
+                <arg>RANDOM</arg>
+                <arg>DYNAMIC</arg>
+              </group>
+            </arg>
+            <sbr/>
+            <arg>; RECORD KEY IS data-name-1</arg>
+            <sbr/>
+            <arg choice="opt">; FILE STATUS IS data-name-3</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rules</title>
@@ -509,6 +528,7 @@ established and the memory area which is to be shared by different files.
                 <arg>condition-name</arg>
               </group>
             </arg>
+            <sbr/>
             <arg choice="opt" rep="repeat">
               <arg>; SAME AREA FOR file-name-3</arg>
               <arg choice="opt" rep="repeat">, file-name-4</arg>
@@ -599,12 +619,12 @@ terminated by a period.
       <para>
 A record description consists of a set of data description entries
 which describe the characteristics of a particular record. Each data
-description entry consists of a level-number followed by a data-nante if
+description entry consists of a level-number followed by a data-name if
 required, followed by a series of independent clauses as required. A record
 description has a hierarchical structure and therefore the clauses used with
 an entry may vary considerably, depending upon whether or not it is followed
 by subordinate entries. The structure of a record description is defined in
-CONCEPTS OF LEVEl.S in Chapter 2 while the elements allowed in a record
+CONCEPTS OF LEVELS in Chapter 2 while the elements allowed in a record
 description are shown in <xref linkend="c03.skeleton"/> in Chapter 3.
 </para>
     </section>
@@ -619,18 +639,50 @@ structure, identification, and record names pertaining to a given file.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     FD file-name
-           ; BLOCK CONTAINS integer-2 RECORDS       ']
-         [                               CHARACTERS I
-           [;~CONTAINS          [integer-3 TO) integer-4 CHARACTERS]
-                            RECORD IS 1 l STANDARD 1l
-                          l RECORDS ARE I OMITTED IJ
-           ;~OF       data-name-1 IS literal-1
-                      [,data-name-2 IS literal-2]
-           DATA    RECORD IS    I  data-name-3    [ ,data-name-4]
-                 l RECORDS ARE I
-</para>
+        <cmdsynopsis>
+          <command>FD</command>
+          <arg>file-name</arg>
+          <arg choice="opt">
+            <arg>; BLOCK CONTAINS integer-2</arg>
+            <group choice="req">
+              <arg>RECORDS</arg>
+              <arg>CHARACTERS</arg>
+            </group>
+          </arg>
+          <sbr/>
+          <arg choice="opt">
+            <arg>; RECORD CONTAINS</arg>
+            <arg choice="opt">integer-3 TO</arg>
+            <arg>integer-4 CHARACTERS</arg>
+          </arg>
+          <sbr/>
+          <arg choice="ansi">
+            <arg>; LABEL</arg>
+            <group choice="req">
+              <arg>RECORD IS</arg>
+              <arg>RECORDS ARE</arg>
+            </group>
+            <group choice="req">
+              <arg>STANDARD</arg>
+              <arg>OMITTED</arg>
+            </group>
+          </arg>
+          <sbr/>
+          <arg>
+            <arg>; VALUE OF data-name-1 IS literal-1</arg>
+            <arg choice="opt" rep="repeat">, data-name-2 IS literal-2</arg>
+          </arg>
+          <arg choice="opt">
+            <arg>; DATA</arg>
+            <group choice="req">
+              <arg>RECORD IS</arg>
+              <arg>RECORDS ARE</arg>
+            </group>
+            <arg>data-name-3</arg>
+            <arg choice="opt" rep="repeat">, data-name-4</arg>
+            <arg>.</arg>
+          </arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -667,7 +719,8 @@ The BLOCK CONTAINS clause specifies the size of a physical record.
       <section>
         <title>General Format</title>
         <cmdsynopsis>
-          <arg>BLOCK CONTAINS integer-2</arg>
+          <command>BLOCK CONTAINS</command>
+          <arg>integer-2</arg>
           <group choice="req">
             <arg>RECORDS</arg>
             <arg>CHARACTERS</arg>
@@ -692,10 +745,15 @@ data records with their associated file.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-          DATA       RECORD IS }   data-name-1 [, data-name-21  . .
-                   { RECORDS ARE
-</para>
+        <cmdsynopsis>
+          <arg>DATA</arg>
+          <group choice="req">
+            <arg>RECORD IS</arg>
+            <arg>RECORDS ARE</arg>
+          </group>
+          <arg>data-name-1</arg>
+          <arg choice="opt">, data-name-2</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -735,11 +793,17 @@ The LABEL RECORDS clause specifies whether labels are present.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-                LABEL 1 RECORD IS 1         STANDARD 1
-                       I RECORDS ARE I    I
-
-</para>
+        <cmdsynopsis>
+          <arg>LABEL</arg>
+          <group choice="req">
+            <arg>RECORD IS</arg>
+            <arg>RECORDS ARE</arg>
+          </group>
+          <group choice="req">
+            <arg>STANDARD</arg>
+            <arg>OMITTED</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>General Rule</title>
@@ -758,9 +822,11 @@ The LABEL RECORDS clause specifies whether labels are present.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-                  CONTAINS    ( integer-1 TO)   integer-2 CHARACTERS
-</para>
+        <cmdsynopsis>
+          <arg>RECORD CONTAINS</arg>
+          <arg choice="opt">integer-1 TO</arg>
+          <arg>integer-2 CHARACTERS</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>General Rule</title>
@@ -782,10 +848,11 @@ records associated with a file.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-           VALUE OF data-namel IS literal-1
-          - - - - [ ,dataname2 IS literal-2]
-</para>
+        <cmdsynopsis>
+          <arg>VALUE OF</arg>
+          <arg>data-name-1 IS literal-1</arg>
+          <arg choice="opt" rep="repeat">, data-name-2 IS literal-2</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>General Rules</title>
@@ -817,9 +884,12 @@ A figurative constant may be substituted in the format above wherever a literal 
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     CLOSE file-name-1 [WITH] [ file-name-2          [WITH)]
-</para>
+        <cmdsynopsis>
+          <arg>CLOSE</arg>
+          <arg>file-name-1</arg>
+          <arg choice="opt">WITH LOCK</arg>
+          <arg choice="opt" rep="repeat">, file-name-2 <arg choice="opt">WITH LOCK</arg></arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rule</title>
@@ -872,9 +942,10 @@ The DELETE statement logically removes a record from a file.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-         DELETE file-name RECORD [; INVALID KEY imperative-statement]
-</para>
+        <cmdsynopsis>
+          <arg>DELETE file-name RECORD</arg>
+          <arg choice="opt">;INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -882,14 +953,14 @@ The DELETE statement logically removes a record from a file.
           <listitem>
             <para>
 The INVALID KEY phase must not be specified for a DELETE statement
-         which references a file which is in sequential access mode.
+which references a file which is in sequential access mode.
 </para>
           </listitem>
           <listitem>
             <para>
 The INVALID KEY phrase must be specified for a DELETE statement which
-         references a file which is not in sequential access mode and for which
-         an applicable USE procedure is not specified.
+references a file which is not in sequential access mode and for which
+an applicable USE procedure is not specified.
 </para>
           </listitem>
         </orderedlist>
@@ -907,38 +978,35 @@ execution of this statement.
           <listitem>
             <para>
 For files in the sequential access mode, the last input-output
-         statement executed for file-name prior to the execution of the DELETE
-         statement must have been a successfully executed READ statement. The
-         record that was accessed by that READ statement is logically removed
-         from the file.
+statement executed for file-name prior to the execution of the DELETE
+statement must have been a successfully executed READ statement. The
+record that was accessed by that READ statement is logically removed from the file.
 </para>
           </listitem>
           <listitem>
             <para>
 For a file in random or dynamic access mode, the record identified by
-         the contents of the record key data item associated with file-name is
-         logicaJ.ly removed from the file. If the file does not contain the
-         record npecified by the key, an INVALID KEY condition exists.
-         (See <xref linkend="sec7.inv.key"/> in this Chapter).
+the contents of the record key data item associated with file-name is
+logically removed from the file. If the file does not contain the
+record specified by the key, an INVALID KEY condition exists.
+(See <xref linkend="sec7.inv.key"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
 After the successful execution of a DELETE statement, the identified
-         record has been logically removed from the file and can no longer be
-         accessed.
+record has been logically removed from the file and can no longer be accessed.
 </para>
           </listitem>
           <listitem>
             <para>
 The execution of a DELETE statement does not affect the contents of the
-         record area associated with file-name.
+record area associated with file-name.
 </para>
           </listitem>
           <listitem>
             <para>
-The current record pointer is not affected by the execution of a DELETE
-         statement.
+The current record pointer is not affected by the execution of a DELETE statement.
 </para>
           </listitem>
           <listitem>
@@ -962,11 +1030,23 @@ checking and/or writing of labels and other input-output operations.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-                     INPUT file-name-1   [, file-name-2]
-          OPEN       OUTPUT file-name-3  [ , file-name-4]
-                       file-name-5       [, file-name-6]
-</para>
+        <cmdsynopsis>
+          <arg choice="plain">OPEN</arg>
+          <group choice="req" rep="repeat">
+            <arg choice="plain">
+              <arg choice="plain">INPUT <replaceable>file-name-1</replaceable></arg>
+              <arg choice="opt" rep="repeat">, <replaceable>file-name-2</replaceable></arg>
+            </arg>
+            <arg choice="plain">
+              <arg choice="plain">OUTPUT <replaceable>file-name-3</replaceable></arg>
+              <arg choice="opt" rep="repeat">, <replaceable>file-name-4</replaceable></arg>
+            </arg>
+            <arg choice="plain">
+              <arg choice="plain">I-O <replaceable>file-name-5</replaceable></arg>
+              <arg choice="opt" rep="repeat">, <replaceable>file-name-6</replaceable></arg>
+            </arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1026,7 +1106,7 @@ top of the column.
                   </row>
                   <row>
                     <entry>Input</entry>
-                    <entry>Ouput</entry>
+                    <entry>Output</entry>
                     <entry>Input-Output</entry>
                   </row>
                 </thead>
@@ -1131,7 +1211,7 @@ top of the column.
           <listitem>
             <para>
 A file may be opened with the INPUT, OUTPUT and I-O phrases in the same
-program. Following the i nitial execution of an OPEN statement for a
+program. Following the initial execution of an OPEN statement for a
 file, each subsequent OPEN statement execution for that same file must
 be preceded by the execution of a CLOSE statement for that file.
 </para>
@@ -1200,7 +1280,7 @@ deleted. If write protected, an error status occurs.</phrase>
       <section>
         <title>Function</title>
         <para>
-For sequential access, the READ statement makes available the neJCt
+For sequential access, the READ statement makes available the next
 logical record from a file. For random access, the READ statement makes
 available a specified record from a mass storage file.
 </para>
@@ -1209,12 +1289,25 @@ available a specified record from a mass storage file.
         <title>General Format</title>
         <para>
      Format 1
-          READ file-name [NEXT]    RECORD   [INTO identifier)
-             [;AT END imperative-statement]
-     Format
-          READ file-name RECORD [ INTO identifier
-             [;INVALID KEY imperative-statement]
+     </para>
+        <cmdsynopsis>
+          <command>READ</command>
+          <arg>file-name</arg>
+          <arg choice="opt">NEXT</arg>
+          <arg>RECORD</arg>
+          <arg choice="opt">INTO identifier</arg>
+          <arg choice="opt">; AT END imperative-statement</arg>
+        </cmdsynopsis>
+        <para>
+Format 2
 </para>
+        <cmdsynopsis>
+          <command>READ</command>
+          <arg>file-name</arg>
+          <arg>RECORD</arg>
+          <arg choice="opt">INTO identifier</arg>
+          <arg choice="opt">;INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1293,16 +1386,16 @@ then that record is made available.
           <listitem>
             <para>
 The execution of the READ statement causes the value of the FILE STATUS
-    data item, if any, associated with file-name to be updated.
-    (See <xref linkend="sec7.i.o"/> in this Chapter).
+data item, if any, associated with file-name to be updated.
+(See <xref linkend="sec7.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
 Regardless of the method used to overlap access time with processing
-    time, the concept of the READ statement is unchanged in that a record
-    is available to the object program prior to the execution of any
-    statement following the READ statement.
+time, the concept of the READ statement is unchanged in that a record
+is available to the object program prior to the execution of any
+statement following the READ statement.
 </para>
           </listitem>
           <listitem>
@@ -1312,7 +1405,7 @@ record description, these records automatically share the same storage
 area; this is equivalent to an implicit redefinition of the area. The
 contents of any data items which lie beyond the range of the current
 data record are undefined at the completion of the execution of the
-    READ statement.
+READ statement.
 </para>
           </listitem>
           <listitem>
@@ -1370,7 +1463,7 @@ statement. Any USE procedure specified for this file is not executed.
               <listitem>
                 <para>
 If the AT END phrase is not specified, then a USE procedure must
-be specified, either explictly or implicitly, for this file, and
+be specified, either explicitly or implicitly, for this file, and
 that procedure is executed,
 </para>
                 <para>
@@ -1445,9 +1538,12 @@ storage file.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     REWRITE record-name [FROM identifier] [; INVALID KEY imperative-statement]
-</para>
+        <cmdsynopsis>
+          <command>REWRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier</arg>
+          <arg choice="opt">; INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1512,7 +1608,7 @@ to the execution of:
             <para>
 followed by the execution of the same REWRITE statement without the
 FROM phrase. The contents of the record area prior to the execution of
-the implict MOVE statement have no effect on the execution of the
+the implicit MOVE statement have no effect on the execution of the
 REWRITE statement.
 </para>
           </listitem>
@@ -1583,19 +1679,27 @@ indexed file, for subsequent sequential retrieval of records.
       </section>
       <section>
         <title>General Format</title>
+        <cmdsynopsis>
+          <arg>START file-name</arg>
+          <arg choice="opt">
+            <arg>KEY</arg>
+            <group>
+              <arg>IS EQUAL TO</arg>
+              <arg>IS =</arg>
+              <arg>IS GREATER THAN</arg>
+              <arg>IS &gt;</arg>
+              <arg>IS NOT LESS THAN</arg>
+              <arg>IS NOT &lt;</arg>
+            </group>
+            <arg>data-name</arg>
+            <sbr/>
+            <arg choice="opt">;INVALID KEY imperative-statement</arg>
+          </arg>
+        </cmdsynopsis>
         <para>
-                                    IS EQUAL TO
-                                    IS -c
-         ''"' ,,,,_"   ...['"       IS GREATER
-                                    IS_&gt; _ __ THAN
-                                    IS NOT LESS THAN
-                                    IS NoT- -
-             [;INVALID KEY imperative-statement]
-         </para>
-        <para>
-             NOTE: The required relational characters '&gt;', '&lt;' and '=' are not
-                underlined to avoid confusion with other symbols such as '&#x2265;'
-                (greater than or equal to).
+NOTE: The required relational characters '&gt;', '&lt;' and '=' are not
+underlined to avoid confusion with other symbols such as '&#x2265;'
+(greater than or equal to).
 </para>
       </section>
       <section>
@@ -1622,7 +1726,7 @@ The INVALID KEY phrase must be specified if no applicable USE procedure
 If file-name is the name of an indexed file, and if a KEY phrase is
 specified, data-name may reference a data item specified as the record
 key associated with file-name, or it may reference any data item of
-category alpanumeric subordinate to the data-name of a data item
+category alphanumeric subordinate to the data-name of a data item
 specified as the record key associated with file-name whose leftmost
 character position corresponds to the leftmost character position of
 that record key data item.
@@ -1684,7 +1788,7 @@ The execution of the START statement causes the value of the FILE
           <listitem>
             <para>
 If the KEY phrase is specified, the comparison described in general
-        rule 3 uses the data ltem referenced by data-name.
+        rule 3 uses the data item referenced by data-name.
 </para>
           </listitem>
           <listitem>
@@ -1709,12 +1813,20 @@ control system.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-                                                     file-name-ll
-                          EXCEPTION 1                INP!IT
-USE AFTER STANDARD
--                   l ~I          PROCEDURE ON   ~~Pur
-</para>
+        <cmdsynopsis>
+          <command>USE  AFTER STANDARD</command>
+          <group choice="req">
+            <arg>EXCEPTION</arg>
+            <arg>ERROR</arg>
+          </group>
+          <arg>PROCEDURE ON</arg>
+          <group choice="req">
+            <arg>file-name-1</arg>
+            <arg>INPUT</arg>
+            <arg>OUTPUT</arg>
+            <arg>I-O</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1763,7 +1875,7 @@ Within a USE procedure, there must not be any reference to any
           </listitem>
           <listitem>
             <para>
-Within a USE procedure, there must not be the excecution of any
+Within a USE procedure, there must not be the execution of any
       statement that would cause the execution of a USE procedure that had
       previously been invoked and had not yet returned control to the
       invoking routine.
@@ -1782,9 +1894,12 @@ Within a USE procedure, there must not be the excecution of any
       </section>
       <section>
         <title>General Format</title>
-        <para>
-       WRITE record-name [FROM identifier] INVALID KEY imperative-statement]
-</para>
+        <cmdsynopsis>
+          <command>WRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier</arg>
+          <arg choice="opt">; INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -1826,7 +1941,7 @@ WRITE statement is unsuccessful due to an INVALID KEY condition.
           </listitem>
           <listitem>
             <para>
-The results of the "xecution of the WRITE statement with the FROM
+The results of the execution of the WRITE statement with the FROM
 phrase is equivalent tn the execution of:
 </para>
             <orderedlist>
@@ -1922,7 +2037,7 @@ If random or dynamic access mode is specified, records may be released
           </listitem>
           <listitem>
             <para>
-The INVALID KCY condition exists under the following circumstances:
+The INVALID KEY condition exists under the following circumstances:
 </para>
             <orderedlist>
               <listitem>

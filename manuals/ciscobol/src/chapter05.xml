@@ -23,14 +23,15 @@ except in the case where records are added to the end of the file.
 </para>
       </section>
       <section>
-        <title>Access Mode</title>
+        <title>Access Mode<indexterm><primary>Access Mode</primary></indexterm></title>
         <para>
 In the sequential access mode, the sequence in which records are
 accessed is the order in which the records were originally written.
 </para>
       </section>
       <section>
-        <title>Current Record Pointer</title>
+        <title>Current Record Pointer
+        <indexterm><primary>Current Record Pointer</primary></indexterm></title>
         <para>
 The current record pointer is a conceptual entity used in this document
 to facilitate specification of the next record to be accessed within a given
@@ -456,7 +457,7 @@ In a CIS COBOL program the file description entry (FD) represents the
 highest level of organisation in the File Section. The File Section header
 is followed by a file description entry consisting of a level indicator
 (FD), a file-name and a series of independent clauses. The FD clauses
-spt!cify the size of the logical and physical records, the presence or
+specify the size of the logical and physical records, the presence or
 absence of label records, the value of implementor-defined label items, the
 names of the data records which comprise the file. The entry itself is
 terminated by a period.
@@ -497,12 +498,14 @@ description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
                 <arg>RECORDS</arg>
                 <arg>CHARACTERS</arg>
               </group>
-            </arg><sbr/>
+            </arg>
+            <sbr/>
             <arg choice="opt">
               <arg>; RECORD CONTAINS</arg>
               <arg choice="opt">integer-3 TO</arg>
               <arg>integer-4 CHARACTERS</arg>
-            </arg><sbr/>
+            </arg>
+            <sbr/>
             <arg choice="opt">
               <arg>; LABEL</arg>
               <group choice="req">
@@ -513,7 +516,8 @@ description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
                 <arg>STANDARD</arg>
                 <arg>OMITTED</arg>
               </group>
-            </arg><sbr/>
+            </arg>
+            <sbr/>
             <arg choice="opt">
               <arg>; VALUE OF data-name-1 IS literal-1</arg>
               <arg choice="opt" rep="repeat">, data-name-2 IS literal-2</arg>
@@ -526,7 +530,8 @@ description are shown in the <xref linkend="c03.skeleton"/> in Chapter 3.
               </group>
               <arg>data-name-3</arg>
               <arg choice="opt">, data-name-4</arg>
-            </arg><sbr/>
+            </arg>
+            <sbr/>
             <arg choice="opt">; CODE-SET IS alphabet-name</arg>
           </cmdsynopsis>
         </section>
@@ -559,16 +564,19 @@ The level indicator FD identifies the beginning of a file description and must p
         <section>
           <title>Function</title>
           <para>
-      The BLOCK CONTAINS clause spec i fies the size of a physical record.
+      The BLOCK CONTAINS clause specifies the size of a physical record.
 </para>
         </section>
         <section>
           <title>General Format</title>
-          <para>
-      BLOCK CONTAINS       .
-                           integer {RECORDS
-                                    CHARACTERS }
-</para>
+          <cmdsynopsis>
+            <command>BLOCK CONTAINS</command>
+            <arg>integer</arg>
+            <group choice="req">
+              <arg>RECORDS</arg>
+              <arg>CHARACTERS</arg>
+            </group>
+          </cmdsynopsis>
         </section>
         <section>
           <title>General Rule</title>
@@ -588,9 +596,10 @@ data on the external media.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-      CODE-SET IS alphabet-name
-</para>
+          <cmdsynopsis>
+            <command>CODE-SET IS</command>
+            <arg>alphabet-name</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rules</title>
@@ -633,11 +642,15 @@ data records with their associated file.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-              RECORD IS }       data-name-1   [, data-name-2]
-      DATA { RECORDS ARE
-
-</para>
+          <cmdsynopsis>
+            <arg>DATA</arg>
+            <group choice="req">
+              <arg>RECORD IS</arg>
+              <arg>RECORDS ARE</arg>
+            </group>
+            <arg>data-name-1</arg>
+            <arg choice="opt">, data-name-2</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rule</title>
@@ -678,10 +691,17 @@ data records with their associated file.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-                RECORD IS } {STANDARD}
-              { RECORDS ARE     OMITTED
-</para>
+          <cmdsynopsis>
+            <arg>LABEL</arg>
+            <group choice="req">
+              <arg>RECORD IS</arg>
+              <arg>RECORDS ARE</arg>
+            </group>
+            <group choice="req">
+              <arg>STANDARD</arg>
+              <arg>OMITTED</arg>
+            </group>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Syntax Rule</title>
@@ -707,9 +727,11 @@ This clause is required in every file description entry,
         </section>
         <section>
           <title>General Format</title>
-          <para>
-     RECORD CONTAINS      [integer-1 TO)     integer-2 CHARACTERS
-</para>
+          <cmdsynopsis>
+            <arg>RECORD CONTAINS</arg>
+            <arg choice="opt">integer-1 TO</arg>
+            <arg>integer-2 CHARACTERS</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>General Rule</title>
@@ -731,11 +753,11 @@ records associated with a file.
         </section>
         <section>
           <title>General Format</title>
-          <para>
-     VALUE OF data-name-1  IS literal-1
-
-            [, dataname2   IS literal-2)
-</para>
+          <cmdsynopsis>
+            <arg>VALUE OF</arg>
+            <arg>data-name-1 IS literal-1</arg>
+            <arg choice="opt" rep="repeat">, data-name-2 IS literal-2</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>General Rules</title>
@@ -768,16 +790,20 @@ records associated with a file.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-     CLOSE file-name-1 [ REEL
-                         UNIT J
-</para>
+        <cmdsynopsis>
+          <arg>CLOSE</arg>
+          <arg>file-name-1</arg>
+          <group choice="req">
+            <arg>REEL</arg>
+            <arg>UNIT</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rule</title>
         <para>
 The REEL or UNIT phrase must only be used for sequential files, and are
-for documenation purposes only.
+for documentation purposes only.
 </para>
       </section>
       <section>
@@ -827,13 +853,21 @@ checking and/or writing of labels and other input-output operations.
       </section>
       <section>
         <title>General Format</title>
-        <para>
-               INPUT file-name-1    [, file-name-2]
-               OUTPUT file-name-3   [, file-name-4]
-     OPEN
-               I-O file-name-5    [, file-name-6]
-               EXTEND file-name-7   [, file-name-S]
-      </para>
+        <cmdsynopsis>
+          <command>OPEN</command>
+          <group choice="req">
+            <arg>
+              <arg>INPUT file-name-1</arg>
+              <arg choice="opt" rep="repeat">, file-name-2</arg>
+              <arg>OUTPUT file-name-3</arg>
+              <arg choice="opt" rep="repeat">, file-name-4</arg>
+              <arg>I-O file-name-5</arg>
+              <arg choice="opt" rep="repeat">, file-name-6</arg>
+              <arg>EXTEND file-name-7</arg>
+              <arg choice="opt" rep="repeat">, file-name-8</arg>
+            </arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -932,7 +966,7 @@ organization and open mode given at the top of the column.
           <listitem>
             <para>
 A file may be opened with the INPUT, OUTPUT, EXTEND and I-O phrases in
-the same program. Following the init ial execution of an OPEN statement
+the same program. Following the initial execution of an OPEN statement
 for a file, each subsequent OPEN statement execution for that same file
 must be preceded by the execution of a CLOSE statement, for that file.
       </para>
@@ -1294,14 +1328,14 @@ The current record pointer is not affected by the execution of a REWRITE stateme
           </listitem>
           <listitem>
             <para>
-The execution of the REWRITE statement causes the value of the FILI:
+The execution of the REWRITE statement causes the value of the FILE
 STATUS data item, if any, associated with the file to be updated.
 (See <xref linkend="sec5.i.o"/> in this Chapter).
 </para>
           </listitem>
           <listitem>
             <para>
-The REWRITE statement cannot be used with line sequention files.
+The REWRITE statement cannot be used with line sequential files.
     </para>
           </listitem>
         </orderedlist>
@@ -1343,7 +1377,7 @@ control system.
           <listitem>
             <para>
 A USE statement, when present, must immediately follow a section header
-in the declarat ives section and must be followed by a period followed
+in the declaratives section and must be followed by a period followed
 by a space. The remainder of the section must consist of zero, one or
 more procedural paragraphs that define the procedure to be used.
 </para>
@@ -1351,7 +1385,7 @@ more procedural paragraphs that define the procedure to be used.
           <listitem>
             <para>
 The USE statement itself is never executed; it merely defines the
- conditions calling for the execution of the USE procedures.
+conditions calling for the execution of the USE procedures.
 </para>
           </listitem>
         </orderedlist>
@@ -1489,10 +1523,9 @@ The contents of the record area prior to the execution of the
 implicit MOVE statement have no effect on the execution of this WRITE statement.
 </para>
                 <para>
- After execution of the WRITE statement is complete, the
- information in th e area r eferenced by identifier-1 is available,
- even though the information in the area referenced by r ecord-name
- may not be.    (See general rule 2.)
+After execution of the WRITE statement is complete, the
+information in the area referenced by identifier-1 is available,
+even though the information in the area referenced by record-name may not be.    (See general rule 2.)
  </para>
               </listitem>
             </orderedlist>
@@ -1504,8 +1537,8 @@ The current record pointer is unaffected by the execution of a WRITE statement.
           </listitem>
           <listitem>
             <para>
-The execution of the WRITE stateme nt causes the value of the FILE
-   STATUS data item, if any, associated with the file to be updated.
+The execution of the WRITE statement causes the value of the FILE
+STATUS data item, if any, associated with the file to be updated.
 (See <xref linkend="sec5.i.o"/> in this Chapter).
           </para>
           </listitem>

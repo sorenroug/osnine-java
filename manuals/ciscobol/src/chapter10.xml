@@ -8,10 +8,7 @@ Standard ANSI COBOL debugging provides a means by which the user can
 describe the conditions under which procedures are to be
 monitored during the execution of the object program.
        </para>
-  </section>
-  <section>
-    <title>CIS COBOL RUN-TIME DEBUG EXTENSION</title>
-    <para>
+    <para role="extension">
       <phrase role="extension">The CIS COBOL Run-Time Debug Package is an extension to ANSI COBOL that
 provides break-point facilities in the user's program. Programs may be run
 from the start until a specified break-point is reached, when control is
@@ -20,7 +17,7 @@ passed back to the user. At this point, data areas may be inspected or changed.<
   </section>
   <section>
     <title>CIS COBOL RUN-TIME DEBUG EXTENSION</title>
-    <para>
+    <para role="extension">
       <phrase role="extension">The Run-Time debug is entered as an option by the user and the user
 program is then tested line by line, paragraph by paragraph and so on as
 required. The commands to the package can reference procedure statements
@@ -229,7 +226,7 @@ When the ALL PROCEDURES phrase is specified, procedure-name-1,
             </listitem>
             <listitem>
               <para>
-References to the special register DEBUG-ITEM are restricted to references from within a debugging saction.
+References to the special register DEBUG-ITEM are restricted to references from within a debugging section.
 </para>
             </listitem>
           </orderedlist>
@@ -318,7 +315,7 @@ following general rules remains spaces.
 </para>
               <para>
 Updating is accomplished in accordance with the rules for the MOVE
-statement, the sole exception being the move to DEBUG-cONTENTS when the
+statement, the sole exception being the move to DEBUG-CONTENTS when the
 move is treated exactly as if it was an alphanumeric to alphanumeric
 elementary move with no conversion of data from one form of internal
 representation to another.
@@ -348,7 +345,7 @@ required by the following general rules.
             <listitem>
               <para>
 f the first execution of the first nondeclarative procedure in the
-program causes the debugging sEction to be executed, the following conditions exist:
+program causes the debugging section to be executed, the following conditions exist:
             </para>
               <orderedlist numeration="loweralpha" spacing="compact">
                 <listitem>

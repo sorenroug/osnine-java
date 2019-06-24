@@ -1,8 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE book [
-<!ENTITY ansileft "-[">
-<!ENTITY ansiright "]-">
-]>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:id="ciscobol" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
   <info>
     <title>CIS COBOL Language Reference Manual</title>
@@ -67,9 +63,11 @@ All correspondence should be addressed to:
     <para>
 COBOL is an industry language and is not the property of any company or
 group of companies, or of any organization or group of organizations.
+</para>
+<para>
 No warranty, expressed or implied, is made by any contributor or by the
 CODASYL Programming Language Committee as to the accuracy and functioning of
-the programing system and language. Moreover, no responsibility is assumed
+the programming system and language. Moreover, no responsibility is assumed
 by any contributor, or by the committee, in connection herewith.
 </para>
     <para>
@@ -367,7 +365,7 @@ There are two types of runtime errors:   Recoverable and Fatal.
     <para>
 If the programmer has specified the STATUS clause in the FILE-CONTROL
 paragraph of a program error handling is the programmer's responsibility.
-This will generally or.ly apply to errors that are not considered fatal
+This will generally only apply to errors that are not considered fatal
 by the operating system. (See <emphasis role="underline">File Status</emphasis> in Chapters 5, 6 and 7)
 </para>
     <para>
@@ -401,7 +399,7 @@ These exclude those for which STATUS is not selected as above.
     <informaltable frame="all" colsep="1" rowsep="1">
       <tgroup cols="2">
         <colspec colwidth="1in" align="left"/>
-        <colspec colwidth="3in" align="left"/>
+        <colspec colwidth="4in" align="left"/>
         <thead>
           <row>
             <entry>Error</entry>
@@ -451,7 +449,7 @@ These exclude those for which STATUS is not selected as above.
           </row>
           <row>
             <entry>164</entry>
-            <entry>Specified CALL code not supplied or Attempt to call a COBOL module recusively (i.e when is already active)</entry>
+            <entry>Specified CALL code not supplied or Attempt to call a COBOL module recursively (i.e when is already active)</entry>
           </row>
           <row>
             <entry>165</entry>
@@ -519,7 +517,7 @@ These exclude those for which STATUS is not selected as above.
           </row>
           <row>
             <entry>199</entry>
-            <entry>Indexed sequentia1 file name too long ( &gt;20 characters)</entry>
+            <entry>Indexed sequential file name too long ( &gt;20 characters)</entry>
           </row>
           <row>
             <entry>200</entry>
@@ -546,302 +544,966 @@ See also appendix D in the <citetitle pubwork="book">CIS COBOL Operating Guide</
     <section>
       <title>GENERAL FORMAT FOR IDENTIFICATION DIVISION</title>
       <cmdsynopsis>
-     <arg choice="ansi">IDENTIFICATION DIVISION.</arg><sbr/>
-     <arg choice="ansi">PROGRAM-ID. program name</arg><sbr/>
-     <arg choice="opt">AUTHOR.               <arg choice="opt">comment entry</arg> ... </arg><sbr/>
-     <arg choice="opt">INSTALLATION.         <arg choice="opt">comment entry</arg> ... </arg><sbr/>
-     <arg choice="opt">DATE-WRITTEN.         <arg choice="opt">comment entry</arg> ... </arg><sbr/>
-     <arg choice="opt">DATE-COMPILED.        <arg choice="opt">comment entry</arg> ... </arg><sbr/>
-     <arg choice="opt">SECURITY.             <arg choice="opt">comment entry</arg> ... </arg><sbr/>
-
-
-
-</cmdsynopsis>
+        <arg choice="ansi">IDENTIFICATION DIVISION.</arg>
+        <sbr/>
+        <arg choice="ansi">PROGRAM-ID.</arg><arg>program name</arg>
+        <sbr/>
+        <arg choice="opt">AUTHOR.</arg><arg choice="opt" rep="repeat">comment entry</arg>
+        <sbr/>
+        <arg choice="opt">INSTALLATION.</arg><arg choice="opt" rep="repeat">comment entry</arg>
+        <sbr/>
+        <arg choice="opt">DATE-WRITTEN.</arg><arg choice="opt" rep="repeat">comment entry</arg>
+        <sbr/>
+        <arg choice="opt">DATE-COMPILED.</arg><arg choice="opt" rep="repeat">comment entry</arg>
+        <sbr/>
+        <arg choice="opt">SECURITY.</arg><arg choice="opt" rep="repeat">comment entry</arg>
+        <sbr/>
+      </cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR ENVIRONMENT DIVISION</title>
-      <para>
-        ENVIRONMENT DIVISION.
-        CONFIGURATION SECTION.
-        SOURCE-COMPUTER.        source-computer-entry    [WITH DEBUGGING MODE].
-        OBJECT-COMPUTER.        object-computer-entry
-             [,MEMORY SIZE integer
-                                           WORDS
-                                            CHARACTERS
-                                            MODULES
-                                                        !]
-               [,PROGRAM COLLATING SEQUENCE IS     alphabet-name].
-        SPECIAL-NAMES.
-               SWITCH
-                             0                         ON STATUS IS condition-name-1
-                                                      [OFF STATUS IS condition-name-2]
-            [                     [}i mnemonic-name]   OFF-sTATUS IS conditional-name-2
-                                                      -[ON STATUSIS conditional-name-1]
-            n{ ,SYSIN }  IS   mnemonic-name ]                          D
-            V ,SYSOUT
-               [,TAB IS mnemonic-name 1                                 D
-               [,CURRENCY SIGN IS literal-9]
-                [,DECIMAL-POINT IS COMMA]
-               [,CURSOR IS data-name-1]
-               [,CONSOLE IS CRT]
-                                                  E
-                                                  E
-        INPUT-OUTPUT SECTION.
-        FILE-CONTROL.
-  
-               file-control-entry
- 
-
-   [I-O-CONTROL.
-            , ,                          integer-2 CLOCK-UNITS
-                                         condition-name
-</para>
+      <cmdsynopsis>
+        <arg>ENVIRONMENT DIVISION.</arg>
+        <sbr/>
+        <arg>CONFIGURATION SECTION.</arg>
+        <sbr/>
+        <arg>SOURCE-COMPUTER.</arg>
+        <arg>source-computer-entry</arg>
+        <arg choice="opt">WITH DEBUGGING MODE</arg>
+        <arg>.</arg>
+        <sbr/>
+        <arg>OBJECT-COMPUTER.</arg>
+        <arg>object-computer-entry</arg>
+        <sbr/>
+        <arg choice="opt">,MEMORY SIZE <replaceable>integer</replaceable>
+              <group choice="req"><arg>WORDS</arg><arg>CHARACTERS</arg><arg>MODULES</arg></group>
+            </arg>
+        <sbr/>
+        <arg choice="opt">,PROGRAM COLLATING SEQUENCE IS <replaceable>alphabet-name</replaceable></arg>
+        <sbr/>
+        <!--
+            <arg choice="opt">,SEGMENT-LIMIT IS <replaceable>segment-number</replaceable></arg>
+          -->
+        <arg>SPECIAL-NAMES.</arg>
+        <sbr/>
+        <arg>SWITCH</arg>
+        <arg choice="req">0 ... 7</arg>
+        <arg choice="opt">IS mnemonic-name</arg>
+        <group choice="req">
+          <arg>,ON STATUS IS condition-name-1</arg>
+          <arg choice="opt">,OFF STATUS IS condition-name-2</arg>
+          <arg>,OFF STATUS IS condition-name-2</arg>
+          <arg choice="opt">,ON STATUS IS condition-name-1</arg>
+        </group>
+        <sbr/>
+        <arg choice="opt">
+          <group choice="req">
+            <arg>,SYSIN</arg>
+            <arg>,SYSOUT</arg>
+          </group>
+          <arg>IS mnemonic-name</arg>
+        </arg>
+        <sbr/>
+        <arg choice="opt">, TAB IS mnemonic-name</arg>
+        <sbr/>
+        <!--
+            <arg choice="opt" rep="repeat">
+              <arg>, alphabet-name IS</arg>
+              <group choice="req">
+                <arg>STANDARD-1</arg>
+                <arg>NATIVE</arg>
+              </group>
+            </arg>
+            <sbr/>
+            -->
+        <arg choice="opt">, CURRENCY SIGN IS literal-9</arg>
+        <sbr/>
+        <arg choice="opt">, DECIMAL-POINT IS COMMA</arg>
+        <sbr/>
+        <arg choice="opt">
+          <phrase role="extension">, CONSOLE IS CRT</phrase>
+        </arg>
+        <sbr/>
+        <arg choice="opt">
+          <phrase role="extension">, CURSOR IS data-name-1</phrase>
+        </arg>
+        <arg>.</arg>
+        <sbr/>
+        <arg>INPUT-OUTPUT SECTION.</arg>
+        <sbr/>
+        <arg>FILE-CONTROL.</arg>
+        <sbr/>
+        <arg rep="repeat">file-control-entry</arg>
+        <sbr/>
+        <arg>I-O-CONTROL.</arg>
+        <arg choice="opt" rep="repeat">
+          <arg>; RERUN</arg>
+          <arg choice="opt">
+            <arg>ON</arg>
+            <group choice="req">
+              <arg>file-name-1</arg>
+              <arg>implementor-name</arg>
+            </group>
+          </arg>
+          <arg>EVERY</arg>
+          <group choice="req">
+            <group choice="req">
+              <arg>
+                <arg choice="opt">END OF</arg>
+                <group choice="req">
+                  <arg>REEL</arg>
+                  <arg>UNIT</arg>
+                </group>
+              </arg>
+              <arg>integer-1 RECORDS</arg>
+            </group>
+            <arg>OF file-name-2</arg>
+            <arg>integer-2 CLOCK-UNITS</arg>
+            <arg>condition-name</arg>
+          </group>
+        </arg>
+        <sbr/>
+        <arg choice="opt" rep="repeat">
+          <arg>; SAME AREA FOR file-name-3</arg>
+          <arg choice="opt" rep="repeat">, file-name-4</arg>
+        </arg>
+        <arg>.</arg>
+      </cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR FILE-CONTROL ENTRY</title>
       <para>
 Sequential SELECT:
-       SELECT file-name
-       ASSIGN TO        external-file-name-literal~             ~;.[  external-file-name-literal]
-                      l file-identifier                     S    ( lfile.-.identifier
-                                                                :: :.  . .   :.
-                                                                                                   S
-     [;ORGANIZATION IS
-                                                                                E
-       [;ACCESS MODE IS SEQUENTIAL]
-       [;FILE STATUS IS data-name]
-Relative Select:
-       SELECT file-name
-       ASSIGN TO
-       ORGANIZATION IS RELATIVE
-     [ ;ACCESS MODE IS
-                                 ~ SEQUENTIAL
-       (;FILE STATUS IS data-name]
-                                   {RANDOM }
-                                     DYNAMIC
-                                                      (,RELATIVE KEY IS data-name]
-                                                        ,RELATIVE KEY IS data-name
-                                                                                             !J
-
-  Indexed Select:
-        SELECT file-name
-
-        ASSIGN TO
-        ;ORGANIZATION IS INDEXED
-      [;ACCESS MODE IS
-                            lSEQUENTIAL
-                             RANDOM
-                             DYNAMIC
-                                        l]
-        ;RECORD KEY IS data-name
-        [;FILE STATUS IS data-name]
 </para>
+      <cmdsynopsis>
+        <command>SELECT</command>
+        <arg>file-name</arg>
+        <arg>ASSIGN TO</arg>
+        <group choice="req">
+          <arg>external-file-name-literal</arg>
+          <arg>file-identifier</arg>
+        </group>
+        <arg choice="opt">
+          <arg>,</arg>
+          <group>
+            <arg>external-file-name-literal</arg>
+            <arg>file-identifier</arg>
+          </group>
+        </arg>
+        <sbr/>
+        <arg choice="opt">
+          <arg>; ORGANIZATION IS</arg>
+          <group>
+            <arg>SEQUENTIAL</arg>
+            <arg>LINE SEQUENTIAL</arg>
+          </group>
+        </arg>
+        <sbr/>
+        <arg choice="opt">; ACCESS MODE IS SEQUENTIAL</arg>
+        <sbr/>
+        <arg choice="opt">; FILE STATUS IS data-name-1</arg>
+      </cmdsynopsis>
+      <para>
+Relative Select:
+</para>
+      <cmdsynopsis>
+        <command>SELECT</command>
+        <arg>file-name</arg>
+        <sbr/>
+        <arg>ASSIGN TO</arg>
+        <group choice="req">
+          <arg>external-file-name-literal</arg>
+          <arg>file-identifier</arg>
+        </group>
+        <arg choice="opt">
+          <arg>,</arg>
+          <group choice="req">
+            <arg>external-file-name-literal</arg>
+            <arg>file-identifier</arg>
+          </group>
+        </arg>
+        <sbr/>
+        <arg>; ORGANIZATION IS RELATIVE</arg>
+        <sbr/>
+        <arg choice="opt">
+          <arg>; ACCESS MODE IS</arg>
+          <group choice="req">
+            <arg>SEQUENTIAL ,RELATIVE KEY IS data-name</arg>
+            <arg>
+              <group choice="req">
+                <arg>RANDOM</arg>
+                <arg>DYNAMIC</arg>
+              </group>
+              <arg>,RELATIVE KEY IS data-name</arg>
+            </arg>
+          </group>
+        </arg>
+      </cmdsynopsis>
+      <para>
+  Indexed Select:
+</para>
+      <cmdsynopsis>
+        <command>SELECT</command>
+        <arg>file-name</arg>
+        <sbr/>
+        <arg>ASSIGN TO</arg>
+        <group choice="req">
+          <arg>external-file-name-literal</arg>
+          <arg>file-identifier</arg>
+        </group>
+        <arg choice="opt">
+          <arg>,</arg>
+          <group choice="req">
+            <arg>external-file-name-literal</arg>
+            <arg>file-identifier</arg>
+          </group>
+        </arg>
+        <sbr/>
+        <arg>; ORGANIZATION IS INDEXED</arg>
+        <sbr/>
+        <arg choice="opt">
+          <arg>; ACCESS MODE IS</arg>
+          <group choice="req">
+            <arg>SEQUENTIAL</arg>
+            <arg>RANDOM</arg>
+            <arg>DYNAMIC</arg>
+          </group>
+        </arg>
+        <sbr/>
+        <arg>; RECORD KEY IS data-name-1</arg>
+        <sbr/>
+        <arg choice="opt">; FILE STATUS IS data-name-3</arg>
+      </cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR THE DATA DIVISION</title>
-      <para>
-                                                                               D
-                                                                               D
-                                                                               D
-                                                                               D
-                                                                               D
-                                                                               D
-      [record-description-entry] .. ] .
-   [ WORKING-STORAGE SECTION
-      77-level-description-entry]             )
-    [ record-description-entry
-   [ LINKAGE SECTION
-      77-level-description-entry]    )
-    [ record-description-entry
-</para>
+      <cmdsynopsis>
+        <arg>DATA DIVISION.</arg>
+        <sbr/>
+        <arg choice="opt">FILE SECTION.<sbr/>
+          <arg>FD file-name</arg><sbr/>
+            <arg choice="opt" role="extension"><arg>; BLOCK CONTAINS</arg><arg>integer</arg><group choice="req"><arg>RECORDS</arg><arg>CHARACTERS</arg></group></arg><sbr/>
+
+            <arg choice="opt" role="extension"><arg>; RECORD CONTAINS</arg><arg choice="opt">integer-1 TO</arg><arg>integer-2 CHARACTERS</arg></arg><sbr/>
+            <arg role="extension"><arg>; LABEL</arg><group choice="req"><arg>RECORD IS</arg><arg>RECORDS ARE</arg></group><group choice="req"><arg>STANDARD</arg><arg>OMITTED</arg></group></arg><sbr/>
+
+            <arg role="extension"><arg>; VALUE OF</arg><arg>data-name-1 IS literal-1</arg><arg choice="opt" rep="repeat">, data-name-2 IS literal-2</arg></arg><sbr/>
+
+            <arg role="extension"><arg>; DATA</arg><group choice="req"><arg>RECORD IS</arg><arg>RECORDS ARE</arg></group><arg>data-name-1</arg><arg choice="opt" rep="repeat">, data-name-2</arg></arg><sbr/>
+<arg choice="opt" role="extension">; CODE-SET IS alphabet-name</arg><arg>.</arg><sbr/>
+
+<arg choice="opt" rep="repeat">file-description-entry  <arg choice="opt" rep="repeat">record-description-entry</arg></arg></arg>
+        <sbr/>
+        <arg choice="opt">WORKING-STORAGE SECTION.<sbr/>
+    <arg choice="opt" rep="repeat"><group choice="req"><arg>77-level-description-entry</arg><arg>record-description-entry</arg></group></arg>
+</arg>
+        <sbr/>
+        <arg choice="opt">LINKAGE-SECTION.<sbr/>
+    <arg choice="opt" rep="repeat"><group choice="req"><arg>77-level-description-entry</arg><arg>record-description-entry</arg></group></arg>
+</arg>
+      </cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR DATA DESCRIPTION ENTRY</title>
-      <para>
-      level-number {data-name}
-                          FILLER
-              [;REDEFINES data-name]
-                 PICTURE}      .               ]
-                        )~~M:~~:~;:~:ringl
-           [ {
-              ; PIC
-          [
-             US GE IS
-            , ___A___
-                         ~UTATIONAL-3l
-                         COMP-3
-                         DISPLAY
-          [ (; SIGN IS]       { LEADING
-                                 TRAILING
-                                          }    [SEPARATE CHARACTER]]
-           [ ;OCCURS integer TIMES          INDEXED BY index-name-1  [, index-name-2] . ]
-         ::p ~~~~~aJ.'. '":  '}:. {i~=-~J                                      D
-           [ ;{ ~~~~IFIED}            RIGHT ]
-            {;BLANK WHEN ZERO]
-            [;VALUE IS literal]
-
-</para>
+        <cmdsynopsis>
+          <arg>level-number</arg>
+          <group choice="req">
+            <arg>data-name-1</arg>
+            <arg>FILLER</arg>
+          </group>
+          <sbr/>
+          <arg choice="opt">; REDEFINES data-name-2</arg>
+          <sbr/>
+          <arg choice="opt">
+            <group choice="req">
+              <arg>PICTURE</arg>
+              <arg>PIC</arg>
+            </group>
+            <arg>IS character-string</arg>
+          </arg>
+          <sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg choice="opt">USAGE IS</arg>
+            <group choice="req">
+              <arg>COMPUTATIONAL</arg>
+              <arg>COMP</arg>
+              <arg>COMPUTATIONAL-3</arg>
+              <arg>COMP-3</arg>
+              <arg>DISPLAY</arg>
+            </group>
+          </arg>
+          <sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg choice="opt">SIGN IS</arg>
+            <group choice="req">
+              <arg>LEADING</arg>
+              <arg>TRAILING</arg>
+            </group>
+            <arg choice="opt">SEPARATE CHARACTER</arg>
+          </arg>
+          <sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <group choice="req">
+              <arg>SYNCHRONIZED</arg>
+              <arg>SYNC</arg>
+            </group>
+            <group choice="req">
+              <arg>LEFT</arg>
+              <arg>RIGHT</arg>
+            </group>
+          </arg>
+          <sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <group choice="req">
+              <arg>JUSTIFIED</arg>
+              <arg>JUST</arg>
+            </group>
+            <arg>RIGHT</arg>
+          </arg>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg>BLANK WHEN ZERO</arg>
+          </arg>
+          <sbr/>
+          <arg choice="opt">
+            <arg>;</arg>
+            <arg>VALUE IS literal</arg>
+          </arg>
+        </cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR PROCEDURE DIVISION</title>
       <para>
    Declarative format:
-         PROCEDURE DIVISION (usiNG data-name-1             [. data-name-2] .. ].
-         DECLARATIVES.
-       {section-name SECTION segment-number.             declarative-sentence
-          [paragraph-name. [sentence] ...         J ... }...
-         END DECLARATIVES.
-       { section-name SECTION        [segment-number]
-          [paragraph-name [sentence]  J ... } ...
+   </para>
+             <cmdsynopsis>
+            <arg>PROCEDURE DIVISION</arg>
+            <arg choice="opt">USING data-name-1 <arg choice="opt" rep="repeat">, data-name-2</arg></arg>
+            <arg>.</arg>
+          </cmdsynopsis>
+          <cmdsynopsis>
+            <arg choice="opt">
+              <arg>DECLARATIVES.</arg>
+              <arg choice="req" rep="repeat">
+                <arg>section-name SECTION</arg>
+                <arg choice="opt">segment-number</arg>
+                <arg>.   declarative-sentence</arg>
+                <sbr/>
+                <arg choice="opt" rep="repeat">paragraph-name.     <arg choice="opt" rep="repeat">sentence</arg></arg>
+              </arg>
+              <sbr/>
+              <arg>END DECLARATIVES.</arg>
+            </arg>
+            <sbr/>
+            <arg choice="req">
+              <arg choice="ansi">section-name SECTION      <arg choice="opt">segment-number</arg></arg>
+              <sbr/>
+              <arg choice="opt">
+                <arg choice="ansi"> paragraph-name</arg>
+                <arg choice="opt" rep="repeat">sentence</arg>
+              </arg>
+            </arg>
+          </cmdsynopsis>
+      <para>
    Non-declarative format:
-         PROCEDURE DIVISION ( ~ data-name-1                  [,data-name-2]    ... ] .
-          {paragraph-name [sentence]            J
-</para>
+   </para>
+          <cmdsynopsis>
+            <arg>PROCEDURE DIVISION</arg>
+            <arg choice="opt">USING data-name-1 <arg choice="opt" rep="repeat">, data-name-2</arg></arg>
+            <arg>.</arg>
+          </cmdsynopsis>
     </section>
     <section>
       <title>GENERAL FORMAT FOR VERBS</title>
-      <para>
-         ACCEPT    dataname-1  IAT       ~~::;~~[;J-lt ~at ,   .                E
-         ACCEPT identifier       [FROM CONSOLE]
-         ADD  sidentifier-1~    Sidentifier-2~ ...      TO identifier [ROUNDED)
-              lliteral-1     S lliteral-2        S
-                           [; ON SIZE ERROR imperative-statement]
-              s identifier-1~ sidentifier-2l [ sidentifier-3i]
-         ADD lliteral-1      S' lliteral-2        S 'lliteral-3        S
-                          GIVING identifier        (ROUNDED]
-                           [; ON SIZE ERROR       imperative-statement]
+      <cmdsynopsis>
+        <command>ACCEPT</command>
+        <arg>data-name-1</arg>
+        <arg choice="opt" role="extension">AT <group choice="req"><arg>data-name-2</arg><arg>literal-1</arg></group></arg>
+        <arg>FROM CRT</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>ACCEPT</command>
+        <arg>identifier</arg>
+        <arg choice="opt">FROM CONSOLE</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>ADD</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg choice="opt" rep="repeat">
+          <arg>,</arg>
+          <group choice="req">
+            <arg>identifier-2</arg>
+            <arg>literal-2</arg>
+          </group>
+        </arg>
+        <arg>TO identifier-m</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <sbr/>
+        <arg choice="opt" rep="repeat">, identifier-n<arg choice="opt">ROUNDED</arg></arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>ADD</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>,</arg>
+        <group choice="req">
+          <arg>identifier-2</arg>
+          <arg>literal-2</arg>
+        </group>
+        <arg choice="opt" rep="repeat">
+          <arg>,</arg>
+          <group choice="req">
+            <arg>identifier-3</arg>
+            <arg>literal-3</arg>
+          </group>
+        </arg>
+        <arg>GIVING identifier-m</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <arg choice="opt">, identifier-n <arg choice="opt">ROUNDED</arg></arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>ALTER</command>
+        <arg>procedure-name-1 TO</arg>
+        <arg choice="opt">PROCEED TO</arg>
+        <arg>procedure-name-2</arg>
+      </cmdsynopsis>
+        <cmdsynopsis>
+          <command>CALL</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg choice="opt">
+            <arg>USING data-name-1</arg>
+            <arg choice="opt" rep="repeat">, data-name-2</arg>
+          </arg>
+          <arg choice="opt">ON OVERFLOW imperative-statement</arg>
+        </cmdsynopsis>
+<!--
+        <cmdsynopsis role="extension">
+          <command>CALL</command>
+          <group choice="req">
+            <arg>literal-2</arg>
+            <arg>identifier-2</arg>
+          </group>
+          <arg choice="opt">
+            <arg>USING data-name-3</arg>
+            <arg choice="opt" rep="repeat">, data-name-4</arg>
+          </arg>
+        </cmdsynopsis>
+        -->
+        <cmdsynopsis>
+          <command>CANCEL</command>
+          <group choice="req">
+            <arg>identifier-1</arg>
+            <arg>literal-1</arg>
+          </group>
+          <arg choice="opt" rep="repeat">
+            <group choice="req">
+              <arg>identifier-2</arg>
+              <arg>literal-2</arg>
+            </group>
+          </arg>
+        </cmdsynopsis>
+        <cmdsynopsis>
+          <arg>DELETE file-name RECORD</arg>
+          <arg choice="opt">;INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
+      <cmdsynopsis>
+        <command>DISPLAY</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg choice="opt" rep="repeat">
+          <arg>,</arg>
+          <group choice="req">
+            <arg>identifier-2</arg>
+            <arg>literal-2</arg>
+          </group>
+        </arg>
+        <arg choice="opt">UPON CONSOLE</arg>
+      </cmdsynopsis>
+      <cmdsynopsis role="extension">
+        <command>DISPLAY</command>
+        <group choice="req">
+          <arg>data-name-1</arg>
+          <arg>literal-3</arg>
+        </group>
+        <arg choice="opt">
+          <arg>AT</arg>
+          <group choice="req">
+            <arg>data-name-2</arg>
+            <arg>literal-4</arg>
+          </group>
+        </arg>
+        <arg>UPON</arg>
+        <group choice="req">
+          <arg>CRT</arg>
+          <arg>CRT-UNDER</arg>
+        </group>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>DIVIDE</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>INTO</arg>
+        <arg>identifier-2</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <sbr/>
+        <arg choice="opt" rep="repeat">, identifier-3 <arg choice="opt">ROUNDED</arg></arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>DIVIDE</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>INTO</arg>
+        <group choice="req">
+          <arg>identifier-2</arg>
+          <arg>literal-2</arg>
+        </group>
+        <arg>GIVING</arg>
+        <arg>identifier-3</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <arg choice="opt" rep="repeat">
+          <arg>,</arg>
+          <arg>identifier-4</arg>
+          <arg choice="opt">ROUNDED</arg>
+        </arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>DIVIDE</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>BY</arg>
+        <group choice="req">
+          <arg>identifier-2</arg>
+          <arg>literal-2</arg>
+        </group>
+        <arg>GIVING</arg>
+        <arg>identifier-3</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <arg choice="opt" rep="repeat">
+          <arg>,</arg>
+          <arg>identifier-4</arg>
+          <arg choice="opt">ROUNDED</arg>
+        </arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis role="extension">
+        <command>ENTER</command>
+        <arg>language-name</arg>
+        <arg choice="opt">routine-name</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>EXIT</command>
+        <arg choice="opt">PROGRAM</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>GO TO</command>
+        <arg choice="req">procedure-name-1</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>GO TO</command>
+        <arg>procedure-name-1</arg>
+        <arg choice="opt" rep="repeat">, procedure-name-2</arg>
+        <arg>, procedure-name-n</arg>
+        <arg>DEPENDING ON identifier</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>IF</command>
+        <arg>condition;</arg>
+        <phrase role="extension">
+          <arg choice="opt" role="extension">THEN</arg>
+        </phrase>
+        <group choice="req">
+          <arg>statement-1</arg>
+          <arg>NEXT SENTENCE</arg>
+        </group>
+        <group choice="req">
+          <arg>; ELSE statement-2</arg>
+          <arg>; ELSE NEXT SENTENCE</arg>
+        </group>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>INSPECT</command>
+        <arg>identifier-1</arg>
+        <arg>TALLYING</arg>
+        <arg>identifier-2 FOR</arg>
+        <arg>,</arg>
+        <group choice="req">
+          <arg>ALL</arg>
+          <arg>LEADING</arg>
+          <arg>CHARACTERS</arg>
+        </group>
+        <group choice="req">
+          <arg>identifier-3</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg choice="opt">
+          <group choice="req">
+            <arg>BEFORE</arg>
+            <arg>AFTER</arg>
+          </group>
+          <arg>INITIAL</arg>
+          <group choice="req">
+            <arg>identifier-7</arg>
+            <arg>literal-5</arg>
+          </group>
+        </arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>INSPECT</command>
+        <arg>identifier-1</arg>
+        <arg>REPLACING</arg>
+        <sbr/>
+        <group choice="req">
+          <arg>CHARACTERS BY <group><arg>identifier-6</arg><arg>literal-4</arg></group></arg>
+          <arg>
+            <arg>,</arg>
+            <group choice="req">
+              <arg>ALL</arg>
+              <arg>LEADING</arg>
+              <arg>FIRST</arg>
+            </group>
+            <arg>,</arg>
+            <group choice="req">
+              <arg>identifier-5</arg>
+              <arg>literal-3</arg>
+            </group>
+            <arg>BY</arg>
+            <group choice="req">
+              <arg>identifier-6</arg>
+              <arg>literal-4</arg>
+            </group>
+          </arg>
+        </group>
+        <sbr/>
+        <arg choice="opt">
+          <group choice="req">
+            <arg>BEFORE</arg>
+            <arg>AFTER</arg>
+          </group>
+          <arg>INITIAL</arg>
+          <group choice="req">
+            <arg>identifier-7</arg>
+            <arg>literal-5</arg>
+          </group>
+        </arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>INSPECT</command>
+        <arg>identifier</arg>
+        <arg>TALLYING</arg>
+        <arg>tally-clause</arg>
+        <arg>REPLACING</arg>
+        <arg>replacing-clause</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>MOVE</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal</arg>
+        </group>
+        <arg>TO</arg>
+        <arg>identifier-2</arg>
+        <arg choice="opt">,  identifier-3  ...</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>MULTIPLY</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>BY identifier-2</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <sbr/>
+        <arg choice="opt" rep="repeat">, identifier-3 <arg choice="opt">ROUNDED</arg></arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>MULTIPLY</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>BY</arg>
+        <group choice="req">
+          <arg>identifier-2</arg>
+          <arg>literal-2</arg>
+        </group>
+        <arg>GIVING</arg>
+        <arg>identifier-3</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <sbr/>
+        <arg choice="opt" rep="repeat">, identifier-4 <arg choice="opt">ROUNDED</arg></arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+        <cmdsynopsis>
+          <command>OPEN</command>
+          <group choice="req">
+            <arg>
+              <arg>INPUT file-name-1</arg>
+              <arg choice="opt" rep="repeat">, file-name-2</arg>
+              <arg>OUTPUT file-name-3</arg>
+              <arg choice="opt" rep="repeat">, file-name-4</arg>
+              <arg>I-O file-name-5</arg>
+              <arg choice="opt" rep="repeat">, file-name-6</arg>
+              <arg>EXTEND file-name-7</arg>
+              <arg choice="opt" rep="repeat">, file-name-8</arg>
+            </arg>
+          </group>
+        </cmdsynopsis>
+      <cmdsynopsis>
+        <command>PERFORM</command>
+        <arg>procedure-name-1</arg>
+        <arg choice="opt">
+          <group choice="req">
+            <arg>THROUGH</arg>
+            <arg>THRU</arg>
+          </group>
+          <arg>procedure-name-2</arg>
+        </arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>PERFORM</command>
+        <arg>procedure-name-1</arg>
+        <arg choice="opt">
+          <group choice="req">
+            <arg>THROUGH</arg>
+            <arg>THRU</arg>
+          </group>
+          <arg>procedure-name-2</arg>
+        </arg>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>integer-1</arg>
+        </group>
+        <arg>TIMES</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>PERFORM</command>
+        <arg>procedure-name-1</arg>
+        <arg choice="opt">
+          <group choice="req">
+            <arg>THROUGH</arg>
+            <arg>THRU</arg>
+          </group>
+          <arg>procedure-name-2</arg>
+        </arg>
+        <arg>UNTIL</arg>
+        <arg>condition-1</arg>
+      </cmdsynopsis>
+         <cmdsynopsis>
+          <command>READ</command>
+          <arg>file-name</arg>
+          <arg choice="opt">NEXT</arg>
+          <arg>RECORD</arg>
+          <arg choice="opt">INTO identifier</arg>
+          <arg choice="opt">; AT END imperative- statement</arg>
+        </cmdsynopsis>
+          <cmdsynopsis>
+          <command>READ</command>
+          <arg>file-name</arg>
+          <arg>RECORD</arg>
+          <arg choice="opt">INTO identifier</arg>
+          <arg choice="opt">;INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
+        <cmdsynopsis>
+          <command>REWRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier</arg>
+          <arg choice="opt">; INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
+           <cmdsynopsis>
+          <command>SET</command>
+          <group choice="req">
+            <arg>
+              <arg>identifier-1</arg>
+              <arg choice="opt" rep="repeat">, identifier-2</arg>
+            </arg>
+            <arg>
+              <arg>index-name-1</arg>
+              <arg choice="opt" rep="repeat">, index-name-2</arg>
+            </arg>
+          </group>
+          <group choice="req">
+            <arg>TO</arg>
+            <arg>UP BY</arg>
+            <arg>DOWN BY</arg>
+          </group>
+          <group choice="req">
+            <arg>identifier-3</arg>
+            <arg>index-name-3</arg>
+            <arg>integer-1</arg>
+          </group>
+        </cmdsynopsis>
+        <cmdsynopsis>
+          <arg>START file-name</arg>
+          <arg choice="opt">
+            <arg>KEY</arg>
+            <group>
+              <arg>IS =</arg>
+              <arg>IS &gt;</arg>
+              <arg>IS NOT &lt;</arg>
+            </group>
+            <arg>data-name</arg>
+            <sbr/>
+            <arg choice="opt">;INVALID KEY imperative-statement</arg>
+          </arg>
+        </cmdsynopsis>
 
-         ALTER   ~procedure-name-1      TO [PROCEED TO  J procedure-name-2
-         CALL Si~entifier-ll [USING         data-name-1       [, data-name-2]   .. J
-        - - l hteral-1        S
-         CANCEL Sidentifier-1l           identifier-2]
-        - - - lliteral-1         S    [ ,literal-2
-                                       D                   D                          D
-                                                               ~ , file-name
-         DELETE    file-name    RECORD     [; INVALID KEY     imperative-statement]
-         DISPLAY sidentifier-1~ , Sidentifier-2l             . [UPON CONSOLE]
-        - - - hiteral-1            S    luteral-2        S
+      <cmdsynopsis>
+        <command>STOP</command>
+        <group choice="req">
+          <arg>RUN</arg>
+          <arg>literal</arg>
+        </group>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>SUBTRACT</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>,</arg>
+        <group choice="req" rep="repeat">
+          <arg>identifier-2</arg>
+          <arg>literal-2</arg>
+        </group>
+        <arg>...</arg>
+        <arg>FROM</arg>
+        <arg>identifier-m</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <arg choice="opt" rep="repeat">
+          <arg>, identifier-n</arg>
+          <arg choice="opt">ROUNDED</arg>
+        </arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+      <cmdsynopsis>
+        <command>SUBTRACT</command>
+        <group choice="req">
+          <arg>identifier-1</arg>
+          <arg>literal-1</arg>
+        </group>
+        <arg>,</arg>
+        <group choice="req" rep="repeat">
+          <arg>identifier-2</arg>
+          <arg>literal-2</arg>
+        </group>
+        <arg>...</arg>
+        <arg>FROM</arg>
+        <arg>identifier-m</arg>
+        <arg>GIVING</arg>
+        <arg>identifier-n</arg>
+        <arg choice="opt">ROUNDED</arg>
+        <arg choice="opt" rep="repeat">
+          <arg>, identifier-o</arg>
+          <arg choice="opt">ROUNDED</arg>
+        </arg>
+        <arg choice="opt">; ON SIZE ERROR imperative-statement</arg>
+      </cmdsynopsis>
+        <cmdsynopsis>
+          <command>USE  AFTER STANDARD</command>
+          <group choice="req">
+            <arg>EXCEPTION</arg>
+            <arg>ERROR</arg>
+          </group>
+          <arg>PROCEDURE ON</arg>
+          <group choice="req">
+            <arg>file-name-1</arg>
+            <arg>INPUT</arg>
+            <arg>OUTPUT</arg>
+            <arg>I-O</arg>
+            <arg>EXTEND</arg>
+          </group>
+        </cmdsynopsis>
+          <cmdsynopsis>
+            <command>USE FOR DEBUGGING ON</command>
+            <group choice="req">
+              <arg>procedure-name-1</arg>
+              <arg>ALL PROCEDURES</arg>
+            </group>
+            <arg choice="opt">
+              <arg>,</arg>
+              <group choice="req" rep="repeat">
+                <arg>procedure-name-2</arg>
+                <arg>ALL PROCEDURES</arg>
+              </group>
+            </arg>
+             <arg>OUTPUT</arg>
+         </cmdsynopsis>
+        <cmdsynopsis>
+          <command>WRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier-1</arg>
+          <arg choice="opt">
+            <group>
+              <arg>BEFORE</arg>
+              <arg>AFTER</arg>
+            </group>
+            <arg>ADVANCING</arg>
+            <group>
+              <arg>integer <group><arg>LINE</arg><arg>LINES</arg></group></arg>
+              <arg role="extension">TAB</arg>
+              <arg>PAGE</arg>
+            </group>
+          </arg>
+        </cmdsynopsis>
+        <cmdsynopsis>
+          <command>WRITE</command>
+          <arg>record-name</arg>
+          <arg choice="opt">FROM identifier</arg>
+          <arg choice="opt">; INVALID KEY imperative-statement</arg>
+        </cmdsynopsis>
 
-                                                                                                                         E
-     DIVIDE Sidentifier-ll                                            INTO 'd        'f' -2             [ROUNDED]
-              hiteral-1                                        ~      - - 1 ent1 1er
-                  [;ON SIZE ERROR                                           imperative-statement]
-     DIVIDE Si~entifier- 1 l INTO                                             Sidentifier- 2 l GIVING           identifier-2   [ROUNDED]
-              l h teral-1                                      S            lliteral-2             ~ -
-                  [;ON SIZE ERROR                                           imperative-statement]
-     DIVIDE Sidentifier-ll BY Si~entifier- 2 l                                                       GIVING   identifier-3   [ROUNDED]
-              lliteral-1                                       S - - l11tera1-2                  S
-                  [;ON SIZE ERROR                                           imperative-statement]
-     EXIT [PROGRAM].
-     GO TO procedure-name.                                                                                                               ~
-     GO TO procedure-name-1                                             , procedure-name-2
-            DEPENDING ON identifier
-              . .                     { statement-1                              }       ; ELSE statement-2 }
-     IF condition;                          NEXT SENTENCE                           { ; ELSE NEXT SENTENCE
-     INSPECT     identifier-1 TALLYING
-     -~                                                                     ){ALL            }      Sidentifier-3l~
-            identifier-2 FOR                                              ,     LEADING             lliteral-2      ~
-               [{BEFORE}
-                  AFTER
-                                                               INITIAL Sidentifier-4l]
-                                                                              lliteral-3
-                                                                                            CHARACTERS
-                                                                                                      S
-                                                                                                          I
-     INSPECT identifier-1 REPLACING
-            CHARACTERS BY
-         [,)l~~ING ~
-              FIRST
-                  BEFORE} INITIAL
-                                         ~
-                                                       ,
-                                                                Sidentifier-6l
-                                                                lliteral-4
-                                                              ~i~entifier-5 ~
-                                                               11teral-3
-                                                                                     ~
-                                                                                         BY
-
-                                                                              S i~entifier-7l]
-                                                                                                  sidentifier-6l
-                                                                                                   lliteral-4     S
-                                                                                                                    I
-               [{ AFTER                                                       l l1teral-S             ~
-                                                                                   274
-         INSPECT identifier TALLYING tally-clause REPLACING replacing-clause
-         MOVESi~entifier-ll TO identifier-2             [, identifier-3]
-        lh.teral-1          ~
-               sidentifier-ll                         [ROUNDED]
-   MULTIPLY lliteral-l        S BY identifier-2
-           (;ON SIZE ERROR        imperative-statement)
-   MULTIPLY    )~~~~~!~~7r-lt BY~~~~:~!~~;r- 2 (      GIVING identifier-3     [ROUNDED]
-            [; ON SIZE ERROR       imperative-statement]
-   OPEN  ~~ ~~~~~T I file-name-1
-         ll EXTEND ~                       ,file-name-2     l
-   PERFORM     procedure-name-1 { ~   THROUGH} procedure-name-2
-                                                                     Sidentifier-ll
-   PERFORM     procedure-name-1 { THROUGH}
-                                      THRU       procedure-name-2    lliteral-1    ~
-   PERFORM     procedure-name-1 { ~   THROUGH} procedure-name-2       UNTIL condition
-   READ file-name       [NEXT)       RECORD     (INTO identifier]
-               [;AT END imperative-statement]
-   READ file-name      RECORD      [INTO identifier]
-               [;INVALID KEY imperative-statement)
-   REWRITE     record-name    [FROM identifier]
-               [;INVALID KEY imperative-statement]
-                                                            l Il
-         Sidentifier-ll S[identifier-2]l                                   identifier-3 ~
-                                                             TO
-                                                             UP BY         index-name-3
-         lindex-name-lS l[index-name-2]S
-                                                             DOWN BY       integer-1
-   START    file-name [KEY      ~ i~ :       ~                  data-name]
-                                ~IS   NOT &lt; ~
-                 [;INVALID  KEY      imperative-statement]
-
- SUBTRACT ~identifer-ll [ ~identifier-2l]               FROM identifier-) [ROUNDED]
-          lliteral-1 ~       lliteral-2     S
-           [; ON SIZE ERROR    imperative-statement]
- SUBTRACT Sidentifier-ll , Sidentifier-2l          FROMSi~entifier-3l
-          lliteral-1    S lliteral-2       S    hl.teral-3       S
-           GIVING  identifier 4     [ROUNDED]
-           [; ON SIZE ERROR    imperative-statement]
-                                                              file-name
-                                                              INPUT
- USE AFTER STANDARD {EXCEPTION}      PROCEDURE ON             OUTPUT
--                    ERROR
-                                                              r:o-
-                                                              EXTEND
-USE FOR DEBUGGING {procedure-name-1       [, procedure-name-2]}
--                    ALL PROCEDURES
-~ITE   l;;;;;:; F::~::::tif ie;~;}er                { LINE
-                                                      LINES } l         E
-WRITE record-name [FROM identifier]
-           [;INVALID KEY imperative-statement]
-</para>
     </section>
     <section>
       <title>GENERAL FORM FOR COPY STATEMENT</title>
-      <para>
-  COPY    text-name
-          external-file-name-literal .
-</para>
+      <cmdsynopsis>
+        <arg>COPY</arg>
+        <group>
+          <arg>text-name</arg>
+          <arg>external-file-name-literal</arg>
+        </group>
+        <arg>.</arg>
+      </cmdsynopsis>
     </section>
   </appendix>
   <appendix>
     <title>SUMMARY OF EXTENSIONS TO ANSI COBOL</title>
     <para>
-  CIS COBOL is oriented to microcomputer users with the system readily accessable
-  and usually with a CRT. CIS COBOL therefore provides extensions for
-  interactive working, program control of files, text file handling and rapid
-  development and testing. These facilities are summarized below.
+CIS COBOL is oriented to microcomputer users with the system readily accessible
+and usually with a CRT. CIS COBOL therefore provides extensions for
+interactive working, program control of files, text file handling and rapid
+development and testing. These facilities are summarized below.
 </para>
     <section>
       <title>SCREEN FORMATTING AND DATA ENTRY</title>
       <section>
         <title>THE ACCEPT STATEMENT</title>
         <para>
-  An additional format for the ACCEPT statement is provided as follows:
+An additional format for the ACCEPT statement is provided as follows:
   </para>
         <cmdsynopsis>
           <command>ACCEPT</command>
@@ -952,7 +1614,7 @@ is operating system dependent.
 </para>
       </section>
       <section>
-        <title>RUN TIME INPUT OF FILENANES</title>
+        <title>RUN TIME INPUT OF FILENAMES</title>
         <para>
 The ASSIGNed name in the SELECT statement for a file is processed on
 OPENing as follows:
@@ -1123,7 +1785,7 @@ by the compiler during compilation but do not cause compile time errors:
         </section>
       </section>
       <section>
-        <title>PROOCEDURE DIVISION</title>
+        <title>PROCEDURE DIVISION</title>
         <section>
           <title>CLOSE Statement</title>
           <para>
@@ -1146,7 +1808,7 @@ compiler during compilation but do not cause compiler-time errors:
   <appendix>
     <title>LANGUAGE SPECIFICATION</title>
     <para>
-CIS COBOL is ANSI COBOL as given in "American Natioual Standard Programming
+CIS COBOL is ANSI COBOL as given in "American National Standard Programming
 Language COBOL" (ANSI X.3.23 1974). CIS COBOL implements both levels of
 ANSI COBOL. The following modules are fully implemented at Level 1:
  </para>
@@ -1180,7 +1842,7 @@ ANSI COBOL. The following modules are fully implemented at Level 1:
       </listitem>
     </itemizedlist>
     <para>
-In addition many Level 2 features are Unplemented such as:
+In addition many Level 2 features are implemented such as:
 </para>
     <itemizedlist>
       <listitem>
@@ -1488,7 +2150,7 @@ A powerful Run-Time Debug package is available. See Chapter 3 in the <citetitle 
       </section>
     </section>
     <section>
-      <title>INTER-PROGRAM COMMUNICAIION</title>
+      <title>INTER-PROGRAM COMMUNICATION</title>
       <section>
         <title>Level Two Implementation</title>
         <para>
@@ -1499,13 +2161,13 @@ Fully implemented to Level Two.
   </appendix>
   <index/>
   <colophon>
-    <para>This book was reconstructred into DocBook format from a scanned PDF found on the Internet.
+    <para>This book was reconstructed into DocBook format from a scanned PDF found on the Internet.
   The PDF file already had OCR performed and the text was embedded in the file.
   </para>
     <para>
   The original was published by Acorn Computers Limited in cooperation with the British Broadcasting Corporation.
   </para>
-  <para>Source version: <?eval ${project.version}?>
+    <para>Source version: <?eval ${project.version}?>
   </para>
   </colophon>
 </book>

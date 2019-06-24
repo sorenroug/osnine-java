@@ -53,7 +53,7 @@ fully implemented at Level 1:
 </para>
     <itemizedlist spacing="compact">
       <listitem>
-        <para>Nucleus -Nested IF, PERFORM UNTIL</para>
+        <para>Nucleus - Nested IF, PERFORM UNTIL</para>
       </listitem>
       <listitem>
         <para>Relative and Indexed sequential I/O - START statement</para>
@@ -63,19 +63,19 @@ fully implemented at Level 1:
       </listitem>
     </itemizedlist>
     <para>
-      This manual is intended as a reference work for COBOL programmers and
+This manual is intended as a reference work for COBOL programmers and
 material from the ANSI language standard document is included.
 </para>
     <para>
-      The package has been proved to meet and exceed the COBOL ANSI standard
+The package has been proved to meet and exceed the COBOL ANSI standard
 X3.23 and has been certified by the Federal Compiler Testing Center (FCTC)
 under the direction of the General Services Administration (GSA) as
 validated at Federal Low Intermediate Level. The GSA Validation Summary
 Report is available under the reference CCVS74-VSR685.
 </para>
     <para>
-      Along with the ANSI implementation CIS COBOL also contains several
- language extensions specifically oriented to the small computer environment,
+Along with the ANSI implementation CIS COBOL also contains several
+language extensions specifically oriented to the small computer environment.
 These enable a CIS COBOL program to format CRT screens for data input and
 output (DISPLAY and ACCEPT), READ and WRITE text files efficiently and
 define external file names at run time.
@@ -150,8 +150,8 @@ Each division is divided into sections which are further divided into
 paragraphs which in turn are made up of sentences.
 </para>
       <para>
-     Within these subdivisions of a COBOL program, further subdivisions
-exist as clauses and statements.      A clause is an ordered set of COBOL
+Within these subdivisions of a COBOL program, further subdivisions
+exist as clauses and statements. A clause is an ordered set of COBOL
 elements that specify an attribute of an entry, and a statement is a
 combination of elements in the Procedure Division that include a COBOL verb
 and constitute a program instruction.
@@ -167,24 +167,25 @@ and constitute a program instruction.
 clause or a statement, Throughout this document a format is shown adjacent
 to information defining the clause or statement.       When more than one
 specific arrangement is permitted, the general format is separated into
-numbered formats.    Clauses must be written in the sequence given in the
-general formats.   (Clauses that are optional must appear in the sequence
+numbered formats. Clauses must be written in the sequence given in the
+general formats. (Clauses that are optional must appear in the sequence
 shown if they are used). In certain cases, stated explicitly in the rules
 associated with a given format, the clauses may appear in sequences other
-than that shown.    Applications, requirements or restrictions are shown as
-rules.
+than that shown. Applications, requirements or restrictions are shown as rules.
 </para>
     </section>
     <section>
       <title>SYNTAX RULES</title>
       <para>
-     Syntax rules are those rules that define or clarify the order in which
+Syntax rules are those rules that define or clarify the order in which
 words or elements are arranged to form larger elements such as phrases,
 clauses, or statements. Syntax rules also impose restrictions on individual
-words or elements,
-     These rules are used to define or clarify how the statement must be
-written, i.e,, the order of the elements of the statement and restrictions
-on what each element may represent,
+words or elements.
+</para>
+<para>
+These rules are used to define or clarify how the statement must be
+written, i.e., the order of the elements of the statement and restrictions
+on what each element may represent.
 </para>
     </section>
     <section>
@@ -201,7 +202,7 @@ on either execution or compilation.
       <para>
       Elements which make up a clause or a statement consist of uppercase
 words, lowercase words, level-numbers, brackets, braces, connectives and
-special characters (see Chapter 2),
+special characters (see Chapter 2).
 </para>
     </section>
   </section>
@@ -213,7 +214,7 @@ columns. These columns are used in the following way:
 </para>
           <informaltable frame="none" colsep="0" rowsep="0">
             <tgroup cols="2">
-              <colspec colwidth="2in" align="right"/>
+              <colspec colwidth="2in" align="left"/>
               <colspec colwidth="2in"/>
               <tbody>
                 <row>

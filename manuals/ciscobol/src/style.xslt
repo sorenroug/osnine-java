@@ -81,7 +81,7 @@
     </xsl:call-template>
   </xsl:param>
 
-  <fo:inline background-color="#c0c0c0">
+  <fo:inline background-color="#d0d0d0">
     <xsl:if test="@dir">
       <xsl:attribute name="direction">
         <xsl:choose>
@@ -112,7 +112,7 @@
   </xsl:if>
   <xsl:choose>
     <xsl:when test="$choice='ansi'">
-      <fo:inline text-decoration="line-through" background-color="#c0c0c0">
+      <fo:inline text-decoration="line-through">
         <xsl:value-of select="$arg.choice.ansi.open.str"/>
       </fo:inline>
     </xsl:when>
@@ -133,7 +133,7 @@
 
   <xsl:choose>
     <xsl:when test="$choice='ansi'">
-      <fo:inline text-decoration="line-through" background-color="#c0c0c0">
+      <fo:inline text-decoration="line-through">
         <xsl:value-of select="$arg.choice.ansi.close.str"/>
       </fo:inline>
     </xsl:when>

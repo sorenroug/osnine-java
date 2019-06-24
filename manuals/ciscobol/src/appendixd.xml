@@ -8,7 +8,7 @@ listings produced by the CIS COBOL compiler are as follows:
   <informaltable frame="all" colsep="1" rowsep="0">
     <tgroup cols="2">
       <colspec colwidth="1in" align="left"/>
-      <colspec colwidth="3in" align="left"/>
+      <colspec colwidth="4in" align="left"/>
       <thead>
         <row>
           <entry>ERROR</entry>
@@ -150,7 +150,7 @@ listings produced by the CIS COBOL compiler are as follows:
         </row>
         <row>
           <entry>47</entry>
-          <entry>'SEQUENTIAL' oc 'RELATIVE' or 'INDEXED' missing</entry>
+          <entry>'SEQUENTIAL' or 'RELATIVE' or 'INDEXED' missing</entry>
         </row>
         <row>
           <entry>48</entry>
@@ -278,7 +278,7 @@ listings produced by the CIS COBOL compiler are as follows:
         </row>
         <row>
           <entry>83</entry>
-          <entry>USAGE must be COHP, DISPLAY or INDEX</entry>
+          <entry>USAGE must be COMP, DISPLAY or INDEX</entry>
         </row>
         <row>
           <entry>84</entry>
@@ -310,7 +310,7 @@ listings produced by the CIS COBOL compiler are as follows:
         </row>
         <row>
           <entry>91</entry>
-          <entry>INDEXEO data-name missing or already declared</entry>
+          <entry>INDEXED data-name missing or already declared</entry>
         </row>
         <row>
           <entry>92</entry>

@@ -253,10 +253,10 @@ switch settings.
           <listitem>
             <para>
 If during the execution of a CALL statement, it is determined that the
-available portion of run-time memory is incapable of accomodating the
+available portion of run-time memory is incapable of accommodating the
 program specified in the CALL statement, the next sequential
 instruction is executed. If ON OVERFLOW has been specified, the
-associated imperative statement 1s executed betore the next instruction is executed.
+associated imperative statement is executed before the next instruction is executed.
 </para>
           </listitem>
           <listitem>
@@ -408,7 +408,7 @@ The EXIT PROGRAM statement marks the logical end of a called program.
 An execution of an EXIT PROGRAM statement in a called program causes control
 to be passed to the calling program. Execution of an EXIT PROGRAM statement
 in a program which is not called behaves as if the statement were an EXIT
-statement. (See THE EXIT STATEMENIT in Chapter 3) .
+statement. (See THE EXIT STATEMENT in Chapter 3) .
     </para>
       </section>
     </section>

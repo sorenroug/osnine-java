@@ -106,7 +106,7 @@ of the characters from the ASCII character set. See Appendix B.
 The individual characters of the language are concatenated to form
 character-strings and separators. A separator may be concatenated with
 another separator or with a character- string. A character-string may only
-be conca t enated with a separator. The concatenation of character-strings
+be concatenated with a separator. The concatenation of character-strings
 and separators forms the text of a source program.
 </para>
       <section>
@@ -200,7 +200,7 @@ comment-entries, or comment lines.
         <para>
 A character-string is a character or a sequence of contiguous
 characters which forms a CIS COBOL word, a literal, a PICTURE
-character-string, or a comment-entry. A character-string is delillited by
+character-string, or a comment-entry. A character-string is delimited by
 separators.
 </para>
         <section>
@@ -263,13 +263,13 @@ user-defined words within a given disjoint set must be unique.
 </para>
           <para>
 With the exception of paragraph-name, section-name, level-number and
-segment-number, all user-defined words mus t contain at least one alphabetic
+segment-number, all user-defined words must contain at least one alphabetic
 character. Segment-numbers and level-numbers need not be unique; a given
-specification of a segment-number or level-number may be ir!entical to any
+specification of a segment-number or level-number may be identical to any
 other segment-number or level-number and may even be identical to a
 paragraph-name or section-name.
 </para>
-          <variablelist>
+          <variablelist termlength="15">
             <varlistentry>
               <term>Condition-Name:</term>
               <listitem>
@@ -283,8 +283,7 @@ paragraph-name or section-name.
           Condition-names may be defined in the Data Division or
           in the SPECIAL-NAMES paragraph within the Environment
           Division where a condition-name must be assigned to the
-          ON STATUS or OFF STATUS, or both, of the run time
-          switches.
+          ON STATUS or OFF STATUS, or both, of the run time switches.
       </para>
                 <para>
           A condition-name is used only in the RERUN clause or in
@@ -354,7 +353,7 @@ paragraph-name or section-name.
                 </orderedlist>
                 <para>
           Within a given implementation these three types of
-        system-names form disjoint seta; a given system-name may
+        system-names form disjoint sets; a given system-name may
         belong to one and only one of them.
         The system-names listed above are individually defined
         in the glossary in Appendix C.</para>
@@ -363,12 +362,13 @@ paragraph-name or section-name.
             <varlistentry>
               <term>Reserved Words:</term>
               <listitem>
-                <para>     A reserved word is a COBOL word that is one of a
-        specified list of words which may be used in COBOL
-        source programs, but which must not appear in the
-        programs as user-defined words or system-names.
-        Reserved words can only be used as specified in the
-        general formats. (See Appendix A).
+                <para>
+A reserved word is a COBOL word that is one of a
+specified list of words which may be used in COBOL
+source programs, but which must not appear in the
+programs as user-defined words or system-names.
+Reserved words can only be used as specified in the
+general formats. (See Appendix A).
       </para>
                 <para>
         There are six types of reserved words:
@@ -482,8 +482,8 @@ of characters itself, except:
           </variablelist>
           <para>
 All other punctuation characters are part of the value of the nonnumeric
-literal rather than separators; all nonnumric literal are category alphanumeric.
-(See The PICTURE Clause in chapter 3). <phrase role="extension">In addition, hexadecimal
+literal rather than separators; all nonnumeric literal are category alphanumeric.
+(See <xref linkend="c03.picture"/> in chapter 3). <phrase role="extension">In addition, hexadecimal
 binary values can be attributed to non-numeric literals by, expressing
 literals as: X"nn", where n is a hexadecimal character in the set 0-9 A-F;
 nn may be repeated up to 128 times, but the number of hex digits must be even.</phrase>
@@ -527,7 +527,7 @@ numeric literals are as follows:
                     <para>The value of a numeric literal is the algebraic
         quality represented by the characters in the
         numeric literal. Every numeric literal is category
-        numeric. (See THE PICTURE CLAUSE in Chapter 3).
+        numeric. (See <xref linkend="c03.picture"/> in Chapter 3).
         The size of a numeric literal in standard data
         format characters is equal to the number of digits
         specified by the user.</para>
@@ -653,7 +653,7 @@ numeric characters in it, the only figurative constant permitted is ZERO
 </para>
           <para>
 When the figurative constants HIGH-VALUE(S) or LOW-VALUE(S) are used in
-the source program, the artual character associated with each figurative
+the source program, the actual character associated with each figurative
 constant depends upon the program collating sequence specified. (See
 THE OBJECT-COMPUTER PARAGRAPH, and THE SPECIAL-NAMES PARAGRAPH in Chapter 3).
 </para>
@@ -668,7 +668,7 @@ THE OBJECT-COMPUTER PARAGRAPH, and THE SPECIAL-NAMES PARAGRAPH in Chapter 3).
           <para>
 A PICTURE character-string consists of certain combinations of
 characters in the COBOL character set used as symbols. See
-The PICTURE Clause for the PICTURE character-string and for the rules that
+<xref linkend="c03.picture"/> for the PICTURE character-string and for the rules that
 govern their use.
 </para>
           <para>
@@ -762,16 +762,19 @@ assigned the special level-number 77.
         </section>
       </section>
       <section>
-        <title>Concept of Classes of Data</title>
+        <title>Concept of Classes of Data
+        <indexterm><primary>Classes of Data, Concepts</primary></indexterm>
+        <indexterm><primary>Concept, Classes of Data</primary></indexterm>
+        </title>
         <para>
-      The five categories of data items (see THE PICTURE CLAUSE in Chapter 3)
+      The five categories of data items (see <xref linkend="c03.picture"/> in Chapter 3)
 are grouped into three classes : alphabetic, numeric, and alphanumeric. For
 alphabetic and numeric, the classes and categories are synonymous. The
 alphanumeric class includes the categories of alphanumeric edited, numeric
 edited and alphanumeric (without editing). Every elementary item except for
 an index data item belongs to one of the classes and to one of the
 categories. The class of a group item is treated at object time as
-alphanumeric regardless of the class of elementary items subnrdinate to that
+alphanumeric regardless of the class of elementary items subordinate to that
 group item. Table 2-2 depicts the relationship of the class and categories
 of data items.
 </para>
@@ -844,24 +847,25 @@ As alphanumeric characters stored one per byte in ASCII representation.
           <listitem>
             <para>
 As numeric characters defined by USAGE IS DISPLAY (See The USAGE Clause
-        in Chapter 3) one per byte in ASCII representation. If they are signed
-        and the sign is specified as rNCLUDED, bit 6 of the leading or trailing
-        byte of the field is set for negative, depending on the field
-        definition. rf a SEPARATE sign is specified as a one byte ASCII + or
-          , a sign is added as the leading or trailing byte. If no SIGN clause
-        is specified, bit 6 of the trailing digit is set to indicate negative
-        by default.
+in Chapter 3) one per byte in ASCII representation. If they are signed
+and the sign is specified as INCLUDED, bit 6 of the leading or trailing
+byte of the field is set for negative, depending on the field
+definition. If a SEPARATE sign is specified as a one byte ASCII + or -,
+a sign is added as the leading or trailing byte. If no SIGN clause
+is specified, bit 6 of the trailing digit is set to indicate negative
+by default.
 </para>
           </listitem>
           <listitem>
             <para>
 As numeric characters defined by USAGE IS COMP or COMPUTATIONAL in pure
-        binary form. If the field is signed the number is held in its
-        twos-complement form. Storage is then dependent on the number of 9's
-        in the PICTURE clause (see The PICTURE Clause in Chapter 3) and on
-        whether the field is SIGNed or not (see The SIGN Clause in Chapter 3).
-        Table 2-3 shows the storage requirements for each COMP(UTATIONAL)
-        PICTURE Clause.
+binary form. If the field is signed the number is held in its
+twos-complement form. Storage is then dependent on the number of 9's
+in the PICTURE clause (see <xref linkend="c03.picture"/> in Chapter 3) and on
+whether the field is SIGNed or not (see The SIGN Clause in Chapter 3).
+        </para>
+            <para>
+Table 2-3 shows the storage requirements for each COMP(UTATIONAL) PICTURE Clause.
     </para>
             <table frame="all" colsep="1" rowsep="1">
               <title>Numeric Data Storage for the COMP(UTATIONAL) PICTURE Clause.</title>
@@ -928,16 +932,16 @@ As numeric characters defined by USAGE IS COMP or COMPUTATIONAL in pure
           <listitem>
             <para>
 As numeric characters defined by USAGE IS COMPUTATIONAL-3 or USAGE IS
-   COMP-3 in packed internal decimal form. Storage is dependent on the
-   number of 9's in the PICTURE clause. The decimal numbers are stored as
-   signed strings of variable length of 1 through 18 digits. The sign of
-   the packed decimal number is always stored in place of the least
-   significant quartet of the low order byte. Each byte contains :wo
-   decimal positions (four bits per digit) and the digits (0 - 9) are
-   encoded as BCD numbers (0000 - 1001). Numbers are represented in the
-   field as right-justified values with a + or - sign as shown in the
-   example below. The maximum number of digits permitted in arithmetic
-   operands is LB.
+COMP-3 in packed internal decimal form. Storage is dependent on the
+number of 9's in the PICTURE clause. The decimal numbers are stored as
+signed strings of variable length of 1 through 18 digits. The sign of
+the packed decimal number is always stored in place of the least
+significant quartet of the low order byte. Each byte contains two
+decimal positions (four bits per digit) and the digits (0 - 9) are
+encoded as BCD numbers (0000 - 1001). Numbers are represented in the
+field as right-justified values with a + or - sign as shown in the
+example below. The maximum number of digits permitted in arithmetic
+operands is 18.
    </para>
             <para>
    EXAMPLE:
@@ -950,16 +954,16 @@ For COMPUTATIONAL-3 and PICTURE 9999, the number +1234 would be stored as follow
                 <programlisting>
        ...      0     1     2      3      4      F
               0000   0001  0010   0011   0100   1111
-                                          +---------+
-                                             1 byte
+                                         +---------+
+                                           1 byte
    </programlisting>
                 <para>
-         where F represents the non-printing plus sign.
+ where F represents the non-printing plus sign.
  </para>
               </listitem>
               <listitem>
                 <para>
- For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be stored as follows:
+For COMPUTATIONAL-3 and PICTURE S9999, the number +1234 would be stored as follows:
  </para>
                 <para>
 Storage would be as in a above except that the least significant
@@ -979,13 +983,13 @@ byte would be replaced by D (1101) representing the minus sign.
             <para>
 Table 2-4 shows the storage requirements for each COMP-3 clause.
    </para>
-            <table frame="all" colsep="1" rowsep="1">
+            <table frame="all" colsep="1" rowsep="0">
               <title>Numeric Data Storage for the COMPUTATION-3 PICTURE Clause.</title>
               <tgroup cols="2">
                 <colspec colwidth="1.8in" align="center"/>
                 <colspec colwidth="2.2in" align="center" colname="c2"/>
                 <thead>
-                  <row>
+                  <row rowsep="1">
                     <entry>Bytes Required</entry>
                     <entry>Number of Digits (Signed or Unsigned)</entry>
                   </row>
@@ -1038,7 +1042,7 @@ Table 2-4 shows the storage requirements for each COMP-3 clause.
         </orderedlist>
       </section>
       <section>
-        <title>Algebraic Signs</title>
+        <title>Algebraic Signs<indexterm><primary>Algebraic Signs</primary></indexterm></title>
         <para>
       Algebraic signs fall into two categories: operational signs, which are
 associated with signed numeric data items and signed numeric literals to
@@ -1057,7 +1061,7 @@ control symbols of THE PICTURE CLAUSE.
   </para>
       </section>
       <section>
-        <title>Standard Alignment Rules</title>
+        <title>Standard Alignment Rules<indexterm><primary>Alignment Rules, Standard</primary></indexterm></title>
         <para>
       The standard rules for positioning data within an elementary item
 depend on the category of the receiving item. These rules are:
@@ -1109,9 +1113,9 @@ standard rules are modified as described in THE JUSTIFIED CLAUSE in Chapter 3.
   </para>
       </section>
       <section>
-        <title>Uniqueness of Reference</title>
+        <title>Uniqueness of Reference<indexterm><primary>Uniqueness of Reference</primary></indexterm></title>
         <section>
-          <title>Subscripting</title>
+          <title>Subscripting<indexterm><primary>Subscripting</primary></indexterm></title>
           <para>
       Subscripts can be used only when reference is made to an individual
 element within a list or table of like elements that have not been assigned
@@ -1178,33 +1182,34 @@ The general format for indexing is:
 </para>
           <cmdsynopsis>
             <group choice="req">
-              <arg choice="req">
+              <arg>
                 <replaceable>data-name</replaceable>
               </arg>
-              <arg choice="req">
+              <arg>
                 <replaceable>condition-name</replaceable>
               </arg>
             </group>
-            <arg choice="plain">(</arg>
+            <arg>(</arg>
             <group choice="req">
-              <arg choice="plain">
+              <arg>
                 <replaceable>index-name-1</replaceable>
               </arg>
-              <arg choice="plain">
+              <arg>
                 <replaceable>literal-1</replaceable>
               </arg>
-            </group>
-            <arg choice="opt">
-              <group choice="req">
-                <arg choice="plain">+</arg>
-                <arg choice="plain">-</arg>
-              </group>
-              <arg>
-                <replaceable>literal-2</replaceable>
+              <arg choice="opt">
+                <group choice="req">
+                  <arg>+</arg>
+                  <arg>-</arg>
+                </group>
+                <arg>
+                  <replaceable>literal-2</replaceable>
+                </arg>
               </arg>
-            </arg>
+            </group>
+            <sbr/>
             <arg choice="opt">
-              <arg choice="plain">,</arg>
+              <arg>,</arg>
               <group choice="req">
                 <arg choice="plain">
                   <replaceable>index-name-2</replaceable>
@@ -1215,35 +1220,35 @@ The general format for indexing is:
               </group>
               <arg choice="opt">
                 <group choice="req">
-                  <arg choice="plain">+</arg>
-                  <arg choice="plain">-</arg>
+                  <arg>+</arg>
+                  <arg>-</arg>
+                  <arg>
+                    <replaceable>literal-4</replaceable>
+                  </arg>
                 </group>
-                <arg>
-                  <replaceable>literal-4</replaceable>
-                </arg>
               </arg>
               <arg choice="opt">
-                <arg choice="plain">,</arg>
+                <arg>,</arg>
                 <group choice="req">
-                  <arg choice="plain">
+                  <arg>
                     <replaceable>index-name-3</replaceable>
                   </arg>
-                  <arg choice="plain">
+                  <arg>
                     <replaceable>literal-5</replaceable>
                   </arg>
-                </group>
-                <arg choice="opt">
-                  <group choice="req">
-                    <arg choice="plain">+</arg>
-                    <arg choice="plain">-</arg>
-                  </group>
-                  <arg>
-                    <replaceable>literal-6</replaceable>
+                  <arg choice="opt">
+                    <group choice="req">
+                      <arg>+</arg>
+                      <arg>-</arg>
+                    </group>
+                    <arg>
+                      <replaceable>literal-6</replaceable>
+                    </arg>
                   </arg>
-                </arg>
+                </group>
               </arg>
             </arg>
-            <arg choice="plain">)</arg>
+            <arg>)</arg>
           </cmdsynopsis>
         </section>
         <section>
@@ -1254,18 +1259,64 @@ The general format for indexing is:
      subscripts or indices necessary to ensure uniqueness.
 </para>
           <para>
-          The general formats for identifiers are:
-     Format 1:
-                data-name-1    [ (subscript - 1 [,    subscript-2     [, subscript-3]] ]
-     Format 2:
-                                              ( j index-name-11 [{+t literal- 2]
-                data-name-1
-                                                ) literal-1
-         [.    jindex-name-2/[{+\
-               )literal-3     r -     literal-4]     [  ) literal-5    r
-                                                         jindex-name-31[{ rliteral-6
-                                                                            t          J]] )
-          Restrictions on subscripting and indexing are:
+The general formats for identifiers are:
+</para>
+          <para>
+Format 1:
+</para>
+          <cmdsynopsis>
+            <arg>data-name-1</arg>
+            <arg choice="opt">(subscript-1<arg choice="opt">, subscript-2<arg choice="opt">, subscript-3</arg></arg><arg>(</arg></arg>
+          </cmdsynopsis>
+          <para>
+Format 2:
+</para>
+          <cmdsynopsis>
+            <arg>data-name-1</arg>
+            <arg>(</arg>
+            <group choice="req">
+              <arg>index-name-1</arg>
+              <arg>literal-1</arg>
+            </group>
+            <arg choice="opt">
+              <group choice="req">
+                <arg>+</arg>
+                <arg>-</arg>
+              </group>
+              <arg>literal-2</arg>
+            </arg>
+            <sbr/>
+            <arg choice="opt">
+              <arg>,</arg>
+              <group choice="req">
+                <arg>index-name-2</arg>
+                <arg>literal-3</arg>
+              </group>
+              <arg choice="opt">
+                <group choice="req">
+                  <arg>+</arg>
+                  <arg>-</arg>
+                </group>
+                <arg>literal-4</arg>
+              </arg>
+              <arg choice="opt">
+                <arg>,</arg>
+                <group choice="req">
+                  <arg>index-name-3</arg>
+                  <arg>literal-5</arg>
+                </group>
+                <arg choice="opt">
+                  <group choice="req">
+                    <arg>+</arg>
+                    <arg>-</arg>
+                  </group>
+                  <arg>literal-6</arg>
+                </arg>
+              </arg>
+            </arg>
+          </cmdsynopsis>
+          <para>
+Restrictions on subscripting and indexing are:
 </para>
           <orderedlist>
             <listitem>
@@ -1290,7 +1341,7 @@ specified by the implementor. Such data items are called index data items.
             <listitem>
               <para>
 Literal-1, literal-3, literal-5, in the above format must be positive
-numeric integers. Literal-2, literal-4 , literal-6 must be unsigned
+numeric integers. Literal-2, literal-4, literal-6 must be unsigned
 numeric integers.
 </para>
             </listitem>
@@ -1306,7 +1357,7 @@ Each condition-name must be unique.
     </section>
   </section>
   <section>
-    <title>PROGRAM STRUCTURE</title>
+    <title>PROGRAM STRUCTURE<indexterm><primary>Program Structure</primary></indexterm></title>
     <para>
           A CIS COBOL program consists of four divisions:
 </para>
@@ -1339,6 +1390,7 @@ paragraphs, which in turn are made up of sentences.
     <section>
       <title>
         THE "ANSI SWITCH" COMPILER DIRECTIVE
+        <indexterm><primary>ANSI (ANS) Compiler Directive</primary></indexterm>
       </title>
       <para>
         <phrase role="extension">Some of the 'red-tape' statements required By a strict ANSI interpretation,
@@ -1357,7 +1409,7 @@ directive in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
     </section>
   </section>
   <section>
-    <title>IDENTIFICATION DIVISION</title>
+    <title>IDENTIFICATION DIVISION<indexterm><primary>Identification Division</primary></indexterm></title>
     <section>
       <title>GENERAL DESCRIPTION</title>
       <para>
@@ -1373,7 +1425,7 @@ such other information as desired under the paragraphs in the general format sho
       <para>
 Paragraph headers identify the type of information contained in the
 paragraph. The name of the program must be given in the first paragraph,
-which is the PROCRAM-ID paragraph. The other paragraphs are optional and
+which is the PROGRAM-ID paragraph. The other paragraphs are optional and
 may be included in this division at the user's choice, in order of
 presentation shown by the format below.
   </para>
@@ -1532,7 +1584,7 @@ the called program. Its structure is the same as the WORKING-STORAGE SECTION.
       <section>
         <title>General Format</title>
         <para>
-The following gives the general fonnat of the sections in the Data Division,
+The following gives the general format of the sections in the Data Division,
 and defines the order of their presentation in the source program.
 </para>
         <cmdsynopsis>
@@ -1542,11 +1594,11 @@ and defines the order of their presentation in the source program.
 <arg choice="opt" rep="repeat">file-description-entry  <arg choice="opt" rep="repeat">record-description-entry</arg></arg></arg>
           <sbr/>
           <arg choice="opt">WORKING-STORAGE SECTION.<sbr/>
-    <arg choice="opt" rep="repeat"><group><arg>77-level-desciription-entry</arg><arg>record-description-entry</arg></group></arg>
+    <arg choice="opt" rep="repeat"><group choice="req"><arg>77-level-description-entry</arg><arg>record-description-entry</arg></group></arg>
 </arg>
           <sbr/>
           <arg choice="opt">LINKAGE-SECTION.<sbr/>
-    <arg choice="opt" rep="repeat"><group><arg>77-level-desciription-entry</arg><arg>record-description-entry</arg></group></arg>
+    <arg choice="opt" rep="repeat"><group choice="req"><arg>77-level-description-entry</arg><arg>record-description-entry</arg></group></arg>
 </arg>
         </cmdsynopsis>
       </section>
@@ -1582,7 +1634,7 @@ it occurs. It consists of a paragraph-name (which may be qualified), or a
 section-name.
 </para>
         <para>
-      The end of the Procedure Divis i on and the physical end of the program
+      The end of the Procedure Division and the physical end of the program
 is that physical position in a COBOL source program after which no further
 procedures appear.
 </para>
@@ -1594,7 +1646,7 @@ the Procedure Division, at the key words END DECLARATIVES.
 </para>
         <para>
       A paragraph consists of a paragraph-name followed by a period and a
-space and by zero, one, or more successiv e sentences. A paragraph ends
+space and by zero, one, or more successive sentences. A paragraph ends
 immediately before the next paragraph-name or section-name or at the end of
 the Procedure Division or, in the declaratives portion of the Procedure
 Division, at the key words END DECLARATIVES.
@@ -1635,9 +1687,11 @@ other order.
           <para>
        The Procedure Division is identified by and must begin with the following header:
        </para>
-          <para>
-             PROCEDURE DIVISION (USING data-name-1 [, data-name-2]   ...] .
-</para>
+          <cmdsynopsis>
+            <command>PROCEDURE DIVISION</command>
+            <arg choice="opt">USING data-name-1 <arg choice="opt" rep="repeat">, data-name-2</arg></arg>
+            <arg>.</arg>
+          </cmdsynopsis>
         </section>
         <section>
           <title>Procedure Division Body<indexterm><primary>Body, Procedure Division</primary></indexterm></title>
@@ -1660,6 +1714,7 @@ Format 1:
               <sbr/>
               <arg>END DECLARATIVES.</arg>
             </arg>
+            <sbr/>
             <arg choice="req">
               <arg choice="ansi">section-name SECTION      <arg choice="opt">segment-number</arg></arg>
               <sbr/>
@@ -1857,7 +1912,7 @@ Without the optional INVALID KEY phrase or END-OF-PAGE phrase.
         <para>
 When 'imperative-statement' appears in the general format of
 statements, 'imperative-statement' refers to that sequence of consecutive
-imperative statements that m1111t be ended by a period or an ELSE phrase
+imperative statements that must be ended by a period or an ELSE phrase
 associated with a previous IF statement.
 </para>
       </section>
@@ -1878,7 +1933,7 @@ The reference format, which provides a standard method for describing
 COBOL source programs, is described in terms of character positions in a
 line on an input-output medium. The CIS COBOL compiler accepts source
 programs written in reference format and produces an output listing of the
-source program input in reference fonnat.
+source program input in reference format.
 </para>
       <para>
 The rules for spacing given in the discussion of the reference format

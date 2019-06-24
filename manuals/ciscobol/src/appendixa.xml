@@ -63,7 +63,7 @@ SPACE and SPACES are reserved words.
     <member>DATE-COMPILED</member>
     <member>DATE-WRITTEN</member>
     <member>DEBUGGING</member>
-    <member>DECIHAL-POINT</member>
+    <member>DECIMAL-POINT</member>
     <member>DECLARATIVES</member>
     <member>DELETE</member>
     <member>DEPENDING</member>
@@ -244,7 +244,7 @@ upward compatible with Level II COBOL do not use these words as user-names.
   <simplelist type="vert" columns="4">
     <member>ALSO</member>
     <member>ALTERNATE</member>
-    <member>BOTTON</member>
+    <member>BOTTOM</member>
     <member>COMMUNICATION</member>
     <member>COMPUTE</member>
     <member>CORR/ESPONDING</member>
@@ -281,12 +281,12 @@ upward compatible with Level II COBOL do not use these words as user-names.
     <member>POSITION</member>
     <member>QUEUE</member>
     <member>RECEIVE</member>
+    <member>REMOVAL</member>
     <member>RENAMES</member>
     <member>RESERVE</member>
     <member>RETURN</member>
     <member>REVERSED</member>
     <member>REWIND</member>
-    <member>REXOVKL</member>
     <member>SEARCH</member>
     <member>SEND</member>
     <member>STRING</member>

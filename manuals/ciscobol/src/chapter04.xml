@@ -4,7 +4,7 @@
   <section>
     <title>INTRODUCTION TO THE TABLE HANDLING MODULE</title>
     <para>
-      The Table Handling module provides a capability for defining tables of
+The Table Handling module provides a capability for defining tables of
 contiguous data items and accessing an item relative to its position in the
 table. Language facilities are provided for specifying how many times an
 item is to be repeated. Each item may be identified through use of a
@@ -34,7 +34,7 @@ subscripts or indices.
           <arg>OCCURS</arg>
           <arg>integer-2</arg>
           <arg>TIMES</arg>
-          <arg choice="opt">[INDEXED BY index-name-1 <arg choice="opt">[, index-name-2]]</arg></arg>
+          <arg choice="opt" rep="repeat">INDEXED BY index-name-1 <arg choice="opt" rep="repeat">, index-name-2</arg></arg>
         </cmdsynopsis>
       </section>
       <section>
@@ -67,30 +67,29 @@ Index-name-1, index-name-2, ... must be unique words within the program.
         <orderedlist>
           <listitem>
             <para>
-The OCCURS clause is used in defining tables and other homogenous sets
-     of repeated deta items. Whenever the OCCURS clause is used, the
-     data-name which is the subject of this entry must be either subscripted
-     or indexed whenever it is referred to in a statement other than USE FOR
-     DEBUGGING. Further, if the subject of this entry is the name of a
-     group item, then all data-names belonging to the group must be
-     subscripted or indexed whenever they are used as operands, except as
-     the object of a REDEFINES clause. (See under headings Subscripting,
-     Indexing and Identifier in Chapter 2).
+The OCCURS clause is used in defining tables and other homogeneous sets
+of repeated data items. Whenever the OCCURS clause is used, the
+data-name which is the subject of this entry must be either subscripted
+or indexed whenever it is referred to in a statement other than USE FOR
+DEBUGGING. Further, if the subject of this entry is the name of a
+group item, then all data-names belonging to the group must be
+subscripted or indexed whenever they are used as operands, except as
+the object of a REDEFINES clause.
+(See under headings Subscripting, Indexing and Identifier in Chapter 2).
 </para>
           </listitem>
           <listitem>
-           <para>
+            <para>
 Except for the OCCURS clause itself, all data description clauses
-     associated w1th an item whose description includes an OCCURS clause
-     apply to each occurrence of the item described.         (See restriction in
-     general rule 2 under Data Description Entries Other Than Condition
-     in Chapter 3).
+associated with an item whose description includes an OCCURS clause
+apply to each occurrence of the item described.
+(See restriction in general rule 2 under Data Description Entries Other Than Condition in Chapter 3).
 </para>
           </listitem>
           <listitem>
             <para>
 The number of occurrences of the subject entry is defined as the value
-     of integer-2 representing the exact number of occurrences.
+of integer-2 representing the exact number of occurrences.
  </para>
           </listitem>
         </orderedlist>
@@ -101,14 +100,14 @@ The number of occurrences of the subject entry is defined as the value
       <section>
         <title>Function</title>
         <para>
-     The USAGE clause specifies the format of a data item in the computer storage.
+The USAGE clause specifies the format of a data item in the computer storage.
      </para>
       </section>
     </section>
     <section>
       <title>General Format</title>
       <cmdsynopsis>
-        <arg choice="opt">[USAGE IS]</arg>
+        <arg choice="opt">USAGE IS</arg>
         <arg>INDEX</arg>
       </cmdsynopsis>
     </section>
@@ -117,16 +116,15 @@ The number of occurrences of the subject entry is defined as the value
       <orderedlist>
         <listitem>
           <para>
-An index data item can be referenced explicitly only in a SET
-     statement, a relation condition, the USING phrase of a Procedure
-     Division header, or the USING phrase of a CALL statement.
+An index data item can be referenced explicitly only in a SET statement, a relation condition,
+the USING phrase of a Procedure Division header, or the USING phrase of a CALL statement.
 </para>
         </listitem>
         <listitem>
           <para>
-  The SYNCHRONIZED, JUSTIFIED, PICTURE, VALUE and BLANK WHEN ZERO clauses
-     cannot be used to describe group or elementary items described with the
-     USAGE IS INDEX clause.
+The SYNCHRONIZED, JUSTIFIED, PICTURE, VALUE and BLANK WHEN ZERO clauses
+cannot be used to describe group or elementary items described with the
+USAGE IS INDEX clause.
 </para>
         </listitem>
       </orderedlist>
@@ -136,30 +134,28 @@ An index data item can be referenced explicitly only in a SET
       <orderedlist>
         <listitem>
           <para>
-   The USAGE clause can be written at any level. If the USAGE clause is
-     written at a group level, it applies to each elementary item in the
-     group. The USAGE clause of an elementary item cannot contradict the
-     USAGE clause of a group to which the item belongs.
+The USAGE clause can be written at any level. If the USAGE clause is
+written at a group level, it applies to each elementary item in the
+group. The USAGE clause of an elementary item cannot contradict the
+USAGE clause of a group to which the item belongs.
 </para>
         </listitem>
         <listitem>
           <para>
-   An elementary item described with the USAGE IS INDEX clause is called
-     an index data item and contains a value which must correspond to an
-     occurrence number of a table element. The elementary item cannot be a
-     conditional variable. The compiler will allocate a 2 byte binary field
-     with an implied picture of 9(4) COMPUTATIONAL. If a group item is
-     described with the USAGE IS INDEX clause the elementary items in the
-     group are all index data items. The group itself is not an index data
-     item and cannot be used :n the SET statement or in a relation
-     condition.
+An elementary item described with the USAGE IS INDEX clause is called
+an index data item and contains a value which must correspond to an
+occurrence number of a table element. The elementary item cannot be a
+conditional variable. The compiler will allocate a 2 byte binary field
+with an implied picture of 9(4) COMPUTATIONAL. If a group item is
+described with the USAGE IS INDEX clause the elementary items in the
+group are all index data items. The group itself is not an index data
+item and cannot be used :n the SET statement or in a relation condition.
 </para>
         </listitem>
         <listitem>
           <para>
-   An index data item can be part of a group which is referred to in a
-     MOVE or input-output statement, in which case no conversion will take
-     place.
+An index data item can be part of a group which is referred to in a
+MOVE or input-output statement, in which case no conversion will take place.
 </para>
         </listitem>
       </orderedlist>
@@ -172,12 +168,12 @@ An index data item can be referenced explicitly only in a SET
       <section>
         <title>Comparisons Involving Index-Names And/or Index Data Items</title>
         <para>
-  Relation tests may be made between the following data items:
+Relation tests may be made between the following data items:
 </para>
         <itemizedlist>
           <listitem>
             <para>
-Two index-names. The result is the same as tf the corresponding
+Two index-names. The result is the same as if the corresponding
 occurrence numbers were compared.
 </para>
           </listitem>
@@ -206,7 +202,7 @@ item or literal not specified above is undefined.
     <section>
       <title>OVERLAPPING OPERANDS</title>
       <para>
-  When a sending and a receiving item in a SET statement share a part of
+When a sending and a receiving item in a SET statement share a part of
 their storage areas, the result of the execution of such a statement is undefined.
 </para>
     </section>
@@ -215,25 +211,50 @@ their storage areas, the result of the execution of such a statement is undefine
       <section>
         <title>Function</title>
         <para>
-  The SET statement establishes reference points for table handling
-     operations by settinp, index-names associated with table elements.
+The SET statement establishes reference points for table handling
+operations by setting index-names associated with table elements.
 </para>
       </section>
       <section>
         <title>General Format</title>
         <para>
      Format 1
-                                                                           identifier-3
-                                                                         l
-           SET jidentifier-l    [, identifier-2]
-                index-name-1   [, index-name-2]          '"!TO             index-name-3
-                                                                           integer-l
+        </para>
+        <cmdsynopsis>
+          <command>SET</command>
+          <group choice="req">
+            <arg>
+              <arg>identifier-1</arg>
+              <arg choice="opt" rep="repeat">, identifier-2</arg>
+            </arg>
+            <arg>
+              <arg>index-name-1</arg>
+              <arg choice="opt" rep="repeat">, index-name-2</arg>
+            </arg>
+          </group>
+          <arg>TO</arg>
+          <group choice="req">
+            <arg>identifier-3</arg>
+            <arg>index-name-3</arg>
+            <arg>integer-1</arg>
+          </group>
+        </cmdsynopsis>
+        <para>
      Format 2
-                                                       \!!f. .!!_ ! jidentifier-4!
-                index-name-4    [, index-name-5]
-                                                     ' l DOWN .!!_   integer-2    I
-
-</para>
+        </para>
+        <cmdsynopsis>
+          <command>SET</command>
+          <arg>index-name-4</arg>
+          <arg choice="opt" rep="repeat">, index-name-5</arg>
+          <group choice="req">
+            <arg>UP BY</arg>
+            <arg>DOWN BY</arg>
+          </group>
+          <group choice="req">
+            <arg>identifier-4</arg>
+            <arg>integer-2</arg>
+          </group>
+        </cmdsynopsis>
       </section>
       <section>
         <title>Syntax Rules</title>
@@ -246,18 +267,18 @@ equally to index-name-2, identifier-2, and index-name-5, respectively.
           </listitem>
           <listitem>
             <para>
-   Identifier-1 and identifier-3 must name either index data items, or
-     elementary items described as an integer.
+Identifier-1 and identifier-3 must name either index data items, or
+elementary items described as an integer.
 </para>
           </listitem>
           <listitem>
             <para>
-   Identifier-4 must be described as an elementary numeric integer.
+Identifier-4 must be described as an elementary numeric integer.
 </para>
           </listitem>
           <listitem>
             <para>
-  Integer-1 and integer-2 may be signed. Integer-1 must be positive.
+Integer-1 and integer-2 may be signed. Integer-1 must be positive.
 </para>
           </listitem>
         </orderedlist>
@@ -267,23 +288,23 @@ equally to index-name-2, identifier-2, and index-name-5, respectively.
         <orderedlist>
           <listitem>
             <para>
-   Index-names are considered related to a given table and are defined by
-     being specified in the INDEXED BY clause.
+Index-names are considered related to a given table and are defined by
+being specified in the INDEXED BY clause.
 </para>
           </listitem>
           <listitem>
             <para>
 If index-name-3 is specified, the value of the index before the
- execution of the SET statement must correspond to an occurrence number
- of an element in the associated table.
+execution of the SET statement must correspond to an occurrence number
+of an element in the associated table.
 </para>
             <para>
-     If index-name-4, index-name-5 is specified, the value of the index both
+If index-name-4, index-name-5 is specified, the value of the index both
 before and after the execution of the SET statement must correspond to an
 occurrence number of an element in the associated table  If index-name-1,
 index-name-2 is specified, the value of the index after the execution of the
 SET statement must correspond to an occurrence number of an element in the
-associated table.       The value of the index associated with an index-name
+associated table. The value of the index associated with an index-name
 after the execution of a PERFORM statement may be undefined.
 (See THE PERFORM STATEMENT in Chapter 3).
 </para>
@@ -295,37 +316,36 @@ In Format 1, the following action occurs:
             <orderedlist>
               <listitem>
                 <para>
-      a.   Index-name-1 is set to a value causing it to refer to the table
-           element that corresponds in occurrence number to the table element
-           referenced by index-name-3, identifier-3, or integer-1. If
-            identifier-3 is an index data item, or if index-name-3 is related
-           to the same table as index-name 1, no conversion takes place.
+Index-name-1 is set to a value causing it to refer to the table
+element that corresponds in occurrence number to the table element
+referenced by index-name-3, identifier-3, or integer-1. If
+identifier-3 is an index data item, or if index-name-3 is related
+to the same table as index-name-1, no conversion takes place.
 </para>
               </listitem>
               <listitem>
                 <para>
-      b.   If identifier-1 is an index data item, it may be set equal to
-           either the contents of index-name-3 or identifier-3 where
-           identifier-3 is also an index item; no conversion takes place in
-           either case.
+If identifier-1 is an index data item, it may be set equal to
+either the contents of index-name-3 or identifier-3 where
+identifier-3 is also an index item; no conversion takes place in
+either case.
 </para>
               </listitem>
               <listitem>
                 <para>
-      c.    If identifier-1 is not an index data item, it may be set only to
-           an occurrence number that corresponds to the value of
-           index-name-3. Neither identifier-3 nor integer-1 can be used in
-            this case.
+If identifier-1 is not an index data item, it may be set only to
+an occurrence number that corresponds to the value of
+index-name-3. Neither identifier-3 nor integer-1 can be used in this case.
 </para>
               </listitem>
               <listitem>
                 <para>
-      d.   The process is repeated for index-name-2 , identifier-2, etc., if
-           specified. Each time the value of index-name-3 or identifier-3 is
-           used as it was at the beginning of the execution of the statement.
-           Any subscripting or indexing associated with identifier-1, etc.,
-            is evaluated immediately before the value of the respective data
-            item is changed.
+The process is repeated for index-name-2 , identifier-2, etc., if
+specified. Each time the value of index-name-3 or identifier-3 is
+used as it was at the beginning of the execution of the statement.
+Any subscripting or indexing associated with identifier-1, etc.,
+is evaluated immediately before the value of the respective data
+item is changed.
 </para>
               </listitem>
             </orderedlist>
@@ -392,10 +412,10 @@ indicates the applicable general rule.
               <row>
                 <entry namest="c1" nameend="c4">
                   <para>
-   1     =     Rule numbers under General Rules above are referred to.
+   1 = Rule numbers under General Rules above are referred to.
    </para>
                   <para>
-   2     =     No conversion takes place
+   2 = No conversion takes place
    </para>
                 </entry>
               </row>
