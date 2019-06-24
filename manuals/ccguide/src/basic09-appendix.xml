@@ -487,11 +487,11 @@ int  iasize,          /* and it's size */
 /* define stuff cstart.r normally defines */
 #asm
 _stkcheck:
- rts dummy stack check function
+ rts <lineannotation>dummy stack check function</lineannotation>
 
  vsect
-errno: rmb 2 C function system error number
-_flacc: rmb 8 C library float/long accumulator
+errno: rmb 2 <lineannotation>C function system error number</lineannotation>
+_flacc: rmb 8 <lineannotation>C library float/long accumulator</lineannotation>
  endsect
 #endasm
 </programlisting>
@@ -539,7 +539,7 @@ char *cmemory;      /* pointer to some memory for C use */
 double *realarg;    /* pointer to real */
 {
 #asm
- ldy 6,s get static memory address
+ ldy 6,s <lineannotation>get static memory address</lineannotation>
 #endasm
 
      double number;
@@ -563,7 +563,7 @@ double *creal,*breal;
 #asm
 *  At this point U reg contains address of C double
 *                  0,s contains address of BASIC09 real
- ldx 0,s get address of B real
+ ldx 0,s <lineannotation>get address of B real</lineannotation>
 
  clra clear the C double
  clrb
@@ -572,24 +572,24 @@ double *creal,*breal;
  std 4,u
  stb 6,u
  ldd 0,x
- beq g3 BASIC09 real is zero
+ beq g3 <lineannotation>BASIC09 real is zero</lineannotation>
 
- ldd 1,x get hi B mantissa
- and a #$7f clear place for sign
- std 0,u put hi C matissa
- ldd 3,x get lo B mantissa
- andb #$fe mask off sign
- std 2,u put lo C mantissa
- lda 4,x get B sign byte
- lsra shift out sign
+ ldd 1,x <lineannotation>get hi B mantissa</lineannotation>
+ anda #$7f <lineannotation>clear place for sign</lineannotation>
+ std 0,u <lineannotation>put hi C matissa</lineannotation>
+ ldd 3,x <lineannotation>get lo B mantissa</lineannotation>
+ andb #$fe <lineannotation>mask off sign</lineannotation>
+ std 2,u <lineannotation>put lo C mantissa</lineannotation>
+ lda 4,x <lineannotation>get B sign byte</lineannotation>
+ lsra <lineannotation>shift out sign</lineannotation>
  bcc g1
- lda 0,u get C sign byte
- ora #$80 turn on sign
- sta 0,u put C sign byte
-g1 lda 0,x get B exponent
- suba #128 excess 128
- sta 7,u put C exponent
-g3 clra clear carry
+ lda 0,u <lineannotation>get C sign byte</lineannotation>
+ ora #$80 <lineannotation>turn on sign</lineannotation>
+ sta 0,u <lineannotation>put C sign byte</lineannotation>
+g1 lda 0,x <lineannotation>get B exponent</lineannotation>
+ suba #128 <lineannotation>excess 128</lineannotation>
+ sta 7,u <lineannotation>put C exponent</lineannotation>
+g3 clra <lineannotation>clear carry</lineannotation>
 #endasm
 
 }
@@ -607,40 +607,40 @@ double *breal,*creal;
 #asm
 *  At this point U reg contains address of C double
 *                  0,s contains address of BASIC09 real
- ldx 0,s get address of B real
+ ldx 0,s <lineannotation>get address of B real</lineannotation>
 
- lda 7,u get C exponent
- bne p0 not zero?
- clra clear the BASIC09
- clrb real
+ lda 7,u <lineannotation>get C exponent</lineannotation>
+ bne p0 <lineannotation>not zero?</lineannotation>
+ clra <lineannotation>clear the BASIC09</lineannotation>
+ clrb <lineannotation>real</lineannotation>
  std 0,x
  std 2,x
  std 4,x
- bra p3 and exit
+ bra p3 <lineannotation>and exit</lineannotation>
 
-p0 ldd 0,u get hi C mantissa
- ora #$80 this bit always on for normalized real
- std 1,x put hi B mantissa
- ldd 2,u get lo C mantissa
- std 3,x put lo B mantissa
- incb round mantissa
+p0 ldd 0,u <lineannotation>get hi C mantissa</lineannotation>
+ ora #$80 <lineannotation>this bit always on for normalized real</lineannotation>
+ std 1,x <lineannotation>put hi B mantissa</lineannotation>
+ ldd 2,u <lineannotation>get lo C mantissa</lineannotation>
+ std 3,x <lineannotation>put lo B mantissa</lineannotation>
+ incb <lineannotation>round mantissa</lineannotation>
  bne p1
  inc 3,x
  bne p1
  inc 2,x
  bne p1
  inc 1,x
-p1 andb #$fe turn off sign
- stb 4,x put B sign byte
- lda 0,u get C sign byte
- lsla shift out sign
- bcc p2 bra if positive
- orb #$01 turn on sign
- stb 4,x put B sign byte
-p2 lda 7,u get C exponent
- adda #128 less 128
- sta 0,x put B exponent
-p3 clra clear carry
+p1 andb #$fe <lineannotation>turn off sign</lineannotation>
+ stb 4,x <lineannotation>put B sign byte</lineannotation>
+ lda 0,u <lineannotation>get C sign byte</lineannotation>
+ lsla <lineannotation>shift out sign</lineannotation>
+ bcc p2 <lineannotation>bra if positive</lineannotation>
+ orb #$01 <lineannotation>turn on sign</lineannotation>
+ stb 4,x <lineannotation>put B sign byte</lineannotation>
+p2 lda 7,u <lineannotation>get C exponent</lineannotation>
+ adda #128 <lineannotation>less 128</lineannotation>
+ sta 0,x <lineannotation>put B exponent</lineannotation>
+p3 clra <lineannotation>clear carry</lineannotation>
 #endasm
 }
 
@@ -687,7 +687,7 @@ int matxaddr[5][3];  /* pointer a double dim integer array */
 int *scalar;         /* pointer to integer */
 {
 #asm
- ldy 6,s get static memory address
+ ldy 6,s <lineannotation>get static memory address</lineannotation>
 #endasm
 
      int i,j;
