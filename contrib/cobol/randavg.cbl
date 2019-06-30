@@ -6,7 +6,7 @@
        SOURCE-COMPUTER. LINUX.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
-       COPY "rand-ws.cbl".
+       COPY "RAND-WS.INS".
       * Variables for the testing
        77 AVERAGE     PIC 999V9(9) VALUE 0.
 
@@ -24,4 +24,4 @@
               ON SIZE ERROR DISPLAY "OVERFLOW".
       *    DISPLAY RANDVAL.
 
-       COPY "rand-proc.cbl".
+       COPY "RAND-PRC.INS".

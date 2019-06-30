@@ -6,6 +6,11 @@
       * http://hanoitower.mkolar.org/algo.html
       * Works for up to 8 disks.
        ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. LINUX.
+       OBJECT-COMPUTER. KAYPRO4.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        77  NUM-DISKS                   PIC 9 VALUE 5.
@@ -27,19 +32,16 @@
            05  POLES OCCURS 3 TIMES.
                10  STACK OCCURS 10 TIMES.
                    15  POLE            PIC 9 USAGE COMP.
-      *
+
        PROCEDURE DIVISION.
        HANOI.
            DISPLAY "TOWERS OF HANOI PUZZLE WITH ", NUM-DISKS, " DISKS.".
            ADD NUM-DISKS, 1 GIVING N1.
            ADD NUM-DISKS, 2 GIVING N2.
            MOVE 1 TO DNUM (1).
-           MOVE N1 TO DNUM (2).
-           MOVE N1 TO DNUM (3).
-      *
-           MOVE N1 TO POLE (1, N1).
-           MOVE N1 TO POLE (2, N1).
-           MOVE N1 TO POLE (3, N1).
+           MOVE N1 TO DNUM (2), DNUM (3).
+
+           MOVE N1 TO POLE (1, N1), POLE (2, N1), POLE (3, N1).
            MOVE 1 TO POLE (1, N2).
            MOVE 2 TO POLE (2, N2).
            MOVE 3 TO POLE (3, N2).
@@ -52,7 +54,7 @@
            PERFORM MOVE-DISK UNTIL DNUM (3) NOT > 1.
            DISPLAY "TOWERS OF HANOI PUZZLE COMPLETED!".
            STOP RUN.
-      *
+
        INIT-PUZZLE.
            MOVE I TO POLE (1, I).
            MOVE 0 TO POLE (2, I), POLE (3, I).
@@ -63,7 +65,7 @@
        INITODD.
            MOVE 3 TO TO-POLE.
            MOVE 2 TO VIA-POLE.
-      *
+
        MOVE-DISK.
            MOVE DNUM (FROM-POLE) TO FP-TMP.
            MOVE POLE (FROM-POLE, FP-TMP) TO I.
@@ -78,7 +80,7 @@
            MULTIPLY 2 BY DIV.
            IF I NOT = DIV PERFORM MOVE-TO-VIA ELSE
                PERFORM MOVE-FROM-VIA.
-      *
+
        MOVE-TO-VIA.
            MOVE TO-POLE TO VIA-POLE.
            MOVE DNUM (FROM-POLE) TO FP-TMP.
@@ -86,14 +88,13 @@
            IF POLE (FROM-POLE, FP-TMP) > POLE (TMP-P, P-TMP)
                PERFORM MOVE-FROM-TO
            ELSE MOVE TMP-P TO TO-POLE.
-      *
+
        MOVE-FROM-TO.
            MOVE FROM-POLE TO TO-POLE.
            MOVE TMP-P TO FROM-POLE.
            MOVE DNUM (FROM-POLE) TO FP-TMP.
            MOVE DNUM (TMP-P) TO P-TMP.
-      *
+
        MOVE-FROM-VIA.
            MOVE FROM-POLE TO VIA-POLE.
            MOVE TMP-P TO FROM-POLE.
-
