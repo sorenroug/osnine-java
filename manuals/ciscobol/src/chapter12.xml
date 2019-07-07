@@ -3,6 +3,8 @@
   <title>PROGRAMMING TECHNIQUES, USEFUL HINTS AND PROGRAM SIZING</title>
   <section>
     <title>PROGRAMMING TECHNIQUES</title>
+    <indexterm><primary>Programming Techniques</primary></indexterm>
+    <indexterm><primary>Techniques, Programming</primary></indexterm>
     <para>
 Although COBOL is written in an essentially free form, the user will
 nevertheless obtain many advantages from a few self-imposed disciplines. It
@@ -74,6 +76,8 @@ program.
   </section>
   <section>
     <title>USEFUL HINTS</title>
+    <indexterm><primary>Useful Hints</primary></indexterm>
+    <indexterm><primary>Hints, Useful</primary></indexterm>
     <para>
 When writing interactive programs the following facilities of CIS COBOL
 should be remembered:

@@ -3,18 +3,21 @@
   <title>Introduction</title>
   <section>
     <title>WHAT IS CIS COBOL?</title>
+    <indexterm>
+      <primary>CIS COBOL, What It Is</primary>
+    </indexterm>
     <para>
-      COBOL (COmmon Business Oriented Language) is the        most widely and
-extensively    used   language for     the programming of      commercial and
+COBOL (COmmon Business Oriented Language) is the most widely and
+extensively used language for the programming of commercial and
 administrative data processing.
 </para>
     <para>
-      CIS COBOL is a Compact, Interactive and Standard COBOL Language System
+CIS COBOL is a Compact, Interactive and Standard COBOL Language System
 which is designed for use on microprocessor-based computers and intelligent
 terminals.
 </para>
     <para>
-      It is based on the ANSI COBOL given in "American National Standard
+It is based on the ANSI COBOL given in "American National Standard
 Programming Language COBOL" (ANSI X3.23 1974). The CIS COBOL implementation
 has been selected from both levels of ANSI COBOL. The following modules are
 fully implemented at Level 1:
@@ -182,7 +185,7 @@ words or elements are arranged to form larger elements such as phrases,
 clauses, or statements. Syntax rules also impose restrictions on individual
 words or elements.
 </para>
-<para>
+      <para>
 These rules are used to define or clarify how the statement must be
 written, i.e., the order of the elements of the statement and restrictions
 on what each element may represent.
@@ -191,7 +194,7 @@ on what each element may represent.
     <section>
       <title>GENERAL RULES</title>
       <para>
-     A general rule is a rule that defines or clarifies the meaning or
+A general rule is a rule that defines or clarifies the meaning or
 relationship of meanings of an element or set of elements. It is used to
 define or clarify the semantics of the statement and the effect that it has
 on either execution or compilation.
@@ -200,7 +203,7 @@ on either execution or compilation.
     <section>
       <title>ELEMENTS</title>
       <para>
-      Elements which make up a clause or a statement consist of uppercase
+Elements which make up a clause or a statement consist of uppercase
 words, lowercase words, level-numbers, brackets, braces, connectives and
 special characters (see Chapter 2).
 </para>
@@ -208,37 +211,48 @@ special characters (see Chapter 2).
   </section>
   <section>
     <title>SOURCE FORMAT</title>
+      <indexterm>
+        <primary>Source Format</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Formats, Source</primary>
+      </indexterm>
     <para>
-     The COBOL source format divides each COBOL source record into 72
-columns. These columns are used in the following way:
+The COBOL source format divides each COBOL source record into 72 columns.
+These columns are used in the following way:
 </para>
-          <informaltable frame="none" colsep="0" rowsep="0">
-            <tgroup cols="2">
-              <colspec colwidth="2in" align="left"/>
-              <colspec colwidth="2in"/>
-              <tbody>
-                <row>
-                  <entry>Columns 1 - 6</entry>
-                  <entry>Sequence number</entry>
-                </row>
-                <row>
-                  <entry>Column  7</entry>
-                  <entry>Indicator area</entry>
-                </row>
-                <row>
-                  <entry>Columns 8 - 11</entry>
-                  <entry>Area A</entry>
-                </row>
-                <row>
-                  <entry>Columns 12 -72</entry>
-                  <entry>Area B</entry>
-                </row>
-              </tbody>
-            </tgroup>
-            </informaltable>
-
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="2">
+        <colspec colwidth="2in" align="left"/>
+        <colspec colwidth="2in"/>
+        <tbody>
+          <row>
+            <entry>Columns 1 - 6</entry>
+            <entry>Sequence number</entry>
+          </row>
+          <row>
+            <entry>Column  7</entry>
+            <entry>Indicator area</entry>
+          </row>
+          <row>
+            <entry>Columns 8 - 11</entry>
+            <entry>Area A</entry>
+          </row>
+          <row>
+            <entry>Columns 12 -72</entry>
+            <entry>Area B</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
     <section>
       <title>SEQUENCE NUMBER</title>
+      <indexterm>
+        <primary>Sequence Number</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Number, Sequence</primary>
+      </indexterm>
       <para>
      A sequence number of six digits may be used to identify each source
 program line.
@@ -246,6 +260,12 @@ program line.
     </section>
     <section>
       <title>INDICATOR AREA</title>
+      <indexterm>
+        <primary>Indicator Area</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Area, Indicator</primary>
+      </indexterm>
       <para>
 An asterisk * in this area marks the line as documentary comment only.
 Such a comment line can appear anywhere in the program after the
@@ -278,7 +298,7 @@ Note that TAB characters are not permitted in CIS COBOL source.
       <para>
 Figure 1-1 shows the source format of a typical program.
 </para>
-  <programlisting width="80" language="cobol"><![CDATA[** CIS COBOL V4.5                   STOCK.CBL                     PAGE: 0001
+      <programlisting width="80" language="cobol"><![CDATA[** CIS COBOL V4.5                   STOCK.CBL                     PAGE: 0001
 **
 ** OPTIONS SELECTED :
 **     FORM(72)
@@ -351,9 +371,9 @@ Figure 1-1 shows the source format of a typical program.
   |   | +-- Columns 8-11 - Area A
   |   +-- Column 7 - Indicator Area
   +-- Columns 1-6 - Sequence Number]]></programlisting>
-<figure>
-<title>Sample Program Listing Showing Source Format</title>
-</figure>
+      <figure>
+        <title>Sample Program Listing Showing Source Format</title>
+      </figure>
     </section>
   </section>
 </chapter>

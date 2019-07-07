@@ -10,7 +10,8 @@ writing the records to the file. It also provides for the specification of
 re-run points and the sharing of memory areas among files.
 </para>
     <section>
-      <title>LANGUAGE CONCEPTS<indexterm><primary>Language Concepts</primary></indexterm></title>
+      <title>LANGUAGE CONCEPTS</title>
+      <indexterm><primary>Language Concepts</primary></indexterm>
       <section>
         <title>Organization</title>
         <para>
@@ -23,15 +24,16 @@ except in the case where records are added to the end of the file.
 </para>
       </section>
       <section>
-        <title>Access Mode<indexterm><primary>Access Mode</primary></indexterm></title>
+        <title>Access Mode</title>
+        <indexterm><primary>Access Mode</primary></indexterm>
         <para>
 In the sequential access mode, the sequence in which records are
 accessed is the order in which the records were originally written.
 </para>
       </section>
       <section>
-        <title>Current Record Pointer
-        <indexterm><primary>Current Record Pointer</primary></indexterm></title>
+        <title>Current Record Pointer</title>
+        <indexterm><primary>Current Record Pointer</primary></indexterm>
         <para>
 The current record pointer is a conceptual entity used in this document
 to facilitate specification of the next record to be accessed within a given
@@ -42,6 +44,8 @@ affected only by the OPEN and READ statements.
       </section>
       <section xml:id="sec5.i.o">
         <title>I-O Status</title>
+        <indexterm><primary>FILE STATUS Clause</primary></indexterm>
+        <indexterm><primary>Clause, FILE STATUS</primary></indexterm>
         <para>
 If the FILE STATUS clause is specified in a file control entry, a value
 is placed into the specified two-character data item during the execution of
@@ -126,7 +130,7 @@ completion of the input-output operation.
         <section>
           <title>Status Key 2</title>
           <para>
-     The rightmost character position of the FILE STATUS data item is known
+The rightmost character position of the FILE STATUS data item is known
 as Status Key 2 and is used to further describe the results of the
 input-output operation. This character will contain a value as follows:
 </para>
@@ -195,9 +199,11 @@ indicates a valid permissible combination.
           </informaltable>
         </section>
         <section>
-          <title>The AT END Condition<indexterm><primary>AT END Condition</primary></indexterm></title>
+          <title>The AT END Condition</title>
+          <indexterm><primary>AT END Condition</primary></indexterm>
+          <indexterm><primary>Conditions, AT END</primary></indexterm>
           <para>
- The AT END condition can occur as a result of the execution of a READ
+The AT END condition can occur as a result of the execution of a READ
 statement. For details of the causes of the condition,
 see THE READ STATEMENT later in this Chapter.
 </para>
@@ -210,6 +216,8 @@ see THE READ STATEMENT later in this Chapter.
         <title>INPUT-OUTPUT SECTION</title>
         <section>
           <title>The FILE-CONTROL Paragraph</title>
+          <indexterm><primary>FILE-CONTROL Paragraph</primary></indexterm>
+          <indexterm><primary>Paragraph, FILE-CONTROL</primary></indexterm>
           <section>
             <title>Function</title>
             <para>
@@ -227,6 +235,10 @@ other file-related information.       (See also Appendix I in this manual).
         </section>
         <section>
           <title>The FILE CONTROL Entry</title>
+          <indexterm><primary>FILE-CONTROL Entry</primary></indexterm>
+          <indexterm><primary>Entry, FILE-CONTROL</primary></indexterm>
+        <indexterm><primary>SELECT Clause</primary></indexterm>
+        <indexterm><primary>Clause, SELECT</primary></indexterm>
           <section>
             <title>Function</title>
             <para>
@@ -267,7 +279,7 @@ The file control entry names a file and may specify other file-related informati
               <listitem>
                 <para>
 The SELECT clause must be specified first in the file control entry.
-     The clauses which follow the SELECT clause may appear in any order.
+The clauses which follow the SELECT clause may appear in any order.
           </para>
               </listitem>
               <listitem>
@@ -292,13 +304,15 @@ Data-name-1 must be defined in the Data Division as a two-character
               <listitem>
                 <para>
 When the ORGANIZATION IS SEQUENTIAL clause is not specified, the
-      ORGANIZATION IS SEQUENTIAL clause is implied.
+ORGANIZATION IS SEQUENTIAL clause is implied.
           </para>
               </listitem>
             </orderedlist>
           </section>
           <section>
             <title>General Rules</title>
+            <indexterm><primary>ASSIGN Clause</primary></indexterm>
+            <indexterm><primary>Clause, ASSIGN</primary></indexterm>
             <orderedlist>
               <listitem>
                 <para>
@@ -310,9 +324,12 @@ Subsequent assignments within any one ASSIGN clause are for documentation purpos
               </listitem>
               <listitem>
                 <para>
+        <indexterm><primary>ORGANIZATION IS SEQUENTIAL</primary></indexterm>
+        <indexterm><primary>ORGANIZATION IS LINE SEQUENTIAL</primary></indexterm>
+        <indexterm><primary>Clause, ORGANIZATION</primary></indexterm>
 The ORGANIZATION clause specifies the logical structure of a file. The
-      file organization is established at the time a file is created and
-      cannot subsequently be changed.
+file organization is established at the time a file is created and
+cannot subsequently be changed.
           </para>
               </listitem>
               <listitem>
@@ -327,8 +344,8 @@ is always compatible with the Editor software in any Operating System in this re
               </listitem>
               <listitem>
                 <para>
-Records in the file are accessed in the sequence dictated by the file
-organization, This sequence is specified by predecessor-successor
+Records in the file are accessed in the sequence dictated by the file organization.
+This sequence is specified by predecessor-successor
 record relationships established by the execution of WRITE statements
 when the file is created or extended.
           </para>
@@ -347,6 +364,7 @@ of the statement (See <xref linkend="sec5.i.o"/> in this Chapter).
         </section>
         <section>
           <title>The I-O-CONTROL Paragraph</title>
+          <indexterm><primary>Paragraph, I-O CONTROL</primary></indexterm>
           <section>
             <title>Function</title>
             <para>
@@ -452,6 +470,8 @@ The files referenced in the SAME AREA clause need not all have the same organiza
       <title>DATA DIVISION IN THE SEQUENTIAL I-O MODULE</title>
       <section>
         <title>FILE SECTION</title>
+        <indexterm><primary>FILE Section</primary></indexterm>
+        <indexterm><primary>Section, FILE</primary></indexterm>
         <para>
 In a CIS COBOL program the file description entry (FD) represents the
 highest level of organisation in the File Section. The File Section header
@@ -561,6 +581,8 @@ The level indicator FD identifies the beginning of a file description and must p
       </section>
       <section>
         <title>THE BLOCK CONTAINS CLAUSE</title>
+            <indexterm><primary>BLOCK CONTAINS Clause</primary></indexterm>
+            <indexterm><primary>Clause, BLOCK CONTAINS</primary></indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -587,6 +609,8 @@ The level indicator FD identifies the beginning of a file description and must p
       </section>
       <section>
         <title>THE CODE-SET CLAUSE</title>
+        <indexterm><primary>CODE-SET Clause</primary></indexterm>
+        <indexterm><primary>Clause, CODE-SET</primary></indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -633,6 +657,8 @@ The CODE-SET clause may only be specified for non-disk files.
       </section>
       <section>
         <title>THE DATA RECORDS CLAUSE</title>
+        <indexterm><primary>DATA RECORDS Clause</primary></indexterm>
+        <indexterm><primary>Clause, DATA RECORDS</primary></indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -683,6 +709,8 @@ data records with their associated file.
       </section>
       <section>
         <title>THE LABEL RECORDS CLAUSE</title>
+        <indexterm><primary>LABEL RECORDS Clause</primary></indexterm>
+        <indexterm><primary>Clause, LABEL RECORDS</primary></indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -719,6 +747,8 @@ This clause is required in every file description entry,
       </section>
       <section>
         <title>THE RECORD CONTAINS CLAUSE</title>
+        <indexterm><primary>RECORD CONTAINS Clause</primary></indexterm>
+        <indexterm><primary>Clause, RECORD CONTAINS</primary></indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -744,6 +774,8 @@ This clause is required in every file description entry,
       </section>
       <section>
         <title>THE VALUE OF CLAUSE</title>
+        <indexterm><primary>VALUE OF Clause</primary></indexterm>
+        <indexterm><primary>Clause, VALUE OF</primary></indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -781,7 +813,9 @@ records associated with a file.
       <title>PROCEDURE DIVISION IN THE SEQUENTIAL I-O MODULE</title>
     </section>
     <section>
-      <title>THE CLOSE STATEMENT<indexterm><primary>CLOSE Statement</primary></indexterm></title>
+      <title>THE CLOSE STATEMENT</title>
+      <indexterm><primary>CLOSE Statement</primary></indexterm>
+      <indexterm><primary>Statement, CLOSE</primary></indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -843,7 +877,9 @@ for documentation purposes only.
       </section>
     </section>
     <section>
-      <title>THE OPEN STATEMENT<indexterm><primary>OPEN Statement</primary></indexterm></title>
+      <title>THE OPEN STATEMENT</title>
+      <indexterm><primary>OPEN Statement</primary></indexterm>
+      <indexterm><primary>Statement, OPEN</primary></indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1045,7 +1081,9 @@ Upon successful execution of an OPEN statement with the OUTPUT phrase
       </section>
     </section>
     <section>
-      <title>THE READ STATEMENT<indexterm><primary>READ Statement</primary></indexterm></title>
+      <title>THE READ STATEMENT</title>
+      <indexterm><primary>READ Statement</primary></indexterm>
+      <indexterm><primary>Statement, READ</primary></indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1114,9 +1152,9 @@ The record to be made available by the READ statement is determined as follows:
           </listitem>
           <listitem>
             <para>
-       The execution of the READ statement causes the value of the FILE STATUS
-         data item, if any, associated with file-name to be updated.
-         (See <xref linkend="sec5.i.o"/> in this Chapter)
+The execution of the READ statement causes the value of the FILE STATUS
+data item, if any, associated with file-name to be updated.
+(See <xref linkend="sec5.i.o"/> in this Chapter)
 </para>
           </listitem>
           <listitem>
@@ -1162,8 +1200,8 @@ that READ statement is unsuccessful.
           </listitem>
           <listitem>
             <para>
-   If the end of a reel or unit is recognized during the execution of a
-     READ statement, an end-of-file status condition exists.
+If the end of a reel or unit is recognized during the execution of a
+READ statement, an end-of-file status condition exists.
 </para>
             <orderedlist>
               <listitem>
@@ -1245,7 +1283,9 @@ statement for that file.
       </section>
     </section>
     <section>
-      <title>THE REWRITE STATEMENT<indexterm><primary>REWRITE Statement</primary></indexterm></title>
+      <title>THE REWRITE STATEMENT</title>
+      <indexterm><primary>REWRITE Statement</primary></indexterm>
+      <indexterm><primary>Statement, REWRITE</primary></indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1342,7 +1382,9 @@ The REWRITE statement cannot be used with line sequential files.
       </section>
     </section>
     <section>
-      <title>THE USE STATEMENT<indexterm><primary>USE Statement</primary></indexterm></title>
+      <title>THE USE STATEMENT</title>
+      <indexterm><primary>USE Statement</primary></indexterm>
+      <indexterm><primary>Statement, USE</primary></indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1427,7 +1469,9 @@ invoking routine.
       </section>
     </section>
     <section>
-      <title>THE WRITE STATEMENT<indexterm><primary>WRITE Statement</primary></indexterm></title>
+      <title>THE WRITE STATEMENT</title>
+      <indexterm><primary>WRITE Statement</primary></indexterm>
+      <indexterm><primary>Statement, WRITE</primary></indexterm>
       <section>
         <title>Function</title>
         <para>

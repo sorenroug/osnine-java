@@ -99,6 +99,8 @@ execution of an EXIT PROGRAM statement.
     </section>
     <section>
       <title>SEGMENTATION CLASSIFICATION</title>
+      <indexterm><primary>Segmentation Classification</primary></indexterm>
+      <indexterm><primary>Classification, Segmentation</primary></indexterm>
       <para>
 Sections which are to be segmented are classified, using a system of
 segment-numbers and the following criteria:

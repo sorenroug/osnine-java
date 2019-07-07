@@ -76,6 +76,9 @@ in the indicator area is not permitted.
     </section>
     <section>
       <title>THE PROGRAM-ID PARAGRAPH</title>
+      <indexterm>
+        <primary>PROGRAM-ID Paragraph</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -121,6 +124,9 @@ pertaining to a particular program.
     </section>
     <section>
       <title>THE DATE-COMPILED PARAGRAPH</title>
+      <indexterm>
+        <primary>DATE-COMPILED Paragraph</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -163,8 +169,17 @@ replacement string for your implementation of CIS COBOL compile-time.</phrase>
     <title>ENVIRONMENT DIVISION IN THE NUCLEUS</title>
     <section>
       <title>CONFIGURATION SECTION</title>
+      <indexterm>
+        <primary>CONFIGURATION SECTION</primary>
+      </indexterm>
       <section>
         <title>The SOURCE-COMPUTER Paragraph</title>
+        <indexterm>
+          <primary>SOURCE-COMPUTER Paragraph</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Paragraph, SOURCE-COMPUTER</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -199,6 +214,9 @@ are specified by the user.
       </section>
       <section>
         <title>The OBJECT-COMPUTER Paragraph</title>
+        <indexterm>
+          <primary>OBJECT-COMPUTER Paragraph</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -283,6 +301,9 @@ The PROGRAM COLLATING SEQUENCE Clause is also applied to any nonnumeric merge or
       </section>
       <section>
         <title>The SPECIAL-NAMES Paragraph</title>
+        <indexterm>
+          <primary>SPECIAL-NAMES Paragraph</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -440,6 +461,12 @@ See THE ACCEPT STATEMENT and the DISPLAY STATEMENT in this Chapter.</phrase>
             </listitem>
             <listitem>
               <para>
+                <indexterm>
+                  <primary>CURSOR IS Clause</primary>
+                </indexterm>
+                <indexterm>
+                  <primary>Clause, CURSOR IS</primary>
+                </indexterm>
                 <phrase role="extension">The clause CURSOR IS specifies the data-name to contain the CRT cursor
 address as used by the ACCEPT statement. If CURSOR IS is not specified
 the default cursor position on executing an ACCEPT statement is the
@@ -484,14 +511,26 @@ with WRITE ADVANCING. It is treated as for documentation purposes only at this r
     <title>DATA DIVISION IN THE NUCLEUS</title>
     <section>
       <title>WORKING STORAGE SECTION</title>
+      <indexterm>
+        <primary>WORKING STORAGE Section</primary>
+        <indexterm>
+          <primary>WORKING-STORAGe Section</primary>
+        </indexterm>
+      </indexterm>
       <para>
-      The Working-Storage Section is composed of the section header, followed
+The Working-Storage Section is composed of the section header, followed
 by data description entries for noncontiguous data items and/or record
 description entries. Each Working-Storage Section record name and
 noncontiguous item name must be unique.
 </para>
       <section>
         <title>Noncontiguous Working-Storage</title>
+        <indexterm>
+          <primary>Working-Storage Noncontiguous</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Data Description, Entry</primary>
+        </indexterm>
         <para>
 Items and constants in Working-Storage which bear no hierarchical
 relationship to one another need not be grouped into records, provided they
@@ -500,7 +539,7 @@ defined in a separate data description entry which begins with the special
 level-number, 77.
 </para>
         <para>
-The following data clauses are required in each data descriptions entry:
+The following data clauses are required in each data description entry:
 </para>
         <itemizedlist>
           <listitem>
@@ -514,12 +553,15 @@ The following data clauses are required in each data descriptions entry:
           </listitem>
         </itemizedlist>
         <para>
-     Other data description clauses are optional and can be used to complete
+Other data description clauses are optional and can be used to complete
 the description of the item if necessary.
 </para>
       </section>
       <section>
         <title>Working-Storage Records</title>
+        <indexterm>
+          <primary>Working-Storage Records</primary>
+        </indexterm>
         <para>
       Data elements and constants in Working-Storage which bear a definite
 hierarchic relationship to one another must be grouped into records
@@ -651,7 +693,13 @@ not be specified except for an elementary data item.
       </section>
     </section>
     <section>
-      <title>THE BLANK WHEN ZERO CLAUSE<indexterm><primary>BLANK WHEN ZERO Clause</primary></indexterm></title>
+      <title>THE BLANK WHEN ZERO CLAUSE</title>
+      <indexterm>
+        <primary>BLANK WHEN ZERO Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Clause, BLANK WHEN ZERO</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -689,6 +737,12 @@ numeric, the category of the item is considered to be numeric edited.
     </section>
     <section>
       <title>THE DATA-NAME OR FILLER CLAUSE</title>
+      <indexterm>
+        <primary>Clause, DATA-NAME or FILLER</primary>
+      </indexterm>
+      <indexterm>
+        <primary>DATA-NAME or FILLER Clause</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -732,6 +786,12 @@ Under no circumstances can a FILLER item be referred to explicitly.
     </section>
     <section>
       <title>THE JUSTIFIED CLAUSE</title>
+      <indexterm>
+        <primary>Clause, JUSTIFIED</primary>
+      </indexterm>
+      <indexterm>
+        <primary>JUSTIFIED Clause</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -794,6 +854,9 @@ data within. an elementary item apply. (See Standard Alignment Rules.)
     </section>
     <section>
       <title>LEVEL NUMBER</title>
+      <indexterm>
+        <primary>Levels, Number</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -859,6 +922,12 @@ represent implicit redefinitions of the same area.
     </section>
     <section xml:id="c03.picture">
       <title>THE PICTURE CLAUSE</title>
+      <indexterm>
+        <primary>Clause, PICTURE</primary>
+      </indexterm>
+      <indexterm>
+        <primary>PICTURE Clause</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -924,6 +993,9 @@ edited. General rules within these categories are given below:
           </para>
         <section>
           <title>Alphabetic Data Rules</title>
+          <indexterm>
+            <primary>Alphabetic Data Rules</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -941,6 +1013,9 @@ alphabet and the space from the COBOL character set.
         </section>
         <section>
           <title>Numeric Data Rules</title>
+          <indexterm>
+            <primary>Numeric Data Rules</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -962,6 +1037,9 @@ If unsigned, the data in standard data format must be a combination of
         </section>
         <section>
           <title>Alphanumeric Data Rules</title>
+          <indexterm>
+            <primary>Alphanumeric Data Rules</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -981,6 +1059,9 @@ any characters in the computer's character set.
         </section>
         <section>
           <title>Alphanumeric Edited Data Rules</title>
+          <indexterm>
+            <primary>Alphanumeric Edited Data Rules</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -1013,6 +1094,9 @@ The contents when represented in standard data format are allowable
         </section>
         <section>
           <title>Numeric Edited Data Rules</title>
+          <indexterm>
+            <primary>Numeric Edited Data Rules</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -1047,6 +1131,9 @@ allowed to represent a digit in standard data format, must be one of the numeral
         </section>
         <section>
           <title>Elementary Item Size</title>
+          <indexterm>
+            <primary>Elementary Item Size Rules</primary>
+          </indexterm>
           <para>
 The size of an elementary item, where size means the number of
 character positions occupied by the elementary item in standard data format,
@@ -1060,6 +1147,9 @@ that the following symbols may appear only once in a given PICTURE: 'S',
         </section>
         <section>
           <title>Symbols Used</title>
+          <indexterm>
+            <primary>Symbols Used Rules</primary>
+          </indexterm>
           <para>
 The functions of the symbols used to describe an elementary item are
    explained as follows:
@@ -1282,6 +1372,9 @@ of editing may be performed upon a given category.
     </para>
         <table frame="all" colsep="1" rowsep="1">
           <title>Editing Types for Data Categories</title>
+          <indexterm>
+            <primary>Editing Types for Data Categories</primary>
+          </indexterm>
           <tgroup cols="2">
             <colspec colwidth="2.0in" colname="c1"/>
             <colspec colwidth="2.5in" colname="c2"/>
@@ -1324,6 +1417,9 @@ of replacement may be used with zero suppression in a PICTURE clause.
         </note>
         <section>
           <title>Simple Insertion Editing</title>
+          <indexterm>
+            <primary>Simple Insertion Editing Rules</primary>
+          </indexterm>
           <para>
 Simple Insertion Editing. The ',' (comma), 'B' (space), '0' (zero),
 and '/' (stroke) are used as the insertion characters. The insertion
@@ -1333,6 +1429,9 @@ the item into which the character will be inserted.
         </section>
         <section>
           <title>Special Insertion Editing</title>
+          <indexterm>
+            <primary>Special Insertion Editing Rules</primary>
+          </indexterm>
           <para>
 Special Insertion Editing. The '.' (period) is used as the insertion
 character. In addition to being an insertion character it also represents
@@ -1347,6 +1446,9 @@ as shown in the character-string.
         </section>
         <section>
           <title>Fixed Insertion Editing</title>
+          <indexterm>
+            <primary>Fixed Insertion Editing Rules</primary>
+          </indexterm>
           <para>
 Fixed Insertion Editing. The currency symbol and the editing sign
 control symbols,'+','-', 'CR', 'DB', are the insertion characters. Only
@@ -1360,6 +1462,9 @@ size of the item. The currency symbol must be the leftmost character.
 </para>
           <table frame="all" colsep="1" rowsep="1">
             <title>Editing Symbols in PICTURE Character-Strings</title>
+            <indexterm>
+              <primary>Editing Symbols</primary>
+            </indexterm>
             <tgroup cols="3">
               <colspec colwidth="2in" colname="c1"/>
               <colspec colwidth="1.5in" colname="c2"/>
@@ -1456,7 +1561,10 @@ into the receiving data item, plus one for the floating insertion character.
 </para>
         </section>
         <section>
-          <title>Zero Suppression Editing<indexterm><primary>Zero-Suppression Editing Rules</primary></indexterm></title>
+          <title>Zero Suppression Editing</title>
+          <indexterm>
+            <primary>Zero-Suppression Editing Rules</primary>
+          </indexterm>
           <para>
     The suppression of leading zeros in numeric character positions is
 indicated by the use of the alphabetic character 'Z' or the character '*'
@@ -1506,6 +1614,9 @@ character-string.
       </section>
       <section>
         <title>Precedence Rules</title>
+        <indexterm>
+          <primary>Precedence Rules</primary>
+        </indexterm>
         <para>
      Table 3-3 shows the order of precedence when using characters as
 symbols in a character-string. An 'X' at an intersection indicates that the
@@ -1531,6 +1642,12 @@ represents its use to the right of the decimal point position.
     </section>
     <section>
       <title>THE REDEFINES CLAUSE</title>
+      <indexterm>
+        <primary>Clause, REDEFINES</primary>
+      </indexterm>
+      <indexterm>
+        <primary>REDEFINES Clause</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1637,6 +1754,12 @@ Multiple level 01 entries subordinate to any given level indicator
     </section>
     <section>
       <title>THE SIGN CLAUSE</title>
+      <indexterm>
+        <primary>Clause, SIGN</primary>
+      </indexterm>
+      <indexterm>
+        <primary>SIGN Clause</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1705,10 +1828,10 @@ operational sign.
 A numeric data description entry whose picture contains the character
 'S', but to which no optional SIGN clause applies, has an operational
 sign, but neither the representation nor, necessarily, the position of
-the operational sign is specified by the character 'S'           In this
+the operational sign is specified by the character 'S' In this
 (default) case, general rules 3 through 5 do not apply to such signed
 numeric data items. The representation of the default operational sign
-is defined in Chapter 2, Selection of Character Representation and Radix.
+is defined in Chapter 2, <xref linkend="c02.charrep"/>.
 </para>
           </listitem>
           <listitem>
@@ -1771,6 +1894,12 @@ clause applies to such an entry and conversion is necessary for
     </section>
     <section>
       <title>THE SYNCHRONIZED CLAUSE</title>
+      <indexterm>
+        <primary>SYNCHRONIZED Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Clause, SYNCHRONIZED</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1910,6 +2039,12 @@ This clause is hardware dependent.
     </section>
     <section>
       <title>THE USAGE CLAUSE</title>
+      <indexterm>
+        <primary>Clause, USAGE</primary>
+      </indexterm>
+      <indexterm>
+        <primary>USAGE Clause</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1991,14 +2126,20 @@ group to which the item belongs, the usage is implicitly DISPLAY.
           <listitem>
             <para>
 Space requirements for the various USAGE storage options are given
-under Selection of Character Representation and Radix in Chapter 2.
+under <xref linkend="c02.charrep"/> in Chapter 2.
     </para>
           </listitem>
         </orderedlist>
       </section>
     </section>
     <section>
-      <title>THE VALUE CLAUSE<indexterm><primary>VALUE Clause</primary></indexterm></title>
+      <title>THE VALUE CLAUSE</title>
+      <indexterm>
+        <primary>VALUE Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Clause, VALUE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -2083,6 +2224,9 @@ JUSTIFIED clause that may be specified.
       </section>
       <section>
         <title>Data Description Entries</title>
+        <indexterm>
+          <primary>Data Description, Entries</primary>
+        </indexterm>
         <para>
 Rules governing the use of the VALUE clause differ with the respective
 sections of the Data Division:
@@ -2156,6 +2300,12 @@ USAGE IS DISPLAY).
 </para>
       <section>
         <title>Simple Conditions</title>
+        <indexterm>
+          <primary>Simple Conditions</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Conditions, Simple</primary>
+        </indexterm>
         <para>
          The simple conditions are the relation, class, switch-status,
   conditions. A simple condition has a truth value of 'true' or 'false'. The
@@ -2164,6 +2314,9 @@ USAGE IS DISPLAY).
 </para>
         <section>
           <title>Relation Condition</title>
+          <indexterm>
+            <primary>Conditions, Relation</primary>
+          </indexterm>
           <para>
          A relation condition causes a comparison of two operands, each of which
  may be the data item referenced by an identifier, a literal. A relation
@@ -2253,14 +2406,17 @@ comparison. The meaning of the relational operators is as shown in Table 3-4.
                   <entry>IS [NOT] =</entry>
                 </row>
                 <row>
-                  <entry namest="c1" nameend="c2">The required relational characters '&gt;', '&amp;', and '=' are   not
-          underlined to avoid confusion with other symbols such as '&#x2265;' (Greater than or equal to).</entry>
+                  <entry namest="c1" nameend="c2">The required relational characters '&gt;', '&amp;', and '=' are not
+underlined to avoid confusion with other symbols such as '&#x2265;' (Greater than or equal to).</entry>
                 </row>
               </tbody>
             </tgroup>
           </table>
           <section>
             <title>Comparison of Numeric Operands:</title>
+            <indexterm>
+              <primary>Comparison of Numeric</primary>
+            </indexterm>
             <para>
 For operands whose class is numeric a
 comparison is made with respect to the algebraic value of the operands. The
@@ -2273,6 +2429,9 @@ for purposes of comparison.
           </section>
           <section>
             <title>Comparison of Nonnumeric Operands:</title>
+            <indexterm>
+              <primary>Comparison of Nonnumeric</primary>
+            </indexterm>
             <para>
 For nonnumeric operands, or one numeric
 and one nonnumeric operand, a comparison is made with respect to a specified
@@ -2346,6 +2505,12 @@ right by sufficient spaces to make the operands of equal size.
         </section>
         <section>
           <title>Class Condition</title>
+          <indexterm>
+            <primary>Class Condition</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Conditions, Class</primary>
+          </indexterm>
           <para>
 The class condition determines whether the operand is numeric, that is,
 consists entirely of the characters '0', '1', '2', '3', ...,   '9', with or
@@ -2390,19 +2555,25 @@ characters 'A' thru 'Z' and the space.
         </section>
         <section>
           <title>Switch-Status Condition</title>
+          <indexterm>
+            <primary>Switch Status Condition</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Conditions, Switch-Status</primary>
+          </indexterm>
           <para>
-           A switch-status condition determines the 'on' or 'off' status of an
-      implementor-defined switch. The implementor-name and the 'on' or 'off'
-      value associated with the condition must be named in the SPECIAL-NAMES
-      paragraph of the Environment Division. The general format for the
-      switch-status condition is as follows:
+A switch-status condition determines the 'on' or 'off' status of an
+implementor-defined switch. The implementor-name and the 'on' or 'off'
+value associated with the condition must be named in the SPECIAL-NAMES
+paragraph of the Environment Division. The general format for the
+switch-status condition is as follows:
       </para>
           <cmdsynopsis>
             <arg>condition-name</arg>
           </cmdsynopsis>
           <para>
-           The result of the test is true if the switch is set to the specified
-      position corresponding to the condition-name.
+The result of the test is true if the switch is set to the specified
+position corresponding to the condition-name.
 </para>
         </section>
       </section>
@@ -2410,17 +2581,17 @@ characters 'A' thru 'Z' and the space.
     <section>
       <title>COMMON PHRASES AND GENERAL RULES FOR STATEMENT FORMATS</title>
       <para>
-      In the statement descriptions that follow, several phrases appear
+In the statement descriptions that follow, several phrases appear
 frequently: the ROUNDED phrase, the SIZE ERROR phrase.
 </para>
       <para>
-     These are described below. A resultant-identifier is that identifier
+These are described below. A resultant-identifier is that identifier
 associated with a result of an arithmetic operation.
 </para>
       <section xml:id="c03.rounded">
         <title>The Rounded Phrase</title>
         <para>
-     If, after decimal point alignment, the number of places in the fraction
+If, after decimal point alignment, the number of places in the fraction
 of the result of an arithmetic operation is greater than the number of
 places provided for the fraction of the resultant-identifier, truncation is
 relative to the size provided for the resultant-identifier. When rounding
@@ -2437,8 +2608,11 @@ rightmost integer position for which storage is allocated.
       </section>
       <section>
         <title>The Size Error Phrase</title>
+        <indexterm>
+          <primary>SIZE ERROR Phrase</primary>
+        </indexterm>
         <para>
-      If, after decimal point alignment, the absolute value of a result
+If, after decimal point alignment, the absolute value of a result
 exceeds the largest value that can be contained in the associated
 resultant-identifier a size error condition exists. Division by zero always
 causes a size error condition. The size error condition applies only to the
@@ -2451,8 +2625,8 @@ depends on whether or not the SIZE ERROR phrase is specified as follows:
         <section>
           <title>SIZE ERROR Phrase Not Specified</title>
           <para>
-When a    size error condition occurs,    the value of those
-resultant-identifier(s)      affected is undefined. Values of
+When a size error condition occurs, the value of those
+resultant-identifier(s) affected is undefined. Values of
 resultant-identifier(s) for which no size error condition occurs are
 unaffected by size errors that occur for other resultant-identifier(s)
 during execution of this operation.
@@ -2470,6 +2644,9 @@ the SIZE ERROR phrase is executed.
       </section>
       <section>
         <title>Arithmetic Statements</title>
+        <indexterm>
+          <primary>Arithmetic Statements</primary>
+        </indexterm>
         <para>
         The arithmetic statements are the ADD, DIVIDE, MULTIPLY, and SUBTRACT
    statements. Common features are as follows:
@@ -2496,6 +2673,9 @@ must not contain more than 18 decimal digits.
       </section>
       <section>
         <title>Overlapping Operands</title>
+        <indexterm>
+          <primary>Overlapping Operands</primary>
+        </indexterm>
         <para>
 When a sending and a receiving item in an arithmetic statement or an
 INSPECT, MOVE, SET, statement share a part of their storage areas, the
@@ -2504,6 +2684,9 @@ result of the execution of such a statement is undefined.
       </section>
       <section xml:id="c03.incom">
         <title>Incompatible Data</title>
+        <indexterm>
+          <primary>Incompatible Data</primary>
+        </indexterm>
         <para>
 Except for the class condition (See Class Condition in this Chapter),
 when the contents of a data item are referenced in the Procedure Division
@@ -2516,6 +2699,9 @@ present problems in portability if relied upon.
       </section>
       <section>
         <title>CRT Devices</title>
+        <indexterm>
+          <primary>CRT Devices</primary>
+        </indexterm>
         <para>
 The CRT is driven directly by the run time system via a buffer. The
 COBOL programmer moves data into and out of this buffer by means of ACCEPT
@@ -2534,7 +2720,13 @@ into the character positions it defines.
       </section>
     </section>
     <section>
-      <title>THE ACCEPT STATEMENT<indexterm><primary>ACCEPT Statement</primary></indexterm></title>
+      <title>THE ACCEPT STATEMENT</title>
+      <indexterm>
+        <primary>ACCEPT Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, ACCEPT</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -2835,7 +3027,13 @@ NOTE: The actual key identification and functions shown in this table
       </section>
     </section>
     <section xml:id="c03.add">
-      <title>THE ADD STATEMENT<indexterm><primary>ADD Statement</primary></indexterm></title>
+      <title>THE ADD STATEMENT</title>
+      <indexterm>
+        <primary>ADD Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, ADD</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -2966,7 +3164,13 @@ any significant digits during execution.
       </section>
     </section>
     <section>
-      <title>THE ALTER STATEMENT<indexterm><primary>ALTER Statement</primary></indexterm></title>
+      <title>THE ALTER STATEMENT</title>
+      <indexterm>
+        <primary>ALTER Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, ALTER</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3011,7 +3215,13 @@ circumstances, be returned to their initial states
       </section>
     </section>
     <section>
-      <title>THE DISPLAY STATEMENT<indexterm><primary>DISPLAY Statement</primary></indexterm></title>
+      <title>THE DISPLAY STATEMENT</title>
+      <indexterm>
+        <primary>DISPLAY Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, DISPLAY</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3233,7 +3443,13 @@ dependent on the CRT hardware functions and is not available on all makes of CRT
       </section>
     </section>
     <section>
-      <title>THE DIVIDE STATEMENT<indexterm><primary>DIVIDE Statement</primary></indexterm></title>
+      <title>THE DIVIDE STATEMENT</title>
+      <indexterm>
+        <primary>DIVIDE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, DIVIDE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3359,7 +3575,13 @@ stored in identifier-3.
       </section>
     </section>
     <section>
-      <title>THE ENTER STATEMENT<indexterm><primary>ENTER Statement</primary></indexterm></title>
+      <title>THE ENTER STATEMENT</title>
+      <indexterm>
+        <primary>ENTER Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, ENTER</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3397,7 +3619,13 @@ Access to other languages can be achieved by means of CALL.
       </section>
     </section>
     <section>
-      <title>THE EXIT STATEMENT<indexterm><primary>EXIT Statement</primary></indexterm></title>
+      <title>THE EXIT STATEMENT</title>
+      <indexterm>
+        <primary>EXIT Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, EXIT</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3435,7 +3663,13 @@ has no other effect on the compilation or execution of the program.
       </section>
     </section>
     <section>
-      <title>THE GO TO STATEMENT<indexterm><primary>GO TO Statement</primary></indexterm></title>
+      <title>THE GO TO STATEMENT</title>
+      <indexterm>
+        <primary>GO TO Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, GO TO</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3511,7 +3745,13 @@ statement in the normal sequence for execution.
       </section>
     </section>
     <section>
-      <title>THE IF STATEMENT<indexterm><primary>IF Statement</primary></indexterm></title>
+      <title>THE IF STATEMENT</title>
+      <indexterm>
+        <primary>IF Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, IF</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -3619,7 +3859,13 @@ not been already paired with an ELSE.
       </section>
     </section>
     <section>
-      <title>THE INSPECT STATEMENT<indexterm><primary>INSPECT Statement</primary></indexterm></title>
+      <title>THE INSPECT STATEMENT</title>
+      <indexterm>
+        <primary>INSPECT Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, INSPECT</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -4202,7 +4448,13 @@ INSPECT word REPLACING CHARACTERS BY "B" BEFORE INITIAL "A".
       </section>
     </section>
     <section>
-      <title>THE MOVE STATEMENT<indexterm><primary>MOVE Statement</primary></indexterm></title>
+      <title>THE MOVE STATEMENT</title>
+      <indexterm>
+        <primary>MOVE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, MOVE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -4489,7 +4741,13 @@ prohibits the move or the behavior of a legal move.
       </section>
     </section>
     <section>
-      <title>THE MULTIPLY STATEMENT<indexterm><primary>MULTIPLY Statement</primary></indexterm></title>
+      <title>THE MULTIPLY STATEMENT</title>
+      <indexterm>
+        <primary>MULTIPLY Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, MULTIPLY</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -4581,7 +4839,13 @@ The Arithmetic Statements, Overlapping Operands and <xref linkend="c03.incom"/> 
       </section>
     </section>
     <section>
-      <title>THE PERFORM STATEMENT<indexterm><primary>PERFORM Statement</primary></indexterm></title>
+      <title>THE PERFORM STATEMENT</title>
+      <indexterm>
+        <primary>PERFORM Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, PERFORM</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -4867,7 +5131,13 @@ independent segment as that PERFORM statement.
       </section>
     </section>
     <section>
-      <title>THE STOP STATEMENT<indexterm><primary>STOP Statement</primary></indexterm></title>
+      <title>THE STOP STATEMENT</title>
+      <indexterm>
+        <primary>STOP Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, STOP</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -4925,7 +5195,13 @@ of the next executable statement in sequence.
       </section>
     </section>
     <section>
-      <title>THE SUBTRACT STATEMENT<indexterm><primary>SUBTRACT Statement</primary></indexterm></title>
+      <title>THE SUBTRACT STATEMENT</title>
+      <indexterm>
+        <primary>SUBTRACT Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, SUBTRACT</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>

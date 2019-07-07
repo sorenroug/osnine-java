@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>DEBUG AND INTERACTIVE DEBUGGING</title>
+  <indexterm>
+    <primary>Debug</primary>
+  </indexterm>
   <section>
     <title>INTRODUCTION</title>
     <para>
@@ -74,6 +77,9 @@ items in DEBUG-ITEM are also reserved words.
         </para>
     <section>
       <title>COMPILE TIME SWITCH</title>
+      <indexterm>
+        <primary>Compile Time Debug Switch</primary>
+      </indexterm>
       <para>
 The DEBUGGING MODE clause is written as part of the SOURCE-COMPUTER
 paragraph in the Environment Division. It serves as a compile-time switch
@@ -86,6 +92,12 @@ are compiled as if they were comment lines and their syntax is not checked.
     </section>
     <section>
       <title>COBOL DEBUG OBJECT TIME SWITCH</title>
+      <indexterm>
+        <primary>OBJECT Time DEBUG Switch</primary>
+      </indexterm>
+      <indexterm>
+        <primary>DEBUG, Object Time Switch</primary>
+      </indexterm>
       <para>
 An object time switch dynamically activates the debugging code inserted by
 the compiler. This switch cannot be addressed in the program; it is
@@ -104,8 +116,20 @@ The switch is described in the <citetitle pubwork="book">CIS COBOL Operating Gui
     </section>
     <section>
       <title>ENVIRONMENT DIVISION IN COBOL DEBUG</title>
+      <indexterm>
+        <primary>Environment Division in COBOL DEBUG</primary>
+      </indexterm>
+      <indexterm>
+        <primary>DEBUG, Environment</primary>
+      </indexterm>
       <section>
         <title>The WITH DEBUGGING MODE Clause</title>
+        <indexterm>
+          <primary>WITH DEBUGGING MODE Clause</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Clause, WITH DEBUGGING MODE</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -129,8 +153,8 @@ debugging lines and sections are compiled as if they were comment lines.
             <listitem>
               <para>
 If the WITH DEBUGGING MODE clause is specified in the SOURCE-COMPUTER
-      paragraph of the Configuration Section, of a program, all USE FOR
-      DEBUGGING statements and all debugging lines are compiled.
+paragraph of the Configuration Section, of a program, all USE FOR
+DEBUGGING statements and all debugging lines are compiled.
             </para>
             </listitem>
             <listitem>
@@ -147,6 +171,12 @@ and any debugging lines are compiled as if they were comment lines.
     </section>
     <section>
       <title>PROCEDURE DIVISION IN COBOL DEBUG</title>
+      <indexterm>
+        <primary>Procedure Division in COBOL Debug</primary>
+      </indexterm>
+      <indexterm>
+        <primary>DEBUG, Procedure Division in COBOL</primary>
+      </indexterm>
       <section>
         <title>The USE FOR DEBUGGING Statement</title>
         <section>
@@ -221,7 +251,7 @@ The ALL PROCEDURES phrase can appear only once in a program.
             <listitem>
               <para>
 When the ALL PROCEDURES phrase is specified, procedure-name-1,
-      procedure-name-2, ... must not be specified in any USE FOR DEBUGGING statement.
+procedure-name-2, ... must not be specified in any USE FOR DEBUGGING statement.
             </para>
             </listitem>
             <listitem>

@@ -20,6 +20,12 @@ dimensions <phrase role="extension">if the ANSI switch is on (see Chapter 2)</ph
     <title>DATA DIVISION IN THE TABLE HANDLING MODULE</title>
     <section>
       <title>THE OCCURS CLAUSE</title>
+      <indexterm>
+        <primary>OCCURS Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Clause, OCCURS</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -97,6 +103,8 @@ of integer-2 representing the exact number of occurrences.
     </section>
     <section>
       <title>THE USAGE CLAUSE</title>
+        <indexterm><primary>USAGE Clause</primary></indexterm>
+        <indexterm><primary>Clause, USAGE</primary></indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -165,6 +173,9 @@ MOVE or input-output statement, in which case no conversion will take place.
     <title>PROCEDURE DIVISION IN THE TABLE HANDLING MODULE</title>
     <section>
       <title>RELATION CONDITION</title>
+      <indexterm>
+        <primary>Relation Condition, Table</primary>
+      </indexterm>
       <section>
         <title>Comparisons Involving Index-Names And/or Index Data Items</title>
         <para>
@@ -201,6 +212,9 @@ item or literal not specified above is undefined.
     </section>
     <section>
       <title>OVERLAPPING OPERANDS</title>
+      <indexterm>
+        <primary>Overlapping Operands</primary>
+      </indexterm>
       <para>
 When a sending and a receiving item in a SET statement share a part of
 their storage areas, the result of the execution of such a statement is undefined.
@@ -208,6 +222,12 @@ their storage areas, the result of the execution of such a statement is undefine
     </section>
     <section>
       <title>THE SET STATEMENT</title>
+      <indexterm>
+        <primary>SET Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, SET</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>

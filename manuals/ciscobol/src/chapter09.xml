@@ -3,6 +3,7 @@
   <title>LIBRARY</title>
   <section>
     <title>INTRODUCTION TO THE LIBRARY MODULE</title>
+    <indexterm><primary>Library Module</primary></indexterm>
     <para>
      The Library module provides a capability for specifying text that is to
 be copied from a source user-library file. This is usually created using
@@ -17,6 +18,8 @@ treated by the compiler as part of the source program.
   </section>
   <section>
     <title>THE COPY STATEMENT</title>
+    <indexterm><primary>COPY Statement</primary></indexterm>
+    <indexterm><primary>Statement, COPY</primary></indexterm>
     <section>
       <title>FUNCTION</title>
       <para>

@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter [
-<!ENTITY ansileft "-[">
-<!ENTITY ansiright "]-">
-]>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>COBOL Concepts</title>
   <section>
     <title>LANGUAGE CONCEPTS</title>
+    <indexterm>
+      <primary>Concepts, Language</primary>
+    </indexterm>
     <section>
       <title>CHARACTER SET</title>
+      <indexterm>
+        <primary>Character Sets</primary>
+      </indexterm>
       <para>
 The most basic and indivisible unit of the language is the character.
 The set of characters used to form CIS COBOL character-strings and
@@ -105,7 +107,7 @@ of the characters from the ASCII character set. See Appendix B.
       <para>
 The individual characters of the language are concatenated to form
 character-strings and separators. A separator may be concatenated with
-another separator or with a character- string. A character-string may only
+another separator or with a character-string. A character-string may only
 be concatenated with a separator. The concatenation of character-strings
 and separators forms the text of a source program.
 </para>
@@ -185,8 +187,8 @@ space is considered as part of the nonnumeric literal and not as a separator.
 Any punctuation character which appears as part of the specification of
 a PICTURE character-string (see Chapter 3) or numeric literal is not
 considered as a punctuation character, but rather as a symbol used in the
-specification of that PICTURE character-string or numeric literal. PICTURE
-character-strings are delimited only by the separators space, comma,
+specification of that PICTURE character-string or numeric literal.
+PICTURE character-strings are delimited only by the separators space, comma,
 semicolon, or period.
 </para>
         <para>
@@ -197,6 +199,9 @@ comment-entries, or comment lines.
       </section>
       <section>
         <title>Character-Strings</title>
+        <indexterm>
+          <primary>Character Strings</primary>
+        </indexterm>
         <para>
 A character-string is a character or a sequence of contiguous
 characters which forms a CIS COBOL word, a literal, a PICTURE
@@ -205,6 +210,12 @@ separators.
 </para>
         <section>
           <title>COBOL Words</title>
+          <indexterm>
+            <primary>COBOL Words</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Words, COBOL</primary>
+          </indexterm>
           <para>
 A COBOL word is a character-string of not more than 30 characters which
 forms a user defined word, a system-name, or a reserved word. Within a
@@ -654,21 +665,27 @@ numeric characters in it, the only figurative constant permitted is ZERO
           <para>
 When the figurative constants HIGH-VALUE(S) or LOW-VALUE(S) are used in
 the source program, the actual character associated with each figurative
-constant depends upon the program collating sequence specified. (See
-THE OBJECT-COMPUTER PARAGRAPH, and THE SPECIAL-NAMES PARAGRAPH in Chapter 3).
+constant depends upon the program collating sequence specified.
+(See THE OBJECT-COMPUTER PARAGRAPH, and THE SPECIAL-NAMES PARAGRAPH in Chapter 3).
 </para>
           <para>
-        Each reserved word which is used to reference a figurative constant
-      value is a distinct character-string with the exception of the construction
-      'ALL literal' which is composed of two distinct character-strings.
+Each reserved word which is used to reference a figurative constant
+value is a distinct character-string with the exception of the construction
+'ALL literal' which is composed of two distinct character-strings.
   </para>
         </section>
         <section>
           <title>PICTURE Character-Strings</title>
+          <indexterm>
+            <primary>PICTURE Character Strings</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Character Strings, PICTURE</primary>
+          </indexterm>
           <para>
 A PICTURE character-string consists of certain combinations of
-characters in the COBOL character set used as symbols. See
-<xref linkend="c03.picture"/> for the PICTURE character-string and for the rules that
+characters in the COBOL character set used as symbols.
+See <xref linkend="c03.picture"/> for the PICTURE character-string and for the rules that
 govern their use.
 </para>
           <para>
@@ -680,26 +697,41 @@ govern their use.
         </section>
         <section>
           <title>Comment-Entries</title>
+          <indexterm>
+            <primary>Comment Entries</primary>
+          </indexterm>
           <para>
- A comment-entry is an entry in the Identification Division that may be
-      any combination of characters from the computer's character set.
+A comment-entry is an entry in the Identification Division that may be
+any combination of characters from the computer's character set.
   </para>
         </section>
       </section>
     </section>
     <section>
       <title>CONCEPT OF COMPUTER INDEPENDENT DATA DESCRIPTION</title>
+      <indexterm>
+        <primary>Concepts, Computer</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Data Description, Computer</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Computer Independent Date</primary>
+      </indexterm>
       <para>
-           To make data as computer independent as possible, the characteristics
-      or properties of the data are described in relation to a standard data
-      format rather than an equipment-oriented format. This standard data format
-      is oriented to general data processing applications and uses the decimal
-      system to represent numbers (regardless of the radix used by the computer)
-      and the remaining characters in the CIS COBOL character set to describe
-      nonnumeric data items.
+To make data as computer independent as possible, the characteristics
+or properties of the data are described in relation to a standard data
+format rather than an equipment-oriented format. This standard data format
+is oriented to general data processing applications and uses the decimal
+system to represent numbers (regardless of the radix used by the computer)
+and the remaining characters in the CIS COBOL character set to describe
+nonnumeric data items.
   </para>
       <section>
         <title>Concept of Levels</title>
+        <indexterm>
+          <primary>Concepts, Levels</primary>
+        </indexterm>
         <para>
 A level concept is inherent in the structure of a logical record. This
 concept arises from the need to specify subdivisions of a record for the
@@ -713,7 +745,7 @@ consist of a sequence of elementary items, or the record itself may be an
 elementary item.
 </para>
         <para>
-      In order to refer to a set of elementary items, the elementary items
+In order to refer to a set of elementary items, the elementary items
 are combined into groups. Each group consists of a named sequence of one or
 more elementary items. Groups, in turn, may be combined into groups of two
 or more groups, etc. Thus, an elementary item may belong to more than one
@@ -721,8 +753,14 @@ group.
   </para>
         <section>
           <title>Level-Numbers</title>
+          <indexterm>
+            <primary>Levels, Number</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Number, Level</primary>
+          </indexterm>
           <para>
-      A system of level-numbers shows the organization of elementary items
+A system of level-numbers shows the organization of elementary items
 and group items. Since records are the most inclusive data items,
 level-numbers for records start at 01. Less inclusive data items are
 assigned higher (not necessarily successive) level-numbers not greater in
@@ -731,7 +769,7 @@ special level-number, 77, which is an exception to this rule (see below).
 Separate entries are written in the source program for each level-number used.
 </para>
           <para>
-      A group includes all group and elementary items following it until a
+A group includes all group and elementary items following it until a
 level-number less than or equal to the level-number of that group is
 encountered. All items which are immediately subordinate to a given group
 item must be described using identical level-numbers greater than the
@@ -762,12 +800,15 @@ assigned the special level-number 77.
         </section>
       </section>
       <section>
-        <title>Concept of Classes of Data
-        <indexterm><primary>Classes of Data, Concepts</primary></indexterm>
-        <indexterm><primary>Concept, Classes of Data</primary></indexterm>
-        </title>
+        <title>Concept of Classes of Data</title>
+        <indexterm>
+          <primary>Classes of Data, Concepts</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Concept, Classes of Data</primary>
+        </indexterm>
         <para>
-      The five categories of data items (see <xref linkend="c03.picture"/> in Chapter 3)
+The five categories of data items (see <xref linkend="c03.picture"/> in Chapter 3)
 are grouped into three classes : alphabetic, numeric, and alphanumeric. For
 alphabetic and numeric, the classes and categories are synonymous. The
 alphanumeric class includes the categories of alphanumeric edited, numeric
@@ -828,15 +869,17 @@ of data items.
           </tgroup>
         </table>
       </section>
-      <section>
+      <section xml:id="c02.charrep">
         <title>Selection of Character Representation and Radix</title>
+        <indexterm>
+          <primary>Character Representation and Radix</primary>
+        </indexterm>
         <para>
-        The value of a numeric item may be represented in either binary or
-   decimal form, depending on the equipment. In addition, there are several
-   ways of expressing decimal. Since these representations are actually
-   combinations of bits, they are commonly called binary-coded decimal forms.
-   The four standard formats used for storing numeric data in CIS COBOL are as
-   follows:
+The value of a numeric item may be represented in either binary or
+decimal form, depending on the equipment. In addition, there are several
+ways of expressing decimal. Since these representations are actually
+combinations of bits, they are commonly called binary-coded decimal forms.
+The four standard formats used for storing numeric data in CIS COBOL are as follows:
 </para>
         <orderedlist>
           <listitem>
@@ -857,6 +900,9 @@ by default.
 </para>
           </listitem>
           <listitem>
+            <indexterm>
+              <primary>COMP(UTATIONAL)</primary>
+            </indexterm>
             <para>
 As numeric characters defined by USAGE IS COMP or COMPUTATIONAL in pure
 binary form. If the field is signed the number is held in its
@@ -1391,13 +1437,14 @@ paragraphs, which in turn are made up of sentences.
       <title>
         THE "ANSI SWITCH" COMPILER DIRECTIVE
         <indexterm><primary>ANSI (ANS) Compiler Directive</primary></indexterm>
+        <indexterm><primary>Compiler Directive, ANSI</primary></indexterm>
       </title>
       <para>
-        <phrase role="extension">Some of the 'red-tape' statements required By a strict ANSI interpretation,
+        <phrase role="extension">Some of the 'red-tape' statements required by a strict ANSI interpretation,
 are optional under CIS COBOL. It is possible to force the compiler to
 insist on a strict ANSI interpretation by using the "FLAG" directive. In
-the remainder of <emphasis role="underline">this Chapter</emphasis> these statements are marked <arg choice="ansi"> </arg>. Elsewhere in
-this manual a reference is made to the ANSI switch when this applies.</phrase>
+the remainder of <emphasis role="underline">this Chapter</emphasis> these statements are marked <arg choice="ansi"> </arg>.
+Elsewhere in this manual a reference is made to the ANSI switch when this applies.</phrase>
       </para>
       <para>
         <phrase role="extension">If the operator enters the FLAG directive at compile time ANSI requirements
@@ -1438,6 +1485,9 @@ Identification Division and it defines the order of presentation in the source p
    </para>
       <section>
         <title>General format</title>
+        <indexterm>
+          <primary>General Formats</primary>
+        </indexterm>
         <cmdsynopsis>
           <arg choice="ansi">IDENTIFICATION DIVISION.</arg>
           <sbr/>
@@ -1694,7 +1744,10 @@ other order.
           </cmdsynopsis>
         </section>
         <section>
-          <title>Procedure Division Body<indexterm><primary>Body, Procedure Division</primary></indexterm></title>
+          <title>Procedure Division Body</title>
+          <indexterm>
+            <primary>Body, Procedure Division</primary>
+          </indexterm>
           <para>
        The body of the Procedure Division must conform to one of the following formats:
        </para>
@@ -1779,7 +1832,10 @@ Imperative sentences.
         </listitem>
       </orderedlist>
       <section>
-        <title>Conditional Statement<indexterm><primary>Statements, Conditional</primary></indexterm></title>
+        <title>Conditional Statement</title>
+        <indexterm>
+          <primary>Statements, Conditional</primary>
+        </indexterm>
         <para>
  A conditional statement specifies that the truth value of a condition
 is to be determined and that the subsequent action of the object program is
@@ -1846,7 +1902,10 @@ terminated by a period followed by a space.
 </para>
       </section>
       <section>
-        <title>Imperative Statement<indexterm><primary>Statements, Imperative</primary></indexterm></title>
+        <title>Imperative Statement</title>
+        <indexterm>
+          <primary>Statements, Imperative</primary>
+        </indexterm>
         <para>
      An Imperative statement indicates a specific unconditional action to be
 taken by the object program. An imperative statement is any statement that
@@ -1941,7 +2000,7 @@ take precedence over all other rules for spacing.
 </para>
       <para>
 The divisions of a source program must be ordered as follows: the
-Identification Division, then the Environment Divisi n, then the Data
+Identification Division, then the Environment Division, then the Data
 Division, then the Procedure Division. Each division must be written
 according to the rules for the reference format.
 </para>
@@ -2025,7 +2084,10 @@ that the last character in the preceding line is followed by a space.
 </para>
       </section>
       <section>
-        <title>Blank Lines<indexterm><primary>Blank Lines</primary></indexterm></title>
+        <title>Blank Lines</title>
+        <indexterm>
+          <primary>Blank Lines</primary>
+        </indexterm>
         <para>
 A blank line is one that is blank from margin C to margin R, inclusive.
 A blank line can appear anywhere in the source program, except immediately
@@ -2078,30 +2140,33 @@ When the sentences or entries of a paragraph require more than one line
     </section>
     <section>
       <title>DATA DIVISION ENTRIES</title>
+      <indexterm>
+        <primary>Data Division Entries</primary>
+      </indexterm>
       <para>
-        Each Data Division entry begins with a level indicator or a
-  level-number, followed by a space, followed by its associated name (except
-  in the Report Section), followed by a sequence of independent descriptive
-  clauses. Each clause, except the last clause of an entry, may be terminated
-  by either the separator semicolon or the separator comma. The last clause
-  is always terminated by a period followed by a space.
+Each Data Division entry begins with a level indicator or a
+level-number, followed by a space, followed by its associated name (except
+in the Report Section), followed by a sequence of independent descriptive
+clauses. Each clause, except the last clause of an entry, may be terminated
+by either the separator semicolon or the separator comma. The last clause
+is always terminated by a period followed by a space.
 <para>
 </para>
-        There are two types of Data Division entries: those which begin with a
-  level indicator and those which begin with a level-number.
+There are two types of Data Division entries: those which begin with a
+level indicator and those which begin with a level-number.
 <para>
 </para>
 A level indicator is the indicator:  FD
 (see THE FILE DESCRIPTION - COMPLETE ENTRY SKELETON in Chapters 5, 6 and 7)
 <para>
 </para>
-        In those Data Division entries that begin with a level indicator, the
-  level indicator begins in area A followed by a space and followed in area B
-  with its associated name and appropriate descriptive information.
+In those Data Division entries that begin with a level indicator, the
+level indicator begins in area A followed by a space and followed in area B
+with its associated name and appropriate descriptive information.
 <para>
 </para>
-        Those Data Division entries that begin with level-numbers are called
-  data description entries.
+Those Data Division entries that begin with level-numbers are called
+data description entries.
 </para>
       <para>
 A level-number has a value taken from the set of values 1 through 49,
@@ -2111,15 +2176,15 @@ space must separate a level-number from the word following the level-number.
 </para>
       <para>
 In those data description entries that begin with level-number 01 or
-  77, the level-number begins in area A followed by a space and followed in
-  area B by its associated record-name or item-name and appropriate
-  descriptive information.
+77, the level-number begins in area A followed by a space and followed in
+area B by its associated record-name or item-name and appropriate
+descriptive information.
 </para>
       <para>
-    Successive data description entries may have the same format as the
-  first or may be indented according to level-number. The entries in the
-  output listing need be indented only if the input is indented. Indentation
-  does not affect the magnitude of a level-number.
+Successive data description entries may have the same format as the
+first or may be indented according to level-number. The entries in the
+output listing need be indented only if the input is indented. Indentation
+does not affect the magnitude of a level-number.
 </para>
       <para>
 When level-numbers are to be indented, each new level-number may begin
@@ -2128,7 +2193,10 @@ the right is determined only by the width of the physical medium.
 </para>
     </section>
     <section>
-      <title>DECLARATIVES<indexterm><primary>Declaratives</primary></indexterm></title>
+      <title>DECLARATIVES</title>
+      <indexterm>
+        <primary>Declaratives</primary>
+      </indexterm>
       <para>
 The key word DECLARATIVES and the key words END DECLARATIVES that
 precede and follow, respectively, the declaratives portion of the Procedure
@@ -2137,7 +2205,10 @@ A and be followed by a period and a space (see Figure 2-1).
 </para>
     </section>
     <section>
-      <title>COMMENT LINES<indexterm><primary>Comment Lines</primary></indexterm></title>
+      <title>COMMENT LINES</title>
+      <indexterm>
+        <primary>Comment Lines</primary>
+      </indexterm>
       <para>
 A comment line is any line with an asterisk in the continuation
 indicator area of the line. A comment line can appear as any line in a
@@ -2157,7 +2228,10 @@ indicator area.
     </section>
   </section>
   <section>
-    <title>RESERVED WORDS<indexterm><primary>Reserved Words</primary></indexterm></title>
+    <title>RESERVED WORDS</title>
+    <indexterm>
+      <primary>Reserved Words</primary>
+    </indexterm>
     <para>
 A full list of reserved words is given in Appendix A.
 </para>

@@ -95,6 +95,9 @@ description of the item if necessary.
   </section>
   <section>
     <title>PROCEDURE DIVISION IN THE INTER-PROGRAM COMMUNICATION MODULE</title>
+    <indexterm>
+      <primary>Procedure Division in the Inter-Program Communication Module</primary>
+    </indexterm>
     <section>
       <title>THE PROCEDURE DIVISION HEADER</title>
       <para>
@@ -135,6 +138,12 @@ same USING phrase of a CALL statement.
     </section>
     <section>
       <title>THE CALL STATEMENT</title>
+      <indexterm>
+        <primary>CALL Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, CALL</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -294,6 +303,12 @@ calling program.
     </section>
     <section>
       <title>THE CANCEL STATEMENT</title>
+      <indexterm>
+        <primary>CANCEL Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, CANCEL</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -377,6 +392,12 @@ present cancelled. Control passes to the next statement.
     </section>
     <section>
       <title>THE EXIT PROGRAM STATEMENT</title>
+      <indexterm>
+        <primary>EXIT PROGRAM Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, EXIT PROGRAM</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
