@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>TABLE HANDLING</title>
+      <indexterm>
+        <primary>Table Handling</primary>
+      </indexterm>
   <section>
     <title>INTRODUCTION TO THE TABLE HANDLING MODULE</title>
     <para>
@@ -25,6 +28,9 @@ dimensions <phrase role="extension">if the ANSI switch is on (see Chapter 2)</ph
       </indexterm>
       <indexterm>
         <primary>Clause, OCCURS</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Table Handling, Data Division in</primary>
       </indexterm>
       <section>
         <title>Function</title>
@@ -171,6 +177,9 @@ MOVE or input-output statement, in which case no conversion will take place.
   </section>
   <section>
     <title>PROCEDURE DIVISION IN THE TABLE HANDLING MODULE</title>
+      <indexterm>
+        <primary>Table Handling, Procedure Division in</primary>
+      </indexterm>
     <section>
       <title>RELATION CONDITION</title>
       <indexterm>
@@ -178,6 +187,16 @@ MOVE or input-output statement, in which case no conversion will take place.
       </indexterm>
       <section>
         <title>Comparisons Involving Index-Names And/or Index Data Items</title>
+      <indexterm>
+        <primary>Comparison Involving Index-Names</primary>
+      </indexterm>
+    <indexterm>
+      <primary>Index-Names</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Index Data Items</primary>
+    </indexterm>
+
         <para>
 Relation tests may be made between the following data items:
 </para>
@@ -215,6 +234,9 @@ item or literal not specified above is undefined.
       <indexterm>
         <primary>Overlapping Operands</primary>
       </indexterm>
+        <indexterm>
+          <primary>Operand, Overlapping</primary>
+        </indexterm>
       <para>
 When a sending and a receiving item in a SET statement share a part of
 their storage areas, the result of the execution of such a statement is undefined.

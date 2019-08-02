@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <title>RUN-TIME ERRORS</title>
+  <para>
+Run-time error messages are preceded by the name and segment number of
+the currently executing intermediate code file.
+</para>
+  <para>
+There are two types of runtime errors:   Recoverable and Fatal.
+</para>
+  <para>
+(a)  Recoverable errors
+</para>
+  <para>
+If the programmer has specified the STATUS clause in the FILE-CONTROL
+paragraph of a program error handling is the programmer's responsibility.
+This will generally only apply to errors that are not considered fatal
+by the operating system.
+</para>
+  <para>
+(b)  Fatal errors
+</para>
+  <para>
+All errors except those above are fatal. They may come from the operating
+system or from the run-time system. Fatal errors cause a message to be
+output to the console which includes a 3-digit error code and reference to
+the COBOL statement subsequent to that in which the error occurred. These
+fall into two classes:
+</para>
+  <variablelist>
+    <varlistentry>
+      <term>(i)  Exceptions</term>
+      <listitem>
+        <para>
+These cover arithmetic overflow, subscript out of range, too many levels of perform nesting.
+</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>(ii) I-O errors</term>
+      <listitem>
+        <para>
+These exclude those for which STATUS is not selected as above.
+</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <informaltable frame="all" colsep="1" rowsep="1">
+    <tgroup cols="2">
+      <colspec colwidth="1in" align="left"/>
+      <colspec colwidth="4in" align="left"/>
+      <thead>
+        <row>
+          <entry>Error</entry>
+          <entry>Description</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>151</entry>
+          <entry>Random read on sequential file</entry>
+        </row>
+        <row>
+          <entry>152</entry>
+          <entry>REWRITE on file not open I-O</entry>
+        </row>
+        <row>
+          <entry>153</entry>
+          <entry>Subscript out of range</entry>
+        </row>
+        <row>
+          <entry>154</entry>
+          <entry>Perform nesting exceeds 22 levels</entry>
+        </row>
+        <row>
+          <entry>156</entry>
+          <entry>Invalid file operation</entry>
+        </row>
+        <row>
+          <entry>157</entry>
+          <entry>Object file too large</entry>
+        </row>
+        <row>
+          <entry>158</entry>
+          <entry>REWRITE on line-sequential file</entry>
+        </row>
+        <row>
+          <entry>159</entry>
+          <entry>Malformed line-sequential file</entry>
+        </row>
+        <row>
+          <entry>161</entry>
+          <entry>Illegal intermediate code</entry>
+        </row>
+        <row>
+          <entry>162</entry>
+          <entry>Arithmetic overflow or underflow</entry>
+        </row>
+        <row>
+          <entry>164</entry>
+          <entry>Specified CALL code not supplied or Attempt to call a COBOL module recursively (i.e when is already active)</entry>
+        </row>
+        <row>
+          <entry>165</entry>
+          <entry>Incompatible releases of compiler and run-time system</entry>
+        </row>
+        <row>
+          <entry>168</entry>
+          <entry>Memory arrangement failure</entry>
+        </row>
+        <row>
+          <entry>169</entry>
+          <entry>Invalid indirect sequential file key length (&gt;32 characters)</entry>
+        </row>
+        <row>
+          <entry>170</entry>
+          <entry>Illegal operation in Indexed Sequential</entry>
+        </row>
+        <row>
+          <entry>171</entry>
+          <entry>Attempt to read I-S record in output/extend mode</entry>
+        </row>
+        <row>
+          <entry>172</entry>
+          <entry>Attempt to delete I-S record in non I-O mode</entry>
+        </row>
+        <row>
+          <entry>173</entry>
+          <entry>Attempt to write I-S record in input mode</entry>
+        </row>
+        <row>
+          <entry>174</entry>
+          <entry>Attempt to CALL/CANCEL on active program</entry>
+        </row>
+        <row>
+          <entry>176</entry>
+          <entry>Illegal inter-segment reference</entry>
+        </row>
+        <row>
+          <entry>180</entry>
+          <entry>COBOL file malformed</entry>
+        </row>
+        <row>
+          <entry>181</entry>
+          <entry>Fatal file malformation</entry>
+        </row>
+        <row>
+          <entry>194</entry>
+          <entry>File size too large (&gt;0.5MB)</entry>
+        </row>
+        <row>
+          <entry>195</entry>
+          <entry>DELETE/REWRTTE not preceded by a READ</entry>
+        </row>
+        <row>
+          <entry>196</entry>
+          <entry>Relative (or Indexed) - Record number too large (&gt;65535)</entry>
+        </row>
+        <row>
+          <entry>197</entry>
+          <entry>File save failure</entry>
+        </row>
+        <row>
+          <entry>198</entry>
+          <entry>Program load failure (using CHAIN)</entry>
+        </row>
+        <row>
+          <entry>199</entry>
+          <entry>Indexed sequential file name too long ( &gt;20 characters)</entry>
+        </row>
+        <row>
+          <entry>200</entry>
+          <entry>Insufficient space to load Animator</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+</appendix>

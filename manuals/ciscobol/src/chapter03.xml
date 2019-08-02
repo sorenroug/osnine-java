@@ -3,6 +3,9 @@
   <title>THE NUCLEUS</title>
   <section>
     <title>FUNCTION OF THE NUCLEUS</title>
+    <indexterm>
+      <primary>Nucleus Function</primary>
+    </indexterm>
     <para>
 The Nucleus provides a basic language capability for the internal
 processing of data within the basic structure of the four divisions of a program.
@@ -10,6 +13,12 @@ processing of data within the basic structure of the four divisions of a program
   </section>
   <section>
     <title>IDENTIFICATION DIVISION IN THE NUCLEUS</title>
+    <indexterm>
+      <primary>Nucleus, Identification</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Identification Division</primary>
+    </indexterm>
     <section>
       <title>GENERAL DESCRIPTION</title>
       <para>
@@ -22,6 +31,12 @@ general format shown below.
     </section>
     <section>
       <title>ORGANIZATION</title>
+      <indexterm>
+        <primary>Nucleus, Organization</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Organisation, Nucleus</primary>
+      </indexterm>
       <para>
 Paragraph headers identify the type of information contained in the
 paragraph. The name of the program must be given in the first paragraph,
@@ -31,6 +46,12 @@ presentation shown by the general format below.
 </para>
       <section>
         <title>Structure</title>
+        <indexterm>
+          <primary>Nucleus, Structure</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Structure, Nucleus</primary>
+        </indexterm>
         <para>
 The general format of the paragraphs in the Identification Division is
 given below and shows the order of presentation in the source program.
@@ -56,6 +77,12 @@ given below and shows the order of presentation in the source program.
       </section>
       <section>
         <title>Syntax Rules</title>
+        <indexterm>
+          <primary>Syntax Rules, in Nucleus</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Rules, Syntax</primary>
+        </indexterm>
         <orderedlist>
           <listitem>
             <para>
@@ -78,6 +105,9 @@ in the indicator area is not permitted.
       <title>THE PROGRAM-ID PARAGRAPH</title>
       <indexterm>
         <primary>PROGRAM-ID Paragraph</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Paragraph, PROGRAM-ID</primary>
       </indexterm>
       <section>
         <title>Function</title>
@@ -127,6 +157,9 @@ pertaining to a particular program.
       <indexterm>
         <primary>DATE-COMPILED Paragraph</primary>
       </indexterm>
+      <indexterm>
+        <primary>Paragraph, DATE-COMPILED</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -167,10 +200,19 @@ replacement string for your implementation of CIS COBOL compile-time.</phrase>
   </section>
   <section>
     <title>ENVIRONMENT DIVISION IN THE NUCLEUS</title>
+    <indexterm>
+      <primary>Environment Division in Nucleus</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Nucleus, Environment Division in</primary>
+    </indexterm>
     <section>
       <title>CONFIGURATION SECTION</title>
       <indexterm>
         <primary>CONFIGURATION SECTION</primary>
+      </indexterm>
+      <indexterm>
+        <primary>SECTION, CONFIGURATION</primary>
       </indexterm>
       <section>
         <title>The SOURCE-COMPUTER Paragraph</title>
@@ -216,6 +258,9 @@ are specified by the user.
         <title>The OBJECT-COMPUTER Paragraph</title>
         <indexterm>
           <primary>OBJECT-COMPUTER Paragraph</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Paragraph, OBJECT-COMPUTER</primary>
         </indexterm>
         <section>
           <title>Function</title>
@@ -304,6 +349,9 @@ The PROGRAM COLLATING SEQUENCE Clause is also applied to any nonnumeric merge or
         <indexterm>
           <primary>SPECIAL-NAMES Paragraph</primary>
         </indexterm>
+        <indexterm>
+          <primary>Paragraph, SPECIAL-NAMES</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -361,6 +409,9 @@ alphabet-names to character sets and/or collating sequences.
         </section>
         <section>
           <title>General Rules</title>
+          <indexterm>
+            <primary>Condition-Name Rules</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -509,13 +560,19 @@ with WRITE ADVANCING. It is treated as for documentation purposes only at this r
   </section>
   <section>
     <title>DATA DIVISION IN THE NUCLEUS</title>
+    <indexterm>
+      <primary>Data Division in Nucleus</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Nucleus, Data Division in</primary>
+    </indexterm>
     <section>
       <title>WORKING STORAGE SECTION</title>
       <indexterm>
-        <primary>WORKING STORAGE Section</primary>
-        <indexterm>
-          <primary>WORKING-STORAGe Section</primary>
-        </indexterm>
+        <primary>WORKING-STORAGE Section</primary>
+      </indexterm>
+      <indexterm>
+        <primary>SECTION, WORKING-STORAGE</primary>
       </indexterm>
       <para>
 The Working-Storage Section is composed of the section header, followed
@@ -714,7 +771,7 @@ The BLANK WHEN ZERO clause permits the blanking of an item when its value is zer
       </section>
       <section><title>Syntax Rules</title>
        The BLANK WHEN ZERO clause can be used only for an elementary item
-whose   PICTURE is specified as numeric with implicit or explicit USAGE IS
+whose PICTURE is specified as numeric with implicit or explicit USAGE IS
 DISPLAY, or numeric edited. (See <xref linkend="c03.picture"/> later in this Chapter).
 </section>
       <section>
@@ -742,6 +799,9 @@ numeric, the category of the item is considered to be numeric edited.
       </indexterm>
       <indexterm>
         <primary>DATA-NAME or FILLER Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>FILLER or DATA-NAME Clause</primary>
       </indexterm>
       <section>
         <title>Function</title>
@@ -856,6 +916,9 @@ data within. an elementary item apply. (See Standard Alignment Rules.)
       <title>LEVEL NUMBER</title>
       <indexterm>
         <primary>Levels, Number</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Number, Level</primary>
       </indexterm>
       <section>
         <title>Function</title>
@@ -996,6 +1059,9 @@ edited. General rules within these categories are given below:
           <indexterm>
             <primary>Alphabetic Data Rules</primary>
           </indexterm>
+          <indexterm>
+            <primary>Rules, Alphabetic Data</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -1015,6 +1081,9 @@ alphabet and the space from the COBOL character set.
           <title>Numeric Data Rules</title>
           <indexterm>
             <primary>Numeric Data Rules</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Numeric Data</primary>
           </indexterm>
           <orderedlist>
             <listitem>
@@ -1040,6 +1109,9 @@ If unsigned, the data in standard data format must be a combination of
           <indexterm>
             <primary>Alphanumeric Data Rules</primary>
           </indexterm>
+          <indexterm>
+            <primary>Rules, Alphanumeric Data</primary>
+          </indexterm>
           <orderedlist>
             <listitem>
               <para>
@@ -1061,6 +1133,9 @@ any characters in the computer's character set.
           <title>Alphanumeric Edited Data Rules</title>
           <indexterm>
             <primary>Alphanumeric Edited Data Rules</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Alphanumeric Edited Data</primary>
           </indexterm>
           <orderedlist>
             <listitem>
@@ -1096,6 +1171,9 @@ The contents when represented in standard data format are allowable
           <title>Numeric Edited Data Rules</title>
           <indexterm>
             <primary>Numeric Edited Data Rules</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Numeric Edited Data</primary>
           </indexterm>
           <orderedlist>
             <listitem>
@@ -1134,6 +1212,9 @@ allowed to represent a digit in standard data format, must be one of the numeral
           <indexterm>
             <primary>Elementary Item Size Rules</primary>
           </indexterm>
+          <indexterm>
+            <primary>Rules, Elementary Item Size</primary>
+          </indexterm>
           <para>
 The size of an elementary item, where size means the number of
 character positions occupied by the elementary item in standard data format,
@@ -1149,6 +1230,9 @@ that the following symbols may appear only once in a given PICTURE: 'S',
           <title>Symbols Used</title>
           <indexterm>
             <primary>Symbols Used Rules</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Symbols Used</primary>
           </indexterm>
           <para>
 The functions of the symbols used to describe an elementary item are
@@ -1201,10 +1285,11 @@ positions so described.
             <varlistentry>
               <term>S -</term>
               <listitem>
-                <para>  The letter 'S' is used in a character-string to indicate the presence,
+                <para>
+The letter 'S' is used in a character-string to indicate the presence,
 but neither the representation nor, necessarily, the position of an
 operational sign; it must be written as the leftmost character in the
-PICTURE. The s is not counted in determining the size (in terms of
+PICTURE. The S is not counted in determining the size (in terms of
 standard data format characters) of the elementary item unless the
 entry is subject to a SIGN clause which specifies the optional SEPARATE
 CHARACTER phrase. (See the SIGN Clause in this Chapter.)
@@ -1219,8 +1304,7 @@ The 'V' is used in a character-string to indicate the location of the
 assumed decimal point and may only appear once in a character-string.
 The 'V' does not represent a character position and therefore is not
 counted in the size of the elementary item. When the assumed decimal
-point is to the right of the rightmost symbol in the string the 'V' is
-        redundant.
+point is to the right of the rightmost symbol in the string the 'V' is redundant.
         </para>
               </listitem>
             </varlistentry>
@@ -1335,6 +1419,9 @@ contains a numeral and is counted in the size of the item.
       </section>
       <section>
         <title>Editing Rules</title>
+        <indexterm>
+          <primary>Rules, Editing</primary>
+        </indexterm>
         <para>
       There are two general methods of performing editing in the PICTURE
 clause, either by insertion or by suppression and replacement. There are
@@ -1420,6 +1507,12 @@ of replacement may be used with zero suppression in a PICTURE clause.
           <indexterm>
             <primary>Simple Insertion Editing Rules</primary>
           </indexterm>
+          <indexterm>
+            <primary>Rules, Editing, Simple</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Insertion Editing Rules, Simple</primary>
+          </indexterm>
           <para>
 Simple Insertion Editing. The ',' (comma), 'B' (space), '0' (zero),
 and '/' (stroke) are used as the insertion characters. The insertion
@@ -1431,6 +1524,12 @@ the item into which the character will be inserted.
           <title>Special Insertion Editing</title>
           <indexterm>
             <primary>Special Insertion Editing Rules</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Editing, Special</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Insertion Editing Rules, Special</primary>
           </indexterm>
           <para>
 Special Insertion Editing. The '.' (period) is used as the insertion
@@ -1448,6 +1547,12 @@ as shown in the character-string.
           <title>Fixed Insertion Editing</title>
           <indexterm>
             <primary>Fixed Insertion Editing Rules</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Editing, Fixed</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Insertion Editing Rules, Fixed</primary>
           </indexterm>
           <para>
 Fixed Insertion Editing. The currency symbol and the editing sign
@@ -1504,6 +1609,12 @@ size of the item. The currency symbol must be the leftmost character.
         </section>
         <section>
           <title>Floating Insertion Editing</title>
+          <indexterm>
+            <primary>Insertion Editing Rules, Floating</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Editing, Floating</primary>
+          </indexterm>
           <para>
       The currency symbol and editing sign control symbols '+' or '-' are the
 floating insertion characters and as such are mutually exclusive in a given
@@ -1565,6 +1676,12 @@ into the receiving data item, plus one for the floating insertion character.
           <indexterm>
             <primary>Zero-Suppression Editing Rules</primary>
           </indexterm>
+          <indexterm>
+            <primary>Suppression Editing, Zero</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Rules, Editing, Zero</primary>
+          </indexterm>
           <para>
     The suppression of leading zeros in numeric character positions is
 indicated by the use of the alphabetic character 'Z' or the character '*'
@@ -1575,7 +1692,7 @@ is used, the replacement character will be the space and if the asterisk is
 used, the replacement character will be '*'.
 </para>
           <para>
-      Zero suppression and replacement is indicated in a   PICTURE
+      Zero suppression and replacement is indicated in a PICTURE
 character-string by using a string of one or more of the allowable symbols
 to represent leading numeric character positions which are to be replaced
 when the associated character position in the data contains a zero. Any of
@@ -1617,6 +1734,9 @@ character-string.
         <indexterm>
           <primary>Precedence Rules</primary>
         </indexterm>
+        <indexterm>
+          <primary>Rules, Precedence</primary>
+        </indexterm>
         <para>
      Table 3-3 shows the order of precedence when using characters as
 symbols in a character-string. An 'X' at an intersection indicates that the
@@ -1633,9 +1753,9 @@ of the symbols '+', '-' or 'cs' must be present in a PICTURE string.
         <para>
 In Table 3-3, non-floating insertion symbols '+' and '-', floating
 insertion symbols 'Z', '*' '+', '-', and 'cs', and other symbol 'P' appear
-twice in the PICTURE character precedence chart.  The leftmost column and
+twice in the PICTURE character precedence chart. The leftmost column and
 uppermost row for each symbol represents its use to the left of the decimal
-point position.   The second appearance of symbol in the row and column
+point position. The second appearance of symbol in the row and column
 represents its use to the right of the decimal point position.
 </para>
       </section>
@@ -1856,7 +1976,7 @@ determining the size of the item (in terms of standard data format characters).
           </listitem>
           <listitem>
             <para>
-If the optional SEPARATE CHARACTER phrase is present,  then:
+If the optional SEPARATE CHARACTER phrase is present, then:
 </para>
             <orderedlist>
               <listitem>
@@ -2287,8 +2407,20 @@ USAGE IS DISPLAY).
   </section>
   <section>
     <title>PROCEDURE DIVISION IN THE NUCLEUS</title>
+    <indexterm>
+      <primary>Procedure Division in Nucleus</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Nucleus, Procedure Division in</primary>
+    </indexterm>
     <section>
       <title>CONDITIONAL EXPRESSIONS</title>
+      <indexterm>
+        <primary>Conditional Expressions</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Expressions, Conditional</primary>
+      </indexterm>
       <para>
          Conditional expressions identify conditions that art, tested to enable
   the object program to select between alternate paths of control depending
@@ -2316,6 +2448,12 @@ USAGE IS DISPLAY).
           <title>Relation Condition</title>
           <indexterm>
             <primary>Conditions, Relation</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Operand Comparison</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Relation Condition</primary>
           </indexterm>
           <para>
          A relation condition causes a comparison of two operands, each of which
@@ -2417,6 +2555,9 @@ underlined to avoid confusion with other symbols such as '&#x2265;' (Greater tha
             <indexterm>
               <primary>Comparison of Numeric</primary>
             </indexterm>
+            <indexterm>
+              <primary>Numeric Operands</primary>
+            </indexterm>
             <para>
 For operands whose class is numeric a
 comparison is made with respect to the algebraic value of the operands. The
@@ -2447,7 +2588,7 @@ literal, the numeric operand is treated as though it were moved to an
 elementary alphanumeric data item of the same size as the numeric data
 item (in terms of standard data format characters), and the contents of
 this alphanumeric data item were then compared to the nonnumeric
-operand.    (See THE MOVE STATEMENT in this Chapter, and the PICTURE
+operand. (See THE MOVE STATEMENT in this Chapter, and the PICTURE
 Character 'P' under the heading Symbols Used earlier in this Chapter).
 </para>
               </listitem>
@@ -2457,13 +2598,13 @@ If the numeric operand is a group item, the numeric operand is treated
 as though it were moved to a group item of the same size as the numeric
 data item (in terms of standard data format characters), and the
 contents of this group item were then compared to the nonnumeric
-operand.    (See THE MOVE STATEMENT in this Chapter, and the PICTURE
+operand. (See THE MOVE STATEMENT in this Chapter, and the PICTURE
 character 'P' under the Heading Symbols Used earlier in this Chapter).
 </para>
               </listitem>
               <listitem>
                 <para>
-A non-integer numeric operand cannot be compared to a  nonnumeric operand.
+A non-integer numeric operand cannot be compared to a nonnumeric operand.
 </para>
               </listitem>
             </orderedlist>
@@ -2513,7 +2654,7 @@ right by sufficient spaces to make the operands of equal size.
           </indexterm>
           <para>
 The class condition determines whether the operand is numeric, that is,
-consists entirely of the characters '0', '1', '2', '3', ...,   '9', with or
+consists entirely of the characters '0', '1', '2', '3', ..., '9', with or
 without the operational sign, or alphabetic, that is, consists entirely of
 the characters 'A', 'B', 'C', ..., 'Z', space. The general format for the
 class condition is as follows:
@@ -2590,6 +2731,12 @@ associated with a result of an arithmetic operation.
 </para>
       <section xml:id="c03.rounded">
         <title>The Rounded Phrase</title>
+        <indexterm>
+          <primary>ROUNDED Phrase</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Phrase, ROUNDED</primary>
+        </indexterm>
         <para>
 If, after decimal point alignment, the number of places in the fraction
 of the result of an arithmetic operation is greater than the number of
@@ -2610,6 +2757,9 @@ rightmost integer position for which storage is allocated.
         <title>The Size Error Phrase</title>
         <indexterm>
           <primary>SIZE ERROR Phrase</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Phrase, SIZE ERROR</primary>
         </indexterm>
         <para>
 If, after decimal point alignment, the absolute value of a result
@@ -2647,6 +2797,9 @@ the SIZE ERROR phrase is executed.
         <indexterm>
           <primary>Arithmetic Statements</primary>
         </indexterm>
+        <indexterm>
+          <primary>Statements, Arithmetic</primary>
+        </indexterm>
         <para>
         The arithmetic statements are the ADD, DIVIDE, MULTIPLY, and SUBTRACT
    statements. Common features are as follows:
@@ -2675,6 +2828,9 @@ must not contain more than 18 decimal digits.
         <title>Overlapping Operands</title>
         <indexterm>
           <primary>Overlapping Operands</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Operand, Overlapping</primary>
         </indexterm>
         <para>
 When a sending and a receiving item in an arithmetic statement or an
@@ -3434,8 +3590,8 @@ character), however, displays only one space character.</phrase>
           <listitem>
             <para>
               <phrase role="extension">The CRT-UNDER phrase causes the elementary items moved to the CRT to be
-displayed with the underline feature present.  This feature is
-dependent on the CRT hardware functions and is not available on all makes of CRT
+displayed with the underline feature present.
+This feature is dependent on the CRT hardware functions and is not available on all makes of CRT
  (see the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>).</phrase>
             </para>
           </listitem>
@@ -4135,7 +4291,7 @@ redefined data item.
               </listitem>
               <listitem>
                 <para>
-If any of the identifier-1,   identifier-3,  identifier-4,
+If any of the identifier-1, identifier-3, identifier-4,
 identifier-5, identifier-6 or identifier-7 are described as signed
 numeric, the data item is inspected as though it had been moved to
 an unsigned numeric data item of the same length and then the
@@ -4215,7 +4371,7 @@ character position. When this occurs, inspection is terminated.
               </listitem>
               <listitem>
                 <para>
-If the CHARACTERS phrase is specified,    an implied one character
+If the CHARACTERS phrase is specified, an implied one character
 operand participates in the cycle described in paragraphs 5a
 through 5d above, except that no comparison to the contents of the
 data item referenced by identifier-1 takes place. This implied
@@ -4236,8 +4392,7 @@ The comparison operation defined in general rule 5 is affected by the
                 <para>
 If the BEFORE or AFTER phrase is not specified, literal-1,
 literal-3 or the implied operand of the CHARACTERS phrase
-participates in the comparison operation as described in general
-rule 5.
+participates in the comparison operation as described in general rule 5.
 </para>
               </listitem>
               <listitem>
@@ -4250,7 +4405,7 @@ identifier-1 from its leftmost character position up to, but not
 including, the first occurrence of literal-2, literal-5 within the
 contents of the data item referenced by identifier-1. The
 position of this first occurrence is determined before the first
-cycle of the comparison operation described in general rule S is
+cycle of the comparison operation described in general rule 5 is
 begun. If, on any comparison cycle, literal-1, literal-3 or the
 implied operand of the CHARACTERS phrase is not eligible to
 participate, it is considered not to match the contents of the
@@ -4258,8 +4413,7 @@ data item referenced by identifier-1. If there is no occurrence
 of literal-2 literal-5 within the contents of the data item
 referenced by identifier-1, its associated literal-1, literal-3,
 or the implied operand of the CHARACTERS phrase participates in
-the comparison operation as though the BEFORE phrase had not been
-specified.
+the comparison operation as though the BEFORE phrase had not been specified.
 </para>
               </listitem>
               <listitem>
@@ -4270,11 +4424,11 @@ participate only in those comparison cycles which involve that
 portion of the contents of the data item referenced by
 identifier-1 from the character position immediately to the right
 of the rightmost character position of the first occurrence of
-literal-2, literal-5 within the contents of        .the data item
+literal-2, literal-5 within the contents of the data item
 referenced by identifier-1 and the rightmost character position
 of the data item referenced by identifier-1. The position of this
 first occurrence is determined before the first cycle of the
-comparison operation described in general rule S is begun. If, on
+comparison operation described in general rule 5 is begun. If, on
 any comparison cycle, literal-1, literal-3 or the implied operand
 of the CHARACTERS phrase is not eligible to participate, it is
 considered not to match the contents of the data item referenced
@@ -4305,7 +4459,7 @@ initialized by the execution of the INSPECT statement.
             <orderedlist>
               <listitem>
                 <para>
-If   the ALL phrase is specified, the contents of the data item
+If the ALL phrase is specified, the contents of the data item
 referenced by identifier-2 is incremented by one for each
 occurrence of literal-1 matched within the contents of the data
 item referenced by identifier-1.
@@ -4318,15 +4472,14 @@ referenced by identifier-2 are incremented by one for each
 contiguous occurrence of literal-1 matched within the contents of
 the data item referenced by identifier-1, provided that the
 leftmost such occurrence is at the point where comparison began in
-the first comparison cycle in which literal-1 was eligible to
-participate.
+the first comparison cycle in which literal-1 was eligible to participate.
 </para>
               </listitem>
               <listitem>
                 <para>
-If the CHARACTERS phrase is specified,   the contents of the data
+If the CHARACTERS phrase is specified, the contents of the data
 item referenced by identifier-2 are incremented by one for each
-character matched, in the sense of general rule Se, within the
+character matched, in the sense of general rule 5e, within the
 contents of the data item referenced by identifier-1.
 </para>
               </listitem>
@@ -4350,7 +4503,7 @@ The rules for replacement are as follows:
               <listitem>
                 <para>
 When the CHARACTERS phrase is specified, each character matched
-in the sense of general rule Se in the contents of the data item
+in the sense of general rule 5e in the contents of the data item
 referenced by identifier-1 is replaced by literal-4.
 </para>
               </listitem>
@@ -4367,8 +4520,7 @@ When the adjective LEADING is specified, each contiguous
 occurrence of literal-3 matched in the contents of the data item
 referenced by identifier-1 is replaced by literal-4, provided that
 the leftmost occurrence is at the point where comparison began in
-the first comparison cycle in which literal-3 was eligible to
-participate.
+the first comparison cycle in which literal-3 was eligible to participate.
 </para>
               </listitem>
               <listitem>
@@ -4406,8 +4558,8 @@ EXAMPLES
 Four examples of the use of the INSPECT statement follow:
 </para>
         <programlisting>
-INSPECT word TALLYING count FOR ALL "L", REPLACING LEADING "A" BY "E" AFTER
-INITIAL "L".
+INSPECT word TALLYING count FOR ALL "L", REPLACING LEADING "A" BY "E"
+AFTER INITIAL "L".
 </programlisting>
         <para>
           <literallayout>
@@ -4426,8 +4578,8 @@ INSPECT word REPLACING ALL "A" BY "G" BEFORE INITIAL "X".
 </literallayout>
         </para>
         <programlisting>
-INSPECT word TALLYING count FOR CHARACTERS AFTER INITIAL "J" REPLACING ALL
-"A" BY "B"
+INSPECT word TALLYING count FOR CHARACTERS AFTER INITIAL "J"
+REPLACING ALL "A" BY "B"
 </programlisting>
         <para>
           <literallayout>
@@ -4551,7 +4703,7 @@ data item must not be moved to a numeric or numeric edited data item.
               </listitem>
               <listitem>
                 <para>
-A numeric literal, the figurative cons t ant ZERO, a numeric data
+A numeric literal, the figurative constant ZERO, a numeric data
 item or a numeric edited data item must not be moved to an alphabetic data item.
 </para>
               </listitem>

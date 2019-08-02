@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>SEGMENTATION</title>
+  <indexterm>
+    <primary>Segmentation</primary>
+  </indexterm>
   <section>
     <title>INTRODUCTION TO THE SEGMENTATION MODULE</title>
     <para>
-      The Segmentation module provides a capability to specify object program
+The Segmentation module provides a capability to specify object program
 overlay requirements.
 </para>
     <para>
@@ -28,8 +31,20 @@ requirements for an object program.
       </para>
     <section>
       <title>ORGANIZATION</title>
+      <indexterm>
+        <primary>Organisation, Segmentation</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Segmentation Organisation</primary>
+      </indexterm>
       <section>
         <title>Program Segments</title>
+        <indexterm>
+          <primary>Program Segments</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Segments, Program</primary>
+        </indexterm>
         <para>
 Although it is not mandatory, the Procedure Division for a source
 program is usually written as a consecutive group of sections, each of which
@@ -42,6 +57,12 @@ one of the independent segments of the object program.
       </section>
       <section>
         <title>Fixed Portion</title>
+        <indexterm>
+          <primary>Fixed Portion</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Portion, Fixed</primary>
+        </indexterm>
         <para>
 The fixed portion is defined as that part of the object program which
 is logically treated as if it were always in memory. This portion of the
@@ -54,6 +75,12 @@ cannot be overlaid by any other part of the program.
       </section>
       <section>
         <title>Independent Segments</title>
+        <indexterm>
+          <primary>Independent Segments</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Segments, Independent</primary>
+        </indexterm>
         <para>
 An independent segment is defined as part of the object program which
 can overlay, and can be overlaid by another independent segment. An
@@ -99,8 +126,12 @@ execution of an EXIT PROGRAM statement.
     </section>
     <section>
       <title>SEGMENTATION CLASSIFICATION</title>
-      <indexterm><primary>Segmentation Classification</primary></indexterm>
-      <indexterm><primary>Classification, Segmentation</primary></indexterm>
+      <indexterm>
+        <primary>Segmentation Classification</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Classification, Segmentation</primary>
+      </indexterm>
       <para>
 Sections which are to be segmented are classified, using a system of
 segment-numbers and the following criteria:
@@ -132,6 +163,9 @@ with one another should be given the same segment-numbers
     </section>
     <section>
       <title>SEGMENTATION CONTROL</title>
+      <indexterm>
+        <primary>Segmentation Control</primary>
+      </indexterm>
       <para>
 The logical sequence of the program is the same as the physical
 sequence except for specific transfers of control. Control may be
@@ -142,6 +176,12 @@ it is not mandatory to transfer control to the beginning of a section.
   </section>
   <section>
     <title>STRUCTURE OF PROGRAM SEGMENTS</title>
+    <indexterm>
+      <primary>Program Structure</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Structure, Program Segments</primary>
+    </indexterm>
     <section>
       <title>SEGMENT-NUMBERS</title>
       <para>
@@ -217,6 +257,9 @@ a different segment-number.
     </section>
     <section>
       <title>THE PERFORM STATEMENT</title>
+      <indexterm>
+        <primary>PERFORM Statement</primary>
+      </indexterm>
       <para>
 A PERFORM statement that appears in a section that is not in an
 independent segment can have within its range, in addition to any
@@ -257,6 +300,12 @@ independent segment as that PERFORM statement.
   </section>
   <section>
     <title>EXTRA INTERMEDIATE CODE FILES</title>
+    <indexterm>
+      <primary>Extra Intermediate Code Files</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Intermediate Code Files, Extra</primary>
+    </indexterm>
     <para>
       <phrase role="extension">When segmentation is used, extra intermediate code files are generated
 by the compiler as follows:</phrase>

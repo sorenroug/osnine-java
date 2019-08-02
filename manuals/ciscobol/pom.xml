@@ -12,7 +12,7 @@
 
   <groupId>roug.org.osnine</groupId>
   <artifactId>ciscobol</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
   <name>CIS COBOL Reference Manual</name>
   <packaging>pom</packaging>
 
@@ -61,7 +61,22 @@
         <version>2.0.17</version>
         <executions>
           <execution>
-            <id>assembler</id>
+            <id>operatingguide</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+              <!--<goal>generate-xhtml5</goal>-->
+            </goals>
+            <configuration>
+              <draftMode>no</draftMode>
+              <sourceDirectory>${basedir}/src</sourceDirectory>
+              <foCustomization>src/style.xslt</foCustomization>
+              <includes>operatingguide.xml</includes>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>language-reference</id>
             <phase>compile</phase>
             <goals>
               <goal>generate-pdf</goal>
@@ -75,6 +90,7 @@
               <includes>ciscobol-language-reference-v4.5.xml</includes>
             </configuration>
           </execution>
+
         </executions>
 
         <configuration>

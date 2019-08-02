@@ -121,6 +121,12 @@ Operating Guide.
 </para>
     <section>
       <title>PROGRAM STRUCTURE</title>
+      <indexterm>
+        <primary>Program Structure</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Structure, Program</primary>
+      </indexterm>
       <para>
      A COBOL program consists of four divisions:
 </para>
@@ -165,6 +171,12 @@ and constitute a program instruction.
     <title>FORMATS AND RULES</title>
     <section>
       <title>GENERAL FORMAT</title>
+    <indexterm>
+      <primary>General Formats</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Formats, General</primary>
+    </indexterm>
       <para>
      A general format is the specific arrangement of the elements of a
 clause or a statement, Throughout this document a format is shown adjacent
@@ -179,6 +191,9 @@ than that shown. Applications, requirements or restrictions are shown as rules.
     </section>
     <section>
       <title>SYNTAX RULES</title>
+    <indexterm>
+      <primary>Syntax Rules</primary>
+    </indexterm>
       <para>
 Syntax rules are those rules that define or clarify the order in which
 words or elements are arranged to form larger elements such as phrases,
@@ -193,6 +208,9 @@ on what each element may represent.
     </section>
     <section>
       <title>GENERAL RULES</title>
+      <indexterm>
+        <primary>Rules, General</primary>
+      </indexterm>
       <para>
 A general rule is a rule that defines or clarifies the meaning or
 relationship of meanings of an element or set of elements. It is used to
@@ -202,6 +220,9 @@ on either execution or compilation.
     </section>
     <section>
       <title>ELEMENTS</title>
+      <indexterm>
+        <primary>Elements</primary>
+      </indexterm>
       <para>
 Elements which make up a clause or a statement consist of uppercase
 words, lowercase words, level-numbers, brackets, braces, connectives and
@@ -211,12 +232,12 @@ special characters (see Chapter 2).
   </section>
   <section>
     <title>SOURCE FORMAT</title>
-      <indexterm>
-        <primary>Source Format</primary>
-      </indexterm>
-      <indexterm>
-        <primary>Formats, Source</primary>
-      </indexterm>
+    <indexterm>
+      <primary>Source Format</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Formats, Source</primary>
+    </indexterm>
     <para>
 The COBOL source format divides each COBOL source record into 72 columns.
 These columns are used in the following way:
@@ -362,7 +383,7 @@ Figure 1-1 shows the source format of a typical program.
 000560     DISPLAY SPACE.                                               00A9
 000570     DISPLAY "END OF PROGRAM".                                    00AC
 000580     STOP RUN.                                                    00BD
-** CI5 COBOL V4.5 REVISION 4                                  URN AA/0000/AA
+** CIS COBOL V4.5 REVISION 4                                  URN AA/0000/AA
 ** COMPILER COPYRIGHT (C) 1978,1982 MICRO FOCUS LTD
 ** ERRORS=00000 DATA=00768 CODE=00256 DICT=00409:20662/21071 GSA FLAGS=  OFF
 <---->|<--><-----------------------------------------------------------><---->

@@ -20,8 +20,20 @@ is loaded dynamically by the Run Time System. Communication is provided by:
   </section>
   <section>
     <title>DATA DIVISION IN THE INTER-PROGRAM COMMUNICATION MODULE</title>
+    <indexterm>
+      <primary>Data Division in Inter-Program</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Inter-Program Communication, Data Division</primary>
+    </indexterm>
     <section>
       <title>LINKAGE SECTION</title>
+    <indexterm>
+      <primary>Linkage Section</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Section, Linkage</primary>
+    </indexterm>
       <para>
 The Linkage Section in a program is meaningful if and only if the object
 program is to function under the control of a CALL statement, and the CALL
@@ -58,8 +70,8 @@ in the Linkage Section of the called program must not be associated with
 data items defined in the Report Section of the calling program.
 </para>
       <para>
-Of those items defined in the Linkage Section only data-name-1, data-name-2,
-...  in the USING phrase of the Procedure Division header, data items
+Of those items defined in the Linkage Section only data-name-1, data-name-2, ...
+in the USING phrase of the Procedure Division header, data items
 subordinate to these data-names, and condition-names and/or
 index-names associated with such data-names and/or subordinate data items,
 may be referenced in the Procedure Division.
@@ -98,8 +110,14 @@ description of the item if necessary.
     <indexterm>
       <primary>Procedure Division in the Inter-Program Communication Module</primary>
     </indexterm>
+    <indexterm>
+      <primary>Inter-Program Communication, Procedure Division</primary>
+    </indexterm>
     <section>
       <title>THE PROCEDURE DIVISION HEADER</title>
+      <indexterm>
+        <primary>Procedure Division Header</primary>
+      </indexterm>
       <para>
 The Procedure Division is identified by and must begin with the following
 header:

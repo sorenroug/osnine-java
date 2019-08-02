@@ -1,10 +1,15 @@
 <?xml version="1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>PROGRAMMING TECHNIQUES, USEFUL HINTS AND PROGRAM SIZING</title>
+  <titleabbrev>PROGRAMMING TECHNIQUES</titleabbrev>
   <section>
     <title>PROGRAMMING TECHNIQUES</title>
-    <indexterm><primary>Programming Techniques</primary></indexterm>
-    <indexterm><primary>Techniques, Programming</primary></indexterm>
+    <indexterm>
+      <primary>Programming Techniques</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Techniques, Programming</primary>
+    </indexterm>
     <para>
 Although COBOL is written in an essentially free form, the user will
 nevertheless obtain many advantages from a few self-imposed disciplines. It
@@ -76,8 +81,12 @@ program.
   </section>
   <section>
     <title>USEFUL HINTS</title>
-    <indexterm><primary>Useful Hints</primary></indexterm>
-    <indexterm><primary>Hints, Useful</primary></indexterm>
+    <indexterm>
+      <primary>Useful Hints</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Hints, Useful</primary>
+    </indexterm>
     <para>
 When writing interactive programs the following facilities of CIS COBOL
 should be remembered:
@@ -133,6 +142,9 @@ required will result in an undefined file being accessed at run time.
 </para>
       </listitem>
     </orderedlist>
+    <indexterm>
+      <primary>Sizing</primary>
+    </indexterm>
     <table frame="all" colsep="1" rowsep="1">
       <title>Data Dictionary Entry Sizing</title>
       <tgroup cols="2">

@@ -6,6 +6,9 @@
     <indexterm>
       <primary>Concepts, Language</primary>
     </indexterm>
+    <indexterm>
+      <primary>Language Concepts</primary>
+    </indexterm>
     <section>
       <title>CHARACTER SET</title>
       <indexterm>
@@ -104,6 +107,12 @@ of the characters from the ASCII character set. See Appendix B.
     </section>
     <section>
       <title>LANGUAGE STRUCTURE</title>
+      <indexterm>
+        <primary>Language Structure</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Structure, Language</primary>
+      </indexterm>
       <para>
 The individual characters of the language are concatenated to form
 character-strings and separators. A separator may be concatenated with
@@ -113,6 +122,9 @@ and separators forms the text of a source program.
 </para>
       <section>
         <title>Separators</title>
+        <indexterm>
+          <primary>Separators</primary>
+        </indexterm>
         <para>
 A separator is a string of one or more punctuation characters. The
 rules for formation of separators are:
@@ -129,8 +141,8 @@ used as a separator, more than one space may be used.
 The punctuation characters comma,  semicolon and period,  when
 immediately followed by a space, are separators. These separators
 may appear in a COBOL source program only where explicitly permitted by
-the general formats, by format punctuation rules (see
-FORMATS AND RULES in Chapter 1), by statement and sentence structure
+the general formats, by format punctuation rules
+(see FORMATS AND RULES in Chapter 1), by statement and sentence structure
 definitions (see STATEMENTS AND SENTENCES in this Chapter), or
 reference format rules (see REFERENCE FORMAT in this Chapter).
 </para>
@@ -222,6 +234,15 @@ forms a user defined word, a system-name, or a reserved word. Within a
 given source program these classes form disjoint sets; a COBOL word may
 belong to one and only one of these classes.
 </para>
+          <indexterm>
+            <primary>User-Defined Words</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Words, User Defined</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Name, User-Defined</primary>
+          </indexterm>
           <para>
 User-Defined Words:  A user-defined word is a COBOL word that must be
 supplied by the user to satisfy the format of a clause or statement. Each
@@ -284,11 +305,11 @@ paragraph-name or section-name.
             <varlistentry>
               <term>Condition-Name:</term>
               <listitem>
-                <para>A condition-name is a name which is assigned to a
-          specific value, set of values, or range of values,
-          within a complete set of values that a data item may
-          assume. The data item itself is called a conditional
-          variable.
+                <para><indexterm><primary>Condition-Name</primary></indexterm><indexterm><primary>Name, Condition</primary></indexterm>
+A condition-name is a name which is assigned to a
+specific value, set of values, or range of values,
+within a complete set of values that a data item may
+assume. The data item itself is called a conditional variable.
       </para>
                 <para>
           Condition-names may be defined in the Data Division or
@@ -307,28 +328,31 @@ paragraph-name or section-name.
             <varlistentry>
               <term>Mnemonic-Name:</term>
               <listitem>
-                <para>      A mnemonic-name assigns a user-defined word to an
-          implementor-name. These associations are established in
-          the SPECIAL-NAMES paragraph of the Environment Division.
-          (See SPECIAL-NAMES in Chapter 3).</para>
+                <para><indexterm><primary>Mnemonic-Name</primary></indexterm><indexterm><primary>Name, Mnemonic</primary></indexterm>
+A mnemonic-name assigns a user-defined word to an
+implementor-name. These associations are established in
+the SPECIAL-NAMES paragraph of the Environment Division.
+(See SPECIAL-NAMES in Chapter 3).</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Paragraph-Name:</term>
               <listitem>
-                <para>     A paragraph-name is a word which names a paragraph in
-          the Procedure Division. Paragraph-names are equivalent
-          if, and only if, they are composed of the same sequence
-          of the same number of digits and/or characters.</para>
+                <para><indexterm><primary>Paragraph-Name</primary></indexterm><indexterm><primary>Name, Paragraph</primary></indexterm>
+A paragraph-name is a word which names a paragraph in
+the Procedure Division. Paragraph-names are equivalent
+if, and only if, they are composed of the same sequence
+of the same number of digits and/or characters.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Section-Name:</term>
               <listitem>
-                <para>       A section-name is a word which names a section in the
-          Procedure Division. Section names are equivalent if, and
-          only if, they are composed of the same sequence of the
-          same number of digits and/or characters.</para>
+                <para><indexterm><primary>Section-Name</primary></indexterm><indexterm><primary>Name, Section</primary></indexterm>
+A section-name is a word which names a section in the
+Procedure Division. Section names are equivalent if, and
+only if, they are composed of the same sequence of the
+same number of digits and/or characters.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -341,12 +365,13 @@ paragraph-name or section-name.
             <varlistentry>
               <term>System-Names:</term>
               <listitem>
-                <para>A system-name is a COBOL word which is used to
-         communicate with the operating environment. Each
-          character used in the formation of a system-name must be
-          selected from the set of characters 'A', 'B' , 'C', ...
-          'Z', <phrase role="extension">'a','b', ... 'z',</phrase> '0' ... '9' and'-', except that
-          the '- ' may not appear as the first or last character.
+                <para><indexterm><primary>System-Name</primary></indexterm><indexterm><primary>Name, System</primary></indexterm>
+A system-name is a COBOL word which is used to
+communicate with the operating environment. Each
+character used in the formation of a system-name must be
+selected from the set of characters 'A', 'B' , 'C', ...
+'Z', <phrase role="extension">'a','b', ... 'z',</phrase> '0' ... '9' and'-', except that
+the '- ' may not appear as the first or last character.
       </para>
                 <para>
           There are three types of system-names:
@@ -374,6 +399,12 @@ paragraph-name or section-name.
               <term>Reserved Words:</term>
               <listitem>
                 <para>
+    <indexterm>
+      <primary>Words, Reserved</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Reserved Words</primary>
+    </indexterm>
 A reserved word is a COBOL word that is one of a
 specified list of words which may be used in COBOL
 source programs, but which must not appear in the
@@ -409,13 +440,13 @@ general formats. (See Appendix A).
             <varlistentry>
               <term>Key Words:</term>
               <listitem>
-                <para>A key word is a word whose presence is required when the
-        format in which the word appears is used in a source
-        program. Within each format, such words are uppercase
-        and underlined.
+                <para><indexterm><primary>Words, Key</primary></indexterm>
+A key word is a word whose presence is required when the
+format in which the word appears is used in a source
+program. Within each format, such words are uppercase and underlined.
       </para>
                 <para>
-        Key words are of three types:
+Key words are of three types:
       </para>
                 <orderedlist spacing="compact">
                   <listitem>
@@ -433,24 +464,27 @@ general formats. (See Appendix A).
             <varlistentry>
               <term>Optional Words:</term>
               <listitem>
-                <para>Within each format, uppercase words that are not
-        underlined are called optional words and may appear at
-        the user's option. The presence or absence of an
-        optional word does not alter the semantics of the COBOL
-        program in which it appears.</para>
+                <para><indexterm><primary>Words, Optional</primary></indexterm>
+Within each format, uppercase words that are not
+underlined are called optional words and may appear at
+the user's option. The presence or absence of an
+optional word does not alter the semantics of the COBOL
+program in which it appears.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Connectives:</term>
               <listitem>
-                <para>Series connectives link two or more consecutive
-        operands:  , (separator comma)  or ; (separator semicolon).</para>
+                <para><indexterm><primary>Connectives</primary></indexterm>
+Series connectives link two or more consecutive
+operands:  , (separator comma)  or ; (separator semicolon).</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Figurative Constants:</term>
               <listitem>
-                <para> Certain reserved words are used to name and reference
+                <para><indexterm><primary>Constants, Figurative</primary></indexterm><indexterm><primary>Figurative Constants</primary></indexterm>
+Certain reserved words are used to name and reference
 specific constant values. These reserved words are
 specified under Figurative Constant Values in this chapter.</para>
               </listitem>
@@ -469,7 +503,7 @@ to one of two types, nonnumeric or numeric.
             <varlistentry>
               <term>Nonnumeric Literals</term>
               <listitem>
-                <para>
+                <para><indexterm><primary>Literals, Nonnumeric</primary></indexterm><indexterm><primary>Nonnumeric Literals</primary></indexterm>
 A nonnumeric literal is a character-string delimited on
 both ends by quotation marks and consisting of any
 allowable character in the computer's character set.
@@ -491,7 +525,7 @@ of characters itself, except:
               </listitem>
             </varlistentry>
           </variablelist>
-          <para>
+          <para><indexterm><primary>Hexadecimal Characters</primary></indexterm>
 All other punctuation characters are part of the value of the nonnumeric
 literal rather than separators; all nonnumeric literal are category alphanumeric.
 (See <xref linkend="c03.picture"/> in chapter 3). <phrase role="extension">In addition, hexadecimal
@@ -503,7 +537,8 @@ nn may be repeated up to 128 times, but the number of hex digits must be even.</
             <varlistentry>
               <term>Numeric Literals</term>
               <listitem>
-                <para>A numeric literal is a character-string whose characters
+                <para><indexterm><primary>Literals, Numeric</primary></indexterm><indexterm><primary>Numeric Literals</primary></indexterm>
+A numeric literal is a character-string whose characters
 are selected from the digits '0' through '9', the plus
 sign, the minus sign, and/or the decimal point. The
 implementation allows for numeric literals of 1 through
@@ -550,6 +585,9 @@ numeric literals are as follows:
         </section>
         <section>
           <title>Figurative Constant Values</title>
+          <indexterm>
+            <primary>Figurative Constant Values</primary>
+          </indexterm>
           <para>
 Figurative Constant Values are generated by the compiler and referenced
 through the use of the reserved words given below. These words must not be
@@ -659,8 +697,7 @@ the length of the string is one character.
           <para>
 A figurative constant may be used wherever a literal appears in a
 format, except that whenever the literal is restricted to having only
-numeric characters in it, the only figurative constant permitted is ZERO
-(ZEROS, ZEROES).
+numeric characters in it, the only figurative constant permitted is ZERO (ZEROS, ZEROES).
 </para>
           <para>
 When the figurative constants HIGH-VALUE(S) or LOW-VALUE(S) are used in
@@ -700,6 +737,9 @@ govern their use.
           <indexterm>
             <primary>Comment Entries</primary>
           </indexterm>
+          <indexterm>
+            <primary>Entries, Comment</primary>
+          </indexterm>
           <para>
 A comment-entry is an entry in the Identification Division that may be
 any combination of characters from the computer's character set.
@@ -731,6 +771,9 @@ nonnumeric data items.
         <title>Concept of Levels</title>
         <indexterm>
           <primary>Concepts, Levels</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Levels, Concepts of</primary>
         </indexterm>
         <para>
 A level concept is inherent in the structure of a logical record. This
@@ -871,6 +914,9 @@ of data items.
       </section>
       <section xml:id="c02.charrep">
         <title>Selection of Character Representation and Radix</title>
+        <indexterm>
+          <primary>Selection of Character</primary>
+        </indexterm>
         <indexterm>
           <primary>Character Representation and Radix</primary>
         </indexterm>
@@ -1088,7 +1134,13 @@ Table 2-4 shows the storage requirements for each COMP-3 clause.
         </orderedlist>
       </section>
       <section>
-        <title>Algebraic Signs<indexterm><primary>Algebraic Signs</primary></indexterm></title>
+        <title>Algebraic Signs</title>
+        <indexterm>
+          <primary>Algebraic Signs</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Signs, Algebraic</primary>
+        </indexterm>
         <para>
       Algebraic signs fall into two categories: operational signs, which are
 associated with signed numeric data items and signed numeric literals to
@@ -1107,7 +1159,16 @@ control symbols of THE PICTURE CLAUSE.
   </para>
       </section>
       <section>
-        <title>Standard Alignment Rules<indexterm><primary>Alignment Rules, Standard</primary></indexterm></title>
+        <title>Standard Alignment Rules</title>
+        <indexterm>
+          <primary>Standard Alignment Rules</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Alignment Rules, Standard</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Rules, Alignment, Standard</primary>
+        </indexterm>
         <para>
       The standard rules for positioning data within an elementary item
 depend on the category of the receiving item. These rules are:
@@ -1159,9 +1220,18 @@ standard rules are modified as described in THE JUSTIFIED CLAUSE in Chapter 3.
   </para>
       </section>
       <section>
-        <title>Uniqueness of Reference<indexterm><primary>Uniqueness of Reference</primary></indexterm></title>
+        <title>Uniqueness of Reference</title>
+        <indexterm>
+          <primary>Uniqueness of Reference</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Reference, Uniqueness of</primary>
+        </indexterm>
         <section>
-          <title>Subscripting<indexterm><primary>Subscripting</primary></indexterm></title>
+          <title>Subscripting</title>
+          <indexterm>
+            <primary>Subscripting</primary>
+          </indexterm>
           <para>
       Subscripts can be used only when reference is made to an individual
 element within a list or table of like elements that have not been assigned
@@ -1181,8 +1251,7 @@ is delimited by the balanced pair of separators left parenthesis and right
 parenthesis following the table element data-name. The table element
 data-name appended with a subscript is called a subscripted data-name or an
 identifier. When more than one subscript is required, they are written in
-the order of successively less inclusive dimensions of the data
-organization.
+the order of successively less inclusive dimensions of the data organization.
 </para>
           <para>
 The format is:
@@ -1193,6 +1262,9 @@ The format is:
         </section>
         <section>
           <title>Indexing</title>
+          <indexterm>
+            <primary>Indexing</primary>
+          </indexterm>
           <para>
       References can be made to individual elements within a table of like
 elements by specifying indexing for that reference. An index is assigned to
@@ -1299,10 +1371,13 @@ The general format for indexing is:
         </section>
         <section>
           <title>Identifier</title>
+          <indexterm>
+            <primary>Identifier</primary>
+          </indexterm>
           <para>
-          An identifier is a term used to reflect that a data-name, if not unique
-     in a program, must be followed by a syntactically correct combination of
-     subscripts or indices necessary to ensure uniqueness.
+An identifier is a term used to reflect that a data-name, if not unique
+in a program, must be followed by a syntactically correct combination of
+subscripts or indices necessary to ensure uniqueness.
 </para>
           <para>
 The general formats for identifiers are:
@@ -1395,6 +1470,9 @@ numeric integers.
         </section>
         <section>
           <title>Condition-Name</title>
+          <indexterm>
+            <primary>Condition-Name</primary>
+          </indexterm>
           <para>
 Each condition-name must be unique.
 </para>
@@ -1403,9 +1481,15 @@ Each condition-name must be unique.
     </section>
   </section>
   <section>
-    <title>PROGRAM STRUCTURE<indexterm><primary>Program Structure</primary></indexterm></title>
+    <title>PROGRAM STRUCTURE</title>
+    <indexterm>
+      <primary>Program Structure</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Structure, Program</primary>
+    </indexterm>
     <para>
-          A CIS COBOL program consists of four divisions:
+A CIS COBOL program consists of four divisions:
 </para>
     <orderedlist>
       <listitem>
@@ -1434,11 +1518,13 @@ Each division, is divided into sections which are further divided into
 paragraphs, which in turn are made up of sentences.
 </para>
     <section>
-      <title>
-        THE "ANSI SWITCH" COMPILER DIRECTIVE
-        <indexterm><primary>ANSI (ANS) Compiler Directive</primary></indexterm>
-        <indexterm><primary>Compiler Directive, ANSI</primary></indexterm>
-      </title>
+      <title>THE "ANSI SWITCH" COMPILER DIRECTIVE</title>
+      <indexterm>
+        <primary>ANSI (ANS) Compiler Directive</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Compiler Directive, ANSI</primary>
+      </indexterm>
       <para>
         <phrase role="extension">Some of the 'red-tape' statements required by a strict ANSI interpretation,
 are optional under CIS COBOL. It is possible to force the compiler to
@@ -1456,7 +1542,10 @@ directive in the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle>
     </section>
   </section>
   <section>
-    <title>IDENTIFICATION DIVISION<indexterm><primary>Identification Division</primary></indexterm></title>
+    <title>IDENTIFICATION DIVISION</title>
+    <indexterm>
+      <primary>Identification Division</primary>
+    </indexterm>
     <section>
       <title>GENERAL DESCRIPTION</title>
       <para>
@@ -1469,6 +1558,9 @@ such other information as desired under the paragraphs in the general format sho
     </section>
     <section>
       <title>ORGANISATION</title>
+      <indexterm>
+        <primary>Organisation, Identification Division</primary>
+      </indexterm>
       <para>
 Paragraph headers identify the type of information contained in the
 paragraph. The name of the program must be given in the first paragraph,
@@ -1479,15 +1571,15 @@ presentation shown by the format below.
     </section>
     <section>
       <title>STRUCTURE</title>
+      <indexterm>
+        <primary>Structure, Identification Division</primary>
+      </indexterm>
       <para>
 The following is the general format of the paragraphs in the
 Identification Division and it defines the order of presentation in the source program.
    </para>
       <section>
         <title>General format</title>
-        <indexterm>
-          <primary>General Formats</primary>
-        </indexterm>
         <cmdsynopsis>
           <arg choice="ansi">IDENTIFICATION DIVISION.</arg>
           <sbr/>
@@ -1525,6 +1617,9 @@ The Environment Division must be included in every COBOL source program.
     </section>
     <section>
       <title>ORGANIZATION</title>
+      <indexterm>
+        <primary>Organisation, Environment Division</primary>
+      </indexterm>
       <para>
       Two sections make up the Environment Division: the Configuration
 Section and the Input-Output Section.
@@ -1549,6 +1644,9 @@ I-O-CONTROL paragraph which defines special control techniques to be used in the
     </section>
     <section>
       <title>STRUCTURE</title>
+      <indexterm>
+        <primary>Structure, Environment Division</primary>
+      </indexterm>
       <para>
 The following is the general format of the sections and paragraphs in
 the Environment Division, and defines the order of presentation in the source program.
@@ -1612,6 +1710,9 @@ Constants which are defined by the user.
       <title>PHYSICAL AND LOGICAL ASPECTS OF DATA DESCRIPTION</title>
       <section>
         <title>Data Division Organization</title>
+        <indexterm>
+          <primary>Organisation, Data Division</primary>
+        </indexterm>
         <para>
 The DATA DIVISION which is one of the required divisions in a program,
 is subdivided into sections. These are the File, Working-Storage and
@@ -1633,6 +1734,9 @@ the called program. Its structure is the same as the WORKING-STORAGE SECTION.
       </section>
       <section>
         <title>General Format</title>
+        <indexterm>
+          <primary>Structure, Data Division</primary>
+        </indexterm>
         <para>
 The following gives the general format of the sections in the Data Division,
 and defines the order of their presentation in the source program.
@@ -1664,6 +1768,9 @@ This division may contain declarative procedures.
 </para>
       <section>
         <title>Declaratives</title>
+        <indexterm>
+          <primary>Declarations</primary>
+        </indexterm>
         <para>
 Declarative sections must be grouped at the beginning of the Procedure
 Division preceded by the key word DECLARATIVES and followed by the key words
@@ -1673,8 +1780,11 @@ and 7 and the Debug Chapter 10).
       </section>
       <section>
         <title>Procedures</title>
+        <indexterm>
+          <primary>Procedures</primary>
+        </indexterm>
         <para>
-A  procedure is composed of a paragraph, or group of successive
+A procedure is composed of a paragraph, or group of successive
 paragraphs <phrase role="extension">(the first paragraph-name is optional)</phrase>,
 or a section, or a group
 of successive sections within the Procedure Division. If one paragraph is in
@@ -1722,6 +1832,12 @@ unique reference to a data item.
       </section>
       <section>
         <title>Execution</title>
+        <indexterm>
+          <primary>Execution, Procedure Division</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Procedure Division, Execution</primary>
+        </indexterm>
         <para>
        Execution begins with the first statement of the Procedure Division,
 excluding declaratives. Statements are then executed in the order in which
@@ -1732,8 +1848,23 @@ other order.
       </section>
       <section>
         <title>General Format</title>
+        <indexterm>
+          <primary>Procedure Division, General</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Organisation, Procedure Division</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Structure, Procedure Division</primary>
+        </indexterm>
         <section>
           <title>Procedure Division Header</title>
+          <indexterm>
+            <primary>Procedure Division Header</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Header, Procedure Division</primary>
+          </indexterm>
           <para>
        The Procedure Division is identified by and must begin with the following header:
        </para>
@@ -1747,6 +1878,9 @@ other order.
           <title>Procedure Division Body</title>
           <indexterm>
             <primary>Body, Procedure Division</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Procedure Division, Body</primary>
           </indexterm>
           <para>
        The body of the Procedure Division must conform to one of the following formats:
@@ -1791,6 +1925,9 @@ Format 2 :
     </section>
     <section>
       <title>STATEMENTS AND SENTENCES</title>
+        <indexterm>
+          <primary>Sentences</primary>
+        </indexterm>
       <para>
        There are three types of statements:
        </para>
@@ -1879,6 +2016,9 @@ A CALL statement that specifies the ON OVERFLOW phrase.
       </section>
       <section>
         <title>Conditional Sentence</title>
+        <indexterm>
+          <primary>Sentences, Conditional</primary>
+        </indexterm>
         <para>
      A conditional sentence is a conditional statement, optionally preceded
 by an imperative statement, terminated by a period followed by a space.
@@ -1886,6 +2026,9 @@ by an imperative statement, terminated by a period followed by a space.
       </section>
       <section>
         <title>Compiler Directing Statement</title>
+        <indexterm>
+          <primary>Statements, Compiler Directing</primary>
+        </indexterm>
         <para>
      A compiler directing statement consists of a compiler directing verb
 and its operands. The compiler directing verbs are COPY, ENTER and USE (see
@@ -1896,6 +2039,9 @@ causes the compiler to take a specified action during compilation.
       </section>
       <section>
         <title>Compiler Directing Sentence</title>
+        <indexterm>
+          <primary>Sentences, Compiler Directing</primary>
+        </indexterm>
         <para>
      A compiler directing sentence is a single compiler directing statement
 terminated by a period followed by a space.
@@ -1977,6 +2123,9 @@ associated with a previous IF statement.
       </section>
       <section>
         <title>Imperative Sentence</title>
+        <indexterm>
+          <primary>Sentences, Imperative</primary>
+        </indexterm>
         <para>
 An imperative sentence is an imperative statement terminated by a period followed by a space.
 </para>
@@ -1985,6 +2134,9 @@ An imperative sentence is an imperative statement terminated by a period followe
   </section>
   <section>
     <title>REFERENCE FORMAT</title>
+    <indexterm>
+      <primary>Formats, Reference</primary>
+    </indexterm>
     <section>
       <title>GENERAL DESCRIPTION</title>
       <para>
@@ -2053,6 +2205,12 @@ Area B occupies character positions 12 through 72 inclusive; it begins immediate
       </figure>
       <section>
         <title>Sequence Numbers</title>
+        <indexterm>
+          <primary>Sequence Number</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Number, Sequence</primary>
+        </indexterm>
         <para>
 A sequence number, consisting of six digits in the sequence area, may
 be used to label a source program line.
@@ -2060,6 +2218,12 @@ be used to label a source program line.
       </section>
       <section>
         <title>Continuation of Lines</title>
+        <indexterm>
+          <primary>Continuation of Lines</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Lines, Continuation of</primary>
+        </indexterm>
         <para>
 Whenever a sentence, entry, phrase, or clause requires more than one
 line, it may be continued by starting subsequent line(s) in area B. These
@@ -2088,6 +2252,9 @@ that the last character in the preceding line is followed by a space.
         <indexterm>
           <primary>Blank Lines</primary>
         </indexterm>
+        <indexterm>
+          <primary>Lines, Blank</primary>
+        </indexterm>
         <para>
 A blank line is one that is blank from margin C to margin R, inclusive.
 A blank line can appear anywhere in the source program, except immediately
@@ -2097,14 +2264,41 @@ preceding a continuation line. (See Figure 2-1).
     </section>
     <section>
       <title>DIVISION, SECTION, PARAGRAPH FORMATS</title>
+      <indexterm>
+        <primary>Division Format</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Formats, Division</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Formats, Section</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Formats, Paragraph</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Paragraph Format</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Section Format</primary>
+      </indexterm>
       <section>
         <title>Division Header</title>
+        <indexterm>
+          <primary>Division Header</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Header, Division</primary>
+        </indexterm>
         <para>
      The division header must start in area A.  (See Figure 2-1).
 </para>
       </section>
       <section>
         <title>Section Header</title>
+        <indexterm>
+          <primary>Header, Section</primary>
+        </indexterm>
         <para>
      The section header must start in area A.  (See Figure 2-1).
 </para>
@@ -2115,6 +2309,9 @@ Divisions and Data Division entries in the Data Division.
       </section>
       <section>
         <title>Paragraph Header, Paragraph-Name and Paragraph</title>
+        <indexterm>
+          <primary>Header, Paragraph</primary>
+        </indexterm>
         <para>
      A paragraph consists of a paragraph-name followed by a period and a
 space and by zero, one or more sentences, or a paragraph header followed by
@@ -2209,6 +2406,9 @@ A and be followed by a period and a space (see Figure 2-1).
       <indexterm>
         <primary>Comment Lines</primary>
       </indexterm>
+      <indexterm>
+        <primary>Lines, Comment</primary>
+      </indexterm>
       <para>
 A comment line is any line with an asterisk in the continuation
 indicator area of the line. A comment line can appear as any line in a
@@ -2231,6 +2431,9 @@ indicator area.
     <title>RESERVED WORDS</title>
     <indexterm>
       <primary>Reserved Words</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Words, Reserved</primary>
     </indexterm>
     <para>
 A full list of reserved words is given in Appendix A.

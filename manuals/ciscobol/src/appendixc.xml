@@ -369,9 +369,9 @@ whose purpose is to specify an attribute of an entry.
         <term>Condition.</term>
         <listitem>
           <para>A status of a program at execution time for which a truth value
-can be determined. Where the term "condition" (condition-1,
-condition-2,) appears in these language specifications in or 1n
-reference to "condition" (condition-1, condition-2, ...) of a
+can be determined. Where the term <quote>condition</quote> (condition-1,
+condition-2,) appears in these language specifications in or in
+reference to <quote>condition</quote> (condition-1, condition-2, ...) of a
 general format, it is a conditional expression consisting of
 either a simple condition optionally parenthesised, or a negated
 simple condition.
@@ -468,7 +468,7 @@ relationship to one another.
       <varlistentry>
         <term>Currency Sign.</term>
         <listitem>
-          <para>The character "$" (dollar sign) in the CIS COBOL character set.
+          <para>The character <quote>$</quote> (dollar sign) in the CIS COBOL character set.
 </para>
         </listitem>
       </varlistentry>
@@ -544,7 +544,7 @@ position which the input/output control is currently referencing.</phrase>
         <listitem>
           <para>A user-defined word that names a data item described in a data
               description entry in the Data Division. When used in the general
-              formats , "data-name " represents a word which can neither be
+              formats , <quote>data-name</quote> represents a word which can neither be
               subscripted, nor indexed unless specifically permitted by the
               rules for that format.
 </para>
@@ -553,8 +553,7 @@ position which the input/output control is currently referencing.</phrase>
       <varlistentry>
         <term>Debugging Line.</term>
         <listitem>
-          <para>A debugging line is any line with "D" in the indicator area
-           of the line.
+          <para>A debugging line is any line with <quote>D</quote> in the indicator area of the line.
 </para>
         </listitem>
       </varlistentry>

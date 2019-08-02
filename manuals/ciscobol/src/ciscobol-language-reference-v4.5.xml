@@ -353,7 +353,7 @@ but is ignored when producing the object program.
   <xi:include href="appendixa.xml"/>
   <xi:include href="appendixb.xml"/>
   <xi:include href="appendixc.xml"/>
-  <xi:include href="appendixd.xml"/>
+  <xi:include href="compile-time-errors.xml"/>
   <appendix>
     <title>RUN-TIME ERRORS</title>
     <para>
@@ -748,6 +748,8 @@ Relative Select:
             </arg>
           </group>
         </arg>
+        <sbr/>
+        <arg choice="opt">; FILE STATUS IS data-name-2</arg>
       </cmdsynopsis>
       <para>
   Indexed Select:

@@ -20,6 +20,12 @@ passed back to the user. At this point, data areas may be inspected or changed.<
   </section>
   <section>
     <title>CIS COBOL RUN-TIME DEBUG EXTENSION</title>
+    <indexterm>
+      <primary>DEBUG, Run Time</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Run Time Debug</primary>
+    </indexterm>
     <para role="extension">
       <phrase role="extension">The Run-Time debug is entered as an option by the user and the user
 program is then tested line by line, paragraph by paragraph and so on as
@@ -79,6 +85,9 @@ items in DEBUG-ITEM are also reserved words.
       <title>COMPILE TIME SWITCH</title>
       <indexterm>
         <primary>Compile Time Debug Switch</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Switch, Compile Time Debug</primary>
       </indexterm>
       <para>
 The DEBUGGING MODE clause is written as part of the SOURCE-COMPUTER
@@ -179,6 +188,12 @@ and any debugging lines are compiled as if they were comment lines.
       </indexterm>
       <section>
         <title>The USE FOR DEBUGGING Statement</title>
+        <indexterm>
+          <primary>USE FOR DEBUGGING Statement</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Statement, USE FOR DEBUGGING</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -445,7 +460,7 @@ procedure-name-1 to be executed, the following conditions exist:
               <orderedlist numeration="loweralpha" spacing="compact">
                 <listitem>
                   <para>
-DEBUG-LINE identifies the PERFORM statement that references procedure-name 1.
+DEBUG-LINE identifies the PERFORM statement that references procedure-name-1.
 </para>
                 </listitem>
                 <listitem>
@@ -512,6 +527,9 @@ DEBUG-CONTENTS contains 'FALL THROUGH'.
       </section>
       <section>
         <title>DEBUGGING LINES</title>
+        <indexterm>
+          <primary>Lines, Debugging</primary>
+        </indexterm>
         <para>
 A debugging line is any line with a 'D' in the indicator area of the line.
 Any debugging line that consists solely of spaces from margin A to margin R

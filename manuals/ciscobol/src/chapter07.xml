@@ -3,16 +3,24 @@
   <title>INDEXED INPUT AND OUTPUT</title>
   <section>
     <title>INTRODUCTION TO THE INDEXED I-O MODULE</title>
+    <indexterm>
+      <primary>Indexed I-O Module</primary>
+    </indexterm>
     <para>
 The Indexed I-O module provides a capability to access records of a
-mass storage file in either a random or sequential manner. Each record in
-an indexed file is uniquely identified by the value of one key within that
-record.
+mass storage file in either a random or sequential manner.
+Each record in an indexed file is uniquely identified by the value of one key within that record.
 </para>
     <section>
       <title>LANGUAGE CONCEPTS</title>
+      <indexterm>
+        <primary>Language Concepts</primary>
+      </indexterm>
       <section>
         <title>Organization</title>
+      <indexterm>
+        <primary>Organisation, Indexed</primary>
+      </indexterm>
         <para>
 A file whose organization is indexed is a mass storage file in which
 data records may be accessed by the value of a key. A record description
@@ -31,7 +39,12 @@ See the <citetitle pubwork="book">CIS COBOL Operating Guide</citetitle> for the 
       </section>
       <section>
         <title>Access Modes</title>
-        <indexterm><primary>Access Mode</primary></indexterm>
+        <indexterm>
+          <primary>Access Mode</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Mode, Access</primary>
+        </indexterm>
         <para>
 In the sequential access mode, the sequence in which records are
 accessed is the ascending order of the record key values.
@@ -52,6 +65,9 @@ statements.
         <indexterm>
           <primary>Current Record Pointer</primary>
         </indexterm>
+        <indexterm>
+          <primary>Record Pointer, Current</primary>
+        </indexterm>
         <para>
      The current record pointer is a conceptual entity used in this document
 to facilitate specification of the next record to be accessed within a given
@@ -63,10 +79,10 @@ is affected only by the OPEN, START and READ statements.
       <section xml:id="sec7.i.o">
         <title>I-O Status</title>
         <indexterm>
-          <primary>FILE STATUS Clause</primary>
+          <primary>Input-Output Status</primary>
         </indexterm>
         <indexterm>
-          <primary>Clause, FILE STATUS</primary>
+          <primary>Status, Input-Output</primary>
         </indexterm>
         <para>
 If the FILE STATUS clause is specified in a file control entry, a value
@@ -77,6 +93,12 @@ the status or that input-output operation.
 </para>
         <section>
           <title>Status Key 1</title>
+          <indexterm>
+            <primary>Status Keys</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Keys, Status</primary>
+          </indexterm>
           <para>
 The leftmost character position of the FILE STATUS data item is known
 as status key 1 and is set to indicate one of the following conditions upon
@@ -344,8 +366,12 @@ is not affected.
         </section>
         <section>
           <title>The AT END Condition</title>
-          <indexterm><primary>AT END Condition</primary></indexterm>
-          <indexterm><primary>Conditions, AT END</primary></indexterm>
+          <indexterm>
+            <primary>AT END Condition</primary>
+          </indexterm>
+          <indexterm>
+            <primary>Conditions, AT END</primary>
+          </indexterm>
           <para>
 The AT END condition can occur as a result of the execution of a READ
 statement. For details of the causes of the condition,
@@ -357,12 +383,28 @@ see THE READ STATEMENT later in this Chapter.
   </section>
   <section>
     <title>ENVIRONMENT DIVISION IN THE INDEXED I-O MODULE</title>
+    <indexterm>
+      <primary>Environment Division in Indexed I-O</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Indexed I-O Module, Environment Division</primary>
+    </indexterm>
     <section>
       <title>INPUT-OUTPUT SECTION</title>
+      <indexterm>
+        <primary>Input-Output Section</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Section, Input-Output</primary>
+      </indexterm>
       <section>
         <title>The File Control Paragraph</title>
-        <indexterm><primary>FILE-CONTROL Paragraph</primary></indexterm>
-        <indexterm><primary>Paragraph, FILE-CONTROL</primary></indexterm>
+        <indexterm>
+          <primary>FILE-CONTROL Paragraph</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Paragraph, FILE-CONTROL</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -381,10 +423,18 @@ other file-related information. (See also appendix F in the
       </section>
       <section>
         <title>The File Control Entry</title>
-        <indexterm><primary>FILE-CONTROL Entry</primary></indexterm>
-        <indexterm><primary>Entry, FILE-CONTROL</primary></indexterm>
-        <indexterm><primary>SELECT Clause</primary></indexterm>
-        <indexterm><primary>Clause, SELECT</primary></indexterm>
+        <indexterm>
+          <primary>FILE-CONTROL Entry</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Entry, FILE-CONTROL</primary>
+        </indexterm>
+        <indexterm>
+          <primary>SELECT Clause</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Clause, SELECT</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -393,6 +443,12 @@ The file control entry names a file and may specify other file-related informati
         </section>
         <section>
           <title>General Format</title>
+        <indexterm>
+          <primary>FILE STATUS Clause</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Clause, FILE STATUS</primary>
+        </indexterm>
           <cmdsynopsis>
             <command>SELECT</command>
             <arg>file-name</arg>
@@ -471,7 +527,13 @@ assignments within any one ASSIGN clause are for documentation purposes only.</p
 </para>
             </listitem>
             <listitem>
-              <para><indexterm><primary>ORGANIZATION IS INDEXED</primary></indexterm><indexterm><primary>Clause, ORGANIZATION</primary></indexterm>
+              <indexterm>
+                <primary>ORGANIZATION IS INDEXED</primary>
+              </indexterm>
+              <indexterm>
+                <primary>Clause, ORGANIZATION</primary>
+              </indexterm>
+              <para>
 The ORGANIZATION clause specifies the logical structure of a file.
 The File organization is established at the time a file is created and
 cannot subsequently be changed.
@@ -506,9 +568,13 @@ sequentially and/or randomly. (See general rules 4 and 6).
 </para>
             </listitem>
             <listitem>
+              <indexterm>
+                <primary>RECORD KEY Clause</primary>
+              </indexterm>
+              <indexterm>
+                <primary>Clause, RECORD KEY</primary>
+              </indexterm>
               <para>
-        <indexterm><primary>RECORD KEY Clause</primary></indexterm>
-        <indexterm><primary>Clause, RECORD KEY</primary></indexterm>
 The RECORD KEY clause specifies the record key for a file. The values
 of a record key must be unique among records of the file. This record
 key provides an access path to records in an indexed file.
@@ -525,7 +591,12 @@ within a record must be the same as that used when the file was created.
       </section>
       <section>
         <title>The I-O Control Paragraph</title>
-        <indexterm><primary>Paragraph, I-O CONTROL</primary></indexterm>
+        <indexterm>
+          <primary>I-O Control Paragraph</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Paragraph, I-O CONTROL</primary>
+        </indexterm>
         <section>
           <title>Function</title>
           <para>
@@ -626,10 +697,20 @@ organization or access.
   </section>
   <section>
     <title>DATA DIVISION IN THE INDEXED I-O MODULE</title>
+    <indexterm>
+      <primary>Data Division in Indexed I-O</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Indexed I-O Module, Data Division</primary>
+    </indexterm>
     <section>
       <title>FILE SECTION</title>
-        <indexterm><primary>FILE Section</primary></indexterm>
-        <indexterm><primary>Section, FILE</primary></indexterm>
+      <indexterm>
+        <primary>FILE Section</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Section, FILE</primary>
+      </indexterm>
       <para>
 In a COBOL program the file description entry (FD) represents the
 highest level of organisation in the File Section. The File Section header
@@ -643,6 +724,12 @@ terminated by a period.
     </section>
     <section>
       <title>RECORD DESCRIPTION STRUCTURE</title>
+        <indexterm>
+          <primary>Record Description Structure</primary>
+        </indexterm>
+        <indexterm>
+          <primary>Structure, Record Description</primary>
+        </indexterm>
       <para>
 A record description consists of a set of data description entries
 which describe the characteristics of a particular record. Each data
@@ -657,6 +744,9 @@ description are shown in <xref linkend="c03.skeleton"/> in Chapter 3.
     </section>
     <section>
       <title>THE FILE DESCRIPTION - COMPLETE ENTRY SKELETON</title>
+        <indexterm>
+          <primary>File Description Entry</primary>
+        </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -859,8 +949,12 @@ The LABEL RECORDS clause specifies whether labels are present.
     </section>
     <section>
       <title>THE RECORD CONTAINS CLAUSE</title>
-        <indexterm><primary>RECORD CONTAINS Clause</primary></indexterm>
-        <indexterm><primary>Clause, RECORD CONTAINS</primary></indexterm>
+      <indexterm>
+        <primary>RECORD CONTAINS Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Clause, RECORD CONTAINS</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -886,8 +980,12 @@ description entry, therefore this clause is never required.
     </section>
     <section>
       <title>THE VALUE OF CLAUSE</title>
-        <indexterm><primary>VALUE OF Clause</primary></indexterm>
-        <indexterm><primary>Clause, VALUE OF</primary></indexterm>
+      <indexterm>
+        <primary>VALUE OF Clause</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Clause, VALUE OF</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -922,10 +1020,20 @@ A figurative constant may be substituted in the format above wherever a literal 
   </section>
   <section>
     <title>PROCEDURE DIVISION IN THE INDEXED I-O MODULE</title>
+    <indexterm>
+      <primary>Procedure Division in Indexed I-O</primary>
+    </indexterm>
+    <indexterm>
+      <primary>Indexed I-O Module, Procedure Division</primary>
+    </indexterm>
     <section>
       <title>THE CLOSE STATEMENT</title>
-      <indexterm><primary>CLOSE Statement</primary></indexterm>
-      <indexterm><primary>Statement, CLOSE</primary></indexterm>
+      <indexterm>
+        <primary>CLOSE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, CLOSE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -985,8 +1093,12 @@ record area undefined.
     </section>
     <section>
       <title>THE DELETE STATEMENT</title>
-      <indexterm><primary>DELETE Statement</primary></indexterm>
-      <indexterm><primary>Statement, DELETE</primary></indexterm>
+      <indexterm>
+        <primary>DELETE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, DELETE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1074,8 +1186,12 @@ FILE STATUS data item, if any, associated with file-name to be updated.
     </section>
     <section>
       <title>THE OPEN STATEMENT</title>
-      <indexterm><primary>OPEN Statement</primary></indexterm>
-      <indexterm><primary>Statement, OPEN</primary></indexterm>
+      <indexterm>
+        <primary>OPEN Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, OPEN</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1332,8 +1448,12 @@ deleted. If write protected, an error status occurs.</phrase>
     </section>
     <section>
       <title>THE READ STATEMENT</title>
-      <indexterm><primary>READ Statement</primary></indexterm>
-      <indexterm><primary>Statement, READ</primary></indexterm>
+      <indexterm>
+        <primary>READ Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, READ</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1396,8 +1516,12 @@ The NEXT phrase must be specified for files in dynamic access mode,
 </para>
           </listitem>
           <listitem>
-          <indexterm><primary>Conditions, INVALID KEY</primary></indexterm>
-          <indexterm><primary>INVALID KEY Condition</primary></indexterm>
+            <indexterm>
+              <primary>Conditions, INVALID KEY</primary>
+            </indexterm>
+            <indexterm>
+              <primary>INVALID KEY Condition</primary>
+            </indexterm>
             <para>
 The INVALID KEY phrase or the AT END phrase must be specified if no
           applicable USE procedure is specified for file-name.
@@ -1588,8 +1712,12 @@ Chapter).
     </section>
     <section>
       <title>THE REWRITE STATEMENT</title>
-      <indexterm><primary>REWRITE Statement</primary></indexterm>
-      <indexterm><primary>Statement, REWRITE</primary></indexterm>
+      <indexterm>
+        <primary>REWRITE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, REWRITE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1626,9 +1754,9 @@ The INVALID KEY phrase must be specified in the REWRITE statement for
 </para>
           </listitem>
         </orderedlist>
-        <para>
-General Rules
-</para>
+      </section>
+      <section>
+        <title>General Rules</title>
         <orderedlist>
           <listitem>
             <para>
@@ -1731,8 +1859,12 @@ record area is unaffected. (See <xref linkend="sec7.inv.key"/> in this Chapter).
     </section>
     <section>
       <title>THE START STATEMENT</title>
-      <indexterm><primary>START Statement</primary></indexterm>
-      <indexterm><primary>Statement, START</primary></indexterm>
+      <indexterm>
+        <primary>START Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, START</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1866,8 +1998,12 @@ associated with file-name.
     </section>
     <section>
       <title>THE USE STATEMENT</title>
-      <indexterm><primary>USE Statement</primary></indexterm>
-      <indexterm><primary>Statement, USE</primary></indexterm>
+      <indexterm>
+        <primary>USE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, USE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -1951,8 +2087,12 @@ Within a USE procedure, there must not be the execution of any
     </section>
     <section>
       <title>THE WRITE STATEMENT</title>
-      <indexterm><primary>WRITE Statement</primary></indexterm>
-      <indexterm><primary>Statement, WRITE</primary></indexterm>
+      <indexterm>
+        <primary>WRITE Statement</primary>
+      </indexterm>
+      <indexterm>
+        <primary>Statement, WRITE</primary>
+      </indexterm>
       <section>
         <title>Function</title>
         <para>
@@ -2018,17 +2158,16 @@ phrase is equivalent tn the execution of:
        <programlisting>
        MOVE identifier TO record-name
    </programlisting>
-              according to the rules specified for the MOVE statement, followed  by:
+according to the rules specified for the MOVE statement, followed  by:
 </para>
               </listitem>
               <listitem>
                 <para>
-              The same WRITE statement without the FROM phrase.
+The same WRITE statement without the FROM phrase.
 </para>
                 <para>
-              The contents of the record area prior t0 the execution of the
-              implicit MOVE statement have no effect on the execution of this
-              WRITE statement.
+The contents of the record area prior to the execution of the
+implicit MOVE statement have no effect on the execution of this WRITE statement.
 </para>
                 <para>
 After execution of the WRITE statement is complete, the
