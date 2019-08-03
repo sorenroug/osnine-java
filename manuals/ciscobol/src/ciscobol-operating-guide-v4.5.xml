@@ -649,6 +649,14 @@ Terminate in the same way as for STOCK1.
 The cycle for development and running of CIS COBOL application programs that
 must be performed by the programmer is as shown in Figure 1-1.
 </para>
+      <figure>
+        <title>Program Development Cycle.</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="right" width="2.5in" format="PNG" fileref="devcycle.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
       <para>
 PREPARATION:
 </para>
@@ -708,9 +716,6 @@ tested it may be permanently
 linked to the run-time system
 by use of the "=" option.
 See Chapter 3.
-</para>
-      <para>
-Figure 1 - 1.  Program Development Cycle.
 </para>
       <section>
         <title>PROGRAM PREPARATION CONSIDERATIONS</title>
@@ -859,7 +864,10 @@ the High Level of compiler certification of the GSA.
 Produces validation flags for only the CIS COBOL
 extensions to standard COBOL as it is specified in the
 ANSI COBOL Standard X.23 1974.
-(See the <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>).
+(See the <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>)<footnote><para>
+Up to version 4.4, the <emphasis>FLAG (level)</emphasis> directive was called the <emphasis>ANS switch</emphasis>.
+On older versions of the compiler, use <code>ANS</code> as substitute for <code>FLAG CIS</code>.
+</para></footnote>.
 </para>
             </listitem>
           </varlistentry>
@@ -1369,31 +1377,18 @@ code in memory. The user has the option to overlay optional modules to conserve 
 the CIS COBOL Interactive Debug may be invoked.  The memory layout of the Run Time
 System (RTS) is as shown in Figure 3-1.
 </para>
-          <!--
-+D
-
-Interactive Debug
-
-ANIMATOR (if available)
-
--D, +A
--A, +I
-
-Indexed Sequential
-
--I
-
-
-Nucleus
-
-Figure
-
-3-1.  Run Time System Memory Layout.
--->
+          <figure>
+            <title>Run Time System Memory Layout.</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" width="4in" format="PNG" fileref="rtsmemory.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
           <para>
 The default load position excludes the Debug and ANIMATOR modules but
 implies that Indexed Sequential is included.  The Debug module may be
-included and invoked by using the parameter "+D".
+included and invoked by using the parameter <quote>+D</quote>.
 </para>
           <para>
 The +A parameter invokes the ANIMATOR product and can be used only if you
@@ -1401,56 +1396,64 @@ have the ANIMATOR product.  See Chapter 7.
 </para>
           <para>
 To exclude the Indexed Sequential package and the optional modules above it
-(see Figure 3-1), the parameter "-I" should be given.
+(see Figure 3-1), the parameter <quote>-I</quote> should be given.
 </para>
           <para>
 Table 3-1 shows which optional modules will be loaded for the available
 parameters.
 </para>
-          <para>
-Table 3-1.  Optional Modules by Load Parameter.
-</para>
-          <!--
-Load Parameter
-
-+D
--D or +A
--A or +I
--I
-
-Optional
-
-Module Included
-
-Debug
-
-ANIMATOR
-
-Yes
-No
-No
-No
-
-Yes
-Yes
-No
-No
-
-Indexed
-Yes
-Yes
-Yes
-No
-
-Seq.
-
-RTS only
-Yes
-Yes
-Yes
-Yes
-
--->
+          <table frame="all" colsep="1" rowsep="1">
+            <title>Optional Modules by Load Parameter.</title>
+            <tgroup cols="5">
+              <colspec colwidth="1.5in"/>
+              <colspec colwidth=".7in" colname="c2"/>
+              <colspec colwidth=".7in"/>
+              <colspec colwidth=".7in"/>
+              <colspec colwidth=".7in" colname="c5"/>
+              <thead>
+                <row>
+                  <entry morerows="1">Load Parameter</entry>
+                  <entry namest="c2" nameend="c5">Optional Module Included</entry>
+                </row>
+                <row>
+                  <entry>Debug</entry>
+                  <entry>ANIMATOR</entry>
+                  <entry>Indexed Seq.</entry>
+                  <entry>RTS only</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row rowsep="0">
+                  <entry>+D</entry>
+                  <entry>Yes</entry>
+                  <entry>Yes</entry>
+                  <entry>Yes</entry>
+                  <entry>Yes</entry>
+                </row>
+                <row rowsep="0">
+                  <entry>-D or +A</entry>
+                  <entry>No</entry>
+                  <entry>Yes</entry>
+                  <entry>Yes</entry>
+                  <entry>Yes</entry>
+                </row>
+                <row rowsep="0">
+                  <entry>-A or +I</entry>
+                  <entry>No</entry>
+                  <entry>No</entry>
+                  <entry>Yes</entry>
+                  <entry>Yes</entry>
+                </row>
+                <row rowsep="0">
+                  <entry>-I</entry>
+                  <entry>No</entry>
+                  <entry>No</entry>
+                  <entry>No</entry>
+                  <entry>Yes</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
         </section>
         <section>
           <title>Switch Parameter</title>
@@ -1462,6 +1465,13 @@ operator.  See the description of the SPECIAL-NAMES paragraph in the
 The operator sets these switches at run time by use of the Switch Parameter to the RUN command.
 The general format of the Switch Parameter is:
 </para>
+          <informalfigure>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" width="2in" format="PNG" fileref="runtimeswitches.png"/>
+              </imageobject>
+            </mediaobject>
+          </informalfigure>
           <para>
 where:
 </para>
@@ -1568,7 +1578,6 @@ See the CP/M operating documentation for the REName command.
 </para>
           <note>
             <para>
-NOTE:
 Programs cannot be linked if the ANIMATOR is in use (ie., parameters +a
 and = are mutually exclusive).
 </para>
@@ -1793,74 +1802,69 @@ De-editing of numeric edited to numeric data-items
 During execution of ACCEPT statements the cursor is manipulated on the CRT
 screen by the cursor control keys on the console keyboard as shown in Table 3-2.
 </para>
-          <!--
-Table 3-2.
-
-CRT Cursor Control
-
-Keys
-
-Function
-Home (referred
-manual)
-Tab forward
-
-Keys
-to as \
-
-is manipulated
-on the CRT
-keyboard as shown in Table
-
-l
-
-Ctrl
-
-or HOMin this
-
-I
-l
-
-a field
-
-Tab backward a field
-Forward Space
-
-~
-
--
-
-Backward Space
-Column Tab
-Left Zero
-
-I
-
-TAB
-
-2
-
-Return
-
-RETURN
-
-1 -
-
-Where CTL is specified
-the operator must press the CTL key hold it down
-and simultaneously
-press the character
-key. Back one space for ADM3Ais
-thus both the CTL and the H character
-keys.
-
-2 -
-
-The "." for left zero fill is a <quote>,</quote> when
-
+          <table frame="all" colsep="1" rowsep="1">
+            <title>CRT Cursor Control Keys</title>
+            <tgroup cols="2">
+              <colspec colwidth="2.7in" colname="c1"/>
+              <colspec colwidth="2.3in" colname="c2"/>
+              <thead>
+                <row>
+                  <entry>Function</entry>
+                  <entry>Keys<superscript>1</superscript></entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>Home (referred to as &#x2196; or HOM in this manual)</entry>
+                  <entry>Ctrl &#x2193;</entry>
+                </row>
+                <row>
+                  <entry>Tab forward a field</entry>
+                  <entry>&#x2193;</entry>
+                </row>
+                <row>
+                  <entry>Tab backward a field</entry>
+                  <entry>&#x2191;</entry>
+                </row>
+                <row>
+                  <entry>Forward space</entry>
+                  <entry>&#x2192;</entry>
+                </row>
+                <row>
+                  <entry>Backward space</entry>
+                  <entry>&#x2190;</entry>
+                </row>
+                <row>
+                  <entry>Column Tab</entry>
+                  <entry>TAB</entry>
+                </row>
+                <row>
+                  <entry>Left Zero<superscript>2</superscript></entry>
+                  <entry>.</entry>
+                </row>
+                <row>
+                  <entry>Return</entry>
+                  <entry>RETURN</entry>
+                </row>
+                <row>
+                  <entry namest="c1" nameend="c2">
+                    <para>
+1 - Where CTL is specified the operator must press the CTL key hold it down
+and simultaneously press the character key. Back one space for ADM3A is
+thus both the CTL and the H character keys.
+</para>
+                    <para>
+2 - The "." for left zero fill is a <quote>,</quote> when
+<programlisting>
    DECIMAL-POINT IS COMMA
+</programlisting>
 is specified in the user program
--->
+</para>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
         </section>
       </section>
     </section>
@@ -1886,699 +1890,414 @@ Debug Mark 3.1              <lineannotation>title</lineannotation>
 
 ?                           <lineannotation>prompt</lineannotation>
 </screen>
-      <!--
-
+      <para>
 The user now has the following commands available:
-
-p
-
-Displays
-
-G
-
-Breakpoint
-
-x
-
-Execute
-
-one CIS COBOL statement
-
-D
-
-Display
-
-bytes
-
-A
-
-Replace contents of a memory location
-or ASCII character.
-
-s
-
-Set start
-Display
-
-the current
-
-program counter
-
-at specified
-
-Change bytes
-
-address.
-at a time.
-
-in the Data Division
-
-of block
-bytes
-
-(p-c).
-
-for correction
-
-by a hexadecimal
-
-or display.
-
-in block above.
-in block above.
-
-T
-
-Trace paragraphs
-
-up to breakpoint
-
-specified.
-
-L
-
-Output one CR LF on the CRT
-
-M
-
-Define Debug command macro with name specified
-End macro definition
-
-c
-
-A description
-
-Displays
-
-specified
-
-character
-
-on the CRT
-
-Precedes
-
-comment to describe
-
-a macro just
-
-of the use of each of these
-
-2 - 36
-
-entered.
-
-Debug commands follows.
-
-value
--->
+</para>
+      <informaltable frame="all" colsep="0" rowsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="0.5in" colname="c1"/>
+          <colspec colwidth="4.5in" colname="c2"/>
+          <tbody>
+            <row>
+              <entry>P</entry>
+              <entry>Displays the current program counter (p-c).</entry>
+            </row>
+            <row>
+              <entry>G</entry>
+              <entry>Breakpoint at specified address.</entry>
+            </row>
+            <row>
+              <entry>X</entry>
+              <entry>Execute one CIS COBOL statement at a time.</entry>
+            </row>
+            <row>
+              <entry>D</entry>
+              <entry>Display bytes in the Data Division</entry>
+            </row>
+            <row>
+              <entry>A</entry>
+              <entry>Replace contents of a memory location by a hexadecimal value or ASCII character.</entry>
+            </row>
+            <row>
+              <entry>S</entry>
+              <entry>Set start of block for correction or display.</entry>
+            </row>
+            <row>
+              <entry>/</entry>
+              <entry>Display bytes in block above.</entry>
+            </row>
+            <row>
+              <entry>.</entry>
+              <entry>Change bytes in block above.</entry>
+            </row>
+            <row>
+              <entry>T</entry>
+              <entry>Trace paragraphs up to breakpoint specified.</entry>
+            </row>
+            <row>
+              <entry>L</entry>
+              <entry>Output one CR LF on the CRT</entry>
+            </row>
+            <row>
+              <entry>M</entry>
+              <entry>Define Debug command macro with name specified</entry>
+            </row>
+            <row>
+              <entry>$</entry>
+              <entry>End macro definition</entry>
+            </row>
+            <row>
+              <entry>C</entry>
+              <entry>Displays specified character on the CRT</entry>
+            </row>
+            <row>
+              <entry>;</entry>
+              <entry>Precedes comment to describe a macro just entered.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>
+      A description of the use of each of these Debug commands follows.
+      </para>
       <section>
         <title>THE P COMMAND</title>
-        <!--
-The P command displays
-the address
-at which the
-currently
-points
-i. e, where the current
-instruction
-Division code of a program.
-This hexadecimal address
+        <para>
+The P command displays the address at which the program counter (p-c)
+currently points i. e, where the current instruction is in the Procedure
+Division code of a program.  This hexadecimal address is that printed in the
 right hand column of a program listing.
-
-program counter
-(p-c)
-is in the Procedure
-is that printed
-in the
-
+</para>
+        <para>
 EXAMPLE:
-At the start
-
-of a program the p-c is at 0000 as shown below:
-?P&lt;&lt;
-0000
-
--command
--current
-p-c
--prompt
-
+</para>
+        <para>
+At the start of a program the p-c is at 0000 as shown below:
+</para>
+        <screen>
+?P&lt;&lt;         <lineannotation>-command</lineannotation>
+0000               <lineannotation>-current p-c</lineannotation>
+?                  <lineannotation>-prompt</lineannotation>
+</screen>
+        <para>
 NOTES:
-1.
-
-The location
-given by the 'P' command is relative
-to the start
-of the
-PROCEDURE
-DIVISION. All numbers in the Debug package are expressed
-as
+</para>
+        <para>
+1.  The location given by the 'P' command is relative to the start of the
+PROCEDURE DIVISION. All numbers in the Debug package are expressed as
 hexadecimal values.
-
--->
+</para>
       </section>
       <section>
         <title>THE G COMMAND</title>
-        <!--
-The G command executes from the current p-c until
-the p-c reaches the value
-in the parameter
-to 'G".
-If this value is not the address of an executed
-instruction,
-the breakpoint
-is never reached and the program continues.
+        <para>
+The G command executes from the current p-c until the p-c reaches the value
+in the parameter to 'G'.  If this value is not the address of an executed
+instruction, the breakpoint is never reached and the program continues.
+</para>
+        <para>
 EXAMPLE:
-If a breakpoint
-
-is required
-
-at PARA-22 in the following
-
-PARA-22.
-ADD 1 TO COUNT.
-MOVEFIELD-1 TO FIELD-2.
-
-the following
-
-017A
-Ol7B
-Ol8C
-
-code:
-
-hex addresses
-
-command is typed:
-
+</para>
+        <para>
+If a breakpoint is required at PARA-22 in the following code:
+</para>
+        <programlisting>
+              .                             .
+              .                             .
+         PARA-22.                           017A
+              ADD 1 TO COUNT.               017B <lineannotation>- hex address</lineannotation>
+              MOVE FIELD-1 TO FIELD-2.      018C
+              .                             .
+              .                             .
+</programlisting>
+        <para>
+the following command is typed:
+</para>
+        <screen>
 ?G 017A&lt;&lt;
-The display
-of the second question mark above indicates
-that the G command
-has executed completely and thus the breakpoint
-has been reached
-
-2 - 37
-
+?
+</screen>
+        <para>
+The display of the second question mark above indicates that the G command
+has executed completely and thus the breakpoint has been reached.
+</para>
+        <para>
 NOTES:
-1.
-
-Exactly
-
-four hexadecimal
-
-A check on the current
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
+Exactly four hexadecimal digits must be keyed for an address value.
+</para>
+            <para>
+A check on the current address at this point by use of the P command
 would be as follows:
+</para>
+            <screen>
 ?P&lt;&lt;
-017A
-2.
-
-digits
-address
-
-must be keyed for an address
-at
-
-this
-
--returns
-
-point
-
-by use of the
-
-value.
-P command
-
-p-c
-
-The command G 0000 can be used to cause a breakpoint
+ 017A               <lineannotation>-returns p-c</lineannotation>
+</screen>
+          </listitem>
+          <listitem>
+            <para>
+The command G 0000 can be used to cause a breakpoint on entry to the
 next called subroutine.
-
-on entr y to the
-
--->
+</para>
+          </listitem>
+        </orderedlist>
       </section>
       <section>
         <title>THE X COMMAND</title>
-        <!--
-When a suspected
-error
-is reached,
-single
-instructions
-can be stepped
-through one at a time by use of the 'X' command.
-Afte r each COBOL
-instruction
-is executed,
-the hexadecimal number in the right-hand
-column is
-the address of the first
-statement
-on a line.
-Where COBOL operations
-are
-made up of several
-individual
-primitive
-instructions,
-DEBUGmay appear to
-halt in the middle of a line.
-If this occurs, the RETURNis pressed agai n .
+        <para>
+When a suspected error is reached, single instructions can be stepped
+through one at a time by use of the 'X' command.  After each COBOL
+instruction is executed, the hexadecimal number in the right-hand column is
+the address of the first statement on a line.  Where COBOL operations are
+made up of several individual primitive instructions, DEBUG may appear to
+halt in the middle of a line.  If this occurs, the RETURN is pressed again.
+</para>
+        <para>
 EXAMPLE:
-If an error occurred in
+</para>
+        <para>
+If an error occurred in the MOVE instruction the X command sequence
 would be shown as follows :
-
-the MOVEinstruction
-
-the
-
-X command sequence
-
+</para>
+        <screen>
 ?X&lt;&lt;
-OlBC
-To check the contents of "FIELD-2" before
-"DATADIVISION" the display would be:
-02
-02
-02
-
-and after
-
-FIELD-1 PIC XXXVALUE"ABC".
-FI ELD-2 PIC XXXVALUE "XYZ".
-FI ELD-3 PIC X(BO) VALU
-E SPACE.
-
-the move for code in the
-0030
-0033
-0036
-
+ 018C
+?
+</screen>
+        <para>
+To check the contents of "FIELD-2" before and after the move for code in the
+"DATA DIVISION" the display would be:
+</para>
+        <screen>
+02   FIELD-1 PIC XXX VALUE "ABC".     0030
+02   FIELD-2 PIC XXX VALUE "XYZ".     0033
+02   FIELD-3 PIC X(8O) VALUE SPACE.   0036
+     .                                .
+     .                                .
+</screen>
+      </section>
+      <section>
+        <title>THE D COMMAND</title>
+        <para>
 To display bytes in the DATA DIVISION, the 'D' command can be used. This
-displays
-16 bytes from the address specified
-(again the address is derived
-from the inform a tion
-on the listing).
-It displays
-each byte as a
+displays 16 bytes from the address specified (again the address is derived
+from the information on the listing).  It displays each byte as a
 hexadecimal value plus an ASCII equivalent if it is printable.
-EXA.'IPLE:
-?D 0030 &lt;&lt;
-41-A 42-B 43-C 58-X 59-Y SA-Z 20FIELD-1
-
-FIELD-2
-
-20-
-
-FIELD-3
-
-2 - 38
-
-20- ........
-
--
-
-If the MOVEis then executed
-
-and re-examined
-
-?X&lt;&lt;
-019C
+</para>
+        <para>
+EXAMPLE:
+</para>
+        <screen>
 ?D 0030&lt;&lt;
-41-A 42-B 43-C 41-A 42-B 43-C 20-
-
-20-
-
-the following
-
-display
-
-results:
-
-20-
-
--->
+41-A 42-B 43-C 58-X 59-Y 5A-Z 20-  20-  20- ........
+FIELD-1        FIELD-2        FIELD-3
+     ?
+</screen>
+        <para>
+If the MOVE is then executed and re-examined the following display results:
+</para>
+        <screen>
+?X&lt;&lt;
+ 019C
+?D 0030&lt;&lt;
+41-A 42-B 43-C 41-A 42-B 43-C 20-  20-  20-
+</screen>
       </section>
       <section>
         <title>THE A COMMAND</title>
-        <!--
-The "A" command is used to amend data at a specified
-
-memory location.
-
+        <para>
+The "A" command is used to amend data at a specified memory location.
+</para>
+        <para>
 EXAMPLE:
-To replace
-the first
-character
-"A" of FIELD-1 by "G".
-The value supplied
-may be a two character
-hex value or an ASCII character
-preceded by quote eg
-"G or 4 7.
-?A 0030 47&lt;&lt;
--amend byte
+</para>
+        <para>
+To replace the first character <quote>A</quote> of FIELD-1 by <quote>G</quote>.  The value supplied
+may be a two character hex value or an ASCII character preceded by quote eg
+"G or 47.
+</para>
+        <screen>
+?A 0030 47&lt;&lt;                      <lineannotation>-amend byte</lineannotation>
 ?D 0030&lt;&lt;
-47-G 42-B 43-C 41-A 42-B 43-C 20- 20- 20This correction
-facility
-an erroneous
-result.
-
-allows
-
-continued
-
-running
-
-even if
-
-a bug has produced
-
--->
+ 47-G 42-B 43-C 41-A 42-B 43-C 20-  20-  20- ........
+?
+</screen>
+        <para>
+This correction facility allows continued running even if a bug has produced
+an erroneous result.
+</para>
       </section>
       <section>
         <title>THE S COMMAND</title>
-        <!--
-Where a number of corrections
-are required,
-DEBUGallows specification
-of a
-working register
-which contains
-an address.
-This address
-can be set or
-incremented and the contents can be displayed
-or modified immediately by use
-of the 'S' command. The address
-and contents
-can then be displayed
-by
-keying 'I'.
+        <para>
+Where a number of corrections are required, DEBUG allows specification of a
+working register which contains an address.  This address can be set or
+incremented and the contents can be displayed or modified immediately by use
+of the 'S' command. The address and contents can then be displayed by
+keying '/'.
+</para>
+        <para>
 EXAMPLE:
-To display
-
-the first
-
-byte of FIELD-1 operation
-
-?S 0030&lt;&lt;
-? !&lt;&lt;
-
-would be as follows:
-
--load address
--display
-
-0030 47G
-
--->
+</para>
+        <para>
+To display the first byte of FIELD-1 operation would be as follows:
+</para>
+        <screen>
+?S 0030&lt;&lt;                    <lineannotation>-load address</lineannotation>
+?/&lt;&lt; -display
+ 0030 47G
+?
+</screen>
       </section>
       <section>
         <title>THE '.' COMMAND</title>
-        <!--
-
-To amend the byte at the current
+        <para>
+To amend the byte at the current location '.' is used; this also increments
 the working register.
-
-location
-
-2 - 39
-
-is
-
-used;
-
-this
-
-also
-
-incr ~rr.ents
-
+</para>
+        <para>
 EXAMPLE:
-To change FIELDl to "DEF" the display
-
-?s oo3o&lt;&lt;
-
--load address
--modify
-
-?.44.45.46&lt;&lt;
+</para>
+        <para>
+To change FIELD1 to <quote>DEF</quote> the display would be:
+</para>
+        <screen>
+?S 0030&lt;&lt;              <lineannotation>-load address</lineannotation>
+?.44.45.46&lt;&lt;           <lineannotation>-modify</lineannotation>
 ?D 0030&lt;&lt;
-44-D 45-E 36-F
-To increment
-
--
-
-would be:
-
-only the working
-
-register
-
-use
-
--->
+ 44-D 45-E 36-F ......
+</screen>
+        <para>
+To increment only the working register use ','.
+</para>
       </section>
       <section>
         <title>THE T COMMAND</title>
-        <!--
+        <para>
 An advanced form of the 'G' command is the 'T' command. This also executes
-up to a breakpoint
-in the PROCEDURE
-DIVISION, but also prints
-the address of
+up to a breakpoint in the PROCEDURE DIVISION, but also prints the address of
 each paragraph encountered.
+</para>
+        <para>
 EXAMPLE:
-?T 017B&lt;&lt;
-
-trace
-
-up to 017B
-
-NOTE:
-The command T 0000 can be used
-called sub-program.
-
-to trace
-
-up to the
-
-start
-
-of the
-
-next
-
--->
+</para>
+        <screen>
+?T 017B&lt;&lt;         <lineannotation>trace up to 017B</lineannotation>
+</screen>
+        <note>
+          <para>
+The command T 0000 can be used to trace up to the start of the next called sub-program.
+</para>
+        </note>
       </section>
       <section>
         <title>DEBUG MACRO COMMANDS</title>
-        <!--
+        <para>
 The user will find that some Debug command sequences are used often when
-debugging.
-If these sequences are long it can become tiresome
-typing them
-in.
-To overcome this and to allow the development of complex debugging
-sequences Debug permits
-the definition
-of macros comprised both of basic
-operations
-and other macros.
-Macros are given names of one character.
-The M Command
-Macros are
-
-introduced
-
-by the
-
-'M' command followed
-
-immediately
-
-by the macro
-
-To define a macro to execute
-jump by a single
-instruction
-typ p:):
-
-up to Ol8C, display
-and display
-again;
-
-the value at 0030, then
-the following
-would be
-
-name.
-
-EXAMPLE:
-
-00030 L X D 0030 $&lt;&lt;
-
-?MZ G Ol8C
-To invoke
-
-this
-
-macro its
-
-name is typed as follows:
-
-2 - 40
-
-?Z&lt;&lt;
-
-First
-
-41-A 42-B 43-C 58-X 59-Y SA-Z
-0190
-41-A 42-B 43-C 41-A 42-B 43-C
-There are two other
-
-commands introduced
-
-display
-
-Second display
-in this
-
-macro:
-
-'L'
-
-and '$'.
-
--->
+debugging.  If these sequences are long it can become tiresome typing them
+in.  To overcome this and to allow the development of complex debugging
+sequences Debug permits the definition of macros comprised both of basic
+operations and other macros.  Macros are given names of one character.
+</para>
         <section>
-          <title>The L Command</title>
-          <!--
-The 'L' command merely
+          <title>The M Command</title>
+          <para>
+Macros are introduced by the 'M' command followed immediately by the macro name.
+</para>
+          <para>
+EXAMPLE:
+</para>
+          <para>
+To define a macro to execute up to 018C, display the value at 0030, then
+jump by a single instruction and display again; the following would be typed:
+</para>
+          <screen>
+?MZ G 018C   D0030 L X D 0030 $&lt;&lt;
+?
+</screen>
+          <para>
+To invoke this macro its name is typed as follows:
+</para>
+          <screen>
+?Z&lt;&lt;
+41-A 42-B 43-C 58-X 59-Y 5A-Z ......   <lineannotation>First display</lineannotation>
+0190
+41-A 42-B 43-C 41-A 42-B 43-C ......   <lineannotation>Second display</lineannotation>
+</screen>
+          <para>
+There are two other commands introduced in this macro: 'L' and '$'.  
+</para>
+          </section>
+          <section>
+            <title>The L Command</title>
+            <para>
+The 'L' command merely forces a carriage return and line feed to be output
 on the console.
-
-forces
-
-a carriage
-
-return
-
-and line
-
-feed
-
-to be output
-
--->
+</para>
         </section>
         <section>
           <title>The $ Command</title>
-          <!--
-
+          <para>
 The '$' command ends a macro definition.
-
--->
+</para>
         </section>
         <section>
           <title>The C Command</title>
-          <!--
-To allow macro writers
-to output characters
-to the console,
-is provided.
-This outputs its parameter on the console
-
-the command 'C'
-
+          <para>
+To allow macro writers to output characters to the console, the command 'C'
+is provided.  This outputs its parameter on the console
+</para>
+          <para>
 EXAMPLE:
+</para>
+          <screen>
 ?C "A&lt;&lt;
 A
-
--->
+?
+</screen>
         </section>
         <section>
           <title>The ; Command</title>
-          <!--
-To improve readability
-of macros,
-comments may be inserted.
-introduced
-by the character
-';' and terminated
-by carriage
-return.
-
-These
-
-are
-
+          <para>
+To improve readability of macros, comments may be inserted.  These are
+introduced by the character ';' and terminated by carriage return.
+</para>
+          <para>
 EXAMPLE:
+</para>
+          <screen>
 ?MZ D 0030 XL D 0030 $ ; Run macro&lt;&lt;
-Macro names must be letters
-internally
+</screen>
+          <para>
+Macro names must be letters only.  Lower case letters are converted internally
 to upper case.
-
-only.
-
-Lower
-
-case
-
-letters
-
-are
-
-converted
-
-If an error is made in typing in a macro then it may be reentered.
-However,
-there is only a finite
-amount of macro space and space is not released
-if a
-macro is reentered.
-If the space runs out or the maximum nesting
-of macros
-is exceeded then the message STACKOVERFLOW
-will result.
-
-2 - 41
-
+</para>
+          <para>
+If an error is made in typing in a macro then it may be reentered.  However,
+there is only a finite amount of macro space and space is not released if a
+macro is reentered.  If the space runs out or the maximum nesting of macros
+is exceeded then the message STACK OVERFLOW will result.
+</para>
+          <para>
 EXAMPLE:
-?MZ Z$
+</para>
+          <screen>
+?MZ Z$  ; macro to crash system&lt;&lt;
 ?Z&lt;&lt;
-
-macro to crash
-
-system&lt;&lt;
-
-After the crash has occurred,
-the Debug system will return to command mode
-and will reset
-the stack to allow the user to continue.
-However, if more
-serious
-crashes occur i.e.
-those with no message, then the system will not
+</screen>
+          <para>
+After the crash has occurred, the Debug system will return to command mode
+and will reset the stack to allow the user to continue.  However, if more
+serious crashes occur i.e.  those with no message, then the system will not
 recover.
-
-For full
-
-details
-
-of Debug commands see Appendix E.
-
-tllll'\,
-
-2 - 42
-
-./WI
-        -->
+</para>
+          <para>
+For full details of Debug commands see Appendix E.
+</para>
         </section>
       </section>
     </section>
@@ -2718,79 +2437,51 @@ can be loaded into the available memory.  Because it cannot, however, be
 loaded all at once, it is loaded one segment at a time, to achieve the same
 effect, in the reduced store space as shown below.
 </para>
-      <!--
-Full
-
-In the
-largest
-
-case of
-segment
-
-program
-
-(assuming
-
-a COBOL segmented
-in that program:
-
-PERMANENTSEGMENT
-
-The beginnings
-of
-program are denoted
-
-Segment
-Segment
-Segment
-Segment
-
-program
-
-space
-
-available)
-
-~he compiler
-
-allows
-
-space
-
-for
-
-the
-
-l I
-
-2
-3
-4
-
-I
-I
-
-the
-segments
-of a Procedure
-Division
-of
-in the CIS COBOL source by a SECTION label,
-
-a segmented
-e.g.
-
+      <informalfigure>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" width="4in" format="PNG" fileref="fullprogram.png"/>
+          </imageobject>
+          <textobject>
+            <phrase>Full program (assuming space available)</phrase>
+          </textobject>
+        </mediaobject>
+      </informalfigure>
+      <para>
+In the case of a COBOL segmented program the compiler allows space for the
+largest segment in that program:
+</para>
+      <informalfigure>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" width="4in" format="PNG" fileref="segments.png"/>
+          </imageobject>
+          <textobject>
+            <phrase>Permanent segment and independent segments</phrase>
+          </textobject>
+        </mediaobject>
+      </informalfigure>
+      <para>
+The beginnings of the segments of a Procedure Division of a segmented
+program are denoted in the CIS COBOL source by a SECTION label, e.g.
+</para>
+      <programlisting>
+     .
+     .
+     .
 SECTION 52.
-MOVE A TO B.
-etc.
-
+     MOVE A TO B.
+     etc.
+     .
+     .
+     .
 SECTION 62.
-MOVE XTO
-
-Y.
-
-etc,
--->
+     MOVE X TO Y.
+     etc.
+     .
+     .
+     .
+</programlisting>
       <para>
 Segmentation can be applied only to the Procedure Division.  The
 Identification, Environment and Data Divisions are common to all segments;
@@ -2857,73 +2548,52 @@ RUNTIME DIRECTIVES.
 Any number of COBOL programs and assembler code subroutines can be CALLed
 from a COBOL program.  Operational features of CALL are as follows:
 </para>
-      <!--
-1.
-
-The CALLed intermediate
-code program file must be present
-on disk at
-the time of the first
-CALL to the file or fatal error 164 will result.
-
-2.
-
-There must be room available
-in memory for the program to be loaded.
-The ON OVERFLOWphrase
-can be used to specify
-program action
-if
-insufficient
-space is available.
-Otherwise
-the CALL statement
-is
-ignored and the next calling program instruction
-is performed.
-
-3.
-
-Run-time
-
-4.
-
-Disks can be changed during or at run time by suitable
-user-programmed
-operator messages and actions.
-Under CP/M the changed drive will then
-become READonly (i.e.
-accessable
-only for input.)
-
-5.
-
+      <orderedlist>
+        <listitem>
+          <para>
+The CALLed intermediate code program file must be present on disk at
+the time of the first CALL to the file or fatal error 164 will result.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+There must be room available in memory for the program to be loaded.
+The ON OVERFLOW phrase can be used to specify program action if
+insufficient space is available.  Otherwise the CALL statement is
+ignored and the next calling program instruction is performed.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Run-time Subroutines must be preconfigured into the RTS.
+</para>
+        </listitem>
+        <listitem>
+          <para>
+Disks can be changed during or at run time by suitable user-programmed
+operator messages and actions.  Under CP/M the changed drive will then
+become READ only (i.e.  accessable only for input.)
+</para>
+        </listitem>
+        <listitem>
+          <para>
 The CANCEL statement reclaims unused storage when executed at run time.
-
-6.
-
+</para>
+        </listitem>
+        <listitem>
+          <para>
 No more than seven programs can have been called concurrently.
-
-Subroutines
-
-must be preconfigured
-
-into
-
--
-
-the RTS.
-
-
-
-If a tree structure
-of called independent programs is used as shown earlier,
+</para>
+        </listitem>
+      </orderedlist>
+      <para>
+If a tree structure of called independent programs is used as shown earlier,
 each segment can call the next dynamically by using the technique shown in
 the following sample coding:
-
--
-
+</para>
+      <programlisting>
 WORKING-STORAGE SECTION.
+
 01   NEXT-PROG      PIC X(20) VALUE SPACES.
 01   CURRENT-PROG   PIC X(20) VALUE "1STPROG.INT".
 PROCEDURE DIVISION.
@@ -2934,1122 +2604,802 @@ LOOP.
      MOVE NEXT-PROG TO CURRENT PROG.
      MOVE SPACESTO NEXT PROG.
      GO TO LOOP.
-
-
+</programlisting>
+      <para>
 The actual programs to be run can then specify their successors as follows:
-
+</para>
+      <programlisting>
+.
+.
+.
 LINKAGE-SECTION.
 01   NEXT-PROG PIC X(20).
-
+.
+.
+.
 PROCEDURE DIVISION USING NEXT-PROG.
-
+.
+.
+.
+.
+.
 MOVE "SUCCESOR.INT" TO NEXT-PROG.
 EXIT PROGRAM,
-
+</programlisting>
+      <para>
 It can be seen that in this way each independent segment or sub-program
 cancels itself, and changes the name in the CALL statement to call the next
 one by use of the USING phrase.
-
--->
+</para>
       <section>
         <title>RUN TIME COBOL PROGRAM LINKAGE</title>
-        <!--
-
+        <para>
 Run-time execution of the COBOL verb CALL depends on the argument used by
 the CALL.
-
+</para>
+        <para>
 When the subroutine or subprogram is in COBOL, the parameter is an
 alphanumeric quantity whose value is interpreted as a file-name and the
 appropriate file of intermediate code is loaded from disk into memory and
 executed.
-
+</para>
+        <para>
 When the subroutine is configured into the RTS for the main program (See
 RUN-TIME SUBROUTINES - CALL in this Chapter), the CALL parameter is a
 numeric quantity, its value is interpreted as the linkage number to the Run
 Time subroutine table and the corresponding machine code subroutine
 is executed.
-
-
--->
+</para>
       </section>
       <section>
         <title>EXAMPLE LINKAGE</title>
-        <!--
-
+        <programlisting>
 PROCEDURE DIVISION
-
+     .
+     .
+     .
 CALL "A:SUBITM.INT" USING ...
-
+     .
+     .
+     .
 CALL "10" USING ...
-
+     .
+     .
+     .
+</programlisting>
+        <para>
 For the first CALL in this example to perform correctly the file SUBITM.INT
 must be present on disk unit A and must contain a compiled COBOL program.
 For the second CALL to -perform correctly the RTS must contain an assembler
 subroutine (Run-Time subroutine) arranged as subroutine 10. A description
 of run-time subroutine inclusion follows.
-
-
--->
+</para>
       </section>
       <section>
         <title>RUN-TIME SUBROUTINES (IN ASSEMBLER OR NON-COBOL LANGUAGES)</title>
-        <!--
-
+        <para>
 The run-time system is designed in such a way that the user may write and
 include assembled or other language subroutines that can be accessed using
-the COBOL"CALL" verb.  (See the Appendix on example use of this facility at
+the COBOL "CALL" verb.  (See the Appendix on example use of this facility at
 the back of this manual).
-
--->
+</para>
       </section>
       <section>
         <title>RESERVING SPACE FOR RUN-TIME SUBROUTINES</title>
-        <!--
-
+        <para>
 To reserve space in the run-time system for User Subroutines, it is
 necessary first of all to run the CONFIG program (see Chapter 5) to direct
 it to reserve the space and, from it, to obtain the absolute address at
 which the code is to be placed, (See also Appendix K).
-
--->
+</para>
       </section>
       <section>
         <title>FORMAT OF RUN-TIME SUBROUTINE AREA</title>
-        <!--
-
+        <para>
 The code is now created, ensuring that an 'ORG' is placed at its head to
 position the code at the correct place in store as specified by the
 configuration utility.  The code is entered using any CP/M editor software,
 then assembled and finally linked at this address using the CP/M DDT linker
 facility.
-
+</para>
+        <para>
 Each Subroutine is identified by an integer as in the example in Appendix M
 (CALTOP).
-
+</para>
+        <para>
 The first part of the Subroutine area must consist of a table of addresses
-as follows:
-
-BYTE 0 Highest subroutine number which is available
-BYTE 1+2 Address of routine to satisfy CALL "0"
-BYTE 3+4 Address of routine to satisfy CALL "1"
-BYTE 5+6 Address of routine to satisfy CALL "2"
-
+as follows:-
+</para>
+        <informaltable frame="none" colsep="0" rowsep="0">
+          <tgroup cols="2">
+            <colspec colwidth="1in" align="left"/>
+            <colspec colwidth="4in" align="left"/>
+            <tbody>
+              <row>
+                <entry>BYTE 0</entry>
+                <entry>Highest subroutine number which is available</entry>
+              </row>
+              <row>
+                <entry>BYTE 1+2</entry>
+                <entry>Address of routine to satisfy CALL "0"</entry>
+              </row>
+              <row>
+                <entry>BYTE 3+4</entry>
+                <entry>Address of routine to satisfy CALL "1"</entry>
+              </row>
+              <row>
+                <entry>BYTE 5+6</entry>
+                <entry>Address of routine to satisfy CALL "2"</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>
 If byte 0 contains n, the user need not include all numbers in the range 0
 to n, in which case an unused integer has address 0.  Thus if the user
 wishes to support CALL "0" and CALL "2" only, the table would be as
 follows:-
-
-ORG NNNNH
-
-DB
-DW
-DW
-DW
-
-2D
-
-ADDR0
-
-0
-
-ADDR2
-
-;PROGADDRESSFROMCONFIGURATOR
-;3 ROUTINESAVAILABLE
-;ADDRESSOF CALL"0" ROUTINE
-; CALL "l" NOT IMPLEMENTED
-;ADDRESSOF CALL"2" ROUTINE
-
-
--->
+</para>
+        <programlisting>
+     ORG       NNNNH           ;PROG ADDRESS FROM CONFIGURATOR
+     DB        2D              ;3 ROUTINES AVAILABLE
+     DW        ADDR0           ;ADDRESS OF CALL "0" ROUTINE
+     DW        0               ;CALL "1" NOT IMPLEMENTED
+     DW        ADDR2           ;ADDRESS OF CALL "2" ROUTINE
+</programlisting>
       </section>
       <section>
         <title>PARAMETER PASSING TO RUN-TIME SUBROUTINES</title>
-        <!--
-
+        <para>
 Parameter passing in run time subroutines is as follows:
-
-1.
-
-If one parameter
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
+If one parameter is passed, its address will be found in register pair
 B,C.
-
-2.
-
-If
-two parameters
-are passed,
-passed in B,C the second address
-
-3.
-
+</para>
+          </listitem>
+          <listitem>
+            <para>
+If two parameters are passed, the first parameter address will be
+passed in B,C the second address in D,E.
+</para>
+          </listitem>
+          <listitem>
+            <para>
 If three or more are passed, the last two will be passed as in 2 above,
-and the rest will be stacked, in such a way that the first
-parameter
+and the rest will be stacked, in such a way that the first parameter
 will be the last to be POPped from the stack.
-
-4.
-
-The return address to the Run Time System will
-the stack on entry to the CALLcode.
-
-5.
-
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The return address to the Run Time System will be found at the top of
+the stack on entry to the CALL code.
+</para>
+          </listitem>
+          <listitem>
+            <para>
 The user need not clear all parameters from the stack, since this will
-be automatically
-reset by the Run Time System, provided the address on
+be automatically reset by the Run Time System, provided the address on
 the top of the stack on entry is returned to.
-
-6.
-
-If
-
-will
-
-register
-contain
-
-is passed,
-
-its
-
-is as follows:
-
-address
-
-will
-
-the first
-in D,E.
-
-be found in register
-parameter
-
-B,C and/or D,E are not used for
-'FFFF' on entry to the CALLcode.
-
-address
-
-parameter
-
-After the last parameter has been POPped from the stack,
+</para>
+          </listitem>
+          <listitem>
+            <para>
+If register B,C and/or D,E are not used for parameter passing, they
+will contain 'FFFF' on entry to the CALL code.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+After the last parameter has been POPped from the stack, the next POP
 will return the value FFFF.
-
-8.
-
-If only one parameter is passed the entry
-on the stack will be FFFF as will registers
-
-9.
-
-If no parameters are passed,
+</para>
+          </listitem>
+          <listitem>
+            <para>
+If only one parameter is passed the entry following the return address
+on the stack will be FFFF as will registers D,E.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+If no parameters are passed, then conditions will be as in 8 above with
 B,C set to FFFF also.
-
-The use of terminator
-FFFF allows the user
+</para>
+          </listitem>
+        </orderedlist>
+        <para>
+The use of terminator FFFF allows the user programmer to pass a variable
 number of parameters to the subroutine.
-
-will
-
-be
-
-be found at the top of
-
-7.
-
-following
-D,E.
-
-then conditions
-
-pair
-
-will
-
-passing,
-
--
-
-they
-
-the next POP
-
-the return
-
-address
-
-be as in 8 above with
-
-programmer to pass a variable
-
--
-
--->
+</para>
       </section>
       <section>
         <title>PLACEMENT OF THE SUBROUTINES IN THE SUBROUTINE AREA</title>
-        <!--
-The subroutines
-will typically
-be written completely independently
-of the
-COBOL program in any language which generates microprocessor
-order code.
+        <para>
+The subroutines will typically be written completely independently of the
+COBOL program in any language which generates microprocessor order code.
 They will be assembled or compiled into absolute modules located at the
-addresses
-specified
-in the table. at the front of the subroutine
-area.
-During development
-these addresses
-will typically
-change with each new
-compilation,
-as the sizes of the various subroutines change.
-The subroutine
-object code will
-using the CP/M DDTutility.
-This utility
-
-is described
-
-then be patched
-
-in detail
-
-into
-
-the subroutine
-
-in the CP/~ Manual describing
-
-2 - 52
-
-area
-
-DDT.
-
-
--->
+addresses specified in the table. at the front of the subroutine area.
+During development these addresses will typically change with each new
+compilation, as the sizes of the various subroutines change.
+</para>
+        <para>
+The subroutine object code will then be patched into the subroutine area
+using the CP/M DDT utility.
+</para>
+        <para>
+This utility is described in detail in the CP/M Manual describing DDT.
+</para>
       </section>
       <section>
         <title>SAMPLE RUN WITH RUN-TIME SUBROUTINES</title>
-        <!--
-The following series of operations
-show a typical
+        <para>
+The following series of operations show a typical CIS COBOL object program 
 run where a CALL is made to user subroutines.
-l.
-
-Place CP/M system disc
-
-2.
-
-Place object
-
-3.
-
-Key B: to log in drive
-
-4.
-
-Key A:OOT RUNA.COM
-- where RUNA.COM
-is the configured
-
-S.
-
-The system will
-NEXT
-6100
-
-in drive
-
-CIS COBOL object
-
-pack containing
-
-program
-
-A.
-
-your HEX file
-
-in drive
-
-B.
-
-B.
-RTS.
-
-respond with: -
-
-PC
-OlOOH
-
-6.
-
-Key Ixxxxxx.HEX - the HEX file
-
-7.
-
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
+Place CP/M system disc in drive A.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Place object pack containing your HEX file in drive B.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Key B: to log in drive B.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Key A:DDT RUNA.COM - where RUNA.COM is the configured RTS.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The system will respond with:-
+</para>
+            <screen>
+NEXT     PC
+6100     0100H
+</screen>
+          </listitem>
+          <listitem>
+            <para>
+Key Ixxxxxx.HEX - the HEX file identity
+</para>
+          </listitem>
+          <listitem>
+            <para>
 Key R
-
-8.
-
-The system will
-NEXT
-XXYY
-
-identity
-
-respond with:-
-
-PC
-OOOOH
-
-At this point take a note of the first
-two digits
-example - convert them to decimal from hexadecimal
-
-of NEXT i.e.
-and subtract
-
-"XX" in this
-1.
-
+</para>
+          </listitem>
+          <listitem>
+            <para>
+The system will respond with:-
+</para>
+            <screen>
+NEXT     PC
+XXYY     0000H
+</screen>
+            <para>
+At this point take a note of the first two digits of NEXT i.e.  "XX" in this
+example - convert them to decimal from hexadecimal and subtract 1.
+</para>
+            <para>
 EXAMPLE:
-NEXT
-6216
-
-PC
-OOOOH
-
+</para>
+            <screen>
+NEXT     PC
+6216     0000H
+</screen>
+            <para>
 XX= 62H
-i.e.,
-980-1 = 970
-Make a note of this
-
-decimal value.
-
-9.
-
-Press
-
-the Control
-
-and C keys simultaneously.
-
-10.
-
-System responds
-
-11.
-
-Key SAVENN RUNZ.COM
-
-with B
-
-Where NN is the decimal number noted
+i.e., 98D-1 = 97D
+</para>
+            <para>
+Make a note of this decimal value.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Press the Control and C keys simultaneously.
+</para>
+          </listitem>
+          <listitem>
+            <para>
+System responds with B
+</para>
+          </listitem>
+          <listitem>
+            <para>
+Key SAVE NN RUNZ.COM
+</para>
+            <para>
+Where NN is the decimal number noted in (8), and RUNZ .COM is the of
 your new Run Time System.
-
-2 - 53
-
-in (8),
-
-and RUNZ.COM is
-
-the of
-
--->
+</para>
+          </listitem>
+        </orderedlist>
       </section>
       <section>
         <title>ASSEMBLER SUBROUTINES PROVIDED BY MICRO FOCUS</title>
-        <!--
-The following
-
-standard
-
-CHAIN
-PEEK
-POKE
-GET
-PUT
-ABSCAL
-The user may call
+        <para>
+The following standard CALL codes are available in the Run Time System.
+        </para>
+        <informaltable frame="none" colsep="0" rowsep="0">
+          <tgroup cols="2">
+            <colspec colwidth="1in" align="left"/>
+            <colspec colwidth="2in" align="left"/>
+            <tbody>
+              <row>
+                <entry>CHAIN</entry>
+                <entry>CALL code "260"</entry>
+              </row>
+              <row>
+                <entry>PEEK</entry>
+                <entry>CALL code "261"</entry>
+              </row>
+              <row>
+                <entry>POKE</entry>
+                <entry>CALL code "262"</entry>
+              </row>
+              <row>
+                <entry>GET</entry>
+                <entry>CALL code "263"</entry>
+              </row>
+              <row>
+                <entry>PUT</entry>
+                <entry>CALL code "264"</entry>
+              </row>
+              <row>
+                <entry>ABSCAL</entry>
+                <entry>CALL code "265"</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>
+The user may call these routines without making any alteration to the Run
 Time System.
-
-CALL codes are available
-
--:
-
-these
-
-CALLcode
-CALL code
-CALLcode
-CALL code
-CALLcode
-C.\LL code
-routines
-
-in the Run Time System.
-
-"260"
-"261"
-"262"
-"263"
-"264"
-"265"
-
-i.-ithout
-
-making any alteration
-
-to the Run
-
--
-
-"j
-
-2 -
-
-54
-
--->
+</para>
         <section>
           <title>The CHAIN Subroutine</title>
-          <!--
+          <para>
 The CHAIN call allows another linked CIS COBOL program or any program not
-requiring
-parameters to be loaded and entered.
-There is no return to the
+requiring parameters to be loaded and entered.  There is no return to the
 calling program.
-A parameter
-
-*
-
-list
-
-of one variable
-
-must be passed with CALLCHAIN:
-
+</para>
+          <para>
+A parameter list of one variable must be passed with CALL CHAIN:
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
 The data-name containing the file-name of the program to chain to.
+</para>
+            </listitem>
+            <listitem>
+              <para>
 The file-name must be terminated by at least one space character.
-
-EXAMPJ.E:
-
-WORKING-STORAGE
-SECTION.
-
-03
-
-NEXT-PROG
-PIC X(lO)
-
-VALUE"PRIN2.COM"
-
-03
-
-CHAIN
-
-VALUE"260",
-
-PIC X(3)
-
-PROCEDURE
-DIVISION.
-
-CALLCHAINUSINGNEXT-P~OG.
-
-2 - 55
-
--->
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
+EXAMPLE:
+</para>
+          <programlisting>
+WORKING-STORAGE SECTION.
+                    .
+                    .
+                    .
+                    .
+    03    NEXT-PROG PIC X(10) VALUE "PRIN2.COM".
+                    .
+                    .
+                    .
+                    .
+    03    CHAIN     PIC X(3) VALUE "260".
+                    .
+                    .
+                    .
+                    .
+PROCEDURE DIVISION.
+                    .
+                    .
+                    .
+                    .
+          CALL CHAIN USING NEXT-PROG.
+                    .
+                    .
+                    .
+</programlisting>
         </section>
         <section>
           <title>The PEEK Subroutine</title>
-          <!--
-The PEEK call allows an absolute
-program.
-The CALL returns into
+          <para>
+The PEEK call allows an absolute address location to be examined from a user
+program.  The CALL returns into the user area a copy of the 8 bit value at 
 the absolute address.
-A parameter.list
-
-of
-
-two
-
-variables
-
-*
-
-The five-character
-to be read from .
-
-*
-
-The one-character
-
-address location to be examined from a user
-the user area a copy of the 8 bit value at
-must be passed with CALLPEEK:
-
-data-name containing
-
-the absolute
-
-address
-
-data-name where the value is to be read to.
-
+</para>
+          <para>
+A parameter list of two variables must be passed with CALL PEEK:
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
+The five-character data-name containing the absolute address
+to be read from.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+The one-character data-name where the value is to be read to.
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
 EXAMPLE:
-
-i-,
-
-WORKING-STORAGE
-SECTION.
-
-PIC X(J)
-
-03
-
-PEEK
-
-03
-
-ADDRESS PIC 9(5)
-
-03
-
-DATA-VAL PIC X.
-
-VALUE"261".
-
-
-
-VALUE 1234 .
-
-..,
-PROCEDURE
-DIVISION.
-
-CALL PEEK USINGADDR
-ESS, DATA-VAL.
-
-2 .. 56
-
--->
+</para>
+          <programlisting>
+WORKING-STORAGE SECTION.
+                    .
+                    .
+                    .
+                    .
+    03    PEEK      PIC X(3)  VALUE "261".
+                    .
+                    .
+                    .
+                    .
+    03    ADDRESS   PIC 9(5)  VALUE  1234.
+                    .
+                    .
+                    .
+                    .
+    03    DATA-VAL  PIC X.
+                    .
+                    .
+                    .
+                    .
+PROCEDURE DIVISION.
+                    .
+                    .
+                    .
+                    .
+         CALL PEEK USING ADDRESS, DATA-VAL.
+                    .
+                    .
+                    .
+                    .
+</programlisting>
         </section>
         <section>
           <title>The POKE Subroutine</title>
-          <!--
-The POKE CALL al lows an absolute
-address location
-to be set from a user
-program.
-The CALL transfers
-a copy of an 8-bit value in the user program to
+          <para>
+The POKE CALL allows an absolute address location to be set from a user
+program.  The CALL transfers a copy of an 8-bit value in the user program to
 an absolute address.
-A parameter
-
-list
-
-of two variables
-
-*
-
-The five-character
-written
-to.
-
-*
-
-The one-character
-
-must be passed with CALL POKE:
-
-data-name
-data-name
-
-containing
-
-whose value
-
-the
-
-is to be written.
-
+</para>
+          <para>
+A parameter list of two variables must be passed with CALL POKE:
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
+The five-character data-name containing the absolute address to be
+written to.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+The one-character data-name whose value is to be written.
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
 EXAMPLE:
-WORKING-STORAGE
-SECTION.
-
-03
-
-POKE
-
-03
-
-ADDRESS PIC 9(5)
-
-03
-
-DATA-VAL PIC X VALUE"V"
-
-PIC X(3)
-
-VALUE "262" .
-
-VALUE2345.
-
-PROCEDURE
-DIVISION.
-
-CALL POKEUSING ADDRESS,DATA-VAL.
-
-2 - 57
-
-absolute
-
-address
-
-to
-
-be
-
-_,
--i
--i
-
--->
+</para>
+          <programlisting>
+WORKING-STORAGE SECTION.
+               .
+               .
+               .
+               .
+     03   POKE      PIC X(3)  VALUE "262".
+               .
+               .
+               .
+               .
+     03   ADDRESS   PIC 9(5)  VALUE  2345.
+               .
+               .
+               .
+               .
+     03   DATA-VAL  PIC X  VALUE "V".
+               .
+               .
+               .
+               .
+PROCEDURE DIVISION.
+               .
+               .
+               .
+               .
+     CALL POKE USING ADDRESS, DATA-VAL.
+</programlisting>
         </section>
         <section>
           <title>The GET Subroutine</title>
-          <!--
-The GET call allows a hardware
-CALL inputs the port and returns
-A parameter
-
-list
-
-of two variables
-
-*
-
-The three-character
-from.
-
-*
-
-The one-character
-
-port to be input from a user program.
-the 8 bit value to a user area.
-must be passed with CALLGET:
-
-data-name
-data-name
-
-containing
-to be input
-
+          <para>
+The GET call allows a hardware port to be input from a user program. The
+CALL inputs the port and returns the 8 bit value to a user area. 
+</para>
+          <para>
+A parameter list of two variables must be passed with CALL GET:
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
+The three-character data-name containing the port to be input from.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+The one-character data-name to be input to.
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
 EXAMPLE:
-WORKING-STORAGE
-SECTION.
-
-the port
-to.
-
-to be input
-
-The
-
-.-i
-
-liffl1
-
--_,
-
-03
-
-GET
-
-PIC X(3)
-
-VALUE"263".
-
-03
-
-PORT
-
-PIC 9(3)
-
-VALUE129.
-
-03
-
-DATA-VAL PIC X.
-
--'-"'
-
-_,
-""'"'\
-
-PROCEDURE
-DIVISION.
-
-._,
-
-CALLGET USING PORT, DATA-VAL.
-
-~
-
-,
-~
-
-2 - 58
-
-,
-
--.
-
--->
+</para>
+          <programlisting>
+WORKING-STORAGE SECTION.
+               .
+               .
+               .
+               .
+     03   GET       PIC X(3)  VALUE "263".
+               .
+               .
+               .
+               .
+     03   PORT      PIC 9(3)  VALUE 129.
+               .
+               .
+               .
+               .
+     03   DATA-VAL  PIC X.
+               .
+               .
+               .
+               .
+PROCEDURE DIVISION.
+               .
+               .
+               .
+               .
+    CALL GET USING PORT, DATA-VAL.
+               .
+               .
+               .
+               .
+</programlisting>
         </section>
         <section>
           <title>The PUT Subroutine</title>
-          <!--
-The PUT call
-allows a hardware port to be output from a user
-The CALL outputs an 8 bit value to the port froffi a user area.
-A parameter
-
-list
-
-of two variables
-
-*
-
-The three-character
-
-*
-
-The one-character
-
-program.
-
-must be passed with CALL PUT:
-
-data-name
-data-name
-
-containing
-
-the port
-
-to be written
-
-from.
-
+          <para>
+The PUT call allows a hardware port to be output from a user program.
+The CALL outputs an 8 bit value to the port from a user area.
+</para>
+          <para>
+A parameter list of two variables must be passed with CALL PUT:
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
+The three-character data-name containing the port to be written to.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+The one-character data-name to be written.
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
 EXAMPLE:
-WORKING-STORAGE
-SECTION.
-
-03
-
-PUT
-
-PIC X(3)
-
-VALUE"264".
-
-03
-
-PORT
-
-PIC 9(3)
-
-VALUE131.
-
-03
-
-DATA-VAL PIC X
-
-VALUEX"2F",
-
-PROCEDURE
-DIVISION.
-
-CALLPUT USING PORT, DATA-VAL.
-
-2 - 59
-
-to be written
-
-to.
-
--->
+</para>
+          <programlisting>
+WORKING-STORAGE SECTION.
+               .
+               .
+               .
+               .
+     03   PUT       PIC X(3)  VALUE "264".
+               .
+               .
+               .
+               .
+     03   PORT      PIC 9(3)  VALUE 131.
+               .
+               .
+               .
+               .
+     03   DATA-VAL  PIC X     VALUE X"2F".
+               .
+               .
+               .
+               .
+PROCEDURE DIVISION.
+               .
+               .
+               .
+               .
+    CALL PUT USING PORT, DATA-VAL.
+               .
+               .
+               .
+               .
+</programlisting>
         </section>
         <section>
           <title>The ABSCAL Subroutine</title>
-          <!--
-The ABSCAL call allows a subroutine
-parameters are passed to the subroutine
-A parameter
-
-*
-
-list
-
-of one variable
-
-CALL to an absolute
-location.
-at the absolute address.
-
-No
-
-must be passed .with CALLABSCAL:
-
-The five-character
-data-name
+          <para>
+The ABSCAL call allows a subroutine CALL to an absolute location. No
+parameters are passed to the subroutine at the absolute address.
+</para>
+          <para>
+A parameter list of one variable must be passed with CALL ABSCAL:
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
+The five-character data-name containing the decimal absolute 
 address to be called.
-
-containing
-
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
 EXAMPLE:
-WORKING-STORAGE
-SECTION.
-
-03
-
-ABSCAL
-
-PIC X(3)
-
-VALUE"265".
-
-03
-
-ADDRESS
-
-PIC 9(5)
-
-VALUE5.
-
-PROCEDURE
-DIVISION.
-
-CALLABSCALUSINGADDRESS.
-
-2 - 60
-
-the
-
-decimal
-
-absolute
-
--
-
--
-
--->
+</para>
+          <programlisting>
+WORKING-STORAGE SECTION.
+                         .
+                         .
+                         .
+     03   ABSCAL         PIC X(3)  VALUE "265".
+                         .
+                         .
+                         .
+     03   ADDRESS        PIC 9(5)  VALUE 5.
+                         .
+                         .
+                         .
+PROCEDURE DIVISION.
+                         .
+                         .
+                         .
+    CALL ABSCAL USING ADDRESS.
+                         .
+                         .
+                         .
+</programlisting>
         </section>
         <section>
           <title>The File Name Manipulation Routines SPLIT and JOIN</title>
-          <!--
-
-CP/M names can be decomposed into a device
-code,
-fi le name and file
-extension,
-and the supplied
-sub-programs
-SPLIT and J OIN ca n be used by
-system program mers to decompose and reconstitute
-names in this way. Usually
-SPLIT is called
-first
-and then JOIN is used to produce a file name string
+          <para>
+CP/M names can be decomposed into a device code, file name and file
+extension, and the supplied sub-programs SPLIT and JOIN can be used by
+system programmers to decompose and reconstitute names in this way. Usually
+SPLIT is called first and then JOIN is used to produce a file name string
 with a modified extension.
-Important
+</para>
+          <para>
+Important use of these subroutines is made by the CIS COBOL software as
 follows:
-
-use
-
-of
-
-these
-
-subroutines
-
-is
-
-made by the
-
-*
-
-The compiler to produce default
+</para>
+          <itemizedlist>
+            <listitem>
+              <para>
+The compiler to produce default listing and intermediate code filenames
 from the source file name
-
-*
-
-The compiler
-
-*
-
-Segmented programs to produce the file
-and the inter-segment
-reference
-file
-
-*
-
-The standard
-CIS COBOL indexed
+</para>
+            </listitem>
+            <listitem>
+              <para>
+The compiler to produce the file names of its overlays
+</para>
+            </listitem>
+            <listitem>
+              <para>
+Segmented programs to produce the file names for the various segments
+and the inter-segment reference file
+</para>
+            </listitem>
+            <listitem>
+              <para>
+The standard CIS COBOL indexed sequential file package t o produce the
 name of the index file
-
-to produce
-
-the file
-
-listing
-
-CIS COBOL software
-
-and intermediate
-
-as
-
-.code filenames
-
-names of it s ove rlays
-names for
-
-sequential
-
-file
-
-the various
-
-package
-
-segments
-
-t o produce
-
-the
-
-SPLIT and JOIN can also prove of use to an application
-programmer where
-there is a requirement
-to process filena mes partiall y specified,
-and when
-writing portable
-soft wa re .
-A parameter
-JOIN:
-
-list
-
-of four
-
-variables
-
-must be passed
-
-name string
-
-with
-
-l.
-
-Identifier
-
-of the complete
-
-2.
-
-Identifier
-
-of the devi ce substri ng (minimum length
-
-3.
-
-Ide ntifier
-
-of the file
-
-name substring
-
-4.
-
-Identifier
-
-of the file
-
-extension
-
-CALL SPLIT or CALL
-
-(minimum length
-
-6 bytes)
-
-(minimum length
-
-substring
-
-20 bytes )
-
-10 bytes)
-
-(minimum length
-
-SPLIT separates
-the string found at 1 storing
-its resultant
-3. and 4. separately;
-JOIN takes the substrings
-found at
-combines them storing
-the resulting
-complete string at 1.
-
-5 bytes)
-
-substrings
-at 2.
-2 . 3. and 4. and
-
-The file
-name strings
-are subject
-to the CP/M maximum length and may be
-terminated
-ea rli er by a space cha rac ter.
-This means tha t the parameter s
-(1 - 4) spe cified above must be the identifiers
-of areas of WORKINGSTORAGE
-each at least as large as their re spective mi nimum length.
-
-2 - 61
-
+</para>
+            </listitem>
+          </itemizedlist>
+          <para>
+SPLIT and JOIN can also prove of use to an application programmer where
+there is a requirement to process filenames partially specified, and when
+writing portable software.
+              </para>
+          <para>
+A parameter list of four variables must be passed with CALL SPLIT or CALL JOIN:
+              </para>
+          <orderedlist>
+            <listitem>
+              <para>
+Identifier of the complete name string (minimum length 20 bytes)
+</para>
+            </listitem>
+            <listitem>
+              <para>
+Identifier of the device substring (minimum length 6 bytes)
+</para>
+            </listitem>
+            <listitem>
+              <para>
+Identifier of the file name substring (minimum length 10 bytes)
+</para>
+            </listitem>
+            <listitem>
+              <para>
+Identifier of the file extension substring (minimum length 5 bytes)
+</para>
+            </listitem>
+          </orderedlist>
+          <para>
+SPLIT separates the string found at 1 storing its resultant substrings at 2.
+3. and 4. separately; JOIN takes the substrings found at 2 . 3. and 4. and
+combines them storing the resulting complete string at 1.
+</para>
+          <para>
+The file name strings are subject to the CP/M maximum length and may be
+terminated earlier by a space character.  This means that the parameters
+(1 - 4) specified above must be the identifiers of areas of WORKING STORAGE
+each at least as large as their respective minimum length.
+</para>
+          <para>
 The order of the parameters passed to SPLIT and JOIN is of course important:
-
-CALL SPLIT using
-
-filename-to-be-split,
+</para>
+          <informaltable frame="none" colsep="0" rowsep="0">
+            <tgroup cols="2">
+              <colspec colwidth="2in" align="left"/>
+              <colspec colwidth="2in" align="left"/>
+              <tbody>
+                <row>
+                  <entry>CALL SPLIT using</entry>
+                  <entry>
+                    <literallayout>filename-to-be-split,
 device-substring,
 name-substring,
-extension-substring.
-
-CALL JOIN using
-
-concatenated-substrings,
+extension-substring.</literallayout>
+                  </entry>
+                </row>
+                <row>
+                  <entry>CALL JOIN using</entry>
+                  <entry>
+                    <literallayout>concatenated-substrings,
 device-substring,
 name-substring,
-extension-substring.
--->
+extension-substring.</literallayout>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
           <para>
 EXAMPLE:
 </para>
@@ -4289,42 +3639,16 @@ factors above.
 The diagram below gives an idea of the length (in decimal) of the RTS
 overloadable modules in CIS V4.5.
 </para>
-        <!--
-RUNTIME DEBUG
-ANIMATOR(RESIDENT)
-
-These modules may
-not be overloaded
-
-INDEXED
-SEQUENTIAL
-
-..
-
-(in
-
-
-
-~~~~~~~~~~~·-
-
-decimal)
-
-of
-
-the
-
-RTS
-
-2600 bytes
-1400 bytes
-
-over loadable
-RTS modules
-
-7300 bytes
-
-0 - low end of memory
--->
+        <informalfigure>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" width="4in" format="PNG" fileref="overloadable.png"/>
+            </imageobject>
+            <textobject>
+              <phrase>Overloadable modules are RUN TIME DEBUG, ANIMATOR (RESIDENT) and INDEXED SEQUENTIAL</phrase>
+            </textobject>
+          </mediaobject>
+        </informalfigure>
         <para>
 From the above diagram it can be seen that the maximum length of assembler
 subroutines that can be embedded in the RTS is of the order of 11,000
@@ -4370,94 +3694,50 @@ supported by the FORMS-2 Utility Program Users Guide.
     </section>
     <section>
       <title>SCREEN LAYOUT FACILITY</title>
-      <!--
-The
-FORMS-2 Screen
-Descriptions
-for screen
-
-Layout
-layouts.
-
-facility
-
-generates
-
-source
-
-COBOL Record
-
--->
+      <para>
+The FORMS-2 Screen Layout facility generates source COBOL Record
+Descriptions for screen layouts.
+</para>
       <section>
         <title>MAJOR FACILITIES</title>
-        <!--
-
+        <para>
 Users have three major facilities available to them:
-
-1.
-
+</para>
+        <orderedlist>
+          <listitem>
+            <para>
 They may store an image copy on disk of the form they have just defined
-for subsequent
-use in this or another FORMS-2 run.
-The image can be
-printed
-to obtain
-a hard copy, using the 0/S standard
-file
-print
-utility
+for subsequent use in this or another FORMS-2 run.  The image can be
+printed to obtain a hard copy, using the O/S standard file print utility
 program.
-
-2.
-
-They may generate
-CIS COBOL source
-code for the data descriptions
-required
-to define
-the form just created.
-This may then be included
+</para>
+          </listitem>
+          <listitem>
+            <para>
+They may generate CIS COBOL source code for the data descriptions
+required to define the form just created.  This may then be included
 into a CIS COBOL program by use of the COPY verb.
-
-3.
-
-They may choose
-to generate
-a Check Out program
-which
-duplication
-of many machine conversations
-which would take place
-a run of the application
-which is being designed.
-
-allows
-during
-
--->
+</para>
+          </listitem>
+          <listitem>
+            <para>
+They may choose to generate a Check Out program which allows
+duplication of many machine conversations which would take place during
+a run of the application which is being designed.
+</para>
+          </listitem>
+        </orderedlist>
       </section>
       <section>
         <title>CIS COBOL PROGRAMMING FOR FORMS-2 SCREEN LAYOUTS</title>
-        <!--
-All that the user has to do to incorporate
-FORMS-2 Screen layout output in a
-program is to specify
-the FORMS-2 output file name (filename.DDS)
-in a r.ou,;,
-COPY statement.
-Obviously
-data item names in the user program must ~.,
-specified
-to correspond
-with those generated
-from a user-specified
-base name
-by FORMS-2. Details
-of FORMS-2 nam~ generation
-are g:.ven in the FORMS-2
+        <para>
+All that the user has to do to incorporate FORMS-2 Screen layout output in a
+program is to specify the FORMS-2 output file name (filename.DDS) in a COBOL
+COPY statement.  Obviously data item names in the user program must be
+specified to correspond with those generated from a user-specified base name
+by FORMS-2. Details of FORMS-2 name generation are given in the FORMS-2
 Utility Program Users Guide.
 </para>
--->
         <para>
 EXAMPLE:
 </para>
@@ -4477,36 +3757,36 @@ CIS COBOL is being used.
 </para>
       <section>
         <title>CIS COBOL PROGRAMMING FOR FORMS-2 GENERATED FILES</title>
-        <!--
-<para>
-No special programming is required to use FORMS-2generated program files in
-a CIS COBOL application
-program.
-The files are processed as normal indexed
-sequential
-files.
-It is worth noting that the files can be fully maintained
-interactively
-by use of only
-the FORMS-2 Utility.
-In addition
-to
-establishing
-or deleting
-files,
-this includes the following facilities:
-
-*
-
-Insertion of new records
-Insertion of the same data in records with different keys
-Display of any selected record/s (Full inquiry facility)
-Insertion or amendment of records dependent on their key
-Deletion of records
-Read and display next record or a message if end of file detected
-Terminate run
-
-        -->
+        <para>
+No special programming is required to use FORMS-2 generated program files in
+a CIS COBOL application program.  The files are processed as normal indexed
+sequential files.  It is worth noting that the files can be fully maintained
+interactively by use of only the FORMS-2 Utility.  In addition to
+establishing or deleting files, this includes the following facilities:
+</para>
+        <itemizedlist spacing="compact">
+          <listitem>
+            <para>Insertion of new records</para>
+          </listitem>
+          <listitem>
+            <para>Insertion of the same data in records with different keys</para>
+          </listitem>
+          <listitem>
+            <para>Display of any selected record/s (Full inquiry facility)</para>
+          </listitem>
+          <listitem>
+            <para>Insertion or amendment of records dependent on their key</para>
+          </listitem>
+          <listitem>
+            <para>Deletion of records</para>
+          </listitem>
+          <listitem>
+            <para>Read and display next record or a message if end of file detected</para>
+          </listitem>
+          <listitem>
+            <para>Terminate run</para>
+          </listitem>
+        </itemizedlist>
         <para>
 Details of the FORMS-2 Indexed Sequential File handling facilities are given
 in the FORMS-2 Utility Program Users Guide.
@@ -4531,432 +3811,248 @@ statement as execution proceeds.  Speed of execution can be varied; the user
 may also switch off animation thus allowing rapid execution up to the area
 of interest.
 </para>
-    <!--
-The
-user
-can
-interrupt
-execution
-at
-any point,
-either
-by defining
-break-points
-or
-dynamically
-simply
-by pressing
-the
-space-bar
-on the
-keyboard.
-Whilst
-execution
-is suspended
-the user can easily
-examine any
-part
-of the source
-code by means of simple commands to refresh
-the sc neen
-display.
-This
-means that
-it
-is not even necessary
-to have a printc•,t
-compilation
-listing
-in order to debug a program.
-Various
-other
-debugging
-functions
-are available,
-invoked by pressing
-a kPy.
-Only the top 20 lines
-of the screen are used for the display
-of source code,
-the bottom area being used to display
-menus of available
-commands, some of
-which invoke subordinate
-command menus.
-Where debugging
-functions
-require
-reference
-to either
-data
-items
-or
-procedural
-statements
-this
-is achieved
-by the user moving the cc,r~or
-to
-"point"
-at the appropriate
-place
-in the source
-code.
-Alternatively
-data
-items can be referenced
-by actually
-typing
-the COBOL data-name.
-Where control
-of ANIMATORrequires
-more keyboard
-input than simply pointing
-with the cursor
-or pressing
-one of the displayed
-command characters,
-COBOL
-syntax
-is used.
-For instance,
-replacement
-of data item values
-is achieved
-by typing
-that value in COBOL literal
-format (i.e.
-non-numeric
-literals
-are
-enclosed
-in quotes).
-The facilities
-provided
-in ANIMATOR make it
-much more than
-simply
-a
-COBOL-oriented
-debugger.
-It
-can be a valuable
-training
-aid,
-and also
-provides
-the ideal
-means for a programmer
-to attain
-understanding
-of an
-unfamiliar
-program.
-ANIMATOR is supplied
-This Chapter
-describes
-the ANIMATORutility.
-
-as a separate
-product
-complete
-with dccumentat ion.
-CIS COBOL operating
-considerations
-in order
-to us~
-
-2 - 70
-
--
-
--->
+    <para>
+The user can interrupt execution at any point, either by defining
+break-points or dynamically simply by pressing the space-bar on the
+keyboard.  Whilst execution is suspended the user can easily examine any
+part of the source code by means of simple commands to refresh the screen
+display.  This means that it is not even necessary to have a printed
+compilation listing in order to debug a program.
+</para>
+    <para>
+Various other debugging functions are available, invoked by pressing a key.
+Only the top 20 lines of the screen are used for the display of source code,
+the bottom area being used to display menus of available commands, some of
+which invoke subordinate command menus.
+</para>
+    <para>
+Where debugging functions require reference to either data items or
+procedural statements this is achieved by the user moving the cursor to
+<quote>point</quote> at the appropriate place in the source code.  Alternatively data
+items can be referenced by actually typing the COBOL data-name.
+</para>
+    <para>
+Where control of ANIMATOR requires more keyboard input than simply pointing
+with the cursor or pressing one of the displayed command characters, COBOL
+syntax is used.  For instance, replacement of data item values is achieved
+by typing that value in COBOL literal format (i.e.  non-numeric literals are
+enclosed in quotes).
+</para>
+    <para>
+The facilities provided in ANIMATOR make it much more than simply a
+COBOL-oriented debugger.  It can be a valuable training aid, and also
+provides the ideal means for a programmer to attain understanding of an
+unfamiliar program.
+</para>
+    <para>
+ANIMATOR is supplied as a separate product complete with dccumentation. 
+This Chapter describes CIS COBOL operating considerations in order to use
+the ANIMATOR utility.
+</para>
     <section>
       <title>COMPILATION</title>
-      <!--
-In order
-directive
-
-to be able to use ANIMATOR
-with a CIS COBOL program, a specific
-must be included in the CIS COBOL compiler command line .
-
--->
+      <para>
+In order to be able to use ANIMATOR with a CIS COBOL program, a specific
+directive must be included in the CIS COBOL compiler command line.
+</para>
       <section>
         <title>THE ANIM COMPILER DIRECTIVE</title>
-        <!--
-The inclusion
-of directives
-in the compiler command line is described
-in
-Chapter 2 of this manual.
-If the ANIM directive
-is included the compiler
-will compile the source input in such a way as to allow run time ani.mation.
-The compile,: generates
-in addition
-to the ".INT" file,
-three other files
-with extension
-identifiers
-as follows:
-.DOC
-.SCP
-.SCB
-These files
-wil 1 be directed
+        <para>
+The inclusion of directives in the compiler command line is described in
+Chapter 2 of this manual.  If the ANIM directive is included the compiler
+will compile the source input in such a way as to allow run time animation.
+The compiler generates in addition to the ".INT" file, three other files
+with extension identifiers as follows:
+</para>
+        <simplelist>
+          <member>.DOC</member>
+          <member>.SCP</member>
+          <member>.SCB</member>
+        </simplelist>
+        <para>
+These files will be directed to the same drive as the intermediate file
 produced by the compiler.
-
-to
-
-the
-
-same drive
-
-as
-
-the
-
-intermediate
-
-file
-
-NOTE:
-The intermediate
-code file includes data specifying
-whether or not it
-was produced by compilation
-with the ANIM directive
-specified.
-An
-intermediate
-file produced by compiling without ANIM cannot be run with
+</para>
+        <note>
+          <para>
+The intermediate code file includes data specifying whether or not it
+was produced by compilation with the ANIM directive specified.  An
+intermediate file produced by compiling without ANIM cannot be run with
 animation even if the three extra files mentioned above are available
-from a previous compilation
-when ANIMwas specified.
--->
+from a previous compilation when ANIM was specified.
+</para>
+        </note>
       </section>
     </section>
     <section>
       <title>RUNNING PROGRAMS WITH ANIMATOR</title>
-      <!--
+      <para>
 To run a CIS COBOL program that has been compiled with the ANIM compiler
-directive
-specified,
-it is necessary to enter the run command line parameter
-+A. Chapter 3 of this manual describes
-the CIS COBOL Run Command line.
--->
+directive specified, it is necessary to enter the run command line parameter
++A. Chapter 3 of this manual describes the CIS COBOL Run Command line.
+</para>
       <section>
         <title>THE +A RUN COMMAND PARAMETER</title>
-        <!--
-In addition
-to specifying
-a particular
-load point for a user program (see
-Chapter 3) the +A parameter
-is the animation
-run time switch,
-and causes
-ANLll!ATOR
-to be loaded and run providing dynamic control of the user program.
+        <para>
+In addition to specifying a particular load point for a user program (see
+Chapter 3) the +A parameter is the animation run time switch, and causes
+ANIMATOR to be loaded and run providing dynamic control of the user program.
 The following files must be present at run time in order to use ANIMATOR:
-File
-
-Disk Drive
-
-$ANIM.V45
-
-The logged in drive
-
-filename.CSL
-filename.SCP
-filename.SCB
-filename .DDC
-
-The drive containing
-the int. code
-(Note:
-the file containing
-the COBOL
-source must have the extension
-.CBL)
-
-2 - 71
-
--
-
+</para>
+        <informaltable frame="none" colsep="0" rowsep="0">
+          <tgroup cols="2">
+            <colspec colwidth="2in" align="left"/>
+            <colspec colwidth="2in" align="left"/>
+            <thead>
+              <row>
+                <entry>File</entry>
+                <entry>Disk Drive</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>$ANIM.V45</entry>
+                <entry>The logged in drive</entry>
+              </row>
+              <row>
+                <entry>
+                  <simplelist>
+                    <member>filename.CSL</member>
+                    <member>filename.SCP</member>
+                    <member>filename.SCB</member>
+                    <member>filename.DDC</member>
+                  </simplelist>
+                </entry>
+                <entry>
+The drive containing the int. code (Note: the file containing the COBOL
+source must have the extension .CBL)
+</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>
 If $ANIM.V45 is not present on the logged-in drive, a message is displayed
-on the VDU and ANIMATORis permanently switched off.
-If any of the other
-files is not.present,
-then the message
-Animation of root programs inhibited
-- missing files
-is displayed
-and ANIMATORis not activated
-for the root program, but stil 1
+on the VDU and ANIMATOR is permanently switched off.  If any of the other
+files is not present, then the message
+</para>
+        <para>
+          <errortext>Animation of root programs inhibited - missing files</errortext>
+        </para>
+        <para>
+is displayed and ANIMATOR is not activated for the root program, but still
 may be invoked for called subprograms.
-NOTE:
-Deletion/Renaming
-of files (except $ANIM.V45) can be used to switch off
-animation for selected
-programs within a suite.
-This facility
-can be
-used as an alternative
-to recompiling without the ANIM switch.
+</para>
+        <note>
+          <para>
+Deletion/Renaming of files (except $ANIM.V45) can be used to switch off
+animation for selected programs within a suite.  This facility can be
+used as an alternative to recompiling without the ANIM switch.
+</para>
+        </note>
+        <para>
 EXAMPLES:
+</para>
+        <para>
 The directive
-RUN+A PROG. INT&lt;&lt;
-loads and runs the program PROGwith animation.
-The program must have
-been compiled with ANIM and all necessary files
-(see LOADParameter in
-Chapter 3) must be present.
-Also,
-the RTS must be capable
-of
-initiating
-ANIMATOR(i.e.
-this facility
-is available
-and has not been
-omitted at configuration
-time - see Chapter 5).
-The dirPctive
-RUN +A= PROG.INT&lt;&lt;
-is invalid,
-
-"=" and
-
-and results
-
-in the message
-
-"+A" not allowed
-
-in conjunction
-
-being displa yed on the screen,
-CP/M.
-
-followed
-
-immediately
-
-by a return
-
-to
-
-The dirPctive
-RUN+A +I = PROG.INT&lt;&lt;
-is invalid
-(only 1 load parameter allowed) and results
-in the message
-Command line processing
-error
-being displayed on the screen, followed immediately by a retur n to
-CP/M.
--->
+</para>
+        <screen>
+RUN +A PROG.INT&lt;&lt;
+</screen>
+        <para>
+loads and runs the program PROG with animation.  The program must have
+been compiled with ANIM and all necessary files (see LOAD Parameter in
+Chapter 3) must be present.  Also, the RTS must be capable of
+initiating ANIMATOR (i.e.  this facility is available and has not been
+omitted at configuration time - see Chapter 5).
+</para>
+        <para>
+The directive
+</para>
+        <screen>
+RUN +A = PROG.INT&lt;&lt;
+</screen>
+        <para>
+is invalid, and results in the message
+</para>
+        <para>
+          <errortext>"=" and "+A" not allowed in conjunction</errortext>
+        </para>
+        <para>
+being displayed on the screen, followed immediately by a return to CP/M.
+</para>
+        <para>
+The directive
+</para>
+        <screen>
+RUN +A +I = PROG.INT&lt;&lt;
+</screen>
+        <para>
+is invalid (only 1 load parameter allowed) and results in the message
+</para>
+        <para>
+          <errortext>Command line processing error</errortext>
+        </para>
+        <para>
+being displayed on the screen, followed immediately by a return to CP/M.
+</para>
       </section>
       <section>
         <title>MEMORY MANAGEMENT CONSIDERATIONS</title>
-        <!--
+        <para>
 The size of the RTS with ANIMATOR included is larger by 1920 (decimal)
-bytes,
-than it will
-be when not included.
-Additionally,
-the program
-$ANIM.V45 will be loaded as and when it is necessary
-to animate a program,
-and will remain in memory thereafter.
-The diagram that follows gives an
+bytes, than it will be when not included.  Additionally, the program
+$ANIM.V45 will be loaded as and when it is necessary to animate a program,
+and will remain in memory thereafter.  The diagram that follows gives an
 idea of the memory usage by CIS systems components when running with
 ANIMATOR:
-
-2 - 72
-
-$ANIM.V45
-
-- 12K approx
-
-ANIMATOR
-SCREEN-DATA
-
-- 1920 bytes
-
-RTS NUCLEUS
-
-- 29K approx
-
-0 - low end of memory
-ANIMATORattempts
-to load the complete Data Division
-of the program to be
+</para>
+        <informalfigure>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="right" width="4in" format="PNG" fileref="animatormem.png"/>
+            </imageobject>
+            <textobject>
+              <phrase>Memory use: ANIMATOR SCREEN-DATA - 1920 bytes, $ANIM.V45 - 12K approx, RTS NUCLEUS - 29K approx</phrase>
+            </textobject>
+          </mediaobject>
+        </informalfigure>
+        <para>
+ANIMATOR attempts to load the complete Data Division of the program to be
 animated into memory; it then loads as much of the Procedure Division as can
-be fitted
-in (ANIMATORmaintains
-a 'window' onto the procedure
-division
-code).
-If the entire Data Division of the program cannot be accommodated in
-available
-memory, then the program cannot be animated.
-NOTE:
-1.
-
-In addition
-be reserved
-
-to memory usage by CIS COBOL system components, memory may
-by a resident
-operating
-system at the top end of memory.
-
-2.
-
-ANIMATORand Interactive
-Debug (see Chapter
-facilities
-and cannot be used concurrently .
-
-3.
-
-If the RTS has been configured
-for user subroutines,
-and at the time of
-configuration
-the ANIMATORor Interactive
-Debug modules were excluded
-(as described
-under MEMORY.
-MANAGEMENT
-CONSIDERATIONSin Chapter 3) it
-is invalid
-to -supply a load parameter of "+A" or "+D", since the RTS no
-longer
-contains
-these modules.
-In general,
-attempts
-to activate
-a
-facility
-which has been omitted in this way will result
-in the message:
-Pre-assigned
-Load Point Used
-
-2 - 73
-
-3) are
-
-mutually
-
-exclusive
-        -->
+be fitted in (ANIMATOR maintains a 'window' onto the procedure division
+code).  If the entire Data Division of the program cannot be accommodated in
+available memory, then the program cannot be animated.
+</para>
+        <note>
+          <orderedlist>
+            <listitem>
+              <para>
+In addition to memory usage by CIS COBOL system components, memory may
+be reserved by a resident operating system at the top end of memory.
+</para>
+            </listitem>
+            <listitem>
+              <para>
+ANIMATOR and Interactive Debug (see Chapter 3) are mutually exclusive
+facilities and cannot be used concurrently .
+</para>
+            </listitem>
+            <listitem>
+              <para>
+If the RTS has been configured for user subroutines, and at the time of
+configuration the ANIMATOR or Interactive Debug modules were excluded
+(as described under MEMORY MANAGEMENT CONSIDERATIONS in Chapter 3) it
+is invalid to supply a load parameter of "+A" or "+D", since the RTS no
+longer contains these modules.  In general, attempts to activate a
+facility which has been omitted in this way will result in the message:
+</para>
+              <para>
+                <errortext>Pre-assigned Load Point Used</errortext>
+              </para>
+            </listitem>
+          </orderedlist>
+        </note>
       </section>
     </section>
   </chapter>
@@ -5033,7 +4129,10 @@ the High Level of compiler certification of the GSA.
 Produces validation flags for only the CIS COBOL
 extensions to standard COBOL as it is specified in the
 ANSI COBOL Standard X.23 1974.
-(See the <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>).
+(See the <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>)<footnote><para>
+Up to version 4.4, the <emphasis>FLAG (level)</emphasis> directive was called the <emphasis>ANS switch</emphasis>.
+On older versions of the compiler, use <code>ANS</code> as substitute for <code>FLAG CIS</code>.
+</para></footnote>.
 </para>
                 </listitem>
               </varlistentry>
@@ -5238,52 +4337,33 @@ where:
       <para>
 load param loads modules as follows:
 </para>
-      <!--
-+D
-
-Interactive
-
--
-
-Debug
-+A
-
-ANIMATOR
-Default
-
-(-A)
-
-Indexed Sequential
-
--I
-Nucleus
--->
+      <informalfigure>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" width="4in" format="PNG" fileref="rtsmemory2.png"/>
+          </imageobject>
+        </mediaobject>
+      </informalfigure>
       <para>
 switch param is of general format:
 </para>
-      <!--
-
-[:t
-
-link
-
-param
-
-filename
-
-
-~l [[,][
-
-J :t n2]. .. )]
-
+      <informalfigure>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" width="2in" format="PNG" fileref="runtimeswitches.png"/>
+          </imageobject>
+        </mediaobject>
+      </informalfigure>
+      <para>
 n1 and n2 are any program switch numbers (See Language
 Reference Manual) in the range 0-7
-
-D invokes the standard ANSI COBOL Debug module
-+ or - sets the associated switch on or off
-
 </para>
--->
+      <para>
+D invokes the standard ANSI COBOL Debug module
+</para>
+      <para>
++ or - sets the associated switch on or off
+</para>
       <para>
 link param is the = (equal sign) symbol which is us ed to link the
 program with the Run Time System so that it can be directly
@@ -5402,166 +4482,70 @@ Could be caused by physical surface damage, incorrect format or invalid address 
             <entry>C val</entry>
             <entry>Display ASCII character corresponding to val</entry>
           </row>
-          <!--
-
-D data-ref
-
-Display
-
-16 bytes
-
-J'IIII.
-
-E
-
-Execute until
-contents
-
-(118
-
-G proc-ref
-
-Execute from current position
-given address is reached
-
-fll'I
-
-L
-
-Output carriage
-console
-
-,-
-
-M name
-
-Start
-
-N
-
-Set relative
-
-addressing
-
-default
-
-to start
-
-of user area
-
-0
-
-Set relative
-
-addressing
-
-default
-
-to start
-
-of segment
-
-p
-
-Display
-
-,.
-f'IIM
-
-,.
-,..
-
-,..
-
-,.
-
-s
-
-ra
-
-r-
-
-return/line
-
-until
-
-program counter
-
-Set work register
-
-to address
-
-Execute one instruction
-
-$
-
-End macro definition
-
-I
-
-Display
-
-.
-
-byte at address
-
-given
-up to
-
-in work register
-
-Change byte at address in work register
-to val and increment register
-Increment
-
-work register
-
-Start comment return is ignored
-
-to specified
-
-of macro
-
-x
-
-val
-
-changes
-
-feed to
-
-Trace all paragraphs executed
-address (Procedure Division)
-
-;
-
-fW,
-
-current
-
-given
-
-location
-
-T proc-ref
-
-,r-
-
-data-ref
-
-from address
-
-specific
-
-definition
-
-corresponding
-
-line
-
-
-up to carriage
--->
+          <row>
+            <entry>D data-ref</entry>
+            <entry>Display 16 bytes from address given</entry>
+          </row>
+          <row>
+            <entry>E</entry>
+            <entry>Execute until specific location changes to specified contents</entry>
+          </row>
+          <row>
+            <entry>G proc-ref</entry>
+            <entry>Execute from current position until given address is reached</entry>
+          </row>
+          <row>
+            <entry>L</entry>
+            <entry>Output carriage return/line feed to console</entry>
+          </row>
+          <row>
+            <entry>M name</entry>
+            <entry>Start definition of macro</entry>
+          </row>
+          <row>
+            <entry>N</entry>
+            <entry>Set relative addressing default to start of user area</entry>
+          </row>
+          <row>
+            <entry>O</entry>
+            <entry>Set relative addressing default to start of segment</entry>
+          </row>
+          <row>
+            <entry>P</entry>
+            <entry>Display current program counter</entry>
+          </row>
+          <row>
+            <entry>S data-ref</entry>
+            <entry>Set work register to address given</entry>
+          </row>
+          <row>
+            <entry>T proc-ref</entry>
+            <entry>Trace all paragraphs executed up to address (Procedure Division)</entry>
+          </row>
+          <row>
+            <entry>X</entry>
+            <entry>Execute one instruction</entry>
+          </row>
+          <row>
+            <entry>$</entry>
+            <entry>End macro definition</entry>
+          </row>
+          <row>
+            <entry>/</entry>
+            <entry>Display byte at address in work register</entry>
+          </row>
+          <row>
+            <entry>. val</entry>
+            <entry>Change byte at address in work register to val and increment register</entry>
+          </row>
+          <row>
+            <entry>,</entry>
+            <entry>Increment work register</entry>
+          </row>
+          <row>
+            <entry>;</entry>
+            <entry>Start comment - line up to carriage return is ignored</entry>
+          </row>
         </tbody>
       </tgroup>
       <tgroup cols="3">
@@ -5631,61 +4615,45 @@ statements is as follows:
           <para>
 General Format
 </para>
-          <!--
-<para>
-
-
-file-ilame
-iexternal-f ile-na.ne-li
-/file-identifier
-
-~TO
-
-r
-_'
-
-terall
-I
-
-5external-file-name-literal/
-/file-identifier
-
-I
-
-J
-
-</para>
--->
+          <cmdsynopsis>
+            <command>SELECT</command>
+            <arg>file-name</arg>
+            <arg>ASSIGN TO</arg>
+            <group choice="req">
+              <arg>external-file-name-literal</arg>
+              <arg>file-identifier</arg>
+            </group>
+            <sbr/>
+            <arg choice="opt">
+              <arg>,</arg>
+              <group>
+                <arg>external-file-name-literal</arg>
+                <arg>file-identifier</arg>
+              </group>
+            </arg>
+          </cmdsynopsis>
           <para>
 Parameters
 </para>
-          <!--
-<para>
-
-~1
-
-filename
-
-Can be any user-defined
-CIS COBOL word (see User
-Defined COBOL Words in Chapter 2)
-
-file-identifier
-
-See Run-Time File Assignment
-later in this Appendix
-external-file-name-literal
-
-Is a standard CP/M file name of
-the following general format:
-
-[drive] filename.[extension]
-!device
-
-
-
+          <para>
+filename - Can be any user-defined CIS COBOL word (see User Defined COBOL Words in Chapter 2)
 </para>
--->
+          <para>
+file-identifier - See Run-Time File Assignment later in this Appendix
+</para>
+          <para>
+external-file-name-literal - Is a standard CP/M file name of the following general format:
+</para>
+          <cmdsynopsis>
+            <group choice="req">
+              <arg>
+                <arg choice="opt">drive</arg>
+                <arg>filename</arg>
+                <arg choice="opt">extension</arg>
+              </arg>
+              <arg>device</arg>
+            </group>
+          </cmdsynopsis>
           <para>
 where:
 </para>
@@ -5698,85 +4666,63 @@ device - Devices other than disk as follows:<footnote><para>
 availability of  the driver software for the device in your version of CP/M.
 </para></footnote>
 </para>
-          <!--
-<para>
-LPT:
-LST:
-:LP:
-:CI:
-:CC:
-CON:
-filename
-extension
-
--
-
-PUN:
-:TP:
-:HP:
-
-Line Printer
-Keyboard Input
-Screen Output
-Console I-0
-One through
-spaces)
-One through
-spaces)
-
-
-:RDR:
-
-:TR:
-:HR:
-:BB:
-
-identifier
-
-A:
-
-Punch Device
-High Speed Punch
-Reader Device
-High Speed Reader
-Byte Bucket
-
-eight
-
-alphabetic
-
-or numeric
-
-characters
-
-(no
-
-three
-
-alphabetic
-
-or numeric
-
-characters
-
-(no
-
-of any of these
-the driver
-software
-
-2 - 88
-
-devices
-is dependent
-upon the
-for the device in your version
-
-
-
+          <informaltable frame="all" colsep="0" rowsep="1">
+            <tgroup cols="4">
+              <colspec colwidth="0.5in" align="left"/>
+              <colspec colwidth="1.5in" align="left"/>
+              <colspec colwidth="0.5in" align="left"/>
+              <colspec colwidth="1.5in" align="left"/>
+              <tbody>
+                <row>
+                  <entry>LPT:</entry>
+                  <entry morerows="2">Line Printer</entry>
+                  <entry>PUN:</entry>
+                  <entry morerows="1">Punch Device</entry>
+                </row>
+                <row>
+                  <entry>LST:</entry>
+                  <entry>:TP:</entry>
+                </row>
+                <row>
+                  <entry>:LP:</entry>
+                  <entry>:HP:</entry>
+                  <entry>High Speed Punch</entry>
+                </row>
+                <row>
+                  <entry>:CI:</entry>
+                  <entry>Keyboard Input</entry>
+                  <entry>:RDR:</entry>
+                  <entry morerows="1">Reader Device</entry>
+                </row>
+                <row>
+                  <entry>:CC:</entry>
+                  <entry>Screen Output</entry>
+                  <entry>:TR:</entry>
+                </row>
+                <row>
+                  <entry>CON:</entry>
+                  <entry>Console I-O</entry>
+                  <entry>:HR:</entry>
+                  <entry>High Speed Reader</entry>
+                </row>
+                <row>
+                  <entry/>
+                  <entry/>
+                  <entry>:BB:</entry>
+                  <entry>Byte Bucket</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          <para>
+filename - One through eight alphabetic or numeric characters (no spaces)
+</para>
+          <para>
+extension - One through three alphabetic or numeric characters (no spaces)
+</para>
+          <para>
 Examples or Fixed File Assignment
-
--->
+</para>
           <programlisting>
     SELECT     STOCKFILE
         ASSIGN TO "B:WAREHS.BUY".
@@ -5812,206 +4758,138 @@ external CP/M file name can then be stored in this data area in the
 Procedure Division by the user, and can be altered during the run as
 required.
 </para>
-        <!--
+        <para>
 The following specifications are required run-time assignment:
-
-Environment Division
-
+</para>
+        <section>
+          <title>Environment Division</title>
+          <para>
 In the FILE-CONTROL paragraph the general format of the SELECT and ASSIGN TO
 statements is as follows:
-
+</para>
+          <para>
 General Format
+</para>
+          <para>
 
 SELECT filename
 ASSIGN TO fileidentifier
 
+</para>
+          <para>
 Parameters
-
-file-name
-
-Can be any user-defined
-CIS COBOL word.  (See User
+</para>
+          <para>
+file-name - Can be any user-defined CIS COBOL word.  (See User
 defined COBOL Words in Chapter
 2 of the <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>).
-
+</para>
+          <para>
+file-identifier -
 Is any user-defined CIS COBOL word (See User Defined COBOL Words in Chapter 2 of the
 <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>),
-
-file-identifier
-
-
+</para>
+          <para>
 Example of Run-Time File Assignment
+</para>
+          <programlisting>
+    SELECT STOCKFILE
 
-SELECT STOCKFILE
-ASSIGN STOCKNAME.
-
-Data Division
-
+         ASSIGN STOCKNAME.
+</programlisting>
+        </section>
+        <section>
+          <title>Data Division</title>
+          <para>
 The file-name specified as above is then used in the File Description for
 that program (see THE FILE DESCIPTION - COMPLETE ENTRY SKELETON in Chapters
 5, 6 and 7 of the <citetitle pubwork="book">CIS COBOL Language Reference Manual</citetitle>).
-
-Procedure Division
-
+</para>
+        </section>
+        <section>
+          <title>Procedure Division</title>
+          <para>
 The external CP/M file name of the required file (see under FIXED FILE
 ASSIGNMENT above for format) is then stored as required in the
 file-identifier location specified above by the user program before the file
 is OPENed for use.
-
+</para>
+          <para>
 EXAMPLE:
-
--->
-        <programlisting>
-MOVE "B:WAREHS.BUY" TO STOCK-NAME.
-OPEN INPUT STOCK-FILE.
-
-CLOSE STOCK-FILE.
-
-MOVE "B:WAREHS.SEL" TO STOCK-NAME.
-OPEN INPUT STOCK-FILE.
-
-CLOSE STOCK-FILE.
-
-MOVE."B:PROGA.SRC" TO file-identifier.
-OPEN INPUT file-name.
+</para>
+          <programlisting>
+MOVE     "B:WAREHS.BUY" TO STOCK-NAME.
+OPEN     INPUT STOCK-FILE.
+.
+.
+.
+CLOSE     STOCK-FILE.
+.
+.
+.
+MOVE     "B:WAREHS.SEL" TO STOCK-NAME.
+OPEN     INPUT STOCK-FILE.
+.
+.
+.
+CLOSE     STOCK-FILE.
+.
+.
+.
+MOVE "B:PROGA.SRC" TO file-identifier.
+OPEN      INPUT     file-name.
 </programlisting>
-        <para>
+          <para>
 The CP/M file name could have been entered via an ACCEPT statement i.e. by
 an operator, or stored as any other variable data.
 </para>
-        <para>
+          <para>
 In this way different external files can be used as a common internal user
 file during any run of a program, but care is required to ensure that the
 correct file is allocated at any given time.
 </para>
-        <note>
-          <para>
+          <note>
+            <para>
 The device assignment B: in the file name above can be replaced by the
 format :F1: for compatability with other operating systems.
 </para>
-        </note>
+          </note>
+        </section>
       </section>
     </section>
     <section>
       <title>BLOCK LENGTHS</title>
-      <!--
-on disk
-of 128 bytes
-per
-CP/M uses
-fixed-length
-'CP/M records 1 (blocks)
-block.
-Since
-CIS COBOL permits
-block
-lengths
-other
-than
-128 bytes,
-a
-trailer
-block is appended
-by CIS COBOL to CP/M files.
-The last
-two blocks
-in a file
-appear as follows:
-
-128 bytes
-Data
-
-bytes
-
-Padding
-
-LAST DATA RECORD
-o
-
-I
-
-:-21
-
-b tes-:-2
-Bytes
-
-b tes-!-1
-
-Padding
-
-b te-
-Byte
-Number
-
-Block
-Information
-
-b tes~
-
-'
-
-Padding
-
-TRAILER RECORD
-The last
-data block is padded beyond the last data byte with EOF characters
-If the last data block is full
-i.e.
-128 bytes
-long,
-(lAH) up to 128 bytes.
-then no padding
-is inserted.
-The trailer
-block
-contains
-the position
-at
-which
-the next
-data
-byte
-would be inserted
-in 'byte
-number'
-and 'block
-number Within file'
-format.
-An important
-corollary
-of this
-is that
-if the CP/M utility
-PIP is used to
-move CIS COBOL files
-it must treat
-them as binary
-files.
-This means either
-renaming
-them to have the extension
-.COM, or using
-the "[OJ" parameter
+      <para>
+CP/M uses fixed-length 'CP/M records' (blocks) on disk of 128 bytes per
+block.  Since CIS COBOL permits block lengths other than 128 bytes, a
+trailer block is appended by CIS COBOL to CP/M files.  The last two blocks
+in a file appear as follows:
+</para>
+      <informalfigure>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" width="5in" format="PNG" fileref="filepadding.png"/>
+          </imageobject>
+        </mediaobject>
+      </informalfigure>
+      <para>
+The last data block is padded beyond the last data byte with EOF characters
+(1AH) up to 128 bytes.  If the last data block is full i.e.  128 bytes long,
+then no padding is inserted.  The trailer block contains the position at
+which the next data byte would be inserted in 'byte number' and 'block
+number Within file' format.
+</para>
+      <para>
+An important corollary of this is that if the CP/M utility PIP is used to
+move CIS COBOL files it must treat them as binary files.  This means either
+renaming them to have the extension .COM, or using the "[0]" parameter
 (alpha 0).
-Files
-read as line-sequential
-need not
-only be terminated
-by using the standard
-source
-programs
-to be prepared
-using the
-
-possess
-the trailer
-CP/M EOF convention.
-CP/M editor.
-
-block and need
-This allows
-
--->
+</para>
+      <para>
+Files read as line-sequential need not possess the trailer block and need
+only be terminated by using the standard CP/M EOF convention.  This allows
+source programs to be prepared using the CP/M editor.
+</para>
     </section>
     <section>
       <title>CIS COBOL DISK FILE STRUCTURES UNDER CP/M</title>
@@ -6357,7 +5235,7 @@ THE RTS IS SUPPLIED WITH COLUMN TAB STOPS IN COLUMNS:-
 FOLLOWING: 'YES' 'Y' 'NO' 'N' &gt;<userinput>N</userinput>
 
 THE RTS PROVIDES THE FACILITY TO INCORPORATE ASSEMBLER CODE THAT MAY
-BE ENTERED BY YOU FROM THE COBOL"CALL" VERB.
+BE ENTERED BY YOU FROM THE COBOL "CALL" VERB.
 DO YOU WISH TO INCLUDE SUCH CODE?
 INPUT ONE OF THE FOLLOWING:'YES' 'Y' 'NO' 'N'
 &gt;<userinput>N</userinput>

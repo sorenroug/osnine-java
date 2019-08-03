@@ -71,7 +71,7 @@
               <draftMode>no</draftMode>
               <sourceDirectory>${basedir}/src</sourceDirectory>
               <foCustomization>src/style.xslt</foCustomization>
-              <includes>operatingguide.xml</includes>
+              <includes>ciscobol-operating-guide-v4.5.xml</includes>
             </configuration>
           </execution>
 
