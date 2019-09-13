@@ -1,14 +1,14 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. ITERATIVE-TOWERS-OF-HANOI.
        AUTHOR. SOREN ROUG.
-       DATE-WRITTEN. 2019-06-28.
+       DATE-WRITTEN. 2019-09-13.
       * Kolar's Hanoi Tower algorithm no. 1
       * http://hanoitower.mkolar.org/algo.html
       * Works for up to 8 disks.
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
-       SOURCE-COMPUTER. LINUX.
-       OBJECT-COMPUTER. KAYPRO4.
+       SOURCE-COMPUTER. CIS-COBOL.
+       OBJECT-COMPUTER. CP-M.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
        DATA DIVISION.
@@ -50,7 +50,12 @@
            MOVE 1 TO FROM-POLE.
            DIVIDE 2 INTO NUM-DISKS GIVING DIV.
            MULTIPLY 2 BY DIV.
-           IF DIV NOT = NUM-DISKS PERFORM INITODD ELSE PERFORM INITEVEN.
+           IF DIV NOT = NUM-DISKS
+               MOVE 3 TO TO-POLE
+               MOVE 2 TO VIA-POLE
+           ELSE
+               MOVE 2 TO TO-POLE
+               MOVE 3 TO VIA-POLE.
            PERFORM MOVE-DISK UNTIL DNUM (3) NOT > 1.
            DISPLAY "TOWERS OF HANOI PUZZLE COMPLETED!".
            STOP RUN.
@@ -59,12 +64,6 @@
            MOVE I TO POLE (1, I).
            MOVE 0 TO POLE (2, I), POLE (3, I).
            ADD 1 TO I.
-       INITEVEN.
-           MOVE 2 TO TO-POLE.
-           MOVE 3 TO VIA-POLE.
-       INITODD.
-           MOVE 3 TO TO-POLE.
-           MOVE 2 TO VIA-POLE.
 
        MOVE-DISK.
            MOVE DNUM (FROM-POLE) TO FP-TMP.
@@ -78,23 +77,20 @@
            MOVE I TO POLE (TO-POLE, TO-TMP).
            DIVIDE 2 INTO I GIVING DIV.
            MULTIPLY 2 BY DIV.
-           IF I NOT = DIV PERFORM MOVE-TO-VIA ELSE
-               PERFORM MOVE-FROM-VIA.
+           IF I NOT = DIV
+               PERFORM MOVE-TO-VIA
+           ELSE
+               MOVE FROM-POLE TO VIA-POLE
+               MOVE TMP-P TO FROM-POLE.
 
        MOVE-TO-VIA.
-           MOVE TO-POLE TO VIA-POLE.
-           MOVE DNUM (FROM-POLE) TO FP-TMP.
-           MOVE DNUM (TMP-P) TO P-TMP.
+           MOVE TO-POLE TO VIA-POLE
+           MOVE DNUM (FROM-POLE) TO FP-TMP
+           MOVE DNUM (TMP-P) TO P-TMP
            IF POLE (FROM-POLE, FP-TMP) > POLE (TMP-P, P-TMP)
-               PERFORM MOVE-FROM-TO
-           ELSE MOVE TMP-P TO TO-POLE.
-
-       MOVE-FROM-TO.
-           MOVE FROM-POLE TO TO-POLE.
-           MOVE TMP-P TO FROM-POLE.
-           MOVE DNUM (FROM-POLE) TO FP-TMP.
-           MOVE DNUM (TMP-P) TO P-TMP.
-
-       MOVE-FROM-VIA.
-           MOVE FROM-POLE TO VIA-POLE.
-           MOVE TMP-P TO FROM-POLE.
+               MOVE FROM-POLE TO TO-POLE
+               MOVE TMP-P TO FROM-POLE
+               MOVE DNUM (FROM-POLE) TO FP-TMP
+               MOVE DNUM (TMP-P) TO P-TMP
+           ELSE
+               MOVE TMP-P TO TO-POLE.
