@@ -74,7 +74,7 @@
 <funcprototype>
   <funcdef>char *<function>rindex</function></funcdef>
   <paramdef>char *<parameter>s</parameter></paramdef>
-  <paramdef>char<parameter>ch</parameter></paramdef>
+  <paramdef>char <parameter>ch</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
