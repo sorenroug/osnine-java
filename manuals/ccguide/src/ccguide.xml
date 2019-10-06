@@ -1,71 +1,66 @@
-<?xml version="1.0" ?>
-<book
-    version="5.0" xml:id="ccguide" xml:lang="en"
-    xmlns="http://docbook.org/ns/docbook"
-    xmlns:xi="http://www.w3.org/2001/XInclude"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
-<bookinfo>
- <title>Microware C Compiler User's Guide</title>
- <subtitle>for OS-9</subtitle>
-
- <publisher>
-  <publishername>Cleglen Publishing Limited</publishername>
-  <address>
-   <city>Cardiff</city>
-  </address>
- </publisher>
-
-<copyright>
-  <year>1983</year>
-  <holder>Microware Systems Corporation.</holder>
-</copyright>
-
-<legalnotice>
-
-<para>All rights reserved.</para>
-
-<para>
+<?xml version="1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" xml:id="ccguide" xml:lang="en" xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd">
+  <bookinfo>
+    <title>Microware C Compiler User's Guide</title>
+    <subtitle>for OS-9</subtitle>
+    <edition>C</edition>
+    <pubdate>June, 1983</pubdate>
+    <publisher>
+      <publishername>Cleglen Publishing Limited</publishername>
+      <address>
+        <city>Cardiff</city>
+      </address>
+    </publisher>
+    <copyright>
+      <year>1983</year>
+      <holder>Microware Systems Corporation.</holder>
+    </copyright>
+    <legalnotice>
+      <para>All rights reserved.</para>
+      <para>
 Reproduction of this document, in part or whole, by any means,
 electrical or otherwise, is prohibited, except by written permission
 from Microware Systems Corporation.</para>
-
-<para>The information contained herein is believed to be accurate as of
+      <para>
+The information contained herein is believed to be accurate as of
 the date of publication, however, Microware will not be liable for
 any damages, including indirect or consequential, from use of
 the OS-9 operating system or reliance on the accuracy of this
 documentation. The information contained herein is subject to
 change without notice.</para>
-</legalnotice>
-<revhistory>
-<revision>
-<revnumber>C</revnumber>
-<date>June 1983</date>
-</revision>
-</revhistory>
-</bookinfo>
-
-<preface>
-<title>Acknowledgements</title>
-<para>
-The OS-9 C Compiler was written by James McCosh with OS-9
-implementation assistance from Terry Crane and Kim Kempf. The
-Relocatable Assembler, Linker, and Profiler was edited by Wes Camden and
-Ken Kaplan.
+    </legalnotice>
+    <releaseinfo>
+Revision C
+</releaseinfo>
+    <revhistory>
+      <revision>
+        <revnumber>C</revnumber>
+        <date>June 1983</date>
+      </revision>
+      <revision>
+        <revnumber>D</revnumber>
+        <date>August 1983</date>
+      </revision>
+    </revhistory>
+  </bookinfo>
+  <preface>
+    <title>Acknowledgements</title>
+    <para>
+The OS-9 C Compiler was written by James McCosh with OS-9 implementation assistance from Terry Crane and Kim Kempf.
+The Relocatable Assembler, Linker, and Profiler was edited by Wes Camden and Ken Kaplan.
 </para>
-</preface>
-
-<xi:include href="intro-preface.xml" />
-<xi:include href="chap1-chapter.xml" />
-<xi:include href="chap2-chapter.xml" />
-<xi:include href="chap3-chapter.xml" />
-<xi:include href="chap4-chapter.xml" />
-<xi:include href="creference-appendix.xml" />
-<xi:include href="errors-appendix.xml" />
-<xi:include href="phases-appendix.xml" />
-<xi:include href="basic09-appendix.xml" />
-<xi:include href="rmareference.xml" />
-<colophon>
+  </preface>
+  <xi:include href="intro-preface.xml"/>
+  <xi:include href="chap1-chapter.xml"/>
+  <xi:include href="chap2-chapter.xml"/>
+  <xi:include href="chap3-chapter.xml"/>
+  <xi:include href="chap4-chapter.xml"/>
+  <xi:include href="creference-appendix.xml"/>
+  <xi:include href="errors-appendix.xml"/>
+  <xi:include href="phases-appendix.xml"/>
+  <xi:include href="basic09-appendix.xml"/>
+  <xi:include href="rmareference.xml"/>
+  <colophon>
     <para>
         This book is scanned from an OS-9 C-compiler + manual for the Dragon 64.
         The book was published by Dragon Data Ltd., and distributed by H. C. Andersen Computer A/S in Copenhagen.
@@ -76,5 +71,5 @@ Ken Kaplan.
     <para>
         The manual has many references to Appendix A (The C reference) of the Kernighan &amp; Ritchie <citetitle pubwork="book">C Programming Language</citetitle> book. Since there has been an evolution of the C language since 1983 and the original edition of K &amp; R is very difficult to find, I have downloaded the C reference from Dennis Ritchie's website and included it as appendix A in this manual.
     </para>
-</colophon>
+  </colophon>
 </book>

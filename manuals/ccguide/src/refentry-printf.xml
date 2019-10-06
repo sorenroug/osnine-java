@@ -34,6 +34,14 @@
 </funcprototype>
 </funcsynopsis>
 
+<funcprototype>
+  <funcdef><function>pffinit</function></funcdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>pflinit</function></funcdef>
+</funcprototype>
+
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>
@@ -97,7 +105,7 @@ An optional character <quote>l</quote> indicates that the following
 <quote>d</quote>,<quote>x</quote>, or <quote>o</quote> is the specification of a long integer
 argument. NOTE that in order for the printing of long
 integers to take place, the source code must have in it
-somewhere the statement pflinit(), which causes routines
+somewhere the statement <function>pflinit()</function>, which causes routines
 to be linked from the library.
 </para>
 </listitem>
@@ -163,7 +171,7 @@ rounded.
 <para>
 ALSO NOTE that in order for the printing of floats or doubles
 to take place, the source program <emphasis>must</emphasis> have the statement
-pffinit() somewhere.
+<function>pffinit()</function> somewhere.
 </para>
 
 <informaltable frame="none" rowsep="0" colsep="0">

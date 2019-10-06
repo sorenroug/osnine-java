@@ -817,8 +817,8 @@ used in which case the expansion will be &lt;string&gt;.
     </row>
     <row>
 	<entry>cc prg1.c prg2.a prg3.r</entry>
-	<entry>compile prg1.c, assemble prg2.a and combine all into and executable program</entry>
-	<entry>prg1.r, prg2.r</entry>
+	<entry>compile prg1.c, assemble prg2.a and combine all into an executable program</entry>
+	<entry>prg1.r, prg2.r, output</entry>
     </row>
     <row>
 	<entry>cc prg1.c prg2.c -a</entry>

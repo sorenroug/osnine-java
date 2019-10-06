@@ -36,8 +36,8 @@ os9 I$READLN
 <para>
 The path number, <quote><replaceable>pn</replaceable></quote> is an integer which is one of the
 standard path numbers 0, 1, or 2, or the path number should
-have been returned by a successful call to <quote>open</quote>, <quote>creat</quote>, or
-<quote>dup</quote>. <quote><replaceable>Buffer</replaceable></quote> is a pointer to space with at least <quote><replaceable>count</replaceable></quote>
+have been returned by a successful call to <function>open</function>, <function>creat</function>, or
+<function>dup</function>. <quote><replaceable>Buffer</replaceable></quote> is a pointer to space with at least <quote><replaceable>count</replaceable></quote>
 bytes of memory into which read will put the data from the file.
 </para>
 <para>

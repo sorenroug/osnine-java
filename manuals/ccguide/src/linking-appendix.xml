@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <!-- This appendix appears in revision D of the CC guide as appendix B. -->
+  <title>Using and Linking to User Defined Libraries</title>
+  <para>
+A library consists of a group of <quote>C</quote> procedures or functions that
+have been separately compiled into Relocatable Object Files (ROF)
+and subsequently merged into on library file.
+</para>
+  <para>
+If, hypothetically, you had created a set of higher level mathematic
+functions, that you wanted to convert into a <quote>C</quote> library. First you
+would separately compile each one using the <option>-R</option>. Then you
+would merge them all into one large library file. If you need to
+scan the library file for available functions you can use the
+example program <quote>RDUMP.C</quote> to inspect any <quote>C</quote> library file.
+</para>
+  <para>
+For example:
+</para>
+  <screen>
+OS9:CC1 SIN.C COS.C TAN.C ARCOS.C -R
+OS9:CC1 ARCSIN.C ARCTAN.C EXP.C LOG.C -R
+OS9:CC1 NLOG.C SQRT.C SQR.C CUBE.C -R
+</screen>
+  <para>
+Then you would:
+</para>
+  <screen>
+OS9:MERGE SIN.R COS.R TAN.R ARCOS.R &gt;TEMP1
+OS9:MERGE ARCSIN.R ARCTAN.R EXP.R LOG.R &gt;TEMP2
+OS9:MERGE NLOG.R SQRT.R SQR.R CUBE.R &gt;TEMP3
+OS9:MERGE TEMP1 TEMP2 TEMP3 &gt;TRIG.L
+</screen>
+  <para>
+Then to use the library simply use the <option>-l=&lt;pathlist&gt;</option> option in your
+command line when you compile your program.
+</para>
+  <para>
+When the linker is executed the pathlist specified will be searched
+to resolve any references made to the functions within the library.
+The linker searches all specified libraries in the order specified
+before searching the standard library. The linker will resolve all
+references on a first found basis. This means that the linker will
+use the first procedure or function whose name matches a reference
+to that name and will ignore any additional functions found that
+have the same name.
+</para>
+  <para>
+Procedures or functions within a library that use other functions
+within the same library should always appear first. For example, in
+the above example if the <quote>ARCSIN</quote> routine used the <quote>SIN</quote> routine,
+the <quote>SIN</quote> routine should be merged into the library after the
+<quote>ARCSIN</quote>. Another way of putting this is that all references to
+other procedures within a library should be forward references.
+</para>
+</appendix>
