@@ -98,6 +98,7 @@ public class Screen extends JTextPane {
         //setLineWrap(true);
     }
 
+/*
     public void run() {
         LOGGER.debug("Thread started");
         try {
@@ -120,7 +121,7 @@ public class Screen extends JTextPane {
         }
         System.exit(2);
     }
-
+*/
     private void logCharacter(int val, String newchar) {
         if (val >= 32 && val <=127) {
             LOGGER.info("{} [{}]", val, newchar);
@@ -211,6 +212,7 @@ public class Screen extends JTextPane {
             if (keyChar == '\n') {
                 acia.eolReceived();
             } else {
+                LOGGER.debug("Typed: {}", keyChar);
                 acia.dataReceived(keyChar & 0x7F);
             }
         }

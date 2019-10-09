@@ -97,20 +97,19 @@ public class GUI {
         bus = new BusStraight();
 
         RandomAccessMemory ram = new RandomAccessMemory(0x0000, bus, "0x10000");
-        bus.insertMemorySegment(ram);
+        bus.addMemorySegment(ram);
 
 //      ReadOnlyMemory rom = new ReadOnlyMemory(0xC000, bus, "0x4000");
 //      bus.insertMemorySegment(rom);
 
-        // FF00 reserved for IRQbeat
+        IRQBeat irqBeat = new IRQBeat(0xFF00, bus, "20");
+        bus.insertMemorySegment(irqBeat);
+
         t1 = new Acia6850(0xFF02, bus);
         bus.insertMemorySegment(t1);
         screen1 = new Screen(t1);
         AciaToScreen atc1 = new AciaToScreen(t1, screen1);
-        //SwingUtilities.invokeLater(atc1);
-        Thread reader1 = new Thread(atc1, "T1");
-        reader1.setDaemon(true);
-        reader1.start();
+        atc1.execute();
 
         t2 = new Acia6850(0xFF04, bus);
         bus.insertMemorySegment(t2);
@@ -131,10 +130,10 @@ public class GUI {
         loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "SysGo", "Init",
                 "BootDyn", "HWClock");
         loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed4", "RBF_ed8", "VDisk",
-                "D0", "T1");
+                "D0", "T1", "Shell");
 
         cpu = new MC6809(bus);
-        // TODO: Set the reset vector
+
         setWord(MC6809.RESET_ADDR, 0xF076);
         setWord(MC6809.SWI3_ADDR, 0x100);
         setWord(MC6809.SWI2_ADDR, 0x103);
@@ -157,7 +156,7 @@ public class GUI {
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
 
-        /*
+/*
         LOGGER.debug("Starting heartbeat every 20 milliseconds");
         TimerTask clocktask = new ClockTask();
 

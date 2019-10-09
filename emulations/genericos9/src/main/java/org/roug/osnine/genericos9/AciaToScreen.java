@@ -2,6 +2,8 @@ package org.roug.osnine.genericos9;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.List;
+import javax.swing.SwingWorker;
 
 import org.roug.osnine.Acia;
 import org.slf4j.Logger;
@@ -11,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Listen to ACIA and send the character to the screen.
  *
  */
-public class AciaToScreen implements Runnable {
+public class AciaToScreen extends SwingWorker<Integer, Integer> {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(AciaToScreen.class);
@@ -29,28 +31,33 @@ public class AciaToScreen implements Runnable {
         this.screen = screen;
     }
 
-    public void run() {
+    @Override
+    public Integer doInBackground() {
         LOGGER.debug("Thread started");
+        acia.setDCD(true);
         try {
-            acia.setDCD(true);
-            try {
-                while (true) {
-                    int val = acia.waitForValueToTransmit();
-                    screen.sendToGUI(val);
-                    if (Thread.interrupted())
-                        throw new InterruptedException();
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("InterruptException");
-            } catch (Exception e) {
-                LOGGER.error("Broken connection", e);
+            while (!isCancelled()) {
+                int val = acia.waitForValueToTransmit();
+                publish(val);
             }
-            acia.setDCD(false);
+        } catch (InterruptedException e) {
+            LOGGER.error("InterruptException");
+//      } catch (Exception e) {
+//          LOGGER.error("Broken connection", e);
+        }
+        acia.setDCD(false);
+        return 0; // Unused
+    }
+
+    @Override
+    protected void process(List<Integer> chunks) {
+        try {
+            for(int val : chunks) {
+                screen.sendToGUI(val);
+            }
         } catch (Exception e) {
             LOGGER.error("GUI exception");
         }
-        System.exit(2);
     }
-
 }
 
