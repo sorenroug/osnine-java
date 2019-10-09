@@ -1,0 +1,42 @@
+<project name="BuildModules" default="compile">
+
+    <property name="homedir" value="src/modules"/>
+    <property name="os9dir" value="${main.basedir}/os9software" />
+    <property name="targetdir" value="target/classes" />
+    <macrodef name="assemble">
+        <attribute name="src" />
+        <sequential>
+            <echo message="Assembling: @{src}"/>
+            <java jar="../../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    fork="true" dir="${homedir}">
+                <env key="OSNINEDIR" value="${os9dir}"/>
+                <arg value="-m"/>
+                <arg value="20000"/>
+                <arg value="asm"/>
+                <arg value="@{src}.asm"/>
+                <arg value="o=a.out"/>
+            </java>
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+        </sequential>
+    </macrodef>
+
+    <target name="compile">
+        <mkdir dir="${targetdir}"/>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/"
+            files="Acia_ed4 BootDyn IOMan_ed4 SCF_ed8 RBF_ed8 OS9p1_d64 OS9p2_ed9 PipeMan Piper Pipe VDisk"
+          />
+        </copy>
+        <!--
+        <copy todir="${targetdir}">
+          <filelist dir="." files="OS9.dsk WORK.dsk"/>
+        </copy>
+        -->
+        <assemble src="D0"/>
+        <assemble src="HWClock"/>
+        <assemble src="Init"/>
+        <assemble src="SysGo"/>
+        <assemble src="T1"/>
+    </target>
+
+</project>
