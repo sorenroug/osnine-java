@@ -76,7 +76,9 @@ public class Acia6551 extends MemorySegment implements Acia {
         super(start, start + 3);
         this.bus = bus;
         setDCD(false);  // There is no carrier
-        loadUI(args[0]);
+        if (args.length > 0) {
+            loadUI(args[0]);
+        }
     }
 
     /**
