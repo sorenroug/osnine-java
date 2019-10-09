@@ -37,6 +37,8 @@
         <assemble src="Init"/>
         <assemble src="SysGo"/>
         <assemble src="T1"/>
+        <assemble src="T2"/>
+        <assemble src="P"/>
     </target>
 
 </project>

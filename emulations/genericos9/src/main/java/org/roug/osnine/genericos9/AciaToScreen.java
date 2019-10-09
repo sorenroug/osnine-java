@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listen to ACIA and send the character to the screen.
+ * Listen to ACIA and send the character to the User Interface.
  *
  */
 public class AciaToScreen extends SwingWorker<Integer, Integer> {
@@ -19,21 +19,20 @@ public class AciaToScreen extends SwingWorker<Integer, Integer> {
             LoggerFactory.getLogger(AciaToScreen.class);
 
     private Acia acia;
-    private Screen screen;
+    private UIDevice uiDevice;
 
     /**
      * Constructor.
      *
      * @param acia - The ACIA the user interface talks to
      */
-    public AciaToScreen(Acia acia, Screen screen) {
+    public AciaToScreen(Acia acia, UIDevice uiDevice) {
         this.acia = acia;
-        this.screen = screen;
+        this.uiDevice = uiDevice;
     }
 
     @Override
     public Integer doInBackground() {
-        LOGGER.debug("Thread started");
         acia.setDCD(true);
         try {
             while (!isCancelled()) {
@@ -42,8 +41,6 @@ public class AciaToScreen extends SwingWorker<Integer, Integer> {
             }
         } catch (InterruptedException e) {
             LOGGER.error("InterruptException");
-//      } catch (Exception e) {
-//          LOGGER.error("Broken connection", e);
         }
         acia.setDCD(false);
         return 0; // Unused
@@ -53,7 +50,7 @@ public class AciaToScreen extends SwingWorker<Integer, Integer> {
     protected void process(List<Integer> chunks) {
         try {
             for(int val : chunks) {
-                screen.sendToGUI(val);
+                uiDevice.sendToUI(val);
             }
         } catch (Exception e) {
             LOGGER.error("GUI exception");

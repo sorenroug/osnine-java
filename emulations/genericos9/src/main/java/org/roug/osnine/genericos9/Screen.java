@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * Graphical user interface for Acia chip using JTextPane.
  *
  */
-public class Screen extends JTextPane {
+public class Screen extends JTextPane implements UIDevice {
 
     private int currentFontSize = 16;
     private int rows = 24;
@@ -98,30 +98,6 @@ public class Screen extends JTextPane {
         //setLineWrap(true);
     }
 
-/*
-    public void run() {
-        LOGGER.debug("Thread started");
-        try {
-            acia.setDCD(true);
-            try {
-                while (true) {
-                    int val = acia.waitForValueToTransmit();
-                    sendToGUI(val);
-                    if (Thread.interrupted())
-                        throw new InterruptedException();
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("InterruptException");
-            } catch (Exception e) {
-                LOGGER.error("Broken connection", e);
-            }
-            acia.setDCD(false);
-        } catch (Exception e) {
-            LOGGER.error("GUI exception");
-        }
-        System.exit(2);
-    }
-*/
     private void logCharacter(int val, String newchar) {
         if (val >= 32 && val <=127) {
             LOGGER.info("{} [{}]", val, newchar);
@@ -144,7 +120,8 @@ public class Screen extends JTextPane {
      *
      * @param val character to display.
      */
-    void sendToGUI(int val) throws BadLocationException, IOException {
+    @Override
+    public void sendToUI(int val) throws BadLocationException, IOException {
         int caretPos = getCaretPosition();
         String newchar = Character.toString((char) val);
         //logCharacter(val, newchar);
@@ -226,7 +203,7 @@ public class Screen extends JTextPane {
 
         NORMAL {
             @Override
-            Go51State sendToGUI(int val, Screen h)
+            Go51State sendToUI(int val, Screen h)
                     throws BadLocationException,IOException {
                 int caretPos = h.getCaretPosition();
                 String newchar = Character.toString((char) val);
@@ -275,7 +252,7 @@ public class Screen extends JTextPane {
 
         ESCAPE {
             @Override
-            Go51State sendToGUI(int val, Screen h)
+            Go51State sendToUI(int val, Screen h)
                     throws BadLocationException,IOException {
                 int caretPos = h.getCaretPosition();
                 switch (val) {
@@ -316,7 +293,7 @@ public class Screen extends JTextPane {
             }
         };
 
-        abstract Go51State sendToGUI(int val, Screen h)
+        abstract Go51State sendToUI(int val, Screen h)
                 throws BadLocationException,IOException;
 
     }

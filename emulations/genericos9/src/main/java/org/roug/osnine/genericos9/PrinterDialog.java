@@ -1,7 +1,13 @@
 package org.roug.osnine.genericos9;
 
 import javax.swing.*;
-import javax.swing.text.*;
+//import javax.swing.text.*;
+
+import java.io.IOException;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,7 +24,7 @@ import java.awt.print.PrinterJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PrinterDialog {
+public class PrinterDialog implements UIDevice {
 
     private static final Logger LOGGER =
                     LoggerFactory.getLogger(PrinterDialog.class);
@@ -102,7 +108,8 @@ public class PrinterDialog {
      *
      * @param value the character received from the PIA.
      */
-    public void printOneByte(int value) {
+    @Override
+    public void sendToUI(int value) {
         if (value == 0x0A) {
             textBuffer.append('\n');
             printSegment(textBuffer.toString());

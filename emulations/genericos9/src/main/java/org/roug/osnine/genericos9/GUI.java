@@ -114,8 +114,12 @@ public class GUI {
         t2 = new Acia6850(0xFF04, bus);
         bus.insertMemorySegment(t2);
 
+        printerDialog = new PrinterDialog(guiFrame);
+
         t3 = new Acia6850(0xFF06, bus);
         bus.insertMemorySegment(t3);
+        AciaToScreen atc3 = new AciaToScreen(t3, printerDialog);
+        atc3.execute();
 
         hwClock = new HWClock(0xFF10, bus);
         bus.insertMemorySegment(hwClock);
@@ -123,14 +127,11 @@ public class GUI {
         d0 = new VirtualDisk(0xFF40, bus, "OS9.dsk");
         bus.insertMemorySegment(d0);
 
-        printerDialog = new PrinterDialog(guiFrame);
-        //PIA6821 printerPia = new PIAPrinter(bus, printerDialog);
-        //bus.insertMemorySegment(printerPia);
 
         loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "SysGo", "Init",
                 "BootDyn", "HWClock");
         loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed4", "RBF_ed8", "VDisk",
-                "D0", "T1", "Shell");
+                "D0", "T1", "P");
 
         cpu = new MC6809(bus);
 
@@ -141,7 +142,7 @@ public class GUI {
         setWord(MC6809.IRQ_ADDR, 0x10C);
         setWord(MC6809.FIRQ_ADDR, 0x10F);
 
-        guiFrame.setSize(1000, 600);
+        guiFrame.setSize(900, 600);
         guiFrame.add(screen1);
 
         //guiFrame.pack();
