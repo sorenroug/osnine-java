@@ -98,6 +98,9 @@ public class MC6809 extends USimMotorola {
         super(new BusStraight());
         bus = (Bus8Motorola) super.getBus();
         allocate_memory(0xfff0, 16);
+        if(LOGGER.isTraceEnabled()) {
+            setTraceInstructions(true);
+        }
         reset();
     }
 
@@ -109,6 +112,9 @@ public class MC6809 extends USimMotorola {
     public MC6809(Bus8Motorola bus) {
         super(bus);
         this.bus = bus;
+        if(LOGGER.isTraceEnabled()) {
+            setTraceInstructions(true);
+        }
         reset();
     }
 
