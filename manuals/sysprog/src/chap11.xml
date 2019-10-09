@@ -5152,17 +5152,16 @@ SCF also uses ATTACH/DETACH to setup its second (echo) device.
       <para>
 FUNCTION: Given the number of an existing path, DUP returns a synonymous
 path number for the same file or device. <application>Shell</application> uses this service
-request when it redirects I/O. Service requests using either the old or
-new path numbers operate on the same file or device. It is usually not a
-good idea for more than one process to be doing 1/0 on the same path
+request when it redirects I/O.
+Service requests using either the old or new path numbers operate on the same file or device.
+It is usually not a good idea for more than one process to be doing I/O on the same path
 concurrently. On RBF files, unpredictable results may be produced.
 </para>
       <para>
 NOTE: This only increments the <quote>use count</quote> of a path descriptor and
 returns the synonymous path number. The path descriptor is NOT copied.
-It is usually not a good idea for more than process to be doing 1/0 on
-the same path concurrently. On RBF files, unpredictable results may be
-produced.
+It is usually not a good idea for more than process to be doing I/O on the same path concurrently.
+On RBF files, unpredictable results may be produced.
 </para>
   <variablelist role="factsheet">
     <varlistentry>
@@ -5187,12 +5186,10 @@ LI and LII - <simplelist type="inline">
       <term>CAVEATS:</term>
       <listitem>
       <para>
-The DUP will always use the lowest available path number. For
-example, if the user does I$Close on path #0, then does I$Dup on path #4,
-then path #0 will be returned as the new path number. In this way, the
-standard I/O paths may be manipulated to contain any desired paths. In
-this way, the standard I/O paths may be manipulated to contain ant
-desired paths.
+The DUP will always use the lowest available path number.
+For example, if the user does I$Close on path #0, then does I$Dup on path #4,
+then path #0 will be returned as the new path number.
+In this way, the standard I/O paths may be manipulated to contain any desired paths.
 </para>
       </listitem>
     </varlistentry>
@@ -5267,10 +5264,10 @@ device parameters that:</para>
         </listitem>
       </orderedlist>
       <para>The exact operation of this call depends on the device driver and
-file manager associated with the path. A typical use is to
-determine a terminal's parameters for backspace character, delete
-character, echo on/off, null padding, paging, etc. It is commonly
-used in conjunction with the <xref linkend="i.setstt"/>
+file manager associated with the path.
+A typical use is to determine a terminal's parameters for backspace character, delete
+character, echo on/off, null padding, paging, etc.
+It is commonly used in conjunction with the <xref linkend="i.setstt"/>
 service request which is
 used to set the device operating parameters. Below are presently
 defined function codes for <xref linkend="i.getstt"/>:</para>
@@ -6217,8 +6214,7 @@ condition. Note that a SEEK to address zero is the same as a <quote>rewind</quot
 operation.
 </para>
       <para>
-Seeks to non-random access devices are usually ignored and return without
-error.
+Seeks to non-random access devices are usually ignored and return without error.
 </para>
   <variablelist role="factsheet">
     <varlistentry>
@@ -6715,7 +6711,7 @@ SS.Lock (Code $10): Lock out a section of a file.
 FUNCTION: SS.Lock locks out a section of the file from the current
 position up to the number of bytes requested. If 0 bytes are requested,
 all locks (Record Lock, EOF Lock, and File Lock) are removed. If (X) and
-(U) contain SFFFF FFFF, then the entire file is locked out regardless of
+(U) contain $FFFF FFFF, then the entire file is locked out regardless of
 where the file pointer is. This is a special type of file lock that
 remains in effect until released by SS.Lock(O), a read or write of zero
 bytes, or the file is closed. There is no way to gain file lock using
