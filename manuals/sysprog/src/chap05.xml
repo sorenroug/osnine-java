@@ -240,7 +240,7 @@ form feeds to printers.
 <para>
 Strictly speaking, device drivers must conform to the general format
 presented in this manual. However, IOMAN uses only the <quote>Init</quote> and
-"Terminate" entry points. Other entry points need only be compatible
+<quote>Terminate</quote> entry points. Other entry points need only be compatible
 with the file manager for which the driver is written. For example, the
 Read entry point of an SCF driver is expected to return one byte from the
 device. On the other hand, RBF expects Read to return an entire sector.
@@ -263,15 +263,15 @@ illustrate how a file manager might call one of it's drivers.
 *          (B)=error code, CC set if error
 * Destroys B,CC
 
-IOEXEC pshs a,x,y,u save registers
-       ldu V$STAT,x get static storage for driver
-       ldx V$DRIV,x get driver module address
-       ldd M$EXEC,X and offset of execution entries
-       addd 5,s offset by read/write
-       leax d,x absolute entry address
-       lda ,s+ restore char (for write)
-       jsr 0,x execute driver read/write
-       puls x,y,u,pc return (A)=char, (B)=error
+IOEXEC pshs a,x,y,u <lineannotation>save registers</lineannotation>
+       ldu V$STAT,x <lineannotation>get static storage for driver</lineannotation>
+       ldx V$DRIV,x <lineannotation>get driver module address</lineannotation>
+       ldd M$EXEC,X <lineannotation>and offset of execution entries</lineannotation>
+       addd 5,s <lineannotation>offset by read/write</lineannotation>
+       leax d,x <lineannotation>absolute entry address</lineannotation>
+       lda ,s+ <lineannotation>restore char (for write)</lineannotation>
+       jsr 0,x <lineannotation>execute driver read/write</lineannotation>
+       puls x,y,u,pc <lineannotation>return (A)=char, (B)=error</lineannotation>
 
        emod Module CRC
 Size equ * size of Sequential File Manager
@@ -401,7 +401,7 @@ it does not have good response time.</para></listitem>
 An interrupt system allows the hardware to report to the CPU and the
 device drivers when the device has finished some operation. Using
 interrupts to advantage, a device driver may set up interrupt handling to
-occur when a character is sent/reed, a disk operation is complete, or
+occur when a character is sent/read, a disk operation is complete, or
 whatever. The OS-9 environment is set up for ease of interrupt
 processing. There is a flexible built-in polling system facility for
 pausing a process, and awakening the process. Microware has developed a
@@ -412,11 +412,11 @@ Step 1: Init routine places the driver local IRQSVC routine in
 the IRQ polling sequence via an F$IRQ system call.
 </para>
 <programlisting>
-     ldd V.Port,u get address to poll
-     leax IRQPOLL,pcr point to IRQ packet
-     leay IRQSERVC,pcr point to IRQ service routine
-     OS9 F$IRQ add dev to poll sequence
-     bcs Error abnormal exit if error
+     ldd V.Port,u <lineannotation>get address to poll</lineannotation>
+     leax IRQPOLL,pcr <lineannotation>point to IRQ packet</lineannotation>
+     leay IRQSERVC,pcr <lineannotation>point to IRQ service routine</lineannotation>
+     OS9 F$IRQ <lineannotation>add dev to poll sequence</lineannotation>
+     bcs Error <lineannotation>abnormal exit if error</lineannotation>
 </programlisting>
 <para>
 Step 2: Whenever a driver program must wait for the hardware, it
@@ -436,16 +436,16 @@ the sending of a wakeup signal. The following code will indicate a
 technique to accomplish this:
 </para>
 <programlisting>
-          lda V.Busy,u get proc ID
-          sta V.Wake,u arrange for wakeup
-          andcc #^IntMasks clear the way for interrupts
-Sleep50   ldx #0 or any tick time desired.
-          OS9 F$Sleep await an IRQ
-          ldx D.Proc get process desc ptr (if signal test)
-          ldb PSSignal,x is signal present? (if signal test)
-          bne SigTest bra if so (if signal test)
-          tst V.Wake,u IRQ occur?
-          bne SleepSO bra if not
+          lda V.Busy,u <lineannotation>get proc ID</lineannotation>
+          sta V.Wake,u <lineannotation>arrange for wakeup</lineannotation>
+          andcc #^IntMasks <lineannotation>clear the way for interrupts</lineannotation>
+Sleep50   ldx #0 <lineannotation>or any tick time desired.</lineannotation>
+          OS9 F$Sleep <lineannotation>await an IRQ</lineannotation>
+          ldx D.Proc <lineannotation>get process desc ptr (if signal test)</lineannotation>
+          ldb PSSignal,x <lineannotation>is signal present? (if signal test)</lineannotation>
+          bne SigTest <lineannotation>bra if so (if signal test)</lineannotation>
+          tst V.Wake,u <lineannotation>IRQ occur?</lineannotation>
+          bne SleepSO <lineannotation>bra if not</lineannotation>
 </programlisting>
 <para>
 Note that the code labelled <quote>if signal test</quote> is only necessary if the
@@ -545,24 +545,24 @@ IRQSERVC routine sample follows:
 </para>
 
 <programlisting>
-         ldy V.Port,u get dev addr
-         tst V.Wake,u is process awaiting IRQ?
-         beq IRQSVCER no exit
+         ldy V.Port,u <lineannotation>get dev addr</lineannotation>
+         tst V.Wake,u <lineannotation>is process awaiting IRQ?</lineannotation>
+         beq IRQSVCER <lineannotation>no exit</lineannotation>
 
-         clear device interrupt
-         exit if IRQ not from this device
+         <lineannotation>clear device interrupt</lineannotation>
+         <lineannotation>exit if IRQ not from this device</lineannotation>
 
-         lda V.Wake,u get process ptr
+         lda V.Wake,u <lineannotation>get process ptr</lineannotation>
          clrb
-         stb V.Wake,u clear proc waiting flag
-         tfr d,x get process descriptor ptr
-         lda F$State,x get state flag
-         anda #^Suspend clear suspend state
-         sta P$State,x save it
-         clrb clear carry bit
+         stb V.Wake,u <lineannotation>clear proc waiting flag</lineannotation>
+         tfr d,x <lineannotation>get process descriptor ptr</lineannotation>
+         lda F$State,x <lineannotation>get state flag</lineannotation>
+         anda #^Suspend <lineannotation>clear suspend state</lineannotation>
+         sta P$State,x <lineannotation>save it</lineannotation>
+         clrb <lineannotation>clear carry bit</lineannotation>
          rts
 
-IRQSVCER comb set carry bit
+IRQSVCER comb <lineannotation>set carry bit</lineannotation>
          rts
 </programlisting>
 </sect2>
