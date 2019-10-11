@@ -5,13 +5,15 @@
          use   os9defs
          use   scfdefs
          endc
-tylg     set   Systm+Objct   
+tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   $05
 
 hwclock  set   $FFDA
+
          mod   eom,name,tylg,atrv,start,size
+T1PROC   rmb 1 Child process id
 stack    rmb   200
 size     equ   .
 name     equ   *
@@ -26,39 +28,61 @@ ExecDir  fcc   "Cmds"
          fcb   C$CR
          fcc   ",,,,,," room for patch
 
+TSMon    fcc   "TSMon"
+         fcb   C$CR
+         fcc   ",,,,,," room for patch
+TSMonArg fcc   "/T2"
+         fcb   C$CR
+TSMonEnd equ   *
+
 Login    fcc   "Login"
          fcb   C$CR
          fcc   ",,,,,," room for patch
 
 LoginArg fcb   C$CR
          fcc   ",,,,,," room for patch
-         
+LoginEnd equ   *
+
 * SysGo entry point
 start    equ   *
          leax  >IcptRtn,pcr     * Set up empty intercept
-         os9   F$Icpt   
+         os9   F$Icpt
 
 *        leax  >BootMsg,pcr
 *        ldy   #MsgEnd-BootMsg
 *        lda   #$01
-*        os9   I$Write  
+*        os9   I$Write
 
 * OS9p2 has looked for a module called "Clock" and initialised it.
          ldx   #hwclock
          os9   F$STime
+
 * Set the execution directory
          leax  >ExecDir,pcr
          lda   #$04      EXEC.
-         os9   I$ChgDir 
+         os9   I$ChgDir
+
+* Start up TSMon on terminal 2
+* Ignore any failures
+         leax  >TSMon,pcr
+         leau  >TSMonArg,pcr
+         ldd   #$0100   A=Lang/type, B=opt. data size
+         ldy   #TSMonEnd-TSMonArg   Parameter size
+         os9   F$Fork
 
 FrkLogin leax  >Login,pcr
          leau  >LoginArg,pcr
-         ldd   #$0100
-         ldy   #start-LoginArg   Parameter size
-         os9   F$Fork   
+         ldd   #$0100   A=Lang/type, B=opt. data size
+         ldy   #LoginEnd-LoginArg   Parameter size
+         os9   F$Fork
          bcs   DeadEnd
-         os9   F$Wait   
-         bcc   FrkLogin
+         sta   T1PROC save process id
+LoginW   os9   F$Wait
+         bcs   DeadEnd
+         cmpa  T1PROC Child went away?
+         bne   LoginW
+         bra   FrkLogin
+
 DeadEnd  bra   DeadEnd
 
 * Intercept routine

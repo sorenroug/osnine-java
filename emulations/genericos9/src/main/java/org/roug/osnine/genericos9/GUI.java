@@ -132,9 +132,9 @@ public class GUI {
 
 
         loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "SysGo", "Init",
-                "BootDyn", "HWClock");
-        loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed4", "RBF_ed8", "VDisk",
-                "D0", "T1", "T2", "P");
+                "BootDyn", "HWClock", "VDisk", "T1");
+        loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed4", "RBF_ed8",
+                "D0", "T2", "P");
 
         cpu = new MC6809(bus);
 
