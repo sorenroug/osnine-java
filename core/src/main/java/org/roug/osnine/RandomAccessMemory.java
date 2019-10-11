@@ -15,15 +15,24 @@ public class RandomAccessMemory extends MemorySegment {
      * The size of the RAM segment is the first argument.
      *
      * @param start - First address location of the segment.
+     * @param size - Size of memory.
+     */
+    public RandomAccessMemory(int start, int size) {
+        super(start, start + size);
+        this.memorySize = size;
+        memory = new byte[size];
+    }
+
+    /**
+     * Constructor.
+     * The size of the RAM segment is the first argument.
+     *
+     * @param start - First address location of the segment.
      * @param bus - The bus the segment is attached to.
      * @param args - additional arguments
      */
     public RandomAccessMemory(int start, Bus8Motorola bus, String... args) {
-        super(start);
-        int size = Integer.decode(args[0]).intValue();
-        setEndAddress(start + size);
-        this.memorySize = size;
-        memory = new byte[size];
+        this(start,Integer.decode(args[0]).intValue()); 
     }
 
     @Override

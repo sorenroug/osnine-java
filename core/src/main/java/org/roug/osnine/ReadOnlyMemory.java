@@ -1,7 +1,8 @@
 package org.roug.osnine;
 
 /**
- * ROM segment.
+ * Read Only Memory (ROM) segment. A normal write to a memory address
+ * will be ignored. You must use the forceWrite().
  */
 public class ReadOnlyMemory extends MemorySegment {
 
@@ -12,18 +13,27 @@ public class ReadOnlyMemory extends MemorySegment {
 
     /**
      * Constructor.
-     * The size of the RAM segment is the first argument.
+     * The size of the ROM segment is the first argument.
+     *
+     * @param start - First address location of the segment.
+     * @param size - Size of memory.
+     */
+    public ReadOnlyMemory(int start, int size) {
+        super(start, start + size);
+        this.memorySize = size;
+        memory = new byte[size];
+    }
+
+    /**
+     * Constructor.
+     * The size of the ROM segment is the first argument.
      *
      * @param start - First address location of the segment.
      * @param bus - The bus the segment is attached to.
      * @param args - additional arguments
      */
     public ReadOnlyMemory(int start, Bus8Motorola bus, String... args) {
-        super(start);
-        int size = Integer.decode(args[0]).intValue();
-        setEndAddress(start + size);
-        this.memorySize = size;
-        memory = new byte[size];
+        this(start,Integer.decode(args[0]).intValue());
     }
 
     @Override
