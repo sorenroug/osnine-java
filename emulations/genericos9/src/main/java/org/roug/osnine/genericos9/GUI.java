@@ -1,12 +1,21 @@
 package org.roug.osnine.genericos9;
 
+import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
@@ -19,7 +28,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.JPanel;
 
 import org.roug.osnine.Acia;
 import org.roug.osnine.Acia6850;
@@ -28,18 +37,9 @@ import org.roug.osnine.BusStraight;
 import org.roug.osnine.HWClock;
 import org.roug.osnine.IRQBeat;
 import org.roug.osnine.MC6809;
-//import org.roug.osnine.PIA6821;
 import org.roug.osnine.RandomAccessMemory;
 //import org.roug.osnine.ReadOnlyMemory;
 import org.roug.osnine.VirtualDisk;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +58,7 @@ public class GUI {
     private JFrame guiFrame;
 
     private PrinterDialog printerDialog;
+    private JDialog t2Dialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
@@ -70,7 +71,7 @@ public class GUI {
     private HWClock hwClock;
 
     /** The display of the emulator. */
-    private Screen screen1;
+    private Screen screen1, screen2;
 
     private int loadStart = 0;
 
@@ -96,42 +97,44 @@ public class GUI {
 
         bus = new BusStraight();
 
-        RandomAccessMemory ram = new RandomAccessMemory(0x0000, bus, "0x10000");
+        RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x10000);
         bus.addMemorySegment(ram);
 
-//      ReadOnlyMemory rom = new ReadOnlyMemory(0xC000, bus, "0x4000");
+//      ReadOnlyMemory rom = new ReadOnlyMemory(0xC000, 0x4000);
 //      bus.insertMemorySegment(rom);
 
-        IRQBeat irqBeat = new IRQBeat(0xFF00, bus, "20");
+        IRQBeat irqBeat = new IRQBeat(0xFFD0, bus, "20");
         bus.insertMemorySegment(irqBeat);
 
-        t1 = new Acia6850(0xFF02, bus);
+        t1 = new Acia6850(0xFFD4, bus);
         bus.insertMemorySegment(t1);
         screen1 = new Screen(t1);
         AciaToScreen atc1 = new AciaToScreen(t1, screen1);
         atc1.execute();
 
-        t2 = new Acia6850(0xFF04, bus);
+        t2 = new Acia6850(0xFFD6, bus);
         bus.insertMemorySegment(t2);
+
+        t2Dialog = new Terminal2(guiFrame, t2);
 
         printerDialog = new PrinterDialog(guiFrame);
 
-        t3 = new Acia6850(0xFF06, bus);
+        t3 = new Acia6850(0xFFD8, bus);
         bus.insertMemorySegment(t3);
         AciaToScreen atc3 = new AciaToScreen(t3, printerDialog);
         atc3.execute();
 
-        hwClock = new HWClock(0xFF10, bus);
+        hwClock = new HWClock(0xFFDA, bus);
         bus.insertMemorySegment(hwClock);
 
-        d0 = new VirtualDisk(0xFF40, bus, "OS9.dsk");
+        d0 = new VirtualDisk(0xFFD1, bus, "OS9.dsk");
         bus.insertMemorySegment(d0);
 
 
         loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "SysGo", "Init",
                 "BootDyn", "HWClock");
         loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed4", "RBF_ed8", "VDisk",
-                "D0", "T1", "P");
+                "D0", "T1", "T2", "P");
 
         cpu = new MC6809(bus);
 
@@ -142,10 +145,10 @@ public class GUI {
         setWord(MC6809.IRQ_ADDR, 0x10C);
         setWord(MC6809.FIRQ_ADDR, 0x10F);
 
-        guiFrame.setSize(900, 600);
+        //guiFrame.setSize(900, 600);
         guiFrame.add(screen1);
 
-        //guiFrame.pack();
+        guiFrame.pack();
 
         screen1.requestFocusInWindow();
         guiFrame.setVisible(true);
@@ -285,7 +288,7 @@ public class GUI {
 
         JMenu guiMenu = new JMenu("Help");
 
-        JMenuItem menuItem = new JMenuItem("Quick Reference");
+        JMenuItem menuItem = new JMenuItem("OS-9 User Guide");
         menuItem.addActionListener(new CSH.DisplayHelpFromSource(hb));
         guiMenu.add(menuItem);
 
@@ -299,7 +302,11 @@ public class GUI {
     private void addDevicesMenu(JMenuBar guiMenuBar) {
         JMenu guiMenuDevices = new JMenu("Devices");
 
-        JMenuItem menuItem = new JMenuItem("Printer");
+        JMenuItem menuItem = new JMenuItem("Terminal 2");
+        menuItem.addActionListener(new T2Action());
+        guiMenuDevices.add(menuItem);
+
+        menuItem = new JMenuItem("Printer");
         menuItem.addActionListener(new PrinterAction());
         guiMenuDevices.add(menuItem);
 
@@ -355,12 +362,20 @@ public class GUI {
         public void actionPerformed(ActionEvent e) {
             Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
             try {
-                pasteBuffer = (String) c.getContents(null).getTransferData(DataFlavor.stringFlavor);
+                pasteBuffer = (String) c.getContents(null)
+                                .getTransferData(DataFlavor.stringFlavor);
                 LOGGER.debug("To paste:{}", pasteBuffer);
                 pasteIndex = 0;
             } catch (UnsupportedFlavorException | IOException e1) {
                 LOGGER.error("Unsupported flavor", e1);
             }
+        }
+    }
+
+    private class T2Action implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            t2Dialog.setVisible(true);
         }
     }
 
@@ -411,5 +426,4 @@ public class GUI {
                     getClass().getPackage().getImplementationVersion()));
         }
     }
-
 }

@@ -9,7 +9,7 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   $02
 
-clockctl set   $ff00
+clockctl set   $ffd0
 TkPerSec set   50
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   0

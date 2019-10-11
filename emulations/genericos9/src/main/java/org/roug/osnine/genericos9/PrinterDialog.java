@@ -1,25 +1,27 @@
 package org.roug.osnine.genericos9;
 
-import javax.swing.*;
-//import javax.swing.text.*;
-
 import java.io.IOException;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.PrinterJob;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +135,6 @@ public class PrinterDialog implements UIDevice {
             pageFormat.setPaper(paper);
             PrinterJob pj = PrinterJob.getPrinterJob();
             pj.setPrintable(textPane.getPrintable(null, null), pageFormat);
-            PageFormat pf = pj.pageDialog(pageFormat);
 //          if (pj.printDialog()) {
                 try {
                     pj.print();

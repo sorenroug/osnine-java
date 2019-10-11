@@ -13,7 +13,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
          fcb   $FF mode byte
          fcb   $FF extended controller address
-         fdb   $FF40  physical controller address
+         fdb   $FFD1  physical controller address
          fcb   initsize-*-1  initilization table size
          fcb   $01 device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00 drive number

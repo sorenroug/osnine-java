@@ -1,21 +1,13 @@
 package org.roug.osnine.genericos9;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.io.InputStream;
 import java.io.IOException;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
@@ -47,6 +39,8 @@ public class Screen extends JTextPane implements UIDevice {
 
     /** Does backspace delete the last character? */
     private boolean backspaceDeletes = true;
+
+    private Go51State term = Go51State.NORMAL;
 
     private Document doc = getStyledDocument();
     /** Current style. */
@@ -93,6 +87,10 @@ public class Screen extends JTextPane implements UIDevice {
 
         currSet = normalSet;
         setEditable(false);
+
+        setPreferredSize(new Dimension(840, 500));
+        setMinimumSize(new Dimension(300, 100));
+
         Caret c = getCaret();
         c.setVisible(true);
         //setLineWrap(true);
@@ -122,51 +120,12 @@ public class Screen extends JTextPane implements UIDevice {
      */
     @Override
     public void sendToUI(int val) throws BadLocationException, IOException {
-        int caretPos = getCaretPosition();
-        String newchar = Character.toString((char) val);
-        //logCharacter(val, newchar);
-
-        switch (val) {
-        case 7:
-            Toolkit.getDefaultToolkit().beep();
-            break;
-        case 8:     // Backspace
-            if (backspaceDeletes) {
-                if (caretPos > 0)
-                    doc.remove(caretPos - 1, 1);
-            } else {
-                setCaretPosition(caretPos - 1);
-            }
-            break;
-        case 11:    // Cursor home
-            setCaretPosition(0);
-            break;
-        case 12:    // Form feed - clear screen
-            doc.remove(0, doc.getLength());
-            currSet = normalSet;
-            break;
-        case 0:  // Ignore NULLs
-        case 3:  // Ignore ETX - End of Text
-        case 13: // Ignore carriage returns
-        case 14: // Ignore command to go to alpha mode.
-        case 127:
-            break;
-        default:
-            int l = getDocument().getLength();
-            if (caretPos == l) {
-                doc.insertString(doc.getLength(), newchar, currSet);
-            } else {
-                doc.insertString(caretPos, newchar, currSet);
-                //replaceRange(newchar, caretPos, caretPos + 1);
-            }
-            setCaretPosition(caretPos + 1);
-        }
-
+        term = term.sendToUI(val, this);
         // Scroll
         if (getLineCount() > rows) {
-            String t = getText();
-            setText(t.substring(t.indexOf('\n') + 1));
-            setCaretPosition(getText().length());
+           String t = getText();
+           setText(t.substring(t.indexOf('\n') + 1));
+           setCaretPosition(getText().length());
         }
     }
 
