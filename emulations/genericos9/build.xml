@@ -24,7 +24,7 @@
         <mkdir dir="${targetdir}"/>
         <copy todir="${targetdir}">
           <filelist dir="../../os9software/target/"
-            files="Acia_ed4 BootDyn IOMan_ed4 SCF_ed8 RBF_ed8 OS9p1_d64 OS9p2_ed9 PipeMan Piper Pipe VDisk Shell"
+            files="Acia_ed2 BootDyn IOMan_ed4 SCF_ed8 RBF_ed8 OS9p1_d64 OS9p2_ed9 PipeMan Piper Pipe VDisk Shell"
           />
         </copy>
         <!--
@@ -35,7 +35,8 @@
         <assemble src="D0"/>
         <assemble src="HWClock"/>
         <assemble src="Init"/>
-        <assemble src="SysGo"/>
+        <assemble src="SysGoMulti"/>
+        <assemble src="SysGoSingle"/>
         <assemble src="T1"/>
         <assemble src="T2"/>
         <assemble src="P"/>

@@ -84,7 +84,7 @@ public class GUI {
     /**
      * Create emulator application.
      */
-    public GUI() throws Exception {
+    public GUI(boolean singleUser) throws Exception {
         guiFrame = new JFrame("OS-9 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
@@ -131,13 +131,21 @@ public class GUI {
         bus.insertMemorySegment(d0);
 
 
-        loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "SysGo", "Init",
-                "BootDyn", "HWClock", "VDisk", "T1");
-        loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed4", "RBF_ed8",
-                "D0", "T2", "P");
+        if (singleUser) {
+            loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoSingle",
+                    "BootDyn", "HWClock", "VDisk");
+            loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
+                    "D0", "T1", "T2", "P");
+        } else {
+            loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoMulti",
+                    "BootDyn", "HWClock", "VDisk", "T1");
+            loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
+                    "D0", "T2", "P");
+        }
 
         cpu = new MC6809(bus);
 
+        // Interrupt vectors
         setWord(MC6809.RESET_ADDR, 0xF076);
         setWord(MC6809.SWI3_ADDR, 0x100);
         setWord(MC6809.SWI2_ADDR, 0x103);
@@ -145,7 +153,6 @@ public class GUI {
         setWord(MC6809.IRQ_ADDR, 0x10C);
         setWord(MC6809.FIRQ_ADDR, 0x10F);
 
-        //guiFrame.setSize(900, 600);
         guiFrame.add(screen1);
 
         guiFrame.pack();
@@ -376,6 +383,7 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             t2Dialog.setVisible(true);
+            t2Dialog.requestFocusInWindow();
         }
     }
 

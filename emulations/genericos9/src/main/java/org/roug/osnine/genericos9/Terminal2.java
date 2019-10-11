@@ -48,7 +48,7 @@ public class Terminal2 extends JDialog {
 
     private Acia6850 t2;
 
-    private Screen screen2;
+    private Screen screen;
 
     /**
      * Create Terminal
@@ -66,17 +66,19 @@ public class Terminal2 extends JDialog {
         JButton button = new JButton("Close");
         button.addActionListener(new CloseAction());
         buttonPane.add(button);
-        screen2 = new Screen(t2);
-//      screen2.setPreferredSize(new Dimension(700, 500));
-//      screen2.setMinimumSize(new Dimension(100, 100));
+        screen = new Screen(t2);
 
+        add(screen);
 
-        add(screen2);
-
-        AciaToScreen atc = new AciaToScreen(t2, screen2);
+        AciaToScreen atc = new AciaToScreen(t2, screen);
         atc.execute();
         //setSize(900, 500);
         pack();
+    }
+
+    @Override
+    public boolean requestFocusInWindow() {
+        return screen.requestFocusInWindow();
     }
 
     private class CloseAction implements ActionListener {

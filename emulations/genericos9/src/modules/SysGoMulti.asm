@@ -12,17 +12,18 @@ edition  set   $05
 
 hwclock  set   $FFDA
 
-         mod   eom,name,tylg,atrv,start,size
+         mod   eom,name,tylg,atrv,CldEnt,size
 T1PROC   rmb 1 Child process id
 stack    rmb   200
 size     equ   .
 name     equ   *
          fcs   /SysGo/
          fcb   edition
+
 *BootMsg  fcc   "BOOT"
 *         fcb   C$CR,C$LF
 *         fcb   C$LF
-*MsgEnd   equ   *
+*MsgSize  equ *-BootMsg
 
 ExecDir  fcc   "Cmds"
          fcb   C$CR
@@ -31,6 +32,7 @@ ExecDir  fcc   "Cmds"
 TSMon    fcc   "TSMon"
          fcb   C$CR
          fcc   ",,,,,," room for patch
+
 TSMonArg fcc   "/T2"
          fcb   C$CR
 TSMonEnd equ   *
@@ -44,12 +46,11 @@ LoginArg fcb   C$CR
 LoginEnd equ   *
 
 * SysGo entry point
-start    equ   *
-         leax  >IcptRtn,pcr     * Set up empty intercept
+CldEnt   leax  >IcptRtn,pcr     * Set up empty intercept
          os9   F$Icpt
 
 *        leax  >BootMsg,pcr
-*        ldy   #MsgEnd-BootMsg
+*        ldy   #MsgSize
 *        lda   #$01
 *        os9   I$Write
 
@@ -59,20 +60,20 @@ start    equ   *
 
 * Set the execution directory
          leax  >ExecDir,pcr
-         lda   #$04      EXEC.
+         lda   #EXEC. Get execution mode
          os9   I$ChgDir
 
 * Start up TSMon on terminal 2
 * Ignore any failures
          leax  >TSMon,pcr
          leau  >TSMonArg,pcr
-         ldd   #$0100   A=Lang/type, B=opt. data size
+         ldd   #OBJCT*256 Get type
          ldy   #TSMonEnd-TSMonArg   Parameter size
          os9   F$Fork
 
 FrkLogin leax  >Login,pcr
          leau  >LoginArg,pcr
-         ldd   #$0100   A=Lang/type, B=opt. data size
+         ldd   #OBJCT*256 Get type
          ldy   #LoginEnd-LoginArg   Parameter size
          os9   F$Fork
          bcs   DeadEnd
