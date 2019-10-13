@@ -1,5 +1,5 @@
          nam   SysGo
-         ttl   SysGo that runs Login
+         ttl   SysGo that runs Login on /T1
 
          ifp1
          use   os9defs
@@ -12,12 +12,12 @@ edition  set   $05
 
 hwclock  set   $FFDA
 
-         mod   eom,name,tylg,atrv,CldEnt,size
-T1PROC   rmb 1 Child process id
+         mod   CldEnd,CldNam,tylg,atrv,CldEnt,size
+
 stack    rmb   200
 size     equ   .
-name     equ   *
-         fcs   /SysGo/
+
+CldNam   fcs   /SysGo/
          fcb   edition
 
 *BootMsg  fcc   "BOOT"
@@ -42,8 +42,16 @@ Login    fcc   "Login"
          fcc   ",,,,,," room for patch
 
 LoginArg fcb   C$CR
+*        fcc   ",,,,,," room for patch
+LoginSiz equ   *-LoginArg
+
+Shell    fcc   "Shell"
+         fcb   C$CR
          fcc   ",,,,,," room for patch
-LoginEnd equ   *
+SHLFUN   fcc   "STARTUP -P"
+         fcb   C$CR
+FUNSIZ   equ *-SHLFUN
+         fcc   ",,,,," room for patch
 
 * SysGo entry point
 CldEnt   leax  >IcptRtn,pcr     * Set up empty intercept
@@ -63,6 +71,15 @@ CldEnt   leax  >IcptRtn,pcr     * Set up empty intercept
          lda   #EXEC. Get execution mode
          os9   I$ChgDir
 
+* Run the startup script
+         leax  >Shell,pcr
+         leau  >SHLFUN,pcr
+         ldd   #OBJCT*256 Get type
+         ldy   #FUNSIZ
+         os9   F$Fork
+         bcs   DeadEnd
+         os9   F$Wait Wait for it
+
 * Start up TSMon on terminal 2
 * Ignore any failures
          leax  >TSMon,pcr
@@ -73,15 +90,17 @@ CldEnt   leax  >IcptRtn,pcr     * Set up empty intercept
 
 FrkLogin leax  >Login,pcr
          leau  >LoginArg,pcr
-         ldd   #OBJCT*256 Get type
-         ldy   #LoginEnd-LoginArg   Parameter size
+         ldd   #OBJCT*256+3 Set type and 3 pages of data for shell
+         ldy   #0      No parameters
          os9   F$Fork
          bcs   DeadEnd
-         sta   T1PROC save process id
+
+*        pshs  a
 LoginW   os9   F$Wait
          bcs   DeadEnd
-         cmpa  T1PROC Child went away?
-         bne   LoginW
+*        cmpa  1,s Login Child went away?
+*        bne   LoginW
+*        puls  a
          bra   FrkLogin
 
 DeadEnd  bra   DeadEnd
@@ -89,4 +108,4 @@ DeadEnd  bra   DeadEnd
 * Intercept routine
 IcptRtn  rti
          emod
-eom      equ   *
+CldEnd      equ   *

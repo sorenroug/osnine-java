@@ -2,6 +2,8 @@ package org.roug.osnine.genericos9;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -51,6 +53,7 @@ public class Screen extends JTextPane implements UIDevice {
     private boolean showInverted = false;
 
     private Font font = new Font(Font.MONOSPACED, Font.BOLD, currentFontSize);
+    private Caret caret;
 
     /**
      * Constructor.
@@ -91,9 +94,9 @@ public class Screen extends JTextPane implements UIDevice {
         setPreferredSize(new Dimension(840, 500));
         setMinimumSize(new Dimension(300, 100));
 
-        Caret c = getCaret();
-        c.setVisible(true);
-        //setLineWrap(true);
+        //setCaret(new TerminalCaret());
+        caret = getCaret();
+        caret.setVisible(true);
     }
 
     private void logCharacter(int val, String newchar) {
@@ -143,6 +146,7 @@ public class Screen extends JTextPane implements UIDevice {
      * Event handler for keyboard.
      */
     private class KeyListener extends KeyAdapter {
+        @Override
         public void keyTyped(KeyEvent evt) {
             char keyChar = evt.getKeyChar();
             if (keyChar == '\n') {
@@ -155,9 +159,22 @@ public class Screen extends JTextPane implements UIDevice {
 
     }
 
+/*
+    private class FocusReceiver implements FocusListener {
+        @Override
+        public void focusGained(FocusEvent e) {
+            int l = getDocument().getLength();
+            setCaretPosition(l);
+            caret.setVisible(true);
+        }
+        @Override
+        public void focusLost(FocusEvent e) {
+        }
+    }
+*/
     /**
      * State engine to handle GO51 screen command codes.
-     */
+     */ 
     private enum Go51State {
 
         NORMAL {

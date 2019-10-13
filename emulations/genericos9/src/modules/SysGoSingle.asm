@@ -25,15 +25,15 @@ MsgSize  equ *-BootMsg
 
 ExecDir  fcc   "Cmds"
          fcb   C$CR
-         fcc   ",,,,,,,,,," room for patch
+         fcc   ",,,,,," room for patch
 
 Shell    fcc   "Shell"
          fcb   C$CR
-         fcc   ",,,,,,,,,," room for patch
+         fcc   ",,,,,," room for patch
 SHLFUN   fcc   "STARTUP -P"
          fcb   C$CR
 FUNSIZ   equ *-SHLFUN
-         fcc   ",,,,,,,,,," room for patch
+         fcc   ",,,,,," room for patch
          
 * SysGo entry point
 CldEnt   leax  >IcptRtn,pcr

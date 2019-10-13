@@ -6,6 +6,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.io.File;
@@ -91,7 +92,7 @@ public class GUI {
         guiFrame.setJMenuBar(guiMenuBar);
 
         addFileMenu(guiMenuBar);
-        addEditMenu(guiMenuBar);
+        //addEditMenu(guiMenuBar);
         addDevicesMenu(guiMenuBar);
         addHelpMenu(guiMenuBar);
 
@@ -103,7 +104,7 @@ public class GUI {
 //      ReadOnlyMemory rom = new ReadOnlyMemory(0xC000, 0x4000);
 //      bus.insertMemorySegment(rom);
 
-        IRQBeat irqBeat = new IRQBeat(0xFFD0, bus, "20");
+        IRQBeat irqBeat = new IRQBeat(0xFFD0, bus, 20);
         bus.insertMemorySegment(irqBeat);
 
         t1 = new Acia6850(0xFFD4, bus);
@@ -133,15 +134,13 @@ public class GUI {
 
         if (singleUser) {
             loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoSingle",
-                    "BootDyn", "HWClock", "VDisk");
-            loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
-                    "D0", "T1", "T2", "P");
+                    "BootDyn", "HWClock", "VDisk", "D0");
         } else {
             loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoMulti",
-                    "BootDyn", "HWClock", "VDisk", "T1");
-            loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
-                    "D0", "T2", "P");
+                    "BootDyn", "HWClock", "VDisk", "D0");
         }
+        loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
+                     "T1", "T2", "P", "PipeMan", "Piper", "Pipe");
 
         cpu = new MC6809(bus);
 
@@ -245,8 +244,11 @@ public class GUI {
 
     private void addFileMenu(JMenuBar guiMenuBar) {
         JMenu guiMenu = new JMenu("File");
+        guiMenu.setMnemonic(KeyEvent.VK_F);
 
-        JMenuItem menuItem = new JMenuItem("Zoom 1x");
+        JMenuItem menuItem;
+/*
+        menuItem = new JMenuItem("Zoom 1x");
         menuItem.addActionListener(new Zoom1Action());
         guiMenu.add(menuItem);
 
@@ -257,12 +259,13 @@ public class GUI {
         menuItem = new JMenuItem("Zoom 4x");
         menuItem.addActionListener(new Zoom4Action());
         guiMenu.add(menuItem);
-
+*/
         menuItem = new JMenuItem("Reset CPU");
         menuItem.addActionListener(new ResetAction());
         guiMenu.add(menuItem);
 
         menuItem = new JMenuItem("Exit");
+        menuItem.setMnemonic(KeyEvent.VK_X);
         menuItem.addActionListener(new QuitAction());
         guiMenu.add(menuItem);
 
@@ -294,6 +297,7 @@ public class GUI {
         HelpBroker hb = hs.createHelpBroker();
 
         JMenu guiMenu = new JMenu("Help");
+        guiMenu.setMnemonic(KeyEvent.VK_H);
 
         JMenuItem menuItem = new JMenuItem("OS-9 User Guide");
         menuItem.addActionListener(new CSH.DisplayHelpFromSource(hb));
@@ -307,17 +311,18 @@ public class GUI {
     }
 
     private void addDevicesMenu(JMenuBar guiMenuBar) {
-        JMenu guiMenuDevices = new JMenu("Devices");
+        JMenu guiMenu = new JMenu("Devices");
+        guiMenu.setMnemonic(KeyEvent.VK_D);
 
         JMenuItem menuItem = new JMenuItem("Terminal 2");
         menuItem.addActionListener(new T2Action());
-        guiMenuDevices.add(menuItem);
+        guiMenu.add(menuItem);
 
         menuItem = new JMenuItem("Printer");
         menuItem.addActionListener(new PrinterAction());
-        guiMenuDevices.add(menuItem);
+        guiMenu.add(menuItem);
 
-        guiMenuBar.add(guiMenuDevices);
+        guiMenuBar.add(guiMenu);
     }
 
     /**
