@@ -37,69 +37,72 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
-        <assemble src="install.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
-        <assemble src="dynacalc" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
-        <assemble src="Dynacalc.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
-        <assemble src="basic09_d64_y2k" home="basic09"/>
-        <assemble src="runb_tandy_y2k" home="basic09" />
-        <assemble src="runb_generic_y2k" home="basic09" />
-        <assemble src="basic09_generic_y2k" home="basic09"/>
-        <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
-        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
-        <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
-        <assemble src="basic09_generic" home="basic09"/>
+        <assemble src="TSMon" home="utilities" verify="7501e649d06eb2fe81780ad7e257c99e"/>
+        <assemble src="Shell" home="utilities" verify="91209757f1b55d768536629eca4c984c"/>
+        <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
+        <assemble src="Setime" home="utilities" verify="b37bf834061eaa8e2170ce99ef01dd98"/>
+        <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
         <assemble src="Dir_normal_ed3" home="utilities" verify="65c719c5dd0c511a2cc51a4243a081e9"/>
         <assemble src="Dir_small_ed3" home="utilities" verify="d7e0e580d1bdd1f38eb029fbd9e9ea64"/>
-        <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
+
         <assemble src="Dir_normal_ed5" home="y2k" verify="fb0a982ace14691577771b4aaeb45dca"/>
         <assemble src="Dir_small_ed5" home="y2k" verify="68111b8e4c25b715085c85833acee3c3"/>
-        <assemble src="Free_ed7" home="y2k" />
+        <assemble src="Free_ed7" home="y2k" verify="17674e3c92e75ea9cc615a5b04e84382"/>
         <assemble src="Setime_ed12" home="y2k" verify="0299b94d5f67ff057c003d641d80f465"/>
         <assemble src="Login_normal_ed10" home="y2k" verify="3269cd10bee3f11ea606db9a90b3a92f"/>
         <assemble src="Login_small_ed10" home="y2k" verify="8e4f6948f7683bb31424520a5cba63e0"/>
         <assemble src="Date_ed5" home="y2k" verify="a4b5cad5ff8d614a6313d865362e4b09"/>
+
         <assemble src="DDisk_ed4" home="kernel" verify="085c24996a2d560cbc5641e39c1b710f"/>
         <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
         <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
-        <assemble src="RBF_ed7" home="kernel"/>
-        <assemble src="RBF_ed8" home="kernel"/>
-        <assemble src="IOMan_ed4" home="kernel"/>
-
-        <assemble src="go51nkb" home="kernel"/>
-        <assemble src="go51n" home="kernel"/>
-        <assemble src="go51" home="kernel"/>
-        <assemble src="Acia51_ed4" home="kernel"/>
-        <assemble src="Acia_ed2" home="kernel"/>
-        <assemble src="Acia_ed4" home="kernel"/>
-        <assemble src="BootDyn" home="kernel"/>
-        <assemble src="Clock_gimix" home="kernel"/>
-        <assemble src="T1" home="kernel"/>
-        <assemble src="HWClock" home="kernel"/>
-        <assemble src="KbVdIO" home="kernel"/>
+        <assemble src="RBF_ed7" home="kernel" verify="f3b9848e9716821fd8f397d055ad717f"/>
+        <assemble src="RBF_ed8" home="kernel" verify="5f4e4351725f0be8b3f96fb67b7072c0"/>
+        <assemble src="IOMan_ed4" home="kernel" verify="fce2d0270c03b4f7d8f06d51e4465d28"/>
+        <assemble src="Acia51_ed4" home="kernel" verify="6ed6dc592328cc3916e3e92b62fe36c0"/>
+        <assemble src="Acia_ed2" home="kernel" verify="6c8d9746cee87d8f71f818b8e059c607"/>
+        <assemble src="Acia_ed4" home="kernel" verify="62ee1c4ca8056c4145c1487341a11849"/>
+        <assemble src="BootDyn" home="kernel" verify="7a6191a6bd8ee2649212bcebaff42c0d"/>
+        <assemble src="Clock_gimix" home="kernel" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
+        <assemble src="T1" home="kernel" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
+        <assemble src="HWClock" home="kernel" verify="3cc1395b3495bef485fee9774e7fdef6"/>
+        <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
         <assemble src="OS9p1_d64" home="kernel" verify="523b00da5aa39530ea3e2ae2364ec0e6"/>
-        <assemble src="OS9p1_gimix" home="kernel"/>
-        <assemble src="OS9p1_swtc" home="kernel"/>
-        <assemble src="OS9p1_ed8" home="kernel"/>
-        <assemble src="OS9p2_ed9" home="kernel"/>
-        <assemble src="OS9p2_ed5" home="kernel"/>
-        <assemble src="OS9p2_ed8" home="kernel"/>
-        <assemble src="Pipe" home="kernel"/>
-        <assemble src="PipeMan" home="kernel"/>
-        <assemble src="Piper" home="kernel"/>
-        <assemble src="SCF_ed7" home="kernel"/>
-        <assemble src="SCF_ed8" home="kernel"/>
-        <assemble src="SysGo" home="kernel"/>
-        <assemble src="SysGo_login" home="kernel"/>
+        <assemble src="OS9p1_gimix" home="kernel" verify="fc8df0c641cc8411069476e09da83560"/>
+        <assemble src="OS9p1_swtc" home="kernel" verify="1832f6806d7b89f1a2209dd28bd96322"/>
+        <assemble src="OS9p1_ed8" home="kernel" verify="ca51db8a306c143967b8b6bc4ef55047"/>
+        <assemble src="OS9p2_ed9" home="kernel" verify="21a3ab8b0fd418f3d6bf00c1d442ab08"/>
+        <assemble src="OS9p2_ed8" home="kernel" verify="4620b5340979f69d3d243c07592ec200"/>
+        <assemble src="OS9p2_ed5" home="kernel" verify="4abcd9d66beafc30a673168ea603a99b"/>
+        <assemble src="Pipe" home="kernel" verify="9cc9561b6e28188550ee25a4c32216f0"/>
+        <assemble src="PipeMan" home="kernel" verify="023c67977a1946c1d2804d84e7e595d9"/>
+        <assemble src="Piper" home="kernel" verify="c62010913ea02b2e606785c1521233d3"/>
+        <assemble src="SCF_ed7" home="kernel" verify="2e882e79821eacba496d9f456d6e2738"/>
+        <assemble src="SCF_ed8" home="kernel" verify="4f58ede8d3c8931480fd230499648dc0"/>
+        <assemble src="go51nkb" home="kernel" verify="17d598001819b9aec3b579a5e63c822b"/>
+        <assemble src="go51n" home="kernel" verify="6798a2db83aedf2ac3629c913714dfa0"/>
+        <assemble src="go51" home="kernel" verify="83632831c5d2f8ddfa9e22b38faa8109"/>
+        <assemble src="SysGo" home="kernel" verify="a47c4ceedee4da200ebeabfcdea8b53c"/>
+        <assemble src="SysGo_login" home="kernel" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
 
-        <assemble src="D0_vdisk" home="virtual"/>
-        <assemble src="D1_vdisk" home="virtual"/>
-        <assemble src="VDisk" home="virtual"/>
+        <assemble src="D0_vdisk" home="virtual" verify="9c31bf382aa1be8f30909a0dd6d481a6"/>
+        <assemble src="D1_vdisk" home="virtual" verify="e952a2f0422f1f51a9d157b70ac02f8d"/>
+        <assemble src="VDisk" home="virtual" verify="726892927a2cfef6c3a1019eb8953477"/>
 
-        <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
-        <assemble src="Setime" home="utilities"/>
+        <assemble src="install.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
+        <assemble src="dynacalc" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
+        <assemble src="Dynacalc.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
 
-        <assemble src="gfx" home="basic09"/>
-        <assemble src="syscall" home="basic09"/>
+        <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
+        <assemble src="runb_tandy_y2k" home="basic09" verify="08da732414bafa6e7b1cc00e737d5195"/>
+        <assemble src="runb_generic_y2k" home="basic09" verify="bbb9685c8f71d66978a99e08d40d36ff"/>
+        <assemble src="basic09_generic_y2k" home="basic09" verify="c096bfad1ee5309a626874a9afb25b5b"/>
+        <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
+        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
+        <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
+        <assemble src="basic09_generic" home="basic09" verify="8fcd0e6da6577f2bf426d1ee159528bb"/>
+        <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>
+        <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
     </target>
 
 </project>
