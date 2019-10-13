@@ -18,17 +18,18 @@ class ClockTick extends TimerTask {
         this.bus = bus;
     }
 
-    public void run() {
-        //LOGGER.debug("IRQ sent");
-        activeIRQ = true;
-        bus.signalIRQ(true); // Execute a hardware interrupt
+    public synchronized void run() {
+        if (!activeIRQ) {
+            activeIRQ = true;
+            bus.signalIRQ(true); // Execute a hardware interrupt
+        }
     }
 
-    boolean isActiveIRQ() {
+    synchronized boolean isActiveIRQ() {
         return activeIRQ;
     }
 
-    void setActiveIRQ(boolean val) {
+    synchronized void setActiveIRQ(boolean val) {
         activeIRQ = val;
     }
 }
@@ -51,6 +52,22 @@ public class IRQBeat extends MemorySegment {
 
     private ClockTick clocktask;
 
+    private int clockPeriod = CLOCKPERIOD;
+
+    /**
+     * Constructor.
+     *
+     * @param start - First address location of the ACIA.
+     * @param bus - The bus the ACIA is attached to.
+     * @param period - Frequency for how often to interrupt the CPU in milliseconds.
+     */
+    public IRQBeat(int start, Bus8Motorola bus, int period) {
+        super(start, start + 1);
+        LOGGER.debug("Initialise heartbeat");
+        this.bus = bus;
+        clockPeriod = period;
+    }
+
     /**
      * Constructor.
      *
@@ -59,9 +76,7 @@ public class IRQBeat extends MemorySegment {
      * @param args - additional arguments
      */
     public IRQBeat(int start, Bus8Motorola bus, String... args) {
-        super(start, start + 1);
-        LOGGER.debug("Initialise heartbeat");
-        this.bus = bus;
+        this(start, bus, CLOCKPERIOD);
     }
 
     // Return 1 if IRQ is enabled and turn it off.
@@ -83,7 +98,7 @@ public class IRQBeat extends MemorySegment {
         if (clocktask == null) {
             clocktask = new ClockTick(bus);
             Timer timer = new Timer("clock", true);
-            timer.scheduleAtFixedRate(clocktask, CLOCKDELAY, CLOCKPERIOD);
+            timer.scheduleAtFixedRate(clocktask, CLOCKDELAY, clockPeriod);
         }
     }
 
