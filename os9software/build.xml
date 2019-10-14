@@ -37,6 +37,7 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+        <assemble src="Mfree_ed4" home="utilities" verify="f629490039f5f4b307604d495c543be1"/>
         <assemble src="TSMon" home="utilities" verify="7501e649d06eb2fe81780ad7e257c99e"/>
         <assemble src="Shell" home="utilities" verify="91209757f1b55d768536629eca4c984c"/>
         <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
