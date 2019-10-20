@@ -283,6 +283,11 @@
           <artifactId>slf4j-simple</artifactId>
           <version>1.7.23</version>
         </dependency>
+        <dependency>
+          <groupId>com.googlecode.lanterna</groupId>
+          <artifactId>lanterna</artifactId>
+          <version>3.0.1</version>
+        </dependency>
     </dependencies>
 
     <reporting>
@@ -290,7 +295,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.8</version>
+                <version>3.12.0</version>
                 <configuration>
                     <linkXref>false</linkXref>
                     <sourceEncoding>utf-8</sourceEncoding>

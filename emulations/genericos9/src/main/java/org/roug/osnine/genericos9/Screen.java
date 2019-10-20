@@ -1,21 +1,24 @@
 package org.roug.osnine.genericos9;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.io.IOException;
-import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.terminal.swing.ScrollingSwingTerminal;
 
 import org.roug.osnine.Acia;
 import org.slf4j.Logger;
@@ -25,11 +28,16 @@ import org.slf4j.LoggerFactory;
  * Graphical user interface for Acia chip using JTextPane.
  *
  */
-public class Screen extends JTextPane implements UIDevice {
+public class Screen extends ScrollingSwingTerminal implements UIDevice {
 
     private int currentFontSize = 16;
     private int rows = 24;
     private int columns = 80;
+
+    /** For Cursor escape sequence */
+    private int go51X;
+
+    private boolean shiftDown;
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(Screen.class);
@@ -44,16 +52,7 @@ public class Screen extends JTextPane implements UIDevice {
 
     private Go51State term = Go51State.NORMAL;
 
-    private Document doc = getStyledDocument();
-    /** Current style. */
-    private SimpleAttributeSet currSet;
-    private SimpleAttributeSet normalSet, normalUnderSet;
-    private SimpleAttributeSet invertedSet, invertedUnderSet;
-    private boolean showUnderline = false;
-    private boolean showInverted = false;
-
     private Font font = new Font(Font.MONOSPACED, Font.BOLD, currentFontSize);
-    private Caret caret;
 
     /**
      * Constructor.
@@ -65,38 +64,18 @@ public class Screen extends JTextPane implements UIDevice {
         this.acia = acia;
 
         addKeyListener(new KeyListener());
-        setFont(font);
-        setBackground(Color.WHITE);
+        //setFont(font);
+        //setBackground(Color.WHITE);
 
-        // Normal, no underline
-        normalSet = new SimpleAttributeSet();
-        StyleConstants.setBackground(normalSet, Color.WHITE);
 
-        // Normal with underline
-        normalUnderSet = new SimpleAttributeSet();
-        StyleConstants.setBackground(normalUnderSet, Color.WHITE);
-        StyleConstants.setUnderline(normalUnderSet, true);
-
-        // Inverted no underline
-        invertedSet = new SimpleAttributeSet();
-        StyleConstants.setForeground(invertedSet, Color.WHITE);
-        StyleConstants.setBackground(invertedSet, Color.black);
-
-        // Inverted with underline
-        invertedUnderSet = new SimpleAttributeSet();
-        StyleConstants.setForeground(invertedUnderSet, Color.WHITE);
-        StyleConstants.setBackground(invertedUnderSet, Color.black);
-        StyleConstants.setUnderline(invertedUnderSet, true);
-
-        currSet = normalSet;
-        setEditable(false);
-
-        setPreferredSize(new Dimension(840, 500));
-        setMinimumSize(new Dimension(300, 100));
-
-        //setCaret(new TerminalCaret());
-        caret = getCaret();
-        caret.setVisible(true);
+/*
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
+*/
     }
 
     private void logCharacter(int val, String newchar) {
@@ -124,22 +103,6 @@ public class Screen extends JTextPane implements UIDevice {
     @Override
     public void sendToUI(int val) throws BadLocationException, IOException {
         term = term.sendToUI(val, this);
-        // Scroll
-        if (getLineCount() > rows) {
-           String t = getText();
-           setText(t.substring(t.indexOf('\n') + 1));
-           setCaretPosition(getText().length());
-        }
-    }
-
-    private int getLineCount() throws BadLocationException {
-        int numNL = 0;
-        String t = getText(0, doc.getLength());
-        int l = t.length();
-        for (int i = 0; i < l; i++) {
-            if (t.charAt(i) == '\n') numNL++;
-        }
-        return numNL;
     }
 
     /**
@@ -147,31 +110,59 @@ public class Screen extends JTextPane implements UIDevice {
      */
     private class KeyListener extends KeyAdapter {
         @Override
-        public void keyTyped(KeyEvent evt) {
+        public void keyReleased(KeyEvent evt) {
+            int keyCode = evt.getKeyCode();
+            if (keyCode == KeyEvent.VK_SHIFT) shiftDown = false;
+        }
+
+        @Override
+        public void keyPressed(KeyEvent evt) {
             char keyChar = evt.getKeyChar();
-            if (keyChar == '\n') {
-                acia.eolReceived();
+            int keyCode = evt.getKeyCode();
+            if (keyChar == KeyEvent.CHAR_UNDEFINED) {
+                switch (keyCode) {
+                case KeyEvent.VK_SHIFT:
+                    shiftDown = true;
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (shiftDown)
+                        acia.dataReceived((char) 0x18);
+                    else
+                        acia.dataReceived((char) 0x08);
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if (shiftDown)
+                        acia.dataReceived((char) 0x19);
+                    else
+                        acia.dataReceived((char) 0x09);
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if (shiftDown)
+                        acia.dataReceived((char) 0x1A);
+                    else
+                        acia.dataReceived((char) 0x0A);
+                    break;
+                case KeyEvent.VK_UP:
+                    if (shiftDown)
+                        acia.dataReceived((char) 0x1C);
+                    else
+                        acia.dataReceived((char) 0x0C);
+                    break;
+                default:
+                    LOGGER.debug("Undefined char received: {}", keyCode);
+                }
             } else {
-                LOGGER.debug("Typed: {}", keyChar);
-                acia.dataReceived(keyChar & 0x7F);
+                if (keyChar == '\n') {
+                    acia.eolReceived();
+                } else {
+                    LOGGER.debug("Typed: {}", keyCode);
+                    acia.dataReceived(keyChar & 0x7F);
+                }
             }
         }
 
     }
 
-/*
-    private class FocusReceiver implements FocusListener {
-        @Override
-        public void focusGained(FocusEvent e) {
-            int l = getDocument().getLength();
-            setCaretPosition(l);
-            caret.setVisible(true);
-        }
-        @Override
-        public void focusLost(FocusEvent e) {
-        }
-    }
-*/
     /**
      * State engine to handle GO51 screen command codes.
      */ 
@@ -181,28 +172,36 @@ public class Screen extends JTextPane implements UIDevice {
             @Override
             Go51State sendToUI(int val, Screen h)
                     throws BadLocationException,IOException {
-                int caretPos = h.getCaretPosition();
                 String newchar = Character.toString((char) val);
+                TerminalPosition tp;
                 switch (val) {
                 case 7:
-                    Toolkit.getDefaultToolkit().beep();
+                    h.bell();
+                    h.flush();
                     return NORMAL;
                 case 8:     // Backspace
-                    if (h.backspaceDeletes) {
-                        if (caretPos > 0)
-                            h.doc.remove(caretPos - 1, 1);
-                    } else {
-                        h.setCaretPosition(caretPos - 1);
+                    tp = h.getCursorPosition();
+                    if (tp.getColumn() > 0) {
+                        h.setCursorPosition(tp.withRelativeColumn(-1));
+                        h.putCharacter(' ');
+                        h.setCursorPosition(tp.withRelativeColumn(-1));
+                        h.flush();
                     }
                     return NORMAL;
-                case 11:    // Cursor home
-                    h.setCaretPosition(0);
+                /*
+                case 0x0A:    // Line feed
+                    tp = h.getCursorPosition();
+                    h.setCursorPosition(tp.withRelativeRow(1));
+                    h.flush();
+                    return NORMAL;
+                */
+                case 0x0B:    // Cursor home
+                    h.setCursorPosition(0,0);
+                    h.flush();
                     return NORMAL;
                 case 12:    // Form feed - clear screen
-                    h.doc.remove(0, h.doc.getLength());
-                    h.currSet = h.normalSet;
-                    h.showInverted = false;
-                    h.showUnderline = false;
+                    h.clearScreen();
+                    h.flush();
                     return NORMAL;
                 case 0:  // Ignore NULLs
                 case 3:  // Ignore ETX - End of Text
@@ -213,14 +212,8 @@ public class Screen extends JTextPane implements UIDevice {
                 case 27:
                     return ESCAPE;
                 default:
-                    int l = h.getDocument().getLength();
-                    if (caretPos == l) {
-                        h.doc.insertString(h.doc.getLength(), newchar, h.currSet);
-                    } else {
-                        h.doc.insertString(caretPos, newchar, h.currSet);
-                        //replaceRange(newchar, caretPos, caretPos + 1);
-                    }
-                    h.setCaretPosition(caretPos + 1);
+                    h.putCharacter((char)val);
+                    h.flush();
                     return NORMAL;
                 }
             }
@@ -230,42 +223,87 @@ public class Screen extends JTextPane implements UIDevice {
             @Override
             Go51State sendToUI(int val, Screen h)
                     throws BadLocationException,IOException {
-                int caretPos = h.getCaretPosition();
+                TerminalPosition tp;
+                TerminalSize ts;
+                int col,cols,row,rows;
+
                 switch (val) {
+                case 0x41:
+                    return EXPECTX;
                 case 0x42:  // Clear to end of line
-                    h.doc.remove(caretPos, h.doc.getLength() - caretPos);
+                    tp = h.getCursorPosition();
+                    col = tp.getColumn();
+                    ts = h.getTerminalSize();
+                    cols = ts.getColumns();
+                    for (int x = col; x < cols; x++) {
+                        h.putCharacter(' ');
+                    }
+                    h.setCursorPosition(tp);
+                    h.flush();
+                    return NORMAL;
+                case 0x43:
+                    tp = h.getCursorPosition();
+                    h.setCursorPosition(tp.withRelativeColumn(1));
+                    return NORMAL;
+                case 0x44:
+                    tp = h.getCursorPosition();
+                    h.setCursorPosition(tp.withRelativeRow(-1));
+                    return NORMAL;
+                case 0x45:
+                    tp = h.getCursorPosition();
+                    h.setCursorPosition(tp.withRelativeRow(1));
                     return NORMAL;
                 case 0x46:  // Reverse on
-                    if (h.showUnderline)
-                        h.currSet = h.invertedUnderSet;
-                    else
-                        h.currSet = h.invertedSet;
-                    h.showInverted = true;
+                    h.enableSGR(SGR.REVERSE);
                     return NORMAL;
                 case 0x47:  // Reverse off
-                    if (h.showUnderline)
-                        h.currSet = h.normalUnderSet;
-                    else
-                        h.currSet = h.normalSet;
-                    h.showInverted = false;
+                    h.disableSGR(SGR.REVERSE);
                     return NORMAL;
                 case 0x48:  // Underline on
-                    if (h.showInverted)
-                        h.currSet = h.invertedUnderSet;
-                    else
-                        h.currSet = h.normalUnderSet;
-                    h.showUnderline = true;
+                    h.enableSGR(SGR.UNDERLINE);
                     return NORMAL;
                 case 0x49:  // Underline off
-                    if (h.showInverted)
-                        h.currSet = h.invertedSet;
-                    else
-                        h.currSet = h.normalSet;
-                    h.showUnderline = false;
+                    h.disableSGR(SGR.UNDERLINE);
+                    return NORMAL;
+                case 0x4A:   // Clear to end of screen
+                    tp = h.getCursorPosition();
+                    col = tp.getColumn();
+                    row = tp.getRow();
+                    ts = h.getTerminalSize();
+                    cols = ts.getColumns();
+                    rows = ts.getRows();
+                    for (int x = col; x < cols; x++) {
+                        h.putCharacter(' ');
+                    }
+                    for (int y = row + 1; y < rows; y++) {
+                        for (int x = 0; x < cols; x++) {
+                            h.putCharacter(' ');
+                        }
+                    }
+                    h.setCursorPosition(tp);
+                    h.flush();
                     return NORMAL;
                 default:
                     return NORMAL;
                 }
+            }
+        },
+
+        EXPECTX {
+            @Override
+            Go51State sendToUI(int val, Screen h)
+                    throws BadLocationException,IOException {
+                h.go51X = val;
+                return EXPECTY;
+            }
+        },
+
+        EXPECTY {
+            @Override
+            Go51State sendToUI(int val, Screen h)
+                    throws BadLocationException,IOException {
+                h.setCursorPosition(h.go51X, val);
+                return NORMAL;
             }
         };
 
