@@ -5154,8 +5154,6 @@ FUNCTION: Given the number of an existing path, DUP returns a synonymous
 path number for the same file or device. <application>Shell</application> uses this service
 request when it redirects I/O.
 Service requests using either the old or new path numbers operate on the same file or device.
-It is usually not a good idea for more than one process to be doing I/O on the same path
-concurrently. On RBF files, unpredictable results may be produced.
 </para>
       <para>
 NOTE: This only increments the <quote>use count</quote> of a path descriptor and
@@ -5799,11 +5797,11 @@ operations are permitted as follows:
 </literallayout>
       </para>
       <para>
-For RBF devices, Read mode should be used if preference to Update if the
+For RBF devices, Read mode should be used if preference to Update if the file
 is not going to be modified. This will inhibit record locking, and could
 dramatically improve system performance if more than one user is
 accessing the file. The access mode must conform to the access
-permission attributes associated with the file or device (see CREATE).
+permission attributes associated with the file or device (see <xref linkend="i.create"/>).
 Only the owner may access a file unless the appropriate <quote>public permit</quote>
 bits are set.
 </para>
