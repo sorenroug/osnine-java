@@ -51,7 +51,7 @@ public class AciaToScreen extends SwingWorker<Integer, Integer> {
                 uiDevice.sendToUI(val);
             }
         } catch (Exception e) {
-            LOGGER.error("GUI exception");
+            LOGGER.error("GUI exception", e);
         }
     }
 }

@@ -18,7 +18,12 @@ import javax.swing.text.StyleConstants;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.terminal.swing.ScrollingSwingTerminal;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.swing.SwingTerminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
+import com.googlecode.lanterna.terminal.swing.TerminalEmulatorColorConfiguration;
+import com.googlecode.lanterna.terminal.swing.TerminalEmulatorDeviceConfiguration;
+import com.googlecode.lanterna.TextCharacter;
 
 import org.roug.osnine.Acia;
 import org.slf4j.Logger;
@@ -28,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Graphical user interface for Acia chip using JTextPane.
  *
  */
-public class Screen extends ScrollingSwingTerminal implements UIDevice {
+public class Screen extends SwingTerminal implements UIDevice {
 
     private int currentFontSize = 16;
     private int rows = 24;
@@ -52,7 +57,14 @@ public class Screen extends ScrollingSwingTerminal implements UIDevice {
 
     private Go51State term = Go51State.NORMAL;
 
-    private Font font = new Font(Font.MONOSPACED, Font.BOLD, currentFontSize);
+    private Font font = new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize);
+    private static TerminalEmulatorDeviceConfiguration deviceConfiguration = 
+            TerminalEmulatorDeviceConfiguration.getDefault().withLineBufferScrollbackSize(0)
+               .withCursorStyle(TerminalEmulatorDeviceConfiguration.CursorStyle.UNDER_BAR);
+    private static SwingTerminalFontConfiguration fontConfiguration =
+                SwingTerminalFontConfiguration.getDefault();
+    private static TerminalEmulatorColorConfiguration colorConfiguration =
+                 TerminalEmulatorColorConfiguration.getDefault();
 
     /**
      * Constructor.
@@ -60,12 +72,10 @@ public class Screen extends ScrollingSwingTerminal implements UIDevice {
      * @param acia - The ACIA the user interface talks to
      */
     public Screen(Acia acia) {
-        super();
+        super(deviceConfiguration, fontConfiguration, colorConfiguration);
         this.acia = acia;
 
         addKeyListener(new KeyListener());
-        //setFont(font);
-        //setBackground(Color.WHITE);
 
 
 /*
@@ -83,6 +93,49 @@ public class Screen extends ScrollingSwingTerminal implements UIDevice {
             LOGGER.info("{} [{}]", val, newchar);
         } else {
             LOGGER.info("{}", val);
+        }
+    }
+
+    /**
+     * Write character and scroll if necessary.
+     * Scrolling is a workaround.
+     *
+     * @param c - ASCII character to write.
+     */
+    private void writeCharacter(char c) {
+        TerminalSize ts = getTerminalSize();
+        TerminalPosition tp = getCursorPosition();
+        int rows = ts.getRows();
+        int columns = ts.getColumns();
+
+        int rowBefore = tp.getRow();
+        int colBefore = tp.getColumn();
+        putCharacter(c);
+        int rowAfter = tp.getRow();
+        int colAfter = tp.getColumn();
+        //LOGGER.info("col {}:{} row {}:{}", colBefore, colAfter, rowBefore, rowAfter);
+        if (rowBefore == rows - 1 && rowBefore == rowAfter
+                && (c == '\n' || colAfter == columns)) {
+            try {
+                TerminalScreen screen = new TerminalScreen(this);
+                TextCharacter tchar;
+                TerminalPosition tpos;
+                screen.startScreen();
+                for (int y = 1; y < rowAfter; y++) {
+                    for (int x = 0; x < columns; x++) {
+                        tchar = screen.getFrontCharacter(x, y);
+                        screen.setCharacter(x, y -1 , tchar);
+                    }
+                }
+                tchar = new TextCharacter(' ');
+                for (int x = 0; x < columns; x++) {
+                    screen.setCharacter(x, rows, tchar);
+                }
+                screen.stopScreen();
+                screen.refresh();
+            } catch (IOException e) {
+                LOGGER.error("writeCharacter", e);
+            }
         }
     }
 
@@ -174,47 +227,61 @@ public class Screen extends ScrollingSwingTerminal implements UIDevice {
                     throws BadLocationException,IOException {
                 String newchar = Character.toString((char) val);
                 TerminalPosition tp;
-                switch (val) {
-                case 7:
-                    h.bell();
-                    h.flush();
+                TerminalSize ts;
+                int col,cols,row,rows;
+
+                if (val < 0x07 || (val > 0x0D && val < 0x1B)) {
                     return NORMAL;
-                case 8:     // Backspace
-                    tp = h.getCursorPosition();
-                    if (tp.getColumn() > 0) {
-                        h.setCursorPosition(tp.withRelativeColumn(-1));
-                        h.putCharacter(' ');
-                        h.setCursorPosition(tp.withRelativeColumn(-1));
+                } else {
+                    switch (val) {
+                    case 0x07:
+                        h.bell();
                         h.flush();
+                        return NORMAL;
+                    case 0x08:     // Backspace
+                        tp = h.getCursorPosition();
+                        if (tp.getColumn() > 0) {
+                            h.setCursorPosition(tp.withRelativeColumn(-1));
+                            h.putCharacter(' ');
+                            h.setCursorPosition(tp.withRelativeColumn(-1));
+                        } else {
+                            ts = h.getTerminalSize();
+                            cols = ts.getColumns();
+                            h.setCursorPosition(tp.withRelativeRow(-1).withColumn(cols - 1));
+                        }
+                        h.flush();
+                        return NORMAL;
+                    /*
+                    case 0x0A:    // Line feed
+                        tp = h.getCursorPosition();
+                        h.setCursorPosition(tp.withRelativeRow(1));
+                        h.flush();
+                        return NORMAL;
+                    */
+                    case 0x0B:    // Cursor home
+                        h.setCursorPosition(0,0);
+                        h.flush();
+                        return NORMAL;
+                    case 0x0C:    // Form feed - clear screen
+                        h.clearScreen();
+                        h.flush();
+                        return NORMAL;
+                    case 0x0D:
+                        //h.writeCharacter('\n');
+                        return NORMAL;
+                    case 0x1B:  // Escape code
+                        return ESCAPE;
+                    case 0x1C:
+                    case 0x1D:
+                    case 0x1E:
+                    case 0x1F:
+                    case 127:
+                        return NORMAL;
+                    default:
+                        h.writeCharacter((char)val);
+                        h.flush();
+                        return NORMAL;
                     }
-                    return NORMAL;
-                /*
-                case 0x0A:    // Line feed
-                    tp = h.getCursorPosition();
-                    h.setCursorPosition(tp.withRelativeRow(1));
-                    h.flush();
-                    return NORMAL;
-                */
-                case 0x0B:    // Cursor home
-                    h.setCursorPosition(0,0);
-                    h.flush();
-                    return NORMAL;
-                case 12:    // Form feed - clear screen
-                    h.clearScreen();
-                    h.flush();
-                    return NORMAL;
-                case 0:  // Ignore NULLs
-                case 3:  // Ignore ETX - End of Text
-                case 13: // Ignore carriage returns
-                case 14: // Ignore command to go to alpha mode.
-                case 127:
-                    return NORMAL;
-                case 27:
-                    return ESCAPE;
-                default:
-                    h.putCharacter((char)val);
-                    h.flush();
-                    return NORMAL;
                 }
             }
         },
@@ -303,6 +370,7 @@ public class Screen extends ScrollingSwingTerminal implements UIDevice {
             Go51State sendToUI(int val, Screen h)
                     throws BadLocationException,IOException {
                 h.setCursorPosition(h.go51X, val);
+                h.flush();
                 return NORMAL;
             }
         };
