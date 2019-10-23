@@ -22,22 +22,26 @@ LINEBUF  rmb   530
 size     equ   .
 name     equ   *
          fcs   /Mfree/
-         fcb   $04
-
+         fcb   $05
 title    fcb   C$LF
          fcc " Address  pages"
          fcb   C$LF
          fcc "--------- -----"
          fcb   $8D       Signed CR
+
 totxt    fcb   C$LF
          fcs   "Total pages free = "
+
+gfxtitle fcs  "Graphics Memory "
+notalloc fcs   "Not Allocated"
+gfxat    fcs   "at: $"
 
 start    equ   *
          leay  LINEBUF,u
          sty   <BUFPTR
          leay  <title,pcr
          bsr   OUTSTR
-         bsr   PRINT
+         bsr   L00EC
          ldx   >D.FMBM
          stx   <FMBM.S
          ldx   >D.FMBM+2
@@ -49,34 +53,35 @@ start    equ   *
          std   <u0008
          stb   <u000A
          ldx   <FMBM.S
-L006A    lda   ,x+
-         bsr   L0083
+L008C    lda   ,x+
+         bsr   L00A8
          cmpx  <FMBM.E
-         bcs   L006A
-         bsr   L0093
+         bcs   L008C
+         bsr   L00B8
          leay  <totxt,pcr
          bsr   OUTSTR
          ldb   <TOTPAGES
-         bsr   PRTNUM
-         bsr   PRINT
+         bsr   L0101
+         bsr   L00EC
+         lbsr  L014A
          clrb
          os9   F$Exit
 
 * Count 1-bits in byte
-L0083    bsr   L0085   Executed once
-L0085    bsr   L0087   Executed twice
-L0087    bsr   L0089   Executed four times
-L0089    lsla          Executed eight times - shift highest bit into CC
-         bcs   L0093   Occupied page?
+L00A8    bsr   L00AA
+L00AA    bsr   L00AC
+L00AC    bsr   L00AE
+L00AE    lsla
+         bcs   L00B8
          inc   <TOTPAGES
          inc   <u000A
          inc   <u0006
          rts
 
 * Write line for segment of free pages
-L0093    pshs  b,a
+L00B8    pshs  b,a
          ldb   <u000A
-         beq   L00B2
+         beq   L00D7
          ldd   <u0008
          bsr   Bin4Hx
          lda   #'-
@@ -84,12 +89,12 @@ L0093    pshs  b,a
          ldd   <u0006
          subd  #1
          bsr   Bin4Hx
-         bsr   L00FD
-         bsr   L00FD
+         bsr   L0122
+         bsr   L0122
          ldb   <u000A
-         bsr   PRTNUM
-         bsr   PRINT
-L00B2    inc   <u0006
+         bsr   L0101
+         bsr   L00EC
+L00D7    inc   <u0006
          ldd   <u0006
          std   <u0008
          clr   <u000A
@@ -101,40 +106,38 @@ OUTSTR   lda   ,y
          lda   ,y+
          bpl   OUTSTR
          rts
-
-PRINT    pshs  y,x,a
-         lda   #C$CR
+L00EC    pshs  y,x,a
+         lda   #$0D
          bsr   OUTCH
          leax  LINEBUF,u
          stx   <BUFPTR
-         ldy   #80
-         lda   #1
+         ldy   #$0050
+         lda   #$01
          os9   I$WritLn
          puls  pc,y,x,a
-
-PRTNUM   lda   #$FF
+L0101    lda   #$FF
          clr   <ZERSUP
-PRTN10 inca form hundreds digit
-         subb  #100
-         bcc   PRTN10
-         bsr   FRZSUP
-         lda   #10
-PRTN20   deca form tens digit
-         addb  #10
-         bcc   PRTN20
-         bsr   FRZSUP
+L0105    inca
+         subb  #$64
+         bcc   L0105
+         bsr   L0119
+         lda   #$0A
+L010E    deca
+         addb  #$0A
+         bcc   L010E
+         bsr   L0119
          tfr   b,a
          inc   <ZERSUP
-FRZSUP   tsta   ZERO?
-         beq   L00F9
+L0119    tsta
+         beq   L011E
          sta   <ZERSUP
-L00F9    tst   <ZERSUP
-         bne   FRZS20
-L00FD    lda   #$F0
-FRZS20   adda  #'0  Make it ASCII
-         cmpa  #'9+1
+L011E    tst   <ZERSUP
+         bne   L0124
+L0122    lda   #$F0
+L0124    adda  #$30
+         cmpa  #$3A
          bcs   OUTCH
-         adda #'A-'9-1 Adjust for A-F
+         adda  #$07
 
 OUTCH    pshs  x
          ldx   <BUFPTR
@@ -156,14 +159,31 @@ Bin4Hx   clr   <ZERSUP
 *  Convert byte in A register to
 *    two-char hex
 *
-Bin2Hx   pshs  a Save byte
-         lsra  Shift it to right
+Bin2Hx   pshs  a
          lsra
          lsra
          lsra
-         bsr   L0121
-         puls  a Restore byte
-L0121    anda  #$0F Mask low byte
-         bra   FRZSUP
+         lsra
+         bsr   L0146
+         puls  a
+L0146    anda  #$0F
+         bra   L0119
+
+L014A    pshs  y,x
+         leay  >gfxtitle,pcr
+         bsr   OUTSTR
+         lda   #1
+         ldb   #$12    #SS.DStat
+         os9   I$GetStt
+         bcc   L0163
+         leay  >notalloc,pcr
+         bsr   OUTSTR
+         bra   L016E
+L0163    leay  >gfxat,pcr
+         lbsr  OUTSTR
+         tfr   x,d
+         bsr   Bin4Hx
+L016E    puls  y,x
+         lbra  L00EC
          emod
 eom      equ   *

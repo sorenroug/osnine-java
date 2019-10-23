@@ -345,53 +345,11 @@ M01F0    fcb   $FF
 
          fcb   $18
          fcb   $30 0
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $64 d
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $20
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20
-         fcb   $3D =
+         fcc   "         dollar rate ="
 
          fcb   $18
          fcb   $30 0
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $79 y
-         fcb   $20
-         fcb   $3D =
+         fcc   "                duty ="
 
          fcb   $14
          fcb   $32 2
@@ -900,31 +858,38 @@ M0280    fcb   $6D m
          fcb   $20
          fcb   $20
          fcb   $20
+
          fcb   $03
          fcb   $30 0
          fcb   $25 %
+
          fcb   $04
          fcb   $30 0
          fcb   $72 r
          fcb   $20
+
          fcb   $03
          fcb   $30 0
          fcb   $20
+
          fcb   $03
          fcb   $37 7
          fcb   $2E .
+
          fcb   $06
          fcb   $30 0
          fcb   $20
          fcb   $4C L
          fcb   $49 I
          fcb   $53 S
+
          fcb   $06
          fcb   $30 0
          fcb   $20
          fcb   $65 e
          fcb   $6E n
          fcb   $64 d
+
          fcb   $06
          fcb   $30 0
          fcb   $20
@@ -1025,18 +990,21 @@ M0280    fcb   $6D m
          fcb   $03
          fcb   $37 7
          fcb   $2E .
+
          fcb   $06
          fcb   $30 0
          fcb   $45 E
          fcb   $43 C
          fcb   $45 E
          fcb   $4D M
+
          fcb   $06
          fcb   $33 3
          fcb   $20
          fcb   $20
          fcb   $20
          fcb   $44 D
+
          fcb   $06
          fcb   $30 0
          fcb   $20
@@ -1152,10 +1120,7 @@ M0280    fcb   $6D m
 
          fcb   $06
          fcb   $30 0
-         fcb   $42 B
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
+         fcc   "BER "
 
          fcb   $06
          fcb   $30 0

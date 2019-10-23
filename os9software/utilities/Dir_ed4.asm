@@ -1,11 +1,11 @@
 * Disassembled from GIMIX dir command
 
          nam   Dir
-         ttl   program module       
+         ttl   program module
 
          use   defsfile
 
-tylg     set   Prgrm+Objct   
+tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,start,size
@@ -32,9 +32,9 @@ u003C    rmb   530
 size     equ   .
 name     equ   *
          fcs   /Dir/
-         fcb   $04 
+         fcb   $04
 
-L0011    fcb   $10 
+L0011    fcb   $10
 L0012    fcb   $30
 
 DirOf    fcb   C$LF
@@ -44,7 +44,7 @@ L0024    fcb   $2E .
          fcb   C$CR
 
 L0026    fcb   $40 @
-         fcb   $0D 
+         fcb   $0D
 
 Header    fcb   C$LF
          fcc "Owner Last modified attributes sector bytecount name"
@@ -67,11 +67,11 @@ L00B0    stx   <u0000
          lda   #$81
          ora   <ExeDir
          pshs  x,a
-         os9   I$Open   
+         os9   I$Open
          sta   <u0002
          puls  x,a
          lbcs  L019D
-         os9   I$ChgDir 
+         os9   I$ChgDir
          lbcs  L019D
          pshs  x
          leay  >DirOf,pcr
@@ -86,7 +86,7 @@ L00D5    lda   ,x+
          lbsr  WrSpace
          lbsr  WrSpace
          leax  u0009,u
-         os9   F$Time   
+         os9   F$Time
          leax  u000C,u
          lbsr  PRTIME
          lbsr  WrLine
@@ -95,18 +95,18 @@ L00D5    lda   ,x+
          lda   #$01
          ora   <ExeDir
          leax  >L0026,pcr
-         os9   I$Open   
+         os9   I$Open
          lbcs  L019D
          sta   <u0005
          leax  >Header,pcr
          ldy   #$0071
          lda   #$01
-         os9   I$WritLn 
+         os9   I$WritLn
 L0118    lda   <u0002
          ldx   #$0000
          pshs  u
          ldu   #$0040
-         os9   I$Seek   
+         os9   I$Seek
          puls  u
          bra   L018B
 L0129    tst   <DirEnt
@@ -126,16 +126,16 @@ L0143    subb  >L0011,pcr
          bra   L018B
 L014D    pshs  u
          lda   <LSN3
-         clrb  
+         clrb
          tfr   d,u
          ldx   <LSN1
          lda   <u0005
-         os9   I$Seek   
+         os9   I$Seek
          puls  u
          bcs   L019D
          leax  <FileDesc,u
          ldy   #13
-         os9   I$Read   
+         os9   I$Read
          bcs   L019D
 
          ldd   <u0030
@@ -155,13 +155,13 @@ L0188    lbsr  WrLine
 L018B    leax  DirEnt,u
          ldy   #$0020
          lda   <u0002
-         os9   I$Read   
+         os9   I$Read
          bcc   L0129
          cmpb  #$D3
          bne   L019D
-         clrb  
+         clrb
 L019D    bsr   WrLine
-         os9   F$Exit   
+         os9   F$Exit
 
 L01A2    lda   <LSN1
          bsr   L01CC
@@ -181,16 +181,16 @@ L01B4    ldd   <u0038
          bra   L01A8
 
 L01C2    pshs  a
-         lsra  
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
+         lsra
          bsr   L01D2
          puls  pc,a
 L01CC    clr   <u0006
 L01CE    bsr   L01C2
 L01D0    anda  #$0F
-L01D2    tsta  
+L01D2    tsta
          beq   L01D7
          sta   <u0006
 L01D7    tst   <u0006
@@ -215,20 +215,20 @@ PermFlgs fcc   "dsewrewr"
 Attrs    ldb  <FileDesc
          leax  <PermFlgs,pcr
          lda   ,x+
-L0205    lslb  
+L0205    lslb
          bcs   L020A
          lda   #$2D
 L020A    bsr   OUTCHR
          lda   ,x+
          bpl   L0205
-         rts   
+         rts
 
 WrString    lda   ,y
          anda  #$7F
          bsr   OUTCHR
          lda   ,y+
          bpl   WrString
-         rts   
+         rts
 
 WrLine    pshs  y,x,a
          lda   #$0D
@@ -237,7 +237,7 @@ WrLine    pshs  y,x,a
          stx   <u0007
          ldy   #$0050
          lda   #$01
-         os9   I$WritLn 
+         os9   I$WritLn
          puls  pc,y,x,a
 
 *****
@@ -272,15 +272,15 @@ PRTNUM    ldb   ,x+
          lda   #$2F
          cmpb  #$64
          bcs   PRTN10
-         clrb  
-PRTN10    inca  
+         clrb
+PRTN10    inca
          subb  #$64
          bcc   PRTN10
          cmpa  #$30
          beq   PRTN20
          bsr   OUTCHR
-PRTN20 lda #'9+1
-PRTN30 deca Form Tens digit 
+PRTN20   lda #'9+1
+PRTN30   deca Form Tens digit
          addb  #$0A
          bcc   PRTN30
          lbsr  OUTCHR
@@ -289,7 +289,7 @@ PRTN30 deca Form Tens digit
          lbra  OUTCHR
 
 
-ParsOpts    ldd   ,x+
+ParsOpts ldd   ,x+
          cmpa  #$20
          beq   ParsOpts
          cmpa  #$2C
@@ -310,6 +310,6 @@ L028C    lda   -$01,x
          lda   #$04
          sta   <ExeDir
          bra   ParsOpts
-L029E    rts   
+L029E    rts
          emod
 eom      equ   *

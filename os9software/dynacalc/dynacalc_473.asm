@@ -6,4 +6,4 @@
  use Dynacalc.cor.inc
  endc
  opt -m
- use dynacalc.inc
+ use dynacalc_473.inc

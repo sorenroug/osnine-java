@@ -1,7 +1,7 @@
 # DYNACALC, Version 4.7:3
 
 This directory contains Dynacalc v. 4.7:3 as sold for the Dragon 64. This
-edition has been modified to fit the 51-column screen that was the max number
+edition has been configured to fit the 51-column screen that was the max number
 of columns the Dragon 64 could display. The control sequences for the screen
 are defined in the Dynacalc.trm file and in principle it is possible to define
 another terminal, but the 'install.dc' program to do so has had this

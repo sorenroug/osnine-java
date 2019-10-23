@@ -37,6 +37,8 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+        <assemble src="Mfree_d64" home="dragon64" verify="3fc4db96ec92a745e14d642c95a62387"/>
+
         <assemble src="Mfree_ed4" home="utilities" verify="f629490039f5f4b307604d495c543be1"/>
         <assemble src="TSMon" home="utilities" verify="7501e649d06eb2fe81780ad7e257c99e"/>
         <assemble src="Shell" home="utilities" verify="91209757f1b55d768536629eca4c984c"/>
@@ -91,7 +93,7 @@
         <assemble src="VDisk" home="virtual" verify="726892927a2cfef6c3a1019eb8953477"/>
 
         <assemble src="install.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
-        <assemble src="dynacalc" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
+        <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
         <assemble src="Dynacalc.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
 
         <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
