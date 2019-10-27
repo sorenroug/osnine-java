@@ -96,7 +96,11 @@ public class VirtualDisk extends MemorySegment {
         if (diskFP != null) {
             diskFP.close();
         }
-        diskFP = new RandomAccessFile(diskFile, "rw");
+        if (diskFile.isFile() && diskFile.canRead()) {
+            diskFP = new RandomAccessFile(diskFile, "rw");
+        } else {
+            throw new FileNotFoundException("Unable to open disk: " + diskFile.toString());
+        }
     }
 
     @Override

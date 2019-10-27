@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:13-alpine
 
 COPY target/osnine-core-1.0-SNAPSHOT-jar-with-dependencies.jar /var/opt
 

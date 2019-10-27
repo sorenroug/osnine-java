@@ -1,7 +1,5 @@
 # Emulator core
 
-![Class hierarchy](/images/classhierarchy.png)
-
 
 ## Docker image
 
