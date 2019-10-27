@@ -142,6 +142,7 @@ public class GUI {
         }
         loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
                      "T1", "T2", "P", "PipeMan", "Piper", "Pipe");
+        if (singleUser) loadROM("Shell"); // Don't rely on the harddisk
 
         cpu = new MC6809(bus);
 

@@ -19,4 +19,4 @@ The two terminals are called '/T1' and '/T2'. The printer device is called '/P' 
 Internals
 ---------
 
-The system uses the kernel from CoCo/Dragon 64. The terminals and printer are implemented as emulated 6850 ACIAs. The harddisk is implemented as a pseudo device where the issues of spin up, rotations, noise are removed. Additionally, there is a clock device, which gets the time from the host. The CPU is interrupted 50 times a second to facilitate multitasking.
+The system uses the kernel from CoCo/Dragon 64. The terminals and printer are implemented as emulated 6850 ACIAs. The harddisk is implemented as a pseudo device where the issues of spin up, rotational delay, noise etc. are removed. Additionally, there is a clock device, which gets the time from the host. The CPU is interrupted 50 times a second to facilitate multitasking.

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Screen extends SwingTerminal implements UIDevice {
 
-    private int currentFontSize = 16;
+    private static int currentFontSize = 16;
     private int rows = 24;
     private int columns = 80;
 
@@ -57,12 +57,15 @@ public class Screen extends SwingTerminal implements UIDevice {
 
     private Go51State term = Go51State.NORMAL;
 
-    private Font font = new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize);
+    private static Font font = new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize);
+
     private static TerminalEmulatorDeviceConfiguration deviceConfiguration = 
-            TerminalEmulatorDeviceConfiguration.getDefault().withLineBufferScrollbackSize(0)
-               .withCursorStyle(TerminalEmulatorDeviceConfiguration.CursorStyle.UNDER_BAR);
+            TerminalEmulatorDeviceConfiguration.getDefault().withLineBufferScrollbackSize(0);
+//             .withCursorStyle(TerminalEmulatorDeviceConfiguration.CursorStyle.UNDER_BAR);
+
     private static SwingTerminalFontConfiguration fontConfiguration =
-                SwingTerminalFontConfiguration.getDefault();
+                SwingTerminalFontConfiguration.newInstance(font);
+
     private static TerminalEmulatorColorConfiguration colorConfiguration =
                  TerminalEmulatorColorConfiguration.getDefault();
 
