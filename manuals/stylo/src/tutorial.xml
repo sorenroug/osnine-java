@@ -1,9 +1,9 @@
+<?xml version="1.0"?>
 <article xmlns="http://docbook.org/ns/docbook">
-<articleinfo>
-  <title>A STYLOGRAPH TUTORIAL</title>
-  <titleabbrev>TUTORIAL</titleabbrev>
-</articleinfo>
-
+  <articleinfo>
+    <title>A STYLOGRAPH TUTORIAL</title>
+    <titleabbrev>TUTORIAL</titleabbrev>
+  </articleinfo>
   <para>This short set of
 exercises is designed for the person who is inexperienced with
 computers and who will be using STYLOGRAPH. The commands that are
@@ -18,39 +18,39 @@ some idea of the way STYLOGRAPH operates. When you are done with
 the tutorial, it is a good idea to go back and read the manual
 through to get an idea of the other capabilities of the STYLOGRAPH
 system.</para>
-<section>
-  <title>A. THE TERMINAL</title>
-  <para>There are a few
+  <section>
+    <title>A. THE TERMINAL</title>
+    <para>There are a few
 differences between the typewriter that you have used in the past
 and the screen and keyboard that you will be using with STYLOGRAPH.
 This section is designed to make you aware of those
 differences.</para>
-  <important>
-  <para>In this manual and
+    <important>
+      <para>In this manual and
 tutorial, we make frequent references to certain special keys, such
 as RETURN, ESCAPE, and CONTROL. On your keyboard these may be named
 differently. Refer to the Key Assignments Summary At the back of
 this manual for a guide to these special keys on your keyboard.</para>
-</important>
-  <para>First of all, you will
+    </important>
+    <para>First of all, you will
 notice that the letters on the terminal are set up exactly the way
 they are on the typewriter. However, there are some extra keys with
 special functions that you should notice, because those functions
 are important to the working of STYLOGRAPH:</para>
-  <para>1. The CAPS LOCK key:
+    <para>1. The CAPS LOCK key:
 This key is somewhat like an upper-shift lock on a typewriter,
 except that it only locks the upper-case for letters; the numbers
 and punctuation on the keyboard are unaffected by it. You usually
 turn the upper-case on and off by hitting the key. This is a very
 useful key when you want to type in capital letters, as it leaves
 everything else on the lower case level.</para>
-  <para>2. Auto-Repeat
+    <para>2. Auto-Repeat
 function: Many video terminals will repeat the letter, number, or
 punctuation that you are typing if you hold the key down. Some
 terminals do not have this feature, but rather, have a REPEAT key
 which will produce this function if held down at the same time as
 the key that you want repeated.</para>
-  <para>3. CONTROL key: The
+    <para>3. CONTROL key: The
 control key is something like a shift key on the typewriter, except
 that it normally produces no real effect on the letters typed on
 the video terminal. The CONTROL key. however, is used extensively
@@ -58,11 +58,11 @@ in STYLOGRAPH and you should try and locate it on the video
 terminal you're using. It's usually somewhere on the left side of
 the keyboard. To enter, for example, CONTROL-D, hold down the
 CONTROL key and hit the D key.</para>
-  <para>4. ESCAPE key: The
+    <para>4. ESCAPE key: The
 ESCAPE key does not appear on a typewriter, but is important to the
 workings of STYLOGRAPH. It will be used in STYLOGRAPH
 extensively.</para>
-  <para>5. RETURN key: The
+    <para>5. RETURN key: The
 carriage return is located in the same place as on a typewriter.
 You will find, however, that you will use it much less than you
 have when you typed in the past. This is because STYLOGRAPH will
@@ -71,27 +71,27 @@ long to fit on the current line you're working on.</para>
   </section>
   <section>
     <title>B. TERMINOLOGY</title>
-  <para>Before you begin
+    <para>Before you begin
 working through the STYLOGRAPH tutorial, there are a few words that
 will be thrown around quite a bit with which you will have to be
 familiar.</para>
-  <para>1. Character: a
-"character" is any of the letters, numbers, or symbols available on
+    <para>1. Character: a
+<quote>character</quote> is any of the letters, numbers, or symbols available on
 the keyboard. Since the computer codes all characters in numerical
 form, it has no real idea that letters are a different kind of
 symbol from punctuation marks, so it's easier to refer to all of
-them as "characters".</para>
-  <para>2. String: a "string"
+them as <quote>characters</quote>.</para>
+    <para>2. String: a <quote>string</quote>
 refers to one or more characters together. The computer does not
 know English (or any other human language, for that matter), and so
-the string or characters "v7iu3e:d,q" makes as such sense to the
-computer as the string "elephant". Naturally, only the second
+the string or characters <quote>v7iu3e:d,q</quote> makes as such sense to the
+computer as the string <quote>elephant</quote>. Naturally, only the second
 string of characters is intelligible to us, but the computer
 doesn't know that. So, it is easier to think of a paragraph
 sentence, word, or any part thereof, as a string. Usually, the term
 will be used when you are trying to perform some operation on it,
-such as "moving a string" or "duplicating a string".</para>
-  <para>3. Edit: "editing"
+such as <quote>moving a string</quote> or <quote>duplicating a string</quote>.</para>
+    <para>3. Edit: <quote>editing</quote>
 something on a computer is no different from editing a typewritten
 piece of material, except that it's much easier. When you type
 something, and it gets edited, you usually have to retype it. Not
@@ -100,40 +100,40 @@ the information as it will be printed out so that you can catch any
 typing errors, misspellings, etc. Your first print-out is usually
 error-free. but even if it isn't, it's no problem to go back and
 re-edit it, and get another printout in a matter of minutes.</para>
-  <para>4. Text: the word
-"text" as used in word processing, isn't much different from the
-word's normal English usage in sentences like "The text of the
-letter was long". It simply refers to written information that you
+    <para>4. Text: the word
+<quote>text</quote> as used in word processing, isn't much different from the
+word's normal English usage in sentences like <quote>The text of the
+letter was long</quote>. It simply refers to written information that you
 can work on, or edit. If you are thinking like a computer, you can
-envisage "text" as a lot of "strings" put together.</para>
-  <para>5. Mode: a "mode" is a
-certain way of doing things, a kind of "system". STYLOGRAPH has
-three separate "modes" or systems, each of which is used to perform
+envisage <quote>text</quote> as a lot of <quote>strings</quote> put together.</para>
+    <para>5. Mode: a <quote>mode</quote> is a
+certain way of doing things, a kind of <quote>system</quote>. STYLOGRAPH has
+three separate <quote>modes</quote> or systems, each of which is used to perform
 different types of tasks on the text you wish to edit. These are
-the "SUPERVISOR, ESCAPE, and INSERT" modes, and they will be
+the <quote>SUPERVISOR, ESCAPE, and INSERT</quote> modes, and they will be
 discussed in more detail below.</para>
-  <para>6. Disk: a "disk" is a
+    <para>6. Disk: a <quote>disk</quote> is a
 piece of flattened magnetic tape: much like cassette tape, on which
 the computer can permanently store information and retrieve it at a
 later time. Disks are needed because the information that is stored
 directly in the computer will disappear when you turn the computer
-off. Therefore, you must "save" your text to the disk before
+off. Therefore, you must <quote>save</quote> your text to the disk before
 turning the computer off.</para>
-  <para>7. File: a "file" is
+    <para>7. File: a <quote>file</quote> is
 how information is stored on a disk. It is much like a file in a
 filing cabinet, in that it is stored in an organized way for later
 retrieval. But the disk system of the computer can do many things
 with a file: it can be listed, printed out, processed, copied to
 other disks, etc., in only a fraction of the time it would take for
 a secretary to do it. The only real difference is that a disk file
-tends to contain less information than a "file" in the real
+tends to contain less information than a <quote>file</quote> in the real
 office-life sense. For example, one disk file may contain only one
 letter, or only one report.</para>
-  <para>8. Cursor: A "cursor"
+    <para>8. Cursor: A <quote>cursor</quote>
 is a little marker which tells you where you are in the text. On
 typewriters, the platen moves from right to left to tell you where
 you are on a line. On a computer: the cursor moves from left to
-right to tell you "where you are" on the screen. On some video
+right to tell you <quote>where you are</quote> on the screen. On some video
 terminals, the cursor is a solid block, while on others it can be a
 blinking block or a simple line underneath the letters. You will
 need to identify the cursor on your terminal and move it around to
@@ -141,106 +141,106 @@ use STYLOGRAPH.</para>
   </section>
   <section>
     <title>C. STARTING THE SYSTEM</title>
-  <para>Now that you're
+    <para>Now that you're
 somewhat familiar with the terminology and equipment that will be
 used with STYLOGRAPH, we'll get you started on your first
 lesson.</para>
-  <para>First of all, you must
+    <para>First of all, you must
 get your computer running. Refer to your computer manual for this.
 When you have the OS-9 prompt</para>
-  <screen>
+    <screen>
 OS9:
 </screen>
-  <para>remove the system disk
+    <para>remove the system disk
 from drive 0 and put in your STYLOGRAPH disk. Change your execution
 and data directories to this disk by typing:</para>
-  <screen>
+    <screen>
 OS9: chx /d0/cmds; chd /d0
 </screen>
-  <para>If you are using a
+    <para>If you are using a
 Dragon 64 and you are not already in the 51 characters by 24 lines
 screen mode, go into that mode with:</para>
-  <screen>
+    <screen>
 OS9: go51
 </screen>
-  <para>To start the STYLOGRAPH
+    <para>To start the STYLOGRAPH
 system, all you have to do is to type in the STYLOGRAPH program
-name "STYLO" and the name of the file that you will be working on.
+name <quote>STYLO</quote> and the name of the file that you will be working on.
 To get you going, enter</para>
-  <screen>
+    <screen>
 OS9: stylo lesson1
 </screen>
-  <para>What this will do is
+    <para>What this will do is
 first. load in the STYLOGRAPH word processor, and second, tell
 STYLOGRAPH that the name of the text file you will be working on is
-"LESSON1" At this point, you will be in one of the three "modes" of
+<quote>LESSON1</quote> At this point, you will be in one of the three <quote>modes</quote> of
 STYLOGRAPH, the SUPERVISOR mode.</para>
   </section>
   <section>
     <title>D. THE SUPERVISOR MODE</title>
-  <para>If everything is
-working correctly, you should now see a list of tasks, or "options"
+    <para>If everything is
+working correctly, you should now see a list of tasks, or <quote>options</quote>
 in front of you on the screen. The tasks should have names like
-"EDIT", "PRINT", "SAVE AND RETURN" and so forth. Don't be worried
+<quote>EDIT</quote>, <quote>PRINT</quote>, <quote>SAVE AND RETURN</quote> and so forth. Don't be worried
 about how long the list is; you'll only be using these three
-commands in this short tutorial. This list is called a "menu". It
+commands in this short tutorial. This list is called a <quote>menu</quote>. It
 is like a restaurant menu because it shows you what is available,
 and allows you to make your selection. Now, all you have to do is
 to tell it what you want to do. Notice that to the left of the list
 is a pointer-like symbol; you need to move the pointer to the task
 you want STYLOGRAPH to do, and then hit the RETURN key. You can
-move the pointer down by hitting the comma (",") key, and you can
-move it up by hitting the "I" key. (We know that this makes no
+move the pointer down by hitting the comma (<quote>,</quote>) key, and you can
+move it up by hitting the <quote>I</quote> key. (We know that this makes no
 sense at all right now, but bear with us. It soon will). Move the
 pointer around a little to get used to it. What you want to do now
 is to EDIT some text, so move the pointer to EDIT, and hit
 RETURN.</para>
-  <para>At this point, you
+    <para>At this point, you
 should see something like this on your screen:</para>
-  <screen>
+    <screen>
 --------------------- PAGE 1 --------------------
                                                 |
 </screen>
-  <para>You are now in another
-"mode" of STYLOGRAPH, the ESCAPE mode. The ESCAPE mode is designed
+    <para>You are now in another
+<quote>mode</quote> of STYLOGRAPH, the ESCAPE mode. The ESCAPE mode is designed
 to display the text that you're working on and to allow you to do
 some things to the text. However, because there is no text to work
 on yet, the screen will be pretty empty. In order to enter some
 text, you have to go to the third mode of STYLOGRAPH, the INSERT
 mode. We will return to the ESCAPE mode a little later. To get into
-the INSERT model you only have to hit the semicolon key (";").</para>
+the INSERT model you only have to hit the semicolon key (<quote>;</quote>).</para>
   </section>
   <section>
     <title>E. THE INSERT MODE</title>
-  <para>Now the screen should
+    <para>Now the screen should
 look like this:</para>
-  <screen>
+    <screen>
 --------------------- PAGE 1 --------------------
 ------------------------------------------------|
 </screen>
-  <para>All you need to do now
+    <para>All you need to do now
 in order to enter text is to type it in, as if you were typing
 normally. Before you start typing, however, you should know two
 things about entering text into STYLOGRAPH:</para>
-  <orderedlist>
-    <listitem>
-      <para>You don't have to hit
+    <orderedlist>
+      <listitem>
+        <para>You don't have to hit
 the RETURN key to move to the next line. In fact, STYLOGRAPH keeps
 track of how many spaces are left on the line. and will
 automatically put the word you are typing on the next line if it
 doesn't fit. The number or dashes on the line you are typing let
 you know how many spaces are left on the line.</para>
-    </listitem>
-    <listitem>
-      <para>If you make any mistake
+      </listitem>
+      <listitem>
+        <para>If you make any mistake
 as you are typing, you can simply backspace over the error and
 retype it. All computer terminals have a backspace key, like
 typewriters.</para>
-    </listitem>
-  </orderedlist>
-  <para>Now, to show you some
+      </listitem>
+    </orderedlist>
+    <para>Now, to show you some
 of the features of STYLOGRAPH, type in this sample bit of text:</para>
-  <screen>
+    <screen>
 --------------------- PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
@@ -248,12 +248,12 @@ because STYLOGRAPH allows you to type in material as
 you go along and automatically puts words on the next
 line if they are too long.--------------------------|
 </screen>
-  <para>You may be wondering what you do use the RETURN key for. You use
+    <para>You may be wondering what you do use the RETURN key for. You use
 it if you want to start typing in text on a new line. This is for
 new paragraphs, skipping lines, or any other time that you don't
 need to finish a line. For example, of you now hit a RETURN and
 type another line in the sample text, it will look like this:</para>
-  <screen>
+    <screen>
 ------------------------ PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
@@ -263,10 +263,10 @@ line if they are too long.                             |
    This text should start on the next line because you
 have hit a carriage RETURN-----------------------------|
 </screen>
-  <para>You will notice that
+    <para>You will notice that
 when you hit a carriage RETURN, STYLOGRAPH signifies it with a
 vertical mark on the right hand margin.</para>
-  <para>Now that you can enter
+    <para>Now that you can enter
 text into STYLOGRAPH using the INSERT mode, there are some other
 things that you can do in the INSERT mode which will make your
 typed work come out formatted perfectly. When you type on a
@@ -274,35 +274,35 @@ typewriter, you can set margins. The same thing is true of
 STYLOGRAPH; you can set margins using a set of format commands that
 are entered in the INSERT mode like regular text, but do not appear
 on the final printed copy.</para>
-  <para>Each of the format
+    <para>Each of the format
 commands requires a line all for itself. You will have to hit
 another RETURN to enter the commands. Right and left margins are
 set separately. You can set the left margins by entering a:</para>
-  <screen>
+    <screen>
 ,lm 12
 </screen>
-  <para>on the line. Note that
+    <para>on the line. Note that
 the comma MUST be the first character on the line. (there must be
 no preceding spaces), there MUST be no gap between the comma and
-the command "lm", and there MUST be a space between the command and
-the numeric parameter, "12". What this will do is set the start of
+the command <quote>lm</quote>, and there MUST be a space between the command and
+the numeric parameter, <quote>12</quote>. What this will do is set the start of
 the left margin at 12 spaces in from the left boundary of the
 paper. Of course you don't have to use 12, the left margin can be
 set at 10, 8, or any other number you please. Usually 10 or 12 are
 the standards, however. The command will not appear on the
 print-out of the text.</para>
-  <para>Right margins are set a
+    <para>Right margins are set a
 little differently, but use the same restrictions as for the left
 margin command. The right margins are set by allowing a certain
 line length for each line. If you only allow a certain number of
 spaces per line, this will naturally set the right margin. To set
 the right margin, hit another RETURN and enter:</para>
-  <screen>
+    <screen>
 ,ll 48
 </screen>
-  <para>Your text should now
+    <para>Your text should now
 look like this:</para>
-  <screen>
+    <screen>
 ------------------------ PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
@@ -315,59 +315,59 @@ have hit a carriage RETURN
 ,ll 48
 --------------------------------------                 |
 </screen>
-  <para>Notice that the line of
+    <para>Notice that the line of
 dashes does not extend all the way to the end of the screen. This
 is because you have set the right margin with the <command>,ll</command> command.
 Naturally, your line length need not be 48; it can be anything,
 although 65 and 75 are the usual standards.</para>
-  <para>One of the most
+    <para>One of the most
 frustrating jobs in typing is centring titles on a page. This is
 easily done with another STYLOGRAPH format command, however. The
 centring command looks like this:</para>
-  <screen>
+    <screen>
 ,ce
 </screen>
-  <para>Enter the command, hit
+    <para>Enter the command, hit
 a RETURN, and type in the following lane:</para>
-  <screen>
+    <screen>
        Presto! This line is centred.---------------|
 </screen>
-  <para>Now hit the RETURN, and
+    <para>Now hit the RETURN, and
 presto! the line is centred. The <command>,ce</command> command may be followed by any
 number, and STYLOGRAPH will automatically centre that next number
 of lines. For example, the command</para>
-  <screen>
+    <screen>
 .ce 5
 </screen>
-  <para>will centre the next
+    <para>will centre the next
 five lines of text. Again, remember that you need to follow the
 restrictions of the margin commands that the command start in the
 first space of the line, and that the command be preceded by a
 comma.</para>
-  <para>Along with centring,
+    <para>Along with centring,
 you often have to put things on the right margin. Examples of this
-(it's called "right justification") are the return addresses and
+(it's called <quote>right justification</quote>) are the return addresses and
 dates of business letters, and the page numbers of reports. A
 STYLOGRAPH format command will also do this for you automatically.
 In your sample text, type in:</para>
-  <screen>
+    <screen>
 ,rj
 </screen>
-  <para>followed by RETURN, and then:</para>
-  <screen>
+    <para>followed by RETURN, and then:</para>
+    <screen>
 December 19, 1943-------------------   |
 </screen>
-  <para>followed by another
+    <para>followed by another
 RETURN. This should result in the date being placed against the far
 right margin:</para>
-  <screen>
+    <screen>
                                               December 19, 1943  |
 </screen>
-  <para>As with the <command>,ce</command>
+    <para>As with the <command>,ce</command>
 command, you can follow the <command>,rj</command> command with any number, and
 STYLOGRAPH will automatically right-justify that many lines of
 following text. Your entire text should look like this now:</para>
-  <screen>
+    <screen>
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
 because STYLOGRAPH allows you to type in material as
@@ -382,48 +382,48 @@ have hit a carriage RETURN
 ,rj                                                    |
                                       December 19, 1943|
 </screen>
-  <para>There is one last
+    <para>There is one last
 INSERT mode feature of STYLOGRAPH that will be described in this
-tutorial. The "header" and "footer" features let you set the top
+tutorial. The <quote>header</quote> and <quote>footer</quote> features let you set the top
 and bottom margins for the pages. They are also very useful if your
 letter or report extends beyond one page long, and if certain
 things will have to be printed on the top or the bottom of each
 page.</para>
-  <para>STYLOGRAPH lets you
+    <para>STYLOGRAPH lets you
 specify what you want printed, or how many lines to skip, on the
 top or bottom of every page <citetitle>once</citetitle>, and then will
 automatically do it for you as each page is printed out. Things
-that are printed at the top of the page are called "headers" and
+that are printed at the top of the page are called <quote>headers</quote> and
 things that are printed at the bottom of the page are called
-"footers". In combination with the <command>,rj</command> and <command>,ce</command> commands, you can do
-some very fancy formatting. You can define a "header" with the
+<quote>footers</quote>. In combination with the <command>,rj</command> and <command>,ce</command> commands, you can do
+some very fancy formatting. You can define a <quote>header</quote> with the
 following commands:</para>
-  <screen>
+    <screen>
 ,hd
 ,,
 </screen>
-  <para>Anything placed between
+    <para>Anything placed between
 the <command>,hd</command> and <command>,,</command> will be repeated at the top of every page of text.
 So, for example, if you entered the following chain of commands
 (remember to follow each of the with a carriage RETURN):</para>
-  <screen>
+    <screen>
 ,hd                                                    |
                                                        |
 ,rj                                                    |
 19/12/43                                               |
 ,,                                                     |
 </screen>
-  <para>It would cause the date
-"19/12/43" to be printed out on the edge of the right margin at
+    <para>It would cause the date
+<quote>19/12/43</quote> to be printed out on the edge of the right margin at
 every page of the text printout. Too see this work, enter the chain
 of commands, and then enter the following command which will skip
 to another page:</para>
-  <screen>
+    <screen>
 ,pg
 </screen>
-  <para>After a RETURN, your
+    <para>After a RETURN, your
 entire screen should look something like this:</para>
-  <screen>
+    <screen>
 ------------------------ PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
@@ -450,24 +450,24 @@ have hit a carriage RETURN
                                                        -
 -------------------------------------------------------|
 </screen>
-  <para>The three dashes which
+    <para>The three dashes which
 appear on the right margin edge of the top of page 2 signify that
 these three lines are indeed, a header. You could now add
-additional text if you wanted. The "footer" command is essentially
+additional text if you wanted. The <quote>footer</quote> command is essentially
 the same, except that the command looks like this:</para>
-  <screen>
+    <screen>
 ,ft
 ,,
 </screen>
-  <para>and that any material
+    <para>and that any material
 entered between the <command>,ft</command> and the <command>,,</command> would be printed out
 automatically at the bottom of the page. In practicing a footer, we will introduce one
 more nice feature of STYLOGRAPH: the automatic page numbering. By
-using the symbol "#" in any header or footer of a STYLOGRAPH text
+using the symbol <quote>#</quote> in any header or footer of a STYLOGRAPH text
 file, the page number will replace the symbol in the final
 printout. For example, enter the next set of commands (again,
 following each with a RETURN):</para>
-  <screen>
+    <screen>
 ,ft                                                    |
                                                        |
 ,ce                                                    |
@@ -475,10 +475,10 @@ PAGE #                                                 |
                                                        |
 ,,                                                     |
 </screen>
-  <para>and following these
+    <para>and following these
 commands with another <command>,pg</command> command, Page 2 of your text will look
 like this:</para>
-  <screen>
+    <screen>
 ------------------------ PAGE 2 -----------------------|
                                                        -
                                               19/12/43 -
@@ -495,21 +495,21 @@ PAGE #                                                 |
                                                        -
 ------------------------ PAGE 3 -----------------------|
 </screen>
-  <para>STYLOGRAPH will
+    <para>STYLOGRAPH will
 automatically increase the page numbers by one every time you go
 onto a new page. Note again the dashes in the right margin of the
 footer, signifying that it is put there by the footer command, and
 not by you.</para>
-  <important>
-<para>
+    <important>
+      <para>
 You don't need to use the <command>,pg</command> command when you get to the bottom of
 the page. STYLOGRAPH also keeps track of the number of lines on the
 page and will automatically skip to a new page when you run out of
 lines. You can see the usefulness of this if you've ever ended up
 typing on the very bottom of a sheet of paper because you forgot to
 keep track of yourself.</para>
-</important>
-  <para>Now that you have practiced a little with the INSERT
+    </important>
+    <para>Now that you have practiced a little with the INSERT
 mode, let's move back to the ESCAPE mode, and see what kinds of
 tricks can be done there. All you need to do to get back into the
 ESCAPE mode is to hit the ESCAPE key. This will remove the dashes
@@ -517,131 +517,131 @@ that you see in the INSERT mode.</para>
   </section>
   <section>
     <title>F . THE ESCAPE MODE</title>
-  <para>The escape mode is
+    <para>The escape mode is
 designed to display the text you have entered so that you may
-easily work on it. To "work" on any particular part of the text you
-will need to move the cursor to it (remember "cursor"'?). The
+easily work on it. To <quote>work</quote> on any particular part of the text you
+will need to move the cursor to it (remember <quote>cursor</quote>'?). The
 cursor is moved by using four keys on the right side of the
 keyboard:</para>
-  <screen>
+    <screen>
                              I
                            J   L
                              ,
 </screen>
-  <para>Each of these keys will
+    <para>Each of these keys will
 move the cursor in a different direction. You can remember the
 direction of each key if you just remember the position of the
-keys: Left and Right movement is controlled by the "J" (left) and
-"L" (right) keys, while up and down movement is controlled by the
-"I" (up) and "," (down) keys. While this might seem awkward at
+keys: Left and Right movement is controlled by the <quote>J</quote> (left) and
+<quote>L</quote> (right) keys, while up and down movement is controlled by the
+<quote>I</quote> (up) and <quote>,</quote> (down) keys. While this might seem awkward at
 present it will become very easy to move in and around your text
 after only a few hours experience with STYLOGRAPH.</para>
-  <para>Now while you are in
+    <para>Now while you are in
 the ESCAPE mode, use the cursor movement keys to move back to the
 top of the text you have just entered. You probably need only to
-use the "I" and "J" keys at this point. You may hear a beep or bell
+use the <quote>I</quote> and <quote>J</quote> keys at this point. You may hear a beep or bell
 if you have been moving the cursor around and it has run out of
 room in the direction you were going. You can either come to the
-"top" (beginning) or "bottom" (ending) of the text, but you haven't
+<quote>top</quote> (beginning) or <quote>bottom</quote> (ending) of the text, but you haven't
 done any damage. Practice moving the cursor around to different
 places in the text you have entered. It's very important that you
 know how to direct the cursor around to various parts of the text,
 because cursor position is a crucial feature in executing many
 commands in the ESCAPE mode.</para>
-  <para>Once you have mastered
+    <para>Once you have mastered
 this, it's time to show you some of the more useful features of the
 STYLOGRAPH system. One of the most powerful commands in the ESCAPE
-mode is the "Find" command. Place the cursor at the start of the
-text, and hit the "F" key. This will cause the following to be
+mode is the <quote>Find</quote> command. Place the cursor at the start of the
+text, and hit the <quote>F</quote> key. This will cause the following to be
 printed on the terminal:</para>
-  <screen>
+    <screen>
 *** FIND {
 </screen>
-  <para>At this point, if you
+    <para>At this point, if you
 enter any string (remember string?) that is located anywhere in the
 text you have entered. STYLOGRAPH will search for it, find it, and
-move the cursor to it. For example, enter the string "typ" and hit
+move the cursor to it. For example, enter the string <quote>typ</quote> and hit
 the RETURN. The cursor should now be placed in front of the word
-"type" in the second sentence of the text you have entered, and
+<quote>type</quote> in the second sentence of the text you have entered, and
 another message should have appeared:</para>
-  <screen>
+    <screen>
 *** STOP (RET) OR CONTINUE (SP)?
 </screen>
-  <para>What STYLOGRAPH wants
+    <para>What STYLOGRAPH wants
 to know now is whether you want to keep looking for the string
-"typ", or stop at this string. If you want it to stop here, you can
+<quote>typ</quote>, or stop at this string. If you want it to stop here, you can
 hit the RETURN. If you want it to keep looking for the string you
 have specified, hit the space bar. If you do hit the space bar, you
 will find that the cursor has been moved to the next occurrence of
-the string "typ", the word "typing" in the next sentence, and the
+the string <quote>typ</quote>, the word <quote>typing</quote> in the next sentence, and the
 stop-or-continue message has reappeared. If you hit the space bar
-again, it will go to the third occurrence of the "typ" string in
-the text; namely, the word "typed" in the next sentence. If you hit
+again, it will go to the third occurrence of the <quote>typ</quote> string in
+the text; namely, the word <quote>typed</quote> in the next sentence. If you hit
 the space bar again, the error bell/beep will ring, telling you
 that the string does not occur again anywhere in the text after the
-word "typed" in the third sentence. Note that STYLOGRAPH searches
+word <quote>typed</quote> in the third sentence. Note that STYLOGRAPH searches
 for strings from the position of the cursor at the time of the
 command down to the bottom of the text. Any occurrence of the
-string above the cursor when you give the "FIND" command will not
+string above the cursor when you give the <quote>FIND</quote> command will not
 be found.</para>
-  <para>A powerful variant of
-the "FIND" command is the "REPLACE" command, which will find any
+    <para>A powerful variant of
+the <quote>FIND</quote> command is the <quote>REPLACE</quote> command, which will find any
 string, and replace it with any other specified string. Place the
-cursor at the top of the text again. Now, hit the "R" key. A
+cursor at the top of the text again. Now, hit the <quote>R</quote> key. A
 message will appear:</para>
-  <screen>
+    <screen>
 *** REPLACE {
 </screen>
-  <para>Now enter a string; for
-example, let's replace the word "allows" in the text with the word
-"lets". Simply enter the word "allows" and hit the RETURN. At this
+    <para>Now enter a string; for
+example, let's replace the word <quote>allows</quote> in the text with the word
+<quote>lets</quote>. Simply enter the word <quote>allows</quote> and hit the RETURN. At this
 point the screen should look like this:</para>
-  <screen>
+    <screen>
 *** REPLACE {allows}
 *** WITH {
 </screen>
-  <para>Now enter the word
-"lets" and again hit the RETURN. At this point, STYLOGRAPH will
-search for the string "allows" and place the cursor at it. You will
+    <para>Now enter the word
+<quote>lets</quote> and again hit the RETURN. At this point, STYLOGRAPH will
+search for the string <quote>allows</quote> and place the cursor at it. You will
 also be asked whether or not you want to change it:</para>
-  <screen>
+    <screen>
 *** REPLACE (Y-N-A)?
 </screen>
-  <para>"Y-N-A" is an
-abbreviation of "Yes-No-All" If you answer "Y" then it will replace
-"allows" with "lets". If you answer "N" then it will go to the next
-occurrence of "allows" in the text (since there is no next
+    <para><quote>Y-N-A</quote> is an
+abbreviation of <quote>Yes-No-All</quote> If you answer <quote>Y</quote> then it will replace
+<quote>allows</quote> with <quote>lets</quote>. If you answer <quote>N</quote> then it will go to the next
+occurrence of <quote>allows</quote> in the text (since there is no next
 occurrence here, it will ring the bell) and ask you the same
-question. If you answer "A" it will replace all of the occurrences
-of "allows" that it finds in the text with the string "lets". You
-usually should not use the "A" option, because STYLOGRAPH will not
+question. If you answer <quote>A</quote> it will replace all of the occurrences
+of <quote>allows</quote> that it finds in the text with the string <quote>lets</quote>. You
+usually should not use the <quote>A</quote> option, because STYLOGRAPH will not
 show you all of the changes it makes. Nevertheless, you can see
 what a nice feature this is if you have ever misspelled a word or
 name consistently throughout a letter or report; now all you have
 to do is tell STYLOGRAPH to REPLACE it with the correct
 spelling.</para>
-  <para>You often have to
+    <para>You often have to
 underline words when you type letters or reports. One more command
 that you can use from the ESCAPE mode will do this for you
 automatically when you have a printout made of your text. For
-example, if you wanted to underline the word "Stylograph" in the
+example, if you wanted to underline the word <quote>Stylograph</quote> in the
 text passage you have entered, simply move the cursor to the first
-letter of the word, either by moving it manually with the "I", "J",
-"," and "L" keys, or with the "FIND" function. Now all you need to
+letter of the word, either by moving it manually with the <quote>I</quote>, <quote>J</quote>,
+<quote>,</quote> and <quote>L</quote> keys, or with the <quote>FIND</quote> function. Now all you need to
 do is to hold down the CONTROL key and hit the U (for Underline)
 key for each letter you want underlined. You will notice that this
-operation changes the display of the letters you have "underlined"
+operation changes the display of the letters you have <quote>underlined</quote>
 to tell you that something has been done to the letters when you
 look through the text again. Now when you have the text printed
-out, the work "Stylograph" will be underlined.</para>
-  <para>There are two other
+out, the work <quote>Stylograph</quote> will be underlined.</para>
+    <para>There are two other
 ESCAPE mode commands which come in handy when you are working on a
 letter or report and you want to make some simple changes. Both of
 these commands are used to remove unwanted letters or words from
 the text. To erase single letters or spaces from a text, all you
 have to do is position the cursor at the letter, and then hit
 CONTROL-D (for delete). This will cause the letter to disappear,
-and the rest of the text will "move up" to fill in the gap left by
+and the rest of the text will <quote>move up</quote> to fill in the gap left by
 the erased letter. Try this on any letter of the text that you have
 entered. A similar command is used to delete entire words from the
 text; to do this, simply place the cursor at the word you want
@@ -652,29 +652,29 @@ separated from the word by a space will also be deleted. When you
 use these commands, be careful, because if you hold the keys down
 for any length of time longer than needed for one letter or word,
 you may delete more than one.</para>
-  <para>Now you know all the
+    <para>Now you know all the
 commands you need to enter text to format it perfectly and to edit
 any typing errors you have made and missed earlier. It's time to
 take a look at the printed copy, and to go back to the SUPERVISOR
-mode. To do this: just hit the slash "/" key.</para>
+mode. To do this: just hit the slash <quote>/</quote> key.</para>
   </section>
   <section>
     <title>G. THE SUPERVISOR MODE (Again)</title>
-  <para>The "menu" should have
+    <para>The <quote>menu</quote> should have
 reappeared now. As before, to request any of the tasks on the menu,
 position the pointer next to it. Let's print out the text you've
-entered by using the "I" and "," keys to move to the PRINT command.
+entered by using the <quote>I</quote> and <quote>,</quote> keys to move to the PRINT command.
 Make sure that your printer is correctly connected up to your
 computer. We are assuming that you are using a parallel printer ion
-the parallel printer port "/p1". Once you've done that, hit the
+the parallel printer port <quote>/p1</quote>. Once you've done that, hit the
 RETURN. This will cause STYLOGRAPH to ask you some questions that
 you needn't worry about right now:</para>
-  <screen>
+    <screen>
 Different Printer (Y/N*)?
 Stop for New Pages (Y/N*)?
 Print all Pages (Y*/N)?
 </screen>
-  <para>For the present time,
+    <para>For the present time,
 just hit the RETURN key for each of them, and the text should be
 printed out on the printer. Once this is done, you should notice
 that on the printout, the format commands should not be visible,
@@ -691,23 +691,23 @@ disk by positioning the pointer to the SAVE AND RETURN option. At
 this position, hit the RETURN again, and you will hear the disk run
 for a short time and then the screen will clear showing the OS-9
 prompt:</para>
-  <screen>
+    <screen>
 OS9:
 </screen>
-  <para>If you look at the
+    <para>If you look at the
 contents of the disk, using the 'dir' command, you should find that
-a file named "LESSON1" exists on it. This is the text file you have
+a file named <quote>LESSON1</quote> exists on it. This is the text file you have
 created with STYLOGRAPH and this tutorial. In order to work on it
 further, simply repeat the command you used to create the file in
 the first place:</para>
-  <screen>
+    <screen>
 OS9: stylo lesson1
 </screen>
-  <para>This will again
+    <para>This will again
 activate the STYLOGRAPH system, load in your text file, and put you
 in the SUPERVISOR mode. where you may EDIT, PRINT, and SAVE the
 file again.</para>
-  <para>We hope that this
+    <para>We hope that this
 course has been useful. You should read the entire manual in order
 to get a good idea of the many other features of STYLOGRAPH. You
 will eventually find word processing a very easy and efficient way
