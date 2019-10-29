@@ -250,8 +250,8 @@ L0077    pshs  y,x,b,a
          leax  $08,s
          stx   <u0004
          stx   <u0006
-         leax  >L00F5,pcr
-         ldu   #$0000
+         leax  >IRQHNDLR,pcr
+         ldu   #0
          os9   F$Icpt
          ldx   <u007A
          leay  >$0100,x
@@ -273,9 +273,9 @@ L0077    pshs  y,x,b,a
          leax  >$0FE7,y
          stx   <u001A
          bsr   L00EC
-         clra
-         clrb
-         ldx   <u000E
+         clra   Path number 0
+         clrb   Function code 0 (ss.opt)
+         ldx   <u000E  Address to put status packet
          os9   I$GetStt
          ldy   <u0010
          ldd   #$0020
@@ -298,7 +298,9 @@ L00EC    leau  $05,x
          stu   $02,x
          clr   $04,x
          rts
-L00F5    rti
+
+* Interrupt handler
+IRQHNDLR    rti
 
 * Add a to buffer
 L00F6    pshs  y,x,b,a
@@ -306,7 +308,7 @@ L00F6    pshs  y,x,b,a
          anda  #$7F
          sta   ,x+
          stx   <u00ED
-         leax  <-$50,x
+         leax  -80,x
          cmpx  <u00EF
          bcs   L011C
          bra   L010B
@@ -345,7 +347,7 @@ L0131    pshs  x,b,a
          puls  pc,x,b,a
 
 L0142    stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          andcc #$FD
          puls  pc,x,b,a
 
@@ -394,7 +396,7 @@ L0188    lda   ,y+
          cmpa  >L04E5,pcr
          beq   L01C6
          bra   L01A4
-L019E    orcc  #$01
+L019E    orcc  #Carry
          andcc #$FD
          puls  pc,y,x,b,a
 L01A4    leay  -$01,y
@@ -412,7 +414,7 @@ L01A8    lda   ,y+
 L01BB    clr   ,x
          leay  -$01,y
          sty   <u0004
-         andcc #$FE
+         andcc #^Carry
          puls  pc,y,x,b,a
 L01C6    lda   ,y+
          cmpa  #$0D
@@ -430,11 +432,12 @@ L01DA    lda   ,x+
          beq   L01EA
          cmpa  #$0D
          bne   L01DA
-         orcc  #$01
+         orcc  #Carry
          puls  pc,b,a
 L01EA    stx   <u0006
-         andcc #$FE
+         andcc #^Carry
          puls  pc,b,a
+
 L01F0    pshs  u,x,b,a
          lda   #$02
          ldb   #$03
@@ -449,11 +452,11 @@ L01FB    bcs   L020D
          andcc #$FC
          puls  pc,u,x,b,a
 L020D    stb   <u0003
-         cmpb  #$DA
+         cmpb  #E$CEF  Creating Existing File
          bne   L0217
          orcc  #$03
          puls  pc,u,x,b,a
-L0217    orcc  #$01
+L0217    orcc  #Carry
          andcc #$FD
          puls  pc,u,x,b,a
 L021D    pshs  u,x,b,a
@@ -488,10 +491,10 @@ L0252    bcs   L025E
          stu   $02,x
          puls  pc,u,x,a
 
-L025E    cmpb  #$D8
+L025E    cmpb  #E$PNNF   File not found
          beq   L026A
          stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          andcc #$FD
          puls  pc,u,x,a
 L026A    stb   <u0003
@@ -571,12 +574,13 @@ L02FB    lda   ,x+
          os9   I$Close
          orcc  #$03
          puls  pc,u,y,x,b,a
-L0311    cmpb  #$D8
+L0311    cmpb  #E$PNNF   File not found
          beq   L031D
 L0315    stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          andcc #$FD
          puls  pc,u,y,x,b,a
+
 L031D    tst   <u004E
          beq   L0339
          ldx   <u000A
@@ -650,7 +654,7 @@ L03A0    lda   ,x+
          ldu   <u000A
          os9   I$Seek
          lbcs  L0315
-L03C0    andcc #$FE
+L03C0    andcc #^Carry
          puls  pc,u,y,x,b,a
 
 L03C4    pshs  u,y,x,b,a
@@ -671,13 +675,13 @@ L03E0    tfr   d,y
          lda   #$0D
          sta   ,x
          ldd   #$0000
-         leax  >L145E,pcr
+         leax  >SHELL,pcr   shell
          os9   F$Fork
          bcs   L040C
          os9   F$Wait
          tstb
          bne   L040C
-         andcc #$FE
+         andcc #^Carry
 L03FE    pshs  cc
          ldx   <u0010
          ldd   #$0000
@@ -685,7 +689,7 @@ L03FE    pshs  cc
          puls  cc
          puls  pc,u,y,x,b,a
 L040C    stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          bra   L03FE
 L0412    lbsr  L0109
          lbsr  L0287
@@ -696,13 +700,14 @@ L0412    lbsr  L0109
          clrb
          os9   F$Exit
          rts
+
 L0428    pshs  u
          ldu   ,x
          sta   ,u+
          stu   ,x
          cmpu  $02,x
          beq   L0439
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u
 L0439    puls  u
 L043B    pshs  y,x,b,a
@@ -729,7 +734,7 @@ L0462    ldu   ,x
          beq   L0471
          lda   ,u+
          stu   ,x
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u
 L0471    pshs  y,x
          tfr   x,y
@@ -746,11 +751,11 @@ L0471    pshs  y,x
          leau  d,u
          stu   $02,x
          bra   L0462
-L0493    cmpb  #$D3
+L0493    cmpb  #E$EOF
          bne   L049B
          orcc  #$03
          puls  pc,u
-L049B    orcc  #$01
+L049B    orcc  #Carry
          andcc #$FD
          stb   <u0003
          puls  pc,u
@@ -804,11 +809,11 @@ L04D0    fcb   $1B
 L04D1    fcb   $14
 L04D2    fcb   $15
 L04D3    fcb   $2D -
-L04D4    fcb   $7C ü
+L04D4    fcb   $7C |
 L04D5    fcb   $2C ,
-L04D6    fcb   $7D ý
+L04D6    fcb   $7D }
 L04D7    fcb   $23 #
-         fcb   $7C ü
+         fcb   $7C |
 L04D9    fcb   $3E >
 L04DA    fcb   $3C <
 L04DB    fcb   $59 Y
@@ -822,8 +827,8 @@ L04E2    fcb   $54 T
 L04E3    fcb   $50 P
 L04E4    fcb   $4D M
 L04E5    fcb   $2B +
-L04E6    fcb   $7D ý
-L04E7    fcb   $7B û
+L04E6    fcb   $7D }
+L04E7    fcb   $7B {
 L04E8    fcb   $00
 L04E9    fcb   $00
 L04EA    fcb   $00
@@ -837,10 +842,9 @@ L04F0    fcb   $04
 L04F2    fcb   $00
 L04F3    fcb   $00
 L04F4    fcb   $00
-L04F5    fcb   $05
-         fcb   $89
-L04F7    fcb   $05
-         fcb   $F1 q
+
+L04F5    fdb   CE.CMD
+L04F7    fdb   $05F1
 L04F9    fcb   $08
          fcb   $B7 7
          fcb   $08
@@ -897,30 +901,23 @@ L052D    fcb   $0C
          fcb   $98
 L052F    fcb   $0C
          fcb   $A8 (
-L0531    fcb   $0D
-         fcb   $8F
-L0533    fcb   $0D
-         fcb   $A4 $
-L0535    fcb   $0D
-         fcb   $B3 3
-L0537    fcb   $0D
-         fcb   $D1 Q
-L0539    fcb   $0D
-         fcb   $E3 c
-L053B    fcb   $0E
-         fcb   $11
-L053D    fcb   $0E
-         fcb   $32 2
-L053F    fcb   $0E
-         fcb   $3D =
-L0541    fcb   $12
-         fcb   $D6 V
+
+L0531    fdb   L0D8F  Ptr to "Is the text secure?"
+
+L0533    fdb   L0DA4  Ptr to "Are you sure"
+L0535    fdb   L0DB3  Ptr to "Erase entire text"
+L0537    fdb   $0DD1
+L0539    fdb   $0DE3
+L053B    fdb   $0E11
+L053D    fdb   $0E32
+L053F    fdb   $0E3D
+L0541    fdb   L12D6  Ptr to "/p"
 L0543    fcb   $0E
          fcb   $4A J
 L0545    fcb   $0E
          fcb   $65 e
 L0547    fcb   $0E
-         fcb   $7C ü
+         fcb   $7C |
 L0549    fcb   $0E
          fcb   $84
 L054B    fcb   $0E
@@ -985,26 +982,22 @@ L057D    fcb   $12
          fcb   $C6 F
          fcb   $12
          fcb   $CE N
-         fcc   "CE"
+
+CE.CMD   fcc   "CE"
          fcb   $00
-         fcc   "LL"
+L058C    fcc   "LL"
          fcb   $00
          fcc   "PL"
          fcb   $00
-         fcb   $4A J
-         fcb   $55 U
+         fcc   "JU"
          fcb   $00
-         fcb   $52 R
-         fcb   $4A J
+         fcc   "RJ"
          fcb   $00
-         fcb   $4E N
-         fcb   $4A J
+         fcc   "NJ"
          fcb   $00
-         fcb   $4C L
-         fcb   $4D M
+         fcc   "LM"
          fcb   $00
-         fcb   $53 S
-         fcb   $50 P
+         fcc   "SP"
          fcb   $00
          fcb   $53 S
          fcb   $53 S
@@ -1374,45 +1367,7 @@ L057D    fcb   $12
          fcb   $45 E
          fcb   $00
          fcb   $14
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $42 B
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $4B K
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $42 B
-         fcb   $59 Y
-         fcb   $20
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $55 U
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $53 S
+L0745    fcc   "CAN'T DELETE - NOT BRACKETED BY RETURNS"
          fcb   $00
          fcb   $15
          fcb   $43 C
@@ -1940,26 +1895,7 @@ L057D    fcb   $12
          fcb   $2D -
          fcb   $00
          fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $4C L
+L097B    fcc   "PAGE LENGTH ---- ,PL"
          fcb   $00
          fcb   $48 H
          fcb   $45 E
@@ -2984,71 +2920,11 @@ L057D    fcb   $12
          fcb   $79 y
          fcb   $2E .
          fcb   $00
-         fcb   $49 I
-         fcb   $73 s
-         fcb   $20
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $20
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $74 t
-         fcb   $20
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
+L0D8F    fcc   "Is the text secure? "
          fcb   $00
-         fcb   $41 A
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20
-         fcb   $79 y
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $20
-         fcb   $73 s
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
+L0DA4    fcc   "Are you sure? "
          fcb   $00
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $20
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $3F ?
-         fcb   $20
+L0DB3    fcc   "Erase entire file in memory? "
          fcb   $00
          fcb   $53 S
          fcb   $54 T
@@ -3706,93 +3582,13 @@ L11F3    fcc   "     STYLOGRAPH for the Dragon 64"
          fcb   $50 P
          fcb   $35 5
          fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $36 6
+         fcc   "STYHLP6"
          fcb   $00
-         fcb   $2F /
-         fcb   $70 p
+L12D6    fcc   "/p"
          fcb   $00
-         fcb   $20
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
+         fcc   " later printing"
          fcb   $00
-         fcb   $57 W
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $45 E
-         fcb   $4C L
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $79 y
-         fcb   $20
-         fcb   $61 a
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20
-         fcb   $77 w
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $6C l
+         fcc   "WHEEL ----------- specify a proportional spacing print wheel"
          fcb   $00
          fcb   $4E N
          fcb   $45 E
@@ -3837,57 +3633,7 @@ L11F3    fcc   "     STYLOGRAPH for the Dragon 64"
          fcb   $6C l
          fcb   $65 e
          fcb   $00
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $47 G
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $48 H
-         fcb   $20
-         fcb   $57 W
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $44 D
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $53 S
-         fcb   $59 Y
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $4D M
-         fcb   $20
-         fcb   $56 V
-         fcb   $32 2
-         fcb   $2E .
-         fcb   $31 1
-         fcb   $20
-         fcb   $28 (
-         fcb   $63 c
-         fcb   $29 )
-         fcb   $20
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $38 8
-         fcb   $31 1
+         fcc   "    STYLOGRAPH WORD PROCESSING SYSTEM V2.1 (c) 1981"
          fcb   $00
          fcb   $52 R
          fcb   $45 E
@@ -4099,7 +3845,7 @@ L1452    fcc   ".bak"
          fcb   $00
 L1457    fcc   "rename"
          fcb   $0D
-L145E    fcc   "shell"
+SHELL    fcc   "shell"
          fcb   $0D
 L1464    fcc   "/D0/STY/"
          fcb   $00
@@ -4193,7 +3939,8 @@ L1493    fcb   $96
          fcb   $51 Q
          fcb   $18
          fcb   $4E N
-         fcb   $00
+
+L14EC    fcb   $00
          fcb   $00
          fcb   $00
          fcb   $00
@@ -4666,9 +4413,9 @@ L1493    fcb   $96
          fcb   $00
          fcb   $00
          fcb   $7A z
-         fcb   $7B û
-         fcb   $7C ü
-         fcb   $7D ý
+         fcb   $7B {
+         fcb   $7C |
+         fcb   $7D }
          fcb   $7E þ
          fcb   $00
          fcb   $84
@@ -5267,339 +5014,182 @@ L1493    fcb   $96
          fcb   $E9 i
          fcb   $1B
          fcb   $E4 d
-L191E    fcb   $0D
-         fcb   $42 B
-         fcb   $27 '
-         fcb   $0A
-         fcb   $0F
-         fcb   $42 B
-         fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $18
-         fcb   $8D
-         fcb   $65 e
-         fcb   $35 5
-         fcb   $04
-         fcb   $34 4
-         fcb   $04
-         fcb   $D6 V
-         fcb   $41 A
-         fcb   $D1 Q
-         fcb   $3F ?
-         fcb   $35 5
-         fcb   $04
-         fcb   $22 "
-         fcb   $05
-         fcb   $0C
-         fcb   $41 A
-         fcb   $16
-         fcb   $E7 g
-         fcb   $BB ;
-         fcb   $39 9
-L193C    fcb   $0D
-         fcb   $42 B
-         fcb   $26 &
-         fcb   $EC l
-         fcb   $97
-         fcb   $42 B
-         fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $1A
-         fcb   $20
-         fcb   $E0 `
-L1948    fcb   $DD ]
-         fcb   $40 @
-         fcb   $34 4
-         fcb   $10
-         fcb   $C6 F
-         fcb   $02
-         fcb   $8D
-         fcb   $3F ?
-         fcb   $25 %
-         fcb   $24 $
-         fcb   $9E
-         fcb   $3C <
-         fcb   $E6 f
-         fcb   $84
-         fcb   $C5 E
-         fcb   $80
-         fcb   $27 '
-         fcb   $1E
-         fcb   $96
-         fcb   $40 @
-         fcb   $C5 E
-         fcb   $40 @
-         fcb   $27 '
-         fcb   $02
-         fcb   $8B
-         fcb   $20
-         fcb   $17
-         fcb   $E7 g
-         fcb   $91
-         fcb   $96
-         fcb   $41 A
-         fcb   $9E
-         fcb   $3C <
-         fcb   $E6 f
-         fcb   $84
-         fcb   $C5 E
-         fcb   $40 @
-         fcb   $27 '
-         fcb   $02
-         fcb   $8B
-         fcb   $20
-         fcb   $17
-         fcb   $E7 g
-         fcb   $82
-         fcb   $DC \
-         fcb   $40 @
-         fcb   $35 5
-         fcb   $90
-         fcb   $96
-         fcb   $41 A
-         fcb   $C5 E
-         fcb   $40 @
-         fcb   $27 '
-         fcb   $02
-         fcb   $8B
-         fcb   $20
-         fcb   $17
-         fcb   $E7 g
-         fcb   $73 s
-         fcb   $96
-         fcb   $40 @
-         fcb   $9E
-         fcb   $3C <
-         fcb   $E6 f
-         fcb   $84
-         fcb   $C5 E
-         fcb   $40 @
-         fcb   $27 '
-         fcb   $E4 d
-         fcb   $20
-         fcb   $E0 `
-         fcb   $34 4
-         fcb   $16
-         fcb   $9E
-         fcb   $3C <
-         fcb   $AE .
-         fcb   $85
-         fcb   $27 '
-         fcb   $11
-         fcb   $A6 &
-         fcb   $01
-         fcb   $81
-         fcb   $FF
-         fcb   $27 '
-         fcb   $0F
-         fcb   $A6 &
-         fcb   $80
-         fcb   $34 4
-         fcb   $02
-         fcb   $17
-         fcb   $E7 g
-         fcb   $52 R
-         fcb   $A6 &
-         fcb   $E0 `
-         fcb   $2A *
-         fcb   $F5 u
-         fcb   $1C
-         fcb   $FE
-         fcb   $35 5
-         fcb   $96
-         fcb   $E6 f
-         fcb   $84
-         fcb   $58 X
-         fcb   $30 0
-         fcb   $8D
-         fcb   $FB
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $85
-         fcb   $30 0
-         fcb   $8D
-         fcb   $E6 f
-         fcb   $47 G
-         fcb   $30 0
-         fcb   $8B
-         fcb   $DC \
-         fcb   $40 @
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $33 3
-         fcb   $8D
-         fcb   $E7 g
-         fcb   $33 3
-         fcb   $AD -
-         fcb   $84
-         fcb   $35 5
-         fcb   $40 @
-         fcb   $1A
-         fcb   $01
-         fcb   $20
-         fcb   $DF _
-L19CB    fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $06
-         fcb   $8D
-         fcb   $BE >
-         fcb   $35 5
-         fcb   $84
-L19D3    fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $04
-         fcb   $8D
-         fcb   $B6 6
-         fcb   $35 5
-         fcb   $84
-L19DB    fcb   $34 4
-         fcb   $14
-         fcb   $0F
-         fcb   $40 @
-         fcb   $0F
-         fcb   $41 A
-         fcb   $C6 F
-         fcb   $0C
-         fcb   $8D
-         fcb   $AA *
-         fcb   $17
-         fcb   $E7 g
-         fcb   $21 !
-         fcb   $8E
-         fcb   $1F
-         fcb   $40 @
-         fcb   $30 0
-         fcb   $1F
-         fcb   $26 &
-         fcb   $FC
-         fcb   $35 5
-         fcb   $94
-L19F1    fcb   $34 4
-         fcb   $06
-         fcb   $C6 F
-         fcb   $10
-         fcb   $8D
-         fcb   $98
-         fcb   $DC \
-         fcb   $40 @
-         fcb   $4A J
-         fcb   $17
-         fcb   $FF
-         fcb   $4B K
-         fcb   $35 5
-         fcb   $86
-L19FF    fcb   $34 4
-         fcb   $06
-         fcb   $C6 F
-         fcb   $12
-         fcb   $8D
-         fcb   $8A
-         fcb   $DC \
-         fcb   $40 @
-         fcb   $4C L
-         fcb   $17
-         fcb   $FF
-         fcb   $3D =
-         fcb   $35 5
-         fcb   $86
-L1A0D    fcb   $34 4
-         fcb   $14
-         fcb   $0F
-         fcb   $40 @
-         fcb   $0F
-         fcb   $41 A
-         fcb   $C6 F
-         fcb   $14
-         fcb   $17
-         fcb   $FF
-         fcb   $77 w
-         fcb   $17
-         fcb   $E6 f
-         fcb   $EE n
-         fcb   $8E
-         fcb   $27 '
-         fcb   $10
-         fcb   $30 0
-         fcb   $1F
-         fcb   $26 &
-         fcb   $FC
-         fcb   $35 5
-         fcb   $94
-L1A24    fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $16
-         fcb   $17
-         fcb   $FF
-         fcb   $64 d
-         fcb   $35 5
-         fcb   $84
-L1A2D    fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $0A
-         fcb   $17
-         fcb   $FF
-         fcb   $5B [
-         fcb   $35 5
-         fcb   $84
-L1A36    fcb   $34 4
-         fcb   $04
-         fcb   $C6 F
-         fcb   $08
-         fcb   $17
-         fcb   $FF
-         fcb   $52 R
-         fcb   $35 5
-         fcb   $84
-L1A3F    fcb   $34 4
-         fcb   $16
-         fcb   $DC \
-         fcb   $40 @
-         fcb   $34 4
-         fcb   $06
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $5F _
-         fcb   $17
-         fcb   $FE
-         fcb   $FD
-         fcb   $9E
-         fcb   $3C <
-         fcb   $A6 &
-         fcb   $84
-         fcb   $85
-         fcb   $10
-         fcb   $27 '
-         fcb   $0C
-         fcb   $C6 F
-         fcb   $0E
-         fcb   $17
-         fcb   $FF
-         fcb   $37 7
-         fcb   $35 5
-         fcb   $06
-         fcb   $17
-         fcb   $FE
-         fcb   $EB k
-         fcb   $35 5
-         fcb   $96
-         fcb   $D6 V
-         fcb   $3F ?
-         fcb   $86
-         fcb   $20
-         fcb   $17
-         fcb   $E6 f
-         fcb   $90
-         fcb   $5A Z
-         fcb   $2A *
-         fcb   $FA z
-         fcb   $20
-         fcb   $ED m
+
+L191E    tst   <u0042
+         beq   L192C
+         clr   <u0042
+         pshs  b
+         ldb   #$18
+L1928    bsr   L198F
+         puls  b
+L192C    pshs  b
+         ldb   <u0041
+         cmpb  <u003F
+         puls  b
+         bhi   L193B
+         inc   <u0041
+         lbra  L00F6
+L193B    rts
+
+L193C    tst   <u0042
+         bne   L192C
+         sta   <u0042
+         pshs  b
+         ldb   #$1A
+         bra   L1928
+
+*
+* Write string in X on line A column B
+*
+L1948    std   <u0040
+         pshs  x
+         ldb   #$02
+         bsr   L198F
+         bcs   L1976
+         ldx   <u003C
+         ldb   ,x
+         bitb  #$80
+         beq   L1978
+         lda   <u0040
+         bitb  #$40
+         beq   L1962
+         adda  #$20
+L1962    lbsr  L00F6
+         lda   <u0041
+         ldx   <u003C
+         ldb   ,x
+         bitb  #$40
+         beq   L1971
+L196F    adda  #$20
+L1971    lbsr  L00F6
+         ldd   <u0040
+L1976    puls  pc,x
+
+L1978    lda   <u0041
+         bitb  #$40
+         beq   L1980
+         adda  #$20
+L1980    lbsr  L00F6
+         lda   <u0040
+         ldx   <u003C
+         ldb   ,x
+         bitb  #$40
+         beq   L1971
+         bra   L196F
+
+L198F    pshs  x,b,a
+         ldx   <u003C
+         ldx   b,x
+         beq   L19A8
+         lda   $01,x
+         cmpa  #$FF
+         beq   L19AC
+L199D    lda   ,x+
+         pshs  a
+         lbsr  L00F6
+         lda   ,s+
+         bpl   L199D
+L19A8    andcc #^Carry
+L19AA    puls  pc,x,b,a
+
+L19AC    ldb   ,x
+         lslb  
+         leax  >L14EC,pcr
+         ldd   b,x
+         leax  >0,pcr
+         leax  d,x
+         ldd   <u0040
+         pshs  u
+         leau  >L00F6,pcr
+         jsr   ,x
+         puls  u
+         orcc  #Carry
+         bra   L19AA
+
+L19CB    pshs  b
+         ldb   #$06
+         bsr   L198F
+         puls  pc,b
+
+L19D3    pshs  b
+         ldb   #$04
+         bsr   L198F
+         puls  pc,b
+
+L19DB    pshs  x,b
+         clr   <u0040
+         clr   <u0041
+         ldb   #$0C
+         bsr   L198F
+         lbsr  L0109
+         ldx   #$1F40
+L19EB    leax  -$01,x
+         bne   L19EB
+         puls  pc,x,b
+L19F1    pshs  b,a
+         ldb   #$10
+         bsr   L198F
+         ldd   <u0040
+         deca  
+         lbsr  L1948
+         puls  pc,b,a
+
+L19FF    pshs  b,a
+         ldb   #$12
+         bsr   L198F
+         ldd   <u0040
+         inca  
+         lbsr  L1948
+         puls  pc,b,a
+
+L1A0D    pshs  x,b
+         clr   <u0040
+         clr   <u0041
+         ldb   #$14
+         lbsr  L198F
+         lbsr  L0109
+         ldx   #$2710
+L1A1E    leax  -$01,x
+         bne   L1A1E
+         puls  pc,x,b
+
+L1A24    pshs  b
+         ldb   #$16
+         lbsr  L198F
+         puls  pc,b
+
+L1A2D    pshs  b
+         ldb   #$0A
+         lbsr  L198F
+         puls  pc,b
+
+L1A36    pshs  b
+         ldb   #$08
+         lbsr  L198F
+         puls  pc,b
+
+L1A3F    pshs  x,b,a
+         ldd   <u0040
+         pshs  b,a
+         ldd   $02,s
+         clrb  
+         lbsr  L1948
+         ldx   <u003C
+         lda   ,x
+         bita  #$10
+         beq   L1A5F
+         ldb   #$0E
+         lbsr  L198F
+L1A58    puls  b,a
+         lbsr  L1948
+         puls  pc,x,b,a
+
+L1A5F    ldb   <u003F
+         lda   #$20
+L1A63    lbsr  L00F6
+         decb  
+         bpl   L1A63
+         bra   L1A58
 
 start    equ   *
          lbsr  L0072
@@ -5791,9 +5381,9 @@ L1C38    lbsr  L1C4F
          lbsr  L3183
          bcs   L1C27
          bra   L1C2C
-L1C44    cmpa  #$61
+L1C44    cmpa  #'a
          bcs   L1C4E
-         cmpa  #$7A
+         cmpa  #'z
          bhi   L1C4E
          suba  #$20
 L1C4E    rts
@@ -5803,7 +5393,7 @@ L1C4F    pshs  u,y,x,b,a
          bne   L1C94
          tst   <u0086
          bne   L1C5D
-         andcc #$FE
+         andcc #^Carry
          bra   L1C92
 L1C5D    ldu   <u0026
          ldx   <u0082
@@ -5826,10 +5416,10 @@ L1C77    lbsr  L23D5
          lda   [,u]
          cmpa  >L04D5,pcr
          beq   L1C77
-L1C8A    orcc  #$01
+L1C8A    orcc  #Carry
          bra   L1C92
 L1C8E    clr   <u0086
-         orcc  #$01
+         orcc  #Carry
 L1C92    puls  pc,u,y,x,b,a
 
 L1C94    clr   <u0093
@@ -5850,12 +5440,12 @@ L1C94    clr   <u0093
          lbsr  L45F5
          ldx   <u0028
          stx   <u0082
-         orcc  #$01
+         orcc  #Carry
          bra   L1C92
 L1CC0    clr   <u0086
          ldd   #$FFFF
          std   <u007E
-         andcc #$FE
+         andcc #^Carry
          lbra  L1C92
 L1CCC    lbsr  L19DB
          lbsr  L1A24
@@ -5958,8 +5548,9 @@ L1D98    tst   <u00D0
          beq   L1DB2
          tst   u0008,u
          beq   L1DAC
-         lda   #$2D
+         lda   #'-
          bra   L1DB4
+
 L1DAC    lda   >L04D4,pcr
          bra   L1DB4
 L1DB2    lda   #$20
@@ -6200,7 +5791,7 @@ L1FA4    bitb  #$10
          lbsr  L3F8B
 L1FAB    tst   <u00DF
          bne   L1FB2
-         andcc #$FE
+         andcc #^Carry
          rts
 L1FB2    clr   <u00D7
          lda   #$20
@@ -6435,6 +6026,7 @@ L21A9    lda   $01,y
          bne   L21B3
          bsr   L21C1
 L21B3    lbra  L193C
+
 L21B6    cmpa  >L04D7,pcr
          bne   L21BE
          bsr   L21C1
@@ -6692,7 +6284,7 @@ L23E1    ldx   u0002,u
          cmpx  <u0063
          bcs   L23EC
          lda   #$0A
-         orcc  #$01
+         orcc  #Carry
          rts
 L23EC    cmpu  <u0022
          bne   L2451
@@ -6709,7 +6301,7 @@ L23EC    cmpu  <u0022
          cmpa  <u002A,u
          bcs   L2411
 L240C    lda   #$0B
-         orcc  #$01
+         orcc  #Carry
          rts
 L2411    tst   u0008,u
          bne   L2428
@@ -6760,8 +6352,9 @@ L246A    stx   ,u
          bne   L2483
          cmpb  >L04D5,pcr
          lbne  L23D5
-L2483    andcc #$FE
+L2483    andcc #^Carry
          rts
+
 L2486    lda   #$01
          sta   u0008,u
          lda   u000E,u
@@ -6810,8 +6403,9 @@ L24BD    lda   <u001D,u
          sta   u0008,u
          cmpu  <u0022
          beq   L24F8
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L24F8    ldy   <u0028
          ldx   <u002A
          ldd   #$015E
@@ -6839,8 +6433,9 @@ L24F8    ldy   <u0028
          puls  x
          ldd   <u006D
          std   $04,x
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L2537    tst   u0008,u
          beq   L2545
          lda   [,u]
@@ -7041,7 +6636,7 @@ L270C    lbsr  L2CFB
          lbra  L263A
 L2716    lda   #$F0
          lbra  L267D
-L271B    andcc #$FE
+L271B    andcc #^Carry
          lbsr  L1A36
          lda   [,u]
          cmpa  >L04D5,pcr
@@ -7231,7 +6826,7 @@ L28C3    lda   ,y+
          sta   ,x+
 L28C7    cmpy  u0004,u
          bne   L28C3
-L28CC    andcc #$FE
+L28CC    andcc #^Carry
 L28CE    puls  pc,u,y
 L28D0    ldy   <u0022
          cmpx  $06,y
@@ -7283,7 +6878,7 @@ L2934    stb   <u006A
          incb
          stb   <u0060
          stb   <u0068
-         orcc  #$01
+         orcc  #Carry
          bra   L28CE
 L293F    ldx   <u00AA
          ldy   ,u
@@ -7349,7 +6944,7 @@ L299F    cmpx  <u0084
          inca
          sta   <u0060
          sta   <u0068
-L29C0    orcc  #$01
+L29C0    orcc  #Carry
          lbra  L28CE
 L29C5    ldd   u0002,u
          pshs  b,a
@@ -7364,13 +6959,13 @@ L29D7    ldd   u0006,u
          bcc   L29EF
          tst   <u0058
          bne   L29E5
-         andcc #$FE
+         andcc #^Carry
          rts
 L29E5    lda   <u006A
          inca
          sta   <u0068
          sta   <u0060
-         orcc  #$01
+         orcc  #Carry
          rts
 L29EF    tst   <u006F
          bne   L2A00
@@ -7465,13 +7060,13 @@ L2AAE    cmpa  ,x+
          leay  $02,y
          tst   ,y
          bne   L2AAE
-         orcc  #$01
+         orcc  #Carry
          rts
 L2ABB    pshs  a
          leax  >0,pcr
          ldd   ,y
          leax  d,x
-         andcc #$FE
+         andcc #^Carry
          puls  pc,a
 
 * Command table in ESCAPE mode
@@ -7721,16 +7316,16 @@ L2CFB    pshs  y,x,b,a
          bcs   L2D12
          jsr   ,x
          bcs   L2D16
-         orcc  #$01
+         orcc  #Carry
 L2D10    puls  pc,y,x,b,a
-L2D12    andcc #$FE
+L2D12    andcc #^Carry
          bra   L2D10
 L2D16    lbsr  L31D9
          lda   <u006A
          inca
          sta   <u0068
          sta   <u0060
-         orcc  #$01
+         orcc  #Carry
          lbra  L2D10
 
 L2D25    fcb   $2F,$B2     ble   L2CD9
@@ -7753,14 +7348,14 @@ L2D25    fcb   $2F,$B2     ble   L2CD9
          bne   L2D64
 L2D5A    lda   #$0F
          lbsr  L3111
-         andcc #$FE
+         andcc #^Carry
          rts
 L2D62    lda   #$01
 L2D64    sta   <u006F
-         orcc  #$01
+         orcc  #Carry
          rts
          lbsr  L311C
-         andcc #$FE
+         andcc #^Carry
          rts
          lda   <u003F
 L2D71    inca
@@ -7888,7 +7483,7 @@ L2EA5    lbsr  L1C27
          beq   L2EB4
          cmpa  >L04CA,pcr
          bne   L2EA5
-L2EB4    orcc  #$01
+L2EB4    orcc  #Carry
          rts
 L2EB7    lda   #$10
          sta   <u009C
@@ -7941,7 +7536,7 @@ L2F0F    tst   <u0097
          bcs   L2F25
 L2F1D    lda   #$12
          lbsr  L3111
-         andcc #$FE
+         andcc #^Carry
          rts
 L2F25    lda   [,u]
          cmpa  >L04D5,pcr
@@ -8007,7 +7602,7 @@ L2FA8    lda   <u006A
          inca
          sta   <u0068
          sta   <u0060
-L2FAF    andcc #$FE
+L2FAF    andcc #^Carry
          rts
          ldx   <u006D
          lda   -$01,x
@@ -8018,7 +7613,7 @@ L2FAF    andcc #$FE
          beq   L2FCA
 L2FC2    lda   #$14
          lbsr  L3111
-         andcc #$FE
+         andcc #^Carry
          rts
 L2FCA    ldx   u0002,u
          lda   ,-x
@@ -8032,7 +7627,7 @@ L2FCA    ldx   u0002,u
          beq   L2FA8
          tst   <u001C,u
          bne   L2FA8
-         andcc #$FE
+         andcc #^Carry
          rts
          lda   #$FF
          sta   <u0060
@@ -8068,7 +7663,7 @@ L3027    ldd   #$0000
 L3035    lbsr  L0281
          lbsr  L0167
          lbsr  L1C27
-L303E    orcc  #$01
+L303E    orcc  #Carry
          rts
          ldx   u0006,u
          lda   ,x
@@ -8085,7 +7680,7 @@ L303E    orcc  #$01
          lbsr  L30DA
          lbsr  L2851
          lbsr  L29C5
-L3062    andcc #$FE
+L3062    andcc #^Carry
          rts
          ldb   <u0041
          addb  <u0098
@@ -8148,10 +7743,10 @@ L30C4    cmpa  b,x
          bne   L30C4
          lda   #$1C
          lbsr  L3111
-         orcc  #$01
+         orcc  #Carry
          rts
 L30D5    lda   b,x
-         andcc #$FE
+         andcc #^Carry
          rts
 L30DA    pshs  a
          ldd   ,u
@@ -8165,7 +7760,7 @@ L30DA    pshs  a
          bra   L30FC
 L30F3    lda   #$1A
          lbsr  L3111
-         orcc  #$01
+         orcc  #Carry
          puls  pc,a
 L30FC    ldd   u0006,u
          subd  ,u
@@ -8175,7 +7770,7 @@ L30FC    ldd   u0006,u
          lbsr  L45F5
          puls  a
          sta   ,y
-         andcc #$FE
+         andcc #^Carry
          rts
 
 * Send character?
@@ -8221,7 +7816,7 @@ L3167    lbsr  L1C27
          beq   L3176
          cmpa  >L04D0,pcr
          bne   L3167
-L3176    orcc  #$01
+L3176    orcc  #Carry
          puls  pc,x,b,a
 
 L317A    ldx   >L04F9,pcr
@@ -8241,8 +7836,9 @@ L3196    lda   <u0060
          lda   <u003E
          inca
          sta   <u0060
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u,y,x,b,a
+
 L31A5    ldu   <u0024
 L31A7    lbsr  L23D5
          bcs   L31D2
@@ -8261,7 +7857,7 @@ L31C3    lda   #$01
          lda   <u0060
          lbsr  L3249
 L31CC    inc   <u0060
-         orcc  #$01
+         orcc  #Carry
          puls  pc,u,y,x,b,a
 L31D2    lda   <u0060
          lbsr  L1A3F
@@ -8511,7 +8107,7 @@ L33F2    cmpy  u0002,u
          bmi   L341E
          cmpa  #$20
          beq   L3407
-         orcc  #$01
+         orcc  #Carry
          ror   <u0059
          bra   L3435
 L3407    tst   <u0059
@@ -9006,7 +8602,7 @@ L3850    ldx   >L0535,pcr
          lbsr  L1C44
          cmpa  >L04DB,pcr
          lbne  L3762
-         ldx   >L0533,pcr
+         ldx   >L0533,pcr  "Are you sure?"
          lbsr  L3920
          lbsr  L3753
          lbsr  L191E
@@ -9030,7 +8626,7 @@ L3850    ldx   >L0535,pcr
          lbra  L3762
          tst   <u004F
          lbne  L3846
-         ldx   >L0531,pcr
+         ldx   >L0531,pcr  "Is the text secure?"
          lbsr  L391B
          lbsr  L3753
          lbsr  L00F6
@@ -9068,11 +8664,14 @@ L3910    lbsr  L3753
          lbra  L3759
 L3916    ldd   #$0000
          bra   L3928
-L391B    ldd   #$0100
+
+L391B    ldd   #$0100   Line 1
          bra   L3928
-L3920    ldd   #$0200
+
+L3920    ldd   #$0200   Line 2
          bra   L3928
-L3925    ldd   #$0300
+
+L3925    ldd   #$0300   Line 3
 L3928    lbsr  L1948
          lbra  L3731
          ldx   >L051B,pcr
@@ -9622,8 +9221,9 @@ L3E83    lda   [,u]
          bne   L3E95
          tst   <u002B,u
          bne   L3E98
-L3E95    andcc #$FE
+L3E95    andcc #^Carry
          rts
+
 L3E98    lda   <u002C,u
          lbsr  L3F12
          lda   <u002D,u
@@ -9651,14 +9251,15 @@ L3EC4    lbsr  L3753
          cmpa  #$0D
          beq   L3ED7
          bra   L3EC4
-L3ED7    orcc  #$01
+L3ED7    orcc  #Carry
          rts
 L3EDA    ldd   u0002,u
          subd  ,u
          cmpd  #$0001
          bne   L3EE7
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L3EE7    ldb   <u0017,u
 L3EEA    decb
          bmi   L3F0C
@@ -9678,8 +9279,9 @@ L3F03    pshs  b
          puls  b
          bra   L3EEA
 L3F0C    lbsr  L3249
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L3F12    ldb   <u0044
          cmpb  #$0A
          bhi   L3F37
@@ -10238,7 +9840,7 @@ L4432    inca
          sta   <u0060
          sta   <u0068
 L4437    lbra  L2A2B
-L443A    lda   >L04E7,pcr
+L443A    lda   >L04E7,pcr  character {
          ldb   #$02
          lbsr  L193C
          clrb
@@ -10292,25 +9894,28 @@ L4496    tstb
 L44B1    incb
          abx
          stx   <u00B4
-         lda   >L04E6,pcr
+         lda   >L04E6,pcr  character }
          ldb   #$02
          lbsr  L193C
-         andcc #$FE
+         andcc #^Carry
          rts
-L44C1    orcc  #$01
+
+L44C1    orcc  #Carry
          rts
+
 L44C4    lda   #$0D
          sta   b,x
          incb
          abx
          stx   <u00B4
-         lda   >L04E6,pcr
+         lda   >L04E6,pcr  character }
          lbsr  L193C
          ldx   >L056B,pcr
          lbsr  L3731
          inc   <u00EB
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L44DF    ldx   u0006,u
          cmpx  <u00CB
          bhi   L44E9
@@ -10352,7 +9957,7 @@ L4526    cmpa  ,y
          beq   L4535
 L452E    cmpx  <u0063
          bcs   L4502
-L4532    orcc  #$01
+L4532    orcc  #Carry
          rts
 L4535    stx   <u00B6
          leay  $01,y
@@ -10405,7 +10010,7 @@ L458F    ldx   <u00B6
          lbsr  L23D5
          bcs   L45A1
          bra   L458F
-L459C    andcc #$FE
+L459C    andcc #^Carry
          stx   u0006,u
          rts
 L45A1    clr   <u006A
@@ -10432,11 +10037,11 @@ L45BB    lda   ,x+
          bne   L45BB
          leax  -$02,x
          stx   <u00C3
-         andcc #$FE
+         andcc #^Carry
          rts
 L45DA    lda   #$15
          lbsr  L3111
-         orcc  #$01
+         orcc  #Carry
          rts
 L45E2    inca
          pshs  a
@@ -10449,10 +10054,12 @@ L45ED    bne   L45E8
          dec   ,s
          bne   L45E8
          puls  pc,a
+
 L45F5    inca
          pshs  a
          tstb
          bra   L4600
+
 L45FB    lda   ,x+
          sta   ,y+
          decb
@@ -10460,6 +10067,7 @@ L4600    bne   L45FB
          dec   ,s
          bne   L45FB
          puls  pc,a
+
 L4608    clr   <u0058
          leay  >0,pcr
          ldd   >L04F5,pcr
@@ -10618,13 +10226,13 @@ L478A    pshs  a
          suba  <u0028,u
          cmpa  #$0A
          bcs   L47B2
-         andcc #$FE
+         andcc #^Carry
          puls  pc,a
 L47B2    cmpu  <u0022
          bne   L47BC
          lda   #$0D
          lbsr  L3111
-L47BC    orcc  #$01
+L47BC    orcc  #Carry
          puls  pc,a
          lbsr  L4A0C
          lbcs  L4649
@@ -10917,10 +10525,10 @@ L4A1E    cmpa  #$F0
          adca  #$00
          std   <u005A
          bra   L4A1C
-L4A57    andcc #$FE
+L4A57    andcc #^Carry
          ldd   <u005A
          rts
-L4A5C    orcc  #$01
+L4A5C    orcc  #Carry
          rts
 
 * 'I' key in Escape mode
@@ -11622,16 +11230,16 @@ L507A    leax  $01,x
          bra   L5063
 L507E    leax  $01,x
 L5080    lda   <u0059
-         andcc #$FE
+         andcc #^Carry
          rts
-L5085    orcc  #$01
+L5085    orcc  #Carry
          rts
 L5088    cmpa  #$30
          bcs   L50A5
          cmpa  #$39
          bhi   L5095
          suba  #$30
-         andcc #$FE
+         andcc #^Carry
          rts
 L5095    lbsr  L1C44
          cmpa  #$41
@@ -11639,9 +11247,10 @@ L5095    lbsr  L1C44
          cmpa  #$46
          bhi   L50A5
          suba  #$37
-         andcc #$FE
+         andcc #^Carry
          rts
-L50A5    orcc  #$01
+
+L50A5    orcc  #Carry
          rts
 L50A8    stb   <u00E5
          tfr   x,d
@@ -11662,13 +11271,14 @@ L50B4    ldb   #$03
          ldx   >L0579,pcr
          lbsr  L3731
 L50D4    clr   <u00E6
-L50D6    lda   #$20
+
+L50D6    lda   #C$SPAC
          lbsr  L191E
          lda   <u00E6
          adda  #$04
          clrb
          lbsr  L1948
-         lda   #$3E
+         lda   #'>
          lbsr  L191E
          ldd   <u0040
          decb
