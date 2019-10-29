@@ -1,0 +1,8 @@
+
+ ifp1
+ use   /d0/defs/os9defs
+ endc
+
+PRTTYPE  equ $000E
+MAXPAGES equ $000F
+LOADPROP equ $0011

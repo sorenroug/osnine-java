@@ -1,9 +1,8 @@
          nam   Styfix
          ttl   program module
 
-         ifp1
-         use   /d0/defs/os9defs
-         endc
+         use   defsfile
+
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -73,7 +72,7 @@ L0069    lda   #$07   Bell
 L0077    leax  >L036D,pcr  Printer number ?
          lbsr  OUTSTR
          bsr   L00C0
-         ldx   #$000E
+         ldx   #PRTTYPE
          bsr   L00EE
          bra   L0038
 
@@ -84,15 +83,15 @@ L0087    leax  >L037E,pcr   Load styps ?
          leax  >INPBUF,u
          lbsr  L0466
          lda   >INPBUF,u
-         anda  #$5F
-         cmpa  #$59
+         anda  #$5F   Convert to upper case
+         cmpa  #'Y
          beq   L00A6
-         cmpa  #$4E
+         cmpa  #'N
          bne   L0069
          clrb
          bra   L00A8
 L00A6    ldb   #$01
-L00A8    ldx   #$0011
+L00A8    ldx   #LOADPROP
          bsr   L00EE
          bra   L0038
 
@@ -101,7 +100,7 @@ L00A8    ldx   #$0011
 L00AF    leax  >L03B9,pcr   Number of pages ?
          lbsr  OUTSTR
          bsr   L00C0
-         ldx   #$000F
+         ldx   #MAXPAGES
          bsr   L00EE
          lbra  L0038
 
@@ -189,6 +188,7 @@ L017E    ldy   #$000B
          os9   I$Write
          lbcs  FATAL
          lbra  L0038
+
 L0190    pshs  u
          lda   >u00FC,u
          tfr   x,u

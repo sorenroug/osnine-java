@@ -37,6 +37,8 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+        <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
+        <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
         <assemble src="Mfree_d64" home="dragon64" verify="3fc4db96ec92a745e14d642c95a62387"/>
 
         <assemble src="Mfree_ed4" home="utilities" verify="f629490039f5f4b307604d495c543be1"/>
@@ -106,6 +108,8 @@
         <assemble src="basic09_generic" home="basic09" verify="8fcd0e6da6577f2bf426d1ee159528bb"/>
         <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>
         <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
+        <!--
+        -->
     </target>
 
 </project>
