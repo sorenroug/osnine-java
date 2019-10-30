@@ -169,8 +169,8 @@ public class DevUnix extends DevDrvr {
         int alreadyMatched = 0;
 
         path = path.normalize();
-        if (path.startsWith("/")) {
-            startFrom = "/";
+        if (path.isAbsolute()) {
+            startFrom = path.getRoot().toString();
         } else {
             startFrom = ".";
         }
