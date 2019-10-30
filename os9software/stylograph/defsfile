@@ -4,6 +4,7 @@
  use   /d0/defs/scfdefs
  endc
 
+DRVSLCT  equ $000D
 PRTTYPE  equ $000E
 MAXPAGES equ $000F
 LOADPROP equ $0011
