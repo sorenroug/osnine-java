@@ -122,7 +122,7 @@
                 <version>2.20</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <storage.dir>${project.build.directory}</storage.dir>
+                        <storage.dir>${project.build.directory}/test-classes</storage.dir>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
