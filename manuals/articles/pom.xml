@@ -63,7 +63,7 @@
 
           <execution>
             <id>pascallinking</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
               <!--<goal>generate-html</goal>-->
@@ -75,7 +75,7 @@
 
           <execution>
             <id>interfaceasm</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
             </goals>
@@ -86,7 +86,7 @@
 
           <execution>
             <id>dragonsystemdisk</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
             </goals>
@@ -97,7 +97,7 @@
 
           <execution>
             <id>review-os9-cobol</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
             </goals>

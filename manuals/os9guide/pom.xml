@@ -65,7 +65,7 @@
 
           <execution>
             <id>pdf</id>
-            <phase>generate-sources</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
             </goals>

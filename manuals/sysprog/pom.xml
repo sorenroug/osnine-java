@@ -62,7 +62,7 @@
         <executions>
           <execution>
             <id>os9sysprog</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
               <!--<goal>generate-html</goal>-->

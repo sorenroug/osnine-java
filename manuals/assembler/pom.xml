@@ -62,7 +62,7 @@
         <executions>
           <execution>
             <id>assembler</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>generate-pdf</goal>
               <!--<goal>generate-html</goal>-->
