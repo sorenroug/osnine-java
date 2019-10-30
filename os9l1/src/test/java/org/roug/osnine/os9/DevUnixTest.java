@@ -20,7 +20,7 @@ public class DevUnixTest {
     @Test
     public void testRead() {
         String driveLocation = System.getProperty("outputDirectory");
-        System.out.println(driveLocation);
+        //System.out.println(driveLocation);
         DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
         PathDesc pd = dev.open("/dd/datamodule", AccessCodes.READ, false);
         //System.out.println(Util.getErrorMessage(dev.getErrorCode()));
@@ -40,7 +40,7 @@ public class DevUnixTest {
     @Test
     public void openCaseInsensitive() {
         String driveLocation = System.getProperty("outputDirectory");
-        System.out.println(driveLocation);
+        //System.out.println(driveLocation);
         DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
         PathDesc pd = dev.open("/dd/DataModule", AccessCodes.READ, false);
         //System.out.println(Util.getErrorMessage(dev.getErrorCode()));
@@ -64,7 +64,7 @@ public class DevUnixTest {
         String newFile = "/dd/newfile";
 
         String driveLocation = System.getProperty("outputDirectory");
-        System.out.println(driveLocation);
+        //System.out.println(driveLocation);
         DevUnix dev = new DevUnix("/dd", driveLocation); // Default drive
 
         PathDesc pd = dev.open("/dd/newfile", AccessCodes.WRITE, true);
@@ -98,23 +98,29 @@ public class DevUnixTest {
      * Check case-sensitivity.
      * FIXME: This doesn't work on a Windows system
      */
-    @Ignore
+    @Test
     public void testGetPath() {
-        File f = new File("/ETC/passwd");
-        Path path = DevUnix.findpath(f.toPath(), true);
-        assertNotNull(path);
-        assertEquals("/etc/passwd", path.toString());
+        String osName = System.getProperty("os.name", "").toLowerCase();
+        if(osName.contains("linux")) {
+            File f = new File("/ETC/passwd");
+            Path path = DevUnix.findpath(f.toPath(), true);
+            assertNotNull(path);
+            assertEquals("/etc/passwd", path.toString());
+        }
     }
 
     /**
      * Check case-sensitivity.
      * FIXME: This doesn't work on a Windows system
      */
-    @Ignore
+    @Test
     public void testGetPathLast() {
-        File f = new File("/ETC/PasswD");
-        Path path = DevUnix.findpath(f.toPath(), true);
-        assertNotNull(path);
-        assertEquals("/etc/passwd", path.toString());
+        String osName = System.getProperty("os.name", "").toLowerCase();
+        if(osName.contains("linux")) {
+            File f = new File("/ETC/PasswD");
+            Path path = DevUnix.findpath(f.toPath(), true);
+            assertNotNull(path);
+            assertEquals("/etc/passwd", path.toString());
+        }
     }
 }
