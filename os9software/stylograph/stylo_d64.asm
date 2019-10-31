@@ -62,9 +62,9 @@ u0038    rmb   2
 u003A    rmb   2
 u003C    rmb   2
 u003E    rmb   1
-u003F    rmb   1
+u003F    rmb   1 Max column
 SCRROW    rmb   1
-u0041    rmb   1
+u0041    rmb   1 Curr column
 u0042    rmb   1
 u0043    rmb   1
 u0044    rmb   1
@@ -320,8 +320,10 @@ L010B    ldd   <u00ED
          os9   I$Write
 L011C    puls  pc,y,x,b,a
 
+* Switch to dimmed font?
 L011E    rts
 
+* Write text and unset dimmed font?
 L011F    bra   L0109
          rts
 
@@ -793,7 +795,7 @@ L04BF    fcb   $09
 L04C0    fcb   $0B
 L04C1    fcb   $1A
          fcb   $20
-L04C3    fcb   $08
+L04C3    fcb   $08 Backspace
 L04C4    fcb   $18
          fcb   $04
          fcb   $17
@@ -806,7 +808,7 @@ L04CA    fcb   $10
          fcb   $19
          fcb   $1E
          fcb   $01
-L04D0    fcb   $1B
+L04D0    fcb   $1B  Escape
 L04D1    fcb   $14
 L04D2    fcb   $15
 L04D3    fcb   $2D -
@@ -846,59 +848,34 @@ L04F4    fcb   $00
 
 L04F5    fdb   CE.CMD
 L04F7    fdb   $05F1
-L04F9    fcb   $08
-         fcb   $B7 7
-         fcb   $08
-         fcb   $C0 @
-L04FD    fcb   $08
-         fcb   $E9 i
-L04FF    fcb   $08
-         fcb   $FB
-L0501    fcb   $09
-         fcb   $3B ;
-L0503    fcb   $0B
-         fcb   $08
-L0505    fcb   $0B
-         fcb   $16
-L0507    fcb   $0B
-         fcb   $24 $
-L0509    fcb   $0B
-         fcb   $2F /
-L050B    fcb   $0B
-         fcb   $3C <
-L050D    fcb   $0B
-         fcb   $41 A
-L050F    fcb   $0B
-         fcb   $48 H
+L04F9    fdb   $08B7
+         fdb   $08C0
+L04FD    fdb   L08E9 Ptr to "*** page ="
+L04FF    fdb   $08FB
+L0501    fdb   L093B Ptr to "SERIAL PAGE"
+L0503    fdb   $0B08
+L0505    fdb   $0B16
+L0507    fdb   $0B24
+L0509    fdb   $0B2F
+L050B    fdb   $0B3C
+L050D    fdb   $0B41
+L050F    fdb   L0B48
 L0511    fdb   $0B4D
 L0513    fdb   $0B57
-L0515    fcb   $0B
-         fcb   $62 b
-L0517    fcb   $0B
-         fcb   $70 p
-L0519    fcb   $0B
-         fcb   $8E
-L051B    fdb   $0BAA
-L051D    fcb   $0B
-         fcb   $B6 6
-L051F    fcb   $0B
-         fcb   $C8 H
-L0521    fcb   $0B
-         fcb   $E2 b
-L0523    fcb   $0C
-         fcb   $07
-L0525    fcb   $0C
-         fcb   $17
-         fcb   $0C
-         fcb   $41 A
-L0529    fcb   $0C
-         fcb   $56 V
-L052B    fcb   $0C
-         fcb   $74 t
-L052D    fcb   $0C
-         fcb   $98
-L052F    fcb   $0C
-         fcb   $A8 (
+L0515    fdb   $0B62
+L0517    fdb   $0B70
+L0519    fdb   $0B8E
+L051B    fdb   L0BAA
+L051D    fdb   $0BB6
+L051F    fdb   $0BC8
+L0521    fdb   $0BE2
+L0523    fdb   $0C07
+L0525    fdb   $0C17
+         fdb   $0C41
+L0529    fdb   $0C56
+L052B    fdb   $0C74
+L052D    fdb   $0C98
+L052F    fdb   $0CA8
 
 L0531    fdb   L0D8F  Ptr to "Is the text secure?"
 
@@ -1232,40 +1209,7 @@ L058C    fcc   "LL"
          fcb   $45 E
          fcb   $00
          fcb   $10
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $20
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
+L06E9    fcc   "HEADER OR FOOTER TOO LONG FOR PAGE"
          fcb   $00
          fcb   $11
          fcb   $43 C
@@ -1605,26 +1549,7 @@ L0745    fcc   "CAN'T DELETE - NOT BRACKETED BY RETURNS"
          fcb   $4E N
          fcb   $44 D
          fcb   $00
-         fcb   $21 !
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $47 G
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $55 U
-         fcb   $4D M
-         fcb   $42 B
-         fcb   $45 E
-         fcb   $52 R
+L0884    fcc   "!ILLEGAL PAGE NUMBER"
          fcb   $00
          fcb   $22 "
          fcb   $57 W
@@ -1706,39 +1631,9 @@ L0745    fcc   "CAN'T DELETE - NOT BRACKETED BY RETURNS"
          fcb   $45 E
          fcb   $53 S
          fcb   $00
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $3D =
+L08E9    fcc   "*********** PAGE="
          fcb   $00
-         fcb   $2D -
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $55 U
-         fcb   $53 S
-         fcb   $20
-         fcb   $2D -
+L08FB    fcc   "- PAGE STATUS -"
          fcb   $00
          fcb   $52 R
          fcb   $45 E
@@ -1788,26 +1683,7 @@ L0745    fcc   "CAN'T DELETE - NOT BRACKETED BY RETURNS"
          fcb   $2D -
          fcb   $2D -
          fcb   $00
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $23 #
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
+L093B    fcc   "SERIAL PAGE # ------"
          fcb   $00
          fcc   "PRINTED PAGE # -----"
          fcb   $00
@@ -2225,22 +2101,11 @@ L097B    fcc   "PAGE LENGTH ---- ,PL"
          fcb   $20
          fcb   $20
          fcb   $00
-         fcb   $4F O
-         fcb   $50 P
-         fcb   $45 E
-         fcb   $4E N
+L0B3C    fcc   "OPEN"
          fcb   $00
-         fcb   $43 C
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $44 D
+L0B41    fcc   "CLOSED"
          fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
+L0B48    fcc   "PAGE"
          fcb   $00
          fcb   $53 S
          fcb   $61 a
@@ -2335,17 +2200,7 @@ L097B    fcc   "PAGE LENGTH ---- ,PL"
          fcb   $3F ?
          fcb   $20
          fcb   $00
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
+L0BAA    fcc   "File name? "
          fcb   $00
          fcb   $4D M
          fcb   $61 a
@@ -2559,35 +2414,7 @@ L0C06    fcc   "WARNING! FILE TOO LARGE - ENTIRE FILE MAY NOT BE NOT LOADED!!!"
          fcb   $65 e
          fcb   $72 r
          fcb   $00
-         fcb   $4E N
-         fcb   $6F o
-         fcb   $20
-         fcb   $73 s
-         fcb   $61 a
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $20
-         fcb   $20
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $2E .
+L0CED    fcc   "No save.  Cursor on top page."
          fcb   $00
          fcb   $53 S
          fcb   $61 a
@@ -2917,40 +2744,9 @@ L0DE3    fcc   "ERROR - PROPORTIONAL SPACING TABLE NOT LOADED"
          fcb   $20
          fcb   $20
          fcb   $00
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
+L0ECF    fcc   "Print all pages (Y*/N)? "
          fcb   $00
-         fcb   $20
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20
-         fcb   $3D =
-         fcb   $20
+L0EE8    fcc   " First = "
          fcb   $00
          fcb   $20
          fcb   $20
@@ -3157,49 +2953,9 @@ L11F3    fcc   "     STYLOGRAPH for the Dragon 64"
          fcb   $64 d
          fcb   $73 s
          fcb   $00
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $4C L
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
+L122C    fcc   "CONTROL Commands"
          fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $29 )
+L123D    fcc   "FORMAT Commands (vertical)"
          fcb   $00
          fcb   $46 F
          fcb   $4F O
@@ -3327,170 +3083,21 @@ L12D6    fcc   "/p"
          fcb   $00
          fcc   "WHEEL ----------- specify a proportional spacing print wheel"
          fcb   $00
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $57 W
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $20
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $70 p
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
+L1326    fcc   "NEW ------------- new text from input file"
          fcb   $00
          fcc   "    STYLOGRAPH WORD PROCESSING SYSTEM V2.1 (c) 1981"
          fcb   $00
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $55 U
-         fcb   $52 R
-         fcb   $4E N
+L1385    fcc   "RETURN"
          fcb   $00
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $45 E
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
+L138C    fcc   "ESCAPE Commands"
          fcb   $00
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $4C L
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
+L139C    fcc   "CONTROL Commands"
          fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $29 )
+L13AD    fcc   "FORMAT Commands (vertical)"
          fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $7A z
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $29 )
+L13C8    fcc   "FORMAT Commands (horizontal)"
          fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $6D m
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $63 c
-         fcb   $2E .
-         fcb   $29 )
+L13E5    fcc   "FORMAT Commands (misc.)"
          fcb   $00
          fcb   $44 D
          fcb   $69 i
@@ -3557,17 +3164,9 @@ L12D6    fcc   "/p"
          fcb   $50 P
          fcb   $35 5
          fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $36 6
+L143E    fcc   "STYHLP6"
          fcb   $00
-         fcb   $2F /
-         fcb   $70 p
-         fcb   $31 1
+L1446    fcc   "/p1"
          fcb   $00
          fcb   $00
          fcb   $00
@@ -4731,8 +4330,10 @@ TRMSEQ   fcb   $80
          fcb   $1B
          fcb   $E4 d
 * End of terminal driver
+TRMEND   equ *
 
-TRMEND   tst   <u0042
+* Print character in A repeatedly B times
+OUTREPT   tst   <u0042
          beq   L192C
          clr   <u0042
          pshs  b
@@ -4740,11 +4341,11 @@ TRMEND   tst   <u0042
 L1928    bsr   L198F
          puls  b
 L192C    pshs  b
-         ldb   <u0041
-         cmpb  <u003F
+         ldb   <u0041 Curr column
+         cmpb  <u003F Max column
          puls  b
          bhi   L193B
-         inc   <u0041
+         inc   <u0041 Curr column
          lbra  L00F6
 L193B    rts
 
@@ -4758,7 +4359,7 @@ L193C    tst   <u0042
 *
 * Write string in X on line A column B
 *
-WRROWCOL std   <SCRROW
+GOROWCOL std   <SCRROW
          pshs  x
          ldb   #$02
          bsr   L198F
@@ -4772,7 +4373,7 @@ WRROWCOL std   <SCRROW
          beq   L1962
          adda  #$20
 L1962    lbsr  L00F6
-         lda   <u0041
+         lda   <u0041 Curr column
          ldx   <u003C
          ldb   ,x
          bitb  #$40
@@ -4782,7 +4383,7 @@ L1971    lbsr  L00F6
          ldd   <SCRROW
 L1976    puls  pc,x
 
-L1978    lda   <u0041
+L1978    lda   <u0041 Curr column
          bitb  #$40
          beq   L1980
          adda  #$20
@@ -4835,7 +4436,7 @@ L19D3    pshs  b
 
 L19DB    pshs  x,b
          clr   <SCRROW
-         clr   <u0041
+         clr   <u0041 Curr column
          ldb   #$0C
          bsr   L198F
          lbsr  L0109
@@ -4848,7 +4449,7 @@ L19F1    pshs  b,a
          bsr   L198F
          ldd   <SCRROW
          deca  
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          puls  pc,b,a
 
 L19FF    pshs  b,a
@@ -4856,12 +4457,12 @@ L19FF    pshs  b,a
          bsr   L198F
          ldd   <SCRROW
          inca  
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          puls  pc,b,a
 
 L1A0D    pshs  x,b
          clr   <SCRROW
-         clr   <u0041
+         clr   <u0041 Curr column
          ldb   #$14
          lbsr  L198F
          lbsr  L0109
@@ -4890,7 +4491,7 @@ L1A3F    pshs  x,b,a
          pshs  b,a
          ldd   $02,s
          clrb  
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   <u003C
          lda   ,x
          bita  #$10
@@ -4898,11 +4499,11 @@ L1A3F    pshs  x,b,a
          ldb   #$0E
          lbsr  L198F
 L1A58    puls  b,a
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          puls  pc,x,b,a
 
-L1A5F    ldb   <u003F
-         lda   #$20
+L1A5F    ldb   <u003F Max column
+         lda   #C$SPAC
 L1A63    lbsr  L00F6
          decb  
          bpl   L1A63
@@ -5036,14 +4637,14 @@ L1B8A    clr   ,y+
          std   $04,y
          ldx   #$0000
          stx   ,y
-         ldb   <u003F
+         ldb   <u003F Max column
          leax  b,x
          stx   $02,y
          ldb   >L04E8,pcr
          stb   <$17,y
          ldb   >L04E9,pcr
          bne   L1BB0
-         ldb   <u003F
+         ldb   <u003F Max column
 L1BB0    stb   <$1B,y
          ldb   >L04EC,pcr
          stb   <$25,y
@@ -5055,7 +4656,7 @@ L1BB0    stb   <$1B,y
          stb   <$23,y
          ldb   >L04EB,pcr
          bne   L1BD4
-         ldb   <u003F
+         ldb   <u003F Max column
 L1BD4    stb   <$1F,y
          com   $08,y
          ldb   >L04EE,pcr
@@ -5204,7 +4805,7 @@ L1D17    lda   <u00CD
          lda   <u0099
          cmpa  <u0098
          bcs   L1D62
-         tst   <u0041
+         tst   <u0041 Curr column
          bne   L1D3E
          tst   <u0098
          beq   L1D3E
@@ -5213,17 +4814,17 @@ L1D17    lda   <u00CD
          tst   <u0074
          beq   L1D3E
          lda   >L04DA,pcr
-         lbsr  TRMEND
+         lbsr  OUTREPT
          bra   L1D62
 L1D3E    lda   <u0099
          suba  <u0098
-         cmpa  <u003F
+         cmpa  <u003F Max column
          bcs   L1D5B
          bhi   L1D62
          tst   <u0074
          beq   L1D53
          lda   >L04D9,pcr
-         lbsr  TRMEND
+         lbsr  OUTREPT
 L1D53    lda   <u00D0
          ora   #$50
          sta   <u00D0
@@ -5240,11 +4841,11 @@ L1D62    lda   <u00CD
 L1D6D    lda   <u0099
          suba  <u0098
          bcs   L1D94
-         cmpa  <u003F
+         cmpa  <u003F Max column
          bhi   L1DB7
          beq   L1D98
-         lda   #$20
-         tst   <u0041
+         lda   #C$SPAC
+         tst   <u0041 Curr column
          bne   L1D8D
          tst   <u0098
          beq   L1D8D
@@ -5254,7 +4855,7 @@ L1D6D    lda   <u0099
          lda   >L04DA,pcr
 L1D8D    tst   <u0074
          beq   L1D94
-         lbsr  TRMEND
+         lbsr  OUTREPT
 L1D94    inc   <u0099
          bra   L1D6D
 L1D98    tst   <u00D0
@@ -5271,8 +4872,8 @@ L1D98    tst   <u00D0
 L1DAC    lda   >L04D4,pcr  character |
          bra   L1DB4
 
-L1DB2    lda   #$20
-L1DB4    lbsr  TRMEND
+L1DB2    lda   #C$SPAC
+L1DB4    lbsr  OUTREPT
 L1DB7    cmpu  <u0022
          bne   L1E0E
          clr   <u0097
@@ -5286,12 +4887,12 @@ L1DB7    cmpu  <u0022
          bne   L1DD9
          cmpy  u0006,u
          bne   L1DD9
-         ldb   <u003F
+         ldb   <u003F Max column
          bra   L1E09
 L1DD9    ldb   <u00CE
          subb  <u0098
          bcs   L1E00
-         cmpb  <u003F
+         cmpb  <u003F Max column
          bhi   L1E05
          tst   <u00D0
          beq   L1E09
@@ -5302,7 +4903,7 @@ L1DD9    ldb   <u00CE
          beq   L1E09
          inc   <u0097
          bra   L1E09
-L1DF4    cmpb  <u003F
+L1DF4    cmpb  <u003F Max column
          bne   L1E09
          tst   <u00D0
          bpl   L1E09
@@ -5312,9 +4913,9 @@ L1E00    inc   <u0097
          clrb
          bra   L1E09
 L1E05    inc   <u0097
-         ldb   <u003F
+         ldb   <u003F Max column
 L1E09    lda   <SCRROW
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L1E0E    rts
 L1E0F    tsta
          beq   L1E7D
@@ -5749,7 +5350,7 @@ L21B3    lbra  L193C
 L21B6    cmpa  >L04D7,pcr character #
          bne   L21BE
          bsr   L21C1
-L21BE    lbra  TRMEND
+L21BE    lbra  OUTREPT
 L21C1    tst   u0008,u
          bne   L21C6
          rts
@@ -6261,8 +5862,8 @@ L2615    clrb
          clr   <u00C2
 L2638    ldu   <u0022
 L263A    lbsr  L35E5
-L263D    lda   <u0041
-         cmpa  <u003F
+L263D    lda   <u0041 Curr column
+         cmpa  <u003F Max column
          bcc   L2638
          ldd   u000F,u
          subd  <u0050
@@ -6338,11 +5939,11 @@ L26DC    cmpx  <u0052
          lbsr  L2851
          lbcs  L263A
          bra   L2696
-L26E9    cmpa  >L04C3,pcr
+L26E9    cmpa  >L04C3,pcr Backspace
          lbeq  L278A
          cmpa  #$0D
          beq   L2716
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L271B
          cmpa  >L04D1,pcr
          lbeq  L2743
@@ -6393,7 +5994,7 @@ L276B    lda   <u001F,u
 L276E    cmpa  <u00A1
          bcs   L2752
          lda   <u00A1
-         suba  <u0041
+         suba  <u0041 Curr column
          bls   L2784
 L2778    pshs  a
          lda   #$20
@@ -6431,13 +6032,13 @@ L27BA    lbsr  L2851
          lbcs  L263A
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lda   >L04D3,pcr  character -
          clrb
          lbsr  L193C
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbra  L263D
 
 L27DF    tst   <u006F
@@ -6705,7 +6306,7 @@ L2A00    lda   <SCRROW
 L2A12    lda   <SCRROW
          inca
          clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L2A19    lbsr  L23D5
          tst   u0008,u
          bne   L29EF
@@ -7077,18 +6678,18 @@ L2D64    sta   <u006F
          lbsr  L311C
          andcc #^Carry
          rts
-         lda   <u003F
+         lda   <u003F Max column
 L2D71    inca
          sta   <u0060
 L2D74    lbsr  L19DB
          ldd   #$0011
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L04FF,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          ldd   #$0200
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0503,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          tst   <u0061
          bne   L2D9B
          ldx   >L0507,pcr
@@ -7096,11 +6697,11 @@ L2D74    lbsr  L19DB
 L2D9B    ldx   <u0030
          lbsr  L374C
          bra   L2DA5
-L2DA2    lbsr  L3731
+L2DA2    lbsr  L3731  Write string in X
 L2DA5    ldd   #$0500
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0505,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          tst   <u0061
          bne   L2DBC
          ldx   >L0507,pcr
@@ -7108,27 +6709,27 @@ L2DA5    ldd   #$0500
 L2DBC    ldx   <u0032
          lbsr  L374C
          bra   L2DC6
-L2DC3    lbsr  L3731
+L2DC3    lbsr  L3731  Write string in X
 L2DC6    ldd   #$0300
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0509,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          tst   <u004E
          beq   L2DDD
          ldx   >L050B,pcr
          bra   L2DE1
 L2DDD    ldx   >L050D,pcr
-L2DE1    lbsr  L3731
+L2DE1    lbsr  L3731  Write string in X
          ldd   #$0600
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0509,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          tst   <u004F
          beq   L2DFB
          ldx   >L050B,pcr
          bra   L2DFF
 L2DFB    ldx   >L050D,pcr
-L2DFF    lbsr  L3731
+L2DFF    lbsr  L3731  Write string in X
          ldy   <u001C
          ldd   u000F,u
          addd  #$0001
@@ -7199,7 +6800,7 @@ L2E6F    std   ,y++
          sta   <u009D
          bsr   L2EB7
 L2EA5    lbsr  L1C27
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L2EB4
          cmpa  >L04CA,pcr
          bne   L2EA5
@@ -7210,7 +6811,7 @@ L2EB7    lda   #$10
 L2EBB    dec   <u009C
          beq   L2F0E
          ldd   <u009D
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          inc   <u009D
          tst   ,x+
          beq   L2EBB
@@ -7233,7 +6834,7 @@ L2EBB    dec   <u009C
 L2EEB    ldd   <u009D
          deca
          addb  #$0D
-L2EF0    lbsr  WRROWCOL
+L2EF0    lbsr  GOROWCOL
          lbsr  L374C
          puls  x
          bra   L2EBB
@@ -7243,9 +6844,9 @@ L2EFA    tstb
          ldd   <u009D
          deca
          addb  #$16
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          puls  a
-         lbsr  TRMEND
+         lbsr  OUTREPT
          bra   L2EBB
 L2F0E    rts
 L2F0F    tst   <u0097
@@ -7376,7 +6977,7 @@ L3014    lbsr  L02E2
 L3022    lbsr  L00F6
          bra   L3014
 L3027    ldd   #$0000
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          lbsr  L5129
          bra   L2FF9
@@ -7402,7 +7003,7 @@ L303E    orcc  #Carry
          lbsr  L29C5
 L3062    andcc #^Carry
          rts
-         ldb   <u0041
+         ldb   <u0041 Curr column
          addb  <u0098
          beq   L3082
          ldx   <u002E
@@ -7428,13 +7029,13 @@ L3089    decb
          decb
 L3090    cmpb  <u0058
          bne   L3089
-         lda   <u0041
+         lda   <u0041 Curr column
          adda  <u0098
          sta   b,x
          rts
          ldx   <u002E
          clrb
-         lda   <u0041
+         lda   <u0041 Curr column
          adda  <u0098
 L30A2    cmpa  b,x
          beq   L30AC
@@ -7454,7 +7055,7 @@ L30AE    incb
          bra   L30AE
 L30BD    ldx   <u002E
          clrb
-         lda   <u0041
+         lda   <u0041 Curr column
          adda  <u0098
 L30C4    cmpa  b,x
          bcs   L30D5
@@ -7503,13 +7104,13 @@ L3111    pshs  a
 L311C    pshs  x,b,a
          clrb
          lda   <SCRROW
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lda   #$2A
-         lbsr  TRMEND
-         lbsr  TRMEND
-         lbsr  TRMEND
+         lbsr  OUTREPT
+         lbsr  OUTREPT
+         lbsr  OUTREPT
          lda   #$20
-         lbsr  TRMEND
+         lbsr  OUTREPT
          ldd   >L04F7,pcr
          leax  >0,pcr
          leax  d,x
@@ -7522,25 +7123,25 @@ L3144    lda   ,x+
          bne   L3140
          bra   L317A
 L314E    lbsr  L374C
-L3151    lda   #$20
-         lbsr  TRMEND
-         lbsr  TRMEND
-         lda   #$2A
-         ldb   <u003F
-L315D    lbsr  TRMEND
-         cmpb  <u0041
+L3151    lda   #C$SPAC
+         lbsr  OUTREPT
+         lbsr  OUTREPT
+         lda   #'*
+         ldb   <u003F Max column
+L315D    lbsr  OUTREPT
+         cmpb  <u0041 Curr column
          bne   L315D
-         lbsr  TRMEND
+         lbsr  OUTREPT
 L3167    lbsr  L1C27
          cmpa  >L04C8,pcr
          beq   L3176
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          bne   L3167
 L3176    orcc  #Carry
          puls  pc,x,b,a
 
 L317A    ldx   >L04F9,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          bra   L3151
 L3183    pshs  u,y,x,b,a
          tst   <u0068
@@ -7642,12 +7243,12 @@ L3249    pshs  y,x,b,a
          lbsr  L3717
          tst   <u004B
          bne   L3262
-         lbsr  L011E
+         lbsr  L011E  Start dimmed text
          lbsr  L19CB
          ldx   <SCRROW
          stx   <u00D1
          clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L3262    ldy   ,u
          lda   ,y
          cmpa  >L04D5,pcr
@@ -7694,9 +7295,9 @@ L32C9    tst   <u004B
          cmpu  <u0022
          beq   L32D7
          ldd   <u00D1
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L32D7    lbsr  L19D3
-         lbsr  L011F
+         lbsr  L011F   Write txt and stop dimmed
 L32DD    puls  pc,y,x,b,a
 L32DF    tst   <u002F,u
          beq   L32EA
@@ -8029,34 +7630,35 @@ L35A9    rts
 L35AA    ldd   u000F,u
          addd  #$0001
          lbsr  L2CAE
-         ldb   #$1B
-         lda   #$2D
-L35B6    lbsr  TRMEND
+         ldb   #27
+         lda   #'-
+L35B6    lbsr  OUTREPT
          decb
          bne   L35B6
-         lda   #$20
-         lbsr  TRMEND
-         ldx   >L050F,pcr
-         lbsr  L3731
+         lda   #C$SPAC
+         lbsr  OUTREPT
+         ldx   >L050F,pcr  Ptr to "PAGE"
+         lbsr  L3731  Write string in X
          ldx   <u0034
          leax  $02,x
          lbsr  L374C
-         lda   #$20
-         lbsr  TRMEND
-         lda   #$2D
-L35D6    lbsr  TRMEND
-         ldb   <u0041
-         cmpb  <u003F
+         lda   #C$SPAC
+         lbsr  OUTREPT
+         lda   #'-
+L35D6    lbsr  OUTREPT
+         ldb   <u0041 Curr column
+         cmpb  <u003F Max column
          bcs   L35D6
-         lbsr  TRMEND
+         lbsr  OUTREPT
          lbra  L32C9
-L35E5    lbsr  L011E
+
+L35E5    lbsr  L011E  Start dimmed text
          lbsr  L3717
          lbsr  L32FA
          lbsr  L19CB
          clrb
          lda   <u006A
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   ,u
          clr   <u009A
 L35FB    cmpx  u0006,u
@@ -8070,7 +7672,7 @@ L35FB    cmpx  u0006,u
          bra   L35FB
 L360D    ldy   ,u
          clr   <u0058
-         ldb   <u003F
+         ldb   <u003F Max column
          decb
          tst   <u001C,u
          bne   L362C
@@ -8109,7 +7711,7 @@ L3655    tst   <u001C,u
          addb  <u0028,u
          beq   L366A
          lda   #$20
-L3664    lbsr  TRMEND
+L3664    lbsr  OUTREPT
          decb
          bne   L3664
 L366A    cmpy  u0006,u
@@ -8125,14 +7727,14 @@ L367E    lbsr  L2181
 L3681    leay  $01,y
          bra   L366A
 
-L3685    ldb   <u0041
+L3685    ldb   <u0041 Curr column
          stb   <u0059
          ldb   <u0095
          addb  <u0089
          subb  <u008A
          bls   L36A6
-L3691    lda   <u0041
-         cmpa  <u003F
+L3691    lda   <u0041 Curr column
+         cmpa  <u003F Max column
          bcc   L36FF
          lda   >L04D3,pcr  character -
          pshs  b
@@ -8141,8 +7743,8 @@ L3691    lda   <u0041
          puls  b
          decb
          bne   L3691
-L36A6    ldb   <u003F
-         cmpb  <u0041
+L36A6    ldb   <u003F Max column
+         cmpb  <u0041 Curr column
          bls   L36FF
          cmpy  u0002,u
          bcc   L36D4
@@ -8164,11 +7766,11 @@ L36CB    leax  $01,y
          cmpx  u0002,u
          bne   L36C7
          lbsr  L2181
-L36D4    ldb   <u003F
+L36D4    ldb   <u003F Max column
          lda   #$20
-L36D8    cmpb  <u0041
+L36D8    cmpb  <u0041 Curr column
          bls   L36E1
-         lbsr  TRMEND
+         lbsr  OUTREPT
          bra   L36D8
 
 L36E1    ldy   u0002,u
@@ -8176,12 +7778,12 @@ L36E1    ldy   u0002,u
          cmpb  #$F0
          bne   L36EE
          lda   >L04D4,pcr  character |
-L36EE    lbsr  TRMEND
+L36EE    lbsr  OUTREPT
 L36F1    lda   <SCRROW
          ldb   <u0059
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L19D3
-         lbsr  L011F
+         lbsr  L011F   Write txt and stop dimmed
          rts
 L36FF    cmpy  u0002,u
          bcc   L36E1
@@ -8207,20 +7809,22 @@ L3720    tst   <u001C,u
          subb  <u0028,u
 L372E    stb   <u0095
          rts
-L3731    pshs  b,a
-         lbsr  L011E
+
+* Dim test state, write, undim state?
+L3731    pshs  d
+         lbsr  L011E  Start dimmed text
          tfr   x,d
          leax  >0,pcr
          leax  d,x
          bra   L3743
-
-L3740    lbsr  TRMEND
+L3740    lbsr  OUTREPT
 L3743    lda   ,x+
          bne   L3740
-         lbsr  L011F
-         puls  pc,b,a
+         lbsr  L011F   Write txt and stop dimmed
+         puls  pc,d
+
 L374C    pshs  b,a
-         lbsr  L011E
+         lbsr  L011E  Start dimmed text
          bra   L3743
 
 L3753    lbsr  L0167
@@ -8266,11 +7870,11 @@ L37B4    ldx   <u001C
          leay  <$37,x
          sty   <u0052
 L37BC    lbsr  L0153   Read keyboard
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L380F
          cmpa  >L04C4,pcr
          beq   L37EB
-         cmpa  >L04C3,pcr
+         cmpa  >L04C3,pcr Backspace
          beq   L37F3
          cmpa  #$0D
          beq   L37DF
@@ -8281,7 +7885,7 @@ L37DB    cmpx  <u0052
 L37DF    sta   ,x+
          cmpa  #$0D
          beq   L37EA
-         lbsr  TRMEND
+         lbsr  OUTREPT
          bra   L37BC
 
 L37EA    rts
@@ -8299,12 +7903,12 @@ L37F3    cmpx  <u001C
 L37FB    leax  -$01,x
          ldd   <SCRROW
          decb
-L3800    lbsr  WRROWCOL
+L3800    lbsr  GOROWCOL
          lda   #C$SPAC
-         lbsr  TRMEND
+         lbsr  OUTREPT
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          rts
 
 L380F    ldu   <u0022
@@ -8337,14 +7941,14 @@ L3846    ldx   >L052F,pcr
 L3850    ldx   >L0535,pcr  Ptr to "Erase entire text?"
          lbsr  WRLINE1
          lbsr  L3753
-         lbsr  TRMEND
+         lbsr  OUTREPT
          lbsr  L1C44
          cmpa  >L04DB,pcr  character Y
          lbne  L3762
          ldx   >L0533,pcr  Ptr to "Are you sure?"
          lbsr  WRLINE2
          lbsr  L3753
-         lbsr  TRMEND
+         lbsr  OUTREPT
          lbsr  L1C44
          cmpa  >L04DB,pcr  character Y
          lbne  L3762
@@ -8411,8 +8015,8 @@ WRLINE2  ldd   #$0200   Line 2
          bra   L3928
 
 WRLINE3  ldd   #$0300   Line 3
-L3928    lbsr  WRROWCOL
-         lbra  L3731
+L3928    lbsr  GOROWCOL
+         lbra  L3731  Write string in X
          ldx   >L051B,pcr
          lbsr  L3916
          lbsr  L37B4
@@ -8507,14 +8111,14 @@ L39E9    cmpy  <u006D
          clr   <u0068
          lbra  L3762
 L3A03    ldd   #$0100
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          lbsr  L0281
          ldx   >L0523,pcr
          lbsr  WRLINE3
          lbra  L3762
 L3A19    ldd   #$0100
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          lbsr  L0281
          ldx   >L0521,pcr
@@ -8573,7 +8177,7 @@ L3A9B    stb   <u0045
 L3A9F    stb   <u0044
          bra   L3A6F
 L3AA3    ldx   >L0525,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbra  L0412
          lda   #$01
          sta   <u00CA
@@ -8632,7 +8236,7 @@ L3B27    ldx   >L0511,pcr
          ldx   <u0032
          lbsr  L374C
          ldx   >L0513,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L3753
          lbsr  L1C44
          cmpa  >L04DC,pcr  character N
@@ -8642,10 +8246,10 @@ L3B27    ldx   >L0511,pcr
          cmpa  #$0D
          bne   L3B27
 L3B50    lda   >L04DB,pcr  character Y
-         lbsr  TRMEND
+         lbsr  OUTREPT
          ldx   <u0032
          bra   L3B77
-L3B5B    lbsr  TRMEND
+L3B5B    lbsr  OUTREPT
 L3B5E    ldx   >L051B,pcr
          lbsr  WRLINE1
          lbsr  L37B4
@@ -8679,7 +8283,7 @@ L3BA3    lda   >L04DB,pcr  character Y
          bcs   L3BB3
          bra   L3B83
 L3BB3    ldd   #$0100
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
 L3BBC    ldx   >L0515,pcr
          lbsr  WRLINE3
@@ -8698,7 +8302,7 @@ L3BDD    ldx   <u0056
          jsr   ,x
          bcc   L3BD0
 L3BE3    ldd   #$0100
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          ldx   >L0517,pcr
          lbsr  WRLINE3
@@ -8741,7 +8345,7 @@ L3C42    lda   #$07
          lbsr  L3916
          lbra  L3762
 L3C51    ldd   #$0200
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          lbra  L3762
          lda   #$01
@@ -8770,7 +8374,7 @@ L3C8E    lds   <u001E
          ldx   >L0543,pcr
          lbsr  L3916
 L3CA3    lbsr  L3753
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L3762
          cmpa  #$0D
          beq   L3CDE
@@ -8783,15 +8387,15 @@ L3CA3    lbsr  L3753
          lda   #$07
          lbsr  L00F6
          bra   L3CA3
-L3CCA    lbsr  TRMEND
+L3CCA    lbsr  OUTREPT
          ldx   >L0547,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L37B4
          ldx   <u001C
          lbsr  L3A2E
          bra   L3CEF
 L3CDE    lda   >L04DC,pcr  character N
-         lbsr  TRMEND
+         lbsr  OUTREPT
          ldd   >L0541,pcr
          leax  >0,pcr
          leax  d,x
@@ -8805,7 +8409,7 @@ L3D02    ldx   >L0549,pcr
          lbsr  WRLINE1
          clr   <u00A2
 L3D0B    lbsr  L3753
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L3D3E
          lbsr  L1C44
          cmpa  >L04DC,pcr  character N
@@ -8817,11 +8421,11 @@ L3D0B    lbsr  L3753
          lda   #$07
          lbsr  L00F6
          bra   L3D0B
-L3D2E    lbsr  TRMEND
+L3D2E    lbsr  OUTREPT
          inc   <u00A2
          bra   L3D3C
 L3D35    lda   >L04DC,pcr  character N
-         lbsr  TRMEND
+         lbsr  OUTREPT
 L3D3C    bsr   L3D4E
 L3D3E    lbsr  L014A
 L3D41    clr   <u004B
@@ -8849,7 +8453,7 @@ L3D70    lda   #$03
          ldx   >L054D,pcr
          lbsr  WRLINE2
 L3D7C    lbsr  L3753
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L3E6F
          lbsr  L1C44
          cmpa  >L04DC,pcr  character N
@@ -8862,13 +8466,13 @@ L3D7C    lbsr  L3753
          lbsr  L00F6
          bra   L3D7C
 L3DA1    lda   >L04DB,pcr  character Y
-         lbsr  TRMEND
+         lbsr  OUTREPT
          clr   <u00C0
          ldb   #$FF
          bra   L3DD9
-L3DAE    lbsr  TRMEND
+L3DAE    lbsr  OUTREPT
          ldx   >L054F,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L37B4
          ldx   <u001C
          lbsr  L4A0C
@@ -8878,7 +8482,7 @@ L3DAE    lbsr  TRMEND
          decb
 L3DC6    stb   <u00C0
          ldx   >L0551,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L37B4
          ldx   <u001C
          lbsr  L4A0C
@@ -8910,10 +8514,10 @@ L3DFC    lda   <u0010,u
          lbsr  L0153   Read keyboard
          cmpa  #$20
          beq   L3E22
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          bne   L3E35
 L3E22    lbsr  L3753
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L3E35
          cmpa  #$20
          beq   L3E35
@@ -8983,7 +8587,7 @@ L3EA8    lda   <u002B,u
          tst   <u00A2
          beq   L3EA8
 L3EC4    lbsr  L3753
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L3EA8
          cmpa  #$20
          beq   L3EA8
@@ -9162,7 +8766,7 @@ L402C    ldy   u0006,u
          lbsr  L2181
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L403A    lbra  L4B5E
 L403D    pshs  a
          tst   <u00C2
@@ -9336,18 +8940,18 @@ L41A7    ldd   ,u
          lbsr  L1A3F
          lda   <u006A
          clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldd   <u00C3
          subd  u0006,u
          lbsr  L2CAE
          ldx   >L0573,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          ldx   <u0034
          lbsr  L374C
          ldx   >L0575,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L1C27
-         lbsr  TRMEND
+         lbsr  OUTREPT
          anda  #$5F
          cmpa  >L04DB,pcr  character Y
          lbne  L2A65
@@ -9378,9 +8982,9 @@ L41A7    ldd   ,u
          sta   <u0060
 L4243    lbsr  L45A5
          ldd   #$0000
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0567,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
 L4253    ldx   <u001C
          stx   <u00B4
          lbsr  L443A
@@ -9398,9 +9002,9 @@ L426A    lbsr  L44DF
          sta   <u0068
          sta   <u0060
          ldd   #$0200
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0569,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lda   #$01
          sta   <u0074
          lda   <u006A
@@ -9409,7 +9013,7 @@ L426A    lbsr  L44DF
 L4290    lbsr  L1C27
          cmpa  #$0D
          beq   L42A8
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L42A8
          cmpa  #$20
          bne   L4290
@@ -9441,9 +9045,9 @@ L42BA    lbra  L2A2B
          sta   <u0060
 L42D7    lbsr  L45A5
          ldd   #$0000
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L056D,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          ldx   <u001C
          stx   <u00B4
 L42EB    lbsr  L443A
@@ -9457,9 +9061,9 @@ L42EB    lbsr  L443A
          ldd   <u00B4
          std   <u00B2
          ldd   #$0100
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L056F,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L443A
          bcs   L42D7
 L4314    lbsr  L44DF
@@ -9474,9 +9078,9 @@ L4314    lbsr  L44DF
          lda   #$03
          lbsr  L1A3F
          ldd   #$0200
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0571,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lda   #$01
          sta   <u0074
          lda   #$04
@@ -9484,7 +9088,7 @@ L4314    lbsr  L44DF
          clr   <u00CF
          lbsr  L3249
 L4349    lbsr  L1C27
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L42A8
          anda  #$5F
          cmpa  >L04DC,pcr  character N
@@ -9523,9 +9127,9 @@ L438A    ldd   <u00B4
          sta   <u0060
          sta   <u0068
 L43AE    ldd   #$0200
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0569,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lda   #$01
          sta   <u0074
          lda   #$04
@@ -9534,7 +9138,7 @@ L43AE    ldd   #$0200
 L43C6    lbsr  L1C27
          cmpa  #$0D
          lbeq  L42A8
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L42A8
          cmpa  #$20
          bne   L43C6
@@ -9586,7 +9190,7 @@ L443A    lda   >L04E7,pcr  character {
          clrb
          ldx   <u00B4
 L4446    lbsr  L1C27
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L42A8
          cmpa  >L04C4,pcr
          beq   L44C1
@@ -9594,7 +9198,7 @@ L4446    lbsr  L1C27
          beq   L4475
          cmpa  >L04D2,pcr
          beq   L44C4
-         cmpa  >L04C3,pcr
+         cmpa  >L04C3,pcr Backspace
          beq   L4496
          cmpa  >L04D4,pcr  character |
          bne   L4471
@@ -9615,19 +9219,19 @@ L4475    sta   b,x
 L4489    cmpa  #$F0
          bne   L4491
          lda   >L04D4,pcr  character |
-L4491    lbsr  TRMEND
+L4491    lbsr  OUTREPT
          bra   L4446
 L4496    tstb
          beq   L44C1
          pshs  b
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lda   #$20
-         lbsr  TRMEND
+         lbsr  OUTREPT
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          puls  b
          decb
          bra   L4446
@@ -9651,7 +9255,7 @@ L44C4    lda   #$0D
          lda   >L04E6,pcr  character }
          lbsr  L193C
          ldx   >L056B,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          inc   <u00EB
          andcc #^Carry
          rts
@@ -10331,7 +9935,7 @@ L4ACE    lda   #$01
          sta   <u0074
 L4AD2    tfr   b,a
          clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L2BE8
          ldu   <u0022
          lbsr  L21F5
@@ -10368,7 +9972,7 @@ L4B14    lda   <SCRROW
          sta   <u0096
          lda   <u003E
 L4B28    clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          cmpa  <u0060
          bcs   L4B32
          sta   <u0074
@@ -10421,7 +10025,7 @@ L4B88    stx   u0006,u
          clr   <u0074
          lda   <u006A
          lbsr  L3249
-         lda   <u0041
+         lda   <u0041 Curr column
          adda  <u0098
          sta   <u0071
          lbra  L2A80
@@ -10429,7 +10033,7 @@ L4B88    stx   u0006,u
 L4B9E    cmpx  ,u
          bne   L4BAB
          lda   <u0098
-         adda  <u003F
+         adda  <u003F Max column
          sta   <u0071
          lbra  L4A5F
 L4BAB    tst   ,-x
@@ -10446,7 +10050,7 @@ L4BBD    stx   u0006,u
          clr   <u00CF
          lda   <u006A
          lbsr  L3249
-         lda   <u0041
+         lda   <u0041 Curr column
          adda  <u0098
          sta   <u0071
          lbra  L2A80
@@ -10462,7 +10066,7 @@ L4BBD    stx   u0006,u
          cmpa  >L04B3,pcr
          lbne  L2A8F
          lda   <u0098
-         adda  <u003F
+         adda  <u003F Max column
          sta   <u0071
          lda   <u006A
          lbsr  L3249
@@ -10656,17 +10260,17 @@ L4D70    lda   <u006A
          lbsr  L1A3F
          lda   <u006A
          clrb
-         lbsr  WRROWCOL
-         ldx   >L04FD,pcr
-         lbsr  L3731
+         lbsr  GOROWCOL
+         ldx   >L04FD,pcr Ptr to "*** page ="
+         lbsr  L3731  Write string in X
          ldx   <u001C
 L4DA5    lbsr  L1C27
          anda  #$7F
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L2A65
          cmpa  #$0D
          beq   L4DDC
-         lbsr  TRMEND
+         lbsr  OUTREPT
          cmpa  #$30
          bcs   L4DC5
          cmpa  #$39
@@ -10691,7 +10295,7 @@ L4DDC    sta   ,x
          subd  #$0001
 L4DEE    std   <u00BA
          ldd   #$0000
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldd   <u00BA
          cmpd  u000F,u
          bls   L4E4F
@@ -10714,7 +10318,7 @@ L4E13    lda   #$01
          lbsr  L19F1
 L4E25    ldd   <SCRROW
          inca
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L4E2B    lbsr  L23D5
          tst   u0008,u
          bne   L4E13
@@ -10835,9 +10439,9 @@ L4EF1    lda   #$01
 L4F3E    ldx   >L053B,pcr
          lbsr  L3916
          ldx   >L0537,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          ldx   >L053D,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
 L4F53    lbsr  L3753
          lbsr  L1C44
          cmpa  #$0D
@@ -10849,7 +10453,7 @@ L4F53    lbsr  L3753
          lda   #$07
          lbsr  L00F6
          bra   L4F53
-L4F70    lbsr  TRMEND
+L4F70    lbsr  OUTREPT
          ldx   >L053F,pcr
          lbsr  WRLINE1
          lbsr  L37B4
@@ -10857,7 +10461,7 @@ L4F70    lbsr  TRMEND
          lbsr  L3A2E
          bra   L4F93
 L4F84    lda   #$59
-         lbsr  TRMEND
+         lbsr  OUTREPT
 L4F89    ldd   >L0537,pcr
          leax  >0,pcr
          leax  d,x
@@ -10876,7 +10480,7 @@ L4FA9    pshs  cc
          puls  cc
          bvs   L4FBE
 L4FB2    ldd   #$0000
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          lbra  L4FEE
 L4FBE    lda   #$01
@@ -10998,7 +10602,7 @@ L50A8    stb   <u00E5
          leax  d,x
          lda   #$04
 L50B4    ldb   #$03
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L374C
          lda   <SCRROW
          inca
@@ -11007,27 +10611,27 @@ L50B4    ldb   #$03
          cmpb  <u00E5
          bne   L50B4
          ldd   #$1303
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          ldx   >L0579,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
 L50D4    clr   <u00E6
 
 L50D6    lda   #C$SPAC
-         lbsr  TRMEND
+         lbsr  OUTREPT
          lda   <u00E6
          adda  #$04
          clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lda   #'>
-         lbsr  TRMEND
+         lbsr  OUTREPT
          ldd   <SCRROW
          decb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
 L50EE    lbsr  L0153   Read keyboard
          lbsr  L1C44
          cmpa  #$0D    Select item in supervisor menu
          beq   L5124
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          beq   L5127
          cmpa  >TXTBEG,pcr   check 'I' key
          beq   L5115
@@ -11061,9 +10665,9 @@ L5127    clra
 L5129    clrb
          lda   #$04
 L512C    clrb
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lda   #$20
-         lbsr  TRMEND
+         lbsr  OUTREPT
          lda   <SCRROW
          inca
          ldb   <SCRROW
@@ -11085,7 +10689,7 @@ L5158    clra
          lbsr  L3916
          lbsr  L3753
          lbsr  L1C44
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L3762
          cmpa  >L04DC,pcr  character N
          lbeq  L5237
@@ -11108,10 +10712,10 @@ L518A    lda   >L04DB,pcr  character Y
          ldx   <u0032
          lbsr  L374C
          ldx   >L055D,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L3753
          lbsr  L1C44
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L3762
          cmpa  >L04DB,pcr  character Y
          beq   L51F5
@@ -11143,7 +10747,7 @@ L5202    ldx   >L055F,pcr
          lbsr  WRLINE2
          lbsr  L3753
          lbsr  L1C44
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L3762
          cmpa  >L04DB,pcr  character Y
          beq   L522C
@@ -11151,13 +10755,13 @@ L5202    ldx   >L055F,pcr
          beq   L522C
          cmpa  >L04DC,pcr  character N
          bne   L5202
-         lbsr  TRMEND
+         lbsr  OUTREPT
          bra   L523A
 L522C    lda   >L04DB,pcr  character Y
-         lbsr  TRMEND
+         lbsr  OUTREPT
          inc   <u004D
          bra   L523A
-L5237    lbsr  TRMEND
+L5237    lbsr  OUTREPT
 L523A    tst   <u004C
          lbeq  L5357
          tst   <u004F
@@ -11174,7 +10778,7 @@ L525A    ldx   >L0519,pcr
          lbsr  WRLINE3
          lbsr  L3753
          lbsr  L1C44
-         cmpa  >L04D0,pcr
+         cmpa  >L04D0,pcr  Escape
          lbeq  L3762
          cmpa  >L04DC,pcr  character N
          lbeq  L3762
@@ -11230,7 +10834,7 @@ L52E4    cmpx  <u0052
 L52F0    lbsr  L02CA
          bcc   L52E4
          ldd   #$0200
-         lbsr  WRROWCOL
+         lbsr  GOROWCOL
          lbsr  L02BF
          lbsr  L0287
          clr   <u004F
@@ -11356,7 +10960,7 @@ L5417    lda   #$02
          lda   #$03
          lbsr  L1A3F
          ldx   >L0563,pcr
-         lbsr  L3731
+         lbsr  L3731  Write string in X
          lbsr  L02BF
          bra   L5410
 L542D    tst   <u0061
@@ -11379,4 +10983,4 @@ L5448    inc   <u00E7
          sta   <u0060
          lbra  L4F89
          emod
-BINEND      equ   *
+BINEND   equ   *
