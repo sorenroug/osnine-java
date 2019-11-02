@@ -1131,9 +1131,9 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-*20
+*20 Probably Hewlett packard 2621
          fcb   $F0 p
-         fcb   $4C L
+         fcb   76
          fcb   0
          fcb   0
          fcb   0
@@ -1183,17 +1183,17 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-         fcb   130
+         fcb   130 CLEAR SCREEN
          fcb   96
          fcb   127
          fcb   128
          fcb   0
          fcb   0
-         fcb   99
+         fcb   99 ATT0  - NO CHARACTER ATTRIBUTES
          fcb   129
-*24
+*24 Probably TEC 70
          fcb   $F0 p
-         fcb   $5B [
+         fcb   91
          fcb   0
          fcb   0
          fcb   0
@@ -1206,7 +1206,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $5C \
          fcb   6
-*25 VT100?
+*25 VT100/ANSI Standard
          fcb   CYX+SSCD+LERF+D2479
          fcb   93  CURSOR MOVE (macro)
          fcb   0
@@ -1221,9 +1221,9 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   99 ATT0  - NO CHARACTER ATTRIBUTES
          fcb   100 ATT1  - CHARACTER ATTRIBUTES
-*26
+*26 Probably GIMIX Video board
          fcb   $70 p
-         fcb   $30 0
+         fcb   48
          fcb   $31 1
          fcb   $32 2
          fcb   $65 e

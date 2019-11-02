@@ -416,26 +416,26 @@ XPGM52 FCC '---NONE---'
  FCB 0
 XPGM53 FCC 'STATUS:     '
  FCB 0
-XPGM54    fcc   "OPEN"
+XPGM54 FCC "OPEN"
  FCB 0
-XPGM55    fcc   "CLOSED"
+XPGM55 FCC "CLOSED"
  FCB 0
-XPGBS1    fcc   "PAGE"
+XPGBS1 FCC "PAGE"
  FCB 0
-XSAVM1    fcc   'Save as "'
+XSAVM1 FCC 'Save as "'
  FCB 0
 XSAVMB FCC '" (Y*/N)? '
  FCB 0
-XSAVM2    fcc   "NO TEXT SAVED"
+XSAVM2 FCC 'NO TEXT SAVED'
  FCB 0
-XSAVM3    fcc   "PART OR ALL OF TEXT NOT SAVED"
+XSAVM3 FCC 'PART OR ALL OF TEXT NOT SAVED'
  FCB 0
-XSAVM4    fcc   "Delete backup file (Y*/N)? "
+XSAVM4 FCC 'Delete backup file (Y*/N)? '
  FCB 0
-XSAVM5    fcc   "File name? "
+XSAVM5 FCC 'File name? '
  FCB 0
 
-XSVMS1    fcc   "Marker not found."
+XSVMS1 FCC 'Marker not found.'
  FCB 0
 XDSTM1 FCC 'WARNING! FILE TOO LARGE - '
 XDSTM2 FCC 'ENTIRE FILE MAY NOT BE NOT LOADED!!!'
@@ -592,25 +592,27 @@ XHLPS7 FCC "STYHLP6"
 
 XSTYS1    fcc   "/p"
  FCB 0
+
+* Remnants from binary patching
  FCC " later printing"
  FCB 0
  FCC "WHEEL ----------- specify a proportional spacing print wheel"
  FCB 0
-L1326    fcc   "NEW ------------- new text from input file"
+ FCC "NEW ------------- new text from input file"
  FCB 0
  FCC "    STYLOGRAPH WORD PROCESSING SYSTEM V2.1 (c) 1981"
  FCB 0
-L1385    fcc   "RETURN"
+ FCC "RETURN"
  FCB 0
-L138C    fcc   "ESCAPE Commands"
+ FCC "ESCAPE Commands"
  FCB 0
-L139C    fcc   "CONTROL Commands"
+ FCC "CONTROL Commands"
  FCB 0
-L13AD    fcc   "FORMAT Commands (vertical)"
+ FCC "FORMAT Commands (vertical)"
  FCB 0
-L13C8    fcc   "FORMAT Commands (horizontal)"
+ FCC "FORMAT Commands (horizontal)"
  FCB 0
-L13E5    fcc   "FORMAT Commands (misc.)"
+ FCC "FORMAT Commands (misc.)"
  FCB 0
 
 * Redundant junk in original
