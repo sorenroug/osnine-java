@@ -193,7 +193,7 @@ u00EF    rmb   13073
 size     equ   .
 
 
-L000D    fcb   $01
+L000D    fcb   $01  Display driver select
 L000E    fcb   $00
          fcb   $14  MAXPAGES
 L0010    fcb   $28
@@ -209,26 +209,21 @@ L0011    fcb   $00
          fdb   TRMBEG
          fdb   TRMSEQ
          fdb   TRMEND
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $1B
-         fcb   $31 1
-         fcb   $1B
-         fcb   $93
+         fdb   $0000
+         fdb   $0000
+         fdb   $0000
+         fdb   $1B31
+         fdb   $1B93
          fcb   $0D
          fcb   $37 7
          fcb   $4C L
          fcb   $00
          fcb   $0D
-         fcc   " STYLOGRAPH "
+ FCC " STYLOGRAPH "
          fcb   $0D
-         fcc   "COPYRIGHT 1982"
+ FCC "COPYRIGHT 1982"
          fcb   $0D
-         fcc   "GREAT PLAINS COMPUTER CO.,INC."
+ FCC "GREAT PLAINS COMPUTER CO.,INC."
          fcb   $0D
 name     equ   *
          fcs   /Stylo/
@@ -463,7 +458,7 @@ L021D    pshs  u,x,b,a
          ldx   <u001A
          bra   L01FB
 L022A    pshs  y,x,b,a
-         leax  >L1464,pcr
+         leax  >STYDIR,pcr
          ldy   <u0012
 L0233    lda   ,x+
          beq   L023B
@@ -761,647 +756,7 @@ L049B    orcc  #Carry
          stb   <u0003
          puls  pc,u
 
-* Beginning of text area
-TXTBEG   equ *
-
-*ESCAPE CHARACTER CONSTANTS
-ESCTBL EQU *
-CURUC FCC 'I' CURSOR UP
- FCC 'L' CURSOR RIGHT
-CURDC FCC ',' CURSOR DOWN
- FCC 'J' CURSOR LEFT
- FCC 'U' SCROLL UP
- FCC 'M' SCROLL DOWN
- FCC 'F' FIND CHARACTERS
- FCC 'R' REPLACE CHARACTERS
- FCC ';' ENTER TEXT
- FCC 'W' WITHDRAW RESERVED TEXT
- FCC 'Z' BLOCK DELETE
- FCC 'S' RESERVE BLOCK OF TEXT
- FCC '/' COMMAND MODE
- FCC 'D' DUPLICATE
- FCC 'O' MOVE SCREEN UP
- FCC '.' MOVE SCREEN DOWN
-CURLRC FCC 'K' MOVE CURSOR LEFT-RIGHT
-PAGC FCC 'P' MOVE TO PAGE #
- FCC '}' SET MARKER CHARACTER
- FCB $14 ^T TAB CHARACTER
- FCC '-' DUMMY
- FCC '7' SCROLL LEFT
- FCC '9' SCROLL RIGHT
- FCC '1' OVERWRITE 1
- FCC '^' INSERT 1
-
-*CHARACTER MOD CHARACTERS (ALSO CONTROL)
-ULMCHR FCB $15 ^U UNDERLINE
-OLMCHR FCB $F ^O OVERLINE
-BFMCHR    fcb   $02
-SPMCHR    fcb   $09
-SBMCHR    fcb   $0B
-ENMODC    fcb   $1A
-         fcb   $20
-BSC    fcb   $08 Backspace
-
-*CONTROL CHARACTER CONSTANTS
-CTRTBL EQU *
-LNDELC FCB $18 ^X LINE DELETE
-         fcb   $04
-         fcb   $17
-         fcb   $06
-NMERC    fcb   $0E
-         fcb   $16
-PAGSTC    fcb   $10
-         fcb   $07
-         fcb   $12
-         fcb   $19
-         fcb   $1E
-         fcb   $01
-ESCC    fcb   $1B  Escape
-TABC    fcb   $14
-FLDCHR    fcb   $15
-INSFIL    fcb   $2D -
-CRCHR    fcb   $7C |
-PRCCHR    fcb   $2C ,
-MRKCHR    fcb   $7D }
-PNCHR    fcb   $23 #
-         fcb   $7C |
-RARCHR    fcb   $3E >
-LARCHR    fcb   $3C <
-YCHR    fcb   $59 Y
-NCHR    fcb   $4E N
-         fcb   $53 S
-ACHR    fcb   $41 A
-PSCHR    fcb   $53 S
-PTCHR    fcb   $54 T
-PBCHR    fcb   $42 B
-CTMCHR    fcb   $54 T
-CPTCHR    fcb   $50 P
-CPGCHR    fcb   $4D M
-OPTCHR    fcb   $2B +
-RBCHR    fcb   $7D }
-LBCHR    fcb   $7B {
-
-
-*START PARAMETERS
-STLM FCB 0 START LEFT MARGIN
-STLL FCB 0 LINE LENGTH, 0= DEFAULT TO NC
-STMS    fcb   $00
-STHFLL    fcb   $00
-STJU    fcb   $00
-STPL    fcb   $42 B
-STCS    fcb   $0A
-STVS    fcb   $06
-STBFS    fcb   $04
-         fcb   $00
-STPADC    fcb   $00
-STMMC    fcb   $00
-STPC    fcb   $00
-
-*VECTORS FOR THE STRINGS
-
-FMTTBL FDB XFMTTBL
-ERRTBL FDB XERRTBL
-BELS1 FDB XBELS1
-BAVM1 FDB XBAVM1
-PAGS1 FDB XPAGS1
-
-PGMS1 FDB XPGMS1
-PGMS6 FDB XPGMS6
-PGM50 FDB XPGM50
-PGM51 FDB XPGM51
-PGM52 FDB XPGM52
-PGM53 FDB XPGM53
-PGM54 FDB XPGM54
-PGM55 FDB XPGM55
-
-PGBS1 FDB XPGBS1
-
-SAVM1 FDB XSAVM1
-SAVMB FDB XSAVMB
-SAVM2 FDB XSAVM2
-SAVM3 FDB XSAVM3
-SAVM4 FDB XSAVM4
-SAVM5 FDB XSAVM5
-
-SVMS1 FDB XSVMS1
-
-DSTM1 FDB XDSTM1
-DSTM2 FDB XDSTM2
-DSTM3 FDB XDSTM3
-DSTM5 FDB XDSTM5
-DSTM6 FDB XDSTM6
-
-TTYS1 FDB XTTYS1
-SPCLS1 FDB XSPCLS1
-OSPS1 FDB XOSPS1
-OSPS2 FDB XOSPS2
-EXTM1 FDB XEXTM1
-EXTM2 FDB XEXTM2
-ERMM1 FDB XERMM1
-
-PSWS1 FDB XPSWS1
-PSWS2 FDB XPSWS2
-PSWS3 FDB XPSWS3
-PSWS4 FDB XPSWS4
-PSWS5 FDB XPSWS5
-
-STYS1 FDB XSTYS1
-PRNS1 FDB XPRNS1
-PRNS2 FDB XPRNS2
-PRNS3 FDB XPRNS3
-PRNS4 FDB XPRNS4
-OTXS1 FDB XOTXS1
-OTXS2 FDB XOTXS2
-OTXS3 FDB XOTXS3
-OTXS4 FDB XOTXS4
-SPLS1 FDB XSPLS1
-PSQS1 FDB XPSQS1
-
-NEWM1 FDB XNEWM1
-NEWM3 FDB XNEWM3
-NEWM4 FDB XNEWM4
-NEWM5 FDB XNEWM5
-NEWM6 FDB XNEWM6
-NEWM7 FDB XNEWM7
-NEWM8 FDB XNEWM8
-NEWM9 FDB XNEWM9
-
-FNDS1 FDB XFNDS1
-FNDS2 FDB XFNDS2
-FNDS3 FDB XFNDS3
-RPLS1 FDB XRPLS1
-RPLS2 FDB XRPLS2
-RPLS3 FDB XRPLS3
-BDLS1 FDB XBDLS1
-BDLS2 FDB XBDLS2
-
-SUPS1    fdb   XSUPS1  EDIT menu choice
-BANNER   fdb   XBANNER
-HLPS1    fdb   XHLPS1
-HLPS2    fdb   XHLPS2
-         fdb   XHLPS3
-         fdb   XHLPS4
-         fdb   XHLPS5
-         fdb   XHLPS6
-         fdb   XHLPS7
-
-*FORMAT COMMAND TABLE
-XFMTTBL EQU *
- FCC 'CE'
- FCB 0
- FCC 'LL'
- FCB 0
- FCC 'PL'
- FCB 0
- FCC 'JU'
- FCB 0
- FCC 'RJ'
- FCB 0
- FCC 'NJ'
- FCB 0
- FCC 'LM'
- FCB 0
- FCC 'SP'
- FCB 0
- FCC 'SS'
- FCB 0
- FCC 'HD'
- FCB 0
- FCC 'FT'
- FCB 0
- FCC '*'
- FCB 0
- FCC 'PN'
- FCB 0
- FCC 'PG'
- FCB 0
- FCC 'SI'
- FCB 0
- FCC 'IN'
- FCB 0
- FCC 'VT'
- FCB 0
- FCC 'CS'
- FCB 0
- FCC 'VS'
- FCB 0
- FCC 'PS'
- FCB 0
- FCC 'NPS'
- FCB 0
- FCC 'PC'
- FCB 0
- FCC 'MMC'
- FCB 0
- FCC 'PADC'
- FCB 0
- FCC 'NL'
- FCB 0
- FCC 'PP'
- FCB 0
- FCC 'PPSI'
- FCB 0
- FCC 'PPSP'
- FCB 0
- FCC 'PPNL'
- FCB 0
- FCC 'TF'
- FCB 0
- FCC 'BFS'
- FCB 0
- FCB 0 END OF TABLE
-
-XERRTBL EQU *
- FCB 2
- FCC 'L/R SCROLL OUT OF BOUNDS'
- FCB 0
- FCB 3
- FCC 'INVALID ESCAPE COMMAND ENTERED'
- FCB 0
- FCB 7
- FCC 'TOP OF TEXT REACHED'
- FCB 0
- FCB 10
- FCC 'BOTTOM OF TEXT REACHED'
- FCB 0
- FCB 11
- FCC 'MAXIMUM PAGE LIMIT'
- FCB 0
- FCB 12
- FCC 'INVALID FORMAT COMMAND'
- FCB 0
- FCB 13
- FCC 'FORMAT VALUE OUT OF BOUNDS'
- FCB 0
- FCB 14
- FCC 'ILLEGAL HEADER OR FOOTER COMMAND'
- FCB 0
- FCB 15
- FCC "CURSOR ON FORMAT LINE - CAN'T BUNDLE"
- FCB 0
- FCB 16
- FCC "HEADER OR FOOTER TOO LONG FOR PAGE"
- FCB 0
- FCB 17
- FCC "CAN'T BACKSPACE TO BUNDLED FORMAT LINE"
- FCB 0
- FCB 18
- FCC "ILLEGAL DELETE"
- FCB 0
- FCB 20
- FCC "CAN'T DELETE - NOT BRACKETED BY RETURNS"
- FCB 0
- FCB 21
- FCC "CAN'T FIND MARKER"
- FCB 0
- FCB 22
- FCC "TEXT ALREADY SAVED"
- FCB 0
- FCB 23
- FCC "NOT ENOUGH MEMORY TO DO COMMAND"
- FCB 0
- FCB 24
- FCC "NO TEXT SAVED, CAN'T WITHDRAW OR DUPLICATE"
- FCB 0
- FCB 25
- FCC "WARNING - MEMORY NEARLY FULL"
- FCB 0
- FCB 26
- FCC "MEMORY FULL"
- FCB 0
- FCB 27
- FCC "TOO MANY TABS"
- FCB 0
- FCB 28
- FCC "NO MORE TABS SET"
- FCB 0
- FCB 29
- FCC "CAN'T TAB"
- FCB 0
- FCB 30
- FCC "WARNING - NONSTANDARD CHARACTER SPACING"
- FCB 0
- FCB 31
- FCC "STRING OVERFLOW"
- FCB 0
- FCB 32
- FCC "STRING NOT FOUND"
- FCB 0
- FCB 33
- FCC "ILLEGAL PAGE NUMBER"
- FCB 0
- FCB 34
- FCC 'WARNING - NO "PS-TABLE" SET'
- FCB 0
- FCB 0 END OF TABLE
-
-XBELS1 FCC 'NO ERROR'
- FCB 0
-
-XBAVM1 FCC "CANNOT MOVE TO LAST PAGE, TOO MANY PAGES"
- FCB 0
-
-XPAGS1 FCC "*********** PAGE="
- FCB 0
-
-*MESSAGES AND NUMBER AREAS
-XPGMS1 FCC '- PAGE STATUS -'
- FCB 0
-XPGM2A FCC 'READ FILE = '
- FCB 0
-XPGMS2 FCC 'WRITE FILE = '
- FCB 0
-XPGMS4    fcc   "------ NONE --------"
- FCB 0
-XPGMS6 EQU *
- FCC   "SERIAL PAGE # ------"
- FCB 0
- FCC   "PRINTED PAGE # -----"
- FCB 0
- FCC   "LINE # -------------"
- FCB 0
- FCB 0 SKIP A LINE
- FCC "PAGE LENGTH ---- ,PL"
- FCB 0
- FCC "HEADER LINES -,HD ,,"
- FCB 0
- FCC 'FOOTER LINES -,FT ,,'
- FCB 0
- FCC 'SPACING -------- ,SS'
- FCB 0
- FCC 'LINES/INCH ----- ,VS'
- FCB 0
- FCB 0
- FCC 'LINE LENGTH ---- ,LL'
- FCB 0
- FCC 'H/F L-LENGTH --- ,LL'
- FCB 0
- FCC 'LEFT MARGIN ---- ,LM'
- FCB 0
- FCC 'INDENT --------- ,IN'
- FCB 0
- FCC "CHAR'S/INCH ---- ,CS"
- FCB 0
-
- FCC 'PARA INDENT -- ,PPSI'
- FCB 0
- FCC 'PARA SPACE --- ,PPSP'
- FCB 0
- FCC "PARA NEED L'S -,PPNL"
- FCB 0
- FCB 0
- FCC 'JUSTIFIED - ,JU/,NJU'
- FCB 0
- FCC 'PROP SP --- ,PS/,NPS'
- FCB 0
- FCB 0
- FCC 'PRINTER CHAR --- ,PC'
- FCB 0
- FCC 'SP PAD CHAR -- ,PADC'
- FCB 0
- FCC 'M-M CHARACTER - ,MMC'
- FCB 0
- FCB 0
- FCC 'ROOM LEFT'
- FCB 0
- FCB 0,0,0,0,0
-XPGM50 FCC 'READ FILE:   '
- FCB 0
-XPGM51 FCC 'WRITE FILE:  '
- FCB 0
-XPGM52 FCC '---NONE---'
- FCB 0
-XPGM53 FCC 'STATUS:     '
- FCB 0
-XPGM54    fcc   "OPEN"
- FCB 0
-XPGM55    fcc   "CLOSED"
- FCB 0
-XPGBS1    fcc   "PAGE"
- FCB 0
-XSAVM1    fcc   'Save as "'
- FCB 0
-XSAVMB FCC '" (Y*/N)? '
- FCB 0
-XSAVM2    fcc   "NO TEXT SAVED"
- FCB 0
-XSAVM3    fcc   "PART OR ALL OF TEXT NOT SAVED"
- FCB 0
-XSAVM4    fcc   "Delete backup file (Y*/N)? "
- FCB 0
-XSAVM5    fcc   "File name? "
- FCB 0
-XSVMS1    fcc   "Marker not found."
- FCB 0
-
-XDSTM1 FCC 'WARNING! FILE TOO LARGE - '
-XDSTM2 FCC 'ENTIRE FILE MAY NOT BE NOT LOADED!!!'
- FCB 0
-XDSTM3 FCC 'FILE NOT LOADED'
- FCB 0
-XDSTM5 FCB $D,$A
- FCC 'ILLEGAL PRINTER, TERMINAL, OR FILE NAME'
- FCB 0
-XDSTM6 FCC 'INPUT FILE NOT FOUND'
- FCB 0
-
-XTTYS1 FCC 'Output set for "TTY" printer.'
- FCB 0
-XSPCLS1 FCC 'Output set for "Specialty" printer.'
- FCB 0
-XOSPS1 FCC 'OS-9 command:  '
- FCB 0
-XOSPS2 FCB 7
- FCC 'Command not allowed with files open.'
- FCB 0
-XPSQS1 FCC 'Hit any key to restart printer'
- FCB 0
-
-XNEWM1 FCC 'No save.  Cursor on top page.'
- FCB 0
-XNEWM3 FCC "Save text (Y*/N)? "
- FCB 0
-XNEWM4 FCC '  to file "'
- FCB 0
-XNEWM5 FCC '" (Y*/N)? '
- FCB 0
-XNEWM6 FCC 'Fill from input file (Y*/N)? '
- FCB 0
-XNEWM7 FCC 'No room for fill.'
- FCB 0
-XNEWM8 FCC 'DISK ERROR!!!'
- FCB 0
-XNEWM9 FCC 'No fill.  Input file empty.'
- FCB 0
-
-XEXTM1 FCC 'Is the text secure? '
- FCB 0
-XEXTM2 FCC 'Are you sure? '
- FCB 0
-XERMM1 FCC 'Erase entire file in memory? '
- FCB 0
-
-XPSWS1 FCC 'STYPS'
- FCB 0,0,0,0,0,0,0,0,0,0,0,0,0
-XPSWS2 FCC 'ERROR - PROPORTIONAL SPACING TABLE NOT LOADED'
- FCB 0
-XPSWS3 FCC 'Set proportional spacing table "'
- FCB 0
-XPSWS4 FCC '" (Y*,N)? '
- FCB 0
-XPSWS5 FCC 'Table name? '
- FCB 0
-
-XPRNS1 FCC 'Different printer (Y/N*)? '
- FCB 0
-XPRNS2 FCC 'PRINT DRIVER NOT FOUND'
- FCB 0
-XPRNS3 FCC ' Name? '
- FCB 0
-XPRNS4 FCC 'Stop for new pages (Y/N*)? '
- FCB 0
-XOTXS1 FCC 'Hit SPACE to stop/continue, RETURN to abort.  '
- FCB 0
-XOTXS2 FCC 'Print all pages (Y*/N)? '
- FCB 0
-XOTXS3 FCC ' First = '
- FCB 0
-XOTXS4 FCC '  Last = '
- FCB 0
-XSPLS1 FCC 'Spooled output file name? '
- FCB 0
-XFNDS1 FCC '*** FIND    '
- FCB 0
-XFNDS2 FCC '*** STOP (RET) OR CONTINUE (SP)?'
- FCB 0
-XFNDS3 FCC ' UPPER/LOWER CASE'
- FCB 0
-XRPLS1 FCC '*** REPLACE '
- FCB 0
-XRPLS2 FCC '*** WITH    '
- FCB 0
-XRPLS3 FCC '*** REPLACE (Y-N-A)?'
- FCB 0
-XBDLS1 FCC '*** DELETE '
- FCB 0
-XBDLS2 FCC '  CHARACTERS? '
- FCB 0
-
-XSUPS1 equ *
-         fcc   "EDIT ---------- go to ESCAPE mode to edit text"
-         fcb   $00
-         fcc   "PRINT --------- print the text"
-         fcb   $00
-         fcc   "SAVE & RETURN - save text and return to OS-9"
-         fcb   $00
-         fcc   "SAVE ---------- save the text to disk"
-         fcb   $00
-         fcc   "SAVE TO MARK -- save text from cursor to marker"
-         fcb   $00
-         fcc   "RETURN -------- return to OS-9"
-         fcb   $00
-         fcc   "LOAD ---------- insert file at cursor position"
-         fcb   $00
-         fcc   "ERASE --------- erase text without saving"
-         fcb   $00
-         fcc   'SPECIAL-------- use a "letter quality" printer'
-         fcb   $00
-         fcc   "TTY ----------- use a TTY (matrix) printer"
-         fcb   $00
-         fcc   "PASS ---------- pass a command to OS-9"
-         fcb   $00
-         fcc   "SPOOL --------- send text to disk for printing"
-         fcb   $00
-         fcc   "WHEEL --------- select proportional print wheel"
-         fcb   $00
-         fcc   "NEW ----------- new text from input file"
-         fcb   $00
-XBANNER  fcc   "     STYLOGRAPH for the Dragon 64"
-         fcb   $00
-
-XHLPS1 FCC 'RETURN'
- FCB 0
- FCC 'ESCAPE Commands'
- FCB 0
- fcc 'CONTROL Commands'
- FCB 0
- FCC 'FORMAT Commands (vertical)'
- FCB 0
- fcc 'FORMAT Commands (horizontal)'
- FCB 0
- FCC 'FORMAT Commands (misc.)'
- FCB 0
- fcc 'Displayed character mods'
- FCB 0
-XHLPS2 FCC "STYHLP1"
- FCB 0
-XHLPS3 FCC "STYHLP2"
- FCB 0
-XHLPS4 FCC "STYHLP3"
- FCB 0
-XHLPS5 FCC "STYHLP4"
- FCB 0
-XHLPS6 FCC "STYHLP5"
- FCB 0
-XHLPS7 FCC "STYHLP6"
- FCB 0
-
-XSTYS1    fcc   "/p"
-         fcb   $00
-         fcc   " later printing"
-         fcb   $00
-         fcc   "WHEEL ----------- specify a proportional spacing print wheel"
-         fcb   $00
-L1326    fcc   "NEW ------------- new text from input file"
-         fcb   $00
-         fcc   "    STYLOGRAPH WORD PROCESSING SYSTEM V2.1 (c) 1981"
-         fcb   $00
-L1385    fcc   "RETURN"
-         fcb   $00
-L138C    fcc   "ESCAPE Commands"
-         fcb   $00
-L139C    fcc   "CONTROL Commands"
-         fcb   $00
-L13AD    fcc   "FORMAT Commands (vertical)"
-         fcb   $00
-L13C8    fcc   "FORMAT Commands (horizontal)"
-         fcb   $00
-L13E5    fcc   "FORMAT Commands (misc.)"
-         fcb   $00
-
-* Redundant junk in original
-*
- fcc 'Displayed character mods'
- FCB 0
- FCC "STYHLP1"
- FCB 0
- FCC "STYHLP2"
- FCB 0
- FCC "STYHLP3"
- FCB 0
- FCC "STYHLP4"
- FCB 0
- FCC "STYHLP5"
- FCB 0
- FCC "STYHLP6"
- FCB 0
- FCC   "/p1"
- FCB 0,0,0,0,0,0,0,0,0
-
-DOTBAK fcc ".bak"
- FCB 0
-RENAME fcc "rename"
- FCB $0D
-SHELL fcc "shell"
- FCB $0D
-L1464 fcc "/D0/STY/"
- FCB 0
-
-*SAVE A FEW BYTES FOR POSSIBLE LARGER TEXT OVERLAY
- FCC "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-
-*EQUATE FOR STYFIX
-TXTEND EQU *
+ use s_text_go51.asm
 
          lda   <u0045    Load driver number
          cmpa  #$20
@@ -1448,7 +803,7 @@ L14C2    lslb
          rts
 
 * Table for screen sizes. This has been modified for Go51's
-* unusual screen size. It is used as an index into the D codes
+* unusual screen size. It is used as an index for the D codes
 L14E2    fcb   23,49  D2479
          fcb   23,79  D2480
          fcb   19,81  D2082
@@ -1475,7 +830,7 @@ CAD20 EQU  $40 ADD $20 TO CURSOR ADDRESSES
 SSCD EQU $20 CAN SCROLL SCREEN DOWN
 LERF EQU $10 HAS LINE ERASE FUNCTION
 
-* GO51 terminal
+*0 GO51 terminal
          fcb   LERF+SSCD+D2479
          fcb   1  CURMV  - CURSOR MOVE
          fcb   0  CURON  - CURSOR ON
@@ -1490,7 +845,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0  SSHUT  - SHUT DOWN SCREEN
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
-
+*1
          fcb   CYX+CAD20+SSCD+LERF+D2479
          fcb   1  CURMV  - CURSOR MOVE
          fcb   0  CURON  - CURSOR ON
@@ -1505,7 +860,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
-
+*2
          fcb   CYX+CAD20+SSCD+LERF+D2479
          fcb   1
          fcb   9
@@ -1520,7 +875,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   6
          fcb   7
-
+*3
          fcb   CYX+CAD20+SSCD+LERF+D2479
          fcb   1
          fcb   0
@@ -1535,7 +890,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   6
          fcb   7
-
+*4
          fcb   $30 0
          fcb   $0B
          fcb   0
@@ -1550,7 +905,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   $11
          fcb   $10
          fcb   $11
-
+*5
          fcb   0
          fcb   $0B
          fcb   0
@@ -1565,7 +920,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*6
          fcb   $C0 @
          fcb   1
          fcb   0
@@ -1580,7 +935,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*7
          fcb   $F0 p
          fcb   1
          fcb   $13
@@ -1595,7 +950,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   6
          fcb   7
-
+*8
          fcb   $F0 p
          fcb   1
          fcb   0
@@ -1610,7 +965,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   6
          fcb   7
-
+*9
          fcb   $B0 0
          fcb   $18
          fcb   0
@@ -1625,7 +980,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $16
          fcb   $17
-
+*10
          fcb   $D4 T
          fcb   1
          fcb   0
@@ -1641,38 +996,39 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   $1E
          fcb   $1F
 
-         fcb   $32 2
-         fcb   $20
-         fcb   $21 !
-         fcb   $22 "
-         fcb   $23 #
-         fcb   $24 $
-         fcb   $25 %
-         fcb   $26 &
-         fcb   $27 '
-         fcb   $2C ,
-         fcb   $28 (
-         fcb   $29 )
-         fcb   $2A *
-         fcb   $2B +
-
-         fcb   $D0 P
-         fcb   $33 3
+*11 SWTPC CT-82
+         fcb   D2082+SSCD+LERF
+         fcb   32  CURSOR MOVE
+         fcb   33  CURSOR ON
+         fcb   34
+         fcb   35
+         fcb   36
+         fcb   37
+         fcb   38
+         fcb   39
+         fcb   44
+         fcb   40  SCINIT  - INITIALIZE TERMINAL
+         fcb   41
+         fcb   42
+         fcb   43
+*12 VT52?
+         fcb   D2479+CYX+CAD20+LERF
+         fcb   51 CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   $19
          fcb   $1D
-         fcb   $35 5
+         fcb   53
          fcb   0
          fcb   $2F /
          fcb   0
          fcb   $1E
          fcb   $83
-
+*13
          fcb   $F0 p
-         fcb   $33 3
+         fcb   51 CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
@@ -1685,14 +1041,14 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*14
          fcb   $D0 P
-         fcb   $33 3
+         fcb   51 CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $19
+         fcb   25  CLRS  - CLEAR SCREEN
          fcb   $1D
          fcb   $35 5
          fcb   0
@@ -1700,12 +1056,12 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*15
          fcb   $F1 q
-         fcb   $33 3
-         fcb   $37 7
-         fcb   $38 8
-         fcb   $39 9
+         fcb   51 CURSOR MOVE
+         fcb   55
+         fcb   56
+         fcb   57
          fcb   $3A :
          fcb   $34 4
          fcb   $1D
@@ -1715,14 +1071,14 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   $3C <
          fcb   $3D =
          fcb   $3E >
-
+*16
          fcb   $C0 @
          fcb   1
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $3F ?
+         fcb   63
          fcb   0
          fcb   3
          fcb   0
@@ -1730,9 +1086,9 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*17
          fcb   $F0 p
-         fcb   $33 3
+         fcb   51 CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
@@ -1745,7 +1101,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $42 B
          fcb   $43 C
-
+*18
          fcb   $D0 P
          fcb   $44 D
          fcb   0
@@ -1760,7 +1116,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $46 F
          fcb   $47 G
-
+*19
          fcb   $D0 P
          fcb   $48 H
          fcb   0
@@ -1775,7 +1131,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*20
          fcb   $F0 p
          fcb   $4C L
          fcb   0
@@ -1790,7 +1146,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $50 P
          fcb   $51 Q
-
+*21
          fcb   $D0 P
          fcb   $33 3
          fcb   0
@@ -1805,7 +1161,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $2D -
          fcb   $2E .
-
+*22
          fcb   $F0 p
          fcb   $40 @
          fcb   0
@@ -1820,22 +1176,22 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
-         fcb   $B1 1
-         fcb   $5D ]
+*23 Also VT100?
+         fcb   CYX+SSCD+LERF+D2480
+         fcb   93  CURSOR MOVE (macro)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $82
-         fcb   $60 `
-         fcb   $7F
-         fcb   $80
+         fcb   130
+         fcb   96
+         fcb   127
+         fcb   128
          fcb   0
          fcb   0
-         fcb   $63 c
-         fcb   $81
-
+         fcb   99
+         fcb   129
+*24
          fcb   $F0 p
          fcb   $5B [
          fcb   0
@@ -1850,22 +1206,22 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $5C \
          fcb   6
-
-         fcb   $B0 0
-         fcb   $5D ]
+*25 VT100?
+         fcb   CYX+SSCD+LERF+D2479
+         fcb   93  CURSOR MOVE (macro)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $5F _
-         fcb   $60 `
-         fcb   $61 a
-         fcb   $62 b
+         fcb   95   CLRS  - CLEAR SCREEN
+         fcb   96
+         fcb   97
+         fcb   98
          fcb   0
          fcb   0
-         fcb   $63 c
-         fcb   $64 d
-
+         fcb   99 ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   100 ATT1  - CHARACTER ATTRIBUTES
+*26
          fcb   $70 p
          fcb   $30 0
          fcb   $31 1
@@ -1880,7 +1236,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $6B k
          fcb   $6C l
-
+*27
          fcb   $D0 P
          fcb   $48 H
          fcb   0
@@ -1895,7 +1251,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   $2C ,
          fcb   $27 '
-
+*28
          fcb   $F0 p
          fcb   $33 3
          fcb   $86
@@ -1910,7 +1266,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   $8A
          fcb   $8B
          fcb   $8C
-
+*29
          fcb   $51 Q
          fcb   $6F o
          fcb   0
@@ -1925,38 +1281,38 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-
+*30 ADM-5?
          fcb   $D0 P
          fcb   1
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $12
-         fcb   $72 r
+         fcb   18  CLEAR SCREEN
+         fcb   114 ERASE LINE
          fcb   3
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-
-         fcb   $31 1
+*31
+         fcb   $31
          fcb   $79 y
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $7A z
-         fcb   $7B {
-         fcb   $7C |
-         fcb   $7D }
+         fcb   $7A
+         fcb   $7B
+         fcb   $7C
+         fcb   $7D
          fcb   $7E
          fcb   0
          fcb   $84
          fcb   $85
 
-* This looks like code
+* Seems to unreachable code
 L16CC
          pshs  b,a
          lda   #$1B
@@ -1988,8 +1344,9 @@ L16CC
          jsr   ,u
          puls  pc,b,a
 
+* Print number in A as ascii
 L1704    cmpa  #$0A
-         bcs   L171B
+         bcs   L171B  Number less than 10
          clrb
 L1709    suba  #$0A
          bcs   L1710
@@ -2002,22 +1359,25 @@ L1710    adda  #$0A
          tfr   b,a
 L171B    adda  #$30
          lbra  WrA2BUF
+
+* Screen move sequence for VT100
          pshs  b,a
          lda   #$1B
          jsr   ,u
-         lda   #$5B
+         lda   #'[
          jsr   ,u
-         lda   ,s
+         lda   ,s   Get row number
          inca
-         bsr   L1704
-         lda   #$3B
+         bsr   L1704  Print as number
+         lda   #';
          jsr   ,u
-         lda   $01,s
+         lda   $01,s  Get column number
          inca
-         bsr   L1704
-         lda   #$48
+         bsr   L1704  Print as number
+         lda   #'H
          jsr   ,u
          puls  pc,b,a
+
          pshs  b,a
          lda   #$0B
          jsr   ,u
@@ -2042,7 +1402,7 @@ M EQU $FF
 
 
 * Location $1752
-TRMSEQ
+TRMSEQ EQU *
 *0  - NO FUNCTION, DO NOT MODIFY THIS BYTE
          fcb   N
 *1  - CURSOR MOVE (GO51)
@@ -2070,13 +1430,16 @@ TRMSEQ
          fcb   $1B
          fcb   $C6 F
 
-*8  - SCROLL DOWN
+* NOTE. The Go51 terminal description seems to have been binary patched into
+* the application.
+* What you see below are the original codes and are out of sync 
+*?  - SCROLL DOWN
          fcb   $29+N
-
+*8
          fcb   $1E
          fcb   $1B
          fcb   $C5 E
-
+*9
          fcb   $1B
          fcb   $2E .
          fcb   $32 2
@@ -2084,7 +1447,7 @@ TRMSEQ
          fcb   $30 0
          fcb   $31 1
          fcb   $8E
-
+*10
          fcb   $1B
          fcb   $2E .
          fcb   $32 2
@@ -2092,97 +1455,97 @@ TRMSEQ
          fcb   $30 0
          fcb   $30 0
          fcb   $8E
-
-         fcb   $7E ~
+*11
+         fcb   $7E
          fcb   $91
-
-         fcb   $7E ~
+*12
+         fcb   $7E
          fcb   $9C
-
-         fcb   $7E ~
+*13
+         fcb   $7E
          fcb   $8F
-
-         fcb   $7E ~
+*14
+         fcb   $7E
          fcb   $11
          fcb   $00
          fcb   $17
          fcb   $8A
-
-         fcb   $7E ~
+*15
+         fcb   $7E
          fcb   $12
-         fcb   $7E ~
+         fcb   $7E
          fcb   $9A
-
-         fcb   $7E ~
+*16
+         fcb   $7E
          fcb   $9F
-
-         fcb   $7E ~
-         fcb   $99
-
+*17
+         fcb   $7E
+         fcb   $19+N
+*18
          fcb   $9A
-
+*19
          fcb   $1B
-         fcb   $7E ~
+         fcb   $7E
          fcb   $B3 3
-
+*20
          fcb   $1B
-         fcb   $7E ~
+         fcb   $7E
          fcb   $B1 1
-
+*21
          fcb   $1E
          fcb   $1B
          fcb   $C9 I
-
+*21
          fcb   $1B
          fcb   $C2 B
-
+*23
          fcb   $1B
          fcb   $C3 C
-
+*24
          fcb   $94
-
+*25
          fcb   $8C
-
+*26
          fcb   $9E
-
+*27
          fcb   $14
          fcb   $17
          fcb   $00
          fcb   $8A
-
+*28
          fcb   $1D
          fcb   $1B
          fcb   $C8 H
-
+*29
          fcb   $1B
          fcb   $CB K
-
+*30
          fcb   $1B
          fcb   $30 0
          fcb   $C0 @
-
+*31
          fcb   $1B
          fcb   $30 0
          fcb   $C1 A
-
+*32
          fcb   $8B
-*  - CURSOR ON (CT-82)
+*33  - CURSOR ON (CT-82)
          fcb   $1E,5+N
-*  - CURSOR OFF (CT-82)
+*34  - CURSOR OFF (CT-82)
          fcb   $1E,$15+N
-
+*35
          fcb   $1E
          fcb   $83
-
+*36
          fcb   $1E
          fcb   $93
-*  - CLEAR SCREEN (CT-82)
+*37  - CLEAR SCREEN (CT-82)
          fcb   $10,$16+N
-*  - ERASE LINE (CT-82)
+*38  - ERASE LINE (CT-82)
          fcb   6+N
-*  - SCROLL UP (CT-82)
+*39  - SCROLL UP (CT-82)
          fcb   $E+N
-* - INITIALIZE SCREEN (CT-82)
+*40 - INITIALIZE SCREEN (CT-82)
          fcb   $1E
          fcb   $01
          fcb   $1E
@@ -2201,134 +1564,134 @@ TRMSEQ
          fcb   $1D
          fcb   $1C
          fcb   $12+N
-*  - SHUT DOWN SCREEN
+*41  - SHUT DOWN SCREEN
          fcb   $1E
          fcb   $A+N
-*  - NO CHARACTER ATTRIBUTE
+*42  - NO CHARACTER ATTRIBUTE
  FCB $1E,$6+N HIGH INTENSITY
-*  - CHARACTER ATTRIBUTE (CT-82)
+*43  - CHARACTER ATTRIBUTE (CT-82)
  FCB $1E,$16+N LOW INTENSITY
-
+*44
          fcb   $8F
-
+*45
          fcb   $8F
-
+*46
          fcb   $8E
-
+*47
          fcb   $1B
          fcb   $30 0
          fcb   $C1 A
-
+*48
          fcb   $03
-         fcb   $FF
-
+         fcb   M
+*49
          fcb   $83
-
+*50
          fcb   $84
-
+*51 CURSOR MOVE (VT52)
          fcb   $1B
          fcb   $D9 Y
-
+*52 CLEAR TO END OF SCREEN (VT52)
          fcb   $1B
          fcb   $48 H
          fcb   $1B
          fcb   $CA J
-
+*53
          fcb   $1B
-         fcb   $59 Y
-         fcb   $37 7
+         fcb   $59
+         fcb   $37
          fcb   $20
          fcb   $8A
-
+*54
          fcb   $1B
          fcb   $48 H
          fcb   $1B
          fcb   $C9 I
-
+*55
          fcb   $1B
          fcb   $79 y
          fcb   $B5 5
-
+*56
          fcb   $1B
          fcb   $78 x
          fcb   $B5 5
-
+*57
          fcb   $1B
          fcb   $78 x
          fcb   $B4 4
-
+*58
          fcb   $1B
          fcb   $79 y
          fcb   $B4 4
-
+*59
          fcb   $1B
          fcb   $78 x
          fcb   $34 4
          fcb   $1B
          fcb   $F7 w
-
+*60
          fcb   $1B
          fcb   $FA z
-
+*61
          fcb   $1B
          fcb   $F1 q
-
+*62
          fcb   $1B
          fcb   $F0 p
-
+*63
          fcb   $98
-
+*64
          fcb   $1B
          fcb   $C5 E
-
+*65
          fcb   $1B
          fcb   $48 H
          fcb   $1B
          fcb   $CC L
-
+*66
          fcb   $1B
          fcb   $64 d
          fcb   $C0 @
-
+*67
          fcb   $1B
          fcb   $64 d
          fcb   $C1 A
-
+*68
          fcb   $1B
          fcb   $C6 F
-
+*69
          fcb   $1B
          fcb   $46 F
          fcb   $37 7
          fcb   $20
          fcb   $8A
-
+*70
          fcb   $1B
          fcb   $DB [
-
+*71
          fcb   $1B
          fcb   $DD ]
-
+*72
          fcb   $90
-
+*73
          fcb   $19
          fcb   $97
-
+*74
          fcb   $96
-
+*75
          fcb   $10
          fcb   $37 7
          fcb   $20
          fcb   $8A
-
+*76
          fcb   $00
-         fcb   $FF
-
+         fcb   M
+*77
          fcb   $1B
          fcb   $48 H
          fcb   $1B
          fcb   $CA J
-
+*78
          fcb   $1B
          fcb   $26 &
          fcb   $61 a
@@ -2338,7 +1701,7 @@ TRMSEQ
          fcb   $30 0
          fcb   $43 C
          fcb   $8A
-
+*79
          fcb   $1B
          fcb   $26 &
          fcb   $61 a
@@ -2348,29 +1711,29 @@ TRMSEQ
          fcb   $43 C
          fcb   $1B
          fcb   $CC L
-
+*80
          fcb   $1B
          fcb   $26 &
          fcb   $64 d
          fcb   $C0 @
-
+*81
          fcb   $1B
          fcb   $26 &
          fcb   $64 d
          fcb   $C1 A
-
+*82
          fcb   $1B
          fcb   $D8 X
-
+*83
          fcb   $1B
          fcb   $D5 U
-
+*84
          fcb   $1B
          fcb   $45 E
          fcb   $37 7
          fcb   $20
          fcb   $8A
-
+*85
          fcb   $1B
          fcb   $53 S
          fcb   $1B
@@ -2381,7 +1744,7 @@ TRMSEQ
          fcb   $48 H
          fcb   $1B
          fcb   $D2 R
-
+*86
          fcb   $1E
          fcb   $01
          fcb   $1E
@@ -2400,40 +1763,39 @@ TRMSEQ
          fcb   $1D
          fcb   $1C
          fcb   $94
-
+*87
          fcb   $1B
          fcb   $86
-
+*88
          fcb   $1B
          fcb   $8B
-
+*89
          fcb   $1B
          fcb   $0E
          fcb   $68 h
          fcb   $7F
          fcb   $8A
-
+*90
          fcb   $1B
          fcb   $08
          fcb   $1B
          fcb   $8C
-
+*91
          fcb   $01
-         fcb   $FF
-
+         fcb   M
+*92
          fcb   $1B
          fcb   $A0
-
+*93
          fcb   $02
-         fcb   $FF
-
+         fcb   M
+*94
          fcb   $1B
          fcb   $3D =
          fcb   $38 8
          fcb   $20
          fcb   $8A
-
-* VT100 Move cursor to upper left corner
+*95  VT100  Clear screen
          fcb   $1B
          fcb   $5B [
          fcb   $48 H
@@ -2442,168 +1804,166 @@ TRMSEQ
          fcb   $32 2
          fcb   $CA J
 
-* VT100 Clear entire line
+*96 VT100 Clear entire line
          fcb   $0D
          fcb   $1B
          fcb   $5B [
          fcb   $32 2
          fcb   $CB K
-
+*97
          fcb   $1B
          fcb   $5B [
          fcb   $D3 S
-
+*98
          fcb   $1B
          fcb   $5B [
          fcb   $D4 T
-* VT100 Turn off character attributes
+*99 VT100 Turn off character attributes
          fcb   $1B
          fcb   $5B [
          fcb   $30 0
          fcb   $ED m
-* VT100 Turn low intensity mode on
+*100 VT100 Turn low intensity mode on
          fcb   $1B
          fcb   $5B [
          fcb   $32 2
          fcb   $ED m
-
-         fcb   $85
-
-         fcb   $86
-
-         fcb   $89
-
+*101
+         fcb   $05+N
+*102
+         fcb   $06+N
+*103
+         fcb   $09+N
+*104
          fcb   $90
-
+*105
          fcb   $8F
-
+*106
          fcb   $15
          fcb   $00
          fcb   $00
          fcb   $50 P
          fcb   $18
          fcb   $81
-
+*107
          fcb   $81
-
+*108
          fcb   $82
-
+*109
          fcb   $1B
-         fcb   $7E ~
+         fcb   $7E
          fcb   $B3 3
-
+*110
          fcb   $1B
-         fcb   $7E ~
-
+         fcb   $7E
          fcb   $B2 2
-
+*111
          fcb   $04
-         fcb   $FF
-
+         fcb   M
+*112
          fcb   $1B
          fcb   $C9 I
-
+*113
          fcb   $1B
          fcb   $58 X
          fcb   $37 7
          fcb   $1B
          fcb   $C2 B
-
+*114
          fcb   $1B
          fcb   $D4 T
-
+*115
          fcb   $97
-
+*116
          fcb   $01
          fcb   $00
          fcb   $17
          fcb   $8A
-
+*117
          fcb   $07
-         fcb   $FF
-
+         fcb   M
+*118
          fcb   $05
-         fcb   $FF
-
+         fcb   M
+*119
          fcb   $06
-         fcb   $FF
-
+         fcb   M
+*120
          fcb   $08
-         fcb   $FF
-
+         fcb   M
+*121
          fcb   $1B
          fcb   $91
-
+*122
          fcb   $1B
          fcb   $9C
-
+*123
          fcb   $0D
          fcb   $1B
          fcb   $8F
-
+*124
          fcb   $1B
          fcb   $11
          fcb   $00
          fcb   $17
          fcb   $8A
-
+*125
          fcb   $1B
          fcb   $12
          fcb   $1B
          fcb   $9A
-
+*126
          fcb   $1B
          fcb   $06
          fcb   $1B
          fcb   $24 $
          fcb   $1B
          fcb   $9F
-
+*127
          fcb   $1B
          fcb   $5B [
          fcb   $18
          fcb   $48 H
          fcb   $1B
          fcb   $C4 D
-* VT100 Move cursor to upper left corner
+*128 VT100 Move cursor to upper left corner
          fcb   $1B
          fcb   $5B [
          fcb   $48 H
          fcb   $1B
          fcb   $CD M
-
+*129
          fcb   $1B
          fcb   $5B [
          fcb   $37 7
          fcb   $ED m
-* VT100 Clear entire screen
+*130 VT100 Clear entire screen
          fcb   $1B
          fcb   $5B [
          fcb   $32 2
          fcb   $CA J
-
+*131
          fcb   $1B
          fcb   $30 0
          fcb   $D0 P
-
+*132
          fcb   $1B
          fcb   $9F
-
+*133
          fcb   $1B
          fcb   $99
-
+*134
          fcb   $1B
          fcb   $A3 #
-
+*135
          fcb   $1B
          fcb   $A4 $
-
+*136
          fcb   $1B
          fcb   $48 H
-
          fcb   $1B
          fcb   $C1 A
-
+*137
          fcb   $04
          fcb   $1B
          fcb   $23 #
@@ -2631,17 +1991,17 @@ TRMSEQ
          fcb   $69 i
          fcb   $1B
          fcb   $EE n
-
+*138
          fcb   $1E
          fcb   $8A
-
+*139
          fcb   $1B
          fcb   $65 e
          fcb   $1B
          fcb   $67 g
          fcb   $1B
          fcb   $E9 i
-
+*140
          fcb   $1B
          fcb   $E4 d
 TRMEND   equ *
@@ -2715,7 +2075,7 @@ L198F    pshs  x,b,a
          ldx   b,x
          beq   L19A8
          lda   $01,x
-         cmpa  #$FF
+         cmpa  #M  Is the terminal sequence a Macro?
          beq   L19AC
 L199D    lda   ,x+
          pshs  a
@@ -2725,6 +2085,8 @@ L199D    lda   ,x+
 L19A8    andcc #^Carry
 L19AA    puls  pc,x,b,a
 
+
+* Call macro in TRMBEG table
 L19AC    ldb   ,x
          lslb
          leax  >TRMBEG,pcr
@@ -4175,7 +3537,8 @@ L2615    clrb
          lda   #$10
          lbsr  L3111
          rts
-         lbsr  L1A2D
+
+L2633    lbsr  L1A2D
          clr   <u00C2
 L2638    ldu   <u0022
 L263A    lbsr  L35E5
@@ -4633,8 +3996,9 @@ L2A19    lbsr  L23D5
          sta   <u006A
          bra   L29E5
          nop
-         pshs  x,b,a
-         neg   <u0055
+         fcb   $34  Unreachable instruction
+
+L2A28    lbra  L2A80
 L2A2B    bsr   L2A33
          bra   L2A65
 L2A2F    bsr   L2A33
@@ -4710,22 +4074,40 @@ L2ABB    pshs  a
          puls  pc,a
 
 * Command table in ESCAPE mode
-L2AC9    fdb   L4A5F
+L2AC9    fdb   L4A5F   Cursor up
+         fdb   L4B5E   Cursor right
+         fdb   L4AF3
+         fdb   L4B9C
+         fdb   L4BFC
+         fdb   L4C22
+         fdb   L422B
+         fdb   L42BD
+         fdb   L2633
+         fdb   L413B
+         fdb   L41CB
+         fdb   L40C0
+         fdb   L3759
+         fdb   L417F
+         fdb   L4CF4
+         fdb   L4C83
+         fdb   L4BD1
+         fdb   L4D91
+         fdb   L421E
+         fdb   L4D7A
+         fdb   L2A28
+         fdb   L4E6D
+         fdb   L4E82
+         fdb   L4E8F
+         fdb   L4F01
+         fdb   L4007
+         fdb   L4007
+         fdb   L4007
+         fdb   L4007
+         fdb   L4007
+         fdb   L4099
          fdb   L4B5E
-         fdb   $4AF3
-         fdb   $4B9C
-         fcb   $4B,$FC,$4C,$22,$42,$2B
-         fcb   $42,$BD,$26,$33,$41,$3B
-         fcb   $41,$CB,$40,$C0,$37,$59
-         fcb   $41,$7F,$4C,$F4,$4C,$83
-         fcb   $4B,$D1,$4D,$91,$42,$1E
-         fcb   $4D,$7A,$2A,$28
-         fcb   $4E,$6D,$4E,$82,$4E,$8F
-         fcb   $4F,$01
-         fcb   $40,$07,$40,$07,$40,$07
-         fcb   $40,$07,$40,$07,$40,$99,$4B,$5E
-         fcb   $4B,$9C
-         fcb   $00
+         fdb   L4B9C
+ FCB 0
 
 L2B0C    stx   <u006B
          ldu   <u0020
@@ -4944,11 +4326,13 @@ L2CE2    lda   #$30
          bne   L2CE2
 L2CEF    puls  pc,y,x,b,a
 
-L2CF1    fcb    $27,$10  beq   L2D03
-         com   <u00E8
-         neg   <u0064
-         neg   <u000A
-         neg   <u0001
+
+L2CF1    fdb 10000
+         fdb  1000
+         fdb   100
+         fdb    10
+         fdb     1
+
 L2CFB    pshs  y,x,b,a
          leax  >CTRTBL,pcr
          leay  >L2D25,pcr
@@ -6178,16 +5562,18 @@ L377B    tsta
 
 
 L3794    fdb   L380F    Select EDIT
-         fdb   $3C94    Select PRINT
-         fdb   $3AAD    Select SAVE & RETURN
-         fdb   $3B0D    Select SAVE
-         fdb   $3C1D    Select SAVE TO MARK
+         fdb   L3C94    Select PRINT
+         fdb   L3AAD    Select SAVE & RETURN
+         fdb   L3B0D    Select SAVE
+         fdb   L3C1D    Select SAVE TO MARK
          fdb   L38A6    Select RETURN
-         fdb   $392E
-         fdb   $383E
-         fdb   $382E,$381E,$38DF
-         fdb   $3C5D
-         fdb   $4F29    Select WHEEL
+         fdb   L392E
+         fdb   L383E
+         fdb   L382E
+         fdb   L381E
+         fdb   L38DF
+         fdb   L3C5D
+         fdb   L4F29    Select WHEEL
          fdb   L5143    Select NEW
          fdb   $0000,$0000
 
@@ -6243,19 +5629,19 @@ L380F    ldu   <u0022
          lbsr  L23D5
          bra   L380F
 
-         ldx   >TTYS1,pcr
+L381E    ldx   >TTYS1,pcr
          lbsr  L3916
          lda   >L0010,pcr
          sta   <u0044
          lbra  L3762
 
-         ldx   >SPCLS1,pcr
+L382E    ldx   >SPCLS1,pcr
          lbsr  L3916
          lda   >L000E,pcr
          sta   <u0044
          lbra  L3762
 
-         tst   <u004E
+L383E    tst   <u004E
          bne   L3846
          tst   <u004F
          beq   L3850
@@ -6309,7 +5695,7 @@ L38A6    tst   <u004F
          cmpa  >YCHR,pcr  character Y
          lbne  L3762
          lbra  L1CCC
-         lda   #$01
+L38DF    lda   #$01
          bne   L38EF
          tst   <u004E
          lbne  L3846
@@ -6342,7 +5728,7 @@ WRLINE2  ldd   #$0200   Line 2
 WRLINE3  ldd   #$0300   Line 3
 L3928    lbsr  GOROWCOL
          lbra  L3731  Write string in X
-         ldx   >SAVM5,pcr
+L392E    ldx   >SAVM5,pcr
          lbsr  L3916
          lbsr  L37B4
          leax  -$01,x
@@ -6506,7 +5892,7 @@ L3A9F    stb   <u0044
 L3AA3    ldx   >DSTM5,pcr
          lbsr  L3731  Write string in X
          lbra  L0412
-         lda   #$01
+L3AAD    lda   #$01
          sta   <u00CA
          clr   <u00C8
          tst   <u004F
@@ -6548,7 +5934,7 @@ L3AFE    lbsr  L027B
          lbsr  L0287
          lbsr  L028D
          lbra  L0412
-         clr   <u00CA
+L3B0D    clr   <u00CA
          clr   <u00C8
          tst   <u004E
          lbne  L3846
@@ -6650,7 +6036,7 @@ L3C11    tst   <u00CA
          lbne  L3AC0
 L3C17    lbsr  L028D
          lbra  L3762
-         lbsr  L45B9
+L3C1D    lbsr  L45B9
          bcs   L3C42
          inc   <u00C8
          clr   <u00CA
@@ -6675,7 +6061,7 @@ L3C51    ldd   #$0200
          lbsr  GOROWCOL
          lbsr  L02BF
          lbra  L3762
-         lda   #$01
+L3C5D    lda   #$01
          sta   <u00EC
          clr   <u00A2
          leax  >L3C88,pcr
@@ -6696,7 +6082,7 @@ L3C88    lbsr  L02D3
 
 L3C8E    lds   <u001E
          lbra  L3C51
-         clr   <u00EC
+L3C94    clr   <u00EC
          leax  >L0122,pcr
          stx   <u0048
          ldx   >PRNS1,pcr  Ptr to "Different printer"
@@ -7072,7 +6458,7 @@ L3FF5    lda   #$1B
          inca
 L4002    lbsr  L3F53
 L4005    puls  pc,a
-         ldb   [<u0006,u]
+L4007    ldb   [<u0006,u]
          bmi   L401D
          clr   <u00C2
          bsr   L403D
@@ -7138,7 +6524,8 @@ L4092    orb   #$80
          incb
          stb   <u00C2
          puls  pc,a
-         lda   [<u0006,u]
+
+L4099    lda   [<u0006,u]
          lbpl  L4B5E
          cmpa  #$F0
          lbeq  L4B5E
@@ -7152,7 +6539,7 @@ L4092    orb   #$80
          lbsr  L45E2
          sty   ,u
          lbra  L402C
-         tst   <u0065
+L40C0    tst   <u0065
          beq   L40CC
          lda   #$16
          lbsr  L3111
@@ -7203,7 +6590,7 @@ L412B    lbsr  L2851
          sta   <u0068
          sta   <u0060
          lbra  L2A65
-         tst   <u0065
+L413B    tst   <u0065
          bne   L4147
          lda   #$18
          lbsr  L3111
@@ -7231,7 +6618,7 @@ L4157    ldx   <u0063
          ldy   u0006,u
          lbsr  L45F5
          lbra  L412B
-         tst   <u0065
+L417F    tst   <u0065
          bne   L418B
          lda   #$18
          lbsr  L3111
@@ -7262,7 +6649,7 @@ L41A7    ldd   ,u
          ldd   <u00C5
          lbsr  L45F5
          lbra  L412B
-         lbsr  L45B9
+L41CB    lbsr  L45B9
          lbcs  L2A80
          lda   <u006A
          lbsr  L1A3F
@@ -7292,11 +6679,11 @@ L41A7    ldd   ,u
          lbsr  L45E2
          sty   ,u
          lbra  L412B
-         lda   >MRKCHR,pcr
+L421E    lda   >MRKCHR,pcr
          lbsr  L30DA
          lbsr  L29C5
          lbra  L2A65
-         clr   <u00EB
+L422B    clr   <u00EB
          clr   <u00CB
          lda   #$01
          sta   <u006F
@@ -7358,7 +6745,7 @@ L42A8    lda   #$04
          sta   <u0060
          sta   <u0068
 L42BA    lbra  L2A2B
-         clr   <u00EB
+L42BD    clr   <u00EB
          clr   <u00CB
          lda   #$01
          sta   <u006F
@@ -8228,6 +7615,7 @@ L4A6E    leax  -$01,x
 L4A87    lda   #$07
          lbsr  L3111
          rts
+
 L4A8D    ldy   <u0020
          ldb   <SCRROW
          clra
@@ -8359,7 +7747,7 @@ L4B88    stx   u0006,u
          adda  <u0098
          sta   <u0071
          lbra  L2A80
-         ldx   u0006,u
+L4B9C    ldx   u0006,u
 L4B9E    cmpx  ,u
          bne   L4BAB
          lda   <u0098
@@ -8384,7 +7772,7 @@ L4BBD    stx   u0006,u
          adda  <u0098
          sta   <u0071
          lbra  L2A80
-         lda   <u0098
+L4BD1    lda   <u0098
          sta   <u0071
          lda   #$01
          sta   <u00CF
@@ -8401,7 +7789,7 @@ L4BBD    stx   u0006,u
          lda   <u006A
          lbsr  L3249
          lbra  L2A80
-         tst   <SCRROW
+L4BFC    tst   <SCRROW
          bne   L4C03
          lbsr  L4AF8
 L4C03    lbsr  L19F1
@@ -8419,7 +7807,7 @@ L4C16    lda   <SCRROW
          sta   <u0068
          clr   <u0096
          lbra  L2A80
-         tst   <u006F
+L4C22    tst   <u006F
          beq   L4C2A
          ldd   u0009,u
          bra   L4C2C
@@ -8464,7 +7852,7 @@ L4C71    lda   <u006A
          clr   <u0096
          lbsr  L31D9
          lbra  L2A65
-         tst   <u006F
+L4C83    tst   <u006F
          beq   L4C8B
          ldd   u0009,u
          bra   L4C8D
@@ -8516,7 +7904,7 @@ L4CE1    lbsr  L2BE8
          sta   <u0068
          clr   <u0096
          lbra  L2A65
-         lda   <SCRROW
+L4CF4    lda   <SCRROW
          sta   <u009B
          bra   L4D07
 L4CFA    lda   <u009B
@@ -8576,7 +7964,7 @@ L4D70    lda   <u006A
          sta   <u0060
          sta   <u0068
          lbra  L2A65
-         lbsr  L30BD
+L4D7A    lbsr  L30BD
          clr   u0006,u
          clr   <u0074
          sta   <u0071
@@ -8586,12 +7974,12 @@ L4D70    lda   <u006A
          lda   <u006A
          lbsr  L3249
          lbra  L2A80
-         lda   <u006A
+L4D91    lda   <u006A
          lbsr  L1A3F
          lda   <u006A
          clrb
          lbsr  GOROWCOL
-         ldx   >PAGS1,pcr Ptr to "*** page ="
+         ldx   >PAGS1,pcr         Ptr to "*** page ="
          lbsr  L3731  Write string in X
          ldx   <u001C
 L4DA5    lbsr  L1C27
@@ -8635,6 +8023,7 @@ L4DFD    lbsr  L23D5
          stb   <u006A
          lbsr  L3111
          lbra  L2A2F
+
 L4E0C    ldd   $0F,u
          cmpd  <u00BA
          bne   L4DFD
@@ -8678,7 +8067,7 @@ L4E58    lda   #$37
          lbsr  L45F5
          lbsr  L2BE8
          bra   L4E13
-         lda   <u0098
+L4E6D    lda   <u0098
          cmpa  #$96
          bcc   L4E7A
          adda  #$19
@@ -8687,13 +8076,14 @@ L4E58    lda   #$37
 L4E7A    lda   #$02
          lbsr  L3111
          lbra  L2A80
-         lda   <u0098
+
+L4E82    lda   <u0098
          beq   L4E7A
          suba  #$19
          bcs   L4E7A
          sta   <u0098
          lbra  L2A55
-         clr   <u0058
+L4E8F    clr   <u0058
          lbsr  L1C27
          cmpa  #$20
          lbcs  L2AA5
@@ -8742,7 +8132,7 @@ L4EF1    lda   #$01
          lda   <u006A
          lbsr  L3249
          lbra  L4B5E
-         lbsr  L1C27
+L4F01    lbsr  L1C27
          cmpa  #$20
          lbcs  L2AA5
          cmpa  #$7F
@@ -8757,7 +8147,7 @@ L4EF1    lda   #$01
          sta   <u0068
          sta   <u0060
          lbra  L2A65
-         ldx   #$0001
+L4F29    ldx   #$0001
          ldu   <u0022
          cmpx  u0009,u
          bcc   L4F3E
@@ -8928,7 +8318,7 @@ L50A5    orcc  #Carry
          rts
 
 *
-* Write number of null-terminated strings in B
+* Display supervisor menu
 *
 L50A8    stb   <u00E5
          tfr   x,d
