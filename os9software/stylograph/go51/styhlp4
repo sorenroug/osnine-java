@@ -1,0 +1,20 @@
+    ----- HORIZONAL FORMATTING COMMANDS -----
+
+
+   ,CE N   centre N lines
+   ,RJ N   right justify N lines
+   ,JU     justify
+   ,NJ     no justify
+
+   ,LL N   line length N characters
+   ,IN N   indent N spaces
+   ,SI N   indent one line N spaces
+
+   ,PS     proportional spacing
+   ,NPS    non-proportional spacing
+
+
+   --- PRINT PARAMETERS ---
+
+   ,LM N   set left margin of N spaces
+   ,CS N   character spacing N char. per inch

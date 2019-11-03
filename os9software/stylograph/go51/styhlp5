@@ -1,0 +1,19 @@
+  ----- MISCELLANEOUS FORMATTING COMMANDS -----
+
+
+   ,PP      start paragraph
+   ,PPNL N  paragraph needs N lines on same page
+   ,PPSP N  paragraph space N lines
+   ,PPSI N  paragraph single indent
+
+
+   ,BFS  N  boldface - strike N times at printout
+
+
+   ,PC   C  character for delimiting print strings
+   ,MMC  C  mail merge character
+   ,PADC C  pad character for non-paddable spaces
+            on printout
+
+
+   ,*       comment line

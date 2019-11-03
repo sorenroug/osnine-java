@@ -1,0 +1,14 @@
+
+           ----- CONTROL COMMANDS -----
+
+  P  page status                 U  underline
+  N  name the last error         O  overline
+  V  view/hide character mods.   I  superscript
+  F  format command display      K  subscript
+  A  assistance                  B  boldface
+
+  G  insert ghost hyphen
+
+  W  delete word                 R  set a tab
+  D  delete single character     T  move to tab
+  X  delete line                 Y  clear a tab

@@ -1,0 +1,23 @@
+       ----- DISPLAYED MOD CHARACTERS -----
+
+                             CHARACTER USED
+                    ! as       as sub-   as super-
+         HIGHLIGHTS ! normal   script    script
+                    !
+               none !  (CHAR)      A        a
+                    !
+          underline !     -        B        b
+                    !
+           boldface !     3        C        c
+                    !
+ underline+boldface !     4        D        d
+                    !
+           overline !     5        E        e
+                    !
+ underline+overline !     6        F        f
+                    !
+ boldface +overline !     7        G        g
+                    !
+ underline+boldface !     8        H        h
+     +overline      !
+

@@ -1454,20 +1454,20 @@ TRMSEQ EQU *
          fcb   'B+N
 *4  - SCROLL UP (GO51)
          fcb   $1B
-         fcb   $41 A
+         fcb   'A
          fcb   $00
          fcb   $17
-         fcb   $8A
+         fcb   $0A+N
 *5  - SCROLL DOWN (GO51)
          fcb   $0B
          fcb   $1B
          fcb   'D+N
 *6  - NO CHARACTER ATTRIBUTES (GO51)
          fcb   $1B
-         fcb   $C7 G
+         fcb   'G+N
 *7  - CHARACTER ATTRIBUTES (GO51)
          fcb   $1B
-         fcb   $C6 F
+         fcb   'F+N
 
 * NOTE. The Go51 terminal description seems to have been binary patched into
 * the application.
@@ -1476,13 +1476,13 @@ TRMSEQ EQU *
          fcb   $29+N
  else
 *1  - CURSOR MOVE (Unknown)
-         fcb   $1B,$3D+N
+         fcb   $1B,'=+N
 *2, - CLEAR SCREEN (Unknown)
          fcb   $1B,$2A+N
 *3  - 
          fcb   $1B
-         fcb   $3D
-         fcb   $37
+         fcb   '=
+         fcb   '7
          fcb   $20
          fcb   $0A+N
 *4  - 
@@ -1503,51 +1503,51 @@ TRMSEQ EQU *
 *8
          fcb   $1E
          fcb   $1B
-         fcb   $C5 E
+         fcb   'E+N
 *9
          fcb   $1B
          fcb   $2E .
-         fcb   $32 2
-         fcb   $36 6
-         fcb   $30 0
-         fcb   $31 1
-         fcb   $8E
+         fcb   '2
+         fcb   '6
+         fcb   '0
+         fcb   '1
+         fcb   $0E+N
 *10
          fcb   $1B
          fcb   $2E .
-         fcb   $32 2
-         fcb   $36 6
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $8E
+         fcb   '2
+         fcb   '6
+         fcb   '0
+         fcb   '0
+         fcb   $0E+N
 *11  Move XY on Hazeltine esprit
          fcb   $7E
-         fcb   $91
+         fcb   $11+N
 *12  Clear screen on Hazeltine esprit
          fcb   $7E
-         fcb   $9C
+         fcb   $1C+N
 *13 Clear to end of line on Hazeltine esprit
          fcb   $7E
-         fcb   $8F
+         fcb   $0F+N
 *14
          fcb   $7E
          fcb   $11
          fcb   $00
          fcb   $17
-         fcb   $8A
+         fcb   $0A+N
 *15
          fcb   $7E
          fcb   $12
          fcb   $7E
-         fcb   $9A
+         fcb   $1A+N
 *16
          fcb   $7E
-         fcb   $9F
+         fcb   $1F+N
 *17
          fcb   $7E
          fcb   $19+N
 *18
-         fcb   $9A
+         fcb   $1A+N
 *19
          fcb   $1B
          fcb   $7E
@@ -1567,16 +1567,16 @@ TRMSEQ EQU *
          fcb   $1B
          fcb   $C3 C
 *24
-         fcb   $94
+         fcb   $14+N
 *25
          fcb   $8C
 *26
-         fcb   $9E
+         fcb   $1E+N
 *27
          fcb   $14
          fcb   $17
          fcb   $00
-         fcb   $8A
+         fcb   $0A+N
 *28
          fcb   $1D
          fcb   $1B
@@ -1586,11 +1586,11 @@ TRMSEQ EQU *
          fcb   $CB K
 *30
          fcb   $1B
-         fcb   $30 0
+         fcb   '0
          fcb   $C0 @
 *31
          fcb   $1B
-         fcb   $30 0
+         fcb   '0
          fcb   $C1 A
 *32
          fcb   $8B
@@ -1603,13 +1603,13 @@ TRMSEQ EQU *
          fcb   $83
 *36
          fcb   $1E
-         fcb   $93
+         fcb   $13+N
 *37  - CLEAR SCREEN (CT-82)
          fcb   $10,$16+N
 *38  - ERASE LINE (CT-82)
-         fcb   6+N
+         fcb   $06+N
 *39  - SCROLL UP (CT-82)
-         fcb   $E+N
+         fcb   $0E+N
 *40 - INITIALIZE SCREEN (CT-82)
          fcb   $1E
          fcb   $01
@@ -1631,20 +1631,20 @@ TRMSEQ EQU *
          fcb   $12+N
 *41  - SHUT DOWN SCREEN
          fcb   $1E
-         fcb   $A+N
+         fcb   $0A+N
 *42  - NO CHARACTER ATTRIBUTE
  FCB $1E,$6+N HIGH INTENSITY
 *43  - CHARACTER ATTRIBUTE (CT-82)
  FCB $1E,$16+N LOW INTENSITY
 *44
-         fcb   $8F
+         fcb   $0F+N
 *45
-         fcb   $8F
+         fcb   $0F+N
 *46
-         fcb   $8E
+         fcb   $0E+N
 *47
          fcb   $1B
-         fcb   $30 0
+         fcb   '0
          fcb   $C1 A
 *48
          fcb   $03
@@ -1658,9 +1658,9 @@ TRMSEQ EQU *
          fcb   $D9 Y
 *52 CLEAR TO END OF SCREEN (VT52)
          fcb   $1B
-         fcb   $48 H
+         fcb   'H
          fcb   $1B
-         fcb   $CA J
+         fcb   'J+N
 *53 Scroll screen up for H19
          fcb   $1B
          fcb   $59
@@ -1704,32 +1704,32 @@ TRMSEQ EQU *
          fcb   $1B
          fcb   $70+N
 *63
-         fcb   $98
+         fcb   $18+N
 *64
          fcb   $1B
-         fcb   $C5 E
+         fcb   'E+N
 *65
          fcb   $1B
-         fcb   $48 H
+         fcb   'H
          fcb   $1B
          fcb   $CC L
 *66
          fcb   $1B
-         fcb   $64 d
+         fcb   'd
          fcb   $C0 @
 *67
          fcb   $1B
-         fcb   $64 d
+         fcb   'd
          fcb   $C1 A
 *68
          fcb   $1B
          fcb   $C6 F
 *69
          fcb   $1B
-         fcb   $46 F
-         fcb   $37 7
+         fcb   'F
+         fcb   '7
          fcb   $20
-         fcb   $8A
+         fcb   $0A+N
 *70
          fcb   $1B
          fcb   $DB [
@@ -1737,54 +1737,54 @@ TRMSEQ EQU *
          fcb   $1B
          fcb   $DD ]
 *72
-         fcb   $90
+         fcb   $10+N
 *73
          fcb   $19
-         fcb   $97
+         fcb   $17+N
 *74
-         fcb   $96
+         fcb   $16+N
 *75
          fcb   $10
-         fcb   $37 7
+         fcb   '7
          fcb   $20
-         fcb   $8A
+         fcb   $0A+N
 *76
          fcb   $00
          fcb   M
 *77
          fcb   $1B
-         fcb   $48 H
+         fcb   'H
          fcb   $1B
-         fcb   $CA J
+         fcb   'J+N
 *78
          fcb   $1B
-         fcb   $26 &
-         fcb   $61 a
-         fcb   $32 2
-         fcb   $33 3
-         fcb   $79 y
-         fcb   $30 0
-         fcb   $43 C
-         fcb   $8A
+         fcb   '&
+         fcb   'a
+         fcb   '2
+         fcb   '3
+         fcb   'y
+         fcb   '0
+         fcb   'C
+         fcb   $0A+N
 *79
          fcb   $1B
-         fcb   $26 &
-         fcb   $61 a
-         fcb   $30 0
-         fcb   $79 y
-         fcb   $30 0
-         fcb   $43 C
+         fcb   '&
+         fcb   'a
+         fcb   '0
+         fcb   'y
+         fcb   '0
+         fcb   'C
          fcb   $1B
          fcb   $CC L
 *80
          fcb   $1B
-         fcb   $26 &
-         fcb   $64 d
+         fcb   '&
+         fcb   'd
          fcb   $C0 @
 *81
          fcb   $1B
-         fcb   $26 &
-         fcb   $64 d
+         fcb   '&
+         fcb   'd
          fcb   $C1 A
 *82
          fcb   $1B
@@ -1794,19 +1794,19 @@ TRMSEQ EQU *
          fcb   $D5 U
 *84
          fcb   $1B
-         fcb   $45 E
-         fcb   $37 7
+         fcb   'E
+         fcb   '7
          fcb   $20
-         fcb   $8A
+         fcb   $0A+N
 *85
          fcb   $1B
-         fcb   $53 S
+         fcb   'S
          fcb   $1B
-         fcb   $47 G
+         fcb   'G
          fcb   $1B
-         fcb   $56 V
+         fcb   'V
          fcb   $1B
-         fcb   $48 H
+         fcb   'H
          fcb   $1B
          fcb   $D2 R
 *86
@@ -1827,7 +1827,7 @@ TRMSEQ EQU *
          fcb   $1E
          fcb   $1D
          fcb   $1C
-         fcb   $94
+         fcb   $14+N
 *87
          fcb   $1B
          fcb   $86
@@ -1837,9 +1837,9 @@ TRMSEQ EQU *
 *89
          fcb   $1B
          fcb   $0E
-         fcb   $68 h
+         fcb   'h
          fcb   $7F
-         fcb   $8A
+         fcb   $0A+N
 *90
          fcb   $1B
          fcb   $08
@@ -1856,43 +1856,43 @@ TRMSEQ EQU *
          fcb   M
 *94
          fcb   $1B
-         fcb   $3D =
-         fcb   $38 8
+         fcb   '=
+         fcb   '8
          fcb   $20
-         fcb   $8A
+         fcb   $0A+N
 *95  VT100  Clear screen
          fcb   $1B
-         fcb   $5B [
-         fcb   $48 H
+         fcb   '[
+         fcb   'H
          fcb   $1B
-         fcb   $5B [
-         fcb   $32 2
-         fcb   $CA J
+         fcb   '[
+         fcb   '2
+         fcb   'J+N
 
 *96 VT100 Clear entire line
          fcb   $0D
          fcb   $1B
-         fcb   $5B [
-         fcb   $32 2
+         fcb   '[
+         fcb   '2
          fcb   $CB K
 *97
          fcb   $1B
-         fcb   $5B [
+         fcb   '[
          fcb   $D3 S
 *98
          fcb   $1B
-         fcb   $5B [
+         fcb   '[
          fcb   $D4 T
 *99 VT100 Turn off character attributes
          fcb   $1B
-         fcb   $5B [
+         fcb   '[
          fcb   $30
-         fcb   $ED
+         fcb   'm+N
 *100 VT100 Turn low intensity mode on
          fcb   $1B
-         fcb   $5B [
-         fcb   $32 2
-         fcb   $ED
+         fcb   '[
+         fcb   '2
+         fcb   'm+N
 *101
          fcb   $05+N
 *102
@@ -1900,14 +1900,14 @@ TRMSEQ EQU *
 *103
          fcb   $09+N
 *104
-         fcb   $90
+         fcb   $10+N
 *105
-         fcb   $8F
+         fcb   $0F+N
 *106
          fcb   $15
          fcb   $00
          fcb   $00
-         fcb   $50 P
+         fcb   'P
          fcb   $18
          fcb   $81
 *107
@@ -1930,20 +1930,20 @@ TRMSEQ EQU *
          fcb   $C9 I
 *113
          fcb   $1B
-         fcb   $58 X
-         fcb   $37 7
+         fcb   'X
+         fcb   '7
          fcb   $1B
          fcb   $C2 B
 *114
          fcb   $1B
          fcb   $D4 T
 *115
-         fcb   $97
+         fcb   $17+N
 *116
          fcb   $01
          fcb   $00
          fcb   $17
-         fcb   $8A
+         fcb   $0A+N
 *117
          fcb   $07
          fcb   M
@@ -1958,65 +1958,65 @@ TRMSEQ EQU *
          fcb   M
 *121
          fcb   $1B
-         fcb   $91
+         fcb   $11+N
 *122
          fcb   $1B
-         fcb   $9C
+         fcb   $1C+N
 *123
          fcb   $0D
          fcb   $1B
-         fcb   $8F
+         fcb   $0F+N
 *124
          fcb   $1B
          fcb   $11
          fcb   $00
          fcb   $17
-         fcb   $8A
+         fcb   $0A+N
 *125
          fcb   $1B
          fcb   $12
          fcb   $1B
-         fcb   $9A
+         fcb   $1A+N
 *126
          fcb   $1B
          fcb   $06
          fcb   $1B
          fcb   $24 $
          fcb   $1B
-         fcb   $9F
+         fcb   $1F+N
 *127
          fcb   $1B
-         fcb   $5B [
+         fcb   '[
          fcb   $18
-         fcb   $48 H
+         fcb   'H
          fcb   $1B
          fcb   $C4 D
 *128 VT100 Move cursor to upper left corner
          fcb   $1B
-         fcb   $5B [
-         fcb   $48 H
+         fcb   '[
+         fcb   'H
          fcb   $1B
          fcb   $CD M
 *129
          fcb   $1B
-         fcb   $5B [
-         fcb   $37 7
-         fcb   $ED m
+         fcb   '[
+         fcb   '7
+         fcb   'm+N
 *130 VT100 Clear entire screen
          fcb   $1B
-         fcb   $5B [
-         fcb   $32 2
-         fcb   $CA J
+         fcb   '[
+         fcb   '2
+         fcb   'J+N
 *131
          fcb   $1B
-         fcb   $30 0
+         fcb   '0
          fcb   $D0 P
 *132
          fcb   $1B
-         fcb   $9F
+         fcb   $1F+N
 *133
          fcb   $1B
-         fcb   $99
+         fcb   $19+N
 *134
          fcb   $1B
          fcb   $A3 #
@@ -2025,7 +2025,7 @@ TRMSEQ EQU *
          fcb   $A4 $
 *136
          fcb   $1B
-         fcb   $48 H
+         fcb   'H
          fcb   $1B
          fcb   $C1 A
 *137
@@ -2037,40 +2037,40 @@ TRMSEQ EQU *
          fcb   $1B
          fcb   $4D M
          fcb   $1B
-         fcb   $45 E
+         fcb   'E
          fcb   $1B
-         fcb   $51 Q
+         fcb   'Q
          fcb   $1B
-         fcb   $55 U
+         fcb   'U
          fcb   $1B
-         fcb   $5B [
+         fcb   '[
          fcb   $1B
          fcb   $5E ^
          fcb   $1B
-         fcb   $62 b
+         fcb   'b
          fcb   $1B
-         fcb   $65 e
+         fcb   'e
          fcb   $1B
-         fcb   $67 g
+         fcb   'g
          fcb   $1B
-         fcb   $69 i
+         fcb   'i
          fcb   $1B
          fcb   $EE n
 *138
          fcb   $1E
-         fcb   $8A
+         fcb   $0A+N
 *139
          fcb   $1B
-         fcb   $65 e
+         fcb   'e
          fcb   $1B
-         fcb   $67 g
+         fcb   'g
          fcb   $1B
          fcb   $E9 i
 *140
          fcb   $1B
          fcb   $E4 d
+
 TRMEND   equ *
-* End of terminal driver
 
 * Print character in A repeatedly B times
 OUTREPT  tst   <u0042
