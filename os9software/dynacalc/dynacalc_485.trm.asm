@@ -12,108 +12,21 @@
          fcb   $00 
          fcb   $00 
          fcb   $00 
-         fcb   $05 
-         fcb   $21 !
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $05 
-         fcb   $20 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $00 
-         fcb   $00 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $00 
-         fcb   $00 
-         fcb   $02 
-         fcb   $27 '
-         fcb   $2C ,
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $03 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $08 
-         fcb   $20 
-         fcb   $08 
-         fcb   $FF 
-         fcb   $00 
-         fcb   $00 
-         fcb   $08 
-         fcb   $FF 
-         fcb   $00 
-         fcb   $00 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
+M0088    fcb   $05,$21,$FF,$FF    Cursor on
+M008C    fcb   $05,$20,$FF,$FF    Cursor off
+M0090    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+         fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF  Terminal setup
+M00A0    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF   Terminal kiss-off
+M00A8    fcb   $FF,$FF,$00,$00    Cursor right
+         fcb   $FF,$FF,$00,$00    Cursor ??
+CURSPOS  fcb   $02,$27,$2C,$FF,$FF,$FF,$FF,$FF     Cyrsor XY
+M00B8    fcb   $03,$FF,$FF,$FF,$FF,$FF   Cursor clear to EOL
+         fcb   $FF,$FF,$FF,$FF,$FF,$FF   Cursor clear to end of screen
+REVON    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF Reverse on
+REVOFF   fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF Reverse off
+M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
+M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
+M00DE    fcc   "                "  Terminal name (16 chars)
          fcb   $20 
          fcb   $00 
          fcb   $00 
@@ -123,30 +36,30 @@
          fcb   $00 
          fcb   $00 
          fcb   $00 
-         fcb   $04 
-         fcb   $00 
+M00F7    fcb   $04  Log-off key
+M00F8    fcb   $00  Upper case only
          fcb   $00 
          fcb   $01 
-         fcb   $00 
-         fcb   $FF 
-         fcb   $4F O
-         fcb   $00 
-         fcb   $39 9
-         fcb   $0C 
-         fcb   $0A 
-         fcb   $08 
-         fcb   $09 
-         fcb   $1C 
-         fcb   $1A 
-         fcb   $07 
-         fcb   $18 
-         fcb   $03 
+M00FB    fcb   $00  keep helps  T/F
+         fcb   $FF  print borders  T/F
+         fcb   79  printer page width
+         fcb   $00  Pagination  T/F
+M00FF    fcb   57  Lines per page
+M0100    fcb   $0C     Up-arrow
+DOWNKEY  fcb   $0A     Down-arrow
+         fcb   $08     Left-arrow
+         fcb   $09     Right-arrow
+         fcb   $1C     Home key    (Ctrl-\)
+         fcb   $1A     Jump window (Ctrl-Z)
+         fcb   $07   Bell character
+GETADDR  fcb   $18   Get address (Ctrl-X)
+         fcb   $03   Flush type-ahead buffer (Ctrl-C)
          fcb   $05 
-         fcb   $20 
-         fcb   $20 
+         fcb   $20   direct cursor addressing row offset
+         fcb   $20   direct cursor addressing columns offset
          fcb   $01 
-         fcb   $10 
-         fcb   $1F 
+         fcb   16    number of rows on screen
+         fcb   31  number of columns on screen
          fcb   $18 
          fcb   $02 
          fcb   $00 
@@ -879,25 +792,9 @@
          fcb   $00 
          fcb   $00 
          fcb   $00 
-         fcb   $20 
-         fcb   $20 
-         fcb   $4A J
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $20 
-         fcb   $20 
-         fcb   $30 0
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $20 
-         fcb   $30 0
+M0562    fcc   "  January  0, 19 0"
          fcb   $00 
+
          fcb   $08 
          fcb   $00 
          fcb   $A8 (

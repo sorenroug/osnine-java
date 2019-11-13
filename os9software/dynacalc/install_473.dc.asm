@@ -3,7 +3,7 @@
 
          ifp1
          use   defsfile
-         use   Dynacalc.cor.inc
+         use   Dynacalc_473.cor.inc
          endc
          opt -m
 

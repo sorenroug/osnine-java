@@ -1795,10 +1795,11 @@ L0D24    pshs  b
          decb
          clra
          tfr   d,x
-         ldb   #$13
+         ldb   #SS.Joy
          os9   I$GetStt
          tsta
          puls  pc,b
+
 L0D32    ldb   #$01
          bsr   L0D38
          ldb   #$02
