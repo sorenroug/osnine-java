@@ -19,8 +19,8 @@ performed using 256 byte data blocks. RBF does not directly deal with
 physical addresses such as tracks, cylinders, etc. Instead, it passes to
 device driver modules address parameters using a standard address called
 a <quote>logical sector number</quote>, or <quote>LSN</quote>. LSNs are integers in the range of 0
-to n-1, where n is the maximum number of sectors on the media. The
-driver is responsible for translating the logical sector number to actual
+to <emphasis>n</emphasis>-1, where <emphasis>n</emphasis> is the maximum number of sectors on the media.
+The driver is responsible for translating the logical sector number to actual
 cylinder/track/sector values.
 </para>
   <para>
@@ -30,7 +30,7 @@ driven. The physical parameters it uses are stored on the media itself.
 On disk systems, this information is written on the first few sectors of
 track number zero. The device drivers also use this information,
 particularly the physical parameters stored on sector 0. These
-parameters are written by the <quote>format</quote> program that initializes and tests
+parameters are written by the <command>format</command> program that initializes and tests
 the media.
 </para>
   <sect1>
@@ -429,7 +429,8 @@ section of path descriptors used by RBF.
           <row>
             <entry>PD.SSZ</entry>
             <entry>$19</entry>
-            <entry>3</entry>  <!-- Matches os9defs -->
+            <entry>3</entry>
+            <!-- Matches os9defs -->
             <entry>Segment size</entry>
           </row>
           <row>
@@ -1658,8 +1659,8 @@ File Locking may be considered a special case of record locking, in
 which the entire file is considered unsafe to be used by more than one
 user. Sometimes (although rarely), it is necessary to create a file
 that can never be accessed by more than one user at a time by setting
-the non-sharable(S) bit in the file's attribute byte. The bit can be set
-by using an option when the file is created, or later using the Attr
+the non-sharable (S) bit in the file's attribute byte. The bit can be set
+by using an option when the file is created, or later using the <command>Attr</command>
 utility. Once the non-sharable bit has been set, only one user may open
 the file at a time. If other users attempt to open the file, an error
 (#253) will be returned.
@@ -1674,7 +1675,7 @@ already been opened by another process, an error (#253) will be returned.
 </para>
       <para>
 A feature of non-sharable files is that they may be duplicated using
-the I$Dupe system call so that they may be inherited, and therefore
+the I$Dup system call so that they may be inherited, and therefore
 accessible to more.than one process at a time. Non-sharable means only
 that the file may be opened once at a time. It is usually a very bad
 idea to have two processes actively use any disk file through the same

@@ -893,7 +893,7 @@ starting a complete new tine which starts at the left side of the
 screen, it is usually easiest to move the cursor to the previous
 RETURN and enter a RETURN as the first character. This will usually
 cause the next line to be completely empty and will reduce
-distracting Cursor movement On Some terminals.</para>
+distracting cursor movement on some terminals.</para>
     <section>
       <title>CHARACTER MODS</title>
       <para>While you are entering

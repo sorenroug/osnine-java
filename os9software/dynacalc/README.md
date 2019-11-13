@@ -17,6 +17,7 @@ Dynacalc was originally created by Scott Schaeferle.
 
 ## Number format
 
+```
 -1    = 0A A0 80 0000 0000 0000 81 FF FF00
 
 1     = 0A A0 00 0000 0000 0000 81 FF FF00   2^0 + 1
@@ -44,3 +45,4 @@ PI    = 0A A0 49 0FDA A221 68BD 82 FF FF00  (3.141592653589793)
 
 '1    = 03 3031 FFFF 00
 'AB.. = 0F 3041 4243 4445 4647 4849 4A4B 4C4D FFFF 00 'ABCDEFGHIJKLM' = len(13)
+```

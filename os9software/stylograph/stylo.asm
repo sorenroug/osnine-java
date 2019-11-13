@@ -862,7 +862,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
  else
-*1 Unknown terminal (SOROC IQ-120?)
+*1 SOROC IQ-120
          fcb CYX+CAD20+LERF+D2479
          fcb   1  CURMV  - CURSOR MOVE
          fcb   0  CURON  - CURSOR ON
@@ -878,7 +878,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
  endc
-*2
+*2 SOROC IQ-140
          fcb   CYX+CAD20+SSCD+LERF+D2479
          fcb   1  CURMV  - CURSOR MOVE
          fcb   0  CURON  - CURSOR ON
@@ -954,7 +954,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
 *7 Lear-Zigler ADM-3A?
-         fcb   $C0 @
+         fcb   CYX+CAD20+D2479
          fcb   1
          fcb   0
          fcb   0
@@ -962,7 +962,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   18  CLRS  - CLEAR SCREEN
          fcb   0
-         fcb   3
+         fcb   3   SCRLUP - SCROLL UP
          fcb   0
          fcb   0
          fcb   0
@@ -1105,7 +1105,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   61
          fcb   62 ATT1  - CHARACTER ATTRIBUTES
 *17
-         fcb   $C0 @
+         fcb   CYX+CAD20+D2479
          fcb   1
          fcb   0
          fcb   0
@@ -1475,15 +1475,15 @@ TRMSEQ EQU *
 *?  - 
          fcb   $29+N
  else
-*1  - CURSOR MOVE (Unknown)
+*1  - CURSOR MOVE (SOROC IQ-120)
          fcb   $1B,'=+N
-*2, - CLEAR SCREEN (Unknown)
-         fcb   $1B,$2A+N
-*3  - 
+*2, - CLEAR SCREEN (SOROC IQ-120)
+         fcb   $1B,'*+N
+*3  - SCROLL UP (ADM-3A, SOROC IQ-120)
          fcb   $1B
          fcb   '=
-         fcb   '7
-         fcb   $20
+         fcb   '7     Line 24
+         fcb   $20    Column 1
          fcb   $0A+N
 *4  - 
          fcb   $1B
@@ -1506,7 +1506,7 @@ TRMSEQ EQU *
          fcb   'E+N
 *9
          fcb   $1B
-         fcb   $2E .
+         fcb   '.
          fcb   '2
          fcb   '6
          fcb   '0
@@ -1514,19 +1514,19 @@ TRMSEQ EQU *
          fcb   $0E+N
 *10
          fcb   $1B
-         fcb   $2E .
+         fcb   '.
          fcb   '2
          fcb   '6
          fcb   '0
          fcb   '0
          fcb   $0E+N
-*11  Move XY on Hazeltine esprit
+*11  Move XY on Hazeltine 1000 series
          fcb   $7E
          fcb   $11+N
-*12  Clear screen on Hazeltine esprit
+*12  Clear screen on Hazeltine 1000 series
          fcb   $7E
          fcb   $1C+N
-*13 Clear to end of line on Hazeltine esprit
+*13 Clear to end of line on Hazeltine 1000 series
          fcb   $7E
          fcb   $0F+N
 *14

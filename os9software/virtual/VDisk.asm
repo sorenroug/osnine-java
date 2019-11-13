@@ -85,6 +85,7 @@ NOTLSN0  tfr x,d
          std AddrReg,x    Write the LSN to the at AddrReg, AddrReg+1
          ldb #RdLSN
          stb OpReg,x      Tell the chip to read a sector
+* FIXME: Check for error code
          ldy PD.BUF,y
          clrb
 READBYTE lda #RdByte
@@ -144,7 +145,7 @@ WRTLOOP  lda ,x+
 
          lda #WrLSN
          sta OpReg,y      Tell the chip to write a sector
-
+* FIXME: Check for error code
          clrb
 WRIT99   rts
 
@@ -152,6 +153,7 @@ WRIT99   rts
 * GETSTA
 *  get device status
 *
+* FIXME: Just return error code.
 GETSTA
          ldx V.PORT,u
          sta OpReg,x      Send noop to chip

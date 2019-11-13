@@ -3459,15 +3459,18 @@ L1B0A    lbra  L20E0
 L1B0D    lbra  L1E11
 L1B10    lbra  L1B16
 L1B13    lbra  L1B1F
+
 L1B16    tst   <u00F0
          bne   L1B5A
          bsr   L1B29
          lbra  L3AF3
+
 L1B1F    tst   <u00F0
          beq   L1B5A
          pshs  u,a
          lda   #$8C
          bra   L1B2D
+
 L1B29    pshs  u,a
          lda   #$88
 L1B2D    tst   <u00E0

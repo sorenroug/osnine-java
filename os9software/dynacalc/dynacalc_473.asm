@@ -1,5 +1,5 @@
  nam   Dynacalc
- ttl   program module
+ ttl   Dynacalc version 4.7:3
 
  ifp1
  use defsfile
