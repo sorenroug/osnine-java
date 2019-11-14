@@ -1,5 +1,6 @@
 package org.roug.osnine.genericos9;
 
+import java.io.File;
 import org.roug.osnine.OptionParser;
 
 import org.slf4j.Logger;
@@ -14,13 +15,20 @@ public class OS9Emu {
 
     /** List of unrecognized command line arguments. */
     private static String[] unusedArguments = new String[0];
+    private static String[] diskArgs = new String[4];
 
     private static boolean singleUser = false;
 
     public static void main(String[] args) {
+
         try {
             parseArguments(args);
             GUI app = new GUI(singleUser);
+            for (int i = 0; i < 4; i++) {
+                if (diskArgs[i] != null) {
+                    app.setDisk(i, new File(diskArgs[i]));
+                }
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to start", e);
             System.exit(1);
@@ -36,10 +44,16 @@ public class OS9Emu {
      */
     private static void parseArguments(String[] args) {
 
-        OptionParser op = new OptionParser(args, "sm");
+        OptionParser op = new OptionParser(args, "sm0:1:2:3:");
         singleUser = op.getOptionFlag("s");
         if (op.getOptionFlag("m")) {
             singleUser = false;
+        }
+        for (int i = 0; i < 4; i++) {
+            String a = op.getOptionArgument(Integer.toString(i));
+            if (a != null) {
+                diskArgs[i] = a;
+            }
         }
         unusedArguments = op.getUnusedArguments();
     }

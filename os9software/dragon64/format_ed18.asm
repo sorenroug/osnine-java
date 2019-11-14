@@ -17,7 +17,7 @@
          ifp1
          use   defsfile
          endc
-tylg     set   Prgrm+Objct   
+tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
 PAGE     equ   $0100
@@ -83,15 +83,15 @@ u2976    rmb   451
 size     equ   .
 name     equ   *
          fcs   /Format/
-         fcb   $12 
+         fcb   $12
 
-val1     fdb   0 
-val2     fdb   0 
-val3     fdb   0 
+val1     fdb   0
+val2     fdb   0
+val3     fdb   0
 
-hdsdat   fcb   $80,$E5 
+hdsdat   fcb   $80,$E5
          fcb   $80,$E5
-         fcb   0,$00 
+         fcb   0,$00
 
 * Low level formatting
 
@@ -103,25 +103,25 @@ sgtdat   fcb   1,$00
          fcb   6,$00
          fcb   1,$FC  Index Address Mark (IAM)
          fcb   12,$FF
-         fcb   0,$00 
+         fcb   0,$00
 
-         fcb   6,$00 
-         fcb   1,$FE 
+         fcb   6,$00
+         fcb   1,$FE
 
-         fcb   4,$00 
+         fcb   4,$00
          fcb   1,$F7   2 CRCs written
-         fcb   10,$FF 
-         fcb   6,$00 
+         fcb   10,$FF
+         fcb   6,$00
          fcb   1,$FB   Data address mark
 
          fcb   $80,$E5
          fcb   $80,$E5
          fcb   1,$F7
-         fcb   10,$FF 
-         fcb   $00,$00 
+         fcb   10,$FF
+         fcb   $00,$00
 
-         fcb   $FF 
-         fcb   $00 
+         fcb   $FF
+         fcb   $00
          fcb   $43
          fcb   $01
          fcb   $28
@@ -134,51 +134,51 @@ dbtdat   fcb   80,$4E
          fcb   3,$F6  IAM 3 x $F6 + 1 x $FC
          fcb   1,$FC  Index Address Mark (IAM)
          fcb   $20,$4E  GAP1
-         fcb   $00,$00 
+         fcb   $00,$00
 
          fcb   12,$00  SYNC 12 x $00
          fcb   3,$F5   IDAM
-         fcb   1,$FE 
+         fcb   1,$FE
 
-         fcb   4,$00 
+         fcb   4,$00
          fcb   1,$F7
          fcb   22,$4E  GAP2 22 x $4E
          fcb   12,$00  SYNC 12 x $00
          fcb   3,$F5   DATA AM
-         fcb   1,$FB 
+         fcb   1,$FB
 
          fcb   $80,$E5
          fcb   $80,$E5
          fcb   1,$F7
          fcb   22,$4E
-         fcb   $00,$00 
+         fcb   $00,$00
 
-         fcb   $4E,$00 
-         fcb   $90 
-         fcb   $01 
-         fcb   $52 
+         fcb   $4E,$00
+         fcb   $90
+         fcb   $01
+         fcb   $52
 
 dctdat   fcb   $20,$4E
-         fcb   $00,$00 
+         fcb   $00,$00
 
-         fcb   $08,$00 
+         fcb   $08,$00
          fcb   $03,$F5
-         fcb   $01,$FE 
+         fcb   $01,$FE
 
-         fcb   $04,$00 
+         fcb   $04,$00
          fcb   $01,$F7
          fcb   22,$4E   GAP2 22 x $4E
          fcb   $0C,$00 SYNC 12 x $00
          fcb   $03,$F5 DATA AM
-         fcb   $01,$FB 
+         fcb   $01,$FB
 
          fcb   $80,$E5
          fcb   $80,$E5
          fcb   $01,$F7
          fcb   $18,$4E
-         fcb   $00,$00 
+         fcb   $00,$00
          fcb   $4E
-         fcb   $00 
+         fcb   $00
          fcb   $2C
          fcb   $01
          fcb   $50
@@ -195,9 +195,9 @@ start    equ   *
          lbsr  verify
          lbsr  fdsnok   Write root dir structure
          ldu   <F.Dtb
-         os9   I$Detach 
-         clrb  
-fexout   os9   F$Exit   
+         os9   I$Detach
+         clrb
+fexout   os9   F$Exit
 
 clrwrk   leay  F.Opn,u
          pshs  y
@@ -213,7 +213,7 @@ prsprm   lda   ,x+
 bpnerr   ldb   #E$BPNam
          lbra  usermg
 
-L00DA    os9   F$PrsNam 
+L00DA    os9   F$PrsNam
          lbcs  usermg
          lda   #PDELIM       /
          cmpa  ,y
@@ -222,13 +222,13 @@ L00DA    os9   F$PrsNam
          leay  <Prmbuf,u
 movnam   sta   ,y+
          lda   ,x+
-         decb  
+         decb
          bpl   movnam
          leax  <Prmbuf+1,u
          lda   #C$SPAC
          sta   ,y
-         clra  
-         os9   I$Attach 
+         clra
+         os9   I$Attach
          lbcs  usermg
          stu   <F.Dtb
          ldu   <F.Dma
@@ -237,20 +237,20 @@ movnam   sta   ,y+
          std   ,y
          lda   #WRITE.
          leax  <Prmbuf,u
-         os9   I$Open   
+         os9   I$Open
          bcs   fexout
          sta   <F.Opn
-         rts   
+         rts
 
 L011A    bsr   defalt
          bsr   L015D
          lbsr  L0216
-         rts   
+         rts
 
 * Get the parameters from the device descriptor
 defalt   leax  >Optbuf,u
          clrb              SS.Opt - Function code 0
-         os9   I$GetStt 
+         os9   I$GetStt
          bcs   fexout
          ldb   PD.SID-PD.OPT,x    Get number of sides
          stb   <F.Sid
@@ -259,7 +259,7 @@ defalt   leax  >Optbuf,u
          andb  #$01
          stb   <F.Bdn   0 = FM, 1 = MFM
          puls  b
-         lsrb  
+         lsrb
          andb  #$01
          stb   <F.Tdn         Track density 1 = 96 TPI 0 = single 48 TPI
          ldd   PD.CYL-PD.OPT,x
@@ -276,8 +276,8 @@ defalt   leax  >Optbuf,u
          stb   <F.Ilv
          ldb   #$01
          stb   <F.Bit   Set cluster size to 1
-         clrb  
-         rts   
+         clrb
+         rts
 
 L015D    ldx   <F.Prm
 L015F    leay  >opt.1,pcr
@@ -295,14 +295,14 @@ L0176    lda   ,x+
 L0178    cmpa  ,y
          bne   L0180
          ldb   $01,y     Load default value
-         clra  
-L017F    rts   
+         clra
+L017F    rts
 
 L0180    leay  $04,y
          tst   ,y
          bne   L0178
-         coma  
-         rts   
+         coma
+         rts
 
 opt.1    fcb   $52  R
          fcb   $59  Y
@@ -349,7 +349,7 @@ o.sid    stb   <F.Sid
          rts
 
 o.unk3   inc   <u0046
-         rts   
+         rts
 
 * Option for disk name
 o.nam    leay  Nambuf,u
@@ -358,7 +358,7 @@ nxtnam   lda   ,x+
          cmpa  #'"
          beq   namfil
          sta   ,y+
-         decb  
+         decb
          bne   nxtnam
 L01CD    ldb   ,x+
          cmpb  #'"
@@ -373,40 +373,40 @@ L01DF    leay  -$01,y
          lda   ,y
 nulnam   adda  #$80
          sta   ,y
-         clrb  
-         rts   
+         clrb
+         rts
 
 * Not referred to in options
 o.cyl    lbsr  inpnum
          ldd   <F.Val
          std   <F.Cyl
-         rts   
+         rts
 
 * ":" option Interleave
 o.ilv    lbsr  inpnum
          ldd   <F.Val
-         tsta  
+         tsta
          beq   L01FB
          ldb   #$01
 L01FB    stb   <F.Ilv
-L01FD    rts   
+L01FD    rts
 
 * Not referred to in options
 * Sets cluster size
 o.unk6   lbsr  inpnum
          ldd   <F.Val
-         tsta  
+         tsta
          beq   L0208
          ldb   #$01
 L0208    stb   <F.Bit   Set cluster size to 1
-         negb  
-         decb  
+         negb
+         decb
          andb  <F.Bit
          beq   L0214
          ldb   #$01
          stb   <F.Bit   Set cluster size to 1 if insane
-L0214    clrb  
-         rts   
+L0214    clrb
+         rts
 
 L0216    leax  >progvers,pcr
          lbsr  print
@@ -440,7 +440,7 @@ L0254    leax  >prompt,pcr
          anda  #^$20
          cmpa  #'Y
          beq   L01FD
-         clrb  
+         clrb
          cmpa  #'N
          lbeq  fexout
          bra   L0254
@@ -449,8 +449,8 @@ L0254    leax  >prompt,pcr
 linend   leax  >justcr,pcr
 print    ldy   #80
 prntln   lda   #StdOut
-         os9   I$WritLn 
-         rts   
+         os9   I$WritLn
+         rts
 
 * Prompt for a response
 * Read from StdIn
@@ -459,12 +459,12 @@ respon   pshs  u,y,x,b,a
          leax  ,s        Where to store the response
          ldy   #1        Read one character
          clra            Set A to stdin
-         os9   I$Read   
+         os9   I$Read
          lbcs  fexout
          bsr   linend
          puls  u,y,x,b,a
          anda  #$7F
-         rts   
+         rts
 
 dsktyp   leax  >hdsdat,pcr
          stx   <u000A
@@ -482,10 +482,10 @@ L02AB    leax  >sgtdat,pcr    Single bit density
          beq   trkdat
          leax  >dbtdat,pcr    Double bit density
 trkdat   stx   <F.Dtk
-         clra  
+         clra
          ldb   <F.Sid
          tfr   d,y
-         clrb  
+         clrb
          ldx   <F.Cyl
          bsr   L0303
          exg   d,x
@@ -509,7 +509,7 @@ mionoc   exg   d,x
          lda   <F.Bit
          pshs  a
          bsr   L034C
-         tstb  
+         tstb
          beq   bmpsok
          leax  >clsmme,pcr   Print cluster mismatch
          lbsr  print
@@ -517,19 +517,19 @@ mionoc   exg   d,x
 
 bmpsok   leas  $02,s
          stx   <F.Map
-         rts   
+         rts
 
 L0303    lda   #$08
 L0305    clr   ,-s
-         deca  
+         deca
          bne   L0305
          sty   ,s
          stb   $02,s
          stx   $03,s
 L0311    ldd   ,s
          beq   L0334
-         lsra  
-         rorb  
+         lsra
+         rorb
          std   ,s
          bcc   L0327
          ldd   $03,s
@@ -539,11 +539,11 @@ L0311    ldd   ,s
          adca  $05,s
          sta   $05,s
 L0327    ldd   $03,s
-         lslb  
-         rola  
+         lslb
+         rola
          std   $03,s
          lda   $02,s
-         rola  
+         rola
          sta   $02,s
          bra   L0311
 L0334    leas  $05,s
@@ -560,7 +560,7 @@ L0338    pshs  x,b
          adcb  #$00
 L034C    lsr   $02,s
          bne   L0338
-         rts   
+         rts
 
 L0351    tst   <F.Typ
          bpl   L036B       If bit 7 is on then do physical format - don't ask
@@ -572,23 +572,23 @@ L0351    tst   <F.Typ
          beq   L036B
          cmpa  #'N
          bne   L0351
-         rts   
+         rts
 
 * Format physical tracks. This is actually done by the device driver
 *
 L036B    lda   <F.Opn
          ldb   #SS.Reset  Restore head to track 0
-         os9   I$SetStt 
+         os9   I$SetStt
          lbcs  fexout
          ldd   #0
          std   <F.Wtc track = 0
-         inca  
+         inca
          sta   <F.Scl       Sector length = 256
 fmontk   clr   <F.Fac       side = 0
 fmostk   bsr   intdat
          leax  >Secbuf,u
          ldu   <F.Wtc       track count
-         clrb  
+         clrb
          tst   <F.Bdn
          beq   L039B
          tst   <u0046
@@ -611,7 +611,7 @@ L03A7    tfr   d,y
          lbcs  fexout
          ldu   <F.Dma
          ldb   <F.Fac  side count
-         incb  
+         incb
          stb   <F.Fac  side count
          cmpb  <F.Sid
          bcs   fmostk
@@ -620,7 +620,7 @@ L03A7    tfr   d,y
          std   <F.Wtc
          cmpd  <F.Cyl
          bcs   fmontk
-         rts   
+         rts
 
 * Expand the codes in sgtdat or dbtdat into Secbuf
 * Stop when $0,$0 is seen
@@ -628,7 +628,7 @@ L03CC    ldy   <u000E
 L03CF    ldd   ,y++
          beq   L03E9
 L03D3    stb   ,x+
-         deca  
+         deca
          bne   L03D3
          bra   L03CF
 
@@ -638,7 +638,7 @@ intdat   lda   <F.Typ
          ldy   <F.Dtk
          leax  >Secbuf,u
          bsr   L03CF
-L03E9    rts   
+L03E9    rts
 
 L03EA    ldy   <F.Dtk
          ldb   <F.Spt+1
@@ -683,19 +683,19 @@ L0445    leax  d,x
          std   ,x
          ldb   <u0009
          lda   b,y
-         incb  
+         incb
          stb   <u0009
          ldb   <F.Scl
          tst   <u0046
          beq   L0459
-         inca  
+         inca
 L0459    std   $02,x
          lda   <u0009
          cmpa  <F.Wsc
          bcc   L0465
          ldd   <u003F
          bra   L0445
-L0465    rts   
+L0465    rts
 
 cplsat   pshs  y,b skip table
          tfr   b,a
@@ -710,18 +710,18 @@ L047A    leax  >L097F,pcr
          lbra  exterr
 L0481    cmpb  <F.Wsc
          bhi   L047A
-         nega  
+         nega
          pshs  y,x,b,a
-         clra  
+         clra
 L0489    sta   ,x
-         inca  
+         inca
          cmpa  <F.Wsc
          bne   nxtlps
          leas  $06,s
 plaend   puls  pc,y,b
 
 nxtlps   ldb   <F.Ilv
-         abx   
+         abx
          cmpx  $04,s
          bcs   L049F
          ldb   ,s
@@ -743,7 +743,7 @@ intdsk   lbsr  clrbuf
          stb   DD.TKS,x
          lda   <F.Bit
          sta   DD.BIT+1,x
-         clra  
+         clra
          ldb   <F.Map
          tst   <u0027
          beq   L04C9
@@ -751,7 +751,7 @@ intdsk   lbsr  clrbuf
 L04C9    addd  #$0001
          addd  #$0010
          std   DD.DIR+1,x
-         clra  
+         clra
          tst   <F.Bdn
          beq   L04D8
          ora   #$02
@@ -768,7 +768,7 @@ L04E6    sta   <DD.FMT,x
          lda   #$FF       Set disk attributes to $ff
          sta   DD.ATT,x
          leax  Secbuf+DD.DAT,u     Set creation date
-         os9   F$Time   
+         os9   F$Time
          leax  Secbuf+DD.NAM,u
          leay  Nambuf,u
          tst   ,y
@@ -784,8 +784,8 @@ nmntav   leax  >namask,pcr
          lbsr  prntln
          leax  Secbuf+DD.NAM,u
          ldy   #$0021
-         clra  
-         os9   I$ReadLn 
+         clra
+         os9   I$ReadLn
          bcc   dknmib
          cmpa  #E$EOF
          bne   nmntav
@@ -795,7 +795,7 @@ abortf   leax  >fabort,pcr
 dknmib   tfr   y,d
          leax  d,x
          clr   ,-x
-         decb  
+         decb
          beq   nmntav
          lda   ,-x
          ora   #$80
@@ -820,32 +820,32 @@ L054A    addd  ,x++
          lda   <F.Opn
          ldb   #SS.Opt
          leax  >Secbuf+DD.OPT,u
-         os9   I$GetStt 
+         os9   I$GetStt
          ldb   #SS.Reset
-         os9   I$SetStt 
+         os9   I$SetStt
          lbcs  fexout
          leax  >Secbuf,u
          lbra  wrtsec
 
 access   lda   <F.Opn
-         os9   I$Close  
+         os9   I$Close
          leax  <Prmbuf,u
          lda   #READ.
-         os9   I$Open   
+         os9   I$Open
          lbcs  rptbss
          sta   <F.Opn
          leax  >Secbuf,u
          ldy   #$0100
-         os9   I$Read   
+         os9   I$Read
          lbcs  rptbss
          lda   <F.Opn
-         os9   I$Close  
+         os9   I$Close
          leax  <Prmbuf,u
          lda   #UPDAT.
-         os9   I$Open   
+         os9   I$Open
          lbcs  rptbss
          sta   <F.Opn
-         rts   
+         rts
 
 * Verify disk
 verify   lda   <F.Typ
@@ -864,8 +864,8 @@ L05C7    leax  >askver,pcr    Ask for verification
 * Do verification
 doverf   ldd   <F.Stz
          std   <u0015
-         clra  
-         clrb  
+         clra
+         clrb
          std   <u0034
          std   <F.Wtc
          std   <F.Cns
@@ -877,13 +877,13 @@ doverf   ldd   <F.Stz
          lbsr  clrsec
          leax  PAGE,x
          stx   <F.Max
-         clra  
+         clra
          ldb   #$01
          std   <F.Bms
          lda   <F.Bit
          sta   <u0029
          clr   <u0028
-         clra  
+         clra
          ldb   <F.Map
          tst   <u0027
          beq   L0614
@@ -892,7 +892,7 @@ L0614    addd  #$0009
          addd  #$0010
          std   <u002B
          lda   <F.Bit
-L061E    lsra  
+L061E    lsra
          bcs   L062F
          lsr   <u002B
          ror   <u002C
@@ -904,7 +904,7 @@ L061E    lsra
 L062F    ldb   <u002C
          stb   <u002D
          lda   <F.Bit
-         mul   
+         mul
          std   <u002B
          subd  #$0001
          subb  <F.Map
@@ -919,9 +919,9 @@ L064B    tst   <u0043
          lda   <F.Opn
          leax  >Secbuf,u
          ldy   #$0100
-         os9   I$Read   
+         os9   I$Read
          bcc   nxtsec
-         os9   F$PErr   
+         os9   F$PErr
          lbsr  L084B
          lda   #$FF
          sta   <u0028
@@ -932,7 +932,7 @@ L064B    tst   <u0043
          bhi   nxtsec
 rptbss   leax  >syscbd,pcr   Print bad system sector
 exterr   lbsr  print
-         clrb  
+         clrb
          lbra  fexout
 
 nxtsec   ldd   <F.Cns
@@ -981,7 +981,7 @@ L06D8    ldb   <F.Cnt
          ldx   <F.Cnt+1
          leax  $01,x
          bne   L06E1
-         incb  
+         incb
 L06E1    cmpb  <F.Tot
          bcs   L06E9
          cmpx  <F.Tot+1
@@ -999,7 +999,7 @@ L06F8    cmpy  <F.Pnt
 
 L0701    ldx   <F.Pnt
          lda   <u0028
-         rora  
+         rora
          rol   ,x+
          inc   <F.Mcn
          lda   <F.Mcn
@@ -1013,13 +1013,13 @@ L0701    ldx   <F.Pnt
          leax  >Optbuf,u
          stx   <F.Pnt
          lbsr  clrsec
-L0723    rts   
+L0723    rts
 
 L0724    tfr   a,b
-         lsra  
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
+         lsra
          andb  #$0F
          addd  #$3030
          cmpa  #$39
@@ -1028,7 +1028,7 @@ L0724    tfr   a,b
 L0735    cmpb  #$39
          bls   L073B
          addb  #$07
-L073B    rts   
+L073B    rts
 
 * Print out the number of good sectors
 pnogsf   lbsr  linend
@@ -1036,10 +1036,10 @@ pnogsf   lbsr  linend
          ldy   #$0019
          lbsr  prntln
          ldb   <F.Bit
-         clra  
+         clra
          ldx   <u0034
          pshs  x,a
-L0751    lsrb  
+L0751    lsrb
          bcs   L075C
          lsl   $02,s
          rol   $01,s
@@ -1062,19 +1062,19 @@ L075C    puls  x,a
          tfr   s,x
          lbsr  print
          leas  $07,s
-         rts   
+         rts
 
 L0780    pshs  y
-         clra  
+         clra
          ldb   #$01
          cmpd  <F.Bms
          bne   L079B
          leax  >Optbuf,u
-         clra  
+         clra
          ldb   <u002D
          tfr   d,y
-         clrb  
-         os9   F$AllBit 
+         clrb
+         os9   F$AllBit
          lbcs  rptbss
 L079B    lbsr  seksec
          leax  >Optbuf,u
@@ -1102,17 +1102,17 @@ fdsnok   ldd   #$0010
          leax  >Fdtbuf,u
          bsr   clrsec
          leax  >Fdtbuf+FD.DAT,u
-         os9   F$Time   
+         os9   F$Time
          leax  >Fdtbuf,u
          lda   #^SHARE.
          sta   FD.ATT,x
          lda   #$02         Set link count to 2
          sta   FD.LNK,x
-         clra  
+         clra
          ldb   #DIR.SZ*2
          std   FD.SIZ+2,x   Directory size is 64 bytes
          ldb   <F.Das
-         decb  
+         decb
          stb   FD.SEG+FDSL.B+1,x
          ldd   <F.Bms
          addd  #1
@@ -1131,9 +1131,9 @@ fdsnok   ldd   #$0010
 * Write the empty sectors of the directory
          bsr   clrbuf
          ldb   <F.Das
-L080F    decb  
+L080F    decb
          bne   L0813
-         rts   
+         rts
 
 L0813    pshs  b
          bsr   wrtsec
@@ -1142,35 +1142,35 @@ L0813    pshs  b
 
 * Clear the sector buffer
 clrbuf   leax  >Secbuf,u
-clrsec   clra  
-         clrb  
+clrsec   clra
+         clrb
 L0821    sta   d,x
-         decb  
+         decb
          bne   L0821
-         rts   
+         rts
 
 * Write sector
 wrtsec   lda   <F.Opn
          ldy   #PAGE
-         os9   I$Write  
+         os9   I$Write
          lbcs  fexout
-         rts   
+         rts
 
 * Seek past bitmap sectors
-seksec   clra  
+seksec   clra
          ldb   <F.Bms
          tfr   d,x
          lda   <F.Bms+1
-         clrb  
+         clrb
          tfr   d,u
 sekopn   lda   <F.Opn
-         os9   I$Seek   
+         os9   I$Seek
          ldu   <F.Dma
          lbcs  fexout
-         rts   
+         rts
 L084B    ldx   <F.Cnt
          lda   <F.Cnt+2
-         clrb  
+         clrb
          addd  #PAGE
          tfr   d,u
          bcc   sekopn
@@ -1204,7 +1204,7 @@ L0891    sta   ,u+
          leas  $02,s
          leax  >Secbuf,u
          lbsr  print
-         rts   
+         rts
 
 * Decimal powers
 dcnums   fdb 10000
@@ -1224,7 +1224,7 @@ L08B2    bsr   L08C2
          bne   L08C1
 L08BC    ldd   #$0001
          std   <F.Val
-L08C1    rts   
+L08C1    rts
 
 L08C2    pshs  y,b,a
          ldb   ,x+
@@ -1243,13 +1243,13 @@ L08DE    puls  pc,y,b,a
 L08E0    orcc  #$04
          puls  pc,y,b,a
 usermg    lda   #$02
-         os9   F$PErr   
+         os9   F$PErr
          leax  <useopt,pcr
          ldy   #340
          lda   #$02
-         os9   I$WritLn 
-         clrb  
-         os9   F$Exit   
+         os9   I$WritLn
+         clrb
+         os9   F$Exit
 
 progvers fcb   $0A
          fcc   "DRAGON FORMAT UTILITY"
@@ -1285,7 +1285,7 @@ clsmme   fcc   /Cluster size mismatch/
          fcc   /Double sided? /
 gdsect   fcc   /Number of good sectors: $/
 L0A58    fcc   /Both PHYSICAL and LOGICAL format? /
-askver    fcc   /Physical Verify desired? /
+askver   fcc   /Physical Verify desired? /
 
          emod
 eom      equ   *

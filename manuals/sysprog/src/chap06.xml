@@ -1339,7 +1339,7 @@ back to be verified.</para>
               <entry>
                 <literallayout>(U) = address of the device static storage area
 (Y) = address of the path descriptor
-FUNCTION CODE SHOULD BE RETRIEVED FROM RSB ON THE USER STACK.
+FUNCTION CODE SHOULD BE RETRIEVED FROM R$B ON THE USER STACK.
 </literallayout>
               </entry>
             </row>
@@ -1369,9 +1369,9 @@ service requests.</para>
 contains the values of MPU registers at the time of the
 <xref linkend="i.getstt"/> or
 <xref linkend="i.setstt"/> service request. The address of the register stack may be
-found in PD.RGS, which is located in the path descriptor, . The
-following offsets may be used to access any particular value in the
-register stack:</para>
+found in PD.RGS, which is located in the path descriptor.
+The following offsets may be used to access any particular value in the register stack:
+</para>
       <informaltable frame="none" colsep="0" rowsep="0">
         <tgroup cols="5">
           <colspec colwidth="0.6in"/>

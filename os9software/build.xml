@@ -37,6 +37,7 @@
 
     <target name="compile">
         <mkdir dir="${targetdir}"/>
+
         <assemble src="dynacalc_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
         <assemble src="stylo_std" home="stylograph"/>
@@ -72,7 +73,6 @@
         <assemble src="BootDyn" home="kernel" verify="7a6191a6bd8ee2649212bcebaff42c0d"/>
         <assemble src="Clock_gimix" home="kernel" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
         <assemble src="T1" home="kernel" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
-        <assemble src="HWClock" home="kernel" verify="3cc1395b3495bef485fee9774e7fdef6"/>
         <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
         <assemble src="OS9p1_d64" home="kernel" verify="523b00da5aa39530ea3e2ae2364ec0e6"/>
         <assemble src="OS9p1_gimix" home="kernel" verify="fc8df0c641cc8411069476e09da83560"/>
@@ -92,15 +92,17 @@
         <assemble src="SysGo" home="kernel" verify="a47c4ceedee4da200ebeabfcdea8b53c"/>
         <assemble src="SysGo_login" home="kernel" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
 
+        <assemble src="HWClock" home="virtual" verify="3cc1395b3495bef485fee9774e7fdef6"/>
         <assemble src="D0_vdisk" home="virtual" verify="9c31bf382aa1be8f30909a0dd6d481a6"/>
         <assemble src="D1_vdisk" home="virtual" verify="e952a2f0422f1f51a9d157b70ac02f8d"/>
         <assemble src="VDisk" home="virtual" verify="726892927a2cfef6c3a1019eb8953477"/>
+        <assemble src="VDisk_rv2" home="virtual" verify="a1f6637dd8b30819bec182f24eea611f"/>
 
-        <assemble src="install.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
+        <assemble src="install_473.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
         <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
-        <assemble src="Dynacalc.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
-        <assemble src="vt100.trm" home="dynacalc"/>
+        <assemble src="Dynacalc_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
+        <assemble src="vt100_473.trm" home="dynacalc"/>
 
         <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
         <assemble src="runb_tandy_y2k" home="basic09" verify="08da732414bafa6e7b1cc00e737d5195"/>

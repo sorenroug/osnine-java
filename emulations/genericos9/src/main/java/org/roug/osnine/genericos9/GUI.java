@@ -62,6 +62,7 @@ public class GUI {
 
     private PrinterDialog printerDialog;
     private JDialog t2Dialog;
+    private DiskDialog d1Dialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
@@ -69,7 +70,7 @@ public class GUI {
     /** Serial devices. T3 will be used for printer. */
     private Acia6850 t1,t2,t3;
 
-    private VirtualDisk d0;
+    private VirtualDisk diskDevice;
 
     private HWClock hwClock;
 
@@ -130,17 +131,19 @@ public class GUI {
         hwClock = new HWClock(0xFFDA, bus);
         bus.insertMemorySegment(hwClock);
 
-        d0 = new VirtualDisk(0xFFD1, bus, "OS9.dsk");
-        bus.insertMemorySegment(d0);
+        diskDevice = new VirtualDisk(0xFFD1, bus, "OS9.dsk");
+        bus.insertMemorySegment(diskDevice);
+
+        d1Dialog = new DiskDialog(guiFrame, diskDevice, 1);
 
         if (singleUser) {
             loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoSingle",
-                    "BootDyn", "HWClock", "VDisk", "D0");
+                    "BootDyn", "HWClock", "VDisk_rv2");
         } else {
             loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoMulti",
-                    "BootDyn", "HWClock", "VDisk", "D0");
+                    "BootDyn", "HWClock", "VDisk_rv2");
         }
-        loadROM(0x3800, "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
+        loadROM(0x3800, "D0", "D1", "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
                      "T1", "T2", "P", "PipeMan", "Piper", "Pipe");
         if (singleUser) loadROM("Shell"); // Don't rely on the harddisk
 
@@ -182,6 +185,11 @@ public class GUI {
         Timer timer = new Timer("clock", true);
         timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
         */
+    }
+
+    void setDisk(int driveNumber, File diskFile)
+                throws IOException, FileNotFoundException {
+        diskDevice.setDisk(driveNumber, diskFile);
     }
 
     /**
@@ -331,6 +339,10 @@ public class GUI {
         menuItem.addActionListener(new PrinterAction());
         guiMenu.add(menuItem);
 
+        menuItem = new JMenuItem("Drive /D1");
+        menuItem.addActionListener(new D1Action());
+        guiMenu.add(menuItem);
+
         guiMenuBar.add(guiMenu);
     }
 
@@ -405,6 +417,13 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             printerDialog.setVisible(true);
+        }
+    }
+
+    private class D1Action implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            d1Dialog.setVisible(true);
         }
     }
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,8 @@ public class VirtualDisk extends MemorySegment {
 
     /** Open file pointer to disk image. */
     private RandomAccessFile[] diskFP = new RandomAccessFile[4];
+    private File[] diskFiles = new File[4];
+    private boolean writeProtected[] = new boolean[4];
 
     /** current value in buffer and also LSB of sector address. */
     private int valueRegister;
@@ -104,9 +107,10 @@ public class VirtualDisk extends MemorySegment {
         setDisk(diskId, diskFile);
     }
 
-    private void removeDisk(int diskId)
+    public void removeDisk(int diskId)
                     throws FileNotFoundException, IOException {
         if (diskFP[diskId] != null) {
+            diskFiles[diskId] = null;
             diskFP[diskId].close();
             diskFP[diskId] = null;
         }
@@ -127,14 +131,23 @@ public class VirtualDisk extends MemorySegment {
      */
     public void setDisk(int diskId, File diskFile)
                     throws FileNotFoundException, IOException {
-        if (diskFP[diskId] != null) {
-            diskFP[diskId].close();
-        }
+        removeDisk(diskId);
         if (diskFile.isFile() && diskFile.canRead()) {
-            diskFP[diskId] = new RandomAccessFile(diskFile, "rw");
+            diskFiles[diskId] = diskFile;
+            if (diskFile.canWrite()) {
+                diskFP[diskId] = new RandomAccessFile(diskFile, "rw");
+                writeProtected[diskId] = false;
+            } else {
+                diskFP[diskId] = new RandomAccessFile(diskFile, "r");
+                writeProtected[diskId] = true;
+            }
         } else {
             throw new FileNotFoundException("Unable to open disk: " + diskFile.toString());
         }
+    }
+
+    public File getDisk(int diskId) {
+        return diskFiles[diskId];
     }
 
     @Override
@@ -211,6 +224,10 @@ public class VirtualDisk extends MemorySegment {
               errorCode = E_NOTRDY;
               return;
         }
+        if (writeProtected[diskId]) {
+              errorCode = E_WP;
+              return;
+        }
         int lsn = bufferAddress * BYTE_SIZE + valueRegister;
         bufferAddress = 0;
         LOGGER.debug("Write sector {}", lsn);
@@ -234,7 +251,7 @@ public class VirtualDisk extends MemorySegment {
             diskFP[diskId].seek(lsn * LSN_SIZE);
             int readResult = diskFP[diskId].read(buffer);
             if (readResult != LSN_SIZE) {
-                errorCode = 2;
+                Arrays.fill(buffer, readResult + 1, LSN_SIZE, (byte) 0);
             }
         } catch (IOException e) {
             LOGGER.error("IO error reading sector {}", lsn);

@@ -1,8 +1,8 @@
          nam   Clock
-         ttl   HW clock module
+         ttl   Clock module for host
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
