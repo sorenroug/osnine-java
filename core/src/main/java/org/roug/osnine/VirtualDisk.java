@@ -8,6 +8,13 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+class DiskImage {
+    RandomAccessFile diskFP;
+    File fileName;
+    boolean writeProtected;
+    int headerOffset;
+}
+
 /**
  * Virtualized block device. Takes 3 bytes of memory.
  * It requires a special OS9 device driver to work.
@@ -58,9 +65,8 @@ public class VirtualDisk extends MemorySegment {
     private static final int E_NOTRDY = 246;
 
     /** Open file pointer to disk image. */
-    private RandomAccessFile[] diskFP = new RandomAccessFile[4];
-    private File[] diskFiles = new File[4];
-    private boolean writeProtected[] = new boolean[4];
+    private DiskImage[] drives = { new DiskImage(), new DiskImage(),
+                                   new DiskImage(), new DiskImage() };
 
     /** current value in buffer and also LSB of sector address. */
     private int valueRegister;
@@ -109,10 +115,10 @@ public class VirtualDisk extends MemorySegment {
 
     public void removeDisk(int diskId)
                     throws FileNotFoundException, IOException {
-        if (diskFP[diskId] != null) {
-            diskFiles[diskId] = null;
-            diskFP[diskId].close();
-            diskFP[diskId] = null;
+        if (drives[diskId].diskFP != null) {
+            drives[diskId].fileName = null;
+            drives[diskId].diskFP.close();
+            drives[diskId].diskFP = null;
         }
     }
 
@@ -132,22 +138,33 @@ public class VirtualDisk extends MemorySegment {
     public void setDisk(int diskId, File diskFile)
                     throws FileNotFoundException, IOException {
         removeDisk(diskId);
+        drives[diskId].headerOffset = 0;
         if (diskFile.isFile() && diskFile.canRead()) {
-            diskFiles[diskId] = diskFile;
+            drives[diskId].fileName = diskFile;
             if (diskFile.canWrite()) {
-                diskFP[diskId] = new RandomAccessFile(diskFile, "rw");
-                writeProtected[diskId] = false;
+                drives[diskId].diskFP = new RandomAccessFile(diskFile, "rw");
+                drives[diskId].writeProtected = false;
             } else {
-                diskFP[diskId] = new RandomAccessFile(diskFile, "r");
-                writeProtected[diskId] = true;
+                drives[diskId].diskFP = new RandomAccessFile(diskFile, "r");
+                drives[diskId].writeProtected = true;
+            }
+            // Detect VDK image
+            int readResult = drives[diskId].diskFP.read(buffer);
+            if (readResult > 12 && buffer[0] == 'd' && buffer[1] == 'k') {
+                LOGGER.debug("Loading VDK image");
+                int headersize = buffer[2] + buffer[3] * 256; // (little-endian)
+                if (headersize < 64) {
+                    drives[diskId].headerOffset = headersize;
+                }
             }
         } else {
-            throw new FileNotFoundException("Unable to open disk: " + diskFile.toString());
+            throw new FileNotFoundException("Unable to open disk: "
+                            + diskFile.toString());
         }
     }
 
     public File getDisk(int diskId) {
-        return diskFiles[diskId];
+        return drives[diskId].fileName;
     }
 
     @Override
@@ -220,11 +237,11 @@ public class VirtualDisk extends MemorySegment {
      * Write the 256 byte buffer to logical sector address.
      */
     private void writeLSN(int diskId) {
-        if (diskFP[diskId] == null) {
+        if (drives[diskId].diskFP == null) {
               errorCode = E_NOTRDY;
               return;
         }
-        if (writeProtected[diskId]) {
+        if (drives[diskId].writeProtected) {
               errorCode = E_WP;
               return;
         }
@@ -232,15 +249,15 @@ public class VirtualDisk extends MemorySegment {
         bufferAddress = 0;
         LOGGER.debug("Write sector {}", lsn);
         try {
-            diskFP[diskId].seek(lsn * LSN_SIZE);
-            diskFP[diskId].write(buffer);
+            drives[diskId].diskFP.seek(lsn * LSN_SIZE + drives[diskId].headerOffset);
+            drives[diskId].diskFP.write(buffer);
         } catch (IOException e) {
             errorCode = E_WRITE;
         }
     }
 
     private void readLSN(int diskId) {
-        if (diskFP[diskId] == null) {
+        if (drives[diskId].diskFP == null) {
               errorCode = E_NOTRDY;
               return;
         }
@@ -248,8 +265,8 @@ public class VirtualDisk extends MemorySegment {
         LOGGER.debug("Read sector {}", lsn);
         bufferAddress = 0;
         try {
-            diskFP[diskId].seek(lsn * LSN_SIZE);
-            int readResult = diskFP[diskId].read(buffer);
+            drives[diskId].diskFP.seek(lsn * LSN_SIZE + drives[diskId].headerOffset);
+            int readResult = drives[diskId].diskFP.read(buffer);
             if (readResult != LSN_SIZE) {
                 Arrays.fill(buffer, readResult + 1, LSN_SIZE, (byte) 0);
             }

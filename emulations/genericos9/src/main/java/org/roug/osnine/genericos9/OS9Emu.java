@@ -16,6 +16,7 @@ public class OS9Emu {
     /** List of unrecognized command line arguments. */
     private static String[] unusedArguments = new String[0];
     private static String[] diskArgs = new String[4];
+    private static String[] defaultDisks = { "OS9.dsk" };
 
     private static boolean singleUser = false;
 
@@ -24,6 +25,13 @@ public class OS9Emu {
         try {
             parseArguments(args);
             GUI app = new GUI(singleUser);
+            if (unusedArguments.length == 0) unusedArguments = defaultDisks;
+            for (int i = 0; i < 4; i++) {
+                if (i < unusedArguments.length) {
+                    app.setDisk(i, new File(unusedArguments[i]));
+                }
+            }
+
             for (int i = 0; i < 4; i++) {
                 if (diskArgs[i] != null) {
                     app.setDisk(i, new File(diskArgs[i]));

@@ -62,7 +62,7 @@ public class GUI {
 
     private PrinterDialog printerDialog;
     private JDialog t2Dialog;
-    private DiskDialog d1Dialog;
+    private DiskDialog d0Dialog, d1Dialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
@@ -131,9 +131,10 @@ public class GUI {
         hwClock = new HWClock(0xFFDA, bus);
         bus.insertMemorySegment(hwClock);
 
-        diskDevice = new VirtualDisk(0xFFD1, bus, "OS9.dsk");
+        diskDevice = new VirtualDisk(0xFFD1, bus);
         bus.insertMemorySegment(diskDevice);
 
+        d0Dialog = new DiskDialog(guiFrame, diskDevice, 0);
         d1Dialog = new DiskDialog(guiFrame, diskDevice, 1);
 
         if (singleUser) {
@@ -187,6 +188,9 @@ public class GUI {
         */
     }
 
+    /**
+     * Load an disk image into a drive. Used by the command line parameters.
+     */
     void setDisk(int driveNumber, File diskFile)
                 throws IOException, FileNotFoundException {
         diskDevice.setDisk(driveNumber, diskFile);
@@ -339,7 +343,13 @@ public class GUI {
         menuItem.addActionListener(new PrinterAction());
         guiMenu.add(menuItem);
 
+        menuItem = new JMenuItem("Drive /D0");
+        menuItem.setMnemonic(KeyEvent.VK_0);
+        menuItem.addActionListener(new D0Action());
+        guiMenu.add(menuItem);
+
         menuItem = new JMenuItem("Drive /D1");
+        guiMenu.setMnemonic(KeyEvent.VK_1);
         menuItem.addActionListener(new D1Action());
         guiMenu.add(menuItem);
 
@@ -417,6 +427,13 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             printerDialog.setVisible(true);
+        }
+    }
+
+    private class D0Action implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            d0Dialog.setVisible(true);
         }
     }
 

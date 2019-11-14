@@ -76,7 +76,7 @@ public class DiskDialog {
         diskDialog.setSize(300,300);
  
         fc.setAcceptAllFileFilterUsed(false);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("DSK images", "dsk", "xdskx");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("DSK images", "dsk", "vdk");
         fc.addChoosableFileFilter(filter);
     }
 
