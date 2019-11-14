@@ -12,7 +12,6 @@ import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -79,8 +78,6 @@ public class GUI {
 
     /** Status of throttling. */
     private boolean throttleState;
-
-    private final JFileChooser fc = new JFileChooser(new File("."));
 
     /**
      * Create emulator application.
