@@ -115,6 +115,7 @@
         <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>
         <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
         <!--
+        <assemble src="rms" home="rms" verify="1e5af27b963b2ef3635edd2c526d495f"/>
         -->
     </target>
 
