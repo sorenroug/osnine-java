@@ -157,12 +157,12 @@ L0051    lda   ,x+
          std   <$11,x
          clr   <$13,x
          os9   I$SetStt
-         leax  >L0220,pcr  "RMS.TRM"
-         lda   #$01
+         leax  >TRMFILE,pcr  "RMS.TRM"
+         lda   #READ.
          os9   I$Open
          bcc   L008F
-         leax  >L0220,pcr  "RMS.TRM"
-         lda   #$21
+         leax  >TRMFILE,pcr  "RMS.TRM"
+         lda   #PEXEC.+READ.
          os9   I$Open
          lbcs  L09D0
 
@@ -175,7 +175,7 @@ L008F    sta   <u0092
          lda   #$58
          sta   <u0095
 L009D    bsr   L00DD
-         cmpa  #$2A
+         cmpa  #'*
          bne   L00AB
 
 * Read comment until EOL
@@ -188,7 +188,7 @@ L00AB    cmpa  #$0D    Is it a CR?
          beq   L009D
          cmpa  #$20    Space starts a comment to EOL
          beq   L00A3
-         cmpa  #$41
+         cmpa  #'A
          bcs   L00B9
          suba  #$07
 L00B9    lsla
@@ -197,9 +197,9 @@ L00B9    lsla
          lsla
          sta   <u0096
          bsr   L00DD
-         cmpa  #$30
+         cmpa  #'0
          lbcs  L09D0
-         cmpa  #$41
+         cmpa  #'A
          bcs   L00CD
          suba  #$07
 L00CD    anda  #$0F
@@ -287,11 +287,11 @@ L0182    std   <u0019
          cmpd  <u0002
          lbcc  L099A
          ldx   <u0094
-         lda   #$2E
-         ldb   #$44
+         lda   #'.
+         ldb   #'D
          std   ,x
-         lda   #$49
-         ldb   #$43
+         lda   #'I
+         ldb   #'C
          std   $02,x
          clr   $04,x
          ldx   <u0092
@@ -304,11 +304,11 @@ L0182    std   <u0019
          ldx   <u0000
          lbsr  L01E9
          bne   L01D2
-         lda   #$2E
-         ldb   #$4E
+         lda   #'.
+         ldb   #'N
          std   ,x
-         lda   #$44
-         ldb   #$58
+         lda   #'D
+         ldb   #'X
          std   $02,x
          clr   $04,x
          ldx   <u0000
@@ -334,7 +334,7 @@ L01EC    lda   ,y
          rts
 L01F5    cmpa  #$20
          beq   L01FD
-         cmpa  #$2C
+         cmpa  #',
          bne   L0201
 L01FD    leay  $01,y
          bra   L01EC
@@ -342,7 +342,7 @@ L0201    ldb   #$50
 L0203    lda   ,y
          cmpa  #$0D
          beq   L021A
-         cmpa  #$2C
+         cmpa  #',
          beq   L0218
          cmpa  #$20
          bls   L0218
@@ -355,7 +355,7 @@ L021A    sty   <u0004
          lda   #$00
          rts
 
-L0220    fcs   "RMS.TRM"
+TRMFILE  fcs   "RMS.TRM"
          fcb   $0D
 
 L0228    stx   <u001F
@@ -575,17 +575,17 @@ L03FB    cmpa  #$0D
          bra   L03EF
 L0403    cmpa  #$20
          beq   L03EF
-         cmpa  #$2C
+         cmpa  #',
          beq   L03EF
-         cmpa  #$3B
+         cmpa  #';
          lbeq  L04CC
          cmpa  #'[
          beq   L0424
-         cmpa  #$28
+         cmpa  #'(
          beq   L0462
-         cmpa  #$3C
+         cmpa  #'<
          beq   L046C
-         leax  >L0713,pcr
+         leax  >L0713,pcr invalid validator type
          lbra  L08FC
 L0424    lda   #']
          sta   <u0093
@@ -782,95 +782,96 @@ L08BE    fcc   "CAN'T ACCESS RMS.TRM FILE@"
 L08D8    fcc   "CAN'T CREATE SEQUENTIAL OUTPUT FILE@"
 
 L08FC    lda   #$0A
-         bsr   L0948
+         bsr   OUTCH
 L0900    lda   ,x+
-         cmpa  #$40
+         cmpa  #'@
          beq   L090A
-L0906    bsr   L0948
+L0906    bsr   OUTCH
          bra   L0900
 L090A    lda   <u0038
          beq   L093D
-         leax  >L091A,pcr
+         leax  >L091A,pcr   line
 L0912    lda   ,x+
          beq   L0921
-         bsr   L0948
+         bsr   OUTCH
          bra   L0912
 
 L091A    fcc   " LINE "
          fcb   0
 
+* Output decimal number
 L0921    lda   <u0038
          clrb
-L0924    cmpa  #$0A
+L0924    cmpa  #10
          blt   L092D
-         suba  #$0A
+         suba  #10
          incb
          bra   L0924
 L092D    std   <u0092
          lda   <u0093
 L0931    beq   L0937
          ora   #$30
-         bsr   L0948
+         bsr   OUTCH
 L0937    lda   <u0092
 L0939    ora   #$30
-         bsr   L0948
+         bsr   OUTCH
 L093D    lda   #$0A
-         bsr   L0948
+         bsr   OUTCH
          lda   #$0D
-         bsr   L0948
+         bsr   OUTCH
          lbra  L0BE7
 
-L0948    lbra  L1A03
+OUTCH    lbra  XOUTCH
 
          leax  >L058C,pcr  - invalid file name
          bra   L08FC
 
-L0951    leax  >L059E,pcr
-         bra   L0985
-L0957    leax  >L05B3,pcr
-         bra   L0985
+L0951    leax  >L059E,pcr  - can't open .RMS file
+         bra   ERRMSG
+L0957    leax  >L05B3,pcr  - can't open .DIC file
+         bra   ERRMSG
 L095D    leax  >L05C8,pcr
-         bra   L0985
+         bra   ERRMSG
 L0963    leax  >L05DA,pcr
-         bra   L0985
+         bra   ERRMSG
 L0969    leax  >L05F2,pcr
-         bra   L0985
+         bra   ERRMSG
 L096F    leax  >L0608,pcr
-         bra   L0985
+         bra   ERRMSG
 L0975    leax  >L061E,pcr
-         bra   L0985
+         bra   ERRMSG
 L097B    leax  >L063A,pcr
-         bra   L0985
+         bra   ERRMSG
 L0981    leax  >L0658,pcr
 
-L0985    lbra  L08FC
+ERRMSG   lbra  L08FC
 
 L0988    leax  >L0679,pcr
-         bra   L0985
+         bra   ERRMSG
 L098E    leax  >L069C,pcr
-         bra   L0985
+         bra   ERRMSG
 L0994    leax  >L06BC,pcr
-         bra   L0985
+         bra   ERRMSG
 L099A    leax  >L06D9,pcr
-         bra   L0985
+         bra   ERRMSG
 L09A0    leax  >L06ED,pcr
-         bra   L0985
+         bra   ERRMSG
 L09A6    leax  >L0750,pcr
-         bra   L0985
+         bra   ERRMSG
 L09AC    leax  >L0770,pcr
-         bra   L0985
+         bra   ERRMSG
          leax  >L07A2,pcr
-         bra   L0985
+         bra   ERRMSG
          leax  >L07CF,pcr
-         bra   L0985
+         bra   ERRMSG
 L09BE    leax  >L07F7,pcr
-         bra   L0985
+         bra   ERRMSG
 L09C4    leax  >L081E,pcr
-         bra   L0985
+         bra   ERRMSG
 L09CA    leax  >L083D,pcr
-         bra   L0985
-L09D0    leax  >L08BE,pcr
-         bra   L0985
+         bra   ERRMSG
+L09D0    leax  >L08BE,pcr  can't access rms.trm file
+         bra   ERRMSG
 L09D6    ldx   <u000D
          ldy   <u000F
          lda   ,y
@@ -898,6 +899,7 @@ L09F6    lda   ,x
          leax  <$14,x
          bra   L09F6
 L0A0B    rts
+
 L0A0C    ldx   <u0015
          leax  $01,x
          stx   <u0092
@@ -910,7 +912,7 @@ L0A0C    ldx   <u0015
          beq   L0A2E
          lda   <$14,y
          bne   L0A2E
-         leax  >L086F,pcr
+         leax  >L086F,pcr   secondary dict has only one field
          lbra  L08FC
 L0A2E    ldd   #$2020
          ldx   <u0011
@@ -923,7 +925,7 @@ L0A33    std   ,x++
 L0A3F    lda   ,x+
          cmpa  #$FF
          beq   L0A4A
-         lbsr  L1A03
+         lbsr  XOUTCH
          bra   L0A3F
 L0A4A    clra
          lbra  L0B42
@@ -962,7 +964,7 @@ L0A4E    clr   <u0029
          cmpa  #$20
          lbcc  L0CB9
 L0AB1    lda   <u0052
-         lbsr  L1A03
+         lbsr  XOUTCH
          bra   L0A4E
 L0AB8    tst   <u0070
          beq   L0ACE
@@ -1018,7 +1020,7 @@ L0AE9    puls  a
          lbra  L0AB1
 L0B42    tst   <u00A1
          beq   L0B53
-         leax  >L15EE,pcr
+         leax  >L15EE,pcr to clear without save type Y
          lbsr  L12E2
          cmpa  #$59
          lbne  L0A4E
@@ -1075,7 +1077,7 @@ L0BBA    ldb   #$53
          bra   L0BCF
 L0BBE    ldb   #$59
          bra   L0BCF
-L0BC2    lbra  L1A03
+L0BC2    lbra  XOUTCH
 L0BC5    ldb   #$4C
          bra   L0BCF
 L0BC9    ldb   #$3E
@@ -1087,14 +1089,14 @@ L0BCF    pshs  x,b
          ldb   #$06
 L0BD7    lda   ,x+
          beq   L0BE1
-         lbsr  L1A03
+         lbsr  XOUTCH
          decb
          bne   L0BD7
 L0BE1    puls  x,b
          rts
 L0BE4    lbsr  L0BC9
 L0BE7    lda   <u0007
-         lbsr  L1A15
+         lbsr  WRIBUF
          ldx   <u00B5
          ldd   #$0000
          os9   I$SetStt
@@ -1126,7 +1128,7 @@ L0C1A    lda   <u003D
          lda   $0E,x
          bsr   L0C32
          bra   L0C51
-L0C32    lbra  L1A03
+L0C32    lbra  XOUTCH
 L0C35    lbsr  L0BCD
          lda   $0D,x
          sta   <u0092
@@ -1166,17 +1168,17 @@ L0C74    ldx   <u0024
          leax  -$01,x
          stx   <u0021
          lda   <u003C
-         lbsr  L1A03
+         lbsr  XOUTCH
          lda   <u004B
-         lbsr  L1A03
+         lbsr  XOUTCH
 L0C91    lda   <u004B
-         lbsr  L1A03
+         lbsr  XOUTCH
          lbra  L0A4E
 L0C99    lda   #$20
          ldx   <u0021
          sta   ,x
          lda   <u003C
-         lbsr  L1A03
+         lbsr  XOUTCH
          bra   L0C91
 L0CA6    ldx   <u0024
          cmpx  <u000D
@@ -1199,7 +1201,7 @@ L0CCD    ldx   <u0021
          subb  ,x
          lda   <u0092
          sta   ,x+
-         lbsr  L1A03
+         lbsr  XOUTCH
          stx   <u0021
          ldx   <u0024
          cmpx  <u000D
@@ -1289,7 +1291,7 @@ L0D8C    lda   #$2F
          ldx   <u0021
          sta   ,x+
          stx   <u0021
-         lbsr  L1A03
+         lbsr  XOUTCH
          bra   L0D9C
          lbra  L0AB1
 L0D9C    lbra  L0CCD
@@ -1299,14 +1301,14 @@ L0D9F    ldx   <u0024
          cmpx  <u0021
          bne   L0DCA
 L0DAA    lda   <u004B
-         lbsr  L1A03
+         lbsr  XOUTCH
          lda   #$30
-         lbsr  L1A03
+         lbsr  XOUTCH
          ldx   <u0021
          leax  -$01,x
          lda   ,x
          sta   $01,x
-         lbsr  L1A03
+         lbsr  XOUTCH
          lda   #$30
          sta   ,x
          leax  $02,x
@@ -1337,7 +1339,7 @@ L0DE7    lbsr  L0C0A
 L0DF9    lda   ,y+
          sta   ,x+
          pshs  y
-         lbsr  L1A03
+         lbsr  XOUTCH
          puls  y
          dec   <u0092
          bne   L0DF9
@@ -1388,7 +1390,7 @@ L0E63    ldx   <u0024
          ldb   $08,x
          ldx   <$12,x
 L0E75    lda   ,x+
-         lbsr  L1A03
+         lbsr  XOUTCH
          decb
          bne   L0E75
          ldx   <u0024
@@ -1625,7 +1627,7 @@ L109B    lbsr  L0BCD
          leax  -$01,x
          bne   L109B
 L10A2    lda   <u0052
-         lbra  L1A03
+         lbra  XOUTCH
 L10A7    tst   <u00B7
          clr   <u002C
          clr   <u002D
@@ -1713,7 +1715,7 @@ L115B    bsr   L116E
          leax  <$14,x
          stx   <u0024
          bra   L1133
-L116E    lbra  L1A03
+L116E    lbra  XOUTCH
 L1171    clr   <u002E
          clr   <u002F
          bra   L117D
@@ -1842,7 +1844,7 @@ L1288    ldx   <u000D
          ldb   $08,x
          ldx   <$12,x
 L1294    lda   ,x+
-         lbsr  L1A03
+         lbsr  XOUTCH
          decb
          bne   L1294
          lbra  L0E0D
@@ -1916,7 +1918,7 @@ L1318    lda   #$20
 
 L1328    fcc   " - HIT SPACE@"
 
-L1335    lbra  L1A03
+L1335    lbra  XOUTCH
 L1338    cmpa  #$61
          bcs   L1342
          cmpa  #$7A
@@ -2195,7 +2197,7 @@ L176C    ldx   <u0024
          ldx   <$12,x
          sta   <u0092
 L177A    lda   ,x
-         lbsr  L1A03
+         lbsr  XOUTCH
          leax  $01,x
          dec   <u0092
          bne   L177A
@@ -2360,7 +2362,7 @@ L19B8    fcc   "NOT IN THE FILE OF ACCEPTABLE VALUES@"
 L19DD    fcc   "MISSING NUMBER@"
 
 L19EC    pshs  x,b
-         bsr   L1A15
+         bsr   WRIBUF
          ldx   <u0002
          ldy   #$0001
          lda   #$01
@@ -2370,17 +2372,19 @@ L19EC    pshs  x,b
          anda  #$7F
          puls  pc,x,b
 
-L1A03    pshs  x
+* Add character in A to buffer
+XOUTCH   pshs  x
          ldx   <u009F
          cmpx  <u00BC
          bcs   L1A0F
-         bsr   L1A15
+         bsr   WRIBUF
 L1A0D    ldx   <u009F
 L1A0F    sta   ,x+
          stx   <u009F
          puls  pc,x
 
-L1A15    pshs  x,b,a
+* Write buffer
+WRIBUF   pshs  x,b,a
          ldd   <u009F
          subd  <u00BA
          beq   L1A28
