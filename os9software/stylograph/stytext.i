@@ -1,7 +1,5 @@
  TTL S-TEXT
  PAG
-*EQUATE FOR STYFIX
-TXTBEG EQU *
 
 
 *ESCAPE CHARACTER CONSTANTS
@@ -41,6 +39,7 @@ SBMCHR FCB $B ^K SUBSCRIPT
 ENMODC FCB $1A END MOD
  FCB $20 CURSOR RIGHT
 BSC FCB $08 BS CHR FROM KEYBOARD
+
 
 *CONTROL CHARACTER CONSTANTS
 CTRTBL EQU *
@@ -179,7 +178,7 @@ BDLS1 FDB XBDLS1
 BDLS2 FDB XBDLS2
 
 SUPS1 FDB XSUPS1
-BANNER fdb XBANNER
+BANNER FDB XBANNER
 HLPS1 FDB XHLPS1
 HLPS2 FDB XHLPS2
 HLPS3 FDB XHLPS3
@@ -253,6 +252,7 @@ XFMTTBL EQU *
  FCC 'BFS'
  FCB 0
  FCB 0 END OF TABLE
+
 
 XERRTBL EQU *
  FCB 2
@@ -354,75 +354,76 @@ XPGM2A FCC 'READ FILE = '
  FCB 0
 XPGMS2 FCC 'WRITE FILE = '
  FCB 0
-XPGMS4 FCC "------ NONE --------"
+XPGMS4 FCC '------- NONE ---------'
  FCB 0
 XPGMS6 EQU *
- FCC   "SERIAL PAGE # ------"
+ FCC 'SERIAL PAGE # ---------'
  FCB 0
- FCC   "PRINTED PAGE # -----"
+ FCC 'PRINTED PAGE # --------'
  FCB 0
- FCC   "LINE # -------------"
+ FCC 'LINE # ----------------'
  FCB 0
  FCB 0 SKIP A LINE
- FCC "PAGE LENGTH ---- ,PL"
+ FCC 'PAGE LENGTH ----------- ,PL'
  FCB 0
- FCC "HEADER LINES -,HD ,,"
+ FCC 'HEADER LINES ---------- ,HD ,,'
  FCB 0
- FCC 'FOOTER LINES -,FT ,,'
+ FCC 'FOOTER LINES ---------- ,FT ,,'
  FCB 0
- FCC 'SPACING -------- ,SS'
+ FCC 'SPACING --------------- ,SS'
  FCB 0
- FCC 'LINES/INCH ----- ,VS'
+ FCC 'LINES/INCH ------------ ,VS'
  FCB 0
  FCB 0
- FCC 'LINE LENGTH ---- ,LL'
+ FCC 'LINE LENGTH ----------- ,LL'
  FCB 0
- FCC 'H/F L-LENGTH --- ,LL'
+ FCC 'H/F LINE LENGTH ------- ,LL'
  FCB 0
- FCC 'LEFT MARGIN ---- ,LM'
+ FCC 'LEFT MARGIN ----------- ,LM'
  FCB 0
- FCC 'INDENT --------- ,IN'
+ FCC 'INDENT ---------------- ,IN'
  FCB 0
- FCC "CHAR'S/INCH ---- ,CS"
+ FCC 'CHARACTERS/INCH ------- ,CS'
  FCB 0
 
- FCC 'PARA INDENT -- ,PPSI'
+ FCC 'PARAGRAPH INDENT ------ ,PPSI'
  FCB 0
- FCC 'PARA SPACE --- ,PPSP'
+ FCC 'PARAGRAPH SPACE ------- ,PPSP'
  FCB 0
- FCC "PARA NEED L'S -,PPNL"
- FCB 0
- FCB 0
- FCC 'JUSTIFIED - ,JU/,NJU'
- FCB 0
- FCC 'PROP SP --- ,PS/,NPS'
+ FCC 'PARAGRAPH NEED LINES -- ,PPNL'
  FCB 0
  FCB 0
- FCC 'PRINTER CHAR --- ,PC'
+ FCC 'JUSTIFIED ------------- ,JU/,NJU'
  FCB 0
- FCC 'SP PAD CHAR -- ,PADC'
+ FCC 'PROPORTIONAL SPACED --- ,PS/,NPS'
  FCB 0
- FCC 'M-M CHARACTER - ,MMC'
+ FCB 0
+ FCC 'PRINTER CHARACTER ----- ,PC'
+ FCB 0
+ FCC 'SPACE PAD CHARACTER --- ,PADC'
+ FCB 0
+ FCC 'MAIL-MERGE CHARACTER -- ,MMC'
  FCB 0
  FCB 0
  FCC 'ROOM LEFT'
  FCB 0
  FCB 0,0,0,0,0
-XPGM50 FCC 'READ FILE:   '
+XPGM50 FCC 'READ FILE:  '
  FCB 0
 XPGM51 FCC 'WRITE FILE:  '
  FCB 0
 XPGM52 FCC '---NONE---'
  FCB 0
-XPGM53 FCC 'STATUS:     '
+XPGM53 FCC 'STATUS:  '
  FCB 0
-XPGM54 FCC "OPEN"
+XPGM54 FCC 'OPEN'
  FCB 0
-XPGM55 FCC "CLOSED"
+XPGM55 FCC 'CLOSED'
  FCB 0
-XPGBS1 FCC "PAGE"
+
+XPGBS1 FCC 'PAGE'
  FCB 0
-XSAVM1 FCC 'Save as "'
+XSAVM1 FCC 'Save under file name "'
  FCB 0
 XSAVMB FCC '" (Y*/N)? '
  FCB 0
@@ -462,9 +463,9 @@ XPSQS1 FCC 'Hit any key to restart printer'
 
 XNEWM1 FCC 'No save.  Cursor on top page.'
  FCB 0
-XNEWM3 FCC "Save text (Y*/N)? "
+XNEWM3 FCC "Save text in memory (Y*/N)? "
  FCB 0
-XNEWM4 FCC '  to file "'
+XNEWM4 FCC '  Save to output file "'
  FCB 0
 XNEWM5 FCC '" (Y*/N)? '
  FCB 0
@@ -499,21 +500,22 @@ XPRNS1 FCC 'Different printer (Y/N*)? '
  FCB 0
 XPRNS2 FCC 'PRINT DRIVER NOT FOUND'
  FCB 0
-XPRNS3 FCC ' Name? '
+XPRNS3 FCC '  Printer name? '
  FCB 0
 XPRNS4 FCC 'Stop for new pages (Y/N*)? '
  FCB 0
-XOTXS1 FCC 'Hit SPACE to stop/continue, RETURN to abort.  '
+XOTXS1 FCC 'Hit "ESC" to stop, any other key to continue. '
  FCB 0
 XOTXS2 FCC 'Print all pages (Y*/N)? '
  FCB 0
-XOTXS3 FCC ' First = '
+XOTXS3 FCC '  First page = '
  FCB 0
-XOTXS4 FCC '  Last = '
+XOTXS4 FCC '  Last page = '
  FCB 0
 XSPLS1 FCC 'Spooled output file name? '
  FCB 0
-XFNDS1 FCC '*** FIND    '
+
+XFNDS1 FCC '*** FIND  '
  FCB 0
 XFNDS2 FCC '*** STOP (RET) OR CONTINUE (SP)?'
  FCB 0
@@ -521,7 +523,7 @@ XFNDS3 FCC ' UPPER/LOWER CASE'
  FCB 0
 XRPLS1 FCC '*** REPLACE '
  FCB 0
-XRPLS2 FCC '*** WITH    '
+XRPLS2 FCC '*** WITH  '
  FCB 0
 XRPLS3 FCC '*** REPLACE (Y-N-A)?'
  FCB 0
@@ -531,36 +533,36 @@ XBDLS2 FCC '  CHARACTERS? '
  FCB 0
 
 XSUPS1 equ *
- FCC "EDIT ---------- go to ESCAPE mode to edit text"
+ FCC 'EDIT ------------ return to ESCAPE mode to edit text'
  FCB 0
- FCC "PRINT --------- print the text"
+ fcc 'PRINT ----------- print the text'
  FCB 0
- FCC "SAVE & RETURN - save text and return to OS-9"
+ FCC 'SAVE & RETURN --- save the text and return to the operating system'
  FCB 0
- FCC "SAVE ---------- save the text to disk"
+ FCC 'SAVE ------------ save the text to disk'
  FCB 0
- FCC "SAVE TO MARK -- save text from cursor to marker"
+ FCC 'SAVE TO MARK ---- save the text from the cursor to the marker'
  FCB 0
- FCC "RETURN -------- return to OS-9"
+ fcc 'RETURN ---------- return to the operating system'
  FCB 0
- FCC "LOAD ---------- insert file at cursor position"
+ FCC 'LOAD ------------ insert a file at the cursor position'
  FCB 0
- FCC "ERASE --------- erase text without saving"
+ FCC 'ERASE ----------- erase the present text without saving it'
  FCB 0
- FCC 'SPECIAL-------- use a "letter quality" printer'
+ FCC 'SPECIAL---------- use a specialty "letter quality" printer'
  FCB 0
- FCC "TTY ----------- use a TTY (matrix) printer"
+ FCC 'TTY ------------- use a TTY printer'
  FCB 0
- FCC "PASS ---------- pass a command to OS-9"
+ FCC 'PASS ------------ pass a command to the operating system'
  FCB 0
- FCC "SPOOL --------- send text to disk for printing"
+ fcc 'SPOOL ----------- output text to the disk for later printing'
  FCB 0
- FCC "WHEEL --------- select proportional print wheel"
+ fcc 'WHEEL ----------- specify a proportional spacing print wheel'
  FCB 0
- FCC "NEW ----------- new text from input file"
+ FCC 'NEW ------------- new text from input file'
  FCB 0
 
-XBANNER  fcc   "     STYLOGRAPH for the Dragon 64"
+XBANNER FCC '    STYLOGRAPH WORD PROCESSING SYSTEM V2.1 (c) 1981'
  FCB 0
 
 XHLPS1 FCC 'RETURN'
@@ -589,63 +591,6 @@ XHLPS6 FCC "STYHLP5"
  FCB 0
 XHLPS7 FCC "STYHLP6"
  FCB 0
-
-XSTYS1    fcc   "/p"
- FCB 0
-
-* Remnants from binary patching
- FCC " later printing"
- FCB 0
- FCC "WHEEL ----------- specify a proportional spacing print wheel"
- FCB 0
- FCC "NEW ------------- new text from input file"
- FCB 0
- FCC "    STYLOGRAPH WORD PROCESSING SYSTEM V2.1 (c) 1981"
- FCB 0
- FCC "RETURN"
- FCB 0
- FCC "ESCAPE Commands"
- FCB 0
- FCC "CONTROL Commands"
- FCB 0
- FCC "FORMAT Commands (vertical)"
- FCB 0
- FCC "FORMAT Commands (horizontal)"
- FCB 0
- FCC "FORMAT Commands (misc.)"
- FCB 0
-
-* Redundant junk in original
-*
- fcc 'Displayed character mods'
- FCB 0
- FCC "STYHLP1"
- FCB 0
- FCC "STYHLP2"
- FCB 0
- FCC "STYHLP3"
- FCB 0
- FCC "STYHLP4"
- FCB 0
- FCC "STYHLP5"
- FCB 0
- FCC "STYHLP6"
- FCB 0
- FCC   "/p1"
- FCB 0,0,0,0,0,0,0,0,0
-
-DOTBAK fcc ".bak"
- FCB 0
-RENAME fcc "rename"
- FCB $0D
-SHELL fcc "shell"
- FCB $0D
-STYDIR fcc "/D0/STY/"
- FCB 0
-
-*SAVE A FEW BYTES FOR POSSIBLE LARGER TEXT OVERLAY
- FCC "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-
-*EQUATE FOR STYFIX
-TXTEND EQU *
-
+ 
+XSTYS1 FCC '/p'
+ FCB 0,0,0,0,0,0,0,0,0,0

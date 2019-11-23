@@ -760,7 +760,28 @@ L049B    orcc  #Carry
          stb   <u0003
          puls  pc,u
 
- use s_text_go51.asm
+*EQUATE FOR STYFIX
+TXTBEG EQU *
+ ifeq PRODUCT-P.Dragon
+ use stytext_go51.i
+ else
+ use stytext.i
+ endc
+
+DOTBAK FCC '.bak'
+ FCB 0
+RENAME FCC 'rename'
+ FCB $0D
+SHELL FCC 'shell'
+ FCB $0D
+STYDIR FCC '/D0/STY/'
+ FCB 0
+
+*SAVE A FEW BYTES FOR POSSIBLE LARGER TEXT OVERLAY
+ FCC '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+
+*EQUATE FOR STYFIX
+TXTEND EQU *
 
          lda   <u0045    Load driver number
          cmpa  #$20
