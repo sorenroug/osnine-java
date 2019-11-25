@@ -1,0 +1,18 @@
+
+
+------------------- Vertical formatting commands -----------------
+
+  ,PL N    Page length N lines/page
+  ,PG      New page
+  ,PN N    Page number
+  ,TF      Top of form (printer command)
+
+  ,HD      Define header
+  ,FT      Define footer
+  ,,       End header or footer definition
+
+  ,SP N    Space N lines (print parameter)
+  ,SS N    Set spacing N spaces per line (print parameter)
+  ,VT N    Vertical tab to Nth line (print parameter)
+  ,VS N    Vertical spacing, lines/inch (print parameter)
+  ,NL N    Need N lines on same page

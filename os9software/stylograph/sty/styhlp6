@@ -1,0 +1,18 @@
+------------------- Displayed mod characters -------------------------
+
+  _  Underline                          a  Subscript
+  3  Boldface                           b  Subscript, Underline
+  4  Underline, Boldface                c  Subscript, Boldface
+  5  Overline                           d  Subscript, Underline, Boldface
+  6  Underline, Overline                e  Subscript, Overline
+  7  Boldface, Overline                 f  Subscript, Underline, Overline
+  8  Underline, Boldface, Underline     g  Subscript, Boldface, Overline
+                                        h  Subscript, Underline, Boldface,
+  A  Superscript                                                 Overline
+  B  Superscript, Underline
+  C  Superscript, Boldface
+  D  Superscript, Underline, Boldface
+  E  Superscript, Overline
+  F  Superscript, Underline, Overline
+  G  Superscript, Boldface, Overline
+  H  Superscript, Underline, Boldface, Overline

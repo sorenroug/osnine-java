@@ -2127,17 +2127,17 @@ GOROWCOL std   <SCRROW
          bcs   L1976
          ldx   <u003C
          ldb   ,x
-         bitb  #$80   On = row (Y) first
+         bitb  #CYX   On = row (Y) first
          beq   L1978
          lda   <SCRROW
-         bitb  #$40   On = add 32 to coordinate
+         bitb  #CAD20   On = add 32 to coordinate
          beq   L1962
          adda  #$20
 L1962    lbsr  WrA2BUF
          lda   <u0041 Curr column
          ldx   <u003C
          ldb   ,x
-         bitb  #$40   On = add 32 to coordinate
+         bitb  #CAD20   On = add 32 to coordinate
          beq   L1971
 L196F    adda  #$20
 L1971    lbsr  WrA2BUF
@@ -2145,14 +2145,14 @@ L1971    lbsr  WrA2BUF
 L1976    puls  pc,x
 
 L1978    lda   <u0041 Curr column
-         bitb  #$40
+         bitb  #CAD20
          beq   L1980
          adda  #$20
 L1980    lbsr  WrA2BUF
          lda   <SCRROW
          ldx   <u003C
          ldb   ,x
-         bitb  #$40
+         bitb  #CAD20
          beq   L1971
          bra   L196F
 
@@ -4145,6 +4145,7 @@ L2AA5    lda   #$03
          lbsr  L3111
          bra   L2A80
 L2AAC    jmp   ,x
+
 L2AAE    cmpa  ,x+
          beq   L2ABB
          leay  $02,y
@@ -4152,6 +4153,7 @@ L2AAE    cmpa  ,x+
          bne   L2AAE
          orcc  #Carry
          rts
+
 L2ABB    pshs  a
          leax  >0,pcr
          ldd   ,y
@@ -4419,6 +4421,7 @@ L2CF1    fdb 10000
          fdb    10
          fdb     1
 
+* Check for control codes
 L2CFB    pshs  y,x,b,a
          leax  >CTRTBL,pcr
          leay  >L2D25,pcr
@@ -4428,6 +4431,7 @@ L2CFB    pshs  y,x,b,a
          bcs   L2D16
          orcc  #Carry
 L2D10    puls  pc,y,x,b,a
+
 L2D12    andcc #^Carry
          bra   L2D10
 L2D16    lbsr  L31D9
@@ -4438,17 +4442,29 @@ L2D16    lbsr  L31D9
          orcc  #Carry
          lbra  L2D10
 
-L2D25    fcb   $2F,$B2     ble   L2CD9
-         fcb   $2F,$0F    ble   L2D38
-         fcb   $2F,$46,$2D,$48,$2D,$69,$2D,$43,$2D,$6F
-         fcb   $30,$41,$30,$65,$30,$9B,$2D,$3E,$2F,$E9
+L2D25    fdb   L2FB2  Line delete
+         fdb   L2F0F
+         fdb   L2F46
+         fdb   L2D48
+         fdb   L2D69
+         fdb   L2D43
+         fdb   L2D6F
+         fdb   L3041
+         fdb   L3065
+         fdb   L309B
+         fdb   L2D3E  Toggle upper case lock
+         fdb   L2FE9  Ctrl-A Display help menu
+         fcb 0
 
-         neg   <u0003
-         suba  -$04,x
-         ldu   >$3903
-         neg   >$1A01
+L2D3E    com   <u00A0
+         andcc #^Carry
          rts
-         tst   <u006F
+
+L2D43    com   <u0070
+         orcc  #Carry
+         rts
+
+L2D48    tst   <u006F
          beq   L2D62
          clra
          tst   <u001C,u
@@ -4460,14 +4476,17 @@ L2D5A    lda   #$0F
          lbsr  L3111
          andcc #^Carry
          rts
+
 L2D62    lda   #$01
 L2D64    sta   <u006F
          orcc  #Carry
          rts
-         lbsr  L311C
+
+L2D69    lbsr  L311C
          andcc #^Carry
          rts
-         lda   <LASTCOL Max column
+
+L2D6F    lda   <LASTCOL Max column
 L2D71    inca
          sta   <u0060
 L2D74    lbsr  L19DB
@@ -4483,6 +4502,7 @@ L2D74    lbsr  L19DB
          bne   L2D9B
          ldx   >PGM52,pcr
          bra   L2DA2
+
 L2D9B    ldx   <u0030
          lbsr  L374C  Write string in X
          bra   L2DA5
@@ -4663,7 +4683,8 @@ L2F34    ldx   u0006,u
          beq   L2F44
          leay  $01,y
 L2F44    bra   L2F8E
-         tst   <u0097
+
+L2F46    tst   <u0097
          bne   L2F1D
          ldx   u0006,u
          lda   ,x
@@ -4714,7 +4735,9 @@ L2FA8    lda   <u006A
          sta   <u0060
 L2FAF    andcc #^Carry
          rts
-         ldx   <u006D
+
+* Line delete
+L2FB2    ldx   <u006D
          lda   -$01,x
          cmpa  #$F0
          beq   L2FCA
@@ -4725,6 +4748,7 @@ L2FC2    lda   #$14
          lbsr  L3111
          andcc #^Carry
          rts
+
 L2FCA    ldx   u0002,u
          lda   ,-x
          cmpa  #$F0
@@ -4739,7 +4763,9 @@ L2FCA    ldx   u0002,u
          bne   L2FA8
          andcc #^Carry
          rts
-         lda   #$FF
+
+* Display help menu
+L2FE9    lda   #$FF
          sta   <u0060
          lbsr  L19DB
          ldb   #$07
@@ -4775,7 +4801,8 @@ L3035    lbsr  L0281
          lbsr  L1C27
 L303E    orcc  #Carry
          rts
-         ldx   u0006,u
+
+L3041    ldx   u0006,u
          lda   ,x
          cmpa  #$F1
          beq   L3062
@@ -4792,7 +4819,8 @@ L303E    orcc  #Carry
          lbsr  L29C5
 L3062    andcc #^Carry
          rts
-         ldb   <u0041 Curr column
+
+L3065    ldb   <u0041 Curr column
          addb  <u0098
          beq   L3082
          ldx   <u002E
@@ -4822,7 +4850,8 @@ L3090    cmpb  <u0058
          adda  <u0098
          sta   b,x
          rts
-         ldx   <u002E
+
+L309B    ldx   <u002E
          clrb
          lda   <u0041 Curr column
          adda  <u0098
@@ -6587,20 +6616,27 @@ L4045    cmpa  >ULMCHR,pcr
          inc   <u00C2
 L4069    clrb
          puls  pc,a
+
+* Underline
 L406C    ldb   #$01
          bra   L4088
+* Overline
 L4070    ldb   #$04
          bra   L4088
+* Bold
 L4074    ldb   #$02
          bra   L4088
+* Superscript
 L4078    ldb   <u00C2
-         andb  #$0F
+         andb  #$0F   Remove existing sub-/superscript attribute
          orb   #$40
          bra   L4092
+* Subscript
 L4080    ldb   <u00C2
-         andb  #$0F
+         andb  #$0F   Remove existing sub-/superscript attribute
          orb   #$60
          bra   L4092
+
 L4088    lda   <u00C2
          anda  #$70
          bne   L4090
@@ -7250,16 +7286,19 @@ L4649    cmpu  <u0022
          lda   #$0C
          lbra  L3111
 L4653    rts
+
 L4654    cmpu  <u0022
          bne   L4653
          lda   #$0D
          lbra  L3111
          rts
+
 L465F    cmpu  <u0022
          bne   L4653
          lda   #$0E
          lbra  L3111
          rts
+
 L466A    leay  >L4679,pcr
          lda   <u0058
          lsla

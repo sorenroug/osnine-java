@@ -25,7 +25,9 @@ The Acia can be configured to show a graphical UI written Java Swing. See `gui65
 Telnet service
 --------------
 
-The v6809 can be configured to start to make a serial port available as a telnet port. This is set up in the telnet.properties file.
+The v6809 can be configured to start to make a serial port available as a telnet port. This is set up in the telnet.properties file. To execute do ./vtelnet and then in another terminal:
+
+    telnet localhost 2323
 
 In order to match assumptions of Linux users the end-of-file has been changed from ESC to CTRL-D,
 and the reprint-line has been changed from CTRL-D to CTRL-R. The Telnet service also launches the Login command because now it is a multi-user system.

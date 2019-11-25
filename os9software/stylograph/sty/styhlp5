@@ -1,0 +1,16 @@
+
+--------------------- Misc. formatting commands -------------------
+
+  ,PP        Paragraph
+  ,PPNL N    Paragraph need N lines on same page
+  ,PPSP N    Paragraph space N lines
+  ,PPSI N    Paragraph single indent
+
+  ,BFS  N    Boldface strike N times at printout
+
+  ,PADC C    Pad character C for non-paddable spaces on printout
+  ,MMC  C    Mail Merge character C
+  ,PC   C    Print character C for delimiting print strings
+
+
+  ,*         Comment line

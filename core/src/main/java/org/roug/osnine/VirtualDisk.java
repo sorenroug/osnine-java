@@ -127,6 +127,11 @@ public class VirtualDisk extends MemorySegment {
         setDisk(0, diskFile);
     }
 
+    public void setDisk(String fileName)
+                    throws FileNotFoundException, IOException {
+        setDisk(0, fileName);
+    }
+
     /**
      * Provide file name of disk.
      *

@@ -38,9 +38,8 @@
     <target name="compile">
         <mkdir dir="${targetdir}"/>
 
-        <assemble src="dynacalc_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
-        <assemble src="stylo_std" home="stylograph"/>
+        <assemble src="stylo_std" home="stylograph" verify="170366065627902e83c8ba54107e1188"/>
         <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
         <assemble src="Mfree_d64" home="dragon64" verify="3fc4db96ec92a745e14d642c95a62387"/>
 
@@ -101,6 +100,7 @@
         <assemble src="install_473.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
         <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
+        <assemble src="dynacalc_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="Dynacalc_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
         <assemble src="vt100_473.trm" home="dynacalc"/>
 
@@ -116,6 +116,7 @@
         <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
         <!--
         <assemble src="rms" home="rms" verify="1e5af27b963b2ef3635edd2c526d495f"/>
+        <assemble src="report" home="rms" verify="f9820a325090ec307208d8f5667358da"/>
         -->
     </target>
 
