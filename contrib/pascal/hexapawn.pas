@@ -87,9 +87,14 @@ PROCEDURE readmove(VAR x,y:integer);
      END
   END;
 
-  FUNCTION fnm(y:integer):integer;
+  FUNCTION highdigit(y:integer):integer;
   BEGIN
-    fnm := y MOD 10
+    highdigit := y DIV 10
+  END;
+
+  FUNCTION lowdigit(y:integer):integer;
+  BEGIN
+    lowdigit := y MOD 10
   END;
 
   { Read a y/n answer. Returns uppercase }
@@ -273,6 +278,14 @@ PROCEDURE initboard;
     s[9] := human;
   END;
 
+FUNCTION endreached(player,p:integer):boolean;
+  BEGIN
+    IF (s[p] = player) OR (s[p+1] = player) OR (s[p+2] = player) THEN
+      endreached := true
+    ELSE
+      endreached := false;
+  END;
+
 FUNCTION hasnopawns(player:integer):boolean;
   VAR
     i : integer;
@@ -282,11 +295,29 @@ FUNCTION hasnopawns(player:integer):boolean;
       IF s[i] = player THEN hasnopawns := false;
   END;
 
+{ Find a move out of four possible.
+  Return false if no move available.
+}
+FUNCTION findmove(x:integer; VAR y:integer):boolean;
+  VAR
+    i : integer;
+    available : boolean;
+  BEGIN
+    available := false;
+    FOR i := 1 TO 4 DO
+      IF moves[x,i] <> 0 THEN available := true;
+    IF available THEN
+      REPEAT
+        y := rnd(seed) MOD 4 + 1;
+      UNTIL moves[x,y] <> 0;
+    findmove := available
+  END;
+
 { Play a game of hexapawn. Returns true if computer won,
   false if player won.
 }
 FUNCTION playgame:boolean;
-  LABEL 120,330,350,460,510,540,600,790,800;
+  LABEL 120,330,350,460,510,540,790,800;
 
   VAR
     i,j,k : integer;
@@ -302,16 +333,12 @@ FUNCTION playgame:boolean;
     s[m1] := empty;
     s[m2] := human;
     printboard;
-    IF (s[1] = human) OR (s[2] = human) OR (s[3] = human) THEN
+    IF endreached(human,1) OR hasnopawns(computer) THEN
       BEGIN
         playgame := false;
         GOTO 800
       END;
-    IF hasnopawns(computer) THEN
-      BEGIN
-        playgame := false;
-        GOTO 800
-      END;
+
     FOR i := 1 TO 9 DO
       BEGIN
         IF s[i] <> computer THEN GOTO 330; { continue }
@@ -338,58 +365,51 @@ FUNCTION playgame:boolean;
          GOTO 540;
 510:   END;
     { No pattern with a possible move was found }
-    writeln('I RESIGN');
+    write('I CAN''T MOVE, SO ');
     playgame := false;
     GOTO 800;
 
 540:
     x := i;
-    FOR i := 1 TO 4 DO
-      IF moves[x,i] <> 0 THEN GOTO 600;
-    write('I CAN''T MOVE, SO ');
-    playgame := false;
-    GOTO 800;
+    if NOT findmove(x,y) THEN
+      BEGIN
+        write('I CAN''T MOVE, SO ');
+        playgame := false;
+        GOTO 800;
+      END;
 
-600:
-    REPEAT
-      y := rnd(seed) MOD 4 + 1;
-    UNTIL moves[x,y] <> 0;
     IF reversed THEN
        BEGIN
-         writeln('I MOVE FROM ', fnr(moves[x,y] DIV 10):1, ' TO ',
-             fnr(fnm(moves[x,y])):1);
-         s[fnr(moves[x,y] DIV 10)] := empty;
-         s[fnr(fnm(moves[x,y]))] := computer
+         writeln('I MOVE FROM ', fnr(highdigit(moves[x,y])):1, ' TO ',
+             fnr(lowdigit(moves[x,y])):1);
+         s[fnr(highdigit(moves[x,y]))] := empty;
+         s[fnr(lowdigit(moves[x,y]))] := computer
        END
      ELSE
        BEGIN
-         writeln('I MOVE FROM ', (moves[x,y] DIV 10):1, ' TO ',
-             fnm(moves[x,y]):1);
-         s[moves[x,y] DIV 10] := empty;
-         s[fnm(moves[x,y])] := computer
+         writeln('I MOVE FROM ', highdigit(moves[x,y]):1, ' TO ',
+             lowdigit(moves[x,y]):1);
+         s[highdigit(moves[x,y])] := empty;
+         s[lowdigit(moves[x,y])] := computer
        END;
   printboard;
-  IF (s[7] = computer) OR (s[8] = computer) OR (s[9] = computer) THEN
-    BEGIN
-      playgame := true;
-      GOTO 800
-    END;
-  IF hasnopawns(human) THEN
+  IF endreached(computer,7) OR hasnopawns(human) THEN
     BEGIN
       playgame := true;
       GOTO 800
     END;
 
+  { Can human move? }
   FOR i := 1 TO 9 DO
     BEGIN
       IF s[i] <> human THEN GOTO 790; { continue }
       IF s[i-3] = empty THEN GOTO 120;
       IF (fnr(i) = i) THEN
         IF ((s[i-2] = computer) OR (s[i-4] = computer)) THEN GOTO 120
-        ELSE GOTO 790;
+        ELSE GOTO 790; { continue }
       IF (i < 7) THEN
         IF (s[2] = computer) THEN GOTO 120
-        ELSE GOTO 790;
+        ELSE GOTO 790; { continue }
       IF s[5] = computer THEN GOTO 120;
 790: END;
     write('YOU CAN''T MOVE, SO ');
