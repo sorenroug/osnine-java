@@ -1,68 +1,49 @@
-         nam t1
-         use defsfile
-         ttl Device Descriptor for the Serial Port
+ nam T1
+ ttl Device Descriptor for terminal
 
-***************
-* Original Dragon 64 distribution
-* /t1 module - serial port
-* for use as a terminal port.
-*
-* Header for : T1
-* Module size: $3A  #58
-* Module CRC : $32A3DF (Good)
-* Hdr parity : $D3
-* File Mgr   : scf
-* Driver     : acia51
-* Edition    : $73  #115
-* Ty/La At/Rv: $F1 $81
-* Device Descriptor mod, 6809 Obj, re-ent, R/O
-***************
+ use defsfile
 
-Type     set DEVIC+OBJCT
-Revs     set REENT+1
+**************************
+*  TERMINAL device module
 
-         mod T1End,T1Nam,Type,Revs,T1Mgr,T1Drv
-         fcb UPDAT. attributes
-         fcb $FF high byte of 24-bit address
-         fdb $FF04 port address
-         fcb DD.Parms-*-1 option byte count
-OptStrt  fcb DT.SCF SCF type device
+ mod TrmEnd,TrmNam,DEVIC+OBJCT,REENT+1,TrmMgr,TrmDrv
+ fcb UPDAT. mode
+ fcb $F port bank
+ fdb A.T1 port address
+ fcb TrmNam-*-1 option byte count
+ fcb DT.SCF Device Type: SCF
 
-* Default path options
+* DEFAULT PARAMETERS
 
-         fcb 0 case=UPPER and lower
-         fcb 1 backspace=BS,SP,BS
-         fcb 0 delete=backspace over line
-         fcb 1 auto echo ON
-         fcb 1 auto line feed ON
-         fcb 0 number of NULLS after CR
-         fcb 1 end of page pause ON
-         fcb 24 lines per page
-         fcb C$BSP backspace key
-         fcb C$DEL delete line key
-         fcb C$CR end of record key
-         fcb C$EOF end of file key
-         fcb C$RPRT redisplay the line
-         fcb C$RPET repeat the line
-         fcb C$PAUS pause key
-         fcb C$INTR Keyboard Interrupt key
-         fcb C$QUIT Keyboard Quit key
-         fcb C$BSP backspace echo character
-         fcb C$BELL line overflow character
-         fcb 0 no parity specified
-         fcb 3 baud rate = 1200
-         fdb T1Nam offset to pause device name
-         fcb $11 XON
-         fcb $13 XOFF
-DD.Parms equ *
+ fcb 0 case=UPPER and lower
+ fcb 1 backspace=BS,SP,BS
+ fcb 0 delete=backspace over line
+ fcb 1 auto echo on
+ fcb 1 auto line feed on
+ fcb 0 null count
+ fcb 1 end of page pause on
+ fcb 24 lines per page
+ fcb C$BSP backspace char
+ fcb C$DEL delete line char
+ fcb C$CR end of record char
+ fcb C$EOF end of file char
+ fcb C$RPRT reprint line char
+ fcb C$RPET dup last line char
+ fcb C$PAUS pause char
+ fcb C$INTR Keyboard Interrupt char
+ fcb $11 Keyboard Quit char
+ fcb C$BSP backspace echo char
+ fcb C$BELL line overflow char
+ fcb A.T.init ACIA initialization
+ fcb 0 reserved
+ fdb TrmNam offset of echo device
+ fcb 0 Transmit Enable char
+ fcb 0 Transmit Disable char
+TrmNam fcs "T1" device name
+TrmMgr fcs "SCF"  file manager
+TrmDrv fcs "ACIA" device driver
 
-T1Nam    fcs 'T1' device name
-T1Mgr    fcs 'scf' file manager
-T1Drv    fcs 'acia51' device driver
+ emod Module CRC
 
-         emod
-
-T1End    equ *
-
-         end
+TrmEnd EQU *
 
