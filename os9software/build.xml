@@ -18,9 +18,10 @@
                 <arg value="@{src}.asm"/>
                 <arg value="o=a.out"/>
             </java>
-            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+            <mkdir dir="${targetdir}/@{home}"/>
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{home}/@{src}" />
             <local name="calculated"/>
-            <checksum file="${targetdir}/@{src}" property="calculated"/>
+            <checksum file="${targetdir}/@{home}/@{src}" property="calculated"/>
             <echo message="Checksum: ${calculated}"/>
             <fail>
                 <condition>
@@ -38,10 +39,29 @@
     <target name="compile">
         <mkdir dir="${targetdir}"/>
 
+        <assemble src="Term" home="gimix" verify="6033eabac7b4db841b7cb13fc377fc10"/>
+        <assemble src="Init" home="gimix" verify="8bf368aaefb208a3c68db734e8a7d79c"/>
+        <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>
+        <assemble src="Boot" home="gimix" verify="c478773a1104052ce055125773dd51f9"/>
+        <!--
+        <assemble src="Clock" home="gimix" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
+        <assemble src="SysGo" home="gimix" verify="265bba4740d194f2dea21a36d9350764"/>
+        -->
+
+        <!--
+        <assemble src="FD2_ed0" home="swtc" verify="77406f3aa8d5fd2ec4b9cb4c12ecf7cb"/>
+        <assemble src="DC3_drvr" home="swtc" verify="cd0a25175be395e22193b6dbb09bc5ba"/>
+        <assemble src="OS9p1" home="swtc" verify="1832f6806d7b89f1a2209dd28bd96322"/>
+        -->
+
         <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
         <assemble src="stylo_std" home="stylograph" verify="170366065627902e83c8ba54107e1188"/>
         <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
+
         <assemble src="Mfree_d64" home="dragon64" verify="3fc4db96ec92a745e14d642c95a62387"/>
+        <assemble src="T1" home="dragon64" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
+        <assemble src="DDisk_ed4" home="dragon64" verify="085c24996a2d560cbc5641e39c1b710f"/>
+        <assemble src="DDisk_ed2" home="dragon64" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
 
         <assemble src="Mfree_ed4" home="utilities" verify="f629490039f5f4b307604d495c543be1"/>
         <assemble src="TSMon" home="utilities" verify="7501e649d06eb2fe81780ad7e257c99e"/>
@@ -60,8 +80,6 @@
         <assemble src="Login_small_ed10" home="y2k" verify="8e4f6948f7683bb31424520a5cba63e0"/>
         <assemble src="Date_ed5" home="y2k" verify="a4b5cad5ff8d614a6313d865362e4b09"/>
 
-        <assemble src="DDisk_ed4" home="kernel" verify="085c24996a2d560cbc5641e39c1b710f"/>
-        <assemble src="DDisk_ed2" home="kernel" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
         <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
         <assemble src="RBF_ed7" home="kernel" verify="f3b9848e9716821fd8f397d055ad717f"/>
         <assemble src="RBF_ed8" home="kernel" verify="5f4e4351725f0be8b3f96fb67b7072c0"/>
@@ -70,12 +88,7 @@
         <assemble src="Acia_ed2" home="kernel" verify="6c8d9746cee87d8f71f818b8e059c607"/>
         <assemble src="Acia_ed4" home="kernel" verify="62ee1c4ca8056c4145c1487341a11849"/>
         <assemble src="BootDyn" home="kernel" verify="7a6191a6bd8ee2649212bcebaff42c0d"/>
-        <assemble src="Clock_gimix" home="kernel" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
-        <assemble src="T1" home="kernel" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
-        <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
         <assemble src="OS9p1_d64" home="kernel" verify="523b00da5aa39530ea3e2ae2364ec0e6"/>
-        <assemble src="OS9p1_gimix" home="kernel" verify="fc8df0c641cc8411069476e09da83560"/>
-        <assemble src="OS9p1_swtc" home="kernel" verify="1832f6806d7b89f1a2209dd28bd96322"/>
         <assemble src="OS9p1_ed8" home="kernel" verify="ca51db8a306c143967b8b6bc4ef55047"/>
         <assemble src="OS9p2_ed9" home="kernel" verify="21a3ab8b0fd418f3d6bf00c1d442ab08"/>
         <assemble src="OS9p2_ed8" home="kernel" verify="4620b5340979f69d3d243c07592ec200"/>
@@ -85,9 +98,12 @@
         <assemble src="Piper" home="kernel" verify="c62010913ea02b2e606785c1521233d3"/>
         <assemble src="SCF_ed7" home="kernel" verify="2e882e79821eacba496d9f456d6e2738"/>
         <assemble src="SCF_ed8" home="kernel" verify="4f58ede8d3c8931480fd230499648dc0"/>
+        <!--
+        <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
         <assemble src="go51nkb" home="kernel" verify="17d598001819b9aec3b579a5e63c822b"/>
         <assemble src="go51n" home="kernel" verify="6798a2db83aedf2ac3629c913714dfa0"/>
         <assemble src="go51" home="kernel" verify="83632831c5d2f8ddfa9e22b38faa8109"/>
+        -->
         <assemble src="SysGo" home="kernel" verify="a47c4ceedee4da200ebeabfcdea8b53c"/>
         <assemble src="SysGo_login" home="kernel" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
 
@@ -104,6 +120,7 @@
         <assemble src="Dynacalc_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
         <assemble src="vt100_473.trm" home="dynacalc"/>
 
+        <!--
         <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
         <assemble src="runb_tandy_y2k" home="basic09" verify="08da732414bafa6e7b1cc00e737d5195"/>
         <assemble src="runb_generic_y2k" home="basic09" verify="bbb9685c8f71d66978a99e08d40d36ff"/>
@@ -114,7 +131,7 @@
         <assemble src="basic09_generic" home="basic09" verify="8fcd0e6da6577f2bf426d1ee159528bb"/>
         <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>
         <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
-        <!--
+
         <assemble src="rms" home="rms" verify="1e5af27b963b2ef3635edd2c526d495f"/>
         <assemble src="report" home="rms" verify="f9820a325090ec307208d8f5667358da"/>
         -->

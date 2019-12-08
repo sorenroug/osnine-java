@@ -1,0 +1,64 @@
+
+
+
+                        OS-9 SOURCE FILE INFORMATION
+
+
+      Description of the source
+
+       1 - The "Kernal" is composed of two parts.  OS9P1 is the  source  
+      for the "P1" ROM which goes at $F800.  OS9P2 contains the rest of 
+      the  OS-9 Kernal and the INIT module.  The OS9P2 and INIT modules
+      go in the  "P2" ROM along  with the BOOT module.   You will  find
+      source  to a BOOT module for either the specified disk controller
+      or a representative sample.
+
+
+       2 - There are three device  drivers  included.   "Acia"  is  the  
+      MC6850  acia  device  driver.  "Pia" is the MC6821(20) pia device 
+      driver.  The Acia and Pia drivers are "SCF" (sequential character 
+      file)  type device drivers.   Then there is a DRVR  (disk driver)
+      for either the specified  controller or a representative  sample.
+      The disk  driver  is an "RBF" (random  block  file ) type  device
+      driver.
+
+
+       3 - There are several device descriptors included.  "Term", "T1"
+      and "P1"  are acia type device descriptors. The first two are for
+      terminals and  the other is for a serial  printer.   "P" is a pia
+      type device  descriptor for a parallel printer.
+
+
+       4 - The "Shell" is source for the  "command  interpreter".   Our  
+      experience  has  shown  that  changes  to  shell  can often cause 
+      seemingly  unrelated  problems  which  are really shell problems.
+      Therefore be careful if you modify this source.
+
+
+       5  -  The "Sysdefs.sys" file is  used to define  the  particular
+      system for which this source was created.   It should be moved to
+      your DEFS  directory.   It is used by many of the source files to
+      define changeable configurations for different systems. It is the
+      user's  responsibility to check  that the  sysdefs match  what is
+      currently  needed for his  system and make any  required changes.
+      The  defsfile is a convenient file for "using" all the  different
+      OS-9 definitions files.
+
+
+       6  -  In  addition  there  is an assortment of example utilities 
+      which will give you a good look at how to use  OS-9  in  assembly  
+      language  programs.  Comments on several of these: You may notice
+      a similarity  between Copy, List, and Merge.  This is a result of
+      OS-9's  unified I/O  handling.   Note  that  SYSGO is the  system
+      starter  module which sets  up the default  directories and keeps
+      the system  going even if shell "dies".   Details on SYSGO can be
+      found in the System Programmers Manual.
+
+
+       7  -  NOTE:  Not all of the utilities are included in the source
+      package.  The intent in sending out any of them is to guide users
+      into good programming techniques.   Those sent are representative
+      of the utilities done by Microware.
+
+
+          (C) 1980 Microware Systems Corporation and Motorola Inc.

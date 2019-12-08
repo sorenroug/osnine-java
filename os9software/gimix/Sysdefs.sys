@@ -1,0 +1,37 @@
+CPUType set Gimix
+
+ClocType set M58167
+
+DiskType set G68
+DriveCnt set 4
+
+ ifeq DiskType-G68
+DPort equ $E3B0
+ endc
+ ifeq DiskType-DCB4
+DPort equ $E3C0
+ endc
+ ifeq ClocType-M58167
+CPort equ $E220
+ endc
+ ifeq ClocType-MC6840
+CPort equ $E210
+ endc
+A.Term equ $E004
+A.T1 equ $E020
+A.T2 equ $E024
+A.T3 equ $E030
+A.T.init equ $15
+A.P1 equ $E000
+A.P equ $E042
+DBG.DP equ $E4
+DBG.Time equ $E210
+
+Densy set 1 FM only
+Sides set 2 single or double
+StpRat set $83
+IntrLeav set 3
+DrvSiz set 580
+Density set Densy+2
+
+

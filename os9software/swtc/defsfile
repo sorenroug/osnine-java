@@ -3,4 +3,5 @@ Level    equ   1
  use /d0/DEFS/os9defs
  use /d0/DEFS/scfdefs
  use /d0/DEFS/rbfdefs
+ use /d0/DEFS/systype
  use Sysdefs.sys

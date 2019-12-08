@@ -1,19 +1,4 @@
- nam   DDisk
-***********************************************
-*
-* Original edition from Dragon Data OS-9 system disk
-*
-* Header for : DDisk
-* Module size: $31C  #796
-* Module CRC : $E01A55 (Good)
-* Hdr parity : $C4
-* Exec. off  : $0014  #20
-* Data size  : $00AF  #175
-* Edition    : $02  #2
-* Ty/La At/Rv: $E1 $81
-* Device Driver mod, 6809 Obj, re-ent, R/O
-
-* Known bugs: Unable to use two-sided disks
+ nam   Ddisk
 
  use   defsfile
 
@@ -26,7 +11,6 @@
 *******************************************************************
 
 NMIVec equ $109
-DriveCnt equ 4
 
 P1PDRB equ $FF22
 P1PCRB equ $FF23
@@ -46,14 +30,19 @@ V.DATR equ   $FF43
 * Disk Driver Module Header
 *
 *
- mod DSKEND,DSKNAM,DRIVR+OBJCT,REENT+1,DSKENT,DSKSTA
- fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
-DSKNAM fcs "DDisk"
 
- fcb 2 Edition telltale byte
+tylg     set   Drivr+Objct
+atrv     set   ReEnt+rev
+rev      set   $04
+         mod   DSKEND,DSKNAM,tylg,atrv,DSKENT,DSKSTA
+ fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
+DSKNAM fcs "Ddisk"
+
+ fcb 4 Edition telltale byte
 *******************
 * Revision History
 * edition 2: prehistoric
+* edition 4: From Eurohard OS9 l1 v2.0 - Handles dual-sided disks
 
  pag
 *********************************************************************
@@ -69,8 +58,11 @@ CURDRV rmb 1
 V.DOSK rmb 1
 V.PIA rmb 1
 V.ACIA rmb 1
-V.BUF rmb 2 Local buffer addr
-DSKSTA equ . Total static requirement
+V.BUF    rmb   2
+u00AF    rmb   1
+u00B0    rmb   1
+u00B1    rmb   1
+DSKSTA     equ   .
 
 
 
@@ -95,7 +87,7 @@ F.READ equ $88 Read sector command
 F.WRIT equ $A8 Write sector command
 F.TYP1 equ $D0 Force type 1 status
 F.WRTR equ $F0 Write track command
-SID2 equ $2
+RATE2 equ $2
 
  pag
 ****************************************************************
@@ -134,14 +126,12 @@ INILUP sta 0,x
  OS9 F$SRqMem Request 1 pag of mem
  tfr U,X
  puls U
- bcs RETRN1 ..oh ..oh; no mem available
+ bcs WRERR9 ..oh ..oh; no mem available
  stx V.BUF,U Save for future use
- clrb
-RETRN1 rts
 
 TERMNT
 GETSTA clrb
- rts
+WRERR9    rts
 *************************************************************
 *
 * Read Sector Command
@@ -171,8 +161,6 @@ READ01 lda B,X
  clrb
  puls pc,y,x
 
-WRERR9 rts
-
 RDDSK1 bcc RDDSK3 Retry without restore
  pshs D,X
  lbsr RESTOR Drive to tr00
@@ -191,6 +179,7 @@ READSC lbsr SEEK Move head to track
  ldx PD.BUF,Y Point to buffer
  pshs y,dp,cc
  ldb #F.READ Read sector command
+         orb   >u00B1,u
  bsr READS3
 READS1 lda <P1PCRB
  bmi READS2
@@ -269,10 +258,10 @@ WRTDS1 pshs D,X Save regs
  bcs WRTDS3 Write error; try again.
  tst PD.VFY,Y Verify desired?
  bne WRTDS2 ...no; all is well.
- lbsr Wrtvfy Go verify sector
+ bsr Wrtvfy Go verify sector
  bcs WRTDS3 ...verify failed
 WRTDS2 clrb
- rts
+WRTDS4 rts
 
 WRTDS3 lsra
  lbeq Wrerr Retries done; ...exit
@@ -284,14 +273,15 @@ WRTDS3 lsra
 
 
 
-WRITSC lbsr SEEK
- lbcs WRERR9
+WRITSC bsr SEEK
+ bcs WRTDS4
  ldx PD.BUF,Y Buffer addr
  pshs y,dp,cc
  ldb #F.WRIT Write function code
-WRITS1 lbsr READS3
+WRITS1    orb   >u00B1,u
+ lbsr READS3
  lda ,x+
-WRITS2 ldb <P1PCRB
+WRITS2    ldb   <P1PCRB
  bmi WRITS4
  leay -1,y
  bne WRITS2
@@ -368,7 +358,8 @@ WRTVF6 puls d,x,pc
 *   B = Error Code
 *
 SEEK clr >V.DOSK,u
- bsr SELECT Select drive
+         clr   >u00B1,u
+ lbsr SELECT Select drive
  tstb CHECK Sector bounds
  bne PHYERR  msb must be zero
  tfr X,D Logical sector (os-9)
@@ -383,40 +374,60 @@ PHYERR comb
 
 PHYSC1 clr ,-s
  bra PHYSC5
-PHYSC2 inc 0,S
+PHYSC2    clrb
+         bra   PHYSC6
+
+PHYSC4    inc   ,s
 PHYSC5 subd #18 Subtract one track worth of sectors
- bcc PHYSC2 Repeat until less than 1 track size
+ bcc PHYSC4 Repeat until less than 1 track size
  addb #18 Add back for sector number
- puls A Desired track.
- cmpa  #$10
- bls PHYSC7
- pshs a
+         lda   <DD.FMT,x
+         bita  #$01
+         puls  a
+         beq   PHYSC6
+         lsra
+         rol   >u00B1,u
+         lsl   >u00B1,u
+PHYSC6    cmpa  >u00B0,u
+         bls   PHYSC7
+         pshs  a
  lda >CURDRV,u
  ora #$10 Write Precompensation enable
  sta >CURDRV,u
  puls a
 PHYSC7 incb
- stb V.SECR Put sector (b) in sector reg
-SETRK3 ldb <V.Trak,x
- stb >V.TRKR
+PHYSC8 stb V.SECR Put sector (b) in sector reg
+         lbsr  DELAY1
+         cmpb  >V.SECR
+         bne   PHYSC8
+ ldb <V.Trak,x
+         tst   >u00AF,u
+         beq   SETRK2
+         lslb
+SETRK2    stb   >V.TRKR
  tst V.DOSK,U Force seek?
  bne SETRK4 ..yes; do it.
  cmpa V.TRAK,X Same track?
- beq SETRK9 ..yes; skip seek.
+ beq SETRK8 ..yes; skip seek.
 SETRK4 sta V.Trak,x
- sta >V.DATR Put new trk in data reg
- ldb #F.SEEK+SID2 Command
- bsr WCR0 Issue command
+         tst   >u00AF,u
+         beq   SETRK6
+         lsla
+SETRK6 sta >V.DATR Put new trk in data reg
+ ldb #F.SEEK+RATE2 Command
+         orb   <$22,y
+ lbsr WCR0 Issue command
  pshs x
  ldx #$222E  delay loop
-SETRK8 leax -1,x
- bne SETRK8
+SETRK7 leax -1,x
+ bne SETRK7
  puls  x
+SETRK8 lda V.Trak,x
+ sta >V.TRKR
 SETRK9 clrb
  rts
 
-SELECT lbsr STARTMOT
- lda PD.DRV,Y Get drive number
+SELECT lda PD.DRV,Y Get drive number
  cmpa  #4 Drive num ok?
  bcs SELCT3 ..yes
  comb
@@ -425,18 +436,31 @@ SELECT lbsr STARTMOT
 
 SELCT3 pshs X,D
  sta CURDRV,U
+ lbsr STARTMOT
  leax DRVBEG,U Table beginning
  ldb #DRVMEM
  mul OFFSET For this drive
  leax D,X
  cmpx CURTBL,U New device call?
- beq SELCT5 ...no; don't force seek
+ beq SELCT4 ...no; don't force seek
  stx CURTBL,U Current table ptr
  com V.DOSK,U Set force seek flag
-SELCT5 puls pc,x,b,a
+SELCT4    lda   #$10
+         sta   >u00B0,u
+         lda   <$24,y
+         anda  #$02
+         sta   >u00AF,u
+         beq   SELCT5
+         lda   <$10,x
+         bita  #$04
+         beq   SELCT5
+         clr   >u00AF,u
+         lda   #$28
+         sta   >u00B0,u
+SELCT5    puls  pc,x,b,a
 
 STCK bitb #%11111000 Any error codes set?
- beq NOERR
+ beq ERRCRC
  bitb #%10000000 Drive ready?
  bne ERNRDY ..no; error
  bitb #%01000000 Write protected?
@@ -446,8 +470,9 @@ STCK bitb #%11111000 Any error codes set?
  bitb #%00010000 Seek error?
  bne ERSEEK ..yes; return error
  bitb #%00001000 Check sum ok?
- bne ERRCRC ..no; return error
-NOERR clrb
+ERRCRC beq SETRK9
+ comb
+ ldb #E$CRC Error: bad check sum
  rts
 
 
@@ -465,16 +490,12 @@ ERSEEK comb
  ldb #E$SEEK Error: seek error
  rts
 
-ERRCRC comb
- ldb #E$CRC Error: bad check sum
- rts
-
 RDERR comb
  ldb #E$Read
  rts
 
-WCR0 bsr DELAY
-WCR02 ldb   >V.CMDR
+WCR0    bsr   DELAY
+WCR02    ldb   >V.CMDR
  bitb #%00000001 Busy?
  beq DELAY4 ..yes; wait for it.
  lda #$F0
@@ -516,14 +537,17 @@ RETRN2    rts
 *         (U)=Global Storage
 *
 WRTTRK lbsr SELECT Select drive
+         ldb   $07,x
+ ldx Curtbl,u Point to drive table
+         stb   <DD.FMT,x
+         andb  #$01
+         lslb
+         stb   >u00B1,u
+ lbsr SELECT
+ ldx PD.RGS,Y
  lda R$U+1,X Track number
- cmpa #$10
- bls WRTRK2
- ldb CURDRV,u
- orb #$10  Write Precompensation enable
- stb CURDRV,u
-WRTRK2 ldx Curtbl,u Point to drive table
- lbsr SETRK3
+ ldx Curtbl,u Point to drive table
+         lbsr  PHYSC2
  bcs RETRN2
  ldx PD.RGS,Y
  ldx R$X,X Get buffer addr
@@ -548,25 +572,26 @@ RESTOR lbsr SELECT Select drive
  ldx CURTBL,U
  clr V.TRAK,X Old track = 0
  lda #5 Repeat five times
-RESTR2 ldb #F.STPI+SID2
+RESTR2 ldb #F.STPI+RATE2
  pshs A
- lbsr WCR0 Issue command, delay & wait for done.
+ bsr RESTR3
  puls A
  deca DONE Stepping?
  bne RESTR2 ...no; step again.
- ldb #F.REST+SID2 Restore command
- bra WCR0
-
+ ldb #F.REST+RATE2 Restore command
+RESTR3 orb <$22,y
+ lbra WCR0
 * Start Drive Motors and wait for them if necessary
 STARTMOT pshs  X,D
  lda >D.DskTmr
  bne START10
  lda #$04
+         ora   >CURDRV,u
  sta >V.SEL
  ldx #$A000
 WAITLOOP nop
  nop
- leax  -$01,x
+ leax  -1,x
  bne WAITLOOP
 START10 lda #$F0
  sta >D.DskTmr
