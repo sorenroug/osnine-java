@@ -27,7 +27,7 @@ A.P equ $E042
 DBG.DP equ $E4
 DBG.Time equ $E210
 
-Densy set 1 FM only
+Densy set 1
 Sides set 2 single or double
 StpRat set $83
 IntrLeav set 3
