@@ -27,14 +27,14 @@ V.SEL rmb 2 Drive select reg addr.
 u0002    rmb   2
 u0004    rmb   2
 u0006    rmb   2
-u0008    rmb   2
+V.TRKR    rmb   2
 V.SECR    rmb   2
 V.DATR    rmb   2
 V.SIDE    rmb   1
 u000F    rmb   4
 u0013    rmb   1
 u0014    rmb   1
-u0015    rmb   1
+V.EFLG    rmb   1
 V.BUF    rmb   2
 V.TRCK    rmb   1
 V.DRV    rmb   1
@@ -85,15 +85,15 @@ INILUP pshs a
  lda #F.Typ1
  sta 0,x Inz controller chip
          stx   u0006,u
-         leax  $01,x
-         stx   u0008,u
-         leax  $01,x
-         stx   V.SECR,u
-         leax  $01,x
-         stx   V.DATR,u
+ leax 1,X Address of track register
+ stx V.TRKR,U
+ leax 1,X Address of sector register
+ stx V.SECR,U
+ leax 1,X Address of data register
+ stx V.DATR,U
  lda #$FF
  sta V.TRCK,U Inz to high track count
-         lda   [,u]
+         lda   [V.SEL,u]
          anda  #$01
          sta   <u0013,u
 
@@ -199,31 +199,34 @@ RESTR2 ldb #F.STPI Step in command
 *
 READSK lda #$91 Error retry code
  cmpx #0 Is this sector zero?
-         bne   RDSK3
-         bsr   RDSK3
-         bcs   Retrn1
+ bne RDSK3 Branch if not
+ bsr RDSK3 Read sector into buffer
+ bcs Retrn1
  ldy V.BUF,u Point "y" to dd. info
  clrb
 Retrn1 rts
 
 
-RDSK1    bcc   RDSK3
-         pshs  x,b,a
-         bsr   RESTOR
-         puls  x,b,a
-RDSK3    pshs  x,b,a
-         bsr   READSC
-         puls  x,b,a
-         bcc   Retrn1
-         lsra
-         bne   RDSK1
-READSC    bsr   PHYSIC
-         bcs   Retrn1
-         ldx   <V.BUF,u
+RDSK1 bcc RDSK3 Retry without restore
+ pshs D,X
+ bsr RESTOR Drive to tr00
+ puls D,X
+RDSK3 pshs D,X
+ bsr READSC Read sector
+ puls D,X
+ bcc Retrn1 Return if no error
+ lsra DONE?
+ bne RDSK1 ...no; retry.
+*
+* Fall Through To Try One Last Time
+*
+READSC bsr PHYSIC Move head to track
+ bcs Retrn1
+ ldx V.BUF,u Point to buffer
          lda   #$10
          sta   <u0014,u
  ldb #F.READ Read sector command
-         lbsr  WCR0
+ lbsr WCR0 Issue command
          lbra  L01FE
  pag
 **************************************************************
@@ -245,13 +248,13 @@ PHYSIC    lda   #$01
          sta   <V.DRV,u
          lda   #$20
          sta   u000F,u
-         clr   V.SIDE,u
-         tstb
-         bne   PHYERR
+ clr V.SIDE,u
+ tstb CHECK Sector bounds
+ bne PHYERR  msb must be zero
  tfr X,D Logical sector (os-9)
  cmpd #0 Logical sector zero?
-         beq   PHYSC7
-         cmpd  $01,y
+ beq PHYSC7 ..yes; skip conversion.
+ cmpd DD.TOT+1,Y Too high sector number?
          bcc   PHYERR
          tst   <u0013,u
          bne   L014A
@@ -274,12 +277,12 @@ L0159    stb   <u0014,u
          lsrb
          ldb   <u0014,u
          bcc   L0176
-L0168    com   V.SIDE,u
-         bne   L016E
-         inc   ,s
-L016E    subb  $03,y
-         sbca  #$00
-         bcc   L0168
+PHYSC3 com V.SIDE,U Switch sides
+ bne PHYSC4 Skip track inc if side 1
+ inc 0,S
+PHYSC4 subb DD.TKS,Y
+ sbca #0
+         bcc   PHYSC3
          bra   L017E
 L0176    inc   ,s
          subb  $03,y
@@ -291,33 +294,34 @@ L017E    lda   <$10,y
          clr   u000F,u
 L0187    puls  a
          addb  $03,y
-PHYSC7    stb   [<V.SECR,u]
+PHYSC7 stb [V.SECR,U] Put sector (b) in sector reg
          ldb   u000F,u
          orb   <V.DRV,u
          stb   <V.DRV,u
          ldb   <V.TRCK,u
-         stb   [<u0008,u]
-L019C    ldb   [,u]
+         stb   [<V.TRKR,u]
+L019C    ldb   [V.SEL,u]
          bitb  #$20
          bne   L019C
          cmpa  <V.TRCK,u
-         beq   L01BD
-         sta   <V.TRCK,u
-         sta   [<V.DATR,u]
-         ldb   #$1B
+         beq   SETRK9
+ sta V.TRCK,U Update with new track
+ sta [V.DATR,U] Put new trk in data reg
+ ldb #F.SEEK Command
          eorb  >L0022,pcr
          clr   <u0014,u
-         bsr   WCR0
-         lda   #$04
-         sta   <u0015,u
-L01BD    clrb
-         rts
+ bsr WCR0 Issue command
+ lda #4
+ sta V.EFLG,U
+Setrk9 clrb
+ rts
+ pag
 WCR0    stx   [<u0004,u]
          lda   <V.DRV,u
          tst   <u0013,u
          beq   L01CC
          ora   #$C0
-L01CC    sta   [,u]
+L01CC    sta   [V.SEL,u]
          lda   <u0014,u
          tst   V.SIDE,u
          beq   L01D7
@@ -326,33 +330,34 @@ L01D7    ora   #$80
          sta   [<u0002,u]
          tst   <u0014,u
          beq   L01ED
-         orb   <u0015,u
-         clr   <u0015,u
+         orb   <V.EFLG,u
+         clr   <V.EFLG,u
          tst   V.SIDE,u
          beq   L01ED
          orb   #$02
 L01ED    stb   [<u0006,u]
-L01F0    lda   [,u]
+L01F0    lda   [V.SEL,u]
          bita  #$40
          beq   L01F0
          lda   [<u0006,u]
          rts
+
          bita  #$40
          bne   ERRWP
 L01FE    bita  #$04
          bne   L0218
-         bita  #$08
-         bne   ERRCRC
-         bita  #$10
-         bne   ERSEEK
-         bita  #$80
-         bne   ERNRDY
-         clrb
-         rts
+ bita #%00001000 Check sum ok?
+ bne ERRCRC ..no; return error
+ bita #%00010000 Seek error?
+ bne ERSEEK ..yes; return error
+ bita #%10000000 Drive ready?
+ bne ERNRDY ..no; error
+ clrb
+ rts
 
-ERRCRC    comb
-         ldb   #E$CRC
-         rts
+ERRCRC comb
+ ldb #E$CRC Error: bad check sum
+ rts
 
 ERSEEK comb
  ldb   #E$Seek
