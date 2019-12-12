@@ -39,6 +39,9 @@
     <target name="compile">
         <mkdir dir="${targetdir}"/>
 
+        <assemble src="G68" home="gimix" verify="d937eb81ca9cd5323e032d7943d61367"/>
+        <assemble src="H0" home="gimix" verify="70d896d38742e234e338f6cfe8bf644f"/>
+        <assemble src="XBC" home="gimix" verify="5bacdeaa30478463193fcc4324f63ad9"/>
         <assemble src="Term" home="gimix" verify="6033eabac7b4db841b7cb13fc377fc10"/>
         <assemble src="Init" home="gimix" verify="8bf368aaefb208a3c68db734e8a7d79c"/>
         <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>

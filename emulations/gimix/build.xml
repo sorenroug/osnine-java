@@ -24,18 +24,15 @@
         <mkdir dir="${targetdir}"/>
         <copy todir="${targetdir}">
           <filelist dir="." files="OS9_GMX_V1.2.dsk v6809.properties os9l1v11.u6 os9l1v12.u7"/>
-          <filelist dir="../../os9software/target/"
-            files="Acia_ed2 Acia_ed4 BootDyn IOMan_ed4 SCF_ed7 RBF_ed8 OS9p1_gimix OS9p2_ed9 OS9p2_ed5 PipeMan Piper Pipe
-            VDisk"
+          <filelist dir="../../os9software/target/kernel"
+            files="Acia_ed2 Acia_ed4 BootDyn IOMan_ed4 SCF_ed7 RBF_ed8 OS9p2_ed9 OS9p2_ed5 PipeMan Piper Pipe"
           />
+          <filelist dir="../../os9software/target/gimix" files="OS9p1 Init Term" />
+          <filelist dir="../../os9software/target/virtual" files="VDisk" />
         </copy>
         <assemble src="D0_vdisk"/>
-        <assemble src="Init"/>
-        <assemble src="SysGo_gimix"/>
         <assemble src="SysGo"/>
-        <assemble src="Term"/>
         <assemble src="HWClock"/>
-        <assemble src="Clock_gimix"/>
     </target>
 
 </project>

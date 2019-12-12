@@ -1,4 +1,5 @@
 {
+$TITLE Hexapawn
 HEXAPAWN:  INTERPRETATION OF HEXAPAWN GAME AS PRESENTED IN
 MARTIN GARDNER'S "THE UNEXPECTED HANGING AND OTHER MATHEMATICAL
 DIVERSIONS", CHAPTER EIGHT:  A MATCHBOX GAME-LEARNING MACHINE
@@ -11,18 +12,14 @@ CONVERSION TO PASCAL BY SOREN ROUG
 PROGRAM hexapawn(input, output);
 
   CONST
-    computer = -1;
-    empty = 0;
-    human = 1;
     maxpatterns = 19;
   TYPE
-    str9 = ARRAY [1..9] OF char;
-    str11 = ARRAY [1..11] OF char;
+    cellvals = (computer, empty, human);
   VAR
-    pattern : ARRAY [1..maxpatterns, 1..9] OF integer;
+    pattern : ARRAY [1..maxpatterns, 1..9] OF cellvals;
     moves : ARRAY [1..maxpatterns, 1..4] OF integer;
-    s,t : ARRAY [1..9] OF integer;
-    p : ARRAY [computer..human] OF char;
+    s,t : ARRAY [1..9] OF cellvals;
+    p : ARRAY [cellvals] OF char;
     m1,m2,i,j,k,won,lost,x,y : integer;
     a : char;
     seed : real;
@@ -53,7 +50,7 @@ PROCEDURE randomize(VAR seed:real);
     seed := afrac(seed / modulus) * modulus
   END;
 
-{ Read integer coordinate separated by a comma }
+{ Read integer values separated by a comma }
 PROCEDURE readmove(VAR x,y:integer);
   VAR
     r : integer;
@@ -98,24 +95,23 @@ PROCEDURE readmove(VAR x,y:integer);
   END;
 
   { Read a y/n answer. Returns uppercase }
-  PROCEDURE readyesno(var yesno:char);
+  FUNCTION readyesno:char;
+    VAR
+      yesno:char;
     BEGIN
       prompt;  { flush output }
       readln(yesno);
       if (yesno >= 'a') and (yesno <= 'z') then
         yesno := chr(ord(yesno) - ord('a') + ord('A'));
+      readyesno := yesno
     END;
 
   { Initialise the patterns. Only the patterns that have moves are listed. }
   PROCEDURE init;
   VAR
-    s9 : str9;
-    n2 : ARRAY [0..1] OF char;
-    c : ARRAY [1..maxpatterns] OF str9;
-    n11 : ARRAY [1..maxpatterns] OF str11;
-    s11 : str11;
+    c : ARRAY [1..maxpatterns,1..9] OF char;
+    m : ARRAY [1..maxpatterns,1..11] OF char;
     i,j : integer;
-    tmpr : real;
 
   BEGIN
     c[ 1] := 'XXXO...OO';
@@ -141,8 +137,7 @@ PROCEDURE readmove(VAR x,y:integer);
     FOR i := 1 TO maxpatterns DO
       FOR j := 1 TO 9 DO
         BEGIN
-          s9 := c[i];
-          CASE s9[j] OF
+          CASE c[i,j] OF
             'X': pattern[i,j] := computer;
             '.': pattern[i,j] := empty;
             'O': pattern[i,j] := human;
@@ -150,35 +145,30 @@ PROCEDURE readmove(VAR x,y:integer);
         END;
 
     { Possible moves for each pattern }
-    n11[ 1] := '24,25,36,00';
-    n11[ 2] := '14,15,36,00';
-    n11[ 3] := '15,35,36,47';
-    n11[ 4] := '36,58,59,00';
-    n11[ 5] := '15,35,36,00';
-    n11[ 6] := '24,25,26,00';
-    n11[ 7] := '26,57,58,00';
-    n11[ 8] := '26,35,00,00';
-    n11[ 9] := '47,48,00,00';
-    n11[10] := '35,36,00,00';
-    n11[11] := '35,36,00,00';
-    n11[12] := '36,00,00,00';
-    n11[13] := '47,58,00,00';
-    n11[14] := '15,00,00,00';
-    n11[15] := '26,47,00,00';
-    n11[16] := '47,58,00,00';
-    n11[17] := '35,36,47,00';
-    n11[18] := '28,58,00,00';
-    n11[19] := '15,47,00,00';
+    m[ 1] := '24,25,36,00';
+    m[ 2] := '14,15,35,36';
+    m[ 3] := '15,35,36,47';
+    m[ 4] := '36,58,59,00';
+    m[ 5] := '15,35,36,00';
+    m[ 6] := '24,25,26,00';
+    m[ 7] := '26,57,58,00';
+    m[ 8] := '26,35,00,00';
+    m[ 9] := '47,48,00,00';
+    m[10] := '35,36,00,00';
+    m[11] := '35,36,00,00';
+    m[12] := '36,00,00,00';
+    m[13] := '47,58,00,00';
+    m[14] := '15,00,00,00';
+    m[15] := '26,47,00,00';
+    m[16] := '47,58,00,00';
+    m[17] := '35,36,47,00';
+    m[18] := '24,58,00,00';
+    m[19] := '15,47,00,00';
 
     FOR i := 1 TO maxpatterns DO
       FOR j := 1 TO 4 DO
-        BEGIN
-          s11 := n11[i];
-          n2[0] := s11[j * 3 - 2];
-          n2[1] := s11[j * 3 - 1];
-          tmpr := cnvtreal(n2);
-          moves[i,j] := round(tmpr)
-        END
+        moves[i,j] := (ord(m[i,j * 3 - 2]) - ord('0')) * 10
+                     + ord(m[i,j * 3 - 1]) - ord('0');
   END;
 
   PROCEDURE printboard;
@@ -278,7 +268,7 @@ PROCEDURE initboard;
     s[9] := human;
   END;
 
-FUNCTION endreached(player,p:integer):boolean;
+FUNCTION endreached(player:cellvals; p:integer):boolean;
   BEGIN
     IF (s[p] = player) OR (s[p+1] = player) OR (s[p+2] = player) THEN
       endreached := true
@@ -286,7 +276,7 @@ FUNCTION endreached(player,p:integer):boolean;
       endreached := false;
   END;
 
-FUNCTION hasnopawns(player:integer):boolean;
+FUNCTION hasnopawns(player:cellvals):boolean;
   VAR
     i : integer;
   BEGIN
@@ -416,8 +406,9 @@ FUNCTION playgame:boolean;
     playgame := true;  
 800:
     END;
-
-BEGIN { MAIN }
+$Page
+$Subtitle MAIN
+BEGIN
   randomize(seed);
   writeln(' ':32, 'HEXAPAWN');
   writeln(' ':15, 'CREATIVE COMPUTING  MORRISTOWN, NEW JERSEY');
@@ -429,7 +420,7 @@ BEGIN { MAIN }
   init;
   REPEAT
     write('INSTRUCTIONS (Y-N)? ');
-    readyesno(a);
+    a := readyesno;
   UNTIL (a = 'Y') OR (a = 'N');
   IF a = 'Y' THEN instructions;
 
