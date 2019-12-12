@@ -28,8 +28,8 @@ CURDRV    rmb   1
 CURTBL    rmb   2
 u005F    rmb   1
 u0060    rmb   1
-u0061    rmb   1
-u0062    rmb   1
+V.DCB0    rmb   1
+V.DCB1    rmb   1
 V.BUF    rmb   1
 u0064    rmb   1
 u0065    rmb   1
@@ -43,13 +43,12 @@ u006D    rmb   4
 
 DSKSTA     equ   .
 
-DSKENT    equ   *
-         lbra  INIDSK
-         lbra  READSK
-         lbra  WRTDSK
-         lbra  Getsta
-         lbra  PUTSTA
-         lbra  Termnt
+DSKENT lbra INIDSK Initialize i/o
+ lbra READSK Read sector
+ lbra WRTDSK Write sector
+ lbra GETSTA Get status call
+ lbra PUTSTA
+ lbra TERMNT Terminate device use
 
 HDMASK fcb 0 no flip bits
  fcb $80 Irq polling mask
@@ -87,7 +86,7 @@ INIDSK ldx V.PORT,U Point to i/o port
  clra
          sta   WPORT0,x
          sta   <u005F,u
-         sta   <u0062,u
+         sta   <V.DCB1,u
          sta   <u0060,u
          ldb   #$80
          stb   WPORT0,x
@@ -106,10 +105,10 @@ INILUP stb DD.TOT,y Inz to non-zero
  tfr y,d
  leax  >HDMASK,pcr
  leay  >IRQSVC,pcr
- os9   F$IRQ
-         bcs   L0063
-         clrb
-L0063    rts
+ os9 F$IRQ
+ bcs RETRN1
+ clrb
+RETRN1 rts
 
 *************************************************************
 *
@@ -124,12 +123,12 @@ L0063    rts
 *
 * Error: Cc=Set, B=Error Code
 *
-READSK    tstb
-         bne   L0086
+READSK tstb Could this be sector zero?
+ bne RDDSK3 No.. too high
  cmpx #0 Is this sector zero?
-         bne   L0086
-         bsr   L0086
-         bcs   L0085
+ bne RDDSK3
+ bsr RDDSK3
+ bcs WRERR9
  pshs y,x
  ldx V.BUF,u
  ldy CURTBL,U
@@ -138,17 +137,17 @@ READ01 lda B,X
  sta B,Y
  decb
  bpl READ01
-         clrb
-         puls  y,x
-L0085    rts
+ clrb
+ puls y,x
+WRERR9 rts
 
-L0086    bsr   SELECT
-         bcs   L0085
-         lda   #F.READ   Read command
-         lbra  L0134
+RDDSK3 bsr SELECT
+ bcs WRERR9
+ lda #F.READ   Read command
+ lbra  L0134
 
 WRTDSK    bsr   SELECT
-         bcs   L0085
+         bcs   WRERR9
          lda   #F.WRIT   Write command
          lbra  L0134
 ***************************************************************
@@ -163,33 +162,34 @@ WRTDSK    bsr   SELECT
 SELECT lda PD.DRV,Y Get drive number
  cmpa V.NDRV,U Drive num ok?
  lbhs ERUNIT ..no; report error.
-         pshs  y,x,b
-         ldx   PD.BUF,y
+ pshs y,x,b
+ ldx PD.BUF,y
  stx V.BUF,U Save for future use
- cmpa  CURDRV,u
-         beq   L00EC
+ cmpa CURDRV,u
+ beq   L00EC Already current drive
  sta CURDRV,U
  leax DRVBEG,U Table beginning
  ldb #DRVMEM
  mul OFFSET For this drive
  leax D,X
-         stx   <CURTBL,u
-         clr   <$15,x
+ stx <CURTBL,u
+         clr   V.TRAK,x
          ldb   <$23,y
          pshs  b
          andb  #DRIVE1
          stb   <DRVSLCT,u
          puls  b
          andb  #$1F
-         stb   <u0061,u
+         stb   <V.DCB0,u
          bitb  <u005F,u
          bne   L00EC
-         lda   #$0C   Init drive
-         leax  >L012C,pcr
+         lda   #F.INITL   Init drive
+         leax  >DRVCHRS,pcr
          bsr   L0134
          bcc   L00E1
          puls  x,a
          bra   L0126
+
 L00E1    ldb   <$23,y
          andb  #$1F
          orb   <u005F,u
@@ -201,15 +201,15 @@ L00EC    puls  x,b
          cmpx  $01,y
          bcs   L00FF
          coma
-         ldb   #$F1
+         ldb   #E$Sect
          bra   L0126
 L00FF    lda   #$01
          sta   <u0069,u
          lda   #$04
          sta   <u006A,u
-         lda   <u0061,u
+         lda   <V.DCB0,u
          ora   #$60
-         sta   <u0061,u
+         sta   <V.DCB0,u
          ldy   ,s
          pshs  b
          ldb   <$23,y
@@ -226,16 +226,20 @@ ERUNIT comb
  ldb #E$UNIT Error: illegal unit (drive)
  rts
 
-L012C    fcb   $01,$32,$06
-         fcb   $01,$32,$01
-         fcb   $32,$0B
+* Drive characteristics
+DRVCHRS fdb $0132  Number of cylinders
+ fcb 6     Number of heads
+ fdb $0132  Starting reduced write current cylinder
+ fdb $0132  Starting write precompensation cylinder
+ fcb 11     Maximum error burst length
 
+* Send command to disk
 L0134 pshs y,x
  ldy V.PORT,U Point to i/o port
          sta   <u0065,u
          cmpa  #F.STATUS
          beq   L0148
-         cmpa  #$0C
+         cmpa  #F.INITL
          bcs   L016C
          cmpa  #$0D
          bne   L0157
@@ -245,7 +249,8 @@ L0148    inc   <u0060,u
          ldx   ,s
          lbsr  L01D7
          bra   L0167
-L0157    cmpa  #$0C
+* Initialize drive
+L0157    cmpa  #F.INITL
          bne   L016C
          inc   <u0060,u
          bsr   L0188
@@ -254,6 +259,7 @@ L0157    cmpa  #$0C
          bsr   L01C6
 L0167    lbsr  L01E9
          bra   L017C
+
 L016C    lda   V.BUSY,u
          sta   V.WAKE,u
          bsr   L0188
@@ -267,12 +273,12 @@ L017C    lda   #$02
          lbsr  L01FB
 L0186    puls  pc,y,x
 
-L0188    ldd   <u0062,u
+L0188    ldd   <V.DCB1,u
          sta   $01,y
          stb   $02,y
          lda   <u0064,u
          sta   $03,y
-         lda   <u0061,u
+         lda   <V.DCB0,u
          sta   WPORT0,y
          leax  <u0065,u
          ldb   #$04
@@ -306,6 +312,7 @@ L01CC    lda   ,x+
          bita  #$04
          beq   L01CC
          rts
+
 L01D7    lda   $04,y
          sta   ,x+
          bsr   L01E2
@@ -331,9 +338,9 @@ L01F0    bsr   L01E2
 
 L01FB    ldb   #$03
          stb   <u0065,u
-         ldb   <u0061,u
+         ldb   <V.DCB0,u
          andb  #$1F
-         stb   <u0061,u
+         stb   <V.DCB0,u
          inc   <u0060,u
          lbsr  L0188
          clr   <u0060,u
@@ -351,13 +358,13 @@ L0225    lda   <u006B,u
          beq   L023F
          cmpa  #$18    Correctable data error
          beq   L023F
-         leay  >ERRMAP,pcr
+         leay  >ERRTBL,pcr
 L0234    cmpa  ,y++
          beq   L023C
          tst   ,y
          bpl   L0234
 L023C    comb
-         ldb   -$01,y
+         ldb   -1,y
 L023F    rts
 
 ***************
@@ -373,7 +380,7 @@ IRQSVC ldy V.PORT,U Point to i/o port
          beq   L0269
          lda   V.WAKE,u
          beq   L0268
-         ldb   <u0061,u
+         ldb   <V.DCB0,u
          andb  #$1F
          stb   WPORT0,y
          tst   <u0060,u
@@ -388,7 +395,7 @@ L025B    pshs  a
 L0268    clrb
 L0269    rts
 
-ERRMAP   fcb   $01,E$NotRdy
+ERRTBL   fcb   $01,E$NotRdy
          fcb   $02,E$Seek    No seek complete from disk drive
          fcb   $03,E$Write   Write fault from disk drive
          fcb   $04,E$NotRdy  Drive not ready after it was selected
@@ -410,54 +417,54 @@ ERRMAP   fcb   $01,E$NotRdy
 ************************************************************
 *
 * Put Status Call
-*
+* Y = Address of the path descriptor
 *
 *
 PUTSTA ldx PD.RGS,Y Point to parameters
-         ldb   $02,x
+ ldb R$B,x
  cmpb #SS.Reset Restore call?
- beq   RESTOR
+ beq RESTOR
  cmpb #SS.WTrk Write track call?
- beq   WRTTRK
- cmpb  #SS.DCmd
- lbeq  L032F
+ beq WRTTRK
+ cmpb #SS.DCmd
+ lbeq L032F
 GETSTA comb ...NO; Error
  ldb #E$UnkSvc Error code
  rts
 
 
-RESTOR    lbsr  SELECT
-         lda   <u0061,u
+RESTOR lbsr SELECT
+         lda   <V.DCB0,u
          anda  #$1F
          ora   #$40
-         sta   <u0061,u
+         sta   <V.DCB0,u
          lda   #$01
          lbra  L0134
-WRTTRK    ldd   $08,x
+WRTTRK ldd R$U,x Track number
          bne   L032D
-         ldb   $06,x
+         ldb   R$Y,x Side/density
          bne   L032D
          clrb
          ldx   #$0000
          lbsr  SELECT
          bcs   L032E
-         lda   <u0061,u
+         lda   <V.DCB0,u
          anda  #$1F
          ora   #$40
-         sta   <u0061,u
+         sta   <V.DCB0,u
          ldb   <DRVSLCT,u
          andb  #$E0
          stb   <DRVSLCT,u
          clra
          clrb
          std   <u0067,u
-         lda   <$2D,y
-         ldb   #$04
-         std   <u0069,u
-L02E6    lda   #$04
+         lda   PD.ILV,y
+         ldb   #$04     Step option
+         std   <u0069,u Store interleave and stop option
+L02E6    lda   #F.FORMAT
          lbsr  L0134
          bcc   L032D
-         cmpb  #$F9
+         cmpb  #E$BTyp
          bne   L032E
          clra
          ldd   <u006D,u
@@ -502,8 +509,8 @@ L032F    pshs  y,x
          bcs   L032E
          ldy   $06,x
          ldd   ,y++
-         ora   <u0061,u
-         std   <u0061,u
+         ora   <V.DCB0,u
+         std   <V.DCB0,u
          ldd   ,y++
          std   <V.BUF,u
          ldd   ,y++
