@@ -27,7 +27,7 @@ u005B    rmb   1
 CURDRV    rmb   1
 CURTBL    rmb   2
 u005F    rmb   1
-u0060    rmb   1
+V.USEDMA rmb 1  Use DMA
 V.DCB0    rmb   1
 V.DCB1    rmb   1
 V.BUF    rmb   1
@@ -87,7 +87,7 @@ INIDSK ldx V.PORT,U Point to i/o port
          sta   WPORT0,x
          sta   <u005F,u
          sta   <V.DCB1,u
-         sta   <u0060,u
+         sta   <V.USEDMA,u
          ldb   #$80
          stb   WPORT0,x
          sta   WPORT0,x
@@ -115,7 +115,7 @@ RETRN1 rts
 * Read Sector Command
 *
 * Input: B = Msb Of Logical Sector Number
-*        X = Lsb'S Of Logical Sector Number
+*        X = Lsbs Of Logical Sector Number
 *        Y = Ptr To Path Descriptor
 *        U = Ptr To Global Storage
 *
@@ -146,6 +146,21 @@ RDDSK3 bsr SELECT
  lda #F.READ   Read command
  lbra  L0134
 
+***************************************************************
+*
+* Write Sector Command
+*
+* Input:
+*   B = Msb Of Logical Sector Number
+*   X = Lsb'S Of Logical Sector Number
+*   Y = Ptr To Path Descriptor
+*   U = Ptr To Global Storage
+*
+*
+* Error:
+*   Carry Set
+*   B = Error Code
+*
 WRTDSK    bsr   SELECT
          bcs   WRERR9
          lda   #F.WRIT   Write command
@@ -166,7 +181,7 @@ SELECT lda PD.DRV,Y Get drive number
  ldx PD.BUF,y
  stx V.BUF,U Save for future use
  cmpa CURDRV,u
- beq   L00EC Already current drive
+ beq SELCT2 Already current drive
  sta CURDRV,U
  leax DRVBEG,U Table beginning
  ldb #DRVMEM
@@ -174,7 +189,7 @@ SELECT lda PD.DRV,Y Get drive number
  leax D,X
  stx <CURTBL,u
          clr   V.TRAK,x
-         ldb   <$23,y
+         ldb   PD.TYP,y
          pshs  b
          andb  #DRIVE1
          stb   <DRVSLCT,u
@@ -182,28 +197,29 @@ SELECT lda PD.DRV,Y Get drive number
          andb  #$1F
          stb   <V.DCB0,u
          bitb  <u005F,u
-         bne   L00EC
+         bne   SELCT2
          lda   #F.INITL   Init drive
          leax  >DRVCHRS,pcr
          bsr   L0134
-         bcc   L00E1
+         bcc   SELCT1
          puls  x,a
-         bra   L0126
+         bra   SELCT4
 
-L00E1    ldb   <$23,y
+SELCT1    ldb   PD.TYP,y
          andb  #$1F
          orb   <u005F,u
          stb   <u005F,u
-L00EC    puls  x,b
-         ldy   <CURTBL,u
-         cmpb  ,y
-         bcs   L00FF
-         cmpx  $01,y
-         bcs   L00FF
-         coma
-         ldb   #E$Sect
-         bra   L0126
-L00FF    lda   #$01
+SELCT2 puls x,b
+ ldy CURTBL,u
+ cmpb DD.TOT,y Too high sector number?
+ bcs SELCT3 .. no
+ cmpx DD.TOT+1,Y Too high sector number?
+ bcs SELCT3 .. no
+ coma
+ ldb #E$Sect
+ bra SELCT4
+
+SELCT3    lda   #$01
          sta   <u0069,u
          lda   #$04
          sta   <u006A,u
@@ -212,14 +228,14 @@ L00FF    lda   #$01
          sta   <V.DCB0,u
          ldy   ,s
          pshs  b
-         ldb   <$23,y
+         ldb   PD.TYP,y
          andb  #DRIVE1
          orb   ,s
          stb   <DRVSLCT,u
          puls  b
          clra
          stx   <u0067,u
-L0126    puls  pc,y
+SELCT4 puls  pc,y
 
 
 ERUNIT comb
@@ -240,26 +256,27 @@ L0134 pshs y,x
          cmpa  #F.STATUS
          beq   L0148
          cmpa  #F.INITL
-         bcs   L016C
+         bcs   L016C lower than $0C
          cmpa  #$0D
          bne   L0157
-L0148    inc   <u0060,u
+L0148    inc   <V.USEDMA,u
          bsr   L0188
-         clr   <u0060,u
+         clr   <V.USEDMA,u
          ldx   ,s
          lbsr  L01D7
          bra   L0167
 * Initialize drive
 L0157    cmpa  #F.INITL
          bne   L016C
-         inc   <u0060,u
+         inc   <V.USEDMA,u
          bsr   L0188
-         clr   <u0060,u
+         clr   <V.USEDMA,u
          ldx   ,s
          bsr   L01C6
 L0167    lbsr  L01E9
          bra   L017C
 
+* Use DMA for these opcodes
 L016C    lda   V.BUSY,u
          sta   V.WAKE,u
          bsr   L0188
@@ -289,9 +306,9 @@ L019E    bsr   L01E2
          bpl   L019E
          bsr   L01E2
          lda   ,x+
-         tst   <u0060,u
+         tst   <V.USEDMA,u
          bne   L01C3
-L01B0    ldb   <u006A
+L01B0    ldb   D.DMAReq Wait for other DMA to finish
          beq   L01C0
          pshs  x
          ldx   #1
@@ -300,9 +317,10 @@ L01B0    ldb   <u006A
          bra   L01B0
 
 L01C0    incb
-         stb   <u006A
+         stb   D.DMAReq
 L01C3    sta   $04,y
          rts
+
 L01C6    bsr   L01E2
          bita  #$14
          bne   L01C6
@@ -321,7 +339,7 @@ L01D7    lda   $04,y
          rts
 
 * Wait for status
-L01E2    lda   ,y
+L01E2    lda  RPORT0,y
          bita  #$01
          beq   L01E2
          rts
@@ -341,9 +359,9 @@ L01FB    ldb   #$03
          ldb   <V.DCB0,u
          andb  #$1F
          stb   <V.DCB0,u
-         inc   <u0060,u
+         inc   <V.USEDMA,u
          lbsr  L0188
-         clr   <u0060,u
+         clr   <V.USEDMA,u
 L0211    bsr   L01E2
          bita  #$10
          beq   L0211
@@ -383,15 +401,15 @@ IRQSVC ldy V.PORT,U Point to i/o port
          ldb   <V.DCB0,u
          andb  #$1F
          stb   WPORT0,y
-         tst   <u0060,u
+         tst   <V.USEDMA,u
          bne   L025B
-         clr   <u006A
+         clr   D.DMAReq
 L025B    pshs  a
          bsr   L01E9
          puls  a
-         ldb   #1
-         clr   V.WAKE,u
-         os9   F$Send
+ ldb #S$Wake
+ clr V.WAKE,u
+ os9 F$Send
 L0268    clrb
 L0269    rts
 
@@ -427,7 +445,7 @@ PUTSTA ldx PD.RGS,Y Point to parameters
  cmpb #SS.WTrk Write track call?
  beq WRTTRK
  cmpb #SS.DCmd
- lbeq L032F
+ lbeq DCMD
 GETSTA comb ...NO; Error
  ldb #E$UnkSvc Error code
  rts
@@ -440,6 +458,7 @@ RESTOR lbsr SELECT
          sta   <V.DCB0,u
          lda   #$01
          lbra  L0134
+
 WRTTRK ldd R$U,x Track number
          bne   L032D
          ldb   R$Y,x Side/density
@@ -460,7 +479,7 @@ WRTTRK ldd R$U,x Track number
          std   <u0067,u
          lda   PD.ILV,y
          ldb   #$04     Step option
-         std   <u0069,u Store interleave and stop option
+         std   <u0069,u Store interleave and step option
 L02E6    lda   #F.FORMAT
          lbsr  L0134
          bcc   L032D
@@ -485,10 +504,10 @@ L02E6    lda   #F.FORMAT
          stb   <DRVSLCT,u
          puls  b
 L031A    puls  x
-         ldy   <CURTBL,u
-         cmpb  ,y
+         ldy   CURTBL,u
+         cmpb  DD.TOT,y
          bcs   L02E6
-         cmpx  $01,y
+         cmpx  DD.TOT+1,y
          bcs   L02E6
          comb
          ldb   #E$DevBsy
@@ -498,8 +517,9 @@ L032D    clrb
 L032E    rts
 
 * Direct command to disk controller
-L032F    pshs  y,x
-         ldy   $06,x
+* X = Address of register stack
+DCMD    pshs  y,x
+         ldy   R$Y,x
          ldb   $05,y
          andb  #$1F
          ldx   $06,y
@@ -507,7 +527,7 @@ L032F    pshs  y,x
          lbsr  SELECT
          puls  y,x
          bcs   L032E
-         ldy   $06,x
+         ldy   R$Y,x
          ldd   ,y++
          ora   <V.DCB0,u
          std   <V.DCB0,u
