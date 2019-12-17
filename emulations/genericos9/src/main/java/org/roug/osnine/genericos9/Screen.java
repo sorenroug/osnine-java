@@ -42,7 +42,8 @@ public class Screen extends SwingTerminal implements UIDevice {
     /** For Cursor escape sequence */
     private int go51X;
 
-    private boolean shiftDown;
+    private boolean shiftPressed;
+    private boolean altPressed;
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(Screen.class);
@@ -168,7 +169,8 @@ public class Screen extends SwingTerminal implements UIDevice {
         @Override
         public void keyReleased(KeyEvent evt) {
             int keyCode = evt.getKeyCode();
-            if (keyCode == KeyEvent.VK_SHIFT) shiftDown = false;
+            if (keyCode == KeyEvent.VK_SHIFT) shiftPressed = false;
+            if (keyCode == KeyEvent.VK_ALT) altPressed = false;
         }
 
         @Override
@@ -177,29 +179,32 @@ public class Screen extends SwingTerminal implements UIDevice {
             int keyCode = evt.getKeyCode();
             if (keyChar == KeyEvent.CHAR_UNDEFINED) {
                 switch (keyCode) {
+                case KeyEvent.VK_ALT:
+                    altPressed = true;
+                    break;
                 case KeyEvent.VK_SHIFT:
-                    shiftDown = true;
+                    shiftPressed = true;
                     break;
                 case KeyEvent.VK_LEFT:
-                    if (shiftDown)
+                    if (shiftPressed)
                         acia.dataReceived((char) 0x18);
                     else
                         acia.dataReceived((char) 0x08);
                     break;
                 case KeyEvent.VK_RIGHT:
-                    if (shiftDown)
+                    if (shiftPressed)
                         acia.dataReceived((char) 0x19);
                     else
                         acia.dataReceived((char) 0x09);
                     break;
                 case KeyEvent.VK_DOWN:
-                    if (shiftDown)
+                    if (shiftPressed)
                         acia.dataReceived((char) 0x1A);
                     else
                         acia.dataReceived((char) 0x0A);
                     break;
                 case KeyEvent.VK_UP:
-                    if (shiftDown)
+                    if (shiftPressed)
                         acia.dataReceived((char) 0x1C);
                     else
                         acia.dataReceived((char) 0x0C);
@@ -212,7 +217,8 @@ public class Screen extends SwingTerminal implements UIDevice {
                     acia.eolReceived();
                 } else {
                     LOGGER.debug("Typed: {}", keyCode);
-                    acia.dataReceived(keyChar & 0x7F);
+                    if (!altPressed) 
+                        acia.dataReceived(keyChar & 0x7F);
                 }
             }
         }

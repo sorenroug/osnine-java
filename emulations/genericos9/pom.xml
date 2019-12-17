@@ -14,7 +14,7 @@
     <version>1.1.0</version>
     <packaging>jar</packaging>
 
-    <name>Generic emulator for an OS-9 operating system</name>
+    <name>Emulator for a generic OS-9 Level I operating system</name>
     <url>http://www.roug.org/retrocomputing/emulators/genericos9</url>
 
     <properties>
