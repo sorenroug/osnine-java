@@ -1,10 +1,10 @@
- nam   DDisk
+ nam DDisk
 * Original edition from Dragon Data OS-9 system disk
 * Known bugs: Unable to use two-sided disks
 
- use   defsfile
+ use defsfile
 
- ttl   Driver Module
+ ttl Driver Module
  pag
 *******************************************************************
 *
@@ -196,10 +196,10 @@ READS3 lda #$FF
  sta >V.ACIA,u
  anda #$FE
  sta <ACIACmnd
- bita  #%01000000
- beq   READS5
+ bita #%01000000
+ beq READS5
 READS4 lda <ACIAStat
- bita  #%00010000 Transmit register empty?
+ bita #%00010000 Transmit register empty?
  beq READS4
 READS5 orcc #IRQMask+FIRQMask Disable interrupts
  lda <P0PCRB
@@ -221,7 +221,7 @@ READS5 orcc #IRQMask+FIRQMask Disable interrupts
  rts
 
 RECPER lda >CURDRV,u
- ora #$04   motor on
+ ora #$04 motor on
  sta <V.SEL
  lda >V.PIA,u
  sta <P0PCRB
@@ -356,7 +356,7 @@ WRTVF6 puls d,x,pc
 SEEK clr >V.DOSK,u
  bsr SELECT Select drive
  tstb CHECK Sector bounds
- bne PHYERR  msb must be zero
+ bne PHYERR msb must be zero
  tfr X,D Logical sector (os-9)
  ldx CURTBL,u
  cmpd #0 Logical sector zero?
@@ -374,7 +374,7 @@ PHYSC5 subd #18 Subtract one track worth of sectors
  bcc PHYSC4 Repeat until less than 1 track size
  addb #18 Add back for sector number
  puls A Desired track.
- cmpa  #$10
+ cmpa #$10
  bls PHYSC7
  pshs a
  lda >CURDRV,u
@@ -394,16 +394,16 @@ SETRK4 sta V.Trak,x
  ldb #F.SEEK+RATE2 Command
  bsr WCR0 Issue command
  pshs x
- ldx #$222E  delay loop
+ ldx #$222E delay loop
 SETRK8 leax -1,x
  bne SETRK8
- puls  x
+ puls x
 SETRK9 clrb
  rts
 
 SELECT lbsr STARTMOT
  lda PD.DRV,Y Get drive number
- cmpa  #4 Drive num ok?
+ cmpa #DriveCnt Drive num ok?
  bcs SELCT3 ..yes
  comb
  ldb #E$UNIT Error: illegal unit (drive)
@@ -427,7 +427,7 @@ STCK bitb #%11111000 Any error codes set?
  bne ERNRDY ..no; error
  bitb #%01000000 Write protected?
  bne WPERR ..yes; return error
- bitb  #%00100000 Head loaded?
+ bitb #%00100000 Head loaded?
  bne WRERR ..yes; return error.
  bitb #%00010000 Seek error?
  bne ERSEEK ..yes; return error
@@ -444,7 +444,7 @@ ERNRDY comb
 WPERR comb
  ldb #E$WP
  rts
-WRERR    comb
+WRERR comb
  ldb #E$Write
  rts
 ERSEEK comb
@@ -460,13 +460,13 @@ RDERR comb
  rts
 
 WCR0 bsr DELAY
-WCR02 ldb   >V.CMDR
+WCR02 ldb >V.CMDR
  bitb #%00000001 Busy?
  beq DELAY4 ..yes; wait for it.
  lda #$F0
  sta >D.DskTmr
  bra WCR02
-WCR lda #$04  motor on
+WCR lda #$04 motor on
  ora >CURDRV,u
  sta >V.SEL
  stb >V.CMDR
@@ -491,7 +491,7 @@ PUTSTA ldx PD.RGS,Y Point to parameters
  beq WRTTRK ..yes; do it.
  comb ...NO; Error
  ldb #E$UnkSvc Error code
-RETRN2    rts
+RETRN2 rts
 
 
 *****************************************************************
@@ -506,7 +506,7 @@ WRTTRK lbsr SELECT Select drive
  cmpa #$10
  bls WRTRK2
  ldb CURDRV,u
- orb #$10  Write Precompensation enable
+ orb #$10 Write Precompensation enable
  stb CURDRV,u
 WRTRK2 ldx Curtbl,u Point to drive table
  lbsr SETRK3
@@ -544,7 +544,7 @@ RESTR2 ldb #F.STPI+RATE2
  bra WCR0
 
 * Start Drive Motors and wait for them if necessary
-STARTMOT pshs  X,D
+STARTMOT pshs X,D
  lda >D.DskTmr
  bne START10
  lda #$04
@@ -552,7 +552,7 @@ STARTMOT pshs  X,D
  ldx #$A000
 WAITLOOP nop
  nop
- leax  -1,x
+ leax -1,x
  bne WAITLOOP
 START10 lda #$F0
  sta >D.DskTmr

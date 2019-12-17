@@ -5,3 +5,5 @@ ClocType set 0
 
 DPort set $FF40
 DriveCnt equ 4
+
+A.P1 equ $FF04

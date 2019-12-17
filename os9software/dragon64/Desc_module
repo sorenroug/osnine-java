@@ -1,0 +1,56 @@
+ ttl Descriptor Module
+ page
+*************************
+*
+*  Drive Descriptor Module
+*
+*
+
+Type set DEVIC+OBJCT
+Revs set REENT+1
+ mod DescEnd,DescName,Type,Revs,DscMgr,DscDrv
+ fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
+ fcb $FF
+ fdb DPort port address
+
+DrvTyp set $20
+Cyls set 40
+SecTrk set 18
+SecTr0 set 18
+ 
+ fcb DescName-*-1 Bytes of options
+ fcb DT.RBF,Drive Rbf devic and drive no.
+ fcb StpRat
+ fcb DrvTyp
+ fcb Density
+ fdb Cyls Number of cylinders
+ fcb Sides
+ fcb 0 Verify turned on
+ fdb SecTrk
+ fdb SecTr0
+ fcb IntrLeav Sector interleave offset
+ fcb 8 Sector allocation size
+ ifeq Pass
+DescName equ *
+ endc
+ fcb 'D,'0+Drive+$80
+ ifeq Pass
+DscMgr equ *
+ endc
+ fcs "RBF" Rbfman
+ ifeq Pass
+DscDrv equ *
+ endc
+ fcs "DDisk"
+
+ emod
+ ifeq Pass
+DescEnd equ *
+
+Pass set 1
+ endc
+
+Drive set Drive+1
+ ifne DriveCnt-Drive
+ use desc_module
+ endc
