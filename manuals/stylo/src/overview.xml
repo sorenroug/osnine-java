@@ -155,8 +155,8 @@ from Dragon Data contains two items: this manual, and a single
 floppy disk. Because of the risk of inadvertently damaging the disk or deleting the
 files on it, you should NEVER use the disk for running STYLOGRAPH.
 Use the 'backup' command available on OS-9 to copy the original
-disk to a freshly formatted blank disk, and STORE THE ORIGINAL DISK
-IN A SAFE PLACE. Refer to the <citetitle pubwork="book">OS-9 User's Manual</citetitle> for instructions
+disk to a freshly formatted blank disk, and STORE THE ORIGINAL DISK IN A SAFE PLACE.
+Refer to the <citetitle pubwork="book">OS-9 User's Manual</citetitle> for instructions
 on how to use the 'backup' and 'format' commands.</para>
       <para>Now place the new disk
 in drive d0 (drive zero). Change your execution and data
@@ -170,8 +170,8 @@ of the disk, which you can now inspect by</para>
 OS9: dir
 </screen>
       <para>you will find some
-sample STYLOGRAPH workfiles and three directories - CMDS, STY, and
-SYS. The CMDS (commands) directory contains the files that you need
+sample STYLOGRAPH workfiles and three directories - CMDS, STY, and SYS.
+The CMDS (commands) directory contains the files that you need
 to run STYLOGRAPH. You can inspect it by:</para>
       <screen>
 os9: dir cmds
@@ -772,8 +772,8 @@ during text editing that you will want to move a string from one
 place to another. This is easily accomplished with the SAVE, <quote>S</quote>
 and WITHDRAW, <quote>W</quote> functions. To do this you must first set of a a
 marker at the end of the string. This is done by moving the cursor
-to the end of the string and entering two marker characters <quote>}}</quote> Do
-not worry about these unwanted marker characters appearing in the
+to the end of the string and entering two marker characters <quote>}}</quote>.
+Do not worry about these unwanted marker characters appearing in the
 text since they will automatically disappear when you save the
 text. Now move the cursor to the beginning of the string and hit
 the <quote>S</quote> key indicating a SAVE. The text between the cursor and the
@@ -2215,8 +2215,7 @@ STYFIX.</para>
             <row>
               <entry>P0</entry>
               <entry>STYPS.D</entry>
-              <entry>All DIABLO, all C.ITOH, NEC 3515, 3525, 5515,5525,7715, 7725,
-QUME SPRINT, 5/xx or 9/xx</entry>
+              <entry>All DIABLO, all C.ITOH, NEC 3515, 3525, 5515, 5525, 7715, 7725, QUME SPRINT, 5/xx or 9/xx</entry>
             </row>
             <row>
               <entry>P10</entry>
