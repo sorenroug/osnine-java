@@ -46,7 +46,7 @@
         <assemble src="Acia_ed4" home="kernel" verify="62ee1c4ca8056c4145c1487341a11849"/>
         <assemble src="BootDyn" home="kernel" verify="7a6191a6bd8ee2649212bcebaff42c0d"/>
         <assemble src="IOMan_ed4" home="kernel" verify="fce2d0270c03b4f7d8f06d51e4465d28"/>
-        <assemble src="OS9p2_ed5" home="kernel" verify="4abcd9d66beafc30a673168ea603a99b"/>
+        <assemble src="OS9p2_ed5" home="kernel" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
         <assemble src="OS9p2_ed9" home="kernel" verify="eb0515cd5087c7e59ecc6ff26bab594a"/>
         <assemble src="Pipe" home="kernel" verify="9cc9561b6e28188550ee25a4c32216f0"/>
         <assemble src="PipeMan" home="kernel" verify="023c67977a1946c1d2804d84e7e595d9"/>

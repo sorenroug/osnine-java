@@ -870,3 +870,31 @@ BOOTXX rts
 
  emod
 OS9End equ *
+
+
+
+ ttl Configuration Module
+ page
+*****
+*
+* Configuration Module
+*
+Type set SYSTM
+ mod ConEnd,ConNam,Type,Revs
+ fcb 0 no extended memory
+ fdb $F800 High free memory bound
+ fcb 12 Entries in interrupt polling table
+ fcb 12 Entries in device table
+ fdb ModNam Initial module name
+ fdb DirNam Default directory name
+ fdb TermNam Standard i/o device name
+ fdb BootNam Bootstrap module name
+ConNam fcs "Init"
+ModNam fcs "SysGo"
+DirNam fcs "/D0"
+TermNam fcs "/Term"
+BootNam fcs "Boot"
+ emod
+ConEnd equ *
+
+ end
