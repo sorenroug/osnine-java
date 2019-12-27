@@ -3,7 +3,7 @@
  ttl System Type definitions
 
 * It was disassembled from a file name os9l1v11.u6, which is a ROM file in
-* the MAME emulator. It seems to be edition 8.
+* the MAME emulator. It seems to be edition 8 for OS-9 level I v. 1.1.
 * It doesn't seem to work with OS-9 level I 1.2
 
  use defsfile

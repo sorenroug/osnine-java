@@ -1,5 +1,5 @@
          nam   IOMan
-         ttl   os9 system module    
+         ttl   os9 system module
 
 * This is a disassembly of the IOMan edition 4 distributed with OS-9 for Dragon 64
 
@@ -14,7 +14,7 @@
          ifp1
          use   ../DEFS/os9defs
          endc
-tylg     set   Systm+Objct   
+tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  equ   $04
@@ -31,15 +31,15 @@ IOManEnt equ   *
          ldx   D.Init
          lda   PollCnt,x
          ldb   #POLSIZ
-         mul   
+         mul
          pshs  b,a
          lda   DevCnt,x
          ldb   #DEVSIZ
-         mul   
+         mul
          addd  0,s
          addd  #$00FF                  bring up to next page
-         clrb  
-         os9   F$SRqMem 
+         clrb
+         os9   F$SRqMem
          bcs   Crash
 * clear allocated mem
          leax  ,u
@@ -51,15 +51,15 @@ L002E    clr   ,x+
          leax  d,u
          stx   D.DevTbl
          ldx   D.PthDBT
-         os9   F$All64  
+         os9   F$All64
          bcs   Crash
          stx   D.PthDBT
-         os9   F$Ret64  
+         os9   F$Ret64
          leax  >DPoll,pcr
          stx   <D.Poll
 * install I/O system calls
          leay  <IOCalls,pcr
-         os9   F$SSvc   
+         os9   F$SSvc
          rts                           return to OS9p2
 
 Crash    jmp   [>$FFFE]
@@ -98,7 +98,7 @@ L007C    lbsr  L00FB
          tst   $08,u
          lbne  L00F6
          leau  $09,u
-         decb  
+         decb
          bne   L007C
 L008C    ldu   D.DevTbl
          ldb   ,s
@@ -115,7 +115,7 @@ L0090    lbsr  L00FB
 L00A9    cmpx  $02,u
          beq   L00DD
          leau  $09,u
-         decb  
+         decb
          bne   L00A9
          ldu   $01,s
          ldy   D.Proc
@@ -133,7 +133,7 @@ L00A9    cmpx  $02,u
          ldx   ,x
          ldd   $0B,x
          addd  #$00FF                  round up to next page
-         clrb  
+         clrb
          os9   F$SRtMem                return mem
          ldx   $01,s
          ldx   $04,x
@@ -145,12 +145,12 @@ L00DD    ldu   $01,s
          puls  u,b
 L00EA    ldx   $01,s
          leau  $09,u
-         decb  
+         decb
          lbne  L0090
-L00F3    clra  
+L00F3    clra
          puls  pc,u,y,x,a
 
-L00F6    comb  
+L00F6    comb
          ldb   #E$ModBsy
          puls  pc,u,y,x,a
 
@@ -161,10 +161,10 @@ L00FB    cmpx  $04,u
          cmpx  $06,u
          beq   L010D
          leau  $09,u
-         decb  
+         decb
          bne   L00FB
-         comb  
-L010D    rts   
+         comb
+L010D    rts
 
 UsrIODis fdb   IAttach-UsrIODis
          fdb   IDetach-UsrIODis
@@ -213,20 +213,20 @@ IODsptch cmpb  #I$DeletX
          leax  d,x                     get addr
          puls  b
          jmp   ,x
-ErrSvc   comb  
+ErrSvc   comb
          ldb   #E$UnkSvc
-         rts   
+         rts
 
 IAttach  ldb   #$11
 L016F    clr   ,-s
-         decb  
+         decb
          bpl   L016F
          stu   <$10,s
          lda   $01,u
          sta   $09,s
          ldx   $04,u
          lda   #Devic+0
-         os9   F$Link   
+         os9   F$Link
          bcs   EAttach
          stu   $04,s
          ldy   <$10,s
@@ -236,21 +236,21 @@ L016F    clr   ,-s
          ldd   $0B,u
          leax  d,u
          lda   #Drivr+0
-         os9   F$Link   
+         os9   F$Link
          bcs   EAttach
          stu   ,s
          ldu   $04,s
          ldd   $09,u
          leax  d,u
          lda   #FlMgr+0
-         os9   F$Link   
+         os9   F$Link
          bcc   L01B8
 * error on attach, so detach
 EAttach  stb   <$11,s                  save fmgr addr on stack
          leau  ,s
-         os9   I$Detach 
+         os9   I$Detach
          leas  <$11,s                  clean up stack
-         comb  
+         comb
          puls  pc,b
 
 L01B8    stu   $06,s
@@ -267,7 +267,7 @@ L01C2    ldx   $04,u
          pshs  a
          lda   $08,u
          beq   L01D7
-         os9   F$IOQu   
+         os9   F$IOQu
 L01D7    puls  a
          bra   L01C2
 L01DB    stu   $0E,s
@@ -284,7 +284,7 @@ L01DD    ldx   $04,u
          beq   L01F7
          sta   $0A,s
 L01F7    leau  $09,u
-         decb  
+         decb
          bne   L01C2
          ldu   $0E,s
          lbne  L0259
@@ -292,7 +292,7 @@ L01F7    leau  $09,u
 L0204    ldx   $04,u
          beq   L0219
          leau  $09,u
-         deca  
+         deca
          bne   L0204
          ldb   #E$DevOvf               device table overflow
          bra   EAttach
@@ -306,8 +306,8 @@ L0219    ldx   $02,s
          ldx   ,s
          ldd   $0B,x
          addd  #$00FF                  round up to next page
-         clrb  
-         os9   F$SRqMem 
+         clrb
+         os9   F$SRqMem
          lbcs  EAttach
          stu   $02,s
 L0232    clr   ,u+
@@ -326,7 +326,7 @@ L0232    clr   ,u+
 L0250    ldb   #$08
 L0252    lda   b,s
          sta   b,u
-         decb  
+         decb
          bpl   L0252
 L0259    ldx   $04,u
          ldb   $07,x
@@ -345,21 +345,21 @@ L0277    inc   $08,u
          ldx   <$10,s
          stu   $08,x
          leas  <$12,s                  restore stack
-         clrb  
-         rts   
+         clrb
+         rts
 
 IDetach  ldu   R$U,u
          dec   $08,u
          ldx   $06,u
          ldy   ,u
          ldu   $04,u
-         os9   F$UnLink 
+         os9   F$UnLink
          leau  ,y
-         os9   F$UnLink 
+         os9   F$UnLink
          leau  ,x
          os9   F$UnLink                unlink descriptor
-         clrb  
-         rts   
+         clrb
+         rts
 
 * user state I$Dup
 IDup     bsr   FindPath
@@ -372,7 +372,7 @@ IDup     bsr   FindPath
          puls  x,b
          stb   $01,u
          sta   b,x
-         rts   
+         rts
 L02B2    puls  pc,x,a
 
 * system state I$Dup
@@ -380,22 +380,22 @@ SIDup    lda   R$A,u
 L02B6    lbsr  FindPDsc
          bcs   IDupRTS
          inc   $02,y
-IDupRTS  rts   
+IDupRTS  rts
 
 * find next free path position in current proc
 FindPath ldx   D.Proc
          leax  <$26,x
-         clra  
+         clra
 L02C4    tst   a,x
          beq   L02D1
-         inca  
+         inca
          cmpa  #$10
          bcs   L02C4
-         comb  
+         comb
          ldb   #$C8
-         rts   
+         rts
 L02D1    andcc #^Carry
-         rts   
+         rts
 
 IUsrCall bsr   FindPath
          bcs   L02E6
@@ -406,7 +406,7 @@ IUsrCall bsr   FindPath
          ldb   $01,u
          stb   a,x
          sta   $01,u
-L02E6    rts   
+L02E6    rts
 
 ISysCall pshs  b
          ldb   $01,u
@@ -417,7 +417,7 @@ ISysCall pshs  b
          bcs   L030A
          lda   ,y
          sta   $01,u
-         rts   
+         rts
 L02FB    puls  pc,a
 
 * make directory
@@ -429,10 +429,10 @@ L0301    bsr   L0364
          lbsr  CallFMgr
 L030A    pshs  b,cc
          ldu   $03,y
-         os9   I$Detach 
+         os9   I$Detach
          lda   ,y
          ldx   D.PthDBT
-         os9   F$Ret64  
+         os9   F$Ret64
          puls  pc,b,cc
 
 * change directory
@@ -462,7 +462,7 @@ L0341    bitb  #$24
 L034C    ldx   $03,y
          stx   <$20,u
          inc   $08,x
-L0353    clrb  
+L0353    clrb
          bra   L030A
 
 IDelete  pshs  b
@@ -479,7 +479,7 @@ IDeletX  ldb   #$87
 *   B  = path mode
 L0364    pshs  u
          ldx   <D.PthDBT
-         os9   F$All64  
+         os9   F$All64
          bcs   L03C3
          inc   $02,y
          stb   $01,y
@@ -503,11 +503,11 @@ L0391    beq   L03C5
          ldd   $04,x
          leax  d,x
 L0399    pshs  y
-         os9   F$PrsNam 
+         os9   F$PrsNam
          puls  y
          bcs   L03C5
          lda   $01,y
-         os9   I$Attach 
+         os9   I$Attach
          stu   $03,y
          bcs   L03C7
          ldx   $04,u
@@ -519,17 +519,17 @@ L0399    pshs  y
          ldb   #$1F
 L03BB    lda   ,x+
          sta   ,u+
-L03BF    decb  
+L03BF    decb
          bpl   L03BB
-         clrb  
+         clrb
 L03C3    puls  pc,u
 L03C5    ldb   #$D7
 L03C7    pshs  b
          lda   ,y
          ldx   D.PthDBT
-         os9   F$Ret64  
+         os9   F$Ret64
          puls  b
-         coma  
+         coma
          bra   L03C3
 L03D5    lda   $01,u
          cmpa  #$10
@@ -539,22 +539,22 @@ L03D5    lda   $01,u
          andcc #^Carry
          lda   a,x
          bne   L03E9
-L03E6    comb  
-         ldb   #$C9
-L03E9    rts   
+L03E6    comb
+         ldb   #E$BPNum
+L03E9    rts
 
 UISeek   bsr   L03D5
          bcc   GetPDsc
-         rts   
+         rts
 
 SISeek   lda   $01,u
 GetPDsc  bsr   FindPDsc
          lbcc  CallFMgr
-         rts   
+         rts
 
 UIRead   bsr   L03D5
          bcc   L03FF
-         rts   
+         rts
 SIRead   lda   $01,u
 L03FF    pshs  b
          ldb   #$05
@@ -566,11 +566,11 @@ L0403    bsr   FindPDsc
          lbra  CallFMgr
 L0410    ldb   #$D7
 L0412    com   ,s+
-         rts   
+         rts
 
 UIWrite  bsr   L03D5
          bcc   L041C
-         rts   
+         rts
 
 SIWrite  lda   $01,u
 L041C    pshs  b
@@ -583,14 +583,14 @@ L041C    pshs  b
 *   Y  = addr of path desc (if no error)
 FindPDsc pshs  x
          ldx   D.PthDBT
-         os9   F$Find64 
+         os9   F$Find64
          puls  x
          bcs   L03E6
-L042D    rts   
+L042D    rts
 
 UIGetStt bsr   L03D5
          bcc   L0435
-         rts   
+         rts
 
 SIGetStt lda   $01,u
 L0435    pshs  b,a
@@ -600,23 +600,28 @@ L0435    pshs  b,a
          bsr   GetPDsc
          puls  a
          pshs  cc
-         tsta  
-         beq   L044C
-         cmpa  #$0E
+         tsta  Is a SS.OPT?
+         beq   L044C ..yes
+         cmpa  #SS.DevNm
          beq   L045E
          puls  pc,cc
-L044C    leax  <$20,y
-L044F    ldy   $04,u
-         ldb   #$20
+
+* Return 32 byte option section of path descriptor
+* Y contains the path descriptor
+L044C    leax  <32,y
+L044F    ldy   R$X,u
+         ldb   #32
 L0454    lda   ,x+
          sta   ,y+
-         decb  
+         decb
          bne   L0454
          leas  $01,s
-         rts   
-L045E    ldx   $03,y
-         ldx   $04,x
-         ldd   $04,x
+         rts
+
+* Return device name
+L045E    ldx   PD.DEV,y
+         ldx   V$DESC,x
+         ldd   M$Name,x
          leax  d,x
          bra   L044F
 
@@ -638,17 +643,17 @@ L0479    bsr   FindPDsc
 L0485    tst   $02,y
          bne   L042D
          lbra  L030A
-L048C    os9   F$IOQu   
-         comb  
+L048C    os9   F$IOQu
+         comb
          ldb   <$36,x
          bne   L04A0
 L0495    ldx   D.Proc
          ldb   ,x
-         clra  
+         clra
          lda   $05,y
          bne   L048C
          stb   $05,y
-L04A0    rts   
+L04A0    rts
 
 * B = entry point into FMgr
 * Y = path desc
@@ -665,7 +670,7 @@ L04AB    stu   $06,y
          ldb   ,s+
          subb  #$83
          lda   #$03
-         mul   
+         mul
          jsr   d,x
 L04BE    pshs  b,cc
          bsr   L04D1
@@ -681,9 +686,9 @@ L04D1    pshs  y,x
          bra   L04E8
 L04D8    clr   <$11,y
          ldb   #$01
-         os9   F$Send   
+         os9   F$Send
          ldx   D.PrcDBT
-         os9   F$Find64 
+         os9   F$Find64
          clr   <$10,y
 L04E8    lda   <$11,y
          bne   L04D8
@@ -693,7 +698,7 @@ L04E8    lda   <$11,y
 FIRQ     ldx   $04,u
          ldb   ,x                      B = flip byte
          ldx   $01,x
-         clra  
+         clra
          pshs  cc
          pshs  x,b
          ldx   D.Init
@@ -703,9 +708,9 @@ FIRQ     ldx   $04,u
          beq   L0540
          tst   $01,s
          beq   L056B
-         decb  
+         decb
          lda   #$09
-         mul   
+         mul
          leax  d,x
          lda   $03,x
          bne   L056B
@@ -716,7 +721,7 @@ L0515    ldb   $02,s
          ldb   #$09
 L051D    lda   ,-x
          sta   $09,x
-         decb  
+         decb
          bne   L051D
          cmpx  D.PolTbl
          bhi   L0515
@@ -737,28 +742,28 @@ L0540    leas  $04,s
 L0545    cmpy  $06,x
          beq   L0551
          leax  $09,x
-         decb  
+         decb
          bne   L0545
-         clrb  
-         rts   
+         clrb
+         rts
 L0551    pshs  b,cc
          orcc  #$50
          bra   L055E
 L0557    ldb   $09,x
          stb   ,x+
-         deca  
+         deca
          bne   L0557
 L055E    lda   #$09
          dec   $01,s
          bne   L0557
 L0564    clr   ,x+
-         deca  
+         deca
          bne   L0564
          puls  pc,a,cc
 L056B    leas  $04,s
-L056D    comb  
+L056D    comb
          ldb   #$CA
-         rts   
+         rts
 
 * IRQ polling routine
 DPoll    ldy   D.PolTbl
@@ -766,7 +771,7 @@ DPoll    ldy   D.PolTbl
          ldb   $0C,x
          bra   L057F
 L057A    leay  $09,y
-         decb  
+         decb
          beq   L056D
 L057F    lda   [,y]
          eora  $02,y
@@ -777,7 +782,7 @@ L057F    lda   [,y]
          jsr   [<$04,y]
          puls  y,b
          bcs   L057A
-         rts   
+         rts
 
 * load a module
 FLoad    pshs  u
@@ -796,8 +801,9 @@ FLoad    pshs  u
          leax  d,y
          stx   $06,u
 L05B3    puls  pc,u
-L05B5    lda   #$04
-         os9   I$Open   
+
+L05B5    lda   #EXEC.
+         os9   I$Open
          bcs   L062B
          leas  -$0A,s
          ldu   #$0000
@@ -808,48 +814,48 @@ L05C5    ldd   $04,s
          stu   $04,s
 L05CB    lda   $06,s
          leax  $07,s
-         ldy   #$0009
-         os9   I$Read   
+         ldy   #M$IDSize
+         os9   I$Read
          bcs   L0617
-         ldd   ,x
+         ldd   M$ID,x
          cmpd  #$87CD
          bne   L0615
-         ldd   $09,s
-         os9   F$SRqMem 
+         ldd   9,s
+         os9   F$SRqMem
          bcs   L0617
-         ldb   #$09
+         ldb   #M$IDSize
 L05E9    lda   ,x+
          sta   ,u+
-         decb  
+         decb
          bne   L05E9
          lda   $06,s
          leax  ,u
-         ldu   $09,s
-         leay  -$09,u
-         os9   I$Read   
-         leax  -$09,x
+         ldu   9,s
+         leay  -M$IDSize,u
+         os9   I$Read
+         leax  -M$IDSize,x
          bcs   L0604
-         os9   F$VModul 
+         os9   F$VModul
          bcc   L05C5
 L0604    pshs  u,b
          leau  ,x
-         ldd   $02,x
-         os9   F$SRtMem 
+         ldd   M$Size,x
+         os9   F$SRtMem
          puls  u,b
-         cmpb  #$E7
+         cmpb  #E$KwnMod
          beq   L05C5
          bra   L0617
-L0615    ldb   #$CD
+L0615    ldb   #E$BMID
 L0617    puls  u,y,x
          lda   ,s
          stb   ,s
-         os9   I$Close  
+         os9   I$Close
          ldb   ,s
          leas  $0A,s
          cmpu  #$0000
          bne   L062B
-         coma  
-L062B    rts   
+         coma
+L062B    rts
 
 ErrHead  fcc   /ERROR #/
 ErrNum   equ   *-ErrHead
@@ -857,8 +863,8 @@ ErrNum   equ   *-ErrHead
 ErrLen   equ   *-ErrHead
 
 FPErr    ldx   D.Proc
-         lda   <$28,x
-         beq   L066D
+         lda   <P$PATH+2,x Get standard error path
+         beq   L066D ..not open
          leas  -$0B,s
          leax  <ErrHead,pcr
          leay  ,s
@@ -878,10 +884,10 @@ L0655    dec   $08,s
          ldx   D.Proc
          leax  ,s
          ldu   D.Proc
-         lda   <$28,u
-         os9   I$WritLn 
+         lda   <P$PATH+2,u Get standard error path
+         os9   I$WritLn
          leas  $0B,s
-L066D    rts   
+L066D    rts
 
 FIOQu    ldy   D.Proc
 L0671    lda   <P$IOQN,y
@@ -890,18 +896,18 @@ L0671    lda   <P$IOQN,y
          bne   L068E
          clr   <P$IOQN,y
          ldx   D.PrcDBT
-         os9   F$Find64 
+         os9   F$Find64
          bcs   L06E3
          clr   <P$IOQP,y
          ldb   #S$Wake
-         os9   F$Send   
+         os9   F$Send
          bra   L069E
 L068E    ldx   D.PrcDBT
-         os9   F$Find64 
+         os9   F$Find64
          bcc   L0671
 L0695    lda   R$A,u
 L0697    ldx   D.PrcDBT
-         os9   F$Find64 
+         os9   F$Find64
          bcs   L06E3
 L069E    lda   <P$IOQN,y
          bne   L0697
@@ -911,12 +917,12 @@ L069E    lda   <P$IOQN,y
          lda   ,y
          sta   <P$IOQP,x
          ldx   #$0000
-         os9   F$Sleep  
+         os9   F$Sleep
          ldu   D.Proc
          lda   <P$IOQP,u
          beq   L06E0
          ldx   D.PrcDBT
-         os9   F$Find64 
+         os9   F$Find64
          bcs   L06E0
          lda   <P$IOQN,y
          beq   L06E0
@@ -925,11 +931,11 @@ L069E    lda   <P$IOQN,y
          beq   L06E0
          clr   <P$IOQN,u
          ldx   D.PrcDBT
-         os9   F$Find64 
+         os9   F$Find64
          bcs   L06E0
          lda   <P$IOQP,u
          sta   <P$IOQP,y
 L06E0    clr   <P$IOQP,u
-L06E3    rts   
+L06E3    rts
          emod
 eom      equ   *

@@ -7,9 +7,9 @@
 * Enable interrupts
 * Print them out
 
-         ifp1
-         use   os9defs
-         endc
+
+ use defsfile
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -34,12 +34,21 @@ statecol equ   4
          fcs   /Procs/
          fcb   $08 
 header   fcb   $0A 
+ ifeq Screen-small
          fcc   "Usr #  id pty sta mem pri mod"
          fcb   $0D 
 dashes   fcs   "----- --- --- --- --- -------"
 L004F    fcs   " act "
 L0054    fcs   " wai "
 L0059    fcs   " sle "
+ else
+         fcc   "Usr #  id pty  state   mem primary module"
+         fcb   $0D 
+dashes   fcs   "----- --- --- -------- --- --------------"
+L004F    fcs   "  active  " 
+L0054    fcs   "  waiting " 
+L0059    fcs   " sleeping "
+ endc
 
 start    equ   *
          clr   showall
@@ -108,11 +117,27 @@ L00EE    bsr   CopyStr
          bsr   L012A
          lbsr  WrtSpace
          ldy   $05,x
+ ifeq Screen-small
+ else
          ldd   $04,y
          leay  d,y
          bsr   CopyStr
          bsr   WrtSpace
-         bsr   writeln
+         lda   #'<
+         bsr   addtobuf
+         lda   $01,x
+         lbsr  L0209
+         bcs   L0140
+         ldy   $03,y
+         ldy   $04,y
+ endc
+         ldd   $04,y
+         leay  d,y
+         bsr   CopyStr
+ ifeq Screen-small
+         bsr   WrtSpace
+ endc
+L0140    bsr   writeln
          bra   L00BF
 
 goodexit clrb  
@@ -219,7 +244,7 @@ L01C5    ldx   P$Queue,x   * next prtr
          bne   L01A3
 L01C9    puls  pc,y,b,a
 
-         pshs  x,b,a
+L0209    pshs  x,b,a
          ldx   >$0064
          tsta  
          beq   L01E2

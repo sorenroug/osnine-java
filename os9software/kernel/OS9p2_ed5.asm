@@ -35,6 +35,11 @@ OS9Nam fcs /OS9p2/
 
  fcc   /(C)1981Microware/
 
+*************************
+*    Edition History
+*
+* Ed.  5 - Beginning of history  (V1.1 final version)
+
  ttl Service Routine initialization table
  page
 *****

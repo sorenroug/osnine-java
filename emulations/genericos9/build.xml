@@ -44,11 +44,10 @@
         <assemble src="D0"/>
         <assemble src="D1"/>
         <assemble src="HWClock"/>
-        <assemble src="Init"/>
         <assemble src="SysGoMulti"/>
         <assemble src="SysGoSingle"/>
+        <assemble src="Term"/>
         <assemble src="T1"/>
-        <assemble src="T2"/>
         <assemble src="P"/>
     </target>
 

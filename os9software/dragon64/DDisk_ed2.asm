@@ -81,7 +81,9 @@ F.READ equ $88 Read sector command
 F.WRIT equ $A8 Write sector command
 F.TYP1 equ $D0 Force type 1 status
 F.WRTR equ $F0 Write track command
-RATE2 equ $2
+STEPRATE equ 2
+
+PRECOMP  equ %00010000
 
  pag
 ****************************************************************
@@ -111,10 +113,10 @@ INILUP sta 0,x
  leax DRVMEM,X Point to next drive table
  decb DONE
  bne INILUP ...no; inz more.
- leax >NMISVC,pcr
- stx >NMIVec+1
+ leax NMISVC,pcr
+ stx NMIVec+1
  lda #$7E Store JMP command
- sta >NMIVec
+ sta NMIVec
  ldd #256 "d" passes memory req size
  pshs U Save "u" we need it later
  OS9 F$SRqMem Request 1 pag of mem
@@ -374,11 +376,11 @@ PHYSC5 subd #18 Subtract one track worth of sectors
  bcc PHYSC4 Repeat until less than 1 track size
  addb #18 Add back for sector number
  puls A Desired track.
- cmpa #$10
- bls PHYSC7
+ cmpa #16 Precompensation needed?
+ bls PHYSC7 ..no
  pshs a
  lda >CURDRV,u
- ora #$10 Write Precompensation enable
+ ora #PRECOMP Write Precompensation enable
  sta >CURDRV,u
  puls a
 PHYSC7 incb
@@ -391,7 +393,7 @@ SETRK3 ldb <V.Trak,x
  beq SETRK9 ..yes; skip seek.
 SETRK4 sta V.Trak,x
  sta >V.DATR Put new trk in data reg
- ldb #F.SEEK+RATE2 Command
+ ldb #F.SEEK+STEPRATE Command
  bsr WCR0 Issue command
  pshs x
  ldx #$222E delay loop
@@ -503,10 +505,10 @@ RETRN2 rts
 *
 WRTTRK lbsr SELECT Select drive
  lda R$U+1,X Track number
- cmpa #$10
- bls WRTRK2
+ cmpa #16 Precompensation needed?
+ bls WRTRK2 ..no
  ldb CURDRV,u
- orb #$10 Write Precompensation enable
+ orb #PRECOMP Write Precompensation enable
  stb CURDRV,u
 WRTRK2 ldx Curtbl,u Point to drive table
  lbsr SETRK3
@@ -534,13 +536,13 @@ RESTOR lbsr SELECT Select drive
  ldx CURTBL,U
  clr V.TRAK,X Old track = 0
  lda #5 Repeat five times
-RESTR2 ldb #F.STPI+RATE2
+RESTR2 ldb #F.STPI+STEPRATE
  pshs A
  lbsr WCR0 Issue command, delay & wait for done.
  puls A
  deca DONE Stepping?
  bne RESTR2 ...no; step again.
- ldb #F.REST+RATE2 Restore command
+ ldb #F.REST+STEPRATE Restore command
  bra WCR0
 
 * Start Drive Motors and wait for them if necessary

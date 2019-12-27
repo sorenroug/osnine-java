@@ -1,10 +1,10 @@
-         nam t1
+         nam term
          use os9defs
          use SCFDefs
          ttl Device Descriptor for the Serial Port
 
 ***************
-* /t1 module - serial port
+* /term module - serial port
 * for use as a terminal port.
 *
 ***************
@@ -12,7 +12,7 @@
 Type     set DEVIC+OBJCT
 Revs     set REENT+1
 
-         mod T1End,T1Nam,Type,Revs,T1Mgr,T1Drv
+         mod TermEnd,TermNam,Type,Revs,TermMgr,TermDrv
          fcb UPDAT. attributes
          fcb $FF high byte of 24-bit address
          fdb $FF04 port address
@@ -42,18 +42,18 @@ OptStrt  fcb DT.SCF SCF type device
          fcb C$BELL line overflow character
          fcb 0 no parity specified
          fcb 3 baud rate = 1200
-         fdb T1Nam offset to pause device name
+         fdb TermNam offset to pause device name
          fcb $11 XON
          fcb $13 XOFF
 DD.Parms equ *
 
-T1Nam    fcs 'T1' device name
-T1Mgr    fcs 'scf' file manager
-T1Drv    fcs 'acia' device driver
+TermNam    fcs 'Term' device name
+TermMgr    fcs 'scf' file manager
+TermDrv    fcs 'acia' device driver
 
          emod
 
-T1End    equ *
+TermEnd    equ *
 
          end
 

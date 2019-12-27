@@ -38,9 +38,6 @@ LOGNAM fcs "Login"
 
 MAXTRY set 3 Num of login attempts permitted
 LINSIZ set 80 Input line buffer size
-normal equ 0 normal screen size
-small equ 1 small screen size
-Screen equ normal normal screen size
 PSWBSZ equ 128 Password file max rcd length
 C$CR set $0D
 C$LF set $0A

@@ -7,6 +7,13 @@ OS9Vrsn  equ   2
 OS9Major equ   0
 OS9Minor equ   1
 
-         use   /d0/DEFS/os9defs
-         use   /d0/DEFS/scfdefs
-         use   /d0/DEFS/rbfdefs
+ ifp1
+ use   /d0/DEFS/os9defs
+ use   /d0/DEFS/scfdefs
+ use   /d0/DEFS/rbfdefs
+ endc
+
+normal equ 0 normal screen size
+small equ 1 small screen size
+Screen equ normal
+

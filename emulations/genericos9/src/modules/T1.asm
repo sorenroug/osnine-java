@@ -15,7 +15,7 @@ Revs     set REENT+1
          mod TermEnd,TermNam,Type,Revs,TermMgr,TermDrv
          fcb UPDAT. attributes
          fcb   $0F extended controller address
-         fdb   $FFD4  physical controller address
+         fdb   $FFD6  physical controller address
          fcb DD.Parms-*-1 option byte count
 OptStrt  fcb DT.SCF SCF type device
 

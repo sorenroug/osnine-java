@@ -1,5 +1,5 @@
          nam   Init
-         ttl   os9 system module    
+         ttl   os9 system module
 
          ifp1
          use   /d0/defs/os9defs

@@ -1,0 +1,112 @@
+************************************************************
+*
+*     OS-9 Level I Definitions
+*
+*   Definition of Level I symbols renamed under Level II
+*
+F$UNLK equ F$Unlink Unlink Module
+F$CHAN equ F$Chain Chain process to new module
+F$SLEP equ F$Sleep Process Sleep
+F$SPRI equ F$SPrior set process priority
+F$PNAM equ F$PrsNam Parse Name
+F$CNAM equ F$CmpNam Compare Two Names
+F$SBIT equ F$SchBit Search Bit Map
+F$ABIT equ F$AllBit Allocate Bit Map
+F$DBIT equ F$DelBit Deallocate Bit Map
+F$STIM equ F$STime set current time
+F$SRQM equ F$SRqMem System Memory Request
+F$SRTM equ F$SRtMem System Memory Return
+F$APRC equ F$AProc enter active process queue
+F$NPRC equ F$NProc start next active process
+F$VMOD equ F$VModul Validate module
+F$F64 equ F$Find64 Find process/path descriptor
+F$A64 equ F$ALL64 allocate process/path descriptor
+F$R64 equ F$Ret64 return process/path descriptor
+F$IODL equ F$IODel delete i/o module
+I$ATCH equ I$Attach device to system
+I$DTCH equ I$Detach device from system
+I$CREA equ I$Create create new file
+I$MDIR equ I$MakDir make directory file
+I$CDIR equ I$ChgDir change default directory
+I$DLET equ I$Delete delete a file
+I$WRIT equ I$Write write data
+I$RDLN equ I$ReadLn read line
+I$WRLN equ I$WritLn write line
+I$GSTT equ I$GetStt get status
+I$SSTT equ I$SetStt set status
+I$CLOS equ I$Close close path
+
+S$ABT equ S$Abort Keyboard abort signal
+S$INTR equ S$Intrpt Keyboard interrupt signal
+
+COBOL equ CblCode COBOL module type
+
+SS.RST equ SS.Reset Reset Device
+SS.WTK equ SS.WTrk Write Track
+SS.SIZ equ SS.Size File size
+SS.FEE equ SS.Feed Form feed
+SS.DCM equ SS.Dcmd Hard disk command
+M$STAK equ M$Mem Module Stack Requirement
+P$PCNT equ P$PagCnt Memory page count
+P$PRIO equ P$Prior Priority
+P$STAT equ P$State Process state
+P$QUEU equ P$Queue Queue link (process ptr)
+P$PMOD equ P$PModul Primary module ptr
+P$SIGN equ P$Signal Process Signal
+P$SIGV equ P$SigVec Signal intercept vector
+P$SIGD equ P$SigDat Signal intercept data address
+E$PTHF equ E$PthFul path table full
+E$IID equ E$BMID Illegal module ID block
+E$DIRF equ E$DirFul Module directory full
+E$MEMF equ E$MemFul Memory full
+E$USVC equ E$UnkSvc Unknown Service Request error
+E$MODB equ E$ModBsy Module busy
+E$RNAM rmb E$EOF+1 returning non-allocated memory
+E$BBND equ E$BPAddr Bad page address
+E$BPN equ E$BPNam bad path name
+E$LNEM equ E$MNF Module not found
+E$DESP equ E$DelSP deleting stack ptr memory
+E$IPID equ E$IPrcID illegal process ID
+E$ISC equ E$IPrcID+1
+E$NOCH equ E$NoChld No children
+E$PRCF equ E$PrcFul Process table full
+E$KMOD equ E$KwnMod Known module
+E$BCRC equ E$BMCRC Bad module CRC
+E$USP equ E$USigP unprocessed signal pending
+E$IFKP equ E$IForkP illegal fork parameter
+E$RD equ E$Read Read error
+E$WR equ E$Write Write error
+E$NRDY equ E$NotRdy Device Not Ready
+REVMSK equ Revsmask
+INISTR equ InitStr
+TYPMSK equ TypeMask
+LANMSK equ LangMask
+IRQM equ IRQMask
+FIRQM equ FIRQMask
+NPATHS equ NumPaths
+SYSTAT equ SysState
+TSLEEP equ TimSleep
+
+***************
+*
+* Level One defs renamed under level
+*
+D.MODD equ D.ModDir Module directory ptr
+D.BASE equ D.Init ROM base address
+D.ISVC equ D.SvcIRQ Interrupt service entry
+D.UIRQ equ D.UsrIRQ User IRQ routine
+D.SIRQ equ D.SysIRQ System IRQ routine
+D.UREQ equ D.UsrSVC User service request routine
+D.SREQ equ D.SysSVC System service request routine
+D.USVC equ D.UsrDis User svc dispatch table
+D.SSVC equ D.SysDis System svc dispatch table
+D.SLIC equ D.Slice Process time slice count
+D.PRDB equ D.PrcDBT Process Descriptor Block table
+D.APRQ equ D.AProcQ Active process queue ptr
+D.WPRQ equ D.WProcQ Waiting process queue
+D.SPRQ equ D.SProcQ Sleeping process queue ptr
+D.MNTH equ D.Month
+D.TIC equ D.Tick
+D.TSLC equ D.TSlice Ticks / Time-slice
+
+

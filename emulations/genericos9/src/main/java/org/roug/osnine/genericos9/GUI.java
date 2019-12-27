@@ -61,14 +61,14 @@ public class GUI {
     private JFrame guiFrame;
 
     private PrinterDialog printerDialog;
-    private JDialog t2Dialog;
+    private JDialog t1Dialog;
     private DiskDialog d0Dialog, d1Dialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
 
-    /** Serial devices. T3 will be used for printer. */
-    private Acia6850 t1,t2,t3;
+    /** Serial devices. T2 will be used for printer. */
+    private Acia6850 term,t1,t2;
 
     private VirtualDisk diskDevice;
 
@@ -110,22 +110,22 @@ public class GUI {
         IRQBeat irqBeat = new IRQBeat(0xFFD0, bus, 20);
         bus.insertMemorySegment(irqBeat);
 
-        t1 = new Acia6850(0xFFD4, bus);
-        bus.insertMemorySegment(t1);
-        screen1 = new Screen(t1);
-        AciaToScreen atc1 = new AciaToScreen(t1, screen1);
+        term = new Acia6850(0xFFD4, bus);
+        bus.insertMemorySegment(term);
+        screen1 = new Screen(term);
+        AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
-        t2 = new Acia6850(0xFFD6, bus);
-        bus.insertMemorySegment(t2);
+        t1 = new Acia6850(0xFFD6, bus);
+        bus.insertMemorySegment(t1);
 
-        t2Dialog = new Terminal2(guiFrame, t2);
+        t1Dialog = new Terminal2(guiFrame, t1);
 
         printerDialog = new PrinterDialog(guiFrame);
 
-        t3 = new Acia6850(0xFFD8, bus);
-        bus.insertMemorySegment(t3);
-        AciaToScreen atc3 = new AciaToScreen(t3, printerDialog);
+        t2 = new Acia6850(0xFFD8, bus);
+        bus.insertMemorySegment(t2);
+        AciaToScreen atc3 = new AciaToScreen(t2, printerDialog);
         atc3.execute();
 
         hwClock = new HWClock(0xFFDA, bus);
@@ -138,14 +138,14 @@ public class GUI {
         d1Dialog = new DiskDialog(guiFrame, diskDevice, 1);
 
         if (singleUser) {
-            loadROM(0xF000, "OS9p1", "OS9p2_ed9", "Init", "SysGoSingle",
+            loadROM(0xF000, "OS9p1", "OS9p2_ed9", "SysGoSingle",
                     "BootDyn", "HWClock", "VDisk_rv2");
         } else {
-            loadROM(0xF000, "OS9p1", "OS9p2_ed9", "Init", "SysGoMulti",
+            loadROM(0xF000, "OS9p1", "OS9p2_ed9", "SysGoMulti",
                     "BootDyn", "HWClock", "VDisk_rv2");
         }
         loadROM(0x3800, "D0", "D1", "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
-                     "T1", "T2", "P", "PipeMan", "Piper", "Pipe");
+                     "Term", "T1", "P", "PipeMan", "Piper", "Pipe");
         if (singleUser) loadROM("Shell"); // Don't rely on the harddisk
 
         cpu = new MC6809(bus);
@@ -336,7 +336,7 @@ public class GUI {
         guiMenu.setMnemonic(KeyEvent.VK_D);
 
         JMenuItem menuItem = new JMenuItem("Terminal 2");
-        menuItem.addActionListener(new T2Action());
+        menuItem.addActionListener(new T1Action());
         guiMenu.add(menuItem);
 
         menuItem = new JMenuItem("Printer");
@@ -415,11 +415,11 @@ public class GUI {
         }
     }
 
-    private class T2Action implements ActionListener {
+    private class T1Action implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            t2Dialog.setVisible(true);
-            t2Dialog.requestFocusInWindow();
+            t1Dialog.setVisible(true);
+            t1Dialog.requestFocusInWindow();
         }
     }
 

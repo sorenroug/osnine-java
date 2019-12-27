@@ -24,7 +24,7 @@ initnam  fcs   "Init"
 
 sysgo    fcs   "SysGo"
 SysDev   fcs   "/D0"
-systerm  fcs   "/T1"
+systerm  fcs   "/Term"
 DefBoot  fcs   "Boot"
          emod
 eom      equ   *
