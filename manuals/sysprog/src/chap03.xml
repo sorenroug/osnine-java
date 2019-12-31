@@ -851,18 +851,17 @@ interrupts are not normally used and are vectored through a RAM
 address to an RTI instruction.</para>
     <sect2>
       <title>Physical Interrupt Processing</title>
-      <para>The OS-9 kernel. ROMs contain the hardware vectors required by the
+      <para>The OS-9 kernel ROMs contain the hardware vectors required by the
 6809 MPU at addresses $FFF0 through $FFFF. These vectors each
 point to jump-extended-indirect instruction which vector the MPU to
 the actual interrupt service routine. A RAM vector table in page zero
-of memory contains the target addresses of the jump instructions as
-follows:
+of memory contains the target addresses of the jump instructions as follows:
 </para>
       <informaltable frame="none" rowsep="0" colsep="0">
         <tgroup cols="3">
           <colspec colwidth="1.1in" colname="c1"/>
-          <colspec colwidth="1.7in" colname="c2"/>
-          <colspec colwidth="1.7in" colname="c3"/>
+          <colspec colwidth="1.8in" colname="c2"/>
+          <colspec colwidth="1.8in" colname="c3"/>
           <thead>
             <row>
               <entry>INTERRUPT</entry>
