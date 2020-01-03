@@ -1,5 +1,5 @@
 
- nam OS-9 Level I V1.2 kernal, part 1
+ nam OS-9 Level I V1.1 kernal, part 1
  ttl System Type definitions
 
 * It was disassembled from a file name os9l1v11.u6, which is a ROM file in
@@ -14,7 +14,7 @@
 
 ************************************************************
 *                                                          *
-*           OS-9 Level I V1.2 - Kernal, part 1             *
+*           OS-9 Level I V1.1 - Kernal, part 1             *
 *                                                          *
 ************************************************************
 
