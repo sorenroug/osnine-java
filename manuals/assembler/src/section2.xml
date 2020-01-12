@@ -1737,7 +1737,7 @@ os9 F$EXIT           <lineannotation>(call OS-9 <quote>EXIT</quote> service requ
       </variablelist>
       <para>
 Changes the value of the assembler's data location counter (normal
-mode) or the instruction location counter (Motorola- compatible mode).
+mode) or the instruction location counter (Motorola-compatible mode).
 The expression is evaluated and the appropriate counter is set to the
 value of the result. ORG statements cannot have labels.
 </para>
@@ -1961,7 +1961,7 @@ to create tables of addresses relative to some arbitrary location. The
 routines that use the tables read the table entries, then add them to the
 absolute address of the arbitrary location. The sum is the run-time
 absolute address. The absolute address of the <quote>arbitrary location</quote> is
-determined Using PCR instructions (typically LEA). The choice of the
+determined using PCR instructions (typically LEA). The choice of the
 common address is arbitrary, but two places may have specific advantages:
 the beginning address of the table (an index register probably will
 contain this address anyway); and the first byte of the module.
@@ -2018,7 +2018,7 @@ constants, complex data types, etc.
     <section>
       <title>Accessing The Data Area</title>
       <para>
-The size of the data area is specified by the <quote>minimum.permanent
+The size of the data area is specified by the <quote>minimum permanent
 storage size</quote> entry of the module header. Of course it is possible for a
 program to optionally receive more than this minimum. Remember that OS-9
 allocates memory in exact multiples of 256-byte pages, and all processes
