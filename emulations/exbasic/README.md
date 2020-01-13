@@ -13,6 +13,12 @@ the interrupt stays raised. This causes an infinite loop.
 
 This is now fixed and CTRL-C stops a running program.
 
-The assembler file was compiled with AS9 from http://home.hccnet.nl/a.w.m.van.der.horst/m6809.html
+The assembler file was created with AS9 from http://home.hccnet.nl/a.w.m.van.der.horst/m6809.html
+
+```
+as9 ExBasROM.asm -s19 now
+```
+
+As9 requries a very peculiar set of arguments: First come *all* the file names.  Then comes the first option, with a dash. Then come the, possibly multichar, options without dash.
 
 For a list of valid commands in BASIC see http://searle.hostei.com/grant/6809/Simple6809.html
