@@ -1,5 +1,5 @@
 This is a configuration for Microsoft extended basic from 1982.
-The ROM can be downloaded from http://searle.hostei.com/grant/6809/ExBasRom.zip
+The ROM can be downloaded from http://zx80.netai.net/grant/6809/ExBasRom.zip
 It is configured for a Motorola 6850 UART at location $A000 and 16K ROM at C000-FFFF
 
 In the unmodified ExBasRom.zip  you could enter programs, but 'RUN' didn't work.
@@ -21,4 +21,4 @@ as9 ExBasROM.asm -s19 now
 
 As9 requries a very peculiar set of arguments: First come *all* the file names.  Then comes the first option, with a dash. Then come the, possibly multichar, options without dash.
 
-For a list of valid commands in BASIC see http://searle.hostei.com/grant/6809/Simple6809.html
+For a list of valid commands in BASIC see http://zx80.netai.net/grant/6809/Simple6809.html
