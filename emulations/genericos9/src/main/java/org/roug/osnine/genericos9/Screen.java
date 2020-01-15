@@ -169,8 +169,24 @@ public class Screen extends SwingTerminal implements UIDevice {
         @Override
         public void keyReleased(KeyEvent evt) {
             int keyCode = evt.getKeyCode();
-            if (keyCode == KeyEvent.VK_SHIFT) shiftPressed = false;
-            if (keyCode == KeyEvent.VK_ALT) altPressed = false;
+            LOGGER.debug("Released: {}", keyCode);
+            switch (keyCode) {
+            case KeyEvent.VK_SHIFT:
+                shiftPressed = false;
+                break;
+            case KeyEvent.VK_ALT:
+                altPressed = false;
+                break;
+            case KeyEvent.VK_DEAD_CIRCUMFLEX:
+                acia.dataReceived('^');
+                break;
+            case KeyEvent.VK_DEAD_TILDE:
+                acia.dataReceived('~');
+                break;
+            case KeyEvent.VK_DEAD_GRAVE:
+                acia.dataReceived('`');
+                break;
+            }
         }
 
         @Override
