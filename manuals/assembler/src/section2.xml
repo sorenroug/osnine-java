@@ -546,7 +546,7 @@ beginning of the line. It is not used in Motorola-compatible mode.
       <para>
 Operators used in expressions operate on one operand (negative and
 not) or on two operands (all others). The table below shows the
-available operators, listed in the order they are evaluated relative.to
+available operators, listed in the order they are evaluated relative to
 each other, e.g, logical OR operations are performed before
 multiplications. Operators listed on the same line have identical
 precedence and are processed from left to right when they occur in the

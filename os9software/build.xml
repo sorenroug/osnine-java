@@ -62,6 +62,7 @@
 
         <assemble src="Term" home="gimix" verify="6033eabac7b4db841b7cb13fc377fc10"/>
         <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>
+        <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
 
         <!-- Optional -->
         <!--
@@ -71,7 +72,6 @@
         <assemble src="Boot" home="gimix" verify="c478773a1104052ce055125773dd51f9"/>
         <assemble src="Clock" home="gimix" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
         <assemble src="SysGo" home="gimix" verify="265bba4740d194f2dea21a36d9350764"/>
-        <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
 
         <assemble src="FD2_ed0" home="swtcp" verify="77406f3aa8d5fd2ec4b9cb4c12ecf7cb"/>
         <assemble src="DC3_drvr" home="swtcp" verify="cd0a25175be395e22193b6dbb09bc5ba"/>
