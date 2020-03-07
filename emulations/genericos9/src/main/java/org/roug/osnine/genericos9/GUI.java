@@ -1,6 +1,5 @@
 package org.roug.osnine.genericos9;
 
-import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -9,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,16 +20,13 @@ import java.util.TimerTask;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import org.roug.osnine.Acia;
 import org.roug.osnine.Acia6850;
@@ -41,7 +36,7 @@ import org.roug.osnine.HWClock;
 import org.roug.osnine.IRQBeat;
 import org.roug.osnine.MC6809;
 import org.roug.osnine.RandomAccessMemory;
-//import org.roug.osnine.ReadOnlyMemory;
+import org.roug.terminal.JTerminal;
 import org.roug.osnine.VirtualDisk;
 
 import org.slf4j.Logger;
@@ -75,7 +70,7 @@ public class GUI {
     private HWClock hwClock;
 
     /** The display of the emulator. */
-    private Screen screen1, screen2;
+    private JTerminal screen1, screen2;
 
     private int loadStart = 0;
 
@@ -112,7 +107,7 @@ public class GUI {
 
         term = new Acia6850(0xFFD4, bus);
         bus.insertMemorySegment(term);
-        screen1 = new Screen(term);
+        screen1 = new JTerminal(term, 80, 24);
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
@@ -373,13 +368,13 @@ public class GUI {
                 int code = pasteBuffer.charAt(pasteIndex);
                 pasting = true;
                 LOGGER.debug("Paste {}", code);
-                if (code >= 0)
-                    screen1.setKey(code, true);
+//              if (code >= 0)
+//                  screen1.setKey(code, true);
             }
             if ((beats % PASTE_INTERVAL) == PASTE_RELEASE && pasting) {
                 int code = pasteBuffer.charAt(pasteIndex);
-                if (code >= 0)
-                    screen1.setKey(code, false);
+//              if (code >= 0)
+//                  screen1.setKey(code, false);
                 pasting = false;
                 pasteIndex++;
                 if (pasteIndex >= pasteBuffer.length()) {
@@ -388,7 +383,6 @@ public class GUI {
                 }
             }
 
-            //pia.signalC1(PIA6821.B); // Send signal to PIA CB1
             beats++;
         }
     }
@@ -479,7 +473,7 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(guiFrame,
-                String.format("%s v. %s\nby Søren Roug",
+                String.format("%s v. %s%nby Søren Roug",
                     getClass().getPackage().getImplementationTitle(),
                     getClass().getPackage().getImplementationVersion()));
         }

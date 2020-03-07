@@ -1,7 +1,5 @@
 package org.roug.osnine.genericos9;
 
-import java.io.IOException;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -89,7 +87,7 @@ public class PrinterDialog implements UIDevice {
         Style def = StyleContext.getDefaultStyleContext().
                         getStyle(StyleContext.DEFAULT_STYLE);
 
-        Style monospace = doc.addStyle("monospace", def);
+        //Style monospace = doc.addStyle("monospace", def);
         //StyleConstants.setFontFamily(monospace, "monospaced");
 
     }
