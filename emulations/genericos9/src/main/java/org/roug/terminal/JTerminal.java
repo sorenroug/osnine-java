@@ -43,7 +43,7 @@ public class JTerminal extends JPanel implements UIDevice {
     private int cursorX = 0;
     private int cursorY = 0;
 
-    private int currentFontSize = 16;
+    private int currentFontSize = 24;
     private Font font;
 
     private boolean drawCursor = false;
@@ -62,9 +62,9 @@ public class JTerminal extends JPanel implements UIDevice {
     private Acia acia;
 
     private TerminalEmulation emulator;
+
     /**
      * Create the canvas for text.
-     *
      */
     public JTerminal(Acia acia, int columns, int rows) {
         super();
@@ -83,11 +83,16 @@ public class JTerminal extends JPanel implements UIDevice {
         timer.schedule(cursortask, 1000, BLINKPERIOD);
     }
 
+    /**
+     * Set the size of the font to use in points.
+     *
+     * @param fs - font size.
+     */
     public void setFontSize(int fs) {
         currentFontSize = fs;
         font = new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize);
         FontMetrics fm = getFontMetrics(font);
-        colWidth = fm.getMaxAdvance();
+        colWidth = fm.charWidth('M');
         rowHeight = fm.getHeight();
         lineLeading = fm.getLeading();
         lineOffset = fm.getAscent();
@@ -95,7 +100,10 @@ public class JTerminal extends JPanel implements UIDevice {
         repaint();
     }
 
-    public double getFontSize() {
+    /**
+     * Get the font size in points.
+     */
+    public int getFontSize() {
         return currentFontSize;
     }
 
@@ -117,8 +125,9 @@ public class JTerminal extends JPanel implements UIDevice {
 
     /**
      * Write a character to the terminal.
-     * Only applies to printable characters. This is not a state engine.
-     * FIXME:
+     * Only applies to printable characters.
+     *
+     * @param c character to display.
      */
     public void writeChar(char c) {
         lines[cursorY].writeChar(c);
@@ -128,11 +137,11 @@ public class JTerminal extends JPanel implements UIDevice {
             cursorX = 0;
             cursorDown();
         }
-        //repaint();
     }
 
     /**
-     * Put the character on the canvas.
+     * Put the character on the canvas. Called from the host,
+     * and it is first parsed for control sequences.
      *
      * @param val character to display.
      */
@@ -141,14 +150,6 @@ public class JTerminal extends JPanel implements UIDevice {
         emulator.parseChar(val);
     }
 
-
-    /*
-    void writeString(String s) {
-        for (char c : s.toCharArray()) {
-            writeChar(c);
-        }
-    }
-    */
 
     /**
      * Move the cursor up. If it is already
@@ -182,8 +183,12 @@ public class JTerminal extends JPanel implements UIDevice {
         if (cursorX <= 0) {
            cursorX = COLUMNS - 1;
            cursorUp();
-        } else
+        } else {
             cursorX--;
+            repaintXY(cursorX, cursorY);
+            drawCursor = false;
+            repaintXY(cursorX+1, cursorY);
+        }
     }
 
     void cursorRight() {
@@ -192,6 +197,7 @@ public class JTerminal extends JPanel implements UIDevice {
            cursorDown();
         } else
             cursorX++;
+        repaintXY(cursorX, cursorY);
     }
 
     void carriageReturn() {
@@ -303,7 +309,8 @@ public class JTerminal extends JPanel implements UIDevice {
             int leftX = clipBounds.x / colWidth;
             int numChars = clipBounds.width / colWidth;
             if (clipBounds.width % colWidth != 0) numChars++; // Round up
-            LOGGER.debug("Redraw chars: {},{} -> {},{}", leftX,bottomY,numChars+leftX, topY);
+            LOGGER.debug("Redraw chars: {},{} -> {},{}", leftX,bottomY,
+                            numChars+leftX, topY);
             for (int i = bottomY; i < topY; i++) {
                 AttributedString text = lines[i].getAttrLine();
                 AttributedCharacterIterator aci = text.getIterator();
@@ -401,7 +408,7 @@ public class JTerminal extends JPanel implements UIDevice {
         /**
          * Apply attributes in as long stretches as possible.
          */
-        void applyAttribute(int attributeBit, TextAttribute textAttribute,
+        private void applyAttribute(int attributeBit, TextAttribute textAttribute,
                             Object value) {
             boolean attrFlag = false;
             int runStart = -1;
@@ -424,7 +431,7 @@ public class JTerminal extends JPanel implements UIDevice {
     }
 
     /**
-     * Make the cursor blink. (Stub)
+     * Make the cursor blink.
      */
     private class CursorTask extends TimerTask {
         @Override

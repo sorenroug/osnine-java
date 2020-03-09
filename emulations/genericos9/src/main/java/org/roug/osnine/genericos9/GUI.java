@@ -263,19 +263,15 @@ public class GUI {
         guiMenu.setMnemonic(KeyEvent.VK_F);
 
         JMenuItem menuItem;
-/*
-        menuItem = new JMenuItem("Zoom 1x");
-        menuItem.addActionListener(new Zoom1Action());
+
+        menuItem = new JMenuItem("Decrease font size");
+        menuItem.addActionListener(new DecreaseFontAction());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Zoom 2x");
-        menuItem.addActionListener(new Zoom2Action());
+        menuItem = new JMenuItem("Increase font size");
+        menuItem.addActionListener(new IncreaseFontAction());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Zoom 4x");
-        menuItem.addActionListener(new Zoom4Action());
-        guiMenu.add(menuItem);
-*/
         menuItem = new JMenuItem("Reset CPU");
         menuItem.addActionListener(new ResetAction());
         guiMenu.add(menuItem);
@@ -445,26 +441,22 @@ public class GUI {
         }
     }
 
-    private class Zoom1Action implements ActionListener {
+    private class DecreaseFontAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            //screen1.setPixelSize(1);
+            int fs = screen1.getFontSize();
+            if (fs >= 10) fs -= 2;
+            screen1.setFontSize(fs);
             guiFrame.pack();
         }
     }
 
-    private class Zoom2Action implements ActionListener {
+    private class IncreaseFontAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            //screen1.setPixelSize(2);
-            guiFrame.pack();
-        }
-    }
-
-    private class Zoom4Action implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //screen1.setPixelSize(4);
+            int fs = screen1.getFontSize();
+            if (fs <= 30) fs += 2;
+            screen1.setFontSize(fs);
             guiFrame.pack();
         }
     }
