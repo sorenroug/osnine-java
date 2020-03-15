@@ -3,4 +3,4 @@
  use dynacalc_473.inc
  endc
  opt m
- use Dynacalc_473.cor.inc
+ use dynacalc_473.trm.inc

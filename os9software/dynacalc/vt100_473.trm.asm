@@ -2295,7 +2295,7 @@ M0B05    ldx   <$0030
          clra
 M0B16    ldb   #$09
          mul
-         leau  >M0CEB,pcr  Calendar months
+         leau  >MONTHS,pcr  Calendar months
          leau  d,u
 M0B1F    ldb   #$09
 M0B21    lda   ,u+
@@ -2496,7 +2496,7 @@ M0CCB    fdb   $0381
          fdb   $0380
          fdb   $0380
 
-M0CEB    fcc   "  January"
+MONTHS   fcc   "  January"
          fcc   " February"
          fcc   "    March"
          fcc   "    April"

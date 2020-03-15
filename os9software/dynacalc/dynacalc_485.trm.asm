@@ -1893,99 +1893,21 @@ M0562    fcc   "  January  0, 19 0"
          fcb   $80 
          fcb   $03 
          fcb   $80 
-         fcc   "  January"
+
+MONTHS   fcc   "  January"
          fcc   " February"
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $4D M
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $41 A
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $4D M
-         fcb   $61 a
-         fcb   $79 y
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $4A J
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $4A J
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $41 A
-         fcb   $75 u
-         fcb   $67 g
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $20 
-         fcb   $4F O
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $4E N
-         fcb   $6F o
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $03 
+         fcc   "    March"
+         fcc   "    April"
+         fcc   "      May"
+         fcc   "     June"
+         fcc   "     July"
+         fcc   "   August"
+         fcc   "September"
+         fcc   "  October"
+         fcc   " November"
+         fcc   " December"
+
+BANNER   fcb   $03 
          fcb   $07 
          fcc   "**** DYNACALC ****"
          fcb   $00 
@@ -1995,98 +1917,19 @@ M0562    fcc   "  January  0, 19 0"
          fcb   $00 
          fcb   $06 
          fcb   $06 
-         fcb   $42 B
-         fcb   $79 y
-         fcb   $20 
-         fcb   $53 S
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $20 
-         fcb   $53 S
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $65 e
-         fcb   $66 f
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6C l
-         fcb   $65 e
+         fcc   "By Scott Schaeferle"
          fcb   $00 
          fcb   $08 
          fcb   $06 
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20 
-         fcb   $52 R
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $68 h
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $20 
-         fcb   $52 R
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $64 d
+         fcc   "All Rights Reserved"
          fcb   $00 
          fcb   $0A 
          fcb   $01 
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $54 T
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $79 y
-         fcb   $20 
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
+         fcc   "Licensed to Tandy Corporation"
          fcb   $00 
          fcb   $0C 
          fcb   $07 
-         fcb   $56 V
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $30 0
-         fcb   $31 1
-         fcb   $2E .
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $2E .
-         fcb   $30 0
-         fcb   $30 0
+         fcc   "Version 01.00.00"
          fcb   $00 
          fcb   $00 
          fcb   $00 

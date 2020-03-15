@@ -140,7 +140,7 @@
         <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
         <assemble src="dynacalc_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
-        <assemble src="Dynacalc_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
+        <assemble src="dynacalc_473.trm" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
         <assemble src="vt100_473.trm" home="dynacalc"/>
 
         <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
