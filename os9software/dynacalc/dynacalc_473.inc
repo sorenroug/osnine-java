@@ -31,8 +31,8 @@ u0018    rmb   1
 u0019    rmb   1
 MEMPTR   rmb   2
 u001C    rmb   1
-u001D    rmb   1   Flag for help text discarded
-u001E    rmb   2
+u001D    rmb   1   Flag for help texts discarded
+u001E    rmb   2   address of help texts routine
 u0020    rmb   1
 u0021    rmb   1
 u0022    rmb   1
@@ -4120,7 +4120,7 @@ L2092    incb
          cmpb  #$3F
          bne   L2076
          bra   L2070
-L20A1    tst   <u001D
+L20A1    tst   <u001D    texts discarded?
          bne   L20AD
          ldu   <u001E
          pshs  u

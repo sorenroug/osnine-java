@@ -5,6 +5,6 @@
  opt m
  org 0
  use copyright.inc
- use go51.keys
+ use ansi.keys
  use rest.inc
  use help51.inc
