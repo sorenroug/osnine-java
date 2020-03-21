@@ -1,13 +1,70 @@
-         nam   OS9p2
-         ttl   os9 system module
+         nam   OS-9 Level II V1.2, part 2
+         ttl   os9 Module Header
 
- use   defsfile
+************************************************************
+*                                                          *
+*           OS-9 Level II V1.2 - Kernal, part 2            *
+*                                                          *
+* Copyright 1982 by Microware Systems Corporation          *
+* Reproduced Under License                                 *
+*                                                          *
+* This source code is the proprietary confidential prop-   *
+* erty of Microware Systems Corporation, and is provided   *
+* to the licensee solely for documentation and educational *
+* purposes. Reproduction, publication, or distribution in  *
+* any form to any party other than the licensee is         *
+* is strictly prohibited !!!                               *
+*                                                          *
+************************************************************
 
-tylg     set   Systm+0
-Revs set REENT+2
+************************************************************
+*
+*     Module Header
+*
+Type set Systm
+Revs set ReEnt+2
 
- mod OS9End,OS9Nam,tylg,Revs,OS9Ent,$0100
+ mod OS9End,OS9Name,Type,Revs,Cold,256
 
+OS9Name fcs /OS9p2/
+************************************************************
+*
+*     Edition History
+*
+* Edition   Date         Comments
+*
+*   $28   pre 82/08/18
+*
+*     1     82/08/18     F$Send & F$Sleep routines altered
+*                        changes in routines commmented as "***V.1 -"
+*
+*     2     82/08/22     Modifications for MC6829
+
+*     8     83/02/07     Add changes for write protect/enable;
+*                        change "CnvBit" for speed purposes
+*
+*     9     83/03/17     Fix bug in "Mem" which caused it to not
+*                        catch request for memory > (64K-DAT.BlSz)
+*
+*    10     83/04/18     Add Comtrol CPU type
+*
+*    11     83/05/04     Extensive mods to module load and link for
+*                        non-contiguous modules
+*                        Modified F$Send to clear suspend state
+*                        whenever a signal is sent.
+*                        Added MotGED and if needed Accupt conds.
+*    12     83/08/02     Added FM11L2 CPUType
+*
+*    13     83/11/07     Added error messages  Vivaway Ltd PSD
+*
+*    13     83/12/15     Extended F$MapBlk and F$ClrBlk to allow
+*                        mapping into the system task space
+
+ fcb  17 edition number
+
+ use  defsfile
+
+ org 0
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
@@ -56,10 +113,7 @@ u00E5    rmb   25
 u00FE    rmb   2
 size     equ   .
 
-OS9Nam fcs /OS9p2/
-
- fcb  17 Edition number
- ttl Cold Start routine
+ ttl Coldstart Routines
  page
 *****
 *
@@ -68,7 +122,7 @@ OS9Nam fcs /OS9p2/
 *
 * Initialize Service Routine Dispatch Table
 *
-OS9Ent leay SVCTBL,PCR Get ptr to service routine table
+Cold leay SVCTBL,PCR Get ptr to service routine table
          os9   F$SSvc
          ldu   D.Init
          ldd   u0009,u
