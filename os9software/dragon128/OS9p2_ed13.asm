@@ -154,7 +154,7 @@ L0038    ldu   D.Init
          leay  >$00A0,y
          lda   #$0D
          sta   ,y
-         ldd   <u0016,u
+         ldd   <$16,u
          beq   L0057
          leax  d,u
          ldb   #$20
@@ -320,8 +320,8 @@ IOLink    leax  >IOSTR,pcr
 *    Delete Module From Directory & Return Memory
 *
 UNLINK   pshs  u,b,a
-         ldd   u0008,u
-         ldx   u0008,u
+         ldd   R$U,u
+         ldx   R$U,u
          lsra
          lsra
          lsra
@@ -357,18 +357,18 @@ L0187    ldb   ,s
          ldd   b,y
          ldu   D.ModDir
          bra   L01AA
-L01A1    leau  u0008,u
+L01A1    leau  R$U,u
          cmpu  D.ModEnd
          bcs   L01AA
 L01A8    bra   L01F5
-L01AA    cmpx  u0004,u
+L01AA    cmpx  R$X,u
          bne   L01A1
          cmpd  [,u]
          bne   L01A1
-         ldx   u0006,u
+         ldx   R$Y,u
          beq   L01BD
          leax  -$01,x
-         stx   u0006,u
+         stx   R$Y,u
          bne   L01DA
 L01BD    ldx   $02,s
          ldx   $08,x
@@ -378,9 +378,9 @@ L01BD    ldx   $02,s
          bcs   L01D8
          os9   F$IODel
          bcc   L01D8
-         ldx   u0006,u
+         ldx   R$Y,u
          leax  $01,x
-         stx   u0006,u
+         stx   R$Y,u
          bra   L01F6
 L01D8    bsr   L01FA
 L01DA    ldb   ,s
@@ -689,7 +689,7 @@ L0409    stu   ,y++
          os9   F$AllTsk
          bcc   L0427
 L0427    ldu   D.PROC
-         lda   u0006,u
+         lda   P$Task,u
          ldb   $06,x
          leau  >$01F4,x
          leax  ,y
@@ -844,7 +844,7 @@ L0565    lda   $02,y
          bne   L0553
          leay  ,x
          ldx   #$0047
-         lds   <u00CC
+         lds   D.SysStk
          pshs  cc
          orcc  #$50
          lda   $01,y
@@ -866,7 +866,7 @@ L0594    ldd   P$Queue,x
          std   P$Queue,u
          puls  cc
          ldu   $04,x
-         ldu   u0008,u
+         ldu   $08,u
          lbsr  CHILDS
          os9   F$AProc
 L05A4    os9   F$NProc
@@ -971,7 +971,7 @@ SEND15    inca
 SENSUB    lbsr  L0B30
          pshs  u,y,a,cc
          bcs   L0669
-         tst   u0002,u
+         tst   $02,u
          bne   L066C
          ldd   $08,x
          beq   L066C
@@ -979,7 +979,7 @@ SENSUB    lbsr  L0B30
          beq   L066C
          ldb   #$E0
          inc   ,s
-L0669    lbra  L06F3
+L0669    lbra  SEND75
 L066C    orcc  #$50
          ldb R$B,u Is it unconditional abort signal?
          bne   L067A
@@ -991,21 +991,21 @@ L067A    lda   P$State,y
          anda  #$F7
          sta   P$State,y
          lda   P$Signal,y
-         beq   L068E
+         beq   SEND40
          deca Is it wake-up?
-         beq   L068E
+         beq   SEND40
          inc   ,s
          ldb   #$E9
-         bra   L06F3
-L068E    stb   P$Signal,y
-         ldx   #$0049
+         bra   SEND75
+SEND40    stb   P$Signal,y
+         ldx #D.SProcQ-P$Queue Fake process ptr
          clra
          clrb
 L0696    leay  ,x
          ldx   $0D,x
          beq   L06D2
          ldu   $04,x
-         addd  u0004,u
+         addd  $04,u
          cmpx  $02,s
          bne   L0696
          pshs  b,a
@@ -1014,10 +1014,10 @@ L0696    leay  ,x
          beq   L06CE
          ldd   ,s
          beq   L06CE
-         ldd   u0004,u
+         ldd   $04,u
          pshs  b,a
          ldd   $02,s
-         std   u0004,u
+         std   $04,u
          puls  b,a
          ldu   $0D,x
          beq   L06CE
@@ -1033,20 +1033,20 @@ L06CE    leas  $02,s
          bra   L06DF
 L06D2    ldx   #$0047
 L06D5    leay  ,x
-         ldx   $0D,x
-         beq   L06F3
+         ldx   P$Queue,x
+         beq   SEND75
          cmpx  $02,s
          bne   L06D5
-L06DF    ldd   $0D,x
-         std   $0D,y
+L06DF    ldd   P$Queue,x Remove from queue
+         std   P$Queue,y
          lda   P$Signal,x
          deca
-         bne   L06F0
+         bne   SEND70
          sta   P$Signal,x
          lda   ,s
          tfr   a,cc
-L06F0    os9   F$AProc
-L06F3    puls  pc,u,y,a,cc
+SEND70   os9   F$AProc
+SEND75    puls  pc,u,y,a,cc
  page
 *****
 *
@@ -1070,29 +1070,29 @@ page
 * Suspend Process
 *
 SLEEP pshs  cc
-         ldx   D.PROC
-         orcc  #$50
-         lda   P$Signal,x
-         beq   SLEP20
-         deca
-         bne   SLEP10
-         sta   P$Signal,x
+ ldx D.PROC Get current process
+ orcc #IRQMask+FIRQMask Set interrupt mask
+ lda P$Signal,X Signal waiting?
+ beq SLEP20 Branch if not
+ deca IS It wake-up?
+ bne SLEP10 Branch if not
+ sta P$Signal,X Clear signal
 SLEP10    puls  cc
-         os9   F$AProc
+ OS9 F$AProc Put process in active queue
          bra   L0779
 SLEP20 ldd R$X,U Get length of sleep
          beq   L0766
  subd #1 count current tick
  std R$X,U update count
  beq SLEP10 branch if done
-         pshs  y,x
+         pshs  y,x Save process & register ptr
  ldx #D.SProcQ-P$Queue Fake process ptr
 L072B    std   u0004,u
          stx   $02,s
          ldx   $0D,x
          beq   L0748
-         lda   $0C,x
-         bita  #TimSleep
+ lda P$State,X Get process status
+ bita #TimSleep In timed sleep?
          beq   L0748
          ldy   $04,x
          ldd   u0004,u
@@ -1103,42 +1103,43 @@ L072B    std   u0004,u
          sbca  #$00
          std   $04,y
 L0748    puls  y,x
-         lda   $0C,x
-         ora   #TimSleep
-         sta P$State,X
-         ldd   P$Queue,y
-         stx   P$Queue,y
-         std   P$Queue,x
+ lda P$State,X Set timed sleep status
+ ora #TimSleep
+ sta P$State,X
+ ldd P$Queue,Y Put process in queue
+ stx P$Queue,Y
+ std P$Queue,X
          ldx R$X,u
          bsr   L0779
          stx R$X,u
          ldx   D.PROC
-         lda   P$State,x
-         anda  #$BF
-         sta   P$State,x
+ lda P$State,X Get status
+ anda #$FF-TimSleep Set not timed sleep
+ sta P$State,X
          puls  pc,cc
 L0766    ldx #D.SProcQ-P$Queue Fake process ptr
 L0769    leay  ,x
-         ldx   $0D,x
+         ldx   P$Queue,x
          bne   L0769
          ldx   D.PROC
          clra
          clrb
-         stx   $0D,y
-         std   $0D,x
+ stx P$Queue,Y Link into queue
+ std P$Queue,X
          puls  cc
 L0779    pshs  pc,u,y,x
          leax  <L0795,pcr
          stx   $06,s
-         ldx   D.PROC
+         ldx   D.PROC Get process ptr
          ldb   P$Task,x
          cmpb  D.SysTsk
          beq   L078B
          os9   F$DelTsk
 L078B    ldd   $04,x
          pshs  dp,b,a,cc
-         sts   P$SP,x
-         os9   F$NProc
+         sts   P$SP,x Note location
+ OS9 F$NProc Start another process
+
 L0795    pshs  x
          ldx   D.PROC
          std   P$SP,x
@@ -1158,13 +1159,13 @@ SETPRI   lda R$A,u
          bcs   SETP20
          ldx   D.PROC
          ldd   P$User,x
-         beq   L07B0
-         cmpd  P$User,y
-         bne   SETP10
-L07B0    lda   R$B,u
-         sta   P$Prior,y
-         clrb
-         rts
+         beq   SETP05  Superuser?
+ cmpd P$USER,Y Same as set user?
+ bne SETP10 Branch if not
+SETP05 lda R$B,U Get priority
+ sta P$Prior,Y Set priority
+ clrb
+ rts
 SETP10 comb SET Carry
  ldb #E$IPrcID Err: illegal process id
 SETP20    rts
@@ -1190,37 +1191,42 @@ GETID ldx D.PROC Get process ptr
 * Set Software Interrupt Vectors
 *
 SETSWI   ldx   D.PROC
-         leay  P$SWI,x
-         ldb   R$A,u
-         decb
-         cmpb  #3
-         bcc   SSWI10
-         lslb
-         ldx R$X,u
-         stx   b,y
-         rts
-SSWI10    comb
-         ldb #E$ISWI
-         rts
+ leay P$SWI,X Get ptr to vectors
+ ldb R$A,U Get swi code
+ decb ADJUST Range
+ cmpb #3 Is it in range
+ bcc SSWI10 Branch if not
+ aslb
+ ldx R$X,U
+ stx B,Y
+ rts
+SSWI10 comb
+ ldb #E$ISWI
+ rts
+
+**********
+*
+* Subroutine Settime
+*
 
 ClockNam fcs "Clock"
 
-SetTime  ldx R$X,u
+SetTime ldx R$X,U get date ptr
          tfr   dp,a
          ldb   #D.Time
          tfr   d,u
          ldy   D.PROC
-         lda   $06,y
+         lda   P$Task,y
          ldb   D.SysTsk
-         ldy   #$0006
+         ldy   #6
          os9   F$Move
          ldx   D.PROC
          pshs  x
          ldx   D.SysPrc
          stx   D.PROC
-         lda   #$C1
+         lda #SYSTM+OBJCT
          leax  <ClockNam,pcr
-         os9   F$Link
+         os9   F$Link link to clock module
          puls  x
          stx   D.PROC
          bcs   SeTime99
@@ -1231,7 +1237,7 @@ ALLBIT   ldd R$D,u
          ldx R$X,u
          bsr   L0867
          ldy   D.PROC
-         ldb   $06,y
+         ldb   P$Task,y
          bra   L0825
 
 SALLBIT  ldd R$D,u
@@ -1289,7 +1295,7 @@ DELBIT   ldd R$D,u
          ldx R$X,u
          bsr   L0867
          ldy   D.PROC
-         ldb   $06,y
+         ldb   P$Task,y
          bra   L0899
 
 SDELBIT  ldd R$D,u
@@ -1372,7 +1378,7 @@ L0915    leay  $01,y
          std   $05,s
          bra   L0902
 L0933    ldd   $03,s
-         std   u0006,u
+         std   R$Y,u
          comb
          ldd   $05,s
          bra   L093E
@@ -1397,11 +1403,11 @@ GBLKMP   ldd   #DAT.BlSz
          std R$D,u
          ldd   D.BlkMap+2
          subd  D.BlkMap
-         std   u0006,u
+         std   R$Y,u
          tfr   d,y
          lda   D.SysTsk
          ldx   D.PROC
-         ldb   $06,x
+         ldb   P$Task,x
          ldx   D.BlkMap
          ldu   R$X,u
          os9   F$Move
@@ -1414,12 +1420,12 @@ GMODDR   ldd   D.ModDir+2
          subd  D.ModDir
          ldx R$X,u
          leax  d,x
-         stx   u0006,u
+         stx   R$Y,u
          ldx   D.ModDir
          stx   u0008,u
          lda   D.SysTsk
          ldx   D.PROC
-         ldb   $06,x
+         ldb   P$Task,x
          ldx   D.ModDir
          ldu   u0004,u
          os9   F$Move
@@ -1434,13 +1440,13 @@ SETUSER  ldx   D.PROC
 CPYMEM   ldd   R$Y,u
          beq   L0A04
          addd  8,u
-         ldy   <u0022
+         ldy   D.TmpDAT
          leay  <$20,y
-         sty   <u0022
+         sty   D.TmpDAT
          leay  <-$20,y
          pshs  y,b,a
          ldy   D.PROC
-         ldb   $06,y
+         ldb   P$Task,y
          pshs  b
          ldx   u0001,u
          leay  <$40,y
@@ -1473,7 +1479,7 @@ L09EA    os9   F$LDAXY
          cmpu  $01,s
          bcs   L09DD
          puls  y,x,b
-         sty   <u0022
+         sty   D.TmpDAT
 L0A04    clrb
          rts
 
@@ -1486,16 +1492,16 @@ UNLOAD   pshs  u
          puls  y
          bcs   L0A51
          stx   $04,y
-         ldx   u0006,u
+         ldx   R$Y,u
          beq   L0A24
          leax  -$01,x
-         stx   u0006,u
+         stx   R$Y,u
          bne   L0A50
 L0A24    cmpa  #$D0
          bcs   L0A4D
          clra
          ldx   [,u]
-         ldy   <u004C
+         ldy   D.SysDAT
 L0A2E    adda  #$02
          cmpa  #$20
          bcc   L0A4D
@@ -1509,9 +1515,9 @@ L0A2E    adda  #$02
          tfr   d,x
          os9   F$IODel
          bcc   L0A4D
-         ldx   u0006,u
+         ldx   R$Y,u
          leax  $01,x
-         stx   u0006,u
+         stx   R$Y,u
          bra   L0A51
 L0A4D    lbsr  L01FA
 L0A50    clrb
@@ -1679,19 +1685,20 @@ GPROCP   lda R$A,u
          sty R$Y,u
 L0B2F    rts
 
+* Find process descriptor
 L0B30    pshs  x,b,a
          ldb   ,s
          beq   L0B42
          ldx   D.PrcDBT
          abx
-         lda   ,x
+         lda   P$ID,x
          beq   L0B42
          clrb
          tfr   d,y
          puls  pc,x,b,a
 L0B42    puls  x,b,a
          comb
-         ldb   #$EE
+         ldb   #E$BPrcId
          rts
 
 DELIMG   ldx R$X,u
@@ -1749,7 +1756,7 @@ L0B83    stx   ,y++
          cmpx  D.SysPrc
          bne   L0BCE
          tfr   x,y
-         ldx   <u004E
+         ldx   D.SysMem
          ldb   u0008,u
          abx
          leay  <$40,y
@@ -1811,7 +1818,7 @@ L0C0B    stx   ,y++
          sta   $0C,x
          cmpx  D.SysPrc
          bne   L0C2D
-         ldx   <u004E
+         ldx   D.SysMem
          ldb   u0008,u
          abx
          ldb R$B,u
