@@ -320,11 +320,7 @@ CNFSTR fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
 BTSTR fcs /Boot/
 
-L0271    fcb   $6E,$98,$F0
-
-L0274    ldx   D.Proc
-         ldu   <$17,x
-         beq   L028E
+L0271    fcb   $6E,$98,$F0,$9E,$50,$EE,$88,$17,$27,$13
 
 L027B    lbra  L0E5E
          ldx   D.Proc
