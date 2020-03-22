@@ -65,7 +65,7 @@ L005B    std   ,x++
          bls   L005B
          leax  >L1225,pcr
          pshs  x
-         leay  >L1205,pcr
+         leay  >SYSVEC,pcr
          ldx   #$00E0
 L006F    ldd   ,y++
          addd  ,s
@@ -167,9 +167,9 @@ L0134    lda   ,x
 L0148    pshs  y,x
          lbsr  L0B0B
          ldb   $01,y
-         stb   >$FE00
+         stb   DAT.Regs
          lda   ,x
-         clr   >$FE00
+         clr   DAT.Regs
          puls  y,x
          cmpa  #$87
          bne   L0170
@@ -198,20 +198,22 @@ L0172    tfr   x,d
 L0187    leax  $01,x
          cmpx  D.BlkMap+2
          bcs   L0134
-L018D    leax  >CNFSTR,pcr
+L018D    leax  CNFSTR,pcr
          bsr   L01B1
          bcc   L019C
          os9   F$Boot
          bcc   L018D
          bra   L01AB
 L019C    stu   D.Init
-L019E    leax  >OS9STR,pcr
+L019E    leax  OS9STR,pcr
          bsr   L01B1
          bcc   L01AF
          os9   F$Boot
          bcc   L019E
 L01AB    jmp   [>$FFEE]
-L01AF    jmp   ,y
+
+L01AF    jmp 0,Y Let os9 part two finish
+
 L01B1    lda   #$C0
          os9   F$Link
          rts
@@ -232,32 +234,53 @@ L01BD    stx   ,y++
 SVCTBL equ *
          fcb F$Link
          fdb LINK-*-2
-
- fcb $10,$04,$EC
- fcb $11,$05,$73
+         fcb F$PrsNam
+         fdb PNAM-*-2
+ fcb F$CmpNam,$05,$73
  fcb F$CmpNam+$80,$05,$7B
- fcb $17,$03,$EA,$A8,$05,$D2
- fcb $A9,$06,$44,$AC,$0A,$29,$AD,$0A,$87,$AE,$01,$FB,$32,$01,$0D
- fcb $B4,$01,$28,$B5,$06,$8E,$B6,$05,$BA,$B8,$09,$4B,$39,$06,$E9
- fcb $BA,$07,$1B,$BC,$08,$A6,$BD,$08,$63,$BE,$08,$46,$BF,$09,$58
- fcb $C0,$09,$65,$C1,$09,$73,$C2,$09,$8B,$C3,$09,$A8,$C4,$08,$AE
- fcb $C6,$08,$C1,$C8,$08,$F7,$C9,$09,$10
+ fcb F$CRC
+ fdb CRCGen-*-2
+ fcb F$SRqMem+$80,$05,$D2
+ fcb F$SRtMem+$80,$06,$44
+ fcb $AC,$0A,$29
+ fcb $AD,$0A,$87
+ fcb $AE,$01,$FB
+ fcb $32,$01,$0D
+ fcb $B4,$01,$28
+ fcb $B5,$06,$8E
+ fcb $B6,$05,$BA
+ fcb $B8,$09,$4B
+ fcb $39,$06,$E9
+ fcb $BA,$07,$1B
+ fcb $BC,$08,$A6
+ fcb $BD,$08,$63
+ fcb $BE,$08,$46
+ fcb $BF,$09,$58
+ fcb $C0,$09,$65
+ fcb $C1,$09,$73
+ fcb $C2,$09,$8B
+ fcb $C3,$09,$A8
+ fcb $C4,$08,$AE
+ fcb $C6,$08,$C1
+ fcb $C8,$08,$F7
+ fcb $C9,$09,$10
  fcb F$STABX+$80,$09,$17
  fcb F$ELink+$80
  fdb ELINK-*-2
- fcb $CE,$03,$DC
- fcb $54,$07,$C9
- fcb $55,$07,$FA
+ fcb F$FModul+$80
+ fdb FMODUL-*-2
+ fcb F$GMap    * $54 request graphics memory
+ fdb GFXMAP-*-2
+ fcb F$GClr    * $55 return graphics memory
+ fdb GFXCLR-*-2
  fcb $80
 
 CNFSTR fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
 BTSTR fcs /Boot/
 
-L023A fcb $6e,$98
-         subb  >$9E50
-         ldu   <$17,x
-         beq   L0257
+L023A fcb $6E,$98,$F0,$9E,$50,$EE,$88,$17,$27,$13
+
 L0244    lbra  L0E1B
 
          ldx   D.Proc
@@ -276,7 +299,7 @@ L0257    ldd   D.SysSvc
          sta   $0C,x
          sts   $04,x
          leas  >$01F4,x
-         andcc #$AF
+         andcc #^IntMasks
          leau  ,s
          bsr   L0294
          ldb   $06,x
@@ -306,7 +329,7 @@ L029E    ldb   $06,x
          exg   x,u
 L02A8    ldy   #$0006
          tfr   b,dp
-         orcc  #$50
+         orcc  #IntMasks
          lbra  L1171
 L02B3    leau  ,s
          lda   ,u
@@ -702,16 +725,24 @@ CRCCAL eora 0,U Add crc msb
          lsla
          lsla
          eora  ,s+
-         bpl   L05BE
+         bpl   CRCC99
          ldd   #$8021
          eora  ,u
          sta   ,u
          eorb  $02,u
          stb   $02,u
-L05BE    rts
+CRCC99    rts
 
+
+
+*****
+*
+*  Subroutine Crcgen
+*
+* Generate Crc
+*
 CRCGen    ldd   $06,u
-         beq   L0600
+         beq   CRCGen20
          ldx   $04,u
          pshs  x,b,a
          leas  -$03,s
@@ -738,7 +769,7 @@ L05E6    lbsr  L0AF3
          exg   x,u
          lbsr  L0B47
          leas  $07,s
-L0600    clrb
+CRCGen20    clrb
          rts
 
 FMODUL   pshs  u
@@ -829,7 +860,8 @@ L069E    lbsr  L0B0B
          asrb
          lbsr  L0ACC
          puls  pc,y,a
-         ldx   D.Proc
+
+PNAM     ldx   D.Proc
          leay  <$40,x
          ldx   $04,u
          bsr   L06CB
@@ -875,6 +907,7 @@ L0706    puls  y,x
          asrb
          lbsr  L0ACC
          puls  pc,y,b,a,cc
+
 L0714    pshs  a
          anda  #$7F
          cmpa  #$2E
@@ -899,6 +932,7 @@ L072F    cmpa  #$41
          bls   L0728
 L073F    coma
          puls  pc,a
+
          ldx   D.Proc
          leay  <$40,x
          ldx   $04,u
@@ -1236,7 +1270,7 @@ L09D2    fcb $00,$01,$02,$03,$04,$05,$06,$07
          fcb $10,$11,$12,$13,$14,$15,$16,$17
          fcb $18,$19,$1A,$1B,$1C,$1D,$1E,$1F
 
-L09F2    ldb   $02,u
+GFXMAP   ldb   $02,u
          bsr   L09FB
          bcs   L09FA
          stx   $04,u
@@ -1264,7 +1298,8 @@ L0A1F    comb
          ldb   #$ED
          stb   $01,s
          puls  pc,x,b,a
-         ldb   $02,u
+
+GFXCLR         ldb   $02,u
          ldx   $04,u
          pshs  x,b,a
          abx
@@ -1368,17 +1403,17 @@ L0ACC    pshs  x,b,a
          rts
 L0AE3    pshs  cc
          lda   $01,y
-         orcc  #$50
-         sta   >$FE00
+         orcc  #IntMasks
+         sta   DAT.Regs
          lda   ,x
-         clr   >$FE00
+         clr   DAT.Regs
          puls  pc,cc
 L0AF3    lda   $01,y
          pshs  cc
-         orcc  #$50
-         sta   >$FE00
+         orcc  #IntMasks
+         sta   DAT.Regs
          lda   ,x+
-         clr   >$FE00
+         clr   DAT.Regs
          puls  cc
          bra   L0B0B
 L0B05    leax  >-$1000,x
@@ -1517,7 +1552,7 @@ L0C09    clrb
          pshs  u,y,x,cc
          lda   $0A,x
          sta   $0B,x
-         orcc  #$50
+         orcc  #IntMasks
          ldu   #$0045
          bra   L0C21
 L0C17    inc   $0B,u
@@ -1547,7 +1582,7 @@ L0C23    ldu   $0D,u
          lbsr  L1125
          ora   #$50
          lbsr  L1137
-L0C53    orcc  #$50
+L0C53    orcc  #IntMasks
          ldx   D.Proc
          ldu   $04,x
          lda   $0C,x
@@ -1560,10 +1595,10 @@ L0C66    bsr   L0C09
          ldx   D.SysPrc
          stx   D.Proc
          lds   D.SysStk
-         andcc #$AF
+         andcc #^IntMasks
          bra   L0C75
 L0C73    cwai  #$AF
-L0C75    orcc  #$50
+L0C75    orcc  #IntMasks
          ldy   #$0045
          bra   L0C7F
 L0C7D    leay  ,x
@@ -1616,7 +1651,7 @@ L0CE2    lda   $0C,x
          ora   #$80
          sta   $0C,x
          leas  >$0200,x
-         andcc #$AF
+         andcc #^IntMasks
          ldb   <$19,x
          clr   <$19,x
          os9   F$Exit
@@ -1638,7 +1673,7 @@ L0D10    orcc  #$01
          rts
          clra
          tfr   a,dp
-         ldx   #$FCC0
+         ldx   #DAT.Task
          lda   $01,x
          lbne  L0DF2
          ldb   #$04
@@ -1703,7 +1738,7 @@ L0D8F    lda   ,y+
          cmpb  #$10
          bcs   L0D8F
          lda   #$B0
-         sta   >$FCC0
+         sta   >DAT.Task
          ldx   #$6000
          ldd   #$2008
 L0DA5    std   ,x++
@@ -1737,156 +1772,127 @@ L0E0C    sync
 L0E0D    sta   ,x
          bra   L0E0A
 L0E11    ldb   $06,x
-         orcc  #$50
-         stb   >$FCC0
+         orcc  #IntMasks
+         stb   >DAT.Task
          leas  ,u
          rti
 L0E1B    ldb   $06,x
-         stb   >$FCC0
+         stb   >DAT.Task
          jmp   ,u
          emod
 OS9End      equ   *
 
-* Filler
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
+Target set $1125
+ use filler
 
 L1125    andcc #$FE
          pshs  b,cc
-         orcc  #$50
-         stb   >$FCC0
+         orcc  #IntMasks
+         stb   >DAT.Task
          lda   ,x
          ldb   #$80
-         stb   >$FCC0
+         stb   >DAT.Task
          puls  pc,b,cc
 
 L1137    andcc #$FE
          pshs  b,cc
-         orcc  #$50
-         stb   >$FCC0
+         orcc  #IntMasks
+         stb   >DAT.Task
          sta   ,x
          ldb   #$80
-         stb   >$FCC0
+         stb   >DAT.Task
          puls  pc,b,cc
 
 L1149    andcc #$FE
          pshs  a,cc
-         orcc  #$50
-         stb   >$FCC0
+         orcc  #IntMasks
+         stb   >DAT.Task
          ldb   ,x
          lda   #$80
-         sta   >$FCC0
+         sta   >DAT.Task
          puls  pc,a,cc
 
-L115B    orcc  #$50
+L115B    orcc  #IntMasks
          bcc   L1171
-         sta   >$FCC0
+         sta   >DAT.Task
          lda   ,x+
-         stb   >$FCC0
+         stb   >DAT.Task
          sta   ,u+
          leay  $01,y
          bra   L117F
 L116D    lda   $01,s
-         orcc  #$50
-L1171    sta   >$FCC0
+         orcc  #IntMasks
+L1171    sta   >DAT.Task
          ldd   ,x++
          exg   b,dp
-         stb   >$FCC0
+         stb   >DAT.Task
          exg   b,dp
          std   ,u++
 L117F    lda   #$80
-         sta   >$FCC0
+         sta   >DAT.Task
          lda   ,s
          tfr   a,cc
          leay  -$01,y
          bne   L116D
          puls  pc,u,y,x,dp,b,a,cc
 
-L118E    orcc  #$50
+L118E    orcc  #IntMasks
 L1190    lda   $01,x
          leax  $02,x
-         stb   >$FCC0
+         stb   >DAT.Task
          sta   ,u+
          lda   #$80
-         sta   >$FCC0
+         sta   >DAT.Task
          leay  -$01,y
          bne   L1190
          puls  pc,u,y,x,b,a,cc
-         orcc  #$50
-         ldb   #$F2
-         bra   L11B8
-         orcc  #$50
-         ldb   #$F4
-         bra   L11B8
-         ldb   #$F6
-         bra   L11B8
-         orcc  #$50
-         ldb   #$F8
-L11B8    lda   #$80
-         sta   >$FCC0
+
+SWI3HN    orcc  #IntMasks
+         ldb   #D.SWI3
+         bra   IRQH10
+
+SWI2HN    orcc  #IntMasks
+         ldb   #D.SWI2
+         bra   IRQH10
+
+FIRQHN   ldb   #D.FIRQ
+         bra   IRQH10
+
+IRQHN    orcc  #IntMasks
+         ldb   #D.IRQ
+IRQH10    lda   #$80
+         sta   >DAT.Task
 L11BD    clra
          tfr   a,dp
          tfr   d,x
          jmp   [,x]
-         ldb   #$FA
-         bra   L11B8
-         ldb   #$FC
+
+SWIHN    ldb   #D.SWI
+         bra   IRQH10
+
+NMIHN    ldb   #D.NMI
          bra   L11BD
 
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /9999999999999999/
- fcc /999999999/
+Target set $1205
+ use filler
 
-L1205 fcb $F9,$A5,$F0,$18,$F0,$22,$ED,$DB,$FA,$0A
-      fcb $F0,$2B,$FB,$D2,$ED,$EE,$ED,$DB,$FF,$7F
-      fcb $FF,$85,$FF,$8B,$FF,$8F,$FF,$9F,$FF,$A3,$FA,$EE
+SYSVEC fdb $F9A5
+      fdb $F018
+      fdb $F022
+      fdb $EDDB
+      fdb $FA0A
+      fdb $F02B
+      fdb $FBD2
+      fdb $EDEE
+
+      fdb $EDDB
+ fdb SWI3HN+$FFF2-* Swi3 handler
+ fdb SWI2HN+$FFF4-* Swi2 handler
+ fdb FIRQHN+$FFF6-* Fast irq handler
+ fdb IRQHN+$FFF8-* Irq handler
+ fdb SWIHN+$FFFA-* Swi handler
+ fdb NMIHN+$FFFC-* Nmi handler
+      fdb $FAEE
 L1225 equ *
 
 

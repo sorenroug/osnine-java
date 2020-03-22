@@ -1,4 +1,3 @@
-*level equ 2
  opt -c
  opt f
 * NOTE: This file assumes Defs Directory in on Root
@@ -7,4 +6,5 @@
  use os9defs.x
  use os9sysdefs.lii.x
  use systype.128
+ use sysdefs.128
  endc
