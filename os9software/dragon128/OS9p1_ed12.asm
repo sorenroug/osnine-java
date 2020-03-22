@@ -63,7 +63,7 @@ COLD05    std   ,x++
 L005B    std   ,x++
          cmpx  #$00FC
          bls   L005B
-         leax  >L1225,pcr
+         leax  >ROMEnd,pcr
          pshs  x
          leay  >SYSVEC,pcr
          ldx   #$00E0
@@ -80,12 +80,12 @@ L006F    ldd   ,y++
          leax  >L02B3,pcr
          stx   D.SysSvc
          stx   D.XSWI2
-         leax  >L0CF7,pcr
+         leax  >SYSIRQ,pcr
          stx   D.SysIRQ
          stx   D.XIRQ
          leax  >SVCIRQ,pcr
          stx   D.SvcIRQ
-         leax  >L0D10,pcr
+         leax  >IOPOLL,pcr
  stx D.POLL
          leay  >SVCTBL,pcr
          lbsr  L030B
@@ -103,7 +103,7 @@ L006F    ldd   ,y++
          lda   #$FF
          sta   $0A,x
          sta   $0B,x
-         leax  <$40,x
+         leax  <P$DATImg,x
          stx   D.SysDAT
          lda   #$D8
          sta   $3C
@@ -111,7 +111,7 @@ L006F    ldd   ,y++
          clrb
          std   ,x++
          ldy   #$000D
-         ldd   #$00C0
+         ldd   #DAT.Free
 L00D7    std   ,x++
          leay  -$01,y
          bne   L00D7
@@ -390,7 +390,7 @@ ELINK    pshs  u
          bra   L033B
 
 LINK     ldx   D.Proc
-         leay  <$40,x
+         leay  <P$DATImg,x
 L0324    pshs  u
          ldx   $04,u
          lda   $01,u
@@ -460,7 +460,7 @@ L0391    puls  u,y,x,b
 L03A9    orcc  #$01
          puls  pc,u
 L03AD    ldx   D.Proc
-         leay  <$40,x
+         leay  <P$DATImg,x
          clra
          pshs  y,x,b,a
          subb  #$10
@@ -755,7 +755,7 @@ CRCGen    ldd   $06,u
          pshs  y,x,b,a
          lbsr  L0B47
          ldx   D.Proc
-         leay  <$40,x
+         leay  <P$DATImg,x
          ldx   $0B,s
          lbsr  L0B0B
 L05E6    lbsr  L0AF3
@@ -862,7 +862,7 @@ L069E    lbsr  L0B0B
          puls  pc,y,a
 
 PNAM     ldx   D.Proc
-         leay  <$40,x
+         leay  <P$DATImg,x
          ldx   $04,u
          bsr   L06CB
          std   $01,u
@@ -934,12 +934,12 @@ L073F    coma
          puls  pc,a
 
          ldx   D.Proc
-         leay  <$40,x
+         leay  <P$DATImg,x
          ldx   $04,u
          pshs  y,x
          bra   L0759
          ldx   D.Proc
-         leay  <$40,x
+         leay  <P$DATImg,x
          ldx   $04,u
          pshs  y,x
          ldy   D.SysDAT
@@ -994,7 +994,7 @@ L07A0    decb
 L07B9    ldx   D.SysDAT
          lslb
          ldd   b,x
-         cmpd  #$00C0
+         cmpd  #DAT.Free
          beq   L07D1
          ldx   D.BlkMap
          lda   d,x
@@ -1067,7 +1067,7 @@ L0835    ldb   ,x
          ldx   D.SysDAT
          ldy   #$0010
 L0844    ldd   ,x
-         cmpd  #$00C0
+         cmpd  #DAT.Free
          beq   L0873
          ldu   D.BlkMap
          lda   d,u
@@ -1088,7 +1088,7 @@ L0861    lda   ,u+
          ldd   ,x
          ldu   D.BlkMap
          clr   d,u
-         ldd   #$00C0
+         ldd   #DAT.Free
          std   ,x
 L0873    leax  $02,x
          leay  -$01,y
@@ -1177,14 +1177,14 @@ L090D    comb
          ldx   $04,u
 L0918    pshs  u,y,x,b,a
          lsla
-         leay  <$40,x
+         leay  <P$DATImg,x
          leay  a,y
          clra
          tfr   d,x
          ldu   D.BlkMap
          pshs  u,y,x,b,a
 L0927    ldd   ,y++
-         cmpd  #$00C0
+         cmpd  #DAT.Free
          beq   L093C
          lda   d,u
          cmpa  #$01
@@ -1222,7 +1222,7 @@ L096A    ldb   #$CF
 L0973    puls  u,y,x
          leau  <$20,u
 L0978    ldd   ,y++
-         cmpd  #$00C0
+         cmpd  #DAT.Free
          bne   L0991
 L0980    cmpu  D.BlkMap+2
          beq   L0997
@@ -1240,7 +1240,7 @@ L0997    ldu   D.BlkMap
          bra   L09A8
 L099C    pshs  b
          ldd   ,y++
-         cmpd  #$00C0
+         cmpd  #DAT.Free
          puls  b
          bne   L09C3
 L09A8    pshs  y
@@ -1357,7 +1357,7 @@ L0A8D    tfr   a,b
          addb  $02,s
 L0A91    lslb
          ldx   b,y
-         cmpx  #$00C0
+         cmpx  #DAT.Free
          bne   L0A7B
          inca
          cmpa  $03,s
@@ -1368,7 +1368,7 @@ L0A9E    leas  $02,s
          ldx   $04,u
          ldu   $08,u
 L0AA8    pshs  u,y,x,b,a
-         leay  <$40,x
+         leay  <P$DATImg,x
          lsla
          leay  a,y
 L0AB0    ldx   ,u++
@@ -1485,7 +1485,7 @@ L0B80    lda   $0C,x
          andcc #$FE
          pshs  u,y,x,b,a,cc
          ldb   $06,x
-         leax  <$40,x
+         leax  <P$DATImg,x
          ldy   #$0010
          ldu   #$FE00
          lbra  L118E
@@ -1597,6 +1597,7 @@ L0C66    bsr   L0C09
          lds   D.SysStk
          andcc #^IntMasks
          bra   L0C75
+
 L0C73    cwai  #$AF
 L0C75    orcc  #IntMasks
          ldy   #$0045
@@ -1656,21 +1657,23 @@ L0CE2    lda   $0C,x
          clr   <$19,x
          os9   F$Exit
 
-L0CF7    jsr   [D.SvcIRQ]
-         bcc   SYSI10
-         ldb   ,s
-         orb   #$50
-         stb   ,s
-SYSI10    rti
+SYSIRQ    jsr   [D.SvcIRQ]
+ bcc SYSI10 branch if interrupt identified
+ ldb R$CC,S get condition codes
+ orb #IntMasks set interrupt mask
+ stb R$CC,S update condition codes
+SYSI10 rti
+
 L0D04    ldx   D.SysPrc
          lbsr  L0B77
          leas  ,u
          rti
 
-SVCIRQ    jmp   [D.Poll]
+SVCIRQ   jmp   [D.Poll]
 
-L0D10    orcc  #$01
+IOPOLL   orcc  #$01
          rts
+
          clra
          tfr   a,dp
          ldx   #DAT.Task
@@ -1738,7 +1741,7 @@ L0D8F    lda   ,y+
          cmpb  #$10
          bcs   L0D8F
          lda   #$B0
-         sta   >DAT.Task
+         sta   DAT.Task
          ldx   #$6000
          ldd   #$2008
 L0DA5    std   ,x++
@@ -1773,63 +1776,63 @@ L0E0D    sta   ,x
          bra   L0E0A
 L0E11    ldb   $06,x
          orcc  #IntMasks
-         stb   >DAT.Task
+         stb   DAT.Task
          leas  ,u
          rti
 L0E1B    ldb   $06,x
-         stb   >DAT.Task
+         stb   DAT.Task
          jmp   ,u
          emod
 OS9End      equ   *
 
-Target set $1125
+Target set $1225-$100
  use filler
 
 L1125    andcc #$FE
          pshs  b,cc
          orcc  #IntMasks
-         stb   >DAT.Task
+         stb   DAT.Task
          lda   ,x
          ldb   #$80
-         stb   >DAT.Task
+         stb   DAT.Task
          puls  pc,b,cc
 
 L1137    andcc #$FE
          pshs  b,cc
          orcc  #IntMasks
-         stb   >DAT.Task
+         stb   DAT.Task
          sta   ,x
          ldb   #$80
-         stb   >DAT.Task
+         stb   DAT.Task
          puls  pc,b,cc
 
 L1149    andcc #$FE
          pshs  a,cc
          orcc  #IntMasks
-         stb   >DAT.Task
+         stb   DAT.Task
          ldb   ,x
          lda   #$80
-         sta   >DAT.Task
+         sta   DAT.Task
          puls  pc,a,cc
 
 L115B    orcc  #IntMasks
          bcc   L1171
-         sta   >DAT.Task
+         sta   DAT.Task
          lda   ,x+
-         stb   >DAT.Task
+         stb   DAT.Task
          sta   ,u+
          leay  $01,y
          bra   L117F
 L116D    lda   $01,s
          orcc  #IntMasks
-L1171    sta   >DAT.Task
+L1171    sta   DAT.Task
          ldd   ,x++
          exg   b,dp
-         stb   >DAT.Task
+         stb   DAT.Task
          exg   b,dp
          std   ,u++
 L117F    lda   #$80
-         sta   >DAT.Task
+         sta   DAT.Task
          lda   ,s
          tfr   a,cc
          leay  -$01,y
@@ -1839,10 +1842,10 @@ L117F    lda   #$80
 L118E    orcc  #IntMasks
 L1190    lda   $01,x
          leax  $02,x
-         stb   >DAT.Task
+         stb   DAT.Task
          sta   ,u+
          lda   #$80
-         sta   >DAT.Task
+         sta   DAT.Task
          leay  -$01,y
          bne   L1190
          puls  pc,u,y,x,b,a,cc
@@ -1861,8 +1864,8 @@ FIRQHN   ldb   #D.FIRQ
 IRQHN    orcc  #IntMasks
          ldb   #D.IRQ
 IRQH10    lda   #$80
-         sta   >DAT.Task
-L11BD    clra
+         sta   DAT.Task
+IRQH20    clra
          tfr   a,dp
          tfr   d,x
          jmp   [,x]
@@ -1871,9 +1874,9 @@ SWIHN    ldb   #D.SWI
          bra   IRQH10
 
 NMIHN    ldb   #D.NMI
-         bra   L11BD
+         bra   IRQH20
 
-Target set $1205
+Target set $1225-$20
  use filler
 
 SYSVEC fdb $F9A5
@@ -1893,7 +1896,7 @@ SYSVEC fdb $F9A5
  fdb SWIHN+$FFFA-* Swi handler
  fdb NMIHN+$FFFC-* Nmi handler
       fdb $FAEE
-L1225 equ *
+ROMEnd equ *
 
 
  end
