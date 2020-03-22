@@ -1805,6 +1805,7 @@ L1125    andcc #$FE
          ldb   #$80
          stb   >$FCC0
          puls  pc,b,cc
+
 L1137    andcc #$FE
          pshs  b,cc
          orcc  #$50
@@ -1813,6 +1814,7 @@ L1137    andcc #$FE
          ldb   #$80
          stb   >$FCC0
          puls  pc,b,cc
+
 L1149    andcc #$FE
          pshs  a,cc
          orcc  #$50
@@ -1821,6 +1823,7 @@ L1149    andcc #$FE
          lda   #$80
          sta   >$FCC0
          puls  pc,a,cc
+
 L115B    orcc  #$50
          bcc   L1171
          sta   >$FCC0
@@ -1844,6 +1847,7 @@ L117F    lda   #$80
          leay  -$01,y
          bne   L116D
          puls  pc,u,y,x,dp,b,a,cc
+
 L118E    orcc  #$50
 L1190    lda   $01,x
          leax  $02,x

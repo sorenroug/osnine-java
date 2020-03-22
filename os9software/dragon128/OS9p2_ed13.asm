@@ -11,7 +11,12 @@
 Type set Systm
 Revs set ReEnt+2
 
-         mod   OS9End,OS9Name,Type,Revs,start,size
+         mod   OS9End,OS9Name,Type,Revs,COLD,size
+
+OS9Name     equ   *
+         fcs   /OS9p2/
+         fcb   13
+
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   2
@@ -64,13 +69,19 @@ u00DE    rmb   15
 u00ED    rmb   10
 u00F7    rmb   9
 size     equ   .
-OS9Name     equ   *
-         fcs   /OS9p2/
-         fcb   13
-start    equ   *
-         leay  >SVCTBL,pcr
+
+ ttl Coldstart Routines
+ page
+*****
+*
+* Cold Start Routines
+*
+*
+* Initialize Service Routine Dispatch Table
+*
+Cold leay SVCTBL,PCR Get ptr to service routine table
          os9   F$SSvc
-         ldu   <u0024
+         ldu   D.Init
          ldd   u0009,u
          lsra
          rorb
@@ -80,16 +91,16 @@ start    equ   *
          rorb
          lsra
          rorb
-         addd  <u0040
+         addd  D.BlkMap
          tfr   d,x
          ldb   #$80
          bra   L0034
 L002E    lda   ,x+
          bne   L0034
          stb   -$01,x
-L0034    cmpx  <u0042
+L0034    cmpx  D.BlkMap+2
          bcs   L002E
-L0038    ldu   <u0024
+L0038    ldu   D.Init
          ldy   <u004A
          leay  >$00A0,y
          lda   #$0D
@@ -118,7 +129,7 @@ L0059    clr   ,-s
          bcc   L0078
          os9   F$Boot
          bcc   L0038
-L0078    ldu   <u0024
+L0078    ldu   D.Init
          ldd   <u0012,u
          beq   L00A0
          leax  d,u
@@ -128,7 +139,7 @@ L0078    ldu   <u0024
          os9   F$Boot
          bcc   L0078
          bra   L00A0
-L008F    ldx   <u0050
+L008F    ldx   D.PROC
          sta   <$30,x
          os9   I$Dup
          sta   <$31,x
@@ -139,7 +150,7 @@ L00A0    leax  <L00BF,pcr
          os9   F$Link
          bcs   L00AC
          jsr   ,y
-L00AC    ldu   <u0024
+L00AC    ldu   D.Init
          ldd   u000E,u
          leax  d,u
          lda   #$01
@@ -184,7 +195,7 @@ IOLink    leax  >IOSTR,pcr
          os9   F$Link
          rts
 
-         pshs  u,b,a
+UNLINK   pshs  u,b,a
          ldd   u0008,u
          ldx   u0008,u
          lsra
@@ -193,11 +204,11 @@ IOLink    leax  >IOSTR,pcr
          lsra
          sta   ,s
          beq   L01A8
-         ldu   <u0050
-         leay  <u0040,u
+         ldu   D.PROC
+         leay  <$40,u
          lsla
          ldd   a,y
-         ldu   <u0040
+         ldu   D.BlkMap
          ldb   d,u
          bitb  #$02
          beq   L01A8
@@ -264,7 +275,7 @@ L01F0    stx   ,y++
 L01F5    clrb
 L01F6    leas  $02,s
          puls  pc,u
-L01FA    ldx   <u0040
+L01FA    ldx   D.BlkMap
          ldd   [,u]
          lda   d,x
          bmi   L024A
@@ -277,7 +288,7 @@ L0204    ldd   [,x]
 L020F    leax  $08,x
          cmpx  <u0058
          bcs   L0204
-         ldx   <u0040
+         ldx   D.BlkMap
          ldd   u0002,u
          bsr   L024B
          pshs  y
@@ -310,12 +321,13 @@ L024B    addd  #$0FFF
          lsra
          lsra
          rts
-         pshs  u
+
+FORK     pshs  u
          lbsr  L02F9
          bcc   L025C
          puls  pc,u
 L025C    pshs  u
-         ldx   <u0050
+         ldx   D.PROC
          ldd   $08,x
          std   u0008,u
          lda   $0A,x
@@ -348,7 +360,7 @@ L029B    lda   $07,x
          subd  ,s
          tfr   d,u
          ldb   $06,x
-         ldx   <u0050
+         ldx   D.PROC
          lda   $06,x
          leax  ,y
          puls  y
@@ -361,7 +373,7 @@ L029B    lda   $07,x
          os9   F$Move
          puls  u,x
          os9   F$DelTsk
-         ldy   <u0050
+         ldy   D.PROC
          lda   ,x
          sta   u0001,u
          ldb   $03,y
@@ -380,7 +392,8 @@ L02DE    puls  x
          lbsr  L039D
          comb
          puls  pc,u,b
-         pshs  u
+
+ALLPRC   pshs  u
          bsr   L02F9
          bcs   L02F7
          ldx   ,s
@@ -415,14 +428,14 @@ L0326    std   ,x++
          sta   u000C,u
          ldb   #$0F
          ldx   #$00C0
-         leay  <u0040,u
+         leay  $40,u
 L0338    stx   ,y++
          decb
          bne   L0338
          ldx   #$00FF
          stx   ,y++
          leay  >u00A0,u
-         ldx   <u0050
+         ldx   D.PROC
          leax  >$00A0,x
          ldb   #$20
 L034E    lda   ,x+
@@ -431,9 +444,11 @@ L034E    lda   ,x+
          bne   L034E
          clrb
 L0356    rts
-         lda   u0001,u
+
+DELPRC   lda   u0001,u
          bra   L039D
-         ldx   <u0050
+
+WAIT     ldx   D.PROC
          lda   $03,x
          beq   L037F
 L0361    lbsr  L0B30
@@ -479,11 +494,12 @@ L039D    pshs  u,x,b,a
          ldd   #$0200
          os9   F$SRtMem
 L03B8    puls  pc,u,x,b,a
-         pshs  u
+
+CHAIN    pshs  u
          lbsr  L02F9
          bcc   L03C3
          puls  pc,u
-L03C3    ldx   <u0050
+L03C3    ldx   D.PROC
          pshs  u,x
          leax  $04,x
          leau  u0004,u
@@ -492,7 +508,7 @@ L03CF    ldd   ,x++
          std   ,u++
          leay  -$01,y
          bne   L03CF
-         ldx   <u0050
+         ldx   D.PROC
          clra
          clrb
          stb   $06,x
@@ -522,14 +538,14 @@ L0409    stu   ,y++
          ldu   #$00FF
          stu   ,y++
          ldu   $02,s
-         stu   <u0050
+         stu   D.PROC
          ldu   $04,s
          lbsr  L04B3
          lbcs  L04A3
          pshs  b,a
          os9   F$AllTsk
          bcc   L0427
-L0427    ldu   <u0050
+L0427    ldu   D.PROC
          lda   u0006,u
          ldb   $06,x
          leau  >$01F4,x
@@ -578,23 +594,23 @@ L0476    lda   <u00D0
          os9   F$DelTsk
          orcc  #$50
          ldd   <u004A
-         std   <u0050
+         std   D.PROC
          lda   $0C,x
          anda  #$7F
          sta   $0C,x
          os9   F$AProc
          os9   F$NProc
 L04A3    puls  u,x
-         stx   <u0050
+         stx   D.PROC
          pshs  b
          lda   ,u
          lbsr  L039D
          puls  b
          os9   F$Exit
 L04B3    pshs  u,y,x,b,a
-         ldd   <u0050
+         ldd   D.PROC
          pshs  b,a
-         stx   <u0050
+         stx   D.PROC
          lda   u0001,u
          ldx   u0004,u
          ldy   ,s
@@ -602,7 +618,7 @@ L04B3    pshs  u,y,x,b,a
          os9   F$SLink
          bcc   L04D9
          ldd   ,s
-         std   <u0050
+         std   D.PROC
          ldu   $04,s
          os9   F$Load
          bcc   L04D9
@@ -613,7 +629,7 @@ L04D9    stu   $02,s
          ldu   $0B,s
          stx   u0004,u
          ldx   $07,s
-         stx   <u0050
+         stx   D.PROC
          ldd   $05,s
          std   <$11,x
          puls  a
@@ -658,9 +674,10 @@ L0510    os9   F$Mem
          std   $08,y
          stx   $0A,y
 L0540    puls  b,a
-         std   <u0050
+         std   D.PROC
          puls  pc,u,y,x,b,a
-         ldx   <u0050
+
+EXIT     ldx   D.PROC
          bsr   L05A7
          ldb   u0002,u
          stb   <$19,x
@@ -724,16 +741,17 @@ L05BB    decb
          lsrb
          lsrb
          os9   F$DelImg
-L05CC    ldd   <u0050
+L05CC    ldd   D.PROC
          pshs  b,a
-         stx   <u0050
+         stx   D.PROC
          ldu   <$11,x
          os9   F$UnLink
          puls  u,b,a
-         std   <u0050
+         std   D.PROC
          os9   F$DelTsk
          rts
-         ldx   <u0050
+
+USRMEM   ldx   D.PROC
          ldd   u0001,u
          beq   L0637
          addd  #$00FF
@@ -785,18 +803,20 @@ L0637    lda   $07,x
          std   u0001,u
          std   u0006,u
          rts
-         ldx   <u0050
+
+SEND     ldx   D.PROC
          lda   u0001,u
-         bne   L0651
+         bne   SENSUB
          inca
 L0646    cmpa  ,x
          beq   L064C
-         bsr   L0651
+         bsr   SENSUB
 L064C    inca
          bne   L0646
          clrb
          rts
-L0651    lbsr  L0B30
+
+SENSUB    lbsr  L0B30
          pshs  u,y,a,cc
          bcs   L0669
          tst   u0002,u
@@ -875,15 +895,29 @@ L06DF    ldd   $0D,x
          tfr   a,cc
 L06F0    os9   F$AProc
 L06F3    puls  pc,u,y,a,cc
-         ldx   <u0050
+ page
+*****
+*
+*  Subroutine Intcpt
+*
+* Signal Intercept Handler
+*
+INTCPT ldx D.PROC Get process ptr
          ldd   u0004,u
          std   <$1A,x
          ldd   u0008,u
          std   <$1C,x
          clrb
          rts
-         pshs  cc
-         ldx   <u0050
+page
+*****
+*
+*  Subroutine Sleep
+*
+* Suspend Process
+*
+SLEEP pshs  cc
+         ldx   D.PROC
          orcc  #$50
          lda   <$19,x
          beq   L071B
@@ -925,7 +959,7 @@ L0748    puls  y,x
          ldx   u0004,u
          bsr   L0779
          stx   u0004,u
-         ldx   <u0050
+         ldx   D.PROC
          lda   $0C,x
          anda  #$BF
          sta   $0C,x
@@ -934,7 +968,7 @@ L0766    ldx   #$0049
 L0769    leay  ,x
          ldx   $0D,x
          bne   L0769
-         ldx   <u0050
+         ldx   D.PROC
          clra
          clrb
          stx   $0D,y
@@ -943,7 +977,7 @@ L0769    leay  ,x
 L0779    pshs  pc,u,y,x
          leax  <L0795,pcr
          stx   $06,s
-         ldx   <u0050
+         ldx   D.PROC
          ldb   $06,x
          cmpb  <u00D0
          beq   L078B
@@ -953,14 +987,15 @@ L078B    ldd   $04,x
          sts   $04,x
          os9   F$NProc
 L0795    pshs  x
-         ldx   <u0050
+         ldx   D.PROC
          std   $04,x
          clrb
          puls  pc,x
-         lda   u0001,u
+
+SETPRI   lda   u0001,u
          lbsr  L0B30
          bcs   L07B9
-         ldx   <u0050
+         ldx   D.PROC
          ldd   $08,x
          beq   L07B0
          cmpd  $08,y
@@ -972,57 +1007,61 @@ L07B0    lda   u0002,u
 L07B6    comb
          ldb   #$E0
 L07B9    rts
-         ldx   <u0050
+
+GETID    ldx   D.PROC
          lda   ,x
          sta   u0001,u
          ldd   $08,x
          std   u0006,u
          clrb
          rts
-         ldx   <u0050
+
+SETSWI   ldx   D.PROC
          leay  <$13,x
          ldb   u0001,u
          decb
          cmpb  #$03
-         bcc   L07D8
+         bcc   SSWI10
          lslb
          ldx   u0004,u
          stx   b,y
          rts
-L07D8    comb
+SSWI10    comb
          ldb   #$E3
          rts
-L07DC    coma
-         inc   $0F,s
-         com   d,s
-L07E1    ldx   u0004,u
+
+ClockNam fcs "Clock"
+
+SetTime  ldx   u0004,u
          tfr   dp,a
          ldb   #$28
          tfr   d,u
-         ldy   <u0050
+         ldy   D.PROC
          lda   $06,y
          ldb   <u00D0
          ldy   #$0006
          os9   F$Move
-         ldx   <u0050
+         ldx   D.PROC
          pshs  x
          ldx   <u004A
-         stx   <u0050
+         stx   D.PROC
          lda   #$C1
-         leax  <L07DC,pcr
+         leax  <ClockNam,pcr
          os9   F$Link
          puls  x
-         stx   <u0050
+         stx   D.PROC
          bcs   L080F
          jmp   ,y
 L080F    rts
-         ldd   u0001,u
+
+ALLBIT   ldd   u0001,u
          ldx   u0004,u
          bsr   L0867
-         ldy   <u0050
+         ldy   D.PROC
          ldb   $06,y
          bra   L0825
-         ldd   u0001,u
+
+SALLBIT  ldd   u0001,u
          ldx   u0004,u
          bsr   L0867
          ldb   <u00D0
@@ -1076,7 +1115,7 @@ L087C    fcb  $80,$40,$20,$10,$08,$04,$02,$01
 DELBIT   ldd   u0001,u
          ldx   u0004,u
          bsr   L0867
-         ldy   <u0050
+         ldy   D.PROC
          ldb   $06,y
          bra   L0899
 
@@ -1116,13 +1155,15 @@ L08D4    os9   F$STABX
          leas  $01,s
 L08D9    clrb
          rts
-         ldd   u0001,u
+
+SCHBIT   ldd   u0001,u
          ldx   u0004,u
          bsr   L0867
-         ldy   <u0050
+         ldy   D.PROC
          ldb   $06,y
          bra   L08F1
-         ldd   u0001,u
+
+SSCHBIT  ldd   u0001,u
          ldx   u0004,u
          lbsr  L0867
          ldb   <u00D0
@@ -1166,7 +1207,8 @@ L093C    ldd   $07,s
 L093E    std   u0001,u
          leas  $09,s
          rts
-         ldx   <u0050
+
+GPRDSC   ldx   D.PROC
          ldb   $06,x
          lda   u0001,u
          os9   F$GProcP
@@ -1177,20 +1219,22 @@ L093E    std   u0001,u
          ldu   u0004,u
          os9   F$Move
 L095B    rts
-         ldd   #$1000
+
+GBLKMP   ldd   #$1000
          std   u0001,u
-         ldd   <u0042
-         subd  <u0040
+         ldd   D.BlkMap+2
+         subd  D.BlkMap
          std   u0006,u
          tfr   d,y
          lda   <u00D0
-         ldx   <u0050
+         ldx   D.PROC
          ldb   $06,x
-         ldx   <u0040
+         ldx   D.BlkMap
          ldu   u0004,u
          os9   F$Move
          rts
-         ldd   <u0046
+
+GMODDR   ldd   <u0046
          subd  <u0044
          tfr   d,y
          ldd   <u0058
@@ -1201,18 +1245,20 @@ L095B    rts
          ldx   <u0044
          stx   u0008,u
          lda   <u00D0
-         ldx   <u0050
+         ldx   D.PROC
          ldb   $06,x
          ldx   <u0044
          ldu   u0004,u
          os9   F$Move
          rts
-         ldx   <u0050
+
+SETUSER  ldx   D.PROC
          ldd   u0006,u
          std   $08,x
          clrb
          rts
-         ldd   u0006,u
+
+CPYMEM   ldd   u0006,u
          beq   L0A04
          addd  u0008,u
          ldy   <u0022
@@ -1220,7 +1266,7 @@ L095B    rts
          sty   <u0022
          leay  <-$20,y
          pshs  y,b,a
-         ldy   <u0050
+         ldy   D.PROC
          ldb   $06,y
          pshs  b
          ldx   u0001,u
@@ -1257,9 +1303,10 @@ L09EA    os9   F$LDAXY
          sty   <u0022
 L0A04    clrb
          rts
-         pshs  u
+
+UNLOAD   pshs  u
          lda   u0001,u
-         ldx   <u0050
+         ldx   D.PROC
          leay  <$40,x
          ldx   u0004,u
          os9   F$FModul
@@ -1296,13 +1343,15 @@ L0A2E    adda  #$02
 L0A4D    lbsr  L01FA
 L0A50    clrb
 L0A51    rts
-         lda   u0001,u
+
+F64      lda   u0001,u
          ldx   u0004,u
-         bsr   L0A5E
-         bcs   L0A5D
+         bsr   FINDPD
+         bcs   F6410
          sty   u0006,u
-L0A5D    rts
-L0A5E    pshs  b,a
+F6410    rts
+
+FINDPD    pshs  b,a
          tsta
          beq   L0A72
          clrb
@@ -1317,7 +1366,8 @@ L0A5E    pshs  b,a
          bne   L0A73
 L0A72    coma
 L0A73    puls  pc,b,a
-         ldx   u0004,u
+
+A64      ldx   u0004,u
          bne   L0A81
          bsr   L0A8B
          bcs   L0A8A
@@ -1389,7 +1439,17 @@ L0AE9    clr   b,y
 L0AF0    puls  pc,u,x
 L0AF2    leas  $03,s
          puls  pc,u,x
-         lda   u0001,u
+
+***************
+* Rtrn64
+*   Return Path Descriptor To Free Status
+*
+* Passed: (A)=Path Number
+*         (X)=D.Pdbt Path Descriptor Block Table Addr
+* Returns: None
+* Destroys: Cc
+*
+R64      lda   u0001,u
          ldx   u0004,u
          pshs  u,y,x,b,a
          clrb
@@ -1417,7 +1477,8 @@ L0B12    tst   d,u
          clr   a,x
 L0B22    clr   ,s+
 L0B24    puls  pc,u,y,x,b,a
-         lda   u0001,u
+
+GPROCP   lda   u0001,u
          bsr   L0B30
          bcs   L0B2F
          sty   u0006,u
@@ -1436,7 +1497,8 @@ L0B42    puls  x,b,a
          comb
          ldb   #$EE
          rts
-         ldx   u0004,u
+
+DELIMG   ldx   u0004,u
          ldd   u0001,u
          leau  <$40,x
          lsla
@@ -1445,7 +1507,7 @@ L0B42    puls  x,b,a
          tfr   d,y
          pshs  x
 L0B57    ldd   ,u
-         addd  <u0040
+         addd  D.BlkMap
          tfr   d,x
          lda   ,x
          anda  #$FE
@@ -1460,7 +1522,8 @@ L0B57    ldd   ,u
          sta   $0C,x
          clrb
          rts
-         lda   u0002,u
+
+MAPBLK   lda   u0002,u
          cmpa  #$10
          bcc   L0BD5
          leas  <-$20,s
@@ -1471,7 +1534,7 @@ L0B83    stx   ,y++
          deca
          bne   L0B83
          ldb   u0002,u
-         ldx   <u0050
+         ldx   D.PROC
          leay  <$40,x
          os9   F$FreeHB
          bcs   L0BD1
@@ -1497,7 +1560,7 @@ L0B83    stx   ,y++
          lda   ,s
          lsla
          leay  a,y
-         ldu   <u0040
+         ldu   D.BlkMap
 L0BBF    ldd   ,y++
          lda   d,u
          ldb   #$10
@@ -1513,14 +1576,15 @@ L0BD1    leas  <$20,s
 L0BD5    comb
          ldb   #$DB
          rts
-         ldb   u0002,u
+
+CLRBLK   ldb   u0002,u
          beq   L0C2D
          ldd   u0008,u
          tstb
          bne   L0BD5
          bita  #$0F
          bne   L0BD5
-         ldx   <u0050
+         ldx   D.PROC
          cmpx  <u004A
          beq   L0BFC
          lda   $04,x
@@ -1544,7 +1608,7 @@ L0BFC    lda   u0008,u
 L0C0B    stx   ,y++
          decb
          bne   L0C0B
-         ldx   <u0050
+         ldx   D.PROC
          lda   $0C,x
          ora   #$10
          sta   $0C,x
@@ -1562,10 +1626,11 @@ L0C25    clr   ,x+
          bne   L0C23
 L0C2D    clrb
          rts
-         ldb   u0002,u
+
+DELRAM   ldb   u0002,u
          beq   L0C55
-         ldd   <u0042
-         subd  <u0040
+         ldd   D.BlkMap+2
+         subd  D.BlkMap
          subd  u0004,u
          bls   L0C55
          tsta
@@ -1573,7 +1638,7 @@ L0C2D    clrb
          cmpb  u0002,u
          bcc   L0C44
          stb   u0002,u
-L0C44    ldx   <u0040
+L0C44    ldx   D.BlkMap
          ldd   u0004,u
          leax  d,x
          ldb   u0002,u
@@ -1584,7 +1649,8 @@ L0C4C    lda   ,x
          bne   L0C4C
 L0C55    clrb
          rts
-         ldx   <u0044
+
+GCMDIR   ldx   <u0044
          bra   L0C61
 L0C5B    ldu   ,x
          beq   L0C67
