@@ -324,25 +324,25 @@ L0271    fcb   $6E,$98,$F0,$9E,$50,$EE,$88,$17,$27,$13
 
 L027B    lbra  L0E5E
          ldx   D.Proc
-         ldu   <$15,x
+         ldu   P$SWI2,x
          beq   L028E
          bra   L027B
          ldx   D.Proc
-         ldu   <$13,x
+         ldu   P$SWI,x
          bne   L027B
 L028E    ldd   D.SysSvc
          std   D.XSWI2
          ldd   D.SysIRQ
          std   D.XIRQ
-         lda   $0C,x
-         ora   #$80
-         sta   $0C,x
-         sts   $04,x
-         leas  >$01F4,x
+         lda   P$State,x
+         ora   #SysState
+         sta   P$State,x
+         sts   P$SP,x
+         leas  (P$Stack-R$Size),x
          andcc #^IntMasks
          leau  ,s
          bsr   L02CB
-         ldb   $06,x
+         ldb   P$Task,x
          ldx   $0A,u
          lbsr  L0C40
          leax  $01,x
@@ -354,7 +354,7 @@ L028E    ldd   D.SysSvc
          stb   ,u
          ldx   D.Proc
          bsr   L02DA
-         lda   $0C,x
+         lda   P$State,x
          anda  #$7F
          lbra  L0D7C
 L02CB    pshs  u,y,x,cc
@@ -482,7 +482,7 @@ L03BB    ldd   $04,x
          pshs  x,b,a
          ldy   ,x
          ldd   $02,x
-         addd  #$1FFF
+         addd  #DAT.BlSz-1
          tfr   a,b
          lsrb
          lsrb
@@ -623,7 +623,7 @@ L04BE    cmpx  D.ModEnd
 L04CD    puls  u
          ldx   D.BlkMap
          ldd   $02,u
-         addd  #$1FFF
+         addd  #DAT.BlSz-1
          lsra
          lsra
          lsra
@@ -669,7 +669,7 @@ L0524    pshs  u,y,x
          ldd   #$0002
          lbsr  L0B02
          addd  ,s
-         addd  #$1FFF
+         addd  #DAT.BlSz-1
          lsra
          lsra
          lsra
@@ -1119,9 +1119,9 @@ L0863    lda   ,-y
          lsra
          lsra
          ldb   $01,s
-         andb  #$1F
+         andb  #(DAT.BlSz/256)-1
          addb  $01,u
-         addb  #$1F
+         addb  #(DAT.BlSz/256)-1
          lsrb
          lsrb
          lsrb
