@@ -66,14 +66,14 @@ L005B    std   ,x++
          bls   L005B
          leax  >ROMEnd,pcr
          pshs  x
-         leay  >SYSVEC,pcr
+         leay SYSVEC,PCR Get interrupt entries
          ldx   #D.Clock
-L006F    ldd   ,y++
-         addd  ,s
-         std   ,x++
-         cmpx  #$00EC
-         bls   L006F
-         leas  $02,s
+COLD45 ldd ,Y++ get vector
+ addd 0,S add offset
+ std ,X++ init dp vector
+ cmpx #D.XNMI end of dp vectors?
+ bls COLD45 branch if not
+ leas 2,S return scratch
          ldx   D.XSWI2
          stx   D.UsrSvc
          ldx   D.XIRQ
@@ -81,7 +81,7 @@ L006F    ldd   ,y++
          leax  >L02B3,pcr
          stx   D.SysSvc
          stx   D.XSWI2
-         leax  >SYSIRQ,pcr
+         leax SYSIRQ,PCR Get system interrupt routine
          stx   D.SysIRQ
          stx   D.XIRQ
          leax  >SVCIRQ,pcr
@@ -319,6 +319,7 @@ L0244    lbra  L0E1B
          ldu   P$SWI2,x
          beq   L0257
          bra   L0244
+
          ldx   D.Proc
          ldu   P$SWI,x
          bne   L0244
@@ -349,6 +350,7 @@ L0257    ldd   D.SysSvc
          lda   P$State,x
          anda  #$7F
          lbra  L0C5F
+
 L0294    lda   $06,x
          ldb   D.SysTsk
          pshs  u,y,x,dp,b,a,cc
@@ -426,7 +428,7 @@ LINK     ldx   D.Proc
          leay  <P$DATImg,x
 L0324    pshs  u
          ldx   R$X,u
-         lda   $01,u
+         lda   R$A,u
          lbsr  L0616
          lbcs  L03A9
          leay  ,u
@@ -526,14 +528,14 @@ L03D4    puls  u,y
 * Validate Module
 *
 VMOD pshs U Save register ptr
-         ldx   R$X,u
-         ldy   $01,u
+ ldx R$X,U Get new module ptr
+         ldy   R$D,u
          bsr   L03EE
          ldx   ,s
          stu   $08,x
          puls  pc,u
 L03EE    pshs  y,x
-         lbsr  L050F
+         lbsr  IDCHK
          bcs   L041E
          ldd   #$0006
          lbsr  L0B1D
@@ -555,6 +557,7 @@ L03EE    pshs  y,x
 L041C    ldb   #$CE
 L041E    orcc  #$01
          puls  pc,y,x
+
 L0422    ldx   ,s
          lbsr  L04AE
          bcs   L041C
@@ -673,11 +676,12 @@ L0500    ldu   ,y++
          rts
 L050C    orcc  #$01
          rts
-L050F    pshs  y,x
+
+IDCHK    pshs  y,x
          clra
          clrb
          lbsr  L0B1D
-         cmpd  #$87CD
+ cmpd #M$ID12 Check them
          beq   L0520
          ldb   #$CD
          bra   L057C
@@ -742,36 +746,36 @@ CRCCAL eora 0,U Add crc msb
  lslb SHIFT D
  rola
  eora 1,U Add old lsb
-         std   R$D,u
-         clrb
-         lda   ,s
-         lsra
-         rorb
-         lsra
-         rorb
-         eora  $01,u
-         eorb  $02,u
-         std   R$D,u
-         lda   ,s
-         lsla
-         eora  ,s
-         sta   ,s
-         lsla
-         lsla
-         eora  ,s
-         sta   ,s
-         lsla
-         lsla
-         lsla
-         lsla
-         eora  ,s+
-         bpl   CRCC99
-         ldd   #$8021
-         eora  ,u
-         sta   ,u
-         eorb  $02,u
-         stb   R$B,u
-CRCC99    rts
+ std 1,U Set crc mid & low
+ clrb
+ lda 0,S Get old msb
+ lsra SHIFT D
+ rorb
+ lsra SHIFT D
+ rorb
+ eora 1,U Add new mid
+ eorb 2,U Add new low
+ std 1,U Set crc mid & low
+ lda 0,S Get old msb
+ lsla
+ eora 0,S Add old msb
+ sta 0,S
+ lsla
+ lsla
+ eora 0,S Add altered msb
+ sta 0,S
+ lsla
+ lsla
+ lsla
+ lsla
+ eora ,S+ Add altered msb
+ bpl CRCC99
+ ldd #$8021
+ eora 0,U
+ sta 0,U
+ eorb 2,U
+ stb 2,U
+CRCC99 rts
 
 
 
@@ -781,9 +785,9 @@ CRCC99    rts
 *
 * Generate Crc
 *
-CRCGen    ldd   $06,u
-         beq   CRCGen20
-         ldx   R$X,u
+CRCGen ldd R$Y,u get byte count
+         beq   CRCGen20 branch if none
+         ldx   R$X,u get data ptr
          pshs  x,b,a
          leas  -$03,s
          ldx   D.Proc
@@ -795,7 +799,7 @@ CRCGen    ldd   $06,u
          pshs  y,x,b,a
          lbsr  L0B47
          ldx   D.Proc
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
          ldx   $0B,s
          lbsr  L0B0B
 L05E6    lbsr  L0AF3
@@ -812,6 +816,19 @@ L05E6    lbsr  L0AF3
 CRCGen20    clrb
          rts
 
+*****
+*
+*  Subroutine Fmodul
+*
+* Search Directory For Module
+*
+* Input: A = Type
+*        X = Name String Ptr
+* Output: U = Directory Entry Address
+*         Cc = Carry Set If Not Found
+* Local: None
+* Global: D.ModDir
+
 FMODUL   pshs  u
          lda   R$A,u
          ldx   R$X,u
@@ -819,23 +836,23 @@ FMODUL   pshs  u
          bsr   L0616
          puls  y
          std   R$D,y
-         stx   $04,y
-         stu   $08,y
+         stx   R$X,y
+         stu   R$U,y
          rts
-L0616    ldu   #$0000
+L0616    ldu #0 Return zero if not found
          pshs  u,b,a
          bsr   L069C
-         cmpa  #$2F
-         beq   L0695
-         lbsr  L06CB
-         bcs   L0698
-         ldu   D.ModDir
-         bra   L068B
+ cmpa #'/ Is there leading '/'
+ beq FMOD35
+ lbsr PRSNAM Parse name
+ bcs FMOD40 Branch if bad name
+ ldu D.ModDir Get module directory ptr
+         bra   FMOD33 Test if end is reached
 L062A    pshs  y,x,b,a
          pshs  y,x
-         ldy   ,u
-         beq   L067F
-         ldx   R$X,u
+         ldy   0,u
+         beq   FMOD20
+         ldx   M$NAME,U Get name offset
          pshs  y,x
          ldd   #$0004
          lbsr  L0B1D
@@ -848,45 +865,47 @@ L062A    pshs  y,x,b,a
          leas  $04,s
          puls  y,x
          leas  $04,s
-         bcs   L0687
+         bcs   FMOD30
          ldd   #$0006
          lbsr  L0B1D
          sta   ,s
          stb   $07,s
          lda   $06,s
-         beq   L0676
+         beq   FMOD16
          anda  #$F0
-         beq   L066A
+         beq   FMOD14
          eora  ,s
-         anda  #$F0
-         bne   L0687
-L066A    lda   $06,s
-         anda  #$0F
-         beq   L0676
+ anda #TypeMask
+ bne FMOD30 Branch if different
+FMOD14 lda 6,S Get desired language
+ anda #LangMask
+ beq FMOD16 Branch if any
          eora  ,s
-         anda  #$0F
-         bne   L0687
-L0676    puls  y,x,b,a
+ anda #LangMask
+ bne FMOD30 Branch if different
+FMOD16    puls  y,x,d Retrieve registers
          abx
          clrb
          ldb   $01,s
          leas  $04,s
          rts
-L067F    leas  $04,s
+FMOD20    leas  $04,s
          ldd   $08,s
-         bne   L0687
+         bne   FMOD30
          stu   $08,s
-L0687    puls  y,x,b,a
+FMOD30   puls  y,x,d
          leau  $08,u
-L068B    cmpu  D.ModEnd
+FMOD33   cmpu  D.ModEnd
          bcs   L062A
          comb
-         ldb   #$DD
-         bra   L0698
-L0695    comb
-         ldb   #$EB
-L0698    stb   $01,s
+         ldb   #E$MNF
+         bra   FMOD40
+FMOD35 comb SET Carry
+         ldb   #E$BNam
+FMOD40    stb   $01,s
          puls  pc,u,b,a
+
+* Skip spaces
 L069C    pshs  y
 L069E    lbsr  L0B0B
          lbsr  L0AE3
@@ -902,44 +921,45 @@ L069E    lbsr  L0B0B
          puls  pc,y,a
 
 PNAM     ldx   D.Proc
-         leay  <P$DATImg,x
-         ldx   R$X,u
-         bsr   L06CB
-         std   R$D,u
-         bcs   L06C8
-         stx   R$X,u
+         leay  P$DATImg,x
+         ldx   R$X,u Get string ptr
+ bsr PRSNAM Call parse name
+ std R$D,U Return byte & size
+ bcs PNam.x branch if error
+ stx R$X,U Return updated string ptr
          abx
-L06C8    stx   $06,u
-         rts
-L06CB    pshs  y
+PNam.x stx R$Y,U Return name end ptr
+ rts
+
+PRSNAM    pshs  y
          lbsr  L0B0B
          pshs  y,x
          lbsr  L0AF3
-         cmpa  #$2F
-         bne   L06E0
+ cmpa #'/ Slash?
+ bne PRSNA1 ..no
          leas  $04,s
          pshs  y,x
          lbsr  L0AF3
-L06E0    bsr   L072B
-         bcs   L06F4
+PRSNA1    bsr   L072B
+         bcs   PRSNA4
          clrb
-L06E5    incb
+PRSNA2 incb INCREMENT Character count
          tsta
-         bmi   L06F0
+         bmi   PRSNA3
          lbsr  L0AF3
          bsr   L0714
-         bcc   L06E5
-L06F0    andcc #$FE
+         bcc   PRSNA2
+PRSNA3 andcc #^CARRY clear carry
          bra   L0706
-L06F4    cmpa  #$2C
-         bne   L06FF
-L06F8    leas  $04,s
+PRSNA4 cmpa #', Comma (skip if so)?
+         bne   PRSNA6
+PRSNA5    leas  $04,s
          pshs  y,x
          lbsr  L0AF3
-L06FF    cmpa  #$20
-         beq   L06F8
-         comb
-         ldb   #$EB
+PRSNA6 cmpa #$20 Space?
+ beq PRSNA5 ..yes; skip
+ comb (NAME Not found)
+ ldb #E$BNam 
 L0706    puls  y,x
          pshs  b,a,cc
          tfr   y,d
@@ -950,27 +970,27 @@ L0706    puls  y,x
 
 L0714    pshs  a
          anda  #$7F
-         cmpa  #$2E
-         beq   L0728
-         cmpa  #$30
-         bcs   L073F
-         cmpa  #$39
-         bls   L0728
-         cmpa  #$5F
-         bne   L072F
-L0728    clra
-         puls  pc,a
+ cmpa #'. period?
+ beq RETCC branch if so
+ cmpa #'0 Below zero?
+ blo RETCS ..yes; return carry set
+ cmpa #'9 Numeric?
+ bls RETCC ..yes
+ cmpa #'_ Underscore?
+ bne ALPHA
+RETCC clra
+ puls  pc,a
 L072B    pshs  a
-         anda  #$7F
-L072F    cmpa  #$41
-         bcs   L073F
-         cmpa  #$5A
-         bls   L0728
-         cmpa  #$61
-         bcs   L073F
-         cmpa  #$7A
-         bls   L0728
-L073F    coma
+ anda  #$7F
+ALPHA cmpa #'A
+ blo RETCS
+ cmpa #'Z Upper case alphabetic?
+ bls RETCC ..yes
+ cmpa #$61 Below lower case a?
+ blo RETCS ..yes
+ cmpa #$7A Lower case?
+ bls RETCC ..yes
+RETCS    coma Set carry
          puls  pc,a
 
 CMPNAM   ldx   D.Proc
@@ -1033,9 +1053,9 @@ L07A0    decb
 * System Memory Request
 *
 SRQMEM ldd R$D,U Get byte count
-         addd  #$00FF
-         clrb
-         std   R$D,u
+ addd #$FF Round up to page
+ clrb
+ std R$D,U Return size to user
          ldy   D.SysMem
          leas  -$02,s
          stb   ,s
@@ -1063,7 +1083,7 @@ L07E1    ldb   $01,u
 L07E3    cmpy  D.SysMem
          bhi   L07ED
          comb
-         ldb   #$CF
+         ldb   #E$MemFul Get error code
          bra   L081C
 L07ED    lda   ,-y
          bne   L07E1
@@ -1104,15 +1124,15 @@ L081C    leas  $02,s
 * System Memory Return
 *
 SRTMEM ldd R$D,U Get byte count
-         beq   L0879
-         addd  #$00FF
-         ldb   $09,u
-         beq   SRTM10
+ beq SRTMXX  Branch if returning nothing
+ addd #$FF Round up to page
+         ldb   R$U+1,u Is address on page boundary?
+         beq   SRTM10 yes
          comb
-         ldb   #$D2
-         rts
-SRTM10    ldb   $08,u
-         beq   L0879
+ ldb #E$BPAddr
+ rts
+SRTM10    ldb   R$U,u
+         beq   SRTMXX  Branch if returning nothing
          ldx   D.SysMem
          abx
 L0835    ldb   ,x
@@ -1149,7 +1169,7 @@ L0861    lda   ,u+
 L0873    leax  $02,x
          leay  -1,y
          bne   L0844
-L0879    clrb
+SRTMXX   clrb
          rts
 
 BOOT     comb
@@ -1163,7 +1183,7 @@ BOOT     comb
          leax  d,x
          bra   L0893
 L088F    leax  >BTSTR,pcr
-L0893    lda   #$C1
+L0893    lda #SYSTM+OBJCT Get object type
          os9   F$Link
          bcs   L08DE
          jsr   ,y
@@ -1179,7 +1199,7 @@ L0893    lda   #$C1
          ldy   D.SysDAT
          leay  a,y
 L08AF    ldd   ,x
-         cmpd  #$87CD
+         cmpd  #M$ID12
          bne   L08D6
          tfr   x,d
          subd  ,s
@@ -1228,8 +1248,9 @@ L0905    inc   ,y+
          bne   L0905
          clrb
          puls  pc,y,x,b,a
+
 L090D    comb
-         ldb   #$ED
+         ldb   #E$NoRam
          stb   $01,s
          puls  pc,y,x,b,a
 
@@ -1331,6 +1352,29 @@ L09D2    fcb $00,$01,$02,$03,$04,$05,$06,$07
          fcb $18,$19,$1A,$1B,$1C,$1D,$1E,$1F
 
  ifeq CPUType-DRG128
+* OS-9 Level 2 normally allocates memory blocks from physical
+* block 0 upwards. On the Dragon 128 the first 128k bytes (32
+* blocks) can be allocated to the screen. In certain screen
+* modes the same blocks in the two 64k byte pages must be
+* allocated together, (eg blocks 10 to 14 with blocks 26 to 30).
+* Therefore OS-9 has been expanded with the addition of two
+* system calls to manage screen memory. F$GMap reserves screen
+* memory, in the lower or both pages. F$GClr returns the memory.
+* In order to maximise the availability of memory for the screen
+* display, the normal OS-9 memory allocation routines have been
+* modified . First, any memory above the first 32 block s is used.
+* Then blocks a reallocated from the first 32 in an order
+* designed to maximise the availability of screen memory, (which
+* is allocated by F$GMap from the top down). This order is
+* determined by a table in the source file BlkTrans, used in the
+* assembly of OS9P1 and IOMAN.
+
+* F$GMap
+* Input B = number of 4k blocks required in each 64k page
+*       A = 0 required in lower page only
+*           1 required in both pages
+* Output X = first block number in lower page
+*            or carry set, B has error code, if memory not available
 GFXMAP   ldb   R$B,u
          bsr   L09FB
          bcs   L09FA
@@ -1360,6 +1404,12 @@ L0A1F    comb
          stb   $01,s
          puls  pc,x,b,a
 
+* F$GClr
+* Input B = number of blocks to deal locate in each 64k page
+*       A = 0 deallocate in lower page only
+*           1 deallocate in both pages
+*       X = first block number in lower page
+* Output: None
 GFXCLR   ldb   R$B,u
          ldx   R$X,u
          pshs  x,b,a
@@ -1625,25 +1675,32 @@ L0BF5    dec   D.Slice
 L0C05    clrb
          rts
 
-APROC    ldx   R$X,u
+ page
+*****
+*
+*  Subroutine Actprc
+*
+* Put Process In Active Process Queue
+*
+APROC ldx R$X,U
 L0C09    clrb
          pshs  u,y,x,cc
-         lda   $0A,x
-         sta   $0B,x
-         orcc  #IntMasks
-         ldu   #$0045
+ lda P$Prior,X Get process priority/age
+ sta P$AGE,X Set age to priority
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ ldu #D.AProcQ-P$Queue Fake process ptr
          bra   L0C21
-L0C17    inc   $0B,u
+L0C17    inc   P$AGE,u
          bne   L0C1D
-         dec   $0B,u
-L0C1D    cmpa  $0B,u
+         dec   P$AGE,u
+L0C1D    cmpa  P$AGE,u
          bhi   L0C23
-L0C21    leay  ,u
-L0C23    ldu   $0D,u
+L0C21    leay 0,U Copy ptr to this process
+L0C23  ldu P$Queue,U Get ptr to next process
          bne   L0C17
-         ldd   $0D,y
-         stx   $0D,y
-         std   $0D,x
+         ldd   P$Queue,y
+         stx   P$Queue,y
+         std   P$Queue,x
          puls  pc,u,y,x,cc
 
          ldx   D.Proc
@@ -1656,61 +1713,61 @@ L0C23    ldu   $0D,u
          jsr   [D.SvcIRQ]
          bcc   L0C53
          ldx   D.Proc
-         ldb   $06,x
-         ldx   $04,x
+         ldb   P$Task,x
+         ldx   P$SP,x
          lbsr  L1125
          ora   #$50
          lbsr  L1137
 L0C53    orcc  #IntMasks
          ldx   D.Proc
-         ldu   $04,x
-         lda   $0C,x
+         ldu   P$SP,x
+         lda   P$State,x
          bita  #$20
          beq   L0C9E
 L0C5F    anda  #$DF
-         sta   $0C,x
+         sta   P$State,x
          lbsr  L0B6F
 L0C66    bsr   L0C09
 NPROC    ldx   D.SysPrc
          stx   D.Proc
          lds   D.SysStk
          andcc #^IntMasks
-         bra   L0C75
+         bra   NXTP06
 
-L0C73    cwai  #$AF
-L0C75    orcc  #IntMasks
-         ldy   #$0045
+NXTP04 cwai #$FF-IRQMask-FIRQMask Clear interrupt masks & wait
+NXTP06 orcc #IRQMask+FIRQMask Set interrupt masks
+         ldy   #D.AProcQ-P$Queue Fake process ptr
          bra   L0C7F
 L0C7D    leay  ,x
-L0C7F    ldx   $0D,y
-         beq   L0C73
-         lda   $0C,x
-         bita  #$08
+L0C7F    ldx   P$Queue,y
+         beq   NXTP04
+         lda   P$State,x
+         bita  #Suspend
          bne   L0C7D
-         ldd   $0D,x
-         std   $0D,y
+         ldd   P$Queue,x
+         std   P$Queue,y
          stx   D.Proc
          lbsr  L0B5F
          bcs   L0C66
          lda   D.TSlice
          sta   D.Slice
-         ldu   $04,x
-         lda   $0C,x
+         ldu   P$SP,x
+         lda   P$State,x Is process in system state?
          bmi   L0D04
-L0C9E    bita  #$02
-         bne   L0CE2
+L0C9E    bita  #Condem Is process condemmed?
+         bne   NXTOUT
          lbsr  L0B77
-         ldb   <$19,x
+         ldb   P$Signal,x
          beq   L0CD7
          decb
          beq   L0CD4
          leas  -$0C,s
          leau  ,s
          lbsr  L0294
-         lda   <$19,x
+         lda   P$Signal,x
          sta   $02,u
          ldd   <$1A,x
-         beq   L0CE2
+         beq   NXTOUT
          std   $0A,u
          ldd   <$1C,x
          std   $08,u
@@ -1721,19 +1778,20 @@ L0C9E    bita  #$02
          leas  $0C,s
          ldu   $04,x
          clrb
-L0CD4    stb   <$19,x
+L0CD4    stb   P$Signal,x
 L0CD7    ldd   D.UsrSvc
          std   D.XSWI2
          ldd   D.UsrIRQ
          std   D.XIRQ
          lbra  L0E11
-L0CE2    lda   $0C,x
-         ora   #$80
-         sta   $0C,x
-         leas  >$0200,x
-         andcc #^IntMasks
-         ldb   <$19,x
-         clr   <$19,x
+
+NXTOUT    lda   P$State,x Get process status
+         ora #SysState Set system state
+         sta   P$State,x Update status
+         leas  >$0200,x         P$Stack
+         andcc #^IntMasks Clear interrupt masks
+         ldb   P$Signal,x
+         clr   P$Signal,x
          os9   F$Exit
 
 *****

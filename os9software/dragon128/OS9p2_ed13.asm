@@ -643,7 +643,7 @@ CHAIN    pshs  u
          lbsr  L02F9
          bcc   L03C3
          puls  pc,u
-L03C3    ldx   D.PROC
+L03C3    ldx   D.PROC Get process ptr
          pshs  u,x
          leax  P$SP,x
          leau  P$SP,u
@@ -794,14 +794,14 @@ L04FD    ldd   #$000B
          bcc   L0510
          lda   R$B,u
          clrb
-L0510    os9   F$Mem
+L0510    os9   F$Mem Mem to correct size
          bcs   L04F6
          ldx   $06,s
          leay  (P$Stack-R$Size),x
          pshs  b,a
          subd  R$Y,u
          std   $04,y
-         subd  #R$Size
+         subd  #R$Size Deduct stack room
          std   P$SP,x
          ldd   R$Y,u
          std   $01,y
@@ -829,57 +829,57 @@ L0540    puls  b,a
 *
 EXIT     ldx   D.PROC
          bsr   L05A7
-         ldb R$B,u
+         ldb R$B,u Get exit status
          stb P$Signal,X Save status
          leay  $01,x
-         bra   L0565
-L0553    clr   $02,y
+         bra   EXIT30
+EXIT20    clr P$SID,Y Clear sibling link
          lbsr  L0B30
-         clr   $01,y
-         lda   $0C,y
+         clr   P$PID,y
+         lda   P$State,y
          bita  #$01
-         beq   L0565
+         beq   EXIT30
          lda   ,y
          lbsr  L039D
-L0565    lda   $02,y
-         bne   L0553
+EXIT30    lda   P$SID,y Get sibling id
+         bne   EXIT20
          leay  ,x
          ldx   #$0047
          lds   D.SysStk
          pshs  cc
          orcc  #$50
-         lda   $01,y
-         bne   L0586
+         lda   P$PID,y
+         bne   EXIT40
          puls  cc
          lda   ,y
          lbsr  L039D
-         bra   L05A4
-L0582    cmpa  ,x
-         beq   L0594
-L0586    leau  ,x
+         bra   EXIT50
+EXIT35   cmpa P$ID,X Is this parent?
+         beq   EXIT45
+EXIT40    leau  ,x
          ldx   P$Queue,x
-         bne   L0582
+         bne   EXIT35
          puls  cc
          lda   #$81
          sta   $0C,y
-         bra   L05A4
-L0594    ldd   P$Queue,x
+         bra   EXIT50
+EXIT45    ldd   P$Queue,x
          std   P$Queue,u
          puls  cc
-         ldu   $04,x
-         ldu   $08,u
-         lbsr  CHILDS
+         ldu P$SP,X Get parent's stack
+         ldu   R$U,u
+         lbsr  CHILDS Return child status
          os9   F$AProc
-L05A4    os9   F$NProc
+EXIT50    os9   F$NProc
 L05A7    pshs  u
-         ldb   #NumPaths
-         leay  P$Path,x
-EXIT10    lda   ,y+
-         beq   EXIT15
-         clr   -$01,y
-         pshs  b
-         os9   I$Close
-         puls  b
+ ldb #NumPaths Get number of paths
+ leay P$PATH,X Get path table ptr
+EXIT10    lda   ,y+ Get next path number
+ beq EXIT15 Branch if not in use
+         clr   -1,y
+ pshs B Save path count
+ OS9 I$Close Close the file
+ puls B Retrieve path count
 EXIT15    decb
          bne   EXIT10
          clra
@@ -901,14 +901,14 @@ L05CC    ldd   D.PROC
          os9   F$DelTsk
          rts
 
-USRMEM   ldx   D.PROC
-         ldd R$D,u
-         beq   USRM35
+USRMEM   ldx   D.PROC get process ptr
+ ldd R$D,U Get size requested
+ beq USRM35 branch if info request
          addd  #$00FF
          bcc   L05EF
-         ldb   #$CF
+         ldb   #E$MemFul
          bra   L0628
-L05EF    cmpa  $07,x
+L05EF    cmpa  P$PagCnt,x
          beq   USRM35
          pshs  a
          bcc   L0603
@@ -916,9 +916,9 @@ L05EF    cmpa  $07,x
          ldb   #$F4
          cmpd  $04,x
          bcc   L0603
-         ldb   #$DF
+         ldb   #E$DelSP
          bra   L0626
-L0603    lda   $07,x
+L0603    lda   P$PagCnt,x
          adda  #(DAT.BlSz/256)-1
          lsra
          lsra
@@ -927,7 +927,7 @@ L0603    lda   $07,x
          ldb   ,s
          addb  #(DAT.BlSz/256)-1
          bcc   L0615
-         ldb   #$CF
+         ldb   #E$MemFul
          bra   L0626
 L0615    lsrb
          lsrb
@@ -947,8 +947,8 @@ L062B    pshs  b
          negb
          os9   F$DelImg
 L0633    puls  a
-         sta   $07,x
-USRM35    lda   $07,x
+         sta   P$PagCnt,x
+USRM35    lda   P$PagCnt,x
          clrb
          std R$D,u
          std R$Y,u
