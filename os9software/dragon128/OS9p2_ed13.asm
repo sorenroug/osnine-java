@@ -336,7 +336,7 @@ UNLINK   pshs  u,b,a
          ldb   d,u
          bitb  #$02
          beq   L01A8
-         leau  <$40,y
+         leau  P$DATImg,y
          bra   L0187
 L0183    dec   ,s
          beq   L01A8
@@ -386,9 +386,9 @@ L01D8    bsr   L01FA
 L01DA    ldb   ,s
          lslb
          leay  b,y
-         ldx   <$40,y
+         ldx   P$DATImg,y
          leax  -$01,x
-         stx   <$40,y
+         stx   P$DATImg,y
          bne   L01F5
          ldd   u0002,u
          bsr   L024B
@@ -494,7 +494,7 @@ L029B    lda   $07,x
          ldx   ,s
          lda   D.SysTsk
          ldu   $04,x
-         leax  >$01F4,x
+         leax  (P$Stack-R$Size),x
          ldy   #$000C
          os9   F$Move
          puls  u,x
@@ -523,8 +523,9 @@ ALLPRC   pshs  u
          bsr   L02F9
          bcs   L02F7
          ldx   ,s
-         stu   $08,x
+         stu   R$U,x
 L02F7    puls  pc,u
+
 L02F9    ldx   D.PrcDBT
 L02FB    lda   ,x+
          bne   L02FB
@@ -552,7 +553,7 @@ L0326    std   ,x++
          bne   L0326
          lda   #$80
          sta   u000C,u
-         ldb   #$0F
+         ldb   #$0F        counter
          ldx   #DAT.Free
          leay  P$DATImg,u
 L0338    stx   ,y++
@@ -663,7 +664,7 @@ L03CF    ldd   ,x++
          ldu   P$PModul,x
          os9   F$UnLink
          ldb   P$PagCnt,x
-         addb  #$0F
+         addb  #(DAT.BlSz/256)-1     round up to the nearest block
          lsrb
          lsrb
          lsrb
@@ -691,9 +692,9 @@ L0409    stu   ,y++
 L0427    ldu   D.PROC
          lda   P$Task,u
          ldb   $06,x
-         leau  >$01F4,x
+         leau  (P$Stack-R$Size),x
          leax  ,y
-         ldu   u0004,u
+         ldu   P$SP,u
          pshs  u
          cmpx  ,s++
          puls  y
@@ -728,7 +729,7 @@ L0473    os9   F$Move
 L0476    lda   D.SysTsk
          ldx   ,s
          ldu   $04,x
-         leax  >$01F4,x
+         leax  (P$Stack-R$Size),x
          ldy   #$000C
          os9   F$Move
          puls  u,x
@@ -757,7 +758,7 @@ L04B3    pshs  u,y,x,b,a
          lda R$A,u
          ldx R$X,u
          ldy   ,s
-         leay  <$40,y
+         leay  P$DATImg,y
          os9   F$SLink
          bcc   L04D9
          ldd   ,s
@@ -786,36 +787,36 @@ L04F6    leas  $02,s
          comb
          bra   L0540
 L04FD    ldd   #$000B
-         leay  <$40,x
-         ldx   <$11,x
+         leay  P$DATImg,x
+         ldx   P$PModul,x
          os9   F$LDDDXY
-         cmpa  u0002,u
+         cmpa  R$B,u
          bcc   L0510
-         lda   u0002,u
+         lda   R$B,u
          clrb
 L0510    os9   F$Mem
          bcs   L04F6
          ldx   $06,s
-         leay  >$01F4,x
+         leay  (P$Stack-R$Size),x
          pshs  b,a
-         subd  u0006,u
+         subd  R$Y,u
          std   $04,y
-         subd  #$000C
-         std   $04,x
-         ldd   u0006,u
+         subd  #R$Size
+         std   P$SP,x
+         ldd   R$Y,u
          std   $01,y
          std   $06,s
          puls  x,b,a
          std   $06,y
-         ldd   u0008,u
+         ldd   R$U,u
          std   $06,s
          lda   #$80
-         sta   ,y
+         sta   R$CC,y
          clra
-         sta   $03,y
+         sta   R$DP,y
          clrb
          std   $08,y
-         stx   $0A,y
+         stx   R$PC,y
 L0540    puls  b,a
          std   D.PROC
          puls  pc,u,y,x,b,a
@@ -884,7 +885,7 @@ EXIT15    decb
          clra
          ldb   P$PagCnt,x
          beq   L05CC
-         addb  #$0F
+         addb  #(DAT.BlSz/256)-1
          lsrb
          lsrb
          lsrb
@@ -918,13 +919,13 @@ L05EF    cmpa  $07,x
          ldb   #$DF
          bra   L0626
 L0603    lda   $07,x
-         adda  #$0F
+         adda  #(DAT.BlSz/256)-1
          lsra
          lsra
          lsra
          lsra
          ldb   ,s
-         addb  #$0F
+         addb  #(DAT.BlSz/256)-1
          bcc   L0615
          ldb   #$CF
          bra   L0626
@@ -1449,7 +1450,7 @@ CPYMEM   ldd   R$Y,u
          ldb   P$Task,y
          pshs  b
          ldx   u0001,u
-         leay  <$40,y
+         leay  P$DATImg,y
          ldb   #$10
          pshs  u,b
          ldu   $06,s
@@ -1703,7 +1704,7 @@ L0B42    puls  x,b,a
 
 DELIMG   ldx R$X,u
          ldd R$D,u
-         leau  <$40,x
+         leau  P$DATImg,x
          lsla
          leau  a,u
          clra
@@ -1759,7 +1760,7 @@ L0B83    stx   ,y++
          ldx   D.SysMem
          ldb   u0008,u
          abx
-         leay  <$40,y
+         leay  P$DATImg,y
          lda   ,s
          lsla
          leay  a,y
@@ -1786,7 +1787,7 @@ CLRBLK   ldb R$B,u
          ldd   u0008,u
          tstb
          bne   L0BD5
-         bita  #$0F
+         bita  #(DAT.BlSz/256)-1
          bne   L0BD5
          ldx   D.PROC
          cmpx  D.SysPrc
@@ -1805,7 +1806,7 @@ L0BFC    lda   u0008,u
          lsra
          lsra
          lsra
-         leay  <$40,x
+         leay  P$DATImg,x
          leay  a,y
          ldb R$B,u
          ldx   #DAT.Free

@@ -10,14 +10,15 @@
  use defsfile
          endc
 
-tylg     set   Systm
-atrv     set   ReEnt+rev
-rev      set   $08
-         mod   OS9End,name,tylg,atrv,0,0
+*****
+*
+*  Module Header
+*
+Revs set REENT+8
+ mod OS9End,OS9Nam,SYSTM,Revs,0,0
 
-name     equ   *
-         fcs   /OS9p1/
-         fcb   12
+OS9Nam fcs /OS9p1/
+ fcb 12 Edition number
 
 LORAM set $20
 HIRAM set $1000
@@ -26,12 +27,12 @@ COLD ldx #LORAM Set ptr
  ldy #HIRAM-LORAM Set byte count
  clra CLEAR D
  clrb
-COLD05    std   ,x++
-         leay  -$02,y
+COLD05 std ,X++ Clear two bytes
+ leay -2,Y Count down
  bne COLD05
  inca ONE Page for direct page
          std   D.Tasks
-         addb  #$10
+         addb  #DAT.TkCt
          std   D.Tasks+2
          clrb
          inca
@@ -66,7 +67,7 @@ L005B    std   ,x++
          leax  >ROMEnd,pcr
          pshs  x
          leay  >SYSVEC,pcr
-         ldx   #$00E0
+         ldx   #D.Clock
 L006F    ldd   ,y++
          addd  ,s
          std   ,x++
@@ -85,7 +86,7 @@ L006F    ldd   ,y++
          stx   D.XIRQ
          leax  >SVCIRQ,pcr
          stx   D.SvcIRQ
-         leax  >IOPOLL,pcr
+ leax IOPOLL,PCR Set irq polling routine
  stx D.POLL
          leay  >SVCTBL,pcr
          lbsr  L030B
@@ -97,7 +98,7 @@ L006F    ldd   ,y++
          sta   ,x
          lda   #$80
          sta   $0C,x
-         lda   #$80
+         lda   #$80   SysTask
          sta   D.SysTsk
          sta   $06,x
          lda   #$FF
@@ -105,17 +106,19 @@ L006F    ldd   ,y++
          sta   $0B,x
          leax  <P$DATImg,x
          stx   D.SysDAT
+ ifeq CPUType-DRG128
          lda   #$D8
-         sta   $3C
+         sta   D.GRReg  Graphics control port
+ endc
          clra
          clrb
          std   ,x++
          ldy   #$000D
          ldd   #DAT.Free
 L00D7    std   ,x++
-         leay  -$01,y
+         leay  -1,y
          bne   L00D7
-         ldb   #$FE
+         ldb   #ROMBlock
          std   ,x++
          ldd   #$00FF
          std   ,x++
@@ -154,7 +157,7 @@ L0122    puls  x
          ldx   D.BlkMap
          inc   ,x
          ldx   D.BlkMap+2
-         leax  >-$0010,x
+         leax  >-$10,x
 L0134    lda   ,x
          beq   L0187
          tfr   x,d
@@ -236,44 +239,73 @@ SVCTBL equ *
          fdb LINK-*-2
          fcb F$PrsNam
          fdb PNAM-*-2
- fcb F$CmpNam,$05,$73
- fcb F$CmpNam+$80,$05,$7B
- fcb F$CRC
- fdb CRCGen-*-2
- fcb F$SRqMem+$80,$05,$D2
- fcb F$SRtMem+$80,$06,$44
- fcb $AC,$0A,$29
- fcb $AD,$0A,$87
- fcb $AE,$01,$FB
- fcb $32,$01,$0D
- fcb $B4,$01,$28
- fcb $B5,$06,$8E
- fcb $B6,$05,$BA
- fcb $B8,$09,$4B
- fcb $39,$06,$E9
- fcb $BA,$07,$1B
- fcb $BC,$08,$A6
- fcb $BD,$08,$63
- fcb $BE,$08,$46
- fcb $BF,$09,$58
- fcb $C0,$09,$65
- fcb $C1,$09,$73
- fcb $C2,$09,$8B
- fcb $C3,$09,$A8
- fcb $C4,$08,$AE
- fcb $C6,$08,$C1
- fcb $C8,$08,$F7
- fcb $C9,$09,$10
- fcb F$STABX+$80,$09,$17
- fcb F$ELink+$80
- fdb ELINK-*-2
- fcb F$FModul+$80
- fdb FMODUL-*-2
+         fcb F$CmpNam
+         fdb CMPNAM-*-2
+         fcb F$CmpNam+$80
+         fdb SCMPNAM-*-2
+         fcb F$CRC
+         fdb CRCGen-*-2
+         fcb F$SRqMem+$80
+         fdb SRQMEM-*-2
+         fcb F$SRtMem+$80
+         fdb SRTMEM-*-2
+         fcb F$AProc+$80
+         fdb APROC-*-2
+         fcb F$NProc+$80
+         fdb NPROC-*-2
+         fcb F$VModul+$80
+         fdb VMOD-*-2
+         fcb F$SSVC
+         fdb SSVC-*-2
+         fcb F$SLink+$80
+         fdb SLINK-*-2
+         fcb F$Boot+$80
+         fdb BOOT-*-2
+         fcb F$BtMem+$80
+         fdb SRQMEM-*-2
+         fcb F$Move+$80
+         fdb MOVE-*-2
+         fcb F$AllRAM
+         fdb ALLRAM-*-2
+         fcb F$AllImg+$80
+         fdb ALLIMG-*-2
+         fcb F$SetImg+$80
+         fdb SETIMG-*-2
+         fcb F$FreeLB+$80
+         fdb FREELB-*-2
+         fcb F$FreeHB+$80
+         fdb FREEHB-*-2
+         fcb F$AllTsk+$80
+         fdb ALLTSK-*-2
+         fcb F$DelTsk+$80
+         fdb DELTSK-*-2
+         fcb F$SetTsk+$80
+         fdb SETTSK-*-2
+         fcb F$ResTsk+$80
+         fdb RESTSK-*-2
+         fcb F$RelTsk+$80
+         fdb RELTSK-*-2
+         fcb F$DATLog+$80
+         fdb DATLOG-*-2
+         fcb F$LDAXY+$80
+         fdb LDAXY-*-2
+         fcb F$LDDDXY+$80
+         fdb LDDDXY-*-2
+         fcb F$LDABX+$80
+         fdb LDABX-*-2
+         fcb F$STABX+$80
+         fdb STABX-*-2
+         fcb F$ELink+$80
+         fdb ELINK-*-2
+         fcb F$FModul+$80
+         fdb FMODUL-*-2
+ ifeq CPUType-DRG128
  fcb F$GMap    * $54 request graphics memory
  fdb GFXMAP-*-2
  fcb F$GClr    * $55 return graphics memory
  fdb GFXCLR-*-2
  fcb $80
+ endc
 
 CNFSTR fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
@@ -284,25 +316,25 @@ L023A fcb $6E,$98,$F0,$9E,$50,$EE,$88,$17,$27,$13
 L0244    lbra  L0E1B
 
          ldx   D.Proc
-         ldu   <$15,x
+         ldu   P$SWI2,x
          beq   L0257
          bra   L0244
          ldx   D.Proc
-         ldu   <$13,x
+         ldu   P$SWI,x
          bne   L0244
 L0257    ldd   D.SysSvc
          std   D.XSWI2
          ldd   D.SysIRQ
          std   D.XIRQ
-         lda   $0C,x
-         ora   #$80
-         sta   $0C,x
-         sts   $04,x
-         leas  >$01F4,x
+         lda   P$State,x
+         ora   #SysState
+         sta   P$State,x
+         sts   P$SP,x
+         leas  (P$Stack-R$Size),x
          andcc #^IntMasks
          leau  ,s
          bsr   L0294
-         ldb   $06,x
+         ldb   P$Task,x
          ldx   $0A,u
          lbsr  L1149
          leax  $01,x
@@ -314,7 +346,7 @@ L0257    ldd   D.SysSvc
          stb   ,u
          ldx   D.Proc
          bsr   L029E
-         lda   $0C,x
+         lda   P$State,x
          anda  #$7F
          lbra  L0C5F
 L0294    lda   $06,x
@@ -356,7 +388,7 @@ L02DB    pshs  u
          puls  u
 L02E1    tfr   cc,a
          bcc   L02E7
-         stb   $02,u
+         stb   R$B,u
 L02E7    ldb   ,u
          andb  #$D0
          stb   ,u
@@ -364,7 +396,8 @@ L02E7    ldb   ,u
          ora   ,u
          sta   ,u
          rts
-         ldy   $06,u
+
+SSVC     ldy   R$Y,u
          bra   L030B
 L02F9    clra
          lslb
@@ -381,37 +414,37 @@ L030B    ldb   ,y+
          bne   L02F9
          rts
 
-SLINK    ldy   $06,u
+SLINK    ldy   R$Y,u
          bra   L0324
 
 ELINK    pshs  u
-         ldb   $02,u
-         ldx   $04,u
+         ldb   R$B,u
+         ldx   R$X,u
          bra   L033B
 
 LINK     ldx   D.Proc
          leay  <P$DATImg,x
 L0324    pshs  u
-         ldx   $04,u
+         ldx   R$X,u
          lda   $01,u
          lbsr  L0616
          lbcs  L03A9
          leay  ,u
          ldu   ,s
-         stx   $04,u
-         std   $01,u
+         stx   R$X,u
+         std   R$D,u
          leax  ,y
 L033B    bitb  #$80
          bne   L0347
          ldd   $06,x
          beq   L0347
-         ldb   #$D1
+ ldb #E$ModBsy err: module busy
          bra   L03A9
 L0347    ldd   $04,x
          pshs  x,b,a
          ldy   ,x
          ldd   $02,x
-         addd  #$0FFF
+         addd  #DAT.BlSz-1
          tfr   a,b
          lsrb
          lsrb
@@ -485,8 +518,15 @@ L03D4    puls  u,y
          cmpy  $04,s
          bcc   L03BB
          puls  pc,y,x,b,a
-         pshs  u
-         ldx   $04,u
+
+*****
+*
+*  Subroutine Valmod
+*
+* Validate Module
+*
+VMOD pshs U Save register ptr
+         ldx   R$X,u
          ldy   $01,u
          bsr   L03EE
          ldx   ,s
@@ -519,7 +559,7 @@ L0422    ldx   ,s
          lbsr  L04AE
          bcs   L041C
          sty   ,u
-         stx   $04,u
+         stx   R$X,u
          clra
          clrb
          std   $06,u
@@ -543,7 +583,7 @@ L0449    cmpx  D.ModEnd
 L0458    puls  u
          ldx   D.BlkMap
          ldd   $02,u
-         addd  #$0FFF
+         addd  #DAT.BlSz-1
          lsra
          lsra
          lsra
@@ -588,7 +628,7 @@ L04AE    pshs  u,y,x
          ldd   #$0002
          lbsr  L0B1D
          addd  ,s
-         addd  #$0FFF
+         addd  #DAT.BlSz-1
          lsra
          lsra
          lsra
@@ -702,7 +742,7 @@ CRCCAL eora 0,U Add crc msb
  lslb SHIFT D
  rola
  eora 1,U Add old lsb
-         std   $01,u
+         std   R$D,u
          clrb
          lda   ,s
          lsra
@@ -711,7 +751,7 @@ CRCCAL eora 0,U Add crc msb
          rorb
          eora  $01,u
          eorb  $02,u
-         std   $01,u
+         std   R$D,u
          lda   ,s
          lsla
          eora  ,s
@@ -730,7 +770,7 @@ CRCCAL eora 0,U Add crc msb
          eora  ,u
          sta   ,u
          eorb  $02,u
-         stb   $02,u
+         stb   R$B,u
 CRCC99    rts
 
 
@@ -743,7 +783,7 @@ CRCC99    rts
 *
 CRCGen    ldd   $06,u
          beq   CRCGen20
-         ldx   $04,u
+         ldx   R$X,u
          pshs  x,b,a
          leas  -$03,s
          ldx   D.Proc
@@ -773,12 +813,12 @@ CRCGen20    clrb
          rts
 
 FMODUL   pshs  u
-         lda   $01,u
-         ldx   $04,u
-         ldy   $06,u
+         lda   R$A,u
+         ldx   R$X,u
+         ldy   R$Y,u
          bsr   L0616
          puls  y
-         std   $01,y
+         std   R$D,y
          stx   $04,y
          stu   $08,y
          rts
@@ -795,7 +835,7 @@ L062A    pshs  y,x,b,a
          pshs  y,x
          ldy   ,u
          beq   L067F
-         ldx   $04,u
+         ldx   R$X,u
          pshs  y,x
          ldd   #$0004
          lbsr  L0B1D
@@ -863,11 +903,11 @@ L069E    lbsr  L0B0B
 
 PNAM     ldx   D.Proc
          leay  <P$DATImg,x
-         ldx   $04,u
+         ldx   R$X,u
          bsr   L06CB
-         std   $01,u
+         std   R$D,u
          bcs   L06C8
-         stx   $04,u
+         stx   R$X,u
          abx
 L06C8    stx   $06,u
          rts
@@ -933,19 +973,20 @@ L072F    cmpa  #$41
 L073F    coma
          puls  pc,a
 
-         ldx   D.Proc
+CMPNAM   ldx   D.Proc
          leay  <P$DATImg,x
-         ldx   $04,u
+         ldx   R$X,u
          pshs  y,x
          bra   L0759
-         ldx   D.Proc
+
+SCMPNAM  ldx   D.Proc
          leay  <P$DATImg,x
-         ldx   $04,u
+         ldx   R$X,u
          pshs  y,x
          ldy   D.SysDAT
 L0759    ldx   $06,u
          pshs  y,x
-         ldd   $01,u
+         ldd   R$D,u
          leax  $04,s
          leay  ,s
          bsr   L0768
@@ -984,10 +1025,17 @@ L07A0    decb
          bne   L079D
          clrb
          puls  pc,u,y,x,b,a
-         ldd   $01,u
+
+*****
+*
+*  Subroutine Srqmem
+*
+* System Memory Request
+*
+SRQMEM ldd R$D,U Get byte count
          addd  #$00FF
          clrb
-         std   $01,u
+         std   R$D,u
          ldy   D.SysMem
          leas  -$02,s
          stb   ,s
@@ -1028,9 +1076,9 @@ L07ED    lda   ,-y
          lsra
          lsra
          ldb   $01,s
-         andb  #$0F
+         andb  #(DAT.BlSz/256)-1
          addb  $01,u
-         addb  #$0F
+         addb  #(DAT.BlSz/256)-1
          lsrb
          lsrb
          lsrb
@@ -1047,15 +1095,23 @@ L0812    inc   ,y+
          clrb
 L081C    leas  $02,s
          rts
-         ldd   $01,u
+
+ page
+*****
+*
+*  Subroutine Srtmem
+*
+* System Memory Return
+*
+SRTMEM ldd R$D,U Get byte count
          beq   L0879
          addd  #$00FF
          ldb   $09,u
-         beq   L082E
+         beq   SRTM10
          comb
          ldb   #$D2
          rts
-L082E    ldb   $08,u
+SRTM10    ldb   $08,u
          beq   L0879
          ldx   D.SysMem
          abx
@@ -1091,11 +1147,12 @@ L0861    lda   ,u+
          ldd   #DAT.Free
          std   ,x
 L0873    leax  $02,x
-         leay  -$01,y
+         leay  -1,y
          bne   L0844
 L0879    clrb
          rts
-         comb
+
+BOOT     comb
          lda   D.Boot
          bne   L08DE
          inc   D.Boot
@@ -1144,11 +1201,13 @@ L08D8    cmpx  $02,s
          bcs   L08AF
          leas  $04,s
 L08DE    rts
-         ldb   $02,u
+
+ALLRAM   ldb   R$B,u
          bsr   L08E8
          bcs   L08E7
-         std   $01,u
+         std   R$D,u
 L08E7    rts
+
 L08E8    pshs  y,x,b,a
          ldx   D.BlkMap
 L08EC    leay  ,x
@@ -1173,8 +1232,9 @@ L090D    comb
          ldb   #$ED
          stb   $01,s
          puls  pc,y,x,b,a
-         ldd   $01,u
-         ldx   $04,u
+
+ALLIMG   ldd   R$D,u
+         ldx   R$X,u
 L0918    pshs  u,y,x,b,a
          lsla
          leay  <P$DATImg,x
@@ -1270,10 +1330,11 @@ L09D2    fcb $00,$01,$02,$03,$04,$05,$06,$07
          fcb $10,$11,$12,$13,$14,$15,$16,$17
          fcb $18,$19,$1A,$1B,$1C,$1D,$1E,$1F
 
-GFXMAP   ldb   $02,u
+ ifeq CPUType-DRG128
+GFXMAP   ldb   R$B,u
          bsr   L09FB
          bcs   L09FA
-         stx   $04,u
+         stx   R$X,u
 L09FA    rts
 L09FB    pshs  x,b,a
          ldx   D.BlkMap
@@ -1299,8 +1360,8 @@ L0A1F    comb
          stb   $01,s
          puls  pc,x,b,a
 
-GFXCLR         ldb   $02,u
-         ldx   $04,u
+GFXCLR   ldb   R$B,u
+         ldx   R$X,u
          pshs  x,b,a
          abx
          cmpx  #$0020
@@ -1317,12 +1378,15 @@ L0A3C    lda   ,x
          bne   L0A3C
 L0A45    clrb
          puls  pc,x,b,a
-         ldb   $02,u
-         ldy   $06,u
+ endc
+
+FREEHB   ldb   R$B,u
+         ldy   R$Y,u
          bsr   L0A54
          bcs   L0A53
          sta   $01,u
 L0A53    rts
+
 L0A54    tfr   b,a
 L0A56    suba  #$11
          nega
@@ -1330,8 +1394,9 @@ L0A56    suba  #$11
          ldd   #$FFFF
          pshs  b,a
          bra   L0A7B
-         ldb   $02,u
-         ldy   $06,u
+
+FREELB   ldb   R$B,u
+         ldy   R$Y,u
          bsr   L0A6E
          bcs   L0A6D
          sta   $01,u
@@ -1364,9 +1429,10 @@ L0A91    lslb
          bne   L0A8D
 L0A9E    leas  $02,s
          puls  pc,x,b,a
-         ldd   $01,u
-         ldx   $04,u
-         ldu   $08,u
+
+SETIMG   ldd   R$D,u
+         ldx   R$X,u
+         ldu   R$U,u
 L0AA8    pshs  u,y,x,b,a
          leay  <P$DATImg,x
          lsla
@@ -1381,10 +1447,11 @@ L0AB0    ldx   ,u++
          sta   $0C,x
          clrb
          puls  pc,u,y,x,b,a
-         ldb   $02,u
-         ldx   $04,u
+
+DATLOG   ldb   R$B,u
+         ldx   R$X,u
          bsr   L0ACC
-         stx   $04,u
+         stx   R$X,u
          clrb
          rts
 L0ACC    pshs  x,b,a
@@ -1395,8 +1462,9 @@ L0ACC    pshs  x,b,a
          addb  $02,s
          stb   $02,s
          puls  pc,x,b,a
-         ldx   $04,u
-         ldy   $06,u
+
+LDAXY    ldx   R$X,u
+         ldy   R$Y,u
          bsr   L0AE3
          sta   $01,u
          clrb
@@ -1421,7 +1489,8 @@ L0B05    leax  >-$1000,x
 L0B0B    cmpx  #$1000
          bcc   L0B05
          rts
-         ldd   $01,u
+
+LDDDXY   ldd   R$D,u
          leau  $04,u
          pulu  y,x
          bsr   L0B1D
@@ -1436,18 +1505,21 @@ L0B1D    pshs  y,x
          bsr   L0AE3
          tfr   a,b
          puls  pc,y,x,a
-         ldb   $02,u
-         ldx   $04,u
+
+LDABX    ldb   R$B,u
+         ldx   R$X,u
          lbsr  L1125
          sta   $01,u
          rts
-         ldd   $01,u
-         ldx   $04,u
+
+STABX    ldd   R$D,u
+         ldx   R$X,u
          lbra  L1137
-         ldd   $01,u
-         ldx   $04,u
-         ldy   $06,u
-         ldu   $08,u
+
+MOVE     ldd   R$D,u
+         ldx   R$X,u
+         ldy   R$Y,u
+         ldu   R$U,u
 L0B47    andcc #$FE
          leay  ,y
          beq   L0B5C
@@ -1460,7 +1532,8 @@ L0B47    andcc #$FE
          tfr   b,dp
          lbra  L115B
 L0B5C    rts
-         ldx   $04,u
+
+ALLTSK   ldx   R$X,u
 L0B5F    ldb   $06,x
          bne   L0B6B
          bsr   L0B9E
@@ -1469,7 +1542,8 @@ L0B5F    ldb   $06,x
          bsr   L0B80
 L0B6B    clrb
 L0B6C    rts
-         ldx   $04,u
+
+DELTSK   ldx   R$X,u
 L0B6F    ldb   $06,x
          beq   L0B6C
          clr   $06,x
@@ -1478,7 +1552,8 @@ L0B77    lda   $0C,x
          bita  #$10
          bne   L0B80
          rts
-         ldx   $04,u
+
+SETTSK   ldx   R$X,u
 L0B80    lda   $0C,x
          anda  #$EF
          sta   $0C,x
@@ -1489,8 +1564,9 @@ L0B80    lda   $0C,x
          ldy   #$0010
          ldu   #$FE00
          lbra  L118E
-         bsr   L0B9E
-         stb   $02,u
+
+RESTSK   bsr   L0B9E
+         stb   R$B,u
          rts
 L0B9E    pshs  x
          ldb   #$01
@@ -1507,7 +1583,8 @@ L0BB2    inc   b,x
          orb   D.SysTsk
          clra
 L0BB7    puls  pc,x
-         ldb   $02,u
+
+RELTSK   ldb   R$B,u
 L0BBB    pshs  x,b
          ldb   D.SysTsk
          comb
@@ -1547,7 +1624,8 @@ L0BF5    dec   D.Slice
          sta   $0C,x
 L0C05    clrb
          rts
-         ldx   $04,u
+
+APROC    ldx   R$X,u
 L0C09    clrb
          pshs  u,y,x,cc
          lda   $0A,x
@@ -1567,6 +1645,7 @@ L0C23    ldu   $0D,u
          stx   $0D,y
          std   $0D,x
          puls  pc,u,y,x,cc
+
          ldx   D.Proc
          sts   $04,x
          lds   D.SysStk
@@ -1592,7 +1671,7 @@ L0C5F    anda  #$DF
          sta   $0C,x
          lbsr  L0B6F
 L0C66    bsr   L0C09
-         ldx   D.SysPrc
+NPROC    ldx   D.SysPrc
          stx   D.Proc
          lds   D.SysStk
          andcc #^IntMasks
@@ -1657,6 +1736,12 @@ L0CE2    lda   $0C,x
          clr   <$19,x
          os9   F$Exit
 
+*****
+*
+*  Interrupt Routine Sysirq
+*
+* Handles Irq While In System State
+*
 SYSIRQ    jsr   [D.SvcIRQ]
  bcc SYSI10 branch if interrupt identified
  ldb R$CC,S get condition codes
@@ -1835,7 +1920,7 @@ L117F    lda   #$80
          sta   DAT.Task
          lda   ,s
          tfr   a,cc
-         leay  -$01,y
+         leay  -1,y
          bne   L116D
          puls  pc,u,y,x,dp,b,a,cc
 
@@ -1846,7 +1931,7 @@ L1190    lda   $01,x
          sta   ,u+
          lda   #$80
          sta   DAT.Task
-         leay  -$01,y
+         leay  -1,y
          bne   L1190
          puls  pc,u,y,x,b,a,cc
 
@@ -1863,7 +1948,8 @@ FIRQHN   ldb   #D.FIRQ
 
 IRQHN    orcc  #IntMasks
          ldb   #D.IRQ
-IRQH10    lda   #$80
+
+IRQH10    lda   #$80    SysTask
          sta   DAT.Task
 IRQH20    clra
          tfr   a,dp
