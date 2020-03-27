@@ -6,5 +6,7 @@ LEVEL equ 2 select level two
  use os9rbfdefs
  use os9scfdefs
 
+DAT.Regs equ $FD80
 DAT.Task equ $FD90 Task register address
+DAT.BlSz equ $1000
  endc
