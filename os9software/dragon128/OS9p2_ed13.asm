@@ -30,6 +30,8 @@ Revs set ReEnt+2
 
 OS9Name fcs /OS9p2/
 
+         fcb   13 Edition
+
 ************************************************************
 *
 *     Edition History
@@ -62,9 +64,6 @@ OS9Name fcs /OS9p2/
 *
 *    13     83/12/15     Extended F$MapBlk and F$ClrBlk to allow
 *                        mapping into the system task space
-
-         fcb   13
-
 
 u0000    rmb   1
 u0001    rmb   1
@@ -150,11 +149,13 @@ L002E    lda   ,x+
 L0034    cmpx  D.BlkMap+2
          bcs   L002E
 L0038    ldu   D.Init
+ ifne EXTERR
+* Load error messages path
          ldy   D.SysPrc
-         leay  >$00A0,y
+         leay  P$ErrNam,y
          lda   #$0D
          sta   ,y
-         ldd   <$16,u
+         ldd   ErrStr,u
          beq   L0057
          leax  d,u
          ldb   #$20
@@ -163,6 +164,10 @@ L004E    lda   ,x+
          bmi   L0057
          decb
          bne   L004E
+ endc
+ ifne ClocType
+* Clock init start
+* Reset to 0
 L0057    ldb   #$06
 L0059    clr   ,-s
          decb
@@ -170,6 +175,8 @@ L0059    clr   ,-s
          leax  ,s
          os9   F$STime
          leas  $06,s
+ endc
+* Clock init end
          ldd   SysStr,u
          beq   L0078    No system device
          leax  d,u

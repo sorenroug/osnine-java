@@ -104,7 +104,7 @@ COLD45 ldd ,Y++ get vector
          lda   #$FF
          sta   $0A,x
          sta   $0B,x
-         leax  <P$DATImg,x
+         leax  P$DATImg,x
          stx   D.SysDAT
  ifeq CPUType-DRG128
          lda   #$D8
@@ -129,14 +129,14 @@ L00D7    std   ,x++
 L00EE    inc   ,x+
          decb
          bne   L00EE
-         ldy   #$1000
+         ldy   #HIRAM
          ldx   D.BlkMap
 L00F9    pshs  x
          ldd   ,s
          subd  D.BlkMap
          cmpb  #$FF
          beq   L011E
-         stb   >$FE01
+         stb   >$FE01  DAT.Regs+1
          ldu   ,y
          ldx   #$00FF
          stx   ,y
@@ -157,12 +157,12 @@ L0122    puls  x
          ldx   D.BlkMap
          inc   ,x
          ldx   D.BlkMap+2
-         leax  >-$10,x
+         leax  >-16,x
 L0134    lda   ,x
          beq   L0187
          tfr   x,d
          subd  D.BlkMap
-         leas  <-$20,s
+         leas  <-32,s
          leay  ,s
          bsr   L01B7
          pshs  x
@@ -217,11 +217,12 @@ L01AB    jmp   [>$FFEE]
 
 L01AF    jmp 0,Y Let os9 part two finish
 
-L01B1    lda   #$C0
+L01B1    lda #SYSTM Get system type module
          os9   F$Link
          rts
+
 L01B7    pshs  y,x,b,a
-         ldb   #$10
+         ldb   #$10   DAT.BlCt
          ldx   ,s
 L01BD    stx   ,y++
          leax  $01,x
@@ -365,15 +366,17 @@ L02A8    ldy   #$0006
          tfr   b,dp
          orcc  #IntMasks
          lbra  L1171
+* System Service
 L02B3    leau  ,s
          lda   ,u
          tfr   a,cc
          ldx   $0A,u
          ldb   ,x+
          stx   $0A,u
-         ldy   D.SysDis
+         ldy   D.SysDis Get system service routine table
          bsr   L02C7
          lbra  L0D04
+
 L02C7    lslb
          bcc   L02D1
          rorb
@@ -425,7 +428,7 @@ ELINK    pshs  u
          bra   L033B
 
 LINK     ldx   D.Proc
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
 L0324    pshs  u
          ldx   R$X,u
          lda   R$A,u
@@ -495,7 +498,7 @@ L0391    puls  u,y,x,b
 L03A9    orcc  #$01
          puls  pc,u
 L03AD    ldx   D.Proc
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
          clra
          pshs  y,x,b,a
          subb  #$10
@@ -534,6 +537,7 @@ VMOD pshs U Save register ptr
          ldx   ,s
          stu   $08,x
          puls  pc,u
+
 L03EE    pshs  y,x
          lbsr  IDCHK
          bcs   L041E
@@ -994,13 +998,13 @@ RETCS    coma Set carry
          puls  pc,a
 
 CMPNAM   ldx   D.Proc
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
          ldx   R$X,u
          pshs  y,x
          bra   L0759
 
 SCMPNAM  ldx   D.Proc
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
          ldx   R$X,u
          pshs  y,x
          ldy   D.SysDAT
@@ -1258,7 +1262,7 @@ ALLIMG   ldd   R$D,u
          ldx   R$X,u
 L0918    pshs  u,y,x,b,a
          lsla
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
          leay  a,y
          clra
          tfr   d,x
@@ -1434,7 +1438,7 @@ FREEHB   ldb   R$B,u
          ldy   R$Y,u
          bsr   L0A54
          bcs   L0A53
-         sta   $01,u
+         sta   R$A,u
 L0A53    rts
 
 L0A54    tfr   b,a
@@ -1449,8 +1453,9 @@ FREELB   ldb   R$B,u
          ldy   R$Y,u
          bsr   L0A6E
          bcs   L0A6D
-         sta   $01,u
+         sta   R$A,u
 L0A6D    rts
+
 L0A6E    lda   #$FF
          pshs  x,b,a
          lda   #$01
@@ -1458,6 +1463,7 @@ L0A6E    lda   #$FF
          negb
          pshs  b,a
          bra   L0A7B
+
 L0A7B    clra
          ldb   $02,s
          addb  ,s
@@ -1484,7 +1490,7 @@ SETIMG   ldd   R$D,u
          ldx   R$X,u
          ldu   R$U,u
 L0AA8    pshs  u,y,x,b,a
-         leay  <P$DATImg,x
+         leay  P$DATImg,x
          lsla
          leay  a,y
 L0AB0    ldx   ,u++
@@ -1516,7 +1522,7 @@ L0ACC    pshs  x,b,a
 LDAXY    ldx   R$X,u
          ldy   R$Y,u
          bsr   L0AE3
-         sta   $01,u
+         sta   R$A,u
          clrb
          rts
 L0AE3    pshs  cc
@@ -1559,7 +1565,7 @@ L0B1D    pshs  y,x
 LDABX    ldb   R$B,u
          ldx   R$X,u
          lbsr  L1125
-         sta   $01,u
+         sta   R$A,u
          rts
 
 STABX    ldd   R$D,u
@@ -1598,6 +1604,7 @@ L0B6F    ldb   $06,x
          beq   L0B6C
          clr   $06,x
          bra   L0BBB
+
 L0B77    lda   $0C,x
          bita  #$10
          bne   L0B80
@@ -1610,7 +1617,7 @@ L0B80    lda   $0C,x
          andcc #$FE
          pshs  u,y,x,b,a,cc
          ldb   $06,x
-         leax  <P$DATImg,x
+         leax  P$DATImg,x
          ldy   #$0010
          ldu   #$FE00
          lbra  L118E
@@ -1618,6 +1625,7 @@ L0B80    lda   $0C,x
 RESTSK   bsr   L0B9E
          stb   R$B,u
          rts
+
 L0B9E    pshs  x
          ldb   #$01
          ldx   D.Tasks
@@ -1728,6 +1736,7 @@ L0C5F    anda  #$DF
          sta   P$State,x
          lbsr  L0B6F
 L0C66    bsr   L0C09
+
 NPROC    ldx   D.SysPrc
          stx   D.Proc
          lds   D.SysStk
