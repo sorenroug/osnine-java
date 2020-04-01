@@ -94,16 +94,16 @@ COLD45 ldd ,Y++ get vector
          ldx   D.SysPrc
          stx   ,u
          stx   $01,u
-         lda   #$01
-         sta   ,x
-         lda   #$80
-         sta   $0C,x
-         lda   #$80   SysTask
+         lda   #1   Process id 1
+         sta   P$ID,x
+         lda   #SysState
+         sta   P$State,x
+         lda   #SysTask
          sta   D.SysTsk
-         sta   $06,x
+         sta   P$Task,x
          lda   #$FF
-         sta   $0A,x
-         sta   $0B,x
+         sta   P$Prior,x
+         sta   P$Age,x
          leax  P$DATImg,x
          stx   D.SysDAT
  ifeq CPUType-DRG128
@@ -120,7 +120,7 @@ L00D7    std   ,x++
          bne   L00D7
          ldb   #ROMBlock
          std   ,x++
-         ldd   #$00FF
+         ldd   #$00FF  IOBlock
          std   ,x++
          ldx   D.Tasks
          inc   ,x
@@ -135,23 +135,23 @@ L00F9    pshs  x
          ldd   ,s
          subd  D.BlkMap
          cmpb  #$FF
-         beq   L011E
+         beq   COLD15
          stb   >$FE01  DAT.Regs+1
          ldu   ,y
-         ldx   #$00FF
-         stx   ,y
-         cmpx  ,y
-         bne   L011E
-         ldx   #$FF00
-         stx   ,y
-         cmpx  ,y
-         bne   L011E
-         stu   ,y
+ ldx #$00FF Get bit pattern
+ stx 0,Y Store it
+ cmpx 0,Y Is it there?
+ bne COLD15 If not, end of ram
+ ldx #$FF00 Try a different pattern
+ stx 0,Y Store it
+ cmpx 0,Y Did it take?
+ bne COLD15 If not, eor
+         stu   0,y
          bra   L0122
-L011E    ldb   #$80
+COLD15    ldb   #$80
          stb   [,s]
 L0122    puls  x
-         leax  $01,x
+         leax  1,x
          cmpx  D.BlkMap+2
          bcs   L00F9
          ldx   D.BlkMap
@@ -178,13 +178,13 @@ L0148    pshs  y,x
          bne   L0170
          lbsr  L03EE
          bcc   L0166
-         cmpb  #$E7
+         cmpb  #E$KwnMod Is it known module
          bne   L0170
 L0166    ldd   #$0002
          lbsr  L0B1D
          leax  d,x
          bra   L0172
-L0170    leax  $01,x
+L0170    leax  1,x Try next location
 L0172    tfr   x,d
          tstb
          bne   L0148
@@ -213,7 +213,7 @@ L019E    leax  OS9STR,pcr
          bcc   L01AF
          os9   F$Boot
          bcc   L019E
-L01AB    jmp   [>$FFEE]
+L01AB    jmp   [>D$REBOOT]
 
 L01AF    jmp 0,Y Let os9 part two finish
 
@@ -312,18 +312,23 @@ CNFSTR fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
 BTSTR fcs /Boot/
 
-L023A fcb $6E,$98,$F0,$9E,$50,$EE,$88,$17,$27,$13
+L023A fcb $6E,$98,$F0
+
+SWI3HN ldx D.Proc
+         ldu   P$SWI3,x
+         beq   L0257
 
 L0244    lbra  L0E1B
 
-         ldx   D.Proc
+SWI2HN ldx   D.Proc
          ldu   P$SWI2,x
          beq   L0257
          bra   L0244
 
-         ldx   D.Proc
+SWIHN    ldx   D.Proc
          ldu   P$SWI,x
          bne   L0244
+
 L0257    ldd   D.SysSvc
          std   D.XSWI2
          ldd   D.SysIRQ
@@ -455,11 +460,17 @@ L0347    ldd   $04,x
          lsrb
          lsrb
          lsrb
+ ifge DAT.BlSz-$2000
+         lsrb
+ endc
          inca
          lsra
          lsra
          lsra
          lsra
+ ifge DAT.BlSz-$2000
+         lsra
+ endc
          pshs  a
          leau  ,y
          bsr   L03AD
@@ -1226,7 +1237,7 @@ L08D8    cmpx  $02,s
          leas  $04,s
 L08DE    rts
 
-ALLRAM   ldb   R$B,u
+ALLRAM   ldb   R$B,u Get number of blocks
          bsr   L08E8
          bcs   L08E7
          std   R$D,u
@@ -1258,8 +1269,8 @@ L090D    comb
          stb   $01,s
          puls  pc,y,x,b,a
 
-ALLIMG   ldd   R$D,u
-         ldx   R$X,u
+ALLIMG   ldd   R$D,u  Get beginning and number of blocks
+         ldx   R$X,u Process descriptor pointer
 L0918    pshs  u,y,x,b,a
          lsla
          leay  P$DATImg,x
@@ -1281,7 +1292,9 @@ L093C    leax  -$01,x
          bne   L0927
          ldx   ,s++
          beq   L0973
+*
          leau  <$20,u
+*
 L0947    lda   ,u+
          bne   L094F
          leax  -$01,x
@@ -1434,11 +1447,11 @@ L0A45    clrb
          puls  pc,x,b,a
  endc
 
-FREEHB   ldb   R$B,u
-         ldy   R$Y,u
+FREEHB   ldb   R$B,u Get block count
+         ldy   R$Y,u DAT image pointer
          bsr   L0A54
          bcs   L0A53
-         sta   R$A,u
+         sta   R$A,u return beginning block number
 L0A53    rts
 
 L0A54    tfr   b,a
@@ -1449,11 +1462,11 @@ L0A56    suba  #$11
          pshs  b,a
          bra   L0A7B
 
-FREELB   ldb   R$B,u
-         ldy   R$Y,u
+FREELB   ldb   R$B,u Get block count
+         ldy   R$Y,u DAT image pointer
          bsr   L0A6E
          bcs   L0A6D
-         sta   R$A,u
+         sta   R$A,u return beginning block number
 L0A6D    rts
 
 L0A6E    lda   #$FF
@@ -1486,9 +1499,9 @@ L0A91    lslb
 L0A9E    leas  $02,s
          puls  pc,x,b,a
 
-SETIMG   ldd   R$D,u
-         ldx   R$X,u
-         ldu   R$U,u
+SETIMG   ldd   R$D,u  Get beginning and number of blocks
+         ldx   R$X,u Process descriptor pointer
+         ldu   R$U,u New image pointer
 L0AA8    pshs  u,y,x,b,a
          leay  P$DATImg,x
          lsla
@@ -1498,16 +1511,16 @@ L0AB0    ldx   ,u++
          decb
          bne   L0AB0
          ldx   $02,s
-         lda   $0C,x
-         ora   #$10
-         sta   $0C,x
+         lda   P$State,x
+         ora   #ImgChg
+         sta   P$State,x
          clrb
          puls  pc,u,y,x,b,a
 
-DATLOG   ldb   R$B,u
-         ldx   R$X,u
+DATLOG   ldb   R$B,u  DAT image offset
+         ldx   R$X,u Block offset
          bsr   L0ACC
-         stx   R$X,u
+         stx   R$X,u Return logical address
          clrb
          rts
 L0ACC    pshs  x,b,a
@@ -1519,8 +1532,8 @@ L0ACC    pshs  x,b,a
          stb   $02,s
          puls  pc,x,b,a
 
-LDAXY    ldx   R$X,u
-         ldy   R$Y,u
+LDAXY    ldx   R$X,u Block offset
+         ldy   R$Y,u DAT image pointer
          bsr   L0AE3
          sta   R$A,u
          clrb
@@ -1546,7 +1559,7 @@ L0B0B    cmpx  #$1000
          bcc   L0B05
          rts
 
-LDDDXY   ldd   R$D,u
+LDDDXY   ldd   R$D,u Offset to the offset within DAT image
          leau  $04,u
          pulu  y,x
          bsr   L0B1D
@@ -1562,8 +1575,8 @@ L0B1D    pshs  y,x
          tfr   a,b
          puls  pc,y,x,a
 
-LDABX    ldb   R$B,u
-         ldx   R$X,u
+LDABX    ldb   R$B,u Task number
+         ldx   R$X,u Data pointer
          lbsr  L1125
          sta   R$A,u
          rts
@@ -1572,10 +1585,10 @@ STABX    ldd   R$D,u
          ldx   R$X,u
          lbra  L1137
 
-MOVE     ldd   R$D,u
-         ldx   R$X,u
-         ldy   R$Y,u
-         ldu   R$U,u
+MOVE     ldd   R$D,u Source and destination task number
+         ldx   R$X,u Source pointer
+         ldy   R$Y,u Byte count
+         ldu   R$U,u  Destination pointer
 L0B47    andcc #$FE
          leay  ,y
          beq   L0B5C
@@ -1589,34 +1602,34 @@ L0B47    andcc #$FE
          lbra  L115B
 L0B5C    rts
 
-ALLTSK   ldx   R$X,u
-L0B5F    ldb   $06,x
+ALLTSK   ldx   R$X,u  Get process descriptor
+L0B5F    ldb   P$Task,x
          bne   L0B6B
          bsr   L0B9E
          bcs   L0B6C
-         stb   $06,x
+         stb   P$Task,x
          bsr   L0B80
 L0B6B    clrb
 L0B6C    rts
 
-DELTSK   ldx   R$X,u
-L0B6F    ldb   $06,x
+DELTSK   ldx   R$X,u  Get process descriptor
+L0B6F    ldb   P$Task,x
          beq   L0B6C
-         clr   $06,x
+         clr   P$Task,x
          bra   L0BBB
 
-L0B77    lda   $0C,x
-         bita  #$10
+L0B77    lda   P$State,x
+         bita  #ImgChg
          bne   L0B80
          rts
 
 SETTSK   ldx   R$X,u
-L0B80    lda   $0C,x
+L0B80    lda   P$State,x
          anda  #$EF
-         sta   $0C,x
+         sta   P$State,x
          andcc #$FE
          pshs  u,y,x,b,a,cc
-         ldb   $06,x
+         ldb   P$Task,x
          leax  P$DATImg,x
          ldy   #$0010
          ldu   #$FE00
@@ -1651,38 +1664,51 @@ L0BBB    pshs  x,b
          ldx   D.Tasks
          clr   b,x
 L0BC8    puls  pc,x,b
-         ldx   D.SProcQ
-         beq   L0BF5
-         lda   $0C,x
-         bita  #$40
-         beq   L0BF5
-         ldu   $04,x
-         ldd   $04,u
-         subd  #$0001
-         std   $04,u
-         bne   L0BF5
-L0BDF    ldu   $0D,x
-         bsr   L0C09
-         leax  ,u
-         beq   L0BF3
-         lda   $0C,x
-         bita  #$40
-         beq   L0BF3
-         ldu   $04,x
-         ldd   $04,u
-         beq   L0BDF
-L0BF3    stx   D.SProcQ
-L0BF5    dec   D.Slice
-         bne   L0C05
-         inc   D.Slice
-         ldx   D.Proc
-         beq   L0C05
-         lda   $0C,x
-         ora   #$20
-         sta   $0C,x
-L0C05    clrb
-         rts
 
+ page
+*****
+*
+*  Clock Tick Routine
+*
+* Wake Sleeping Processes
+*
+TICK ldx D.SProcQ Get sleeping queue ptr
+ beq SLICE Branch if none
+ lda P$State,X Get process status
+ bita #TimSleep Is it in timed sleep?
+ beq SLICE Branch if not
+ ldu P$SP,X Get stack ptr
+ ldd R$X,U Get tick count
+ subd #1 Count down
+ std R$X,U Update tick count
+ bne SLICE Branch if ticks left
+TICK10 ldu P$Queue,X Get next process ptr
+ bsr ACTPRC Activate process
+ leax 0,U Copy process ptr
+ beq TICK20 Branch if end of queue
+ lda P$State,X Get process status
+ bita #TimSleep In timed sleep?
+ beq TICK20 Branch if not
+ ldu P$SP,X Get stack ptr
+ ldd R$X,U Get tick count
+ beq TICK10 Branch if time
+TICK20 stx D.SProcQ Update sleep queue ptr
+*
+* Update Time Slice counter
+*
+SLICE dec D.Slice Count tick
+ bne SLIC10 Branch if slice not over
+ inc D.Slice
+*
+* If Process not in System State, Give up Time-Slice
+*
+ ldx D.PROC Get current process ptr
+ beq SLIC10 Branch if none
+ lda P$State,X Get status
+ ora #TIMOUT Set time-out flag
+ sta P$State,X Update process status
+SLIC10 clrb
+ rts
  page
 *****
 *
@@ -1691,8 +1717,8 @@ L0C05    clrb
 * Put Process In Active Process Queue
 *
 APROC ldx R$X,U
-L0C09    clrb
-         pshs  u,y,x,cc
+ACTPRC clrb
+ pshs  u,y,x,cc
  lda P$Prior,X Get process priority/age
  sta P$AGE,X Set age to priority
  orcc #IRQMask+FIRQMask Set interrupt masks
@@ -1701,7 +1727,7 @@ L0C09    clrb
 L0C17    inc   P$AGE,u
          bne   L0C1D
          dec   P$AGE,u
-L0C1D    cmpa  P$AGE,u
+L0C1D    cmpa P$AGE,U Who has bigger priority?
          bhi   L0C23
 L0C21    leay 0,U Copy ptr to this process
 L0C23  ldu P$Queue,U Get ptr to next process
@@ -1711,8 +1737,12 @@ L0C23  ldu P$Queue,U Get ptr to next process
          std   P$Queue,x
          puls  pc,u,y,x,cc
 
-         ldx   D.Proc
-         sts   $04,x
+*****
+*
+*  Irq Handler
+*
+IRQHN    ldx   D.Proc
+         sts   P$SP,x
          lds   D.SysStk
          ldd   D.SysSvc
          std   D.XSWI2
@@ -1735,7 +1765,7 @@ L0C53    orcc  #IntMasks
 L0C5F    anda  #$DF
          sta   P$State,x
          lbsr  L0B6F
-L0C66    bsr   L0C09
+L0C66    bsr   ACTPRC
 
 NPROC    ldx   D.SysPrc
          stx   D.Proc
@@ -1775,17 +1805,17 @@ L0C9E    bita  #Condem Is process condemmed?
          lbsr  L0294
          lda   P$Signal,x
          sta   $02,u
-         ldd   <$1A,x
+         ldd   P$SigVec,x
          beq   NXTOUT
          std   $0A,u
-         ldd   <$1C,x
+         ldd   P$SigDat,x
          std   $08,u
-         ldd   $04,x
-         subd  #$000C
-         std   $04,x
+         ldd   P$SP,x
+         subd  #$0C
+         std   P$SP,x
          lbsr  L029E
          leas  $0C,s
-         ldu   $04,x
+         ldu   P$SP,x
          clrb
 L0CD4    stb   P$Signal,x
 L0CD7    ldd   D.UsrSvc
@@ -1826,7 +1856,7 @@ SVCIRQ   jmp   [D.Poll]
 IOPOLL   orcc  #$01
          rts
 
-         clra
+DATINT clra
          tfr   a,dp
          ldx   #DAT.Task
          lda   $01,x
@@ -1854,9 +1884,9 @@ L0D42    stb   ,x
          lda   #$1F
          sta   $06,y
          lda   #$FE
-         sta   $0E,y
+         sta   $E,y
          lda   #$FF
-         sta   $0F,y
+         sta   $F,y
          incb
          bne   L0D42
          lda   #$F0
@@ -1899,7 +1929,7 @@ L0D8F    lda   ,y+
 L0DA5    std   ,x++
          cmpx  #$7000
          bne   L0DA5
-         leay  >L0DCE,pcr
+         leay  >LOADMSG,pcr
          ldx   #$63C0
 L0DB3    lda   ,y+
          beq   L0DBB
@@ -1908,12 +1938,13 @@ L0DB3    lda   ,y+
 L0DBB    lbra  COLD
 
 L0DBE    fcb $37,$28,$2E,$35,$1E,$02,$19,$1B,$50,$09,$20,$09,$38,$00,$38,$00
-L0DCE    fcc " OS-9 is loading - please wait ...."
+LOADMSG  fcc " OS-9 is loading - please wait ...."
          fcb 0
 
 L0DF2    lds   #$FFFF
          sync
-L0DF7    lds   #$FFFF
+
+NMIHN    lds   #$FFFF
          ldx   D.DMPort
          ldu   D.DMMem
          ldb   D.DMDir
@@ -1931,11 +1962,13 @@ L0E11    ldb   $06,x
          stb   DAT.Task
          leas  ,u
          rti
+
 L0E1B    ldb   $06,x
          stb   DAT.Task
          jmp   ,u
-         emod
-OS9End      equ   *
+
+ emod
+OS9End equ *
 
 Target set $1225-$100
  use filler
@@ -2002,53 +2035,53 @@ L1190    lda   $01,x
          bne   L1190
          puls  pc,u,y,x,b,a,cc
 
-SWI3HN    orcc  #IntMasks
+SWI3RQ    orcc  #IntMasks
          ldb   #D.SWI3
-         bra   IRQH10
+         bra   IRQ10
 
-SWI2HN    orcc  #IntMasks
+SWI2RQ    orcc  #IntMasks
          ldb   #D.SWI2
-         bra   IRQH10
+         bra   IRQ10
 
-FIRQHN   ldb   #D.FIRQ
-         bra   IRQH10
+FIRQ   ldb   #D.FIRQ
+         bra   IRQ10
 
-IRQHN    orcc  #IntMasks
+IRQ    orcc  #IntMasks
          ldb   #D.IRQ
 
-IRQH10    lda   #$80    SysTask
+IRQ10    lda   #$80    SysTask
          sta   DAT.Task
-IRQH20    clra
+IRQ20    clra
          tfr   a,dp
          tfr   d,x
          jmp   [,x]
 
-SWIHN    ldb   #D.SWI
-         bra   IRQH10
+SWIRQ    ldb   #D.SWI
+         bra   IRQ10
 
-NMIHN    ldb   #D.NMI
-         bra   IRQH20
+NMI      ldb   #D.NMI
+         bra   IRQ20
 
 Target set $1225-$20
  use filler
 
-SYSVEC fdb $F9A5
-      fdb $F018
-      fdb $F022
-      fdb $EDDB
-      fdb $FA0A
-      fdb $F02B
-      fdb $FBD2
-      fdb $EDEE
+SYSVEC fdb TICK+$FFE0-* Clock tick handler
+ fdb SWI3HN+$FFE2-* Swi3 handler
+ fdb SWI2HN+$FFE4-* Swi2 handler
+ fdb 0000+$FFE6-*  Fast irq handler
+ fdb IRQHN+$FFE8-* Irq handler
+ fdb SWIHN+$FFEA-* Swi handler
+ fdb NMIHN+$FFEC-* Nmi handler
+ fdb COLD+$FFEE-*
 
-      fdb $EDDB
- fdb SWI3HN+$FFF2-* Swi3 handler
- fdb SWI2HN+$FFF4-* Swi2 handler
- fdb FIRQHN+$FFF6-* Fast irq handler
- fdb IRQHN+$FFF8-* Irq handler
- fdb SWIHN+$FFFA-* Swi handler
- fdb NMIHN+$FFFC-* Nmi handler
-      fdb $FAEE
+ fdb 0000+$FFF0-*
+ fdb SWI3RQ+$FFF2-* Swi3
+ fdb SWI2RQ+$FFF4-* Swi2
+ fdb FIRQ+$FFF6-* Firq
+ fdb IRQ+$FFF8-* Irq
+ fdb SWIRQ+$FFFA-* Swi
+ fdb NMI+$FFFC-* Nmi
+ fdb DATINT+$FFFE-* Dynamic address translator initialization
 ROMEnd equ *
 
 
