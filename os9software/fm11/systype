@@ -1,0 +1,18 @@
+* This systype file is reverse engineered
+*
+************************************************************
+*
+*     Dynamic Address Translator Definitions
+*
+DAT.BlCt equ 16 D.A.T. blocks/address space
+DAT.Regs equ $FD80 DAT Block Registers base address
+DAT.Task equ $FD90 Task register address
+*DAT.BlSz equ $1000
+DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
+***************
+DAT.Free equ $FE Free Block Number
+
+SysTask equ $80
+
+ClocType equ 0
+
