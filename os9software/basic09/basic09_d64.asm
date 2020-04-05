@@ -1,6 +1,7 @@
 
 Y2K equ 0
 B09EXEC equ 1
+Edition  equ   22
 
        org 1
 TANDY  rmb 1

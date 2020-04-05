@@ -20,6 +20,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.basedir>${project.basedir}/..</main.basedir>
+        <package>required</package>
     </properties>
 
     <scm>
@@ -53,6 +54,7 @@
                 </executions>
             </plugin>
 -->
+            <!-- To build other packages do: mvn install -Dpackage=basic09 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -66,7 +68,7 @@
                                 <property name="main.basedir" value="${main.basedir}"/>
                                 <property name="project.basedir" value="${project.basedir}"/>
                                 <ant antfile="build.xml">
-                                    <target name="compile"/>
+                                    <target name="${package}"/>
                                 </ant>
                             </target>
                         </configuration>

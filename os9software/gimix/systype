@@ -1,0 +1,72 @@
+ opt -l
+ ttl System Type Definitions
+ page
+************************************************************
+*
+*     CPU Type Definitions
+*
+ org 1
+Gimix rmb 1
+SSB rmb 1
+Kodak rmb 1
+MotGED rmb 1
+Primal rmb 1
+Helix rmb 1
+Positron rmb 1
+Profitel rmb 1
+Gimix2 rmb 1
+
+ ifeq LEVEL-1
+Exorsr rmb 1
+S09 rmb 1
+Swtc rmb 1
+Cms9609 rmb 1
+Mm19 rmb 1
+Percom rmb 1
+Elektra rmb 1
+ endc
+
+OneMHz equ 1
+TwoMHz equ 2
+
+CPUType set 0
+CPUSpeed set OneMHz
+
+
+************************************************************
+*
+*     Disk Controller Type Definitions
+*
+ org 1
+G68 rmb 1
+DCB4 rmb 1
+ExDiskII rmb 1
+PD5 rmb 1
+H58 rmb 1
+PosiDisk rmb 1
+ProfDisk rmb 1
+
+ ifeq LEVEL-1
+Cms9670 rmb 1
+ endc
+
+DiskType set 0
+
+
+************************************************************
+*
+*     Clock Type Definitions
+*
+ org 1
+MC6840 rmb 1 MC6840 timer
+VIA rmb 1 VIA timer
+M58167 rmb 1 M58167 clock
+MC146818 rmb 1 MC146818 clock
+MPT rmb 1 Swtpc MPT timer card
+
+ClocType set 0
+
+
+ opt l
+ use ../../defs/sysdefs.gimix
+

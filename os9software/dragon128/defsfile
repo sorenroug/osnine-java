@@ -6,5 +6,6 @@
  use systype.128
  use sysdefs.128
  use os9defs.x
+ use os9iodefs
  use os9sysdefs.lii.x
  endc

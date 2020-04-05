@@ -29,12 +29,6 @@ STRTYPE equ 4
 B.FALSE equ $00
 B.TRUE equ $FF
 
- ifeq Y2K-true
-Edition  set   23
- else
-Edition  set   22
- endc
-
 L0000    mod   B09END,B09NAME,Prgrm+Objct,ReEnt+1,start,dsize
 
          org 0
@@ -235,6 +229,19 @@ B09NAME
 * Intro screen
 
 INTRO
+ ifeq RESELLER-OTHER
+   ifle EDITION-20
+     fcc   'Copyright 1980 by Motorola, Inc.'
+   else
+     fcc   'Copyright 1980 by Motorola and Microware.'
+   endc
+     fcb   C$LF
+   ifeq (EDITION-21)
+     fcs   'Reproduced Under License'
+   else
+     fcs   'Reproduced Under License '
+   endc
+ else
        ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
          fcb   C$FORM   Clear screen on 32x16 display
          fcc   '            BASIC09'
@@ -265,7 +272,7 @@ INTRO
        endc
          fcc   '    ALL RIGHTS RESERVED.'
          fcb   $80+C$LF   Line feed
-
+ endc
 * Jump vector @ $1B goes here
 L00DC    pshs  x,d        Preserve regs
          ldb   [<$04,s]   Get function offset
@@ -1359,7 +1366,11 @@ L073F
 L0745    fcs   'What?'
 L074A    fcs   ' free'
 L074F    fcs   'Program'
+   ifle EDITION-20
+L0756    fcs   'Procedure'
+   else
 L0756    fcs   'PROCEDURE'
+   endc
          fcb   C$CR
 L0760    fcb   C$LF
          fcs   '  Name      Proc-Size  Data-Size'
@@ -1391,7 +1402,12 @@ L07B5    lda   R$DP,s     Get DP register from stack
          rti              Return to normal BASIC09
 
 * BASIC09 INIT
-start    pshs  u                        save start of data mem into D
+start    equ *
+ ifle EDITION-20
+         tfr   u,d
+
+ else
+         pshs  u                        save start of data mem into D
          leau  256,u                    point to end of DP
          clra                           clear all of DP to $00
          clrb
@@ -1399,6 +1415,7 @@ L07C9    std   ,--u
          cmpu  ,s
          bhi   L07C9
          puls  b,a                      get start of data mem into D
+ endc
          leau  ,x                       point U to start of parameter area
          std   <membase                 preserve start of data memory ptr
          inca                           point to $100 in data area
@@ -1418,7 +1435,14 @@ L07C9    std   ,--u
          subd  <membase
          std   <memsize
          clra
+ ifle EDITION-20
+         clrb  
+         std   <u000A
+         std   <pgmaddr
+         incb  
+ else
          ldb   #$01             default err path
+ endc
          std   <u002D
          sta   <u00BD
          lda   #$03             close paths 4-16
@@ -1439,6 +1463,9 @@ L07FC    os9   I$Close
 L0819    std   ,--x
          cmpx  <moddir
          bhi   L0819
+ ifle EDITION-20
+         clr   <u00DD
+ endc
          leax  >L0000,pc Point to beginning of module header
          pshs  x
          ldx   <membase
@@ -3977,7 +4004,9 @@ L1CA5    pshs  x,d        Preserve regs
 L1CB5    fdb   LAX1-L1CB5 $00 function
          fdb   LAX2-L1CB5 $02 function
          fdb   L252A-L1CB5 $04 function
+ ifgt EDITION-20
          fdb   L2508-L1CB5 $06 function
+ endc
  ifeq B09EXEC-true
          fdb   L24BD-L1CB5 $08 function
          fdb   L1E29-L1CB5 $0A function
@@ -7933,10 +7962,17 @@ L3A14    bsr   L3A23
 L3A1B    lbsr  L320F
          lbra  L3206            exit
 
+ ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
 L3A21    fcb   14,255           Force text mode in VDGINT
+ endc
 
-L3A23    leax  <L3A21,pcr
+L3A23 equ *
+
+ ifeq (RESELLER-TANDY)*(RESELLER-DRAGON)
+         leax  <L3A21,pcr
          lbsr  SPRINT
+ endc
+*============
  ifeq B09EXEC-true
          ldx   <u005C
          leay  ,x

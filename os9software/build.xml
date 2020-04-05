@@ -36,10 +36,18 @@
         </sequential>
     </macrodef>
 
-    <target name="compile">
+    <target name="prepare">
         <mkdir dir="${targetdir}"/>
+    </target>
 
-        <!-- Required by other Maven modules -->
+    <!-- All -->
+    <target name="all" depends="prepare, required, level1,
+        gimix, swtpc, color, color3, fm11, virtual,
+        utilities, dynacalc, stylo, rms, basic09">
+    </target>
+
+    <!-- Required by other Maven modules -->
+    <target name="required" depends="prepare">
         <assemble src="Shell" home="utilities" verify="91209757f1b55d768536629eca4c984c"/>
         <assemble src="Acia51_ed4" home="kernel" verify="6ed6dc592328cc3916e3e92b62fe36c0"/>
         <assemble src="Acia_ed2" home="kernel" verify="6c8d9746cee87d8f71f818b8e059c607"/>
@@ -63,27 +71,45 @@
         <assemble src="Term" home="gimix" verify="6033eabac7b4db841b7cb13fc377fc10"/>
         <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>
         <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
+    </target>
 
-        <!-- Optional -->
-        <!--
+    <!-- Level I kernel modules (common) -->
+    <target name="level1" depends="prepare">
+        <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
+        <assemble src="RBF_ed7" home="kernel" verify="f3b9848e9716821fd8f397d055ad717f"/>
+        <assemble src="OS9p1_ed8" home="kernel" verify="ca51db8a306c143967b8b6bc4ef55047"/>
+        <assemble src="OS9p2_ed8" home="kernel" verify="4620b5340979f69d3d243c07592ec200"/>
+        <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
+        <assemble src="go51nkb" home="kernel" verify="17d598001819b9aec3b579a5e63c822b"/>
+        <assemble src="go51n" home="kernel" verify="6798a2db83aedf2ac3629c913714dfa0"/>
+        <assemble src="go51" home="kernel" verify="83632831c5d2f8ddfa9e22b38faa8109"/>
+        <assemble src="SysGo" home="kernel" verify="a47c4ceedee4da200ebeabfcdea8b53c"/>
+        <assemble src="SysGo_login" home="kernel" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
+    </target>
+
+    <!-- GIMIX Level I -->
+    <target name="gimix" depends="prepare">
         <assemble src="G68" home="gimix" verify="d937eb81ca9cd5323e032d7943d61367"/>
         <assemble src="H0" home="gimix" verify="70d896d38742e234e338f6cfe8bf644f"/>
         <assemble src="XBC" home="gimix" verify="5bacdeaa30478463193fcc4324f63ad9"/>
         <assemble src="Boot" home="gimix" verify="c478773a1104052ce055125773dd51f9"/>
         <assemble src="Clock" home="gimix" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
         <assemble src="SysGo" home="gimix" verify="265bba4740d194f2dea21a36d9350764"/>
+    </target>
 
-        <assemble src="FD2_ed0" home="swtcp" verify="77406f3aa8d5fd2ec4b9cb4c12ecf7cb"/>
-        <assemble src="DC3_drvr" home="swtcp" verify="cd0a25175be395e22193b6dbb09bc5ba"/>
-        <assemble src="DC3_boot" home="swtcp" verify="8605a6f41aded53466629f570982f741"/>
-        <assemble src="DC3_desc" home="swtcp"/>
-        <assemble src="OS9p1" home="swtcp" verify="1832f6806d7b89f1a2209dd28bd96322"/>
-        <assemble src="OS9p2" home="swtcp" verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
+    <!-- SWTPC Level I -->
+    <target name="swtpc" depends="prepare">
+        <assemble src="FD2_ed0" home="swtpc" verify="77406f3aa8d5fd2ec4b9cb4c12ecf7cb"/>
+        <assemble src="DC3_drvr" home="swtpc" verify="cd0a25175be395e22193b6dbb09bc5ba"/>
+        <assemble src="DC3_boot" home="swtpc" verify="8605a6f41aded53466629f570982f741"/>
+        <assemble src="DC3_desc" home="swtpc"/>
+        <assemble src="OS9p1" home="swtpc" verify="1832f6806d7b89f1a2209dd28bd96322"/>
+        <assemble src="OS9p2" home="swtpc" verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
 
-        <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
-        <assemble src="stylo_std" home="stylograph" verify="170366065627902e83c8ba54107e1188"/>
-        <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
+    </target>
 
+    <!-- COCO Level I -->
+    <target name="color" depends="prepare">
         <assemble src="PRINTER" home="color" verify="a56e989efb645270da72151ac365ecee"/>
         <assemble src="RS232" home="color" verify="645d047d1becb25b5802499abc8f3ae8"/>
         <assemble src="T1" home="color" verify="3ce86b9c72726f56ae528c3b0d092b31"/>
@@ -94,6 +120,10 @@
         <assemble src="Init" home="color" verify="8bf368aaefb208a3c68db734e8a7d79c"/>
         <assemble src="Dir" home="color" verify="d7e0e580d1bdd1f38eb029fbd9e9ea64"/>
         <assemble src="TMode" home="color" verify="033c534c820856b8c8867417b041521f"/>
+    </target>
+
+    <!-- COCO Level II -->
+    <target name="color3" depends="prepare">
 
         <assemble src="OS9p1" home="color3" verify="5b74b74a31534bc8cee02603341f7fe6"/>
         <assemble src="OS9p2" home="color3" verify="2fd0cea7e2c3492feca8de7ec1721f70"/>
@@ -106,6 +136,26 @@
         <assemble src="DDisk_ed2" home="dragon64" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
         <assemble src="DDisk_desc" home="dragon64" verify="db6f08610c19d1716bc6afc946d14c17"/>
 
+        <assemble src="OS9p1_ed12" home="dragon128" verify="f9d58c063476646c3d8a8e45cb00bd6d"/>
+        <assemble src="OS9p2_ed13" home="dragon128" verify="1e962babaad664249926cda12db82e47"/>
+        <assemble src="Init"       home="dragon128" verify="8bbcbfd913f2fef3ff5df0e551b78ff5"/>
+        <assemble src="Shell_ed21" home="dragon128" verify="89542e1bf04c29499d3ff696ac1bebb6"/>
+    </target>
+
+    <!-- FM-11 Level II -->
+    <target name="fm11" depends="prepare">
+        <assemble src="OS9p1_ed13" home="fm11" verify="023ae85725ac5e5055036050b17a4bd8"/>
+        <assemble src="OS9p2_ed14" home="fm11" verify="2e84b1ce0bab76bcdd309c626c9a04ae"/>
+        <assemble src="OS9p3"      home="fm11" verify="ebb4f4ac8b1a7be281402a67c2ab3644"/>
+    </target>
+
+    <target name="virtual" depends="prepare">
+        <assemble src="HWClock" home="virtual" verify="3cc1395b3495bef485fee9774e7fdef6"/>
+        <assemble src="D0_vdisk" home="virtual" verify="9c31bf382aa1be8f30909a0dd6d481a6"/>
+        <assemble src="D1_vdisk" home="virtual" verify="e952a2f0422f1f51a9d157b70ac02f8d"/>
+    </target>
+
+    <target name="utilities" depends="prepare">
         <assemble src="Mfree_ed4" home="utilities" verify="f629490039f5f4b307604d495c543be1"/>
         <assemble src="TSMon" home="utilities" verify="7501e649d06eb2fe81780ad7e257c99e"/>
         <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
@@ -121,42 +171,43 @@
         <assemble src="Login_small_ed10" home="y2k" verify="8e4f6948f7683bb31424520a5cba63e0"/>
         <assemble src="Date_ed5" home="y2k" verify="a4b5cad5ff8d614a6313d865362e4b09"/>
 
-        <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
-        <assemble src="RBF_ed7" home="kernel" verify="f3b9848e9716821fd8f397d055ad717f"/>
-        <assemble src="OS9p1_ed8" home="kernel" verify="ca51db8a306c143967b8b6bc4ef55047"/>
-        <assemble src="OS9p2_ed8" home="kernel" verify="4620b5340979f69d3d243c07592ec200"/>
-        <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
-        <assemble src="go51nkb" home="kernel" verify="17d598001819b9aec3b579a5e63c822b"/>
-        <assemble src="go51n" home="kernel" verify="6798a2db83aedf2ac3629c913714dfa0"/>
-        <assemble src="go51" home="kernel" verify="83632831c5d2f8ddfa9e22b38faa8109"/>
-        <assemble src="SysGo" home="kernel" verify="a47c4ceedee4da200ebeabfcdea8b53c"/>
-        <assemble src="SysGo_login" home="kernel" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
+    </target>
 
-        <assemble src="HWClock" home="virtual" verify="3cc1395b3495bef485fee9774e7fdef6"/>
-        <assemble src="D0_vdisk" home="virtual" verify="9c31bf382aa1be8f30909a0dd6d481a6"/>
-        <assemble src="D1_vdisk" home="virtual" verify="e952a2f0422f1f51a9d157b70ac02f8d"/>
-
+    <target name="dynacalc" depends="prepare">
         <assemble src="install_473.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
         <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
         <assemble src="dynacalc_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="dynacalc_473.trm" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
-        <assemble src="vt100_473.trm" home="dynacalc"/>
+        <assemble src="ansi_473.trm" home="dynacalc" verify="9080196e996384d57472bc234deece4a"/>
+    </target>
 
+    <!-- Stylograph -->
+    <target name="stylo" depends="prepare">
+        <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
+        <assemble src="stylo_std" home="stylograph" verify="170366065627902e83c8ba54107e1188"/>
+        <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
+    </target>
+
+    <!-- RMS Report Management System -->
+    <target name="rms" depends="prepare">
+        <assemble src="rms" home="rms" verify="1e5af27b963b2ef3635edd2c526d495f"/>
+        <assemble src="report" home="rms" verify="f9820a325090ec307208d8f5667358da"/>
+    </target>
+
+    <!-- BASIC09 -->
+    <target name="basic09" depends="prepare">
         <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
         <assemble src="runb_tandy_y2k" home="basic09" verify="08da732414bafa6e7b1cc00e737d5195"/>
-        <assemble src="runb_generic_y2k" home="basic09" verify="bbb9685c8f71d66978a99e08d40d36ff"/>
-        <assemble src="basic09_generic_y2k" home="basic09" verify="c096bfad1ee5309a626874a9afb25b5b"/>
+        <assemble src="runb_generic_y2k" home="basic09" verify="5ae664915244495285014c500624b0b7"/>
+        <assemble src="runb_generic" home="basic09" verify="5c1e4a64e8ea15e10c02ba89cc4507c7"/>
+        <assemble src="basic09_generic_y2k" home="basic09" verify="67b113de00c1670c67c2817aaf93738f"/>
         <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
         <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
         <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
-        <assemble src="basic09_generic" home="basic09" verify="8fcd0e6da6577f2bf426d1ee159528bb"/>
+        <assemble src="basic09_generic" home="basic09" verify="ede76a6833915309482772012db053ee"/>
         <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>
         <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
-
-        <assemble src="rms" home="rms" verify="1e5af27b963b2ef3635edd2c526d495f"/>
-        <assemble src="report" home="rms" verify="f9820a325090ec307208d8f5667358da"/>
-        -->
     </target>
 
 </project>
