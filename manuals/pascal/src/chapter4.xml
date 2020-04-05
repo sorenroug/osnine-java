@@ -97,7 +97,7 @@ Translate all procedures? (Y or N):
 <screen>
 Enter a name to be used as the module name:
 </screen>
-<para>Here you will enter the name that you want the final output tile to be called. If you press the <keycap>ENTER</keycap> key, the name of the program in the P-code file is taken from the first 8 characters of the name on the 'PROGRAM' line in the original source program.</para>
+<para>Here you will enter the name that you want the final output title to be called. If you press the <keycap>ENTER</keycap> key, the name of the program in the P-code file is taken from the first 8 characters of the name on the 'PROGRAM' line in the original source program.</para>
 <para>You are also asked if you want line numbers in the P-code file to be translated with:</para>
 
 <screen>Translate line numbers in P-code file? (Y or N):</screen>

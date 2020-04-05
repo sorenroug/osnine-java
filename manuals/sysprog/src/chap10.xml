@@ -90,7 +90,7 @@ you do so:
     required in any OS-9 system.</para></listitem>
 
 
-    <listitem><para>If the target system is perform any I/O or interrupt
+    <listitem><para>If the target system is to perform any I/O or interrupt
     functions include IOMAN.</para></listitem>
 
     <listitem><para>If the target system is to perform I/O to character-oriented
