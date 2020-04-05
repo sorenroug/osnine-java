@@ -1,6 +1,6 @@
 {$L1500 - Stack size in bytes }
 { Solve sudoku with recursive algoritm }
-PROGRAM sudoko;
+PROGRAM sudoku;
 
 VAR
   grid : ARRAY [0..8,0..8] OF integer;
