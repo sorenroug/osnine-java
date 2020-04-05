@@ -1,9 +1,9 @@
 package org.roug.osnine.mo5;
 
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.BusStraight;
-import org.roug.osnine.PIA6821;
-import org.roug.osnine.BitReceiver;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.BusStraight;
+import org.roug.usim.PIA6821;
+import org.roug.usim.BitReceiver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

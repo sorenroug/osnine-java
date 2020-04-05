@@ -11,8 +11,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.roug.osnine.Acia;
-import org.roug.osnine.Acia6850;
+import org.roug.usim.Acia;
+import org.roug.usim.Acia6850;
 import org.roug.terminal.JTerminal;
 
 import org.slf4j.Logger;

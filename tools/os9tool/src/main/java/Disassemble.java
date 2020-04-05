@@ -1,8 +1,8 @@
 import java.io.FileInputStream;
 import java.util.Arrays;
-import org.roug.osnine.MC6809;
-import org.roug.osnine.OptionParser;
-import org.roug.osnine.DisAssembler;
+import org.roug.usim.mc6809.MC6809;
+import org.roug.usim.mc6809.DisAssembler;
+import org.roug.usim.OptionParser;
 
 public class Disassemble {
 

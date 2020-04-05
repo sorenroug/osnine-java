@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.PIA6821;
-import org.roug.osnine.BitReceiver;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.PIA6821;
+import org.roug.usim.BitReceiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

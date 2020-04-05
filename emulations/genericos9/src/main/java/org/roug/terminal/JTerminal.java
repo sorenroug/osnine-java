@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.roug.osnine.Acia;
+import org.roug.usim.Acia;
 import org.roug.osnine.genericos9.UIDevice;
 
 /**

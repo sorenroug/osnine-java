@@ -1,7 +1,7 @@
 package org.roug.osnine.genericos9;
 
 import java.io.File;
-import org.roug.osnine.OptionParser;
+import org.roug.usim.OptionParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

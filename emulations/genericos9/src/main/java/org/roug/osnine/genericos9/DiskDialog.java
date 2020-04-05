@@ -10,7 +10,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import org.roug.osnine.VirtualDisk;
+import org.roug.usim.VirtualDisk;
 
 import java.io.File;
 

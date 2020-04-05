@@ -28,16 +28,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.roug.osnine.Acia;
-import org.roug.osnine.Acia6850;
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.BusStraight;
-import org.roug.osnine.HWClock;
-import org.roug.osnine.IRQBeat;
-import org.roug.osnine.MC6809;
-import org.roug.osnine.RandomAccessMemory;
+import org.roug.usim.Acia;
+import org.roug.usim.Acia6850;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.BusStraight;
+import org.roug.usim.HWClock;
+import org.roug.usim.IRQBeat;
+import org.roug.usim.mc6809.MC6809;
+import org.roug.usim.RandomAccessMemory;
 import org.roug.terminal.JTerminal;
-import org.roug.osnine.VirtualDisk;
+import org.roug.usim.VirtualDisk;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

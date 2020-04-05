@@ -17,8 +17,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.BitReceiver;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.BitReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
