@@ -11,7 +11,7 @@
 
     <groupId>roug.org.osnine</groupId>
     <artifactId>genericos9</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
 
     <name>Emulator for a generic OS-9 Level I</name>
