@@ -281,7 +281,7 @@ public class Acia6850 extends MemorySegment implements Acia {
      */
     private synchronized int getReceivedValue() throws IOException {
         LOGGER.debug("Received val: {}", receiveData);
-        lowerIRQ();
+        if (isBitOff(statusRegister, TDRE)) lowerIRQ();
         int r = receiveData;  // Read before we turn RDRF off.
         clearStatusBit(RDRF);
         notifyAll();
