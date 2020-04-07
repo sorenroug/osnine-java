@@ -207,14 +207,6 @@ public class Acia6850 extends MemorySegment implements Acia {
         }
     }
 
-    private void signalReadyForTransmit() {
-        if (transmitIrqEnabled) {
-            raiseIRQ();
-        } else {
-            lowerIRQ();
-        }
-    }
-
     @Override
     protected int load(int addr) {
         LOGGER.debug("Load: {}", addr);
