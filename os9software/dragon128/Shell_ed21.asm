@@ -208,8 +208,10 @@ PARTBL fdb SHCOMT-*
  fcs "T" Echo input as read
  fdb SHNTEE-*
  fcs "-T" ..don't echo input
+ ifne EXTERR
  fdb INSERR-*
  fcs "SETERR"
+ endc
  fdb SHSETP-*
  fcs "SETPR" set <proc id> <priority>
  fdb CLRRTS-*
@@ -494,12 +496,14 @@ SHCDIR lda #DIR.+UPDAT. Change data dir
 SHCD10 OS9 I$ChgDir Change directory
  rts
 
+ ifne EXTERR
 **********
 * InsErr
 *
 *
 INSERR os9 F$InsErr
  rts
+ endc
 
 **********
 * Shprmt

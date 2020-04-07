@@ -79,28 +79,28 @@ OS9Name fcs /OS9p2/
 OS9Ent leay SVCTBL,PCR Get ptr to service routine table
  OS9 F$SSVC Set service table addresses
  ldu D.Init get configuration ptr
-         ldd   MaxMem,u
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
+ ldd   MaxMem,u
+ lsra
+ rorb
+ lsra
+ rorb
+ lsra
+ rorb
+ lsra
+ rorb
  ifge DAT.BlSz-$2000
-         lsra
-         rorb
+ lsra
+ rorb
  endc
-         addd  D.BlkMap
-         tfr   d,x
-         ldb   #$80
-         bra   COLD20
+ addd  D.BlkMap
+ tfr   d,x
+ ldb   #$80
+ bra   COLD20
 
-COLD10    lda   ,x+
-         bne   COLD20
-         stb   -1,x
-COLD20 cmpx  D.BlkMap+2
+COLD10 lda ,x+
+ bne COLD20
+ stb -1,x
+COLD20 cmpx D.BlkMap+2
  bcs COLD10
 COLD30 ldu D.Init
  ifne EXTERR
@@ -136,19 +136,19 @@ L0059    clr   ,-s
  leax D,U Get name ptr
  lda #EXEC.+READ. Set both execution & data
  OS9 I$ChgDir Set default directory
-         bcc   SETSTDS
-         os9   F$Boot
-         bcc   COLD30
-SETSTDS    ldu   D.Init
+ bcc SETSTDS
+ os9 F$Boot
+ bcc COLD30
+SETSTDS ldu D.Init
  ldd STDSTR,U get name offset
-         beq   LOADP3
+ beq LOADP3
  leax D,U get name ptr
  lda #UPDAT. set mode
  OS9 I$OPEN open file
-         bcc   SETSTD05
-         os9   F$Boot
-         bcc   SETSTDS
-         bra   LOADP3
+ bcc SETSTD05
+ os9 F$Boot
+ bcc SETSTDS
+ bra LOADP3
 
 SETSTD05 ldx D.PROC
  sta P$PATH,X set standard input
@@ -156,7 +156,7 @@ SETSTD05 ldx D.PROC
  sta P$PATH+1,X set standard output
  OS9 I$DUP count open image
  sta P$PATH+2,X set standard error
-LOADP3    leax  <OS9P3STR,pcr
+LOADP3 leax <OS9P3STR,pcr
  lda #SYSTM
  os9 F$Link
  bcs INITPRC
@@ -170,7 +170,7 @@ INITPRC ldu D.Init
  os9 F$Fork
  os9 F$NProc
 
-OS9P3STR    fcs "OS9p3"
+OS9P3STR fcs "OS9p3"
 
 SVCTBL equ *
  fcb F$Unlink
@@ -258,7 +258,7 @@ SVCTBL equ *
 *
 * Input: Y - Service Dispatch Table ptr
 *
-IOSTR    fcs "IOMan"
+IOSTR fcs "IOMan"
 
 IOHOOK pshs D,X,Y,U Save registers
  bsr IOLink Link ioman

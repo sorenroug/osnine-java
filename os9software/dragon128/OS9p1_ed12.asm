@@ -6,9 +6,9 @@
 * The CPUType is called DRG128, and CPUSpeed is TwoMHz
 ********************************
 
-         ifp1
+ ifp1
  use defsfile
-         endc
+ endc
 
 *****
 *
@@ -31,60 +31,60 @@ COLD05 std ,X++ Clear two bytes
  leay -2,Y Count down
  bne COLD05
  inca ONE Page for direct page
-         std   D.Tasks
-         addb  #DAT.TkCt
-         std   D.Tasks+2
-         clrb
-         inca
-         std   D.BlkMap
-         adda  #$01
-         std   D.BlkMap+2
-         std   D.SysDis
-         inca
-         std   D.UsrDis
-         inca
-         std   D.PrcDBT
-         inca
-         std   D.SysPrc
-         std   D.Proc
-         adda  #$02
-         tfr   d,s
-         inca
-         std   D.SysStk
-         std   D.SysMem
-         inca
-         std   D.ModDir
-         std   D.ModEnd
-         adda  #$06
-         std   D.ModDir+2
-         std   D.ModDAT
-         leax  >JMPMINX,pcr
-         tfr   x,d
-         ldx   #D.SWI3
-COLD30   std   ,x++
-         cmpx  #D.NMI
-         bls   COLD30
-         leax  >ROMEnd,pcr
-         pshs  x
-         leay SYSVEC,PCR Get interrupt entries
-         ldx   #D.Clock
+ std D.Tasks
+ addb #DAT.TkCt
+ std D.Tasks+2
+ clrb
+ inca
+ std D.BlkMap
+ adda #1
+ std D.BlkMap+2
+ std D.SysDis
+ inca
+ std D.UsrDis
+ inca
+ std D.PrcDBT
+ inca
+ std D.SysPrc
+ std D.Proc
+ adda #2
+ tfr d,s
+ inca
+ std D.SysStk
+ std D.SysMem
+ inca
+ std D.ModDir
+ std D.ModEnd
+ adda #6
+ std D.ModDir+2
+ std D.ModDAT
+ leax >JMPMINX,pcr
+ tfr x,d
+ ldx #D.SWI3
+COLD30 std ,x++
+ cmpx #D.NMI
+ bls COLD30
+ leax >ROMEnd,pcr
+ pshs x
+ leay SYSVEC,PCR Get interrupt entries
+ ldx #D.Clock
 COLD45 ldd ,Y++ get vector
  addd 0,S add offset
  std ,X++ init dp vector
  cmpx #D.XNMI end of dp vectors?
  bls COLD45 branch if not
  leas 2,S return scratch
-         ldx   D.XSWI2
-         stx   D.UsrSvc
-         ldx   D.XIRQ
-         stx   D.UsrIRQ
+ ldx D.XSWI2
+ stx D.UsrSvc
+ ldx D.XIRQ
+ stx D.UsrIRQ
  leax SYSREQ,PCR Get system service routine
  stx D.SysSVC
  stx D.XSWI2 Set service to system state
  leax SYSIRQ,PCR Get system interrupt routine
  stx D.SysIRQ
  stx D.XIRQ
-         leax  SVCIRQ,pcr
+ leax SVCIRQ,pcr
  stx D.SvcIRQ Set interrupts to system state
  leax IOPOLL,PCR Set irq polling routine
  stx D.POLL
@@ -93,31 +93,31 @@ COLD45 ldd ,Y++ get vector
 *
  leay SVCTBL,PCR Get ptr to service routine table
  lbsr SETSVC Set service table entries
-         ldu   D.PrcDBT
-         ldx   D.SysPrc
-         stx   ,u
-         stx   1,u
-         lda   #1   Process id 1
-         sta   P$ID,x
-         lda   #SysState
-         sta   P$State,x
-         lda   #SysTask
-         sta   D.SysTsk
-         sta   P$Task,x
-         lda   #$FF
-         sta   P$Prior,x
-         sta   P$Age,x
-         leax  P$DATImg,x
-         stx   D.SysDAT
+ ldu D.PrcDBT
+ ldx D.SysPrc
+ stx ,u
+ stx 1,u
+ lda #1   Process id 1
+ sta P$ID,x
+ lda #SysState
+ sta P$State,x
+ lda #SysTask
+ sta D.SysTsk
+ sta P$Task,x
+ lda #$FF
+ sta P$Prior,x
+ sta P$Age,x
+ leax P$DATImg,x
+ stx D.SysDAT
  ifeq CPUType-DRG128
-         lda   #$D8
-         sta   D.GRReg  Graphics control port
+ lda #$D8
+ sta D.GRReg  Graphics control port
  endc
-         clra
-         clrb
-         std   ,x++
-         ldy   #$000D
-         ldd   #DAT.Free
+ clra
+ clrb
+ std ,x++
+ ldy #$000D
+ ldd #DAT.Free
 L00D7    std   ,x++
          leay  -1,y
          bne   L00D7
@@ -239,74 +239,74 @@ L01BD    stx   ,y++
 * System Service Routine Table
 *
 SVCTBL equ *
-         fcb F$Link
-         fdb LINK-*-2
-         fcb F$PrsNam
-         fdb PNAM-*-2
-         fcb F$CmpNam
-         fdb CMPNAM-*-2
-         fcb F$CmpNam+$80
-         fdb SCMPNAM-*-2
-         fcb F$CRC
-         fdb CRCGen-*-2
-         fcb F$SRqMem+$80
-         fdb SRQMEM-*-2
-         fcb F$SRtMem+$80
-         fdb SRTMEM-*-2
-         fcb F$AProc+$80
-         fdb APROC-*-2
-         fcb F$NProc+$80
-         fdb NPROC-*-2
-         fcb F$VModul+$80
-         fdb VMOD-*-2
-         fcb F$SSVC
-         fdb SSVC-*-2
-         fcb F$SLink+$80
-         fdb SLINK-*-2
-         fcb F$Boot+$80
-         fdb BOOT-*-2
-         fcb F$BtMem+$80
-         fdb SRQMEM-*-2
-         fcb F$Move+$80
-         fdb MOVE-*-2
-         fcb F$AllRAM
-         fdb ALLRAM-*-2
-         fcb F$AllImg+$80
-         fdb ALLIMG-*-2
-         fcb F$SetImg+$80
-         fdb SETIMG-*-2
-         fcb F$FreeLB+$80
-         fdb FREELB-*-2
-         fcb F$FreeHB+$80
-         fdb FREEHB-*-2
-         fcb F$AllTsk+$80
-         fdb ALLTSK-*-2
-         fcb F$DelTsk+$80
-         fdb DELTSK-*-2
-         fcb F$SetTsk+$80
-         fdb SETTSK-*-2
-         fcb F$ResTsk+$80
-         fdb RESTSK-*-2
-         fcb F$RelTsk+$80
-         fdb RELTSK-*-2
-         fcb F$DATLog+$80
-         fdb DATLOG-*-2
-         fcb F$LDAXY+$80
-         fdb LDAXY-*-2
-         fcb F$LDDDXY+$80
-         fdb LDDDXY-*-2
-         fcb F$LDABX+$80
-         fdb LDABX-*-2
-         fcb F$STABX+$80
-         fdb STABX-*-2
-         fcb F$ELink+$80
-         fdb ELINK-*-2
-         fcb F$FModul+$80
-         fdb FMODUL-*-2
+ fcb F$Link
+ fdb LINK-*-2
+ fcb F$PrsNam
+ fdb PNAM-*-2
+ fcb F$CmpNam
+ fdb CMPNAM-*-2
+ fcb F$CmpNam+$80
+ fdb SCMPNAM-*-2
+ fcb F$CRC
+ fdb CRCGen-*-2
+ fcb F$SRqMem+$80
+ fdb SRQMEM-*-2
+ fcb F$SRtMem+$80
+ fdb SRTMEM-*-2
+ fcb F$AProc+$80
+ fdb APROC-*-2
+ fcb F$NProc+$80
+ fdb NPROC-*-2
+ fcb F$VModul+$80
+ fdb VMOD-*-2
+ fcb F$SSVC
+ fdb SSVC-*-2
+ fcb F$SLink+$80
+ fdb SLINK-*-2
+ fcb F$Boot+$80
+ fdb BOOT-*-2
+ fcb F$BtMem+$80
+ fdb SRQMEM-*-2
+ fcb F$Move+$80
+ fdb MOVE-*-2
+ fcb F$AllRAM
+ fdb ALLRAM-*-2
+ fcb F$AllImg+$80
+ fdb ALLIMG-*-2
+ fcb F$SetImg+$80
+ fdb SETIMG-*-2
+ fcb F$FreeLB+$80
+ fdb FREELB-*-2
+ fcb F$FreeHB+$80
+ fdb FREEHB-*-2
+ fcb F$AllTsk+$80
+ fdb ALLTSK-*-2
+ fcb F$DelTsk+$80
+ fdb DELTSK-*-2
+ fcb F$SetTsk+$80
+ fdb SETTSK-*-2
+ fcb F$ResTsk+$80
+ fdb RESTSK-*-2
+ fcb F$RelTsk+$80
+ fdb RELTSK-*-2
+ fcb F$DATLog+$80
+ fdb DATLOG-*-2
+ fcb F$LDAXY+$80
+ fdb LDAXY-*-2
+ fcb F$LDDDXY+$80
+ fdb LDDDXY-*-2
+ fcb F$LDABX+$80
+ fdb LDABX-*-2
+ fcb F$STABX+$80
+ fdb STABX-*-2
+ fcb F$ELink+$80
+ fdb ELINK-*-2
+ fcb F$FModul+$80
+ fdb FMODUL-*-2
  ifeq CPUType-DRG128
- fcb F$GMap    * $54 request graphics memory
+ fcb F$GMap     $54 request graphics memory
  fdb GFXMAP-*-2
- fcb F$GClr    * $55 return graphics memory
+ fcb F$GClr     $55 return graphics memory
  fdb GFXCLR-*-2
  endc
  fcb $80
@@ -315,7 +315,7 @@ CNFSTR fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
 BTSTR fcs /Boot/
 
-JMPMINX jmp   [<-$10,x] Jump to the "x" version of the interrupt
+JMPMINX jmp [<-$10,x] Jump to the "x" version of the interrupt
 
 SWI3HN ldx D.Proc
          ldu   P$SWI3,x
