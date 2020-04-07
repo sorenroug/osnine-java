@@ -70,7 +70,7 @@ public class GUI {
     private HWClock hwClock;
 
     /** The display of the emulator. */
-    private JTerminal screen1, screen2;
+    private JTerminal screen1;
 
     private int loadStart = 0;
 
@@ -90,7 +90,7 @@ public class GUI {
         guiFrame.setJMenuBar(guiMenuBar);
 
         addFileMenu(guiMenuBar);
-        //addEditMenu(guiMenuBar);
+        addEditMenu(guiMenuBar);
         addDevicesMenu(guiMenuBar);
         addHelpMenu(guiMenuBar);
 
@@ -161,6 +161,7 @@ public class GUI {
             @Override
             public void windowGainedFocus(WindowEvent e) {
                 screen1.requestFocusInWindow();
+                screen1.resetState();
             }
         });
 
@@ -174,13 +175,6 @@ public class GUI {
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
 
-/*
-        LOGGER.debug("Starting heartbeat every 20 milliseconds");
-        TimerTask clocktask = new ClockTask();
-
-        Timer timer = new Timer("clock", true);
-        timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
-        */
     }
 
     /**
@@ -198,16 +192,6 @@ public class GUI {
         LOGGER.debug("Writing word {} at {}", value, address);
         bus.forceWrite(address, (value >> 8) & 0xFF);
         bus.forceWrite(address + 1, value & 0xFF);
-    }
-
-    /**
-     * Set the size of the window.
-     *
-     * @param size size of a pixel in host computer pixels.
-     */
-    void setPixelSize(int size) {
-        //screen1.setPixelSize(size);
-        guiFrame.pack();
     }
 
     /**
@@ -364,13 +348,9 @@ public class GUI {
                 int code = pasteBuffer.charAt(pasteIndex);
                 pasting = true;
                 LOGGER.debug("Paste {}", code);
-//              if (code >= 0)
-//                  screen1.setKey(code, true);
             }
             if ((beats % PASTE_INTERVAL) == PASTE_RELEASE && pasting) {
                 int code = pasteBuffer.charAt(pasteIndex);
-//              if (code >= 0)
-//                  screen1.setKey(code, false);
                 pasting = false;
                 pasteIndex++;
                 if (pasteIndex >= pasteBuffer.length()) {
@@ -398,7 +378,12 @@ public class GUI {
                 pasteBuffer = (String) c.getContents(null)
                                 .getTransferData(DataFlavor.stringFlavor);
                 LOGGER.debug("To paste:{}", pasteBuffer);
-                pasteIndex = 0;
+                for (char ch : pasteBuffer.toCharArray()) {
+                    if (ch == '\n')
+                        term.eolReceived();
+                    else
+                        term.dataReceived(ch);
+                }
             } catch (UnsupportedFlavorException | IOException e1) {
                 LOGGER.error("Unsupported flavor", e1);
             }

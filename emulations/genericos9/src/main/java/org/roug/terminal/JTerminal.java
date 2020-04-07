@@ -83,6 +83,10 @@ public class JTerminal extends JPanel implements UIDevice {
         timer.schedule(cursortask, 1000, BLINKPERIOD);
     }
 
+    public void resetState() {
+        emulator.resetState();
+    }
+
     /**
      * Set the size of the font to use in points.
      *

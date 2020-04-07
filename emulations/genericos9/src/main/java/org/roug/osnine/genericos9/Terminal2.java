@@ -50,6 +50,7 @@ public class Terminal2 extends JDialog {
             @Override
             public void windowGainedFocus(WindowEvent e) {
                 screen.requestFocusInWindow();
+                screen.resetState();
             }
         });
 

@@ -25,6 +25,12 @@ public class DumbTerminal extends KeyAdapter implements TerminalEmulation {
         this.term = term;
     }
 
+    @Override
+    public void resetState() {
+        shiftPressed = false;
+        altPressed = false;
+    }
+
     /**
      * Parse character received from host and then write it to the terminal.
      * Will only understand the control codes in the lower 32 codes of ASCII.

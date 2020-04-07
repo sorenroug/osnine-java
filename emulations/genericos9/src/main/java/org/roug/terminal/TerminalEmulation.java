@@ -14,4 +14,5 @@ public interface TerminalEmulation extends KeyListener {
      */
     public void parseChar(int c);
 
+    public void resetState();
 }

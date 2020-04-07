@@ -30,6 +30,13 @@ public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
         this.term = term;
     }
 
+    @Override
+    public void resetState() {
+        shiftPressed = false;
+        altPressed = false;
+    }
+
+    @Override
     public void parseChar(int c) {
         termState = termState.sendToUI(c, this);
     }

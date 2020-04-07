@@ -47,7 +47,7 @@ public class AciaToScreen extends SwingWorker<Integer, Integer> {
     @Override
     protected void process(List<Integer> chunks) {
         try {
-            for(int val : chunks) {
+            for (int val : chunks) {
                 uiDevice.sendToUI(val);
             }
         } catch (Exception e) {
