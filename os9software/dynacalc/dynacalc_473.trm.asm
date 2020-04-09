@@ -4,7 +4,8 @@
  endc
  opt m
  org 0
- use copyright.inc
+ use header_473.inc
  use go51.keys
  use rest.inc
  use help51.inc
+ use drg_junk1.inc

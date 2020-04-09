@@ -26,7 +26,7 @@ u0013    rmb   1
 u0014    rmb   1
 u0015    rmb   1
 u0016    rmb   1
-u0017    rmb   1
+u0017    rmb   1   Pointer to M09F0
 u0018    rmb   1
 u0019    rmb   1
 MEMPTR   rmb   2
@@ -48,7 +48,7 @@ u002B    rmb   1
 u002C    rmb   1
 u002D    rmb   2
 u002F    rmb   1
-u0030    rmb   2
+u0030    rmb   2  pointer to buffer at M0331
 u0032    rmb   1
 u0033    rmb   1
 u0034    rmb   1
@@ -65,7 +65,7 @@ u003F    rmb   1
 u0040    rmb   1
 PARAMS   rmb   2
 u0043    rmb   1
-u0044    rmb   1
+u0044    rmb   1   Contains $700
 u0045    rmb   1
 u0046    rmb   1
 u0047    rmb   2
@@ -209,7 +209,7 @@ u00E3    rmb   1
 u00E4    rmb   1
 u00E5    rmb   3
 u00E8    rmb   1
-u00E9    rmb   2
+u00E9    rmb   2  Pointer to buffer at M0280
 u00EB    rmb   1
 u00EC    rmb   1
 u00ED    rmb   1
@@ -1435,7 +1435,7 @@ L0A20    ldu   <u006E
          clr   <u0092
          bsr   L0A82
          ldu   <MEMPTR  beginning of data
-         leau  >u03B8,u
+         leau  >M03B8,u
          lbsr  L1AB9  output string pointed to in U
 L0A40    tst   <u00C8
          beq   L0A47
@@ -1499,7 +1499,7 @@ L0ABE    rts
 L0ABF    pshs  b,a
          tst   <u0075
          bne   L0ACB
-         ldx   #$03BE
+         ldx   #M03BE  Pointer to 'Value'
          lbsr  L0D41
 L0ACB    lbsr  L0B89
          lda   #$0A
@@ -1522,7 +1522,7 @@ L0ACB    lbsr  L0B89
          lbge  L12B4
          lbra  L10D9
 
-         ldx   #$03C4
+         ldx   #M03C4  Pointer to 'Label'
          lbsr  L0D41
          ldy   <u00E9
          lda   <u0064
@@ -1790,6 +1790,7 @@ L0D36    ldx   #$0000
 L0D39    bsr   L0D55
          lbsr  L19DB
          lbra  L3AF3
+* Print string a X offset in Trm-file
 L0D41    stx   <u006C
          lbsr  L1AB3
          sta   <u00C4
@@ -3410,8 +3411,9 @@ L1A82    lbra  L0E24 Write char
 L1A85    clra
          incb
          stb   <u0025
-         lbra  L47A1
-         ora   <u004F
+L1A89    lbra  L47A1
+
+L1A8C    ora   <u004F
          ldb   <u0028
          beq   L1A9B
          tsta
@@ -3956,7 +3958,7 @@ L1F0D    pshs  u
          lda   #$04
          puls  pc,u
 
-L1F16    fcc   "Commands"
+CMDSTR    fcc   "Commands"
          fcb   $00
 
          fcb   'A,$05,$a2
@@ -3997,25 +3999,25 @@ L1F7F    fcc   "Formats"
          fcb   0
 
 L1F87    fcb   'D,$0C,$6D
-         fcb   $47,$0C,$6D
-         fcb   $52,$0C,$6D
-         fcb   $4C,$0C,$6D
-         fcb   $50,$0C,$6D
-         fcb   $49,$0C,$6D
-         fcb   $24,$0C,$6D
-         fcb   $43,$0C,$6D
+         fcb   'G,$0C,$6D
+         fcb   'R,$0C,$6D
+         fcb   'L,$0C,$6D
+         fcb   'P,$0C,$6D
+         fcb   'I,$0C,$6D
+         fcb   '$,$0C,$6D
+         fcb   'C,$0C,$6D
          fcb   '?,$88
 
 L1FA1    fcc   "Windows"
          fcb   $00
 
          fcb   'D,$06,$70
-         fcb   $46,$0C,$39
-         fcb   $48,$0C,$91
-         fcb   $4E,$0D,$78
-         fcb   $53,$0D,$9D
-         fcb   $55,$0D,$BD
-         fcb   $56,$0C,$AA
+         fcb   'F,$0C,$39
+         fcb   'H,$0C,$91
+         fcb   'N,$0D,$78
+         fcb   'S,$0D,$9D
+         fcb   'U,$0D,$BD
+         fcb   'V,$0C,$AA
          fcb   '?,$8A
 
 L1FC0    fcc   " In "
@@ -4023,17 +4025,17 @@ L1FC4    fcc   "Titles"
          fcb   $00
 
          fcb   'B,$0C,$FE
-         fcb   $48,$0D,$00
-         fcb   $4E,$0D,$36
-         fcb   $56,$0D,$02
+         fcb   'H,$0D,$00
+         fcb   'N,$0D,$36
+         fcb   'V,$0D,$02
          fcb   '?,$8C
 
 L1FD9    fcc   "System"
          fcb   $00
 
-         fcb   $43,$0E,$D2
-         fcb   $4C,$0E,$F1
-         fcb   $53,$0E,$F4
+         fcb   'C,$0E,$D2
+         fcb   'L,$0E,$F1
+         fcb   'S,$0E,$F4
          fcb   'X,$0E,$F7
          fcb   '#,$2C,$F8
          fcb   '?,$8E
@@ -4041,8 +4043,8 @@ L1FD9    fcc   "System"
 L1FF1    fcc   "Column width"
          fcb  0
 
-         fcb  $43,$0D,$C2
-         fcb  $57,$0E,$83
+         fcb  'C,$0D,$C2
+         fcb  'W,$0E,$83
          fcb  '?,$90
 
 L2006    fcc   "Quit"
@@ -4076,7 +4078,7 @@ L2013    ldx   #$011A
          leau  >L1FA1,pcr   Windows
          bra   L2047
 
-L2043    leau  >L1F16,pcr   String 'Commands'
+L2043    leau  >CMDSTR,pcr   String 'Commands'
 L2047    bsr   L2013
          sta   <u009A
          clr   <u00E3
@@ -4084,15 +4086,15 @@ L204D    lbsr  L2234  output string pointed to in U
          stu   <u008E
          lda   #':
          lbsr  L1B3C  output char in A
-L2057    lda   ,u
-         cmpa  #'?
-         bne   L2061
-         tst   <u001D
+L2057    lda   0,u
+         cmpa  #'?  Is this help commmand?
+         bne   L2061 ..no
+         tst   <u001D  help texts discarded?
          bne   L2064
 L2061    lbsr  L1B3C  output char in A
 L2064    leau  3,u
-         cmpa  #'?
-         bne   L2057
+         cmpa  #'?   help is last
+         bne   L2057 not at last char
          lbsr  L20DD  Has now listed all command characters
          lbsr  L3AF3
 L2070    lbsr  L0904
@@ -4100,8 +4102,8 @@ L2070    lbsr  L0904
          ldx   <u008E
 L2076    cmpa  ,x+
          bne   L2092
-         cmpa  #'?
-         beq   L20A1
+         cmpa  #'?    help command?
+         beq   L20A1 .. yes
          tfr   x,u
          pshs  pc,b,a
          ldd   ,x
@@ -4120,8 +4122,9 @@ L2092    incb
          cmpb  #$3F
          bne   L2076
          bra   L2070
+
 L20A1    tst   <u001D    texts discarded?
-         bne   L20AD
+         bne   L20AD  ..yes
          ldu   <u001E
          pshs  u
          jsr   [,s++]
@@ -4136,7 +4139,7 @@ L20AD    leau  >L20BC,pcr   String 'helps not available'
 L20BC    fcc   "HELPS NOT AVAILABLE."
          fcb 0
 
-L20D1    tst   <u001D
+L20D1    tst   <u001D  help texts discarded?
          lbne  L215E
          ldu   <u001E
          leau  $03,u
@@ -4216,10 +4219,8 @@ L216E    lda   #$0D
 L217E    fcc   "Clear Worksheet"
          fcb 0
 
-         fcb $33
-L218F    bsr   L218F
-         lsr   >$8D34
-         bne   L215E
+         fcb $33,$8D,$FE,$74,$8D,$34,$26,$C8
+
 L2196    clr   <u00ED
          clr   <u00EE
          lbsr  L0922
@@ -5398,7 +5399,7 @@ L2B61    bsr   L2B35
 L2BD9    ldx   $08,u
          stx   <$18,u
          ldx   $0A,u
-         stx   <MEMPTR,u
+         stx   <$1A,u
          ldx   $0C,u
          stx   <$1C,u
          ldx   $0E,u
@@ -5406,7 +5407,7 @@ L2BD9    ldx   $08,u
          rts
 L2BEE    ldx   <$18,u
          stx   $08,u
-         ldx   <MEMPTR,u
+         ldx   <$1A,u
          stx   $0A,u
          ldx   <$1C,u
          stx   $0C,u
@@ -7165,7 +7166,7 @@ L3C3F    lbsr  L1B0A
          decb
          stb   <u0071
          lbsr  L08E3
-         tst   <u001D
+         tst   <u001D  help texts discarded?
          bne   L3C62
          ldx   <u001E
          leax  $0A,x
@@ -7315,7 +7316,7 @@ L3D89    lda   <u005B
          adda  #$1D
 L3D93    tfr   a,b
          deca
-         ldx   #$2E63
+         ldx   #$2E63  ".cal"
          ldu   #$616C
          cmpu  a,y
          bne   L3DA7
@@ -7661,6 +7662,7 @@ L40B4    ldd   ,y
 L40BF    lbra  L1AB9  output string pointed to in U
 L40C2    lbsr  L0901
 L40C5    lbra  L1B0A
+
 L40C8    ldx   <MEMPTR
          leau  <$20,x
          stu   <u00F4
@@ -8666,7 +8668,7 @@ L49B8    clr   <u00E0
          ldb   <u00F1
          bsr   L49AA
 L49CE    ldu   <MEMPTR
-         leau  >u0562,u
+         leau  >u0562,u    Date string M0562
          bsr   L49B5  output string pointed to in U
          tst   <u0091
          bne   L4A08
@@ -8735,12 +8737,12 @@ L4A44    clr   <u00B3
          tst   <u00EF
          beq   L4A75
          lbsr  L4C4D
-         cmpa  #$2F
+         cmpa  #'/
          bne   L4A75
          lbsr  L4C22
          lbsr  L4C41
          anda  #$5F
-         cmpa  #$52
+         cmpa  #'R
          beq   L4A85
          bra   L4A7D
 L4A75    sta   <u00D7
@@ -9004,14 +9006,14 @@ L4CBC    fcc   "Data file"
 
          fcb   'L,$30,$e7
          fcb   'S,$2f,$f4
-         fcb   $3f,$86
+         fcb   '?,$86
 
 L4CCE    fcc   "Order"
          fcb   $00
          fcb   'C,$2f,$e8
          fcb   $44,$2f,$c7
          fcb   $52,$2f,$f0
-         fcb   $3f,$a2
+         fcb   '?,$a2
 
 L4CDF    fcc   "Printer"
          fcb   $00
@@ -9022,7 +9024,7 @@ L4CDF    fcc   "Printer"
          fcb   $53
          fcb   $33,$12
          fcb   $57,$32,$d3
-         fcb   $3f,$94
+         fcb   '?,$94
 
          ldx   #$00FE   Pagination variable (T/F)
          leau  >L4DC5,pcr  String 'Pagination now'

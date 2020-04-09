@@ -1,25 +1,26 @@
 * Texts are shortened to max 51 characters per line
+* Start at $1071
 HELPS    fcc   "A  set Attributes"
          fcb   $0D
-M1083    fcc   "B  Blank current cell"
+         fcc   "B  Blank current cell"
          fcb   $0D
-M1099    fcc   "C  Clear entire worksheet"
+         fcc   "C  Clear entire worksheet"
          fcb   $0D
-M10B3    fcc   "D  Delete current column or row"
+         fcc   "D  Delete current column or row"
          fcb   $0D
-M10D3    fcc   "E  Edit contents of current cell"
+         fcc   "E  Edit contents of current cell"
          fcb   $0D
-M10F4    fcc   "F  set Format of current cell"
+         fcc   "F  set Format of current cell"
          fcb   $0D
-M1112    fcc   "I  Insert new column or row at current position"
+         fcc   "I  Insert new column or row at current position"
          fcb   $0D
-M1142    fcc   "L  Locate specified label "
+         fcc   "L  Locate specified label "
          fcb   $0D
-M115D    fcc   /   (?="Wild card", @="Don't ignore case")/
+         fcc   /   (?="Wild card", @="Don't ignore case")/
          fcb   $0D
-M1187    fcc   "M  Move column or row to new position"
+         fcc   "M  Move column or row to new position"
          fcb   $0D
-M11AD    fcc   "P  Print all or portion of worksheet to"
+         fcc   "P  Print all or portion of worksheet to"
          fcb   $0D
          fcc   "   system printer or textfile"
          fcb   $0D
@@ -69,7 +70,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "W  allows changing column Width(s)"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M1500    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -81,7 +83,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "R  deletes current Row"
          fcb   $0D
          fcb   $00
-         fcc   "Set Format of current cell:"
+
+M154A    fcc   "Set Format of current cell:"
          fcb   $0D
          fcb   $0A
          fcc   "C  Continuous - characters repeated"
@@ -105,7 +108,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "$  Money - rounds DISPLAY to nearest penny"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M16F0    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -117,7 +121,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "R  inserts new blank Row at current position"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M176D    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -130,7 +135,7 @@ M12EE    fcc   "Set Attributes:"
          fcb   $0D
          fcb   $00
 
-         fcc   "System:"
+M17D0    fcc   "System:"
          fcb   $0D
          fcb   $0A
          fcc   "C  Change the current directory"
@@ -154,7 +159,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "   both default to the current directory"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M1901    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -167,7 +173,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "S  Save labels and CALCULATED Values to disk"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M196F    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcc   "Titles:"
@@ -186,7 +193,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "   Vertical title area"
          fcb   $0D
          fcb   $00
-         fcc   "Windows:"
+
+M1A31    fcc   "Windows:"
          fcb   $0D
          fcb   $0A
          fcc   "D  toggle value/formula Display flag"
@@ -212,8 +220,8 @@ M12EE    fcc   "Set Attributes:"
          fcc   "   at current location"
          fcb   $0D
          fcb   $00
-M1BC7
-         fcc   "Set default format of current window:"
+
+M1BC7    fcc   "Set default format of current window:"
          fcb   $0D
          fcb   $0A
          fcc   "C  Continuous - characters repeated"
@@ -237,7 +245,8 @@ M1BC7
          fcc   "$  Dollar - rounds DISPLAY to nearest cent"
          fcb   $0D
          fcb   $00
-         fcc   "Printer attributes:"
+
+M1D79    fcc   "Printer attributes:"
          fcb   $0D
          fcb   $0A
          fcc   "B  toggles Border flag on/off (defaults to off)"
@@ -258,9 +267,9 @@ M1BC7
          fcc   '  modified by the user, using "Install.dc"'
          fcb   $0D
          fcb   $00
-         fcb   $0A
-         fcb   $0A
 
+M1EF0    fcb   $0A
+         fcb   $0A
          fcc   "Width:"
          fcb   $0D
          fcb   $0A
@@ -276,7 +285,8 @@ M1BC7
          fcc   "   (defaults to 9 characters)"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M1FA8    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcc   "Move column/row:"
@@ -293,7 +303,8 @@ M1BC7
          fcc   "M  Manually move column/row"
          fcb   $0D
          fcb   $00
-         fcb   $0A
+
+M2057    fcb   $0A
          fcb   $0A
          fcc   "C  loads/saves data by Column"
          fcb   $0D
@@ -304,11 +315,12 @@ M1BC7
          fcc   "R  loads/saves data by Rows"
          fcb   $0D
          fcb   $00
+
 M20BB    fcc   "Trigonometric:"
          fcb   $0D
          fcc   "  @SIN      @ASIN     @PI (3.14)"
          fcb   $0D
-M20EB    fcc   "  @COS      @ACOS "
+         fcc   "  @COS      @ACOS "
          fcb   $0D
          fcc   "  @TAN      @ATAN "
          fcb   $0D
@@ -378,7 +390,8 @@ M20EB    fcc   "  @COS      @ACOS "
          fcc   "   Hit ESCAPE key to exit Help"
          fcb   $0D
          fcb   $00
-         fcc   "Arithmetic operators:"
+
+M2544    fcc   "Arithmetic operators:"
          fcb   $0D
          fcc   "   x+y adds x and y"
          fcb   $0D
@@ -414,6 +427,7 @@ M20EB    fcc   "  @COS      @ACOS "
          fcc   "    Hit ESCAPE key to exit Help"
          fcb   $0D
          fcb   $00
+
 M270D    fcc   "       DYNACALC Error Messages"
          fcb   $0D
          fcb   $0A
@@ -445,1428 +459,183 @@ M270D    fcc   "       DYNACALC Error Messages"
          fcc   "      Hit any key to exit Help"
          fcb   $0D
          fcb   $00
-M28BF    fcc   "Path table full."
+
+* Error messages at $28BF
+ERRMSGS equ *
+ERROR01  fcc   "Path table full."
          fcb   $00
-         fcc   "Illegal path number."
+ERROR02  fcc   "Illegal path number."
          fcb   $00
-         fcc   "Interrupt polling table full."
+ERROR03  fcc   "Interrupt polling table full."
          fcb   $00
-         fcc   "Illegal I/O mode."
+ERROR04  fcc   "Illegal I/O mode."
          fcb   $00
-         fcc   "Device table overflow."
+ERROR05  fcc   "Device table overflow."
          fcb   $00
-         fcc   "Illegal module ID block."
+ERROR06  fcc   "Illegal module ID block."
          fcb   $00
-         fcc   "Module directory full."
+ERROR07  fcc   "Module directory full."
          fcb   $00
-         fcc   "Memory full."
+ERROR08  fcc   "Memory full."
          fcb   $00
-         fcc   "Unknown service request."
+ERROR09  fcc   "Unknown service request."
          fcb   $00
-         fcc   "Module busy."
+ERROR10  fcc   "Module busy."
          fcb   $00
-         fcc   "Bad boundary."
+ERROR11  fcc   "Bad boundary."
          fcb   $00
-         fcc   "End of file."
+ERROR12  fcc   "End of file."
          fcb   $00
-         fcc   "Returning non-allocated memory."
+ERROR13  fcc   "Returning non-allocated memory."
          fcb   $00
-         fcc   "Non-existing segment."
+ERROR14  fcc   "Non-existing segment."
          fcb   $00
-         fcc   "No permission- access denied."
+ERROR15  fcc   "No permission- access denied."
          fcb   $00
-         fcc   "Bad path name."
+ERROR16  fcc   "Bad path name."
          fcb   $00
-         fcc   "The file/device cannot be found."
+ERROR17  fcc   "The file/device cannot be found."
          fcb   $00
-         fcc   "Segment list filled."
+ERROR18  fcc   "Segment list filled."
          fcb   $00
-         fcc   "Creating existing file."
+ERROR19  fcc   "Creating existing file."
          fcb   $00
-         fcc   "Illegal block address."
+ERROR20  fcc   "Illegal block address."
          fcb   $00
-         fcc   "Illegal block size."
+ERROR21  fcc   "Illegal block size."
          fcb   $00
-         fcc   "Link to a non-existing module."
+ERROR22  fcc   "Link to a non-existing module."
          fcb   $00
-         fcc   "Sector number out of range."
+ERROR23  fcc   "Sector number out of range."
          fcb   $00
-         fcc   "Deallocating stack memory."
+ERROR24  fcc   "Deallocating stack memory."
          fcb   $00
-         fcc   "Illegal process ID."
+ERROR25  fcc   "Illegal process ID."
          fcb   $00
-         fcc   "Illegal signal code."
+ERROR26  fcc   "Illegal signal code."
          fcb   $00
-         fcc   "No children."
+ERROR27  fcc   "No children."
          fcb   $00
-         fcc   "Illegal SWI code."
+ERROR28  fcc   "Illegal SWI code."
          fcb   $00
-         fcc   "Keyboard abort."
+ERROR29  fcc   "Keyboard abort."
          fcb   $00
-         fcc   "Process table full."
+ERROR30  fcc   "Process table full."
          fcb   $00
-         fcc   "Illegal fork parameter area."
+ERROR31  fcc   "Illegal fork parameter area."
          fcb   $00
-         fcc   "Known module."
+ERROR32  fcc   "Known module."
          fcb   $00
-         fcc   "Bad module CRC."
+ERROR33  fcc   "Bad module CRC."
          fcb   $00
-         fcc   "Unprocessed signal pending."
+ERROR34  fcc   "Unprocessed signal pending."
          fcb   $00
-         fcc   "Non-executable module."
+ERROR35  fcc   "Non-executable module."
          fcb   $00
-         fcc   "Unit number out of range."
+ERROR36  fcc   "Unit number out of range."
          fcb   $00
-         fcc   "Sector number out of range."
+ERROR37  fcc   "Sector number out of range."
          fcb   $00
-         fcc   "Write protect."
+ERROR38  fcc   "Write protect."
          fcb   $00
-         fcc   "Checksum error."
+ERROR39  fcc   "Checksum error."
          fcb   $00
-         fcc   "Read error."
+ERROR40  fcc   "Read error."
          fcb   $00
-         fcc   "Write error."
+ERROR41  fcc   "Write error."
          fcb   $00
-         fcc   "Device not ready."
+ERROR42  fcc   "Device not ready."
          fcb   $00
-         fcc   "Seek error."
+ERROR43  fcc   "Seek error."
          fcb   $00
-         fcc   "Media full."
+ERROR44  fcc   "Media full."
          fcb   $00
-         fcc   "Device/media type mismatch."
+ERROR45  fcc   "Device/media type mismatch."
          fcb   $00
-         fcc   "Device busy."
+ERROR46  fcc   "Device busy."
          fcb   $00
-         fcc   "Device/media ID changed."
+ERROR47  fcc   "Device/media ID changed."
          fcb   $00
-         fcc   "Indirect file error."
+ERROR48  fcc   "Indirect file error."
          fcb   $00
-         fcc   "Indirect file was accessed."
+ERROR49  fcc   "Indirect file was accessed."
          fcb   $00
-M2CC1    fcc   "Un"
-M2CC3    fcc   "known error code."
+ERROR50  fcc   "Unknown error code."
          fcb   $00
 
-M2CD5    fcb   $00        This label is used
-         fcb   $00
-         fcb   $00
-         fcb   $11
-         fcb   $00
-         fcb   $26 &
-         fcb   $00
-         fcb   $44 D
-         fcb   $00
-         fcb   $56 V
-         fcb   $00
-         fcb   $6D m
-         fcb   $00
-         fcb   $86
-         fcb   $00
-         fcb   $9D
-         fcb   $00
-         fcb   $AA *
-         fcb   $00
-         fcb   $C3 C
-         fcb   $00
-         fcb   $D0 P
-         fcb   $00
-         fcb   $DE ^
-         fcb   $00
-         fcb   $EB k
-         fcb   $01
-         fcb   $0B
-         fcb   $01
-         fcb   $21 !
-         fcb   $01
-         fcb   $3F ?
-         fcb   $01
-         fcb   $4E N
-         fcb   $01
-         fcb   $6F o
-         fcb   $01
-         fcb   $84
-         fcb   $01
-         fcb   $9C
-         fcb   $01
-         fcb   $B3 3
-         fcb   $01
-         fcb   $C7 G
-         fcb   $01
-         fcb   $E6 f
-         fcb   $02
-         fcb   $02
-         fcb   $02
-         fcb   $1D
-         fcb   $02
-         fcb   $31 1
-         fcb   $02
-         fcb   $46 F
-         fcb   $02
-         fcb   $53 S
-         fcb   $02
-         fcb   $65 e
-         fcb   $02
-         fcb   $75 u
-         fcb   $02
-         fcb   $89
-         fcb   $02
-         fcb   $A6 &
-         fcb   $02
-         fcb   $B4 4
-         fcb   $02
-         fcb   $C4 D
-         fcb   $02
-         fcb   $E0 `
-         fcb   $04
-         fcb   $02
-         fcb   $04
-         fcb   $02
-         fcb   $04
-         fcb   $02
-         fcb   $04
-         fcb   $02
-         fcb   $04
-         fcb   $02
-         fcb   $02
-         fcb   $F7 w
-         fcb   $03
-         fcb   $11
-         fcb   $03
-         fcb   $2D -
-         fcb   $03
-         fcb   $3C <
-         fcb   $03
-         fcb   $4C L
-         fcb   $03
-         fcb   $58 X
-         fcb   $03
-         fcb   $65 e
-         fcb   $03
-         fcb   $77 w
-         fcb   $03
-         fcb   $83
-         fcb   $03
-         fcb   $8F
-         fcb   $03
-         fcb   $AB +
-         fcb   $03
-         fcb   $B8 8
-         fcb   $03
-         fcb   $D1 Q
-         fcb   $03
-         fcb   $E6 f
-         fcb   $04
-         fcb   $02
-         fcb   $00
-         fcb   $00
-         fcb   $02
-         fcb   $7D
-         fcb   $14
-         fcb   $D3 S
-         fcb   $08
-         fcb   $90
-         fcb   $04
-         fcb   $D9 Y
-         fcb   $09
-         fcb   $C0 @
-         fcb   $08
-         fcb   $FE
-         fcb   $07
-         fcb   $5F _
-         fcb   $0E
-         fcb   $7F
-         fcb   $06
-         fcb   $FC
-         fcb   $0D
-         fcb   $08
-         fcb   $04
-         fcb   $8F
-         fcb   $06
-         fcb   $7F
-         fcb   $0B
-         fcb   $56 V
-         fcb   $10
-         fcb   $4A J
-         fcb   $16
-         fcb   $9C
-         fcb   $0F
-         fcb   $37 7
-         fcb   $0F
-         fcb   $E6 f
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $13
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $15
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $16
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $18
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $1A
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $1C
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $1D
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $1E
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $20
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $22 "
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $23 #
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $24 $
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $26 &
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $27 '
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $28 (
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
-         fcb   $09
-         fcb   $80
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $83
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $09
-         fcb   $82
-         fcb   $20
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $83
-         fcb   $4C L
-         fcb   $20
-         fcb   $0C
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $86
-         fcb   $20
-         fcb   $08
-         fcb   $48 H
-         fcb   $01
-         fcb   $29 )
-         fcb   $02
-         fcb   $08
-         fcb   $88
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $41 A
-         fcb   $0D
-         fcb   $09
-         fcb   $40 @
-         fcb   $01
-         fcb   $04
-         fcb   $09
-         fcb   $83
-         fcb   $48 H
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $87
-         fcb   $09
-         fcb   $43 C
-         fcb   $01
-         fcb   $02
+* Offsets to error codes        This label is used
+ERRTBL   fdb   ERROR01-ERRMSGS
+         fdb   ERROR02-ERRMSGS
+         fdb   $0026
+         fdb   $0044
+         fdb   $0056
+         fdb   $006D
+         fdb   $0086
+         fdb   $009D
+         fdb   $00AA
+         fdb   $00C3
+         fdb   $00D0
+         fdb   ERROR12-ERRMSGS $00DE
+         fdb   $00EB
+         fdb   $010B
+         fdb   $0121
+         fdb   $013F
+         fdb   $014E
+         fdb   $016F
+         fdb   $0184
+         fdb   $019C
+         fdb   $01B3
+         fdb   ERROR22-ERRMSGS $01C7
+         fdb   $01E6
+         fdb   $0202
+         fdb   $021D
+         fdb   $0231
+         fdb   $0246
+         fdb   $0253
+         fdb   $0265
+         fdb   $0275
+         fdb   $0289
+         fdb   ERROR32-ERRMSGS $02A6
+         fdb   $02B4
+         fdb   $02C4
+         fdb   ERROR35-ERRMSGS $02E0
+         fdb   ERROR50-ERRMSGS $0402
+         fdb   ERROR50-ERRMSGS $0402
+         fdb   ERROR50-ERRMSGS $0402
+         fdb   ERROR50-ERRMSGS $0402
+         fdb   ERROR50-ERRMSGS $0402
+         fdb   ERROR36-ERRMSGS $02F7
+         fdb   $0311
+         fdb   $032D
+         fdb   $033C
+         fdb   $034C
+         fdb   $0358
+         fdb   $0365
+         fdb   $0377
+         fdb   $0383
+         fdb   $038F
+         fdb   ERROR46-ERRMSGS $03AB
+         fdb   $03B8
+         fdb   $03D1
+         fdb   ERROR49-ERRMSGS $03E6
+         fdb   ERROR50-ERRMSGS $0402
+
+M2D43    fdb   $0000
+         fdb   M12EE-HELPS $027D
+         fdb   M2544-HELPS $14D3
+         fdb   M1901-HELPS $0890
+         fdb   M154A-HELPS $04D9
+         fdb   M1A31-HELPS $09C0
+         fdb   M196F-HELPS $08FE
+         fdb   M17D0-HELPS $075F
+         fdb   M1EF0-HELPS $0E7F
+         fdb   M176D-HELPS $06FC
+         fdb   M1D79-HELPS $0D08
+         fdb   M1500-HELPS $048F
+         fdb   M16F0-HELPS $067F
+         fdb   M1BC7-HELPS $0B56
+         fdb   M20BB-HELPS $104A
+         fdb   M270D-HELPS  $169C
+         fdb   M1FA8-HELPS $0F37
+         fdb   M2057-HELPS $0FE6
+M2D67 equ *

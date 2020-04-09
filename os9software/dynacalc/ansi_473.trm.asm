@@ -4,7 +4,10 @@
  endc
  opt m
  org 0
- use copyright.inc
+ use header_473.inc
  use ansi.keys
  use rest.inc
- use help51.inc
+* use help51.inc
+ use help80.inc
+Target set $3200
+ use filler.inc

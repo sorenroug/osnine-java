@@ -1,4 +1,4 @@
-         fcb   $61 a
+M0117    fcb   $61 a
          fcb   $F0 p
          fcb   $00
          fdb   $5800    MEMPTR
@@ -322,6 +322,7 @@ M01F0    fcb   $FF
          fcb   $30 0
          fcb   $30 0
          fcb   $20
+
 M0280    fcb   $6D m
          fcb   $61 a
          fcb   $63 c
@@ -463,7 +464,8 @@ M0280    fcb   $6D m
          fcb   $30 0
          fcb   $39 9
          fcb   $20
-         fcb   $00
+
+M0331    fcb   $00
          fcb   $00
          fcb   $01
          fcb   $00
@@ -510,7 +512,8 @@ M0280    fcb   $6D m
          fcb   $6C l
          fcb   $20
          fcb   $6C l
-         fcb   $00
+
+M0360    fcb   $00
          fcb   $00
          fcb   $01
          fcb   $00
@@ -542,8 +545,8 @@ M0280    fcb   $6D m
          fcb   $9F
          fcb   $87
          fcb   $00
-         fcb   $80
-         fcb   $80
+M0380    fcb   $80
+M0381    fcb   $80
          fcb   $80
          fcb   $80
          fcb   $80
@@ -578,8 +581,8 @@ M0280    fcb   $6D m
          fcb   $FF
          fcb   $3E >
          fcb   $FF
-         fcb   $58 X
-         fcb   $21 !
+M03A4    fcb   $58
+         fcb   $21
          fcb   $0D
          fcb   $80
          fcb   $FF
@@ -590,7 +593,7 @@ M0280    fcb   $6D m
          fcb   $FF
          fcb   $2F /
          fcb   $FF
-         fcb   $FF
+         fcb   $FF   M03B0
          fcb   $20
          fcb   $20
          fcb   $28 (
@@ -598,23 +601,11 @@ M0280    fcb   $6D m
          fcb   $29 )
          fcb   $20
          fcb   $00
-         fcb   $52 R
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $79 y
+M03B8    fcc   "Ready"
          fcb   $00
-         fcb   $56 V
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $65 e
+M03BE    fcc   "Value"
          fcb   $00
-         fcb   $4C L
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $6C l
+M03C4    fcc   "Label"
          fcb   $00
          fcb   $6C l
          fcb   $20
@@ -1040,9 +1031,8 @@ M0280    fcb   $6D m
 M0562    fcc   " December 13, 1983"
          fcb   $00
 
-M0575    fcb   $08
-         fcb   $00
-         fcb   $30 0
+M0575    fdb   $0800   Location of program
+M0577    fcb   $30 0
          fcb   $20
          fcb   $31 1
          fcb   $39 9
@@ -1183,7 +1173,7 @@ M0608    ldy   #$004E
          ldy   #$0001
          os9   I$Read
          ldu   >M0575,pcr
-         jmp   >$3AD5,u
+         jmp   >L3AEA-PGBEGIN,u   >$3AD5,u  = L3AEA
 
 M0629    fcb   $0D
          fcb   $0A
@@ -1330,7 +1320,8 @@ M06D0    fcb   $20
          fcb   $06
          fcb   $40 @
          fcb   $01
-         fcb   $1B,$41,$06,$0F    Cyrsor XY
+
+M0700    fcb   $1B,$41,$06,$0F    Cyrsor XY
 M0704    fcc   " (Press any key to continue)  "
          fcb   $FF
          fcb   $09
@@ -1859,7 +1850,7 @@ M0704    fcc   " (Press any key to continue)  "
          fcb   $00
          fcb   $00
          fcb   $00
-         fcb   $87
+M0925    fcb   $87
          fcb   $20
          fcb   $08
          fcb   $48 H
@@ -2092,7 +2083,7 @@ M0A08    lbra  M0A21
 
          pshs  x,a
          tfr   pc,x
-         leax  >-$5A0F,x
+         leax  >-$5A0F,x     Is this at M0A0F ?
          stx   >M0575,pcr
          lda   #$FF
          sta   >$0143,u
@@ -2120,7 +2111,7 @@ M0A74    std   >$01C1,u
          tfr   a,dp
          stx   <PARAMS
          stu   <MEMPTR   beginning of data
-         leax  >$0280,u
+         leax  >M0280,u
          stx   <$00E9
          ldx   #$0700
          stx   <$0044
@@ -2130,12 +2121,12 @@ M0A74    std   >$01C1,u
          clr   <$00A7
          clr   >M06C0,pcr
          ldu   <MEMPTR   beginning of data
-         leax  >$09F0,u
+         leax  >M09F0,u
          stx   <$0017
          tfr   x,s
-         leax  >$0331,u
-         stx   <$0030
-         leax  <$2F,x
+         leax  >M0331,u
+         stx   <u0030
+         leax  <$2F,x  Buffer at M0360
          clra
          clrb
          os9   I$GetStt
@@ -2154,11 +2145,11 @@ M0AB2
          bra   M0B05
 
 M0AD0    sta   <$0012   data file path number
-M0AD2    ldx   <$0030
+M0AD2    ldx   <u0030
          clrb
          os9   I$GetStt
          bcs   M0AFA
-         ldx   <$0030
+         ldx   <u0030
          clrb
          lda   ,x
 M0ADF    beq   M0AF4
@@ -2292,9 +2283,9 @@ M0BF7    lda   ,y+
          bne   M0BF7
 M0C0A    tst   <$00ED
          beq   M0C35
-         leau  >M0DC8,pcr     Write Loading
+         leau  >MLOAD,pcr     Write Loading
          ldy   >M0575,pcr
-         jsr   >L1AB9-PGBEGIN,y    >$1AA4,y
+         jsr   >L1AB9-PGBEGIN,y   output string pointed to in U
          bra   M0C5B
 
 M0C1D    lda   ,y+
@@ -2303,7 +2294,7 @@ M0C1D    lda   ,y+
          leay  -$01,y
 M0C25    ldb   $01,y
          andb  #$5F
-         cmpd  #$2D48
+         cmpd  #$2D48  -H  deletes builtin help messages
          bne   M0C0A
          sta   >M00FB,pcr
          bra   M0C0A
@@ -2322,7 +2313,7 @@ M0C54    tst   <$0043
          beq   M0C5B
          lbsr  $3400  Dynacalc.trm is only $3200 bytes
 M0C5B    ldb   #$08
-         leax  >M0100,pcr
+         leax  >M0100,pcr   Start of keys
          leau  >M0CCB,pcr
          ldy   <MEMPTR
 M0C68    lda   ,x+
@@ -2353,11 +2344,11 @@ M0C68    lda   ,x+
          leax  $01,x
          pshs  x
          ldx   <MEMPTR   beginning of data
-         tst   >$00FB,x
+         tst   >M00FB,x  Keep helps ?
          puls  x
          bne   M0CB6
          leax  -$02,x
-         clr   <$001D
+         clr   <u001D  Clear helps flag
          ldy   >M0575,pcr
          jsr   >L3AFF-PGBEGIN,y   >$3AEA,y
 M0CB6    nop
@@ -2372,15 +2363,15 @@ M0CB6    nop
          jmp   >L4EC7-PGBEGIN,u    >$4EB2,u
 
 
-M0CCB    fdb   $0381
+M0CCB    fdb   $0381  Up-arrow
          fdb   $03A9
-         fdb   $0382
+         fdb   $0382  Down-arrow
          fdb   $03AA
-         fdb   $0383
+         fdb   $0383  Left-arrow
          fdb   $03AB
-         fdb   $0384
+         fdb   $0384  Right-arrow
          fdb   $03AC
-         fdb   $03A7
+         fdb   $03A7  Home key
          fdb   $03A7
          fdb   $03A4
          fdb   $03A4
@@ -2402,20 +2393,19 @@ MONTHS   fcc   "  January"
          fcc   " November"
          fcc   " December"
 
+* Location $0D57
 BANNER   fcc   "      **** DYNACALC ****"
          fcb   0
-
          fcc   "                              "
          fcb   0
-M0D8F    fcb   $20
+         fcc   " "
          fcb   0
-M0D91    fcc   "      for the Dragon 64"
+         fcc   "      for the Dragon 64"
          fcb   0
-
-M0DA9    fcc   " (Press any key to continue)  "
-         fcb   $00
-M0DC8    fcc   "      Loading "
-         fcb   $00
+         fcc   " (Press any key to continue)  "
+         fcb   0
+MLOAD    fcc   "      Loading "
+         fcb   0
 
          fcb   $09
          fcb   $80
@@ -2714,28 +2704,24 @@ M0DC8    fcc   "      Loading "
          fcb   $20
          fcb   $00
          fcb   $00
-         fcb   $16
-         fcb   $00
-         fcb   $76 v
-         fcb   $16
-         fcb   $00
-         fcb   $07
+
+M0F00    lbra  M0F79
+M0F03    lbra  M0F0D
          fcb   $1E
          fcb   $67 g
          fcb   $7D
          fcb   $67 g
-         fcb   $16
-         fcb   $01
-         fcb   $39 9
+M0F0A    lbra  M1046
 
-M0F0D    ldu   <$001A
-         ldy   >$0575,u
+M0F0D    ldu   <MEMPTR
+         ldy   >M0575,u   Location of program
          leau  >M0F5C,pcr
-         jsr   >$1AA4,y
-         jsr   >$08EF,y
-         cmpa  #$59
+         jsr   >L1AA4,y
+         jsr   >L08EF,y
+         cmpa  #'Y
          beq   M0F28
-         jmp   >$1A89,y
+         jmp   >L1A89,y
+
 M0F28    ldu   <$001E
          ldx   <$0041
          leax  $01,x
@@ -2747,7 +2733,7 @@ M0F28    ldu   <$001E
          lsra
          rorb
          addd  <$0017
-         jsr   >$4EB5,y
+         jsr   >L4EB5,y
          tfr   u,d
          subd  <$00C5
          std   <$006C
@@ -2767,8 +2753,8 @@ M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00
 
 M0F79    pshs  y
-         ldy   <$001A
-         ldy   >$0575,y
+         ldy   <MEMPTR
+         ldy   >M0575,y location of program
          ldb   ,x
          cmpb  #$88
          bne   M0F91
@@ -2784,8 +2770,8 @@ M0F91    stb   <$0025
 M0F9B    lbsr  M1042
          lda   #$0A
 
-         jsr   >$0925,y
-         leax  >M2CC3,pcr
+         jsr   >L0925,y
+         leax  >ERROR50+2,pcr   Points to 'known error code'
          ldb   <$0025
          abx
          ldd   ,x
@@ -2795,15 +2781,15 @@ M0FB3    lda   ,u+
          beq   M0FEA
          cmpa  #$11
          bne   M0FDE
-         jsr   >$3ADE,y
-         jsr   >$0901,y
+         jsr   >L3ADE,y
+         jsr   >L0901,y
          ldb   -$01,x
          incb
          lda   b,x
          pshs  a
          clr   b,x
 
-         jsr   >$08EF,y
+         jsr   >L08EF,y
          puls  a
          cmpa  #$1B
          beq   M101D
@@ -2811,13 +2797,13 @@ M0FB3    lda   ,u+
          bsr   M1042
          puls  u
          bra   M0FE6
-M0FDE    jsr   >$0925,y
+M0FDE    jsr   >L0925,y
          cmpa  #$0D
          bne   M0FB3
 M0FE6    lda   #$0A
          bra   M0FDE
-M0FEA    jsr   >$3ADE,y
-         jsr   >$0901,y
+M0FEA    jsr   >L3ADE,y
+         jsr   >L0901,y
          lda   <$0025
          cmpa  #$80
          bne   M101D
@@ -2832,7 +2818,7 @@ M1005    cmpa  #$3E
          bne   M1013
          ldb   #$9E
 M100B    stb   <$0025
-         jsr   >$08EF,y
+         jsr   >L08EF,y
          bra   M0F9B
 M1013    anda  #$5F
          cmpa  #$47
@@ -2842,25 +2828,26 @@ M1013    anda  #$5F
 
 M101D    bsr   M1042
          clr   <$00AC
-         jsr   >$1ABC,y
-         ldy   <$001A
-         ldy   >$0575,y
+         jsr   >L1ABC,y
+         ldy   <MEMPTR
+         ldy   >M0575,y  location of program
          ldx   #$0200
          jsr   >$08B9,y
-         jsr   >$3ADE,y
+         jsr   >L3ADE,y
          puls  u,b,a
          sta   <$00B3
          stu   <$00B1
          stb   <$0075
          puls  pc,y
 
-M1042    jmp   >$091C,y
-         ldu   <$001A
-         ldy   >$0575,u
+M1042    jmp   >L091C,y
+
+M1046    ldu   <MEMPTR
+         ldy   >M0575,u location of program
          ldd   #$2C20
-         jsr   >$1A8C,y
+         jsr   >L1A8C,y
          ldb   <$0025
-         leax  >M2CD5,pcr
+         leax  >ERRTBL,pcr Table of pointers to helptexts
          subb  #$C8
          cmpb  #$35
          bls   M1062
@@ -2868,7 +2855,7 @@ M1042    jmp   >$091C,y
 M1062    lslb
          abx
          ldd   ,x
-         leau  >M28BF,pcr
+         leau  >ERRMSGS,pcr  Error messages start
          leau  d,u
          jsr   >$3FAE,y
          rts
