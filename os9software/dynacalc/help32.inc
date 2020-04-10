@@ -13,6 +13,10 @@ HELPS    fcc   "A  set Attributes"
          fcb   $0D
          fcc   "I  Insert new column or row"
          fcb   $0D
+ ifeq DYNAVERS-485
+         fcc   "K  enter Keysaver mode"
+         fcb   $0D
+ endc
          fcc   "L  Locate specified label,"
          fcb   $0D
          fcc   /   ?="Wild card" character/
@@ -28,7 +32,7 @@ HELPS    fcc   "A  set Attributes"
          fcb   $0D
          fcc   "Q  Quit and go to Sleep or OS-9"
          fcb   $0D
-         fcc   "R  Replicate (copy) cells(s)"
+         fcc   "R  Replicate (copy) cell(s)"
          fcb   $0D
          fcc   "S  call System function"
          fcb   $0D
@@ -41,10 +45,10 @@ HELPS    fcc   "A  set Attributes"
          fcb   $0D
          fcc   "    > for help with ERRORS"
          fcb   $0D
-         fcc   "    G for general helps"
+         fcc   "    G for general help"
          fcb   $00
 
-M12EE    fcc   "Set Attributes:"
+M12EE    fcc   "Set attributes:"
          fcb   $0D
          fcc   "B  toggle Bell on/off"
          fcb   $0D
@@ -2917,7 +2921,7 @@ M20BB    fcc   "Trigonometric:"
          fcc   "@INDEX(n,x...y,z)  '=' search -"
          fcb   $0D
          fcc   "   z optional - see manual"
- ifeq 1
+ ifeq DYNAVERS-485
          fcb   $0D
          fcb   $0A
          fcc   "   Hit any key to see page 5"
@@ -3093,7 +3097,7 @@ M2544    fcc   "Arithmetic operators:"
          fcb   $0D
          fcb   $0A
          fcc   "   Hit any key to see page 2"
- ifeq 1
+ ifeq DYNAVERS-485
          fcb   $11
          fcc   "Logical operators:"
          fcb   $0D
@@ -3279,8 +3283,8 @@ M270D    fcc   " >AE<  Bad argument error"
          fcb   $0D
          fcc   " >HO<  Holder overflow error"
          fcb   $0D
-* Only in version 4.8
- ifeq 1
+
+ ifeq DYNAVERS-485
          fcc   " >LG<  Logical error"
          fcb   $0D
  endc
@@ -3300,15 +3304,15 @@ M270D    fcc   " >AE<  Bad argument error"
          fcb   $00
 
 ERRMSGS equ *
-ERROR01  fcc   "Path table full."
+ERROR01  fcc   "Path table full"
          fcb   $00
-         fcc   "Illegal path number"
+ERROR02  fcc   "Illegal path number"
          fcb   $00
-         fcc   "Int. table full"
+ERROR03  fcc   "Int. table full"
          fcb   $00
-ERROR04  fcc   "Illegal I/O mode"
+ERROR04  fcc   "Illegal I/O mode."
          fcb   $00
-         fcb   $44 D
+ERROR05  fcb   $44 D
          fcb   $65 e
          fcb   $76 v
          fcb   $69 i
@@ -3326,7 +3330,7 @@ ERROR04  fcc   "Illegal I/O mode"
          fcb   $00
 ERROR06  fcc   "Illegal ID block"
          fcb   $00
-         fcb   $4D M
+ERROR07  fcb   $4D M
          fcb   $6F o
          fcb   $64 d
          fcb   $75 u
@@ -3937,118 +3941,64 @@ ERROR49  fcc   "Indirect file"
 ERROR50  fcc   "Unknown error code"
          fcb   $00
 
-* Offsets to error codes        This label is used
+* Offsets to error codes
 ERRTBL   fdb   ERROR01-ERRMSGS
-         fcb   $00
-         fcb   $10
-         fcb   $00
-         fcb   $24 $
-         fcb   $00
-         fcb   $34 4
-         fcb   $00
-         fcb   $46 F
-         fcb   $00
-         fcb   $56 V
-         fcb   $00
-         fcb   $67 g
-         fcb   $00
-         fcb   $78 x
-         fcb   $00
-         fcb   $84
-         fcb   $00
-         fcb   $94
-         fcb   $00
-         fcb   $A0
-         fcb   $00
-         fcb   $AD -
-         fcb   $00
-         fcb   $B9 9
-         fcb   $00
-         fcb   $CC L
-         fcb   $00
-         fcb   $DE ^
-         fcb   $00
-         fcb   $EC l
-         fcb   $00
-         fcb   $FA z
-         fcb   $01
-         fcb   $0E
-         fcb   $01
-         fcb   $22 "
-         fcb   $01
-         fcb   $36 6
-         fcb   $01
-         fcb   $46 F
-         fcb   $01
-         fcb   $59 Y
-         fcb   $01
-         fcb   $6D m
-         fcb   $01
-         fcb   $81
-         fcb   $01
-         fcb   $94
-         fcb   $01
-         fcb   $A7 '
-         fcb   $01
-         fcb   $BB ;
-         fcb   $01
-         fcb   $C7 G
-         fcb   $01
-         fcb   $D8 X
-         fcb   $01
-         fcb   $E7 g
-         fcb   $01
-         fcb   $FA z
-         fcb   $02
-         fcb   $0C
-         fcb   $02
-         fcb   $19
-         fcb   $02
-         fcb   $28 (
-         fcb   $02
-         fcb   $3B ;
-         fcb   $03
-         fcb   $24 $
-         fcb   $03
-         fcb   $24 $
-         fcb   $03
-         fcb   $24 $
-         fcb   $03
-         fcb   $24 $
-         fcb   $03
-         fcb   $24 $
-         fcb   $02
-         fcb   $4F O
-         fcb   $02
-         fcb   $63 c
-         fcb   $02
-         fcb   $77 w
-         fcb   $02
-         fcb   $85
-         fcb   $02
-         fcb   $94
-         fcb   $02
-         fcb   $9F
-         fcb   $02
-         fcb   $AB +
-         fcb   $02
-         fcb   $BC <
-         fcb   $02
-         fcb   $C7 G
-         fcb   $02
-         fcb   $D2 R
-         fcb   $02
-         fcb   $E3 c
-         fcb   $02
-         fcb   $EF o
-         fcb   $03
-         fcb   $02
-         fcb   $03
-         fcb   $16
-         fcb   $03
-         fcb   $24 $
+         fdb   $0010
+         fdb   $0024
+         fdb   $0034
+         fdb   $0046
+         fdb   $0056
+         fdb   $0067
+         fdb   $0078
+         fdb   $0084
+         fdb   $0094
+         fdb   $00A0
+         fdb   $00AD
+         fdb   $00B9
+         fdb   $00CC
+         fdb   $00DE
+         fdb   $00EC
+         fdb   $00FA
+         fdb   $010E
+         fdb   $0122
+         fdb   $0136
+         fdb   $0146
+         fdb   $0159
+         fdb   $016D
+         fdb   $0181
+         fdb   $0194
+         fdb   $01A7
+         fdb   $01BB
+         fdb   $01C7
+         fdb   $01D8
+         fdb   $01E7
+         fdb   $01FA
+         fdb   $020C
+         fdb   $0219
+         fdb   $0228
+         fdb   $023B
+         fdb   ERROR50-ERRMSGS $0324
+         fdb   ERROR50-ERRMSGS $0324
+         fdb   ERROR50-ERRMSGS $0324
+         fdb   ERROR50-ERRMSGS $0324
+         fdb   ERROR50-ERRMSGS $0324
+         fdb   $024F
+         fdb   $0263
+         fdb   $0277
+         fdb   $0285
+         fdb   $0294
+         fdb   $029F
+         fdb   $02AB
+         fdb   $02BC
+         fdb   $02C7
+         fdb   $02D2
+         fdb   $02E3
+         fdb   $02EF
+         fdb   $0302
+         fdb   $0316
+         fdb   ERROR50-ERRMSGS $0324
 
-         fdb   $0000
+HELPTBL  fdb   $0000
          fdb   M12EE-HELPS $0258
          fdb   $14B0
          fdb   $07FA
@@ -4067,81 +4017,3 @@ ERRTBL   fdb   ERROR01-ERRMSGS
          fdb   $0E03
          fdb   $0E9A
 
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   $00
-         fcb   $00
-         fcb   $00

@@ -1,0 +1,1177 @@
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48
+         fcb   $01
+         fcb   $13
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $15
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $16
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $18
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $1A
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $1C
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $1D
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $1E
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $20
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $22 "
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $23 #
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $24 $
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $26 &
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $27 '
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $28 (
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02
+         fcb   $09
+         fcb   $80
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $83
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $09
+         fcb   $82
+         fcb   $20
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $83
+         fcb   $4C L
+         fcb   $20
+         fcb   $0C
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $86
+         fcb   $20
+         fcb   $08
+         fcb   $48 H
+         fcb   $01
+         fcb   $29 )
+         fcb   $02
+         fcb   $08
+         fcb   $88
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $41 A
+         fcb   $0D
+         fcb   $09
+         fcb   $40 @
+         fcb   $01
+         fcb   $04
+         fcb   $09
+         fcb   $83
+         fcb   $48 H
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $87
+         fcb   $09
+         fcb   $43 C
+         fcb   $01
+         fcb   $02

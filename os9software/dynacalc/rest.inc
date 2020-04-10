@@ -569,8 +569,8 @@ M0381    fcb   $80
          fcb   $FF
          fcb   $21 !
          fcb   $FF
-         fcb   $FF
-         fcb   $22 "
+M0398    fcb   $FF
+         fcb   $22
          fcb   $FF
          fcb   $2B +
          fcb   $2D -
@@ -1322,7 +1322,7 @@ M06D0    fcb   $20
          fcb   $01
 
 M0700    fcb   $1B,$41,$06,$0F    Cyrsor XY
-M0704    fcc   " (Press any key to continue)  "
+         fcc   " (Press any key to continue)  "
          fcb   $FF
          fcb   $09
          fcb   $82
@@ -2752,6 +2752,7 @@ M0F28    ldu   <$001E
 M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00
 
+* Handling of help texts
 M0F79    pshs  y
          ldy   <MEMPTR
          ldy   >M0575,y location of program
@@ -2769,59 +2770,59 @@ M0F91    stb   <$0025
          pshs  u,b,a
 M0F9B    lbsr  M1042
          lda   #$0A
-
          jsr   >L0925,y
-         leax  >ERROR50+2,pcr   Points to 'known error code'
+         leax  >HELPTBL-$80,pcr
          ldb   <$0025
          abx
          ldd   ,x
          leau  >HELPS,pcr
          leau  d,u
 M0FB3    lda   ,u+
-         beq   M0FEA
-         cmpa  #$11
-         bne   M0FDE
+         beq   M0FEA    Branch if end of page
+         cmpa  #$11     Stop for next screen?
+         bne   M0FDE   ..no
          jsr   >L3ADE,y
          jsr   >L0901,y
-         ldb   -$01,x
+         ldb   -1,x
          incb
          lda   b,x
          pshs  a
          clr   b,x
-
          jsr   >L08EF,y
          puls  a
-         cmpa  #$1B
-         beq   M101D
+         cmpa  #$1B   User typed escape to exit?
+         beq   M101D ..yes
          pshs  u
          bsr   M1042
          puls  u
          bra   M0FE6
-M0FDE    jsr   >L0925,y
+
+M0FDE    jsr   >L0925,y   print character
          cmpa  #$0D
-         bne   M0FB3
+         bne   M0FB3  end loop
 M0FE6    lda   #$0A
          bra   M0FDE
+
 M0FEA    jsr   >L3ADE,y
-         jsr   >L0901,y
+         jsr   >L0901,y  go to line 1 and wait for input
          lda   <$0025
-         cmpa  #$80
-         bne   M101D
-         ldb   -$01,x
+         cmpa  #$80    Is this the first page?
+         bne   M101D   ..no
+         ldb   -1,x
          incb
          lda   b,x
-         cmpa  #$40
+         cmpa  #'@    help with functions
          bne   M1005
          ldb   #$9C
          bra   M100B
-M1005    cmpa  #$3E
+M1005    cmpa  #'>    help with errors
          bne   M1013
          ldb   #$9E
 M100B    stb   <$0025
          jsr   >L08EF,y
          bra   M0F9B
 M1013    anda  #$5F
-         cmpa  #$47
+         cmpa  #'G    general help
          bne   M101D
          ldb   #$84
          bra   M100B

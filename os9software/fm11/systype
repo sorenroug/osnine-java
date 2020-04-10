@@ -5,6 +5,7 @@
 *     Dynamic Address Translator Definitions
 *
 DAT.BlCt equ 16 D.A.T. blocks/address space
+DAT.TkCt equ 16 task maps in the MMU
 DAT.Regs equ $FD80 DAT Block Registers base address
 DAT.Task equ $FD90 Task register address
 *DAT.BlSz equ $1000

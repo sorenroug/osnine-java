@@ -1,0 +1,62 @@
+*
+* Terminal characteristics for an 80-column GO51 compatible terminal
+*
+M0088    fcb   $FF,$FF,$FF,$FF    Cursor on
+M008C    fcb   $FF,$FF,$FF,$FF    Cursor off
+M0090    fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00   Terminal setup
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00
+M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
+M00A8    fcb   $FF,$FF,$00,$00    Cursor right
+         fcb   $FF,$FF,$00,$00    Cursor ??
+CURSPOS  fcb   $1B,$41,$06,$0F    Cyrsor XY
+         fcb   $FF,$00,$00,$00
+M00B8    fcb   $1B,$42,$FF,$00,$00,$00    Cursor clear to EOL
+M00BE    fcb   $1B,$4A,$FF,$00,$00,$00    Cursor clear to end of screen
+REVON    fcb   $1B,$46,$FF,$00    Reverse on
+         fcb   $00,$00,$00,$00
+REVOFF   fcb   $1B,$47,$FF,$00    Reverse off
+M00D0    fcb   $00,$00,$00,$00
+M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
+M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
+M00DE    fcc   "                "  Terminal name (16 chars)
+M00EE    fcb   $00
+         fcb   $00
+M00F0    fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+M00F7    fcb   $04  Log-off key
+M00F8    fcb   $00  Upper case only
+         fcb   $00  line feeds after each line
+M00FA    fcb   $00
+M00FB    fcb   $00  keep helps  T/F
+         fcb   $FF  print borders  T/F
+         fcb   79  printer page width
+         fcb   $00  Pagination  T/F
+M00FF    fcb   57  Lines per page
+M0100    fcb   $0C     Up-arrow
+DOWNKEY  fcb   $0A     Down-arrow
+         fcb   $18     Left-arrow
+         fcb   $09     Right-arrow
+         fcb   $1C     Home key    (Ctrl-\)
+         fcb   $19     Jump window (Ctrl-Y)
+M0106    fcb   $07   Bell character
+GETADDR  fcb   $1A   Get address (Ctrl-Z)
+         fcb   $03   Flush type-ahead buffer (Ctrl-C)
+         fcb   $08   Backspace key
+         fcb   $00   direct cursor addressing row offset
+         fcb   $00   direct cursor addressing columns offset
+M010C    fcb   $02
+         fcb   24   number of rows on screen
+         fcb   79   number of columns on screen
+         fcb   $0F  Edit overlay (Ctrl-O)
+M0110    fcb   $03  Flush type-ahead buffer
+         fcb   $05  Edit from entry level (Ctrl-E)
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00

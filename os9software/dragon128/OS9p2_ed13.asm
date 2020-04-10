@@ -271,7 +271,7 @@ IOHOOK10 jsr 0,Y Call ioman init
  puls D,X,Y,U Retrieve registers
  ldx 254,y Get ioman entry
  jmp 0,x
-IOHOOK20 stb $01,s
+IOHOOK20 stb 1,s
  puls D,X,Y,U,PC
 
 IOLink leax IOSTR,PCR Get ioman name ptr
@@ -355,7 +355,7 @@ L01BD    ldx   $02,s
          os9   F$IODel
          bcc   UNLK20
          ldx   R$Y,u
-         leax  $01,x
+         leax  1,x
          stx   R$Y,u
          bra   L01F6
 UNLK20    bsr   L01FA
@@ -411,7 +411,7 @@ L0220    pshs  x,a
 L023B    cmpd  ,x
          bne   L0244
          clr   ,x
-         clr   $01,x
+         clr   1,x
 L0244    leax  $08,x
          cmpx  D.ModEnd
          bcs   L023B
@@ -496,7 +496,7 @@ L029B    lda   $07,x
          ldb   $03,y
          sta   $03,y
          lda   ,y
-         std   $01,x
+         std   1,x
          lda   $0C,x
          anda  #$7F
          sta   $0C,x
@@ -671,7 +671,10 @@ L03CF    ldd   ,x++
          lsrb
          lsrb
          lsrb
-         lda   #$0F
+ ifge DAT.BlSz-$2000
+         lsrb
+ endc
+         lda   #$0F   counter
          pshs  b
          suba  ,s+
          leay  P$DatImg,x
@@ -719,7 +722,7 @@ L0459    ldb   ,s
          leax  -1,x
          os9   F$LDABX
          exg   x,u
-         ldb   $01,s
+         ldb   1,s
          leax  -1,x
          os9   F$STABX
          exg   x,u
@@ -833,7 +836,7 @@ EXIT     ldx   D.PROC
          bsr   CLOSEPD
          ldb R$B,u Get exit status
          stb P$Signal,X Save status
-         leay  $01,x
+         leay  1,x
          bra   EXIT30
 EXIT20    clr P$SID,Y Clear sibling link
          lbsr  GETPRC
@@ -893,6 +896,9 @@ CLOSE20 decb COUNT Down
          lsrb
          lsrb
          lsrb
+ ifge DAT.BlSz-$2000
+         lsrb
+ endc
          os9   F$DelImg
 L05CC    ldd   D.PROC
          pshs  b,a
@@ -954,7 +960,7 @@ L0615    lsrb
          bcs   L062B
          os9   F$AllImg
          bcc   L0633
-L0626    leas  $01,s
+L0626    leas  1,s
 L0628    orcc  #Carry
          rts
 L062B    pshs  b
@@ -1073,7 +1079,7 @@ SEND67 leay 0,X Copy process ptr
 *
 * Move Process from it's current Queue to Active Queue
 *
-SEND68    ldd   P$Queue,x Remove from queue
+SEND68 ldd P$Queue,x Remove from queue
  std P$Queue,Y
  lda P$Signal,X Get signal
  deca Is it wake-up?
@@ -1121,7 +1127,7 @@ SLEP20 ldd R$X,U Get length of sleep
  subd #1 count current tick
  std R$X,U update count
  beq SLEP10 branch if done
-         pshs  y,x Save process & register ptr
+ pshs y,x Save process & register ptr
  ldx #D.SProcQ-P$Queue Fake process ptr
 L072B    std   R$X,u
          stx   2,s
@@ -1153,6 +1159,7 @@ L0748    puls  y,x
  anda #$FF-TimSleep Set not timed sleep
  sta P$State,X
          puls  pc,cc
+
 L0766    ldx #D.SProcQ-P$Queue Fake process ptr
 L0769    leay  0,x Copy process pointer
          ldx   P$Queue,x
@@ -1235,7 +1242,7 @@ GETID ldx D.PROC Get process ptr
 *
 * Set Software Interrupt Vectors
 *
-SETSWI   ldx   D.PROC
+SETSWI ldx D.PROC
  leay P$SWI,X Get ptr to vectors
  ldb R$A,U Get swi code
  decb ADJUST Range
@@ -1330,7 +1337,7 @@ ALOC30 lsra
  os9 F$LDABX
  ora 0,s
 ALOC35 os9 F$STABX
- leas $01,s
+ leas 1,s
 ALOC40    clrb
  rts
  page
@@ -1572,8 +1579,8 @@ L09EA    os9   F$LDAXY
          leax  ,u+
          os9   F$STABX
          puls  x
-         leax  $01,x
-         cmpu  $01,s
+         leax  1,x
+         cmpu  1,s
          bcs   L09DD
          puls  y,x,b
          sty   D.TmpDAT
@@ -1616,7 +1623,7 @@ L0A2E    adda  #$02
          os9   F$IODel
          bcc   L0A4D
          ldx   R$Y,u
-         leax  $01,x
+         leax  1,x
          stx   R$Y,u
          bra   L0A51
 L0A4D    lbsr  L01FA
@@ -1762,7 +1769,7 @@ ALCPDR leas 3,S Return not enough memory error
 *
 R64 lda R$A,U Get block number
  ldx R$X,U Get block ptr
-RTRN64 pshs D,X,Y,U Save registers
+ pshs D,X,Y,U Save registers
  clrb
  tsta
  beq RTRNEX
@@ -1848,7 +1855,7 @@ MAPBLK   lda   R$B,u  Number of blocks
          ldx R$X,u
          leay  ,s
 MAPBLK10    stx   ,y++
-         leax  $01,x
+         leax  1,x
          deca
          bne   MAPBLK10
          ldb R$B,u
@@ -1888,7 +1895,7 @@ MAPBLK20    ldd   ,y++
 MAPBLK30    sta   ,x+
          decb
          bne   MAPBLK30
-         dec   $01,s
+         dec   1,s
          bne   MAPBLK20
 L0BCE    leas  $02,s
          clrb
@@ -1926,6 +1933,9 @@ CLRBLK10 lda   R$U,u
          lsra
          lsra
          lsra
+ ifge DAT.BlSz-$2000
+         lsra
+ endc
          leay  P$DATImg,x
          leay  a,y
          ldb R$B,u get number of blocks

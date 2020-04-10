@@ -1,6 +1,5 @@
 * Texts are set to max 80 characters per line
 * These texts come primarily from the FLEX edition of Dynacalc
-*                       INCOMPLETE
 
 HELPS    fcc   "A  set Attributes"
          fcb   $0D
@@ -274,6 +273,7 @@ M1FA8    fcb   $0A
          fcb   $0D
          fcb   $00
 
+* Add "Order:" here?
 M2057    fcb   $0A
          fcb   $0A
          fcc   "C  loads/saves data by Column"
@@ -285,6 +285,7 @@ M2057    fcb   $0A
          fcc   "R  loads/saves data by Rows"
          fcb   $0D
          fcb   $00
+
 M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $0D
          fcc   "(All angles       @COS      @ACOS       radians = degrees/(180/PI)"
@@ -508,41 +509,41 @@ ERROR49  fcc   "Indirect file was accessed."
 ERROR50  fcc   "Unknown error code."
          fcb   $00
 
-* Offsets to error codes        This label is used
+* Offsets to error codes
 ERRTBL   fdb   ERROR01-ERRMSGS
          fdb   ERROR02-ERRMSGS
-         fdb   $0026
-         fdb   $0044
-         fdb   $0056
-         fdb   $006D
-         fdb   $0086
-         fdb   $009D
-         fdb   $00AA
-         fdb   $00C3
-         fdb   $00D0
-         fdb   ERROR12-ERRMSGS $00DE
-         fdb   $00EB
-         fdb   $010B
-         fdb   $0121
-         fdb   $013F
-         fdb   $014E
-         fdb   $016F
-         fdb   $0184
-         fdb   $019C
-         fdb   $01B3
-         fdb   ERROR22-ERRMSGS $01C7
-         fdb   ERROR23-ERRMSGS $01E6
-         fdb   ERROR24-ERRMSGS $0202
-         fdb   $021D
-         fdb   $0231
-         fdb   $0246
-         fdb   $0253
-         fdb   $0265
-         fdb   $0275
-         fdb   $0289
-         fdb   ERROR32-ERRMSGS $02A6
-         fdb   $02B4
-         fdb   $02C4
+         fdb   ERROR03-ERRMSGS
+         fdb   ERROR04-ERRMSGS
+         fdb   ERROR05-ERRMSGS
+         fdb   ERROR06-ERRMSGS
+         fdb   ERROR07-ERRMSGS
+         fdb   ERROR08-ERRMSGS
+         fdb   ERROR09-ERRMSGS
+         fdb   ERROR10-ERRMSGS
+         fdb   ERROR11-ERRMSGS
+         fdb   ERROR12-ERRMSGS
+         fdb   ERROR13-ERRMSGS
+         fdb   ERROR14-ERRMSGS
+         fdb   ERROR15-ERRMSGS
+         fdb   ERROR16-ERRMSGS
+         fdb   ERROR17-ERRMSGS
+         fdb   ERROR18-ERRMSGS
+         fdb   ERROR19-ERRMSGS
+         fdb   ERROR20-ERRMSGS
+         fdb   ERROR21-ERRMSGS
+         fdb   ERROR22-ERRMSGS
+         fdb   ERROR23-ERRMSGS
+         fdb   ERROR24-ERRMSGS
+         fdb   ERROR25-ERRMSGS
+         fdb   ERROR26-ERRMSGS
+         fdb   ERROR27-ERRMSGS
+         fdb   ERROR28-ERRMSGS
+         fdb   ERROR29-ERRMSGS
+         fdb   ERROR30-ERRMSGS
+         fdb   ERROR31-ERRMSGS
+         fdb   ERROR32-ERRMSGS
+         fdb   ERROR33-ERRMSGS
+         fdb   ERROR34-ERRMSGS
          fdb   ERROR35-ERRMSGS $02E0
          fdb   ERROR50-ERRMSGS $0402
          fdb   ERROR50-ERRMSGS $0402
@@ -550,37 +551,37 @@ ERRTBL   fdb   ERROR01-ERRMSGS
          fdb   ERROR50-ERRMSGS $0402
          fdb   ERROR50-ERRMSGS $0402
          fdb   ERROR36-ERRMSGS $02F7
-         fdb   $0311
-         fdb   $032D
-         fdb   $033C
-         fdb   $034C
-         fdb   $0358
-         fdb   $0365
-         fdb   $0377
-         fdb   $0383
-         fdb   $038F
-         fdb   ERROR46-ERRMSGS $03AB
-         fdb   $03B8
-         fdb   $03D1
-         fdb   ERROR49-ERRMSGS $03E6
+         fdb   ERROR37-ERRMSGS
+         fdb   ERROR38-ERRMSGS
+         fdb   ERROR39-ERRMSGS
+         fdb   ERROR40-ERRMSGS
+         fdb   ERROR41-ERRMSGS
+         fdb   ERROR42-ERRMSGS
+         fdb   ERROR43-ERRMSGS
+         fdb   ERROR44-ERRMSGS
+         fdb   ERROR45-ERRMSGS
+         fdb   ERROR46-ERRMSGS
+         fdb   ERROR47-ERRMSGS
+         fdb   ERROR48-ERRMSGS
+         fdb   ERROR49-ERRMSGS
          fdb   ERROR50-ERRMSGS $0402
 
-         fdb   $0000
-         fdb   M12EE-HELPS $027D
-         fdb   M2544-HELPS $14D3
-         fdb   M1901-HELPS $0890
-         fdb   M154A-HELPS $04D9
-         fdb   M1A31-HELPS $09C0
-         fdb   M196F-HELPS $08FE
-         fdb   M17D0-HELPS $075F
-         fdb   M1EF0-HELPS $0E7F
-         fdb   M176D-HELPS $06FC
-         fdb   M1D79-HELPS $0D08
-         fdb   M1500-HELPS $048F
-         fdb   M16F0-HELPS $067F
-         fdb   M1BC7-HELPS $0B56
-         fdb   M20BB-HELPS $104A
-         fdb   M270D-HELPS $169C
-         fdb   M1FA8-HELPS $0F37
-         fdb   M2057-HELPS $0FE6
+HELPTBL  fdb   $0000
+         fdb   M12EE-HELPS
+         fdb   M2544-HELPS
+         fdb   M1901-HELPS
+         fdb   M154A-HELPS
+         fdb   M1A31-HELPS
+         fdb   M196F-HELPS
+         fdb   M17D0-HELPS
+         fdb   M1EF0-HELPS
+         fdb   M176D-HELPS
+         fdb   M1D79-HELPS
+         fdb   M1500-HELPS
+         fdb   M16F0-HELPS
+         fdb   M1BC7-HELPS
+         fdb   M20BB-HELPS
+         fdb   M270D-HELPS
+         fdb   M1FA8-HELPS
+         fdb   M2057-HELPS
 

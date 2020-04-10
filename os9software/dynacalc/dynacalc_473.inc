@@ -1306,7 +1306,7 @@ L08E3    lbra  L154A
 L08E6    lbra  L1798
 L08E9    lbra  L0D57
 L08EC    lbra  L1575
-L08EF    lbra  L0C57
+L08EF    lbra  L0C57    Display help page
 L08F2    lbra  L0D95
 L08F5    lbra  L1286
 L08F8    lbra  L0EC3 Read character from keyboard
@@ -1324,7 +1324,7 @@ L0919    lbra  L0EA7
 L091C    lbra  L0DE3
          lbra  L0DD3
 L0922    lbra  L0D36
-L0925    lbra  L0A8B
+L0925    lbra  L0A8B  Print character
 L0928    lbra  L0A98
 L092B    lbra  L1043
 L092E    lbra  L15D0
@@ -1445,7 +1445,7 @@ L0A47    tst   <u00CC
          lbsr  L1ADA
 L0A4E    bsr   L0A8B
          ldu   <MEMPTR  beginning of data
-         leau  >u0398,u
+         leau  >M0398,u
          stu   <u0057
          clrb
          clra
@@ -1467,7 +1467,8 @@ L0A4E    bsr   L0A8B
          lbsr  L0E5D
          clr   <u0060
          lbra  L0F9D
-L0A82    ldx   #$011A
+
+L0A82    ldx   #$011A  line 1 column 26?
 L0A85    lbsr  L0D55
          lbra  L1A19
 
@@ -1678,6 +1679,7 @@ L0C45    sta   <u0022
          clr   <u00C8
          rts
 
+* display help page?
 L0C57    tst   <u0075
          lbne  L0B9B
          pshs  x,b,a
@@ -1790,7 +1792,8 @@ L0D36    ldx   #$0000
 L0D39    bsr   L0D55
          lbsr  L19DB
          lbra  L3AF3
-* Print string a X offset in Trm-file
+
+* Print string at X offset in Trm-file
 L0D41    stx   <u006C
          lbsr  L1AB3
          sta   <u00C4
@@ -3354,6 +3357,7 @@ L1A09    bsr   L1A19
          puls  u
          stu   <u00BD
          lbra  L0D57
+
 L1A19    pshs  x,b
          lbsr  L0E35
          bcs   L1A24
@@ -3368,11 +3372,12 @@ L1A24    abx
 L1A2F    sta   <u00BE
          ldu   <MEMPTR  beginning of data
          leau  >$B8,u   Cursor clear to EOL
-         tst   ,u
-         bmi   L1A40
+         tst   ,u     Defined?
+         bmi   L1A40  ..no
          puls  x,b
-         lbra  L0DD3
-L1A40    lda   #$20
+         lbra  L0DD3  Print control sequence
+
+L1A40    lda   #$20   Clear line with spaces
 L1A42    lbsr  L0DE8
          decb
          bne   L1A42
