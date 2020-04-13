@@ -1144,7 +1144,7 @@ and the operand cannot include a name that has not yet been defined
 (i.e., it cannot contain as-yet undefined names whose definitions also
 use undefined names). Good programming practice, however, dictates that
 all equates should be at the beginning of the program to allow the
-assembler to generate the most Compact code by selecting direct
+assembler to generate the most compact code by selecting direct
 addressing wherever possible.
 </para>
       <para>
