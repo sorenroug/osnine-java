@@ -42,7 +42,7 @@ public class Terminal2 extends JDialog {
         JButton button = new JButton("Close");
         button.addActionListener(new CloseAction());
         buttonPane.add(button);
-        screen = new JTerminal(t2, 80, 24);
+        screen = new JTerminal(t2);
 
         add(screen);
 

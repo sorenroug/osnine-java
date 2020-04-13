@@ -32,8 +32,8 @@ public class JTerminal extends JPanel implements UIDevice {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(JTerminal.class);
 
-    private int COLUMNS = 80;
-    private int ROWS = 25;
+    private int columns = 80;
+    private int rows = 25;
 
     private static final int NOATTRS = 0;
     public static final int REVERSE = 1;
@@ -66,16 +66,16 @@ public class JTerminal extends JPanel implements UIDevice {
     /**
      * Create the canvas for text.
      */
-    public JTerminal(Acia acia, int columns, int rows) {
+    public JTerminal(Acia acia) {
         super();
         this.acia = acia;
-        COLUMNS = columns;
-        ROWS = rows;
-        lines = new Line[ROWS];
-        for (int i = 0; i < ROWS; i++)
-            lines[i] = new Line(COLUMNS);
+        this.columns = GO80Emulation.COLUMNS;
+        this.rows = GO80Emulation.ROWS;
+        lines = new Line[rows];
+        for (int i = 0; i < rows; i++)
+            lines[i] = new Line(columns);
         setFontSize(16);
-        emulator = new GO51Terminal(this);
+        emulator = new GO80Emulation(this);
         addKeyListener(emulator);
 
         TimerTask cursortask = new CursorTask();
@@ -112,7 +112,7 @@ public class JTerminal extends JPanel implements UIDevice {
     }
 
     private void invalidateCache() {
-        for (int i = 0; i < ROWS; i++)
+        for (int i = 0; i < rows; i++)
             lines[i].invalidateCache();
     }
 
@@ -137,7 +137,7 @@ public class JTerminal extends JPanel implements UIDevice {
         lines[cursorY].writeChar(c);
         repaintXY(cursorX, cursorY);
         cursorX++;
-        if (cursorX == COLUMNS) {
+        if (cursorX == columns) {
             cursorX = 0;
             cursorDown();
         }
@@ -173,7 +173,7 @@ public class JTerminal extends JPanel implements UIDevice {
     }
 
     void cursorDown() {
-        if (cursorY >= ROWS - 1)
+        if (cursorY >= rows - 1)
             scrollUp();
         else
             cursorY++;
@@ -185,7 +185,7 @@ public class JTerminal extends JPanel implements UIDevice {
      */
     void cursorLeft() {
         if (cursorX <= 0) {
-           cursorX = COLUMNS - 1;
+           cursorX = columns - 1;
            cursorUp();
         } else {
             cursorX--;
@@ -196,7 +196,7 @@ public class JTerminal extends JPanel implements UIDevice {
     }
 
     void cursorRight() {
-        if (cursorX >= COLUMNS - 1) {
+        if (cursorX >= columns - 1) {
            cursorX = 0;
            cursorDown();
         } else
@@ -215,8 +215,8 @@ public class JTerminal extends JPanel implements UIDevice {
     void cursorXY(int x, int y) {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
-        if (x >= COLUMNS) x = COLUMNS - 1;
-        if (y >= ROWS) y = ROWS - 1;
+        if (x >= columns) x = columns - 1;
+        if (y >= rows) y = rows - 1;
         int prevX = cursorX;
         int prevY = cursorY;
         cursorX = x;
@@ -238,10 +238,10 @@ public class JTerminal extends JPanel implements UIDevice {
      */
     void scrollUp() {
         Line tmpLine = lines[0];
-        for (int i = 1; i < ROWS; i++)
+        for (int i = 1; i < rows; i++)
             lines[i - 1] = lines[i];
         tmpLine.truncate(0);
-        lines[ROWS - 1] = tmpLine;
+        lines[rows - 1] = tmpLine;
         repaint();
     }
 
@@ -249,8 +249,8 @@ public class JTerminal extends JPanel implements UIDevice {
      * Move the text down and insert one empty line at the top.
      */
     void scrollDown() {
-        Line tmpLine = lines[ROWS - 1];
-        for (int i = ROWS - 1; i > 0; i--)
+        Line tmpLine = lines[rows - 1];
+        for (int i = rows - 1; i > 0; i--)
             lines[i] = lines[i - 1];
         tmpLine.truncate(0);
         lines[0] = tmpLine;
@@ -258,7 +258,7 @@ public class JTerminal extends JPanel implements UIDevice {
     }
 
     void clearScreen() {
-        for (int i = 0; i < ROWS; i++)
+        for (int i = 0; i < rows; i++)
             lines[i].truncate(0);
         cursorX = 0;
         cursorY = 0;
@@ -278,7 +278,7 @@ public class JTerminal extends JPanel implements UIDevice {
      */
     void clearToEOS() {
         lines[cursorY].truncate(cursorX);
-        for (int i = cursorY + 1; i < ROWS; i++)
+        for (int i = cursorY + 1; i < rows; i++)
             lines[i].truncate(0);
         repaint();
     }
@@ -289,7 +289,7 @@ public class JTerminal extends JPanel implements UIDevice {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(COLUMNS * colWidth, ROWS * rowHeight);
+        return new Dimension(columns * colWidth, rows * rowHeight);
     }
 
     private void repaintXY(int x, int y) {
@@ -309,7 +309,7 @@ public class JTerminal extends JPanel implements UIDevice {
         if (clipBounds != null) {
             int bottomY = clipBounds.y / rowHeight; // Round down
             int topY = clipBounds.height / rowHeight + bottomY + 1;
-            if (topY > ROWS) topY = ROWS;
+            if (topY > rows) topY = rows;
             int leftX = clipBounds.x / colWidth;
             int numChars = clipBounds.width / colWidth;
             if (clipBounds.width % colWidth != 0) numChars++; // Round up
@@ -324,7 +324,7 @@ public class JTerminal extends JPanel implements UIDevice {
         } else {
             // Redraw everything
             LOGGER.debug("Redraw all");
-            for (int i = 0; i < ROWS; i++) {
+            for (int i = 0; i < rows; i++) {
                 AttributedString text = lines[i].getAttrLine();
                 gc.drawString(text.getIterator(), 0, i * rowHeight + lineOffset + lineLeading);
             }

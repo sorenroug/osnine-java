@@ -10,24 +10,23 @@ import org.slf4j.LoggerFactory;
 /**
  * Parse the control sequences from the host and the keys of the keyboard.
  */
-public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
+public class GO51Emulation extends EmulationCore {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(GO51Terminal.class);
+                = LoggerFactory.getLogger(GO51Emulation.class);
+
+    public static int COLUMNS = 51;
 
     private boolean shiftPressed;
     private boolean altPressed;
-
-    private JTerminal term;
 
     private Go51State termState = Go51State.NORMAL;
 
     /** For Cursor escape sequence */
     private int go51X;
 
-    public GO51Terminal(JTerminal term) {
-        super();
-        this.term = term;
+    public GO51Emulation(JTerminal term) {
+        super(term);
     }
 
     @Override
@@ -39,69 +38,6 @@ public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
     @Override
     public void parseChar(int c) {
         termState = termState.sendToUI(c, this);
-    }
-
-    /**
-     * Write a character to the terminal.
-     */
-    public void writeChar(int c) {
-        LOGGER.debug("Char: {}", c);
-        term.writeChar((char)c);
-    }
-
-    /**
-     * Sends characters to the host.
-     */
-    private void dataReceived(char c) {
-        term.dataReceived(c);
-    }
-
-    private void eolReceived() {
-        term.eolReceived();
-    }
-
-    private void bell() {
-        term.bell();
-    }
-
-    private void carriageReturn() {
-        term.carriageReturn();
-    }
-
-    private void clearScreen() {
-        term.clearScreen();
-    }
-
-    private void clearToEOL() {
-        term.clearToEOL();
-    }
-
-    private void clearToEOS() {
-        term.clearToEOS();
-    }
-
-    private void cursorXY(int x, int y) {
-        term.cursorXY(x, y);
-    }
-
-    private void cursorLeft() {
-        term.cursorLeft();
-    }
-
-    private void cursorRight() {
-        term.cursorRight();
-    }
-
-    private void cursorUp() {
-        term.cursorUp();
-    }
-
-    private void cursorDown() {
-        term.cursorDown();
-    }
-
-    private void setAttribute(int attrCode, boolean flag) {
-        term.setAttribute(attrCode, flag);
     }
 
     @Override
@@ -186,7 +122,7 @@ public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
 
         NORMAL {
             @Override
-            Go51State sendToUI(int val, GO51Terminal h) {
+            Go51State sendToUI(int val, GO51Emulation h) {
 
                 if (val < 0x07 || (val > 0x0D && val < 0x1B)) {
                     return NORMAL;
@@ -228,7 +164,7 @@ public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
 
         ESCAPE {
             @Override
-            Go51State sendToUI(int val, GO51Terminal h) {
+            Go51State sendToUI(int val, GO51Emulation h) {
 
                 switch (val) {
                 case 0x41:
@@ -268,7 +204,7 @@ public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
 
         EXPECTX {
             @Override
-            Go51State sendToUI(int val, GO51Terminal h) {
+            Go51State sendToUI(int val, GO51Emulation h) {
                 h.go51X = val;
                 return EXPECTY;
             }
@@ -276,13 +212,13 @@ public class GO51Terminal extends KeyAdapter implements TerminalEmulation {
 
         EXPECTY {
             @Override
-            Go51State sendToUI(int val, GO51Terminal h) {
+            Go51State sendToUI(int val, GO51Emulation h) {
                 h.cursorXY(h.go51X, val);
                 return NORMAL;
             }
         };
 
-        abstract Go51State sendToUI(int val, GO51Terminal h);
+        abstract Go51State sendToUI(int val, GO51Emulation h);
 
     }
 

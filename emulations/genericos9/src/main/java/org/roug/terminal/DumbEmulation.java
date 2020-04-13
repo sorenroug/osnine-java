@@ -10,19 +10,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Emulation of a dumb terminal without cursor keys.
  */
-public class DumbTerminal extends KeyAdapter implements TerminalEmulation {
+public class DumbEmulation extends EmulationCore {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(DumbTerminal.class);
+                = LoggerFactory.getLogger(DumbEmulation.class);
+
+    public static int COLUMNS = 80;
+    public static int ROWS = 66;
 
     private boolean shiftPressed;
     private boolean altPressed;
 
-    private JTerminal term;
-
-    public DumbTerminal(JTerminal term) {
-        super();
-        this.term = term;
+    public DumbEmulation(JTerminal term) {
+        super(term);
     }
 
     @Override
@@ -41,37 +41,26 @@ public class DumbTerminal extends KeyAdapter implements TerminalEmulation {
         case 0:
             break;
         case 7:
-            term.bell();
+            bell();
             break;
         case '\n':
-            term.cursorDown();
+            cursorDown();
             break;
         case '\b':
-            term.cursorLeft();
+            cursorLeft();
             break;
         case '\f':
-            term.clearScreen();
+            clearScreen();
             break;
         case '\r':
-            term.carriageReturn();
+            carriageReturn();
             break;
         default:
             LOGGER.debug("Char: {}", c);
-            term.writeChar((char)c);
+            writeChar((char)c);
         }
     }
  
-
-    /**
-     * Sends characters to the host.
-     */
-    private void dataReceived(char c) {
-        term.dataReceived(c);
-    }
-
-    private void eolReceived() {
-        term.eolReceived();
-    }
 
     @Override
     public void keyReleased(KeyEvent evt) {

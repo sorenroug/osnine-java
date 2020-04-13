@@ -107,7 +107,7 @@ public class GUI {
 
         term = new Acia6850(0xFFD4, bus);
         bus.insertMemorySegment(term);
-        screen1 = new JTerminal(term, 80, 24);
+        screen1 = new JTerminal(term);
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
@@ -310,11 +310,11 @@ public class GUI {
         JMenu guiMenu = new JMenu("Devices");
         guiMenu.setMnemonic(KeyEvent.VK_D);
 
-        JMenuItem menuItem = new JMenuItem("Terminal 2");
+        JMenuItem menuItem = new JMenuItem("Terminal /T1");
         menuItem.addActionListener(new T1Action());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Printer");
+        menuItem = new JMenuItem("Printer /P");
         menuItem.addActionListener(new PrinterAction());
         guiMenu.add(menuItem);
 
