@@ -1,6 +1,7 @@
 package org.roug.terminal;
 
 import java.awt.event.KeyListener;
+import java.awt.Dimension;
 
 /**
  * Interface for terminal emulation classes.
@@ -15,4 +16,13 @@ public interface TerminalEmulation extends KeyListener {
     public void parseChar(int c);
 
     public void resetState();
+
+    public Dimension getScreenSize();
+
+    public int getColumns();
+
+    public int getRows();
+
+    public void setUIDevice(JTerminal term);
+
 }

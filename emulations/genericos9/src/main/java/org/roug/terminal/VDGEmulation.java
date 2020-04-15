@@ -28,10 +28,6 @@ public class VDGEmulation extends EmulationCore {
     /** For Cursor escape sequence */
     private int coordX;
 
-    public VDGEmulation(JTerminal term) {
-        super(term);
-    }
-
     @Override
     public void resetState() {
         shiftPressed = false;
@@ -155,10 +151,10 @@ public class VDGEmulation extends EmulationCore {
                         h.cursorLeft();
                         return NORMAL;
 		    case 0x09:
-			h.cursorUp();
+			h.cursorUp(true);
 			return NORMAL;
                     case 0x0A:    // Line feed
-                        h.cursorDown();
+                        h.cursorDown(true);
                         return NORMAL;
                     case 0x0B:    // Clear to end of screen
                         h.clearToEOS();
@@ -172,7 +168,7 @@ public class VDGEmulation extends EmulationCore {
                     case 127:
                         return NORMAL;
                     default:
-                        h.writeChar((char)val);
+                        h.writeChar(val);
                         return NORMAL;
                     }
                 }

@@ -66,16 +66,18 @@ public class JTerminal extends JPanel implements UIDevice {
     /**
      * Create the canvas for text.
      */
-    public JTerminal(Acia acia) {
+    public JTerminal(Acia acia, TerminalEmulation emulation) {
         super();
         this.acia = acia;
-        this.columns = GO80Emulation.COLUMNS;
-        this.rows = GO80Emulation.ROWS;
+
+        this.columns = emulation.getColumns();
+        this.rows = emulation.getRows();
         lines = new Line[rows];
         for (int i = 0; i < rows; i++)
             lines[i] = new Line(columns);
         setFontSize(16);
-        emulator = new GO80Emulation(this);
+        emulator = emulation;
+        emulator.setUIDevice(this);
         addKeyListener(emulator);
 
         TimerTask cursortask = new CursorTask();
@@ -139,7 +141,7 @@ public class JTerminal extends JPanel implements UIDevice {
         cursorX++;
         if (cursorX == columns) {
             cursorX = 0;
-            cursorDown();
+            cursorDown(true);
         }
     }
 
@@ -156,13 +158,16 @@ public class JTerminal extends JPanel implements UIDevice {
 
 
     /**
-     * Move the cursor up. If it is already
-     * on the top line, then scroll the screen downwards.
+     * Move the cursor up. If "scroll" argument is true and on the top line
+     * then scroll the screen downwards, ohterwise stay.
+     *
+     * @param scroll - flag to tell if the screen can scroll down.
      */
-    void cursorUp() {
+    void cursorUp(boolean scroll) {
         if (cursorY <= 0) {
-            scrollDown();
-            repaint();
+            if (scroll) {
+                scrollDown();
+            }
         } else {
             drawCursor = false;
             repaintXY(cursorX, cursorY);
@@ -172,10 +177,18 @@ public class JTerminal extends JPanel implements UIDevice {
         }
     }
 
-    void cursorDown() {
-        if (cursorY >= rows - 1)
-            scrollUp();
-        else
+    /**
+     * Move the cursor down. If "scroll" argument is true and on the bottom line
+     * then scroll the screen upwards, ohterwise stay.
+     *
+     * @param scroll - flag to tell if the screen can scroll down.
+     */
+    void cursorDown(boolean scroll) {
+        if (cursorY >= rows - 1) {
+            if (scroll) {
+                scrollUp();
+            }
+        } else
             cursorY++;
     }
 
@@ -186,7 +199,7 @@ public class JTerminal extends JPanel implements UIDevice {
     void cursorLeft() {
         if (cursorX <= 0) {
            cursorX = columns - 1;
-           cursorUp();
+           cursorUp(true);
         } else {
             cursorX--;
             repaintXY(cursorX, cursorY);
@@ -198,7 +211,7 @@ public class JTerminal extends JPanel implements UIDevice {
     void cursorRight() {
         if (cursorX >= columns - 1) {
            cursorX = 0;
-           cursorDown();
+           cursorDown(true);
         } else
             cursorX++;
         repaintXY(cursorX, cursorY);

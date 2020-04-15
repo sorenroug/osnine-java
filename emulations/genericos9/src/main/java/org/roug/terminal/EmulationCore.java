@@ -2,6 +2,7 @@ package org.roug.terminal;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,12 @@ public abstract class EmulationCore extends KeyAdapter implements TerminalEmulat
 
     private JTerminal term;
 
-    public EmulationCore(JTerminal term) {
+    public EmulationCore() {
         super();
+    }
+
+    @Override
+    public void setUIDevice(JTerminal term) {
         this.term = term;
     }
 
@@ -37,6 +42,21 @@ public abstract class EmulationCore extends KeyAdapter implements TerminalEmulat
     @Override
     public void parseChar(int c) {
 	writeChar(c);
+    }
+
+    @Override
+    public int getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    public int getRows() {
+        return ROWS;
+    }
+
+    @Override
+    public Dimension getScreenSize() {
+        return new Dimension(COLUMNS, ROWS);
     }
 
     /**
@@ -90,12 +110,12 @@ public abstract class EmulationCore extends KeyAdapter implements TerminalEmulat
         term.cursorRight();
     }
 
-    protected void cursorUp() {
-        term.cursorUp();
+    protected void cursorUp(boolean scroll) {
+        term.cursorUp(scroll);
     }
 
-    protected void cursorDown() {
-        term.cursorDown();
+    protected void cursorDown(boolean scroll) {
+        term.cursorDown(scroll);
     }
 
     protected void setAttribute(int attrCode, boolean flag) {

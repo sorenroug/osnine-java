@@ -18,8 +18,5 @@ public class GO80Emulation extends GO51Emulation {
     public static int COLUMNS = 80;
     public static int ROWS = 24;
 
-    public GO80Emulation(JTerminal term) {
-        super(term);
-    }
 
 }

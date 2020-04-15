@@ -28,6 +28,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.roug.terminal.GO80Emulation;
+import org.roug.terminal.JTerminal;
+import org.roug.terminal.TerminalEmulation;
 import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
 import org.roug.usim.Bus8Motorola;
@@ -36,7 +39,6 @@ import org.roug.usim.HWClock;
 import org.roug.usim.IRQBeat;
 import org.roug.usim.mc6809.MC6809;
 import org.roug.usim.RandomAccessMemory;
-import org.roug.terminal.JTerminal;
 import org.roug.usim.VirtualDisk;
 
 import org.slf4j.Logger;
@@ -107,7 +109,8 @@ public class GUI {
 
         term = new Acia6850(0xFFD4, bus);
         bus.insertMemorySegment(term);
-        screen1 = new JTerminal(term);
+        TerminalEmulation emulation = new GO80Emulation();
+        screen1 = new JTerminal(term, emulation);
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 

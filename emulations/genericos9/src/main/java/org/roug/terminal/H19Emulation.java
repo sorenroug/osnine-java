@@ -8,14 +8,14 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Parse the control sequences from the host and the keys of the keyboard.
+ * Emulation of a Heath H-19 / Zenith Z-19 terminal.
  */
-public class GO51Emulation extends EmulationCore {
+public class H19Emulation extends EmulationCore {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(GO51Emulation.class);
+                = LoggerFactory.getLogger(H19Emulation.class);
 
-    public static int COLUMNS = 51;
+    public static int COLUMNS = 80;
     public static int ROWS = 24;
 
     private boolean shiftPressed;
@@ -24,7 +24,7 @@ public class GO51Emulation extends EmulationCore {
     private State termState = State.NORMAL;
 
     /** For Cursor escape sequence */
-    private int coordX;
+    private int coordY;
 
     @Override
     public void resetState() {
@@ -113,13 +113,13 @@ public class GO51Emulation extends EmulationCore {
     }
 
     /**
-     * State engine to handle GO51 screen command codes.
+     * State engine to handle H19 screen command codes.
      */ 
     private enum State {
 
         NORMAL {
             @Override
-            State sendToUI(int val, GO51Emulation h) {
+            State sendToUI(int val, H19Emulation h) {
 
                 if (val < 0x07 || (val > 0x0D && val < 0x1B)) {
                     return NORMAL;
@@ -133,12 +133,6 @@ public class GO51Emulation extends EmulationCore {
                         return NORMAL;
                     case 0x0A:    // Line feed
                         h.cursorDown(true);
-                        return NORMAL;
-                    case 0x0B:    // Cursor home
-                        h.cursorXY(0,0);
-                        return NORMAL;
-                    case 0x0C:    // Form feed - clear screen
-                        h.clearScreen();
                         return NORMAL;
                     case 0x0D:
                         h.carriageReturn();
@@ -161,61 +155,73 @@ public class GO51Emulation extends EmulationCore {
 
         ESCAPE {
             @Override
-            State sendToUI(int val, GO51Emulation h) {
+            State sendToUI(int val, H19Emulation h) {
 
                 switch (val) {
-                case 'A':
-                    return EXPECTX;
-                case 'B':  // Clear to end of line
-                    h.clearToEOL();
+                case 0x18:   // Cancel escape sequence
+                    return NORMAL;
+                case 'A':  // Stop if a top line
+                    h.cursorUp(false);
+                    return NORMAL;
+                case 'B':
+                    h.cursorDown(true);
                     return NORMAL;
                 case 'C':
                     h.cursorRight();
                     return NORMAL;
                 case 'D':
+                    h.cursorLeft();
+                    return NORMAL;
+                case 'E':    // Form feed - clear screen
+                    h.clearScreen();
+                    return NORMAL;
+                case 'H':    // Cursor home
+                    h.cursorXY(0,0);
+                    return NORMAL;
+                case 'I':  // Cursor up, scroll if on top line
                     h.cursorUp(true);
-                    return NORMAL;
-                case 'E':
-                    h.cursorDown(true);
-                    return NORMAL;
-                case 'F':  // Reverse on
-                    h.setAttribute(JTerminal.REVERSE, true);
-                    return NORMAL;
-                case 'G':  // Reverse off
-                    h.setAttribute(JTerminal.REVERSE, false);
-                    return NORMAL;
-                case 'H':  // Underline on
-                    h.setAttribute(JTerminal.UNDERLINE, true);
-                    return NORMAL;
-                case 'I':  // Underline off
-                    h.setAttribute(JTerminal.UNDERLINE, false);
                     return NORMAL;
                 case 'J':   // Clear to end of screen
                     h.clearToEOS();
                     return NORMAL;
+                case 'K':  // Clear to end of line
+                    h.clearToEOL();
+                    return NORMAL;
+                case 'Y':
+                    return EXPECTY;
+                case 'p':  // Reverse on
+                    h.setAttribute(JTerminal.REVERSE, true);
+                    return NORMAL;
+                case 'q':  // Reverse off
+                    h.setAttribute(JTerminal.REVERSE, false);
+                    return NORMAL;
+                case 'z':  // Reset to power-up configuration
+                    h.setAttribute(JTerminal.REVERSE, false);
+                    return NORMAL;
+
                 default:
                     return NORMAL;
                 }
             }
         },
 
-        EXPECTX {
+        EXPECTY {
             @Override
-            State sendToUI(int val, GO51Emulation h) {
-                h.coordX = val;
-                return EXPECTY;
+            State sendToUI(int val, H19Emulation h) {
+                h.coordY = val;
+                return EXPECTX;
             }
         },
 
-        EXPECTY {
+        EXPECTX {
             @Override
-            State sendToUI(int val, GO51Emulation h) {
-                h.cursorXY(h.coordX, val);
+            State sendToUI(int val, H19Emulation h) {
+                h.cursorXY(val + 32, h.coordY + 32);
                 return NORMAL;
             }
         };
 
-        abstract State sendToUI(int val, GO51Emulation h);
+        abstract State sendToUI(int val, H19Emulation h);
 
     }
 

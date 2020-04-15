@@ -21,10 +21,6 @@ public class DumbEmulation extends EmulationCore {
     private boolean shiftPressed;
     private boolean altPressed;
 
-    public DumbEmulation(JTerminal term) {
-        super(term);
-    }
-
     @Override
     public void resetState() {
         shiftPressed = false;
@@ -44,7 +40,7 @@ public class DumbEmulation extends EmulationCore {
             bell();
             break;
         case '\n':
-            cursorDown();
+            cursorDown(true);
             break;
         case '\b':
             cursorLeft();
@@ -57,7 +53,7 @@ public class DumbEmulation extends EmulationCore {
             break;
         default:
             LOGGER.debug("Char: {}", c);
-            writeChar((char)c);
+            writeChar(c);
         }
     }
  
