@@ -32,6 +32,11 @@ public class JTerminal extends JPanel implements UIDevice {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(JTerminal.class);
 
+    private static final Color DEFAULT_BACKGROUND = new Color(0x1b3231);
+    private static final Color DEFAULT_FOREGROUND = new Color(0x96d59b);
+    private static final Color DEFAULT_DIMMED = new Color(0x69966d);
+    private static final Color DEFAULT_BOLDED = new Color(0xcde791);
+
     private int columns = 80;
     private int rows = 25;
 
@@ -39,14 +44,23 @@ public class JTerminal extends JPanel implements UIDevice {
     public static final int REVERSE = 1;
     public static final int UNDERLINE = 2;
     public static final int BOLD = 4;
+    public static final int DIMMED = 8;
         
     private int cursorX = 0;
     private int cursorY = 0;
+    /** Holder for returning cursor X,Y in one structure. */
+    private Dimension cursorCoord = new Dimension();
 
     private int currentFontSize = 24;
     private Font font;
 
-    private boolean drawCursor = false;
+    private volatile boolean cursorBlink = true;
+    private volatile boolean cursorVisible = true;
+    private volatile boolean blockCursor = true;
+    private volatile boolean drawCursor = false;
+
+    private Color boldedColor = DEFAULT_BOLDED;
+    private Color dimmedColor = DEFAULT_DIMMED;
 
     /** Width of character in points. */
     private int colWidth;
@@ -59,14 +73,15 @@ public class JTerminal extends JPanel implements UIDevice {
 
     private Line[] lines;
 
+    /** The interface chip to the host. */
     private Acia acia;
 
-    private TerminalEmulation emulator;
+    private EmulationCore emulator;
 
     /**
      * Create the canvas for text.
      */
-    public JTerminal(Acia acia, TerminalEmulation emulation) {
+    public JTerminal(Acia acia, EmulationCore emulation) {
         super();
         this.acia = acia;
 
@@ -75,9 +90,12 @@ public class JTerminal extends JPanel implements UIDevice {
         lines = new Line[rows];
         for (int i = 0; i < rows; i++)
             lines[i] = new Line(columns);
+        setBackground(DEFAULT_BACKGROUND);
+        setForeground(DEFAULT_FOREGROUND);
         setFontSize(16);
         emulator = emulation;
         emulator.setUIDevice(this);
+        emulator.initialize();
         addKeyListener(emulator);
 
         TimerTask cursortask = new CursorTask();
@@ -85,6 +103,9 @@ public class JTerminal extends JPanel implements UIDevice {
         timer.schedule(cursortask, 1000, BLINKPERIOD);
     }
 
+    /**
+     * Reset the terminal and the emulation.
+     */
     public void resetState() {
         emulator.resetState();
     }
@@ -96,7 +117,7 @@ public class JTerminal extends JPanel implements UIDevice {
      */
     public void setFontSize(int fs) {
         currentFontSize = fs;
-        font = new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize);
+        font = new Font(Font.MONOSPACED, Font.BOLD, currentFontSize);
         FontMetrics fm = getFontMetrics(font);
         colWidth = fm.charWidth('M');
         rowHeight = fm.getHeight();
@@ -104,6 +125,50 @@ public class JTerminal extends JPanel implements UIDevice {
         lineOffset = fm.getAscent();
         invalidateCache();
         repaint();
+    }
+
+    /**
+     * Set the color to use when displaying bolded text.
+     *
+     * @param color - color to use.
+     */
+    public void setBoldColor(Color color) {
+        boldedColor = color;
+    }
+
+    public void setBlockCursor() {
+        blockCursor = true;
+    }
+
+    public void setUnderscoreCursor() {
+        blockCursor = false;
+    }
+
+    /**
+     * Set visible cursor.
+     *
+     * @param visible true if visible, false if invisible.
+     */
+    public void setCursorVisible(boolean visible) {
+        cursorVisible = visible;
+    }
+
+    /**
+     * Set blinking cursor.
+     *
+     * @param blink true if blink, false if solid.
+     */
+    public void setCursorBlink(boolean blink) {
+        cursorBlink = blink;
+    }
+
+    /**
+     * Set the color to use when displaying dimmed text.
+     *
+     * @param color - color to use.
+     */
+    public void setDimColor(Color color) {
+        dimmedColor = color;
     }
 
     /**
@@ -143,6 +208,7 @@ public class JTerminal extends JPanel implements UIDevice {
             cursorX = 0;
             cursorDown(true);
         }
+        repaintXY(cursorX, cursorY);
     }
 
     /**
@@ -165,8 +231,10 @@ public class JTerminal extends JPanel implements UIDevice {
      */
     void cursorUp(boolean scroll) {
         if (cursorY <= 0) {
+            cursorY = 0;
             if (scroll) {
-                scrollDown();
+                scrollDownFrom(cursorY);
+                repaint();
             }
         } else {
             drawCursor = false;
@@ -196,22 +264,26 @@ public class JTerminal extends JPanel implements UIDevice {
      * Move the cursor left. If it is already in leftmost column
      * then move one up and to the rightmost column.
      */
-    void cursorLeft() {
+    void cursorLeft(boolean wrap) {
         if (cursorX <= 0) {
-           cursorX = columns - 1;
-           cursorUp(true);
+            if (wrap) {
+                cursorX = columns - 1;
+                cursorUp(true);
+            }
         } else {
-            cursorX--;
             repaintXY(cursorX, cursorY);
-            drawCursor = false;
-            repaintXY(cursorX+1, cursorY);
+            cursorX--;
+            //drawCursor = false;
+            repaintXY(cursorX, cursorY);
         }
     }
 
-    void cursorRight() {
+    void cursorRight(boolean wrap) {
         if (cursorX >= columns - 1) {
-           cursorX = 0;
-           cursorDown(true);
+            if (wrap) {
+                cursorX = 0;
+                cursorDown(true);
+            }
         } else
             cursorX++;
         repaintXY(cursorX, cursorY);
@@ -249,7 +321,7 @@ public class JTerminal extends JPanel implements UIDevice {
     /**
      * Move the text up and insert one empty line at the bottom.
      */
-    void scrollUp() {
+    private void scrollUp() {
         Line tmpLine = lines[0];
         for (int i = 1; i < rows; i++)
             lines[i - 1] = lines[i];
@@ -261,15 +333,38 @@ public class JTerminal extends JPanel implements UIDevice {
     /**
      * Move the text down and insert one empty line at the top.
      */
+    /*
     void scrollDown() {
+        scrollDownFrom(0);
+        repaint();
+    }
+    */
+
+    /**
+     * Insert line by scrolling the lines below.
+     *
+     * @param lineInx - line number to scroll from.
+     */
+    private void scrollDownFrom(int lineInx) {
         Line tmpLine = lines[rows - 1];
-        for (int i = rows - 1; i > 0; i--)
+        for (int i = rows - 1; i > lineInx; i--)
             lines[i] = lines[i - 1];
         tmpLine.truncate(0);
-        lines[0] = tmpLine;
+        lines[lineInx] = tmpLine;
+    }
+
+    /**
+     * Insert line at current row.
+     */
+    void insertLine() {
+        scrollDownFrom(cursorY);
+        cursorX = 0;
         repaint();
     }
 
+    /**
+     * Clear screen.
+     */
     void clearScreen() {
         for (int i = 0; i < rows; i++)
             lines[i].truncate(0);
@@ -296,8 +391,19 @@ public class JTerminal extends JPanel implements UIDevice {
         repaint();
     }
 
+    /**
+     * Ring bell.
+     */
     void bell() {
         Toolkit.getDefaultToolkit().beep();
+    }
+
+    /**
+     * Get cursor location.
+     */
+    public Dimension getCursorXY() {
+        cursorCoord.setSize(cursorX, cursorY);
+        return cursorCoord;
     }
 
     @Override
@@ -305,6 +411,12 @@ public class JTerminal extends JPanel implements UIDevice {
         return new Dimension(columns * colWidth, rows * rowHeight);
     }
 
+    /**
+     * Repaint location of character.
+     *
+     * @param x - column of character
+     * @param y - row of character
+     */
     private void repaintXY(int x, int y) {
         repaint(x * colWidth,
                 y * rowHeight + lineLeading,
@@ -318,6 +430,7 @@ public class JTerminal extends JPanel implements UIDevice {
     @Override
     protected void paintComponent(Graphics gc) {
         super.paintComponent(gc);
+        Graphics2D gc2d = (Graphics2D) gc;
         Rectangle clipBounds = gc.getClipBounds();
         if (clipBounds != null) {
             int bottomY = clipBounds.y / rowHeight; // Round down
@@ -342,13 +455,20 @@ public class JTerminal extends JPanel implements UIDevice {
                 gc.drawString(text.getIterator(), 0, i * rowHeight + lineOffset + lineLeading);
             }
         }
-        if (drawCursor) {
-            //FIXME: use getComposite/setComposite in Graphics2D
-            //gc.setXORMode(Color.WHITE);
-            //gc.setXORMode((Graphics2D) gc.getBackground());
-            gc.fillRect(cursorX * colWidth, cursorY * rowHeight + lineLeading,
-                colWidth, rowHeight - lineLeading);
-            //gc.setPaintMode();
+        if (cursorVisible && drawCursor) {
+            if (blockCursor) {
+                //FIXME: use getComposite/setComposite in Graphics2D
+                //gc2d.setXORMode(Color.WHITE);
+                //gc2d.setXORMode(gc2d.getBackground());
+                gc.fillRect(cursorX * colWidth,
+                            cursorY * rowHeight + lineLeading,
+                            colWidth, rowHeight - lineLeading);
+                //gc.setPaintMode();
+            } else {
+                gc.fillRect(cursorX * colWidth,
+                            cursorY * rowHeight + rowHeight - lineLeading - 2,
+                            colWidth, 3);
+            }
         }
     }
 
@@ -404,20 +524,24 @@ public class JTerminal extends JPanel implements UIDevice {
             if (countChar <= cursorX) countChar = cursorX + 1;
         }
 
+        /**
+         * Get terminal line with attributes.
+         *
+         * @return string to paint on one line in the terminal.
+         */
         AttributedString getAttrLine() {
             if (attrCache != null)
                 return attrCache;
             attrCache = new AttributedString(String.valueOf(line, 0, countChar));
             if (countChar > 0) {
                 attrCache.addAttribute(TextAttribute.FONT, font, 0, countChar);
+                attrCache.addAttribute(TextAttribute.BACKGROUND, getBackground(), 0, countChar);
                 applyAttribute(REVERSE, TextAttribute.SWAP_COLORS,
                             TextAttribute.SWAP_COLORS_ON);
                 applyAttribute(UNDERLINE, TextAttribute.UNDERLINE,
                             TextAttribute.UNDERLINE_ON);
-                applyAttribute(BOLD, TextAttribute.WEIGHT,
-                            TextAttribute.WEIGHT_ULTRABOLD);
-                //attrCache.addAttribute(TextAttribute.FOREGROUND,
-                            //Color.BLUE, 0, countChar);
+                applyAttribute(BOLD, TextAttribute.FOREGROUND, boldedColor);
+                applyAttribute(DIMMED, TextAttribute.FOREGROUND, dimmedColor);
             }
             return attrCache;
         }
@@ -453,8 +577,12 @@ public class JTerminal extends JPanel implements UIDevice {
     private class CursorTask extends TimerTask {
         @Override
         public void run() {
-            drawCursor = !drawCursor;
-            repaintXY(cursorX, cursorY);
+            if (cursorBlink) {
+                drawCursor = !drawCursor;
+            }
+            if (cursorVisible) {
+                repaintXY(cursorX, cursorY);
+            }
         }
     }
 

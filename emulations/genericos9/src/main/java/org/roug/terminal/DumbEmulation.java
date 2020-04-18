@@ -15,16 +15,24 @@ public class DumbEmulation extends EmulationCore {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(DumbEmulation.class);
 
-    public static int COLUMNS = 80;
-    public static int ROWS = 66;
+    private int COLUMNS = 80;
+    private int ROWS = 66;
 
-    private boolean shiftPressed;
-    private boolean altPressed;
+    @Override
+    public void initialize() {}
 
     @Override
     public void resetState() {
-        shiftPressed = false;
-        altPressed = false;
+    }
+
+    @Override
+    public int getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    public int getRows() {
+        return ROWS;
     }
 
     /**
@@ -43,7 +51,7 @@ public class DumbEmulation extends EmulationCore {
             cursorDown(true);
             break;
         case '\b':
-            cursorLeft();
+            cursorLeft(false);
             break;
         case '\f':
             clearScreen();
@@ -59,77 +67,46 @@ public class DumbEmulation extends EmulationCore {
  
 
     @Override
-    public void keyReleased(KeyEvent evt) {
+    void receiveKeyCode(KeyEvent evt) {
         int keyCode = evt.getKeyCode();
-        LOGGER.debug("Released: {}", keyCode);
         switch (keyCode) {
-        case KeyEvent.VK_SHIFT:
-            shiftPressed = false;
+        case KeyEvent.VK_LEFT:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x18);
+            else
+                dataReceived((char) 0x08);
             break;
-        case KeyEvent.VK_ALT:
-            altPressed = false;
+        case KeyEvent.VK_RIGHT:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x19);
+            else
+                dataReceived((char) 0x09);
             break;
-        case KeyEvent.VK_DEAD_CIRCUMFLEX:
-            dataReceived('^');
+        case KeyEvent.VK_DOWN:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x1A);
+            else
+                dataReceived((char) 0x0A);
             break;
-        case KeyEvent.VK_DEAD_TILDE:
-            dataReceived('~');
+        case KeyEvent.VK_UP:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x1C);
+            else
+                dataReceived((char) 0x0C);
             break;
-        case KeyEvent.VK_DEAD_GRAVE:
-            dataReceived('`');
-            break;
+        default:
+            LOGGER.debug("Undefined char received: {}", keyCode);
         }
     }
 
     @Override
-    public void keyPressed(KeyEvent evt) {
-        char keyChar = evt.getKeyChar();
-        int keyCode = evt.getKeyCode();
-        if (keyChar == KeyEvent.CHAR_UNDEFINED) {
-            switch (keyCode) {
-            case KeyEvent.VK_ALT:
-                altPressed = true;
-                break;
-            case KeyEvent.VK_SHIFT:
-                shiftPressed = true;
-                break;
-            case KeyEvent.VK_LEFT:
-                if (shiftPressed)
-                    dataReceived((char) 0x18);
-                else
-                    dataReceived((char) 0x08);
-                break;
-            case KeyEvent.VK_RIGHT:
-                if (shiftPressed)
-                    dataReceived((char) 0x19);
-                else
-                    dataReceived((char) 0x09);
-                break;
-            case KeyEvent.VK_DOWN:
-                if (shiftPressed)
-                    dataReceived((char) 0x1A);
-                else
-                    dataReceived((char) 0x0A);
-                break;
-            case KeyEvent.VK_UP:
-                if (shiftPressed)
-                    dataReceived((char) 0x1C);
-                else
-                    dataReceived((char) 0x0C);
-                break;
-            default:
-                LOGGER.debug("Undefined char received: {}", keyCode);
-            }
-        } else {
-            switch (keyChar) {
-            case '\n':
-                eolReceived();
-                break;
-            default:
-                LOGGER.debug("Typed: {}", keyCode);
-                if (!altPressed) 
-                    dataReceived(keyChar);
-            }
+    void receiveChar(char keyChar) {
+        switch (keyChar) {
+        case '\n':
+            eolReceived();
+            break;
+        default:
+            dataReceived(keyChar);
         }
     }
 }

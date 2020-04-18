@@ -13,9 +13,9 @@ import javax.swing.JPanel;
 
 import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
+import org.roug.terminal.AvailableEmulations;
 import org.roug.terminal.JTerminal;
-import org.roug.terminal.TerminalEmulation;
-import org.roug.terminal.GO80Emulation;
+import org.roug.terminal.EmulationCore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class Terminal2 extends JDialog {
     /**
      * Create Terminal
      */
-    public Terminal2(JFrame parent, Acia t2) throws Exception {
+    public Terminal2(JFrame parent, Acia t2, String terminalType) throws Exception {
         super(parent, "Terminal 2", false);
         setLayout(new BorderLayout());
 
@@ -44,7 +44,7 @@ public class Terminal2 extends JDialog {
         JButton button = new JButton("Close");
         button.addActionListener(new CloseAction());
         buttonPane.add(button);
-        TerminalEmulation emulation = new GO80Emulation();
+        EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
         screen = new JTerminal(t2, emulation);
 
         add(screen);

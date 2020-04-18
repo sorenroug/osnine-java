@@ -6,6 +6,8 @@ import org.roug.usim.OptionParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.roug.terminal.AvailableEmulations;
+
 /**
  * Generic emulator for OS-9. Parse arguments and launch GUI.
  */
@@ -19,12 +21,13 @@ public class OS9Emu {
     private static String[] defaultDisks = { "OS9.dsk" };
 
     private static boolean singleUser = false;
+    private static String terminalType = "go80";
 
     public static void main(String[] args) {
 
         try {
             parseArguments(args);
-            GUI app = new GUI(singleUser);
+            GUI app = new GUI(singleUser, terminalType);
             if (unusedArguments.length == 0) unusedArguments = defaultDisks;
             for (int i = 0; i < 4; i++) {
                 if (i < unusedArguments.length) {
@@ -52,11 +55,14 @@ public class OS9Emu {
      */
     private static void parseArguments(String[] args) {
 
-        OptionParser op = new OptionParser(args, "sm0:1:2:3:");
+        OptionParser op = new OptionParser(args, "mst:0:1:2:3:");
         singleUser = op.getOptionFlag("s");
         if (op.getOptionFlag("m")) {
             singleUser = false;
         }
+        String tt = op.getOptionArgument("t");
+        if (tt != null) terminalType = tt;
+
         for (int i = 0; i < 4; i++) {
             String a = op.getOptionArgument(Integer.toString(i));
             if (a != null) {

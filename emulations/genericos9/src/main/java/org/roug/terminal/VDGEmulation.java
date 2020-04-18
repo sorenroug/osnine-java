@@ -1,5 +1,6 @@
 package org.roug.terminal;
 
+import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -17,11 +18,11 @@ public class VDGEmulation extends EmulationCore {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(VDGEmulation.class);
 
-    public static int COLUMNS = 32;
-    public static int ROWS = 24;
+    private static final Color DEFAULT_BACKGROUND = new Color(0x08ff08);
+    private static final Color DEFAULT_FOREGROUND = new Color(0x004200);
 
-    private boolean shiftPressed;
-    private boolean altPressed;
+    private int COLUMNS = 32;
+    private int ROWS = 16;
 
     private State termState = State.NORMAL;
 
@@ -29,9 +30,26 @@ public class VDGEmulation extends EmulationCore {
     private int coordX;
 
     @Override
+    public void initialize() {
+        term.setBackground(DEFAULT_BACKGROUND);
+        term.setForeground(DEFAULT_FOREGROUND);
+        term.setBlockCursor();
+        term.setCursorBlink(false);
+    }
+
+
+    @Override
     public void resetState() {
-        shiftPressed = false;
-        altPressed = false;
+    }
+
+    @Override
+    public int getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    public int getRows() {
+        return ROWS;
     }
 
     @Override
@@ -40,77 +58,45 @@ public class VDGEmulation extends EmulationCore {
     }
 
     @Override
-    public void keyReleased(KeyEvent evt) {
+    void receiveKeyCode(KeyEvent evt) {
         int keyCode = evt.getKeyCode();
-        LOGGER.debug("Released: {}", keyCode);
         switch (keyCode) {
-        case KeyEvent.VK_SHIFT:
-            shiftPressed = false;
+        case KeyEvent.VK_LEFT:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x18);
+            else
+                dataReceived((char) 0x08);
             break;
-        case KeyEvent.VK_ALT:
-            altPressed = false;
+        case KeyEvent.VK_RIGHT:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x19);
+            else
+                dataReceived((char) 0x09);
             break;
-        case KeyEvent.VK_DEAD_CIRCUMFLEX:
-            dataReceived('^');
+        case KeyEvent.VK_DOWN:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x1A);
+            else
+                dataReceived((char) 0x0A);
             break;
-        case KeyEvent.VK_DEAD_TILDE:
-            dataReceived('~');
+        case KeyEvent.VK_UP:
+            if (evt.isShiftDown())
+                dataReceived((char) 0x1C);
+            else
+                dataReceived((char) 0x0C);
             break;
-        case KeyEvent.VK_DEAD_GRAVE:
-            dataReceived('`');
-            break;
+        default:
+            LOGGER.debug("Undefined char received: {}", keyCode);
         }
     }
 
-    @Override
-    public void keyPressed(KeyEvent evt) {
-        char keyChar = evt.getKeyChar();
-        int keyCode = evt.getKeyCode();
-        if (keyChar == KeyEvent.CHAR_UNDEFINED) {
-            switch (keyCode) {
-            case KeyEvent.VK_ALT:
-                altPressed = true;
-                break;
-            case KeyEvent.VK_SHIFT:
-                shiftPressed = true;
-                break;
-            case KeyEvent.VK_LEFT:
-                if (shiftPressed)
-                    dataReceived((char) 0x18);
-                else
-                    dataReceived((char) 0x08);
-                break;
-            case KeyEvent.VK_RIGHT:
-                if (shiftPressed)
-                    dataReceived((char) 0x19);
-                else
-                    dataReceived((char) 0x09);
-                break;
-            case KeyEvent.VK_DOWN:
-                if (shiftPressed)
-                    dataReceived((char) 0x1A);
-                else
-                    dataReceived((char) 0x0A);
-                break;
-            case KeyEvent.VK_UP:
-                if (shiftPressed)
-                    dataReceived((char) 0x1C);
-                else
-                    dataReceived((char) 0x0C);
-                break;
-            default:
-                LOGGER.debug("Undefined char received: {}", keyCode);
-            }
-        } else {
-            switch (keyChar) {
-            case '\n':
-                eolReceived();
-                break;
-            default:
-                LOGGER.debug("Typed: {}", keyCode);
-                if (!altPressed) 
-                    dataReceived(keyChar);
-            }
+    void receiveChar(char keyChar) {
+        switch (keyChar) {
+        case '\n':
+            eolReceived();
+            break;
+        default:
+            dataReceived(keyChar);
         }
     }
 
@@ -142,13 +128,13 @@ public class VDGEmulation extends EmulationCore {
 		    case 0x05:
                         return CURSOR_CMD;
 		    case 0x06:
-			h.cursorRight();
+			h.cursorRight(true);
 			return NORMAL;
                     case 0x07:
                         h.bell();
                         return NORMAL;
                     case 0x08:     // Backspace
-                        h.cursorLeft();
+                        h.cursorLeft(true);
                         return NORMAL;
 		    case 0x09:
 			h.cursorUp(true);

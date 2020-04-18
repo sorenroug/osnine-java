@@ -17,10 +17,14 @@ public interface TerminalEmulation extends KeyListener {
 
     public void resetState();
 
-    public Dimension getScreenSize();
-
+    /**
+     * Get number of columns the terminal has. Usually 80.
+     */
     public int getColumns();
 
+    /**
+     * Get number of line the terminal has. Usually 24.
+     */
     public int getRows();
 
     public void setUIDevice(JTerminal term);

@@ -28,9 +28,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.roug.terminal.GO80Emulation;
+import org.roug.terminal.AvailableEmulations;
 import org.roug.terminal.JTerminal;
-import org.roug.terminal.TerminalEmulation;
+import org.roug.terminal.EmulationCore;
 import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
 import org.roug.usim.Bus8Motorola;
@@ -85,7 +85,7 @@ public class GUI {
     /**
      * Create emulator application.
      */
-    public GUI(boolean singleUser) throws Exception {
+    public GUI(boolean singleUser, String terminalType) throws Exception {
         guiFrame = new JFrame("OS-9 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
@@ -109,7 +109,7 @@ public class GUI {
 
         term = new Acia6850(0xFFD4, bus);
         bus.insertMemorySegment(term);
-        TerminalEmulation emulation = new GO80Emulation();
+        EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
         screen1 = new JTerminal(term, emulation);
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
@@ -117,7 +117,7 @@ public class GUI {
         t1 = new Acia6850(0xFFD6, bus);
         bus.insertMemorySegment(t1);
 
-        t1Dialog = new Terminal2(guiFrame, t1);
+        t1Dialog = new Terminal2(guiFrame, t1, terminalType);
 
         printerDialog = new PrinterDialog(guiFrame);
 
