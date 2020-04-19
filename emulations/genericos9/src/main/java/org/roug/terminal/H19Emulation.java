@@ -148,7 +148,8 @@ public class H19Emulation extends EmulationCore {
                     case 127:
                         return NORMAL;
                     default:
-                        h.writeChar(val);
+                        if (val < 128)
+                            h.writeChar(val);
                         return NORMAL;
                     }
                 }

@@ -97,6 +97,10 @@ public abstract class EmulationCore extends KeyAdapter {
         term.cursorDown(scroll);
     }
 
+    protected void setCursorVisible(boolean visible) {
+        term.setCursorVisible(visible);
+    }
+
     protected void setAttribute(int attrCode, boolean flag) {
         term.setAttribute(attrCode, flag);
     }

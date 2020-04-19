@@ -1,6 +1,6 @@
 package org.roug.terminal;
 
-class EmulationList {
+public class EmulationList {
 
     Class clazz;
     String name;
@@ -12,4 +12,11 @@ class EmulationList {
         description = d;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

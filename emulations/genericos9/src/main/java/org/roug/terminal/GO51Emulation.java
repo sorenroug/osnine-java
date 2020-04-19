@@ -1,7 +1,6 @@
 package org.roug.terminal;
 
 import java.awt.Color;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import org.slf4j.Logger;
@@ -138,7 +137,8 @@ public class GO51Emulation extends EmulationCore {
                     case 127:
                         return NORMAL;
                     default:
-                        h.writeChar(val);
+                        if (val < 128)
+                            h.writeChar(val);
                         return NORMAL;
                     }
                 }

@@ -18,8 +18,8 @@ public class AvailableEmulations {
         new EmulationList(TVI912Emulation.class,"tvi912",  "Televideo TVI 912 (80x24)")
     };
 
-    public String list() throws Exception {
-        return emulations[1].name;
+    public static EmulationList[] getAvailable() {
+        return emulations;
     }
 
     public static EmulationCore createEmulation(String token)

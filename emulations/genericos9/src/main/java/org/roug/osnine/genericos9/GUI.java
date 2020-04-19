@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.help.CSH;
@@ -76,16 +77,28 @@ public class GUI {
 
     private int loadStart = 0;
 
-    /** Content of clipboard to be sent into the emulator as key events. */
-    private String pasteBuffer;
-    private int pasteIndex;
+    //private final JFileChooser fc = new JFileChooser(new File("."));
 
-    private final JFileChooser fc = new JFileChooser(new File("."));
-
+    private Properties configMap = new Properties();
     /**
      * Create emulator application.
      */
-    public GUI(boolean singleUser, String terminalType) throws Exception {
+    public GUI(Properties config) throws Exception {
+        configMap = config;
+        String bootMode = configMap.getProperty("bootmode", "multiuser");
+        String terminalType = configMap.getProperty("term.type");
+        String fontSizeStr = configMap.getProperty("term.fontsize");
+        int fontSize;
+        try {
+            fontSize = Integer.parseInt(fontSizeStr);
+        } catch (NumberFormatException e) {
+            fontSize = 12;
+        }
+
+        boolean singleUser = false;
+        if ("singleuser".equals(configMap.getProperty("bootmode", "multiuser"))) {
+            singleUser = true;
+        }
         guiFrame = new JFrame("OS-9 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
@@ -111,6 +124,7 @@ public class GUI {
         bus.insertMemorySegment(term);
         EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
         screen1 = new JTerminal(term, emulation);
+        screen1.setFontSize(fontSize);
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
@@ -164,7 +178,6 @@ public class GUI {
             @Override
             public void windowGainedFocus(WindowEvent e) {
                 screen1.requestFocusInWindow();
-                screen1.resetState();
             }
         });
 
@@ -334,38 +347,6 @@ public class GUI {
         guiMenuBar.add(guiMenu);
     }
 
-    /**
-     * Interrupts the CPU 50 times a second.
-     * If the user has clicked 'Paste text' then sends the text one character
-     * at a time to the keyboard input routine.
-     */
-    private class ClockTask extends TimerTask {
-        private static final int PASTE_INTERVAL = 4;
-        private static final int PASTE_RELEASE = PASTE_INTERVAL / 2;
-        private int beats = 0;
-
-        private boolean pasting;
-
-        public void run() {
-            if ((beats % PASTE_INTERVAL) == 0 && pasteBuffer != null) {
-                int code = pasteBuffer.charAt(pasteIndex);
-                pasting = true;
-                LOGGER.debug("Paste {}", code);
-            }
-            if ((beats % PASTE_INTERVAL) == PASTE_RELEASE && pasting) {
-                int code = pasteBuffer.charAt(pasteIndex);
-                pasting = false;
-                pasteIndex++;
-                if (pasteIndex >= pasteBuffer.length()) {
-                    pasteBuffer = null;
-                    pasteIndex = 0;
-                }
-            }
-
-            beats++;
-        }
-    }
-
     private static class QuitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -378,7 +359,7 @@ public class GUI {
         public void actionPerformed(ActionEvent e) {
             Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
             try {
-                pasteBuffer = (String) c.getContents(null)
+                String pasteBuffer = (String) c.getContents(null)
                                 .getTransferData(DataFlavor.stringFlavor);
                 LOGGER.debug("To paste:{}", pasteBuffer);
                 for (char ch : pasteBuffer.toCharArray()) {
@@ -445,6 +426,7 @@ public class GUI {
             int fs = screen1.getFontSize();
             if (fs <= 30) fs += 2;
             screen1.setFontSize(fs);
+            configMap.setProperty("term.fontsize", Integer.toString(fs));
             guiFrame.pack();
         }
     }

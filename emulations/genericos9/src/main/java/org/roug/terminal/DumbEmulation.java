@@ -1,6 +1,6 @@
 package org.roug.terminal;
 
-import java.awt.event.KeyAdapter;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import org.slf4j.Logger;
@@ -19,7 +19,10 @@ public class DumbEmulation extends EmulationCore {
     private int ROWS = 66;
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        term.setBackground(Color.WHITE);
+        term.setForeground(Color.BLACK);
+    }
 
     @Override
     public void resetState() {
@@ -60,8 +63,8 @@ public class DumbEmulation extends EmulationCore {
             carriageReturn();
             break;
         default:
-            LOGGER.debug("Char: {}", c);
-            writeChar(c);
+            if (c >= 32 && c < 128)
+                writeChar(c);
         }
     }
  
@@ -95,7 +98,7 @@ public class DumbEmulation extends EmulationCore {
                 dataReceived((char) 0x0C);
             break;
         default:
-            LOGGER.debug("Undefined char received: {}", keyCode);
+            LOGGER.debug("Unhandled char received: {}", keyCode);
         }
     }
 

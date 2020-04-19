@@ -21,14 +21,38 @@ public class VDGEmulation extends EmulationCore {
     private static final Color DEFAULT_BACKGROUND = new Color(0x08ff08);
     private static final Color DEFAULT_FOREGROUND = new Color(0x004200);
 
-    private int COLUMNS = 32;
-    private int ROWS = 16;
+    private final int COLUMNS = 32;
+    private final int ROWS = 16;
+
+    private boolean reverseState = false;
 
     private State termState = State.NORMAL;
 
     /** For Cursor escape sequence */
     private int coordX;
 
+    private static char[] blockSymbols = {
+      '\u2588', '\u259B', '\u259C', '\u2580',
+      '\u2599', '\u258C', '\u259A', '\u2598',
+      '\u259F', '\u259E', '\u2590', '\u259D',
+      '\u2584', '\u2596', '\u2597', ' '
+    };
+
+    private void sendNormal(int val) {
+        if (reverseState) {
+            reverseState = false;
+            setAttribute(JTerminal.REVERSE, false);
+        }
+        writeChar(val);
+    }
+
+    private void sendReversed(int val) {
+        if (!reverseState) {
+            reverseState = true;
+            setAttribute(JTerminal.REVERSE, true);
+        }
+        writeChar(val);
+    }
     @Override
     public void initialize() {
         term.setBackground(DEFAULT_BACKGROUND);
@@ -90,6 +114,7 @@ public class VDGEmulation extends EmulationCore {
         }
     }
 
+    @Override
     void receiveChar(char keyChar) {
         switch (keyChar) {
         case '\n':
@@ -102,6 +127,7 @@ public class VDGEmulation extends EmulationCore {
 
     /**
      * State engine to handle Coco screen command codes.
+     * There are a few that only exist in Level II.
      */ 
     private enum State {
 
@@ -122,7 +148,7 @@ public class VDGEmulation extends EmulationCore {
                         h.carriageReturn();
 			h.clearToEOL();
                         return NORMAL;
-		    case 0x04:  // Erases from the current character to the end of the line.
+		    case 0x04:  // Erases to the end of the line.
 			h.clearToEOL();
 			return NORMAL;
 		    case 0x05:
@@ -151,10 +177,34 @@ public class VDGEmulation extends EmulationCore {
                     case 0x0D:
                         h.carriageReturn();
                         return NORMAL;
-                    case 127:
+                    case '`':
+                        h.sendReversed('@');
+                        return NORMAL;
+                    case '{':
+                        h.sendReversed('[');
+                        return NORMAL;
+                    case '|':
+                        h.sendReversed('!');
+                        return NORMAL;
+                    case '}':
+                        h.sendReversed(']');
+                        return NORMAL;
+                    case '~':
+                        h.sendReversed('-');
+                        return NORMAL;
+                    case 127:  // DELETE shows as inverted left arrow
+                        h.sendReversed('_');
                         return NORMAL;
                     default:
-                        h.writeChar(val);
+                        if (val >= 128) {
+                            h.sendNormal(blockSymbols[val % 16]);
+                        } else {
+                            if (Character.isLowerCase(val)) {
+                                h.sendReversed(Character.toUpperCase(val));
+                            } else {
+                                h.sendNormal(val);
+                            }
+                        }
                         return NORMAL;
                     }
                 }
@@ -164,12 +214,20 @@ public class VDGEmulation extends EmulationCore {
 	/*
 	 * 05 20 Turns off the cursor.
          * 05 21 Turns on the cursor.
-         * FIXME: Don't ignore
          */
         CURSOR_CMD {
             @Override
             State sendToUI(int val, VDGEmulation h) {
-                return NORMAL;
+                switch (val) {
+                case 0x20:
+                    h.setCursorVisible(false);
+                    return NORMAL;
+                case 0x21:
+                    h.setCursorVisible(true);
+                    return NORMAL;
+                default:
+                    return NORMAL;
+                }
             }
         },
         EXPECTX {
