@@ -49,7 +49,7 @@ public class Acia6850 extends MemorySegment implements Acia {
     boolean transmitIrqEnabled = false;
 
     private int transmitData, receiveData;
-    private int statusRegister;
+    private volatile int statusRegister;
 
     private String eolSequence = "\015";
 
