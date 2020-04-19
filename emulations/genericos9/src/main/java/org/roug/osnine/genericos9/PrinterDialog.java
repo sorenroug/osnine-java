@@ -36,7 +36,7 @@ public class PrinterDialog implements UIDevice {
     private StringBuilder textBuffer = new StringBuilder(80);
 
     public PrinterDialog(JFrame parent) {
-        printerDialog = new JDialog(parent, "Printer", false);
+        printerDialog = new JDialog((JDialog) null, "Printer /P", false);
         printerDialog.setLayout(new BorderLayout());
 
         JPanel buttonPane = new JPanel();

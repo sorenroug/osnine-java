@@ -33,7 +33,7 @@ public class Terminal2 extends JDialog {
      * Create Terminal
      */
     public Terminal2(JFrame parent, Acia t2, String terminalType) throws Exception {
-        super(parent, "Terminal 2", false);
+        super((JDialog) null, "Terminal 2", false);
         setLayout(new BorderLayout());
 
         JPanel buttonPane = new JPanel();
@@ -53,7 +53,6 @@ public class Terminal2 extends JDialog {
             @Override
             public void windowGainedFocus(WindowEvent e) {
                 screen.requestFocusInWindow();
-                screen.resetState();
             }
         });
 

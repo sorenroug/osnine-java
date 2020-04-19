@@ -92,7 +92,7 @@ public class GUI {
         try {
             fontSize = Integer.parseInt(fontSizeStr);
         } catch (NumberFormatException e) {
-            fontSize = 12;
+            fontSize = 16;
         }
 
         boolean singleUser = false;
@@ -287,8 +287,14 @@ public class GUI {
     private void addEditMenu(JMenuBar guiMenuBar) {
         JMenu guiMenu = new JMenu("Edit");
 
-        JMenuItem menuItem = new JMenuItem("Paste text");
-        menuItem.addActionListener(new PasteAction());
+        JMenuItem menuItem;
+
+        menuItem = new JMenuItem("Paste clipboard");
+        menuItem.addActionListener(new PasteAction(null));
+        guiMenu.add(menuItem);
+
+        menuItem = new JMenuItem("Paste disk change");
+        menuItem.addActionListener(new PasteAction("chd /d0 chx /d0/cmds\n"));
         guiMenu.add(menuItem);
 
         guiMenuBar.add(guiMenu);
@@ -355,12 +361,25 @@ public class GUI {
     }
 
     private class PasteAction implements ActionListener {
+
+        private String cannedText = null;
+
+        public PasteAction(String str) {
+            super();
+            cannedText = str;
+        }
+
         @Override
         public void actionPerformed(ActionEvent e) {
             Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+            String pasteBuffer;
             try {
-                String pasteBuffer = (String) c.getContents(null)
-                                .getTransferData(DataFlavor.stringFlavor);
+                if (cannedText == null) {
+                    pasteBuffer = (String) c.getContents(null)
+                                    .getTransferData(DataFlavor.stringFlavor);
+                } else {
+                    pasteBuffer = cannedText;
+                }
                 LOGGER.debug("To paste:{}", pasteBuffer);
                 for (char ch : pasteBuffer.toCharArray()) {
                     if (ch == '\n')

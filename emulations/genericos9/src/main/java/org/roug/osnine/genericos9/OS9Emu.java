@@ -80,7 +80,7 @@ public class OS9Emu {
         configMap.setProperty("t1.type", terminalType);
 
         String fontSize = op.getOptionArgument("f");
-        if (fontSize == null) fontSize = "12";
+        if (fontSize == null) fontSize = "16";
         configMap.setProperty("term.fontsize", fontSize);
         configMap.setProperty("t1.fontsize", fontSize);
 

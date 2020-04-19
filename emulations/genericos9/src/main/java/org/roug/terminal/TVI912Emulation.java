@@ -51,6 +51,17 @@ public class TVI912Emulation extends EmulationCore {
         case KeyEvent.VK_DELETE:
             dataReceived((char) 0x7F);
             break;
+        case KeyEvent.VK_LEFT:
+            dataReceived((char) 0x08);
+            break;
+        case KeyEvent.VK_TAB:
+            if (evt.isShiftDown()) {
+                dataReceived((char) 0x1B);
+                dataReceived('I');
+            } else {
+                dataReceived((char) 0x09);
+            }
+            break;
         case KeyEvent.VK_DOWN:
             dataReceived((char) 0x0A);
             dataReceived('B');
@@ -62,9 +73,6 @@ public class TVI912Emulation extends EmulationCore {
         case KeyEvent.VK_RIGHT:
             dataReceived((char) 0x0C);
             dataReceived('C');
-            break;
-        case KeyEvent.VK_LEFT:
-            dataReceived((char) 0x08);
             break;
         case KeyEvent.VK_HOME:
             dataReceived((char) 0x1E);

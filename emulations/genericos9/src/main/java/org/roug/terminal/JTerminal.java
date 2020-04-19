@@ -116,6 +116,8 @@ public class JTerminal extends JPanel implements UIDevice {
      * @param fs - font size.
      */
     public void setFontSize(int fs) {
+        if (currentFontSize == fs)
+            return;
         currentFontSize = fs;
         font = new Font(Font.MONOSPACED, Font.BOLD, currentFontSize);
         FontMetrics fm = getFontMetrics(font);
