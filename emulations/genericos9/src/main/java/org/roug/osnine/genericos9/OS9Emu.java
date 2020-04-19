@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.roug.terminal.AvailableEmulations;
-import org.roug.terminal.EmulationList;
+import org.roug.terminal.EmulationRec;
 
 /**
  * Generic emulator for OS-9. Parse arguments and launch GUI.
@@ -94,15 +94,15 @@ public class OS9Emu {
     }
 
     private static void validateTermType() {
-        EmulationList[] emulations = AvailableEmulations.getAvailable();
+        EmulationRec[] emulations = AvailableEmulations.getAvailable();
 
-        for (EmulationList em : emulations) {
+        for (EmulationRec em : emulations) {
             if (terminalType.equals(em.getName())) {
                 return;
             }
         }
         System.err.println("Unrecognized terminal type. Available:");
-        for (EmulationList em : emulations) {
+        for (EmulationRec em : emulations) {
             System.err.printf("%10s - %s\n", em.getName(), em.getDescription());
         }
         System.exit(0);

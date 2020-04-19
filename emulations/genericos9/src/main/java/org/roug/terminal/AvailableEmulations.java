@@ -9,16 +9,16 @@ import java.lang.reflect.Field;
 
 public class AvailableEmulations {
 
-    private static EmulationList[] emulations = {
-        new EmulationList(DumbEmulation.class, "teletype", "Teletype printer (80x66)"),
-        new EmulationList(GO51Emulation.class, "go51",     "Coco/Dragon GO51 (51x24)"),
-        new EmulationList(GO80Emulation.class, "go80",     "DragonPlus Board (80x24)"),
-        new EmulationList(H19Emulation.class,  "h19",      "Heath H-19/Zenith Z-19"),
-        new EmulationList(VDGEmulation.class,  "vdg",      "Coco/Dragon VDG (32x16)"),
-        new EmulationList(TVI912Emulation.class,"tvi912",  "Televideo TVI 912 (80x24)")
+    private static EmulationRec[] emulations = {
+        new EmulationRec(DumbEmulation.class, "teletype", "Teletype printer (80x66)"),
+        new EmulationRec(GO51Emulation.class, "go51",     "Coco/Dragon GO51 (51x24)"),
+        new EmulationRec(GO80Emulation.class, "go80",     "DragonPlus Board (80x24)"),
+        new EmulationRec(H19Emulation.class,  "h19",      "Heath H-19/Zenith Z-19"),
+        new EmulationRec(VDGEmulation.class,  "vdg",      "Coco/Dragon VDG (32x16)"),
+        new EmulationRec(TVI912Emulation.class,"tvi912",  "Televideo TVI 912 (80x24)")
     };
 
-    public static EmulationList[] getAvailable() {
+    public static EmulationRec[] getAvailable() {
         return emulations;
     }
 

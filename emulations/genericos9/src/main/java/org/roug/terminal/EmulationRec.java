@@ -1,12 +1,12 @@
 package org.roug.terminal;
 
-public class EmulationList {
+public class EmulationRec {
 
     Class clazz;
     String name;
     String description;
 
-    EmulationList(Class c, String n, String d) {
+    EmulationRec(Class c, String n, String d) {
         clazz = c;
         name = n;
         description = d;
