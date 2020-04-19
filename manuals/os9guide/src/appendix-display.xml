@@ -458,9 +458,9 @@ GET DISPLAY STATUS:
 <tbody>
 <row>
 <entry>Calling Format</entry>
-<entry><literallayout class="monospaced">lda #1        (path number)
-ldb #SS.DStat (Getstat code $12)
-os9 I$GSTT     call OS-9</literallayout></entry>
+<entry><literallayout class="monospaced">lda #1        <lineannotation>(path number)</lineannotation>
+ldb #SS.DStat <lineannotation>(Getstat code $12)</lineannotation>
+os9 I$GSTT     <lineannotation>call OS-9</lineannotation></literallayout></entry>
 </row>
 <row>
 <entry>Passed</entry>
@@ -486,9 +486,9 @@ GET JOYSTICK VALUES:
 <tbody>
 <row>
 <entry>Calling Format</entry>
-<entry><literallayout class="monospaced">lda #1        (path number)
-ldb #SS.Joy   (Getstat code $13)
-os9 I$GSTT     call OS-9</literallayout></entry>
+<entry><literallayout class="monospaced">lda #1        <lineannotation>(path number)</lineannotation>
+ldb #SS.Joy   <lineannotation>(Getstat code $13)</lineannotation>
+os9 I$GSTT     <lineannotation>call OS-9</lineannotation></literallayout></entry>
 </row>
 <row>
 <entry>Passed</entry>
@@ -514,9 +514,9 @@ RETURN ALFA DISPLAY STATUS:
 <tbody>
 <row>
 <entry>Calling Format</entry>
-<entry><literallayout class="monospaced">lda #1        (path number)
-ldb #SS.AlfaS (Getstat code $1C)
-os9 I$GSTT     call OS-9</literallayout></entry>
+<entry><literallayout class="monospaced">lda #1        <lineannotation>(path number)</lineannotation>
+ldb #SS.AlfaS <lineannotation>(Getstat code $1C)</lineannotation>
+os9 I$GSTT     <lineannotation>call OS-9</lineannotation></literallayout></entry>
 </row>
 <row>
 <entry>Passed</entry>
@@ -645,15 +645,18 @@ A = FF if shift lock is engaged, 0 otherwise</literallayout></entry>
 <row>
 <entry>18</entry>
 <entry></entry>
+<entry></entry>
 <entry>Quit Graphics Mode</entry>
 </row>
 <row>
 <entry>19</entry>
 <entry></entry>
+<entry></entry>
 <entry>Erase Screen</entry>
 </row>
 <row>
 <entry>20</entry>
+<entry></entry>
 <entry></entry>
 <entry>Home Graphics Cursor</entry>
 </row>
