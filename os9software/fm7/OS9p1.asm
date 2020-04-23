@@ -4,25 +4,69 @@
 
  use defsfile
 
+ ttl Names & tables
+ opt -c
+ page
+
+************************************************************
+*                                                          *
+*           OS-9 Level I V1.2 - Kernal, part 1             *
+*                                                          *
+************************************************************
+
+* Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
+* Reproduced Under License
+
+*
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than 
+* the licensee is strictly prohibited!!
+*
+
+*****
+*
+*  Module Header
+*
 Type set SYSTM+OBJCT
 Revs set REENT+1
  mod OS9End,OS9Nam,Type,Revs,COLD,0
 
 OS9Nam fcs /OS9p1/
      fcb   13
+*************************
+*    Edition History
+*
+* Ed.  8 - Beginning of history  (V1.1 final version)
+*
+* Ed.  9 - First V1.2 version minor cosmetic changes
+*          Ed byte immediately following module name
+*          Version ID all same length                  WGP  11/25/82
+*
+* Ed. 10 - SetSVC now checks service no. for validity
+*          SetPRC checks for zero data area size       WGP  12/20/82
+*
+* Ed. 11 - Parse name system call made compatible w/LII
+*                                                      ???  ??/??/82
+*
+* Ed. 12 - CNAM change made at RETCS1 to save one byte of code
+*          S09 cpu datinit changed to save one byte of code
+*          These were to allow S09 version to fit in $800
+*                                                      WGP  01/10/83
 
+*********
+* Version Id
+*
+ fcc "FM7"
 RamLimit set $EC00
-
-         fcc "FM7"
 
 CNFSTR fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
 
 
-L001F    fcb   $FD
-         fcb   $02
-         fcb   $20
-         fcb   $31
+IORESET fdb $FD02
+ fdb $2031
 
 *****
 *
@@ -31,53 +75,42 @@ L001F    fcb   $FD
 SVCTBL equ *
  fcb F$LINK
  fdb LINK-*-2
-         fcb   $03
-         fcb   $04
-         fcb   $54 T
-         fcb   $05
-         fcb   $04
-         fcb   $B8 8
-         fcb   $85
-         fcb   $04
-         fcb   $C7 G
-         fcb   $10
-         fcb   $06
-         fcb   $DB [
-         fcb   $11
-         fcb   $07
-         fcb   $3E >
-         fcb   $12
-         fcb   $06
-         fcb   $74 t
-         fcb   $13
-         fcb   $05
-         fcb   $E7 g
-         fcb   $14
-         fcb   $06
-         fcb   $37 7
-         fcb   $17
-         fcb   $03
-         fcb   $85
-         fcb   $A8 (
-         fcb   $05
-         fcb   $73 s
-         fcb   $A9 )
-         fcb   $05
-         fcb   $C0 @
-         fcb   $AC ,
-         fcb   $01
-         fcb   $A3 #
-         fcb   $AD -
-         fcb   $02
-         fcb   $42 B
-         fcb   $AE .
-         fcb   $02
-         fcb   $C4 D
-         fcb   $32 2
-         fcb   $07
-         fcb   $46 F
-         fcb   $80
+ fcb F$FORK
+ fdb FORK-*-2
+ fcb F$Chain
+ fdb USRCHN-*-2
+ fcb F$Chain+$80
+ fdb SYSCHN-*-2
+ fcb F$PrsNam
+ fdb PNAM-*-2
+ fcb F$CmpNam
+ fdb CNAM-*-2
+ fcb F$SchBit
+ fdb SBIT-*-2
+ fcb F$AllBit
+ fdb ABIT-*-2
+ fcb F$DelBit
+ fdb DBIT-*-2
+ fcb F$CRC
+ fdb CRCGen-*-2
+ fcb F$SRqMem+$80
+ fdb SRQMEM-*-2
+ fcb F$SRtMem+$80
+ fdb SRTMEM-*-2
+ fcb F$AProc+$80
+ fdb APRC-*-2
+ fcb F$NProc+$80
+ fdb NXTPRC-*-2
+ fcb F$VModul+$80
+ fdb VMOD-*-2
+ fcb F$SSVC
+ fdb SSVC-*-2
+ fcb $80
 
+
+
+ ttl COLD Start
+ page
 *
 * Clear System Memory, Skipping First 32 Bytes
 *
@@ -107,37 +140,40 @@ COLD05 std ,X++ Clear two bytes
 *
 * Find End Of Ram
 *
-COLD10    leay  ,x
-         ldd   ,y
-         ldx   #$00FF
-         stx   ,y
-         cmpx  ,y
-         bne   COLD15
-         ldx   #$FF00
-         stx   ,y
-         cmpx  ,y
-         bne   COLD15
-         std   ,y
-         leax  >$0100,y
-         cmpx  #$EC00
-         bcs   COLD10
-         leay  ,x
-COLD15    leax  ,y
-         stx   D.MLIM
-COLD20    lbsr  VALMOD
-         bcs   COLD30
-         ldd   $02,x
-         leax  d,x
-         bra   L00B4
-COLD30    cmpb  #$E7
-         beq   COLD40
-         leax  $01,x
-L00B4    cmpx  #$FC00      FM7 **********
+COLD10 leay 0,X Copy current ptr
+ ldd 0,Y Get current value
+ ldx #$00FF Get bit pattern
+ stx 0,Y Store it
+ cmpx 0,Y Is it there?
+ bne COLD15 If not, end of ram
+ ldx #$FF00 Try a different pattern
+ stx 0,Y Store it
+ cmpx 0,Y Did it take?
+ bne COLD15 If not, eor
+ std 0,Y Replace current value
+ leax 256,Y Try next page
+ cmpx #RamLimit
+ bcs COLD10 Branch if more
+ leay 0,X Copy end-of-ram ptr
+COLD15 leax 0,Y Copy eor ptr
+ stx D.MLIM Set memory limit
+*
+* Search Memory For Modules, Build Module Directory
+*
+COLD20 lbsr VALMOD Look for valid module
+ bcs COLD30 Branch if bad module
+ ldd M$SIZE,X Get module size
+ leax D,X Skip module
+ bra COLD35
+COLD30 cmpb #E$KwnMod Is it known module
+ beq COLD40 Branch on first duplicate
+ leax 1,X Try next location
+COLD35    cmpx  #$FC00      FM7 **********
          bcs   COLD20
-COLD40    leay  >SYSVEC,pcr
-         leax  >ROMEnd,pcr
-         pshs  x
-         ldx   #$002C
+COLD40 leay SYSVEC,PCR Get interrupt entries
+ leax ROMEnd,PCR get vector offset
+ pshs X save it
+ ldx #D.SWI3 Get vector address
 COLD45 ldd ,Y++ get vector
  addd 0,S add offset
  std ,X++ init dp vector
@@ -166,22 +202,22 @@ COLD45 ldd ,Y++ get vector
  OS9 F$LINK Link to configuration module
  lbcs COLD Retry if error
  stu D.Init Save ptr
-         ldd   $0A,u
-         clrb
-         cmpd  D.MLIM
-         bcc   L0115
-         std   D.MLIM
-L0115    ldx   D.FMBM
-         ldb   #$F0
-         stb   ,x
-         clra
-         ldb   D.MLIM
-         negb
-         tfr   d,y
-         negb
-         lbsr  ALOCAT
-         leax  >OS9STR,pcr
-         lda   #$C1
+ ldd MAXMEM+1,U Get memory limit
+ clrb ROUND Down
+ cmpd D.MLIM Does ram go that high?
+ bcc COLD50 Branch if not
+ std D.MLIM Set given memory limit
+COLD50 ldx D.FMBM Get bit map ptr
+ ldb #RAMMSK Get initial mask
+ stb 0,X
+ clra GET Beginning page number
+ ldb D.MLIM
+ negb GET Page count
+ tfr D,Y
+ negb GET Page number
+ lbsr ALOCAT
+ leax OS9STR,PCR
+ lda #SYSTM+OBJCT Get object type
  OS9 F$LINK
  lbcs COLD
  jmp 0,Y Let os9 part two finish
@@ -200,10 +236,34 @@ SWI3RQ jmp [D.SWI3] Go thru page zero vector
 *
 *  Swi2 Interrupt Routine
 *
-         jmp   [>$002E]
-         jmp   [>$0030]
-         jmp   [>$0032]
-         jmp   [>$0034]
+SWI2RQ jmp [D.SWI2] Go thru page zero vector
+
+
+
+*****
+*
+*  Firq Interrupt Handler
+*
+FIRQ jmp [D.FIRQ] Go thru page zero vector
+
+
+
+*****
+*
+*  Irq Interrupt Routine
+*
+IRQ jmp [D.IRQ] Go thru page zero vector
+
+
+
+*****
+*
+*  Swi Interrupt Routine
+*
+SWIRQ jmp [D.SWI] Go thru page zero vector
+
+
+
 *****
 *
 *  Nmi Interrupt Routine
@@ -215,12 +275,18 @@ NMI jmp [D.NMI] Go thru page zero vector
 *  Swi3 Handler
 *
 SWI3HN pshs B,X,PC Save registers
-         ldb   #$18
-         bra   SWIH10
+ ldb #P$SWI3 Use swi3 vector
+ bra SWIH10
 
-         pshs  pc,x,b
-         ldb   #$16
-         bra   SWIH10
+
+
+*****
+*
+*  Swi2 Handler
+*
+SWI2HN pshs B,X,PC Save registers
+ ldb #P$SWI2 Use swi2 vector
+ bra SWIH10
 
 
 
@@ -241,11 +307,11 @@ IRQHN jmp [D.SvcIRQ] Go to interrupt service
 *  Swi Handler
 *
 SWIHN pshs B,X,PC Save registers
-         ldb   #$14
-SWIH10    ldx   >$004B
-         ldx   b,x
-         stx   $03,s
-         puls  pc,x,b
+ ldb #P$SWI Use swi vector
+SWIH10 ldx >D.PROC Get process descriptor ptr
+ ldx B,X Get entry point address
+ stx 3,S Save it
+ puls B,X,PC Restore registers & jump
 
 
 
@@ -276,21 +342,29 @@ SWITCH clra SET Direct page
  ora #SysState
  sta P$State,X
  jmp 0,Y Go to post-switch routine
-USRI10    jsr   [>D.Poll]
-         bcc   L0192
-         ldb   ,s
-         orb   #$10
-         stb   ,s
-L0192    lbra  USRRET
+USRI10 jsr [D.POLL] Call irq polling routine
+ bcc USRI20 branch if interrupt identified
+ ldb R$CC,S get condition codes
+ orb #IRQMask set interrupt mask
+ stb R$CC,S update condition codes
+USRI20 lbra USRRET
 
-SYSIRQ    clra
-         tfr   a,dp
-         jsr   [>D.Poll]
-         bcc   L01A4
-         ldb   ,s
-         orb   #$10
-         stb   ,s
-L01A4    rti
+
+
+*****
+*
+*  Interrupt Routine Sysirq
+*
+* Handles Irq While In System State
+*
+SYSIRQ clra clear direct page
+ tfr A,DP
+ jsr [D.POLL] Call irq polling
+ bcc SYSI10 branch if interrupt identified
+ ldb R$CC,S get condition codes
+ orb #IRQMask set interrupt mask
+ stb R$CC,S update condition codes
+SYSI10 rti
 
 
 
@@ -310,23 +384,23 @@ IOPOLL comb set carry
 TICK ldx D.SProcQ Get sleeping queue ptr
  beq SLICE Branch if none
  lda P$State,X Get process status
-         bita  #$40
-         beq   SLICE
-         ldu   $04,x
-         ldd   $04,u
-         subd  #$0001
-         std   $04,u
-         bne   SLICE
-L01BC    ldu   $0E,x
-         bsr   L01EF
-         leax  ,u
-         beq   TICK20
-         lda   $0D,x
-         bita  #$40
-         beq   TICK20
-         ldu   $04,x
-         ldd   $04,u
-         beq   L01BC
+ bita #TimSleep Is it in timed sleep?
+ beq SLICE Branch if not
+ ldu P$SP,X Get stack ptr
+ ldd R$X,U Get tick count
+ subd #1 Count down
+ std R$X,U Update tick count
+ bne SLICE Branch if ticks left
+TICK10 ldu P$Queue,X Get next process ptr
+ bsr ACTPRC Activate process
+ leax 0,U Copy process ptr
+ beq TICK20 Branch if end of queue
+ lda P$State,X Get process status
+ bita #TimSleep In timed sleep?
+ beq TICK20 Branch if not
+ ldu P$SP,X Get stack ptr
+ ldd R$X,U Get tick count
+ beq TICK10 Branch if time
 TICK20 stx D.SProcQ Update sleep queue ptr
 *
 * Update Time Slice counter
@@ -335,105 +409,158 @@ SLICE dec D.Slice Count tick
  bne SLIC10 Branch if slice not over
  lda D.TSlice Get ticks/time-slice
  sta D.Slice Reset slice tick count
-         ldx   D.Proc
-         beq   SLIC10
-         lda   $0D,x
-         ora   #$20
-         sta   $0D,x
-         bpl   SLIC20
-SLIC10    rti
-
-SLIC20    leay  >USRRET,pcr
-         bra   SWITCH
-
-APRC     ldx   $04,u
-L01EF    pshs  u,y
-         ldu   #$003F
-         bra   L01FD
-L01F6    ldb   $0C,u
-         incb
-         beq   L01FD
-         stb   $0C,u
-L01FD    ldu   $0E,u
-         bne   L01F6
-         ldu   #$003F
-         lda   $0B,x
-         sta   $0C,x
-         orcc  #$50
-L020A    leay  ,u
-         ldu   $0E,u
-         beq   L0214
-         cmpa  $0C,u
-         bls   L020A
-L0214    stu   $0E,x
-         stx   $0E,y
-         clrb
-         puls  pc,u,y
-
-USRREQ    leay  <USRR10,pcr
-         orcc  #$50
-         lbra  SWITCH
+*
+* If Process not in System State, Give up Time-Slice
+*
+ ldx D.PROC Get current process ptr
+ beq SLIC10 Branch if none
+ lda P$State,X Get status
+ ora #TIMOUT Set time-out flag
+ sta P$State,X Update process status
+ bpl SLIC20 Branch if user state
+SLIC10 rti
+SLIC20 leay USRRET,PCR Set transfer ptr
+ bra SWITCH Switch to system state
+ page
+*****
+*
+*  Subroutine Actprc
+*
+* Put Process In Active Process Queue
+*
+APRC ldx R$X,U
+ACTPRC pshs Y,U Save registers
+*
+* Age Active Processes
+*
+ ldu #D.AProcQ-P$Queue Fake process ptr
+ bra ACTP20
+ACTP10 ldb P$AGE,U Get age
+ incb
+ beq ACTP20 Branch if highest
+ stb P$AGE,U
+ACTP20 ldu P$Queue,U Get next process
+ bne ACTP10 Branch if more
+*
+* Sort New Process Into Queue
+*
+ ldu #D.AProcQ-P$Queue Fake process ptr
+ lda P$Prior,X Get process priority/age
+ sta P$AGE,X Set age to priority
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ACTP30 leay 0,U Copy ptr to this process
+ ldu P$Queue,U Get ptr to next process
+ beq ACTP40 Branch if no more
+ cmpa P$AGE,U Who has bigger priority?
+ bls ACTP30 Branch if queue process
+ACTP40 stu P$Queue,X Insert into list
+ stx P$Queue,Y
+ clrb CLEAR Carry
+ puls Y,U,PC
+ page
+*****
+*
+*  Subroutine Usrreq
+*
+* User Service Request Handling Routine
+*
+USRREQ leay <USRR10,PCR Get post-switch routine
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ lbra SWITCH Switch to system state
 USRR10 andcc #$FF-IRQMask-FIRQMask Clear interrupt masks
  ldy D.UsrDis Get user service routine table
-         bsr   L024D
-USRRET    ldx   D.Proc
-         beq   NXTPRC
-         orcc  #$50
-         ldb   $0D,x
-         andb  #$7F
-         stb   $0D,x
-         bitb  #$20
-         beq   L02A6
-         andb  #$DF
-         stb   $0D,x
-         bsr   L01EF
-         bra   NXTPRC
+ bsr DISPCH Go do request
+USRRET ldx D.PROC Get process ptr
+ beq NXTPRC Branch if none
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ ldb P$State,X Clear system state
+ andb #$FF-SysState
+ stb P$State,X Update status
+ bitb #TIMOUT Is time-slice over?
+ beq CURPRC Branch if not
+ andb #$FF-TIMOUT Clear time-out flag
+ stb P$State,X Update status
+USRR20 bsr ACTPRC Put in active queue
+ bra NXTPRC Start next process
 
-SYSREQ    clra
-         tfr   a,dp
-         leau  ,s
+
+
+*****
+*
+*  Subroutine Sysreq
+*
+SYSREQ clra clear direct page
+ tfr A,DP
+ leau 0,S Copy stack ptr
  ldy D.SysDis Get system service routine table
-         bsr   L024D
-         rti
-L024D    pshs  u
-         ldx   $0A,u
-         ldb   ,x+
-         stx   $0A,u
-         lslb
-         bcc   L025D
-         rorb
-         ldx   -$02,y
-         bra   L0265
-L025D    cmpb  #$6E
-         bcc   L027C
-         ldx   b,y
-         beq   L027C
-L0265    jsr   ,x
-L0267    puls  u
-         tfr   cc,a
-         bcc   L026F
-         stb   $02,u
-L026F    ldb   ,u
-         andb  #$F0
-         stb   ,u
-         anda  #$0F
-         ora   ,u
-         sta   ,u
-         rts
-L027C    comb
-         ldb   #$D0
-         bra   L0267
-L0281    ldb   $0D,x
-         orb   #$80
-         stb   $0D,x
-         ldb   <$36,x
-         andcc #$AF
-         os9   F$Exit
+ bsr DISPCH Call service routine
+ rti
+ page
+*****
+*
+*  Subroutine Dispch
+*
+* Service Routine Dispatch
+*
+DISPCH pshs U Save register ptr
+*
+* Get Service Request Code
+*
+ ldx R$PC,U Get program counter
+ ldb ,X+ Get service code
+ stx R$PC,U Update program counter
+*
+* Get Service Routine Address
+*
+ aslb SHIFT For two byte table entries
+ bcc DISP10 Branch if not i/o
+ rorb RE-ADJUST Byte
+ ldx -2,Y Get i/o routine
+ bra DISP20
+DISP10 cmpb #SVCTSZ Code in range?
+ bcc BADSVC
+ ldx B,Y Get routine address
+ beq BADSVC Branch if none
+DISP20 jsr 0,X Call routine
+*
+* Return Condition Codes To Caller
+*
+DISP25 puls U Retrieve register ptr
+ tfr CC,A Copy condition codes
+ bcc DISP30 Branch if no error
+ stb R$B,U Return error code
+DISP30 ldb R$CC,U Get condition codes
+ andb #$F0 Clear n, z, v, c
+ stb R$CC,U Save it
+ anda #$0F Clear e, f, h, i
+ ora R$CC,U Return conditions
+ sta R$CC,U
+ rts
 
-NXTPRC    clra
-         clrb
-         std   D.Proc
-         bra   NXTP06
+BADSVC comb SET Carry
+ ldb #E$UnkSvc Unknown service code
+ bra DISP25
+ page
+*****
+*
+*  Routine Nxtprc
+*
+* Starts next Process in Active Queue
+* If no Active Processes, Wait for one
+*
+NXTOUT ldb P$State,X Get process status
+ orb #SysState Set system state
+ stb P$State,X Update status
+ ldb P$Signal,X Return fatal signal
+ andcc #$FF-IRQMask-FIRQMask Clear interrupt masks
+ OS9 F$EXIT Terminate process
+NXTPRC clra
+ clrb
+ std D.PROC Clear current process
+ bra NXTP06
+*
+* Loop until there is a Process in the Active Queue
+*
 NXTP04 cwai #$FF-IRQMask-FIRQMask Clear interrupt masks & wait
 NXTP06 orcc #IRQMask+FIRQMask Set interrupt masks
  ldx D.AProcQ Get first process in active queue
@@ -443,342 +570,444 @@ NXTP06 orcc #IRQMask+FIRQMask Set interrupt masks
 *
  ldd P$Queue,X Get next process ptr
  std D.AProcQ Remove first from active queue
-         stx   D.Proc
-         lds   $04,x
-L02A6    ldb   $0D,x
-         bmi   NXTP30
-         bitb  #$02
-         bne   L0281
-         ldb   <$36,x
-         beq   L02D4
-         decb
-         beq   L02D1
-         ldu   <$37,x
-         beq   L0281
-         ldy   <$39,x
-         ldd   $06,s
-         pshs  u,y,b,a
-         ldu   $0A,s
-         lda   <$36,x
-         ldb   $09,s
-         tfr   d,y
-         ldd   $06,s
-         pshs  u,y,b,a
-         clrb
-L02D1    stb   <$36,x
-L02D4    ldd   <$16,x
+ stx D.PROC Set current process
+ lds P$SP,X Get stack ptr
+*
+* Check Process Status, check for Signal pending
+*
+CURPRC ldb P$State,X Is process in system state?
+ bmi NXTP30 Branch if so
+ bitb #CONDEM Is process condemmed?
+ bne NXTOUT Branch if so
+ ldb P$Signal,X Is a signal waiting?
+ beq NXTP20 Branch if not
+ decb Wake-up Signal?
+ beq NXTP10 Branch if so
+*
+* Signal is pending; If an Intercept has been set
+* Build an Interrupt Stack for User
+*
+ ldu P$SigVec,X Get intercept vector
+ beq NXTOUT Branch if none
+ ldy P$SigDat,X Get intercept data address
+ ldd R$Y,S Get user y register
+ pshs D,Y,U Build partial stack
+ ldu R$X+6,S Get user x register
+ lda P$Signal,X Get signal
+ ldb R$DP+6,S Get direct page
+ tfr D,Y Copy registers
+ ldd R$CC+6,S Get registers
+ pshs D,Y,U Complete stack
+ clrb
+NXTP10 stb P$Signal,X Clear signal
+*
+* Switch to User State
+*
+NXTP20 ldd P$SWI2,X Get user service request
  std D.SWI2
  ldd D.UsrIRQ Get user irq
  std D.SvcIRQ
-NXTP30    rti
+NXTP30 rti Start next process
+ page
+*****
+*
+*  Subroutine Link
+*
+* Search Module Directory & Return Module Address
+*
+* Input: U = Register Package
+* Output: Cc = Carry Set If Not Found
+* Local: None
+* Global: D.ModDir
+*
+LINK pshs U Save register package
+ ldd R$D,U Get revision, type
+ ldx R$X,U Get name ptr
+ lbsr FMODUL Search directory
+ bcc LINK10
+ ldb #E$MNF Err: link non-existing module
+ bra LINKXit
+LINK10 ldy 0,U Get module address
+ ldb M$REVS,Y get attributes/revision
+ bitb #REENT is this sharable
+ bne LINK20 branch if so
+ tst 2,U is it in use?
+ beq LINK20 branch if not
+ comb set carry
+ ldb #E$ModBsy err: module busy
+ bra LINKXit
+LINK20 inc 2,U count use
+ ldu 0,S Get register ptr
+ stx R$X,U
+ sty R$U,U
+ ldd M$TYPE,Y Get type/lang & attr/revs
+ std R$D,U
+ ldd M$EXEC,Y Get execution offset
+ leax D,Y Make entry ptr
+ stx R$Y,U Return it to user
+LINKXit puls U,PC
 
-LINK     pshs  u
-         ldd   $01,u
-         ldx   $04,u
-         lbsr  FMODUL
-         bcc   LINK10
-         ldb   #$DD
-         bra   LINKXit
-LINK10    ldy   ,u
-         ldb   $07,y
-         bitb  #$80
-         bne   LINK20
-         tst   $02,u
-         beq   LINK20
-         comb
-         ldb   #$D1
-         bra   LINKXit
-LINK20    inc   $02,u
-         ldu   ,s
-         stx   $04,u
-         sty   $08,u
-         ldd   $06,y
-         std   $01,u
-         ldd   $09,y
-         leax  d,y
-         stx   $06,u
-LINKXit    puls  pc,u
 
 
-VMOD     pshs  u
-         ldx   $04,u
-         bsr   VALMOD
-         puls  y
-         stu   $08,y
-         rts
+*****
+*
+*  Subroutine Valmod
+*
+* Validate Module
+*
+VMOD pshs U Save register ptr
+ ldx R$X,U Get new module ptr
+ bsr VALMOD Validate module
+ puls Y Retrieve register ptr
+ stu R$U,Y Return directory entry
+VMOD10 rts
 
-VALMOD    bsr   IDCHK
-         bcs   VALM40
-         lda   $06,x
-         pshs  x,a
-         ldd   $04,x
-         leax  d,x
-         puls  a
-         lbsr  FMODUL
-         puls  x
-         bcs   VALM10
-         ldb   #$E7
-         cmpx  ,u
-         beq   L0376
-         lda   $07,x
-         anda  #$0F
-         pshs  a
-         ldy   ,u
-         lda   $07,y
-         anda  #$0F
-         cmpa  ,s+
-         bcc   L0376
-         pshs  y,x
-         ldb   $02,u
-         bne   VALM15
-         ldx   ,u
+VALMOD bsr IDCHK Check sync & chksum
+ bcs VALM40 Branch if not module
+ lda M$TYPE,X Get module type
+ pshs A,X Save module type & ptr
+ ldd M$NAME,X Get name ptr
+ leax D,X
+ puls A Retrieve type
+ lbsr FMODUL Search directory
+ puls X Retrieve module ptr
+ bcs VALM10 Branch if not found
+ ldb #E$KwnMod Get known module error code
+ cmpx 0,U Is it same module?
+ beq BADVAL Branch if so
+ lda M$REVS,X Get new revision level
+ anda #Revsmask
+ pshs A Save it
+ ldy 0,U Get old module ptr
+ lda M$REVS,Y Get old revision level
+ anda #Revsmask
+ cmpa ,S+ Which is higher?
+ bcc BADVAL Branch if old
+ pshs X,Y Save registers
+ ldb 2,U module in use?
+ bne VALM15 branch if so
+ ldx 0,U Get module ptr
  cmpx D.BTLO Is it rom/system module?
  bcc VALM15 Branch if so
-         ldd   $02,x
-         addd  #$00FF
-         tfr   a,b
-         clra
-         tfr   d,y
-         ldb   ,u
-         ldx   D.FMBM
-         os9   F$DelBit
-         clr   $02,u
-VALM15    puls  y,x
-L036C    stx   ,u
-         clrb
-VALM40    rts
-VALM10    leay  ,u
-         bne   L036C
-         ldb   #$CE
-L0376    coma
-         rts
+ ldd M$SIZE,X
+ addd #$FF
+ tfr A,B
+ clra
+ tfr D,Y
+ ldb 0,U
+ ldx D.FMBM
+ OS9 F$DelBit Clear bit map
+ clr 2,U
+VALM15 puls X,Y
+VALM20 stx 0,U Install new module
+VALM30 clrb CLEAR Carry
+VALM40 rts
+VALM10 leay 0,U Free directory entry?
+ bne VALM20 Branch if so
+ ldb #E$DirFul Err: directory full
+BADVAL coma SET Carry
+ rts
 
 
-IDCHK    ldd   ,x
-         cmpd  #$87CD
-         bne   L0386
-         leay  $08,x
-         bsr   PARITY
-         bcc   L038A
-L0386    comb
-         ldb   #$CD
-         rts
-L038A    pshs  x
-         ldy   $02,x
-         bsr   CRCCHK
-         puls  pc,x
-PARITY    pshs  y,x
-         clra
-L0396    eora  ,x+
-         cmpx  $02,s
-         bls   L0396
-         cmpa  #$FF
-         puls  pc,y,x
-CRCCHK    ldd   #$FFFF
-         pshs  b,a
-         pshs  b,a
-         leau  $01,s
-L03A9    lda   ,x+
-         bsr   CRCCAL
-         leay  -$01,y
-         bne   L03A9
-         clr   -$01,u
-         lda   ,u
-         cmpa  #$80
-         bne   L03C1
-         ldd   $01,u
-         cmpd  #$0FE3
-         beq   L03C4
-L03C1    comb
-         ldb   #$E8
-L03C4    puls  pc,y,x
+IDCHK ldd 0,X Get first two bytes
+ cmpd #M$ID12 Check them
+ bne IDCH10 Branch if not module
+ leay 8,X Get header end ptr
+ bsr PARITY Check header parity
+ bcc IDCH30 Branch if good
+IDCH10 comb SET Carry
+ ldb #E$BMID Err: illegal id block
+IDCH20 rts
+IDCH30 pshs X Save module ptr
+ ldy M$SIZE,X Get module size
+ bsr CRCCHK Check crc code
+ puls X,PC
 
-CRCGen   ldx   $04,u
-         ldy   $06,u
-         beq   L03D7
-         ldu   $08,u
-CRCGen10    lda   ,x+
-         bsr   CRCCAL
-         leay  -$01,y
-         bne   CRCGen10
-L03D7    clrb
-         rts
 
-CRCCAL    eora  ,u
-         pshs  a
-         ldd   $01,u
-         std   ,u
-         clra
-         ldb   ,s
-         lslb
-         rola
-         eora  $01,u
-         std   $01,u
-         clrb
-         lda   ,s
-         lsra
-         rorb
-         lsra
-         rorb
-         eora  $01,u
-         eorb  $02,u
-         std   $01,u
-         lda   ,s
-         lsla
-         eora  ,s
-         sta   ,s
-         lsla
-         lsla
-         eora  ,s
-         sta   ,s
-         lsla
-         lsla
-         lsla
-         lsla
-         eora  ,s+
-         bpl   CRCC99
-         ldd   #$8021
-         eora  ,u
-         sta   ,u
-         eorb  $02,u
-         stb   $02,u
-CRCC99    rts
 
-FMODUL    ldu   #$0000
-         tfr   a,b
-         anda  #$F0
-         andb  #$0F
-         pshs  u,y,x,b,a
-         bsr   SKIPSP
-         cmpa  #$2F
-         beq   FMOD35
-         lbsr  PRSNAM
-         bcs   FMOD40
+*****
+*
+*  Subroutine Parity
+*
+* Check Vertical Parity
+*
+PARITY pshs X,Y Save registers
+ clra
+PARI10 eora ,X+ Add parity of next byte
+ cmpx 2,S Done?
+ bls PARI10 Branch if not
+ cmpa #$FF Parity good?
+ puls X,Y,PC
+
+
+
+*****
+*
+*  Subroutine Crcchk
+*
+* Check Module Crc
+*
+CRCCHK ldd #$FFFF
+ pshs D Init crc register
+ pshs D
+ leau 1,S Get crc register ptr
+CRCC10 lda ,X+ Get next byte
+ bsr CRCCAL Calculate crc
+ leay -1,Y count byte
+ bne CRCC10 branch if more
+ clr -1,U Clear msb-1
+ lda 0,U Get crc
+ cmpa #$80 Is it good?
+ bne CRCC20 Branch if not
+ ldd 1,U Get crc
+ cmpd #$0FE3 Is it good?
+ beq CRCC30 Branch if so
+CRCC20 comb SET Carry
+ ldb #E$BMCRC Err: bad crc
+CRCC30 puls X,Y,PC
+
+
+
+*****
+*
+*  Subroutine Crcgen
+*
+* Generate Crc
+*
+CRCGen ldx R$X,U get data ptr
+ ldy R$Y,U get byte count
+ beq CRCGen20 branch if none
+ ldu R$U,U get crc ptr
+CRCGen10 lda ,X+ get next data byte
+ bsr CRCCAL update crc
+ leay -1,Y count byte
+ bne CRCGen10 branch if more
+CRCGen20 clrb clear carry
+ rts
+
+
+
+*****
+*
+*  Subroutine Crccal
+*
+* Calculate Next Crc Value
+*
+CRCCAL eora 0,U Add crc msb
+ pshs A save it
+ ldd 1,U Get crc mid & low
+ std 0,U Shift to high & mid
+ clra
+ ldb 0,S Get old msb
+ lslb SHIFT D
+ rola
+ eora 1,U Add old lsb
+ std 1,U Set crc mid & low
+ clrb
+ lda 0,S Get old msb
+ lsra SHIFT D
+ rorb
+ lsra SHIFT D
+ rorb
+ eora 1,U Add new mid
+ eorb 2,U Add new low
+ std 1,U Set crc mid & low
+ lda 0,S Get old msb
+ lsla
+ eora 0,S Add old msb
+ sta 0,S
+ lsla
+ lsla
+ eora 0,S Add altered msb
+ sta 0,S
+ lsla
+ lsla
+ lsla
+ lsla
+ eora ,S+ Add altered msb
+ bpl CRCC99
+ ldd #$8021
+ eora 0,U
+ sta 0,U
+ eorb 2,U
+ stb 2,U
+CRCC99 rts
+
+FMODUL ldu #0 Return zero if not found
+ tfr A,B Copy type
+ anda #TypeMask Get desired type
+ andb #LangMask Get desired language
+ pshs D,X,Y,U Save registers
+ bsr SKIPSP Skip leading spaces
+ cmpa #'/ Is there leading '/'
+ beq FMOD35
+ lbsr PRSNAM Parse name
+ bcs FMOD40 Branch if bad name
  ldu D.ModDir Get module directory ptr
-FMOD10    pshs  u,y,b
-         ldu   ,u
-         beq   FMOD20
-         ldd   $04,u
-         leay  d,u
-         ldb   ,s
-         lbsr  CHKNAM
-         bcs   FMOD30
-         lda   $05,s
-         beq   L044B
-         eora  $06,u
-         anda  #$F0
-         bne   FMOD30
-L044B    lda   $06,s
-         beq   L0455
-         eora  $06,u
-         anda  #$0F
-         bne   FMOD30
-L0455    puls  u,x,b
-         stu   $06,s
-         bsr   SKIPSP
-         stx   $02,s
-         clra
-         bra   FMOD40
-FMOD20    ldd   $0B,s
-         bne   FMOD30
-         ldd   $03,s
-         std   $0B,s
+FMOD10 pshs B,Y,U Save count, end-of-name, & directory
+ ldu 0,U Get module ptr
+ beq FMOD20 Branch if not used
+ ldd M$NAME,U Get name offset
+ leay D,U Get name ptr
+ ldb 0,S Get character count
+ lbsr CHKNAM Compare names
+ bcs FMOD30 Branch if different
+ lda 5,S Get desired type
+ beq FMOD14 Branch if any
+ eora M$TYPE,U Get type difference
+ anda #TypeMask
+ bne FMOD30 Branch if different
+FMOD14 lda 6,S Get desired language
+ beq FMOD16 Branch if any
+ eora M$TYPE,U Get language difference
+ anda #LangMask
+ bne FMOD30 Branch if different
+FMOD16 puls B,X,U Retrieve registers
+ stu 6,S Return directory entry
+ bsr SKIPSP Skip spaces
+ stx 2,S Return updated ptr
+ clra CLEAR Carry
+ bra FMOD40
+FMOD20 ldd 11,S Free entry found?
+ bne FMOD30 Branch if so
+ ldd 3,S Return this entry
+ std 11,S
 FMOD30 puls B,Y,U Retrieve registers
  leau 4,U Move to next entry
  cmpu D.ModDir+2 End of directory?
-         bcs   FMOD10
-FMOD35    comb
-FMOD40    puls  pc,u,y,x,b,a
+ bcs FMOD10 Branch if not
+FMOD35 comb SET Carry
+FMOD40 puls D,X,Y,U,PC
 
-SKIPSP    lda   #$20
-L0476    cmpa  ,x+
-         beq   L0476
-         lda   ,-x
-         rts
+SKIPSP lda #'  get space
+SKIP10 cmpa ,X+ Is there a space
+ beq SKIP10
+ lda ,-X Get not space
+ rts
+ page
+*****
+*
+*  Subroutine Fork
+*
+* Creates New Child Process
+*
+FORK ldx D.PrcDBT Get process block ptr
+ OS9 F$ALL64 Get new process descriptor
+ bcs PRCFUL Branch if none left
+ ldx D.PROC Get parent process ptr
+ pshs X Save parent process ptr
+ ldd P$USER,X Copy user index
+ std P$USER,Y
+ lda P$Prior,X Copy priority
+ clrb CLEAR Age
+ std P$Prior,Y
+ ldb #SysState Get system state flag
+ stb P$State,Y Set infant state
+ sty D.PROC Make child current process
+*
+* Pass I/O Defaults & Paths 0, 1, And 2
+*    From Parent To Child
+*
+ leax P$DIO,X Get parent path ptr
+ leay P$DIO,Y Get child path ptr
+ ldb #DefIOSiz Get byte count
+FORK10 lda ,X+ Get parent byte
+ sta ,Y+ Pass to child
+ decb COUNT Down
+ bne FORK10 Branch if more
+ ldb #3 Get number of paths
+FORK20 lda ,X+ Get path number
+ OS9 I$DUP Duplicate path
+ bcc FORK25
+ clra CLEAR Path number
+FORK25 sta ,Y+ Pass path to child
+ decb COUNT Down
+ bne FORK20 Branch if more
+ bsr SETPRC Set up process
+ bcs FORK40 Branch if error
+ puls Y Retrieve parent process ptr
+ sty D.PROC Make parent current process
+ lda P$ID,X Get child id
+ sta R$A,U Return to parent
+ ldb P$CID,Y Get youngest child id
+ sta P$CID,Y Set new child
+ lda P$ID,Y Get parent id
+ std P$PID,X Set parent & sibling ids
+ ldb P$State,X Get child state
+ andb #$FF-SysState Clear system state
+ stb P$State,X Update child state
+ OS9 F$AProc Activate child process
+ rts
+FORK40 pshs B Save error code
+ OS9 F$EXIT Terminate child
+ comb SET Carry
+ puls B,X Retrieve error code & parent process ptr
+ stx D.PROC Make parent current process
+ rts
 
-FORK     ldx   D.PrcDBT
-         os9   F$All64
-         bcs   PRCFUL
-         ldx   D.Proc
-         pshs  x
-         ldd   $09,x
-         std   $09,y
-         lda   $0B,x
-         clrb
-         std   $0B,y
-         ldb   #$80
-         stb   $0D,y
-         sty   D.Proc
-         leax  <$1A,x
-         leay  <$1A,y
-         ldb   #$0C
-FORK10    lda   ,x+
-         sta   ,y+
-         decb
-         bne   FORK10
-         ldb   #$03
-L04A9    lda   ,x+
-         os9   I$Dup
-         bcc   FORK25
-         clra
-FORK25    sta   ,y+
-         decb
-         bne   L04A9
-         bsr   SETPRC
-         bcs   FORK40
-         puls  y
-         sty   D.Proc
-         lda   ,x
-         sta   $01,u
-         ldb   $03,y
-         sta   $03,y
-         lda   ,y
-         std   $01,x
-         ldb   $0D,x
-         andb  #$7F
-         stb   $0D,x
-         os9   F$AProc
-         rts
-FORK40    pshs  b
-         os9   F$Exit
-         comb
-         puls  x,b
-         stx   D.Proc
-         rts
-PRCFUL    comb
-         ldb   #$E5
-         rts
-
-USRCHN   bsr   CHAIN
-         bcs   L04FA
-         orcc  #$50
-         ldb   $0D,x
-         andb  #$7F
-         stb   $0D,x
-USRC10    os9   F$AProc
-         os9   F$NProc
-
-SYSCHN   bsr   CHAIN
-         bcc   USRC10
-L04FA    pshs  b
-         stb   <$36,x
-         ldb   $0D,x
-         orb   #$02
-         stb   $0D,x
-         ldb   #$FF
-         stb   $0B,x
-         comb
-         puls  pc,b
+PRCFUL comb SET Carry
+ ldb #E$PrcFul Err: process table full
+ rts
 
 
-CHAIN    pshs  u
-         ldx   D.Proc
-         ldu   <$12,x
-         os9   F$UnLink
-         ldu   ,s
-         bsr   SETPRC
-         puls  pc,u
 
+*****
+*
+*  Subroutine Usrchn
+*
+* User Chain Routine
+*
+USRCHN bsr CHAIN Do chain
+ bcs BADCHN Branch if error
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ ldb P$State,X Clear system state
+ andb #$FF-SysState
+ stb P$State,X
+USRC10 OS9 F$AProc Put process in active queue
+ OS9 F$NProc Start next process
+
+
+
+*****
+*
+*  Subroutine Syschn
+*
+* System Chain Routine
+*
+SYSCHN bsr CHAIN Do chain
+ bcc USRC10 Branch if no error
+BADCHN pshs B Save error code
+ stb P$Signal,X Set error status
+ ldb P$State,X Get process status
+ orb #CONDEM Condem process
+ stb P$State,X
+ ldb #$FF Set high priority
+ stb P$Prior,X
+ comb
+ puls B,PC
+
+
+
+*****
+*
+* Subroutine Chain
+*
+* Execute Overlay
+*
+CHAIN pshs U Save register ptr
+ ldx D.PROC Get process ptr
+ ldu P$PModul,X Get primary module ptr
+ OS9 F$Unlink
+ ldu 0,S Retrieve register ptr
+ bsr SETPRC Set up process
+ puls U,PC Clean stack
+ page
+*****
+*
+*  Subroutine Setprc
+*
+* Set Up Process Descriptor
+*
 SETPRC ldx D.PROC Get process ptr
  pshs X,U Save process & register ptr
  ldd D.UsrSVC Get user service request
@@ -787,390 +1016,505 @@ SETPRC ldx D.PROC Get process ptr
  std P$SWI3,X Reset swi3 vector
  clra
  clrb
-         sta   <$36,x
-         std   <$37,x
-         lda   $01,u
-         ldx   $04,u
-         os9   F$Link
-         bcc   L0541
-         os9   F$Load
-         bcs   L05B5
-L0541    ldy   D.Proc
-         stu   <$12,y
-         cmpa  #$11
-         beq   L0554
-         cmpa  #$C1
-         beq   L0554
-         comb
-         ldb   #$EA
-         bra   L05B5
-L0554    leay  ,u
-         ldu   $02,s
-         stx   $04,u
-         lda   $02,u
-         clrb
-         cmpd  $0B,y
-         bcc   L0564
-         ldd   $0B,y
-L0564    addd  #$0000
-         bne   L056E
-         comb
-         ldb   #$DF
-         bra   L05B5
-L056E    os9   F$Mem
-         bcs   L05B5
-         subd  #$000C
-         subd  $06,u
-         bcs   L05B3
-         ldx   $08,u
-         ldd   $06,u
-         pshs  b,a
-         beq   L058C
-         leax  d,x
-L0584    lda   ,-x
-         sta   ,-y
-         cmpx  $08,u
-         bhi   L0584
-L058C    ldx   D.Proc
-         sty   -$08,y
-         leay  -$0C,y
-         sty   $04,x
-         lda   $07,x
-         clrb
-         std   $08,y
-         sta   $03,y
-         adda  $08,x
-         std   $06,y
-         puls  b,a
-         std   $01,y
-         ldb   #$80
-         stb   ,y
-         ldu   <$12,x
-         ldd   $09,u
-         leau  d,u
-         stu   $0A,y
-         clrb
-L05B3    ldb   #$E6
-L05B5    puls  pc,u,x
-         ldd   $01,u
-         addd  #$00FF
-         clrb
-         std   $01,u
-         ldx   D.FMBM+2
-         ldd   #$01FF
-         pshs  b,a
-         bra   L05D2
-L05C8    dec   $01,s
-         ldb   $01,s
-L05CC    lsl   ,s
-         bcc   L05D8
-         rol   ,s
-L05D2    leax  -$01,x
-         cmpx  D.FMBM
-         bcs   L05EE
-L05D8    lda   ,x
-         anda  ,s
-         bne   L05C8
-         dec   $01,s
-         subb  $01,s
-         cmpb  $01,u
-         rora
-         addb  $01,s
-         rola
-         bcs   L05CC
-         ldb   $01,s
-         clra
-         incb
-L05EE    leas  $02,s
-         bcs   MEMFUL
-         ldx   D.FMBM
-         tfr   d,y
-         ldb   $01,u
-         clra
-         exg   d,y
-         bsr   ALOCAT
-         exg   a,b
-         std   $08,u
-L0601    clra
-         rts
-MEMFUL    comb
-         ldb   #$CF
-         rts
+ sta P$Signal,X Clear signal
+ std P$SigVec,X Clear signal vector ptr
+ lda R$A,U Get type
+ ldx R$X,U Get name ptr
+ OS9 F$LINK
+ bcc SETP10 Branch if found
+ OS9 F$LOAD Try loading it
+ bcs SETP50 Branch if not loadable
+SETP10 ldy D.PROC Get process ptr
+ stu P$PModul,Y Save primary module ptr
+ cmpa #PRGRM+OBJCT is it program object?
+ beq SETP15 branch if so
+ cmpa #SYSTM+OBJCT is it system object?
+ beq SETP15 branch if so
+ comb set carry
+ ldb #E$NEMod err: non-executable module
+ bra SETP50
+SETP15 leay 0,U Copy module ptr
+ ldu 2,S Get register ptr
+ stx R$X,U Return updated ptr
+ lda R$B,U Get memory over-ride
+ clrb
+ cmpd M$Mem,Y Is it big enough?
+ bcc SETP20
+ ldd M$Mem,Y Get memory required
+SETP20 addd #0 Req for zero data mem?
+ bne SETP25 bra if not
+ comb
+ ldb #E$DelSP Error process must have at least one page mem
+ bra SETP50
+SETP25 OS9 F$MEM Mem to correct size
+ bcs SETP50 Branch if no memory
+ subd #R$SIZE Deduct stack room
+ subd R$Y,U Deduct parameter count
+ bcs BADPAR Branch if not available
+ ldx R$U,U Get parameter beginning
+ ldd R$Y,U Get parameter count
+ pshs D Save parameter count
+ beq SETP40 Branch if no parameters
+ leax D,X Get parameter end ptr
+SETP30 lda ,-X Get parameter byte
+ sta ,-Y Pass it
+ cmpx R$U,U Done?
+ bhi SETP30 Branch if not
+SETP40 ldx D.PROC Get process ptr
+ sty R$X-R$SIZE,Y
+ leay -R$SIZE,Y
+ sty P$SP,X Set stack ptr
+ lda P$ADDR,X Set beginning address
+ clrb
+ std R$U,Y
+ sta R$DP,Y Get direct page ptr
+ adda P$PagCnt,X Get end prt
+ std R$Y,Y
+ puls D Retrieve parameter byte count
+ std R$D,Y Pass to process
+ ldb #ENTIRE Set cc entire bit
+ stb R$CC,Y
+ ldu P$PModul,X Get module ptr
+ ldd M$EXEC,U
+ leau D,U Get module entry
+ stu R$PC,Y Set new program counter
+ clrb CLEAR Carry
+BADPAR ldb #E$IForkP Err: illegal fork parameters
+SETP50 puls X,U,PC
+ page
+*****
+*
+*  Subroutine Srqmem
+*
+* System Memory Request
+*
+SRQMEM ldd R$D,U Get byte count
+ addd #$FF Round up to page
+ clrb
+ std R$D,U Return size to user
+ ldx D.FMBM+2 Get end of bit map
+ ldd #$1FF Set mask & bit number
+ pshs D Save them
+ bra SRQM20
+SRQM10 dec 1,S Count page number down
+ ldb 1,S Save it
+SRQM15 lsl 0,S Shift mask
+ bcc SRQM25 Branch if no byte change
+ rol 0,S Move mask to low bit
+SRQM20 leax -1,X Move to next map byte
+ cmpx D.FMBM End of map?
+ bcs SRQM30
+SRQM25 lda 0,X Get map byte
+ anda 0,S Get map bit
+ bne SRQM10 Branch if allocated
+ dec 1,S Count page number down
+ subb 1,S Get number of free pages
+ cmpb R$A,U Compare to requested number
+ rora SAVE Carry
+ addb 1,S Restore high page bound
+ rola RESTORE Carry
+ bcs SRQM15 Branch if not enough
+ ldb 1,S Get page number
+ clra
+ incb
+SRQM30 leas 2,S Return scratch
+ bcs MEMFUL Branch if not enough
+ ldx D.FMBM Get free memory ptr
+ tfr D,Y Copy page number
+ ldb R$A,U Get page count
+ clra
+ exg D,Y Switch page count & number
+ bsr ALOCAT Allocate memory
+ exg A,B Convert page number to address
+ std R$U,U Return ptr to memory
+SRQMXX clra CLEAR Carry
+ rts
+
+MEMFUL comb SET Carry
+ ldb #E$MemFul Get error code
+ rts
+ page
+*****
+*
+*  Subroutine Srtmem
+*
+* System Memory Return
+*
+SRTMEM ldd R$D,U Get byte count
+ addd #$FF Round up to page
+ tfr A,B Make page count
+ clra
+ tfr D,Y Copy page count
+ ldd R$U,U Get address
+ beq SRQMXX Branch if returning nothing
+ tstb IS Address good?
+ beq SRTM10 Branch if so
+BADPAG comb SET Carry
+ ldb #E$BPAddr
+ rts
+SRTM10 exg A,B Convert address to page number
+ ldx D.FMBM Get free memory ptr
+ bra DEALOC Deallocate memory
+ page
+*****
+*
+*  Subroutine Alocat
+*
+* Set Bits In Bit Map
+*
+* Input: D = Beginning Page Number
+*        X = Bit Map Address
+*        Y = Page Count
+* Output: None
+* Local: None
+* Global: None
+*
+ABIT ldd R$D,U Get beginning bit number
+ leau R$X,U
+ pulu X,Y Get bit map addr & bit count
+ALOCAT pshs D,X,Y Save registers
+ bsr FNDBIT Adjust map ptr & get bit mask
+ tsta TEST Mask
+ pshs A Save mask
+ bmi ALOC15 Branch if first bit of byte
+ lda 0,X Get map byte
+ALOC10 ora 0,S Set bit
+ leay -1,Y Decrement page count
+ beq ALOC35 Branch if done
+ lsr 0,S Shift mask
+ bcc ALOC10 Branch if more in this byte
+ sta ,X+ Restore byte
+ALOC15 tfr Y,D Copy page count
+ sta 0,S Save msb
+ lda #$FF Get eight pages worth
+ bra ALOC25
+ALOC20 sta ,X+ Get eight pages
+ALOC25 subb #8 Are there eight left?
+ bcc ALOC20 Branch if so
+ dec 0,S Any msb left?
+ bpl ALOC20 Branch if so
+ALOC30 asla MAKE Final mask
+ incb MOVE Count to zero
+ bne ALOC30 Branch if not done
+ ora 0,X Set final bits
+ALOC35 sta 0,X Set byte
+ clra CLEAR Carry
+ leas 1,S Return scratch
+ puls D,X,Y,PC
+ page
+*****
+*
+*  Subroutine Fndbit
+*
+* Make Page Number Into Ptr & Mask
+*
+* Input: D = Page Number
+*        X = Map Beginning Address
+* Output: A = Bit Mask
+*         B = 0
+*         X = Byte Address
+* Local: None
+* Global: None
+*
+FNDBIT pshs B Save lsb
+ lsra PAGE/2
+ rorb
+ lsra PAGE/4
+ rorb
+ lsra PAGE/8
+ rorb
+ leax D,X Get byte address
+ puls B Get lsb
+ lda #$80 Get mask
+ andb #7 Page modulo 8
+ beq FNDB20 Branch if done
+FNDB10 lsra SHIFT Mask
+ decb
+ bne FNDB10
+FNDB20 rts
+ page
+*****
+*
+*  Subroutine Dealoc
+*
+* Deallocates Space In Bit Map
+*
+* Input: D = Beginning Page Number
+*        X = Bit Map Address
+*        Y = Page Count
+* Output: None
+* Local: None
+* Global: None
+*
+DBIT ldd R$D,U Get beginning bit number
+ leau R$X,U
+ pulu X,Y Get bit map addr & bit count
+DEALOC pshs D,X,Y Save registers
+ bsr FNDBIT Adjust map ptr & get bit mask
+ coma REVERSE Mask
+ pshs A save it
+ bpl DEAL10 branch if first bit of byte
+ lda 0,X get map byte
+DEAL05 anda 0,S Clear bit
+ leay -1,Y Decrement page count
+ beq DEAL30 Branch if done
+ asr 0,S Shift mask
+ bcs DEAL05 Branch if more
+ sta ,X+ Store map byte
+DEAL10 tfr Y,D Copy page count
+ bra DEAL20
+DEAL15 clr ,X+ Clear map byte
+DEAL20 subd #8 Are there eight left?
+ bhi DEAL15 Branch if so
+ beq DEAL30 Branch if done
+DEAL25 asla MAKE Final mask
+ incb
+ bne DEAL25
+ coma REVERSE Mask
+ anda 0,X Clear map bits
+DEAL30 sta 0,X Store map byte
+ clr ,S+ Clear carry & return scratch
+ puls D,X,Y,PC
+ page
+*****
+*
+*  Subroutine Floblk
+*
+* Find Free Block Searching Up
+*
+* Same As Fhiblk
+*
+SBIT pshs U Save register ptr
+ ldd R$D,U Get beginning bit number
+ ldx R$X,U Get bit map ptr
+ ldy R$Y,U Get bit count
+ ldu R$U,U Get map end addr
+ bsr FLOBLK Search bit map
+ puls U Retrieve register ptr
+ std R$D,U Return bit number
+ sty R$Y,U return bits found
+ rts
+
+FLOBLK pshs D,X,Y,U Save registers
+ pshs D,Y Copy beginning page number & size
+ clr 8,S Clear size found
+ clr 9,S
+ tfr D,Y Copy beginning page number
+ bsr FNDBIT Adjust map ptr & get bit mask
+ pshs A Save mask
+ bra FLOB20
+FLOB10 leay 1,Y Move beginning bit number
+ sty 5,S Save beginning block number
+FLOB15 lsr 0,S Shift mask
+ bcc FLOB25 Branch if mask okay
+ ror 0,S Shift mask around end
+ leax 1,X Move map ptr
+FLOB20 cmpx 11,S End of map?
+ bcc FLOB30 Branch if so
+FLOB25 lda 0,X Get map byte
+ anda 0,S Mask bit
+ bne FLOB10 Branch if in use
+ leay 1,Y Move page number
+ tfr Y,D Copy page number
+ subd 5,S Subtract beginning page number
+ cmpd 3,S Block big enough?
+ bcc FLOB35 Branch if so
+ cmpd 9,S Biggest so far?
+ bls FLOB15 Branch if not
+ std 9,S Save size
+ ldd 5,S Copy beginning page number
+ std 1,S
+ bra FLOB15
+FLOB30 ldd 1,S Get beginning page number of largest
+ std 5,S Return it
+ coma SET Carry
+ bra FLOB40
+FLOB35 std 9,S Return size
+FLOB40 leas 5,S Return scratch
+ puls D,X,Y,U,PC
+ page
+***************
+* Parse Path Name
+*
+* Passed:  (X)=Pathname Ptr
+* Returns: (X)=Skipped Past Prefix '/'
+*          (Y)=Ptr To 1St Delim In Pathname
+*          (A)=Delimiter Character
+*          (B)=Number Of Characters Found <=255
+*           Cc=Set If No Characters Found
+* Unaffects: U
+*
+PNAM ldx R$X,U Get string ptr
+ bsr PRSNAM Call parse name
+ std R$D,U Return byte & size
+ bcs PNam.x branch if error
+ stx R$X,U Return updated string ptr
+PNam.x sty R$Y,U Return name end ptr
+ rts
+
+PRSNAM lda 0,X Get first char
+ cmpa #'/ Slash?
+ bne PRSNA1 ..no
+ leax 1,X ..yes; skip it
+PRSNA1 leay 0,X
+ clrb
+ lda ,Y+
+ anda #$7F
+ bsr ALPHA 1st character must be alphabetic
+ bcs PRSNA4 Branch if bad name
+PRSNA2 incb INCREMENT Character count
+ lda -1,Y End of name (high bit set)?
+ bmi PRSNA3 ..yes; quit
+ lda ,Y+ Get next character
+ anda #$7F Strip high order bit
+ bsr ALFNUM Alphanumeric?
+ bcc PRSNA2 ..yes; count it
+ lda ,-Y Backup to unknown
+PRSNA3 andcc #^CARRY clear carry
+ rts RETURN (carry clear)
+
+PRSNA4 cmpa #', Comma (skip if so)?
+ bne PRSNA6 ..no
+PRSNA5 lda ,Y+ Get next character
+PRSNA6 cmpa #$20 Space?
+ beq PRSNA5 ..yes; skip
+ lda ,-Y Backup to non-delim char
+ comb (NAME Not found)
+ ldb #E$BNam 
+ rts RETURN Carry set
 
 
-SRTMEM   ldd   $01,u
-         addd  #$00FF
-         tfr   a,b
-         clra
-         tfr   d,y
-         ldd   $08,u
-         beq   L0601
-         tstb
-         beq   SRTM10
-         comb
-         ldb   #$D2
-         rts
-SRTM10    exg   a,b
-         ldx   D.FMBM
-         bra   DEALOC
 
-ABIT     ldd   $01,u
-         leau  $04,u
-         pulu  y,x
-ALOCAT    pshs  y,x,b,a
-         bsr   FNDBIT
-         tsta
-         pshs  a
-         bmi   L063F
-         lda   ,x
-ALOC10    ora   ,s
-         leay  -$01,y
-         beq   L0657
-         lsr   ,s
-         bcc   ALOC10
-         sta   ,x+
-L063F    tfr   y,d
-         sta   ,s
-         lda   #$FF
-         bra   L0649
-L0647    sta   ,x+
-L0649    subb  #$08
-         bcc   L0647
-         dec   ,s
-         bpl   L0647
-L0651    lsla
-         incb
-         bne   L0651
-         ora   ,x
-L0657    sta   ,x
-         clra
-         leas  $01,s
-         puls  pc,y,x,b,a
+* Check For Alphanumeric Character
+*
+* Passed:  (A)=Char
+* Returns:  Cc=Set If Not Alphanumeric
+* Destroys None
+*
+ALFNUM cmpa #'. period?
+ beq RETCC branch if so
+ cmpa #'0 Below zero?
+ blo RETCS ..yes; return carry set
+ cmpa #'9 Numeric?
+ bls RETCC ..yes
+ cmpa #'_ Underscore?
+ beq RETCC ..yes
+ALPHA cmpa #'A
+ blo RETCS
+ cmpa #'Z Upper case alphabetic?
+ bls RETCC ..yes
+ cmpa #$61 Below lower case a?
+ blo RETCS ..yes
+ cmpa #$7A Lower case?
+ bls RETCC ..yes
+RETCS orcc #CARRY Set carry
+ rts
 
-FNDBIT    pshs  b
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         leax  d,x
-         puls  b
-         lda   #$80
-         andb  #$07
-         beq   FNDB20
-L0670    lsra
-         decb
-         bne   L0670
-FNDB20    rts
 
-DBIT     ldd   $01,u
-         leau  $04,u
-         pulu  y,x
-DEALOC    pshs  y,x,b,a
-         bsr   FNDBIT
-         coma
-         pshs  a
-         bpl   L0692
-         lda   ,x
-L0686    anda  ,s
-         leay  -$01,y
-         beq   L06A6
-         asr   ,s
-         bcs   L0686
-         sta   ,x+
-L0692    tfr   y,d
-         bra   L0698
-L0696    clr   ,x+
-L0698    subd  #$0008
-         bhi   L0696
-         beq   L06A6
-L069F    lsla
-         incb
-         bne   L069F
-         coma
-         anda  ,x
-L06A6    sta   ,x
-         clr   ,s+
-         puls  pc,y,x,b,a
 
-SBIT     pshs  u
-         ldd   $01,u
-         ldx   $04,u
-         ldy   $06,u
-         ldu   $08,u
-         bsr   FLOBLK
-         puls  u
-         std   $01,u
-         sty   $06,u
-         rts
+* Compare Pathname With Module Name
+*
+* Passed:  (X)=Pathname
+*          (Y)=Module Name (High Bit Set Delim)
+*          (B)=Length Of Pathname
+* Returns:  Cc=Set If Names Not Equal
+*
+CNAM ldb R$B,U Get size
+ leau R$X,U
+ pulu X,Y Get string ptrs
+CHKNAM pshs D,X,Y Save registers
+CHKN10 lda ,Y+ Get (next) char of module name
+ bmi CHKN20 Branch if last module char
+ decb DECREMENT Char count
+ beq RETCS1 Branch if last character
+ eora ,X+ Equal pathname char?
+ anda #$FF-$20 Match upper/lower case
+ beq CHKN10 ..yes; repeat
+RETCS1 comb Set carry
+ puls D,X,Y,PC
+CHKN20 decb LAST Char of pathname?
+ bne RETCS1 Branch if not
+ eora 0,X Does last one match?
+ anda #$FF-$A0 Match upper/lower & high order bit
+ bne RETCS1 ..no; return carry set
+ puls D,X,Y Restore regs
+RETCC andcc #$FF-CARRY Clear carry
+ rts
+ page
+*****
+*
+*  Subroutine Ssvc
+*
+* Set Entries In Service Routine Dispatch Tables
+*
+SSVC ldy R$Y,U Get table address
+ bra SETSVC
 
-FLOBLK    pshs  u,y,x,b,a
-         pshs  y,b,a
-         clr   $08,s
-         clr   $09,s
-         tfr   d,y
-         bsr   FNDBIT
-         pshs  a
-         bra   L06DE
-L06D1    leay  $01,y
-         sty   $05,s
-L06D6    lsr   ,s
-         bcc   L06E2
-         ror   ,s
-         leax  $01,x
-L06DE    cmpx  $0B,s
-         bcc   L0700
-L06E2    lda   ,x
-         anda  ,s
-         bne   L06D1
-         leay  $01,y
-         tfr   y,d
-         subd  $05,s
-         cmpd  $03,s
-         bcc   L0707
-         cmpd  $09,s
-         bls   L06D6
-         std   $09,s
-         ldd   $05,s
-         std   $01,s
-         bra   L06D6
-L0700    ldd   $01,s
-         std   $05,s
-         coma
-         bra   FLOB40
-L0707    std   $09,s
-FLOB40    leas  $05,s
-         puls  pc,u,y,x,b,a
-
-PNAM     ldx   $04,u
-         bsr   PRSNAM
-         std   $01,u
-         bcs   L0717
-         stx   $04,u
-L0717    sty   $06,u
-         rts
-
-PRSNAM    lda   ,x
-         cmpa  #$2F
-         bne   PRSNA1
-         leax  $01,x
-PRSNA1    leay  ,x
-         clrb
-         lda   ,y+
-         anda  #$7F
-         bsr   ALPHA
-         bcs   L0740
-PRSNA2    incb
-         lda   -$01,y
-         bmi   L073D
-         lda   ,y+
-         anda  #$7F
-         bsr   ALFNUM
-         bcc   PRSNA2
-         lda   ,-y
-L073D    andcc #$FE
-         rts
-L0740    cmpa  #$2C
-         bne   L0746
-L0744    lda   ,y+
-L0746    cmpa  #$20
-         beq   L0744
-         lda   ,-y
-         comb
-         ldb   #$EB
-         rts
-
-ALFNUM    cmpa  #$2E
-         beq   RETCC
-         cmpa  #$30
-         bcs   RETCS
-         cmpa  #$39
-         bls   RETCC
-         cmpa  #$5F
-         beq   RETCC
-ALPHA    cmpa  #$41
-         bcs   RETCS
-         cmpa  #$5A
-         bls   RETCC
-         cmpa  #$61
-         bcs   RETCS
-         cmpa  #$7A
-         bls   RETCC
-RETCS    orcc  #$01
-         rts
-
-CNAM     ldb   $02,u
-         leau  $04,u
-         pulu  y,x
-CHKNAM    pshs  y,x,b,a
-CHKN10    lda   ,y+
-         bmi   CHKN20
-         decb
-         beq   RETCS1
-         eora  ,x+
-         anda  #$DF
-         beq   CHKN10
-RETCS1    comb
-         puls  pc,y,x,b,a
-CHKN20    decb
-         bne   RETCS1
-         eora  ,x
-         anda  #$5F
-         bne   RETCS1
-         puls  y,x,b,a
-RETCC    andcc #$FE
-         rts
-
-SSVC     ldy   $06,u
-         bra   SETSVC
-SETS10    tfr   b,a
-         anda  #$7F
-         cmpa  #$7F
-         beq   SETS30
-         cmpa  #$37
-         bcs   SETS30
-         comb
-         ldb   #$E3
-         rts
+SETS10 tfr B,A copy routine offset
+ anda #$7F mask upper bit
+ cmpa #$7F Is routine Ioman?
+ beq SETS30 Bra if so
+ cmpa #SVCTSZ/2 Is routine offset legal?
+ bcs SETS30 Bra if so
+ comb set carry
+ ldb #E$ISWI return error
+ rts
 
 SETS30 aslb MAKE Table offset
  ldu D.SysDis Get system service table
  leau B,U Get entry ptr
-         ldd   ,y++
-         leax  d,y
-         stx   ,u
-         bcs   SETSVC
-         stx   <$70,u
-
-SETSVC    ldb   ,y+
-         cmpb  #$80
-         bne   SETS10
-         rts
+ ldd ,Y++ Get table relative offset
+ leax D,Y Get routine address
+ stx 0,U Put in system routine table
+ bcs SETSVC Branch if system only
+ stx SVCTSZ+2,U Put in user routine table
+SETSVC ldb ,Y+ Get next routine offset
+ cmpb #$80 End of table code?
+ bne SETS10 Branch if not
+ rts
+ page
 
 * Loads new interrupt vectors
-DATINT   clra
-         tfr   a,dp
-         orcc  #$50
-         leau  >L001F,pcr
-         ldx   ,u++
-         pshs  u,x
-         clr   ,x
-         stx   ,--s
-         leax  >L07FF,pcr
-         ldu   #$FFF2
-         ldb   #$06
-L07DF    ldy   ,x++
-         sty   ,u++
-         decb
-         bne   L07DF
-         puls  pc,u,x
-         emod
-OS9End      equ   *
+LDVEC clra
+ tfr a,dp
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ leau IORESET,pcr Reset I/O registers
+ ldx ,u++
+ pshs u,x
+ clr ,x
+ stx ,--s
+ leax INTVEC,pcr Copy interrupt vectors
+ ldu #$FFF2
+ ldb #6
+LDVEC10 ldy ,x++
+ sty ,u++
+ decb
+ bne LDVEC10
+ puls pc,u,x
 
-        fcb     $F5,$9A
-SYSVEC  fcb $F9,$3F,$F9,$45,$F9,$4B,$F9,$4C,$F9,$50,$F9,$4B,$00,$00
-        fcb     $00,$00
-L07FF   fcb  $F5,$27,$F5,$2B,$F5,$2F,$F5,$33,$F5,$37,$F5,$3B,$FB,$B8
+ emod
+OS9End equ *
+
+
+*
+* Os-9 System Entries
+*
+ fdb TICK+$FBE0-* Clock tick handler
+SYSVEC fdb SWI3HN+$FFE2-* Swi3 handler
+ fdb SWI2HN+$FFE4-* Swi2 handler
+ fdb FIRQHN+$FFE6-* Fast irq handler
+ fdb IRQHN+$FFE8-* Irq handler
+ fdb SWIHN+$FFEA-* Swi handler
+ fdb NMIHN+$FFEC-* Nmi handler
+ fdb 0 Reserved
+* Actual Vector Entries
+ fdb 0 Reserved
+INTVEC fdb SWI3RQ+$FBF2-* Swi3
+ fdb SWI2RQ+$FBF4-* Swi2
+ fdb FIRQ+$FBF6-* Firq
+ fdb IRQ+$FBF8-* Irq
+ fdb SWIRQ+$FBFA-* Swi
+ fdb NMI+$FBFC-* Nmi
+ fdb LDVEC+$FBFE-*
 
 ROMEnd equ *
