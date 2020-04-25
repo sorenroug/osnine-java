@@ -965,35 +965,9 @@ M0680    fcc   "/P "
 M0700    fcb   $05
          fcb   $21 !
          fcb   $FF
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $20
-         fcb   $30 0
-         fcb   $31 1
-         fcb   $2E .
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $2E .
-         fcb   $30 0
-         fcb   $30 0
+         fcc   "VERSION 01.00.00"
          fcb   $FF
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $50 P
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4F O
-         fcb   $4E N
+         fcc   " CORPORATION"
          fcb   $FF
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -1932,21 +1906,15 @@ BANNER   fcb   $03
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
-M0F00    fcb   $16
-         fcb   $00
-         fcb   $76 v
-         fcb   $16
-         fcb   $00
-         fcb   $07
-         fcb   $1E
-         fcb   $4D M
-         fcb   $7F ÿ
-         fcb   $4D M
+M0F00    lbra  M0F79
+         lbra  M0F0D
+         fdb   ENDHELP-M0F00   $1E4D
+         fdb   ENDHELP-M0F00+$6100      $6100+$1e4d
          fcb   $16
          fcb   $01
          fcb   $41 A
-         fcb   $DE ^
-         fcb   $1A
+
+M0F0D    ldu   <$1A
          fcb   $10
          fcb   $AE .
          fcb   $C9 I
@@ -2028,7 +1996,7 @@ M0F00    fcb   $16
 M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00
 
-         fcb   $34 4
+M0F79    fcb   $34 4
          fcb   $20
          fcb   $10
          fcb   $9E

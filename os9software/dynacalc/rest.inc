@@ -216,28 +216,7 @@ M0150    fcb   $00
          fcb   $12
 M01F0    fcb   $FF
          fcb   $30 0
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $53 S
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $54 T
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
+         fcc   "        .......SOFTWAR"
 
          fcb   $18
          fcb   $30 0
@@ -249,95 +228,21 @@ M01F0    fcb   $FF
 
          fcb   $14
          fcb   $32 2
-         fcb   $2A *
-         fcb   $20
-         fcb   $43 C
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $53 S
-         fcb   $4D M
-         fcb   $42 B
-         fcb   $20
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $39 9
+         fcc   "* CRASMB with 6809"
 
          fcb   $14
          fcb   $32 2
-         fcb   $2A *
-         fcb   $20
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20
-         fcb   $43 C
-         fcb   $50 P
-         fcb   $4D M
-         fcb   $27 '
-         fcb   $73 s
+         fcc   "* additional CPM's"
 
          fcb   $18
          fcb   $32 2
-         fcb   $2A *
-         fcb   $20
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $43 C
-         fcb   $50 P
-         fcb   $4D M
-         fcb   $27 '
-         fcb   $73 s
-         fcb   $20
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20
-         fcb   $73 s
-         fcb   $63 c
-         fcb   $65 e
+         fcc   "* addit CPM's with sce"
 
          fcb   $17
          fcb   $32 2
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $20
+         fcc   "68000 "
 
-M0280    fcb   $6D m
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $20
-         fcb   $63 c
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $73 s
-         fcb   $73 s
-         fcb   $20
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $73 s
+M0280    fcc   "macro cross ass"
 
          fcb   $0D
          fcb   $32
@@ -345,19 +250,7 @@ M0280    fcb   $6D m
 
          fcb   $0F
          fcb   $32 2
-         fcb   $2B +
-         fcb   $20
-         fcb   $53 S
-         fcb   $75 u
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $53 S
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $68 h
+         fcc   "+ SuperSleuth"
 
          fcb   $13
          fcb   $32
@@ -365,60 +258,15 @@ M0280    fcb   $6D m
 
          fcb   $12
          fcb   $32
-         fcb   $2B +
-         fcb   $20
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $35 5
-         fcb   $20
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $6D m
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
+         fcc   "+ 6805 simulator"
 
          fcb   $12
          fcb   $32 2
-         fcb   $2B +
-         fcb   $20
-         fcb   $36 6
-         fcb   $35 5
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $20
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $6D m
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
+         fcc   "+ 6502 simulator"
 
          fcb   $12
          fcb   $32 2
-         fcb   $2A *
-         fcb   $20
-         fcb   $48 H
-         fcb   $44 D
-         fcb   $53 S
-         fcb   $32 2
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $20
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $79 y
+         fcc   "* HDS200 utility"
 
          fcb   $16
          fcb   $32 2
@@ -426,44 +274,11 @@ M0280    fcb   $6D m
 
          fcb   $16
          fcb   $32 2
-         fcb   $2B +
-         fcb   $20
-         fcb   $36 6
-         fcb   $35 5
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $39 9
-         fcb   $20
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $73 s
+         fcc   "+ 6502 to 6809 trans"
 
          fcb   $16
          fcb   $32 2
-         fcb   $2B +
-         fcb   $20
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $39 9
-         fcb   $20
+         fcc   "+ 6800 to 6809 "
 
 M0331    fcb   $00
          fcb   $00
@@ -497,21 +312,7 @@ M0331    fcb   $00
          fcb   $9F
          fcb   $87
          fcb   $00
-         fcb   $4F O
-         fcb   $20
-         fcb   $6A j
-         fcb   $6F o
-         fcb   $62 b
-         fcb   $20
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $20
-         fcb   $6C l
+         fcc   "O job control l"
 
 M0360    fcb   $00
          fcb   $00
@@ -616,19 +417,7 @@ M03C4    fcc   "Label"
          fcb   $65 e
          fcb   $0F
          fcb   $32 2
-         fcb   $2B +
-         fcb   $20
-         fcb   $53 S
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $43 C
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
+         fcc   "+ Spell Check"
          fcb   $12
          fcb   $32 2
          fcb   $2B +
@@ -661,27 +450,10 @@ M03C4    fcc   "Label"
          fcb   $63 c
          fcb   $10
          fcb   $32 2
-         fcb   $2A *
-         fcb   $20
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $53 S
-         fcb   $20
-         fcb   $64 d
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $65 e
+         fcc   "* RMS database"
          fcb   $07
          fcb   $30 0
-         fcb   $45 E
-         fcb   $20
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
+         fcc   "E  PR"
 
          fcb   $0A
          fcb   $A3 #
@@ -715,11 +487,7 @@ M03C4    fcc   "Label"
 
          fcb   $07
          fcb   $30 0
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
+         fcc   "price"
 
          fcb   $0A
          fcb   $A0
@@ -734,10 +502,7 @@ M03C4    fcc   "Label"
 
          fcb   $06
          fcb   $30 0
-         fcb   $49 I
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
+         fcc   "ICE "
 
          fcb   $06
          fcb   $30 0
@@ -783,6 +548,7 @@ M03C4    fcc   "Label"
          fcb   $75 u
          fcb   $73 s
          fcb   $65 e
+
          fcb   $49 I
          fcb   $20
          fcb   $16
@@ -1347,6 +1113,7 @@ M0700    fcb   $1B,$41,$06,$0F    Cyrsor XY
          fcb   $03
          fcb   $37 7
          fcb   $2E .
+
          fcb   $06
          fcb   $30 0
          fcb   $20
@@ -2248,19 +2015,19 @@ M0BAD    lda   #$90
          sta   <$00F0
          jsr   >L0D36-PGBEGIN,y   >$0D21,y
 M0BC0    ldd   <$000D
-         subd  #$0A26
-         lsra
-         lsrb
+         subd  #$0A26    Line 10 column 38
+         lsra              Change to line 5
+         lsrb              Change to column 19
          std   <$00BD
          ldb   #4   Number of segments to print
          leau  >BANNER,pcr    Write DYNACALC on startup
-M0BCF    jsr   >L0D57-PGBEGIN,y   >$0D42,y
-         jsr   >L1AB9-PGBEGIN,y
-         inc   <$00BD
-         inc   <$00BD
+M0BCF    jsr   >L0D57-PGBEGIN,y     Move cursor
+         jsr   >L1AB9-PGBEGIN,y     output string pointed to in U
+         inc   <$00BD     Add 1 to line
+         inc   <$00BD     Add 1 to line
          decb
          bne   M0BCF
-         jsr   >L0D57-PGBEGIN,y   >$0D42,y
+         jsr   >L0D57-PGBEGIN,y  Move cursor
 M0BE2    ldd   <$00C1
          cmpd  #$0001
          bls   M0C35
@@ -2332,7 +2099,7 @@ M0C68    lda   ,x+
          ldx   >M0575,pcr
          leay  >$0F00,y
          ldd   $06,y
-         sta   <$001D
+         sta   <u001D
          clr   <$007D
          lsra  
          rorb  
@@ -2707,10 +2474,8 @@ MLOAD    fcc   "      Loading "
 
 M0F00    lbra  M0F79
 M0F03    lbra  M0F0D
-         fcb   $1E
-         fcb   $67 g
-         fcb   $7D
-         fcb   $67 g
+         fdb   ENDHELP-M0F00   * 1E67
+         fdb   ENDHELP-M0F00+$5F00    * 1E67 + 5F00
 M0F0A    lbra  M1046
 
 M0F0D    ldu   <MEMPTR
@@ -2722,13 +2487,14 @@ M0F0D    ldu   <MEMPTR
          beq   M0F28
          jmp   >L1A89,y
 
+* Delete helps
 M0F28    ldu   <$001E
-         ldx   <$0041
-         leax  $01,x
+         ldx   <PARAMS
+         leax  1,x
          stx   <$001E
          pshs  u,x
-         com   <$001D
-         ldd   <$0041
+         com   <u001D   Flag for helps discarded
+         ldd   <PARAMS
          subd  <$0017
          lsra
          rorb
@@ -2747,7 +2513,7 @@ M0F28    ldu   <$001E
          ror   <$007D
          std   <$006C
          puls  u,x
-         jmp   >$3AE1,y
+         jmp   >L3AE1,y
 
 M0F5C    fcc   "Delete helps: Are you sure? "
          fcb   $00

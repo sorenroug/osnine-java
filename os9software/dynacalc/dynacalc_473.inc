@@ -1803,6 +1803,8 @@ L0D41    stx   <u006C
          lbsr  L1AB9  output string pointed to in U
          ldx   #$0200
 L0D55    stx   <u00BD
+
+* Move cursor to coord stored in u00BD
 L0D57    pshs  u,x,b
          tst   <u00E0
          bne   L0D8A
@@ -7556,9 +7558,10 @@ L3F74    lbsr  L0934    Read the option section from path #0
 L3F87    lda   #$02
          os9   F$PErr
          bra   L3F93
+
 L3F8E    lbsr  L0922
          bsr   L3FC6
-L3F93    leau  >L3FEF,pcr
+L3F93    leau  >L3FEF,pcr   String "OS9>"
          bsr   L3FC3
          clra
          ldx   <MEMPTR

@@ -5,14 +5,11 @@ M0090    fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00   Terminal setup
 M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
 M00A8    fcb   $FF,$FF,$00,$00    Cursor right
          fcb   $FF,$FF,$00,$00    Cursor ??
-CURSPOS  fcb   $1B,$41,$06,$0F    Cyrsor XY
-         fcb   $FF,$00,$00,$00
+CURSPOS  fcb   $1B,$41,$06,$0F,$FF,$00,$00,$00    Cyrsor XY
 M00B8    fcb   $1B,$42,$FF,$00,$00,$00    Cursor clear to EOL
 M00BE    fcb   $1B,$4A,$FF,$00,$00,$00    Cursor clear to end of screen
-REVON    fcb   $1B,$46,$FF,$00    Reverse on
-         fcb   $00,$00,$00,$00
-REVOFF   fcb   $1B,$47,$FF,$00    Reverse off
-M00D0    fcb   $00,$00,$00,$00
+REVON    fcb   $1B,$46,$FF,$00,$00,$00,$00,$00    Reverse on
+REVOFF   fcb   $1B,$47,$FF,$00,$00,$00,$00,$00    Reverse off
 M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
 M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
 M00DE    fcc   "                "  Terminal name (16 chars)

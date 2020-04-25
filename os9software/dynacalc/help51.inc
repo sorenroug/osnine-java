@@ -642,4 +642,4 @@ HELPTBL  fdb   HELPS-HELPS
          fdb   M270D-HELPS  $169C
          fdb   M1FA8-HELPS $0F37
          fdb   M2057-HELPS $0FE6
-M2D67 equ *
+ENDHELP equ *    at 2D67

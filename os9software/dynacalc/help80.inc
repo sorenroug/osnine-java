@@ -1,11 +1,14 @@
 * Texts are set to max 80 characters per line
 * These texts come primarily from the FLEX edition of Dynacalc
 
-HELPS    fcc   "A  set Attributes"
+HELPS    fcc   "A  set Attributes        "
+         fcc  "                 Hit @ for help with FUNCTIONS"
          fcb   $0D
-         fcc   "B  Blank current cell"
+         fcc   "B  Blank current cell    "
+         fcc  "                     > for help with ERRORS"
          fcb   $0D
-         fcc   "C  Clear entire work worksheet"
+         fcc   "C  Clear entire worksheet"
+         fcc  "                     G for general help"
          fcb   $0D
          fcc   "D  Delete current column or row"
          fcb   $0D
@@ -15,6 +18,10 @@ HELPS    fcc   "A  set Attributes"
          fcb   $0D
          fcc   "I  Insert new column or row at current position"
          fcb   $0D
+ ifeq 1
+         fcc   "K  enter Keysaver mode"
+         fcb   $0D
+ endc
          fcc   "L  Locate specified label "
          fcc   /(?="Wild card", @="Don't ignore case")/
          fcb   $0D
@@ -32,12 +39,6 @@ HELPS    fcc   "A  set Attributes"
          fcc   "T  set column or row Titles"
          fcb   $0D
          fcc   "W  adjust display Window(s)"
-         fcb   $0D
-         fcc   "   Hit @ for help with FUNCTIONS"
-         fcb   $0D
-         fcc   "       > for help with ERRORS"
-         fcb   $0D
-         fcc   "       G for general helps"
          fcb   $0D
          fcb   $00
 
@@ -96,7 +97,8 @@ M154A    fcc   "Set Format of current cell:"
          fcb   $0D
          fcc   "L  Left justify - forces number to left of cell"
          fcb   $0D
-         fcc   "P  Plot - uses cell's integer value as number of graph chars. to print"
+         fcc   "P  Plot - uses cell's integer value as number of"
+         fcc   " graph chars. to print"
          fcb   $0D
          fcc   "R  Right justify - forces label to right of cell"
          fcb   $0D
@@ -177,7 +179,7 @@ M196F    fcb   $0A
          fcb   $0D
          fcc   "N  No titles"
          fcb   $0D
-         fcc   "V  set up column(s) to left of cursor as Vertical title area"
+ fcc   "V  set up column(s) to left of cursor as Vertical title area"
          fcb   $0D
          fcb   $00
 
@@ -188,7 +190,7 @@ M1A31    fcc   "Windows:"
          fcb   $0D
          fcc   "F  sets default Format of all cells in current window"
          fcb   $0D
-         fcc   "H  divides screen Horizontally into two windows at current location"
+ fcc   "H  divides screen Horizontally into two windows at current location"
          fcb   $0D
          fcc   "N  No division - returns display to single window"
          fcb   $0D
@@ -196,7 +198,7 @@ M1A31    fcc   "Windows:"
          fcb   $0D
          fcc   "U  Unsynchronizes motion of two windows (default)"
          fcb   $0D
-         fcc   "V  divides screen Vertically into two windows at current location"
+ fcc   "V  divides screen Vertically into two windows at current location"
          fcb   $0D
          fcb   $00
 
@@ -213,7 +215,7 @@ M1BC7    fcc   "Set default format of current window:"
          fcb   $0D
          fcc   "L  Left justify - forces number to left of cell"
          fcb   $0D
-         fcc   "P  Plot - uses cell's integer value as number of graph chars. to print"
+ fcc "P  Plot - uses cell's integer value as number of graph chars. to print"
          fcb   $0D
          fcc   "R  Right justify - forces label to right of cell"
          fcb   $0D
@@ -253,7 +255,7 @@ M1EF0    fcb   $0A
          fcc   "   (defaults to Window value)"
          fcb   $0D
          fcb   $0A
-         fcc   "W  allows changing default width of all columns in current Window"
+ fcc "W  allows changing default width of all columns in current Window"
          fcb   $0D
          fcc   "   (defaults to 9 characters)"
          fcb   $0D
@@ -288,14 +290,14 @@ M2057    fcb   $0A
 
 M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $0D
-         fcc   "(All angles       @COS      @ACOS       radians = degrees/(180/PI)"
+ fcc "(All angles       @COS      @ACOS       radians = degrees/(180/PI)"
          fcb   $0D
-         fcc   "   in radians)    @TAN      @ATAN       degrees = radians*(180/PI)"
+ fcc "   in radians)    @TAN      @ATAN       degrees = radians*(180/PI)"
          fcb   $0D
          fcb   $0A
          fcc   "Logarithmic:      @LOG(x)      logarithm of x to base 10"
          fcb   $0D
-         fcc   "                  @LN(x)       logarithm of x to base e (2.718...)"
+ fcc "                  @LN(x)       logarithm of x to base e (2.718...)"
          fcb   $0D
          fcc   "                  @EXP(x)      e raised to x power"
          fcb   $0D
@@ -308,7 +310,7 @@ M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $0D
          fcc   "                  @ROUND(d,x)  x rounded to nearest d"
          fcb   $0D
-         fcc   "                               (d must be even power of 10)"
+ fcc   "                               (d must be even power of 10)"
          fcb   $0D
          fcb   $0A
          fcc   "               Hit any key to see page 2"
@@ -316,30 +318,31 @@ M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $11
          fcc   "Series:   @COUNT(x...y)    number of cells in range x...y"
          fcb   $0D
-         fcc   "          @SUM(x...y)      sum of values of cells in range x...y"
+ fcc   "          @SUM(x...y)      sum of values of cells in range x...y"
          fcb   $0D
-         fcc   "          @AVERAGE(x...y)  average value of cells in range x...y"
+ fcc   "          @AVERAGE(x...y)  average value of cells in range x...y"
          fcb   $0D
-         fcc   "          @STDDEV(m,x...y) standard deviation of cells in range x...y,"
+ fcc "          @STDDEV(m,x...y) standard deviation of cells in range x...y,"
          fcb   $0D
-         fcc   "                           m sets method:  <0 = population;  >=0 = sample"
+         fcc   "                           m sets method:  <0 = population;"
+         fcc   "  >=0 = sample"
          fcb   $0D
-         fcc   "          @MIN(x...y)      least value of cells in range x...y"
+ fcc   "          @MIN(x...y)      least value of cells in range x...y"
          fcb   $0D
-         fcc   "          @MAX(x...y)      greatest value of cells in range x...y"
+ fcc   "          @MAX(x...y)      greatest value of cells in range x...y"
          fcb   $0D
          fcc   "          @NPV(r,x...y)    Net Present Value of cells"
          fcc   " in range x...y at rate r"
          fcb   $0D
          fcc   "Indexing: @CHOOSE(n,x...y) value of nth cell in range x...y"
          fcb   $0D
-         fcc   "          @LOOKUP(n,x...y,z) '>' search - z optional - see manual"
+ fcc   "          @LOOKUP(n,x...y,z) '>' search - z optional - see manual"
          fcb   $0D
-         fcc   "          @INDEX(n,x...y,z)  '=' search - z optional - see manual"
+ fcc   "          @INDEX(n,x...y,z)  '=' search - z optional - see manual"
          fcb   $0D
          fcc   "Error:    @ERROR           causes >ER< message (general use)"
          fcb   $0D
-         fcc   "          @NA              causes >NA< message (not available)"
+ fcc   "          @NA              causes >NA< message (not available)"
          fcb   $0D
          fcb   $0A
          fcc   "                   Hit any key to exit Help"
@@ -348,7 +351,8 @@ M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
 
 M2544    fcc   "Arithmetic operators: x+y  adds x and y"
          fcb   $0D
-         fcc   "                      x-y  subtracts y from x  (use 0-x for monadic minus)"
+         fcc   "                      x-y  subtracts y from x"
+         fcc   "  (use 0-x for monadic minus)"
          fcb   $0D
          fcc   "                      x*y  multiplies x by y"
          fcb   $0D
@@ -363,7 +367,7 @@ M2544    fcc   "Arithmetic operators: x+y  adds x and y"
          fcc   "Parentheses in terms may be nested to any depth"
          fcb   $0D
          fcb   $0A
-         fcc   "To enter expression, first character must not be alphabetic"
+ fcc   "To enter expression, first character must not be alphabetic"
          fcb   $0D
          fcc   "   For example, to enter A1+A2, type '+A1+A2'"
          fcb   $0D
@@ -584,4 +588,4 @@ HELPTBL  fdb   $0000
          fdb   M270D-HELPS
          fdb   M1FA8-HELPS
          fdb   M2057-HELPS
-
+ENDHELP equ *
