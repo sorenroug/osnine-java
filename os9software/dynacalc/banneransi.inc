@@ -9,6 +9,6 @@ BANNER   fcc   "          **** DYNACALC ****"
          fcb   0
          fcc   "        (Press any key to continue)"
          fcb   0
-MLOAD    fcc   "                   (Loading file...)"
+MLOAD    fcc   "                    Loading "
          fcb   0
 

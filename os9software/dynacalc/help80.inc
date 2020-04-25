@@ -1,5 +1,4 @@
-* Texts are set to max 80 characters per line
-* These texts come primarily from the FLEX edition of Dynacalc
+* Texts are set for an 80-column display
 
 HELPS    fcc   "A  set Attributes        "
          fcc  "                 Hit @ for help with FUNCTIONS"
@@ -42,7 +41,7 @@ HELPS    fcc   "A  set Attributes        "
          fcb   $0D
          fcb   $00
 
-M12EE    fcc   "Set Attributes:"
+H.ATTRS    fcc   "Set Attributes:"
          fcb   $0D
          fcb   $0A
          fcc   "B  toggles Bell on/off (default = on)"
@@ -71,7 +70,7 @@ M12EE    fcc   "Set Attributes:"
          fcb   $0D
          fcb   $00
 
-M1500    fcb   $0A
+H.DEL    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -84,7 +83,7 @@ M1500    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M154A    fcc   "Set Format of current cell:"
+H.CFMT    fcc   "Set Format of current cell:"
          fcb   $0D
          fcb   $0A
          fcc   "C  Continuous - characters repeated throughout cell"
@@ -106,7 +105,7 @@ M154A    fcc   "Set Format of current cell:"
          fcb   $0D
          fcb   $00
 
-M16F0    fcb   $0A
+H.INS    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -119,7 +118,7 @@ M16F0    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M176D    fcb   $0A
+H.QUIT   fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -132,7 +131,7 @@ M176D    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M17D0    fcc   "System:"
+H.SYSTM    fcc   "System:"
          fcb   $0D
          fcb   $0A
          fcc   "C  Change the current directory"
@@ -153,7 +152,7 @@ M17D0    fcc   "System:"
          fcb   $0D
          fcb   $00
 
-M1901    fcb   $0A
+H.SAVE    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -167,7 +166,7 @@ M1901    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M196F    fcb   $0A
+H.TITLE    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcc   "Titles:"
@@ -183,7 +182,7 @@ M196F    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M1A31    fcc   "Windows:"
+H.WINDOW    fcc   "Windows:"
          fcb   $0D
          fcb   $0A
          fcc   "D  toggle value/formula Display flag (defaults to value)"
@@ -202,7 +201,7 @@ M1A31    fcc   "Windows:"
          fcb   $0D
          fcb   $00
 
-M1BC7    fcc   "Set default format of current window:"
+H.WFMT    fcc   "Set default format of current window:"
          fcb   $0D
          fcb   $0A
          fcc   "C  Continuous - characters repeated throughout cell"
@@ -223,7 +222,7 @@ M1BC7    fcc   "Set default format of current window:"
          fcb   $0D
          fcb   $00
 
-M1D79    fcc   "Printer attributes:"
+H.PRINT    fcc   "Printer attributes:"
          fcb   $0D
          fcb   $0A
          fcc   "B  toggles Border flag on/off (defaults to off)"
@@ -245,7 +244,7 @@ M1D79    fcc   "Printer attributes:"
          fcb   $0D
          fcb   $00
 
-M1EF0    fcb   $0A
+H.WIDTH    fcb   $0A
          fcb   $0A
          fcc   "Width:"
          fcb   $0D
@@ -261,7 +260,7 @@ M1EF0    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M1FA8    fcb   $0A
+H.MOVE    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcc   "Move column/row:"
@@ -276,7 +275,7 @@ M1FA8    fcb   $0A
          fcb   $00
 
 * Add "Order:" here?
-M2057    fcb   $0A
+H.ORDER    fcb   $0A
          fcb   $0A
          fcc   "C  loads/saves data by Column"
          fcb   $0D
@@ -288,7 +287,7 @@ M2057    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
+H.TRIG    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $0D
  fcc "(All angles       @COS      @ACOS       radians = degrees/(180/PI)"
          fcb   $0D
@@ -310,32 +309,32 @@ M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $0D
          fcc   "                  @ROUND(d,x)  x rounded to nearest d"
          fcb   $0D
- fcc   "                               (d must be even power of 10)"
-         fcb   $0D
-         fcb   $0A
-         fcc   "               Hit any key to see page 2"
-         fcb   $0D
-         fcb   $11
-         fcc   "Series:   @COUNT(x...y)    number of cells in range x...y"
-         fcb   $0D
- fcc   "          @SUM(x...y)      sum of values of cells in range x...y"
-         fcb   $0D
- fcc   "          @AVERAGE(x...y)  average value of cells in range x...y"
-         fcb   $0D
+ fcc "                               (d must be even power of 10)"
+ fcb $0D
+ fcb $0A
+ fcc "               Hit any key to see page 2"
+ fcb $0D
+ fcb $11
+ fcc "Series:   @COUNT(x...y)    number of cells in range x...y"
+ fcb $0D
+ fcc "          @SUM(x...y)      sum of values of cells in range x...y"
+ fcb $0D
+ fcc "          @AVERAGE(x...y)  average value of cells in range x...y"
+ fcb   $0D
  fcc "          @STDDEV(m,x...y) standard deviation of cells in range x...y,"
-         fcb   $0D
-         fcc   "                           m sets method:  <0 = population;"
-         fcc   "  >=0 = sample"
-         fcb   $0D
+ fcb   $0D
+ fcc   "                           m sets method:  <0 = population;"
+ fcc   "  >=0 = sample"
+ fcb   $0D
  fcc   "          @MIN(x...y)      least value of cells in range x...y"
-         fcb   $0D
+ fcb   $0D
  fcc   "          @MAX(x...y)      greatest value of cells in range x...y"
-         fcb   $0D
-         fcc   "          @NPV(r,x...y)    Net Present Value of cells"
-         fcc   " in range x...y at rate r"
-         fcb   $0D
-         fcc   "Indexing: @CHOOSE(n,x...y) value of nth cell in range x...y"
-         fcb   $0D
+ fcb   $0D
+ fcc   "          @NPV(r,x...y)    Net Present Value of cells"
+ fcc   " in range x...y at rate r"
+ fcb   $0D
+ fcc   "Indexing: @CHOOSE(n,x...y) value of nth cell in range x...y"
+ fcb   $0D
  fcc   "          @LOOKUP(n,x...y,z) '>' search - z optional - see manual"
          fcb   $0D
  fcc   "          @INDEX(n,x...y,z)  '=' search - z optional - see manual"
@@ -349,7 +348,7 @@ M20BB    fcc   "Trigonometric:    @SIN      @ASIN       @PI (3.14...)"
          fcb   $0D
          fcb   $00
 
-M2544    fcc   "Arithmetic operators: x+y  adds x and y"
+H.ARIT    fcc   "Arithmetic operators: x+y  adds x and y"
          fcb   $0D
          fcc   "                      x-y  subtracts y from x"
          fcc   "  (use 0-x for monadic minus)"
@@ -379,7 +378,7 @@ M2544    fcc   "Arithmetic operators: x+y  adds x and y"
          fcb   $0D
          fcb   $00
 
-M270D    fcc   "       DYNACALC Error Messages"
+H.ERRMSG    fcc   "       DYNACALC Error Messages"
          fcb   $0D
          fcb   $0A
          fcc   "    >AE<  Bad argument error"
@@ -571,21 +570,21 @@ ERRTBL   fdb   ERROR01-ERRMSGS
          fdb   ERROR50-ERRMSGS $0402
 
 HELPTBL  fdb   $0000
-         fdb   M12EE-HELPS
-         fdb   M2544-HELPS
-         fdb   M1901-HELPS
-         fdb   M154A-HELPS
-         fdb   M1A31-HELPS
-         fdb   M196F-HELPS
-         fdb   M17D0-HELPS
-         fdb   M1EF0-HELPS
-         fdb   M176D-HELPS
-         fdb   M1D79-HELPS
-         fdb   M1500-HELPS
-         fdb   M16F0-HELPS
-         fdb   M1BC7-HELPS
-         fdb   M20BB-HELPS
-         fdb   M270D-HELPS
-         fdb   M1FA8-HELPS
-         fdb   M2057-HELPS
+         fdb   H.ATTRS-HELPS
+         fdb   H.ARIT-HELPS
+         fdb   H.SAVE-HELPS
+         fdb   H.CFMT-HELPS
+         fdb   H.WINDOW-HELPS
+         fdb   H.TITLE-HELPS
+         fdb   H.SYSTM-HELPS
+         fdb   H.WIDTH-HELPS
+         fdb   H.QUIT-HELPS
+         fdb   H.PRINT-HELPS
+         fdb   H.DEL-HELPS
+         fdb   H.INS-HELPS
+         fdb   H.WFMT-HELPS
+         fdb   H.TRIG-HELPS
+         fdb   H.ERRMSG-HELPS
+         fdb   H.MOVE-HELPS
+         fdb   H.ORDER-HELPS
 ENDHELP equ *
