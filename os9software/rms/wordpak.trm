@@ -1,0 +1,31 @@
+*RMS Terminal File For TRS-80 Color Computer with Word-Pak
+19   lines
+50   columns
+5F   filler
+00   undefined
+0200 clear and home cursor
+0F00 home
+0A   line feed ( cursor down )
+08   cursor left
+0900 cursor right
+00   bell
+0600 reverse video ( does not function )
+06000000 normal video
+FF000000000000000000000000 no initilization
+00     no lost characters
+1B0000 lead in for no functions
+0D00 CR
+0300 char delete                 -- break
+0900 move right to next field    --  ->        ( right arrow )
+0800 move left to previous field --  <-        ( left arrow  )
+1300 quit / exit RMS             -- ctrl ^     ( up arrow    )
+1800 clear record                -- shifted <- ( left arrow  )
+1900 find record                 -- shifted -> ( right arrow )
+1000 delete record               -- ctrl <-    ( left arrow  )
+1100 update record               -- ctrl ->    ( right arrow )
+1A00 feed secondary record       -- shifted v  ( down arrow  )
+0A00 insert new record           --  v         ( down arrow  )
+0C00 home                        --  ^         ( up arrow    )
+1C00 next primary record         -- shifted ^  ( up arrow    )
+1200 copy field                  -- ctrl v     ( down arrow  )
+0032 delay                       -- short delay needed to keep RMS happy

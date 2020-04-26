@@ -10,10 +10,10 @@ rev      set   $01
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   2
 u0002    rmb   2
-u0004    rmb   2
-u0006    rmb   1
-u0007    rmb   1
-u0008    rmb   1
+u0004    rmb   2  Start of parameter area
+FD.RMS    rmb   1  path to .RMS file
+FD.DIC    rmb   1  path to DIC file
+u0008    rmb   1   path to NDX file
 u0009    rmb   2
 u000B    rmb   2
 u000D    rmb   2
@@ -22,7 +22,7 @@ u0011    rmb   2
 u0013    rmb   2
 u0015    rmb   2
 u0017    rmb   2
-u0019    rmb   2
+u0019    rmb   2   input buffer
 u001B    rmb   2
 u001D    rmb   2
 u001F    rmb   2
@@ -42,18 +42,16 @@ u0030    rmb   2
 u0032    rmb   1
 u0033    rmb   5
 u0038    rmb   2
-u003A    rmb   1
-u003B    rmb   1
+u003A    rmb   1   Screen rows
+u003B    rmb   1   Screen width
 u003C    rmb   1
 u003D    rmb   3
 u0040    rmb   10
 u004A    rmb   1
 u004B    rmb   7
-u0052    rmb   28
+u0052    rmb   28 Ring bell
 u006E    rmb   1
-u006F    rmb   1
-u0070    rmb   1
-u0071    rmb   1
+LEAD.IN    rmb   3   address $6F
 u0072    rmb   1
 u0073    rmb   1
 u0074    rmb   1
@@ -82,8 +80,7 @@ u008A    rmb   1
 u008B    rmb   1
 u008C    rmb   1
 u008D    rmb   1
-u008E    rmb   1
-u008F    rmb   1
+LEAD.OUT    rmb   2  Address $8E
 u0090    rmb   2
 u0092    rmb   1
 u0093    rmb   1
@@ -112,15 +109,15 @@ name     equ   *
          fcb   $01
 
 start    equ   *
-         leau  >u0100,u
-         stu   <u00B5
-         leau  <u0040,u
+         leau  >$100,u
+         stu   <u00B5  Buffer for 2x getstat/setstat
+         leau  <$040,u
          stu   <u00BA
          stu   <u009F
-         leau  >u012C,u
+         leau  >$12C,u
          stu   <u00BC
          stu   <u0000
-         stx   <u0004
+         stx   <u0004  Start of parameter area
          leax  >-$00A0,x
          stx   <u0002
          clr   <u00B4
@@ -147,15 +144,15 @@ L0051    lda   ,x+
          ldx   <u00B5
          leax  <$20,x
          ldd   #$0000
-         clr   $04,x
-         clr   $05,x
+         clr   PD.EKO-PD.OPT,x
+         clr   PD.ALF-PD.OPT,x
          clr   $07,x
          std   $09,x
          std   $0B,x
          std   $0D,x
-         std   $0F,x
-         std   <$11,x
-         clr   <$13,x
+         std   PD.PSC-PD.OPT,x
+         std   PD.QUT-PD.OPT,x
+         clr   PD.OVF-PD.OPT,x
          os9   I$SetStt
          leax  >TRMFILE,pcr  "RMS.TRM"
          lda   #READ.
@@ -164,7 +161,7 @@ L0051    lda   ,x+
          leax  >TRMFILE,pcr  "RMS.TRM"
          lda   #PEXEC.+READ.
          os9   I$Open
-         lbcs  L09D0
+         lbcs  L09D0   error
 
 * Parse the rms.trm file
 L008F    sta   <u0092
@@ -174,12 +171,12 @@ L008F    sta   <u0092
          stx   <u0093
          lda   #$58
          sta   <u0095
-L009D    bsr   L00DD
+L009D    bsr   L00DD   Read one byte
          cmpa  #'*
          bne   L00AB
 
 * Read comment until EOL
-L00A3    bsr   L00DD
+L00A3    bsr   L00DD   read byte into A
          cmpa  #$0D
          bne   L00A3
          bra   L009D
@@ -196,9 +193,9 @@ L00B9    lsla
          lsla
          lsla
          sta   <u0096
-         bsr   L00DD
+         bsr   L00DD   read byte into A
          cmpa  #'0
-         lbcs  L09D0
+         lbcs  L09D0   error
          cmpa  #'A
          bcs   L00CD
          suba  #$07
@@ -211,14 +208,15 @@ L00CD    anda  #$0F
          bne   L009D
          bra   L00F4
 
+* Read one byte into A
 L00DD    ldy   #$0001
-         ldx   <u0002
+         ldx   <u0002   keyboard buffer
          lda   <u0092
          os9   I$Read
-         lbcs  L09D0
-         ldx   <u0002
+         lbcs  L09D0   error
+         ldx   <u0002   keyboard buffer
          lda   ,x
-         lbsr  L1338
+         lbsr  L1338  make upper case
          rts
 
 L00F4    lda   <u0092
@@ -227,11 +225,11 @@ L00F4    lda   <u0092
          stx   <u0092
          lbsr  L01E9
          stx   <u0094
-         lda   #$2E
-         ldb   #$52
+         lda   #'.
+         ldb   #'R
          std   ,x
-         lda   #$4D
-         ldb   #$53
+         lda   #'M
+         ldb   #'S
          std   $02,x
          clr   $04,x
          leax  $05,x
@@ -240,21 +238,21 @@ L00F4    lda   <u0092
          lda   #$43
          os9   I$Open
          lbcs  L0951
-         sta   <u0006
+         sta   <FD.RMS  path to .RMS file
          tfr   dp,a
-         ldb   #$2F
+         ldb   #$2F   set address of buffer
          tfr   d,x
          ldy   #$0005
-         lda   <u0006
+         lda   <FD.RMS  path to .RMS file
          os9   I$Read
          lbcs  L095D
          lda   <u002F
-         cmpa  #$55
+         cmpa  #$55   Magic number?
          lbne  L0963
-         ldd   <u0032
-         cmpd  #$0003
+         ldd   <u0032  Size of record
+         cmpd  #$0003  under 3 bytes?
          lble  L0963
-         cmpd  #$0400
+         cmpd  #$0400  over $400 bytes
          lbhi  L0963
          lda   #$FF
          ldb   <u0030
@@ -284,7 +282,7 @@ L0176    std   <u0015
 L0182    std   <u0019
          addd  <u0032
          std   <u0000
-         cmpd  <u0002
+         cmpd  <u0002   keyboard buffer
          lbcc  L099A
          ldx   <u0094
          lda   #'.
@@ -298,24 +296,24 @@ L0182    std   <u0019
          lda   #$41
          os9   I$Open
          lbcs  L0957
-         sta   <u0007
+         sta   <FD.DIC  path to DIC file
          clr   <u00B7
-         clr   <u0008
+         clr   <u0008   path to NDX file
          ldx   <u0000
          lbsr  L01E9
          bne   L01D2
          lda   #'.
          ldb   #'N
-         std   ,x
+         std   0,x
          lda   #'D
          ldb   #'X
-         std   $02,x
-         clr   $04,x
+         std   2,x
+         clr   4,x
          ldx   <u0000
          lda   #$01
          os9   I$Open
          lbcs  L096F
-         sta   <u0008
+         sta   <u0008   path to NDX file
 L01D2    ldx   <u000D
          lda   #$01
          sta   <u0038
@@ -326,7 +324,7 @@ L01D2    ldx   <u000D
          ldx   <u000F
          bsr   L0228
          lbra  L09D6
-L01E9    ldy   <u0004
+L01E9    ldy   <u0004  Start of parameter area
 L01EC    lda   ,y
          cmpa  #$0D
          bne   L01F5
@@ -351,7 +349,7 @@ L0203    lda   ,y
          decb
          bne   L0203
 L0218    leay  $01,y
-L021A    sty   <u0004
+L021A    sty   <u0004  Start of parameter area
          lda   #$00
          rts
 
@@ -387,7 +385,7 @@ L0257    lbsr  L056C
          ldx   <u0093
          sta   ,x+
          stx   <u0093
-         cmpx  <u0002
+         cmpx  <u0002   keyboard buffer
          bcs   L0257
          lbra  L099A
 L0271    ldx   <u0093
@@ -401,13 +399,13 @@ L0281    lbsr  L056C
          lbne  L04D8
          cmpa  #$20
          beq   L0281
-         cmpa  #$3B
+         cmpa  #';
          beq   L0281
          cmpa  #$0D
          bne   L0298
          inc   <u0038
          bra   L0281
-L0298    cmpa  #$24
+L0298    cmpa  #'$
          lbeq  L04D8
          ldx   <u001D
          stx   <u0093
@@ -421,7 +419,7 @@ L0298    cmpa  #$24
          clr   $07,x
          clr   $0F,x
 L02B4    ldx   <u0093
-         lbsr  L1338
+         lbsr  L1338  make upper case
          sta   ,x+
          stx   <u0093
          inc   <u0095
@@ -432,7 +430,7 @@ L02B4    ldx   <u0093
 L02C8    lbne  L0981
          cmpa  #$20
          beq   L02EF
-         cmpa  #$2C
+         cmpa  #',
          beq   L02EF
          cmpa  #$0D
          bne   L02B4
@@ -442,7 +440,7 @@ L02DC    lbsr  L056C
          bne   L02C8
          cmpa  #$20
          beq   L02EF
-         cmpa  #$2C
+         cmpa  #',
          beq   L02EF
          cmpa  #$0D
          bne   L02DC
@@ -452,15 +450,15 @@ L02F1    lbsr  L056C
          bne   L02C8
          cmpa  #$20
          beq   L02F1
-         cmpa  #$3B
+         cmpa  #';
          beq   L02F1
          cmpa  #$0D
          bne   L0306
          inc   <u0038
          bra   L02F1
-L0306    cmpa  #$30
+L0306    cmpa  #'0
          blt   L0334
-         cmpa  #$39
+         cmpa  #'9
          bgt   L0334
          anda  #$0F
          sta   <u0094
@@ -473,7 +471,7 @@ L0306    cmpa  #$30
          stb   <u0093
          lbsr  L056C
          bne   L0334
-         cmpa  #$2C
+         cmpa  #',
          beq   L0337
          cmpa  #$20
          beq   L0337
@@ -488,8 +486,8 @@ L0337    lda   <u0093
          sta   $08,x
 L033F    lbsr  L056C
          bne   L0367
-         lbsr  L1338
-         cmpa  #$2C
+         lbsr  L1338  make upper case
+         cmpa  #',
          beq   L033F
          cmpa  #$20
          beq   L033F
@@ -535,9 +533,9 @@ L039A    lbsr  L056C
          bra   L039A
 L03A9    cmpa  #$20
          beq   L039A
-         cmpa  #$2C
+         cmpa  #',
          beq   L039A
-         cmpa  #$22
+         cmpa  #'"
          lbne  L0994
          ldx   <u001D
          ldd   <u0000
@@ -549,10 +547,10 @@ L03BF    lbsr  L056C
          bne   L03CE
          inc   <u0038
          bra   L03BF
-L03CE    cmpa  #$22
+L03CE    cmpa  #'"
          beq   L03E5
          ldx   <u0000
-         cmpx  <u0002
+         cmpx  <u0002   keyboard buffer
          bcs   L03DB
 L03D8    lbra  L099A
 L03DB    sta   ,x+
@@ -561,7 +559,7 @@ L03DB    sta   ,x+
          inc   $0D,x
          bra   L03BF
 L03E5    ldx   <u0000
-         cmpx  <u0002
+         cmpx  <u0002   keyboard buffer
          bcc   L03D8
          clr   ,x+
          stx   <u0000
@@ -604,14 +602,14 @@ L043B    cmpa  #$0D
 L0443    cmpa  <u0093
          beq   L0456
          ldx   <u0000
-         cmpx  <u0002
+         cmpx  <u0002   keyboard buffer
          bcs   L0450
 L044D    lbra  L099A
 L0450    sta   ,x+
          stx   <u0000
          bra   L0433
 L0456    ldx   <u0000
-         cmpx  <u0002
+         cmpx  <u0002   keyboard buffer
          bcc   L044D
          clr   ,x+
          stx   <u0000
@@ -631,11 +629,11 @@ L0475    lbsr  L056C
          bne   L0485
          inc   <u0038
          lbra  L0475
-L0485    cmpa  #$3E
+L0485    cmpa  #'>
          beq   L04A8
-         cmpa  #$30
+         cmpa  #'0
          lblt  L0438
-         cmpa  #$39
+         cmpa  #'9
          lbgt  L0438
          anda  #$0F
          sta   <u0093
@@ -658,7 +656,7 @@ L04B3    lbsr  L056C
          bra   L04B3
 L04C2    cmpa  #$20
          beq   L04B3
-         cmpa  #$3B
+         cmpa  #';
          lbne  L03F4
 L04CC    ldx   <u001D
          leax  <$14,x
@@ -695,7 +693,7 @@ L050A    lda   ,x
          sta   <u0095
          lda   <u0092
          beq   L052A
-         lda   <u003B
+         lda   <u003B   Screen width
          suba  <u0092
          bls   L0526
          suba  <u0095
@@ -708,9 +706,9 @@ L052A    lda   <u0093
          sta   $0E,x
          lda   <u0095
          adda  <u0092
-L0536    cmpa  <u003B
+L0536    cmpa  <u003B   Screen width
          bcs   L0540
-         suba  <u003B
+         suba  <u003B   Screen width
          inc   <u0093
          bra   L0536
 L0540    cmpa  #$00
@@ -718,29 +716,31 @@ L0540    cmpa  #$00
          tst   <u006E
          bne   L0552
          adda  #$01
-         cmpa  <u003B
+         cmpa  <u003B   Screen width
          bcs   L0552
-         suba  <u003B
+         suba  <u003B   Screen width
          inc   <u0093
 L0552    sta   <u0092
          leax  <$14,x
          lbra  L050A
+
 L055A    lda   <u0093
-         cmpa  <u003A
+         cmpa  <u003A   Screen rows
          bgt   L0568
          bne   L056B
          lda   <u0092
-         cmpa  <u003B
+         cmpa  <u003B   Screen width
          blt   L056B
-L0568    lbra  L09C4
+L0568    lbra  L09C4   Go to error "dictionary too long for screen"
 L056B    rts
 
+* Read a byte into reg. A
 L056C    pshs  x
          tst   <u00B4
          bne   L0586
          ldy   #$0001
-         ldx   <u0019
-         lda   <u0007
+         ldx   <u0019  input buffer
+         lda   <FD.DIC  path to DIC file
          os9   I$Read
          bcs   L0586
          ldx   <u0019
@@ -866,7 +866,7 @@ L09AC    leax  >L0770,pcr
          bra   ERRMSG
 L09BE    leax  >L07F7,pcr
          bra   ERRMSG
-L09C4    leax  >L081E,pcr
+L09C4    leax  >L081E,pcr   dictionary too long for screen
          bra   ERRMSG
 L09CA    leax  >L083D,pcr
          bra   ERRMSG
@@ -905,7 +905,7 @@ L0A0C    ldx   <u0015
          stx   <u0092
          ldx   <u000F
          bsr   L09F6
-         lda   <u0007
+         lda   <FD.DIC  path to DIC file
          os9   I$Close
          ldy   <u000F
          lda   ,y
@@ -914,88 +914,92 @@ L0A0C    ldx   <u0015
          bne   L0A2E
          leax  >L086F,pcr   secondary dict has only one field
          lbra  L08FC
+
 L0A2E    ldd   #$2020
          ldx   <u0011
 L0A33    std   ,x++
          cmpx  <u0019
          bne   L0A33
          tfr   dp,a
-         ldb   #$5F
+         ldb   #$5F  Init sequence
          tfr   d,x
 L0A3F    lda   ,x+
-         cmpa  #$FF
+         cmpa  #$FF Stop at FF
          beq   L0A4A
          lbsr  XOUTCH
          bra   L0A3F
 L0A4A    clra
          lbra  L0B42
+
+* Keyboard entry parsing
 L0A4E    clr   <u0029
-         lbsr  L19EC
-         cmpa  <u006F
-         beq   L0AB8
-         cmpa  <u0072
+         lbsr  L19EC   read from keyboard
+         cmpa  <LEAD.IN  Match first char in lead-in
+         beq   L0AB8 ..yes
+         cmpa  <u0072   CR entered?
          lbeq  L0BF8
-         cmpa  <u0074
+         cmpa  <u0074   backspace entered?
          lbeq  L0C74
-         cmpa  <u0078
+         cmpa  <u0078  tab backward?
          lbeq  L0CA6
-         cmpa  <u0076
+         cmpa  <u0076  tab forward?
          lbeq  L0BF8
-         cmpa  <u007A
-         lbeq  L0BE4
+         cmpa  <u007A  Quit?
+         lbeq  L0BE4 .. yes
          cmpa  <u008C
          lbeq  L0DDF
-         cmpa  <u007C
-         lbeq  L0B42
+         cmpa  <u007C  Clear screen?
+         lbeq  L0B42  yes
          cmpa  <u0080
          lbeq  L0E86
          cmpa  <u0082
          lbeq  L0F28
          cmpa  <u0086
          lbeq  L0F93
-         cmpa  <u0084
+         cmpa  <u0084  FEED key
          lbeq  L10A7
-         cmpa  <u0088
+         cmpa  <u0088  Home key
          lbeq  L0C62
-         cmpa  <u008A
+         cmpa  <u008A  Scan/scroll key
          lbeq  L11BD
-         cmpa  <u007E
-         lbeq  L0E0D
-         cmpa  #$20
+         cmpa  <u007E  Find?
+         lbeq  L0E0D  ..yes
+         cmpa  #$20   is it space?
          lbcc  L0CB9
-L0AB1    lda   <u0052
+L0AB1    lda   <u0052  Ring bell
          lbsr  XOUTCH
-         bra   L0A4E
-L0AB8    tst   <u0070
+         bra   L0A4E  get next char
+* Parse lead-in/lead-out
+L0AB8    tst   <LEAD.IN+1  lead-in char+1
          beq   L0ACE
-         lbsr  L19EC
-         cmpa  <u0070
+         lbsr  L19EC   read from keyboard
+         cmpa  <LEAD.IN+1
          bne   L0AB1
-         tst   <u0071
+         tst   <LEAD.IN+2  lead-in char+2
          beq   L0ACE
-         lbsr  L19EC
-         cmpa  <u0071
+         lbsr  L19EC   read from keyboard
+         cmpa  <LEAD.IN+2
          bne   L0AB1
-L0ACE    lbsr  L19EC
+L0ACE    lbsr  L19EC   read from keyboard
          pshs  a
-         tst   <u008E
+         tst   <LEAD.OUT  lead-out
          beq   L0AE9
-         lbsr  L19EC
-         cmpa  <u008E
+         lbsr  L19EC   read from keyboard
+         cmpa  <LEAD.OUT
          bne   L0AB1
-         tst   <u008F
+         tst   <LEAD.OUT+1  lead-out+1
          beq   L0AE9
-         lbsr  L19EC
-         cmpa  <u008F
-         bne   L0AB1
+         lbsr  L19EC   read from keyboard
+         cmpa  <LEAD.OUT+1  lead-out+1
+         bne   L0AB1   ring bell
 L0AE9    puls  a
-         cmpa  <u0073
+         cmpa  <u0073  CR key+1
          lbeq  L0BF8
-         cmpa  <u0075
+         cmpa  <u0075  BS key+1
          lbeq  L0C74
-         cmpa  <u0079
+         cmpa  <u0079  tab back+1
          lbeq  L0CA6
-         cmpa  <u0077
+         cmpa  <u0077  tab forward+1
          lbeq  L0BF8
          cmpa  <u007B
          lbeq  L0BE4
@@ -1017,7 +1021,9 @@ L0AE9    puls  a
          lbeq  L11BD
          cmpa  <u007F
          lbeq  L0E0D
-         lbra  L0AB1
+         lbra  L0AB1   ring bell
+
+* Clear form
 L0B42    tst   <u00A1
          beq   L0B53
          leax  >L15EE,pcr to clear without save type Y
@@ -1037,11 +1043,12 @@ L0B64    leax  $01,x
          beq   L0B6E
          sta   ,x
          bra   L0B64
+
 L0B6E    lda   #$0D
          sta   ,x
          bsr   L0B76
          bra   L0B8C
-L0B76    lbsr  L0BC9
+L0B76    lbsr  L0BC9   Clear screen
          lda   <u004A
          bsr   L0BC2
          bsr   L0BBA
@@ -1052,6 +1059,7 @@ L0B81    lda   ,x+
          bra   L0B81
 L0B89    bsr   L0BBE
          rts
+
 L0B8C    ldx   <u000D
          stx   <u001D
 L0B90    ldx   <u001D
@@ -1073,16 +1081,22 @@ L0BAE    ldx   <u000D
          stx   <u001D
          lbsr  L0C0A
          lbra  L0A4E
-L0BBA    ldb   #$53
+
+L0BBA    ldb   #$53   Dimmed address
          bra   L0BCF
-L0BBE    ldb   #$59
+L0BBE    ldb   #$59   Brite address
          bra   L0BCF
+
 L0BC2    lbra  XOUTCH
-L0BC5    ldb   #$4C
+
+L0BC5    ldb   #$4C   Sequence for move right
          bra   L0BCF
-L0BC9    ldb   #$3E
+
+L0BC9    ldb   #$3E   Sequence for clear
          bra   L0BCF
-L0BCD    ldb   #$44
+
+L0BCD    ldb   #$44   Sequence for home
+* Output up to 6 bytes
 L0BCF    pshs  x,b
          tfr   dp,a
          tfr   d,x
@@ -1094,14 +1108,17 @@ L0BD7    lda   ,x+
          bne   L0BD7
 L0BE1    puls  x,b
          rts
+
+* Quit
 L0BE4    lbsr  L0BC9
-L0BE7    lda   <u0007
+L0BE7    lda   <FD.DIC  path to DIC file
          lbsr  WRIBUF
          ldx   <u00B5
          ldd   #$0000
          os9   I$SetStt
          clrb
          os9   F$Exit
+
 L0BF8    ldx   <u0024
          leax  <$14,x
          stx   <u0024
@@ -1109,6 +1126,7 @@ L0BF8    ldx   <u0024
          lbeq  L0C62
          bsr   L0C0A
          lbra  L0A4E
+
 L0C0A    ldx   <u0024
          cmpx  <u000F
          bne   L0C15
@@ -1128,7 +1146,9 @@ L0C1A    lda   <u003D
          lda   $0E,x
          bsr   L0C32
          bra   L0C51
+
 L0C32    lbra  XOUTCH
+
 L0C35    lbsr  L0BCD
          lda   $0D,x
          sta   <u0092
@@ -1139,7 +1159,7 @@ L0C3C    lda   <u004A
          lda   $0E,x
          beq   L0C51
          sta   <u0092
-L0C4A    lbsr  L0BC5
+L0C4A    lbsr  L0BC5  Move right
          dec   <u0092
          bne   L0C4A
 L0C51    lbsr  L0BBA
@@ -1150,6 +1170,8 @@ L0C56    lda   ,x+
          bra   L0C56
 L0C5E    lbsr  L0BBE
          rts
+
+* Go to home
 L0C62    ldx   <u000D
          lda   <u0023
          cmpa  #$01
@@ -1345,6 +1367,8 @@ L0DF9    lda   ,y+
          bne   L0DF9
          inc   <u00A1
          lbra  L0BF8
+
+* Find record
 L0E0D    clr   <u0028
          lda   <u0023
          cmpa  #$01
@@ -1361,7 +1385,7 @@ L0E21    lbsr  L138B
          lda   ,y
          cmpa  #$55
          bne   L0E3C
-L0E32    leax  >L13E7,pcr
+L0E32    leax  >L13E7,pcr  NOTFOUND
          lbsr  L12E2
          lbra  L0C62
 L0E3C    lbsr  L1343
@@ -1400,13 +1424,13 @@ L0E75    lda   ,x+
 L0E86    tst   <u00B7
          lda   <u0028
          bne   L0E96
-         leax  >L1404,pcr
+         leax  >L1404,pcr Must display before deleting
          lbsr  L12E2
          lbra  L0A4E
 L0E96    lda   <u0023
          cmpa  #$01
          bne   L0EA9
-         leax  >L144A,pcr
+         leax  >L144A,pcr   Push D to delete
          ldy   <u000F
          lda   ,y
          beq   L0EA9
@@ -1502,7 +1526,7 @@ L0F7C    inc   >L0F82,pcr
 
 L0F82    fcb   $00
 
-L0F83    lda   <u0006
+L0F83    lda   <FD.RMS  path to .RMS file
          ldx   <u00AD
          ldu   <u00AF
          leax  $02,x
@@ -1620,14 +1644,17 @@ L1087    lda   ,x+
          std   <u0092
          bne   L1087
 L1094    rts
+
 L1095    bsr   L10A2
          bsr   L1099
 L1099    ldx   <u0090
 L109B    lbsr  L0BCD
          leax  -$01,x
          bne   L109B
-L10A2    lda   <u0052
+L10A2    lda   <u0052 Ring bell
          lbra  XOUTCH
+
+* Feed key pressed
 L10A7    tst   <u00B7
          clr   <u002C
          clr   <u002D
@@ -1641,7 +1668,7 @@ L10A7    tst   <u00B7
          lda   ,y
          bne   L10D3
          lbra  L0AB1
-L10C3    leax  >L14FF,pcr
+L10C3    leax  >L14FF,pcr   Must display a primary record first
          lbsr  L12E2
          lbra  L0A4E
 L10CD    lda   <u0028
@@ -1679,7 +1706,7 @@ L1106    ldb   ,x+
          sta   <u0028
 L111B    ldx   <u000F
          stx   <u0024
-         lbsr  L0BC9
+         lbsr  L0BC9   Clear screen
          lda   <u004A
          bsr   L116E
          lbsr  L0BBA
@@ -1734,6 +1761,7 @@ L118C    leax  $01,x
          beq   L1196
          sta   ,x
          bra   L118C
+
 L1196    lda   #$0D
          sta   ,x
          ldx   <u0011
@@ -1753,16 +1781,18 @@ L11AB    ldx   <u0092
          deca
          bne   L11AB
          lbra  L111B
+
+* Scan: browse through file
 L11BD    tst   <u00B7
          lbne  L0AB1
          clr   <u00A1
          lda   <u0023
          cmpa  #$01
          beq   L11D5
-         leax  >L1540,pcr
+         leax  >L1540,pcr   error: must be on primary form
          lbsr  L12E2
          lbra  L0A4E
-L11D5    lda   <u0008
+L11D5    lda   <u0008   path to NDX file
          bne   L1218
          ldx   <u002A
          stx   <u002E
@@ -1796,25 +1826,25 @@ L1218    clr   <u0028
          sta   <u0092
          ldx   <$12,x
          stx   <u0093
-L1225    lda   <u0008
+L1225    lda   <u0008   path to NDX file
          ldx   <u0019
          ldy   #$0001
          os9   I$Read
          bcc   L1255
-         cmpb  #$D3
+         cmpb  #E$EOF
          beq   L123C
          leax  >L15D2,pcr
          bra   L124F
 L123C    pshs  u,x
          ldu   #$0000
          ldx   #$0000
-         lda   <u0008
+         lda   <u0008   path to NDX file
          os9   I$Seek
          puls  u,x
          leax  >L1523,pcr
 L124F    lbsr  L12E2
          lbra  L0B42
-L1255    ldx   <u0019
+L1255    ldx   <u0019   input buffer
          lda   ,x
          cmpa  #$0D
          beq   L127E
@@ -1823,12 +1853,12 @@ L1255    ldx   <u0019
          stx   <u0093
          dec   <u0092
          bne   L1225
-L1267    lda   <u0008
+L1267    lda   <u0008   path to NDX file
          ldy   #$0001
-         ldx   <u0019
+         ldx   <u0019   input buffer
          os9   I$Read
          bcs   L1288
-         ldx   <u0019
+         ldx   <u0019   input buffer
          lda   ,x
          cmpa  #$0D
          bne   L1267
@@ -1869,42 +1899,46 @@ L12C1    ldx   #$0001
          stx   <u002E
          rts
 L12C7    lda   ,x+
-         bsr   L1338
+         bsr   L1338  make upper case
          suba  #$20
          adda  <u002E
          sta   <u002E
          decb
          beq   L12E1
          lda   ,x+
-         bsr   L1338
+         bsr   L1338  make upper case
          suba  #$20
          adda  <u002F
          sta   <u002F
          decb
          bne   L12C7
 L12E1    rts
+
+* Display error message
+*
 L12E2    lbsr  L0BCD
-         lda   <u0052
+         lda   <u0052 Ring bell
          bsr   L1335
          lda   #$02
          sta   <u00AC
 L12ED    lda   ,x+
-         cmpa  #$40
+         cmpa  #'@
          beq   L12F9
          bsr   L1335
          inc   <u00AC
          bra   L12ED
-L12F9    leax  >L1328,pcr
+
+L12F9    leax  >HITSPACE,pcr
 L12FD    lda   ,x+
-         cmpa  #$40
+         cmpa  #'@
          beq   L1309
          bsr   L1335
          inc   <u00AC
          bra   L12FD
 L1309    ldx   <u0024
          lbsr  L0C15
-         lbsr  L19EC
-         bsr   L1338
+         lbsr  L19EC   read from keyboard
+         bsr   L1338  make upper case
          sta   <u0097
          lbsr  L0BCD
 L1318    lda   #$20
@@ -1916,15 +1950,18 @@ L1318    lda   #$20
          lda   <u0097
          rts
 
-L1328    fcc   " - HIT SPACE@"
+HITSPACE    fcc   " - HIT SPACE@"
 
 L1335    lbra  XOUTCH
-L1338    cmpa  #$61
+
+* Make uppper case
+L1338    cmpa  #'a
          bcs   L1342
-         cmpa  #$7A
+         cmpa  #'z
          bhi   L1342
          suba  #$20
 L1342    rts
+
 L1343    inc   <u0029
          beq   L1357
          ldx   <u002E
@@ -1950,25 +1987,30 @@ L1365    ldx   <u0019
          leay  $01,y
 L1373    ldb   ,x+
          exg   a,b
-         lbsr  L1338
+         lbsr  L1338  make upper case
          pshs  a
          lda   ,y+
-         lbsr  L1338
+         lbsr  L1338  make upper case
          exg   a,b
 L1383    cmpb  ,s+
          bne   L138A
          deca
          bne   L1373
 L138A    rts
+
+
+* Read record
 L138B    bsr   L13B3
-         lda   <u0006
-         ldx   <u0019
+         lda   <FD.RMS  path to .RMS file
+         ldx   <u0019   input buffer
          ldy   <u0032
          os9   I$Read
          bcs   L13A9
          rts
+
+* Write record
 L139A    bsr   L13B3
-         lda   <u0006
+         lda   <FD.RMS  path to .RMS file
          ldx   <u001B
          ldy   <u0032
          os9   I$Write
@@ -1977,6 +2019,7 @@ L139A    bsr   L13B3
 L13A9    leax  >L1565,pcr
          lbsr  L12E2
          lbra  L0BE7
+
 L13B3    lda   <u002E
          ldb   <u0032
          mul
@@ -1999,7 +2042,7 @@ L13CE    lda   <u002F
          std   <u00AE
          bcc   L13DB
          inc   <u00AD
-L13DB    lda   <u0006
+L13DB    lda   <FD.RMS  path to .RMS file
          ldx   <u00AD
          ldu   <u00AF
          os9   I$Seek
@@ -2361,13 +2404,14 @@ L1999    fcc   "IO ERROR IN THE VALIDATOR FILE@"
 L19B8    fcc   "NOT IN THE FILE OF ACCEPTABLE VALUES@"
 L19DD    fcc   "MISSING NUMBER@"
 
+* Write out and read from keyboard
 L19EC    pshs  x,b
          bsr   WRIBUF
-         ldx   <u0002
+         ldx   <u0002   keyboard buffer
          ldy   #$0001
          lda   #$01
          os9   I$Read
-         ldx   <u0002
+         ldx   <u0002   keyboard buffer
          lda   ,x
          anda  #$7F
          puls  pc,x,b

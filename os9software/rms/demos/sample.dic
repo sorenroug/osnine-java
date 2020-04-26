@@ -1,0 +1,11 @@
+"               RMS SAMPLE FILE:   INVENTORY RECORD";
+PARTNO   8   A   "PART NUMBER: " <6> ;
+DESC     30  A   "          DESCRIPTION: " ;
+PRICE    7   M   "RETAIL PRICE: ";
+INSTOCK  4   N   "      NUMBER IN STOCK: ";
+LOC      1   A   "         STORED IN ISLE " (A,F) ;
+REORDER  3   N   "RE-ORDER WHEN STOCK DOWN TO " ;
+COST     7   M   "ON HAND            WHOLESALE PRICE: ";
+SUPPLIER 10  A   "SUPPLIED BY: ";
+ONORDER  1   A   "BACK ORDERED NOW " [Y,N, ] ;
+ESTDATE  8   D* "  SHOULD BE IN STOCK BY ";
