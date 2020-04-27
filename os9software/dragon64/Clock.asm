@@ -1,14 +1,15 @@
-         nam   Clock
-         ttl   Dragon 64 clock module
+ nam Clock Module
+ ttl Dragon 64 clock module
 
 * The Dragon provides an interrupt request every 20 milliseconds. The role
 * played by this interrupt is to update the system clock. The interrupt
 * request is removed by reading PIA0's peripheral data register, which is
 * mapped through address $FF00. This happens in the keyboard poll routine.
 
-         ifp1
-         use   ../DEFS/os9defs
-         endc
+ use defsfile
+
+TkPerSec set   50
+
 *****
 *
 *  Module Header
@@ -16,14 +17,18 @@
 Type set SYSTM+OBJCT
 Revs set REENT+1
 
-TkPerSec set   50
 
-ClkMod mod   ClkEnd,ClkNam,Type,Revs,ClkEnt,size
-
-size     equ   .
-
+ClkMod mod   ClkEnd,ClkNam,Type,Revs,ClkEnt,0
 ClkNam fcs /Clock/
  fcb 2 Edition number
+*********************
+* Edition history
+*
+* Ed.  1 - prehistoric times                           12/08/82 WGP
+*
+* Ed.  2 - file set up for LI V1.2                     12/08/82 WGP
+*
+
 *
 * Clock Data Definitions
 *
@@ -89,19 +94,19 @@ TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
  lda D.TSEC Get ticks/second
  sta D.Tick
-TICK50    jmp   [D.Clock]
+TICK50 jmp [D.Clock]
 
-ClkEnt    equ   *
-         pshs  dp,cc
-         clra  
-         tfr   a,dp
+ClkEnt equ *
+ pshs dp,cc
+ clra clear Dp
+ tfr A,DP
          lda   #TkPerSec
-         sta   <D.TSec
-         sta   <D.Tick
+ sta D.TSEC
+ sta D.Tick
          lda   #TkPerSec/10
-         sta   <D.TSlice
-         sta   <D.Slice
-         orcc  #FIRQMask+IRQMask       mask ints
+ sta D.TSlice
+ sta D.Slice
+ orcc #IRQMask+FIRQMask Set intrpt masks
          leax  >TICK,pcr
          stx   >D.AltIRQ
 * install system calls
