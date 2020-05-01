@@ -29,9 +29,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.roug.terminal.AvailableEmulations;
-import org.roug.terminal.JTerminal;
-import org.roug.terminal.EmulationCore;
+import org.roug.ui.terminal.AvailableEmulations;
+import org.roug.ui.terminal.JTerminal;
+import org.roug.ui.terminal.EmulationCore;
 import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
 import org.roug.usim.Bus8Motorola;

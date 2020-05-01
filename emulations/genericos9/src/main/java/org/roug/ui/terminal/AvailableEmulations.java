@@ -1,4 +1,4 @@
-package org.roug.terminal;
+package org.roug.ui.terminal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

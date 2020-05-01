@@ -3,6 +3,7 @@ package org.roug.osnine.genericos9;
 import java.util.List;
 import javax.swing.SwingWorker;
 
+import org.roug.ui.UIDevice;
 import org.roug.usim.Acia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

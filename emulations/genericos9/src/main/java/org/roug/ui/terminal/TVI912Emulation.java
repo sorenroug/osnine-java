@@ -1,6 +1,6 @@
-package org.roug.terminal;
+package org.roug.ui.terminal;
 
-import java.awt.Color;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import org.slf4j.Logger;
@@ -10,16 +10,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Emulation of a Heath H-19 / Zenith Z-19 terminal.
  */
-public class H19Emulation extends EmulationCore {
+public class TVI912Emulation extends EmulationCore {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(H19Emulation.class);
+                = LoggerFactory.getLogger(TVI912Emulation.class);
 
-    private int COLUMNS = 80;
-    private int ROWS = 24;
-
-    private static final Color DEFAULT_BACKGROUND = new Color(0x4b534f);
-    private static final Color DEFAULT_FOREGROUND = new Color(0x6fa273);
 
     private State termState = State.NORMAL;
 
@@ -27,11 +22,7 @@ public class H19Emulation extends EmulationCore {
     private int coordY;
 
     @Override
-    public void initialize() {
-        term.setBackground(DEFAULT_BACKGROUND);
-        term.setForeground(DEFAULT_FOREGROUND);
-        term.setBlockCursor();
-    }
+    public void initialize() {}
 
     @Override
     public void resetState() {
@@ -39,12 +30,12 @@ public class H19Emulation extends EmulationCore {
 
     @Override
     public int getColumns() {
-        return COLUMNS;
+        return 80;
     }
 
     @Override
     public int getRows() {
-        return ROWS;
+        return 24;
     }
 
     @Override
@@ -52,83 +43,89 @@ public class H19Emulation extends EmulationCore {
         termState = termState.sendToUI(c, this);
     }
 
-
     @Override
     void receiveKeyCode(KeyEvent evt) {
         int keyCode = evt.getKeyCode();
         switch (keyCode) {
+//          case KeyEvent.VK_BACK_SPACE:  // is defined char
         case KeyEvent.VK_DELETE:
             dataReceived((char) 0x7F);
             break;
-        case KeyEvent.VK_UP:
-            dataReceived((char) 0x1B);
-            dataReceived('A');
+        case KeyEvent.VK_LEFT:
+            dataReceived((char) 0x08);
             break;
         case KeyEvent.VK_DOWN:
-            dataReceived((char) 0x1B);
+            dataReceived((char) 0x0A);
             dataReceived('B');
             break;
+        case KeyEvent.VK_UP:
+            dataReceived((char) 0x0B);
+            dataReceived('A');
+            break;
         case KeyEvent.VK_RIGHT:
-            dataReceived((char) 0x1B);
+            dataReceived((char) 0x0C);
             dataReceived('C');
             break;
-        case KeyEvent.VK_LEFT:
-            dataReceived((char) 0x1B);
-            dataReceived('D');
-            break;
         case KeyEvent.VK_HOME:
-            dataReceived((char) 0x1B);
-            dataReceived('H');
-            break;
-        case KeyEvent.VK_INSERT:
-            dataReceived((char) 0x1B);
-            dataReceived('@');
+            dataReceived((char) 0x1E);
             break;
         case KeyEvent.VK_F1:
-            dataReceived((char) 0x1B);
-            dataReceived('S');
-            break;
         case KeyEvent.VK_F2:
-            dataReceived((char) 0x1B);
-            dataReceived('T');
-            break;
         case KeyEvent.VK_F3:
-            dataReceived((char) 0x1B);
-            dataReceived('U');
-            break;
         case KeyEvent.VK_F4:
-            dataReceived((char) 0x1B);
-            dataReceived('V');
-            break;
         case KeyEvent.VK_F5:
-            dataReceived((char) 0x1B);
-            dataReceived('W');
+        case KeyEvent.VK_F6:
+        case KeyEvent.VK_F7:
+        case KeyEvent.VK_F8:
+        case KeyEvent.VK_F9:
+        case KeyEvent.VK_F10:
+        case KeyEvent.VK_F11:
+            dataReceived((char) 0x01);
+            dataReceived((char) ('@' + keyCode - KeyEvent.VK_F1));
+            dataReceived((char)0x0D);
             break;
         default:
-            LOGGER.debug("Undefined char received: {}", keyCode);
+            LOGGER.debug("Undefined code received: {}", keyCode);
         }
     }
 
+    /*
+     * TODO: Handle FUNCT key. Unable to use ALT or AltGr.
+     */
     @Override
     void receiveChar(char keyChar, KeyEvent evt) {
         switch (keyChar) {
+        /*
+        case 9:  // Tab and back-tab.
+            if (evt.isShiftDown()) {
+            // Back-tab is not transmitted in conversation mode
+                dataReceived((char) 0x1B);
+                dataReceived('I');
+            } else {
+                dataReceived((char) 0x09);
+            }
+            break;
+        */
+        case '\b':
+            dataReceived((char) 0x7F);
+            break;
         case '\n':
             eolReceived();
             break;
         default:
+            LOGGER.debug("Char received: {}", keyChar);
             dataReceived(keyChar);
         }
     }
 
-
     /**
-     * State engine to handle H19 screen command codes.
+     * State engine to handle TVI912 screen command codes.
      */ 
     private enum State {
 
         NORMAL {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, TVI912Emulation h) {
 
                 if (val < 0x07 || (val > 0x0D && val < 0x1B)) {
                     return NORMAL;
@@ -140,17 +137,25 @@ public class H19Emulation extends EmulationCore {
                     case 0x08:     // Backspace
                         h.cursorLeft(false);
                         return NORMAL;
-                    case 0x0A:    // Line feed
+                    case 0x0A:
                         h.cursorDown(true);
+                        return NORMAL;
+                    case 0x0B:
+                        h.cursorUp(true);
+                        return NORMAL;
+                    case 0x0C:
+                        h.cursorRight(true);
                         return NORMAL;
                     case 0x0D:
                         h.carriageReturn();
                         return NORMAL;
                     case 0x1B:  // Escape code
                         return ESCAPE;
+                    case 0x1E:    // Cursor home
+                        h.cursorXY(0,0);
+                        return NORMAL;
                     case 0x1C:
                     case 0x1D:
-                    case 0x1E:
                     case 0x1F:
                     case 127:
                         return NORMAL;
@@ -165,59 +170,56 @@ public class H19Emulation extends EmulationCore {
 
         ESCAPE {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, TVI912Emulation h) {
 
                 switch (val) {
-                case 0x18:   // Cancel escape sequence
-                    return NORMAL;
-                case 'A':  // Stop if a top line
-                    h.cursorUp(false);
-                    return NORMAL;
-                case 'B':
-                    h.cursorDown(true);
-                    return NORMAL;
-                case 'C':
-                    h.cursorRight(false);
-                    return NORMAL;
-                case 'D':
-                    h.cursorLeft(false);
-                    return NORMAL;
-                case 'E':    // Form feed - clear screen
+                case '*':    // Clear all to nulls
                     h.clearScreen();
                     return NORMAL;
-                case 'H':    // Cursor home
-                    h.cursorXY(0,0);
+                case 0x27:  // (Quote) Make protection ineffective (no action)
                     return NORMAL;
-                case 'I':  // Cursor up, scroll if on top line
-                    h.cursorUp(true);
+                case 'E':
+                    h.insertLine();
                     return NORMAL;
-                case 'J':   // Clear to end of screen
-                    h.clearToEOS();
-                    return NORMAL;
-                case 'K':  // Clear to end of line
+                case '=':
+                    return EXPECTY;
+                case 'T':  // Clear to end of line
                     h.clearToEOL();
                     return NORMAL;
-                case 'Y':
-                    return EXPECTY;
-                case 'p':  // Reverse on
+                case ')': // Protected on
+                    h.setAttribute(JTerminal.DIMMED, true);
+                    return NORMAL;
+                case '(':  // Protected off
+                    h.setAttribute(JTerminal.DIMMED, false);
+                    return NORMAL;
+                case 'j':
                     h.setAttribute(JTerminal.REVERSE, true);
                     return NORMAL;
-                case 'q':  // Reverse off
+                case 'k':
                     h.setAttribute(JTerminal.REVERSE, false);
+                    return NORMAL;
+                case 'l':
+                    h.setAttribute(JTerminal.UNDERLINE, true);
+                    return NORMAL;
+                case 'm':
+                    h.setAttribute(JTerminal.UNDERLINE, false);
+                    return NORMAL;
+                case 'Y':  // Clear to end of screen
+                    h.clearToEOS();
                     return NORMAL;
                 case 'z':  // Reset to power-up configuration
                     h.setAttribute(JTerminal.REVERSE, false);
                     return NORMAL;
 
-                    default:
-                        return NORMAL;
+                default:
+                    return NORMAL;
                 }
             }
         },
 
         EXPECTY {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, TVI912Emulation h) {
                 h.coordY = val;
                 return EXPECTX;
             }
@@ -225,13 +227,13 @@ public class H19Emulation extends EmulationCore {
 
         EXPECTX {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, TVI912Emulation h) {
                 h.cursorXY(val - 32, h.coordY - 32);
                 return NORMAL;
             }
         };
 
-        abstract State sendToUI(int val, H19Emulation h);
+        abstract State sendToUI(int val, TVI912Emulation h);
 
     }
 

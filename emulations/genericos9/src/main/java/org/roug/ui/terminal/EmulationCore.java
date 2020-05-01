@@ -1,4 +1,4 @@
-package org.roug.terminal;
+package org.roug.ui.terminal;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

@@ -1,4 +1,4 @@
-package org.roug.terminal;
+package org.roug.ui.terminal;
 
 public class EmulationRec {
 

@@ -13,9 +13,9 @@ import javax.swing.JPanel;
 
 import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
-import org.roug.terminal.AvailableEmulations;
-import org.roug.terminal.JTerminal;
-import org.roug.terminal.EmulationCore;
+import org.roug.ui.terminal.AvailableEmulations;
+import org.roug.ui.terminal.JTerminal;
+import org.roug.ui.terminal.EmulationCore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

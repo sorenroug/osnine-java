@@ -1,4 +1,4 @@
-package org.roug.terminal;
+package org.roug.ui.terminal;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,8 +18,8 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.roug.ui.UIDevice;
 import org.roug.usim.Acia;
-import org.roug.osnine.genericos9.UIDevice;
 
 /**
  * Graphical screen for Terminal.

@@ -8,8 +8,8 @@ import org.roug.usim.OptionParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.roug.terminal.AvailableEmulations;
-import org.roug.terminal.EmulationRec;
+import org.roug.ui.terminal.AvailableEmulations;
+import org.roug.ui.terminal.EmulationRec;
 
 /**
  * Generic emulator for OS-9. Parse arguments and launch GUI.
