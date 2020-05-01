@@ -886,7 +886,7 @@ right of the screen.</para>
 things to keep in mind when placing the cursor before starting to
 enter text. If you are inserting text somewhere inside a line it
 makes the most sense to put the cursor on top of a space and then
-enter a apace as the first character. This assures that the words
+enter a space as the first character. This assures that the words
 that you are entering will always have a space before and after
 them as they would normally have when you are done. If you are
 starting a complete new tine which starts at the left side of the
