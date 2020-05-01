@@ -460,14 +460,12 @@ public class JTerminal extends JPanel implements UIDevice {
         }
         if (cursorVisible && drawCursor) {
             if (blockCursor) {
-                //FIXME: use getComposite/setComposite in Graphics2D
-                //gc2d.setXORMode(Color.WHITE);
-                //gc2d.setXORMode(gc2d.getBackground());
+                gc2d.setXORMode(getBackground());
                 gc.fillRect(cursorX * colWidth,
                             cursorY * rowHeight + lineLeading,
                             colWidth, rowHeight - lineLeading);
-                //gc.setPaintMode();
-            } else {
+                gc.setPaintMode();
+            } else { // Underscore cursor
                 gc.fillRect(cursorX * colWidth,
                             cursorY * rowHeight + rowHeight - lineLeading - 2,
                             colWidth, 3);
