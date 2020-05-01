@@ -10,10 +10,11 @@ import java.lang.reflect.Field;
 public class AvailableEmulations {
 
     private static EmulationRec[] emulations = {
-        new EmulationRec(DumbEmulation.class, "teletype", "Teletype printer (80x66)"),
+        new EmulationRec(ADM3AEmulation.class, "adm3a",   "Lear Siegler ADM-3A (80x24)"),
         new EmulationRec(GO51Emulation.class, "go51",     "Coco/Dragon GO51 (51x24)"),
         new EmulationRec(GO80Emulation.class, "go80",     "DragonPlus Board (80x24)"),
         new EmulationRec(H19Emulation.class,  "h19",      "Heath H-19/Zenith Z-19"),
+        new EmulationRec(DumbEmulation.class, "teletype", "Teletype printer (80x66)"),
         new EmulationRec(VDGEmulation.class,  "vdg",      "Coco/Dragon VDG (32x16)"),
         new EmulationRec(TVI912Emulation.class,"tvi912",  "Televideo TVI 912 (80x24)")
     };

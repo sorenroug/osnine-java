@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -92,12 +93,13 @@ public class PrinterDialog implements UIDevice {
 
     }
 
-    private void printSegment(String segment) {
+    private void printSegment(String segment) throws IOException {
         StyledDocument doc = textPane.getStyledDocument();
         try {
             doc.insertString(doc.getLength(), segment, null);
         } catch (BadLocationException ble) {
             LOGGER.error("Couldn't insert text into text pane.", ble);
+            throw new IOException();
         }
         textPane.repaint();
     }
@@ -109,7 +111,7 @@ public class PrinterDialog implements UIDevice {
      * @param value the character received from the PIA.
      */
     @Override
-    public void sendToUI(int value) {
+    public void sendToUI(int value) throws IOException {
         if (value == 0x0A) {
             textBuffer.append('\n');
             printSegment(textBuffer.toString());

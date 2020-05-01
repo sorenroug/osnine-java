@@ -54,14 +54,6 @@ public class TVI912Emulation extends EmulationCore {
         case KeyEvent.VK_LEFT:
             dataReceived((char) 0x08);
             break;
-        case KeyEvent.VK_TAB:
-            if (evt.isShiftDown()) {
-                dataReceived((char) 0x1B);
-                dataReceived('I');
-            } else {
-                dataReceived((char) 0x09);
-            }
-            break;
         case KeyEvent.VK_DOWN:
             dataReceived((char) 0x0A);
             dataReceived('B');
@@ -78,38 +70,42 @@ public class TVI912Emulation extends EmulationCore {
             dataReceived((char) 0x1E);
             break;
         case KeyEvent.VK_F1:
-            dataReceived((char) 0x01);
-            dataReceived('@');
-            dataReceived((char)0x0D);
-            break;
         case KeyEvent.VK_F2:
-            dataReceived((char) 0x01);
-            dataReceived('A');
-            dataReceived((char)0x0D);
-            break;
         case KeyEvent.VK_F3:
-            dataReceived((char) 0x01);
-            dataReceived('B');
-            dataReceived((char)0x0D);
-            break;
         case KeyEvent.VK_F4:
-            dataReceived((char) 0x01);
-            dataReceived('C');
-            dataReceived((char)0x0D);
-            break;
         case KeyEvent.VK_F5:
+        case KeyEvent.VK_F6:
+        case KeyEvent.VK_F7:
+        case KeyEvent.VK_F8:
+        case KeyEvent.VK_F9:
+        case KeyEvent.VK_F10:
+        case KeyEvent.VK_F11:
             dataReceived((char) 0x01);
-            dataReceived('D');
+            dataReceived((char) ('@' + keyCode - KeyEvent.VK_F1));
             dataReceived((char)0x0D);
             break;
         default:
-            LOGGER.debug("Undefined char received: {}", keyCode);
+            LOGGER.debug("Undefined code received: {}", keyCode);
         }
     }
 
+    /*
+     * TODO: Handle FUNCT key. Unable to use ALT or AltGr.
+     */
     @Override
-    void receiveChar(char keyChar) {
+    void receiveChar(char keyChar, KeyEvent evt) {
         switch (keyChar) {
+        /*
+        case 9:  // Tab and back-tab.
+            if (evt.isShiftDown()) {
+            // Back-tab is not transmitted in conversation mode
+                dataReceived((char) 0x1B);
+                dataReceived('I');
+            } else {
+                dataReceived((char) 0x09);
+            }
+            break;
+        */
         case '\b':
             dataReceived((char) 0x7F);
             break;
@@ -117,6 +113,7 @@ public class TVI912Emulation extends EmulationCore {
             eolReceived();
             break;
         default:
+            LOGGER.debug("Char received: {}", keyChar);
             dataReceived(keyChar);
         }
     }

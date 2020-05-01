@@ -8,18 +8,21 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Emulation of a Heath H-19 / Zenith Z-19 terminal.
+ * Emulation of a Lear-Siegler ADM-3A terminal with upper/lower case
+ * display feature. The terminal wraps to the next line when
+ * a character is displayed beyond column 80.
  */
-public class H19Emulation extends EmulationCore {
+public class ADM3AEmulation extends EmulationCore {
 
     private static final Logger LOGGER
-                = LoggerFactory.getLogger(H19Emulation.class);
+                = LoggerFactory.getLogger(ADM3AEmulation.class);
+
+    private static final Color DEFAULT_BACKGROUND = new Color(0x2d2820);
+    private static final Color DEFAULT_FOREGROUND = new Color(0x7ca7f8);
+    // Alternative: #8bccd2 #98cff0
 
     private int COLUMNS = 80;
     private int ROWS = 24;
-
-    private static final Color DEFAULT_BACKGROUND = new Color(0x4b534f);
-    private static final Color DEFAULT_FOREGROUND = new Color(0x6fa273);
 
     private State termState = State.NORMAL;
 
@@ -33,9 +36,6 @@ public class H19Emulation extends EmulationCore {
         term.setBlockCursor();
     }
 
-    @Override
-    public void resetState() {
-    }
 
     @Override
     public int getColumns() {
@@ -61,48 +61,22 @@ public class H19Emulation extends EmulationCore {
             dataReceived((char) 0x7F);
             break;
         case KeyEvent.VK_UP:
-            dataReceived((char) 0x1B);
-            dataReceived('A');
+            dataReceived((char) 0x0B);
             break;
         case KeyEvent.VK_DOWN:
-            dataReceived((char) 0x1B);
-            dataReceived('B');
+            dataReceived((char) 0x0A);
             break;
         case KeyEvent.VK_RIGHT:
-            dataReceived((char) 0x1B);
-            dataReceived('C');
+            dataReceived((char) 0x0C);
             break;
         case KeyEvent.VK_LEFT:
-            dataReceived((char) 0x1B);
-            dataReceived('D');
+            dataReceived((char) 0x08);
             break;
         case KeyEvent.VK_HOME:
-            dataReceived((char) 0x1B);
-            dataReceived('H');
+            dataReceived((char) 0x1E);
             break;
         case KeyEvent.VK_INSERT:
-            dataReceived((char) 0x1B);
-            dataReceived('@');
-            break;
-        case KeyEvent.VK_F1:
-            dataReceived((char) 0x1B);
-            dataReceived('S');
-            break;
-        case KeyEvent.VK_F2:
-            dataReceived((char) 0x1B);
-            dataReceived('T');
-            break;
-        case KeyEvent.VK_F3:
-            dataReceived((char) 0x1B);
-            dataReceived('U');
-            break;
-        case KeyEvent.VK_F4:
-            dataReceived((char) 0x1B);
-            dataReceived('V');
-            break;
-        case KeyEvent.VK_F5:
-            dataReceived((char) 0x1B);
-            dataReceived('W');
+            dataReceived((char) 0x1A);
             break;
         default:
             LOGGER.debug("Undefined char received: {}", keyCode);
@@ -122,15 +96,15 @@ public class H19Emulation extends EmulationCore {
 
 
     /**
-     * State engine to handle H19 screen command codes.
+     * State engine to handle ADM-3A screen command codes.
      */ 
     private enum State {
 
         NORMAL {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, ADM3AEmulation h) {
 
-                if (val < 0x07 || (val > 0x0D && val < 0x1B)) {
+                if (val < 0x07 || (val > 0x0D && val < 0x1A)) {
                     return NORMAL;
                 } else {
                     switch (val) {
@@ -140,17 +114,27 @@ public class H19Emulation extends EmulationCore {
                     case 0x08:     // Backspace
                         h.cursorLeft(false);
                         return NORMAL;
-                    case 0x0A:    // Line feed
+                    case 0x0A:
                         h.cursorDown(true);
+                        return NORMAL;
+                    case 0x0B:
+                        h.cursorUp(false);
+                        return NORMAL;
+                    case 0x0C:
+                        h.cursorRight(true);
                         return NORMAL;
                     case 0x0D:
                         h.carriageReturn();
                         return NORMAL;
+                    case 0x1A:    // Form feed - clear screen
+                        h.clearScreen();
+                        return NORMAL;
                     case 0x1B:  // Escape code
                         return ESCAPE;
-                    case 0x1C:
+                    case 0x1E:    // Cursor home
+                        h.cursorXY(0,0);
+                        return NORMAL;
                     case 0x1D:
-                    case 0x1E:
                     case 0x1F:
                     case 127:
                         return NORMAL;
@@ -165,59 +149,29 @@ public class H19Emulation extends EmulationCore {
 
         ESCAPE {
             @Override
-            State sendToUI(int val, H19Emulation h) {
-
+            State sendToUI(int val, ADM3AEmulation h) {
                 switch (val) {
-                case 0x18:   // Cancel escape sequence
-                    return NORMAL;
-                case 'A':  // Stop if a top line
-                    h.cursorUp(false);
-                    return NORMAL;
-                case 'B':
-                    h.cursorDown(true);
-                    return NORMAL;
-                case 'C':
-                    h.cursorRight(false);
-                    return NORMAL;
-                case 'D':
-                    h.cursorLeft(false);
-                    return NORMAL;
-                case 'E':    // Form feed - clear screen
-                    h.clearScreen();
-                    return NORMAL;
-                case 'H':    // Cursor home
-                    h.cursorXY(0,0);
-                    return NORMAL;
-                case 'I':  // Cursor up, scroll if on top line
-                    h.cursorUp(true);
-                    return NORMAL;
-                case 'J':   // Clear to end of screen
-                    h.clearToEOS();
-                    return NORMAL;
-                case 'K':  // Clear to end of line
-                    h.clearToEOL();
-                    return NORMAL;
-                case 'Y':
+                case '=':
                     return EXPECTY;
-                case 'p':  // Reverse on
+                case ')':  // Reverse on  (extension)
                     h.setAttribute(JTerminal.REVERSE, true);
                     return NORMAL;
-                case 'q':  // Reverse off
+                case '(':  // Reverse off  (extension)
                     h.setAttribute(JTerminal.REVERSE, false);
                     return NORMAL;
-                case 'z':  // Reset to power-up configuration
-                    h.setAttribute(JTerminal.REVERSE, false);
+                case 'G':  // (extension)
+                    return EXPECTATTR;
+                case 'o':
+                    return EXPECTOPT;
+                default:
                     return NORMAL;
-
-                    default:
-                        return NORMAL;
                 }
             }
         },
 
         EXPECTY {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, ADM3AEmulation h) {
                 h.coordY = val;
                 return EXPECTX;
             }
@@ -225,13 +179,51 @@ public class H19Emulation extends EmulationCore {
 
         EXPECTX {
             @Override
-            State sendToUI(int val, H19Emulation h) {
+            State sendToUI(int val, ADM3AEmulation h) {
                 h.cursorXY(val - 32, h.coordY - 32);
                 return NORMAL;
             }
+        },
+
+        EXPECTATTR {
+            @Override
+            State sendToUI(int val, ADM3AEmulation h) {
+                switch (val) {
+                case '0':  // Normal video
+                    h.setAttribute(JTerminal.REVERSE, false);
+                    h.setAttribute(JTerminal.UNDERLINE, false);
+                    return NORMAL;
+                case '4':  // Reverse
+                    h.setAttribute(JTerminal.REVERSE, true);
+                    return NORMAL;
+                case '8':  // Underline
+                    h.setAttribute(JTerminal.UNDERLINE, true);
+                    return NORMAL;
+                case 'G':  // Reverse, underline
+                    h.setAttribute(JTerminal.UNDERLINE, true);
+                    h.setAttribute(JTerminal.REVERSE, true);
+                    return NORMAL;
+                default:
+                    return NORMAL;
+                }
+            }
+        },
+
+        EXPECTOPT {
+            @Override
+            State sendToUI(int val, ADM3AEmulation h) {
+                switch (val) {
+                case '!':  // Reset to power-up configuration
+                    h.setAttribute(JTerminal.REVERSE, false);
+                    h.setAttribute(JTerminal.UNDERLINE, false);
+                    return NORMAL;
+                default:
+                    return NORMAL;
+                }
+            }
         };
 
-        abstract State sendToUI(int val, H19Emulation h);
+        abstract State sendToUI(int val, ADM3AEmulation h);
 
     }
 

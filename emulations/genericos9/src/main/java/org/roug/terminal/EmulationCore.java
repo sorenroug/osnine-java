@@ -123,11 +123,11 @@ public abstract class EmulationCore extends KeyAdapter {
         char keyChar = evt.getKeyChar();
         if (keyChar != KeyEvent.CHAR_UNDEFINED && !evt.isAltDown()) {
             if (keyChar < 128)
-                receiveChar(keyChar);
+                receiveChar(keyChar, evt);
             else
-                receiveChar('?');
+                receiveChar('?', evt);
         }
     }
 
-    abstract void receiveChar(char keyChar);
+    abstract void receiveChar(char keyChar, KeyEvent evt);
 }

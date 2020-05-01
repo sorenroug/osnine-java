@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Listen to ACIA and send the character to the User Interface.
+ * This is required because Swing isn't thread safe.
  *
  */
 public class AciaToScreen extends SwingWorker<Integer, Integer> {

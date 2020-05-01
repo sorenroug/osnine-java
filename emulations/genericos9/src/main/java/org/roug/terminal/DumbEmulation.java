@@ -103,7 +103,7 @@ public class DumbEmulation extends EmulationCore {
     }
 
     @Override
-    void receiveChar(char keyChar) {
+    void receiveChar(char keyChar, KeyEvent evt) {
         switch (keyChar) {
         case '\n':
             eolReceived();

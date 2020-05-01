@@ -97,6 +97,7 @@ public class JTerminal extends JPanel implements UIDevice {
         emulator.setUIDevice(this);
         emulator.initialize();
         addKeyListener(emulator);
+        setFocusTraversalKeysEnabled(false);
 
         TimerTask cursortask = new CursorTask();
         Timer timer = new Timer("cursorblink", true);
