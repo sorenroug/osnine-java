@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.roug.ui.UIDevice;
+import org.roug.ui.printer.JPrinter;
 
 public class PrinterDialog implements UIDevice {
 
@@ -34,7 +35,7 @@ public class PrinterDialog implements UIDevice {
 
     private String newline = "\n";
     private JDialog printerDialog;
-    private JTextPane textPane;
+    private JPrinter textPane;
 
     private StringBuilder textBuffer = new StringBuilder(80);
 
@@ -59,7 +60,7 @@ public class PrinterDialog implements UIDevice {
         button.addActionListener(new CloseAction());
         buttonPane.add(button);
 
-        textPane = createTextPane();
+        textPane = new JPrinter();
         JScrollPane paneScrollPane = new JScrollPane(textPane);
         paneScrollPane.setVerticalScrollBarPolicy(
                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -72,39 +73,6 @@ public class PrinterDialog implements UIDevice {
 
     }
 
-    private JTextPane createTextPane() {
-
-        JTextPane textPane = new JTextPane();
-        textPane.setEditable(false);
-        Font currFont = textPane.getFont();
-        textPane.setFont(new Font("monospaced", currFont.getStyle(), currFont.getSize()));
-
-        StyledDocument doc = textPane.getStyledDocument();
-        addStylesToDocument(doc);
-
-        return textPane;
-    }
-
-    private void addStylesToDocument(StyledDocument doc) {
-        //Initialize some styles.
-        Style def = StyleContext.getDefaultStyleContext().
-                        getStyle(StyleContext.DEFAULT_STYLE);
-
-        //Style monospace = doc.addStyle("monospace", def);
-        //StyleConstants.setFontFamily(monospace, "monospaced");
-
-    }
-
-    private void printSegment(String segment) throws IOException {
-        StyledDocument doc = textPane.getStyledDocument();
-        try {
-            doc.insertString(doc.getLength(), segment, null);
-        } catch (BadLocationException ble) {
-            LOGGER.error("Couldn't insert text into text pane.", ble);
-            throw new IOException();
-        }
-        textPane.repaint();
-    }
 
 
     /**
@@ -114,13 +82,7 @@ public class PrinterDialog implements UIDevice {
      */
     @Override
     public void sendToUI(int value) throws IOException {
-        if (value == 0x0A) {
-            textBuffer.append('\n');
-            printSegment(textBuffer.toString());
-            textBuffer = new StringBuilder(80);
-        } else {
-            textBuffer.append((char) (value & 0x7F)); // Convert to char
-        }
+        textPane.sendToUI(value);
     }
 
     public void setVisible(boolean visible) {
