@@ -79,7 +79,7 @@ OS9Name fcs /OS9p2/
 OS9Ent leay SVCTBL,PCR Get ptr to service routine table
  OS9 F$SSVC Set service table addresses
  ldu D.Init get configuration ptr
- ldd   MaxMem,u
+ ldd MaxMem,u
  lsra
  rorb
  lsra
@@ -92,10 +92,10 @@ OS9Ent leay SVCTBL,PCR Get ptr to service routine table
  lsra
  rorb
  endc
- addd  D.BlkMap
- tfr   d,x
- ldb   #$80
- bra   COLD20
+ addd D.BlkMap
+ tfr d,x
+ ldb #$80
+ bra COLD20
 
 COLD10 lda ,x+
  bne COLD20
@@ -444,35 +444,35 @@ FORK     pshs  u
          bcc   L025C
          puls  pc,u
 L025C    pshs  u
-         ldx   D.PROC
-         ldd   P$User,x
-         std   P$User,u
-         lda   P$Prior,x
-         sta   P$Prior,u
-         leax  P$DIO,x
-         leau  P$DIO,u
-         ldb   #DefIOSiz
-L0270    lda   ,x+
-         sta   ,u+
-         decb
-         bne   L0270
-         ldy   #3     dup the first three open paths
-L027B    lda   ,x+
-         beq   L0285
-         os9   I$Dup
-         bcc   L0285
-         clra
-L0285    sta   ,u+
-         leay  -1,y
-         bne   L027B
-         ldx   ,s
-         ldu   $02,s
-         lbsr  L04B3
-         bcs   L02DE
-         pshs  b,a
+ ldx D.PROC Get parent process ptr
+ ldd P$USER,X Copy user index
+ std P$User,U
+ lda P$Prior,X Copy priority
+ sta P$Prior,U
+ leax P$DIO,X Get parent path ptr
+ leau P$DIO,U Get child path ptr
+ ldb #DefIOSiz Get byte count
+FORK10 lda ,X+ Get parent byte
+ sta ,U+ Pass to child
+ decb COUNT Down
+ bne FORK10 Branch if more
+ ldy #3 Get number of paths
+FORK20 lda ,X+ Get path number
+ beq FORK25
+ OS9 I$DUP Duplicate path
+ bcc FORK25
+ clra CLEAR Path number
+FORK25 sta ,U+ Pass path to child
+ leay -1,y COUNT Down
+ bne FORK20 Branch if more
+         ldx   0,s
+         ldu   2,s
+ lbsr SETPRC Set up process
+ bcs FORK40 Branch if error
+         pshs  D
          os9   F$AllTsk
-         bcc   L029B
-L029B    lda   $07,x
+         bcc   FORK30
+FORK30 lda $07,x
          clrb
          subd  ,s
          tfr   d,u
@@ -490,24 +490,24 @@ L029B    lda   $07,x
          os9   F$Move
          puls  u,x
          os9   F$DelTsk
-         ldy   D.PROC
-         lda   ,x
-         sta R$A,u
-         ldb   $03,y
-         sta   $03,y
-         lda   ,y
-         std   1,x
-         lda   $0C,x
-         anda  #$7F
-         sta   $0C,x
-         os9   F$AProc
-         rts
-L02DE    puls  x
+ ldy D.PROC
+ lda P$ID,X Get child id
+ sta R$A,U Return to parent
+ ldb P$CID,Y Get youngest child id
+ sta P$CID,Y Set new child
+ lda P$ID,Y Get parent id
+ std P$PID,X Set parent & sibling ids
+ lda P$State,X Get child state
+ anda #$FF-SysState Clear system state
+ sta P$State,X Update child state
+ OS9 F$AProc Activate child process
+ rts
+FORK40    puls  x
          pshs  b
          lbsr  CLOSEPD
          lda   ,x
          lbsr  L039D
-         comb
+ comb SET Carry
          puls  pc,u,b
 
 ALLPRC   pshs  u
@@ -689,7 +689,7 @@ L0409    stu   ,y++
          ldu   $02,s
          stu   D.PROC
          ldu   $04,s
-         lbsr  L04B3
+         lbsr  SETPRC
          lbcs  L04A3
          pshs  b,a
          os9   F$AllTsk
@@ -756,24 +756,26 @@ L04A3    puls  u,x
          lbsr  L039D
          puls  b
          os9   F$Exit
-L04B3    pshs  u,y,x,b,a
-         ldd   D.PROC
-         pshs  b,a
+
+SETPRC    pshs  u,y,x,b,a
+ ldd   D.PROC Get process ptr
+         pshs  D
          stx   D.PROC
          lda R$A,u
          ldx R$X,u
-         ldy   ,s
+         ldy   ,s Get process ptr
          leay  P$DATImg,y
          os9   F$SLink
-         bcc   L04D9
+         bcc   SETPRC05
          ldd   ,s
          std   D.PROC
          ldu   $04,s
          os9   F$Load
-         bcc   L04D9
+         bcc   SETPRC05
          leas  $04,s
          puls  pc,u,y,x
-L04D9    stu   $02,s
+
+SETPRC05    stu   $02,s
          pshs  y,a
          ldu   $0B,s
          stx R$X,u
@@ -782,28 +784,28 @@ L04D9    stu   $02,s
          ldd   $05,s
          std   P$PModul,x
          puls  a
-         cmpa  #$11
-         beq   L04FD
-         cmpa  #$C1
-         beq   L04FD
-         ldb   #$EA
-L04F6    leas  $02,s
+ cmpa #PRGRM+OBJCT is it program object?
+ beq SETPRC15 branch if so
+ cmpa #SYSTM+OBJCT is it system object?
+ beq SETPRC15 branch if so
+ ldb #E$NEMod err: non-executable module
+SETPRC10    leas  $02,s
          stb   $03,s
          comb
-         bra   L0540
-L04FD    ldd   #$000B
+         bra   SETPRC50
+SETPRC15    ldd   #$000B
          leay  P$DATImg,x
          ldx   P$PModul,x
          os9   F$LDDDXY
          cmpa  R$B,u
-         bcc   L0510
+         bcc   SETPRC25
          lda   R$B,u
          clrb
-L0510    os9   F$Mem Mem to correct size
-         bcs   L04F6 Branch if no memory
+SETPRC25    os9   F$Mem Mem to correct size
+         bcs   SETPRC10 Branch if no memory
          ldx   $06,s
          leay  (P$Stack-R$Size),x
-         pshs  b,a
+         pshs  d
          subd  R$Y,u
          std   $04,y
          subd  #R$Size Deduct stack room
@@ -811,7 +813,7 @@ L0510    os9   F$Mem Mem to correct size
          ldd   R$Y,u
          std   R$D,y
          std   $06,s
-         puls  x,b,a
+         puls  x,d
          std   $06,y
          ldd   R$U,u
          std   $06,s
@@ -822,9 +824,9 @@ L0510    os9   F$Mem Mem to correct size
          clrb
          std   R$U,y
          stx   R$PC,y
-L0540    puls  b,a
+SETPRC50 puls  D
          std   D.PROC
-         puls  pc,u,y,x,b,a
+         puls  pc,u,y,x,D
  page
 *****
 *
@@ -1311,20 +1313,20 @@ SALLBIT  ldd R$D,u
          ldb D.SysTsk
 ALOCAT    ldy R$Y,u
          beq   ALOC40
-         sta   ,-s
-         bmi   ALOC15
-         os9   F$LDABX
+ sta ,-s Save mask
+ bmi ALOC15 Branch if first bit of byte
+ os9 F$LDABX
 ALOC10 ora 0,S Set bit
  leay -1,Y Decrement page count
  beq ALOC35 Branch if done
  lsr 0,S Shift mask
  bcc ALOC10 Branch if more in this byte
-         os9   F$STABX
-         leax  1,x
-ALOC15    lda   #$FF Get eight pages worth
-         bra   ALOC25
-ALOC20    os9   F$STABX
-         leax  1,x
+ os9 F$STABX
+ leax 1,x
+ALOC15 lda #$FF Get eight pages worth
+ bra ALOC25
+ALOC20 os9 F$STABX
+ leax 1,x
          leay  -$08,y
 ALOC25 cmpy #8 Are there eight left?
          bhi   ALOC20
@@ -1862,7 +1864,7 @@ MAPBLK10    stx   ,y++
          ldx   D.PROC
          leay  P$DATImg,x
          os9   F$FreeHB
-         bcs   L0BD1
+         bcs   MAPBLK50
          pshs  b,a
          lsla
          lsla
@@ -1879,7 +1881,7 @@ MAPBLK10    stx   ,y++
          os9   F$SetImg
          puls  u
          cmpx  D.SysPrc
-         bne   L0BCE
+         bne   MAPBLK40
          tfr   x,y
          ldx   D.SysMem
          ldb   R$U,u
@@ -1897,9 +1899,9 @@ MAPBLK30    sta   ,x+
          bne   MAPBLK30
          dec   1,s
          bne   MAPBLK20
-L0BCE    leas  $02,s
+MAPBLK40    leas  $02,s
          clrb
-L0BD1    leas  <$20,s
+MAPBLK50    leas  <$20,s
          rts
 
 IBAERR comb

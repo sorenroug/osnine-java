@@ -192,6 +192,7 @@ u00EE    rmb   1
 u00EF    rmb   13073
 size     equ   .
 
+ESCAPE equ $1B
 
   ifeq PRODUCT-P.Dragon
 L000D    fcb   1  Display driver select
@@ -223,11 +224,11 @@ L0011    fcb   $00
          fcb   $4C L
          fcb   $00
          fcb   $0D
- FCC " STYLOGRAPH "
+ fcc " STYLOGRAPH "
          fcb   $0D
- FCC "COPYRIGHT 1982"
+ fcc "COPYRIGHT 1982"
          fcb   $0D
- FCC "GREAT PLAINS COMPUTER CO.,INC."
+ fcc "GREAT PLAINS COMPUTER CO.,INC."
          fcb   $0D
 name     equ   *
          fcs   /Stylo/
@@ -387,7 +388,7 @@ L0188    lda   ,y+
          beq   L0188
          cmpa  #$2C
          beq   L0188
-         cmpa  >OPTCHR,pcr  Character +
+         cmpa  >OPTCHR,pcr  Character + for command line option
          beq   L01C6
          bra   L01A4
 L019E    orcc  #Carry
@@ -784,7 +785,7 @@ STYDIR FCC '/D0/STY/'
 TXTEND EQU *
 
          lda   <u0045    Load driver number
-         cmpa  #$20
+         cmpa  #$20      Number of types
          bhi   L149C
          tsta
          bne   L149F
@@ -792,7 +793,7 @@ L149C    orcc  #Carry
          rts
 
 L149F    deca
-         ldb   #$0E
+         ldb   #$0E  size of entry
          mul
          leax  >TRMBEG+32,pcr
          leax  d,x
@@ -838,7 +839,7 @@ L14E2 equ *
          fcb   23,79  D2480
          fcb   19,81  D2082
          fcb   23,81  D2482
-         fcb   24,78
+         fcb   24,78  D2579
 
 *THE FIRST 32 BYTES ARE RESERVED FOR 16 ADDRESS 
 *POINTERS TO MACHINE LANGUAGE ROUTINES IF USED.
@@ -857,17 +858,19 @@ TRMBEG   fdb   HP2621MV,TEC70MV,VT100MV,GIMIXMV,0,0,0,0
 *THAT IS CALLED FOR THE TERMINAL FUNCTIONS.
 
 *TERMINAL SPECIFICATION CONSTANTS
-D2479 EQU 0 24 ROW BY 79 COLUMNS
-D2480 EQU 1 24 X 80
-D2082 EQU 2 20 X 82
-D2482 EQU 3 34 X 82
+D2479 EQU 0  24 ROW BY 79 COLUMNS
+D2480 EQU 1  24 X 80
+D2082 EQU 2  20 X 82
+D2482 EQU 3  24 X 82
+D2579 EQU 4  25 X 79
 CYX EQU $80 OUTPUT Y(ROW) THEN X(COLUMN) ON CURSOR ADDRESS
-CAD20 EQU  $40 ADD $20 TO CURSOR ADDRESSES
+CAD20 EQU $40 ADD $20 TO CURSOR ADDRESSES
 SSCD EQU $20 CAN SCROLL SCREEN DOWN
 LERF EQU $10 HAS LINE ERASE FUNCTION
 
   ifeq PRODUCT-P.Dragon
-*1 GO51 terminal
+*T1 GO51 terminal
+*Note that D2479 is also changed to be 24x50
          fcb   LERF+SSCD+D2479
          fcb   1  CURMV  - CURSOR MOVE
          fcb   0  CURON  - CURSOR ON
@@ -883,7 +886,7 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
  else
-*1 SOROC IQ-120
+*T1 SOROC IQ-120
          fcb CYX+CAD20+LERF+D2479
          fcb   1  CURMV  - CURSOR MOVE
          fcb   0  CURON  - CURSOR ON
@@ -899,84 +902,84 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
  endc
-*2 SOROC IQ-140
+*T2 SOROC IQ-140
          fcb   CYX+CAD20+SSCD+LERF+D2479
          fcb   1  CURMV  - CURSOR MOVE
-         fcb   0  CURON  - CURSOR ON
+         fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   2  CLRS  - CLEAR SCREEN
-         fcb   5
-         fcb   3
+         fcb   5  LERASE - ERASE LINE
+         fcb   3  SCRLUP - SCROLL UP
          fcb   8  SCRLDN  - SCROLL DOWN
          fcb   4  SCINIT  - INITIALIZE TERMINAL
          fcb   0
          fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
          fcb   7  ATT1  - CHARACTER ATTRIBUTES
-*3
+*T3 SOROC IQ-130/135
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   1
-         fcb   9
-         fcb   10
+         fcb   1  CURMV  - CURSOR MOVE
+         fcb   9  CURON  - CURSOR ON
+         fcb   10  CUROFF - CURSOR OFF
          fcb   0
          fcb   0
          fcb   2  CLRS  - CLEAR SCREEN
-         fcb   5
-         fcb   3
-         fcb   8
-         fcb   4
+         fcb   5  LERASE - ERASE LINE
+         fcb   3  SCRLUP - SCROLL UP
+         fcb   8  SCRLDN  - SCROLL DOWN
+         fcb   4  SCINIT  - INITIALIZE TERMINAL
          fcb   0
-         fcb   6
-         fcb   7
-*4
+         fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   7  ATT1  - CHARACTER ATTRIBUTES
+*T4 Televideo TVI 912/920 and Lear-Siegler ADM-31
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   1
+         fcb   1  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   2  CLRS  - CLEAR SCREEN
-         fcb   5
-         fcb   3
-         fcb   8
-         fcb   4
+         fcb   5  LERASE - ERASE LINE
+         fcb   3  SCRLUP - SCROLL UP
+         fcb   8  SCRLDN  - SCROLL DOWN
+         fcb   4  SCINIT  - INITIALIZE TERMINAL
          fcb   0
-         fcb   6
-         fcb   7
-*5 Hazeltine 1500/1420?
+         fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   7  ATT1  - CHARACTER ATTRIBUTES
+*T5 Hazeltine 1500/1420?
          fcb   SSCD+LERF+D2479
-         fcb   11
+         fcb   11  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   12  CLRS  - CLEAR SCREEN
-         fcb   13
-         fcb   14
-         fcb   15
-         fcb   16
-         fcb   17
-         fcb   16
-         fcb   17
-*6 Hazeltine 1400?
+         fcb   13  LERASE - ERASE LINE
+         fcb   14  SCRLUP - SCROLL UP
+         fcb   15  SCRLDN  - SCROLL DOWN
+         fcb   16  SCINIT  - INITIALIZE TERMINAL
+         fcb   17  SSHUT  - SHUT DOWN SCREEN
+         fcb   16  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   17  ATT1  - CHARACTER ATTRIBUTES
+*T6 Hazeltine 1400
          fcb   D2479
-         fcb   11
+         fcb   11  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   12  CLRS  - CLEAR SCREEN
          fcb   0
-         fcb   14
+         fcb   14  SCRLUP - SCROLL UP
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-*7 Lear-Zigler ADM-3A?
+*T7 Lear-Siegler ADM-3A
          fcb   CYX+CAD20+D2479
-         fcb   1
+         fcb   1  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
@@ -989,387 +992,387 @@ LERF EQU $10 HAS LINE ERASE FUNCTION
          fcb   0
          fcb   0
          fcb   0
-*8 Lear-Zigler ADM-42?
+*T8 Lear-Siegler ADM-42
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   1
-         fcb   19
-         fcb   20
-         fcb   $6D
-         fcb   $6E n
+         fcb   1  CURMV  - CURSOR MOVE
+         fcb   19  CURON  - CURSOR ON
+         fcb   20  CUROFF - CURSOR OFF
+         fcb   109  BLINK  - BLINK CURSOR
+         fcb   110  SOLID  - SOLID CURSOR
          fcb   2  CLRS  - CLEAR SCREEN
-         fcb   5
-         fcb   3
-         fcb   8
-         fcb   4
+         fcb   5  LERASE - ERASE LINE
+         fcb   3  SCRLUP - SCROLL UP
+         fcb   8  SCRLDN  - SCROLL DOWN
+         fcb   4  SCINIT  - INITIALIZE TERMINAL
          fcb   0
-         fcb   6
-         fcb   7
-*9
+         fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   7  ATT1  - CHARACTER ATTRIBUTES
+*T9 Microterm MIME-2A
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   1
+         fcb   1  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   2  CLRS  - CLEAR SCREEN
-         fcb   5
-         fcb   3
-         fcb   21
-         fcb   4
+         fcb   5  LERASE - ERASE LINE
+         fcb   3  SCRLUP - SCROLL UP
+         fcb   21  SCRLDN  - SCROLL DOWN
+         fcb   4  SCINIT  - INITIALIZE TERMINAL
          fcb   0
-         fcb   6
-         fcb   7
-*10
-         fcb   $B0 0
-         fcb   24
+         fcb   6  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   7  ATT1  - CHARACTER ATTRIBUTES
+*T10 Microterm ACT-5A
+         fcb   CYX+SSCD+LERF+D2479
+         fcb   24  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   25  CLRS  - CLEAR SCREEN
-         fcb   $1A
-         fcb   $1B
-         fcb   $1C
+         fcb   26  LERASE - ERASE LINE
+         fcb   27  SCRLUP - SCROLL UP
+         fcb   28  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
-         fcb   22
-         fcb   23
-*11
-         fcb   $D4 T
-         fcb   1
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   25
-         fcb   $1D
-         fcb   $5E ^
+         fcb   22  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   23  ATT1  - CHARACTER ATTRIBUTES
+*T11 Intertec INTERTUBE II
+         fcb   CYX+CAD20+LERF+D2579
+         fcb   1  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
-         fcb   $1E
-         fcb   $1F
+         fcb   0
+         fcb   25  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   94  SCRLUP - SCROLL UP
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   30  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   31  ATT1  - CHARACTER ATTRIBUTES
 
-*12 SWTPC CT-82
-         fcb   D2082+SSCD+LERF
-         fcb   32  CURSOR MOVE
-         fcb   33  CURSOR ON
-         fcb   34
-         fcb   35
-         fcb   36
-         fcb   37
-         fcb   38
-         fcb   39
-         fcb   44
+*T12 SWTPC CT-82
+         fcb   SSCD+LERF+D2082
+         fcb   32  CURMV  - CURSOR MOVE
+         fcb   33  CURON  - CURSOR ON
+         fcb   34  CUROFF - CURSOR OFF
+         fcb   35  BLINK  - BLINK CURSOR
+         fcb   36  SOLID  - SOLID CURSOR
+         fcb   37  CLRS  - CLEAR SCREEN
+         fcb   38  LERASE - ERASE LINE
+         fcb   39  SCRLUP - SCROLL UP
+         fcb   44  SCRLDN  - SCROLL DOWN
          fcb   40  SCINIT  - INITIALIZE TERMINAL
-         fcb   41
-         fcb   42
-         fcb   43
-*13
+         fcb   41  SSHUT  - SHUT DOWN SCREEN
+         fcb   42  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   43  ATT1  - CHARACTER ATTRIBUTES
+*T13 SWTPC CT-8209/12
          fcb   CYX+CAD20+LERF+D2479
-         fcb   51 CURSOR MOVE
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   25
-         fcb   $1D
-         fcb   53
-         fcb   0
-         fcb   $2F /
-         fcb   0
-         fcb   $1E
-         fcb   $83
-*14 DEC VT52?
-         fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   51 CURSOR MOVE
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   $34 4
-         fcb   $1D
-         fcb   53
-         fcb   $36 6
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-*15
-         fcb   $D0 P
-         fcb   51 CURSOR MOVE
+         fcb   51 CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   25  CLRS  - CLEAR SCREEN
-         fcb   $1D
-         fcb   53
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
+         fcb   0
+         fcb   47  SCINIT  - INITIALIZE TERMINAL
+         fcb   0
+         fcb   30  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   131  ATT1  - CHARACTER ATTRIBUTES
+*T14 DEC VT52
+         fcb   CYX+CAD20+SSCD+LERF+D2479
+         fcb   51 CURMV  - CURSOR MOVE
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   52  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
+         fcb   54  SCRLDN  - SCROLL DOWN
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+*T15 ADDS REGENT 25
+         fcb   CYX+CAD20+LERF+D2479
+         fcb   51 CURMV  - CURSOR MOVE
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   25  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-*16 Heath H19
-         fcb   $F1 q
-         fcb   51 CURSOR MOVE
-         fcb   55
-         fcb   56
-         fcb   57
-         fcb   $3A :
-         fcb   $34 4
-         fcb   $1D
-         fcb   53
-         fcb   $36 6
-         fcb   $3B ;
-         fcb   60
-         fcb   61
-         fcb   62 ATT1  - CHARACTER ATTRIBUTES
-*17
+*T16 Heath H19 / Zenith Z-19
+         fcb   CYX+CAD20+SSCD+LERF+D2480
+         fcb   51 CURMV  - CURSOR MOVE
+         fcb   55  CURON  - CURSOR ON
+         fcb   56  CUROFF - CURSOR OFF
+         fcb   57  BLINK  - BLINK CURSOR
+         fcb   58  SOLID  - SOLID CURSOR
+         fcb   52  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
+         fcb   54  SCRLDN  - SCROLL DOWN
+         fcb   59  SCINIT  - INITIALIZE TERMINAL
+         fcb   60  SSHUT  - SHUT DOWN SCREEN
+         fcb   61  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   62  ATT1  - CHARACTER ATTRIBUTES
+*T17 TEC 510, 610
          fcb   CYX+CAD20+D2479
-         fcb   1
+         fcb   1 CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   63
+         fcb   63  CLRS  - CLEAR SCREEN
          fcb   0
-         fcb   3
-         fcb   0
-         fcb   0
+         fcb   3  SCRLUP - SCROLL UP
          fcb   0
          fcb   0
          fcb   0
-*18
+         fcb   0
+         fcb   0
+*T18 Beehive MICRO B2
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   51 CURSOR MOVE
+         fcb   51 CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $40 @
-         fcb   $1D
-         fcb   53
-         fcb   $41 A
+         fcb   64  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
+         fcb   65  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
-         fcb   $42 B
-         fcb   $43 C
-*19
-         fcb   $D0 P
-         fcb   $44 D
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   $40 @
-         fcb   $1D
-         fcb   $45 E
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   $46 F
-         fcb   $47 G
-*20
-         fcb   $D0 P
-         fcb   $48 H
+         fcb   66  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   67  ATT1  - CHARACTER ATTRIBUTES
+*T19 Beehive B100
+         fcb   CYX+CAD20+LERF+D2479
+         fcb   68  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $49 I
-         fcb   $4A J
-         fcb   $4B K
+         fcb   64  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   69  SCRLUP - SCROLL UP
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   70  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   71  ATT1  - CHARACTER ATTRIBUTES
+*T20 Volker-Craig VC-404
+         fcb   CYX+CAD20+LERF+D2479
+         fcb   72  CURMV  - CURSOR MOVE
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   73  CLRS  - CLEAR SCREEN
+         fcb   74  LERASE - ERASE LINE
+         fcb   75  SCRLUP - SCROLL UP
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-*21 Hewlett packard 2621
+*T21 Hewlett packard 2621
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   76     Macro 0
+         fcb   76 CURMV  - CURSOR MOVE (Macro 0)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $4D
-         fcb   $1D
-         fcb   $4E N
-         fcb   $4F O
+         fcb   77  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   78  SCRLUP - SCROLL UP
+         fcb   79  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
-         fcb   $50 P
-         fcb   $51 Q
-*22
-         fcb   $D0 P
-         fcb   $33 3
+         fcb   80  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   81  ATT1  - CHARACTER ATTRIBUTES
+*T22 ADDS Viewpoint
+         fcb   CYX+CAD20+LERF+D2479
+         fcb   51 CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   25
-         fcb   $1D
-         fcb   53
+         fcb   25  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
          fcb   0
-         fcb   $2F /
+         fcb   47  SCINIT  - INITIALIZE TERMINAL
          fcb   0
-         fcb   $2D -
-         fcb   $2E .
-*23
+         fcb   45  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   46  ATT1  - CHARACTER ATTRIBUTES
+*T23 Motorola Exorterm
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   $40 @
+         fcb   64 CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $52 R
-         fcb   $53
-         fcb   $54 T
-         fcb   $55 U
+         fcb   82  CLRS  - CLEAR SCREEN
+         fcb   83  LERASE - ERASE LINE
+         fcb   84  SCRLUP - SCROLL UP
+         fcb   85  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-*24 Visual tech 300?
+*T24 Visual tech 300
          fcb   CYX+SSCD+LERF+D2480
          fcb   93  CURSOR MOVE (macro)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   130 CLEAR SCREEN
-         fcb   96
-         fcb   127
-         fcb   128
+         fcb   130  CLRS  - CLEAR SCREEN
+         fcb   96  LERASE - ERASE LINE
+         fcb   127  SCRLUP - SCROLL UP
+         fcb   128  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
          fcb   99 ATT0  - NO CHARACTER ATTRIBUTES
-         fcb   129
-*25 TEC 70
+         fcb   129  ATT1  - CHARACTER ATTRIBUTES
+*T25 TEC 70
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   91     Macro 1
+         fcb   91  CURMV  - CURSOR MOVE (Macro 1)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $57 W
-         fcb   $58 X
-         fcb   $59 Y
-         fcb   $5A Z
+         fcb   87  CLRS  - CLEAR SCREEN
+         fcb   88  LERASE - ERASE LINE
+         fcb   89  SCRLUP - SCROLL UP
+         fcb   90  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
-         fcb   $5C \
-         fcb   6
-*26 VT100/ANSI Standard
+         fcb   92  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   6  ATT1  - CHARACTER ATTRIBUTES
+*T26 VT100/ANSI Standard
          fcb   CYX+SSCD+LERF+D2479
-         fcb   93  CURSOR MOVE (Macro 2)
+         fcb   93  CURMV  - CURSOR MOVE (Macro 2)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   95   CLRS  - CLEAR SCREEN
-         fcb   96
-         fcb   97
-         fcb   98
+         fcb   95  CLRS  - CLEAR SCREEN
+         fcb   96  LERASE - ERASE LINE
+         fcb   97  SCRLUP - SCROLL UP
+         fcb   98  SCRLDN  - SCROLL DOWN
          fcb   0
          fcb   0
          fcb   99 ATT0  - NO CHARACTER ATTRIBUTES
          fcb   100 ATT1  - CHARACTER ATTRIBUTES
-*27 GIMIX Video board
-         fcb   $70 p
-         fcb   48    Macro 3
-         fcb   49
-         fcb   50
-         fcb   $65 e
-         fcb   $66 f
-         fcb   25
-         fcb   $67 g
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $6A j
+*T27 GIMIX Video board
+         fcb   CAD20+SSCD+LERF+D2479
+         fcb   48  CURMV  - CURSOR MOVE  (Macro 3)
+         fcb   49  CURON  - CURSOR ON
+         fcb   50  CUROFF - CURSOR OFF
+         fcb   101  BLINK  - BLINK CURSOR
+         fcb   102  SOLID  - SOLID CURSOR
+         fcb   25  CLRS  - CLEAR SCREEN
+         fcb   103  LERASE - ERASE LINE
+         fcb   104  SCRLUP - SCROLL UP
+         fcb   105  SCRLDN  - SCROLL DOWN
+         fcb   106  SCINIT  - INITIALIZE TERMINAL
          fcb   0
-         fcb   $6B k
-         fcb   $6C l
-*28
-         fcb   $D0 P
-         fcb   $48 H
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   $49 I
-         fcb   $4A J
-         fcb   $4B K
+         fcb   107  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   108  ATT1  - CHARACTER ATTRIBUTES
+*T28 Volker-Craig VC4404
+         fcb   CYX+CAD20+LERF+D2479
+         fcb   72  CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
-         fcb   $2C ,
-         fcb   $27 '
-*29
+         fcb   0
+         fcb   73  CLRS  - CLEAR SCREEN
+         fcb   74  LERASE - ERASE LINE
+         fcb   75  SCRLUP - SCROLL UP
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   44  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   39  ATT1  - CHARACTER ATTRIBUTES
+*T29 CYBERNEX XL 87
          fcb   CYX+CAD20+SSCD+LERF+D2479
-         fcb   $33 3
-         fcb   $86
-         fcb   $87
+         fcb   51 CURMV  - CURSOR MOVE
+         fcb   134  CURON  - CURSOR ON
+         fcb   135  CUROFF - CURSOR OFF
          fcb   0
          fcb   0
-         fcb   $40 @
-         fcb   $1D
-         fcb   53
-         fcb   $88
-         fcb   $89
-         fcb   $8A
-         fcb   $8B
-         fcb   $8C
-*30
-         fcb   $51 Q
-         fcb   $6F o
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   $1D
-         fcb   $70 p
-         fcb   $71 q
+         fcb   64  CLRS  - CLEAR SCREEN
+         fcb   29  LERASE - ERASE LINE
+         fcb   53  SCRLUP - SCROLL UP
+         fcb   136  SCRLDN  - SCROLL DOWN
+         fcb   137  SCINIT  - INITIALIZE TERMINAL
+         fcb   138  SSHUT  - SHUT DOWN SCREEN
+         fcb   139  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   140  ATT1  - CHARACTER ATTRIBUTES
+*T30 Perkin-Elmer 550 CRT
+         fcb   CAD20+LERF+D2480
+         fcb   111  CURMV  - CURSOR MOVE (macro 4)
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   0
-*31 ADM-5?
-         fcb   $D0 P
-         fcb   1
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   0
-         fcb   18  CLEAR SCREEN
-         fcb   114 ERASE LINE
-         fcb   3
+         fcb   29  CLRS  - CLEAR SCREEN
+         fcb   112  LERASE - ERASE LINE
+         fcb   113  SCRLUP - SCROLL UP
          fcb   0
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-*32
-         fcb   $31
-         fcb   $79 y
+*T31 Lear-Siegler ADM-5
+         fcb   CYX+CAD20+LERF+D2479
+         fcb   1 CURMV  - CURSOR MOVE
          fcb   0
          fcb   0
          fcb   0
          fcb   0
-         fcb   $7A
-         fcb   $7B
-         fcb   $7C
-         fcb   $7D
-         fcb   $7E
+         fcb   18  CLRS  - CLEAR SCREEN
+         fcb   114  LERASE - ERASE LINE
+         fcb   3  SCRLUP - SCROLL UP
          fcb   0
-         fcb   $84
-         fcb   $85
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+*T32 Hazeltine ESPRIT
+         fcb   SSCD+LERF+D2480
+         fcb   121 CURMV  - CURSOR MOVE
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   122  CLRS  - CLEAR SCREEN
+         fcb   123  LERASE - ERASE LINE
+         fcb   124  SCRLUP - SCROLL UP
+         fcb   125  SCRLDN  - SCROLL DOWN
+         fcb   126  SCINIT  - INITIALIZE TERMINAL
+         fcb   0
+         fcb   132  ATT0  - NO CHARACTER ATTRIBUTES
+         fcb   133  ATT1  - CHARACTER ATTRIBUTES
 
 * Cursor move routine
 TEC70MV equ *
          pshs  b,a
-         lda   #$1B
+         lda   #ESCAPE
          jsr   ,u
          lda   #$0E
          jsr   ,u
@@ -1384,7 +1387,7 @@ TEC70MV equ *
 * Cursor move routine for HP2621 ($16E4)
 HP2621MV equ *
          pshs  b,a
-         lda   #$1B
+         lda   #ESCAPE
          jsr   ,u
          lda   #'&
          jsr   ,u
@@ -1418,7 +1421,7 @@ L171B    adda  #$30
 
 * Cursor move sequence for VT100 ($1720)
 VT100MV  pshs  b,a
-         lda   #$1B
+         lda   #ESCAPE
          jsr   ,u
          lda   #'[
          jsr   ,u
@@ -1465,29 +1468,32 @@ TRMSEQ EQU *
          fcb   N
 
   ifeq PRODUCT-P.Dragon
+***********************
+* START GO51  SEQUENCES
+*
 *1  - CURSOR MOVE (GO51)
-         fcb   $1B,'A+N
+         fcb   ESCAPE,'A+N
 *2, - CLEAR SCREEN (GO51)
          fcb   $0C+N
 *3  - ERASE LINE (GO51)
          fcb   $0D    Go to beginning of line
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'B+N
 *4  - SCROLL UP (GO51)
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'A
-         fcb   $00
-         fcb   $17
+         fcb   0      column
+         fcb   23     row
          fcb   $0A+N
 *5  - SCROLL DOWN (GO51)
-         fcb   $0B
-         fcb   $1B
+         fcb   $0B     Cursor home
+         fcb   ESCAPE
          fcb   'D+N
 *6  - NO CHARACTER ATTRIBUTES (GO51)
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'G+N
 *7  - CHARACTER ATTRIBUTES (GO51)
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'F+N
 
 * NOTE. The Go51 terminal description seems to have been binary patched into
@@ -1496,37 +1502,40 @@ TRMSEQ EQU *
 *?  - 
          fcb   $29+N
  else
-*1  - CURSOR MOVE (SOROC IQ-120)
-         fcb   $1B,'=+N
+**********************
+* START ORIGINAL SEQUENCES
+*
+*1  - CURSOR MOVE (ADM-3A, SOROC IQ-120)
+         fcb   ESCAPE,'=+N
 *2, - CLEAR SCREEN (SOROC IQ-120)
-         fcb   $1B,'*+N
+         fcb   ESCAPE,'*+N
 *3  - SCROLL UP (ADM-3A, SOROC IQ-120)
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '=
-         fcb   '7     Line 24
-         fcb   $20    Column 1
+         fcb   23+$20     Line 24
+         fcb   0+$20        Column 1
          fcb   $0A+N
 *4  - 
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $27
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $28+N
 *5  -
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $54+N
 *6  -
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $28+N
 *7 -
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $29+N
  endc
 *8
          fcb   $1E
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'E+N
 *9
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '.
          fcb   '2
          fcb   '6
@@ -1534,7 +1543,7 @@ TRMSEQ EQU *
          fcb   '1
          fcb   $0E+N
 *10
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '.
          fcb   '2
          fcb   '6
@@ -1567,30 +1576,31 @@ TRMSEQ EQU *
 *17
          fcb   $7E
          fcb   $19+N
-*18
+
+*18 Clear screen ADM-3 and ADM-5
          fcb   $1A+N
 *19
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $7E
-         fcb   $B3 3
+         fcb   '3+N
 *20
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $7E
-         fcb   $B1 1
+         fcb   '1+N
 *21
          fcb   $1E
-         fcb   $1B
-         fcb   $C9 I
+         fcb   ESCAPE
+         fcb   'I+N
 *21
-         fcb   $1B
-         fcb   $C2 B
+         fcb   ESCAPE
+         fcb   'B+N
 *23
-         fcb   $1B
-         fcb   $C3 C
+         fcb   ESCAPE
+         fcb   'C+N
 *24
          fcb   $14+N
-*25
-         fcb   $8C
+*25 Clear screen
+         fcb   $0C+N
 *26
          fcb   $1E+N
 *27
@@ -1600,59 +1610,53 @@ TRMSEQ EQU *
          fcb   $0A+N
 *28
          fcb   $1D
-         fcb   $1B
-         fcb   $C8 H
+         fcb   ESCAPE
+         fcb   'H+N
 *29
-         fcb   $1B
-         fcb   $CB K
+         fcb   ESCAPE
+         fcb   'K+N
 *30
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '0
-         fcb   $C0 @
+         fcb   '@+N
 *31
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '0
-         fcb   $C1 A
-*32
-         fcb   $8B
+         fcb   'A+N
+
+*32 Cursor move for SWTPC CT-82
+         fcb   $0B+N    Ctrl-K X,Y
+
 *33  - CURSOR ON (CT-82)
-         fcb   $1E,5+N
+         fcb   $1E,$05+N   Ctrl-^ ctrl-E
 *34  - CURSOR OFF (CT-82)
-         fcb   $1E,$15+N
-*35
+         fcb   $1E,$15+N  Ctrl-^ ctrl-U
+*35  - CURSOR BLINK (CT-82)
          fcb   $1E
-         fcb   $83
-*36
-         fcb   $1E
-         fcb   $13+N
+         fcb   $03+N
+*36  - non-blinking cursor
+         fcb   $1E,$13+N   Ctrl-^ ctrl-S
+
 *37  - CLEAR SCREEN (CT-82)
          fcb   $10,$16+N
 *38  - ERASE LINE (CT-82)
-         fcb   $06+N
+         fcb   $06+N       Ctrl-F
 *39  - SCROLL UP (CT-82)
-         fcb   $0E+N
+         fcb   $0E+N       Ctrl-N
 *40 - INITIALIZE SCREEN (CT-82)
-         fcb   $1E
-         fcb   $01
-         fcb   $1E
-         fcb   $13
-         fcb   $1E
-         fcb   $04
-         fcb   $1E
-         fcb   $05
-         fcb   $1E
-         fcb   $07
-         fcb   $1E
-         fcb   $1A
-         fcb   $1E
-         fcb   $0C
-         fcb   $1E
-         fcb   $1D
-         fcb   $1C
-         fcb   $12+N
-*41  - SHUT DOWN SCREEN
-         fcb   $1E
-         fcb   $0A+N
+         fcb   $1E,$01   Don't show control characters
+         fcb   $1E,$13   Non-blinking cursor
+         fcb   $1E,$04   Set block cursor
+         fcb   $1E,$05   Display cursor
+         fcb   $1E,$07   Ignore protection status
+         fcb   $1E,$1A   Don't wrap on line overflow
+         fcb   $1E,$0C   Enable upper and lower case
+         fcb   $1E,$1D   Disable shift inversion
+         fcb   $1C,$12+N  Set format 82x20 with standard character rom
+
+*41  - SHUT DOWN SCREEN (CT-82)
+         fcb   $1E,$0A+N
+
 *42  - NO CHARACTER ATTRIBUTE
  FCB $1E,$6+N HIGH INTENSITY
 *43  - CHARACTER ATTRIBUTE (CT-82)
@@ -1664,99 +1668,101 @@ TRMSEQ EQU *
 *46
          fcb   $0E+N
 *47
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '0
-         fcb   $C1 A
-*48
-         fcb   $03
-         fcb   M
+         fcb   'A+N
+
+*48  GIMIX Video board CURSOR MOVE (macro)
+         fcb   3,M
 *49
-         fcb   $83
+         fcb   $03+N
 *50
-         fcb   $84
+         fcb   $04+N
+
 *51 CURSOR MOVE (VT52)
-         fcb   $1B
-         fcb   $D9 Y
+         fcb   ESCAPE
+         fcb   'Y+N
+
 *52 CLEAR TO END OF SCREEN (VT52)
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'H
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'J+N
 *53 Scroll screen up for H19
-         fcb   $1B
-         fcb   $59
-         fcb   $37
+         fcb   ESCAPE
+         fcb   'Y
+         fcb   $20+23
          fcb   $20
          fcb   $0A+N
 *54 Scroll screen down for H19
-         fcb   $1B
-         fcb   $48
-         fcb   $1B
-         fcb   $49+N
+         fcb   ESCAPE
+         fcb   'H
+         fcb   ESCAPE
+         fcb   'I+N
 *55 Cursor on for H19
-         fcb   $1B
-         fcb   $79
-         fcb   $35+N
+         fcb   ESCAPE
+         fcb   'y
+         fcb   '5+N    Cursor on
 *56 Cursor off for H19
-         fcb   $1B
-         fcb   $78
-         fcb   $35+N
+         fcb   ESCAPE
+         fcb   'x
+         fcb   '5+N    Cursor off
 *57 Cursor blink for H19
-         fcb   $1B
-         fcb   $78
-         fcb   $34+N
+         fcb   ESCAPE
+         fcb   'x
+         fcb   '4+N    Block cursor
 *58 Cursor solid for H19
-         fcb   $1B
-         fcb   $79
-         fcb   $34+N
+         fcb   ESCAPE
+         fcb   'y
+         fcb   '4+N    underscore cursor
 *59
-         fcb   $1B
-         fcb   $78
-         fcb   $34
-         fcb   $1B
-         fcb   $F7
+         fcb   ESCAPE
+         fcb   'x
+         fcb   '4    Block cursor
+         fcb   ESCAPE
+         fcb   'w+N
 *60
-         fcb   $1B
-         fcb   $FA
+         fcb   ESCAPE
+         fcb   'z+N   Reset all
 *61 Insert mode attribute off (H19)
-         fcb   $1B
-         fcb   $71+N
+         fcb   ESCAPE
+         fcb   'q+N
 *62 Insert mode attribute on (H19)
-         fcb   $1B
-         fcb   $70+N
+         fcb   ESCAPE
+         fcb   'p+N
 *63
          fcb   $18+N
 *64
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'E+N
 *65
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'H
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $CC L
 *66
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'd
          fcb   $C0 @
 *67
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'd
          fcb   $C1 A
 *68
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $C6 F
 *69
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'F
          fcb   '7
          fcb   $20
          fcb   $0A+N
 *70
-         fcb   $1B
-         fcb   $DB [
+         fcb   ESCAPE
+         fcb   '[+N
 *71
-         fcb   $1B
-         fcb   $DD ]
+         fcb   ESCAPE
+         fcb   ']+N
 *72
          fcb   $10+N
 *73
@@ -1769,16 +1775,16 @@ TRMSEQ EQU *
          fcb   '7
          fcb   $20
          fcb   $0A+N
-*76
-         fcb   $00
-         fcb   M
+
+*76 Hewlett packard 2621 CURSOR MOVE (macro)
+         fcb   0,M
 *77
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'H
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'J+N
 *78
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '&
          fcb   'a
          fcb   '2
@@ -1788,129 +1794,126 @@ TRMSEQ EQU *
          fcb   'C
          fcb   $0A+N
 *79
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '&
          fcb   'a
          fcb   '0
          fcb   'y
          fcb   '0
          fcb   'C
-         fcb   $1B
-         fcb   $CC L
+         fcb   ESCAPE
+         fcb   'L+N
 *80
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '&
          fcb   'd
-         fcb   $C0 @
+         fcb   '@+N
 *81
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '&
          fcb   'd
-         fcb   $C1 A
+         fcb   'A+N
 *82
-         fcb   $1B
-         fcb   $D8 X
-*83
-         fcb   $1B
-         fcb   $D5 U
-*84
-         fcb   $1B
+         fcb   ESCAPE
+         fcb   'X+N
+
+*83 Motorola Exorterm line erase
+         fcb   ESCAPE
+         fcb   'U+N
+
+*84 Motorola Exorterm scroll up
+         fcb   ESCAPE
          fcb   'E
          fcb   '7
          fcb   $20
          fcb   $0A+N
-*85
-         fcb   $1B
+
+*85 Motorola Exorterm scroll down
+         fcb   ESCAPE
          fcb   'S
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'G
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'V
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'H
-         fcb   $1B
-         fcb   $D2 R
-*86
-         fcb   $1E
-         fcb   $01
-         fcb   $1E
-         fcb   $13
-         fcb   $1E
-         fcb   $04
-         fcb   $1E
-         fcb   $05
-         fcb   $1E
-         fcb   $07
-         fcb   $1E
-         fcb   $1A
-         fcb   $1E
-         fcb   $0C
-         fcb   $1E
-         fcb   $1D
-         fcb   $1C
-         fcb   $14+N
-*87
-         fcb   $1B
-         fcb   $86
-*88
-         fcb   $1B
-         fcb   $8B
-*89
-         fcb   $1B
+         fcb   ESCAPE
+         fcb   'R+N
+*86 (Unused) Same as CT-82 except for last sequence
+         fcb   $1E,$01
+         fcb   $1E,$13
+         fcb   $1E,$04
+         fcb   $1E,$05
+         fcb   $1E,$07
+         fcb   $1E,$1A
+         fcb   $1E,$0C
+         fcb   $1E,$1D
+         fcb   $1C,$14+N  Set format 82x20 with alternate character PROM
+
+*87 TEC 70 clear screen
+         fcb   ESCAPE
+         fcb   $06+N
+*88 TEC 70 line erase
+         fcb   ESCAPE
+         fcb   $0B+N
+*89 TEC 70 scroll up
+         fcb   ESCAPE
          fcb   $0E
          fcb   'h
          fcb   $7F
          fcb   $0A+N
-*90
-         fcb   $1B
+*90 TEC 70 scroll down
+         fcb   ESCAPE
          fcb   $08
-         fcb   $1B
-         fcb   $8C
-*91
-         fcb   $01
-         fcb   M
-*92
-         fcb   $1B
-         fcb   $A0
-*93 VT100 CURSOR MOVE
-         fcb   $02
-         fcb   M
-*94
-         fcb   $1B
+         fcb   ESCAPE
+         fcb   $0C+N
+
+*91 TEC 70 CURSOR MOVE (macro)
+         fcb   1,M
+*92 TEC 70 attributes
+         fcb   ESCAPE
+         fcb   $20+N
+
+*93 VT100 CURSOR MOVE (macro)
+         fcb   2,M
+
+*94 Scroll up - INTERTUBE II
+         fcb   ESCAPE
          fcb   '=
-         fcb   '8
+         fcb   $20+24
          fcb   $20
          fcb   $0A+N
+
 *95  VT100  Clear screen
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   'H
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   '2
          fcb   'J+N
 
 *96 VT100 Clear entire line
          fcb   $0D
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   '2
-         fcb   $CB K
+         fcb   'K+N
 *97
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
-         fcb   $D3 S
+         fcb   'S+N
 *98
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
-         fcb   $D4 T
+         fcb   'T+N
 *99 VT100 Turn off character attributes
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
-         fcb   $30
+         fcb   '0
          fcb   'm+N
 *100 VT100 Turn low intensity mode on
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   '2
          fcb   'm+N
@@ -1930,34 +1933,34 @@ TRMSEQ EQU *
          fcb   $00
          fcb   'P
          fcb   $18
-         fcb   $81
+         fcb   $01+N
 *107
-         fcb   $81
+         fcb   $01+N
 *108
-         fcb   $82
+         fcb   $02+N
 *109
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $7E
-         fcb   $B3 3
+         fcb   '3+N
 *110
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $7E
-         fcb   $B2 2
-*111
-         fcb   $04
-         fcb   M
+         fcb   '2+N
+
+*111 Perkin-Elmer 550 CURSOR MOVE (macro)
+         fcb   4,M
 *112
-         fcb   $1B
-         fcb   $C9 I
+         fcb   ESCAPE
+         fcb   'I+N
 *113
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'X
          fcb   '7
-         fcb   $1B
-         fcb   $C2 B
+         fcb   ESCAPE
+         fcb   'B+N
 *114
-         fcb   $1B
-         fcb   $D4 T
+         fcb   ESCAPE
+         fcb   'T+N
 *115
          fcb   $17+N
 *116
@@ -1965,131 +1968,130 @@ TRMSEQ EQU *
          fcb   $00
          fcb   $17
          fcb   $0A+N
-*117
-         fcb   $07
-         fcb   M
-*118
-         fcb   $05
-         fcb   M
-*119
-         fcb   $06
-         fcb   M
-*120
-         fcb   $08
-         fcb   M
+*117 (macro)
+         fcb   7,M
+*118 (macro)
+         fcb   5,M
+*119 (macro)
+         fcb   6,M
+*120 (macro)
+         fcb   8,M
 *121
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $11+N
 *122
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $1C+N
 *123
          fcb   $0D
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $0F+N
 *124
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $11
          fcb   $00
          fcb   $17
          fcb   $0A+N
 *125
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $12
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $1A+N
 *126
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $06
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $24 $
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $1F+N
 *127
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   $18
          fcb   'H
-         fcb   $1B
-         fcb   $C4 D
+         fcb   ESCAPE
+         fcb   'D+N
 *128 VT100 Move cursor to upper left corner
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   'H
-         fcb   $1B
-         fcb   $CD M
-*129
-         fcb   $1B
+         fcb   ESCAPE
+         fcb   'M+N
+
+*129  Set attributes for 
+         fcb   ESCAPE
          fcb   '[
          fcb   '7
          fcb   'm+N
+
 *130 VT100 Clear entire screen
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
          fcb   '2
          fcb   'J+N
 *131
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '0
-         fcb   $D0 P
+         fcb   'P+N
 *132
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $1F+N
 *133
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $19+N
 *134
-         fcb   $1B
-         fcb   $A3 #
-*135
-         fcb   $1B
-         fcb   $A4 $
-*136
-         fcb   $1B
+         fcb   ESCAPE
+         fcb   '#+N
+
+*135 Cursor off for CYBERNEX XL 87
+         fcb   ESCAPE
+         fcb   '$+N
+*136 Scroll down for CYBERNEX XL 87
+         fcb   ESCAPE
          fcb   'H
-         fcb   $1B
-         fcb   $C1 A
-*137
+         fcb   ESCAPE
+         fcb   'A+N
+*137 Initialize terminal for CYBERNEX XL 87
          fcb   $04
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $23 #
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $3E >
-         fcb   $1B
-         fcb   $4D M
-         fcb   $1B
+         fcb   ESCAPE
+         fcb   'M
+         fcb   ESCAPE
          fcb   'E
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'Q
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'U
-         fcb   $1B
+         fcb   ESCAPE
          fcb   '[
-         fcb   $1B
+         fcb   ESCAPE
          fcb   $5E ^
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'b
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'e
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'g
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'i
-         fcb   $1B
-         fcb   $EE n
-*138
+         fcb   ESCAPE
+         fcb   'n+N
+*138 Shutdown for CYBERNEX XL 87
          fcb   $1E
          fcb   $0A+N
-*139
-         fcb   $1B
+*139 No attributes for CYBERNEX XL 87
+         fcb   ESCAPE
          fcb   'e
-         fcb   $1B
+         fcb   ESCAPE
          fcb   'g
-         fcb   $1B
-         fcb   $E9 i
-*140
-         fcb   $1B
-         fcb   $E4 d
+         fcb   ESCAPE
+         fcb   'i+N
+*140 Set attributte for CYBERNEX XL 87
+         fcb   ESCAPE
+         fcb   'd+N
 
 TRMEND   equ *
 
@@ -2344,6 +2346,7 @@ L1A75    clr   ,u+
          lda   #$28
          ldb   #$78
          bra   L1B47
+
 L1B28    cmpa  #$0A
          bne   L1B32
          lda   #$0F
@@ -5984,6 +5987,7 @@ L3A60    lda   #$01
 L3A6F    lbsr  L01D6
          bcc   L3A75
          rts
+
 L3A75    pshs  x
          leax  $01,x
          lbsr  L4A0C
@@ -6000,10 +6004,12 @@ L3A75    pshs  x
          stb   <u0062    Max pages
          bra   L3A6F
 
-L3A9B    stb   <u0045
+L3A9B    stb   <u0045   Terminal type number
          bra   L3A6F
+
 L3A9F    stb   <u0044
          bra   L3A6F
+
 L3AA3    ldx   >DSTM5,pcr
          lbsr  L3731  Write string in X
          lbra  L0412
@@ -7260,7 +7266,7 @@ L4614    ldx   ,u
 L4618    lda   ,x+
          cmpa  #$20
          beq   L463F
-         cmpa  #$2C
+         cmpa  #',
          beq   L463F
          lbsr  L1C44
          cmpa  ,y+

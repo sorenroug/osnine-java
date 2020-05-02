@@ -2014,7 +2014,7 @@ M0BAD    lda   #$90
          lda   #$FF
          sta   <$00F0
          jsr   >L0D36-PGBEGIN,y
-M0BC0    ldd   <$000D
+M0BC0    ldd   <$000D    See M10D in trmfile
          subd  #$0A26    Line 10 column 38
          lsra              Change to line 5
          lsrb              Change to column 19

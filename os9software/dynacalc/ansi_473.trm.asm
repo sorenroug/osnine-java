@@ -7,7 +7,7 @@
  use header_473.inc
  use ansi.keys
  use rest.inc
- use banner_drg.inc
+ use banner_ansi.inc
 Target set $F00
  use filler.inc
  use helps_473.inc

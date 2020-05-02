@@ -491,7 +491,7 @@ XPSWS2 FCC 'ERROR - PROPORTIONAL SPACING TABLE NOT LOADED'
  FCB 0
 XPSWS3 FCC 'Set proportional spacing table "'
  FCB 0
-XPSWS4 FCC '" (Y*,N)? '
+XPSWS4 FCC '" (Y*/N)? '
  FCB 0
 XPSWS5 FCC 'Table name? '
  FCB 0

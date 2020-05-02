@@ -42,7 +42,7 @@
 
     <!-- All -->
     <target name="all" depends="prepare, required, level1,
-        gimix, swtpc, color, color3, fm11, virtual,
+        gimix, swtpc, color, fm7, dragon64, color3, fm11, dragon128, virtual,
         utilities, dynacalc, stylo, rms, basic09">
     </target>
 
@@ -105,7 +105,12 @@
         <assemble src="DC3_desc" home="swtpc"/>
         <assemble src="OS9p1" home="swtpc" verify="1832f6806d7b89f1a2209dd28bd96322"/>
         <assemble src="OS9p2" home="swtpc" verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
+    </target>
 
+    <!-- FM-11 Level II -->
+    <target name="fm7" depends="prepare">
+        <assemble src="OS9p1" home="fm7" verify="dc7e4c39ac16fc1dae814e6bb1d99aeb"/>
+        <assemble src="OS9p2" home="fm7" verify="2da082350df89cb057c7a846a5f33b76"/>
     </target>
 
     <!-- COCO Level I -->
@@ -122,20 +127,26 @@
         <assemble src="TMode" home="color" verify="033c534c820856b8c8867417b041521f"/>
     </target>
 
-    <!-- COCO Level II -->
-    <target name="color3" depends="prepare">
-
-        <assemble src="OS9p1" home="color3" verify="5b74b74a31534bc8cee02603341f7fe6"/>
-        <assemble src="OS9p2" home="color3" verify="2fd0cea7e2c3492feca8de7ec1721f70"/>
-        <assemble src="Init" home="color3" verify="b654c12814f287a87c3b638fa9de9c4f"/>
-
+    <!-- Dragon 64 -->
+    <target name="dragon64" depends="prepare">
+        <assemble src="Clock" home="dragon64" verify="3410223ca2579ce665f3ccc3db1e8030"/>
         <assemble src="PRINTER" home="dragon64" verify="9f4223e2e09ca4e9acd0bbe8e5a7a6ea"/>
         <assemble src="P1" home="dragon64" verify="35d22808bbc2023c651c1888b56e95dd"/>
         <assemble src="T1" home="dragon64" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
         <assemble src="DDisk_ed4" home="dragon64" verify="085c24996a2d560cbc5641e39c1b710f"/>
         <assemble src="DDisk_ed2" home="dragon64" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
         <assemble src="DDisk_desc" home="dragon64" verify="db6f08610c19d1716bc6afc946d14c17"/>
+    </target>
 
+    <!-- COCO Level II -->
+    <target name="color3" depends="prepare">
+        <assemble src="OS9p1" home="color3" verify="5b74b74a31534bc8cee02603341f7fe6"/>
+        <assemble src="OS9p2" home="color3" verify="2fd0cea7e2c3492feca8de7ec1721f70"/>
+        <assemble src="Init" home="color3" verify="b654c12814f287a87c3b638fa9de9c4f"/>
+    </target>
+
+    <!-- Dragon 128 -->
+    <target name="dragon128" depends="prepare">
         <assemble src="OS9p1_ed12" home="dragon128" verify="f9d58c063476646c3d8a8e45cb00bd6d"/>
         <assemble src="OS9p2_ed13" home="dragon128" verify="1e962babaad664249926cda12db82e47"/>
         <assemble src="Init"       home="dragon128" verify="8bbcbfd913f2fef3ff5df0e551b78ff5"/>
@@ -180,14 +191,14 @@
         <assemble src="coco_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="dragon64_473.trm" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
         <!--
-        <assemble src="ansi_473.trm" home="dynacalc" verify="9080196e996384d57472bc234deece4a"/>
+        <assemble src="ansi_473.trm" home="dynacalc" verify="02016e1718d3a188e20fb19dab1d2d79"/>
         -->
     </target>
 
     <!-- Stylograph -->
     <target name="stylo" depends="prepare">
         <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
-        <assemble src="stylo_std" home="stylograph" verify="170366065627902e83c8ba54107e1188"/>
+        <assemble src="stylo_std" home="stylograph" verify="5b6b54ab65c1ff865486639d5dbbd40f"/>
         <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
     </target>
 

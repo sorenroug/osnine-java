@@ -4,6 +4,9 @@
 *
 *     Dynamic Address Translator Definitions
 *
+FM11L2 equ 17
+CPUType set FM11L2
+
 DAT.BlCt equ 16 D.A.T. blocks/address space
 DAT.TkCt equ 16 task maps in the MMU
 DAT.Regs equ $FD80 DAT Block Registers base address
