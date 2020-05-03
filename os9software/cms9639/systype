@@ -7,12 +7,12 @@
 CMS9639 equ 18
 CPUType set CMS9639
 
-*DAT.BlCt equ 16 D.A.T. blocks/address space
+DAT.BlCt equ 16 D.A.T. blocks/address space
 DAT.TkCt equ 128 task maps in the MMU
 DAT.Regs equ $F000 DAT Block Registers base address
-*DAT.Task equ $FD90 Task register address
+*DAT.Task equ $FFBA Task register address
 *DAT.BlSz equ $1000
-*DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
+DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
 ***************
 DAT.Free equ $8000 Free Block Number
 

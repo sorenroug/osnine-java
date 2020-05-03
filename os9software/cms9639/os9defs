@@ -13,9 +13,6 @@
 *          for com-trol level II.
 * 83/05/04 F$GCMDir service request added for NCM  by  WGP
 * 83/06/29 Added ProtFlag to init module offsets
-* 83/08/01 Added Japanese version               by M.Hoshi
-* 84/01/11 Added SS.Kmode for now kanji input process.
-*                                                  by  Y.O
 *
 
  pag
@@ -55,10 +52,6 @@ F$GModDr rmb 1 Get Module Directory copy
 F$CpyMem rmb 1 Copy External Memory
 F$SUser rmb 1 Set User ID number
 F$UnLoad rmb 1 Unlink Module by name
-F$Kanji equ . Get KANJI code ... Add by SEIKOU
-F$Ctime rmb 1 Com-Trol clock read
-F$Cstime rmb 1 Com-Trol set time
-F$CTswi2 rmb 1 Com-Trol double postbyte swi2
  org $28 Beginning of System Reserved Calls
 F$SRqMem rmb 1 System Memory Request
 F$SRtMem rmb 1 System Memory Return
@@ -193,14 +186,6 @@ SS.ELog rmb 1 Read Error Log
 SS.SSig rmb 1 Send signal on data ready
 SS.Relea rmb 1 Release device
  rmb $20-. Reserved
-* This areas reserved for Japanese version ...By SEIKOU
-SS.Dns rmb 1 Change Density Request
-SS.Tof rmb 1 Change track offset request
-SS.Kanji rmb 1 Kanji font read request
-SS.Pmode rmb 1 Change Printer mode
-SS.WdSts rmb 1 Window status read request
-SS.Kmode RMB 1 Kanji mode request
- rmb $30-. Reserved By SEIKOU
 
  ttl Structure Formats
  pag
