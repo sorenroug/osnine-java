@@ -1,11 +1,11 @@
-         nam   Stylo
+         nam   Stylograph 2.1
          ttl   program module
 
-         use   defsfile
+ use   defsfile
 
 tylg     set   Prgrm+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
+atrv     set   ReEnt+0
+
          mod   BINEND,name,tylg,atrv,start,size
 u0000    rmb   1
 u0001    rmb   1
@@ -456,6 +456,7 @@ L020D    stb   <u0003
 L0217    orcc  #Carry
          andcc #$FD
          puls  pc,u,x,b,a
+
 L021D    pshs  u,x,b,a
          lda   #$02
          ldb   #$03
@@ -764,7 +765,7 @@ L049B    orcc  #Carry
 *EQUATE FOR STYFIX
 TXTBEG EQU *
  ifeq PRODUCT-P.Dragon
- use stytext_go51.i
+ use stytext_drg64.i
  else
  use stytext.i
  endc
