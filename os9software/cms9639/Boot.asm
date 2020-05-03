@@ -75,22 +75,26 @@ L0062    tst   <$1D,u
 L0071    orcc  #$01
          rts
 
-* Table here
-L0074    fcb   $1B
-         bgt   L007F
-         swi
-         fcb   $1A
-         orcc  #$1A
-         rora
-         ldx   <$18,u
+L0074    fcb   L008F-L0074  0
+         fcb   L00A2-L0074  1
+         fcb   L007C-L0074  2
+         fcb   L00B3-L0074  3
+         fcb   RETRN-L0074  4
+         fcb   RETRN-L0074  5
+         fcb   RETRN-L0074  6
+         fcb   L00BA-L0074  7
+
+L007C    ldx   <$18,u
 L007F    lda   ,x+
          sta   >$FF81
 L0084    brn   L0084
          cmpb  >$FF80
          beq   L007F
          stx   <$18,u
-         rts
-         ldx   <$1A,u
+RETRN    rts
+
+* Copy to drive
+L008F    ldx   <$1A,u
 L0092    lda   ,x+
          sta   >$FF81
 L0097    brn   L0097
@@ -98,19 +102,24 @@ L0097    brn   L0097
          beq   L0092
          stx   <$1A,u
          rts
-         ldx   <$1A,u
+
+* Copy from drive
+L00A2    ldx   <$1A,u
 L00A5    lda   >$FF81
          sta   ,x+
          cmpb  >$FF80
          beq   L00A5
          stx   <$1A,u
          rts
-         lda   >$FF81
+
+L00B3    lda   >$FF81
          sta   <$1C,u
          rts
-         tst   >$FF81
+
+L00BA    tst   >$FF81
          clr   <$1D,u
          rts
+
 L00C1    pshs  y,x,b,a
          sta   <$14,u
          stx   <$12,u

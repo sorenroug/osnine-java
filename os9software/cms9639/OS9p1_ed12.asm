@@ -1863,6 +1863,6 @@ SYSVEC fdb TICK+$FFE0-* Clock tick handler
  fdb IRQ+$FFF8-* Irq
  fdb SWIRQ+$FFFA-* Swi
  fdb NMI+$FFFC-* Nmi
- fdb $FECD
+ fdb DATINT+$FFFE-* Dynamic address translator initialization
 
 ROMEnd equ *
