@@ -51,6 +51,7 @@ L002E    lda   >$FF80
          stb   >$FF80
          andcc #$FE
 L0046    rts
+
 L0047    lda   >$FF80
          bmi   L0052
          bita  #$40
@@ -70,8 +71,11 @@ L0062    tst   <$1D,u
          bne   L0071
          andcc #$FE
          rts
+
 L0071    orcc  #$01
          rts
+
+* Table here
 L0074    fcb   $1B
          bgt   L007F
          swi
@@ -119,6 +123,7 @@ L00D3    orb   $01,s
          stb   <$11,u
          clr   <$15,u
          puls  pc,y,x,b,a
+
 L00DD    pshs  y,x,b,a
          leax  <$10,u
          ldy   <$16,u
@@ -126,13 +131,15 @@ L00DD    pshs  y,x,b,a
          bcc   L00EC
          stb   $01,s
 L00EC    puls  pc,y,x,b,a
+
 L00EE    ldb   #$01
          lbsr  L002E
          bcs   L00EE
          lbsr  L0047
          bcc   L00FC
-         ldb   #$F4
+         ldb   #E$Read
 L00FC    rts
+
 L00FD    pshs  u,y,x,b,a
          sta   <$1E,u
          lda   #$01
@@ -157,6 +164,8 @@ L0112    leax  <$10,u
          bra   L0137
 L0135    stb   $01,s
 L0137    puls  pc,u,y,x,b,a
+
+* Delay
 L0139    pshs  b,a,cc
          ldd   #$1BE6
 L013E    subd  #$0001
@@ -192,19 +201,19 @@ L0175    stb   <$11,u
          puls  y,x
          lbsr  L00EE
          ldd   #$0100
-         ldx   #$0000
+         ldx   #$0000   LSN 0
          lbsr  L00FD
          bcs   L01CD
          ldx   <$16,u
-         ldy   <$18,x
-         beq   L01CA
+         ldy   <DD.BSZ,x
+         beq   L01CA    No boot file?
          sty   <$20,s
-         ldb   <$15,x
+         ldb   <DD.BT,x
          leau  ,x
-         ldx   <$16,x
+         ldx   <DD.BT+1,x
          pshs  y,x,b
          ldd   #$0100
-         os9   F$SRtMem
+         os9   F$SRtMem  Return memory boot sector
          ldd   $03,s
          os9   F$SRqMem
          puls  y,x,b
