@@ -58,7 +58,7 @@ public class Acia6551 extends MemorySegment implements Acia {
     boolean receiveIrqEnabled = false;
     boolean transmitIrqEnabled = false;
 
-    private int statusRegister = TDRE;
+    private volatile int statusRegister = TDRE;
 
     private String eolSequence = "\015";
 
