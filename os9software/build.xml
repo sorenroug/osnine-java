@@ -43,7 +43,7 @@
     <!-- All -->
     <target name="all" depends="prepare, required, level1,
         gimix, swtpc, color, fm7, dragon64, color3, fm11, dragon128, virtual,
-        utilities, dynacalc, stylo, rms, basic09">
+        utilities, dynacalc, stylograph, rms, basic09">
     </target>
 
     <!-- Required by other Maven modules -->
@@ -160,6 +160,12 @@
         <assemble src="OS9p3"      home="fm11" verify="ebb4f4ac8b1a7be281402a67c2ab3644"/>
     </target>
 
+    <!-- CMS 9639 -->
+    <target name="cms9639" depends="prepare">
+        <assemble src="OS9p1_ed12" home="cms9639"  verify="c62663295a8df03e8d370e1f2c9c2eb1"/>
+        <assemble src="Boot" home="cms9639"  verify="921665455cf8e35d2e966368706e72f8"/>
+    </target>
+
     <target name="virtual" depends="prepare">
         <assemble src="HWClock" home="virtual" verify="3cc1395b3495bef485fee9774e7fdef6"/>
         <assemble src="D0_vdisk" home="virtual" verify="9c31bf382aa1be8f30909a0dd6d481a6"/>
@@ -196,10 +202,11 @@
     </target>
 
     <!-- Stylograph -->
-    <target name="stylo" depends="prepare">
+    <target name="stylograph" depends="prepare">
         <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
         <assemble src="stylo_std" home="stylograph" verify="5b6b54ab65c1ff865486639d5dbbd40f"/>
         <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
+        <assemble src="stylo_3" home="stylograph" verify="daf4c997f44cfbe4d57d5518f469dfa2"/>
     </target>
 
     <!-- RMS Report Management System -->
