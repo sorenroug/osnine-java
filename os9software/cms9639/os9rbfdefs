@@ -16,10 +16,6 @@
 * 82/09/20   reserved areas added in static storage.
 * 83/06/07   Added InDriver flag in PD.SMF.       RFD
 * 83/06/13   Added PE.Req tmp save for PE.Lock    RFD
-* 83/08/01   PD.SToff added to path descriptor
-*              MSB 4 bit is sector offset for IBM compatible
-*              LSB 4 bit is track offset for one boot system
-*              This modified by SEIKOU (M.H)
 *
 
  pag
