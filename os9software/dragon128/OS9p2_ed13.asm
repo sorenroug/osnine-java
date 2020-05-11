@@ -289,17 +289,17 @@ IOLink leax IOSTR,PCR Get ioman name ptr
 * Decrment Link Count. If Count Reaches Zero,
 *    Delete Module From Directory & Return Memory
 *
-UNLINK   pshs  u,b,a
+UNLINK pshs u,b,a
  ldd R$U,U Get module address
  ldx R$U,u Get module address
-         lsra
-         lsra
-         lsra
-         lsra
+ lsra
+ lsra
+ lsra
+ lsra
  ifge DAT.BlSz-$2000
-         lsra
+ lsra
  endc
-         sta   ,s
+         sta   0,s
          beq   L01A8
          ldu   D.PROC
          leay  P$DATImg,u
@@ -331,20 +331,20 @@ L0187    ldb   ,s
          ldb   ,s
          lslb
          ldd   b,y
-         ldu   D.ModDir
+         ldu   D.ModDir Get directory ptr
          bra   L01AA
-L01A1    leau  8,u
+L01A1    leau  MD$ESize,u Move to next entry
          cmpu  D.ModEnd
          bcs   L01AA
 L01A8    bra   L01F5
-L01AA    cmpx  R$X,u
+L01AA    cmpx  MD$MPtr,U  Is it this module?
+         bne   L01A1 ..no
+         cmpd  [MD$MPDAT,u]
          bne   L01A1
-         cmpd  [,u]
-         bne   L01A1
-         ldx   R$Y,u
+         ldx   MD$Link,u
          beq   L01BD
          leax  -1,x
-         stx   R$Y,u
+         stx   MD$Link,u
          bne   L01DA
 L01BD    ldx   $02,s
          ldx   $08,x
@@ -354,9 +354,9 @@ L01BD    ldx   $02,s
          bcs   UNLK20
          os9   F$IODel
          bcc   UNLK20
-         ldx   R$Y,u
+         ldx   MD$Link,u
          leax  1,x
-         stx   R$Y,u
+         stx   MD$Link,u
          bra   L01F6
 UNLK20    bsr   L01FA
 L01DA    ldb   ,s
@@ -366,7 +366,7 @@ L01DA    ldb   ,s
          leax  -1,x
          stx   P$DATImg,y
          bne   L01F5
-         ldd   2,u
+         ldd   MD$MBSiz,u
          bsr   DIVBKSZ
          ldx   #DAT.Free
 L01F0    stx   ,y++
@@ -377,23 +377,23 @@ L01F6    leas  $02,s
          puls  pc,u
 
 L01FA    ldx   D.BlkMap
-         ldd   [,u]
+         ldd   [MD$MPDAT,u] Get module DAT image
          lda   d,x
          bmi   L024A
          ldx   D.ModDir
-L0204    ldd   [,x]
-         cmpd  [,u]
+L0204    ldd   [MD$MPDAT,x]
+         cmpd  [MD$MPDAT,u]
          bne   L020F
-         ldd   $06,x
+         ldd   MD$Link,x
          bne   L024A
-L020F    leax  $08,x
+L020F    leax  MD$ESize,x
          cmpx  D.ModEnd
          bcs   L0204
          ldx   D.BlkMap
          ldd   2,u
          bsr   DIVBKSZ
          pshs  y
-         ldy   ,u
+         ldy   MD$MPDAT,u
 L0220    pshs  x,a
          ldd   ,y
          clr   ,y+
@@ -407,12 +407,12 @@ L0220    pshs  x,a
          bne   L0220
          puls  y
          ldx   D.ModDir
-         ldd   ,u
-L023B    cmpd  ,x
+         ldd   MD$MPDAT,u
+L023B    cmpd  MD$MPDAT,x
          bne   L0244
          clr   ,x
          clr   1,x
-L0244    leax  $08,x
+L0244    leax  MD$ESize,x
          cmpx  D.ModEnd
          bcs   L023B
 L024A    rts
@@ -441,9 +441,9 @@ DIVBKSZ addd #DAT.Blsz-1
 *
 FORK     pshs  u
          lbsr  L02F9
-         bcc   L025C
+         bcc   FORK05
          puls  pc,u
-L025C    pshs  u
+FORK05    pshs  u
  ldx D.PROC Get parent process ptr
  ldd P$USER,X Copy user index
  std P$User,U
@@ -517,7 +517,8 @@ ALLPRC   pshs  u
          stu   R$U,x
 L02F7    puls  pc,u
 
-L02F9    ldx   D.PrcDBT
+* Find unused process id
+L02F9    ldx   D.PrcDBT Get process block ptr
 L02FB    lda   ,x+
          bne   L02FB
          leax  -1,x
@@ -619,12 +620,12 @@ CHIL20 lda P$SID,Y Is child next sibling?
  stb P$SID,Y Remove child from sibling list
 L039D    pshs  u,x,b,a
          ldb   ,s
-         ldx   D.PrcDBT
+         ldx   D.PrcDBT Get process block ptr
          abx
          lda   ,x
          beq   L03B8
          clrb
-         stb   ,x
+         stb   ,x  Clear process id
          tfr   d,x
          os9   F$DelTsk
          leau  0,x
@@ -1987,19 +1988,22 @@ L0C4C    lda   ,x
 L0C55    clrb
          rts
 
-GCMDIR   ldx   D.ModDir
-         bra   L0C61
-L0C5B    ldu   ,x
-         beq   L0C67
-         leax  $08,x
-L0C61    cmpx  D.ModEnd
-         bne   L0C5B
+*****
+*
+*
+GCMDIR ldx D.ModDir
+ bra   GCMDIR20
+GCMDIR10 ldu   MD$MPDAT,x Is there a DAT Image?
+ beq   GCMDIR30 ..yes
+ leax  MD$ESize,x
+GCMDIR20 cmpx D.ModEnd
+ bne GCMDIR10
          bra   L0C8F
-L0C67    tfr   x,y
+GCMDIR30    tfr   x,y
          bra   L0C6F
 L0C6B    ldu   ,y
          bne   L0C78
-L0C6F    leay  $08,y
+L0C6F    leay  MD$ESize,y
          cmpy  D.ModEnd
          bne   L0C6B
          bra   L0C8D
