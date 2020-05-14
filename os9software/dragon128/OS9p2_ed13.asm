@@ -119,7 +119,7 @@ L004E    lda   ,x+
          decb
          bne   L004E
  endc
- ifeq ClocType-VSYNC
+ ifne TimePoll
 * Clock init start
 * Reset to 0
 L0057    ldb   #6
@@ -128,7 +128,7 @@ L0059    clr   ,-s
          bne   L0059
          leax  ,s
          os9   F$STime
-         leas  6,s
+         leas 6,s
  endc
 * Clock init end
  ldd SYSSTR,U Get system device name
@@ -440,7 +440,7 @@ DIVBKSZ addd #DAT.Blsz-1
 * Creates New Child Process
 *
 FORK     pshs  u
-         lbsr  L02F9
+         lbsr  F.ALLPRC
          bcc   FORK05
          puls  pc,u
 FORK05    pshs  u
@@ -506,19 +506,22 @@ FORK40    puls  x
          pshs  b
          lbsr  CLOSEPD
          lda   ,x
-         lbsr  L039D
+         lbsr  F.RETPRC
  comb SET Carry
          puls  pc,u,b
 
+*****
+* Allocate Image RAM blocks
+*
 ALLPRC   pshs  u
-         bsr   L02F9
-         bcs   L02F7
-         ldx   ,s
+         bsr   F.ALLPRC
+         bcs   ALLPRC10
+         ldx   0,s
          stu   R$U,x
-L02F7    puls  pc,u
+ALLPRC10    puls  pc,u
 
 * Find unused process id
-L02F9    ldx   D.PrcDBT Get process block ptr
+F.ALLPRC    ldx   D.PrcDBT Get process block ptr
 L02FB    lda   ,x+
          bne   L02FB
          leax  -1,x
@@ -566,8 +569,11 @@ L034E    lda   ,x+
          clrb
 L0356    rts
 
-DELPRC   lda R$A,u
-         bra   L039D
+*****
+* Deallocate process descriptor
+*
+DELPRC lda R$A,u
+ bra F.RETPRC
 
  page
 *****
@@ -579,7 +585,7 @@ DELPRC   lda R$A,u
 WAIT ldx D.PROC Get process ptr
  lda P$CID,X Does process have children?
  beq WAIT20 Branch if no
-WAIT10 lbsr GETPRC
+WAIT10 lbsr F.GProcP
  lda P$State,Y Get child's status
  bita #DEAD Is child dead?
  bne CHILDS Branch if so
@@ -612,26 +618,27 @@ CHILDS lda P$ID,Y Get process id
  leau 0,y
  leay P$CID-P$SID,X Fake sibling process ptr
  bra CHIL20
-CHIL10 lbsr GETPRC Get process ptr
+CHIL10 lbsr F.GProcP Get process ptr
 CHIL20 lda P$SID,Y Is child next sibling?
  cmpa P$ID,u
  bne CHIL10 Branch if not
  ldb P$SID,U Get child's sibling
  stb P$SID,Y Remove child from sibling list
-L039D    pshs  u,x,b,a
+
+F.RETPRC pshs u,x,b,a
          ldb   ,s
          ldx   D.PrcDBT Get process block ptr
          abx
          lda   ,x
-         beq   L03B8
+         beq   RETPRCX
          clrb
-         stb   ,x  Clear process id
+         stb   0,x  Clear process id
          tfr   d,x
          os9   F$DelTsk
          leau  0,x
          ldd   #P$Size
          os9   F$SRtMem
-L03B8    puls  pc,u,x,b,a
+RETPRCX    puls  pc,u,x,b,a
 
 
 
@@ -642,7 +649,7 @@ L03B8    puls  pc,u,x,b,a
 * Execute Overlay
 *
 CHAIN pshs U Save register ptr
-         lbsr  L02F9
+         lbsr  F.ALLPRC
          bcc   L03C3
          puls  pc,u
 
@@ -740,21 +747,21 @@ L0476    lda   D.SysTsk
          os9   F$Move
          puls  u,x
          lda   ,u
-         lbsr  L039D
+         lbsr  F.RETPRC
          os9   F$DelTsk
          orcc #IRQMask+FIRQMask Set interrupt masks
          ldd   D.SysPrc
          std   D.PROC
-         lda   $0C,x
+         lda   P$State,x
          anda  #$7F
-         sta   $0C,x
+         sta   P$State,x
          os9   F$AProc
          os9   F$NProc
 L04A3    puls  u,x
          stx   D.PROC
          pshs  b
          lda   ,u
-         lbsr  L039D
+         lbsr  F.RETPRC
          puls  b
          os9   F$Exit
 
@@ -842,13 +849,13 @@ EXIT     ldx   D.PROC
          leay  1,x
          bra   EXIT30
 EXIT20    clr P$SID,Y Clear sibling link
-         lbsr  GETPRC
+         lbsr  F.GProcP
          clr   P$PID,y
          lda   P$State,y Get process status
  bita #DEAD Is process dead?
          beq   EXIT30 Branch if not
          lda   P$ID,y
-         lbsr  L039D
+         lbsr  F.RETPRC
 EXIT30    lda   P$SID,y Get sibling id
          bne   EXIT20
          leay  ,x
@@ -860,7 +867,7 @@ EXIT30    lda   P$SID,y Get sibling id
          bne   EXIT40
          puls  cc
          lda   ,y
-         lbsr  L039D
+         lbsr  F.RETPRC
          bra   EXIT50
 EXIT35   cmpa P$ID,X Is this parent?
          beq   EXIT45
@@ -900,7 +907,7 @@ CLOSE20 decb COUNT Down
          lsrb
          lsrb
  ifge DAT.BlSz-$2000
-         lsrb
+ lsrb
  endc
          os9   F$DelImg
 L05CC    ldd   D.PROC
@@ -1001,7 +1008,7 @@ SEND15 inca Get next process id
 *
 * Get destination Process ptr
 *
-SENSUB lbsr GETPRC Get process ptr
+SENSUB lbsr F.GProcP Get process ptr
          pshs  u,y,a,cc
          bcs   SEND17
          tst   R$B,u Is it unconditional abort signal (code 0)?
@@ -1210,7 +1217,7 @@ WAKPRC    pshs  x
 * Set Process Priority
 *
 SETPRI lda R$A,U Get process id
- lbsr GETPRC Find process descriptor
+ lbsr F.GProcP Find process descriptor
  bcs SETP20
  ldx D.PROC Get setting process ptr
  ldd P$USER,X Get setting user
@@ -1801,13 +1808,13 @@ RTRNEX puls D,X,Y,U,PC Return to caller
 
 
 GPROCP lda R$A,u
-         bsr   GETPRC
+         bsr   F.GProcP
          bcs   GPROCP10
          sty R$Y,u
 GPROCP10    rts
 
 * Find process descriptor from process ID
-GETPRC    pshs  x,b,a
+F.GProcP    pshs  x,b,a
          ldb   ,s
          beq   GETPRC10
          ldx   D.PrcDBT
