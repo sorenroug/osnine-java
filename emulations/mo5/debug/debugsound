@@ -1,0 +1,4 @@
+#!/bin/sh
+java -Dorg.slf4j.simpleLogger.log.org.roug.osnine.mo5.Beeper=debug \
+-jar target/mo5emulator-1.*.*-jar-with-dependencies.jar
+
