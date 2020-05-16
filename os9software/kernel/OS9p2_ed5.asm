@@ -49,7 +49,7 @@ OS9Nam fcs /OS9p2/
 SVCTBL equ *
  fcb $7F
  fdb IOHOOK-*-2
- fcb F$Unlink
+ fcb F$UNLK
  fdb UNLINK-*-2
  fcb F$WAIT
  fdb WAIT-*-2
@@ -61,21 +61,21 @@ SVCTBL equ *
  fdb SEND-*-2
  fcb F$ICPT
  fdb INTCPT-*-2
- fcb F$Sleep
+ fcb F$SLEP
  fdb SLEEP-*-2
  fcb F$ID
  fdb GETID-*-2
- fcb F$SPrior
+ fcb F$SPRI
  fdb SETPRI-*-2
  fcb F$SSWI
  fdb SETSWI-*-2
- fcb F$STime
+ fcb F$STIM
  fdb SetTime-*-2
- fcb F$Find64+$80
+ fcb F$F64+$80
  fdb F64-*-2
- fcb F$ALL64+$80
+ fcb F$A64+$80
  fdb A64-*-2
- fcb F$Ret64+$80
+ fcb F$R64+$80
  fdb R64-*-2
  fcb $80
 
@@ -92,18 +92,18 @@ SVCTBL equ *
 *
 OS9Ent leay SVCTBL,PCR Get ptr to service routine table
  OS9 F$SSVC Set service table addresses
- ldx D.PrcDBT Get process ptr
- OS9 F$ALL64 Get a process
+ ldx D.PRDB Get process ptr
+ OS9 F$A64 Get a process
  bcs COLD
- stx D.PrcDBT Set process block
+ stx D.PRDB Set process block
  sty D.PROC
  tfr S,D copy stack ptr
  deca get page lower bound
  ldb #1 set page count
  std P$ADDR,Y set process descriptor
- lda #SysState Set system state
- sta P$State,Y
- ldu D.Init get configuration ptr
+ lda #SYSTAT Set system state
+ sta P$STAT,Y
+ ldu D.BASE get configuration ptr
  bsr SETDIRS set default directories
  bcc COLD10 branch if successful
  lbsr BOOT Default failed, boot
@@ -112,12 +112,12 @@ COLD10 bsr SETSTDS open standard i/o
  bcc COLD20 branch if successful
  lbsr BOOT open failed, boot
  bsr SETSTDS try again
-COLD20 ldd InitStr,U Get initial execution string
+COLD20 ldd INISTR,U Get initial execution string
  leax D,U Get string ptr
  lda #OBJCT set type
  clrb use declared memory
  ldy #0 No parameters
- OS9 F$Chain Start process
+ OS9 F$CHAN Start process
 
 COLD jmp [$FFFE] Abort start up
 
@@ -126,7 +126,7 @@ SETDIRS clrb clear carry
  beq SETDIR10 Branch if none
  leax D,U Get name ptr
  lda #EXEC.+READ. Set both execution & data
- OS9 I$ChgDir Set default directory
+ OS9 I$CDIR Set default directory
 SETDIR10 rts
 
 SETSTDS clrb clear carry
@@ -155,11 +155,11 @@ SETSTD10 rts
 *
 UNLINK ldd R$U,U Get module address
  beq UNLK25 Branch if none
- ldx D.ModDir Get directory ptr
+ ldx D.MODD Get directory ptr
 UNLK10 cmpd 0,X Is it this module?
  beq UNLK15 Branch if so
  leax 4,X Move to next entry
- cmpx D.ModDir+2 End of directory?
+ cmpx D.MODD+2 End of directory?
  bcs UNLK10
  bra UNLK25
 UNLK15 lda 2,X Get use count
@@ -168,16 +168,27 @@ UNLK15 lda 2,X Get use count
  sta 2,X
  bne UNLK25 Branch if still used
 UNLK16 ldy 0,X Get ptr to module
+
+ ifne CPUTYP-EXORSR
  cmpy D.BTLO Is it 'system' module?
  bcc UNLK25 Branch if so
+ endc
+
  ldb M$TYPE,Y Get module type
  cmpb #FLMGR Is i/o module?
  bcs UNLK20 Branch if not
- OS9 F$IODel Delete from i/o system
+ OS9 F$IODL Delete from i/o system
  bcc UNLK20
  inc 2,X Reset link count
  bra UNLK30
-UNLK20 clra
+
+UNLK20 equ *
+ ifeq CPUTYP-EXORSR
+ cmpy D.BTLO Is it 'system' module?
+ bcc UNLK25 Branch if so
+ endc
+
+ clra
  clrb
  std 0,X Clear directory entry
  std 0,Y Destroy id code
@@ -186,7 +197,7 @@ UNLK20 clra
  exg D,Y Switch page count & beginning address
  exg A,B Make address into page number
  ldx D.FMBM Get bit map ptr
- OS9 F$DelBit Deallocate memory block
+ OS9 F$DBIT Deallocate memory block
 UNLK25 clra CLEAR Carry
 UNLK30 rts
  page
@@ -197,24 +208,24 @@ UNLK30 rts
 * Wait for Child Process to Exit
 *
 WAIT ldy D.PROC Get process ptr
- ldx D.PrcDBT Get process descriptor block ptr
+ ldx D.PRDB Get process descriptor block ptr
  lda P$CID,Y Does process have children?
  bne WAIT10 Branch if so
  comb Set Carry
- ldb #E$NoChld Err: no children
+ ldb #E$NOCH Err: no children
  rts
-WAIT10 OS9 F$Find64 Get process ptr
- lda P$State,Y Get child's status
+WAIT10 OS9 F$F64 Get process ptr
+ lda P$STAT,Y Get child's status
  bita #DEAD Is child dead?
  bne WAIT20 Branch if so
  lda P$SID,Y More children?
  bne WAIT10 Branch if so
  clr R$A,U clear child process id
  ldx D.PROC Get process ptr
- orcc #IRQMask+FIRQMask Set interrupt masks
- ldd D.WProcQ Put in waiting queue
- std P$Queue,X
- stx D.WProcQ
+ orcc #IRQM+FIRQM Set interrupt masks
+ ldd D.WPRQ Put in waiting queue
+ std P$QUEU,X
+ stx D.WPRQ
  lbra ZZZPRC Put process to sleep
 WAIT20 ldx D.PROC Get parent process ptr
 *
@@ -231,20 +242,20 @@ WAIT20 ldx D.PROC Get parent process ptr
 *         U - Parent Process Register ptr
 *
 CHILDS lda P$ID,Y Get process id
- ldb P$Signal,Y Get death status
+ ldb P$SIGN,Y Get death status
  std R$D,U Return to parent
  pshs A,X,Y,U Save registers
  leay P$CID-P$SID,X Fake sibling process ptr
- ldx D.PrcDBT Get process descriptor block ptr
+ ldx D.PRDB Get process descriptor block ptr
  bra CHIL20
-CHIL10 OS9 F$Find64 Get process ptr
+CHIL10 OS9 F$F64 Get process ptr
 CHIL20 lda P$SID,Y Is child next sibling?
  cmpa 0,S
  bne CHIL10 Branch if not
  ldu 3,S Get process ptr
  ldb P$SID,U Get child's sibling
  stb P$SID,Y Remove child from sibling list
- OS9 F$Ret64 Return process descriptor
+ OS9 F$R64 Return process descriptor
  puls A,X,Y,U,PC
  page
 *****
@@ -255,55 +266,55 @@ CHIL20 lda P$SID,Y Is child next sibling?
 *
 EXIT ldx D.PROC Get process ptr
  ldb R$B,U Get exit status
- stb P$Signal,X Save status
- ldb #NumPaths Get number of paths
+ stb P$SIGN,X Save status
+ ldb #NPATHS Get number of paths
  leay P$PATH,X Get path table ptr
 EXIT10 lda ,Y+ Get next path number
  beq EXIT15 Branch if not in use
  pshs B Save path count
- OS9 I$Close Close the file
+ OS9 I$CLOS Close the file
  puls B Retrieve path count
 EXIT15 decb COUNT Down
  bne EXIT10 Branch if more
  lda P$ADDR,X Get memory page number
  tfr D,U Copy it
- lda P$PagCnt,X
- OS9 F$SRtMem
- ldu P$PModul,X Get primary module ptr
- OS9 F$Unlink Unlink it
+ lda P$PCNT,X
+ OS9 F$SRTM
+ ldu P$PMOD,X Get primary module ptr
+ OS9 F$UNLK Unlink it
  ldu D.PROC Get process ptr
  leay P$CID-P$SID,U Fake sibling process
- ldx D.PrcDBT Get process descriptor block
+ ldx D.PRDB Get process descriptor block
  bra EXIT30
 EXIT20 clr P$SID,Y Clear sibling link
- OS9 F$Find64 Get next process ptr
- lda P$State,Y Get process status
+ OS9 F$F64 Get next process ptr
+ lda P$STAT,Y Get process status
  bita #DEAD Is process dead?
  beq EXIT25 Branch if not
  lda P$ID,Y Return process to free
- OS9 F$Ret64 Return process descriptor
+ OS9 F$R64 Return process descriptor
 EXIT25 clr P$PID,Y Clear parent process ptr
 EXIT30 lda P$SID,Y Get sibling id
  bne EXIT20 Branch if there is one
- ldx #D.WProcQ-P$Queue Fake process ptr
+ ldx #D.WPRQ-P$QUEU Fake process ptr
  lda P$PID,U Get parent process id
  bne EXIT40 Branch if parent alive
- ldx D.PrcDBT Get process block ptr
+ ldx D.PRDB Get process block ptr
  lda P$ID,U Get process id
- OS9 F$Ret64 Return process descriptor
+ OS9 F$R64 Return process descriptor
  bra EXIT50
 EXIT35 cmpa P$ID,X Is this parent?
  beq EXIT45 Branch if so
 EXIT40 leay 0,X Copy this process ptr
- ldx P$Queue,X Get next process ptr
+ ldx P$QUEU,X Get next process ptr
  bne EXIT35 Branch if there is one
- lda P$State,U Get process status
+ lda P$STAT,U Get process status
  ora #DEAD Note process death
- sta P$State,U Update status
+ sta P$STAT,U Update status
  bra EXIT50 Wait for parent to notice
-EXIT45 ldd P$Queue,X Remove parent from wait list
- std P$Queue,Y
- OS9 F$AProc Put parent in active process queue
+EXIT45 ldd P$QUEU,X Remove parent from wait list
+ std P$QUEU,Y
+ OS9 F$APRC Put parent in active process queue
  leay 0,U Copy child ptr
  ldu P$SP,X Get parent's stack
  ldu R$D,U Get actual wait stack
@@ -323,7 +334,7 @@ USRMEM ldx D.PROC get process ptr
  ldd R$D,U Get size requested
  beq USRM35 branch if info request
  bsr DIV256 Divide by 256, rounding up
- subb P$PagCnt,X Subtract current size
+ subb P$PCNT,X Subtract current size
  beq USRM35 Branch if already requested size
  bcs USRM20 Branch if current > requested
  tfr D,Y Copy pages needed
@@ -334,7 +345,7 @@ USRMEM ldx D.PROC get process ptr
  addb 1,S Get location of new
 USRM10 ldx D.FMBM Get free memory ptrs
  ldu D.FMBM+2
- OS9 F$SchBit Look for memory
+ OS9 F$SBIT Look for memory
  bcs BADMEM Branch if not available
  stb 2,S Save page number of new
  ldb 0,S Get beginning of old
@@ -343,7 +354,7 @@ USRM10 ldx D.FMBM Get free memory ptrs
  cmpb 2,S Is that where new begins?
  bne BADMEM Branch if not
 USRM15 ldb 2,S Get page number of new
- OS9 F$AllBit Allocate memory
+ OS9 F$ABIT Allocate memory
  ldd 2,S Get new address & size
  suba 1,S Get address of current
  addb 1,S Get size current
@@ -353,22 +364,22 @@ USRM15 ldb 2,S Get page number of new
 USRM20 negb GET Excess page count
  tfr D,Y Copy it
  negb GET Size requested
- addb P$PagCnt,X
+ addb P$PCNT,X
  addb P$ADDR,X Get page number of excess
  cmpb P$SP,X Deallocating stack?
  bhi USRM25 Branch if not
  comb SET Carry
- ldb #E$DelSP
+ ldb #E$DESP
  rts
 USRM25 ldx D.FMBM Get free memory ptr
- OS9 F$DelBit Deallocate memory
+ OS9 F$DBIT Deallocate memory
  tfr Y,D Copy excess page count
  negb
  ldx D.PROC Get process ptr
- addb P$PagCnt,X Adjust page count
+ addb P$PCNT,X Adjust page count
  lda P$ADDR,X Get address
 USRM30 std P$ADDR,X Set new address & size
-USRM35 lda P$PagCnt,X Get process beginning address
+USRM35 lda P$PCNT,X Get process beginning address
  clrb CLEAR Lsb
  std R$D,U Return memory size
  adda P$ADDR,X Return ptr to memory end
@@ -376,7 +387,7 @@ USRM35 lda P$PagCnt,X Get process beginning address
  rts
 
 BADMEM comb SET Carry
- ldb #E$MemFul Err: memory full
+ ldb #E$MEMF Err: memory full
  puls X,Y,U,PC
 
 
@@ -415,61 +426,61 @@ SEND15 inca Get next process id
 *
 * Get destination Process ptr
 *
-SENSUB ldx D.PrcDBT Get process descriptor block ptr
- OS9 F$Find64 Get process ptr
+SENSUB ldx D.PRDB Get process descriptor block ptr
+ OS9 F$F64 Get process ptr
  bcc SEND20 Branch if good
- ldb #E$IPrcID Err: illegal process id
+ ldb #E$IPID Err: illegal process id
  rts
 *
 * Check Signal type
 *
-SEND20 orcc #IRQMask+FIRQMask Set interrupt masks
+SEND20 orcc #IRQM+FIRQM Set interrupt masks
  pshs A,Y Save process id & ptr
  ldb R$B,U Is it unconditional abort signal?
  bne SEND30 Branch if not
- lda P$State,Y Get process status
+ lda P$STAT,Y Get process status
  ora #CONDEM Condem process
- sta P$State,Y Update status
+ sta P$STAT,Y Update status
 *
 * Check for Signal collision
 *
-SEND30 lda P$Signal,Y Is signal pending?
+SEND30 lda P$SIGN,Y Is signal pending?
  beq SEND40 Branch if not
  deca Is it wake-up?
  beq SEND40 Branch if so
  comb Set Carry
- ldb #E$USigP Err: unprocessed signal pending
+ ldb #E$USP Err: unprocessed signal pending
  puls A,Y,PC
-SEND40 stb P$Signal,Y Save signal
+SEND40 stb P$SIGN,Y Save signal
 *
 * Look for Process in Sleeping Queue
 *
- ldx #D.SProcQ-P$Queue Fake process ptr
+ ldx #D.SPRQ-P$QUEU Fake process ptr
  bra SEND55
 SEND50 cmpx 1,S Is this destination process?
  beq   SEND65 branch if it is
 SEND55 leay 0,X Copy process ptr
- ldx P$Queue,Y More in queue?
+ ldx P$QUEU,Y More in queue?
  bne SEND50 Branch if so
 *
 * Look for Process in Waiting Queue
 *
- ldx #D.WProcQ-P$Queue Fake process ptr
+ ldx #D.WPRQ-P$QUEU Fake process ptr
 SEND60 leay 0,X Copy process ptr
- ldx P$Queue,Y More in queue?
+ ldx P$QUEU,Y More in queue?
  beq SEND75 Branch if not
  cmpx 1,S Is this destination process?
  bne SEND60 Branch if not
 *
 * Move Process from it's current Queue to Active Queue
 *
-SEND65 ldd P$Queue,X Remove from queue
- std P$Queue,Y
- lda P$Signal,X Get signal
+SEND65 ldd P$QUEU,X Remove from queue
+ std P$QUEU,Y
+ lda P$SIGN,X Get signal
  deca Is it wake-up?
  bne SEND70 Branch if not
- sta P$Signal,X Clear signal
-SEND70 OS9 F$AProc Put in active queue
+ sta P$SIGN,X Clear signal
+SEND70 OS9 F$APRC Put in active queue
 SEND75 clrb Clear carry
  puls A,Y,PC
  page
@@ -480,13 +491,13 @@ SEND75 clrb Clear carry
 * Suspend Process
 *
 SLEEP ldx D.PROC Get current process
- orcc #IRQMask+FIRQMask Set interrupt mask
- lda P$Signal,X Signal waiting?
+ orcc #IRQM+FIRQM Set interrupt mask
+ lda P$SIGN,X Signal waiting?
  beq SLEP20 Branch if not
 CKSIGN deca IS It wake-up?
  bne SLEP10 Branch if not
- sta P$Signal,X Clear signal
-SLEP10 OS9 F$AProc Put process in active queue
+ sta P$SIGN,X Clear signal
+SLEP10 OS9 F$APRC Put process in active queue
  bra ZZZPRC Suspend process
 SLEP20 ldd R$X,U Get length of sleep
  beq SLEP50 Branch if indefinite
@@ -494,13 +505,13 @@ SLEP20 ldd R$X,U Get length of sleep
  std R$X,U update count
  beq SLEP10 branch if done
  pshs X,U Save process & register ptr
- ldx #D.SProcQ-P$Queue Fake process ptr
+ ldx #D.SPRQ-P$QUEU Fake process ptr
 SLEP30 leay 0,X Copy process ptr
- ldx P$Queue,X Get next process
+ ldx P$QUEU,X Get next process
  beq SLEP40 Branch if end of queue
  pshs D Save sleep time
- lda P$State,X Get process status
- bita #TimSleep In timed sleep?
+ lda P$STAT,X Get process status
+ bita #TSLEEP In timed sleep?
  puls D Retrieve sleep time
  beq SLEP40 Branch if not timed sleep
  ldu P$SP,X Get process stack ptr
@@ -509,31 +520,31 @@ SLEP30 leay 0,X Copy process ptr
  addd R$X,U Fix sleep time
 SLEP40 puls X,U Retrieve process & register ptr
  std R$X,U Set time to sleep
- ldd P$Queue,Y Put process in queue
- stx P$Queue,Y
- std P$Queue,X
- lda P$State,X Set timed sleep status
- ora #TimSleep
- sta P$State,X
- ldx P$Queue,X Get next process ptr
+ ldd P$QUEU,Y Put process in queue
+ stx P$QUEU,Y
+ std P$QUEU,X
+ lda P$STAT,X Set timed sleep status
+ ora #TSLEEP
+ sta P$STAT,X
+ ldx P$QUEU,X Get next process ptr
  beq ZZZPRC
- lda P$State,X Get status
- bita #TimSleep In timed sleep?
+ lda P$STAT,X Get status
+ bita #TSLEEP In timed sleep?
  beq ZZZPRC Branch if not
  ldx P$SP,X Get stack ptr
  ldd R$X,X Get sleep time
  subd R$X,U Subtract new sleep
  std R$X,X Update sleep time
  bra ZZZPRC
-SLEP50 lda P$State,X Get status
- anda #$FF-TimSleep Set not timed sleep
- sta P$State,X
- ldd #D.SProcQ-P$Queue Fake process ptr
+SLEP50 lda P$STAT,X Get status
+ anda #$FF-TSLEEP Set not timed sleep
+ sta P$STAT,X
+ ldd #D.SPRQ-P$QUEU Fake process ptr
 SLEP60 tfr D,Y Copy process ptr
- ldd P$Queue,Y Get next process ptr
+ ldd P$QUEU,Y Get next process ptr
  bne SLEP60 Branch if one exists
- stx P$Queue,Y Link into queue
- std P$Queue,X
+ stx P$QUEU,Y Link into queue
+ std P$QUEU,X
 *
 *      Fall Thru To Zzzprc
 *
@@ -550,7 +561,7 @@ ZZZPRC leay <WAKPRC,PCR Get wakeup address
  ldx R$X,U Get sleep time (if any)
  pshs CC,D,DP,X,Y,U Make new stack
  sts P$SP,Y Note location
- OS9 F$NProc Start another process
+ OS9 F$NPRC Start another process
 
 WAKPRC std P$SP,Y Restore previous stack
  stx R$X,U Return sleep time
@@ -565,9 +576,9 @@ WAKPRC std P$SP,Y Restore previous stack
 *
 INTCPT ldx D.PROC Get process ptr
  ldd R$X,U Get vector
- std P$SigVec,X Save it
+ std P$SIGV,X Save it
  ldd R$U,U Get data address
- std P$SigDat,X Save it
+ std P$SIGD,X Save it
  clrb CLEAR Carry
  rts
 
@@ -580,18 +591,18 @@ INTCPT ldx D.PROC Get process ptr
 * Set Process Priority
 *
 SETPRI lda R$A,U Get process id
- ldx D.PrcDBT Get process block ptr
- OS9 F$Find64 Find process descriptor
+ ldx D.PRDB Get process block ptr
+ OS9 F$F64 Find process descriptor
  bcs SETP10
  ldx D.PROC Get setting process ptr
  ldd P$USER,X Get setting user
  cmpd P$USER,Y Same as set user?
  bne SETP10 Branch if not
  lda R$B,U Get priority
- sta P$Prior,Y Set priority
+ sta P$PRIO,Y Set priority
  rts
 SETP10 comb SET Carry
- ldb #E$IPrcID Err: illegal process id
+ ldb #E$IPID Err: illegal process id
  rts
 
 
@@ -702,7 +713,7 @@ A6420 rts
 
 A64ADD pshs U Save register ptr
  ldd #$100 Get a page
- OS9 F$SRqMem
+ OS9 F$SRQM
  leax 0,U Copy page ptr
  puls U Retrieve register ptr
  bcs A64A20 Branch if no memory
@@ -739,7 +750,7 @@ ALCPD2 tst A,X Search for an unused pdb
  inca SKIP To next
  cmpa #PDSIZE All tried?
  blo ALCPD2 ..no; keep looking
- ldb #E$PthFul No available path
+ ldb #E$PTHF No available path
  coma RETURN Carry set - error
  bra ALCPD9 Return
 
@@ -803,7 +814,7 @@ RTRNP1 tst D,U Pd in use?
  addb #PDSIZE
  bne RTRNP1 Repeat for each pd in block
  inca (D)=$0100
- OS9 F$SRtMem Return (unused) pdb to system store
+ OS9 F$SRTM Return (unused) pdb to system store
  lda 0,S
  clr A,X Mark pd unused
 RTRNP9 clr ,S+ Return scratch with carry clear
@@ -840,7 +851,7 @@ IOLink leax IOSTR,PCR Get ioman name ptr
  OS9 F$LINK
  rts
 
-BOOT ldx D.Init
+BOOT ldx D.BASE
  comb set carry
  ldd BOOTSTR,X Get default device string
  beq BOOTXX Can't boot without device
@@ -857,7 +868,7 @@ BOOT ldx D.Init
 BOOT10 ldd 0,X get module beginning
  cmpd #M$ID12 is it module sync code?
  bne BOOT20 branch if not
- OS9 F$VModul Validate module
+ OS9 F$VMOD Validate module
  bcs BOOT20
  ldd M$SIZE,X Get module size
  leax D,X Skip module

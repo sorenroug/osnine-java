@@ -5,9 +5,7 @@
          nam   Boot
          ttl   OS-9 Level One Boot module
 
-         ifp1
-         use   os9defs
-         endc
+ use defsfile
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev

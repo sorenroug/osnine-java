@@ -170,7 +170,7 @@ L0134    lda   ,x
          bne   L0150
          ldx   #$0800
 L0150    pshs  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          ldb   1,y
          stb   DAT.Regs
          ldd   ,x
@@ -181,7 +181,7 @@ L0150    pshs  y,x
          puls  x
          bra   L01A7
 L016B    pshs  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          ldb   1,y
          stb   DAT.Regs
          lda   ,x
@@ -325,16 +325,16 @@ SWI3HN ldx D.Proc
          ldu   P$SWI3,x
          beq   L0274
 
-L0261    lbra  CHGTASK+$1000
+USRSWI    lbra  PassSWI+$1000
 
 SWI2HN ldx   D.Proc
          ldu   P$SWI2,x
          beq   L0274
-         bra   L0261
+         bra   USRSWI
 
 SWIHN    ldx   D.Proc
          ldu   P$SWI,x
-         bne   L0261
+         bne   USRSWI
 
 L0274    ldd   D.SysSvc
          std   D.XSWI2
@@ -347,10 +347,10 @@ L0274    ldd   D.SysSvc
          leas  (P$Stack-R$Size),x
          andcc #^IntMasks
          leau  ,s
-         bsr   L02B1
+         bsr   CpySP2U
          ldb   P$Task,x
          ldx   $0A,u
-         lbsr  L0CBD+$1000
+         lbsr  H.LDBBX+$1000
          leax  1,x
          stx   $0A,u
          ldy   D.UsrDis
@@ -362,13 +362,14 @@ L0274    ldd   D.SysSvc
          bsr   L02BB
          lda   P$State,x
          anda  #$7F
-         lbra  L0BB6
+         lbra  IRQHN20
 
-L02B1    lda   $06,x
+CpySP2U    lda   $06,x
          ldb   D.SysTsk
          pshs  u,y,x,dp,b,a,cc
          ldx   $04,x
          bra   L02C5
+
 L02BB    ldb   $06,x
          lda   D.SysTsk
          pshs  u,y,x,dp,b,a,cc
@@ -395,7 +396,7 @@ SYSREQ    leau  ,s
  stx R$PC,U Update program counter
  ldy D.SysDis Get system service routine table
  bsr DISPCH Call service routine
-         lbra  L0C5B
+         lbra  SYSRET
 
 DISPCH aslb SHIFT For two byte table entries
  bcc DISP10 Branch if not i/o
@@ -493,12 +494,12 @@ L0364    ldd   $04,x
          bsr   L03CB
          bcc   L0394
          lda   ,s
-         lbsr  L09AB
+         lbsr  F.FREEHB
          bcc   L0391
          leas  $05,s
          ldb   #$CF
          bra   LINKXit
-L0391    lbsr  L09FD
+L0391    lbsr  F.SETIMG
 L0394    leax  >$0080,x
          sta   ,s
          lsla
@@ -513,7 +514,7 @@ L03A5    ldu   $03,s
          beq   L03AF
          stx   $06,u
 L03AF    puls  u,y,x,b
-         lbsr  L0A21
+         lbsr  F.DATLOG
          stx   $08,u
          ldx   $04,y
          ldy   ,y
@@ -721,7 +722,7 @@ IDCHK    pshs  y,x
          bra   CRCC20
 PARITY    leas  -1,s
          leax  $02,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          ldb   #$07
          lda   #$4A
 PARI10    sta   ,s
@@ -741,7 +742,7 @@ IDCH30    puls  y,x
          ldd   #$FFFF
          pshs  b,a
          pshs  b
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          leau  ,s
 CRCC05    tstb
          bne   CRCC10
@@ -831,11 +832,11 @@ CRCGen ldd R$Y,u get byte count
          ldy   #$0003
          leau  ,s
          pshs  y,x,b,a
-         lbsr  MOVE10
+         lbsr  F.MOVE
          ldx   D.Proc
          leay  P$DATImg,x
          ldx   $0B,s
-         lbsr  DATBLEND
+         lbsr  ADJBLK
 CRCGen10    lbsr  GETBYTE
          lbsr  CRCCAL
          ldd   $09,s
@@ -845,7 +846,7 @@ CRCGen10    lbsr  GETBYTE
          puls  y,x,b,a
          exg   a,b
          exg   x,u
-         lbsr  MOVE10
+         lbsr  F.MOVE
          leas  $07,s
 CRCGen20    clrb
          rts
@@ -896,7 +897,7 @@ FMOD10    pshs  y,x,b,a
          leax  $08,s
          ldb   $0D,s
          leay  ,s
-         lbsr  CHKNAM
+         lbsr  F.CHKNAM
          leas  $04,s
          puls  y,x
          leas  $04,s
@@ -942,8 +943,8 @@ FMOD40    stb   1,s
 
 * Skip spaces
 SKIPSP    pshs  y
-L06BC    lbsr  DATBLEND
-         lbsr  L0A3A
+L06BC    lbsr  ADJBLK
+         lbsr  H.LDAXY
          leax  1,x
          cmpa  #$20
          beq   L06BC
@@ -952,7 +953,7 @@ L06BC    lbsr  DATBLEND
          tfr   y,d
          subd  1,s
          asrb
-         lbsr  L0A21
+         lbsr  F.DATLOG
          puls  pc,y,a
 
 PNAM ldx D.Proc
@@ -967,7 +968,7 @@ PNam.x stx R$Y,U Return name end ptr
  rts
 
 PRSNAM    pshs  y
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          pshs  y,x
          lbsr  GETBYTE
  cmpa #'/ Slash?
@@ -1000,7 +1001,7 @@ L0724    puls  y,x
          tfr   y,d
          subd  $03,s
          asrb
-         lbsr  L0A21
+         lbsr  F.DATLOG
          puls  pc,y,b,a,cc
 
 ALFNUM    pshs  a
@@ -1033,30 +1034,32 @@ CMPNAM   ldx   D.Proc
          leay  P$DATImg,x
          ldx   R$X,u
          pshs  y,x
-         bra   L0777
+         bra   F.CMPNAM
 
 SCMPNAM  ldx   D.Proc
          leay  P$DATImg,x
          ldx   R$X,u
          pshs  y,x
          ldy   D.SysDAT
-L0777    ldx   $06,u
+F.CMPNAM    ldx   $06,u
          pshs  y,x
          ldd   R$D,u
          leax  $04,s
          leay  ,s
-         bsr   CHKNAM
+         bsr   F.CHKNAM
          leas  $08,s
          rts
-CHKNAM    pshs  u,y,x,b,a
+
+F.CHKNAM    pshs  u,y,x,b,a
          ldu   $02,s
          pulu  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          pshu  y,x
          ldu   $04,s
          pulu  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          bra   CHKN15
+
 CHKN10    ldu   $04,s
          pulu  y,x
 CHKN15    lbsr  GETBYTE
@@ -1146,7 +1149,7 @@ L080B    lda   ,-y
          lsrb
  endc
          ldx   D.SysPrc
-         lbsr  ALLIMG10
+         lbsr  F.ALLIMG
          bcs   L083A
          ldb   1,u
 L0830    inc   ,y+
@@ -1265,6 +1268,10 @@ BOOT30 cmpx 2,s End of boot?
  leas 4,s restore stack
 BOOTXX rts
 
+*****
+*
+* Allocate RAM blocks
+*
 ALLRAM   ldb   R$B,u
          bsr   L0906
          bcs   L0905
@@ -1276,7 +1283,7 @@ L0906    pshs  y,x,b,a
 L090A    leay  ,x
          ldb   1,s
 L090E    cmpx  D.BlkMap+2
-         bcc   L092B
+         bcc   ALRAMERR
          lda   ,x+
          bne   L090A
          decb
@@ -1292,14 +1299,14 @@ L0923    inc   ,y+
          clrb
          puls  pc,y,x,b,a
 
-L092B    comb
+ALRAMERR    comb
          ldb   #$ED
          stb   1,s
          puls  pc,y,x,b,a
 
 ALLIMG   ldd   R$D,u  Get beginning and number of blocks
          ldx   R$X,u Process descriptor pointer
-ALLIMG10    pshs  u,y,x,b,a
+F.ALLIMG    pshs  u,y,x,b,a
          lsla
          leay  P$DATImg,x
          leay  a,y
@@ -1311,7 +1318,7 @@ L0945    ldd   ,y++
          cmpd  #DAT.Free
          beq   L095A
          lda   d,u
-         cmpa  #$01
+         cmpa  #$01   #RAMinUse
          puls  b,a
          bne   L096F
          subd  #$0001
@@ -1350,6 +1357,10 @@ L098E    leax  -1,x
          clrb
          puls  pc,u,y,x,b,a
 
+*****
+*
+* Get free high block
+*
 FREEHB   ldb   R$B,u
          ldy   R$Y,u
          bsr   L09A9
@@ -1358,13 +1369,16 @@ FREEHB   ldb   R$B,u
 L09A8    rts
 
 L09A9    tfr   b,a
-L09AB    suba  #$11
+F.FREEHB    suba  #$11
          nega
          pshs  x,b,a
          ldd   #$FFFF
          pshs  b,a
-         bra   L09D0
+         bra   FREEBLK
 
+*****
+* Get Free low block
+*
 FREELB   ldb   R$B,u Get block count
          ldy   R$Y,u DAT image pointer
          bsr   L09C3
@@ -1378,9 +1392,9 @@ L09C3    lda   #$FF
          subb  #$11  DAT.BlCt+1
          negb
          pshs  b,a
-         bra   L09D0
+         bra   FREEBLK
 
-L09D0    clra
+FREEBLK    clra
          ldb   $02,s
          addb  ,s
          stb   $02,s
@@ -1395,7 +1409,7 @@ L09E2    tfr   a,b
 L09E6    lslb
          ldx   b,y
          cmpx  #DAT.Free
-         bne   L09D0
+         bne   FREEBLK
          inca
          cmpa  $03,s
          bne   L09E2
@@ -1405,7 +1419,7 @@ L09F3    leas  $02,s
 SETIMG   ldd   R$D,u  Get beginning and number of blocks
          ldx   R$X,u Process descriptor pointer
          ldu   R$U,u New image pointer
-L09FD    pshs  u,y,x,b,a
+F.SETIMG    pshs  u,y,x,b,a
          leay  P$DATImg,x
          lsla
          leay  a,y
@@ -1422,12 +1436,12 @@ L0A05    ldx   ,u++
 
 DATLOG   ldb   R$B,u
          ldx   R$X,u
-         bsr   L0A21
+         bsr   F.DATLOG
          stx   R$X,u
          clrb
          rts
 
-L0A21    pshs  x,b,a
+F.DATLOG    pshs  x,b,a
          lslb
          lslb
          lslb
@@ -1438,12 +1452,15 @@ L0A21    pshs  x,b,a
 
 LDAXY    ldx   R$X,u
          ldy   R$Y,u
-         bsr   DATBLEND
-         bsr   L0A3A
+         bsr   ADJBLK
+         bsr   H.LDAXY
          sta   R$A,u
          clrb
          rts
-L0A3A    pshs  cc
+* Get byte from other DAT
+* Input: X - location
+*        Y - DAT image number
+H.LDAXY    pshs  cc
          lda   1,y
          orcc  #IntMasks
          sta   DAT.Regs
@@ -1451,6 +1468,10 @@ L0A3A    pshs  cc
          clr   DAT.Regs
          puls  pc,cc
 
+* Get byte and increment X
+* Input: X - location
+*        Y - DAT image number
+* Output: A - result
 GETBYTE    lda   1,y
          pshs  cc
          orcc  #IntMasks
@@ -1458,13 +1479,19 @@ GETBYTE    lda   1,y
          lda   ,x+
          clr   DAT.Regs
          puls  cc
-         bra   DATBLEND
-GETBYTE5    leax  >-$1000,x
+         bra   ADJBLK
+
+ADJBLK10    leax  >-$1000,x
          leay  $02,y
-DATBLEND    cmpx  #$1000
-         bcc   GETBYTE5
+ADJBLK    cmpx  #$1000
+         bcc   ADJBLK10
          rts
 
+*****
+* Load D [D+X],[Y]]
+* Loads two bytes from the address space described by the DAT image
+* pointed to by Y.
+*
 LDDDXY   ldd   R$D,u
          leau  $04,u
          pulu  y,x
@@ -1475,30 +1502,33 @@ LDDDXY   ldd   R$D,u
 
 LDDX    pshs  y,x
          leax  d,x
-         bsr   DATBLEND
+         bsr   ADJBLK
          bsr   GETBYTE
          pshs  a
-         bsr   L0A3A
+         bsr   H.LDAXY
          tfr   a,b
          puls  pc,y,x,a
 
 LDABX    ldb   R$B,u
          ldx   R$X,u
-         lbsr  L0C99+$1000
+         lbsr  H.LDABX+$1000
          sta   R$A,u
          rts
 
 STABX    ldd   R$D,u
          ldx   R$X,u
-         lbra  L0CAB+$1000
+         lbra  H.STABX+$1000
 
+****
+* Move data (low bound first)
+*
 MOVE     ldd   R$D,u
          ldx   R$X,u
          ldy   R$Y,u
          ldu   $08,u
-MOVE10    andcc #^CARRY clear carry
+F.MOVE    andcc #^CARRY clear carry
          leay  ,y
-         beq   MOVE20
+         beq   MOVE10
          pshs  u,y,x,dp,b,a,cc
          tfr   y,d
          lsra
@@ -1506,33 +1536,33 @@ MOVE10    andcc #^CARRY clear carry
          tfr   d,y
          ldd   1,s
          tfr   b,dp
-         lbra  L0CCF+$1000
-MOVE20    rts
+         lbra  MOVER00+$1000
+MOVE10    rts
 
 ALLTSK   ldx   R$X,u
-L0AB6    ldb   $06,x
+F.ALLTSK    ldb   $06,x
          bne   L0AC2
-         bsr   L0AF5
+         bsr   F.RESTSK
          bcs   L0AC3
          stb   $06,x
-         bsr   SETTSK10
+         bsr   F.SETTSK
 L0AC2    clrb
 L0AC3    rts
 
 DELTSK   ldx   R$X,u
-DELTSK10    ldb   $06,x
+F.DELTSK    ldb   $06,x
          beq   L0AC3
          clr   $06,x
-         bra   RELTSK10
+         bra   F.RELTSK
 
 * Did task image change?
 UPDTSK lda P$State,x
  bita #ImgChg
- bne SETTSK10
+ bne F.SETTSK
  rts
 
 SETTSK   ldx   R$X,u
-SETTSK10    lda   $0C,x
+F.SETTSK    lda   $0C,x
          anda  #$EF
          sta   $0C,x
          andcc #^CARRY clear carry
@@ -1541,14 +1571,14 @@ SETTSK10    lda   $0C,x
          leax  P$DATImg,x
          ldy   #$0010
          ldu   #DAT.Regs
-         lbra  L0D02+$1000
+         lbra  SETDAT00+$1000 Copy DAT image to DAT registers
 
-RESTSK   bsr   L0AF5
+RESTSK   bsr   F.RESTSK
          stb   R$B,u
          rts
 
 * Find free task
-L0AF5    pshs  x
+F.RESTSK    pshs  x
          ldb   #$01
          ldx   D.Tasks
 L0AFB    lda   b,x
@@ -1565,7 +1595,7 @@ L0B09    inc   b,x
 L0B0E    puls  pc,x
 
 RELTSK   ldb   R$B,u
-RELTSK10    pshs  x,b
+F.RELTSK    pshs  x,b
          ldb   D.SysTsk
          comb
          andb  ,s
@@ -1592,7 +1622,7 @@ TICK ldx D.SProcQ Get sleeping queue ptr
  std R$X,U Update tick count
  bne SLICE Branch if ticks left
 TICK10 ldu P$Queue,X Get next process ptr
- bsr ACTPRC Activate process
+ bsr F.APROC Activate process
  leax 0,U Copy process ptr
  beq TICK20 Branch if end of queue
  lda P$State,X Get process status
@@ -1626,7 +1656,7 @@ SLIC10 clrb
 * Put Process In Active Process Queue
 *
 APROC ldx R$X,U  Address of process descriptor
-ACTPRC clrb
+F.APROC clrb
  pshs  u,y,x,cc
  lda P$Prior,X Get process priority/age
  sta P$AGE,X Set age to priority
@@ -1658,24 +1688,31 @@ IRQHN    ldx   D.Proc
          ldd   D.SysIRQ
          std   D.XIRQ
          jsr   [D.SvcIRQ]
-         bcc   L0BAA
+         bcc   IRQHN10
          ldx   D.Proc
          ldb   P$Task,x
          ldx   P$SP,x
-         lbsr  L0C99+$1000
+         lbsr  H.LDABX+$1000
          ora   #$50
-         lbsr  L0CAB+$1000
-L0BAA    orcc  #IntMasks
+         lbsr  H.STABX+$1000
+IRQHN10    orcc  #IntMasks
          ldx   D.Proc
          ldu   P$SP,x
          lda   P$State,x
          bita  #$20
-         beq   L0BF5
-L0BB6    anda  #$DF
+         beq   NXTP30
+IRQHN20    anda  #$DF
          sta   P$State,x
-         lbsr  DELTSK10
-L0BBD    bsr   ACTPRC
+         lbsr  F.DELTSK
+IRQHN30    bsr   F.APROC
 
+*****
+*
+*  Routine Nxtprc
+*
+* Starts next Process in Active Queue
+* If no Active Processes, Wait for one
+*
 NPROC    ldx   D.SysPrc
          stx   D.Proc
          lds   D.SysStk
@@ -1695,14 +1732,14 @@ L0BD6    ldx   P$Queue,y
          ldd   $0D,x
          std   $0D,y
          stx   D.Proc
-         lbsr  L0AB6
-         bcs   L0BBD
+         lbsr  F.ALLTSK
+         bcs   IRQHN30
          lda   D.TSlice
          sta   D.Slice
          ldu   P$SP,x
          lda   P$State,x Is process in system state?
-         bmi   L0C5B
-L0BF5    bita  #Condem Is process condemmed?
+         bmi   SYSRET
+NXTP30    bita  #Condem Is process condemmed?
          bne   NXTOUT
          lbsr  UPDTSK
          ldb   P$Signal,x
@@ -1711,7 +1748,7 @@ L0BF5    bita  #Condem Is process condemmed?
          beq   L0C2B
          leas  -$0C,s
          leau  ,s
-         lbsr  L02B1
+         lbsr  CpySP2U
          lda   P$Signal,x
          sta   $02,u
          ldd   <$1A,x
@@ -1731,7 +1768,7 @@ L0C2E    ldd   D.UsrSvc
          std   D.XSWI2
          ldd   D.UsrIRQ
          std   D.XIRQ
-         lbra  L0C88+$1000
+         lbra  SVCRET+$1000
 
 NXTOUT    lda   P$State,x Get process status
          ora #SysState Set system state
@@ -1756,7 +1793,7 @@ SYSIRQ    jsr   [D.SvcIRQ]
  stb R$CC,S update condition codes
 SYSI10 rti
 
-L0C5B    ldx   D.SysPrc
+SYSRET    ldx   D.SysPrc
          lbsr  UPDTSK
          leas  ,u
          rti
@@ -1781,17 +1818,21 @@ DATINT   clra
          sta   >$FD8F   DAT.Regs+$F
          lbra  COLD+$F000
 
-L0C88    ldb   $06,x
+SVCRET    ldb   $06,x
          orcc  #IntMasks
          stb   DAT.Task
          leas  ,u
          rti
 
-CHGTASK ldb   P$Task,x
+* Switch task and execute user supplied SWI vector
+*
+PassSWI ldb   P$Task,x
  stb   DAT.Task
  jmp   0,u
 
-L0C99    andcc #^CARRY clear carry
+* Get byte at 0,X in task B
+* Returns value in A
+H.LDABX    andcc #^CARRY clear carry
          pshs  b,cc
          orcc  #IntMasks
          stb   DAT.Task
@@ -1800,7 +1841,8 @@ L0C99    andcc #^CARRY clear carry
          stb   DAT.Task
          puls  pc,b,cc
 
-L0CAB    andcc #^CARRY clear carry
+* Store register A at 0,X
+H.STABX    andcc #^CARRY clear carry
          pshs  b,cc
          orcc  #IntMasks
          stb   DAT.Task
@@ -1809,8 +1851,9 @@ L0CAB    andcc #^CARRY clear carry
          stb   DAT.Task
          puls  pc,b,cc
 
-* Get byte from Task in B
-L0CBD    andcc #^CARRY clear carry
+* Get byte from Task in task B
+* Returns value in B
+H.LDBBX    andcc #^CARRY clear carry
          pshs  a,cc
          orcc  #IntMasks
          stb   DAT.Task
@@ -1819,15 +1862,16 @@ L0CBD    andcc #^CARRY clear carry
          sta   DAT.Task
          puls  pc,a,cc
 
-L0CCF    orcc  #IntMasks
+* Move Y bytes from X in TASK A to U in Task B
+MOVER00    orcc  #IntMasks
          bcc   L0CE5
          sta   DAT.Task
          lda   ,x+
          stb   DAT.Task
          sta   ,u+
          leay  1,y
-         bra   L0CF3
-L0CE1    lda   1,s
+         bra   MOVER30
+MOVER10    lda   1,s
          orcc  #IntMasks
 L0CE5    sta   DAT.Task
          ldd   ,x++
@@ -1835,32 +1879,37 @@ L0CE5    sta   DAT.Task
          stb   DAT.Task
          exg   b,dp
          std   ,u++
-L0CF3    lda   #$80
+MOVER30    lda   #$80
          sta   DAT.Task
          lda   ,s
          tfr   a,cc
          leay  -1,y
-         bne   L0CE1
+         bne   MOVER10
          puls  pc,u,y,x,dp,b,a,cc
 
-L0D02    orcc  #IntMasks
-L0D04    lda   1,x
+* Copy DAT image to DAT register
+* Input: B: Task number
+*        X: Pointer to DAT image
+*        Y: Number of bytes
+*        U: Pointer to DAT.Regs
+SETDAT00    orcc  #IntMasks
+SETDAT10    lda   1,x
          leax  $02,x
          stb   DAT.Task
          sta   ,u+
          lda   #$80
          sta   DAT.Task
          leay  -1,y
-         bne   L0D04
+         bne   SETDAT10
          puls  pc,u,y,x,b,a,cc
 
 SWI3RQ   orcc  #IntMasks
          ldb   #D.SWI3
-         bra   IRQ10
+         bra   SWITCH
 
 SWI2RQ   orcc  #IntMasks
          ldb   #D.SWI2
-         bra   IRQ10
+         bra   SWITCH
 
 FIRQ   tst   ,s
          bmi   L0D38
@@ -1873,12 +1922,12 @@ FIRQ   tst   ,s
          sta   1,s
          stu   $08,s
 L0D38    ldb   #D.FIRQ
-         bra   IRQ10
+         bra   SWITCH
 
 IRQ    orcc  #IntMasks
          ldb   #D.IRQ
 
-IRQ10    lda   #SysTask
+SWITCH    lda   #SysTask
          sta   DAT.Task
          clra
          tfr   a,dp
@@ -1886,10 +1935,10 @@ IRQ10    lda   #SysTask
          jmp   [,x]
 
 SWIRQ    ldb   #D.SWI
-         bra   IRQ10
+         bra   SWITCH
 
 NMIHN    ldb   #D.NMI
-         bra   IRQ10
+         bra   SWITCH
 
  emod
 OS9End equ *

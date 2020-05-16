@@ -52,10 +52,7 @@
         <assemble src="Acia51_ed4" home="kernel" verify="6ed6dc592328cc3916e3e92b62fe36c0"/>
         <assemble src="Acia_ed2" home="kernel" verify="6c8d9746cee87d8f71f818b8e059c607"/>
         <assemble src="Acia_ed4" home="kernel" verify="62ee1c4ca8056c4145c1487341a11849"/>
-        <assemble src="BootDyn" home="kernel" verify="7a6191a6bd8ee2649212bcebaff42c0d"/>
         <assemble src="IOMan_ed4" home="kernel" verify="fce2d0270c03b4f7d8f06d51e4465d28"/>
-        <assemble src="OS9p2_ed5" home="kernel" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
-        <assemble src="OS9p2_ed9" home="kernel" verify="eb0515cd5087c7e59ecc6ff26bab594a"/>
         <assemble src="Pipe" home="kernel" verify="9cc9561b6e28188550ee25a4c32216f0"/>
         <assemble src="PipeMan" home="kernel" verify="023c67977a1946c1d2804d84e7e595d9"/>
         <assemble src="Piper" home="kernel" verify="c62010913ea02b2e606785c1521233d3"/>
@@ -63,28 +60,25 @@
         <assemble src="SCF_ed7" home="kernel" verify="2e882e79821eacba496d9f456d6e2738"/>
         <assemble src="SCF_ed8" home="kernel" verify="4f58ede8d3c8931480fd230499648dc0"/>
 
+        <assemble src="BootDyn" home="virtual" verify="7a6191a6bd8ee2649212bcebaff42c0d"/>
         <assemble src="VDisk" home="virtual" verify="726892927a2cfef6c3a1019eb8953477"/>
         <assemble src="VDisk_rv2" home="virtual" verify="a1f6637dd8b30819bec182f24eea611f"/>
 
+        <assemble src="OS9p2" home="color" verify="eb0515cd5087c7e59ecc6ff26bab594a"/>
         <assemble src="OS9p1" home="color" verify="523b00da5aa39530ea3e2ae2364ec0e6"/>
 
         <assemble src="Term" home="gimix" verify="6033eabac7b4db841b7cb13fc377fc10"/>
         <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>
         <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
+        <assemble src="OS9p2_ed5" home="gimix" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
     </target>
 
     <!-- Level I kernel modules (common) -->
     <target name="level1" depends="prepare">
         <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
         <assemble src="RBF_ed7" home="kernel" verify="f3b9848e9716821fd8f397d055ad717f"/>
-        <assemble src="OS9p1_ed8" home="kernel" verify="ca51db8a306c143967b8b6bc4ef55047"/>
         <assemble src="OS9p2_ed8" home="kernel" verify="4620b5340979f69d3d243c07592ec200"/>
-        <assemble src="KbVdIO" home="kernel" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
-        <assemble src="go51nkb" home="kernel" verify="17d598001819b9aec3b579a5e63c822b"/>
-        <assemble src="go51n" home="kernel" verify="6798a2db83aedf2ac3629c913714dfa0"/>
-        <assemble src="go51" home="kernel" verify="83632831c5d2f8ddfa9e22b38faa8109"/>
         <assemble src="SysGo" home="kernel" verify="a47c4ceedee4da200ebeabfcdea8b53c"/>
-        <assemble src="SysGo_login" home="kernel" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
     </target>
 
     <!-- GIMIX Level I -->
@@ -125,6 +119,7 @@
         <assemble src="Init" home="color" verify="8bf368aaefb208a3c68db734e8a7d79c"/>
         <assemble src="Dir" home="color" verify="d7e0e580d1bdd1f38eb029fbd9e9ea64"/>
         <assemble src="TMode" home="color" verify="033c534c820856b8c8867417b041521f"/>
+        <assemble src="XMode" home="color" verify="723237aa39dbd01e0fe9270fcd91cae3"/>
     </target>
 
     <!-- Dragon 64 -->
@@ -133,9 +128,20 @@
         <assemble src="PRINTER" home="dragon64" verify="9f4223e2e09ca4e9acd0bbe8e5a7a6ea"/>
         <assemble src="P1" home="dragon64" verify="35d22808bbc2023c651c1888b56e95dd"/>
         <assemble src="T1" home="dragon64" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
+        <assemble src="KbVdIO" home="dragon64" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
+        <assemble src="go51nkb" home="dragon64" verify="17d598001819b9aec3b579a5e63c822b"/>
+        <assemble src="go51n" home="dragon64" verify="6798a2db83aedf2ac3629c913714dfa0"/>
+        <assemble src="go51" home="dragon64" verify="83632831c5d2f8ddfa9e22b38faa8109"/>
         <assemble src="DDisk_ed4" home="dragon64" verify="085c24996a2d560cbc5641e39c1b710f"/>
         <assemble src="DDisk_ed2" home="dragon64" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
         <assemble src="DDisk_desc" home="dragon64" verify="db6f08610c19d1716bc6afc946d14c17"/>
+        <assemble src="TMode" home="dragon64" verify="2c260e14617b8b191b995b0538157f81"/>
+    </target>
+
+    <!-- CMS 9609 -->
+    <target name="cms9609" depends="prepare">
+        <assemble src="OS9p1" home="cms9609"  verify="ab5661de908ec546a45b31f2c8f72b0a"/>
+        <assemble src="OS9p2" home="cms9609"  verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
     </target>
 
     <!-- COCO Level II -->
@@ -170,6 +176,7 @@
         <assemble src="HWClock" home="virtual" verify="3cc1395b3495bef485fee9774e7fdef6"/>
         <assemble src="D0_vdisk" home="virtual" verify="9c31bf382aa1be8f30909a0dd6d481a6"/>
         <assemble src="D1_vdisk" home="virtual" verify="e952a2f0422f1f51a9d157b70ac02f8d"/>
+        <assemble src="SysGo_login" home="virtual" verify="cb53ea3a3d9a799f45e0307b4bb07ded"/>
     </target>
 
     <target name="utilities" depends="prepare">
@@ -224,6 +231,7 @@
         <assemble src="basic09_generic_y2k" home="basic09" verify="67b113de00c1670c67c2817aaf93738f"/>
         <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
         <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
+        <assemble src="basic09_tandy_y2k" home="basic09" verify="2bd9a95d3d42cc5826ef43448e3ebaff"/>
         <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
         <assemble src="basic09_generic" home="basic09" verify="ede76a6833915309482772012db053ee"/>
         <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>

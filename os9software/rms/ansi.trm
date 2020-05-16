@@ -1,0 +1,34 @@
+* Terminal codes for ANSI terminal
+18 lines (24)
+50 columns (80)
+5F filler
+00 undefined
+1B5B324A0000 clear and home cursor
+1B5B48000000 home
+0A   line feed ( cursor down )
+08   move cursor left
+1B5B43000000 move cursor right
+07   bell
+1B5B326D0000 dimmed text
+1B5B306D0000 normal text
+FF00000000000000 no initilization
+00000000000000
+00 no lost characters
+* INPUT CODES...
+1B5B00 lead in for functions ESC [
+0D00 CR
+7F00  char delete
+0900  move right to next field (tab)
+005A  move left to previous field (Shift-tab)
+0500  quit / exit RMS (Ctrl-E)
+0041  clear record  (Up arrow)
+0600  find record (Ctrl-F)
+0400  delete record (Ctrl-D)
+1500  update record (Ctrl-U)
+0042  feed secondary record (Down arrow)
+0100  add/insert new record (Ctrl-A)
+0048  home (Home)
+0046  next primary record (End)
+1200  copy field (Ctrl-R)
+0000  no lead-out
+00F0  delay

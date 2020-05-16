@@ -2,9 +2,8 @@
  nam OS-9 Level I V1.1 kernal, part 1
  ttl System Type definitions
 
-* It was disassembled from a file name os9l1v11.u6, which is a ROM file in
-* the MAME emulator. It seems to be edition 8 for OS-9 level I v. 1.1.
-* It doesn't seem to work with OS-9 level I 1.2
+* It was disassembled from a boot disk for Exorciser
+* There is no difference from edition 8 for OS-9 level I v. 1.1.
 
  use defsfile
 
@@ -37,20 +36,22 @@ Type set SYSTM+OBJCT
 Revs set REENT+1
  mod OS9End,OS9Nam,Type,Revs,COLD,0
 OS9Nam fcs /OS9/
- fcb 8 Edition number
- fcc "(C)1981Microware"
+ fcb 9 Edition number
+ use copyright
 
 *************************
 *    Edition History
 *
 * Ed.  8 - Beginning of history  (V1.1 final version)
+*
+* Ed.  9 - Changed RamLimit
 
 *********
 * Version Id
 *
  ifeq CPUTYP-EXORSR
  fcc /EXOR/ Version name
-RamLimit set $E000
+RamLimit set $E800
  endc
  ifeq CPUTYP-MM19
  fcc /MM19/ Version name

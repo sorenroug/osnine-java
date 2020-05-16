@@ -183,7 +183,7 @@ COLD30    puls  x
          pshs  x
          ldx   #$0D00
 COLD40    pshs  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          ldb   1,y
          stb   DAT.Regs
          lda   ,x
@@ -773,7 +773,7 @@ IDCHK    pshs  y,x
          bra   CRCC20
 PARITY    leas  -1,s
          leax  $02,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          ldb   #$07
          lda   #$4A
 PARI10    sta   ,s
@@ -802,7 +802,7 @@ CRCCHK puls Y,X
  ldd #$FFFF
  pshs D Init crc register
  pshs B Init crc register
- lbsr DATBLEND
+ lbsr ADJBLK
  leau 0,S Get crc register ptr
 CRCC05    tstb
          bne   CRCC10
@@ -897,7 +897,7 @@ CRCGen   ldd   R$Y,u
          ldx   D.Proc
          leay  <P$DATImg,x
          ldx   $0B,s
-         lbsr  DATBLEND
+         lbsr  ADJBLK
 CRCGen10    lbsr  GETBYTE
          lbsr  CRCCAL
          ldd   $09,s
@@ -1002,7 +1002,7 @@ FMOD40    stb   1,s
          puls  pc,u,b,a
 
 SKIPSP    pshs  y
-SKIP10    lbsr  DATBLEND
+SKIP10    lbsr  ADJBLK
          lbsr  H.LDAXY
          leax  1,x
          cmpa  #$20
@@ -1027,7 +1027,7 @@ PNam.x    stx   R$Y,u
          rts
 
 F.PRSNAM    pshs  y
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          pshs  y,x
          lbsr  GETBYTE
          cmpa  #$2F
@@ -1125,11 +1125,11 @@ L07CF    ldx   R$Y,u
 F.CHKNAM    pshs  u,y,x,b,a
          ldu   $02,s
          pulu  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          pshu  y,x
          ldu   $04,s
          pulu  y,x
-         lbsr  DATBLEND
+         lbsr  ADJBLK
          bra   CHKN15
 CHKN10    ldu   $04,s
          pulu  y,x
@@ -1471,24 +1471,24 @@ F.FREEHB    suba  #$09  DAT.BlCt+1
          pshs  b,a
          bra   FREEBLK
 
+*****
+* Get Free low block
+*
 FREELB   ldb   R$B,u
          ldy   R$Y,u
          bsr   FRLB20
-         bcs   L0A4A
+         bcs   FRLB10
          sta   1,u
-L0A4A    rts
+FRLB10    rts
 
 FRLB20    lda   #$FF
          pshs  x,b,a
          lda   #$01
-         subb  #$09  DAT.BlCt+1
+         subb  #DAT.BlCt+1
          negb
          pshs  b,a
          bra   FREEBLK
 
-*****
-* Get Free low block
-*
 FREEBLK    clra
          ldb   $02,s
          addb  ,s
@@ -1497,12 +1497,13 @@ FREEBLK    clra
          bne   L0A75
          ldb   #E$MemFul
          cmpy  D.SysDat
-         bne   L0A6C
+         bne   FREBLK05
          ldb   #E$NoRam
-L0A6C    stb   $03,s
+FREBLK05    stb   $03,s
          comb
-         bra   L0A82
-L0A71    tfr   a,b
+         bra   FREBLK30
+
+FREBLK10    tfr   a,b
          addb  $02,s
 L0A75    lslb
          ldx   b,y
@@ -1510,8 +1511,8 @@ L0A75    lslb
          bne   FREEBLK
          inca
          cmpa  $03,s
-         bne   L0A71
-L0A82    leas  $02,s
+         bne   FREBLK10
+FREBLK30    leas  $02,s
          puls  pc,x,b,a
 
 *****
@@ -1595,11 +1596,12 @@ GETBYTE lda 1,y
  lda   ,x+
  clr   DAT.Regs
  puls  cc
- bra DATBLEND
-GETBYTE5 leax >-DAT.BlSz,x
+ bra ADJBLK
+
+ADJBLK10 leax >-DAT.BlSz,x
  leay 2,y
-DATBLEND cmpx #DAT.BlSz
- bcc GETBYTE5
+ADJBLK cmpx #DAT.BlSz
+ bcc ADJBLK10
  rts
 
 *****
@@ -1618,7 +1620,7 @@ LDDDXY   ldd   R$D,u
 * Get word at D offset into X
 F.LDDDXY    pshs  y,x
          leax  d,x
-         bsr   DATBLEND
+         bsr   ADJBLK
          bsr   GETBYTE
          pshs  a
          bsr   H.LDAXY
@@ -1644,13 +1646,13 @@ STABX ldd R$D,u
 ****
 * Move data (low bound first)
 *
-MOVE     ldd   R$D,u Source and destination task number
-         ldx   R$X,u
-         ldy   R$Y,u
-         ldu   R$U,u
-F.MOVE    pshs  u,y,x,b,a
-         leay  ,y
-         lbeq  MOVE10
+MOVE ldd R$D,u Source and destination task number
+ ldx R$X,u Source pointer
+ ldy R$Y,u Byte count
+ ldu R$U,u Destination pointer
+F.MOVE pshs U,Y,X,B,A
+ leay 0,y How many bytes to move?
+ lbeq MOVE10 ..branch if zero
          pshs  y,b,a
          tfr   a,b
          lbsr  L0BF5
@@ -1663,16 +1665,16 @@ F.MOVE    pshs  u,y,x,b,a
          lbsr  L0C09
          leay  a,u
          pshs  y,x
-         ldd   #DAT.BlSz
+         ldd   #DAT.BlSz get block size
          subd  ,s
          pshs  b,a
          ldd   #DAT.BlSz
          subd  $06,s
          pshs  b,a
          ldx   $08,s
-         leax  >-$6000,x
+         leax  >-$6000,x make X point to where we'll map block
          ldu   $04,s
-         leau  >-$4000,u
+         leau  >-$4000,u  make U point to where we'll map block
 L0B6A    pshs  cc
          orcc  #IntMasks
          ldd   [<$07,s]
@@ -1694,7 +1696,7 @@ L0B92    std   $0F,s
          rorb
          tfr   d,y
          puls  b,a
-         std   >DAT.Regs+5
+         std   >DAT.Regs+5  map in the blocks
          bcc   L0BA7
          lda   ,x+
          sta   ,u+
@@ -1735,10 +1737,15 @@ L0BEF    leas  <$10,s
 MOVE10    clrb
          puls  pc,u,y,x,b,a
 
+* Calculate offset within DAT image
+* Entry: B=Task #
+*        X=Pointer to data
+* Exit : A=Offset into DAT image
+*        X=Offset within block from original pointer
 L0BF5    pshs  b
          tfr   x,d
-         anda  #$E0    bottom page?
-         beq   L0C07   yes
+         anda  #%11100000   Keep only which 8K bank it's in
+         beq   L0C07   Bank 0, no further calcs needed
          exg   d,x
          anda  #$1F   DAT.TkCt-1
          exg   d,x
@@ -1747,6 +1754,7 @@ L0BF5    pshs  b
          lsra
          lsra
 L0C07    puls  pc,b
+
 L0C09    pshs  b
          ldu   D.TskIPt
          lslb

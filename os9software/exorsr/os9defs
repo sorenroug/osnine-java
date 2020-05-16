@@ -1,0 +1,523 @@
+
+*
+* OS-9 System Definition File Included
+*
+
+ opt -l
+ TTL OS-9 System Symbolic Definitions
+
+
+*
+* System Service Request Code Definitions
+*
+
+
+ ORG 0
+F$LINK rmb 1 Link to Module
+F$LOAD rmb 1 Load Module from File
+F$UNLK rmb 1 Unlink Module
+F$FORK rmb 1 Start New Process
+F$WAIT rmb 1 Wait for Child Process to Die
+F$CHAN rmb 1 Chain Process to New Module
+F$EXIT rmb 1 Terminate Process
+F$MEM rmb 1 Set Memory Size
+F$SEND rmb 1 Send Signal to Process
+F$ICPT rmb 1 Set Signal Intercept
+F$SLEP rmb 1 Suspend Process
+F$SSPD rmb 1 Suspend Process
+F$ID rmb 1 Return Process ID
+F$SPRI rmb 1 Set Process Priority
+F$SSWI rmb 1 Set Software Interrupt
+F$PERR rmb 1 Print Error
+F$PNAM rmb 1 Parse Pathlist Name
+F$CNAM rmb 1 Compare Two Names
+F$SBIT rmb 1 Search Bit Map
+F$ABIT rmb 1 Allocate in Bit Map
+F$DBIT rmb 1 Deallocate in Bit Map
+F$TIME rmb 1 Get Current Time
+F$STIM rmb 1 Set Current Time
+F$CRC rmb 1 Generate CRC
+ ORG $28 Beginning of System Reserved Calls
+F$SRQM rmb 1 System Memory Request
+F$SRTM rmb 1 System Memory Return
+F$IRQ rmb 1 Enter IRQ Polling Table
+F$IOQU rmb 1 Enter I/O Queue
+F$APRC rmb 1 Enter Active Process Queue
+F$NPRC rmb 1 Start Next Process
+F$VMOD rmb 1 Validate Module
+F$F64 rmb 1 Find Process/Path Descriptor
+F$A64 rmb 1 Allocate Process/Path Descriptor
+F$R64 rmb 1 Return Process/Path Descriptor
+F$SSVC rmb 1 Service Request Table Initialization
+F$IODL rmb 1 Delete I/O Module
+
+F$LAST equ .
+
+ ORG $80
+I$ATCH rmb 1 Attach I/O Device
+I$DTCH rmb 1 Detach I/O Device
+I$DUP rmb 1 Duplicate Path
+I$CREA rmb 1 Create New File
+I$OPEN rmb 1 Open Existing File
+I$MDIR rmb 1 Make Directory File
+I$CDIR rmb 1 Change Default Directory
+I$DLET rmb 1 Delete File
+I$SEEK rmb 1 Change Current Position
+I$READ rmb 1 Read Data
+I$WRIT rmb 1 Write Data
+I$RDLN rmb 1 Read Line of ASCII Data
+I$WRLN rmb 1 Write Line of ASCII Data
+I$GSTT rmb 1 Get Path Status
+I$SSTT rmb 1 Set Path Status
+I$CLOS rmb 1 Close Path
+
+
+*****
+*
+*  Signal Codes
+*
+ ORG 0
+S$KILL rmb 1 Non-Interceptable Abort
+S$WAKE rmb 1 Wake-up Sleeping Process
+S$ABT rmb 1 Keyboard Abort
+S$INTR rmb 1 Keyboard Interrupt
+
+
+
+*****
+*
+*  Status Codes for GetStat/PutStat
+*
+ ORG 0
+SS.OPT rmb 1 Read/Write PD Options
+SS.RDY rmb 1 Check for Device Ready
+SS.SIZ rmb 1 Read/Write File Size
+SS.RST rmb 1 Device Restore
+SS.WTK rmb 1 Device Write Track
+SS.POS rmb 1 Get File Current Position
+SS.EOF rmb 1 Test for End of File
+SS.LNK rmb 1 Link to Status routines
+SS.ULK rmb 1 Unlink Status routines
+SS.FEE rmb 1 issue form feed
+SS.FRZ rmb 1 Freeze DD. information
+SS.SPT rmb 1 Set DD.TKS to given value
+
+
+
+ TTL Direct Page
+ page
+*****
+*
+*  Direct Page Variables
+*
+*  Permanent Storage Used by OS-9 Located
+*  in absolute Page 0.
+
+ ORG $20 Reserve First 32 Bytes
+
+D.FMBM rmb 4 Free Memory Bit Map Pointers
+D.MLIM rmb 2 Memory Limit
+D.MODD rmb 4 Module Directory
+D.BASE rmb 2 ROM Base Address
+D.SWI3 rmb 2 SWI3 Vector
+D.SWI2 rmb 2 SWI2 Vector
+D.FIRQ rmb 2 FIRQ Vector
+D.IRQ rmb 2 IRQ Vector
+D.SWI rmb 2 SWI Vector
+D.NMI rmb 2 NMI Vector
+D.ISVC rmb 2 Interrupt Service Entry
+D.POLL rmb 2 Interrupt Polling routine
+D.UIRQ rmb 2 User IRQ routine
+D.SIRQ rmb 2 System IRQ routine
+D.UREQ rmb 2 User Service Request routine
+D.SREQ rmb 2 System Service routine
+D.USVC rmb 2 User Service Request Dispatch Table
+D.SSVC rmb 2 System Service Request Dispatch Table
+D.SLIC rmb 1 Process Time Slice Count
+D.PRDB rmb 2 Process Descriptor Block Address
+D.PROC rmb 2 Process Descriptor Address
+D.APRQ rmb 2 Active Process Queue
+D.WPRQ rmb 2 Waiting Process Queue
+D.SPRQ rmb 2 Sleeping Process Queue
+D.TIME equ . Time
+D.YEAR rmb 1
+D.MNTH rmb 1
+D.DAY rmb 1
+D.HOUR rmb 1
+D.MIN rmb 1
+D.SEC rmb 1
+D.TIC rmb 1
+D.TSEC rmb 1 Ticks / Second
+D.TSLC rmb 1 Ticks / Time-Slice
+D.IOML rmb 2 I/O Manager Free Memory Low Bound
+D.IOMH rmb 2 I/O Manager Free Memory Hi  Bound
+D.DEVT rmb 2 Device Driver Table Address
+D.POLT rmb 2 IRQ Polling Table Address
+D.PDBT rmb 2 Path Descriptor Block Table Address
+D.BTLO rmb 2 Bootstrap Low Address
+D.BTHI rmb 2 Bootstrap Hi Address
+
+
+
+* Table SizeS
+
+BMAPSZ equ 32 Bit Map Size
+SVCTNM equ 2 Number of Service Request Tables
+SVCTSZ equ (256-BMAPSZ)/SVCTNM-2 Service Request Table Size
+
+
+ TTL Structure Formats
+ page
+*****
+*
+*  Module Format
+*
+* Universal Module Offsets
+*
+ ORG 0
+M$ID rmb 2 ID Code
+M$SIZE rmb 2 Module Size
+M$NAME rmb 2 Module Name
+M$TYPE rmb 1 Type / Language
+M$REVS rmb 1 Attributes / Revision Level
+M$PRTY rmb 1 ID Parity
+M$IDSZ equ . Module ID Size
+*
+* Module Type Dependent Offsets
+*
+* System, File Manager, Device Driver, Program Module
+M$EXEC rmb 2 Execution Entry Offset
+* Device Driver, Program Module
+M$STAK rmb 2 Stack Requirement
+* Device Driver, Device Descriptor Module
+M$MODE rmb 1 Device Driver Mode Capabilities
+* Device Descriptor Module
+ ORG M$IDSZ
+M$FMGR rmb 2 File Manager Name Offset
+M$PDEV rmb 2 Device Driver Name Offset
+ rmb 1 M$Mode (defined above)
+M$PORT rmb 3 Port Address
+M$OPT rmb 1 Device Default Options
+M$DTYP rmb 1 Device Type
+*  Configuration Module Entry Offsets
+ ORG M$IDSZ
+MAXMEM rmb 3 Maximum Free Memory
+POLCNT rmb 1 Entries in Interrupt Polling Table
+DEVCNT rmb 1 Entries in Device Table
+INISTR rmb 2 Initial Module Name
+SYSSTR rmb 2 System Device Name
+STDSTR rmb 2 Standard I/O Pathlist
+BOOTSTR rmb 2 Bootstrap Module name
+ page
+*****
+*
+*  Module Field Definitions
+*
+
+M$ID12 equ $87CD
+
+*
+* Module Type / Language
+*
+* Field Masks
+
+TYPMSK equ $F0 Type Field
+LANMSK equ $0F Language Field
+
+* Type VALUES
+
+DEVIC equ $F0 Device Descriptor Module
+DRIVR equ $E0 Physical Device Driver
+FLMGR equ $D0 File Manager
+SYSTM equ $C0 System Module
+DATA equ $40 Data Module
+MULTI equ $30 Multi-Module
+SBRTN equ $20 Subroutine Module
+PRGRM equ $10 Program Module
+
+* Language VALUES
+
+OBJCT equ 1 6809 Object Code Module
+ICODE equ 2 Basic09 I-code
+PCODE equ 3 Pascal P-code
+
+*
+* Module Attributes / Revision
+*
+* Field Masks
+
+ATTMSK equ $F0 Attributes Field
+REVMSK equ $0F Revision Level Field
+
+* Attribute Flags
+
+REENT equ %10000000 Re-Entrant Module
+
+*
+* Module Device Type
+*
+
+DT.SCF equ 0 Sequential Character File Type
+DT.RBF equ 1 Random Block File Type
+DT.PIP equ 2 Pipe File Type
+ page
+*  Process Descriptor Format
+
+
+DIOSIZ equ 12 Default I/O Data Length
+NPATHS equ 16 Number of Process-Local Paths
+
+ ORG 0
+P$ID rmb 1 Process ID
+P$PID rmb 1 Parent's Process ID
+P$SID rmb 1 Sibling's Process ID
+P$CID rmb 1 Child's Process ID
+P$SP rmb 2 Process Stack ptr
+P$CHAP rmb 1 Process Chapter Number
+P$ADDR rmb 1 User Memory Beginning Page Number
+P$PCNT rmb 1 User Address Page Count
+P$USER rmb 2 User Index
+P$PRIO rmb 1 Priority
+P$AGE rmb 1 Age
+P$STAT rmb 1 Process Status
+P$QUEU rmb 2 Process Queue Link (Process ptr)
+P$IOQP rmb 1 Process Previous I/O Queue Link
+P$IOQN rmb 1 Process Next     I/O Queue Link
+P$PMOD rmb 2 Primary Module
+P$SWI rmb 2 SWI Entry Point
+P$SWI2 rmb 2 SWI2 Entry Point
+P$SWI3 rmb 2 SWI3 Entry Point
+P$DIO rmb DIOSIZ Default I/O ptrs
+P$PATH rmb NPATHS I/O Path Table
+P$SIGN rmb 1 Signal
+P$SIGV rmb 2 Signal Intercept Vector
+P$SIGD rmb 2 Signal Intercept Data Address
+ rmb $40-. unused
+P$SIZE equ . Size of Process Descriptor
+
+
+
+* Process Status Flags
+
+SYSTAT equ %10000000
+TSLEEP equ %01000000
+TIMOUT equ %00100000
+CONDEM equ %00000010
+DEAD equ %00000001
+ page
+*****
+*
+*  OS-9 System Entry Vectors
+*
+ ORG $FFE0
+CLOCK rmb 2 Clock Tick routine
+SWI3VC rmb 2 SWI3 Handler
+SWI2VC rmb 2 SWI2 Handler
+FIRQVC rmb 2 FIRQ Handler
+IRQVEC rmb 2 IRQ Handler
+SWIVEC rmb 2 SWI Handler
+NMIVEC rmb 2 NMI Handler
+WARM rmb 2 WARM Start routine
+ page
+***** Path Descriptor Offsets
+ ORG 0
+PD.PD rmb 1 Path Number
+PD.MOD rmb 1 Mode (Read/Write/Update)
+PD.CNT rmb 1 Number of Open Images
+PD.DEV rmb 2 Device Table Entry Address
+PD.CPR rmb 1 Current Process
+PD.RGS rmb 2 Caller's Register Stack
+PD.BUF rmb 2 Buffer Address
+PD.FST rmb 32-. File Manager's Storage
+PD.OPT equ . PD GetSts(0) Options
+PD.DTP rmb 1 Device Type
+ rmb 64-. Path options
+PDSIZE equ .
+
+
+
+*  File Access Modes
+
+READ. equ %00000001
+WRITE. equ %00000010
+UPDAT. equ READ.+WRITE.
+EXEC. equ %00000100
+PREAD. equ %00001000
+PWRIT. equ %00010000
+PEXEC. equ %00100000
+SHARE. equ %01000000
+DIR. equ %10000000
+
+
+
+
+
+*****
+*
+*  Pathlist Special Symbols
+*
+PDELIM equ '/ Pathlist Name Separator
+PDIR equ '. Directory
+PENTIR equ '@ Entire Device
+ page
+*****
+*
+*  File Manager Entry Offsets
+*
+ ORG 0
+FMCREA rmb 3 Create (Open New) File
+FMOPEN rmb 3 Open File
+FMMDIR rmb 3 Make Directory
+FMCDIR rmb 3 Change Directory
+FMDLET rmb 3 Delete File
+FMSEEK rmb 3 Position File
+FMREAD rmb 3 Read from File
+FMWRIT rmb 3 Write to File
+FMGSTA rmb 3 Get File Status
+FMSSTA rmb 3 Set File Status
+FMCLOS rmb 3 Close File
+
+
+
+*****
+*
+*  Device Driver Entry Offsets
+*
+ ORG 0
+D$INIT rmb 3 Device Initialization
+D$READ rmb 3 Read from Device
+D$WRIT rmb 3 Write to Device
+D$GSTA rmb 3 Get Device Status
+D$PSTA rmb 3 Put Device Status
+D$TERM rmb 3 Device Termination
+ page
+*****
+*
+*  Device Table Format
+*
+ ORG 0
+V$DRIV rmb 2 Device Driver module
+V$STAT rmb 2 Device Driver Static storage
+V$DESC rmb 2 Device Descriptor module
+V$FMGR rmb 2 File Manager module
+V$USRS rmb 1 use count
+DEVSIZ equ .
+
+
+
+*****
+*
+*  Device Static Storage Offsets
+*
+ ORG 0
+V.PAGE rmb 1 Port Extended Address
+V.PORT rmb 2 Device 'Base' Port Address
+V.LPRC rmb 1 Last Active Process ID
+V.BUSY rmb 1 Active Process ID (0=UnBusy)
+V.WAKE rmb 1 Active PD if Driver MUST Wake-up
+V.USER equ . Driver Allocation Origin
+
+
+
+*****
+*
+*  Interrupt Polling Table Format
+*
+ ORG 0
+Q$POLL rmb 2 Absolute Polling Address
+Q$FLIP rmb 1 Flip (EOR) Byte ..normally Zero
+Q$MASK rmb 1 Polling Mask (after Flip)
+Q$SERV rmb 2 Absolute Service routine Address
+Q$STAT rmb 2 Static Storage Address
+Q$PRTY rmb 1 Priority (Low Numbers=Top Priority)
+POLSIZ equ .
+
+
+
+ TTL Machine Characteristics
+ page
+* Register Offsets on Stack
+
+ ORG 0
+R$CC rmb 1
+R$D equ .
+R$A rmb 1
+R$B rmb 1
+R$DP rmb 1
+R$X rmb 2
+R$Y rmb 2
+R$U rmb 2
+R$PC rmb 2
+R$SIZE equ .
+
+
+
+* Condition Code Bits
+
+ENTIRE equ $80 Entire/Partial State
+FIRQM equ $40 Fast Interrupt Request Mask
+HALFC equ $20 Half Carry
+IRQM equ $10 Interrupt Request Mask
+NEGTIV equ $08 Negative Flag
+ZERO equ $04 Zero Flag
+TWOOVR equ $02 Two's Complement Overflow Flag
+CARRY equ $01 Carry Bit
+
+ TTL Error Codes
+ page
+* System Error Codes
+
+ ORG 200
+E$PTHF rmb 1 Path Table Full
+E$IPTH rmb 1 Illegal Path Number
+E$POLL rmb 1 Interrupt Polling Table Full
+E$MODE rmb 1 Illegal I/O Mode
+E$DEVO rmb 1 Device Table Overflow
+E$IID rmb 1 Illegal Module ID Block
+E$DIRF rmb 1 Module Directory Full
+E$MEMF rmb 1 Memory Full
+E$USVC rmb 1 Unknown Service Request
+E$MODB rmb 1 Module Busy
+E$BBND rmb 1 Bad Boundry
+E$EOF rmb 1 End of File
+E$RNAM rmb 1 Returning Non-Allocated Memory
+E$NES rmb 1 Non-Existing Segment (System Err)
+E$FNA rmb 1 File Not Accessible
+E$BPN rmb 1 Bad Path Name
+E$PNNF rmb 1 Path Name Not Found
+E$SLF rmb 1 Segment List Filled
+E$CEF rmb 1 Creating Existing File
+E$IBA rmb 1 Illegal Block Address
+E$IBS rmb 1 Illegal Block Size
+E$LNEM rmb 1 Link Non-Existing Module
+E$SNOR rmb 1 Sector Number Out of Range
+E$DESP rmb 1 Deallocating Stack Memory
+E$IPID rmb 1 Illegal Process ID
+E$ISC rmb 1 Illegal Signal Code
+E$NOCH rmb 1 No Children
+E$ISWI rmb 1 Illegal SWI Code
+E$KBAB rmb 1 Keyboard Abort
+E$PRCF rmb 1 Process Table Full
+E$IFKP rmb 1 Illegal Fork Parameter Area
+E$KMOD rmb 1 Known Module
+E$BCRC rmb 1 Bad Module CRC
+E$USP rmb 1 Unprocessed Signal Pending
+E$NEMod rmb 1 Non-Executable Module
+ rmb $F0-. reserved for future use
+
+* I/O Error Codes
+
+E$UNIT rmb 1 Unit Number out of range
+E$SECT rmb 1 Sector Number out of range
+E$WP rmb 1 Write Protect
+E$CRC rmb 1 Check Sum error
+E$RD rmb 1 Read Error
+E$WR rmb 1 Write Error
+E$NRDY rmb 1 Device Not Ready
+E$SEEK rmb 1 Seek Error
+E$FULL rmb 1 Media Full
+E$BTYP rmb 1 Device/Media Type Mismatch
+E$BUSY rmb 1 Device Busy
+E$DIDC rmb 1 Device/Media ID Changed
+
+ opt l

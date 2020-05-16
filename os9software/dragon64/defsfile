@@ -5,4 +5,9 @@ Level    equ   1
  use /d0/DEFS/scfdefs
  use /d0/DEFS/rbfdefs
  endc
+
+normal equ 0 normal screen size
+small equ 1 small screen size
+Screen equ small
+
  use Sysdefs.sys

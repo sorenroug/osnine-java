@@ -10,3 +10,5 @@ small equ 1 small screen size
 Screen equ normal
 
  use Sysdefs.sys
+
+CPUTYP equ CPUType
