@@ -25,10 +25,10 @@
         <copy todir="${targetdir}">
           <filelist dir="." files="OS9_GMX_V1.2.dsk v6809.properties os9l1v11.u6 os9l1v12.u7"/>
           <filelist dir="../../os9software/target/kernel"
-            files="Acia_ed2 Acia_ed4 BootDyn IOMan_ed4 SCF_ed7 RBF_ed8 PipeMan Piper Pipe"
+            files="Acia_ed2 Acia_ed4 IOMan_ed4 SCF_ed7 RBF_ed8 PipeMan Piper Pipe"
           />
           <filelist dir="../../os9software/target/gimix" files="OS9p1 OS9p2 OS9p2_ed5 Term" />
-          <filelist dir="../../os9software/target/virtual" files="VDisk" />
+          <filelist dir="../../os9software/target/virtual" files="VDisk BootDyn" />
         </copy>
         <assemble src="D0_vdisk"/>
         <assemble src="SysGo"/>
