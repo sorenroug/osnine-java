@@ -150,10 +150,10 @@ public class GUI {
         d1Dialog = new DiskDialog(guiFrame, diskDevice, 1);
 
         if (singleUser) {
-            loadROM(0xF000, "OS9p1", "OS9p2_ed9", "SysGoSingle",
+            loadROM(0xF000, "OS9p1", "OS9p2", "SysGoSingle",
                     "BootDyn", "HWClock", "VDisk_rv2");
         } else {
-            loadROM(0xF000, "OS9p1", "OS9p2_ed9", "SysGoMulti",
+            loadROM(0xF000, "OS9p1", "OS9p2", "SysGoMulti",
                     "BootDyn", "HWClock", "VDisk_rv2");
         }
         loadROM(0x3800, "D0", "D1", "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",

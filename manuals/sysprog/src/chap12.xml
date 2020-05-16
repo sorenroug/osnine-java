@@ -1113,7 +1113,7 @@ module type of zero passed to FModul will find any module.
         <varlistentry>
           <term>SYSTEM CALLS:</term>
           <listitem>
-            <para>F.LDAXY*, F.DATLOg*, F.PrsNam, F.LDDDXY*, F.ChkNam*</para>
+            <para>F.LDAXY*, F.DATLog*, F.PrsNam, F.LDDDXY*, F.ChkNam*</para>
           </listitem>
         </varlistentry>
       </variablelist>

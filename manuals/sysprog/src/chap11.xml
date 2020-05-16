@@ -1263,7 +1263,7 @@ can have the same user ID.
           <listitem>
             <simplelist>
               <member>LI - OS9p1</member>
-              <member>LII - OS9p2</member>
+              <member>LII - OS9p1</member>
             </simplelist>
           </listitem>
         </varlistentry>
@@ -1855,7 +1855,7 @@ skip one trailing comma or any number of trailing spaces.
           <listitem>
             <simplelist>
               <member>LI - None</member>
-              <member>LII - <simplelist type="inline"><member>F.DATLog*</member><member>P.LDAXY*</member></simplelist>
+              <member>LII - <simplelist type="inline"><member>F.DATLog*</member><member>F.LDAXY*</member></simplelist>
 </member>
             </simplelist>
           </listitem>

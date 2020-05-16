@@ -63,7 +63,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.roug.usim.V6809</mainClass>
+                            <mainClass>org.roug.usim.mc6809.V6809</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

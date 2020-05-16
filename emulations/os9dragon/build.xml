@@ -24,11 +24,11 @@
         <mkdir dir="${targetdir}"/>
         <copy todir="${targetdir}">
           <filelist dir="../../os9software/target/kernel"
-            files="Acia_ed4 Acia51_ed4 BootDyn IOMan_ed4 SCF_ed8 RBF_ed8 OS9p2_ed9 PipeMan Piper Pipe"
+            files="Acia_ed4 Acia51_ed4 BootDyn IOMan_ed4 SCF_ed8 RBF_ed8 PipeMan Piper Pipe"
           />
         </copy>
         <copy todir="${targetdir}">
-          <filelist dir="../../os9software/target/color" files="OS9p1"/>
+          <filelist dir="../../os9software/target/color" files="OS9p1 OS9p2"/>
         </copy>
         <copy todir="${targetdir}">
           <filelist dir="../../os9software/target/virtual" files="VDisk"/>
