@@ -128,7 +128,7 @@ public class DiskInfo {
         inputStream.close();
         int pointer = 0;
         printNumber("Number of sectors", read_triple(pointer));
-        printNumber("Number of tracks", read_byte(pointer + IdentificationSector.DD_TKS));
+        printNumber("Sectors per track", read_byte(pointer + IdentificationSector.DD_TKS));
         printNumber("Bytes in alloc map", read_word(pointer + IdentificationSector.DD_MAP));
         printNumber("Sectors per cluster", read_word(pointer + IdentificationSector.DD_BIT));
         printNumber("Starting sector", read_triple(pointer + IdentificationSector.DD_DIR));
