@@ -27,7 +27,7 @@ V.TRKR    rmb   2
 V.SECR    rmb   2
 V.DATR    rmb   2
 V.SIDE rmb 1 Current side; 0:=side 0
-u00B9    rmb   1
+V.DENS    rmb   1
 u00BA    rmb   1
 V.FDSTA rmb 1  FD status
 u00BC  rmb 1
@@ -411,7 +411,7 @@ L0276    orb   a,x
          stb   >CURDRV,u
          clr   >V.SIDE,u
          lda   #$20
-         sta   >u00B9,u
+         sta   >V.DENS,u
          puls  pc,x,b
 
 
@@ -441,33 +441,39 @@ PHYSIC tstb CHECK Sector bounds
  ldx CURTBL,U
  cmpd DD.TOT+1,X Too high sector number?
  bhs PHYERR ..yes; sorry
-         subd  <$2B,y
-         bcc   PHYSC1
-         addd  <$2B,y
-         bra   PHYSC7
-PHYSC1    stb   >V.TMP,u
+ subd <PD.T0S,y  On side 1 track zero?
+ bcc PHYSC1 .. branch if higher
+ addd <PD.T0S,y
+ bra   PHYSC7
+
+PHYSC1 stb >V.TMP,u
  clrb
  pshs B Will be track number
- ldb DD.FMT,X
+ ldb DD.FMT,X  Disk format from disk identification sector
  lsrb SHIFT Side bit to carry
  ldb V.TMP,U Restore (b)
-         bcc   PHYSC4
-PHYSC2    com   >V.SIDE,u
-         bne   PHYSC3
-         inc   ,s
+ bcc PHYSC4 Single sided disk
+
+* Calculate track for double sided disk
+PHYSC2 com >V.SIDE,u Flip side
+ bne PHYSC3
+ inc 0,S Increment track number
 PHYSC3 subb DD.TKS,X
  sbca #0
  bcc PHYSC2 Repeat until less than 1 trk
-         bra   L02DB
-PHYSC4    inc   ,s
+ bra PHYSC5
+
+* Calculate track for single sided disk
+PHYSC4 inc 0,S Increment track number
  subb DD.TKS,X
  sbca #0
  bcc PHYSC4 Repeat until less than 1 trk
-L02DB    lda   DD.FMT,X
-         bita  #$02
-         beq   L02E6
-         clr   >u00B9,u
-L02E6    puls  a
+
+PHYSC5 lda DD.FMT,X
+         bita  #$02 Check density
+         beq   PHYSC6 Branch if single density
+         clr   >V.DENS,u
+PHYSC6    puls  a
          addb  DD.TKS,x
 PHYSC7    stb   [>V.SECR,u]
  clrb
@@ -479,7 +485,7 @@ PHYERR comb
  pag
 
 Settrk pshs a
-         ldb   >u00B9,u
+         ldb   >V.DENS,u
  orb CURDRV,U Mask into drive select
  stb CURDRV,U Save it
  stb [V.SEL,u]
@@ -631,10 +637,10 @@ WRTTRK lbsr SELECT
  bitb #%00000001 Side zero?
  beq WRTRK2 ..yes; skip side change
  com V.SIDE,U
-WRTRK2    bitb  #$02
-         beq   L042A
-         clr   >u00B9,u
-L042A    lbsr  SETTRK
+WRTRK2 bitb #%00000010 Double density?
+         beq   WRTRK5  ..yes
+ clr >V.DENS,u
+WRTRK5    lbsr  SETTRK
  ldx PD.RGS,Y
  ldx R$X,X Get buffer addr
          ldb   #F.WRTR
@@ -643,9 +649,9 @@ L042A    lbsr  SETTRK
          lbsr  WCR0
          ldb   [V.SEL,u]
          bitb  #DMA.FLT
-         beq   L0446
+         beq   WRTRK9
          lda   #%10000000 Set drive ready status
-L0446    lbra  STCK Check status
+WRTRK9 lbra STCK Check status
  pag
 *********************************************
 *
