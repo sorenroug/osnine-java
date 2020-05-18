@@ -290,7 +290,7 @@ IOLink leax IOSTR,PCR Get ioman name ptr
 *
 *  Subroutine Unlink
 *
-* Decrment Link Count. If Count Reaches Zero,
+* Decrement Link Count. If Count Reaches Zero,
 *    Delete Module From Directory & Return Memory
 *
 UNLINK pshs u,b,a
@@ -304,24 +304,24 @@ UNLINK pshs u,b,a
  lsra
  endc
          sta   0,s
-         beq   L01A8
+         beq   UNLK08
          ldu   D.PROC
          leay  P$DATImg,u
          lsla
          ldd   a,y
          ldu   D.BlkMap
          ldb   d,u
-         bitb  #$02
-         beq   L01A8
+         bitb  #ModBlock
+         beq   UNLK08
          leau  P$DATImg,y
          bra   L0187
 L0183    dec   ,s
-         beq   L01A8
+         beq   UNLK08
 L0187    ldb   ,s
          lslb
          ldd   b,u
          beq   L0183
-         lda   ,s
+         lda   0,s
          lsla
          lsla
          lsla
@@ -332,57 +332,60 @@ L0187    ldb   ,s
          clrb
          nega
          leax  d,X
-         ldb   ,s
+         ldb  0,s
          lslb
          ldd   b,y
          ldu   D.ModDir Get directory ptr
-         bra   L01AA
-L01A1    leau  MD$ESize,u Move to next entry
-         cmpu  D.ModEnd
-         bcs   L01AA
-L01A8    bra   L01F5
-L01AA    cmpx  MD$MPtr,U  Is it this module?
-         bne   L01A1 ..no
-         cmpd  [MD$MPDAT,u]
-         bne   L01A1
-         ldx   MD$Link,u
-         beq   L01BD
-         leax  -1,X
-         stx   MD$Link,u
-         bne   L01DA
-L01BD    ldx   $02,s
-         ldx   $08,X
-         ldd   #6
-         os9   F$LDDDXY
-         cmpa #FLMGR Is i/o module?
-         bcs   UNLK20
-         os9   F$IODel
-         bcc   UNLK20
-         ldx   MD$Link,u
-         leax  1,X
-         stx   MD$Link,u
-         bra   L01F6
-UNLK20    bsr   L01FA
-L01DA    ldb   ,s
-         lslb
-         leay  b,y
-         ldx   P$DATImg,y
-         leax  -1,X
-         stx   P$DATImg,y
-         bne   L01F5
-         ldd   MD$MBSiz,u
-         bsr   DIVBKSZ
-         ldx   #DAT.Free
-L01F0    stx   ,y++
-         deca
-         bne   L01F0
-L01F5    clrb
-L01F6    leas  $02,s
-         puls  pc,u
+         bra   UNLK10
 
+UNLK06 leau MD$ESize,u Move to next entry
+ cmpu D.ModEnd End of directory?
+ bcs UNLK10
+UNLK08 bra UNLK25
+
+UNLK10 cmpx  MD$MPtr,U Is it this module?
+ bne UNLK06 ..no
+ cmpd [MD$MPDAT,u]
+ bne UNLK06
+ ldx MD$Link,u Get use count
+ beq UNLK16 Branch if not used
+ leax -1,X DOWN Link count
+ stx MD$Link,u
+ bne UNLK22 Branch if still used
+UNLK16 ldx 2,S
+ ldx 8,X
+ ldd #M$Type
+ OS9 F$LDDDXY Get module type
+ cmpa #FLMGR Is i/o module?
+ bcs UNLK20 Branch if not
+ os9 F$IODel Delete from i/o system
+ bcc UNLK20
+ ldx MD$Link,u
+ leax 1,X Reset link count
+ stx MD$Link,u
+ bra UNLK30
+UNLK20    bsr   L01FA
+UNLK22 ldb   0,s
+ lslb
+ leay  b,y
+ ldx P$DATImg,y
+ leax  -1,X
+ stx P$DATImg,y
+ bne UNLK25
+ ldd MD$MBSiz,u
+ bsr DIVBKSZ Divide by block size, rounding up
+ ldx #DAT.Free
+UNLK24 stx ,y++ Mark blocks free
+ deca
+ bne UNLK24
+UNLK25 clrb CLEAR Carry
+UNLK30 leas 2,S
+ puls PC,U
+
+* Unlink other modules in the same DAT image
 L01FA    ldx   D.BlkMap
          ldd   [MD$MPDAT,u] Get module DAT image
-         lda   d,X
+         lda   D,X
          bmi   L024A
          ldx   D.ModDir
 L0204    ldd   [MD$MPDAT,X]
@@ -390,22 +393,22 @@ L0204    ldd   [MD$MPDAT,X]
          bne   L020F
          ldd   MD$Link,X
          bne   L024A
-L020F    leax  MD$ESize,X
+L020F    leax  MD$ESize,X Move to next entry
          cmpx  D.ModEnd
          bcs   L0204
          ldx   D.BlkMap
-         ldd   2,u
-         bsr   DIVBKSZ
+         ldd   MD$MBSiz,u
+         bsr DIVBKSZ Divide by block size, rounding up
          pshs  y
          ldy   MD$MPDAT,u
 L0220    pshs  x,a
-         ldd   ,y
+         ldd   0,y
          clr   ,y+
          clr   ,y+
-         leax  d,X
-         ldb   ,X
-         andb  #$FC
-         stb   ,X
+         leax  D,X
+         ldb   0,X
+         andb  #$FC  ^(ModBlock+RAMinUse)
+         stb   0,X
          puls  x,a
          deca
          bne   L0220
@@ -414,7 +417,7 @@ L0220    pshs  x,a
          ldd   MD$MPDAT,u
 L023B    cmpd  MD$MPDAT,X
          bne   L0244
-         clr   ,X
+         clr   0,X
          clr   1,X
 L0244    leax  MD$ESize,X
          cmpx  D.ModEnd
@@ -470,28 +473,28 @@ FORK20 lda ,X+ Get path number
 FORK25 sta ,U+ Pass path to child
  leay -1,y COUNT Down
  bne FORK20 Branch if more
-         ldx   0,s
-         ldu   2,s
+ ldx 0,s
+ ldu 2,s restore U
  lbsr SETPRC Set up process
  bcs FORK40 Branch if error
-         pshs  D
-         os9   F$AllTsk
-         bcc   FORK30
+ pshs D
+ os9 F$AllTsk
+ bcc FORK30
 FORK30 lda $07,X
          clrb
-         subd  ,s
+         subd  0,s
          tfr   d,u
-         ldb   $06,X
+         ldb   6,X
          ldx   D.PROC
          lda   P$Task,X
-         leax  ,y
+         leax  0,y
          puls  y
          os9   F$Move
-         ldx   ,s
+         ldx   0,s
          lda   D.SysTsk
          ldu   $04,X
          leax  (P$Stack-R$Size),X
-         ldy   #$000C
+         ldy   #12
          os9   F$Move
          puls  u,X
          os9   F$DelTsk
@@ -507,26 +510,27 @@ FORK30 lda $07,X
  sta P$State,X Update child state
  OS9 F$AProc Activate child process
  rts
-FORK40    puls  x
-         pshs  b
-         lbsr  CLOSEPD
-         lda   ,X
-         lbsr  F.RETPRC
+
+FORK40 puls x
+ pshs b Save error code
+ lbsr CLOSEPD
+ lda 0,X
+ lbsr F.RETPRC
  comb SET Carry
-         puls  pc,u,b
+ puls pc,u,b
 
 *****
 * Allocate Image RAM blocks
 *
-ALLPRC   pshs  u
-         bsr   F.ALLPRC
-         bcs   ALLPRC10
-         ldx   0,S Recover U register
-         stu   R$U,X
-ALLPRC10    puls  pc,u
+ALLPRC pshs  u
+ bsr F.ALLPRC
+ bcs ALLPRC10
+ ldx 0,S Recover U register
+ stu R$U,X
+ALLPRC10 puls PC,U
 
 * Find unused process id
-F.ALLPRC    ldx   D.PrcDBT Get process block ptr
+F.ALLPRC ldx D.PrcDBT Get process block ptr
 L02FB    lda   ,X+
          bne   L02FB
          leax  -1,X
@@ -559,6 +563,7 @@ L0326    std   ,X++
 L0338    stx   ,y++
          decb
          bne   L0338
+
  ifne EXTERR
          ldx   #$00FF
          stx   ,y++
@@ -631,19 +636,19 @@ CHIL20 lda P$SID,Y Is child next sibling?
  stb P$SID,Y Remove child from sibling list
 
 F.RETPRC pshs U,X,B,A
-         ldb   ,s
-         ldx   D.PrcDBT Get process block ptr
+         ldb 0,s
+         ldx D.PrcDBT Get process block ptr
          abx
-         lda   ,X
-         beq   RETPRCX
+         lda 0,X
+         beq RETPRCX
          clrb
-         stb   0,X  Clear process id
-         tfr   d,X
-         os9   F$DelTsk
-         leau  0,X
-         ldd   #P$Size
-         os9   F$SRtMem
-RETPRCX    puls  pc,u,X,b,a
+         stb 0,X  Clear process id
+         tfr d,X
+         os9 F$DelTsk
+         leau 0,X
+         ldd #P$Size
+         os9 F$SRtMem
+RETPRCX puls pc,u,X,b,a
 
 
 
@@ -676,7 +681,7 @@ L03CF    ldd   ,X++
          std   P$SWI3,X
          sta   P$Signal,X
          std   P$SigVec,X
-         ldu   P$PModul,X
+         ldu   P$PModul,X Get primary module ptr
          os9   F$UnLink
          ldb   P$PagCnt,X
          addb  #(DAT.BlSz/256)-1     round up to the nearest block
@@ -702,7 +707,7 @@ L0409    stu   ,y++
          ldu   $02,s
          stu   D.PROC
          ldu   $04,s
-         lbsr  SETPRC
+         lbsr  SETPRC Set up process
          lbcs  L04A3
          pshs  b,a
          os9   F$AllTsk
@@ -762,6 +767,7 @@ L0476    lda   D.SysTsk
          sta   P$State,X
          os9   F$AProc
          os9   F$NProc
+
 L04A3    puls  u,X
          stx   D.PROC
          pshs  b
@@ -770,23 +776,29 @@ L04A3    puls  u,X
          puls  b
          os9   F$Exit
 
-SETPRC    pshs  u,y,X,b,a
+*****
+*
+*  Subroutine Setprc
+*
+* Set Up Process Descriptor
+*
+SETPRC    pshs  U,Y,X,D
  ldd   D.PROC Get process ptr
          pshs  D
          stx   D.PROC
          lda R$A,u
          ldx R$X,u
-         ldy   ,s Get process ptr
+         ldy   0,s Get process ptr
          leay  P$DATImg,y
          os9   F$SLink
-         bcc   SETPRC05
-         ldd   ,s
+         bcc   SETPRC05 Branch if found
+         ldd   0,s
          std   D.PROC
-         ldu   $04,s
-         os9   F$Load
-         bcc   SETPRC05
-         leas  $04,s
-         puls  pc,u,y,X
+         ldu   $04,s  get X from stack
+ os9 F$Load Try loading it
+ bcc SETPRC05 Branch if loadable
+         leas  4,s
+         puls  PC,U,Y,X
 
 SETPRC05    stu   $02,s
          pshs  y,a
@@ -802,44 +814,45 @@ SETPRC05    stu   $02,s
  cmpa #SYSTM+OBJCT is it system object?
  beq SETPRC15 branch if so
  ldb #E$NEMod err: non-executable module
-SETPRC10    leas  $02,s
-         stb   $03,s
-         comb
-         bra   SETPRC50
-SETPRC15    ldd   #$000B
-         leay  P$DATImg,X
-         ldx   P$PModul,X
-         os9   F$LDDDXY
-         cmpa  R$B,u
-         bcc   SETPRC25
-         lda   R$B,u
-         clrb
-SETPRC25    os9   F$Mem Mem to correct size
-         bcs   SETPRC10 Branch if no memory
+SETPRC10 leas 2,s Restore stack
+ stb 3,s
+ comb set carry
+ bra SETPRC50
+
+SETPRC15 ldd #M$Mem get module's memory requirement
+ leay P$DATImg,X
+ ldx P$PModul,X
+ os9 F$LDDDXY
+ cmpa R$B,u Compare with user request
+ bcc SETPRC25 ..use program specification if higher
+ lda R$B,u user specified data size in pages
+ clrb
+SETPRC25 os9 F$Mem Mem to correct size
+ bcs SETPRC10 Branch if no memory
          ldx   $06,s
          leay  (P$Stack-R$Size),X
          pshs  d
          subd  R$Y,u
          std   $04,y
          subd  #R$Size Deduct stack room
-         std   P$SP,X
+         std   P$SP,X Set stack ptr
          ldd   R$Y,u
          std   R$D,y
          std   $06,s
          puls  x,d
          std   $06,y
          ldd   R$U,u
-         std   $06,s
-         lda   #$80
-         sta   R$CC,y
+         std   $06,s Pass to process
+ lda #ENTIRE Set cc entire bit
+ sta R$CC,y
          clra
-         sta   R$DP,y Get direct page ptr
+         sta R$DP,y Get direct page ptr
          clrb
          std   R$U,y
-         stx   R$PC,y
-SETPRC50 puls  D
-         std   D.PROC
-         puls  pc,u,y,X,D
+         stx   R$PC,y Set new program counter
+SETPRC50 puls D
+ std D.PROC
+ puls PC,U,Y,X,D
  page
 *****
 *
@@ -1616,7 +1629,7 @@ UNLOAD   pshs  u
          leax  -1,X
          stx   R$Y,u
          bne   L0A50
-L0A24    cmpa  #$D0
+L0A24    cmpa #FLMGR Is i/o module?
          bcs   L0A4D
          clra
          ldx   [,u]
@@ -1641,6 +1654,7 @@ L0A2E    adda  #$02
          leax  1,X
          stx   R$Y,u
          bra   L0A51
+
 L0A4D    lbsr  L01FA
 L0A50    clrb
 L0A51    rts
