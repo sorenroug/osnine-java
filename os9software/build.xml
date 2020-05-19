@@ -86,9 +86,10 @@
         <assemble src="G68" home="gimix" verify="d937eb81ca9cd5323e032d7943d61367"/>
         <assemble src="H0" home="gimix" verify="70d896d38742e234e338f6cfe8bf644f"/>
         <assemble src="XBC" home="gimix" verify="5bacdeaa30478463193fcc4324f63ad9"/>
-        <assemble src="Boot" home="gimix" verify="c478773a1104052ce055125773dd51f9"/>
+        <assemble src="Boot_ed0" home="gimix" verify="c478773a1104052ce055125773dd51f9"/>
         <assemble src="Clock" home="gimix" verify="6fb8054308b6ef274739a7fa9c5ad4d1"/>
         <assemble src="SysGo" home="gimix" verify="265bba4740d194f2dea21a36d9350764"/>
+        <assemble src="OS9p1_ed8" home="gimix" verify="ca51db8a306c143967b8b6bc4ef55047"/>
     </target>
 
     <!-- SWTPC Level I -->

@@ -199,6 +199,7 @@ COLD45 ldd #M$Size Get module size
  lbsr F.LDDDXY
  leax D,X Skip module
  bra COLD55
+
 COLD50    leax  1,x
 COLD55    cmpx  #$1E00
          bcs   COLD40
@@ -1354,7 +1355,7 @@ BOOT06 lda #SYSTM+OBJCT get type
  stx D.BtPtr
  leau d,x
  tfr x,d
-         anda  #$E0
+ anda #DAT.Addr
  clrb
  pshs u,d
  lsra

@@ -6,9 +6,7 @@
 * The CPUType is called DRG128, and CPUSpeed is TwoMHz
 ********************************
 
- ifp1
  use defsfile
- endc
 
 *****
 *
@@ -137,9 +135,9 @@ COLD15    inc   ,x+
          ldy   #HIRAM
          ldx   D.BlkMap
 COLD20    pshs  X
-         ldd   ,S
+         ldd   0,S
          subd  D.BlkMap
-         cmpb  #$FF
+         cmpb  #$FF   DAT.BlMx
          beq   COLD25
          stb   >$FE01  DAT.Regs+1
  ldu 0,y Get current value
@@ -207,19 +205,20 @@ COLD60    leax  1,X
          cmpx  D.BlkMap+2
          bcs   COLD35
 
-COLD65    leax  CNFSTR,pcr
-         bsr   LINKTO Link to configuration module
-         bcc   COLD70
-         os9   F$Boot
-         bcc   COLD65
-         bra   COLD80
-COLD70    stu   D.Init
-COLD75    leax  OS9STR,pcr
-         bsr   LINKTO
-         bcc   COLD85
-         os9   F$Boot
-         bcc   COLD75
-COLD80    jmp   [>D$REBOOT]
+COLD65 leax CNFSTR,pcr Get initial module name ptr
+ bsr LINKTO Link to configuration module
+ bcc COLD70
+ os9 F$Boot
+ bcc COLD65
+ bra COLD80
+
+COLD70 stu D.Init
+COLD75 leax OS9STR,pcr
+ bsr LINKTO
+ bcc COLD85
+ os9 F$Boot
+ bcc COLD75
+COLD80 jmp [>D$REBOOT]
 
 COLD85 jmp 0,Y Let os9 part two finish
 
@@ -445,7 +444,7 @@ SSVC ldy R$Y,U Get table address
 
 SETS10 clra
  lslb
- tfr d,u copy routine offset
+ tfr D,U copy routine offset
  ldd ,Y++ Get table relative offset
  leax D,Y Get routine address
  ldd D.SysDis
@@ -530,28 +529,28 @@ LINK20 ldd MD$MPtr,X  Module ptr
          pshs  A
          leau  0,Y
          bsr   L03AD
-         bcc   L0376
+         bcc   LINK40
          lda   ,S
          lbsr  F.FREEHB
-         bcc   L0373
+         bcc   LINK30
          leas  $05,S
          ldb   #E$MemFul
          bra   LINKXit
-L0373    lbsr  F.SETIMG
-L0376    leax  >$0080,X
+LINK30    lbsr  F.SETIMG
+LINK40    leax  >$0080,X
          sta   ,S
          lsla
          leau  A,X
          ldx   ,U
          leax  1,X
-         beq   L0387
+         beq   LINK50
          stx   ,U
-L0387    ldu   $03,S
+LINK50    ldu   $03,S
          ldx   $06,U
          leax  1,X
-         beq   L0391
+         beq   LINK60
          stx   $06,U
-L0391    puls  U,y,x,b
+LINK60    puls  U,Y,X,B
          lbsr  F.DATLOG
          stx   $08,U
          ldx   $04,Y
@@ -588,6 +587,7 @@ L03BF    ldd   ,y++
          stb   ,S
          clrb
          puls  pc,Y,X,D
+
 L03D4    puls  U,Y
          leay  -2,Y
          cmpy  4,S
@@ -681,6 +681,7 @@ L0468    pshs  X,a
          bne   L0468
          clrb
          puls  pc,Y,X
+
 L047C    pshs  U,Y,X,D
          ldx   ,X
          pshs  X
@@ -814,9 +815,9 @@ CRCC10 lbsr GETBYTE Get next byte
  std 3,S
  bne CRCC05
  puls y,x,b
- cmpb #$80 Is it good?    #CRCCon1
+ cmpb #CRCCon1 Is it good?
  bne CRCC15 Branch if not
- cmpx #$0FE3 Is it good?  #CRCCon23
+ cmpx #CRCCon23 Is it good?
  beq CRCC30 Branch if so
 CRCC15 ldb #E$BMCRC Err: bad crc
 CRCC20 orcc #CARRY SET Carry
@@ -901,8 +902,8 @@ CRCGen10 lbsr GETBYTE get next data byte
  std 9,S
  bne CRCGen10 branch if more
  puls Y,X,D
- exg a,b
- exg x,U
+ exg A,B
+ exg X,U
  lbsr F.MOVE
  leas 7,S
 CRCGen20 clrb clear carry
@@ -1315,37 +1316,40 @@ BOOT comb set carry
  beq BOOT05 No boot string in init module
  leax D,X Get name ptr
  bra BOOT06
-BOOT05 leax  BTSTR,pcr
+BOOT05 leax BTSTR,pcr
 BOOT06 lda #SYSTM+OBJCT get type
  OS9 F$LINK find bootstrap module
  bcs BOOTXX Can't boot without module
  jsr 0,Y Call boot entry
+* D now contains the size of the boot file
+* X contains the address where the file was loaded into memory
  bcs BOOTXX Boot failed
- leau D,X
+ leau D,X Set U to end of boot
  tfr X,D
- anda #$F0
+ anda #DAT.Addr Calculate start of block
  clrb
- pshs u,D
+ pshs U,D
  lsra
  lsra
  lsra
  ifge DAT.BlSz-$2000
  lsra
  endc
+* Shifting one less time because SysDAT entries are words
  ldy D.SysDAT
- leay a,Y
-BOOT10 ldd 0,X get module beginning
+ leay A,Y Get DAT image pointer for boot module
+BOOT10 ldd M$ID,X get module beginning
  cmpd #M$ID12 is it module sync code?
  bne BOOT20 branch if not
  tfr X,D
- subd 0,S
- tfr D,X
- tfr Y,D
+ subd 0,S Subtract start of block (U on stack)
+ tfr D,X Module block offset
+ tfr Y,D Transfer DAT image pointer to D
  OS9 F$VModul Validate module
- pshs b
- ldd 1,S
+ pshs B
+ ldd 1,S Get U back from stack
  leax D,X
- puls b
+ puls B
  bcc BOOT15
  cmpb #E$KwnMod
  bne BOOT20
@@ -1353,9 +1357,9 @@ BOOT15 ldd M$SIZE,X Get module size
  leax D,X
  bra BOOT30
 BOOT20 leax 1,X Try next
-BOOT30 cmpx 2,s End of boot?
+BOOT30 cmpx 2,S End of boot?
  bcs BOOT10 Branch if not
- leas 4,s restore stack
+ leas 4,S Restore stack
 BOOTXX rts
 
 *****
@@ -1421,9 +1425,7 @@ L093C    leax  -1,X
          bne   L0927
          ldx   ,s++
          beq   L0973
-*
          leau  DAT.ImSz,U
-*
 L0947    lda   ,u+
          bne   L094F
          leax  -1,X
@@ -1492,7 +1494,7 @@ L09C7    ldx   2,S
          ora   #ImgChg
          sta   P$State,X
          clrb
-         puls  pc,u,Y,X,D
+         puls  PC,U,Y,X,D
 
 L09D2    fcb $00,$01,$02,$03,$04,$05,$06,$07
          fcb $08,$09,$0A,$0B,$0C,$0D,$0E,$0F
@@ -1586,12 +1588,12 @@ GCLRRET    clrb
 *
 * Get free high block
 *
-FREEHB   ldb   R$B,u Get block count
-         ldy   R$Y,u DAT image pointer
-         bsr   FRHB20 Go find free blocks in high part of DAT
-         bcs   FRHB10
-         sta   R$A,u return beginning block number
-FRHB10    rts
+FREEHB ldb R$B,u Get block count
+ ldy R$Y,u DAT image pointer
+ bsr FRHB20 Go find free blocks in high part of DAT
+ bcs FRHB10
+ sta R$A,u return beginning block number
+FRHB10 rts
 
 FRHB20    tfr   b,a
 F.FREEHB    suba  #$11  DAT.BlCt+1
@@ -1626,8 +1628,8 @@ FREEBLK clra
          cmpb  1,S
          bne   FREBLK20
          ldb   #E$MemFul
-         stb   3,s Save error code
-         comb set carry
+ stb 3,s Save error code
+ comb set carry
  bra FREBLK30
 
 FREBLK10 tfr A,B
@@ -1646,23 +1648,23 @@ FREBLK30 leas 2,s Reset stack
 *
 *
 *
-SETIMG   ldd   R$D,u  Get beginning and number of blocks
-         ldx   R$X,u Process descriptor pointer
-         ldu   R$U,u New image pointer
-F.SETIMG pshs  U,Y,X,D
-         leay  P$DATImg,X
-         lsla
-         leay  a,Y
-L0AB0    ldx   ,u++
-         stx   ,y++
-         decb
-         bne   L0AB0
-         ldx   $02,S
-         lda   P$State,X
-         ora   #ImgChg
-         sta   P$State,X
-         clrb
-         puls  pc,u,Y,X,D
+SETIMG ldd R$D,u Get beginning and number of blocks
+ ldx R$X,u Process descriptor pointer
+ ldu R$U,u New image pointer
+F.SETIMG pshs U,Y,X,D
+ leay P$DATImg,X
+ lsla
+ leay A,Y
+SETIMG10 ldx ,u++
+ stx ,y++
+ decb
+ bne SETIMG10
+ ldx 2,S
+ lda P$State,X
+ ora #ImgChg
+ sta P$State,X
+ clrb
+ puls PC,U,Y,X,D
 
 *****
 * Convert DAT block/offset to logical address
@@ -1831,7 +1833,7 @@ F.SETTSK lda P$State,X
  leax P$DATImg,X
          ldy   #$0010 DAT.BlCt DAT.ImSz/2
  ldu #DAT.Regs
-         lbra  SETDAT00 Copy DAT image to DAT registers
+ lbra SETDAT00 Copy DAT image to DAT registers
 
 *****
 * Reserve Task Number
@@ -2145,19 +2147,19 @@ L0D42    stb   ,X
          lda   #$18
          sta   ,X
          stb   1,X
-         ldx   #A.Crtc address of 6845 CRTC
+         ldx   #A.Crtc address of 6845 CRTC ($FC80)
          clrb
          leay  >L0DBE,pcr
 L0D8F    lda   ,y+
-         stb   ,X
+         stb   0,X
          sta   1,X
          incb
          cmpb  #$10
          bcs   L0D8F
          lda   #$B0
          sta   DAT.Task
-         ldx   #$6000
-         ldd   #$2008
+         ldx   #$6000  Start of graphics memory
+         ldd   #$2008  Space + attribute
 L0DA5    std   ,x++
          cmpx  #$7000
          bne   L0DA5
@@ -2231,8 +2233,8 @@ H.LDABX andcc #^CARRY clear carry
  puls pc,b,cc
 
 * Store register A at 0,X
-H.STABX    andcc #^CARRY clear carry
- pshs B,cc
+H.STABX andcc #^CARRY clear carry
+ pshs B,CC
  orcc #IntMasks
  stb DAT.Task
  sta 0,X
@@ -2308,8 +2310,8 @@ FIRQ ldb #D.FIRQ
 IRQ orcc #IntMasks
  ldb #D.IRQ
 
-SWITCH lda   #SysTask
- sta   DAT.Task
+SWITCH lda #SysTask
+ sta DAT.Task
 SWITCH10 clra
  tfr A,DP
  tfr D,X

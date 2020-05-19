@@ -16,6 +16,13 @@ DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
 ***************
 DAT.Free equ $8000 Free Block Number
 
+***************
+*
+* DAT.Addr calculates a mask for the top bits of the
+* logical address that are mapped by the MMU
+DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
+*
+
 ClocType equ 0
 
 SysTask equ $80 System Task number

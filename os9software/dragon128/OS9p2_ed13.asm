@@ -1,7 +1,7 @@
-         nam   OS-9 Level II V1.2, part 2
-         ttl   os9 Module Header
+ nam OS-9 Level II V1.2, part 2
+ ttl os9 Module Header
 
- use  defsfile
+ use defsfile
 
 ************************************************************
 *                                                          *
@@ -314,13 +314,13 @@ UNLINK pshs u,b,a
          bitb  #ModBlock
          beq   UNLK08
          leau  P$DATImg,y
-         bra   L0187
-L0183    dec   ,s
+         bra   UNLK04
+UNLK03    dec   ,s
          beq   UNLK08
-L0187    ldb   ,s
+UNLK04    ldb   0,s
          lslb
          ldd   b,u
-         beq   L0183
+         beq   UNLK03
          lda   0,s
          lsla
          lsla

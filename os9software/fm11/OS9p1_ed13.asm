@@ -1218,39 +1218,43 @@ L0891    leax  $02,x
 SRTMXX    clrb
          rts
 
-BOOT     comb
-         lda   D.Boot
-         bne   BOOTXX
-         inc   D.Boot
-         ldx   D.Init
-         beq   BOOT05
-         ldd   <$14,x
-         beq   BOOT05
-         leax  d,x
-         bra   BOOT06
-BOOT05    leax  >BTSTR,pcr
-BOOT06    lda   #$C1
-         os9   F$Link
-         bcs   BOOTXX
-         jsr   ,y
-         bcs   BOOTXX
-         leau  d,x
-         tfr   x,d
-         anda  #$F0
-         clrb
-         pshs  u,b,a
-         lsra
-         lsra
-         lsra
-         ldy   D.SysDAT
-         leay  a,y
-BOOT10    ldd   ,x
-         cmpd  #$87CD
-         bne   BOOT20
-         tfr   x,d
-         subd  ,s
-         tfr   d,x
-         tfr   y,d
+*****
+BOOT comb set carry
+ lda D.Boot
+ bne BOOTXX Don't boot if already tried
+ inc D.Boot
+ ldx D.Init
+ beq BOOT05 No init module
+ ldd BootStr,X
+ beq BOOT05 No boot string in init module
+ leax D,X Get name ptr
+ bra BOOT06
+BOOT05 leax  BTSTR,pcr
+BOOT06 lda #SYSTM+OBJCT get type
+ OS9 F$LINK find bootstrap module
+ bcs BOOTXX Can't boot without module
+ jsr 0,Y Call boot entry
+ bcs BOOTXX Boot failed
+ leau D,X
+ tfr X,D
+ anda #$F0     ?????
+ clrb
+ pshs u,D
+ lsra
+ lsra
+ lsra
+ ifge DAT.BlSz-$2000
+ lsra
+ endc
+ ldy D.SysDAT
+ leay a,Y
+BOOT10 ldd 0,X get module beginning
+ cmpd #M$ID12 is it module sync code?
+ bne BOOT20 branch if not
+ tfr X,D
+ subd 0,S
+ tfr D,X
+ tfr Y,D
  OS9 F$VModul Validate module
  pshs b
  ldd 1,s
@@ -1273,12 +1277,12 @@ BOOTXX rts
 * Allocate RAM blocks
 *
 ALLRAM   ldb   R$B,u
-         bsr   L0906
-         bcs   L0905
+         bsr   ALRAM10
+         bcs   ALRAM05
          std   R$D,u
-L0905    rts
+ALRAM05    rts
 
-L0906    pshs  y,x,b,a
+ALRAM10    pshs  y,x,b,a
          ldx   D.BlkMap
 L090A    leay  ,x
          ldb   1,s
@@ -1338,6 +1342,7 @@ L096F    ldb   #$CF
          stb   1,s
          comb
          puls  pc,u,y,x,b,a
+
 L0978    puls  u,y,x
 L097A    ldd   ,y++
          cmpd  #DAT.Free
@@ -1351,9 +1356,9 @@ L0982    lda   ,u+
 L098E    leax  -1,x
          bne   L097A
          ldx   $02,s
-         lda   $0C,x
-         ora   #$10
-         sta   $0C,x
+         lda   P$State,x
+         ora   #ImgChg
+         sta   P$State,x
          clrb
          puls  pc,u,y,x,b,a
 
@@ -1363,12 +1368,12 @@ L098E    leax  -1,x
 *
 FREEHB   ldb   R$B,u
          ldy   R$Y,u
-         bsr   L09A9
-         bcs   L09A8
+         bsr   FRHB20
+         bcs   FRHB10
          sta   R$A,u
-L09A8    rts
+FRHB10    rts
 
-L09A9    tfr   b,a
+FRHB20    tfr   b,a
 F.FREEHB    suba  #$11
          nega
          pshs  x,b,a
@@ -1434,6 +1439,9 @@ L0A05    ldx   ,u++
          clrb
          puls  pc,u,y,x,b,a
 
+*****
+* Convert DAT block/offset to logical address
+*
 DATLOG   ldb   R$B,u
          ldx   R$X,u
          bsr   F.DATLOG
@@ -1441,14 +1449,20 @@ DATLOG   ldb   R$B,u
          clrb
          rts
 
-F.DATLOG    pshs  x,b,a
-         lslb
-         lslb
-         lslb
-         lslb
-         addb  $02,s
-         stb   $02,s
-         puls  pc,x,b,a
+* Convert offset into real address
+* Input: B, X
+* Effect: updated X
+F.DATLOG pshs X,D
+ lslb
+ lslb
+ lslb
+ lslb
+ ifge DAT.BlSz-$2000
+ lslb Divide by 32 for 8K blocks
+ endc
+ addb 2,S
+ stb 2,S
+ puls pc,X,D
 
 LDAXY    ldx   R$X,u
          ldy   R$Y,u
@@ -1481,11 +1495,11 @@ GETBYTE    lda   1,y
          puls  cc
          bra   ADJBLK
 
-ADJBLK10    leax  >-$1000,x
-         leay  $02,y
-ADJBLK    cmpx  #$1000
-         bcc   ADJBLK10
-         rts
+ADJBLK10 leax >-DAT.BlSz,X
+ leay 2,Y
+ADJBLK cmpx #DAT.BlSz
+ bcc ADJBLK10
+ rts
 
 *****
 * Load D [D+X],[Y]]

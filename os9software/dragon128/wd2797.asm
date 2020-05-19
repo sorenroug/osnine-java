@@ -74,7 +74,7 @@ DSKENT    equ   *
          lbra  WRTDSK
          lbra  L01B6
          lbra  L01B8
-         lbra  L0283
+         lbra  TERMINAT
          lbra  L02A8
 
 L002A   fcb  $00,$80,$80
@@ -245,7 +245,9 @@ L01AB    bitb  #$08
          ora   #$08
 L01B1    sta   >u00B7,u
          rts
+
 L01B6    bra   L01D0
+
 L01B8    pshs  u,y
          ldx   $06,y
          ldb   $02,x
@@ -328,7 +330,7 @@ L01FE    lda   $07,x
          puls  b,cc
 L0281    puls  pc,u,y
 
-L0283    pshs  u
+TERMINAT    pshs  u
          ldu   >u00A9,u
          ldd   #$0100
          os9   F$SRtMem

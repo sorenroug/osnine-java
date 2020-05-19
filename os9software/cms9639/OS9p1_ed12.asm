@@ -522,29 +522,29 @@ LINK20 ldd MD$MPtr,X  Module ptr
  lsrb Divide by 32 for 8K blocks
  endc
          pshs  b
-         leau  ,y
+         leau  0,y
          bsr   L03CB
-         bcc   L0394
+         bcc   LINK40
          lbsr  FRHB20
-         bcc   L0391
+         bcc   LINK30
          leas  $05,s
          ldb   #E$MemFul
          bra   LINKXit
-L0391    lbsr  F.SETIMG
-L0394    leax  >$0080,x
+LINK30    lbsr  F.SETIMG
+LINK40    leax  >$0080,x
          sta   ,s
          lsla
          leau  a,x
          ldx   ,u
          leax  $01,x
-         beq   L03A5
+         beq   LINK50
          stx   ,u
-L03A5    ldu   $03,s
+LINK50    ldu   $03,s
          ldx   $06,u
          leax  $01,x
-         beq   L03AF
+         beq   LINK60
          stx   $06,u
-L03AF    puls  u,y,x,b
+LINK60    puls  u,y,x,b
          lbsr  F.DATLOG
          stx   $08,u
          ldx   $04,y
@@ -559,6 +559,7 @@ L03AF    puls  u,y,x,b
 LINKXit orcc #CARRY
  puls pc,u
 
+* Called from LINK
 L03CB    ldx   D.Proc
          leay  P$DATImg,x
          clra
@@ -580,6 +581,7 @@ L03DD    ldd   ,y++
          stb   ,s
          clrb
          puls  pc,y,x,b,a
+
 L03F2    puls  u,y
          leay  -$02,y
          cmpy  $04,s
@@ -1294,9 +1296,9 @@ BOOT comb set carry
          ldd   M$EXEC,x
          jsr   d,x
  bcs BOOTXX Boot failed
- leau d,x
- tfr x,d
- anda #$F0
+ leau D,X Set U to end of boot
+ tfr X,D
+ anda #DAT.Addr Calculate start of block
  clrb
  pshs u,d
  lsra
@@ -1310,26 +1312,26 @@ BOOT comb set carry
 BOOT10 ldd 0,X get module beginning
  cmpd #M$ID12 is it module sync code?
  bne BOOT20 branch if not
-         tfr   x,d
-         subd  ,s
-         tfr   d,x
-         tfr   y,d
-         os9   F$VModul
-         pshs  b
-         ldd   $01,s
-         leax  d,x
-         puls  b
-         bcc   BOOT15
-         cmpb  #$E7
-         bne   BOOT20
+ tfr X,D
+ subd 0,S Subtract start of block (U on stack)
+ tfr D,X Module block offset
+ tfr Y,D Transfer DAT image pointer to D
+ OS9 F$VModul Validate module
+ pshs B
+ ldd 1,S Get U back from stack
+ leax D,X
+ puls B
+ bcc BOOT15
+ cmpb #E$KwnMod
+ bne BOOT20
 BOOT15 ldd M$SIZE,X Get module size
-         leax  d,x
-         bra   BOOT30
-BOOT20    leax  $01,x
-BOOT30    cmpx  $02,s
-         bcs   BOOT10
-         leas  $04,s
-BOOTXX    rts
+ leax D,X
+ bra BOOT30
+BOOT20 leax 1,X Try next
+BOOT30 cmpx 2,S End of boot?
+ bcs BOOT10 Branch if not
+ leas 4,S Restore stack
+BOOTXX rts
 
 
 *****
@@ -1383,10 +1385,10 @@ F.ALLIMG    pshs  u,y,x,b,a
          ldu   D.BlkMap
          pshs  u,y,x,b,a
 L0932    ldd   ,y++
-         cmpd  #$8000
+         cmpd  #DAT.Free
          beq   L0947
          lda   d,u
-         cmpa  #$01
+         cmpa  #$01   #RAMinUse
          puls  b,a
          bne   L095C
          subd  #$0001
@@ -1406,9 +1408,10 @@ L095C    ldb   #$CF
          stb   $01,s
          comb
          puls  pc,u,y,x,b,a
+
 L0965    puls  u,y,x
 L0967    ldd   ,y++
-         cmpd  #$8000
+         cmpd  #DAT.Free
          bne   L097B
 L096F    lda   ,u+
          bne   L096F
@@ -1419,9 +1422,9 @@ L096F    lda   ,u+
 L097B    leax  -$01,x
          bne   L0967
          ldx   $02,s
-         lda   P$State,x
-         ora   #$10
-         sta   P$State,x
+         lda   P$State,X
+         ora   #ImgChg
+         sta   P$State,X
          clrb
          puls  pc,u,y,x,b,a
 
@@ -1445,12 +1448,15 @@ FRHB20    tfr   b,a
          pshs  b,a
          bra   FREEBLK
 
+*****
+* Get Free low block
+*
 FREELB         ldb   $02,u
          ldy   $06,u
          bsr   FRLB20
-         bcs   L09AF
+         bcs   FRLB10
          sta   $01,u
-L09AF    rts
+FRLB10    rts
 
 FRLB20    lda   #$FF
          pshs  x,b,a
@@ -1460,9 +1466,6 @@ FRLB20    lda   #$FF
          pshs  b,a
          bra   FREEBLK
 
-*****
-* Get Free low block
-*
 FREEBLK    clra
          ldb   $02,s
          addb  ,s
@@ -1510,12 +1513,12 @@ L09F2    ldx   ,u++
 *****
 * Convert DAT block/offset to logical address
 *
-DATLOG         ldb   $02,u
-         ldx   $04,u
-         bsr   F.DATLOG
-         stx   $04,u
-         clrb
-         rts
+DATLOG ldb R$B,u  DAT image offset
+ ldx R$X,u Block offset
+ bsr F.DATLOG
+ stx R$X,u Return logical address
+ clrb
+ rts
 
 * Convert offset into real address
 * Input: B, X

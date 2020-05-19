@@ -270,23 +270,23 @@ UNLINK   pshs  u,b,a
          lsra
  endc
          sta   ,s
-         beq   L017D
+         beq   UNLK08
          ldu   D.PROC
          leay  P$DATImg,u
          lsla
-L0149    ldd   a,y
+    ldd   a,y
          ldu   D.BlkMap
          ldb   d,u
          bitb  #$02
-         beq   L017D
+         beq   UNLK08
          leau  P$DATImg,y
-         bra   L015C
-L0158    dec   ,s
-         beq   L017D
-L015C    ldb   ,s
+         bra   UNLK04
+UNLK03    dec   ,s
+         beq   UNLK08
+UNLK04    ldb   ,s
          lslb
          ldd   b,u
-         beq   L0158
+         beq   UNLK03
          lda   ,s
          lsla
          lsla
@@ -302,15 +302,15 @@ L015C    ldb   ,s
          lslb
          ldd   b,y
          ldu   D.ModDir
-         bra   L017F
-L0176    leau  8,u
+         bra   UNLK10
+UNLK06    leau  8,u
          cmpu  D.ModEnd
-         bcs   L017F
-L017D    bra   L01CA
-L017F    cmpx  R$X,u
-         bne   L0176
+         bcs   UNLK10
+UNLK08    bra   UNLK25
+UNLK10    cmpx  R$X,u
+         bne   UNLK06
          cmpd  [,u]
-         bne   L0176
+         bne   UNLK06
          ldx   R$Y,u
          beq   L0192
          leax  -$01,x
@@ -335,14 +335,14 @@ L01AF    ldb   ,s
          ldx   <$40,y
          leax  -1,x
          stx   <$40,y
-         bne   L01CA
+         bne   UNLK25
          ldd   2,u
          bsr   DIVBKSZ
          ldx   #$00FE
 L01C5    stx   ,y++
          deca
          bne   L01C5
-L01CA    clrb
+UNLK25    clrb
 L01CB    leas  $02,s
          puls  pc,u
 

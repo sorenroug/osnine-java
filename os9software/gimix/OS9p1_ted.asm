@@ -1,12 +1,14 @@
 
- nam OS-9 Level I V1.1 kernal, part 1
+ nam OS-9 Level I V1.2 kernal, part 1
  ttl System Type definitions
 
-* It was disassembled from a file name os9l1v11.u6, which is a ROM file in
-* the MAME emulator. It seems to be edition 8 for OS-9 level I v. 1.1.
-* It doesn't seem to work with OS-9 level I 1.2
-
  use defsfile
+
+ ifeq (CPUType-GIMIX)*(CPUType-EXORSR)
+ opt l
+ else
+ opt -l
+ endc
 
  ttl Names & tables
  opt -c
@@ -14,7 +16,7 @@
 
 ************************************************************
 *                                                          *
-*           OS-9 Level I V1.1 - Kernal, part 1             *
+*           OS-9 Level I V1.2 - Kernal, part 1             *
 *                                                          *
 ************************************************************
 
@@ -36,33 +38,87 @@
 Type set SYSTM+OBJCT
 Revs set REENT+1
  mod OS9End,OS9Nam,Type,Revs,COLD,0
-OS9Nam fcs /OS9/
+OS9Nam fcs /OS9p1/
+ fcb 12 Edition number
 
 *************************
 *    Edition History
 *
 * Ed.  8 - Beginning of history  (V1.1 final version)
+*
+* Ed.  9 - First V1.2 version minor cosmetic changes
+*          Ed byte immediately following module name
+*          Version ID all same length                  WGP  11/25/82
+*
+* Ed. 10 - SetSVC now checks service no. for validity
+*          SetPRC checks for zero data area size       WGP  12/20/82
+*
+* Ed. 11 - Parse name system call made compatible w/LII
+*                                                      ???  ??/??/82
+*
+* Ed. 12 - CNAM change made at RETCS1 to save one byte of code
+*          S09 cpu datinit changed to save one byte of code
+*          These were to allow S09 version to fit in $800
+*                                                      WGP  01/10/83
 
 *********
 * Version Id
 *
- ifeq CPUTYP-EXORSR
- fcc /EXOR/ Version name
+ ifeq CPUType-EXORSR
+ fcc / Exor / Version name
 RamLimit set $E000
  endc
- ifeq CPUTYP-MM19
- fcc /MM19/ Version name
+ ifeq CPUType-MM19
+ fcc / MM19 / Version name
 RamLimit set $E800
  endc
- ifeq CPUTYP-GIMIX
- fcc /GMX/ Version name
+ ifeq CPUType-GIMIX
+ fcc / Gmx  / Version name
 RamLimit set $E000
  endc
+ ifeq CPUType-SWTC
+ fcc /Swtpc / Version name
+RamLimit set $E000
+ endc
+ ifeq CPUType-S09
+ fcc /SwtMem/ Version name
+RamLimit set $E000
+ endc
+ ifeq CPUType-SSB
+ fcc /Smoke / Version name
+RamLimit set $E800
+ endc
+ ifeq CPUType-PERCOM
+ fcc /Percom/ Version name
+RamLimit set $E800
+ endc
+ ifeq CPUType-CMS9609
+ fcc / CMS  / Version name
+RamLimit set $E000
+ endc
+ ifeq CPUType-CMS9619
+ fcc / CMS  / Version name
+RamLimit set $F000
+ endc
+ ifeq CPUType-HELIX
+ fcc /Helix /
+RamLimit set $E000
+ endc
+ ifeq CPUType-ELEKTRA
+ fcc /Elekt / AAA chicago cpu
+RamLimit set $E000
+ endc
+ ifeq CPUType-DIGALOG
+ fcc /Diglog/ Digalog cpu
+RamLimit set $E000
+ endc
+ ifeq CPUType-SAT96
+ fcc /SAT96 / Sat-96 board
+RamLimit set $E600
+ endc
 
- fcb 8 Edition number
- fcc "(C)1981Microware"
-CNFSTR fcs /INIT/ Configuration module name
-OS9STR fcs /OS9P2/ Kernal, part 2 name
+CNFSTR fcs /Init/ Configuration module name
+OS9STR fcs /OS9p2/ Kernal, part 2 name
  page
 *****
 *
@@ -73,31 +129,31 @@ SVCTBL equ *
  fdb LINK-*-2
  fcb F$FORK
  fdb FORK-*-2
- fcb F$CHAN
+ fcb F$Chain
  fdb USRCHN-*-2
- fcb F$CHAN+$80
+ fcb F$Chain+$80
  fdb SYSCHN-*-2
- fcb F$PNAM
+ fcb F$PrsNam
  fdb PNAM-*-2
- fcb F$CNAM
+ fcb F$CmpNam
  fdb CNAM-*-2
- fcb F$SBIT
+ fcb F$SchBit
  fdb SBIT-*-2
- fcb F$ABIT
+ fcb F$AllBit
  fdb ABIT-*-2
- fcb F$DBIT
+ fcb F$DelBit
  fdb DBIT-*-2
  fcb F$CRC
  fdb CRCGen-*-2
- fcb F$SRQM+$80
+ fcb F$SRqMem+$80
  fdb SRQMEM-*-2
- fcb F$SRTM+$80
+ fcb F$SRtMem+$80
  fdb SRTMEM-*-2
- fcb F$APRC+$80
+ fcb F$AProc+$80
  fdb APRC-*-2
- fcb F$NPRC+$80
+ fcb F$NProc+$80
  fdb NXTPRC-*-2
- fcb F$VMOD+$80
+ fcb F$VModul+$80
  fdb VMOD-*-2
  fcb F$SSVC
  fdb SSVC-*-2
@@ -125,13 +181,13 @@ COLD05 std ,X++ Clear two bytes
  addb #BMAPSZ Add map size
  std D.FMBM+2
  addb #2 Reserve i/o routine entry
- std D.SSVC Set system service request table
+ std D.SysDis Set system service request table
  addb #SVCTSZ+2 Add table size
- std D.USVC Set user service request table
+ std D.UsrDis Set user service request table
  clrb SET Module directory address
  inca
- std D.MODD Set module directory address
- stx D.MODD+2 Set end
+ std D.ModDir Set module directory address
+ stx D.ModDir+2 Set end
  leas $100,X get initial stack
 *
 * Find End Of Ram
@@ -153,7 +209,7 @@ COLD10 leay 0,X Copy current ptr
  leay 0,X Copy end-of-ram ptr
 COLD15 leax 0,Y Copy eor ptr
 
- ifeq CPUTyp-EXORSR
+ ifeq CPUType-EXORSR
 *** >>> Patch For Exorciser Environment <<< ***
 *
  leax NMI,pcr
@@ -166,18 +222,16 @@ COLD15 leax 0,Y Copy eor ptr
  stx $FFF4 set hardware vector
  leax SWI3RQ,PCR get swi3 vector
  stx $FFF2 set hardware vector
-EndRAM equ $A23 This must be greater than the size
+EndRAM equ $A50 This must be greater than the size
 * of ctlrmod+bootmod+os9p2+*
  leax -EndRAM,PCR get artificial end-of-ram
- stx D.MLIM
  stx D.BtLo
  stx D.BtHi
 *
 *** >>> End Of Exorciser Patch <<< ***
- else
- stx D.MLIM Set memory limit
  endc
 
+ stx D.MLIM Set memory limit
 *
 * Search Memory For Modules, Build Module Directory
 *
@@ -186,7 +240,7 @@ COLD20 lbsr VALMOD Look for valid module
  ldd M$SIZE,X Get module size
  leax D,X Skip module
  bra COLD35
-COLD30 cmpb #E$KMOD Is it known module
+COLD30 cmpb #E$KwnMod Is it known module
  beq COLD40 Branch on first duplicate
  leax 1,X Try next location
 COLD35 bne COLD20
@@ -201,14 +255,14 @@ COLD45 ldd ,Y++ get vector
  bls COLD45 branch if not
  leas 2,S return scratch
  leax USRIRQ,PCR Get user interrupt routine
- stx D.UIRQ
+ stx D.UsrIRQ
  leax USRREQ,PCR Get user service routine
- stx D.UREQ
+ stx D.UsrSVC
  leax SYSIRQ,PCR Get system interrupt routine
- stx D.SIRQ
- stx D.ISVC Set interrupts to system state
+ stx D.SysIRQ
+ stx D.SvcIRQ Set interrupts to system state
  leax SYSREQ,PCR Get system service routine
- stx D.SREQ
+ stx D.SysSVC
  stx D.SWI2 Set service to system state
  leax IOPOLL,PCR Set irq polling routine
  stx D.POLL
@@ -221,7 +275,7 @@ COLD45 ldd ,Y++ get vector
  leax CNFSTR,PCR Get initial module name ptr
  OS9 F$LINK Link to configuration module
  lbcs COLD Retry if error
- stu D.BASE Save ptr
+ stu D.Init Save ptr
  ldd MAXMEM+1,U Get memory limit
  clrb ROUND Down
  cmpd D.MLIM Does ram go that high?
@@ -322,7 +376,7 @@ FIRQHN rti
 *
 *  Irq Handler
 *
-IRQHN jmp [D.ISVC] Go to interrupt service
+IRQHN jmp [D.SvcIRQ] Go to interrupt service
 
 
 
@@ -355,20 +409,20 @@ USRIRQ leay <USRI10,PCR Get post-switch routine
 SWITCH clra SET Direct page
  tfr A,DP
  ldx D.PROC Get process
- ldd D.SREQ Get system request routine
+ ldd D.SysSVC Get system request routine
  std D.SWI2
- ldd D.SIRQ Get system irq routine
- std D.ISVC
+ ldd D.SysIRQ Get system irq routine
+ std D.SvcIRQ
  leau 0,S Copy user stack ptr
  stu P$SP,X
- lda P$STAT,X Set system state
- ora #SYSTAT
- sta P$STAT,X
+ lda P$State,X Set system state
+ ora #SysState
+ sta P$State,X
  jmp 0,Y Go to post-switch routine
 USRI10 jsr [D.POLL] Call irq polling routine
  bcc USRI20 branch if interrupt identified
  ldb R$CC,S get condition codes
- orb #IRQM set interrupt mask
+ orb #IRQMask set interrupt mask
  stb R$CC,S update condition codes
 USRI20 lbra USRRET
 
@@ -385,7 +439,7 @@ SYSIRQ clra clear direct page
  jsr [D.POLL] Call irq polling
  bcc SYSI10 branch if interrupt identified
  ldb R$CC,S get condition codes
- orb #IRQM set interrupt mask
+ orb #IRQMask set interrupt mask
  stb R$CC,S update condition codes
 SYSI10 rti
 
@@ -404,42 +458,42 @@ IOPOLL comb set carry
 *
 * Wake Sleeping Processes
 *
-TICK ldx D.SPRQ Get sleeping queue ptr
+TICK ldx D.SProcQ Get sleeping queue ptr
  beq SLICE Branch if none
- lda P$STAT,X Get process status
- bita #TSLEEP Is it in timed sleep?
+ lda P$State,X Get process status
+ bita #TimSleep Is it in timed sleep?
  beq SLICE Branch if not
  ldu P$SP,X Get stack ptr
  ldd R$X,U Get tick count
  subd #1 Count down
  std R$X,U Update tick count
  bne SLICE Branch if ticks left
-TICK10 ldu P$QUEU,X Get next process ptr
+TICK10 ldu P$Queue,X Get next process ptr
  bsr ACTPRC Activate process
  leax 0,U Copy process ptr
  beq TICK20 Branch if end of queue
- lda P$STAT,X Get process status
- bita #TSLEEP In timed sleep?
+ lda P$State,X Get process status
+ bita #TimSleep In timed sleep?
  beq TICK20 Branch if not
  ldu P$SP,X Get stack ptr
  ldd R$X,U Get tick count
  beq TICK10 Branch if time
-TICK20 stx D.SPRQ Update sleep queue ptr
+TICK20 stx D.SProcQ Update sleep queue ptr
 *
 * Update Time Slice counter
 *
-SLICE dec D.SLIC Count tick
+SLICE dec D.Slice Count tick
  bne SLIC10 Branch if slice not over
- lda D.TSLC Get ticks/time-slice
- sta D.SLIC Reset slice tick count
+ lda D.TSlice Get ticks/time-slice
+ sta D.Slice Reset slice tick count
 *
 * If Process not in System State, Give up Time-Slice
 *
  ldx D.PROC Get current process ptr
  beq SLIC10 Branch if none
- lda P$STAT,X Get status
+ lda P$State,X Get status
  ora #TIMOUT Set time-out flag
- sta P$STAT,X Update process status
+ sta P$State,X Update process status
  bpl SLIC20 Branch if user state
 SLIC10 rti
 SLIC20 leay USRRET,PCR Set transfer ptr
@@ -456,28 +510,28 @@ ACTPRC pshs Y,U Save registers
 *
 * Age Active Processes
 *
- ldu #D.APRQ-P$QUEU Fake process ptr
+ ldu #D.AProcQ-P$Queue Fake process ptr
  bra ACTP20
 ACTP10 ldb P$AGE,U Get age
  incb
  beq ACTP20 Branch if highest
  stb P$AGE,U
-ACTP20 ldu P$QUEU,U Get next process
+ACTP20 ldu P$Queue,U Get next process
  bne ACTP10 Branch if more
 *
 * Sort New Process Into Queue
 *
- ldu #D.APRQ-P$QUEU Fake process ptr
- lda P$PRIO,X Get process priority/age
+ ldu #D.AProcQ-P$Queue Fake process ptr
+ lda P$Prior,X Get process priority/age
  sta P$AGE,X Set age to priority
- orcc #IRQM+FIRQM Set interrupt masks
+ orcc #IRQMask+FIRQMask Set interrupt masks
 ACTP30 leay 0,U Copy ptr to this process
- ldu P$QUEU,U Get ptr to next process
+ ldu P$Queue,U Get ptr to next process
  beq ACTP40 Branch if no more
  cmpa P$AGE,U Who has bigger priority?
  bls ACTP30 Branch if queue process
-ACTP40 stu P$QUEU,X Insert into list
- stx P$QUEU,Y
+ACTP40 stu P$Queue,X Insert into list
+ stx P$Queue,Y
  clrb CLEAR Carry
  puls Y,U,PC
  page
@@ -488,21 +542,21 @@ ACTP40 stu P$QUEU,X Insert into list
 * User Service Request Handling Routine
 *
 USRREQ leay <USRR10,PCR Get post-switch routine
- orcc #IRQM+FIRQM Set interrupt masks
+ orcc #IRQMask+FIRQMask Set interrupt masks
  lbra SWITCH Switch to system state
-USRR10 andcc #$FF-IRQM-FIRQM Clear interrupt masks
- ldy D.USVC Get user service routine table
+USRR10 andcc #$FF-IRQMask-FIRQMask Clear interrupt masks
+ ldy D.UsrDis Get user service routine table
  bsr DISPCH Go do request
 USRRET ldx D.PROC Get process ptr
  beq NXTPRC Branch if none
- orcc #IRQM+FIRQM Set interrupt masks
- ldb P$STAT,X Clear system state
- andb #$FF-SYSTAT
- stb P$STAT,X Update status
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ ldb P$State,X Clear system state
+ andb #$FF-SysState
+ stb P$State,X Update status
  bitb #TIMOUT Is time-slice over?
  beq CURPRC Branch if not
  andb #$FF-TIMOUT Clear time-out flag
- stb P$STAT,X Update status
+ stb P$State,X Update status
 USRR20 bsr ACTPRC Put in active queue
  bra NXTPRC Start next process
 
@@ -515,7 +569,7 @@ USRR20 bsr ACTPRC Put in active queue
 SYSREQ clra clear direct page
  tfr A,DP
  leau 0,S Copy stack ptr
- ldy D.SSVC Get system service routine table
+ ldy D.SysDis Get system service routine table
  bsr DISPCH Call service routine
  rti
  page
@@ -561,7 +615,7 @@ DISP30 ldb R$CC,U Get condition codes
  rts
 
 BADSVC comb SET Carry
- ldb #E$USVC Unknown service code
+ ldb #E$UnkSvc Unknown service code
  bra DISP25
  page
 *****
@@ -571,11 +625,11 @@ BADSVC comb SET Carry
 * Starts next Process in Active Queue
 * If no Active Processes, Wait for one
 *
-NXTOUT ldb P$STAT,X Get process status
- orb #SYSTAT Set system state
- stb P$STAT,X Update status
- ldb P$SIGN,X Return fatal signal
- andcc #$FF-IRQM-FIRQM Clear interrupt masks
+NXTOUT ldb P$State,X Get process status
+ orb #SysState Set system state
+ stb P$State,X Update status
+ ldb P$Signal,X Return fatal signal
+ andcc #$FF-IRQMask-FIRQMask Clear interrupt masks
  OS9 F$EXIT Terminate process
 NXTPRC clra
  clrb
@@ -584,25 +638,25 @@ NXTPRC clra
 *
 * Loop until there is a Process in the Active Queue
 *
-NXTP04 cwai #$FF-IRQM-FIRQM Clear interrupt masks & wait
-NXTP06 orcc #IRQM+FIRQM Set interrupt masks
- ldx D.APRQ Get first process in active queue
+NXTP04 cwai #$FF-IRQMask-FIRQMask Clear interrupt masks & wait
+NXTP06 orcc #IRQMask+FIRQMask Set interrupt masks
+ ldx D.AProcQ Get first process in active queue
  beq NXTP04 Branch if none
 *
 * Remove Process from Active Queue
 *
- ldd P$QUEU,X Get next process ptr
- std D.APRQ Remove first from active queue
+ ldd P$Queue,X Get next process ptr
+ std D.AProcQ Remove first from active queue
  stx D.PROC Set current process
  lds P$SP,X Get stack ptr
 *
 * Check Process Status, check for Signal pending
 *
-CURPRC ldb P$STAT,X Is process in system state?
+CURPRC ldb P$State,X Is process in system state?
  bmi NXTP30 Branch if so
  bitb #CONDEM Is process condemmed?
  bne NXTOUT Branch if so
- ldb P$SIGN,X Is a signal waiting?
+ ldb P$Signal,X Is a signal waiting?
  beq NXTP20 Branch if not
  decb Wake-up Signal?
  beq NXTP10 Branch if so
@@ -610,26 +664,26 @@ CURPRC ldb P$STAT,X Is process in system state?
 * Signal is pending; If an Intercept has been set
 * Build an Interrupt Stack for User
 *
- ldu P$SIGV,X Get intercept vector
+ ldu P$SigVec,X Get intercept vector
  beq NXTOUT Branch if none
- ldy P$SIGD,X Get intercept data address
+ ldy P$SigDat,X Get intercept data address
  ldd R$Y,S Get user y register
  pshs D,Y,U Build partial stack
  ldu R$X+6,S Get user x register
- lda P$SIGN,X Get signal
+ lda P$Signal,X Get signal
  ldb R$DP+6,S Get direct page
  tfr D,Y Copy registers
  ldd R$CC+6,S Get registers
  pshs D,Y,U Complete stack
  clrb
-NXTP10 stb P$SIGN,X Clear signal
+NXTP10 stb P$Signal,X Clear signal
 *
 * Switch to User State
 *
 NXTP20 ldd P$SWI2,X Get user service request
  std D.SWI2
- ldd D.UIRQ Get user irq
- std D.ISVC
+ ldd D.UsrIRQ Get user irq
+ std D.SvcIRQ
 NXTP30 rti Start next process
  page
 *****
@@ -641,14 +695,14 @@ NXTP30 rti Start next process
 * Input: U = Register Package
 * Output: Cc = Carry Set If Not Found
 * Local: None
-* Global: D.MODD
+* Global: D.ModDir
 *
 LINK pshs U Save register package
  ldd R$D,U Get revision, type
  ldx R$X,U Get name ptr
  lbsr FMODUL Search directory
  bcc LINK10
- ldb #E$LNEM Err: link non-existing module
+ ldb #E$MNF Err: link non-existing module
  bra LINKXit
 LINK10 ldy 0,U Get module address
  ldb M$REVS,Y get attributes/revision
@@ -657,7 +711,7 @@ LINK10 ldy 0,U Get module address
  tst 2,U is it in use?
  beq LINK20 branch if not
  comb set carry
- ldb #E$MODB err: module busy
+ ldb #E$ModBsy err: module busy
  bra LINKXit
 LINK20 inc 2,U count use
  ldu 0,S Get register ptr
@@ -695,15 +749,15 @@ VALMOD bsr IDCHK Check sync & chksum
  lbsr FMODUL Search directory
  puls X Retrieve module ptr
  bcs VALM10 Branch if not found
- ldb #E$KMOD Get known module error code
+ ldb #E$KwnMod Get known module error code
  cmpx 0,U Is it same module?
  beq BADVAL Branch if so
  lda M$REVS,X Get new revision level
- anda #REVMSK
+ anda #Revsmask
  pshs A Save it
  ldy 0,U Get old module ptr
  lda M$REVS,Y Get old revision level
- anda #REVMSK
+ anda #Revsmask
  cmpa ,S+ Which is higher?
  bcc BADVAL Branch if old
  pshs X,Y Save registers
@@ -719,7 +773,7 @@ VALMOD bsr IDCHK Check sync & chksum
  tfr D,Y
  ldb 0,U
  ldx D.FMBM
- OS9 F$DBIT Clear bit map
+ OS9 F$DelBit Clear bit map
  clr 2,U
 VALM15 puls X,Y
 VALM20 stx 0,U Install new module
@@ -727,7 +781,7 @@ VALM30 clrb CLEAR Carry
 VALM40 rts
 VALM10 leay 0,U Free directory entry?
  bne VALM20 Branch if so
- ldb #E$DIRF Err: directory full
+ ldb #E$DirFul Err: directory full
 BADVAL coma SET Carry
  rts
 
@@ -738,7 +792,7 @@ IDCHK ldd 0,X Get first two bytes
  bsr PARITY Check header parity
  bcc IDCH30 Branch if good
 IDCH10 comb SET Carry
- ldb #E$IID Err: illegal id block
+ ldb #E$BMID Err: illegal id block
 IDCH20 rts
 IDCH30 pshs X Save module ptr
  ldy M$SIZE,X Get module size
@@ -770,7 +824,7 @@ PARI10 eora ,X+ Add parity of next byte
 * Check Module Crc
 *
 CRCCHK ldd #$FFFF
- pshs D.BASE crc register
+ pshs D Init crc register
  pshs D
  leau 1,S Get crc register ptr
 CRCC10 lda ,X+ Get next byte
@@ -785,7 +839,7 @@ CRCC10 lda ,X+ Get next byte
  cmpd #$0FE3 Is it good?
  beq CRCC30 Branch if so
 CRCC20 comb SET Carry
- ldb #E$BCRC Err: bad crc
+ ldb #E$BMCRC Err: bad crc
 CRCC30 puls X,Y,PC
 
 
@@ -868,19 +922,19 @@ CRCC99 rts
 * Output: U = Directory Entry Address
 *         Cc = Carry Set If Not Found
 * Local: None
-* Global: D.MODD
+* Global: D.ModDir
 
 FMODUL ldu #0 Return zero if not found
  tfr A,B Copy type
- anda #TYPMSK Get desired type
- andb #LANMSK Get desired language
+ anda #TypeMask Get desired type
+ andb #LangMask Get desired language
  pshs D,X,Y,U Save registers
  bsr SKIPSP Skip leading spaces
  cmpa #'/ Is there leading '/'
  beq FMOD35
  lbsr PRSNAM Parse name
  bcs FMOD40 Branch if bad name
- ldu D.MODD Get module directory ptr
+ ldu D.ModDir Get module directory ptr
 FMOD10 pshs B,Y,U Save count, end-of-name, & directory
  ldu 0,U Get module ptr
  beq FMOD20 Branch if not used
@@ -892,12 +946,12 @@ FMOD10 pshs B,Y,U Save count, end-of-name, & directory
  lda 5,S Get desired type
  beq FMOD14 Branch if any
  eora M$TYPE,U Get type difference
- anda #TYPMSK
+ anda #TypeMask
  bne FMOD30 Branch if different
 FMOD14 lda 6,S Get desired language
  beq FMOD16 Branch if any
  eora M$TYPE,U Get language difference
- anda #LANMSK
+ anda #LangMask
  bne FMOD30 Branch if different
 FMOD16 puls B,X,U Retrieve registers
  stu 6,S Return directory entry
@@ -911,7 +965,7 @@ FMOD20 ldd 11,S Free entry found?
  std 11,S
 FMOD30 puls B,Y,U Retrieve registers
  leau 4,U Move to next entry
- cmpu D.MODD+2 End of directory?
+ cmpu D.ModDir+2 End of directory?
  bcs FMOD10 Branch if not
 FMOD35 comb SET Carry
 FMOD40 puls D,X,Y,U,PC
@@ -928,18 +982,18 @@ SKIP10 cmpa ,X+ Is there a space
 *
 * Creates New Child Process
 *
-FORK ldx D.PRDB Get process block ptr
- OS9 F$A64 Get new process descriptor
+FORK ldx D.PrcDBT Get process block ptr
+ OS9 F$ALL64 Get new process descriptor
  bcs PRCFUL Branch if none left
  ldx D.PROC Get parent process ptr
  pshs X Save parent process ptr
  ldd P$USER,X Copy user index
  std P$USER,Y
- lda P$PRIO,X Copy priority
+ lda P$Prior,X Copy priority
  clrb CLEAR Age
- std P$PRIO,Y
- ldb #SYSTAT Get system state flag
- stb P$STAT,Y Set infant state
+ std P$Prior,Y
+ ldb #SysState Get system state flag
+ stb P$State,Y Set infant state
  sty D.PROC Make child current process
 *
 * Pass I/O Defaults & Paths 0, 1, And 2
@@ -947,7 +1001,7 @@ FORK ldx D.PRDB Get process block ptr
 *
  leax P$DIO,X Get parent path ptr
  leay P$DIO,Y Get child path ptr
- ldb #DIOSIZ Get byte count
+ ldb #DefIOSiz Get byte count
 FORK10 lda ,X+ Get parent byte
  sta ,Y+ Pass to child
  decb COUNT Down
@@ -970,10 +1024,10 @@ FORK25 sta ,Y+ Pass path to child
  sta P$CID,Y Set new child
  lda P$ID,Y Get parent id
  std P$PID,X Set parent & sibling ids
- ldb P$STAT,X Get child state
- andb #$FF-SYSTAT Clear system state
- stb P$STAT,X Update child state
- OS9 F$APRC Activate child process
+ ldb P$State,X Get child state
+ andb #$FF-SysState Clear system state
+ stb P$State,X Update child state
+ OS9 F$AProc Activate child process
  rts
 FORK40 pshs B Save error code
  OS9 F$EXIT Terminate child
@@ -983,7 +1037,7 @@ FORK40 pshs B Save error code
  rts
 
 PRCFUL comb SET Carry
- ldb #E$PRCF Err: process table full
+ ldb #E$PrcFul Err: process table full
  rts
 
 
@@ -996,12 +1050,12 @@ PRCFUL comb SET Carry
 *
 USRCHN bsr CHAIN Do chain
  bcs BADCHN Branch if error
- orcc #IRQM+FIRQM Set interrupt masks
- ldb P$STAT,X Clear system state
- andb #$FF-SYSTAT
- stb P$STAT,X
-USRC10 OS9 F$APRC Put process in active queue
- OS9 F$NPRC Start next process
+ orcc #IRQMask+FIRQMask Set interrupt masks
+ ldb P$State,X Clear system state
+ andb #$FF-SysState
+ stb P$State,X
+USRC10 OS9 F$AProc Put process in active queue
+ OS9 F$NProc Start next process
 
 
 
@@ -1014,12 +1068,12 @@ USRC10 OS9 F$APRC Put process in active queue
 SYSCHN bsr CHAIN Do chain
  bcc USRC10 Branch if no error
 BADCHN pshs B Save error code
- stb P$SIGN,X Set error status
- ldb P$STAT,X Get process status
+ stb P$Signal,X Set error status
+ ldb P$State,X Get process status
  orb #CONDEM Condem process
- stb P$STAT,X
+ stb P$State,X
  ldb #$FF Set high priority
- stb P$PRIO,X
+ stb P$Prior,X
  comb
  puls B,PC
 
@@ -1033,8 +1087,8 @@ BADCHN pshs B Save error code
 *
 CHAIN pshs U Save register ptr
  ldx D.PROC Get process ptr
- ldu P$PMOD,X Get primary module ptr
- OS9 F$UNLK
+ ldu P$PModul,X Get primary module ptr
+ OS9 F$Unlink
  ldu 0,S Retrieve register ptr
  bsr SETPRC Set up process
  puls U,PC Clean stack
@@ -1047,14 +1101,14 @@ CHAIN pshs U Save register ptr
 *
 SETPRC ldx D.PROC Get process ptr
  pshs X,U Save process & register ptr
- ldd D.UREQ Get user service request
+ ldd D.UsrSVC Get user service request
  std P$SWI,X Reset swi vector
  std P$SWI2,X Reset swi2 vector
  std P$SWI3,X Reset swi3 vector
  clra
  clrb
- sta P$SIGN,X Clear signal
- std P$SIGV,X Clear signal vector ptr
+ sta P$Signal,X Clear signal
+ std P$SigVec,X Clear signal vector ptr
  lda R$A,U Get type
  ldx R$X,U Get name ptr
  OS9 F$LINK
@@ -1062,7 +1116,7 @@ SETPRC ldx D.PROC Get process ptr
  OS9 F$LOAD Try loading it
  bcs SETP50 Branch if not loadable
 SETP10 ldy D.PROC Get process ptr
- stu P$PMOD,Y Save primary module ptr
+ stu P$PModul,Y Save primary module ptr
  cmpa #PRGRM+OBJCT is it program object?
  beq SETP15 branch if so
  cmpa #SYSTM+OBJCT is it system object?
@@ -1075,10 +1129,15 @@ SETP15 leay 0,U Copy module ptr
  stx R$X,U Return updated ptr
  lda R$B,U Get memory over-ride
  clrb
- cmpd M$STAK,Y Is it big enough?
+ cmpd M$Mem,Y Is it big enough?
  bcc SETP20
- ldd M$STAK,Y Get memory required
-SETP20 OS9 F$MEM Mem to correct size
+ ldd M$Mem,Y Get memory required
+SETP20 addd #0 Req for zero data mem?
+ bne SETP25 bra if not
+ comb
+ ldb #E$DelSP Error process must have at least one page mem
+ bra SETP50
+SETP25 OS9 F$MEM Mem to correct size
  bcs SETP50 Branch if no memory
  subd #R$SIZE Deduct stack room
  subd R$Y,U Deduct parameter count
@@ -1100,18 +1159,18 @@ SETP40 ldx D.PROC Get process ptr
  clrb
  std R$U,Y
  sta R$DP,Y Get direct page ptr
- adda P$PCNT,X Get end prt
+ adda P$PagCnt,X Get end prt
  std R$Y,Y
  puls D Retrieve parameter byte count
  std R$D,Y Pass to process
  ldb #ENTIRE Set cc entire bit
  stb R$CC,Y
- ldu P$PMOD,X Get module ptr
+ ldu P$PModul,X Get module ptr
  ldd M$EXEC,U
  leau D,U Get module entry
  stu R$PC,Y Set new program counter
  clrb CLEAR Carry
-BADPAR ldb #E$IFKP Err: illegal fork parameters
+BADPAR ldb #E$IForkP Err: illegal fork parameters
 SETP50 puls X,U,PC
  page
 *****
@@ -1163,7 +1222,7 @@ SRQMXX clra CLEAR Carry
  rts
 
 MEMFUL comb SET Carry
- ldb #E$MEMF Get error code
+ ldb #E$MemFul Get error code
  rts
  page
 *****
@@ -1182,7 +1241,7 @@ SRTMEM ldd R$D,U Get byte count
  tstb IS Address good?
  beq SRTM10 Branch if so
 BADPAG comb SET Carry
- ldb #E$BBND
+ ldb #E$BPAddr
  rts
 SRTM10 exg A,B Convert address to page number
  ldx D.FMBM Get free memory ptr
@@ -1378,9 +1437,10 @@ FLOB40 leas 5,S Return scratch
 *
 PNAM ldx R$X,U Get string ptr
  bsr PRSNAM Call parse name
- stx R$X,U Return updated string ptr
- sty R$Y,U Return name end ptr
  std R$D,U Return byte & size
+ bcs PNam.x branch if error
+ stx R$X,U Return updated string ptr
+PNam.x sty R$Y,U Return name end ptr
  rts
 
 PRSNAM lda 0,X Get first char
@@ -1394,23 +1454,24 @@ PRSNA1 leay 0,X
  bsr ALPHA 1st character must be alphabetic
  bcs PRSNA4 Branch if bad name
 PRSNA2 incb INCREMENT Character count
- tst -1,Y End of name (high bit set)?
+ lda -1,Y End of name (high bit set)?
  bmi PRSNA3 ..yes; quit
  lda ,Y+ Get next character
  anda #$7F Strip high order bit
  bsr ALFNUM Alphanumeric?
  bcc PRSNA2 ..yes; count it
- leay -1,Y Backup to unknown
-PRSNA3 clra
- rts
+ lda ,-Y Backup to unknown
+PRSNA3 andcc #^CARRY clear carry
+ rts RETURN (carry clear)
 
 PRSNA4 cmpa #', Comma (skip if so)?
  bne PRSNA6 ..no
 PRSNA5 lda ,Y+ Get next character
 PRSNA6 cmpa #$20 Space?
  beq PRSNA5 ..yes; skip
- leay -1,Y Backup to non-delim char
- coma (NAME Not found)
+ lda ,-Y Backup to non-delim char
+ comb (NAME Not found)
+ ldb #E$BNam 
  rts RETURN Carry set
 
 
@@ -1460,7 +1521,7 @@ CHKN10 lda ,Y+ Get (next) char of module name
  eora ,X+ Equal pathname char?
  anda #$FF-$20 Match upper/lower case
  beq CHKN10 ..yes; repeat
-RETCS1 orcc #Carry Set carry
+RETCS1 comb Set carry
  puls D,X,Y,PC
 CHKN20 decb LAST Char of pathname?
  bne RETCS1 Branch if not
@@ -1480,8 +1541,18 @@ RETCC andcc #$FF-CARRY Clear carry
 SSVC ldy R$Y,U Get table address
  bra SETSVC
 
-SETS10 aslb MAKE Table offset
- ldu D.SSVC Get system service table
+SETS10 tfr B,A copy routine offset
+ anda #$7F mask upper bit
+ cmpa #$7F Is routine Ioman?
+ beq SETS30 Bra if so
+ cmpa #SVCTSZ/2 Is routine offset legal?
+ bcs SETS30 Bra if so
+ comb set carry
+ ldb #E$ISWI return error
+ rts
+
+SETS30 aslb MAKE Table offset
+ ldu D.SysDis Get system service table
  leau B,U Get entry ptr
  ldd ,Y++ Get table relative offset
  leax D,Y Get routine address
@@ -1494,22 +1565,40 @@ SETSVC ldb ,Y+ Get next routine offset
  rts
  page
 
- ifeq CPUTyp-GIMIX
+ ifne (CPUType-GIMIX)*(CPUType-EXORSR)
+ opt l
+ endc
+
+ ifeq CPUType-GIMIX
 *
 * Dynamic Address Translator Initialization
 *
 DATINT clr $E231 Clear m58167 interrupts
- ldb #$F
+ ldb #$0F
  ldx #$0000
 DAT10 stb ,-X Init dat register
  decb Next Dat mask
  bpl DAT10 branch if more
  lbra COLD
  endc
-
  emod
 OS9End equ *
  page
+ ifeq CPUType-CMS9619
+*****
+* CMS 9619 CPU patch
+*
+* This CPU uses the area between $FF80 and $FFDF for I/O
+*
+* This patch puts garbage in the ROM at these addresses
+*
+ fcc /9999999999999999/
+ fcc /9999999999999999/
+ fcc /9999999999999999/
+ fcc /9999999999999999/
+ fcc /9999999999999999/
+ fcc /9999999999999999/
+ endc
 *****
 *
 * Interrupt Vector Package
@@ -1573,13 +1662,18 @@ SYSVEC fdb SWI3HN+$FFE2-* Swi3 handler
  fdb SWIRQ+$FFFA-* Swi
  fdb NMI+$FFFC-* Nmi
 
- ifeq (CPUTYP-MM19)*(CPUTYP-PERCOM)*(CPUTYP-CMS9609)*(CPUTYP-EXORSR)
+ ifeq (CPUType-MM19)*(CPUType-PERCOM)*(CPUType-CMS9609)*(CPUType-ELEKTRA)*(CPUType-DIGALOG)*(CPUType-SAT96)
  fdb COLD+$FFFE-* Restart
  else
+ ifeq (CPUType-EXORSR)*(CPUType-CMS9619)
+ fdb COLD+$FFFE-*
+ else
  fdb DATINT+$FFFE-* Dynamic address translator initialization
+ endc
  endc
 
 ROMEnd equ *
 
 
  end
+

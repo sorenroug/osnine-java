@@ -31,7 +31,7 @@ V.TRKR    rmb   2
 V.SECR    rmb   2
 V.DATR    rmb   2
 V.SIDE    rmb   1
-u000F    rmb   4
+V.DENS    rmb   4
 u0013    rmb   1
 u0014    rmb   1
 V.EFLG    rmb   1
@@ -247,7 +247,7 @@ PHYERR comb
 PHYSIC    lda   #$01
          sta   <V.DRV,u
          lda   #$20
-         sta   u000F,u
+         sta   V.DENS,u
  clr V.SIDE,u
  tstb CHECK Sector bounds
  bne PHYERR  msb must be zero
@@ -256,46 +256,54 @@ PHYSIC    lda   #$01
  beq PHYSC7 ..yes; skip conversion.
  cmpd DD.TOT+1,Y Too high sector number?
          bcc   PHYERR
-         tst   <u0013,u
+         tst   <u0013,u Test density of media
          bne   L014A
          subb  >P.T0S,pcr
          sbca  #$00
-         bcc   L0159
+         bcc   PHYSC2
          clra
          addb  >P.T0S,pcr
          bra   PHYSC7
+* 16 sectors
 L014A    subb  >P.SCT,pcr
          sbca  #$00
-         bcc   L0159
+         bcc   PHYSC2  tr
          clra
          addb  >P.SCT,pcr
          bra   PHYSC7
-L0159    stb   <u0014,u
+
+* Read track 0
+PHYSC2    stb   <u0014,u
          clrb
          pshs  b
-         ldb   <$10,y
-         lsrb
+         ldb   <DD.FMT,y
+         lsrb Move sides flag into carry
          ldb   <u0014,u
          bcc   L0176
+* Double sided read
 PHYSC3 com V.SIDE,U Switch sides
  bne PHYSC4 Skip track inc if side 1
  inc 0,S
 PHYSC4 subb DD.TKS,Y
  sbca #0
-         bcc   PHYSC3
+ bcc PHYSC3
          bra   L017E
+
+* Single sided read
 L0176    inc   ,s
-         subb  $03,y
+         subb  DD.TKS,y
          sbca  #$00
          bcc   L0176
-L017E    lda   <$10,y
-         bita  #$02
-         beq   L0187
-         clr   u000F,u
+
+L017E    lda   DD.FMT,y
+         bita  #$02    Test density
+         beq   L0187  double density
+         clr   V.DENS,u
 L0187    puls  a
-         addb  $03,y
+         addb  DD.TKS,y
+
 PHYSC7 stb [V.SECR,U] Put sector (b) in sector reg
-         ldb   u000F,u
+         ldb   V.DENS,u
          orb   <V.DRV,u
          stb   <V.DRV,u
          ldb   <V.TRCK,u

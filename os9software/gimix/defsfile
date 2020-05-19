@@ -11,4 +11,6 @@ Screen equ normal
 
  use Sysdefs.sys
 
+* Version 1.1 equates
 CPUTYP equ CPUType
+DIOSIZ equ DefIOSiz
