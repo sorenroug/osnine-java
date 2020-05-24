@@ -3,6 +3,7 @@
 
 ********************************
 * Extracted from Fujitsu FM-11 computer
+* This kernal uses two bytes per block in BlkMap
 ********************************
 
  ifp1
@@ -33,11 +34,11 @@ COLD05 std ,X++ Clear two bytes
  inca ONE Page for direct page
  std D.Tasks
  addb #DAT.TkCt
- std D.Tasks+2
+ std D.TmpDAT
  clrb
  inca
  std D.BlkMap
- adda #1
+ adda #1   DAT.BMSz/256
  std D.BlkMap+2
  std D.SysDis
  inca
@@ -61,18 +62,18 @@ COLD05 std ,X++ Clear two bytes
  leax >JMPMINX,pcr
  tfr x,d
  ldx #D.SWI3
-COLD30 std ,x++
+COLD06 std ,x++
  cmpx #D.NMI
- bls COLD30
+ bls COLD06
  leax >ROMEnd,pcr
  pshs x
  leay SYSVEC,PCR Get interrupt entries
  ldx #D.Clock
-COLD45 ldd ,Y++ get vector
+COLD08 ldd ,Y++ get vector
  addd 0,S add offset
  std ,X++ init dp vector
  cmpx #D.XNMI end of dp vectors?
- bls COLD45 branch if not
+ bls COLD08 branch if not
  leas 2,S return scratch
  ldx D.XSWI2
  stx D.UsrSvc
@@ -114,10 +115,10 @@ COLD45 ldd ,Y++ get vector
  std ,x++
  ldy #$000D
  ldd #DAT.Free
-L00D9    std   ,x++
+COLD10    std   ,x++
          leay  -1,y
-         bne   L00D9
-         ldd   #$0001
+         bne   COLD10
+         ldd   #$0001  ?? type of block ROM?
          std   ,x++
          ldb   #$FF   IOBlock
          std   ,x++
@@ -125,51 +126,52 @@ L00D9    std   ,x++
          inc   ,x
          ldx   D.SysMem
          ldb   D.ModDir+2
-L00F0    inc   ,x+
+COLD15    inc   ,x+
          decb
-         bne   L00F0
+         bne   COLD15
          ldy   #HIRAM
          ldx   D.BlkMap
-L00FB    pshs  x
+COLD20    pshs  x
          ldd   ,s
          subd  D.BlkMap
-         cmpb  #$FF
-         beq   COLD15
+         cmpb  #$FF  IOBlock ?
+         beq   COLD25
          stb   >$FD81  DAT.Regs+1
          ldu   ,y
  ldx #$00FF Get bit pattern
  stx 0,Y Store it
  cmpx 0,Y Is it there?
- bne COLD15 If not, end of ram
+ bne COLD25 If not, end of ram
  ldx #$FF00 Try a different pattern
  stx 0,Y Store it
  cmpx 0,Y Did it take?
- bne COLD15 If not, eor
+ bne COLD25 If not, eor
          stu   ,y
-         bra   L0124
-COLD15    ldb   #$80
+         bra   COLD30
+
+COLD25 ldb #NotRAM
          stb   [,s]
-L0124    puls  x
+COLD30    puls  x
          leax  1,x
          cmpx  D.BlkMap+2
-         bcs   L00FB
+         bcs   COLD20
          ldx   D.BlkMap
          inc   ,x
          lda   #$80
          sta   1,x
-L0134    lda   ,x
-         beq   L01AA
+COLD35    lda  0,x
+         beq   COLD60
          tfr   x,d
          subd  D.BlkMap
          leas  <-32,s
          leay  ,s
-         lbsr  L01DA
+         lbsr  COLD90
          pshs  x
          ldx   #$0000
          cmpb  #$FF
-         bne   L0150
+         bne   COLD40
          ldx   #$0800
-L0150    pshs  y,x
+COLD40    pshs  y,x
          lbsr  ADJBLK
          ldb   1,y
          stb   DAT.Regs
@@ -187,18 +189,18 @@ L016B    pshs  y,x
          lda   ,x
          clr   DAT.Regs
          puls  y,x
-         cmpa  #$87
-         bne   L0193
+         cmpa  #M$ID1
+         bne   COLD50
 L0180    lbsr  VALMOD
-         bcc   L0189
+         bcc   COLD45
          cmpb  #E$KwnMod Is it known module
-         bne   L0193
-L0189    ldd   #M$Size Get module size
+         bne   COLD50
+COLD45    ldd   #M$Size Get module size
          lbsr  LDDX
          leax  d,x
-         bra   L0195
-L0193    leax  1,x
-L0195    tfr   x,d
+         bra   COLD55
+COLD50    leax  1,x
+COLD55    tfr   x,d
          tstb
          bne   L016B
          bita  #$0F
@@ -211,36 +213,36 @@ L0195    tfr   x,d
          puls  x
          leax  a,x
 L01A7    leas  <$20,s
-L01AA    leax  1,x
+COLD60    leax  1,x
          cmpx  D.BlkMap+2
-         bcs   L0134
-L01B0    leax  >CNFSTR,pcr
-         bsr   L01D4
-         bcc   L01BF
+         bcs   COLD35
+COLD65    leax  >CNFSTR,pcr
+         bsr   LINKTO
+         bcc   COLD70
          os9   F$Boot
-         bcc   L01B0
-         bra   L01CE
-L01BF    stu   D.Init
-L01C1    leax  OS9STR,pcr
-         bsr   L01D4
-         bcc   L01D2
+         bcc   COLD65
+         bra   COLD80
+COLD70    stu   D.Init
+COLD75    leax  OS9STR,pcr
+         bsr   LINKTO
+         bcc   COLD85
          os9   F$Boot
-         bcc   L01C1
-L01CE    jmp   [>$FFFE]
+         bcc   COLD75
+COLD80    jmp   [>$FFFE]
 
-L01D2    jmp 0,Y Let os9 part two finish
+COLD85    jmp 0,Y Let os9 part two finish
 
-L01D4    lda #SYSTM Get system type module
+LINKTO    lda #SYSTM Get system type module
          os9   F$Link
          rts
 
-L01DA    pshs  y,x,b,a
+COLD90    pshs  y,x,b,a
          ldb   #$10   DAT.BlCt
          ldx   ,s
-L01E0    stx   ,y++
+COLD95    stx   ,y++
          leax  1,x
          decb
-         bne   L01E0
+         bne   COLD95
          puls  pc,y,x,b,a
 
  page
@@ -359,7 +361,7 @@ L0274    ldd   D.SysSvc
          andb  #$AF
          stb   ,u
          ldx   D.Proc
-         bsr   L02BB
+         bsr   CpyU2SP
          lda   P$State,x
          anda  #$7F
          lbra  IRQHN20
@@ -370,15 +372,17 @@ CpySP2U    lda   $06,x
          ldx   $04,x
          bra   L02C5
 
-L02BB    ldb   $06,x
+* Copy 12 bytes from SysTask to U in Task B
+CpyU2SP    ldb   $06,x
          lda   D.SysTsk
          pshs  u,y,x,dp,b,a,cc
          ldx   $04,x
          exg   x,u
-L02C5    ldy   #$0006
+L02C5    ldy   #R$Size/2
          tfr   b,dp
          orcc  #IntMasks
-         lbra  L0CE5+$1000
+         lbra  MOVER20+$1000
+
 *****
 *
 *  Subroutine SYSREQ
@@ -426,9 +430,17 @@ DISP30 ldb R$CC,U Get condition codes
  sta R$CC,U
  rts
 
+ page
+*****
+*
+*  Subroutine Ssvc
+*
+* Set Entries In Service Routine Dispatch Tables
+*
 SSVC     ldy   R$Y,u
          bra   SETSVC
-L0316    clra
+
+SETS10    clra
          lslb
          tfr   d,u
          ldd   ,y++
@@ -440,7 +452,7 @@ L0316    clra
          stx   d,u
 SETSVC    ldb   ,y+
          cmpb  #$80
-         bne   L0316
+         bne   SETS10
          rts
 
 SLINK    ldy   R$Y,u
@@ -631,7 +643,7 @@ L0486    pshs  x,a
          ldd   ,y++
          leax  d,x
          ldb   ,x
-         orb   #$02
+         orb   #$02   ModBlock
          stb   ,x
          puls  x,a
          deca
@@ -1105,7 +1117,7 @@ L07D7    ldx   D.SysDAT
          beq   L07EF
          ldx   D.BlkMap
          lda   d,x
-         cmpa  #$01
+         cmpa  #$01   RAMinUse
          bne   L07F0
          leay  <$10,y
          bra   L07F7
@@ -1193,7 +1205,7 @@ L0862    ldd   ,x
          beq   L0891
          ldu   D.BlkMap
          lda   d,u
-         cmpa  #$01
+         cmpa  #$01  RAMinUse
          bne   L0891
          tfr   x,d
          subd  D.SysDAT
@@ -1318,44 +1330,44 @@ F.ALLIMG    pshs  u,y,x,b,a
          tfr   d,x
          ldu   D.BlkMap
          pshs  u,y,x,b,a
-L0945    ldd   ,y++
+ALLIMG10    ldd   ,y++
          cmpd  #DAT.Free
-         beq   L095A
+         beq   ALLIMG20
          lda   d,u
          cmpa  #$01   #RAMinUse
          puls  b,a
-         bne   L096F
-         subd  #$0001
+         bne   ALLIMG50
+         subd  #1
          pshs  b,a
-L095A    leax  -1,x
-         bne   L0945
+ALLIMG20    leax  -1,x
+         bne   ALLIMG10
          ldx   ,s++
-         beq   L0978
-L0962    lda   ,u+
-         bne   L096A
+         beq   ALLIMG60
+ALLIMG30    lda   ,u+
+         bne   ALLIMG40
          leax  -1,x
-         beq   L0978
-L096A    cmpu  D.BlkMap+2
-         bcs   L0962
-L096F    ldb   #$CF
+         beq   ALLIMG60
+ALLIMG40    cmpu  D.BlkMap+2
+         bcs   ALLIMG30
+ALLIMG50    ldb   #E$MemFul
          leas  $06,s
          stb   1,s
          comb
          puls  pc,u,y,x,b,a
 
-L0978    puls  u,y,x
-L097A    ldd   ,y++
+ALLIMG60    puls  u,y,x
+ALLIMG65    ldd   ,y++
          cmpd  #DAT.Free
-         bne   L098E
-L0982    lda   ,u+
-         bne   L0982
+         bne   ALLIMG70
+ALLIMG68    lda   ,u+
+         bne   ALLIMG68
          inc   ,-u
          tfr   u,d
          subd  D.BlkMap
          std   -$02,y
-L098E    leax  -1,x
-         bne   L097A
-         ldx   $02,s
+ALLIMG70    leax  -1,x
+         bne   ALLIMG65
+ ldx 2,S Get process ptr
          lda   P$State,x
          ora   #ImgChg
          sta   P$State,x
@@ -1773,7 +1785,7 @@ NXTP30    bita  #Condem Is process condemmed?
          ldd   $04,x
          subd  #$000C
          std   $04,x
-         lbsr  L02BB
+         lbsr  CpyU2SP
          leas  $0C,s
          ldu   $04,x
          clrb
@@ -1832,6 +1844,8 @@ DATINT   clra
          sta   >$FD8F   DAT.Regs+$F
          lbra  COLD+$F000
 
+* Restore DAT image and return from interrupt
+*
 SVCRET    ldb   $06,x
          orcc  #IntMasks
          stb   DAT.Task
@@ -1876,9 +1890,11 @@ H.LDBBX    andcc #^CARRY clear carry
          sta   DAT.Task
          puls  pc,a,cc
 
-* Move Y bytes from X in TASK A to U in Task B
+* Move Y*2 bytes from X in TASK A to U in Task B
+* Input: Y = Number of bytes divided 2 (lsr)
+*        CC = carry set if Y was odd.
 MOVER00    orcc  #IntMasks
-         bcc   L0CE5
+         bcc   MOVER20
          sta   DAT.Task
          lda   ,x+
          stb   DAT.Task
@@ -1887,19 +1903,19 @@ MOVER00    orcc  #IntMasks
          bra   MOVER30
 MOVER10    lda   1,s
          orcc  #IntMasks
-L0CE5    sta   DAT.Task
+MOVER20    sta   DAT.Task
          ldd   ,x++
          exg   b,dp
          stb   DAT.Task
          exg   b,dp
          std   ,u++
-MOVER30    lda   #$80
-         sta   DAT.Task
-         lda   ,s
-         tfr   a,cc
-         leay  -1,y
-         bne   MOVER10
-         puls  pc,u,y,x,dp,b,a,cc
+MOVER30 lda #SysTask
+ sta DAT.Task
+ lda 0,S
+ tfr A,CC
+ leay -1,Y
+ bne MOVER10
+ puls PC,U,Y,X,DP,D,CC
 
 * Copy DAT image to DAT register
 * Input: B: Task number

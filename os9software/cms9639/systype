@@ -13,6 +13,7 @@ DAT.Regs equ $F000 DAT Block Registers base address
 DAT.Task equ $FFBB Task register address
 *DAT.BlSz equ $1000
 DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
+DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
 ***************
 DAT.Free equ $8000 Free Block Number
 
@@ -32,3 +33,4 @@ SysTask equ $80 System Task number
 *IOBlock equ $FF The block number for the I/O
 ROMBlock equ $FF ROM block
 
+RAMCount equ 2 initial blocks of RAM

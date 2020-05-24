@@ -523,8 +523,8 @@ L030A    std   ,x++
          bne   L030A
          lda   #SysState
          sta   P$State,u
-         ldb   #$10
-         ldx   #$00FE
+         ldb   #DAT.BlCt
+         ldx   #DAT.Free
          leay  P$DATImg,u
 L031C    stx   ,y++
          decb

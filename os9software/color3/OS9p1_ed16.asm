@@ -30,7 +30,7 @@ COLD05 std ,X++ Clear two bytes
  clrb
  inca
  std D.BlkMap
- addd  #64   Allocate 64 bytes for block map
+ addd  #DAT.BMSz  64   Allocate 64 bytes for block map
  std D.BlkMap+2
  clrb
  inca
@@ -113,6 +113,9 @@ COLD08 ldd ,Y++ get vector
  sta P$Age,x
  leax P$DATImg,x
  stx D.SysDAT
+*
+* Set up memory blocks in system DAT image
+*
  clra
  clrb
  std ,x++
@@ -145,7 +148,7 @@ COLD18    ldy   #HIRAM
 COLD20    pshs  x
          ldd   ,s
          subd  D.BlkMap
-         cmpb  #$3F    DAT.BlMx?
+         cmpb  #$3F   IOBlock?
          bne   COLD22
          ldb   #$01
          bra   COLD28
@@ -163,8 +166,9 @@ COLD23    stb   >$FFA1   DAT.Regs+1
  stx 0,Y Store it
  cmpx 0,Y Did it take?
  bne COLD25 If not, eor
-         stu   0,y
-         bra   COLD30
+ stu 0,y Replace current value
+ bra COLD30
+
 COLD25    ldb   #NotRAM
 COLD28    stb   [,s]
 COLD30    puls  x
@@ -201,7 +205,7 @@ COLD45 ldd #M$Size Get module size
  bra COLD55
 
 COLD50    leax  1,x
-COLD55    cmpx  #$1E00
+COLD55    cmpx  #$1E00  DAT.Addr?
          bcs   COLD40
          bsr   L01D2
 COLD65 leax CNFSTR,pcr Get initial module name ptr
