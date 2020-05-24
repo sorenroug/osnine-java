@@ -1,4 +1,4 @@
-         nam   wd2797
+             nam   wd2797
          ttl   os9 device driver
 
 
@@ -13,7 +13,7 @@ u0001    rmb   1
 u0002    rmb   1
 u0003    rmb   1
 u0004    rmb   1
-u0005    rmb   1
+XV.WAKE    rmb   1
 u0006    rmb   2
 u0008    rmb   1
 u0009    rmb   1
@@ -40,7 +40,7 @@ u0050    rmb   48
 u0080    rmb   38
 u00A6    rmb   1
 u00A7    rmb   2
-u00A9    rmb   1
+V.BUF    rmb   1
 u00AA    rmb   1
 u00AB    rmb   1
 u00AC    rmb   1
@@ -59,7 +59,7 @@ u00C1    rmb   1
 u00C2    rmb   1
 u00C3    rmb   2
 u00C5    rmb   1
-u00C6    rmb   1
+V.FREZ    rmb   1
 u00C7    rmb   1
 DSKSTA     equ   .
 
@@ -72,32 +72,33 @@ DSKENT    equ   *
          lbra  INIDSK
          lbra  READSK
          lbra  WRTDSK
-         lbra  L01B6
-         lbra  L01B8
+         lbra  GETSTA
+         lbra  PUTSTA
          lbra  TERMINAT
          lbra  L02A8
 
-L002A   fcb  $00,$80,$80
+FDMASK   fcb  $00 no flip bits
+         fcb  $80
+         fcb  $80
 
-INIDSK    fcb $86
-         lsr   <u00A7
-         rora
+INIDSK   lda   #4
+         sta   u0006,u
          leax  u000F,u
          stx   >u00A7,u
-         pshs  u
+ pshs U Save "u" we need it later
          leau  >u00AB,u
          lbsr  L0334
  ldd #256 "d" passes memory req size
-         os9   F$SRqMem
-         bcs   L0090
+         os9   F$SRqMem Request 1 pag of mem
+         bcs   WRERR9
          tfr   u,d
          puls  u
-         std   >u00A9,u
+         std   >V.BUF,u
          ldd   #$FCC1
-         leax  <L002A,pcr
-         leay  >L05DE,pcr
+         leax  <FDMASK,pcr
+         leay  >IRQSVC,pcr
          os9   F$IRQ
-         bcs   L008F
+         bcs   RETCS
          inc   >u00AC,u
          ldx   #$FCC0
          lda   ,x
@@ -109,28 +110,42 @@ INIDSK    fcb $86
          puls  cc
          leax  >L05F7,pcr
          os9   F$Timer
-         bcs   L008F
+         bcs   RETCS
          leax  u000F,u
-         ldb   #$04
+         ldb   #$04 #DriveCnt
          lda   #$FF
-L0083    sta   $01,x
+INILUP    sta   $01,x
          sta   <$15,x
-         leax  <$26,x
-         decb
-         bne   L0083
+ leax DRVMEM,X Point to next drive table
+ decb DONE
+         bne   INILUP
          clrb
-L008F    rts
-L0090    puls  pc,u
+RETCS    rts
+WRERR9    puls  pc,u
 
-READSK    bsr   L00F1
-         bcs   L008F
+ pag
+*************************************************************
+*
+* Read Sector Command
+*
+* Input: B = Msb Of Logical Sector Number
+*        X = Lsb'S Of Logical Sector Number
+*        Y = Ptr To Path Descriptor
+*        U = Ptr To Global Storage
+*
+* Output: 256 Bytes Of Data Returned In Buffer
+*
+* Error: Cc=Set, B=Error Code
+*
+READSK    bsr   PHYSIC
+         bcs   RETCS
          ldx   >u00B5,u
          bne   L00BE
          bsr   L00BE
-         bcs   L008F
-         ldx   $08,y
+         bcs   RETCS
+ ldx PD.BUF,Y Point to buffer
          pshs  y,x
-         tst   >u00C6,u
+         tst   >V.FREZ,u
          bne   L00B8
          ldy   >u00A7,u
          ldb   #$14
@@ -138,7 +153,7 @@ READ01    lda   b,x
          sta   b,y
          decb
          bpl   READ01
-L00B8    clr   >u00C6,u
+L00B8    clr   >V.FREZ,u
          puls  pc,y,x
 
 L00BE    leax  >L0364,pcr
@@ -148,7 +163,7 @@ L00C2    pshs  u,y
          jsr   ,x
          puls  pc,u,y
 
-WRTDSK    bsr   L00F1
+WRTDSK    bsr   PHYSIC
          bcs   L0151
          leax  >L0408,pcr
          bsr   L00C2
@@ -157,34 +172,46 @@ WRTDSK    bsr   L00F1
          bne   L0151
          ldd   $08,y
          pshs  b,a
-         ldd   >u00A9,u
+         ldd   >V.BUF,u
          std   $08,y
          bsr   READSK
          puls  x
          stx   $08,y
          rts
 
-L00F1    tstb
-         bne   L014E
+ pag
+**************************************************************
+*
+* Convert Logical Sector Number
+* To Physical Track And Sector
+*
+*  Input:  B = Msb Of Logical Sector Number
+*          X = Lsb'S Of Logical Sector Number
+*  Output: A = Physical Track Number
+*          Sector Reg = Physical Sector Number
+*  Error:  Carry Set & B = Error Code
+*
+PHYSIC    tstb
+         bne   PHYERR
          stx   >u00B5,u
-         bsr   L0152
+         bsr   SELECT
          bitb  #$40
          beq   L012F
          anda  #$F8
          pshs  a
-         lda   <$27,y
+         lda   PD.SID,y
          deca
          puls  a
          beq   L010C
          ora   #$01
-L010C    ldb   <$24,y
+L010C    ldb   PD.DNS,y
          bitb  #$01
          beq   L0115
          ora   #$02
 L0115    sta   >u00B7,u
-         ldd   <$29,y
+         ldd   PD.SCT,y
          std   >u00B1,u
-         lda   <$27,y
+         lda   PD.SID,y
          deca
          beq   L0127
          lslb
@@ -197,41 +224,51 @@ L012F    clra
          std   >u00B1,u
 L0136    ldd   >u00B5,u
          cmpd  $01,x
-         bhi   L014E
+         bhi   PHYERR
          ldd   $08,y
          std   >u00BD,u
-         ldd   <$2B,y
+         ldd   PD.T0S,y
          std   >u00AF,u
          clrb
          rts
-L014E    comb
-         ldb   #$F1
-L0151    rts
 
-L0152    ldx   >u00A7,u
+PHYERR comb
+ ldb #E$SECT Error: bad sector number
+L0151    rts
+ pag
+***************************************************************
+*
+* Select Drive
+*
+*  Input: (U)= Pointer To Global Storage
+*
+* Output: Curtbl,U=Current Drive Tbl
+*         Curdrv,U=Drive Number
+*
+SELECT    ldx   >u00A7,u
          beq   L015F
          lda   >u00BC,u
          sta   <$15,x
-L015F    lda   <$21,y
+L015F    lda   PD.DRV,y
          sta   >u00B3,u
-         ldb   #$26
+ ldb #DRVMEM
          mul
          leax  u000F,u
          leax  d,x
          stx   >u00A7,u
          lda   <$15,x
          sta   >u00BC,u
-         lda   <$22,y
+         lda   PD.STP,y
          anda  #$03
          sta   >u00C1,u
-         ldb   <$24,y
+         ldb   PD.DNS,y
          andb  #$02
          stb   >u00B8,u
          lda   <$10,x
-         ldb   <$23,y
+         ldb   PD.TYP,y
          andb  #$20
          stb   >u00C7,u
-         ldb   <$23,y
+         ldb   PD.TYP,y
          bitb  #$40
          bne   L01A5
          bita  #$04
@@ -246,45 +283,62 @@ L01AB    bitb  #$08
 L01B1    sta   >u00B7,u
          rts
 
-L01B6    bra   L01D0
+GETSTA    bra   L01D0
 
-L01B8    pshs  u,y
-         ldx   $06,y
-         ldb   $02,x
-         cmpb  #$03
-         beq   L01EB
-         cmpb  #$04
-         beq   L01FE
-         cmpb  #$0A
-         beq   L01D4
-         cmpb  #$0B
-         beq   L01DD
+ pag
+************************************************************
+*
+* Put Status Call
+*
+*
+*
+PUTSTA pshs U,Y
+ ldx PD.RGS,Y Point to parameters
+ ldb R$B,X Get stat call
+ cmpb #SS.Reset Restore call?
+ beq RESTOR ..yes; do it.
+ cmpb #SS.WTrk Write track call?
+ beq WRTTRK ..yes; do it.
+ cmpb #SS.FRZ Freeze dd. info?
+ beq SETFRZ Yes; ....flag it.
+ cmpb #SS.SPT Set sect/trk?
+ beq SETSPT Yes; ....set it.
          puls  u,y
 L01D0    comb
          ldb   #$D0
          rts
-L01D4    ldb   #$01
-         stb   >u00C6,u
+
+SETFRZ    ldb   #$01
+         stb   >V.FREZ,u
          clrb
          puls  pc,u,y
 
-L01DD    ldx   $04,x
+SETSPT    ldx   $04,x
          pshs  x
-         lbsr  L0152
+         lbsr  SELECT
          puls  b,a
          std   $03,x
          clrb
          puls  pc,u,y
-L01EB    lbsr  L0152
+
+RESTOR    lbsr  SELECT
          ldx   >u00A7,u
          clr   <$15,x
          leax  >L04E8,pcr
          lbsr  L00C2
          puls  pc,u,y
-L01FE    lda   $07,x
+
+*****************************************************************
+*
+* Write Full Track
+*  Input: (A)=Track
+*         (Y)=Path Descriptor
+*         (U)=Global Storage
+*
+WRTTRK    lda   $07,x
          ldb   $09,x
          pshs  b,a
-         lbsr  L0152
+         lbsr  SELECT
          ldd   <$29,y
          std   >u00B1,u
          ldd   <$2B,y
@@ -296,7 +350,7 @@ L01FE    lda   $07,x
          stb   >u00C2,u
          anda  #$01
          sta   >u00C5,u
-         lbsr  L0152
+         lbsr  SELECT
          ldd   #$2900
          os9   F$SRqMem
          bcs   L0281
@@ -331,7 +385,7 @@ L01FE    lda   $07,x
 L0281    puls  pc,u,y
 
 TERMINAT    pshs  u
-         ldu   >u00A9,u
+         ldu   >V.BUF,u
          ldd   #$0100
          os9   F$SRtMem
          puls  u
@@ -409,6 +463,7 @@ L0328    comb
 L032D    leas  $03,s
 L032F    leas  <$1F,s
          puls  pc,u,y,x
+
 L0334    leay  <$12,y
          lda   $01,y
          sta   u0008,u
@@ -517,7 +572,7 @@ L0413    lda   u0008,u
          cmpa  #$04
          bcs   L041D
          comb
-         ldb   #E$Unit
+         ldb   #E$Unit Error: illegal unit (drive)
          rts
 
 L041D    coma
@@ -575,6 +630,7 @@ L0485    lda   ,y
          comb
          ldb   #$F6
 L0491    rts
+
 L0492    lda   <u0011,u
          clr   <u0019,u
          tst   u000D,u
@@ -613,6 +669,7 @@ L04D3    ora   <u0016,u
 L04E2    lda   <u0011,u
          sta   $01,y
          rts
+
 L04E8    lbsr  L0413
          clr   <u0011,u
          ldb   #$05
@@ -673,6 +730,7 @@ L0556    lda   u000F,u
          ora   #$01
          sta   ,s
 L056C    puls  pc,cc
+
 L056E    pshs  cc
          orcc  #$50
          ldb   #$FA
@@ -726,16 +784,17 @@ L05D7    rts
 
 L05D8    ldb   >$F2F4
          stb   >$F4F4
-L05DE    ldy   u0001,u
+
+IRQSVC    ldy   u0001,u
          ldb   ,y
          stb   >u00AE,u
          lda   >$FCC0
-         lda   u0005,u
-         beq   L05F5
-         clr   u0005,u
-         ldb   #$01
-         os9   F$Send
-L05F5    clrb
+         lda   V.WAKE,u
+         beq   IRQEND
+         clr   V.WAKE,u
+ ldb #S$Wake
+ os9 F$Send
+IRQEND    clrb
          rts
 
 L05F7    tst   >u00B9,u
