@@ -3547,6 +3547,8 @@ L1A8C    ora   <u004F
          beq   L1A9B
          tsta
          beq   L1A98
+
+* Offset for menus
 L1A95    lbra  L1C26
 L1A98    lbra  L1E28
 L1A9B    lbra  L1DF5
