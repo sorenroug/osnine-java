@@ -1,20 +1,7 @@
-         nam   INSTALL
-         ttl   program module
+ nam   INSTALL
+ ttl   program module
 
-         ifp1
-         use   defsfile
- opt m
- org 0
- use header_473.inc
- use go51.keys
- use rest.inc
- use banner_drg.inc
-Target set $F00
- use filler.inc
- use helps_473.inc
- use help51.inc
-         endc
-         opt -m
+ opt -m
 
 C$EOT    set   $04
 TRMBASE  equ   $14C
@@ -220,13 +207,31 @@ L01D5    clr   <ANSIFLAG
 * Ask for the name of the printer
 L01F5    leax  >H.PSTRS,pcr printer strings heading
          lbsr  OUT.SECT
-         bcs   L0205
+         bcs   QTERM
          leax  >L.PRTSEQ,pcr  enter the character sequences for printer
          lbsr  L0304
-* Ask for terminal here
-* First ask for ANSI
 
-L0205    leax  >L.KEEPH,pcr Do you wish to keep helps
+QTERM equ *
+
+* Ask for terminal here
+ ifeq ASKTERM
+         leax  >H.TERM,pcr   Terminal characteristics heading
+         lbsr  OUT.SECT
+         bcs   QHELPS
+* First ask for ANSI
+         leax  >L0B3A,pcr   ANSI terminal?
+         lbsr  Q.YESNO  ask Y/N question
+         beq   QKEYS   skip sequences if ANSI
+         leax  >L1438,pcr   enter the terminal sequences - not ANSI
+         lbsr  L0304
+         com   <ANSIFLAG
+QKEYS
+         leax  >L0FFA,pcr   enter the terminal keys - always
+         lbsr  L0304
+         com   <ANSIFLAG
+ endc
+
+QHELPS leax  >L.KEEPH,pcr Do you wish to keep helps
          leau  >$FB+TRMBASE,y
          inc   <u001F
          lbsr  Q.YESNO  ask Y/N question
@@ -335,8 +340,8 @@ L02FF    lda   #$20
          lbra  OUTCHAR
 
 * Entry of character sequences
-L0304    tst   <ANSIFLAG
-         beq   L0324
+L0304    tst   <ANSIFLAG 
+         beq   L0324  skip cursor addressing if ANSI is 0
          leau  >L150C,pcr  Direct cursor addr for terminal
          pshs  u
          cmpx  ,s++
@@ -1061,8 +1066,8 @@ L0FCE    fcc   "Sequence to turn off printer (3 Char.):"
          fcb   C$EOT,$00,$AC,$34
          fcb   $FF
 
-* Ask about keys
-
+* Ask about keys - always
+* In some cases arrow keys will be {,[,],}
 L0FFA    fcc   "The function of the key will be displayed, along with"
          fcb   $0D
          fcc   "its current assignment (if it has one). To change, simply"
@@ -1191,7 +1196,7 @@ L1417    fcc   "Do you want to print borders"
          fcb   $02
          fcb   $FF
 
-
+* Not for ANSI
 L1438    fcc   "Enter the character strings needed for your terminal."
          fcb   $0D
          fcc   "When all are entered, hit period. If you want"
