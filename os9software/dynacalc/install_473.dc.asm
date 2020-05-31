@@ -40,11 +40,12 @@ u001F    rmb   1
 u0020    rmb   1
 u0021    rmb   2
 u0023    rmb   2
-u0025    rmb   1   flag for ansi terminal
+ANSIFLAG rmb   1   flag for ansi terminal
 u0026    rmb   1
 errcode  rmb   1   error code
 u0028    rmb   2
-u002A    rmb   3
+V.LABEL    rmb   2
+u002C    rmb   1
 u002D    rmb   4    Upper case flag
 u0031    rmb   3
 u0034    rmb   1
@@ -76,7 +77,7 @@ name     equ   *
 
 start    equ   *
          leay  -$01,y
-         sty   <u002A
+         sty   V.LABEL
          stu   <u0028
          lda   #$28
 L0099    clr   ,u+
@@ -91,7 +92,7 @@ L0099    clr   ,u+
          leax  >L08A1,pcr banner
          lbsr  CRTEXT
          tfr   s,x
-         cmpx  <u002A
+         cmpx  V.LABEL
          beq   L0123
 L00BA    ldd   ,x
          anda  #$5F
@@ -138,7 +139,7 @@ L010F    leax  >TRMBASE,y
          sta   <u0026
          lbra  L00BA
 
-L0123    leax  >L08D0,pcr  Instructions
+L0123    leax  >L.INSTR,pcr  Instructions
          lbsr  CRTEXT
 L012A    ldy   <u0028
          clra
@@ -204,26 +205,31 @@ L01CB    tfr   u,y
          tst   <u0026
          beq   L01D5
          clr   <u0003
-L01D5    clr   <u0025
-         leax  >L0CDD,pcr   printer characteristics
-         lbsr  L0280
+* Start asking questions
+L01D5    clr   <ANSIFLAG
+         leax  >H.PRINT,pcr   printer characteristics heading
+         lbsr  OUT.SECT
          bcs   L01F5
          leax  >L12D5,pcr   enter the printer settings
          lbsr  L0304
-         lda   >$0245,y
+         lda   >$F9+TRMBASE,y   $0245 line feeds after each line
          cmpa  #$08
          bcs   L01F5
          lda   #$07
-         sta   >$0245,y
-L01F5    leax  >L0CCD,pcr printer strings
-         lbsr  L0280
+         sta   >$F9+TRMBASE,y
+* Ask for the name of the printer
+L01F5    leax  >H.PSTRS,pcr printer strings heading
+         lbsr  OUT.SECT
          bcs   L0205
-         leax  >L0E82,pcr  enter the character sequences
+         leax  >L.PRTSEQ,pcr  enter the character sequences for printer
          lbsr  L0304
-L0205    leax  >L0CF5,pcr Do you wish to keep helps
+* Ask for terminal here
+* First ask for ANSI
+
+L0205    leax  >L.KEEPH,pcr Do you wish to keep helps
          leau  >$FB+TRMBASE,y
          inc   <u001F
-         lbsr  YESNO  ask Y/N question
+         lbsr  Q.YESNO  ask Y/N question
          bcs   L021A
          clr   >$FB+TRMBASE,y   yes to keep helps
          bra   L0220
@@ -231,9 +237,9 @@ L021A    ldb   #$FF    no to keep helps
          stb   >$FB+TRMBASE,y
 L0220    leax  >L0D34,pcr Do you want to change anything
          clr   <u0003
-         lbsr  YESNO  ask Y/N question
+         lbsr  Q.YESNO  ask Y/N question
          lbcc  L01D5
-         tst   <u0025   check if vt100 chars should be initialised
+         tst   <ANSIFLAG   check if ANSI chars should be initialised
          beq   L0248    0 - skip
          ldb   #12
          leau  >$B8+TRMBASE,y     
@@ -242,8 +248,10 @@ L023B    lda   ,x+
          sta   ,u+
          decb
          bne   L023B
-         lda   #$FF
-         sta   >$01FC,y
+         lda   #$FF    Set ANSI flag
+         sta   >$B0+TRMBASE,y   CURSPOS
+
+* Save the settings
 L0248    leax  >L078E,pcr   Dynacalc.trm
          lda   #$06
          ldb   #$3F
@@ -259,27 +267,31 @@ L0269    leax  >L088A,pcr  Installation complete
          lbsr  CRTEXT
          lbra  L06ED
 
-L0273    fcb   $1B,'[,'K     vt100 Clear from cursor to end of line
+L0273    fcb   $1B,'[,'K     ANSI Clear from cursor to end of line
          fcb   $FF,$FF,$FF
-         fcb   $1B,'[,'J     vt100 Clear screen from cursor and down
+         fcb   $1B,'[,'J     ANSI Clear screen from cursor and down
          fcb   $FF,$FF,$FF
 
-L027F    rts
-L0280    lbsr  L069F
-         lbsr  L069F
+L027F    equ *
+* Code for repeat printer questions here?
+         rts
+
+* Write section heading and ask if change.
+OUT.SECT    lbsr  OUT.CR
+         lbsr  OUT.CR
          tst   <u0003
          bne   L0295
          pshs  x
-         leax  >L0D10,pcr   Change
-         lbsr  PRTTEXT
+         leax  >L.CHANGE,pcr   Change
+         lbsr  OUT.TXT
          puls  x
-L0295    lbsr  PRTTEXT
+L0295    lbsr  OUT.TXT
          clra
          tst   <u0003
          bne   L027F
-         leax  >L0D18,pcr
-         stx   <u002A
-         lbra  L05BA
+         leax  >L.QMARK,pcr
+         stx   V.LABEL
+         lbra  Q.YESNO2
 
 L02A6    tst   <u0003
          bne   L027F
@@ -297,14 +309,14 @@ L02C0    tfr   u,x
          bne   L02CE
          lda   #'$
          lbsr  OUTCHAR
-         lbsr  OUTHEX
+         lbsr  OUT.HEX
 L02CE    clr   <u0008
          lbsr  L02FF
          lda   ,x
          cmpa  #$20
          bne   L02E2
          leax  >L0D1A,pcr  (S)
-L02DD    lbsr  PRTTEXT
+L02DD    lbsr  OUT.TXT
          bra   L02F8
 L02E2    bhi   L02F1
          pshs  a
@@ -323,33 +335,33 @@ L02FF    lda   #$20
          lbra  OUTCHAR
 
 * Entry of character sequences
-L0304    tst   <u0025
+L0304    tst   <ANSIFLAG
          beq   L0324
-         leau  >L150C,pcr  Direct cursor addr
+         leau  >L150C,pcr  Direct cursor addr for terminal
          pshs  u
          cmpx  ,s++
          bne   L0316
          leax  >L16B5,pcr   highlight on (7 chars)
-L0316    leau  >L122E,pcr   direct cursor addressing row offset
+L0316    leau  >L.CRTDIM,pcr   direct cursor addressing row offset
          pshs  u
          cmpx  ,s++
          bne   L0324
          leax  >L126A,pcr   Number of columns
-L0324    stx   <u002A
+L0324    stx   V.LABEL
          lbsr  CRTEXT
-         ldd   ,x++
+         ldd   ,x++   Get the address of the parameter
          addd  #TRMBASE
          leau  d,y
-         lda   ,x+
-         anda  #$0F
-         bne   L0397
+         lda   ,x+    Get question type
+         anda  #$0F  Is it cursor addressing question
+         bne   L0397 ..no
 L0336    lda   #$FF
          sta   >$10C+TRMBASE,y
-         sta   >$110+TRMBASE,y
+         sta   >$110+TRMBASE,y  Flush type-ahead buffer
          stu   <u0023
          stx   <u0021
          inc   <u0020
-         lbsr  L0505
+         lbsr  L0505  Ask about direct cursor addressing
          clr   <u0020
          leau  >CURSPOS+TRMBASE,y
          ldb   #$FF
@@ -379,10 +391,13 @@ L0388    lbsr  CRTEXT
          bra   L0336
 L0391    leax  >L0D95,pcr
          bra   L0388
+
+* Ask question depending on type
 L0397    deca
-         bne   L03B4
+         bne   L03B4 Not type 1 question
+* Ask about keys
          lbsr  L02A6
-         lbsr  L05FE
+         lbsr  Q.KEY
          tst   <u0007
          bne   L03AC
          cmpa  #$0D
@@ -392,29 +407,30 @@ L0397    deca
 L03AC    sta   ,u
 L03AE    lbsr  L02AA
          lbra  L03FF
+
 L03B4    deca
-         bne   L03C9
+         bne   L03C9 Not type 2 question
          clrb
          pshs  x
          inc   <u001F
-         lbsr  L05BA
+         lbsr  Q.YESNO2
          bcc   L03C2
          comb
 L03C2    stb   ,u
          puls  x
          lbra  L03FF
 L03C9    deca
-         bne   L03D6
+         bne   L03D6 Not type 3 question
          lda   ,u
          lbsr  L040E
          sta   ,u
          lbra  L03FF
 L03D6    deca
-         bne   L03DF
+         bne   L03DF Not type 4 question
          lbsr  L0505
          lbra  L03FF
 L03DF    deca
-         bne   L03F0
+         bne   L03F0 Not type 5 question
          lda   ,u
          lbsr  L0406
          tst   <u0004
@@ -422,19 +438,22 @@ L03DF    deca
          sta   ,u
          lbra  L03FF
 L03F0    deca
-         bne   L03F8
-         lbsr  L04AC
+         bne   L03F8 Not type 6 question
+         lbsr  Q.PNAME
          bra   L03FF
+
 L03F8    leax  >L0D1E,pcr   Program got to...
          lbsr  CRTEXT
 L03FF    tst   ,x
          lbpl  L0304
 L0405    rts
+
 L0406    inca
          lbsr  L040E
          beq   L040D
          deca
 L040D    rts
+
 L040E    pshs  u,x
 L0410    clr   <u0000
          sta   <u0001
@@ -444,7 +463,7 @@ L0410    clr   <u0000
          lbsr  L02FD
          clr   <u0004
          clr   <u0005
-L0421    lbsr  L05FE
+L0421    lbsr  Q.KEY
          cmpa  #$0D
          bne   L0431
          tst   <u0004
@@ -478,7 +497,7 @@ L0441    cmpa  <u0035
          bne   L0465
          addb  <u0002
          bcc   L046E
-L0465    ldx   <u002A
+L0465    ldx   V.LABEL
          lbsr  CRTEXT
          lda   <u0001
          bra   L0410
@@ -493,7 +512,7 @@ L0479    lda   <u0005
 
 * Ask for terminal
 * (dead code)
-         leax  >L0C62,pcr  Enter your terminal's name
+Q.TNAME  leax  >L0C62,pcr  Enter your terminal's name
          lbsr  CRTEXT
          lbsr  L0654
          leau  >$DE+TRMBASE,y
@@ -514,26 +533,28 @@ L04A5    lda   #$04
          sta   >$EE+TRMBASE,y
          rts
 
-L04AC    pshs  x
+* Ask for name of printer
+Q.PNAME    pshs  x
          leau  >$680+TRMBASE,y
          ldb   #$FF
 L04B4    incb
          tst   b,u
-         bne   L04B4
+         bne   L04B4 Next byte if not null
          tstb
-         beq   L04D0
+         beq   L04D0 Null in first byte?
          leax  >L0B96,pcr Printer device currently...
          lbsr  CRTEXT
-         lda   #$04
+         lda   #C$EOT set end of text
          sta   b,u
          tfr   u,x
-         lbsr  PRTTEXT
-         clr   b,u
+         lbsr  OUT.TXT
+         clr   b,u  set back to 0
          bra   L04D7
+
 L04D0    leax  >L0BB1,pcr   No printer currently
          lbsr  CRTEXT
 L04D7    leax  >L0BD3,pcr   Do you wish to change it?
-         lbsr  YESNO  ask Y/N question
+         lbsr  Q.YESNO  ask Y/N question
          bcs   L0503
          leax  >L0BEC,pcr  Printer pathname
          lbsr  CRTEXT
@@ -541,17 +562,20 @@ L04D7    leax  >L0BD3,pcr   Do you wish to change it?
          leau  >$680+TRMBASE,y
          leax  <$4C,y
          ldb   #$3C
+* Copy user input to TRM file
 L04F3    lda   ,x+
          cmpa  #$0D
          beq   L04FE
          sta   ,u+
          decb
          bne   L04F3
-L04FE    ldd   #$2000
+L04FE    ldd   #$2000 Append space and null
          std   ,u
 L0503    puls  pc,x
+
+* Direct cursor addressing sequence
 L0505    pshs  x
-         lda   -$01,x
+         lda -1,x
          lsra
          lsra
          lsra
@@ -563,7 +587,7 @@ L0513    inc   <u0001
 L0515    lbsr  L057F
          ldb   <u0001
          decb
-L051B    lbsr  L05FE
+L051B    lbsr  Q.KEY
          tst   <u0007
          bne   L055D
          tst   <u0020
@@ -605,6 +629,7 @@ L055F    pshs  u
          dec   <u0004
          bne   L0513
          inc   <u0001
+* Copy $FF into TRM
 L056E    lda   #$FF
          ldb   <u0001
          decb
@@ -612,10 +637,11 @@ L0573    sta   b,u
          incb
          dec   <u0004
          bpl   L0573
-L057A    lbsr  L069F
+L057A    lbsr  OUT.CR
          puls  pc,x
+
 L057F    pshs  u
-         lbsr  L069F
+         lbsr  OUT.CR
          ldb   #$FF
          leax  ,y
          lbsr  L0732
@@ -640,10 +666,10 @@ L05AB    lbsr  OUTCHAR
          puls  pc,u
 
 * Ask Y/N question
-YESNO    stx   <u002A
-L05B5    ldx   <u002A
+Q.YESNO    stx   V.LABEL
+Q.YESNO1    ldx   V.LABEL
          lbsr  CRTEXT
-L05BA    lda   #'?
+Q.YESNO2    lda   #'?
          lbsr  OUTCHAR
          lda   #$20
          lbsr  OUTCHAR
@@ -661,9 +687,9 @@ L05D5    anda  #$5F
          cmpa  #$0D    Newline entered?
          beq   L05FC   interpret as no
          tsta
-         bne   L05B5
+         bne   Q.YESNO1
          tst   <u001F
-         beq   L05B5
+         beq   Q.YESNO1
          clr   <u001F
          lda   ,u
          bne   L05F7
@@ -676,25 +702,27 @@ L05F7    lda   #'N
 L05FC    coma
 L05FD    rts
 
-L05FE    pshs  x,b
-         lbsr  L0687
+Q.KEY    pshs  x,b
+         lbsr  READCHR
          clr   <u0007
          clr   <u0008
-         cmpa  #'&
+         cmpa  #'&    Prefix for special characters '&', '$' etc.
          beq   L060F
-         cmpa  #'$
+         cmpa  #'$   ASCII code entered in hexadecimal
          bne   L0652
 L060F    sta   <u0007
-L0611    lbsr  L0687
+L0611    lbsr  READCHR
          cmpa  <u0007
          beq   L0652
          ldb   <u0007
          cmpb  #'$
          beq   L0626
-         cmpa  #$40
-         bcs   L0652
+         cmpa  #'@
+         bcs   L0652 Lower than @
          anda  #$1F
          bra   L0652
+
+* Read hex value
 L0626    lbsr  L0716
          bcs   L0611
          lsla
@@ -707,7 +735,7 @@ L0626    lbsr  L0716
          com   <u0008
          lda   <u0009
          lbsr  OUTCHAR
-L063D    lbsr  L0687
+L063D    lbsr  READCHR
          lbsr  L0716
          bcs   L063D
          adda  ,s+
@@ -717,6 +745,7 @@ L063D    lbsr  L0687
          puls  a
          anda  #$7F
 L0652    puls  pc,x,b
+
 L0654    pshs  u,y
          clra
          clrb
@@ -737,9 +766,11 @@ L0654    pshs  u,y
          os9   I$SetStt
          puls  pc,u,y
 
-L0682    bsr   L0687
+L0682    bsr   READCHR
          lbra  OUTCHAR
-L0687    pshs  y,x,a
+
+* Read a character
+READCHR    pshs  y,x,a
          tfr   s,x
          ldy   #$0001
          clra
@@ -750,7 +781,7 @@ L0687    pshs  y,x,a
          sta   <u0009
          puls  pc,y,x
 
-L069F    lda   #$0D
+OUT.CR    lda   #$0D
 * Write a character
 OUTCHAR    pshs  y,x,a
          tst   <u002D  Upper case needed?
@@ -776,10 +807,12 @@ L06B1    pshs  a
 L06D0    puls  pc,y,x,a
 
 * Write a line starting with CR
+* Line must end with C$EOT
+* Output X points to address after end of string
 CRTEXT   lda   #$0D
 L06D4    bsr   OUTCHAR
 * Write line
-PRTTEXT    lda   ,x+
+OUT.TXT    lda   ,x+
          cmpa  #C$EOT
          bne   L06D4
          rts
@@ -788,8 +821,8 @@ FATAL    leax  >L07E7,pcr  Fatal error
 ERREXIT  stb   <errcode
          lbsr  CRTEXT
          leax  >L0821,pcr  Installation aborted
-         lbsr  PRTTEXT
-L06ED    lbsr  L069F
+         lbsr  OUT.TXT
+L06ED    lbsr  OUT.CR
          clra
          clrb
          ldx   <u0028
@@ -799,7 +832,7 @@ L06ED    lbsr  L069F
          os9   F$Exit
 
 * Print byte as hex
-OUTHEX   lda   ,x
+OUT.HEX   lda   ,x
          lsra
          lsra
          lsra
@@ -813,6 +846,7 @@ L070B    adda  #'0
          adda  #'A-'9-1
 L0713    lbra  OUTCHAR
 
+* Parse hex value
 L0716    bsr   L0727
          bcc   L0726
          suba  #$11
@@ -829,6 +863,7 @@ L0727    suba  #'0
          ldb   #$09
          subb  ,s+
 L0731    rts
+
 L0732    pshs  u,y,x,b,a
          stb   <u0015
          ldd   ,x
@@ -838,8 +873,9 @@ L0732    pshs  u,y,x,b,a
          stb   ,y
          ldx   <u0028
          leax  <$18,x
-         lbsr  PRTTEXT
+         lbsr  OUT.TXT
          puls  pc,u,y,x,b,a
+
 L074B    clr   <u0017
          leax  >L0786,pcr
 L0751    bsr   L0769
@@ -856,7 +892,7 @@ L0767    puls  pc,a
 
 L0769    clr   <u0016
 L076B    inc   <u0016
-         subd  ,x
+         subd  0,x
          bcc   L076B
          addd  ,x++
          pshs  a
@@ -870,7 +906,7 @@ L076B    inc   <u0016
          lda   #$F0
          bra   L0763
 
-L0786    fcb   $27,$10,$03,$E8,$00,$64,$00,$0A
+L0786    fdb   10000,1000,100,10
 
 L078E    fcs   "Dynacalc.trm"
 L079A    fcs   "Dynacalc.cor"
@@ -898,7 +934,7 @@ L088A    fcc   "Installation complete."
 L08A1    fcc   "DYNACALC Customization program, Version 4.7:3"
          fcb   $0D
          fcb   C$EOT
-L08D0    fcc   "INSTRUCTIONS-"
+L.INSTR    fcc   "INSTRUCTIONS-"
          fcb   $0D
          fcc   "INSTALL.DC is a program for changing some of"
          fcb   $0D
@@ -930,13 +966,18 @@ L08D0    fcc   "INSTRUCTIONS-"
          fcc   "before INSTALL changes DYNACALC on the disk."
          fcb   $0D
          fcb   C$EOT
+
+* Unused
 L0B29    fcc   "Now set-up for :"
          fcb   C$EOT
-         fcb   $0A
-L0B3B    fcc   "Does your terminal conform to the American National"
+
+* Unused
+L0B3A    fcb   $0A
+         fcc   "Does your terminal conform to the American National"
          fcb   $0D
          fcc   'Standards Institute, "ANSI", standards'
          fcb   C$EOT
+
 L0B96    fcc   "Printer device currently: "
          fcb   C$EOT
 L0BB1    fcc   "No printer device currently used."
@@ -949,29 +990,33 @@ L0BEC    fcb   $0D
          fcb   C$EOT
 L0C23    fcc   "Do you wish to change any screen/keyboard values"
          fcb   C$EOT
+
 L0C54    fcc   "Terminal name"
          fcb   C$EOT
 L0C62    fcb   $0D
          fcc   "Enter your terminal's name (Up to 16 characters):"
          fcb   $0D
          fcb   C$EOT
+
 L0C96    fcc   "Special keys"
          fcb   C$EOT
-L0CA3    fcc   "Terminal characteristics"
+
+H.TERM    fcc   "Terminal characteristics"
          fcb   C$EOT
 L0CBC    fcc   "Terminal strings"
          fcb   C$EOT
-L0CCD    fcc   "Printer strings"
+H.PSTRS    fcc   "Printer strings"
          fcb   C$EOT
 
-L0CDD    fcc   "Printer characteristics"
+* Section header for printer
+H.PRINT    fcc   "Printer characteristics"
          fcb   C$EOT
-L0CF5    fcb   $0D
+L.KEEPH    fcb   $0D
          fcc   "Do you wish to keep helps"
          fcb   C$EOT
-L0D10    fcc   "Change "
+L.CHANGE    fcc   "Change "
          fcb   C$EOT
-L0D18    fcc   "?"
+L.QMARK    fcc   "?"
          fcb   C$EOT
 L0D1A    fcc   "(S)"
          fcb   C$EOT
@@ -991,10 +1036,12 @@ L0D95    fcc   "**** You may only specify one column and one row position- Try a
 L0DDB    fcc   "**** You must specify both row and column position's- Try again."
          fcb   C$EOT
 
+* Unused
 L0E1C    fcc   "The current string will be printed, along with its"
          fcb   $0D
          fcc   "hex equivalent. Hit the keys you want to be entered"
-L0E82    fcc   "Enter the character sequences needed for your"
+
+L.PRTSEQ    fcc   "Enter the character sequences needed for your"
          fcb   $0D
          fcc   "printer. When all characters in a sequence are"
          fcb   $0D
@@ -1014,6 +1061,7 @@ L0FCE    fcc   "Sequence to turn off printer (3 Char.):"
          fcb   C$EOT,$00,$AC,$34
          fcb   $FF
 
+* Ask about keys
 
 L0FFA    fcc   "The function of the key will be displayed, along with"
          fcb   $0D
@@ -1082,7 +1130,7 @@ L121A    fcc   "Bell character- "
          fcb   C$EOT
          fdb   $0106
          fcb   $01
-L122E    fcc   "Direct cursor addressing row offset- "
+L.CRTDIM    fcc   "Direct cursor addressing row offset- "
          fcb   C$EOT
          fdb   $010A
          fcb   $01
