@@ -1,18 +1,49 @@
          nam   PipeMan
          ttl   os9 file manager     
+*
+*    Pipe File Manager
+*
 
-         ifp1
-         use   os9defs
-         endc
-tylg     set   FlMgr+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,PipeEnt,size
-u0000    rmb   0
-size     equ   .
-name     equ   *
-         fcs   /PipeMan/
-         fcb   $03 
+
+Type set FlMgr+Objct   
+Revs set ReEnt+1
+ mod   PipeEnd,PipeNam,Type,Revs,PipeEnt,0
+
+PipeNam fcs "PipeMan"
+**********
+* Revision History
+*    edition 2    prehistoric
+*    edition 3    03/15/83  Moved Seek label
+*                           from Illegal Service Routines
+*                           to No Action Service Routines
+
+ fcb   3 edition number
+
+**********
+*
+*     Definitions
+*
+ use defsfile
+
+ org PD.FST
+PD.FRead rmb 1 Process ID of first reader waiting
+PD.NRead rmb 1 number of readers waiting
+PD.WRead rmb 1 wake-up reader flag
+PD.RdLn rmb 1 readln flag
+PD.FWrit rmb 1 Process ID of first write waiting
+PD.NWrit rmb 1 number of writers waiting
+PD.WWrit rmb wake-up writer flag
+PD.WrLn rmb 1 writln flag
+PD.BEnd rmb 2 buffer end
+PD.NxIn rmb 2 next-in ptr
+PD.Data rmb 1 data in buffer flag
+ org 0
+First rmb 1
+Waiting rmb 1
+Signal rmb 1
+RWSwitch equ (PD.FRead!PD.FWrit)-(PD.FRead&PD.FWrit)
+
+
 PipeEnt  equ   *
          lbra  POpen     Create
          lbra  POpen     Open
@@ -254,4 +285,4 @@ L01F2    stx   <$16,y
 L01FD    andcc #$FE
          puls  pc,x
          emod
-eom      equ   *
+PipeEnd      equ   *

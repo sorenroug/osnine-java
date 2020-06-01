@@ -1,32 +1,34 @@
-         nam   IOMan
-         ttl   os9 system module
+         nam   Input/Output Manager
+         ttl   Module Header
 
 * This is a disassembly of the IOMan edition 4 distributed with OS-9 for Dragon 64
 
-* Header for : IOMan
-* Module size: $6E7  #1767
-* Module CRC : $BD0579 (Good)
-* Hdr parity : $19
-* Edition    : $04  #4
-* Ty/La At/Rv: $C1 $81
-* System mod, 6809 Obj, re-ent, R/O
 
-         ifp1
-         use   ../DEFS/os9defs
-         endc
-tylg     set   Systm+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-edition  equ   $04
-         mod   eom,name,tylg,atrv,IOManEnt,size
+ mod IOEnd,IOName,SYSTM+OBJCT,REENT+1,IOINIT,0
+IOName  fcs /IOMan/  module name
 
-size     equ   .
+******************************************
+*
+*     Edition History
+*
+* Edition   Date    Comments
+*
+*    1   pre-82/08  beginning of history               LAC
+*
+*    2    82/08/24  modifications for MC6829           LAC
+*
+*    3    82/09/27  conditionals added for LI & LII    WGP
+*
+*    4    82/10/21  I$DeletX system call added         WGP
+*
+ fcb 4  edition number
 
-name     fcs   /IOMan/
-         fcb   edition
+ use   defsfile
 
+ ttl Initialization
+ pag
 * IOMan is called from OS9p2
-IOManEnt equ   *
+IOINIT equ   *
 * allocate device and polling tables
          ldx   D.Init
          lda   PollCnt,x
@@ -938,4 +940,4 @@ L069E    lda   <P$IOQN,y
 L06E0    clr   <P$IOQP,u
 L06E3    rts
          emod
-eom      equ   *
+IOEnd      equ   *
