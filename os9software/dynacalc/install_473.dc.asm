@@ -10,7 +10,7 @@ TRMBASE  equ   $14C
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
-u0003    rmb   1
+u0003    rmb   1 Flag to ask if the user want to change a section
 u0004    rmb   1
 u0005    rmb   1
 u0006    rmb   1
@@ -28,7 +28,7 @@ u0020    rmb   1
 u0021    rmb   2
 u0023    rmb   2
 ANSIFLAG rmb   1   flag for ansi terminal
-u0026    rmb   1
+u0026    rmb   1   TRM file descriptor
 errcode  rmb   1   error code
 u0028    rmb   2
 V.LABEL    rmb   2
@@ -80,17 +80,20 @@ L0099    clr   ,u+
          lbsr  CRTEXT
          tfr   s,x
          cmpx  V.LABEL
-         beq   L0123
+         beq   L0123 No arguments on the command line
+
+* Test if there is an 'I' argument to skip instructions
 L00BA    ldd   ,x
          anda  #$5F
          cmpd  #$4920    I+space
          beq   L012A    skip instructions
          cmpd  #$490D    I+cr
          beq   L012A    skip instructions
-         tst   <u0026
+         tst   <u0026   TRM file descriptor
          bne   L0123   Instructions
          ldy   <u0028
          leau  >TRMBASE,y
+* Copy the next argument, which should be a file name
 L00D5    lda   ,x+
          sta   ,u+
          cmpa  #$0D
@@ -100,7 +103,7 @@ L00D5    lda   ,x+
 L00E1    lda   ,x+
          cmpa  #$20
          beq   L00E1
-         leax  -$01,x
+         leax  -1,x
 * Check if the file name ends with .trm
 L00E9    pshs  x
          ldx   -3,u
@@ -113,7 +116,7 @@ L00F7    ldx   -5,u
          beq   L010F
          cmpx  #$2E54     .T
          beq   L010F
-L0103    leau  -u0001,u
+L0103    leau  -1,u
          ldx   #$2E74     .t
          stx   ,u++
          ldx   #$72ED     rm
@@ -124,6 +127,7 @@ L010F    leax  >TRMBASE,y
          puls  x
          lbcs  L01A9
          sta   <u0026
+* The file is a patch file
          lbra  L00BA
 
 L0123    leax  >L.INSTR,pcr  Instructions
@@ -143,12 +147,13 @@ L012A    ldy   <u0028
          os9   I$SetStt
          lbcs  FATAL
          leax  >L078E,pcr   Dynacalc.trm
-         lda   #$05
+         lda   #EXEC.+READ.
          os9   I$Open
          bcc   L0163
-         cmpb  #$D8
+         cmpb  #E$PNNF
          lbne  FATAL
          bra   L016B
+
 L0163    leax  >L083D,pcr  dynacalc.trm already exists
          clrb
          lbra  ERREXIT
@@ -156,7 +161,8 @@ L016B    leax  >L079A,pcr  dynacalc.cor
          lda   #$01
          os9   I$Open
          bcs   L018A
-         ldx   <u0028
+
+LOADTRM  ldx   <u0028
          leax  >TRMBASE,x
          ldy   #$3200
          os9   I$Read
@@ -166,27 +172,29 @@ L016B    leax  >L079A,pcr  dynacalc.cor
 L018A    leax  >L07CA,pcr  Error loading dynacalc.cor
          lbra  ERREXIT
 L0191    ldu   <u0028
-         leax  >u01D4,u
+         leax  >$88+TRMBASE,u
          lda   <u0026
          beq   L01B0
-         ldy   #$0200
+         ldy   #$0200 Load patch file as overlay from $88
          os9   I$Read
          bcs   L01A9
          os9   I$Close
          bcc   L01B6
 L01A9    leax  >L07A6,pcr  Error loading trm file
          lbsr  ERREXIT
-L01B0    leay  >L18AC,pcr
+L01B0    leay  >L18AC,pcr  Buffer for failed TRM patch file load
          bra   L01CB
 
-L01B6    leay  >u025E,u
+* Copy name of printer from patch file into printer location
+L01B6    leay  >$112+TRMBASE,u
          leax  >$680+TRMBASE,u
-L01BE    lda   ,y
+L01BE    lda   0,y
          clr   ,y+
          sta   ,x+
          bne   L01BE
-         ldd   #$2000
-         std   -$01,x
+         ldd   #$2000 Append space and null
+         std   -1,x
+
 L01CB    tfr   u,y
          com   <u0003
          tst   <u0026
@@ -194,6 +202,7 @@ L01CB    tfr   u,y
          clr   <u0003
 * Start asking questions
 L01D5    clr   <ANSIFLAG
+
          leax  >H.PRINT,pcr   printer characteristics heading
          lbsr  OUT.SECT
          bcs   L01F5
@@ -204,6 +213,7 @@ L01D5    clr   <ANSIFLAG
          bcs   L01F5
          lda   #$07
          sta   >$F9+TRMBASE,y
+*
 * Ask for the name of the printer
 L01F5    leax  >H.PSTRS,pcr printer strings heading
          lbsr  OUT.SECT
@@ -213,7 +223,9 @@ L01F5    leax  >H.PSTRS,pcr printer strings heading
 
 QTERM equ *
 
+*
 * Ask for terminal here
+*
  ifeq ASKTERM
          leax  >H.TERM,pcr   Terminal characteristics heading
          lbsr  OUT.SECT
@@ -221,14 +233,17 @@ QTERM equ *
 * First ask for ANSI
          leax  >L0B3A,pcr   ANSI terminal?
          lbsr  Q.YESNO  ask Y/N question
-         beq   QKEYS   skip sequences if ANSI
-         leax  >L1438,pcr   enter the terminal sequences - not ANSI
+         bcs   QATTRs   skip sequences if ANSI
+         com   <ANSIFLAG Invert, because it gets inverted back
+QATTRS   leax  >L.TATTRS,pcr   Enter terminal attributes
          lbsr  L0304
-         com   <ANSIFLAG
-QKEYS
-         leax  >L0FFA,pcr   enter the terminal keys - always
+         leax  >H.TSTRS,pcr printer strings heading
+         lbsr  OUT.SECT
+         bcs   QHELPS
+         leax  >L.TRMSEQ,pcr   enter the terminal sequences
          lbsr  L0304
-         com   <ANSIFLAG
+QKEYS    leax  >L.KEYS,pcr   enter the terminal keys - always
+         lbsr  L0304
  endc
 
 QHELPS leax  >L.KEEPH,pcr Do you wish to keep helps
@@ -340,18 +355,22 @@ L02FF    lda   #$20
          lbra  OUTCHAR
 
 * Entry of character sequences
-L0304    tst   <ANSIFLAG 
-         beq   L0324  skip cursor addressing if ANSI is 0
-         leau  >L150C,pcr  Direct cursor addr for terminal
+L0304 equ *
+* Skip certain sections that are not relevant for Dragon
+         tst   <ANSIFLAG
+         beq   L0324  skip skips if ANSI is 0
+         leau  >L.CURSOR,pcr  Direct cursor addr for terminal
          pshs  u
          cmpx  ,s++
-         bne   L0316
-         leax  >L16B5,pcr   highlight on (7 chars)
-L0316    leau  >L.CRTDIM,pcr   direct cursor addressing row offset
+         bne   L0316 continue if X is not L.CURSOR
+         leax  >L.HILITE,pcr   highlight on (7 chars)
+
+L0316    leau  >L.OFFSET,pcr   direct cursor addressing row offset
          pshs  u
          cmpx  ,s++
          bne   L0324
-         leax  >L126A,pcr   Number of columns
+         leax  >L.NUMCOL,pcr   Number of columns
+
 L0324    stx   V.LABEL
          lbsr  CRTEXT
          ldd   ,x++   Get the address of the parameter
@@ -399,7 +418,7 @@ L0391    leax  >L0D95,pcr
 
 * Ask question depending on type
 L0397    deca
-         bne   L03B4 Not type 1 question
+         bne   Q.TYPE2 Not type 1 question
 * Ask about keys
          lbsr  L02A6
          lbsr  Q.KEY
@@ -413,8 +432,8 @@ L03AC    sta   ,u
 L03AE    lbsr  L02AA
          lbra  L03FF
 
-L03B4    deca
-         bne   L03C9 Not type 2 question
+Q.TYPE2    deca
+         bne   Q.TYPE3 Not type 2 question
          clrb
          pshs  x
          inc   <u001F
@@ -424,25 +443,25 @@ L03B4    deca
 L03C2    stb   ,u
          puls  x
          lbra  L03FF
-L03C9    deca
-         bne   L03D6 Not type 3 question
+Q.TYPE3    deca
+         bne   Q.TYPE4 Not type 3 question
          lda   ,u
          lbsr  L040E
          sta   ,u
          lbra  L03FF
-L03D6    deca
-         bne   L03DF Not type 4 question
+Q.TYPE4    deca
+         bne   Q.TYPE5 Not type 4 question
          lbsr  L0505
          lbra  L03FF
-L03DF    deca
-         bne   L03F0 Not type 5 question
+Q.TYPE5    deca
+         bne   Q.TYPE6 Not type 5 question
          lda   ,u
          lbsr  L0406
          tst   <u0004
          beq   L0405
          sta   ,u
          lbra  L03FF
-L03F0    deca
+Q.TYPE6    deca
          bne   L03F8 Not type 6 question
          lbsr  Q.PNAME
          bra   L03FF
@@ -484,6 +503,7 @@ L0431    cmpa  #$20
          lda   <u0001
          inc   <u0004
          puls  pc,u,x
+
 L0441    cmpa  <u0035
          beq   L0465
          cmpa  <u0036
@@ -1006,11 +1026,11 @@ L0C62    fcb   $0D
 L0C96    fcc   "Special keys"
          fcb   C$EOT
 
-H.TERM    fcc   "Terminal characteristics"
+H.TERM   fcc   "Terminal characteristics"
          fcb   C$EOT
-L0CBC    fcc   "Terminal strings"
+H.TSTRS  fcc   "Terminal strings"
          fcb   C$EOT
-H.PSTRS    fcc   "Printer strings"
+H.PSTRS  fcc   "Printer strings"
          fcb   C$EOT
 
 * Section header for printer
@@ -1041,7 +1061,7 @@ L0D95    fcc   "**** You may only specify one column and one row position- Try a
 L0DDB    fcc   "**** You must specify both row and column position's- Try again."
          fcb   C$EOT
 
-* Unused
+* Unused - truncated
 L0E1C    fcc   "The current string will be printed, along with its"
          fcb   $0D
          fcc   "hex equivalent. Hit the keys you want to be entered"
@@ -1062,13 +1082,13 @@ L.PRTSEQ    fcc   "Enter the character sequences needed for your"
          fcb   $0D
          fcc   "Sequence to turn on printer (3 Char.):"
          fcb   C$EOT,$00,$A8,$34
-L0FCE    fcc   "Sequence to turn off printer (3 Char.):"
+         fcc   "Sequence to turn off printer (3 Char.):"
          fcb   C$EOT,$00,$AC,$34
          fcb   $FF
 
-* Ask about keys - always
+* Ask about keys
 * In some cases arrow keys will be {,[,],}
-L0FFA    fcc   "The function of the key will be displayed, along with"
+L.KEYS    fcc   "The function of the key will be displayed, along with"
          fcb   $0D
          fcc   "its current assignment (if it has one). To change, simply"
          fcb   $0D
@@ -1078,7 +1098,7 @@ L0FFA    fcc   "The function of the key will be displayed, along with"
          fcb   C$EOT
          fdb   $0100
          fcb   $01
-L10B2    fcc   "Down arrow- "
+         fcc   "Down arrow- "
          fcb   C$EOT
          fdb   $0101
          fcb   $01
@@ -1125,17 +1145,17 @@ L1165    fcc   "Edit overlay- "
          fcb   $FF
 
 
-L1178    fcc   "The individual attributes will be displayed, along with"
+L.TATTRS fcc   "The individual attributes will be displayed, along with"
          fcb   $0D
          fcc   "their current value (if present). To change, enter"
          fcb   $0D
          fcc   "the new value. Press space if it's O.K. the way it is."
          fcb   $0D
-L121A    fcc   "Bell character- "
+         fcc   "Bell character- "
          fcb   C$EOT
          fdb   $0106
          fcb   $01
-L.CRTDIM    fcc   "Direct cursor addressing row offset- "
+L.OFFSET fcc   "Direct cursor addressing row offset- "
          fcb   C$EOT
          fdb   $010A
          fcb   $01
@@ -1143,15 +1163,15 @@ L.CRTDIM    fcc   "Direct cursor addressing row offset- "
          fcb   C$EOT
          fdb   $010B
          fcb   $01
-L126A    fcc   "Number of columns (Limit 127)- "
+L.NUMCOL fcc   "Number of columns (Limit 127)- "
          fcb   C$EOT
          fdb   $010E
          fcb   $05
-L128D    fcc   "Number of rows - "
+         fcc   "Number of rows - "
          fcb   C$EOT
          fdb   $010D
          fcb   $03
-L12A2    fcc   "Use UPPER CASE only (regardless of TMODE flag)"
+         fcc   "Use UPPER CASE only (regardless of TMODE flag)"
          fcb   C$EOT
          fdb   $00F8
          fcb   $02
@@ -1167,7 +1187,7 @@ L12D5    fcc   "Enter the printer default characteristics. If"
          fcc   "changed while in DYNACALC using /AP."
          fcb   $0D
          fcb   $0A
-L1389    fcc   "Printer device pathname-"
+         fcc   "Printer device pathname-"
          fcb   C$EOT
          fdb   $0000
          fcb   $06
@@ -1190,14 +1210,13 @@ L13FD    fcc   "Do you want pagination"
          fcb   C$EOT
          fdb   $00FE
          fcb   $02
-L1417    fcc   "Do you want to print borders"
+         fcc   "Do you want to print borders"
          fcb   C$EOT
          fdb   $00FC
          fcb   $02
          fcb   $FF
 
-* Not for ANSI
-L1438    fcc   "Enter the character strings needed for your terminal."
+L.TRMSEQ fcc   "Enter the character strings needed for your terminal."
          fcb   $0D
          fcc   "When all are entered, hit period. If you want"
          fcb   $0D
@@ -1207,11 +1226,11 @@ L1438    fcc   "Enter the character strings needed for your terminal."
          fcb   C$EOT
          fdb   $0090
          fcb   $F4
-L14EA    fcc   'Terminal "Kiss-Off" (7 CHAR.):'
+         fcc   'Terminal "Kiss-Off" (7 CHAR.):'
          fcb   C$EOT
          fdb   $00A0
          fcb   $74
-L150C    fcc   "Direct cursor addr. Enter the correct sequence for your"
+L.CURSOR fcc   "Direct cursor addr. Enter the correct sequence for your"
          fcb   $0D
          fcc   'terminal, typing a "*" where the column position goes and'
          fcb   $0D
@@ -1221,27 +1240,27 @@ L150C    fcc   "Direct cursor addr. Enter the correct sequence for your"
          fcb   C$EOT
          fdb   CURSPOS
          fcb   $70
-L15F1    fcc   "Erase to end of line (Just type period if your terminal"
+         fcc   "Erase to end of line (Just type period if your terminal"
          fcb   $0D
          fcc   "does not have this feature) (5 CHAR.):"
          fcb   C$EOT
          fdb   $00B8
          fcb   $54
-L1653    fcc   "Erase to end of page (Just type period if your terminal"
+         fcc   "Erase to end of page (Just type period if your terminal"
          fcb   $0D
          fcc   "does not have this feature) (5 CHAR.):"
          fcb   C$EOT
          fdb   $00BE
          fcb   $54
-L16B5    fcc   "Hilite on (Period if not used) (7 CHAR.):"
+L.HILITE    fcc   "Hilite on (Period if not used) (7 CHAR.):"
          fcb   C$EOT
          fdb   REVON
          fcb   $74
-L16E2    fcc   "Hilite off (Period if not used) (7 CHAR.):"
+         fcc   "Hilite off (Period if not used) (7 CHAR.):"
          fcb   C$EOT
          fdb   REVOFF
          fcb   $74
-L1710    fcc   "Following are the terminal cursor on/off strings."
+         fcc   "Following are the terminal cursor on/off strings."
          fcb   $0D
          fcc   "If your terminal does not support this, type a period"
          fcb   $0D
@@ -1252,17 +1271,17 @@ L1710    fcc   "Following are the terminal cursor on/off strings."
          fcc   '"Cursor on" and "Cursor off".'
          fcb   $0A,$0D
          fcc   "Cursor on (3 CHAR.):"
-L1812    fcb   C$EOT
+         fcb   C$EOT
          fdb   $0088
          fcb   $34
          fcc   "Cursor off (3 CHAR.):"
-L182B    fcb   C$EOT
+         fcb   C$EOT
          fdb   $008C
          fcb   $34
          fcc   "Destructive backspace -"
          fcb   $0D
          fcc   "On most terminals, &H,&(space),&H (5 CHAR.):"
-L1873    fcb   C$EOT
+         fcb   C$EOT
          fdb   $00D4
          fcb   $54
          fcc   "Non-destructive backspace, usually &H (3 CHAR.):"
@@ -1271,7 +1290,7 @@ L1873    fcb   C$EOT
          fcb   $34
          fcb   $FF
 
-
+* Default values for key codes and printer
 L18AC    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
          fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
          fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
@@ -1279,8 +1298,8 @@ L18AC    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
          fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
          fcb   $FF,$FF,$FF,$FF,$FF,$FF,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20
          fcb   $20,$20,$20,$20,$20,$20,$FF,$FF,$FF,$FF,$00,$00,$00,$FF,$FF,$04
-         fcb   $00,$00,$00,$00,$FF,$4F,$00,$39,$00,$00,$00,$00,$00,$00,$00,$00
-         fcb   $00,$00,$00,$00,$00,$18,$4F,$00,$02,$05,$2F,$50,$00
+         fcb   $00,$00,$00,$00,$FF,$4F,$00,57,$00,$00,$00,$00,$00,$00,$00,$00
+         fcb   $00,$00,$00,$00,$00,24,79,$00,$02,$05,'/,'P,$00
 
          emod
 eom      equ   *

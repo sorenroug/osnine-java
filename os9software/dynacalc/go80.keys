@@ -55,8 +55,3 @@ M010C    fcb   $02
          fcb   $0F  Edit overlay (Ctrl-O)
 M0110    fcb   $03  Flush type-ahead buffer
          fcb   $05  Edit from entry level (Ctrl-E)
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00

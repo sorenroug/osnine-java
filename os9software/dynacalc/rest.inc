@@ -1,3 +1,8 @@
+M0112    fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
 M0117    fcb   $61 a
          fcb   $F0 p
          fcb   $00
