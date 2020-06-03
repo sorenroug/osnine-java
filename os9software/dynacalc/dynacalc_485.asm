@@ -2216,12 +2216,16 @@ L10A2    anda  #$7F
          pshs  x
          lbsr  L3C67
 L10A9    puls  pc,x
+
+* Read the 32 byte status from path #0
 L10AB    pshs  b,a
          clra
          clrb
          ldx   <u0030
          os9   I$GetStt
          puls  pc,b,a
+
+* Restore the status to path #0
 L10B6    pshs  x,b,a
          clra
          clrb
@@ -2240,11 +2244,11 @@ L10CF    stb   -$01,x
          lda   b,x
          cmpa  >-$0509,x
 L10D7    lbeq  L4943
-         cmpa  #$1B
+         cmpa  #$1B    Escape entered?
          lbeq  L1BA4
          tst   <u009A
          beq   L10EF
-L10E5    cmpa  #$61
+L10E5    cmpa  #$61    Lower than 'a'?
          bcs   L10EF
          cmpa  #$7A
          bhi   L10EF
@@ -7583,7 +7587,8 @@ L400A    lbcs  L3DA6
 L4020    ldx   #$0700
          stx   <u0044
 L4025    puls  pc,u,y,x,b,a
-L4027    tst   <u00A7
+
+L4027    tst   <u00A7  number of characters in input buffer
          bne   L4058
 L402B    pshs  x,b
          ldx   <u0044
@@ -7676,19 +7681,22 @@ L40E6    lda   b,x
          clr   ,u
 L40F5    clr   b,u
          rts
-L40F8    lbsr  L0B14
-         clr   $04,x
+
+L40F8    lbsr  L0B14    Read the option section from path #0
+         clr   $04,x   Turn off echo
          clr   <$10,x
          clr   <$11,x
          clr   $0C,x
          lbsr  L0B17
          lbra  L0AA8
+
 L410B    lda   #$02
          os9   F$PErr
          bra   L4117
+
 L4112    lbsr  L0B02
          bsr   L414A
-L4117    leau  >L4178,pcr
+L4117    leau  >L4178,pcr   String "OS9>"
          bsr   L4147
          clra
          ldx   <MEMPTR
@@ -7706,7 +7714,9 @@ L4117    leau  >L4178,pcr
          tstb
          bne   L410B
          bra   L4117
-L4147    lbra  L1CA9
+
+L4147    lbra  L1CA9  output string pointed to in U
+
 L414A    lbsr  L1D00
          ldx   <u0030
          leax  <$2F,x

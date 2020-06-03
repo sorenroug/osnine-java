@@ -42,7 +42,7 @@ HELPS    fcc   "A  set Attributes"
          fcb   $0D
          fcb   $00
 
-M12EE    fcc   "Set Attributes:"
+H.ATTRS    fcc   "Set Attributes:"
          fcb   $0D
          fcb   $0A
          fcc   "B  toggles Bell on/off (default = on)"
@@ -71,7 +71,7 @@ M12EE    fcc   "Set Attributes:"
          fcb   $0D
          fcb   $00
 
-M1500    fcb   $0A
+H.DEL    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -164,7 +164,7 @@ M17D0    fcc   "System:"
          fcb   $0D
          fcb   $00
 
-M1901    fcb   $0A
+H.SAVE    fcb   $0A
          fcb   $0A
          fcb   $0A
          fcb   $0A
@@ -308,7 +308,7 @@ M1FA8    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M2057    fcb   $0A
+H.ORDER    fcb   $0A
          fcb   $0A
          fcc   "C  loads/saves data by Column"
          fcb   $0D
@@ -320,7 +320,7 @@ M2057    fcb   $0A
          fcb   $0D
          fcb   $00
 
-M20BB    fcc   "Trigonometric:"
+H.TRIG    fcc   "Trigonometric:"
          fcb   $0D
          fcc   "  @SIN      @ASIN     @PI (3.14)"
          fcb   $0D
@@ -395,7 +395,7 @@ M20BB    fcc   "Trigonometric:"
          fcb   $0D
          fcb   $00
 
-M2544    fcc   "Arithmetic operators:"
+H.ARIT    fcc   "Arithmetic operators:"
          fcb   $0D
          fcc   "   x+y adds x and y"
          fcb   $0D
@@ -625,9 +625,9 @@ ERRTBL   fdb   ERROR01-ERRMSGS
          fdb   ERROR50-ERRMSGS $0402
 
 HELPTBL  fdb   HELPS-HELPS
-         fdb   M12EE-HELPS $027D
-         fdb   M2544-HELPS $14D3
-         fdb   M1901-HELPS $0890
+         fdb   H.ATTRS-HELPS $027D
+         fdb   H.ARIT-HELPS $14D3
+         fdb   H.SAVE-HELPS $0890
          fdb   M154A-HELPS $04D9
          fdb   M1A31-HELPS $09C0
          fdb   M196F-HELPS $08FE
@@ -635,11 +635,11 @@ HELPTBL  fdb   HELPS-HELPS
          fdb   M1EF0-HELPS $0E7F
          fdb   M176D-HELPS $06FC
          fdb   M1D79-HELPS $0D08
-         fdb   M1500-HELPS $048F
+         fdb   H.DEL-HELPS $048F
          fdb   M16F0-HELPS $067F
          fdb   M1BC7-HELPS $0B56
-         fdb   M20BB-HELPS $104A
+         fdb   H.TRIG-HELPS $104A
          fdb   M270D-HELPS  $169C
          fdb   M1FA8-HELPS $0F37
-         fdb   M2057-HELPS $0FE6
+         fdb   H.ORDER-HELPS $0FE6
 ENDHELP equ *    at 2D67

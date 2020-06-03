@@ -71,6 +71,7 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $02
          fcb   $00
          fcb   $00
+
          fcb   $00
          fcb   $00
          fcb   $00
@@ -293,326 +294,26 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $00
          fcb   $00
          fcb   $FF
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   $00
          fcb   $01
          fcb   $01
@@ -642,22 +343,7 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $20
          fcb   $B9 9
          fcb   $75 u
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   $00
          fcb   $00
          fcb   $00
@@ -803,7 +489,7 @@ M03C7    fcb   $4C L
 M0562    fcc   "  January  0, 19 0"
          fcb   $00
 
-         fcb   $08
+M0575    fcb   $08
          fcb   $00
          fcb   $A8 (
          fcb   $D4 T
@@ -882,7 +568,7 @@ M0562    fcc   "  January  0, 19 0"
          fcb   $00
          fcb   $01
          fcb   $00
-         fcb   $00
+M0600    fcb   $00
          fcb   $24 $
          fcb   $00
          fcb   $00
@@ -957,7 +643,7 @@ M0680    fcc   "/P "
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+M06C0    fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -1138,7 +824,7 @@ M0700    fcb   $05
          fcb   $E6 f
          fcb   $66 f
          fcb   $91
-         fcb   $12
+M0A13    fcb   $12
          fcb   $12
          fcb   $12
          fcb   $12
@@ -1160,10 +846,10 @@ M0700    fcb   $05
          nop
          nop
 
-M0A05    lbra  M0A27
+M0A28    lbra  M0A4D
 * Entry point for start routine in dynacalc program
 * X contains the program counter a few instructions before the jump.
-M0A08    lbra  M0A21
+M0A2B    lbra  M0A21
 
          pshs  x,a
          fcb   $1F
@@ -1188,117 +874,66 @@ M0A08    lbra  M0A21
          fcb   $53 S
 
 M0A21    cmpd  #$0485
-
-         fcb   $27 '
-         fcb   $43 C
-M0A27    lda   #$02
-         leax  >M0A38,pcr
+         beq M0A8D
+M0A4D    lda   #$02
+         leax  >M0A5B,pcr
          ldy   #$FFFF
          os9   I$WritLn
          clrb
          os9   F$Exit
 
-M0A38    fcc   "DYNACALC and DYNACALC.TRM are different versions."
+M0A5B    fcc   "DYNACALC and DYNACALC.TRM are different versions."
          fcb   $0D
 
-         leax  >-$0B44,x
-         fcb   $AF /
-         fcb   $8D
-         fcb   $FA z
-         fcb   $E0 `
-         fcb   $35 5
-         fcb   $76 v
-         fcb   $ED m
-         fcb   $C9 I
-         fcb   $01
-         fcb   $C1 A
-         fcb   $1F
-         fcb   $B8 8
-         fcb   $4C L
-         fcb   $1F
-         fcb   $8B
-         fcb   $9F
-         fcb   $41 A
-         fcb   $DF _
-         fcb   $1A
-         fcb   $30 0
-         fcb   $C9 I
-         fcb   $02
-         fcb   $80
-         fcb   $9F
-         fcb   $E9 i
-         fcb   $8E
-         fcb   $07
-         fcb   $00
-         fcb   $9F
-         fcb   $44 D
-         fcb   $0F
-         fcb   $ED m
-         fcb   $0F
-         fcb   $EE n
-         fcb   $0F
-         fcb   $19
-         fcb   $0F
-         fcb   $A7 '
-         fcb   $6F o
-         fcb   $8D
-         fcb   $FC
-         fcb   $05
-         fcb   $DE ^
-         fcb   $1A
-         fcb   $30 0
-         fcb   $C9 I
-         fcb   $0A
-         fcb   $13
-         fcb   $9F
-         fcb   $17
-         fcb   $1F
-         fcb   $14
-         fcb   $30 0
-         fcb   $C9 I
-         fcb   $03
-         fcb   $31 1
-         fcb   $9F
-         fcb   $30 0
-         fcb   $30 0
-         fcb   $88
-         fcb   $2F /
+M0A8D    leax  >-$0B44,x
+         stx   >M0575,pcr
+         puls  u,y,x,b,a
+         std   >$01C1,u
+         tfr   dp,a
+         inca  
+         tfr   a,dp
+         stx   <$41    PARAMS
+         stu   <$1A  MEMPTR   beginning of data
+         leax  >$0280,u
+         stx   <$00E9
+         ldx   #$0700
+
+         stx   <$0044
+         clr   <$00ED
+         clr   <$00EE
+         clr   <$0019
+         clr   <$00A7
+         clr   >M06C0,pcr
+         ldu   <$001A
+         leax  >$0A13,u
+         stx   <$0017
+         tfr   x,s
+         leax  >$0331,u
+         stx   <$0030
+         leax  <$2F,x
+
+
          clra
-         clrb
+         clrb    Code 0 - SS.Opt
          os9   I$GetStt
-         fcb   $86
-         fcb   $01
-         fcb   $C6 F
-         fcb   $26 &
+         lda   #$01
+         ldb   #$26   SS.ScSiz  Return screen size for COCO (level 2)
          os9   I$GetStt
          tfr   x,d
-         fcb   $5A Z
-         fcb   $D7 W
-         fcb   $0E
-         fcb   $1F
-         fcb   $20
-         fcb   $D7 W
-         fcb   $0D
-         fcb   $30 0
-         fcb   $8D
-         fcb   $FB
-         fcb   $19
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $ED m
-         fcb   $1E
-         fcb   $A7 '
-         fcb   $1C
-         fcb   $43 C
-         fcb   $53 S
-         fcb   $ED m
-         fcb   $1A
-         fcb   $30 0
-         fcb   $8D
-         fcb   $FB
-         fcb   $8B
-         fcb   $86
-         fcb   $02
+         decb  
+         stb   <$000E
+         tfr   y,d
+         stb   <$000D
+         leax  >M0600,pcr
+         clra  
+         clrb  
+         std   -$02,x
+         sta   -$04,x
+         coma  
+         comb  
+         std   -$06,x
+         leax  >M0680,pcr
+         lda   #$02
          os9   I$Open
          fcb   $24 $
          fcb   $13
