@@ -14,7 +14,7 @@ PIPSTA equ .
 PIPNAM fcs "Piper"
  fcb 2
 
-* A device drive normally has six LBRA statements. These take the
+* A device driver normally has six LBRA statements. These take the
 * same number of bytes
 
 INIPIP clrb
@@ -41,4 +41,4 @@ TERMNT clrb
  rts
 
  emod
-PIPEND      equ   *
+PIPEND equ *

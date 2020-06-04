@@ -4447,7 +4447,7 @@ L2D16    lbsr  L31D9
          lbra  L2D10
 
 L2D25    fdb   L2FB2  Line delete
-         fdb   L2F0F
+         fdb   L2F0F  Character delete
          fdb   L2F46
          fdb   L2D48
          fdb   L2D69

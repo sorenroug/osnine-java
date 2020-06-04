@@ -349,7 +349,7 @@ L0133    pshs  x,b,a
          puls  pc,x,b,a
 
 L0144    stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          andcc #$FD
          puls  pc,x,b,a
 
@@ -397,7 +397,7 @@ L018A    lda   ,y+
          cmpa  >OPTCHR,pcr  Character + for command line option
          beq   L01C8
          bra   L01A6
-L01A0    orcc  #$01
+L01A0    orcc  #Carry
          andcc #$FD
          puls  pc,y,x,b,a
 
@@ -416,7 +416,7 @@ L01AA    lda   ,y+
 L01BD    clr   ,x
          leay  -$01,y
          sty   <u0004
-         andcc #$FE
+         andcc #^Carry
          puls  pc,y,x,b,a
 
 L01C8    lda   ,y+
@@ -435,10 +435,10 @@ L01DC    lda   ,x+
          beq   L01EC
          cmpa  #$0D
          bne   L01DC
-         orcc  #$01
+         orcc  #Carry
          puls  pc,b,a
 L01EC    stx   <u0006
-         andcc #$FE
+         andcc #^Carry
          puls  pc,b,a
 
 L01F2    pshs  u,x,b,a
@@ -459,7 +459,7 @@ L020F    stb   <u0003
          bne   L0219
          orcc  #$03
          puls  pc,u,x,b,a
-L0219    orcc  #$01
+L0219    orcc  #Carry
          andcc #$FD
          puls  pc,u,x,b,a
 L021F    pshs  u,x,b,a
@@ -497,7 +497,7 @@ L0258    bcs   L0264
 L0264    cmpb  #$D8
          beq   L0270
          stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          andcc #$FD
          puls  pc,u,x,a
 L0270    stb   <u0003
@@ -583,7 +583,7 @@ L030A    lda   ,x+
 L0320    cmpb  #$D8
          beq   L032C
 L0324    stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          andcc #$FD
          puls  pc,u,y,x,b,a
 L032C    tst   <u005D
@@ -659,7 +659,7 @@ L03AF    lda   ,x+
          ldu   <u000A
          os9   I$Seek   
          lbcs  L0324
-L03CF    andcc #$FE
+L03CF    andcc #^Carry
          puls  pc,u,y,x,b,a
 L03D3    pshs  u,y,x,b,a
          pshs  x
@@ -685,7 +685,7 @@ L03EF    tfr   d,y
          os9   F$Wait   
          tstb  
          bne   L041B
-         andcc #$FE
+         andcc #^Carry
 L040D    pshs  cc
          ldx   <u0010
          ldd   #$0000
@@ -693,7 +693,7 @@ L040D    pshs  cc
          puls  cc
          puls  pc,u,y,x,b,a
 L041B    stb   <u0003
-         orcc  #$01
+         orcc  #Carry
          bra   L040D
 L0421    lbsr  L010B
          lbsr  L028D
@@ -711,7 +711,7 @@ L0437    pshs  u
          stu   ,x
          cmpu  $02,x
          beq   L0448
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u
 L0448    puls  u
 L044A    pshs  y,x,b,a
@@ -739,7 +739,7 @@ L0471    ldu   ,x
          beq   L0482
          lda   ,u+
          stu   ,x
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u
 L0480    pshs  u
 L0482    pshs  y,x
@@ -761,7 +761,7 @@ L04A4    cmpb  #$D3
          bne   L04AC
          orcc  #$03
          puls  pc,u
-L04AC    orcc  #$01
+L04AC    orcc  #Carry
          andcc #$FD
          stb   <u0003
          puls  pc,u
@@ -825,18 +825,18 @@ CTRTBL EQU *
          fcb   $0A
          fcb   $09
          fcb   $60 `
-L04E5    fcb   $18
+LNDELC    fcb   $18   L04E5
          fcb   $04
          fcb   $17
          fcb   $06
-L04E9    fcb   $0E
+NMERC    fcb   $0E  L04E9
          fcb   $16
 PAGSTC    fcb   $10
          fcb   $07
          fcb   $12
          fcb   $1E
-         fcb   $01
-         fcb   $05
+ FCB $01 ^A HELP, ASSISTANCE
+         fcb   $05 ^E  Programmer mode
  PAG
 
 *MISC. CHARACTER CONSTANTS
@@ -845,13 +845,13 @@ L04F2    fcb   $14
 L04F3    fcb   $15
 L04F4    fcb   $2D -
 L04F5    fcb   $7C
-L04F6    fcb   $2C ,
+PRCCHR FCC ',' PROC COMMAND CHARACTER
 L04F7    fcb   $7D
 L04F8    fcb   $23 #
          fcb   $7C
 L04FA    fcb   $3E >
 L04FB    fcb   $3C <
-L04FC    fcb   $59 Y
+YCHR    fcb   $59 Y L04FC
 L04FD    fcb   $4E N
          fcb   $53 S
 L04FF    fcb   $41 A
@@ -1322,7 +1322,7 @@ L0EEA  lda   <u0041
     bhi L0EF3
          tsta  
          bne  L0EF6
-L0EF3    orcc  #$01
+L0EF3    orcc  #Carry
          rts   
 
 L0EF6    deca
@@ -1727,7 +1727,7 @@ L10BB    lda   ,x+
          lbsr  WrA2BUF
          lda   ,s+
          bpl   L10BB
-         andcc #$FE
+         andcc #^Carry
 L10C8    andcc #$FB
 L10CA    puls  pc,x,b,a
 L10CC    ldb   ,x
@@ -1741,7 +1741,7 @@ L10CC    ldb   ,x
          leau  >WrA2BUF,pcr
          jsr   ,x
          puls  u
-         orcc  #$01
+         orcc  #Carry
          bra   L10C8
 L10EB    pshs  b
          ldb   #$04
@@ -1971,7 +1971,7 @@ L12E9    pshs  b
          bcs   L1334
          adda  <u0050
          bsr   L12B8
-         andcc #$FE
+         andcc #^Carry
          puls  pc,b
 L12FA    lbsr  L14D4
          bcs   L12E7
@@ -2000,7 +2000,7 @@ L1325    pshs  b
          bcs   L1334
          adda  <u004F
          bsr   L12B8
-         andcc #$FE
+         andcc #^Carry
 L1334    puls  pc,b
 L1336    lbsr  L14D4
          bcs   L1325
@@ -2109,7 +2109,7 @@ L1403    lda   <u00DD
          lbsr  L12E9
          lda   #$20
 L141D    lbsr  L12B8
-L1420    orcc  #$01
+L1420    orcc  #Carry
          puls  pc,b
 L1424    ldb   <u002F,u
 L1427    lda   <u00DD
@@ -2157,7 +2157,7 @@ L1481    lda   <u00DD
          bra   L1488
 L1488    tst   <u00E7
          bne   L148F
-         andcc #$FE
+         andcc #^Carry
          rts   
 L148F    clr   <u00DF
          lda   #$20
@@ -2193,10 +2193,10 @@ L14B9    pshs  a
          lda   <u00EA
          eora  <u0066
          sta   <u00EA
-L14D1    andcc #$FE
+L14D1    andcc #^Carry
 L14D3    rts   
 L14D4    pshs  x,b,a
-         orcc  #$01
+         orcc  #Carry
          ldx   <u0049
          ldx   b,x
          beq   L14FB
@@ -2213,7 +2213,7 @@ L14EC    lda   ,x+
          lbsr  L12B8
          lda   ,s+
          bpl   L14EC
-         andcc #$FE
+         andcc #^Carry
 L14FB    puls  pc,x,b,a
 
 * Address 14FD
@@ -2402,7 +2402,7 @@ L16BF    pshs  u,y,x,b,a
          bne   L1704
          tst   <u0093
          bne   L16CD
-         andcc #$FE
+         andcc #^Carry
          bra   L1702
 L16CD    ldu   <u0026
          ldx   <u008F
@@ -2423,12 +2423,12 @@ L16E7    lbsr  L1D2C
          tst   u0008,u
          beq   L16FA
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L16E7
-L16FA    orcc  #$01
+L16FA    orcc  #Carry
          bra   L1702
 L16FE    clr   <u0093
-         orcc  #$01
+         orcc  #Carry
 L1702    puls  pc,u,y,x,b,a
 L1704    clr   <u009E
          lda   #$01
@@ -2448,12 +2448,12 @@ L1704    clr   <u009E
          lbsr  L3EDA
          ldx   <u0028
          stx   <u008F
-         orcc  #$01
+         orcc  #Carry
          bra   L1702
 L1730    clr   <u0093
          ldd   #$FFFF
          std   <u008B
-         andcc #$FE
+         andcc #^Carry
          bra   L1702
 L173B    lbsr  L10FB
          lbsr  L1146
@@ -3151,13 +3151,13 @@ L1D24    ldb   <u00E1
 L1D2C    tst   u0008,u
          beq   L1D38
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L1DA8
 L1D38    ldx   u0002,u
          cmpx  <u0070
          bcs   L1D43
          lda   #$0A
-         orcc  #$01
+         orcc  #Carry
          rts
 L1D43    cmpu  <u0022
          bne   L1DA8
@@ -3174,7 +3174,7 @@ L1D43    cmpu  <u0022
          cmpa  <u002B,u
          bcs   L1D68
 L1D63    lda   #$0B
-         orcc  #$01
+         orcc  #Carry
          rts
 L1D68    tst   u0008,u
          bne   L1D7F
@@ -3221,11 +3221,11 @@ L1DC1    stx   ,u
          tst   u0008,u
          beq   L1DDA
          ldd   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          bne   L1DDA
-         cmpb  >L04F6,pcr
+         cmpb  >PRCCHR,pcr
          lbne  L1D2C
-L1DDA    andcc #$FE
+L1DDA    andcc #^Carry
          rts
 L1DDD    lda   #$01
          sta   u0008,u
@@ -3275,7 +3275,7 @@ L1E14    lda   <u001E,u
          sta   u0008,u
          cmpu  <u0022
          beq   L1E4F
-         andcc #$FE
+         andcc #^Carry
          rts
 L1E4F    ldy   <u0028
          ldx   <u002A
@@ -3304,12 +3304,12 @@ L1E4F    ldy   <u0028
          puls  x
          ldd   <u007A
          std   $04,x
-         andcc #$FE
+         andcc #^Carry
          rts
 L1E8E    tst   u0008,u
          beq   L1E9C
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          lbeq  L1F69
 L1E9C    ldx   u0009,u
          leax  $01,x
@@ -3318,7 +3318,7 @@ L1E9C    ldx   u0009,u
          lda   <u001D,u
          bne   L1EF2
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          lbeq  L1F69
          ldx   u000B,u
          leax  $01,x
@@ -3347,9 +3347,9 @@ L1EE9    tst   <u0022,u
          dec   <u0022,u
 L1EF1    rts
 L1EF2    ldd   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          bne   L1F52
-         cmpb  >L04F6,pcr
+         cmpb  >PRCCHR,pcr
          bne   L1F52
          lda   <u001D,u
          cmpa  #$01
@@ -3385,7 +3385,7 @@ L1F1D    clr   <u001D,u
          sta   <u001A,u
          rts
 L1F52    lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L1F69
          lda   <u001D,u
          cmpa  #$01
@@ -3538,10 +3538,10 @@ L20C5    lbsr  L26BF
          lbra  L1F92
 L20CF    lda   #$F0
          lbra  L1FD7
-L20D4    andcc #$FE
+L20D4    andcc #^Carry
          lbsr  L117C
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L20E9
          tst   <u001D,u
          beq   L20E9
@@ -3728,7 +3728,7 @@ L227C    lda   ,y+
          sta   ,x+
 L2280    cmpy  u0004,u
          bne   L227C
-L2285    andcc #$FE
+L2285    andcc #^Carry
 L2287    puls  pc,u,y
 L2289    ldy   <u0022
          cmpx  $06,y
@@ -3780,7 +3780,7 @@ L22ED    stb   <u0077
          incb
          stb   <u006D
          stb   <u0075
-         orcc  #$01
+         orcc  #Carry
          bra   L2287
 L22F8    ldx   <u00B6
          ldy   ,u
@@ -3846,7 +3846,7 @@ L2358    cmpx  <u0091
          inca
          sta   <u006D
          sta   <u0075
-L2379    orcc  #$01
+L2379    orcc  #Carry
          lbra  L2287
 L237E    ldd   u0002,u
          pshs  b,a
@@ -3861,18 +3861,18 @@ L2390    ldd   u0006,u
          bcc   L23A8
          tst   <u0065
          bne   L239E
-         andcc #$FE
+         andcc #^Carry
          rts
 L239E    lda   <u0077
          inca
          sta   <u0075
          sta   <u006D
-         orcc  #$01
+         orcc  #Carry
          rts
 L23A8    tst   <u007C
          bne   L23B9
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L23D2
          tst   <u001D,u
          bne   L23D2
@@ -3962,14 +3962,14 @@ L2466    cmpa  ,x+
          leay  $02,y
          tst   ,y
          bne   L2466
-         orcc  #$01
+         orcc  #Carry
          rts
 
 L2473    pshs  a
          leax  >0,pcr
          ldd   ,y
          leax  d,x
-         andcc #$FE
+         andcc #^Carry
          puls  pc,a
 
 L2481    fcb   $44 D
@@ -4089,7 +4089,7 @@ L255C    bsr   L2535
          tst   <u001D,u
          bne   L2574
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L2574
 L2571    clr   <u00CF
          rts
@@ -4240,54 +4240,69 @@ L26B3    puls  pc,y,x,b,a
 
 L26B5    fcb  $27,$10,$03,$E8,$00,$64,$00,$0A,$00,$01
 
-
+* Check for control codes
 L26BF    pshs  y,x,b,a
-         leax  >L04E5,pcr
+         leax  >LNDELC,pcr
          leay  >L26E8,pcr
          lbsr  L2466
          bcs   L26D6
          jsr   ,x
          bcs   L26DA
-         orcc  #$01
+         orcc  #Carry
 L26D4    puls  pc,y,x,b,a
-L26D6    andcc #$FE
+
+L26D6    andcc #^Carry
          bra   L26D4
 L26DA    lbsr  L2BBB
          lda   <u0077
          inca
          sta   <u0075
          sta   <u006D
-         orcc  #$01
+         orcc  #Carry
          bra   L26D4
 
-L26E8    fcb  $29,$68,$28,$C5,$28,$FC,$27,$0B,$27,$2C,$27,$06
-         fcb  $27,$32,$2A,$0D,$2A,$31,$27,$01,$29,$9F,$29,$F7,$00
+L26E8    fdb  L2968  Line delete
+         fdb  L28C5  Character delete
+         fdb  L28FC
+         fdb  L270B,L272C,L2706
+         fdb  L2732,L2A0D,L2A31
+         fdb  L2701  Toggle upper case lock
+         fdb  L299F  Ctrl-A Display help menu
+         fdb  L29F7  Programmer mode
+         fcb  0
 
-L2701    fcb $03
-         adda  -$04,x
-         ldu   >$3903
-         tst   >$1A01
+L2701    com   <u00AB
+         andcc #^Carry
          rts
-         tst   <u007C
+
+L2706    com   <u007D
+         orcc  #Carry
+         rts
+
+
+L270B         tst   <u007C
          beq   L2725
          clra
          tst   <u001D,u
          bne   L271D
          ldb   [,u]
-         cmpb  >L04F6,pcr
+         cmpb  >PRCCHR,pcr
          bne   L2727
 L271D    lda   #$0F
          lbsr  L2AF4
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L2725    lda   #$01
 L2727    sta   <u007C
-         orcc  #$01
+         orcc  #Carry
 L272B    rts
-         lbsr  L2AFF
-         andcc #$FE
+
+L272C    lbsr  L2AFF
+         andcc #^Carry
          rts
-         lda   #$FF
+
+L2732    lda   #$FF
          sta   <u006D
          lbsr  L10FB
          leax  >L0527,pcr
@@ -4417,7 +4432,7 @@ L286F    lbsr  L1698
          beq   L287E
          cmpa  >PAGSTC,pcr
          bne   L286F
-L287E    orcc  #$01
+L287E    orcc  #Carry
          rts
 L2881    pshs  b,a
          lda   <u00A8
@@ -4452,6 +4467,7 @@ L28B2    pshs  b
          puls  a
          lbsr  L1016
          rts
+
 L28C5    tst   <u00A2
          bne   L28D3
          ldy   u0006,u
@@ -4460,10 +4476,10 @@ L28C5    tst   <u00A2
          bcs   L28DB
 L28D3    lda   #$12
          lbsr  L2AF4
-         andcc #$FE
+         andcc #^Carry
          rts
 L28DB    lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L28E8
          tst   <u001D,u
          beq   L28EA
@@ -4477,14 +4493,15 @@ L28EA    ldx   u0006,u
          beq   L28FA
          leay  $01,y
 L28FA    bra   L2944
-         tst   <u00A2
+
+L28FC    tst   <u00A2
          bne   L28D3
          ldx   u0006,u
          lda   ,x
          cmpa  #$F0
          beq   L28C5
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L2915
          tst   <u001D,u
          beq   L2917
@@ -4526,9 +4543,11 @@ L295E    lda   <u0077
          inca
          sta   <u0075
          sta   <u006D
-L2965    andcc #$FE
+L2965    andcc #^Carry
          rts
-         ldx   <u007A
+
+* Line delete
+L2968    ldx   <u007A
          lda   -$01,x
          cmpa  #$F0
          beq   L2980
@@ -4537,8 +4556,9 @@ L2965    andcc #$FE
          beq   L2980
 L2978    lda   #$14
          lbsr  L2AF4
-         andcc #$FE
+         andcc #^Carry
          rts
+
 L2980    ldx   u0002,u
          lda   ,-x
          cmpa  #$F0
@@ -4547,13 +4567,15 @@ L2980    ldx   u0002,u
          stx   ,u
          stx   u0006,u
          lda   ,y
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L295E
          tst   <u001D,u
          bne   L295E
-         andcc #$FE
+         andcc #^Carry
          rts
-         lda   #$FF
+
+* Display help menu
+L299F    lda   #$FF
          sta   <u006D
          lbsr  L10FB
          ldb   #$07
@@ -4587,20 +4609,23 @@ L29DD    ldd   #$0000
 L29EB    lbsr  L0287
          lbsr  L0169
          lbsr  L1698
-L29F4    orcc  #$01
+L29F4    orcc  #Carry
          rts
-         lda   <u00FA
-         cmpa  #$01
-         beq   L2A03
+
+*   Programmer mode
+L29F7    lda   <u00FA
+         cmpa  #$01 Is on?
+         beq   L2A03 branch if yes
          lda   #$01
          sta   <u00FA
          bra   L2A07
-L2A03    lda   #$00
+L2A03    lda   #$00 Turn off
          sta   <u00FA
 L2A07    lda   #$07
          lbsr  WrA2BUF
          rts
-         ldx   u0006,u
+
+L2A0D    ldx   u0006,u
          lda   ,x
          cmpa  #$F1
          beq   L2A2E
@@ -4615,9 +4640,10 @@ L2A07    lda   #$07
          lbsr  L2ABC
          lbsr  L220A
          lbsr  L237E
-L2A2E    andcc #$FE
+L2A2E    andcc #^Carry
          rts
-         ldb   <u003F
+
+L2A31    ldb   <u003F
          addb  <u00A3
          beq   L2A4E
          ldx   <u002E
@@ -4688,11 +4714,11 @@ L2AA4    cmpa  b,x
          bne   L2AA4
          lda   #$1C
          lbsr  L2AF4
-         orcc  #$01
+         orcc  #Carry
          rts
 L2AB5    lda   b,x
          sta   <u00F9
-         andcc #$FE
+         andcc #^Carry
          rts
 L2ABC    pshs  y,a
          ldd   ,u
@@ -4706,7 +4732,7 @@ L2ABC    pshs  y,a
          bra   L2ADE
 L2AD5    lda   #$1A
          lbsr  L2AF4
-         orcc  #$01
+         orcc  #Carry
          puls  pc,y,a
 L2ADE    ldd   u0006,u
          subd  ,u
@@ -4716,7 +4742,7 @@ L2ADE    ldd   u0006,u
          lbsr  L3EDA
          puls  a
          sta   ,y
-         andcc #$FE
+         andcc #^Carry
          puls  pc,y
 L2AF4    pshs  a
          sta   <u0085
@@ -4755,12 +4781,12 @@ L2B3C    lbsr  L02C5
 L2B41    lbsr  L0287
          lbsr  L0169
 L2B47    lbsr  L1698
-         cmpa  >L04E9,pcr
+         cmpa  >NMERC,pcr
          beq   L2B56
          cmpa  >ESCC,pcr
          bne   L2B47
 L2B56    puls  b
-         orcc  #$01
+         orcc  #Carry
          puls  pc,x,b,a
 L2B5C    ldx   >L0521,pcr
          lbsr  L310F
@@ -4779,7 +4805,7 @@ L2B78    lda   <u006D
          lda   <u0045
          inca
          sta   <u006D
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u,y,x,b,a
 L2B87    ldu   <u0024
 L2B89    lbsr  L1D2C
@@ -4787,7 +4813,7 @@ L2B89    lbsr  L1D2C
          tst   u0008,u
          beq   L2BA1
 L2B92    lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L2B89
          tst   <u001D,u
          bne   L2B89
@@ -4799,7 +4825,7 @@ L2BA5    lda   #$01
          lda   <u006D
          lbsr  L2C2B
 L2BAE    inc   <u006D
-         orcc  #$01
+         orcc  #Carry
          puls  pc,u,y,x,b,a
 L2BB4    lda   <u006D
          lbsr  L1185
@@ -4832,7 +4858,7 @@ L2BEB    lbsr  L1D2C
          tst   u0008,u
          beq   L2C01
 L2BF2    lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L2BEB
          tst   <u001D,u
          bne   L2BEB
@@ -4872,7 +4898,7 @@ L2C2B    pshs  y,x,b,a
          lbsr  L1066
 L2C44    ldy   ,u
          lda   ,y
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L2C7F
          tst   u0008,u
          beq   L2C69
@@ -5047,7 +5073,7 @@ L2DCC    cmpy  u0002,u
          bmi   L2DF8
          cmpa  #$20
          beq   L2DE1
-         orcc  #$01
+         orcc  #Carry
          ror   <u0066
          bra   L2E0F
 L2DE1    tst   <u0066
@@ -5486,7 +5512,7 @@ L31AE    ldx   <u001C
 L31B6    lbsr  L0155
          cmpa  >ESCC,pcr
          beq   L3207
-         cmpa  >L04E5,pcr
+         cmpa  >LNDELC,pcr
          beq   L31E3
          cmpa  >BSC,pcr
          beq   L31EB
@@ -5540,14 +5566,14 @@ L322C    ldx   >L0555,pcr
          lbsr  L3131
          lbsr  L1016
          lbsr  L16B4
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          lbne  L3140
          ldx   >L0553,pcr
          lbsr  L32F7
          lbsr  L3131
          lbsr  L1016
          lbsr  L16B4
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          lbne  L3140
          ldx   #$0000
          lbsr  L24D0
@@ -5571,14 +5597,14 @@ L322C    ldx   >L0555,pcr
          lbsr  L3131
          lbsr  WrA2BUF
          lbsr  L16B4
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          lbne  L3140
          ldx   >L0553,pcr
          bsr   L32F7
          lbsr  L3131
          lbsr  WrA2BUF
          lbsr  L16B4
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          lbne  L3140
          lbra  L173B
          lda   #$01
@@ -5835,11 +5861,11 @@ L34FB    ldx   >L0533,pcr
          lbsr  L16B4
          cmpa  >L04FD,pcr
          beq   L352F
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L3524
          cmpa  #$0D
          bne   L34FB
-L3524    lda   >L04FC,pcr
+L3524    lda   >YCHR,pcr
          lbsr  L1016
          ldx   <u0032
          bra   L354B
@@ -5866,11 +5892,11 @@ L3557    ldx   <u0061
          lbsr  L32F7
          lbsr  L3131
          lbsr  L16B4
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L3577
          cmpa  #$0D
          bne   L3590
-L3577    lda   >L04FC,pcr
+L3577    lda   >YCHR,pcr
          lbsr  WrA2BUF
          ldx   <u0061
          lbsr  L02A5
@@ -5976,7 +6002,7 @@ L3677    lbsr  L3131
          beq   L36B2
          cmpa  >L04FD,pcr
          beq   L36B2
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L369E
          lda   #$07
          lbsr  WrA2BUF
@@ -6011,7 +6037,7 @@ L36E2    lbsr  L3131
          beq   L370C
          cmpa  #$0D
          beq   L370C
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L3705
          lda   #$07
          lbsr  WrA2BUF
@@ -6055,12 +6081,12 @@ L3753    lbsr  L3131
          beq   L3785
          cmpa  #$0D
          beq   L3778
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L3778
          lda   #$07
          lbsr  WrA2BUF
          bra   L3753
-L3778    lda   >L04FC,pcr
+L3778    lda   >YCHR,pcr
          lbsr  L1016
          clr   <u00C8
          ldb   #$FF
@@ -6153,13 +6179,13 @@ L384B    lda   >L0516,pcr
          lbsr  L1D2C
          rts
 L385F    lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L3871
          tst   <u001D,u
          bne   L3871
          tst   <u002C,u
          bne   L3874
-L3871    andcc #$FE
+L3871    andcc #^Carry
          rts
 L3874    lda   <u002D,u
          lbsr  L12C0
@@ -6188,13 +6214,13 @@ L38A0    lbsr  L3131
          cmpa  #$0D
          beq   L38B3
          bra   L38A0
-L38B3    orcc  #$01
+L38B3    orcc  #Carry
          rts
 L38B6    ldd   u0002,u
          subd  ,u
          cmpd  #$0001
          bne   L38C3
-         andcc #$FE
+         andcc #^Carry
          rts
 L38C3    ldd   <u0011,u
          bitb  #$01
@@ -6214,7 +6240,7 @@ L38D2    decb
          puls  b
          bra   L38D2
 L38E8    lbsr  L2C2B
-         andcc #$FE
+         andcc #^Carry
          rts
          ldb   [<u0006,u]
          bmi   L3904
@@ -6425,7 +6451,7 @@ L3A8D    ldd   ,u
          lbsr  L1698
          lbsr  L1016
          anda  #$5F
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          lbne  L241D
          ldy   <u00CB
          leay  $02,y
@@ -6567,7 +6593,7 @@ L3C2D    lbsr  L1698
          beq   L3C92
          cmpa  >L04FF,pcr
          beq   L3C4E
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          bne   L3C2D
          bra   L3C50
 L3C4E    inc   <u00AE
@@ -6663,7 +6689,7 @@ L3D1D    lda   >LBCHR,pcr
 L3D29    lbsr  L1698
          cmpa  >ESCC,pcr
          lbeq  L3B8C
-         cmpa  >L04E5,pcr
+         cmpa  >LNDELC,pcr
          beq   L3DA4
          cmpa  #$0D
          beq   L3D58
@@ -6712,9 +6738,9 @@ L3D94    incb
          lda   >L050E,pcr
          ldb   #$02
          lbsr  L1033
-         andcc #$FE
+         andcc #^Carry
          rts
-L3DA4    orcc  #$01
+L3DA4    orcc  #Carry
          rts
 L3DA7    lda   #$0D
          sta   b,x
@@ -6727,7 +6753,7 @@ L3DA7    lda   #$0D
          ldx   >L0589,pcr
          lbsr  L310F
          inc   <u00F1
-         andcc #$FE
+         andcc #^Carry
          rts
 L3DC4    ldx   u0006,u
          cmpx  <u00D3
@@ -6770,7 +6796,7 @@ L3E0B    cmpa  ,y
          beq   L3E1A
 L3E13    cmpx  <u0070
          bcs   L3DE7
-L3E17    orcc  #$01
+L3E17    orcc  #Carry
          rts
 L3E1A    stx   <u00C2
          leay  $01,y
@@ -6823,7 +6849,7 @@ L3E74    ldx   <u00C2
          lbsr  L1D2C
          bcs   L3E86
          bra   L3E74
-L3E81    andcc #$FE
+L3E81    andcc #^Carry
          stx   u0006,u
          rts
 L3E86    clr   <u0077
@@ -6850,11 +6876,11 @@ L3EA0    lda   ,x+
          bne   L3EA0
          leax  -$02,x
          stx   <u00CB
-         andcc #$FE
+         andcc #^Carry
          rts
 L3EBF    lda   #$15
          lbsr  L2AF4
-         orcc  #$01
+         orcc  #Carry
          rts
 L3EC7    inca
          pshs  a
@@ -7110,13 +7136,13 @@ L40D1    pshs  a
          suba  <u0029,u
          cmpa  #$0A
          bcs   L40F9
-         andcc #$FE
+         andcc #^Carry
          puls  pc,a
 L40F9    cmpu  <u0022
          bne   L4103
          lda   #$0D
          lbsr  L2AF4
-L4103    orcc  #$01
+L4103    orcc  #Carry
          puls  pc,a
          lbsr  L4364
          lbcs  L3F2E
@@ -7413,10 +7439,10 @@ L4376    cmpa  #$F0
          adca  #$00
          std   <u0067
          bra   L4374
-L43AF    andcc #$FE
+L43AF    andcc #^Carry
          ldd   <u0067
          rts
-L43B4    orcc  #$01
+L43B4    orcc  #Carry
          rts
          ldx   u0006,u
          cmpx  ,u
@@ -7567,7 +7593,7 @@ L44E2    lbsr  L1D2C
 L44ED    tst   <u007C
          bne   L44FE
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L44E2
          tst   <u001D,u
          bne   L44E2
@@ -7772,7 +7798,7 @@ L469E    tst   u0008,u
          tst   <u007C
          bne   L46D1
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L46CC
          tst   <u001D,u
          beq   L46D1
@@ -7811,7 +7837,7 @@ L46F2    lbsr  L1D2C
 L46F7    tst   u0008,u
          beq   L470A
 L46FB    lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L46F2
          tst   <u001D,u
          bne   L46F2
@@ -7827,7 +7853,7 @@ L4712    tst   u0008,u
          tst   <u001D,u
          bne   L4741
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          bne   L4748
          bra   L4741
 L4729    ldb   #$01
@@ -7849,7 +7875,7 @@ L4748    tst   <u007C
          tst   <u001D,u
          bne   L4759
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          bne   L4760
 L4759    lda   #$01
          sta   <u007C
@@ -7941,7 +7967,7 @@ L481F    lbsr  L1D2C
          tst   <u001D,u
          bne   L481F
          lda   [,u]
-         cmpa  >L04F6,pcr
+         cmpa  >PRCCHR,pcr
          beq   L481F
 L4837    lda   <u003E
          sta   <u0077
@@ -8119,7 +8145,7 @@ L49E0    lbsr  L3131
          lbsr  L16B4
          cmpa  #$0D
          beq   L4A11
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L4A11
          cmpa  >L04FD,pcr
          beq   L49FD
@@ -8247,16 +8273,16 @@ L4B00    leax  $01,x
          bra   L4AE9
 L4B04    leax  $01,x
 L4B06    lda   <u0066
-         andcc #$FE
+         andcc #^Carry
          rts
-L4B0B    orcc  #$01
+L4B0B    orcc  #Carry
          rts
 L4B0E    cmpa  #$30
          bcs   L4B2B
          cmpa  #$39
          bhi   L4B1B
          suba  #$30
-         andcc #$FE
+         andcc #^Carry
          rts
 L4B1B    lbsr  L16B4
          cmpa  #$41
@@ -8264,9 +8290,9 @@ L4B1B    lbsr  L16B4
          cmpa  #$46
          bhi   L4B2B
          suba  #$37
-         andcc #$FE
+         andcc #^Carry
          rts
-L4B2B    orcc  #$01
+L4B2B    orcc  #Carry
          rts
 L4B2E    stb   <u00EB
          tfr   x,d
@@ -8359,12 +8385,12 @@ L4BDD    clra
          lbeq  L4CBC
          cmpa  #$0D
          beq   L4C0F
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L4C0F
 L4C08    lda   #$07
          lbsr  WrA2BUF
          bra   L4BC8
-L4C0F    lda   >L04FC,pcr
+L4C0F    lda   >YCHR,pcr
          lbsr  WrA2BUF
          inc   <u005B
          tst   <u005E
@@ -8381,7 +8407,7 @@ L4C0F    lda   >L04FC,pcr
          lbsr  L16B4
          cmpa  >ESCC,pcr
          lbeq  L3140
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L4C7A
          cmpa  #$0D
          beq   L4C7A
@@ -8413,7 +8439,7 @@ L4C87    ldx   >L057D,pcr
          lbsr  L16B4
          cmpa  >ESCC,pcr
          lbeq  L3140
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L4CB1
          cmpa  #$0D
          beq   L4CB1
@@ -8421,7 +8447,7 @@ L4C87    ldx   >L057D,pcr
          bne   L4C87
          lbsr  L1016
          bra   L4CBF
-L4CB1    lda   >L04FC,pcr
+L4CB1    lda   >YCHR,pcr
          lbsr  L1016
          inc   <u005C
          bra   L4CBF
@@ -8446,11 +8472,11 @@ L4CDF    ldx   >L053B,pcr
          lbeq  L3140
          cmpa  >L04FD,pcr
          lbeq  L3140
-         cmpa  >L04FC,pcr
+         cmpa  >YCHR,pcr
          beq   L4D06
          cmpa  #$0D
          bne   L4CDF
-L4D06    lda   >L04FC,pcr
+L4D06    lda   >YCHR,pcr
          lbsr  WrA2BUF
          ldx   <u0032
          lbsr  L02A5

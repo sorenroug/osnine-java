@@ -4,7 +4,6 @@
 
  use defsfile
 
-OS9Start equ *
 
  ttl Names & tables
  opt -c
@@ -16,6 +15,39 @@ OS9Start equ *
 *                                                          *
 ************************************************************
 
+
+*****
+*
+*  Module Header
+*
+Type set SYSTM+OBJCT
+Revs set REENT+1
+ROMBeg EQU *
+
+ mod OS9End,OS9Nam,Type,Revs,COLD,0
+OS9Nam FCS /OS9/
+ fcb 12 Edition number
+
+*************************
+*    Edition History
+*
+* Ed.  8 - Beginning of history  (V1.1 final version)
+*
+* Ed.  9 - First V1.2 version minor cosmetic changes
+*          Ed byte immediately following module name
+*          Version ID all same length  KKK
+*
+* Ed. 10 - SetSVC now checks service no. for validity
+*          SetPRC checks for zero data area size
+*
+* Ed. 11 - Parse name system call made compatible w/LII
+*
+* Ed. 12 - Fix valmod problem on color basic warm start
+
+* VERSION ID
+ fcc   /CC/
+RamLimit equ $F000
+
 * Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
 * Reproduced Under License
 
@@ -26,31 +58,6 @@ OS9Start equ *
 * publication, or distribution in any form to any party other than 
 * the licensee is strictly prohibited!!
 *
-
-*****
-*
-*  Module Header
-*
-Type set SYSTM+OBJCT
-Revs set REENT+1
- mod OS9End,OS9Nam,Type,Revs,COLD,0
-OS9Nam fcs /OS9/
- fcb 12 Edition number
-
-*************************
-*    Edition History
-*
-* Ed.  8 - Beginning of history  (V1.1 final version)
-*
-* Ed.  9 - First V1.2 version minor cosmetic changes
-*          Ed byte immediately following module name
-*          Version ID all same length                  WGP  11/25/82
-
-*********
-* Version Id
-*
- fcc   /CC/
-RamLimit set $F000
 
 CNFSTR fcs /INIT/ Configuration module name
 OS9STR fcs /OS9P2/ Kernal, part 2 name
@@ -230,7 +237,7 @@ COLD30 cmpb #E$KwnMod Is it known module
  leax 1,X Try next location
 COLD35 bne COLD20
 COLD40 leay SYSVEC,PCR Get interrupt entries
-         leax  >OS9Start,pcr
+         leax  >ROMBeg,pcr
  pshs X save it
  ldx #D.SWI3 Get vector address
 COLD45 ldd ,Y++ get vector

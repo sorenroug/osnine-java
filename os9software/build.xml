@@ -199,13 +199,13 @@
     </target>
 
     <target name="dynacalc" depends="prepare">
-        <assemble src="install_473.dc" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
+        <assemble src="install.dc_drg" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
         <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
-        <assemble src="coco_485.trm" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
-        <assemble src="dragon64_473.trm" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
+        <assemble src="coco_485.cor" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
+        <assemble src="dragon64_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
         <!--
-        <assemble src="ansi_473.trm" home="dynacalc" verify="02016e1718d3a188e20fb19dab1d2d79"/>
+        <assemble src="ansi_473.cor" home="dynacalc" verify="02016e1718d3a188e20fb19dab1d2d79"/>
         -->
     </target>
 

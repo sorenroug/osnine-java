@@ -161,34 +161,34 @@ COLD25 ldb #NotRAM
  stb [,s]
 COLD30 puls X
  leax 1,X
- cmpx  D.BlkMap+2
- bcs   COLD20
- ldx   D.BlkMap
- inc   0,X
- ldx   D.BlkMap+2
- leax  >-DAT.BlCt,X  There are 16 pages in a block
+ cmpx D.BlkMap+2
+ bcs COLD20
+ ldx D.BlkMap
+ inc 0,X
+ ldx D.BlkMap+2
+ leax >-DAT.BlCt,X  There are 16 pages in a block
 COLD35 lda 0,X
- beq   COLD60
- tfr   X,D
- subd  D.BlkMap
- leas  -32,S
- leay  0,S
- bsr   COLD90
- pshs  X
- ldx   #$0000
-COLD40 pshs  Y,X
- lbsr  ADJBLK jump to next block?
- ldb   1,Y
- stb   DAT.Regs
- lda   ,X
- clr   DAT.Regs
- puls  Y,X
- cmpa  #M$ID1
- bne   COLD50
- lbsr  VALMOD
- bcc   COLD45
- cmpb  #E$KwnMod Is it a known module
- bne   COLD50
+ beq COLD60
+ tfr X,D
+ subd D.BlkMap
+ leas -32,S
+ leay 0,S
+ bsr COLD90
+ pshs X
+ ldx #$0000
+COLD40 pshs Y,X
+ lbsr ADJBLK jump to next block?
+ ldb 1,Y
+ stb DAT.Regs
+ lda 0,X
+ clr DAT.Regs
+ puls Y,X
+ cmpa #M$ID1
+ bne COLD50
+ lbsr VALMOD
+ bcc COLD45
+ cmpb #E$KwnMod Is it a known module
+ bne COLD50
 COLD45 ldd #M$Size Get module size
  lbsr F.LDDDXY
  leax D,X Skip module
@@ -495,7 +495,7 @@ SLINK ldy R$Y,U
 *
 * Input: B = Module type
 *        X = Pointer to module directory entry
-ELINK pshs  U
+ELINK pshs U
  ldb R$B,U
  ldx R$X,u Get name ptr
  bra LINK10
@@ -531,9 +531,9 @@ LINK10 bitb #REENT is this sharable
  bra LINKXit
 LINK20 ldd MD$MPtr,X  Module ptr
  pshs X,D
- ldy MD$MPDAT,x   Module DAT Image ptr
- ldd MD$MBSiz,x  Memory Block size
- addd  #DAT.BlSz-1 Round up
+ ldy MD$MPDAT,X   Module DAT Image ptr
+ ldd MD$MBSiz,X  Memory Block size
+ addd #DAT.BlSz-1 Round up
  tfr A,B Calculate number of blocks needed from size
  lsrb
  lsrb
@@ -592,7 +592,7 @@ LINKXit orcc #CARRY
 * Called from LINK
 * Input: B = Number of blocks
 *        U = Module DAT Image ptr
-LINK70 ldx   D.Proc get pointer to current process
+LINK70 ldx D.Proc get pointer to current process
  leay P$DATImg,X
  clra
  pshs Y,X,D
@@ -683,11 +683,11 @@ VMOD32 cmpx D.ModEnd
  beq VMOD30
  cmpy [MD$MPDAT,X] DAT match?
  bne VMOD30
- bsr   VMOD50
-VMOD35    puls  U
- ldx   D.BlkMap
- ldd   MD$MBSiz,U
- addd  #DAT.BlSz-1 Round up to nearest block
+ bsr VMOD50
+VMOD35 puls U
+ ldx D.BlkMap
+ ldd MD$MBSiz,U
+ addd #DAT.BlSz-1 Round up to nearest block
  lsra
  lsra
  lsra
@@ -696,7 +696,7 @@ VMOD35    puls  U
  lsra Divide by 32 for 8K blocks
  endc
  ldy MD$MPDAT,U
-VMOD40 pshs  X,A
+VMOD40 pshs X,A
  ldd ,Y++
  leax D,X
  ldb 0,X Get block marker
@@ -710,14 +710,14 @@ VMOD40 pshs  X,A
 
 VMOD50 pshs U,Y,X,D
  ldx 0,X
- pshs  X
+ pshs X
  clra
  clrb
 VMOD55 ldy 0,X
  beq VMOD57
  std ,X++
  bra VMOD55
-VMOD57 puls  x
+VMOD57 puls x
  ldy 2,S
  ldu MD$MPDAT,U
  puls D
@@ -757,7 +757,7 @@ VMOD70 pshs U,Y,X
  ldu #$0000
  stu 5,S
  bsr VMOD80
-VMOD79 puls  PC,U,Y,X,B
+VMOD79 puls PC,U,Y,X,B
 
 VMOD80 ldx D.ModDAT
  leax D,X
@@ -1013,7 +1013,7 @@ FMOD16 puls Y,X,D Retrieve registers
  ldb 1,S
  leas 4,S
  rts
-FMOD20 leas  4,S
+FMOD20 leas 4,S
  ldd 8,s Free entry found?
  bne FMOD30 Branch if so
  stu 8,S
@@ -1121,7 +1121,7 @@ ALFNUM pshs a
  cmpa #'_ Underscore?
  bne ALPHA10
 RETCC clra
- puls  PC,a
+ puls PC,a
 
 ALPHA pshs a
  anda #$7F Strip high order bit
@@ -1134,7 +1134,7 @@ ALPHA10 cmpa #'A
  cmpa #$7A Lower case?
  bls RETCC ..yes
 RETCS coma Set carry
- puls  PC,a
+ puls PC,a
 
 * Compare Pathname With Module Name
 *
@@ -1146,7 +1146,7 @@ RETCS coma Set carry
 CMPNAM ldx D.Proc
  leay P$DATImg,X
  ldx R$X,U
- pshs  Y,X
+ pshs Y,X
  bra F.CMPNAM
 
 SCMPNAM ldx D.Proc
@@ -1197,7 +1197,7 @@ CHKN20 decb
  anda #$FF-$A0 Match upper/lower & high order bit
  bne RETCS1 ..no; return carry set
  clrb
- puls  PC,u,Y,X,D
+ puls PC,u,Y,X,D
 
 *****
 *
@@ -1227,23 +1227,23 @@ SRQM15 clra
 SRQM20 ldb #DAT.BlCt
 SRQM25 sta ,y+
  decb
- bne   SRQM25
-SRQM30    inc   0,S
- ldb   0,S
- cmpb  #DAT.BlCt
- bcs   SRQM10
-SRQM40 ldb   1,U
-SRQM45 cmpy  D.SysMem
- bhi   SRQM50
+ bne SRQM25
+SRQM30 inc 0,S
+ ldb 0,S
+ cmpb #DAT.BlCt
+ bcs SRQM10
+SRQM40 ldb 1,U
+SRQM45 cmpy D.SysMem
+ bhi SRQM50
  comb
- ldb   #E$MemFul Get error code
- bra   SRQMXX
+ ldb #E$MemFul Get error code
+ bra SRQMXX
 SRQM50 lda ,-y
- bne   SRQM40
+ bne SRQM40
  decb
- bne   SRQM45
- sty   0,S
- lda   1,S
+ bne SRQM45
+ sty 0,S
+ lda 1,S
  lsra
  lsra
  lsra
@@ -1251,10 +1251,10 @@ SRQM50 lda ,-y
  ifge DAT.BlSz-$2000
  lsra Divide by 32 for 8K blocks
  endc
- ldb   1,S
- andb  #(DAT.BlSz/256)-1
- addb  1,U
- addb  #(DAT.BlSz/256)-1
+ ldb 1,S
+ andb #(DAT.BlSz/256)-1
+ addb 1,U
+ addb #(DAT.BlSz/256)-1
  lsrb
  lsrb
  lsrb
@@ -1318,17 +1318,17 @@ SRTM30 ldd 0,X
  leau d,U
  ldb #DAT.TkCt
 SRTM40 lda ,U+
-         bne SRTM50
-         decb
-         bne SRTM40
-         ldd 0,X
-         ldu D.BlkMap
-         clr D,U
-         ldd #DAT.Free
-         std 0,X
+ bne SRTM50
+ decb
+ bne SRTM40
+ ldd 0,X
+ ldu D.BlkMap
+ clr D,U
+ ldd #DAT.Free
+ std 0,X
 SRTM50 leax 2,X
-         leay -1,Y
-         bne SRTM30
+ leay -1,Y
+ bne SRTM30
 SRTMXX clrb
  rts
 
@@ -1394,31 +1394,31 @@ BOOTXX rts
 * Allocate RAM blocks
 *
 ALLRAM ldb R$B,u Get number of blocks
-         bsr   ALRAM10
-         bcs   ALRAM05
-         std   R$D,U
+ bsr ALRAM10
+ bcs ALRAM05
+ std R$D,U
 ALRAM05 rts
 
-ALRAM10    pshs  Y,X,D
-         ldx   D.BlkMap
-ALRAM20    leay  ,X
-         ldb   1,S
-ALRAM30    cmpx  D.BlkMap+2
-         bcc   ALRAMERR
-         lda   ,x+
-         bne   ALRAM20 Reset B counter
-         decb
-         bne   ALRAM30
-         tfr   Y,D
-         subd  D.BlkMap
-         sta   0,S
-         lda   1,S
-         stb   1,S
-ALRAM40    inc   ,y+
-         deca
-         bne   ALRAM40
-         clrb
-         puls  PC,Y,X,D
+ALRAM10 pshs Y,X,D
+ ldx D.BlkMap
+ALRAM20 leay 0,X
+ ldb 1,S
+ALRAM30 cmpx D.BlkMap+2
+ bcc ALRAMERR
+ lda ,x+
+ bne ALRAM20 Reset B counter
+ decb
+ bne ALRAM30
+ tfr Y,D
+ subd D.BlkMap
+ sta 0,S
+ lda 1,S
+ stb 1,S
+ALRAM40 inc ,y+
+ deca
+ bne ALRAM40
+ clrb
+ puls PC,Y,X,D
 
 ALRAMERR comb
  ldb #E$NoRam
@@ -1432,46 +1432,46 @@ ALRAMERR comb
 ALLIMG ldd R$D,u  Get beginning and number of blocks
  ldx R$X,u Process descriptor pointer
 F.ALLIMG pshs u,Y,X,D
-         lsla
-         leay  P$DATImg,X
-         leay  a,Y
-         clra
-         tfr   D,X
-         ldu   D.BlkMap
-         pshs  U,Y,X,D
-ALLIMG10    ldd   ,Y++
-         cmpd  #DAT.Free
-         beq   ALLIMG20
-         lda   d,U
-         cmpa  #$01   #RAMinUse
-         puls  d
-         bne   ALLIMG50
-         subd  #1
-         pshs  d
-ALLIMG20    leax  -1,X
-         bne   ALLIMG10
-         ldx   ,s++
-         beq   ALLIMG60
-         leau  DAT.ImSz,U
-ALLIMG30    lda   ,u+
-         bne   ALLIMG40
-         leax  -1,X
-         beq   ALLIMG60
-ALLIMG40    cmpu  D.BlkMap+2
-         bcs   ALLIMG30
+ lsla
+ leay P$DATImg,X
+ leay A,Y
+ clra
+ tfr D,X
+ ldu D.BlkMap
+ pshs U,Y,X,D
+ALLIMG10 ldd ,Y++
+ cmpd #DAT.Free
+ beq ALLIMG20
+ lda D,U
+ cmpa #$01   #RAMinUse
+ puls D
+ bne ALLIMG50
+ subd #1
+ pshs D
+ALLIMG20 leax -1,X
+ bne ALLIMG10
+ ldx ,s++
+ beq ALLIMG60
+ leau DAT.ImSz,U
+ALLIMG30 lda ,u+
+ bne ALLIMG40
+ leax -1,X
+ beq ALLIMG60
+ALLIMG40 cmpu D.BlkMap+2
+ bcs ALLIMG30
 
  ifeq CPUType-DRG128
-         ldu   D.BlkMap
-         clrb
-         leay  TRANSTBL,pcr
-ALLIMG45    lda   B,Y
-         lda   A,U
-         bne   ALLIMG48
-         leax  -1,X
-         beq   ALLIMG60
+ ldu D.BlkMap
+ clrb
+ leay TRANSTBL,pcr
+ALLIMG45 lda B,Y
+ lda A,U
+ bne ALLIMG48
+ leax -1,X
+ beq ALLIMG60
 ALLIMG48 incb
-         cmpb  #DAT.ImSz
-         bcs   ALLIMG45
+ cmpb #DAT.ImSz
+ bcs ALLIMG45
  endc
 
 ALLIMG50 ldb #E$MemFul
@@ -1480,57 +1480,57 @@ ALLIMG50 ldb #E$MemFul
  comb
  puls PC,U,Y,X,D
 
-ALLIMG60    puls  U,Y,X
-         leau  DAT.ImSz,U
-ALLIMG65    ldd   ,Y++
-         cmpd  #DAT.Free
-         bne   ALLIMG70
+ALLIMG60 puls U,Y,X
+ leau DAT.ImSz,U
+ALLIMG65 ldd ,Y++
+ cmpd #DAT.Free
+ bne ALLIMG70
 ALLIMG68 equ *
  cmpu D.BlkMap+2
  beq ALLIMG75
-         lda   ,u+
-         bne   ALLIMG68
-         inc   ,-u
-         tfr   u,D
-         subd  D.BlkMap
-         std   -2,Y
-ALLIMG70    leax  -1,X
-         bne   ALLIMG65
+ lda ,U+
+ bne ALLIMG68
+ inc ,-U
+ tfr U,D
+ subd D.BlkMap
+ std -2,Y
+ALLIMG70 leax -1,X
+ bne ALLIMG65
 
  ifeq CPUType-DRG128
  bra ALLIMG99
 
-ALLIMG75    ldu   D.BlkMap
-         clrb
-         bra   ALLIMG85
+ALLIMG75 ldu D.BlkMap
+ clrb
+ bra ALLIMG85
 
-ALLIMG80    pshs  B
-         ldd   ,Y++
-         cmpd  #DAT.Free
-         puls  b
-         bne   ALLIMG90
-ALLIMG85    pshs  y
-         leay  TRANSTBL,pcr
-ALLIMG88    lda   b,Y
-         incb
-         tst   a,U
-         bne   ALLIMG88
-         inc   a,U
-         pshs  B
-         tfr   a,b
-         clra
-         ldy   1,S
-         std   -$02,Y
-         puls  y,b
-ALLIMG90    leax  -1,X
-         bne   ALLIMG80
+ALLIMG80 pshs B
+ ldd ,Y++
+ cmpd #DAT.Free
+ puls B
+ bne ALLIMG90
+ALLIMG85 pshs Y
+ leay TRANSTBL,pcr
+ALLIMG88 lda B,Y
+ incb
+ tst a,U
+ bne ALLIMG88
+ inc A,U
+ pshs B
+ tfr A,B
+ clra
+ ldy 1,S
+ std -2,Y
+ puls Y,B
+ALLIMG90 leax -1,X
+ bne ALLIMG80
  endc
 ALLIMG99 ldx 2,S Get process ptr
  lda P$State,X
  ora #ImgChg
  sta P$State,X
  clrb
- puls  PC,U,Y,X,D
+ puls PC,U,Y,X,D
 
  ifeq CPUType-DRG128
 
@@ -1563,36 +1563,36 @@ TRANSTBL fcb $00,$01,$02,$03,$04,$05,$06,$07
 *           1 required in both pages
 * Output X = first block number in lower page
 *            or carry set, B has error code, if memory not available
-GFXMAP   ldb   R$B,U
-         bsr   GFXMAP20
-         bcs   GFXMAP10
-         stx   R$X,U
-GFXMAP10    rts
+GFXMAP ldb R$B,U
+ bsr GFXMAP20
+ bcs GFXMAP10
+ stx R$X,U
+GFXMAP10 rts
 
-GFXMAP20    pshs  X,D
-         ldx   D.BlkMap
-         leax  DAT.GBlk,X
-GFXMAP30    ldb   1,S
-GFXMAP40    cmpx  D.BlkMap
-         beq   GFXFUL
-         tst   ,-x   RAM block free
-         bne   GFXMAP30 ..no
-         decb
-         bne   GFXMAP40
-         tfr   X,D
-         subd  D.BlkMap
-         std   $02,S
-         ldd   ,S
-GFXMAP50    inc   ,x+
-         decb
-         bne   GFXMAP50
-         clrb
-         puls  PC,X,D
+GFXMAP20 pshs X,D
+ ldx D.BlkMap
+ leax DAT.GBlk,X
+GFXMAP30 ldb 1,S
+GFXMAP40 cmpx D.BlkMap
+ beq GFXFUL
+ tst ,-x  RAM block free
+ bne GFXMAP30 ..no
+ decb
+ bne GFXMAP40
+ tfr X,D
+ subd D.BlkMap
+ std 2,S
+ ldd 0,S
+GFXMAP50 inc ,X+
+ decb
+ bne GFXMAP50
+ clrb
+ puls PC,X,D
 
 GFXFUL comb SET Carry
-         ldb   #E$NoRAM
-         stb   1,S
-         puls  PC,X,D
+ ldb #E$NoRAM
+ stb 1,S
+ puls PC,X,D
 
 *****
 * F$GClr
@@ -1601,24 +1601,24 @@ GFXFUL comb SET Carry
 *           1 deallocate in both pages
 *       X = first block number in lower page
 * Output: None
-GFXCLR   ldb   R$B,U
-         ldx   R$X,U
-         pshs  X,D
-         abx
-         cmpx  #DAT.GBlk
-         bhi   GCLRRET not a graphics block
-         ldx   D.BlkMap
-         ldd   2,S
-         leax  D,X
-         ldb   1,S
-         beq   GCLRRET
-GFXCLR10    lda   0,X
-         anda  #$FE #^RamInUse
-         sta   ,x+
-         decb
-         bne   GFXCLR10
-GCLRRET    clrb
-         puls  PC,X,D
+GFXCLR ldb R$B,U
+ ldx R$X,U
+ pshs X,D
+ abx
+ cmpx #DAT.GBlk
+ bhi GCLRRET not a graphics block
+ ldx D.BlkMap
+ ldd 2,S
+ leax D,X
+ ldb 1,S
+ beq GCLRRET
+GFXCLR10 lda 0,X
+ anda #$FE #^RamInUse
+ sta ,x+
+ decb
+ bne GFXCLR10
+GCLRRET clrb
+ puls PC,X,D
  endc
 
 *****
@@ -1632,45 +1632,45 @@ FREEHB ldb R$B,u Get block count
  sta R$A,u return beginning block number
 FRHB10 rts
 
-FRHB20    tfr   b,a
-F.FREEHB    suba  #$11  DAT.BlCt+1
-         nega
-         pshs  X,D
-         ldd   #$FFFF
-         pshs  d
-         bra   FREEBLK
+FRHB20 tfr b,a
+F.FREEHB suba #$11  DAT.BlCt+1
+ nega
+ pshs X,D
+ ldd #$FFFF
+ pshs D
+ bra FREEBLK
 
 *****
 * Get Free low block
 *
-FREELB   ldb   R$B,u Get block count
-         ldy   R$Y,u DAT image pointer
-         bsr   FRLB20
-         bcs   FRLB10
-         sta   R$A,u return beginning block number
-FRLB10    rts
+FREELB ldb R$B,u Get block count
+ ldy R$Y,u DAT image pointer
+ bsr FRLB20
+ bcs FRLB10
+ sta R$A,u return beginning block number
+FRLB10 rts
 
-FRLB20    lda   #$FF
-         pshs  X,D
-         lda   #$01
-         subb  #DAT.BlCt+1
-         negb
-         pshs  d
-         bra   FREEBLK
+FRLB20 lda #$FF
+ pshs X,D
+ lda #$01
+ subb #DAT.BlCt+1
+ negb
+ pshs D
+ bra FREEBLK
 
 FREEBLK clra
-         ldb   2,S
-         addb  0,s Add block increment (point to next block)
-         stb   2,S
-         cmpb  1,S
-         bne   FREBLK20
-         ldb   #E$MemFul
+ ldb 2,S
+ addb 0,S Add block increment (point to next block)
+ stb 2,S
+ cmpb 1,S
+ bne FREBLK20
+ ldb #E$MemFul
  stb 3,S Save error code
  comb set carry
  bra FREBLK30
 
 FREBLK10 tfr A,B
- addb  2,s Add to current start block #
+ addb 2,s Add to current start block #
 FREBLK20 lslb Multiply block # by 2
  ldx B,Y Get DAT marker for that block
  cmpx #DAT.Free Empty block?
@@ -1966,7 +1966,7 @@ SLIC10 clrb
 *
 APROC ldx R$X,U  Address of process descriptor
 F.APROC clrb
- pshs  U,y,x,cc
+ pshs U,Y,X,CC
  lda P$Prior,X Get process priority/age
  sta P$AGE,X Set age to priority
  orcc #IRQMask+FIRQMask Set interrupt masks
@@ -2011,7 +2011,7 @@ IRQHN10 orcc #IntMasks
  ldx D.Proc
  ldu P$SP,X
  lda P$State,X
- bita  #TimOut
+ bita #TimOut
  beq NXTP30
 IRQHN20 anda #^TimOut
  sta P$State,X
@@ -2100,8 +2100,8 @@ NXTP50 ldd D.UsrSvc
 
 NXTOUT lda P$State,x Get process status
  ora #SysState Set system state
- sta P$State,x Update status
- leas P$Stack,x   
+ sta P$State,X Update status
+ leas P$Stack,X
  andcc #^IntMasks Clear interrupt masks
  ldb P$Signal,X Return fatal signal
  clr P$Signal,X
@@ -2210,13 +2210,13 @@ DATINT30 std ,X++
  bne DATINT30
 
 * Put message on screen
- leay  >LOADMSG,pcr
- ldx   #$6000+$3C0
-DATINT40 lda   ,Y+
- beq   DATINTBT
- sta   ,X++
- bra   DATINT40
-DATINTBT    lbra  COLD
+ leay >LOADMSG,pcr
+ ldx #$6000+$3C0
+DATINT40 lda ,Y+
+ beq DATINTBT
+ sta ,X++
+ bra DATINT40
+DATINTBT lbra COLD
 
 CRTCCNF fcb $37,$28,$2E,$35,$1E,$02,$19,$1B,$50,$09,$20,$09,$38,$00,$38,$00
 CRTCSIZ equ *-CRTCCNF
@@ -2344,8 +2344,8 @@ SWI3RQ orcc #IntMasks
  ldb #D.SWI3
  bra SWITCH
 
-SWI2RQ orcc  #IntMasks
- ldb   #D.SWI2
+SWI2RQ orcc #IntMasks
+ ldb #D.SWI2
  bra SWITCH
 
 FIRQ ldb #D.FIRQ
@@ -2373,7 +2373,7 @@ Target set $1225-$20
 SYSVEC fdb TICK+$FFE0-* Clock tick handler
  fdb SWI3HN+$FFE2-* Swi3 handler
  fdb SWI2HN+$FFE4-* Swi2 handler
- fdb 0000+$FFE6-*  Fast irq handler
+ fdb 0000+$FFE6-* Fast irq handler
  fdb IRQHN+$FFE8-* Irq handler
  fdb SWIHN+$FFEA-* Swi handler
  fdb NMIHN+$FFEC-* Nmi handler

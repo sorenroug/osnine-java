@@ -122,22 +122,7 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $FF
          fcb   $00
          fcb   $07
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   $00
          fcb   $00
          fcb   $00
@@ -163,70 +148,10 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $00
          fcb   $01
          fcb   $01
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   $00
          fcb   $00
          fcb   $00
@@ -263,22 +188,7 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $00
          fcb   $0D
          fcb   $61 a
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
+         fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   $00
          fcb   $00
          fcb   $00
@@ -438,23 +348,11 @@ GETADDR  fcb   $18   Get address (Ctrl-X)
          fcb   $20
          fcb   $00
 
-M03BB    fcb   $52 R
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $79 y
+M03BB    fcc   "Ready"
          fcb   $00
-M03C1    fcb   $56 V
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $65 e
+M03C1    fcc   "Value"
          fcb   $00
-M03C7    fcb   $4C L
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $6C l
+M03C7    fcc   "Label"
          fcb   $00
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
          fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -579,22 +477,12 @@ M0600    fcb   $00
 
 * Out of memory routine
 M0608    ldy   #$004F
-         fcb   $30 0
-         fcb   $8D
-         fcb   $00
-         fcb   $19
-         fcb   $86
-         fcb   $02
+         leax  >M0629,pcr
+         lda   #$02
          os9   I$Write
-         fcb   $4F O
-         fcb   $30 0
-         fcb   $8D
-         fcb   $00
-         fcb   $0F
-         fcb   $10
-         fcb   $8E
-         fcb   $00
-         fcb   $01
+         clra
+         leax  >M0629,pcr
+         ldy   #$0001
          os9   I$Read
          fcb   $EE n
          fcb   $8D
@@ -824,25 +712,26 @@ M0700    fcb   $05
          fcb   $E6 f
          fcb   $66 f
          fcb   $91
-M0A13    fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
-         fcb   $12
+
+M0A13    nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
+         nop
          nop
          nop
 
@@ -862,8 +751,7 @@ M0A2B    lbra  M0A21
          fcb   $8D
          fcb   $FB
          fcb   $3B ;
-         fcb   $86
-         fcb   $FF
+         lda   #$FF
          fcb   $A7 '
          fcb   $C9 I
          fcb   $01
@@ -873,7 +761,7 @@ M0A2B    lbra  M0A21
          fcb   $20
          fcb   $53 S
 
-M0A21    cmpd  #$0485
+M0A21    cmpd  #$0485   version number test
          beq M0A8D
 M0A4D    lda   #$02
          leax  >M0A5B,pcr
@@ -941,10 +829,8 @@ M0A8D    leax  >-$0B44,x
          fcb   $8D
          fcb   $FB
          fcb   $80
-         fcb   $86
-         fcb   $02
-         fcb   $C6 F
-         fcb   $1B
+         lda   #$02
+         ldb   #%00011011 File permissions for new file
          os9   I$Create
          fcb   $24 $
          fcb   $06
@@ -994,13 +880,10 @@ M0A8D    leax  >-$0B44,x
          fcb   $8D
          fcb   $FB
          fcb   $43 C
-         fcb   $96
-         fcb   $12
+         lda   <$0012   data file path number
          os9   I$Close
-         fcb   $0F
-         fcb   $12
-         fcb   $9E
-         fcb   $30 0
+         clr   <$0012   data file path number
+         ldx   <$0030
          os9   F$Time
          fcb   $31 1
          fcb   $06
@@ -1442,8 +1325,8 @@ M0A8D    leax  >-$0B44,x
          fcb   $C9 I
          fcb   $50 P
          fcb   $B2 2
-         fcb   $03
-         fcb   $81
+
+         fdb   $0381  Up-arrow
          fcb   $03
          fcb   $AC ,
          fcb   $03
@@ -1466,14 +1349,10 @@ M0A8D    leax  >-$0B44,x
          fcb   $A7 '
          fcb   $03
          fcb   $A7 '
-         fcb   $03
-         fcb   $80
-         fcb   $03
-         fcb   $80
-         fcb   $03
-         fcb   $80
-         fcb   $03
-         fcb   $80
+         fdb   $0380
+         fdb   $0380
+         fdb   $0380
+         fdb   $0380
 
 MONTHS   fcc   "  January"
          fcc   " February"
