@@ -2218,7 +2218,22 @@ DATINT40 lda ,Y+
  bra DATINT40
 DATINTBT lbra COLD
 
-CRTCCNF fcb $37,$28,$2E,$35,$1E,$02,$19,$1B,$50,$09,$20,$09,$38,$00,$38,$00
+CRTCCNF fcb 55 Horizontal total (R0)
+ fcb 40  Horizontal characters displayed (R1)
+ fcb $2E Horizontal sync position
+ fcb $35 Sync width
+ fcb 30 Vertical total (R4)
+ fcb 2 Vertical total adjust (R5)
+ fcb 25 Vertical displayed (R6)
+ fcb $1B Vertical sync (R7)
+ fcb $50 Interlace mode (0) and skew (R8)
+ fcb $09 Maximum scan line (R9)
+ fcb $20 Cursor start line + blink (R10)
+ fcb $09 Last scan line of cursor (R11)
+ fcb $38 Start address register (R12)
+ fcb $00 Start address register (R13)
+ fcb $38 Cursor register (R14)
+ fcb $00 Cursor register (R15)
 CRTCSIZ equ *-CRTCCNF
 
 LOADMSG fcc " OS-9 is loading - please wait ...."
