@@ -1,24 +1,22 @@
 *
 * Terminal characteristics for an 80-column GO51 compatible terminal
-* For T/F values, $00 if False, $FF it True
+* For T/F values, $00 if False, $FF if True
+* Sequences must always end with $FF
 *
-M0088    fcb   $FF,$FF,$FF,$FF    Cursor on
-M008C    fcb   $FF,$FF,$FF,$FF    Cursor off
-M0090    fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00   Terminal setup (15 bytes)
-         fcb   $00,$00,$00,$00,$00,$00,$00,$00
-M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
-M00A8    fcb   $FF,$FF,$00,$00    Sequence to turn on printer (3 Char.)
-         fcb   $FF,$FF,$00,$00    Sequence to turn off printer (3 Char.)
-CURSPOS  fcb   $1B,$41,$06,$0F    Cyrsor XY
-         fcb   $FF,$00,$00,$00
-M00B8    fcb   $1B,$42,$FF,$00,$00,$00    Cursor clear to EOL
-M00BE    fcb   $1B,$4A,$FF,$00,$00,$00    Cursor clear to end of screen
-REVON    fcb   $1B,$46,$FF,$00    Reverse on
-         fcb   $00,$00,$00,$00    Unused
-REVOFF   fcb   $1B,$47,$FF,$00    Reverse off
-M00D0    fcb   $00,$00,$00,$00    Unused
-M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
-M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
+M0088    fcb   $FF,$FF,$FF,$FF    Cursor on (3 bytes)
+M008C    fcb   $FF,$FF,$FF,$FF    Cursor off (3 bytes)
+M0090    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+         fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF   Terminal setup (15 bytes)
+M00A0    fcb   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF   Terminal kiss-off (7 bytes)
+M00A8    fcb   $FF,$FF,$FF,$FF    Sequence to turn on printer (3 bytes)
+         fcb   $FF,$FF,$FF,$FF    Sequence to turn off printer (3 bytes)
+CURSPOS  fcb   $1B,$41,$88,$99,$FF,$FF,$FF,$FF    Cyrsor XY (7 bytes)
+M00B8    fcb   $1B,$42,$FF,$FF,$FF,$FF    Cursor clear to EOL (5 bytes)
+M00BE    fcb   $1B,$4A,$FF,$FF,$FF,$FF    Cursor clear to end of screen (5 bytes)
+REVON    fcb   $1B,$46,$FF,$FF,$FF,$FF,$FF,$FF    Hilite on (7 bytes)
+REVOFF   fcb   $1B,$47,$FF,$FF,$FF,$FF,$FF,$FF    Hilite off (7 bytes)
+M00D4    fcb   $08,$20,$08,$FF,$FF,$FF  Destructive backspace (5 bytes)
+M00DA    fcb   $08,$FF,$FF,$FF   non-destructive backspace (3 bytes)
 M00DE    fcc   "                "  Terminal name (16 chars)
 M00EE    fcb   $00
          fcb   $00

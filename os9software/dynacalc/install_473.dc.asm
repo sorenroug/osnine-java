@@ -544,7 +544,7 @@ L0479    lda   <u0005
 * (dead code)
 Q.TNAME  leax  >L0C62,pcr  Enter your terminal's name
          lbsr  CRTEXT
-         lbsr  L0654
+         lbsr  L0654 Read line
          leau  >$DE+TRMBASE,y
          ldb   #$10
          leax  <$4C,y
