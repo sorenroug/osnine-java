@@ -484,14 +484,9 @@ M0608    ldy   #$004F
          leax  >M0629,pcr
          ldy   #$0001
          os9   I$Read
-         fcb   $EE n
-         fcb   $8D
-         fcb   $FF
-         fcb   $50 P
-         fcb   $6E n
-         fcb   $C9 I
-         fcb   $3C <
-         fcb   $55 U
+         ldu   >M0575,pcr
+         jmp   >$3C55,u
+
 
 M0629    fcb   $0D
          fcb   $0A
@@ -741,25 +736,13 @@ M0A28    lbra  M0A4D
 M0A2B    lbra  M0A21
 
          pshs  x,a
-         fcb   $1F
-         fcb   $51 Q
-         fcb   $30 0
-         fcb   $89
-         fcb   $A3 #
-         fcb   $CE N
-         fcb   $AF /
-         fcb   $8D
-         fcb   $FB
-         fcb   $3B ;
+         tfr   pc,x
+         leax  >-$5C32,x
+         stx   >M0575,pcr
          lda   #$FF
-         fcb   $A7 '
-         fcb   $C9 I
-         fcb   $01
-         fcb   $43 C
-         fcb   $35 5
-         fcb   $12
-         fcb   $20
-         fcb   $53 S
+         sta   >$0143,u
+         puls  x,a
+         bra   L0A97
 
 M0A21    cmpd  #$0485   version number test
          beq M0A8D
@@ -776,7 +759,7 @@ M0A5B    fcc   "DYNACALC and DYNACALC.TRM are different versions."
 M0A8D    leax  >-$0B44,x
          stx   >M0575,pcr
          puls  u,y,x,b,a
-         std   >$01C1,u
+L0A97         std   >$01C1,u
          tfr   dp,a
          inca  
          tfr   a,dp
@@ -823,67 +806,43 @@ M0A8D    leax  >-$0B44,x
          leax  >M0680,pcr
          lda   #$02
          os9   I$Open
-         fcb   $24 $
-         fcb   $13
-         fcb   $30 0
-         fcb   $8D
-         fcb   $FB
-         fcb   $80
+         bcc   M0B0F
+         leax  >M0680,pcr
          lda   #$02
          ldb   #%00011011 File permissions for new file
          os9   I$Create
-         fcb   $24 $
-         fcb   $06
-         fcb   $6F o
-         fcb   $8D
-         fcb   $FB
-         fcb   $73 s
-         fcb   $20
-         fcb   $35 5
-         fcb   $97
-         fcb   $12
-         fcb   $9E
-         fcb   $30 0
-         fcb   $5F _
+         bcc   M0B0F
+         clr   >M0680,pcr
+         bra   M0B44
+
+M0B0F    sta   <$0012
+         ldx   <$0030
+         clrb  
+
          os9   I$GetStt
-         fcb   $25 %
-         fcb   $20
-         fcb   $9E
-         fcb   $30 0
-         fcb   $5F _
-         fcb   $A6 &
-         fcb   $84
-         fcb   $27 '
-         fcb   $13
-         fcb   $4A J
-         fcb   $26 &
-         fcb   $16
-         fcb   $96
-         fcb   $12
-         fcb   $C6 F
-         fcb   $02
-         os9   I$GetStt
-         fcb   $25 %
-         fcb   $0D
-         os9   I$Seek
-         fcb   $25 %
-         fcb   $08
-         fcb   $C6 F
-         fcb   $FF
-         fcb   $D7 W
-         fcb   $13
-         fcb   $26 &
-         fcb   $0D
-         fcb   $20
-         fcb   $04
-         fcb   $6F o
-         fcb   $8D
-         fcb   $FB
-         fcb   $43 C
-         lda   <$0012   data file path number
+         bcs   M0B39
+         ldx   <$0030
+         clrb  
+         lda   ,x
+         beq   M0B33
+         deca  
+         bne   M0B39
+         lda   <$0012
+         ldb   #$02
+         os9   I$GetStt 
+         bcs   M0B39
+         os9   I$Seek   
+         bcs   M0B39
+         ldb   #$FF
+M0B33         stb   <$0013
+         bne   M0B44
+         bra   M0B3D
+
+M0B39    clr   >M0680,pcr
+M0B3D    lda   <$0012   data file path number
          os9   I$Close
          clr   <$0012   data file path number
-         ldx   <$0030
+M0B44    ldx   <$0030
          os9   F$Time
          fcb   $31 1
          fcb   $06

@@ -1,21 +1,22 @@
 *
 * Terminal characteristics for an 80-column GO51 compatible terminal
+* For T/F values, $00 if False, $FF it True
 *
 M0088    fcb   $FF,$FF,$FF,$FF    Cursor on
 M008C    fcb   $FF,$FF,$FF,$FF    Cursor off
-M0090    fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00   Terminal setup
+M0090    fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00   Terminal setup (15 bytes)
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
 M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
-M00A8    fcb   $FF,$FF,$00,$00    Cursor right
-         fcb   $FF,$FF,$00,$00    Cursor ??
+M00A8    fcb   $FF,$FF,$00,$00    Sequence to turn on printer (3 Char.)
+         fcb   $FF,$FF,$00,$00    Sequence to turn off printer (3 Char.)
 CURSPOS  fcb   $1B,$41,$06,$0F    Cyrsor XY
          fcb   $FF,$00,$00,$00
 M00B8    fcb   $1B,$42,$FF,$00,$00,$00    Cursor clear to EOL
 M00BE    fcb   $1B,$4A,$FF,$00,$00,$00    Cursor clear to end of screen
 REVON    fcb   $1B,$46,$FF,$00    Reverse on
-         fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$00    Unused
 REVOFF   fcb   $1B,$47,$FF,$00    Reverse off
-M00D0    fcb   $00,$00,$00,$00
+M00D0    fcb   $00,$00,$00,$00    Unused
 M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
 M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
 M00DE    fcc   "                "  Terminal name (16 chars)
@@ -29,14 +30,14 @@ M00F0    fcb   $00
          fcb   $00
          fcb   $00
 M00F7    fcb   $04  Log-off key
-M00F8    fcb   $00  Upper case only
-         fcb   $00  line feeds after each line
+M00F8    fcb   $00  Upper case only T/F
+         fcb   $00  Number of line feeds after each line
 M00FA    fcb   $00
-M00FB    fcb   $00  keep helps  T/F
+M00FB    fcb   $00  Keep helps  T/F
          fcb   $FF  print borders  T/F
-         fcb   79  printer page width
+         fcb   79  Printer page width
          fcb   $00  Pagination  T/F
-M00FF    fcb   57  Lines per page
+M00FF    fcb   57  Lines per printer page
 M0100    fcb   $0C     Up-arrow
 DOWNKEY  fcb   $0A     Down-arrow
          fcb   $18     Left-arrow

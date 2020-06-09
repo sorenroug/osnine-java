@@ -14,7 +14,7 @@
  org 0
  use header_473.inc
  use go51.keys
- use rest.inc
+ use rest_473.inc
  use banner_drg.inc
  use drg_junk4.inc
  use helps_473.inc
