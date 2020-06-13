@@ -52,5 +52,5 @@ M010C    fcb   $02
          fcb   24   number of rows on screen
          fcb   79   number of columns on screen
          fcb   $0F  Edit overlay (Ctrl-O)
-M0110    fcb   $03  Flush type-ahead buffer
+M0110    fcb   $03  Flush type-ahead buffer (Ctrl-C)
          fcb   $05  Edit from entry level (Ctrl-E)

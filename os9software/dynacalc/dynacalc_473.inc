@@ -17,7 +17,7 @@ u000A    rmb   1
 u000B    rmb   1
 u000C    rmb   1
 u000D    rmb   1
-u000E    rmb   1
+u000E    rmb   1  number of columns
 u000F    rmb   1
 u0010    rmb   1
 u0011    rmb   1
