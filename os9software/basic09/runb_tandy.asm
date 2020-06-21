@@ -1,6 +1,8 @@
 
 Y2K equ 0
 B09EXEC equ 0
+Edition  equ   22
+
        org 1
 TANDY  rmb 1
 DRAGON  rmb 1

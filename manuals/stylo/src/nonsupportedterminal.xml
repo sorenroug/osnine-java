@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<appendix xmlns="http://docbook.org/ns/docbook">
+  <title>Modifying Stylograph for Non-supported Serial Terminal</title>
+  <para>
+      If you have a serial terminal which is not listed in appendix C, then
+      you should return your STYLOGRAPH disk to GREAT PLAINS COMPUTER
+      COMPANY INC. for modification. When you return your disk, also
+      include a copy of the portion of the manual which includes the control
+      codes that it uses, or preferably, you may send a copy of the manual.
+      Terminal updates will be done for a $50.00 charge.
+  </para>
+  <para>
+      If you wish, and are capable of assembly code work, you may do the
+      modifications yourself. The terminal driver consists of two different
+      parts: a stack of pointers located $20 bytes above TRMBEG, and a
+      stack of ASCII control sequences located at TRMSEQ. The source code
+      for three different terminal drivers are included on you disk. They
+      may be used as models for constructing your own terminal driver. The
+      easiest course of action is to edit one of these files to create your
+      own file.
+  </para>
+  <para>
+      The first byte of the stack of pointers consists of the sum of some
+      constants indicating the characteristics of the terminal. Those
+      constants are listed in the source code. They specify the following
+      characteristics:
+  </para>
+  <orderedlist>
+    <listitem>
+      <para>
+              The dimensions of the screen. These are the "D"
+              constants. If your terminal scrolls up whenever a character
+              is put in the bottom right hand corner of the screen, you
+              must specify the D2479 rather than the D2480 screen size.
+              STYLOGRAPH only supports the screen sizes listed in the
+              constants shown in the source code.
+          </para>
+    </listitem>
+    <listitem>
+      <para>
+              Whether the cursor is addressed X (Column) then Y (Row),
+              or, Y then X. If it is Y then X, then you must sum in the
+              CYX constant.
+          </para>
+    </listitem>
+    <listitem>
+      <para>
+              Whether $20 must be added to the cursor address. If your
+              terminal requires that the lowest cursor address is a SPACE
+              ($20) rather than a NUL ($00) then you must sum in the
+              "CAD20" constant.
+          </para>
+    </listitem>
+    <listitem>
+      <para>
+              Whether your terminal can scroll down. Many terminals
+              can be made to scroll down by putting the cursor at the top
+              of the screen and using the "insert line" function of the
+              terminal. Other terminals have a scroll down function.
+              Some will scroll down by moving the cursor to the top and
+              bumping the cursor up. If your terminal can scroll down by
+              using one of the sequences, you should sum in the "SSCD"
+              constant.
+          </para>
+    </listitem>
+    <listitem>
+      <para>
+          If our terminal has a line erase function, you should
+          sum in the "LERF" constant. The next 13 bytes consist of
+          pointers to the ASCII control sequences that are listed at
+          TRMSEQ. A number <quote>1</quote> points to the first sequence. A number
+          <quote>4</quote> points to the fourth sequence, etc. A zero indicates
+          that the terminal does not have that function. The only
+          functions that STYLOGRAPH absolutely requires are the
+          cursor-move and the clear-screen functions.
+      </para>
+    </listitem>
+  </orderedlist>
+  <para>
+    The actual sequences that are sent to the terminal are listed starting
+    at TRMSEQ. They are listed in order and the last byte that is sent
+    has the <quote>N</quote> bit set. The <quote>N</quote> bit is set by
+    adding the constant <quote>N</quote> to the last character in the sequence.
+</para>
+  <para>
+    Whenever a new terminal driver is made, all other terminal drivers are
+    destroyed. That is, after these modifications are made you may no
+    longer specify the terminal type on the calling line. Also, the
+    terminal number must now be a <quote>1</quote>. The is normally set by an FCB in
+    the source code, but can also be set by STYFIX. The FCB is at the
+    beginning of the example terminal drivers.
+</para>
+  <para>
+    After this new code has been assembled and a binary file created, it
+    may be appended to STYLOGRAPH.
+</para>
+</appendix>

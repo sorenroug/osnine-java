@@ -1,0 +1,54 @@
+ ttl Gimix Dynamic Address Translator Definitions
+ page
+************************************************************
+*
+*     Dynamic Address Translator Definitions
+*
+DAT.BlCt equ 16 D.A.T. blocks/address space
+DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
+DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
+DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
+DAT.Task equ $FF7F Task Register address
+DAT.TkCt equ 16 Number of DAT Tasks
+DAT.Regs equ $FFF0 DAT Block Registers base address
+DAT.Free equ $FC Free Block Number
+DAT.BlMx equ $FF Maximum Block number
+DAT.BMSz equ $100 Memory Block Map size
+SysTask equ $20 Gimix System Task number
+IOBlock equ $FE
+ROMBlock equ $FF
+ROMCount equ 1 number of blocks of ROM
+RAMCount equ 1 initial blocks of RAM
+LastRAM equ IOBlock maximum RAM block number
+
+
+CPUType set Gimix
+MappedIO equ true
+ClocType set M58167
+DiskType set G68
+DriveCnt set 4
+
+ ifeq DiskType-G68
+DPort equ $E3B0
+ endc
+ ifeq DiskType-DCB4
+DPort equ $E3C0
+ endc
+ ifeq ClocType-M58167
+CPort equ $E220
+ endc
+ ifeq ClocType-MC6840
+CPort equ $E210
+ endc
+A.Term equ $E004
+A.T1 equ $E020
+A.T2 equ $E024
+A.T3 equ $E030
+A.T.init equ $15
+A.P1 equ $E000
+A.P equ $E042
+DBG.DP equ $E4
+DBG.Time equ $E210
+
+
+

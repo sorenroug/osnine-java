@@ -1,0 +1,9 @@
+Color equ $0A
+
+CPUType set Color
+ClocType set 0
+
+DPort set $FF40
+DriveCnt equ 4
+
+A.PIA1A equ $FF20

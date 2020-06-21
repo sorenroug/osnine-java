@@ -3,7 +3,15 @@
 
  ifp1
  use defsfile
- use Dynacalc_473.cor.inc
+ opt m
+ org 0
+ use header_473.inc
+ use go51.keys
+ use rest.inc
+ use banner_drg.inc
+ use drg_junk4.inc
+ use helps_473.inc
+ use help51.inc
  endc
  opt -m
  use dynacalc_473.inc

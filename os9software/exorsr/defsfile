@@ -1,0 +1,8 @@
+Level    equ   1
+
+ ifp1
+ use os9defs
+ use scfdefs
+ use rbfdefs
+ endc
+ use systype

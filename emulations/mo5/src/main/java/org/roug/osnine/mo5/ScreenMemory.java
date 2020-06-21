@@ -1,6 +1,6 @@
 package org.roug.osnine.mo5;
 
-import org.roug.osnine.MemorySegment;
+import org.roug.usim.MemorySegment;
 
 /**
  * Screen memory at $0000 to $1FFF (or 1F3F).

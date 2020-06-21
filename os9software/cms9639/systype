@@ -1,0 +1,36 @@
+* This systype file is reverse engineered
+*
+************************************************************
+*
+*     Dynamic Address Translator Definitions
+*
+CMS9639 equ 15
+CPUType set CMS9639
+
+DAT.BlCt equ 16 D.A.T. blocks/address space
+DAT.TkCt equ 128 task maps in the MMU
+DAT.Regs equ $F000 DAT Block Registers base address
+DAT.Task equ $FFBB Task register address
+*DAT.BlSz equ $1000
+DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
+DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
+***************
+DAT.Free equ $8000 Free Block Number
+
+***************
+*
+* DAT.Addr calculates a mask for the top bits of the
+* logical address that are mapped by the MMU
+DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
+*
+
+ClocType equ 0
+
+SysTask equ $80 System Task number
+*
+***************
+
+*IOBlock equ $FF The block number for the I/O
+ROMBlock equ $FF ROM block
+
+RAMCount equ 2 initial blocks of RAM

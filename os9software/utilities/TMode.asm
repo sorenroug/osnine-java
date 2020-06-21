@@ -45,9 +45,6 @@ SETNAM fcs "Tmode"
 * Ed  8 - Add conditionals for Color Computer               KKK 01/05/83
  pag
 
-normal equ 0 normal screen size
-small equ 1 small screen size
-Screen equ normal
  ifeq Screen-small
 MARGIN set 22 Output line margin
  else

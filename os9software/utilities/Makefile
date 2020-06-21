@@ -9,4 +9,6 @@ ASMHOME=../assembler
 	$(RUN) -h $(CURDIR)/$(ASMHOME) -m 20000 asm $< o=a.out
 	mv $(CURDIR)/$(ASMHOME)/CMDS/a.out $@
 	chmod 755 $@
-	
+	md5sum $@
+	@grep "$@$$" sums
+

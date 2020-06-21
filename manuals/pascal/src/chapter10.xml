@@ -180,7 +180,7 @@ usually assigned multiples of these quantities. For example, an array
 of 6 integers requires 6 times 2 bytes or 12 bytes of storage. Records
 are assigned storage according to their overall structure. A record that
 contains a real variable, an integer variable, and a boolean variable
-would require 5+241 bytes or 8 bytes of storage. Arrays of records
+would require 5+2+1 bytes or 8 bytes of storage. Arrays of records
 require number-of-elements times record-size bytes of storage. Records
 which are allocated as local variables and which contain variants are
 allocated enough storage to contain the largest possible combination

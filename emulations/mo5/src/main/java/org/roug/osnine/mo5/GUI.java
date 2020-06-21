@@ -19,13 +19,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.BusStraight;
-import org.roug.osnine.MC6809;
-import org.roug.osnine.PIA6821;
-import org.roug.osnine.RandomAccessMemory;
-import org.roug.osnine.ReadOnlyMemory;
-import org.roug.osnine.Throttler;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.BusStraight;
+import org.roug.usim.mc6809.MC6809;
+import org.roug.usim.PIA6821;
+import org.roug.usim.RandomAccessMemory;
+import org.roug.usim.ReadOnlyMemory;
+import org.roug.usim.Throttler;
 
 import java.io.File;
 import java.io.FileNotFoundException;

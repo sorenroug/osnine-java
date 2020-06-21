@@ -14,9 +14,8 @@
       <para>OS-9 and BASIC09 are trade marks of Microware Systems Corporation and Motorola Inc.</para>
     </legalnotice>
   </info>
-
   <dedication>
-  <para>
+    <para>
 Dynacalc was originally created by
 <address>
 Scott Schaeferle
@@ -27,42 +26,36 @@ Computer Systems Center
 </address>
 and was ported to several operating systems including FLEX and Disk Extended Color Basic on the TRS-80 Color Computer.
   </para>
-<para>
-<inlinemediaobject>
-  <imageobject condition="web">
-    <imagedata fileref="flexfront.png" format="PNG" scale="40"/>
-  </imageobject>
-  <caption>
-   <para>Dynacalc for FLEX</para>
-  </caption>
-</inlinemediaobject>
-
-<inlinemediaobject>
-  <imageobject condition="web">
-    <imagedata fileref="colorfront.png" format="PNG" scale="40"/>
-  </imageobject>
-  <caption>
-   <para>Dynacalc for Color Basic</para>
-  </caption>
-</inlinemediaobject>
-
-</para>
-</dedication>
-
+    <para>
+      <inlinemediaobject>
+        <imageobject condition="web">
+          <imagedata fileref="flexfront.png" format="PNG" scale="40"/>
+        </imageobject>
+        <caption>
+          <para>Dynacalc for FLEX</para>
+        </caption>
+      </inlinemediaobject>
+      <inlinemediaobject>
+        <imageobject condition="web">
+          <imagedata fileref="colorfront.png" format="PNG" scale="40"/>
+        </imageobject>
+        <caption>
+          <para>Dynacalc for Color Basic</para>
+        </caption>
+      </inlinemediaobject>
+    </para>
+  </dedication>
   <preface>
     <title>System Requirements</title>
     <para>This version of DYNACALC is designed to operate under the 6809 OS-9 operating system, either &#x2018;level one&#x2019; or &#x2018;level 2&#x2019;. With a level one system, about 13k of user space remains after DYNACALC is loaded, which will hold about 1000 numeric cells. A level two system will allow about 36k of user space, or room for about 3000 numeric cells.</para>
-    <para>The minimum system configuration you require is your Dragon Data computer, with at least ask bytes of RAM, running the OS-9 operating system; a floppy disk drive; and a television, or preferably a monochrome monitor. (The monitor will generally give you a better picture than a television). You can certainly run DYNACALC with only one disk drive, although two drives are more convenient.</para>
+    <para>The minimum system configuration you require is your Dragon Data computer, with at least 64k bytes of RAM, running the OS-9 operating system; a floppy disk drive; and a television, or preferably a monochrome monitor. (The monitor will generally give you a better picture than a television). You can certainly run DYNACALC with only one disk drive, although two drives are more convenient.</para>
     <para>Use of a printer with DYNACALC is entirely optional, and you can use any hard copy device which you currently use under OS-9. The user has control of all important printer parameters: printer device name, column width (up to 255), number of lines per page, multiple spacing, pagination on/off, and DYNACALC borders on/off.</para>
   </preface>
-
-
-
-<chapter xml:id="getting.started">
-  <title>Getting Started</title>
-  <para>PLEASE READ THIS SHORT SECTION CAREFULLY BEFORE ATTEMPTING TO USE DYNACALC. WE SUGGEST THAT WHILE YOU ARE LEARNING TO USE DYNACALC YOU SHOULD MAKE USE OF THE COMMAND AND KEY-ASSIGNMENT SUMMARIES AT THE END OF THIS MANUAL.</para>
-  <para>When you have read this section, try out the tutorial at the end of is this manual. 'Hands-on experience' is the best way of quickly becoming familiar with DYNACALC.</para>
-  <para>The DYNACALC package from Dragon Data contains two items: this
+  <chapter xml:id="getting.started">
+    <title>Getting Started</title>
+    <para>PLEASE READ THIS SHORT SECTION CAREFULLY BEFORE ATTEMPTING TO USE DYNACALC. WE SUGGEST THAT WHILE YOU ARE LEARNING TO USE DYNACALC YOU SHOULD MAKE USE OF THE COMMAND AND KEY-ASSIGNMENT SUMMARIES AT THE END OF THIS MANUAL.</para>
+    <para>When you have read this section, try out the tutorial at the end of is this manual. 'Hands-on experience' is the best way of quickly becoming familiar with DYNACALC.</para>
+    <para>The DYNACALC package from Dragon Data contains two items: this
     manual, and a single floppy disk. Because of the risk of inadvertently
     damaging the disk or deleting the files on it, you should NEVER use
     the disk for running DYNACALC. Use the &#x2018;backup&#x2019; command
@@ -70,98 +63,94 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     blank disk, and STORE THE ORIGINAL DISK IN A SAFE PLACE. Refer to
     the <citetitle pubwork="book">OS-9 User&#x2019;s Manual</citetitle> for instructions on how to use the
     'backup' and 'format' commands.</para>
-  <para>Now place the new disk in drive d0. Change your execution and data directories to the new disk:</para>
-  <screen>OS9: <userinput>chx /d0/cmds chd /d0</userinput></screen>
-  <para>On the root directory of the disk, which you can now inspect by</para>
-  <screen>OS9: <userinput>dir</userinput></screen>
-
-  <para>you will find some sample DYNACALC workfiles, and two directories - CMDS and SYS. The CMDS (commands) directory contains the files that you need to run DYNACALC: </para>
-
-  <informaltable frame="none" colsep="0" rowsep="0">
-    <tgroup cols="2">
-      <colspec colwidth="2.0in"/>
-      <colspec colwidth="3.0in"/>
-      <tbody>
-        <row>
-          <entry>
+    <para>Now place the new disk in drive d0. Change your execution and data directories to the new disk:</para>
+    <screen>OS9: <userinput>chx /d0/cmds chd /d0</userinput></screen>
+    <para>On the root directory of the disk, which you can now inspect by</para>
+    <screen>OS9: <userinput>dir</userinput></screen>
+    <para>you will find some sample DYNACALC workfiles, and two directories - CMDS and SYS. The CMDS (commands) directory contains the files that you need to run DYNACALC: </para>
+    <informaltable frame="none" colsep="0" rowsep="0">
+      <tgroup cols="2">
+        <colspec colwidth="2.0in"/>
+        <colspec colwidth="3.0in"/>
+        <tbody>
+          <row>
+            <entry>
             dynacalc
           </entry>
-          <entry>
+            <entry>
             The program itself
           </entry>
-        </row>
-        <row>
-          <entry>
+          </row>
+          <row>
+            <entry>
             install.dc
           </entry>
-          <entry>
+            <entry>
             The customizing program
           </entry>
-        </row>
-        <row>
-          <entry>
+          </row>
+          <row>
+            <entry>
             dynacalc.trm
           </entry>
-          <entry>
+            <entry>
             System information for your Dragon and printer
           </entry>
-        </row>
-      </tbody>
-    </tgroup>
-  </informaltable>
-  <para>plus a few of the commonly used OS-9 utility programs.</para>
-  <para>To inspect this directory type:</para>
-  <screen>OS9: <userinput>dir cmds</userinput></screen>
-  <para>&#x201C;install.dc&#x201D; is used to customize DYNACALC for your printer. The supplied &#x201C;dynacalc.trm&#x201D; is configured for a standard 80 column printer on the parallel printer port, &#x201C;/p&#x201D;. If you do need to change the configuration, see the section on &#x2018;<xref linkend="system.configuration">System Configuration</xref>&#x2019;.</para>
-  <para>The SYS directory contains the OS-9 error messages file, 'errmsg', used by OS-9 when reporting an error (such as &#x201C;Error #216 - Pathname not found&#x201D;).</para>
-  <para>If you are using a Dragon 64 computer and you are not already in the 51 characters by 24 lines mode use the 'go51' command to change the screen format:</para>
-  <screen>OS9: <userinput>go51</userinput></screen>
-  <sect1>
-    <title>Getting into and out or DYNACALC</title>
-    <para>You are now ready to try out DYNACALC. All you need do is type:</para>
-    <screen>OS9: <userinput>dynacalc</userinput></screen>
-    <para>To exit DYNACALC at any time and return to OS-9:</para>
-    <orderedlist numeration="lowerroman">
-      <listitem>
-        <para>hit the <keycap>ESCAPE</keycap> key to return to the DYNACALC &#x2018;Ready&#x2019; prompt. (For the assignment of the <keycap>ESCAPE</keycap> key on your keyboard, see the <xref linkend="key.assignment">Key Assignment Summary</xref> at the end of this manual).</para>
-      </listitem>
-      <listitem>
-        <para>if you want to save your worksheet, use the <userinput>/SS</userinput> command.</para>
-      </listitem>
-      <listitem>
-        <para>type <userinput>/QOY</userinput> (letter "O") to return to OS-9.</para>
-      </listitem>
-    </orderedlist>
-    <para>You can exit any command and return to the &#x2018;Ready&#x2019; prompt by hitting the <keycap>ESCAPE</keycap> key. You should also use the <keycap>ESCAPE</keycap> key to return to the &#x2018;Ready&#x2019; prompt when DYNACALC is showing you an error message, or when you want to exit from a HELP display.</para>
-    <para>To try out one of the sample profiles, for instance &#x2018;demo1.cal&#x2019;, use:</para>
-    <screen>OS9: <userinput>dynacalc demo1</userinput></screen>
-    <para>Note that you do not type in the '.cal' extension of the filename. DYNACALC supplies the extension automatically.</para>
-  </sect1>
-
-  <sect1>
-    <title>Working with two disk drives</title>
-    <para>If you have two disk drives, you can use a separate disk for your workfiles. Format a disk, put it in drive d1, and change your current data directory to that disk by:</para>
-    <screen>OS9: <userinput>chd /d1</userinput></screen>
-    <para>If there is enough free space on your OS-9 system disk, you may find it more convenient to have the DYNACALC programs on your system disk. To do this, copy the files in the CMDS directory of the DYNACALC disk to the CMDS directory of your system disk. Refer to the description of the &#x2018;copy&#x2019; program in the <citetitle pubwork="book">OS-9 User&#x2019;s Manual</citetitle>.</para>
-  </sect1>
-  <sect1>
-    <title>Working with one disk drive</title>
-    <para>It is possible to use a separate data disk when you have only one drive. Put your DYNACALC disk in your drive, d0, and set your execution directory to that disk:</para>
-    <screen>OS9: <userinput>chx /d0/cmds</userinput></screen>
-    <para>Now call up DYNACALC, without specifying a work file:</para>
-    <screen>OS9: <userinput>dynacalc</userinput></screen>
-    <para>When DYNACALC is ready, remove your DYNACALC disk and insert your data disk. Now use the DYNACALC 'change directory' command to change your data directory to the new disk:</para>
-    <screen>You enter <userinput>/SC</userinput></screen>
-    <para>DYNACALC asks you for the directory name, which you enter as /d0. Use the 'load' command, (<userinput>/SL</userinput>), to load your worksheet, if you have one.</para>
-  </sect1>
-  <sect1>
-    <title>DYNACALC on the Dragon 64</title>
-    <para>Before you dive into the rest of this manual, a note about workspace. DYNACALC has a large number of informative HELP messages that can be very useful when you are learning. However, these messages take up a sizable chunk of memory - about 8K bytes - which will limit the size of your worksheet on the Dragon 64. If you need this extra space you can turn off the help messages on the command line, using the '-h' option. For example:</para>
-    <screen>OS9: dynacalc demo1 -h</screen>
-    <para>You can now work on quite a large spreadsheet. As your worksheet grows, DYNACALC will automatically take up more of your computer&#x2019;s memory. Eventually, you may no longer be able to use the <userinput>/SX</userinput> &#x2018;pass a command to OS-9&#x2019; command. This does not inhibit your use of DYNACALC.</para>
-  </sect1>
-</chapter>
-
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>plus a few of the commonly used OS-9 utility programs.</para>
+    <para>To inspect this directory type:</para>
+    <screen>OS9: <userinput>dir cmds</userinput></screen>
+    <para>&#x201C;install.dc&#x201D; is used to customize DYNACALC for your printer. The supplied &#x201C;dynacalc.trm&#x201D; is configured for a standard 80 column printer on the parallel printer port, &#x201C;/p&#x201D;. If you do need to change the configuration, see the section on &#x2018;<xref linkend="system.configuration">System Configuration</xref>&#x2019;.</para>
+    <para>The SYS directory contains the OS-9 error messages file, 'errmsg', used by OS-9 when reporting an error (such as &#x201C;Error #216 - Pathname not found&#x201D;).</para>
+    <para>If you are using a Dragon 64 computer and you are not already in the 51 characters by 24 lines mode use the 'go51' command to change the screen format:</para>
+    <screen>OS9: <userinput>go51</userinput></screen>
+    <sect1>
+      <title>Getting into and out or DYNACALC</title>
+      <para>You are now ready to try out DYNACALC. All you need do is type:</para>
+      <screen>OS9: <userinput>dynacalc</userinput></screen>
+      <para>To exit DYNACALC at any time and return to OS-9:</para>
+      <orderedlist numeration="lowerroman">
+        <listitem>
+          <para>hit the <keycap>ESCAPE</keycap> key to return to the DYNACALC &#x2018;Ready&#x2019; prompt. (For the assignment of the <keycap>ESCAPE</keycap> key on your keyboard, see the <xref linkend="key.assignment">Key Assignment Summary</xref> at the end of this manual).</para>
+        </listitem>
+        <listitem>
+          <para>if you want to save your worksheet, use the <userinput>/SS</userinput> command.</para>
+        </listitem>
+        <listitem>
+          <para>type <userinput>/QOY</userinput> (letter "O") to return to OS-9.</para>
+        </listitem>
+      </orderedlist>
+      <para>You can exit any command and return to the &#x2018;Ready&#x2019; prompt by hitting the <keycap>ESCAPE</keycap> key. You should also use the <keycap>ESCAPE</keycap> key to return to the &#x2018;Ready&#x2019; prompt when DYNACALC is showing you an error message, or when you want to exit from a HELP display.</para>
+      <para>To try out one of the sample profiles, for instance &#x2018;demo1.cal&#x2019;, use:</para>
+      <screen>OS9: <userinput>dynacalc demo1</userinput></screen>
+      <para>Note that you do not type in the '.cal' extension of the filename. DYNACALC supplies the extension automatically.</para>
+    </sect1>
+    <sect1>
+      <title>Working with two disk drives</title>
+      <para>If you have two disk drives, you can use a separate disk for your workfiles. Format a disk, put it in drive d1, and change your current data directory to that disk by:</para>
+      <screen>OS9: <userinput>chd /d1</userinput></screen>
+      <para>If there is enough free space on your OS-9 system disk, you may find it more convenient to have the DYNACALC programs on your system disk. To do this, copy the files in the CMDS directory of the DYNACALC disk to the CMDS directory of your system disk. Refer to the description of the &#x2018;copy&#x2019; program in the <citetitle pubwork="book">OS-9 User&#x2019;s Manual</citetitle>.</para>
+    </sect1>
+    <sect1>
+      <title>Working with one disk drive</title>
+      <para>It is possible to use a separate data disk when you have only one drive. Put your DYNACALC disk in your drive, d0, and set your execution directory to that disk:</para>
+      <screen>OS9: <userinput>chx /d0/cmds</userinput></screen>
+      <para>Now call up DYNACALC, without specifying a work file:</para>
+      <screen>OS9: <userinput>dynacalc</userinput></screen>
+      <para>When DYNACALC is ready, remove your DYNACALC disk and insert your data disk. Now use the DYNACALC 'change directory' command to change your data directory to the new disk:</para>
+      <screen>You enter <userinput>/SC</userinput></screen>
+      <para>DYNACALC asks you for the directory name, which you enter as /d0. Use the 'load' command, (<userinput>/SL</userinput>), to load your worksheet, if you have one.</para>
+    </sect1>
+    <sect1>
+      <title>DYNACALC on the Dragon 64</title>
+      <para>Before you dive into the rest of this manual, a note about workspace. DYNACALC has a large number of informative HELP messages that can be very useful when you are learning. However, these messages take up a sizable chunk of memory - about 8K bytes - which will limit the size of your worksheet on the Dragon 64. If you need this extra space you can turn off the help messages on the command line, using the '-h' option. For example:</para>
+      <screen>OS9: dynacalc demo1 -h</screen>
+      <para>You can now work on quite a large spreadsheet. As your worksheet grows, DYNACALC will automatically take up more of your computer&#x2019;s memory. Eventually, you may no longer be able to use the <userinput>/SX</userinput> &#x2018;pass a command to OS-9&#x2019; command. This does not inhibit your use of DYNACALC.</para>
+    </sect1>
+  </chapter>
   <chapter>
     <title>DYNACALC Basics</title>
     <para>DYNACALC is a computer program that simulates a large sheet of paper (worksheet) arranged as a rectangular array of &#x2018;columns&#x2019; (vertical) and 'rows' (horizontal). At each intersection of a column and a row there is a 'value' (number), or an 'expression' (describes mathematical operations), or a 'label' (an alphanumeric message). See the illustrations on page <xref linkend="screen.illustrations">25</xref>.</para>
@@ -172,8 +161,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     <para>Since it is frequently necessary to move to the top-left corner of the worksheet, a special HOME key has been implemented to do just that. Normally, HOME will cause the cursor to move to cell A1. However, if titles are enabled, that won&#x2019;t be possible. The cursor will in that case go as close to A1 as it can. Check the <xref linkend="key.assignment">Key Assignment Summary</xref> section for the HOME key on your keyboard.</para>
     <para>Once you move DYNACALC&#x2019;s cursor to the cell you wish to examine, you will notice that the contents of that cell are now displayed on the very top line of your screen. This cell to which the cursor points is called the 'current cell'. To examine another location, move the cursor as explained above. When you reach a cell whose contents you wish to change, simply type in the new value expression, or label. When you hit the <keycap>RETURN</keycap> key, the new information will be transferred to the current cell.</para>
   </chapter>
-
-
   <chapter>
     <title>Entering Data and Equations</title>
     <para>As mentioned earlier, each DYNACALC cell can store any of these types of data: values, labels, and expressions. When you move the cursor to a particular cell (let&#x2019;s call this pointing to a cell), its contents are displayed on the top line of the screen. The symbols (V), (L), and (E) are used to indicate Value, Label, and Expression. A given cell can contain only a single type of data at a time. When the cell is changed, the new data may be of any of the three types, but never mixed at the same time.</para>
@@ -188,8 +175,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     <para>The cursor now points to cell A1. Type <userinput>23</userinput> (DOWN-ARROW) <userinput>45</userinput> (DOWN-ARROW). You have placed constants in cells A1 and A2, and the cursor now points to A3. To add cells A1 and A2 and place the sum in A3, type +A1+A2 (<keycap>RETURN</keycap>). Now A3 displays 68, the sum of 23 and 45.</para>
     <para>Now move the cursor back to A1 and enter a different value. When you hit '<keycap>RETURN</keycap>', A1 is updated to its new value. No surprise. But A3 is also changed, and still shows the correct sum of the other two numbers. This is the real power of DYNACALC, and the basis for even the largest and most complex spread-sheet.</para>
   </chapter>
-
-
   <chapter xml:id="error.correction">
     <title>Error Correction</title>
     <para>Line 2 of the DYNACALC screen displays information about the current operating mode and the settings of various options. One of the most important things displayed on line 2 is the &#x2018;Ready&#x2019; message. Whenever you see &#x2018;Ready&#x2019;, you know that DYNACALC is in its &#x2018;Ready&#x2019; mode, and is able to accept commands from the keyboard. The Ready message will not be displayed, for example, while the printer is printing, or while a command menu is being displayed.</para>
@@ -202,8 +187,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     <para>When you are finished editing, hit '<keycap>RETURN</keycap>' to transfer the data to the current cell.</para>
     <para>As described above, the editor is normally entered from the &#x2018;Ready&#x2019; mode, by typing <userinput>/E</userinput>. However, you can also get into the editor directly from the data entry mode by typing the EDIT key (<keycombo action="simul"><keycap>CONTROL</keycap><keycap>E</keycap></keycombo> on most keyboards). You might want to do this if you are typing a long entry and notice that its beginning is messed up. The editor works the same as described earlier; only the method of entry is different.</para>
   </chapter>
-
-
   <chapter>
     <title>Calling DYNACALC</title>
     <para>If you are in OS-9 and see the shell&#x2019;s prompt (OS9:), you can enter DYNACALC by simply typing 'dynacalc' and hitting <keycap>RETURN</keycap>. You will be greeted by a copyright notice, and then by an empty DYNACALC worksheet.</para>
@@ -226,8 +209,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
       <para>You may also want to redirect DYNACALC&#x2019;s output to the 'null' device (if available) to avoid a lot of unnecessary screen flashing. Use a command like '<code>dynacalc &lt;commandfile &gt;/null</code>' to do this. Don&#x2019;t forget, the whole thing can be run in background by ending the command with an ampersand (&amp;). You might even put the OS-9 command line itself in a 'procedure' file, so that this complex command can be executed by typing a single command name.</para>
     </sect1>
   </chapter>
-
-
   <chapter>
     <title xml:id="commands">Commands</title>
     <para>You enter the command mode by typing '/' when you are in the
@@ -235,7 +216,7 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     is replaced on line 2 of the display by the main command menu,
     which consists of a number of single letters, each representing
     a command:</para>
-    <screen>A B C D E F I M P Q R S T W ?</screen>
+    <screen>A B C D E F I L M P Q R S T W ?</screen>
     <para>You can then select any one of the commands by typing the letter associated with it. This will lead to another menu or other message, which will be described under the headings of individual commands. If you don&#x2019;t remember what the letters stand for, type &#x2018;?&#x2019; for HELP, which is a summary of instructions for the main command level. Each subsequent command menu also has its own HELP, which is called up by typing '?' in response to the menu prompt.</para>
     <sect1>
       <title>Attributes</title>
@@ -300,6 +281,49 @@ and was ported to several operating systems including FLEX and Disk Extended Col
       <para>The insert command (/I) lets you insert a new (blank) column or row into an existing worksheet. Simply move the cursor to the column or row where you want the new one to be, and type the command. The new column or row will appear, and any references to cells beyond the inserted area will be automatically adjusted to take into account the new addresses. Remember this yourself when you type in new expressions.</para>
     </sect1>
     <sect1>
+      <title>Locate label</title>
+      <para>
+  The locate label command lets you quickly determine the
+location of a specified label. This is very useful, especially
+with large worksheets extending over several screens.
+      </para>
+      <para>
+When you type /L to enter this command, DYNACALC will ask
+you for the text string (sequence of characters) for which to
+search. Enter the desired string and hit (ENTER). Now DYNACALC
+searches your worksheet for any occurrence on a LABEL of the
+specified string. This is a substring search, so the target
+label does not have to contain only the search string, DYNACALC
+might report the existence of labels 'bathroom' and 'bathtub'
+(but not 'bat').
+      </para>
+      <para>
+When locate finds a match, it displays the address of the
+cell containing the found label, and the entire contents of that
+cell, on the top line of the screen. On line two the prompt
+'Move?' is displayed. Answer this prompt with 'N' to continue
+searching, or 'Y' to move the cursor to the displayed cell.
+      </para>
+      <para>
+Locate starts at the current cell, and goes vertically
+through the worksheet in its search for a match. If no match is
+found before it returns to the starting cell, the command is
+aborted.
+      </para>
+      <para>
+There are two special characters that can be included in
+the search string. A question mark (?) at any position in the
+search string serves as a wild card. Thus a search string of
+'c?t' might result in finding 'cat', 'cot', or 'cut'. Any
+number of wild card characters can be included in the search
+string. The other special character is the at-sign (@). This
+character, when used in the FIRST character position of the
+search string, causes DYNACALC to require an exact match
+(including case) between search and target strings. Normally
+case (the difference between 'a' and 'A') is ignored.
+      </para>
+    </sect1>
+    <sect1>
       <title>Move</title>
       <para>The move command (/M) lets you move rows and columns from one place to another within your worksheet. You can do this manually, or with DYNACALC&#x2019;s built-in sort feature.</para>
       <para>The ascending sort command (<userinput>/MA</userinput>) causes
@@ -349,7 +373,7 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     </sect1>
     <sect1>
       <title>Replicate</title>
-      <para>The replicate command (/R) lets you copy the contents or a cell or range of cells into another part of the worksheet. This means that you can avoid re-typing long expressions, etc., and thus spend more of our valuable time on other things.</para>
+      <para>The replicate command (/R) lets you copy the contents or a cell or range of cells into another part of the worksheet. This means that you can avoid re-typing long expressions, etc., and thus spend more of your valuable time on other things.</para>
       <para>When you type /R, DYNACALC will prompt you for a range of source cells (the source means the cell or range of cells to be copied). If you want to copy just a single cell, enter its address and hit '<keycap>RETURN</keycap>' If the single cell you want to copy happens to be the current cell, just hit <keycap>RETURN</keycap>. Or, if the first of several cells you want to copy is the current cell, just hit '.' and the address of the last source cell, followed by '<keycap>RETURN</keycap>'. For a range of cells, enter the first cell, a period (.), and the last cell, then hit '<keycap>RETURN</keycap>'. If a range or cells is to be copied, they must all be in the same column or In the same row. You cannot replicate multiple columns or rows with a single command. You can transfer blocks of data with /S#S and /S#L (see the section on the /S command).</para>
       <para>DYNACALC will now ask you for the destination. If the destination is a single cell, column, or row, type its address (not necessary if it happens to be the current address) and hit <keycap>RETURN</keycap>. If the source is to be copied a number of times, enter the first address, a period (.), and the last address, followed by '<keycap>RETURN</keycap>'.</para>
       <para>Next you are asked '(S)ame or (R)elative' <emphasis>for each value reference in the source.</emphasis> If you answer 'S', that reference will be copied literally into the destination cell(s). However, if you answer 'R', all occurrences of that value reference will be modified according to the position or the destination within your worksheet. For example. if you want to copy @SUM(A1...A5) from A7 to B7...F7, and you want separate sums to represent individual column totals, you would specify 'R' so that in cell B7 you would wind up with @SUM(B1...B5). and so on. If this seems confusing at first, try it. After a few times it will make sense, and you will develop the ability to get a significant amount of work done with just a few keystrokes.</para>
@@ -422,7 +446,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
       <para>Whenever helps are enabled, any OS-9 error messages required will be printed in English. If helps are disabled, only the OS-9 error number will be displayed. Refer to your <citetitle pubwork="book">OS-9 User&#x2019;s Manual</citetitle> for the error description.</para>
     </sect1>
   </chapter>
-
   <chapter>
     <title>Functions</title>
     <para>DYNACALC has over two dozen built-in mathematical functions. As you probably know, a function is a predefined mathematical expression that produces a result value. In DYNACALC, most functions require one or more independent variables, furnished as arguments. The function then returns the result. A minority of DYNACALC functions, namely @ERROR, @NA, and @PI, require no arguments, and return a pre-defined value or condition.</para>
@@ -464,8 +487,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     <para>@SUM(x...y) is the summation function. It returns the total value of all cells in range x...y. As in @AVERAGE the range may be any combination of constants, cell addresses, and ranges of cells.</para>
     <para>@TAN(x) is the tangent function. This function returns the tangent of x, where x is an angle expressed in degrees or radians.</para>
   </chapter>
-
-
   <chapter>
     <title>Arithmetic Operations</title>
     <para>The building blocks of DYNACALC&#x2019;s built in functions and user calculations are the basic mathematical operators plus (+), minus (-), times (*), divide (/), and exponentiate (^). These operators are used just as in everyday arithmetic, and can be combined in every imaginable way to do what you need to do.</para>
@@ -475,7 +496,6 @@ and was ported to several operating systems including FLEX and Disk Extended Col
     <para>Numbers are limited to the range +/- 1.0e-37 to 9.999...e37. They may be entered in any format (commas are not permitted to be embedded, however), and will be displayed according to the room available in the current column. If a number has too many digits to be displayed completely, the cell will be displayed in scientific notation (if allowed by the current format). Falling that, the cell will be filled with '&gt;&gt;&gt;&gt;&gt;&gt;' to indicate overflow. Increase the column width (<userinput>/AWC</userinput> or <userinput>/AWW</userinput>) to see the number.</para>
     <para>Remember that you can use the @ROUND function to reduce the precision of any calculation. This may be necessary to duplicate the operation of manually-operated calculators.</para>
   </chapter>
-
   <chapter xml:id="operating.tips">
     <title>Operating Tips</title>
     <sect1>
@@ -541,77 +561,84 @@ and was ported to several operating systems including FLEX and Disk Extended Col
       <para>You can make it even easier by putting a command like '<code>dynacalc inventory</code>' in your startup file, so that the operator need only login to get going.</para>
     </sect1>
   </chapter>
-
-
   <chapter>
     <title>DYNACALC Error Messages</title>
     <variablelist spacing="compact">
-    <varlistentry>
-    <term>&gt;AE&lt;</term>
-    <listitem><para>Argument error.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;D0&lt;</term>
-    <listitem><para>Divide by zero attempted.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;ER&lt;</term>
-    <listitem><para>General purpose error.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;EX&lt;</term>
-    <listitem><para>Exponent too large.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;HO&lt;</term>
-    <listitem><para>Holder overflow error.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;LN&lt;</term>
-    <listitem><para>Negative or zero logarithm attempted.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;NA&lt;</term>
-    <listitem><para>Not available.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;NR&lt;</term>
-    <listitem><para>Negative root attempted.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;OV&lt;</term>
-    <listitem><para>Arithmetic overflow error.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;RE&lt;</term>
-    <listitem><para>Reference error.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;RN&lt;</term>
-    <listitem><para>Range Error.</para>
-  </listitem>
-</varlistentry>
-<varlistentry>
-    <term>&gt;SN&lt;</term>
-    <listitem><para>Syntax error.</para>
-  </listitem>
-</varlistentry>
-</variablelist>
-
+      <varlistentry>
+        <term>&gt;AE&lt;</term>
+        <listitem>
+          <para>Argument error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;D0&lt;</term>
+        <listitem>
+          <para>Divide by zero attempted.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;ER&lt;</term>
+        <listitem>
+          <para>General purpose error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;EX&lt;</term>
+        <listitem>
+          <para>Exponent too large.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;HO&lt;</term>
+        <listitem>
+          <para>Holder overflow error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;LN&lt;</term>
+        <listitem>
+          <para>Negative or zero logarithm attempted.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;NA&lt;</term>
+        <listitem>
+          <para>Not available.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;NR&lt;</term>
+        <listitem>
+          <para>Negative root attempted.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;OV&lt;</term>
+        <listitem>
+          <para>Arithmetic overflow error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;RE&lt;</term>
+        <listitem>
+          <para>Reference error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;RN&lt;</term>
+        <listitem>
+          <para>Range Error.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>&gt;SN&lt;</term>
+        <listitem>
+          <para>Syntax error.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
     <para>Machine-generated errors are displayed as <code>@ERROR?</code> on the top line of the display, when pointed to.</para>
   </chapter>
-
-
   <chapter xml:id="empty.screen">
     <title>Screen Layout</title>
     <screen>A1
@@ -647,8 +674,6 @@ Mode=C,A  Memory=xxxxx  Ready
     <para>The final message on line 2 at this time is &#x2018;Ready&#x2019;, which indicates that DYNACALC is ready to accept commands or data entries. If you type &#x2018;/&#x2019; to enter command mode, the &#x2018;Ready&#x2019; will be replaced by the command menu.</para>
     <para>The third line, blank at this time, is called the edit line, and it is here that you enter data before transferring it into a particular cell. Just point to the desired cell with the cursor, and start entering your data. It will automatically be displayed on line 3.</para>
   </chapter>
-
-
   <chapter xml:id="screen.illustrations">
     <title>Columns, Rows, and Cells</title>
     <screen>
@@ -689,8 +714,6 @@ Mode=C,A Memory=xxxxx Ready
     therefore IV256.</para>
     <para>Display shown is from a screen with 24 rows of 80 characters. Actual number of columns and rows depends on characteristics of your terminal.</para>
   </chapter>
-
-
   <chapter xml:id="system.configuration">
     <title>System Configuration</title>
     <sect1>
@@ -728,8 +751,6 @@ Mode=C,A Memory=xxxxx Ready
       <para>'install.dc' will then ask you several questions about your printer, and will use your answers to modify the 'dynacalc.trm' file, (which it expects to find in the current execution directory, normally '/d0/cmds').</para>
     </sect1>
   </chapter>
-
-
   <chapter xml:id="using.files">
     <title>Using Data Files</title>
     <para>DYNACALC can read and write OS-9 data files, with it&#x2019;s /S#S and /S#L commands. All such operations default to the working data directory. But of course you may override the default by typing in a more complete pathname.</para>
@@ -789,8 +810,6 @@ X ALPHA ;
 </programlisting>
     <para>Of course, getting data back into the RMS file isn&#x2019;t quite that simple. For this you need a program (possibly in BASIC09) to work out where in the 'xxx.rms' file each record needs to go. DYNACALC will give you a text file, but the rest is up to you.</para>
   </chapter>
-
-
   <chapter>
     <title>DYNACALC Tutorial</title>
     <para>This tutorial is intended to show you the commonly used features of DYNACALC, and to make you feel more at ease about using DYNACALC for the first time. We will use an example worksheet supplied on your DYNACALC disk. This tutorial is not intended as a substitute for careful reading of the whole manual - which we suggest you do once you have worked through the tutorial - and we will not by any means be covering all the features of DYNACALC. We suggest that you make frequent reference to the Key Assignment, Command, and Function summaries at the back of the manual.</para>
@@ -801,7 +820,7 @@ X ALPHA ;
     <para>and call up DYNACALC:</para>
     <screen>OS9: <userinput>dynacalc</userinput></screen>
     <para>DYNACALC will display its 'Hello' message - hit the SPACE key to continue. Now DYNACALC is displaying a blank worksheet. Let&#x2019;s consider the various parts of the display. Most prominently we can see the borders, showing the rows and columns, something like this:</para>
-<screen>
+    <screen>
     [  A  ] [  B  ] [  C  ]
  1-
  2-
@@ -812,7 +831,7 @@ X ALPHA ;
     <screen>A1 (V) 23</screen>
     <para>DYNACALC is informing you that the cursor is at cell A1. and that the cell contains a Value of 23. Move to cell B1 and enter "45" (don&#x2019;t forget the <keycap>RETURN</keycap>). This is tame stuff, and slower than writing the numbers on graph paper. The power of DYNACALC lies in its ability to do calculations for you. Move to cell C1 and enter "+A1+B1" (and <keycap>RETURN</keycap>, of course). The &#x201C;+A1+B1&#x201D; appeared on the third line, (the first &#x201C;+&#x201D; was just to tell DYNACALC that we were entering an expression), but "68" has appeared in cell C1. The "A1+B1" is known as an 'expression', and instructs DYNACALC that cell C1, the cell into which we entered the expression, should contain the sum of cells A1 and B1. You will see on the first line of the screen the expression you have entered, with '(E)' to indicate an Expression. Now move back to cell A1, and enter "12". You have changed the contents of cell A1 to "12" as you would expect, but cell C1 has also changed to reflect the new sum of A1 and B1 - "57". Imagine how easy this will make cash forecasting! If you set up a complicated cash forecast on paper. and you want to try moving a few purchases around to see how it will affect your bank balance, it&#x2019;s a lot of work. With DYNACALC, a few keystrokes and the new balance is instantly displayed!</para>
     <para>It&#x2019;s time to try one or the example worksheets, which will give you a better idea of how DYNACALC&#x2019;s features can be used. First, we must clear the present worksheet, which allows us to introduce the concept of a DYNACALC command. Hit "/", the command key. You will see the &#x2018;Ready&#x2019; prompt replaced by the main command menu:</para>
-    <screen>Command: A B C D E F I M P Q R S T W ?</screen>
+    <screen>Command: A B C D E F I L M P Q R S T W ?</screen>
     <para>DYNACALC is asking us which command we want. Before we enter the command to clear the worksheet, we can try out DYNACALC&#x2019;s HELP facility. Hit "?", the HELP key. You will see the worksheet replaced by a screenful of help messages about each of the commands. We won&#x2019;t go through these - you can look through them later at your leisure. Suffice it to say that each DYNACALC command menu has its own HELP messages, which you can call up with the HELP key whenever you are not sure about how to use one of the commands. For now, hit the <keycap>ESCAPE</keycap> key to return to the &#x2018;Ready&#x2019; prompt. Hit "/" to bring back the main menu, followed by "C", the Clear worksheet command. DYNACALC will ask you if you are sure you want the worksheet cleared out. Answer "Y" (for Yes), and you will be presented with a clear worksheet.</para>
     <para>Now we can load in a worksheet. Hit "/" to get the main command menu, and "S" to get the 'System' sub menu:</para>
     <screen>C L S X # ?</screen>
@@ -855,8 +874,6 @@ X ALPHA ;
     <para>To exit DYNACALC and return to OS-9, type &#x201C;<userinput>/QOY</userinput>&#x201D; (letter &#x201C;O&#x201D;).</para>
     <para>Now we have given you an introductory tour of DYNACALC. DYNACALC is a very powerful tool, with many more features than we have shown here. We suggest that you read carefully through the rest of the manual, trying out things as you read about them. This may be tedious at first, but when you can use DYNACALC well you will find it an invaluable tool, and wonder how you ever managed without it! Have fun!</para>
   </chapter>
-
-
   <chapter xml:id="functions">
     <title>DYNACALC Function Summary</title>
     <para>Type @ to enter a function. Parenthesis input is optional. You need type only the first 2 letters of the function name (3 for COS, INDEX, and LOOKUP).</para>
@@ -1079,8 +1096,6 @@ m sets method used: &lt;0 =population; &gt;=0 =sample.</literallayout>
     </informaltable>
     <para>NOTE: Third argument (z - cell address) in @INDEX and @LOOKUP functions is optional. If present, causes value returned to be taken from column or row given. If z is omitted, value is returned from adjacent column or row.</para>
   </chapter>
-
-
   <chapter>
     <title>DYNACALC Command Summary</title>
     <para>Type / to enter the command mode when you have the DYNACALC &#x2018;Ready&#x2019; prompt. DYNACALC will display the primary command menu. Follow this with the key for the command you require. Several commands require an additional key or keys. These commands prompt you with subsidiary menus.</para>
@@ -1089,405 +1104,689 @@ m sets method used: &lt;0 =population; &gt;=0 =sample.</literallayout>
     <para>At any level, typing ? will display the help messages for that command.</para>
     <informaltable frame="none" colsep="0" rowsep="0">
       <tgroup cols="4">
-      <colspec colwidth="0.7in"/>
-      <colspec colwidth="3.0in"/>
-      <colspec colwidth="1.0in"/>
-      <colspec colwidth="0.4in"/>
-      <thead><row>
-      <entry>KEY</entry>
-      <entry>ACTION</entry>
-      <entry>DEFAULT</entry>
-      <entry>PAGE</entry>
-      </row>
-            </thead><tbody><row><entry><userinput>/</userinput></entry><entry>
-            Enter command mode
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/A</userinput></entry><entry><para>ATTRIBUTES</para></entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AB</userinput></entry><entry>
-            Toggle bell on/off
-          </entry><entry>
-            on
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AD</userinput></entry><entry>
-            Toggle degrees/radians degrees
-          </entry><entry>
-            degrees
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AG</userinput></entry><entry>
-            Select graphics character
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AH</userinput></entry><entry>
-            Delete help messages
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AL</userinput></entry><entry>
+        <colspec colwidth="0.7in"/>
+        <colspec colwidth="3.0in"/>
+        <colspec colwidth="1.0in"/>
+        <colspec colwidth="0.4in"/>
+        <thead>
+          <row>
+            <entry>KEY</entry>
+            <entry>ACTION</entry>
+            <entry>DEFAULT</entry>
+            <entry>PAGE</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>
+              <userinput>/</userinput>
+            </entry>
+            <entry> Enter command mode </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/A</userinput>
+            </entry>
+            <entry>
+              <para>ATTRIBUTES</para>
+            </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AB</userinput>
+            </entry>
+            <entry> Toggle bell on/off </entry>
+            <entry> on </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AD</userinput>
+            </entry>
+            <entry> Toggle degrees/radians degrees </entry>
+            <entry> degrees </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AG</userinput>
+            </entry>
+            <entry> Select graphics character </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AH</userinput>
+            </entry>
+            <entry> Delete help messages </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AL</userinput>
+            </entry>
+            <entry>
             Toggle label entry mode
-          </entry><entry>
+          </entry>
+            <entry>
             single cell
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AM</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AM</userinput>
+            </entry>
+            <entry>
             Re-write the screen
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AO</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AO</userinput>
+            </entry>
+            <entry>
             (letter O) Toggle row/column order
-          </entry><entry>
-            column/row
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AP</userinput></entry><entry>
-            Printer
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/APB</userinput></entry><entry>
-            Toggle border print
-          </entry><entry>
-            off
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/APC</userinput></entry><entry>
-            Close present print device
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/APL</userinput></entry><entry>
-            Set lines per page
-          </entry><entry>
-            58
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/APP</userinput></entry><entry>
+          </entry>
+            <entry> column/row </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AP</userinput>
+            </entry>
+            <entry> Printer </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/APB</userinput>
+            </entry>
+            <entry> Toggle border print </entry>
+            <entry> off </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/APC</userinput>
+            </entry>
+            <entry> Close present print device </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/APL</userinput>
+            </entry>
+            <entry> Set lines per page </entry>
+            <entry> 58 </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/APP</userinput>
+            </entry>
+            <entry>
             Toggle paginate on/off
-          </entry><entry>
+          </entry>
+            <entry>
             on
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/APS</userinput></entry><entry>
-            Select printout spacing
-          </entry><entry>
-            1
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/APW</userinput></entry><entry>
-            Set printer width
-          </entry><entry>
-            80
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AR</userinput></entry><entry>
-            Toggle re-calculate mode
-          </entry><entry>
-            auto
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AS</userinput></entry><entry>
-            Report highest row/column
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/AT</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/APS</userinput>
+            </entry>
+            <entry> Select printout spacing </entry>
+            <entry> 1 </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/APW</userinput>
+            </entry>
+            <entry> Set printer width </entry>
+            <entry> 80 </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AR</userinput>
+            </entry>
+            <entry> Toggle re-calculate mode </entry>
+            <entry> auto </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AS</userinput>
+            </entry>
+            <entry> Report highest row/column </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/AT</userinput>
+            </entry>
+            <entry>
             Toggle type protection setting
-          </entry><entry>
-            off
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/B</userinput></entry><entry>
+          </entry>
+            <entry> off </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/B</userinput>
+            </entry>
+            <entry>
             BLANK (erase) a cell
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/C</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/C</userinput>
+            </entry>
+            <entry>
             CLEAR (erase) the entire worksheet
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/D</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/D</userinput>
+            </entry>
+            <entry>
             DELETE (erase) an entire row or column
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/E</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/E</userinput>
+            </entry>
+            <entry>
             EDIT a cell
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/F</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/F</userinput>
+            </entry>
+            <entry>
             FORMAT cell (or window if <userinput>/WF</userinput>)
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/FC</userinput></entry><entry>
-            Continuous format (labels)
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/FD</userinput></entry><entry>
-            Default format
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/FG</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FC</userinput>
+            </entry>
+            <entry> Continuous format (labels) </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FD</userinput>
+            </entry>
+            <entry> Default format </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FG</userinput>
+            </entry>
+            <entry>
             General format
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/FI</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FI</userinput>
+            </entry>
+            <entry>
             Integer format
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/FL</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FL</userinput>
+            </entry>
+            <entry>
             Left justify
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/FP</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FP</userinput>
+            </entry>
+            <entry>
             Plotting format (for histograms)
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/FR</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/FR</userinput>
+            </entry>
+            <entry>
             Right justify
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/F$</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/F$</userinput>
+            </entry>
+            <entry>
             Money format
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/I</userinput></entry><entry>
-            INSERT a blank row or column
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/M</userinput></entry><entry>
-            MOVE rows or columns
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/MA</userinput></entry><entry>
-            Ascending sort
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/MD</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/I</userinput>
+            </entry>
+            <entry>INSERT a blank row or column</entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/L</userinput>
+            </entry>
+            <entry>LOCATE label</entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/M</userinput>
+            </entry>
+            <entry>MOVE rows or columns</entry>
+            <entry/>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/MA</userinput>
+            </entry>
+            <entry> Ascending sort </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/MD</userinput>
+            </entry>
+            <entry>
             Descending sort
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/MM</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/MM</userinput>
+            </entry>
+            <entry>
             Manual move
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/P</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/P</userinput>
+            </entry>
+            <entry>
             PRINTER output
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry>
-            /Q
-          </entry><entry>
-            QUIT from DYNACALC
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/QO</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/Q</userinput>
+            </entry>
+            <entry>QUIT from DYNACALC</entry>
+            <entry/>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/QO</userinput>
+            </entry>
+            <entry>
             Return to OS-9
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/QS</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/QS</userinput>
+            </entry>
+            <entry>
             Sleep until key hit
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/R</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/R</userinput>
+            </entry>
+            <entry>
             REPLICATE (copy) cells
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/S</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/S</userinput>
+            </entry>
+            <entry>
             SYSTEM
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/SC</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/SC</userinput>
+            </entry>
+            <entry>
             Change data directory
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/SL</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/SL</userinput>
+            </entry>
+            <entry>
             LOAD worksheet from disk
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/SS</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/SS</userinput>
+            </entry>
+            <entry>
             SAVE worksheet to disk
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/SX</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/SX</userinput>
+            </entry>
+            <entry>
             Execute OS-9 command
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/S#</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/S#</userinput>
+            </entry>
+            <entry>
             Data files:
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/S#L</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/S#L</userinput>
+            </entry>
+            <entry>
             Load a data file from disk
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/S#S</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/S#S</userinput>
+            </entry>
+            <entry>
             Save to a data file on disk
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/T</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/T</userinput>
+            </entry>
+            <entry>
             TITLES control
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/TB</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/TB</userinput>
+            </entry>
+            <entry>
             Both horizontal and vertical titles
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/TH</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/TH</userinput>
+            </entry>
+            <entry>
             Horizontal titles
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/TN</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/TN</userinput>
+            </entry>
+            <entry>
             No titles
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/TV</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/TV</userinput>
+            </entry>
+            <entry>
             Vertical titles
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/W</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/W</userinput>
+            </entry>
+            <entry>
             WINDOWS
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/WD</userinput></entry><entry>
-            Toggle value/formula display
-          </entry><entry>
-            value
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/WF</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WD</userinput>
+            </entry>
+            <entry> Toggle value/formula display </entry>
+            <entry> value </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WF</userinput>
+            </entry>
+            <entry>
             Change default format for window
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/WH</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WH</userinput>
+            </entry>
+            <entry>
             Horizontal window split
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/WN</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WN</userinput>
+            </entry>
+            <entry>
             No window split (one window)
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/WS</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WS</userinput>
+            </entry>
+            <entry>
             Synchronize window scrolling
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/WU</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WU</userinput>
+            </entry>
+            <entry>
             Un-synchronise window scrolling
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry><entry>
+          </entry>
+            <entry>
             
-          </entry></row><row><entry><userinput>/WV</userinput></entry><entry>
+          </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/WV</userinput>
+            </entry>
+            <entry>
             Vertical window split
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row><row><entry><userinput>/?</userinput></entry><entry>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+          <row>
+            <entry>
+              <userinput>/?</userinput>
+            </entry>
+            <entry>
             HELP - DYNACALC help displays
-          </entry><entry>
-            
-          </entry><entry>
-            
-          </entry></row></tbody></tgroup>
+          </entry>
+            <entry> </entry>
+            <entry> </entry>
+          </row>
+        </tbody>
+      </tgroup>
     </informaltable>
   </chapter>
-
-
   <chapter xml:id="key.assignment">
     <title>Key Assignment Summary</title>
     <para>Key Assignment Summary for the Dragon 64</para>
@@ -1611,37 +1910,19 @@ m sets method used: &lt;0 =population; &gt;=0 =sample.</literallayout>
           </entry>
           </row>
           <row>
-            <entry>
-            GOTO
-          </entry>
-            <entry>
-            &gt;
-          </entry>
-            <entry>
-            'Go to cell' command
-          </entry>
+            <entry> GOTO </entry>
+            <entry> &gt; </entry>
+            <entry> 'Go to cell' command </entry>
           </row>
           <row>
-            <entry>
-            HOME
-          </entry>
-            <entry>
-            SHIFT-&#x2191;
-          </entry>
-            <entry>
-            Go to top left cell
-          </entry>
+            <entry> HOME </entry>
+            <entry> SHIFT-&#x2191; </entry>
+            <entry> Go to top left cell </entry>
           </row>
           <row>
-            <entry>
-            JUMP
-          </entry>
-            <entry>
-            SHIFT-&#x2192;
-          </entry>
-            <entry>
-            Jump to other window
-          </entry>
+            <entry> JUMP </entry>
+            <entry> SHIFT-&#x2192; </entry>
+            <entry> Jump to other window </entry>
           </row>
           <row>
             <entry>
@@ -1655,26 +1936,14 @@ m sets method used: &lt;0 =population; &gt;=0 =sample.</literallayout>
           </entry>
           </row>
           <row>
-            <entry>
-            OVERLAY
-          </entry>
-            <entry>
-            CONTROL-O
-          </entry>
-            <entry>
-            When editing, toggles overlay/insert mode.
-          </entry>
+            <entry> OVERLAY </entry>
+            <entry> CONTROL-O </entry>
+            <entry> When editing, toggles overlay/insert mode.  </entry>
           </row>
           <row>
-            <entry>
-            ADDRESS
-          </entry>
-            <entry>
-            SHIFT-&#x2193;
-          </entry>
-            <entry>
-            Put address of current cell in expression.
-          </entry>
+            <entry> ADDRESS </entry>
+            <entry> SHIFT-&#x2193; </entry>
+            <entry> Put address of current cell in expression.  </entry>
           </row>
           <row>
             <entry>
@@ -1721,45 +1990,25 @@ m sets method used: &lt;0 =population; &gt;=0 =sample.</literallayout>
           </entry>
           </row>
           <row>
-            <entry>
-            COMMAND
-          </entry>
-            <entry>
-            /
-          </entry>
-            <entry>
-            Introduces a command. displays the command menu.
-          </entry>
+            <entry> COMMAND </entry>
+            <entry> / </entry>
+            <entry> Introduces a command. displays the command menu.  </entry>
           </row>
           <row>
-            <entry>
-            HELP
-          </entry>
-            <entry>
-            ?
-          </entry>
-            <entry>
-            Displays 'HELP' messages for any command menu.
-          </entry>
+            <entry> HELP </entry>
+            <entry> ?  </entry>
+            <entry> Displays 'HELP' messages for any command menu.  </entry>
           </row>
           <row>
-            <entry>
-            FLUSH
-          </entry>
-            <entry>
-            CONTROL-C
-          </entry>
-            <entry>
-            Empties the type-ahead buffer.
-          </entry>
+            <entry> FLUSH </entry>
+            <entry> CONTROL-C </entry>
+            <entry> Empties the type-ahead buffer.  </entry>
           </row>
           <row>
             <entry>
             LOG-OFF
           </entry>
-            <entry>
-            CONTROL-D
-          </entry>
+            <entry> CONTROL-D </entry>
             <entry>
             ABORT DYNACALC, saving the work sheet in file 'dyna.xxxxx.cal', where 'xxxxx' is your user number.
           </entry>

@@ -1,0 +1,3 @@
+#!/bin/sh
+java -jar target/mo5emulator-*-jar-with-dependencies.jar
+

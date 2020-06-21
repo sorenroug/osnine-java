@@ -1,0 +1,4 @@
+#!/bin/sh
+java -Dorg.slf4j.simpleLogger.log.org.roug.osnine.mo5.TapeRecorder=debug \
+-jar target/mo5emulator-1.1.5-jar-with-dependencies.jar
+

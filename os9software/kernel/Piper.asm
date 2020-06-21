@@ -1,36 +1,44 @@
-         nam   Piper
-         ttl   os9 device driver    
+ nam   Piper
+ ttl   os9 device driver
 
-         ifp1
-         use   os9defs
-         endc
-tylg     set   Drivr+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
+ ifp1
+ use   os9defs
+ endc
+
+ mod   PIPEND,PIPNAM,DRIVR+OBJCT,ReEnt+1,INIPIP,PIPSTA
 u0000    rmb   6
-size     equ   .
-         fcb   $03 
-name     equ   *
-         fcs   /Piper/
-         fcb   $02 
-start    equ   *
-         clrb  
-         rts   
-         nop   
-         clrb  
-         rts   
-         nop   
-         clrb  
-         rts   
-         nop   
-         clrb  
-         rts   
-         nop   
-         clrb  
-         rts   
-         nop   
-         clrb  
-         rts   
-         emod
-eom      equ   *
+PIPSTA equ .
+
+ fcb 3 Edition
+
+PIPNAM fcs "Piper"
+ fcb 2
+
+* A device driver normally has six LBRA statements. These take the
+* same number of bytes
+
+INIPIP clrb
+ rts
+ nop
+
+READPIP clrb
+ rts
+ nop
+
+WRTPIP clrb
+ rts
+ nop
+
+GETSTA clrb
+ rts
+ nop
+
+PUTSTA clrb
+ rts
+ nop
+
+TERMNT clrb
+ rts
+
+ emod
+PIPEND equ *

@@ -1,14 +1,14 @@
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
-import org.roug.osnine.OptionParser;
+import org.roug.usim.OptionParser;
 import org.roug.osnine.os9.OS9;
 import org.roug.osnine.os9.PDStdIn;
 import org.roug.osnine.os9.PDStdOut;
 import org.roug.osnine.os9.DevPipe;
 import org.roug.osnine.os9.DevUnix;
 import org.roug.osnine.os9.DevDrvTerm;
-import org.roug.osnine.RegisterCC;
+//import org.roug.usim.RegisterCC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

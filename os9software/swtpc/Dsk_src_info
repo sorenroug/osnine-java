@@ -1,0 +1,28 @@
+
+           Disk Driver Source Code Usage Information
+
+     This source code covers the three parts necessary to create
+a working disk driver under OS-9.  These parts are:
+
+    1) The Disk driver module itself
+    2) The Disk boot module (installed in ROM)
+    3) The Disk device descriptor modules
+
+     The command lines to assemble each module are:
+
+    1) asm XXX_drvr_src #12k
+    2) asm XXX_boot_src #12k
+    3) asm XXX_desc_src #12k
+       "XXX" varies with the disk driver name
+ 
+     Of course this will only do the  assembly  giving  any error  
+messages.   See the assembler manual for options to obtain object 
+output and a listing.
+
+
+NOTE:  If you do not already  have a sysdefs file set up for your
+system, it will be necessary to copy the given "Sysdefs.dsk" file
+into your  DEFS.  In addition please note that it is NOT possible
+to configure the  sysdefs file to EXACTLY match every system that
+Microware supports.  Therefore it is the user's responsibility to
+insure the sysdefs truly defines his own system.

@@ -1,0 +1,172 @@
+PROCEDURE fourinarow
+   PRINT TAB(22);"FOUR IN A ROW"
+   PRINT TAB(20);"CREATIVE COMPUTING"
+   PRINT TAB(18);"MORRISTOWN, NEW JERSEY"
+   PRINT \ PRINT \ PRINT
+   DIM BM$(8,8):STRING[1]
+   DIM LM(8),SM(4),F(4),NM(4):INTEGER
+   DIM V,V1,VM(16):REAL
+   DIM I,M4,M9,M,S,T,W,Z,Z1:INTEGER
+   DIM C,D:BOOLEAN
+
+   DATA 1,100,500,1E20,1,800,4000,1E20
+   DATA 1,75,900,1E18,1,450,3000,1E18
+   FOR Z1=1 TO 16 \ READ VM(Z1) \ NEXT Z1
+    PRINT "THE GAME OF FOUR IN A ROW"
+    LOOP
+    INPUT "DO YOU WANT INSTRUCTIONS? ";A$
+    EXITIF A$="NO" THEN ENDEXIT
+    EXITIF A$="YES" THEN
+      PRINT "THE GAME CONSISTS OF STACKING X'S"
+      PRINT "AND O'S (THE COMPUTER HAS O) UNTIL"
+      PRINT "ONE OF THE PLAYERS GETS FOUR IN A"
+      PRINT "ROW VERTICALLY, HORIZONTALLY, OR "
+      PRINT "DIAGONALLY."
+      PRINT
+      PRINT
+    ENDEXIT
+    PRINT "YES OR NO"
+    ENDLOOP
+
+    X$="X" \ O$="O"
+    FOR I=1 TO 8 \ FOR J=1 TO 8 \ BM$(I,J)="-" \ NEXT J \ NEXT I
+    FOR Z1=1 TO 8 \ LM(Z1)=0 \ NEXT Z1
+    INPUT "DO YOU WANT TO GO FIRST? ";A$
+    IF A$="NO" THEN 610
+    GOSUB 340
+    GOTO 450
+
+    REM Print board
+340 FOR I=8 TO 1 STEP -1
+    FOR J=1 TO 8
+    PRINT "  ";BM$(I,J);
+    NEXT J
+    PRINT
+    NEXT I
+    FOR I=1 TO 8 \ PRINT "  ";I; \ NEXT I
+    PRINT \ PRINT
+    RETURN
+
+440 PRINT "ILLEGAL MOVE, TRY AGAIN."
+450 INPUT "A NUMBER BETWEEN 1 AND 8? ";M
+    IF M<1 OR M>8 THEN 440
+    L=LM(M)
+    IF L>7 THEN 440
+    LM(M)=L+1
+    L=L+1
+    BM$(L,M)=X$
+    PRINT
+    GOSUB 340
+    P$=X$
+    GOSUB 1240
+    FOR Z=1 TO 4
+      IF SM(Z)>= 4 THEN
+        PRINT "Y O U   W I N !!!"
+        GOTO 1580
+      ENDIF
+    NEXT Z
+610 M9=0 \ V1=0
+    N1=1
+    FOR M4=1 TO 8
+      L=LM(M4)+1
+      IF L>8 THEN 1080
+      V=1
+      P$=O$ \ W=0
+      M=M4
+690   GOSUB 1240
+      FOR Z1=1 TO 4 \ NM(Z1)=0 \ NEXT Z1
+      FOR Z=1 TO 4
+        S=SM(Z)
+        IF S-W>3 THEN 1130
+        T=S+F(Z)
+        IF T<4 THEN 780
+        V=V+4
+        NM(S)=NM(S)+1
+780   NEXT Z
+      FOR I = 1 TO 4
+        N=NM(I)-1
+        IF N <> -1 THEN
+          I1=8*W+4*SGN(N)+I
+          V=V + VM(I1) + N*VM(8*W+I)
+        ENDIF
+      NEXT I
+      IF W <> 1 THEN
+        W=1
+        P$=X$
+        GOTO 690
+      ENDIF
+      L=L+1
+      IF L<=8 THEN
+        GOSUB 1240
+        FOR Z=1 TO 4
+          IF SM(Z)>3 THEN V=2 \ ENDIF
+        NEXT Z
+      ENDIF
+       IF V<V1 THEN 1080
+       IF V>V1 THEN
+         N1=1
+       ELSE
+         N1=N1 + 1
+         IF RND(1) > 1/N1 THEN 1080
+       ENDIF
+       V1 = V
+       M9=M4
+1080 NEXT M4
+     IF M9=0 THEN
+       PRINT "T I E   G A M E ..."
+       GOTO 1580
+     ENDIF
+     M=M9
+1130 PRINT "COMPUTER PICKS COLUMN ";M \ PRINT
+     L=LM(M)+1
+     LM(M)=LM(M)+1
+     BM$(L,M)=O$
+     P$=O$
+     GOSUB 340
+     GOSUB 1240
+     FOR Z = 1 TO 4
+       IF SM(Z)>=4 THEN
+         PRINT "C O M P U T E R   W I N S !!!"
+         GOTO 1580
+       ENDIF
+     NEXT Z
+     GOTO 450
+
+1240 Q$=X$
+     IF P$=X$ THEN Q$=O$ \ ENDIF
+     D2=1 \ D1=0
+     Z=0
+     GOSUB 1360
+     D1=1 \ D2=1
+     GOSUB 1360
+     D2=0 \ D1=1
+     GOSUB 1360
+     D2=-1 \ D1=1
+     GOSUB 1360
+     RETURN
+
+1360 D=TRUE \ S=1
+     T=0
+     Z=Z+1
+1390 C=FALSE
+     FOR K=1 TO 3
+       M5=M+K*D1 \ L1=L+K*D2
+       IF M5<1 OR L1<1 OR M5>8 OR L1>8 THEN 1510
+       B$=BM$(L1,M5)
+       IF C=FALSE THEN 1480
+1450   IF B$=Q$ THEN K=3 \ GOTO 1510 \ ENDIF
+       T=T+1
+       GOTO 1510
+1480   IF B$=P$ THEN S=S+1 \ GOTO 1510 \ ENDIF
+       C=TRUE
+       GOTO 1450
+1510 NEXT K
+     IF D=TRUE THEN
+       D=FALSE \ D1=-D1 \ D2=-D2
+       GOTO 1390
+     ENDIF
+     SM(Z)=S
+     F(Z)=T
+     RETURN
+
+1580 END

@@ -1,21 +1,32 @@
-# DYNACALC, Version 4.7:3
+# DYNACALC
 
-This directory contains Dynacalc v. 4.7:3 as sold for the Dragon 64. This
-edition has been configured to fit the 51-column screen that was the max number
-of columns the Dragon 64 could display. The control sequences for the screen
-are defined in the Dynacalc.trm file and in principle it is possible to define
-another terminal, but the 'install.dc' program to do so has had this
-functionality removed.
+This directory contains two versions of Dynacalc.
 
-There is evidence that it used to be possible to use a VT100 terminal. It is
-called an 'ANSI' terminal in the code. The VT100 terminal is the most common
-type to be emulated in today's tools. However, the cursor keys of a VT100
-terminal send three-character sequences, and the Dynacalc.trm has only space
-for one byte. Apparently the characters '{', '}', '[' and ']' were used.
+Dynacalc v. 4.7:3 as sold for the Dragon 64. This edition was configured
+to fit the 51-column (GO51) screen that was the max number of columns the
+Dragon 64 could display. The control sequences for the screen are
+defined in the Dynacalc.trm file and in principle it is possible to
+define another terminal, but the 'install.dc' program to do so has had
+this functionality removed. Additionally, the help and menu texts were shortenend
+to fit 51 columns.
+
+Dynacalc 4.8:5 was distributed for the TRS-80 Color Computer. It has additional
+functions for Boolean operations. It is configured for a 32 column by 16 lines display
+and the menu texts are shortened accordingly. There is some evidence that the screen
+size is read from the device descriptor, but I have not been able to confirm.
+
+Then some of the OS-9 user groups have disseminated TRM files for versions 4.8:3 and 4.8:4.
 
 Dynacalc was originally created by Scott Schaeferle.
 
-## Number format
+## Cell format
+
+The format of a cell starts with two bytes. The first indicates the length of the value.
+The second is the field type. 
+
+### Numbers
+
+Floating point numbers are the same as used by the Microware C compiler.
 
 ```
 -1    = 0A A0 80 0000 0000 0000 81 FF FF00
@@ -37,11 +48,11 @@ Dynacalc was originally created by Scott Schaeferle.
 PI    = 0A A0 49 0FDA A221 68BD 82 FF FF00  (3.141592653589793)
 @PI   = 0A A0 49 0FDA A221 68BD 82 FF FF00
                                 ^--- sign bit for exponent
-        ||    ^ -----signbit i bit 7
+        ||    ^ -----signbit in bit 7
         || ^------ Field type
         ^^----- length of content incl. type
 
-
+### String format
 
 '1    = 03 3031 FFFF 00
 'AB.. = 0F 3041 4243 4445 4647 4849 4A4B 4C4D FFFF 00 'ABCDEFGHIJKLM' = len(13)

@@ -1,0 +1,11 @@
+LEVEL equ 1 select level one
+ ifp1
+ use /d0/defs/swtpc/os9defs
+ use /d0/defs/swtpc/os9sysdefs.li
+ use /d0/defs/swtpc/os9iodefs
+ use /d0/defs/swtpc/os9rbfdefs
+ use /d0/defs/swtpc/li.equates
+ use /d0/defs/swtpc/systype
+ endc
+ use sysdefs.sys
+

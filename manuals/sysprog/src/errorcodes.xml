@@ -289,7 +289,7 @@ Consult manufacturer's hardware manual for more details.</para>
 <row>
  <entry>$F9</entry>
  <entry>249</entry>
- <entry><errorname xml:id="e.btype" xreflabel="E$BType">E$BType</errorname> <errortext>WRONG TYPE</errortext>
+ <entry><errorname xml:id="e.btyp" xreflabel="E$BTyp">E$BTyp</errorname> <errortext>WRONG TYPE</errortext>
  - attempt to read incompatible media (i.e. attempt to read double-side disk on single-side drive)</entry></row>
 <row>
  <entry>$FA</entry>

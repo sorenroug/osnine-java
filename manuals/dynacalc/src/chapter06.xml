@@ -1,7 +1,7 @@
   <chapter xmlns="http://docbook.org/ns/docbook">
     <title xml:id="commands">Commands</title>
     <para>You enter the command mode by typing '/' when you are in the Ready mode. When you do this, you will notice that the Ready message is replaced on line 2 of the display by the main command menu, which consists of a number of single letters, each representing a command:</para>
-    <screen>A B C D E F I M P Q R S T W ?</screen>
+    <screen>A B C D E F I L M P Q R S T W ?</screen>
     <para>You can then select any one of the commands by typing the letter associated with it. This will lead to another menu or other message, which will be described under the headings of individual commands. If you don&#x2019;t remember what the letters stand for, type &#x2018;?&#x2019; for HELP, which is a summary of instructions for the main command level. Each subsequent command menu also has its own HELP, which is called up by typing '?' in response to the menu prompt.</para>
     <sect1>
       <title>Attributes</title>
@@ -63,6 +63,49 @@
     <sect1>
       <title>Insert</title>
       <para>The insert command (/I) lets you insert a new (blank) column or row into an existing worksheet. Simply move the cursor to the column or row where you want the new one to be, and type the command. The new column or row will appear, and any references to cells beyond the inserted area will be automatically adjusted to take into account the new addresses. Remember this yourself when you type in new expressions.</para>
+    </sect1>
+    <sect1>
+      <title>Locate label</title>
+      <para>
+  The locate label command lets you quickly determine the
+location of a specified label. This is very useful, especially
+with large worksheets extending over several screens.
+      </para>
+      <para>
+When you type /L to enter this command, DYNACALC will ask
+you for the text string (sequence of characters) for which to
+search. Enter the desired string and hit (ENTER). Now DYNACALC
+searches your worksheet for any occurrence on a LABEL of the
+specified string. This is a substring search, so the target
+label does not have to contain only the search string, DYNACALC
+might report the existence of labels 'bathroom' and 'bathtub'
+(but not 'bat').
+      </para>
+      <para>
+When locate finds a match, it displays the address of the
+cell containing the found label, and the entire contents of that
+cell, on the top line of the screen. On line two the prompt
+'Move?' is displayed. Answer this prompt with 'N' to continue
+searching, or 'Y' to move the cursor to the displayed cell.
+      </para>
+      <para>
+Locate starts at the current cell, and goes vertically
+through the worksheet in its search for a match. If no match is
+found before it returns to the starting cell, the command is
+aborted.
+      </para>
+      <para>
+There are two special characters that can be included in
+the search string. A question mark (?) at any position in the
+search string serves as a wild card. Thus a search string of
+'c?t' might result in finding 'cat', 'cot', or 'cut'. Any
+number of wild card characters can be included in the search
+string. The other special character is the at-sign (@). This
+character, when used in the FIRST character position of the
+search string, causes DYNACALC to require an exact match
+(including case) between search and target strings. Normally
+case (the difference between 'a' and 'A') is ignored.
+      </para>
     </sect1>
     <sect1>
       <title>Move</title>

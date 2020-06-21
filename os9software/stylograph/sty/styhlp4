@@ -1,0 +1,17 @@
+
+-------------- Horizontal formatting commands -------------------
+
+  ,CE N    Center N lines
+  ,RJ N    Right justify N lines
+  ,JU      justify
+  ,NJ      no justify
+
+  ,LL N    line length of N
+  ,IN N    indent N spaces
+  ,SI N    indent one line N spaces
+  ,LM N    set left margin N spaces (print parameter)
+
+  ,CS N    character spacing, N characters/inch (print parameter)
+  ,PS      start proportional spacing
+  ,NPS     non-proportional, normal spacing 
+

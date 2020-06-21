@@ -3,12 +3,14 @@ package org.roug.osnine.genericos9;
 import java.util.List;
 import javax.swing.SwingWorker;
 
-import org.roug.osnine.Acia;
+import org.roug.ui.UIDevice;
+import org.roug.usim.Acia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Listen to ACIA and send the character to the User Interface.
+ * This is required because Swing isn't thread safe.
  *
  */
 public class AciaToScreen extends SwingWorker<Integer, Integer> {
@@ -47,7 +49,7 @@ public class AciaToScreen extends SwingWorker<Integer, Integer> {
     @Override
     protected void process(List<Integer> chunks) {
         try {
-            for(int val : chunks) {
+            for (int val : chunks) {
                 uiDevice.sendToUI(val);
             }
         } catch (Exception e) {

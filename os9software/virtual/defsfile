@@ -1,3 +1,6 @@
+Level equ 1
 
+ ifp1
  use ../DEFS/os9defs
  use ../DEFS/rbfdefs
+ endc

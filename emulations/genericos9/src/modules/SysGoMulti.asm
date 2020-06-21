@@ -1,5 +1,5 @@
          nam   SysGo
-         ttl   SysGo that runs Login on /T1
+         ttl   SysGo that runs Login on /Term
 
          ifp1
          use   os9defs
@@ -33,7 +33,7 @@ TSMon    fcc   "TSMon"
          fcb   C$CR
          fcc   ",,,,,," room for patch
 
-TSMonArg fcc   "/T2"
+TSMonArg fcc   "/T1"
          fcb   C$CR
 TSMonEnd equ   *
 
@@ -80,7 +80,7 @@ CldEnt   leax  >IcptRtn,pcr     * Set up empty intercept
          bcs   DeadEnd
          os9   F$Wait Wait for it
 
-* Start up TSMon on terminal 2
+* Start up TSMon on terminal 1
 * Ignore any failures
          leax  >TSMon,pcr
          leau  >TSMonArg,pcr

@@ -23,10 +23,18 @@
     <target name="compile">
         <mkdir dir="${targetdir}"/>
         <copy todir="${targetdir}">
-          <filelist dir="../../os9software/target/"
-            files="Acia_ed2 BootDyn IOMan_ed4 SCF_ed8 RBF_ed8 OS9p1_d64 OS9p2_ed9
-            PipeMan Piper Pipe VDisk_rv2 Shell"
+          <filelist dir="../../os9software/target/kernel"
+            files="Acia_ed2 IOMan_ed4 SCF_ed8 RBF_ed8 PipeMan Piper Pipe"
           />
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/color" files="OS9p1 OS9p2"/>
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/virtual" files="BootDyn VDisk_rv2"/>
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/utilities" files="Shell"/>
         </copy>
         <!--
         <copy todir="${targetdir}">
@@ -36,11 +44,10 @@
         <assemble src="D0"/>
         <assemble src="D1"/>
         <assemble src="HWClock"/>
-        <assemble src="Init"/>
         <assemble src="SysGoMulti"/>
         <assemble src="SysGoSingle"/>
+        <assemble src="Term"/>
         <assemble src="T1"/>
-        <assemble src="T2"/>
         <assemble src="P"/>
     </target>
 

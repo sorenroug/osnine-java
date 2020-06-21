@@ -1,0 +1,34 @@
+* Terminal codes for GO51
+18 lines
+33 columns
+5F filler
+00 undefined
+0C0000000000 clear and home cursor
+0B0000000000 home
+0A   line feed ( cursor down )
+08   move cursor left
+1B4300000000 move cursor right
+07   bell
+000000000000 reverse video ( does not function )
+000000000000 normal video
+FF00000000000000 no initilization
+00000000000000
+00 no lost characters
+* INPUT CODES...
+000000 lead in for no functions
+0D00 CR
+0800  char delete
+0900  move right to next field
+1800  move left to previous field
+0500  quit / exit RMS (Ctrl-E)
+1C00  clear record
+0600  find record
+0400  delete record
+1500  update record
+0A00  feed secondary record
+1900  insert new record
+0C00  home
+1A00  next primary record
+1200  copy field (Ctrl-V)
+0000  no lead-out
+00F0  delay

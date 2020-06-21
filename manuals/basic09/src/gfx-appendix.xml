@@ -4,16 +4,16 @@
 <para>
 The Graphics Interface module provides a simple and convenient
 way to access the colour graphics and joystick functions of the
-Dragon Computer from <productname>BASIS09</productname> programs. The module is a program
+Dragon Computer from <productname>BASIC09</productname> programs. The module is a program
 written in assembly language and stored in a file called <quote>GFX</quote>. It
 can be loaded into memory using the OS-9 <quote>LOAD</quote> command prior to or
-after called <productname>BASIS09</productname>, or it will be
-automatically called by <productname>BASIS09</productname>
+after called <productname>BASIC09</productname>, or it will be
+automatically called by <productname>BASIC09</productname>
 the first time it is referenced in a program if the <quote>GFX</quote> file is
 located in the execution (<quote>CMDS</quote>) directory.
 </para>
 <para>
-<quote>GFX</quote> is called using the <productname>BASIS09</productname> <quote>RUN</quote> statement. The first
+<quote>GFX</quote> is called using the <productname>BASIC09</productname> <quote>RUN</quote> statement. The first
 parameter passed is the name of the graphics function desired.
 Other parameters are used to pass coordinates, colour modes, etc.
 </para>

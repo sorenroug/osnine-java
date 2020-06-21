@@ -1,7 +1,5 @@
 package org.roug.osnine.genericos9;
 
-import java.io.IOException;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -11,6 +9,7 @@ import java.awt.Font;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -26,6 +25,9 @@ import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.roug.ui.UIDevice;
+import org.roug.ui.printer.JPrinter;
+
 public class PrinterDialog implements UIDevice {
 
     private static final Logger LOGGER =
@@ -33,12 +35,12 @@ public class PrinterDialog implements UIDevice {
 
     private String newline = "\n";
     private JDialog printerDialog;
-    private JTextPane textPane;
+    private JPrinter textPane;
 
     private StringBuilder textBuffer = new StringBuilder(80);
 
     public PrinterDialog(JFrame parent) {
-        printerDialog = new JDialog(parent, "Printer", false);
+        printerDialog = new JDialog((JDialog) null, "Printer /P", false);
         printerDialog.setLayout(new BorderLayout());
 
         JPanel buttonPane = new JPanel();
@@ -58,7 +60,7 @@ public class PrinterDialog implements UIDevice {
         button.addActionListener(new CloseAction());
         buttonPane.add(button);
 
-        textPane = createTextPane();
+        textPane = new JPrinter();
         JScrollPane paneScrollPane = new JScrollPane(textPane);
         paneScrollPane.setVerticalScrollBarPolicy(
                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -71,38 +73,6 @@ public class PrinterDialog implements UIDevice {
 
     }
 
-    private JTextPane createTextPane() {
-
-        JTextPane textPane = new JTextPane();
-        textPane.setEditable(false);
-        Font currFont = textPane.getFont();
-        textPane.setFont(new Font("monospaced", currFont.getStyle(), currFont.getSize()));
-
-        StyledDocument doc = textPane.getStyledDocument();
-        addStylesToDocument(doc);
-
-        return textPane;
-    }
-
-    private void addStylesToDocument(StyledDocument doc) {
-        //Initialize some styles.
-        Style def = StyleContext.getDefaultStyleContext().
-                        getStyle(StyleContext.DEFAULT_STYLE);
-
-        Style monospace = doc.addStyle("monospace", def);
-        //StyleConstants.setFontFamily(monospace, "monospaced");
-
-    }
-
-    private void printSegment(String segment) {
-        StyledDocument doc = textPane.getStyledDocument();
-        try {
-            doc.insertString(doc.getLength(), segment, null);
-        } catch (BadLocationException ble) {
-            LOGGER.error("Couldn't insert text into text pane.", ble);
-        }
-        textPane.repaint();
-    }
 
 
     /**
@@ -111,14 +81,8 @@ public class PrinterDialog implements UIDevice {
      * @param value the character received from the PIA.
      */
     @Override
-    public void sendToUI(int value) {
-        if (value == 0x0A) {
-            textBuffer.append('\n');
-            printSegment(textBuffer.toString());
-            textBuffer = new StringBuilder(80);
-        } else {
-            textBuffer.append((char) (value & 0x7F)); // Convert to char
-        }
+    public void sendToUI(int value) throws IOException {
+        textPane.sendToUI(value);
     }
 
     public void setVisible(boolean visible) {

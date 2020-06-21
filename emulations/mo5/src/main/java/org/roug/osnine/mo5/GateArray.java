@@ -1,6 +1,6 @@
 package org.roug.osnine.mo5;
 
-import org.roug.osnine.MemorySegment;
+import org.roug.usim.MemorySegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

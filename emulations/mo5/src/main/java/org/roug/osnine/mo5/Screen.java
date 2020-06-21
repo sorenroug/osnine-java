@@ -8,9 +8,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import javax.swing.JPanel;
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.PIA6821;
-import org.roug.osnine.BitReceiver;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.PIA6821;
+import org.roug.usim.BitReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

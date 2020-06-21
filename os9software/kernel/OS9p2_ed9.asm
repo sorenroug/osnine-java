@@ -20,9 +20,7 @@
 * the licensee is strictly prohibited!!
 *
 
-         ifp1
-         use   os9defs
-         endc
+ use defsfile
 
 *****
 *
@@ -45,6 +43,8 @@ OS9Nam fcs /OS9p2/
 *
 * Edition  8 -  Change made to setime system call enabling it to
 *               call the init routine of the clock module  WGP
+*
+* Edition  9 -  Set boot flag to prevent loop
 *
  fcb 9 Edition number
 
@@ -863,7 +863,7 @@ RTRNP9 clr ,S+ Return scratch with carry clear
 *
 IOSTR fcb 'I,'O,'M,'A,'N+$80
 IOHOOK pshs D,X,Y,U Save registers
-         ldu   <D.Init
+ ldu D.Init
  bsr IOLink Link ioman
  bcc IOHOOK10
  bsr BOOT Ioman not found, boot
@@ -881,16 +881,11 @@ IOLink leax IOSTR,PCR Get ioman name ptr
  OS9 F$LINK
  rts
 
-* In case of an old os9defs file
- ifeq D.Boot
-D.Boot equ $83
- endc
-
 BOOT pshs U save D.Init ptr
  comb set carry
- tst   D.Boot
- bne   BOOTXX Don't boot if already tried
- inc   D.Boot
+ tst D.Boot
+ bne BOOTXX Don't boot if already tried
+ inc D.Boot
  ldd BOOTSTR,U Get default device string
  beq BOOTXX Can't boot without device
  leax D,U Get name ptr
@@ -919,3 +914,31 @@ BOOTXX puls U,PC Restore ptr and return
 
  emod
 OS9End equ *
+
+
+
+ ttl Configuration Module
+ page
+*****
+*
+* Configuration Module
+*
+Type set SYSTM
+ mod ConEnd,ConNam,Type,Revs
+ fcb 0 no extended memory
+ fdb $F800 High free memory bound
+ fcb 12 Entries in interrupt polling table
+ fcb 12 Entries in device table
+ fdb ModNam Initial module name
+ fdb DirNam Default directory name
+ fdb TermNam Standard i/o device name
+ fdb BootNam Bootstrap module name
+ConNam fcs "Init"
+ModNam fcs "SysGo"
+DirNam fcs "/D0"
+TermNam fcs "/Term"
+BootNam fcs "Boot"
+ emod
+ConEnd equ *
+
+ end

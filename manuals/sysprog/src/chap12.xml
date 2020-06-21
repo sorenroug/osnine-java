@@ -597,7 +597,7 @@ half), then X = offset from beginning of DAT image ($8000).
         <varlistentry>
           <term>DATA:</term>
           <listitem>
-            <para>D.TmpDAT, D.Procc</para>
+            <para>D.TmpDAT, D.Proc</para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -1113,7 +1113,7 @@ module type of zero passed to FModul will find any module.
         <varlistentry>
           <term>SYSTEM CALLS:</term>
           <listitem>
-            <para>F.LDAXY*, F.DATLOg*, F.PrsNam, F.LDDDXY*, F.ChkNam*</para>
+            <para>F.LDAXY*, F.DATLog*, F.PrsNam, F.LDDDXY*, F.ChkNam*</para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -1563,7 +1563,7 @@ returned must refer to system address space.
         <varlistentry>
           <term>OUTPUT:</term>
           <listitem>
-            <para>(A) = Data byte ato,X in task's address space</para>
+            <para>(A) = Data byte at 0,X in task's address space</para>
           </listitem>
         </varlistentry>
         <varlistentry>

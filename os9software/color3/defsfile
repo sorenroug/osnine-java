@@ -1,0 +1,24 @@
+level equ 2
+ opt -c
+ opt f
+* NOTE: This file assumes Defs Directory in on Root
+*       of current Disk Device
+ ifp1
+ use os9defs
+ use systype
+
+ page
+************************************************************
+*
+*     Module Directory Entry Definitions
+*
+ org 0
+MD$MPDAT rmb 2 Module DAT Image ptr
+MD$MBSiz rmb 2 Memory Block size
+MD$MPtr rmb 2 Module ptr
+MD$Link rmb 2 Module Link count
+MD$ESize equ . Module Directory Entry size
+
+MD$MBNum equ MD$MPDAT this equate for old file assembly
+
+ endc

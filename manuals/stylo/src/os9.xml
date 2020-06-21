@@ -1,0 +1,455 @@
+<?xml version="1.0"?>
+<article xmlns="http://docbook.org/ns/docbook">
+  <articleinfo>
+    <title>OS9 OPERATING SYSTEM</title>
+  </articleinfo>
+  <section>
+    <title>STYLOGRAPH OPERATION UNDER OS9</title>
+    <para>
+        Stylograph can be used very effectively under a multi-user
+        environment such as OS9. Since Stylograph is highly interactive and
+        uses dynamic screen formatting there are a couple of things to keep in
+        mind. First of all, Stylograph is much easier to use at higher baud
+        rates. Also, since OS9 is very I/O bound and Stylograph is constantly
+        outputting characters to the screen, you should develop some operator
+        habits which will reduce the demand on OS9. You should do most of
+        your editing on the bottom of the screen since that reduces the amount
+        that Stylograph has to update the screen. Also, if you operate in the
+        insert mode with a RETURN on the right side of the insert line, this
+        will reduce the updating that is required on that line. Scrolling and
+        paging through the text also consume a lot of computer time so this
+        should be kept to a minimum. None of these things will hurt the
+        operation of Stylograph but if too many operators are scrolling or
+        paging at the same time, the operation of the entire system will be
+        slowed down. These considerations need not apply if you are using
+        level one of OS9 and only have one operator on the system.
+    </para>
+  </section>
+  <section>
+    <title>INITAL SETUP</title>
+    <para>
+          When you receive the disk the following files should be on the root
+          directory of the disk:
+      </para>
+    <informaltable frame="none" rowsep="0" colsep="0">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="col1" colwidth="1in"/>
+        <colspec colnum="2" colname="col2" colwidth="4in"/>
+        <thead>
+          <row>
+            <entry>FILE NAME</entry>
+            <entry>FUNCTION</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>readme</entry>
+            <entry>initial setup and description of file on this disk</entry>
+          </row>
+          <row>
+            <entry>stylo</entry>
+            <entry>Stylograph program</entry>
+          </row>
+          <row>
+            <entry>styfix</entry>
+            <entry>program for configuring Stylograph</entry>
+          </row>
+          <row>
+            <entry>styappen</entry>
+            <entry>program for appending binary files to Stylograph</entry>
+          </row>
+          <row>
+            <entry>history</entry>
+            <entry>text file listing previous updates and fixes to system</entry>
+          </row>
+          <row>
+            <entry>sty</entry>
+            <entry>directory holding various Stylo related files</entry>
+          </row>
+          <row>
+            <entry>intro</entry>
+            <entry>test file of part of manual for practice editing</entry>
+          </row>
+          <row>
+            <entry>styhlp1-6</entry>
+            <entry>6 text files for assistance command</entry>
+          </row>
+          <row>
+            <entry>styps.d</entry>
+            <entry>proportional spacing table for DIABLO</entry>
+          </row>
+          <row>
+            <entry>styps.b</entry>
+            <entry>for Brother HR-15</entry>
+          </row>
+          <row>
+            <entry>styps.n</entry>
+            <entry>proportional spacing table for NEC</entry>
+          </row>
+          <row>
+            <entry>styps.7</entry>
+            <entry>proportional spacing table for 737/9</entry>
+          </row>
+          <row>
+            <entry>stytext</entry>
+            <entry>source code of stylograph prompts and constants</entry>
+          </row>
+          <row>
+            <entry>sty.130</entry>
+            <entry>source for SOROC IQ-130 terminal driver</entry>
+          </row>
+          <row>
+            <entry>sty.adm3</entry>
+            <entry>source for ADM-3 terminal driver</entry>
+          </row>
+          <row>
+            <entry>sty.ct82</entry>
+            <entry>source for CT-82 terminal driver</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>
+          To set up Stylograph on your system, first establish a directory that
+          contains the files contained in the Sty directory as received from
+          GPCCI. The only files that are required in the Sty directory are:
+          Styhp1-6. Styerr (COCO only), Stystat (COCO only). The rest of the
+          files in the Sty directory are only for certain applications as
+          needed. The Sty directory is a good place to keep them, however.
+          Stylograph assumes that this directory will be called /D0/Sty, but
+          this can be changed by using Styfix with option #6.
+      </para>
+    <para>
+          If you are doing proportional spacing, rename the proper proportional
+          spacing table (Styps.d, Styps.7, Styps.n, Styps.b (COCO only), to
+          <quote>Styps</quote> and move it into your <quote>Sty</quote> directory or its equivalent.
+          Then establish the Stylo file in your <quote>CMDS</quote> directory.
+      </para>
+  </section>
+  <section>
+    <title>PRINTER DRIVERS</title>
+    <para>
+        Stylograph looks for a printer descriptor by the name /p1 by default.
+        If you wish to change the default descriptor name, see the
+        instructions under the STYFIX command.
+    </para>
+  </section>
+  <section>
+    <title>THE STYFIX PROGRAM</title>
+    <para>
+        STYFIX is an executable program and should be put in the CMDS
+        directory of your disk. To execute STYFIX type the following:
+    </para>
+    <screen>
+        styfix filename
+    </screen>
+    <para>
+        where filename = stylo or mm or spell. STYFIX will use the program
+        name to determine which of the three menus (STYLO, MM or SPELL) to bring
+        up. The following explanations describe each of the three menus.
+    </para>
+    <section>
+      <title>STYFIX STYLO</title>
+      <para>
+            This is the menu that appears if the filename is STYLO:
+        </para>
+      <screen>
+------- STYLOGRAPH configuration program -------
+        1. Set default terminal type.
+        2. Printer menu.
+        3. Set proportional table load at startup.
+        4. Set maximum pages.
+        5. List memory boundaries.
+        6. Set default STY directory pathname.
+        7. Set default data buffer size (work area).
+        8. Return to OS-9.
+        Choice?
+    </screen>
+      <para>
+        Select the proper choice by typing the corresponding number followed
+        by a carriage return (CR).
+    </para>
+      <para>
+        If the choice is #1 of the STYLOGRAPH MENU the following prompt will appear:
+    </para>
+      <screen>
+             Terminal number?
+    </screen>
+      <para>
+        These numbers can be found on Appendix C PRINTER AND TERMINAL NUMBERS
+        in the manual. Type the number followed by a carriage return and the
+        MAIN MENU will appear ready for the next choice.
+    </para>
+      <para>
+        If the choice is #2 of the STYLOGRAPH MENU the following menu will
+        appear:
+    </para>
+      <screen>
+        ------- PRINTER menu -------
+             1. Set default printer type.
+             2. Set default printer pathname.
+             3. Return to main menu.
+             Choice?
+     </screen>
+      <para>
+         These options have to do with printer defaults.
+     </para>
+      <para>
+         If the choice is #1 of the PRINTER MENU the following prompt will appear:
+     </para>
+      <screen>
+                  Printer number?
+     </screen>
+      <para>
+         These numbers can be found in Appendix C PRINTER AND TERMINAL NUMBERS
+        in the manual. Type the number followed by a carriage return and the
+        PRINTER MENU will appear ready for your next choice.
+    </para>
+      <para>
+        If the choice is #2 of the PRINTER MENU the following prompt will
+        appear:
+    </para>
+      <screen>
+        Pathname(/p,/p1,/H0/STY/DICT etc.30 chars max)?
+    </screen>
+      <para>
+        This prompt expects an OS9 pathname of not more than 30 characters
+        giving the path (complete OS9 pathlist) of the desired printer.
+    </para>
+      <para>
+        If the choice is #3 of the PRINTER MENU the program will return to the
+        MAIN MENU.
+    </para>
+      <para>
+        If the choice is #3 of the STYLOGRAPH MENU the following prompt will
+        appear:
+    </para>
+      <screen>
+        Load STYPS proportional spacing table at startup (Y/N)?
+    </screen>
+      <para>
+        This prompt wants to know if the proportional spacing table should be
+        loaded with STYLO to do proportional spaced printing. Type a Y or an N accordingly.
+    </para>
+      <para>
+        If the choice is #4 of the STYLOGRAPH MENU the following prompt will appear:
+    </para>
+      <screen>
+        This is the maximum number of printed pages
+        that STYLO can edit or print at a given time.
+        The number of characters or lines on each
+        printed page is not critical. Typically 10
+        to 40 pages. Numbers higher than necessary
+        may waste data space!
+        
+        Maximum pages that Stylograph can edit?
+    </screen>
+      <para>
+        The default value for STYLO is 20 (COCO OS9 STYLO 10) until changed by
+        the user. This selection determines the number of printed pages that
+        STYLO can work with at one time. The default value should normally be
+        enough for working with text files. If there is more text in memory
+        than will fit on the specified number of pages then you may not move
+        the cursor below the last page. No other operations are affected,
+        however, and no text is lost or destroyed.
+    </para>
+      <para>
+If the choice is #5 of the STYLOGRAPH MENU the following table will appear:
+    </para>
+      <screen>
+        LABEL     FUNCTION                         ADDRESS
+        
+        TXTBEG    Beginning of text area ----------- $0123
+        TXTEND    End of text area ----------------- $4567
+        BINEND    End of Stylograph binary code ---- $89AB
+        TRMBEG    Beginning of terminal driver ----- $CDEF
+        TRMSEQ    Beginning of terminal sequence --- $0123
+        TRMEND    End of terminal driver ----------- $4567
+    </screen>
+      <para>
+        This table displays various addresses for use with the STYAPPEN
+        command (not available in COCO STYLO).
+    </para>
+      <para>
+        If the choice is #6 of the STYLOGRAPH MENU the following prompt will appear:
+    </para>
+      <screen>
+        Pathname(/p,/p1,/H0/STY/DICT etc.30 chars max)?
+    </screen>
+      <para>
+        This prompt expects an OS9 pathname of not more than 30 characters
+        giving the path (complete OS9 pathlist) of what is sent to you as the
+        STY directory (for example on the disk received from GPCCI the
+        complete pathlist for the STY directory is /d0/STY or /D1/STY 
+        depending on the disk drive used). This directory (no matter what its
+        name) should contain those files specified in the README file on the
+        GPCCI supplied disk. These files include: styhlp_6, styerr(coco only),
+        stypstat(coco only), styps_b, styps_d, styps_n, styps_7, intro,
+        sty_ct82(not on coco), sty_adm3(not on coco), sty_130(not on coco),
+        stytext(not on coco).
+    </para>
+      <para>
+        If the choice is #7 of the STYLOGRAPH MENU the following prompt will appear:
+    </para>
+      <screen>
+        This size is the default module permanent
+        storage requirement. It has the same
+        effect as the command line:
+        
+                  STYLO MYFILENAME #nk
+        
+        where n=number of kilobytes etc. This
+        size can be increased from the command
+        line but not decreased except from STYFIX.
+        Minimum data buffer size in bytes?
+        
+        (Min = 6144 bytes Max = 65535 bytes)
+    </screen>
+      <para>
+        This choice allows the module header of permanent storage requirement to
+        be increased or decreased in size to adapt STYLO to use the amount of
+        memory that is best suited to any specific system. The minimum is set
+        due to the fact that STYLO requires approximately that amount for its
+        own uses. The maximum is only limited by the largest contiguous memory
+        block available on a system.
+    </para>
+      <para>
+        If the choice is #8 of the STYLOGRAPH MENU then STYFIX will complete
+        its task and return to the operating system.
+    </para>
+    </section>
+    <section>
+      <title>STYFIX MM</title>
+      <para>
+        This is the menu that appears if the filename is MM:
+    </para>
+    <screen>
+        ------- MAILMERGE configuration program -------
+
+                1. Set default printer type.
+                2. Set default STYPS pathname.
+                3. Return to OS-9.
+    </screen>
+    <para>
+        If the choice is #1 of the MAILMERGE MENU the following prompt will appear:
+    </para>
+    <screen>
+        Printer number?
+    </screen>
+    <para>
+        These numbers can be found in the Mail Merge Manual on page 4. Type the number
+        followed by a carriage return and the MAILMERGE MENU will reappear ready for your
+        next choice.
+    </para>
+    <para>
+        If the choice is #2 of the MAILMERGE MENU the following prompt will appear:
+    </para>
+    <screen>
+        Pathname(/p,/p1,/H0/STY/DICT etc. 30 chars max)?
+    </screen>
+    <para>
+        This prompt expects an OS9 pathname of not more than 30 characters giving
+        the path (complete OS9 filename) of the STYPS proportional spacing table file.
+    </para>
+    </section>
+    <section>
+      <title>STYFIX SPELL</title>
+      <para>
+        This is the menu that appears if the filename is SPELL:
+    </para>
+    <screen>
+        ------- SPELL CHECKER configuration program -------
+
+                1. Set default primary dictionary path(DICT).
+                   (/D1/STY/DICT, /h0/mydir/sam/dict, etc.)
+                2. Set default secondary dictionary path(SUPP).
+                   (/D1/STY/SUPP, /h0/mydir/sam/supp, etc.)
+                3. Return to OS-9.
+    </screen>
+    <para>
+        If the choice is #1 of the SPELL CHECKER MENU the following prompt will appear:
+    </para>
+    <screen>
+        Pathname(/p,/p1,/H0/STY/DICT etc. 30 chars max)?
+    </screen>
+    <para>
+        This prompt expects an OS9 pathname of not more than 30 characters giving
+        the path (complete OS9 filename) of the DICT main directory file.
+    </para>
+    <para>
+        If the choice is #2 of the SPELL CHECKER MENU the following prompt will appear:
+    </para>
+    <screen>
+        Pathname(/p,/p1,/H0/STY/DICT etc. 30 chars max)?
+    </screen>
+    <para>
+        This prompt expects an OS9 pathname of not more than 30 characters giving
+        the path (complete OS9 filename) of the SUPP secondary or supplimentary directory file.
+    </para>
+    <para>
+        If the choice is #2 of the SPELL CHECKER MENU then STYFIX will complete
+        its task and return to the operating system.
+    </para>
+    </section>
+    <section>
+      <title>MODIFYING STYLOGRAPH FOR NON-SUPPORTED SERIAL TERMINALS</title>
+      <para>
+      If you have a serial terminal which is not listed in appendix C, then
+      you may return your Stylograph disk to us for modification. When
+      you return your disk, also include a copy of terminal user's
+      manual which includes the control codes. Terminal updates will be done
+      for a $50.00 charge.
+  </para>
+      <para>
+      If you wish, and are capable of assembly code work, you may do the
+      modifications yourself. The terminal driver consists of two different
+      parts: a stack of pointers located $20 bytes above TRMBEG, and a
+      stack of ASCII control sequences located at TRMSEQ. The source code
+      for two different terminal drivers, a CT-82 and an ADM-3A are
+      included on you disk. They
+      may be used as models for constructing your own terminal driver. The
+      easiest course of action is to edit one of these files to create your
+      own file. The method of modifying one of these drivers is explained in
+      the Appendix D --- "MODIFYING STYLOGRAPH FOR NON-SUPPORTED SERIAL TERMINALS".
+  </para>
+      <para>
+      After the new source code has been created, the binary file must be appended
+      to the present Stylograph file by using the "styappen" program.
+      Assuming that the new terminal driver is name "styterm" and the
+      "styappen" file has been put in the "cmds" directory, the 
+      following command should cause Stylograph to work with the new terminal:
+  </para>
+      <screen>
+      styappen cmds/stylo styterm
+  </screen>
+    </section>
+    <section>
+      <title>CHANGING TEXT CONSTANTS</title>
+      <para>
+        A text file by the name "stytext" is supplied on your disk. This file
+        may be modified, assembled and appended to Stylograph to change any of
+        the text constants. The procedures for changing this text file are
+        explained in Appendix E of this manual.
+    </para>
+    </section>
+    <section>
+      <title>PRINTING SPOOLED FILES</title>
+      <para>
+        Files that have been spooled to a disk for later printing, by means of
+        the "SPOOL" command, can be printed as follows:
+    </para>
+      <para>
+        For example suppose you have spooled a file "MYFILE" to "MYDIR" on
+        drive /d1. This spooled file can be printed using the OS-9 "COPY"
+        command as shown below:
+    </para>
+      <screen>
+        chd /d1/mydir
+        copy myfile /p
+    </screen>
+      <para>
+        Do <emphasis>not</emphasis> use the right arrow (&gt;) symbol.
+    </para>
+    </section>
+  </section>
+</article>

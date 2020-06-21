@@ -12,10 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import org.roug.osnine.MC6809;
-import org.roug.osnine.RandomAccessMemory;
-import org.roug.osnine.ReadOnlyMemory;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

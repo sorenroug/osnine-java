@@ -1,6 +1,6 @@
 package org.roug.osnine.os9;
 
-import org.roug.osnine.MemorySegment;
+import org.roug.usim.MemorySegment;
 import java.io.IOException;
 
 /**

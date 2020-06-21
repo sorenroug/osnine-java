@@ -1,0 +1,19 @@
+------------------------------ ESCAPE COMMANDS -------------------------------
+
+  J   cursor left                       U   Scroll up one line
+  L   cursor right                      M   Scroll down one line
+  I   cursor up                         O   Scroll up one screen
+  ,   cursor down                       .   Scroll down one screen
+  K   cursor left then right            7   Scroll left
+                                        9   Scroll right
+  ;   insert text
+  /   go to supervisor                  R   Replace string
+                                        F   Find string
+  1   overwrite one character           P   Go to page #
+  ^   insert one character
+
+  S   save text from cursor to marker
+  W   withdraw saved text
+  D   duplicate (without withdrawing) saved text
+  Z   zap (delete) text from cursor to marker
+

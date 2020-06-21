@@ -1,3 +1,10 @@
 
-         use   /d0/DEFS/os9defs
-         use   /d0/DEFS/scfdefs
+* Dragon Data changed the Dollar to Money and cent to penny
+org 1
+LGENUS rmb 1
+LGENUK rmb 1
+
+LANG set LGENUS
+
+ use /d0/DEFS/os9defs
+ use /d0/DEFS/scfdefs

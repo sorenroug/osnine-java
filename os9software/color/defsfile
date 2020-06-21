@@ -1,0 +1,18 @@
+Level    equ   1
+
+ ifp1
+ use /d0/DEFS/os9defs
+ use /d0/DEFS/scfdefs
+ use /d0/DEFS/rbfdefs
+ endc
+
+* The value $83 is specific to CoCo. Other systems have $73
+ ifeq D.Boot
+D.Boot equ $83
+ endc
+
+normal equ 0 normal screen size
+small equ 1 small screen size
+Screen equ small
+
+ use Sysdefs.sys

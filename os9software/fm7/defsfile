@@ -1,0 +1,10 @@
+LEVEL equ 1 select level one
+ ifp1
+ use OS9Defs.1
+ use OS9SysDefs.li
+ use OS9IODefs.1
+ use OS9RbfDefs.2
+ use OS9ScfDefs.1
+ use li.equates
+ endc
+

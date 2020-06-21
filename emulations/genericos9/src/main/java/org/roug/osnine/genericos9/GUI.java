@@ -1,6 +1,5 @@
 package org.roug.osnine.genericos9;
 
-import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -9,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,32 +15,32 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
-import org.roug.osnine.Acia;
-import org.roug.osnine.Acia6850;
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.BusStraight;
-import org.roug.osnine.HWClock;
-import org.roug.osnine.IRQBeat;
-import org.roug.osnine.MC6809;
-import org.roug.osnine.RandomAccessMemory;
-//import org.roug.osnine.ReadOnlyMemory;
-import org.roug.osnine.VirtualDisk;
+import org.roug.ui.terminal.AvailableEmulations;
+import org.roug.ui.terminal.JTerminal;
+import org.roug.ui.terminal.EmulationCore;
+import org.roug.usim.Acia;
+import org.roug.usim.Acia6850;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.BusStraight;
+import org.roug.usim.HWClock;
+import org.roug.usim.IRQBeat;
+import org.roug.usim.mc6809.MC6809;
+import org.roug.usim.RandomAccessMemory;
+import org.roug.usim.VirtualDisk;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,41 +59,53 @@ public class GUI {
     private JFrame guiFrame;
 
     private PrinterDialog printerDialog;
-    private JDialog t2Dialog;
+    private JDialog t1Dialog;
     private DiskDialog d0Dialog, d1Dialog;
 
     private Bus8Motorola bus;
     private MC6809 cpu;
 
-    /** Serial devices. T3 will be used for printer. */
-    private Acia6850 t1,t2,t3;
+    /** Serial devices. T2 will be used for printer. */
+    private Acia6850 term,t1,t2;
 
     private VirtualDisk diskDevice;
 
     private HWClock hwClock;
 
     /** The display of the emulator. */
-    private Screen screen1, screen2;
+    private JTerminal screen1;
 
     private int loadStart = 0;
 
-    /** Content of clipboard to be sent into the emulator as key events. */
-    private String pasteBuffer;
-    private int pasteIndex;
+    //private final JFileChooser fc = new JFileChooser(new File("."));
 
-    private final JFileChooser fc = new JFileChooser(new File("."));
-
+    private Properties configMap = new Properties();
     /**
      * Create emulator application.
      */
-    public GUI(boolean singleUser) throws Exception {
+    public GUI(Properties config) throws Exception {
+        configMap = config;
+        String bootMode = configMap.getProperty("bootmode", "multiuser");
+        String terminalType = configMap.getProperty("term.type");
+        String fontSizeStr = configMap.getProperty("term.fontsize");
+        int fontSize;
+        try {
+            fontSize = Integer.parseInt(fontSizeStr);
+        } catch (NumberFormatException e) {
+            fontSize = 16;
+        }
+
+        boolean singleUser = false;
+        if ("singleuser".equals(configMap.getProperty("bootmode", "multiuser"))) {
+            singleUser = true;
+        }
         guiFrame = new JFrame("OS-9 emulator");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
         guiFrame.setJMenuBar(guiMenuBar);
 
         addFileMenu(guiMenuBar);
-        //addEditMenu(guiMenuBar);
+        addEditMenu(guiMenuBar);
         addDevicesMenu(guiMenuBar);
         addHelpMenu(guiMenuBar);
 
@@ -110,22 +120,24 @@ public class GUI {
         IRQBeat irqBeat = new IRQBeat(0xFFD0, bus, 20);
         bus.insertMemorySegment(irqBeat);
 
-        t1 = new Acia6850(0xFFD4, bus);
-        bus.insertMemorySegment(t1);
-        screen1 = new Screen(t1);
-        AciaToScreen atc1 = new AciaToScreen(t1, screen1);
+        term = new Acia6850(0xFFD4, bus);
+        bus.insertMemorySegment(term);
+        EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
+        screen1 = new JTerminal(term, emulation);
+        screen1.setFontSize(fontSize);
+        AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
-        t2 = new Acia6850(0xFFD6, bus);
-        bus.insertMemorySegment(t2);
+        t1 = new Acia6850(0xFFD6, bus);
+        bus.insertMemorySegment(t1);
 
-        t2Dialog = new Terminal2(guiFrame, t2);
+        t1Dialog = new Terminal2(guiFrame, t1, terminalType);
 
         printerDialog = new PrinterDialog(guiFrame);
 
-        t3 = new Acia6850(0xFFD8, bus);
-        bus.insertMemorySegment(t3);
-        AciaToScreen atc3 = new AciaToScreen(t3, printerDialog);
+        t2 = new Acia6850(0xFFD8, bus);
+        bus.insertMemorySegment(t2);
+        AciaToScreen atc3 = new AciaToScreen(t2, printerDialog);
         atc3.execute();
 
         hwClock = new HWClock(0xFFDA, bus);
@@ -138,14 +150,14 @@ public class GUI {
         d1Dialog = new DiskDialog(guiFrame, diskDevice, 1);
 
         if (singleUser) {
-            loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoSingle",
+            loadROM(0xF000, "OS9p1", "OS9p2", "SysGoSingle",
                     "BootDyn", "HWClock", "VDisk_rv2");
         } else {
-            loadROM(0xF000, "OS9p1_d64", "OS9p2_ed9", "Init", "SysGoMulti",
+            loadROM(0xF000, "OS9p1", "OS9p2", "SysGoMulti",
                     "BootDyn", "HWClock", "VDisk_rv2");
         }
         loadROM(0x3800, "D0", "D1", "IOMan_ed4", "SCF_ed8", "Acia_ed2", "RBF_ed8",
-                     "T1", "T2", "P", "PipeMan", "Piper", "Pipe");
+                     "Term", "T1", "P", "PipeMan", "Piper", "Pipe");
         if (singleUser) loadROM("Shell"); // Don't rely on the harddisk
 
         cpu = new MC6809(bus);
@@ -179,13 +191,6 @@ public class GUI {
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
 
-/*
-        LOGGER.debug("Starting heartbeat every 20 milliseconds");
-        TimerTask clocktask = new ClockTask();
-
-        Timer timer = new Timer("clock", true);
-        timer.schedule(clocktask, CLOCKDELAY, CLOCKPERIOD);
-        */
     }
 
     /**
@@ -203,16 +208,6 @@ public class GUI {
         LOGGER.debug("Writing word {} at {}", value, address);
         bus.forceWrite(address, (value >> 8) & 0xFF);
         bus.forceWrite(address + 1, value & 0xFF);
-    }
-
-    /**
-     * Set the size of the window.
-     *
-     * @param size size of a pixel in host computer pixels.
-     */
-    void setPixelSize(int size) {
-        //screen1.setPixelSize(size);
-        guiFrame.pack();
     }
 
     /**
@@ -268,19 +263,15 @@ public class GUI {
         guiMenu.setMnemonic(KeyEvent.VK_F);
 
         JMenuItem menuItem;
-/*
-        menuItem = new JMenuItem("Zoom 1x");
-        menuItem.addActionListener(new Zoom1Action());
+
+        menuItem = new JMenuItem("Decrease font size");
+        menuItem.addActionListener(new DecreaseFontAction());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Zoom 2x");
-        menuItem.addActionListener(new Zoom2Action());
+        menuItem = new JMenuItem("Increase font size");
+        menuItem.addActionListener(new IncreaseFontAction());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Zoom 4x");
-        menuItem.addActionListener(new Zoom4Action());
-        guiMenu.add(menuItem);
-*/
         menuItem = new JMenuItem("Reset CPU");
         menuItem.addActionListener(new ResetAction());
         guiMenu.add(menuItem);
@@ -296,8 +287,14 @@ public class GUI {
     private void addEditMenu(JMenuBar guiMenuBar) {
         JMenu guiMenu = new JMenu("Edit");
 
-        JMenuItem menuItem = new JMenuItem("Paste text");
-        menuItem.addActionListener(new PasteAction());
+        JMenuItem menuItem;
+
+        menuItem = new JMenuItem("Paste clipboard");
+        menuItem.addActionListener(new PasteAction(null));
+        guiMenu.add(menuItem);
+
+        menuItem = new JMenuItem("Paste disk change");
+        menuItem.addActionListener(new PasteAction("chd /d0 chx /d0/cmds\n"));
         guiMenu.add(menuItem);
 
         guiMenuBar.add(guiMenu);
@@ -335,11 +332,11 @@ public class GUI {
         JMenu guiMenu = new JMenu("Devices");
         guiMenu.setMnemonic(KeyEvent.VK_D);
 
-        JMenuItem menuItem = new JMenuItem("Terminal 2");
-        menuItem.addActionListener(new T2Action());
+        JMenuItem menuItem = new JMenuItem("Terminal /T1");
+        menuItem.addActionListener(new T1Action());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Printer");
+        menuItem = new JMenuItem("Printer /P");
         menuItem.addActionListener(new PrinterAction());
         guiMenu.add(menuItem);
 
@@ -356,43 +353,6 @@ public class GUI {
         guiMenuBar.add(guiMenu);
     }
 
-    /**
-     * Interrupts the CPU 50 times a second.
-     * If the user has clicked 'Paste text' then sends the text one character
-     * at a time to the keyboard input routine.
-     */
-    private class ClockTask extends TimerTask {
-        private static final int PASTE_INTERVAL = 4;
-        private static final int PASTE_RELEASE = PASTE_INTERVAL / 2;
-        private int beats = 0;
-
-        private boolean pasting;
-
-        public void run() {
-            if ((beats % PASTE_INTERVAL) == 0 && pasteBuffer != null) {
-                int code = pasteBuffer.charAt(pasteIndex);
-                pasting = true;
-                LOGGER.debug("Paste {}", code);
-                if (code >= 0)
-                    screen1.setKey(code, true);
-            }
-            if ((beats % PASTE_INTERVAL) == PASTE_RELEASE && pasting) {
-                int code = pasteBuffer.charAt(pasteIndex);
-                if (code >= 0)
-                    screen1.setKey(code, false);
-                pasting = false;
-                pasteIndex++;
-                if (pasteIndex >= pasteBuffer.length()) {
-                    pasteBuffer = null;
-                    pasteIndex = 0;
-                }
-            }
-
-            //pia.signalC1(PIA6821.B); // Send signal to PIA CB1
-            beats++;
-        }
-    }
-
     private static class QuitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -401,25 +361,43 @@ public class GUI {
     }
 
     private class PasteAction implements ActionListener {
+
+        private String cannedText = null;
+
+        public PasteAction(String str) {
+            super();
+            cannedText = str;
+        }
+
         @Override
         public void actionPerformed(ActionEvent e) {
             Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+            String pasteBuffer;
             try {
-                pasteBuffer = (String) c.getContents(null)
-                                .getTransferData(DataFlavor.stringFlavor);
+                if (cannedText == null) {
+                    pasteBuffer = (String) c.getContents(null)
+                                    .getTransferData(DataFlavor.stringFlavor);
+                } else {
+                    pasteBuffer = cannedText;
+                }
                 LOGGER.debug("To paste:{}", pasteBuffer);
-                pasteIndex = 0;
+                for (char ch : pasteBuffer.toCharArray()) {
+                    if (ch == '\n')
+                        term.eolReceived();
+                    else
+                        term.dataReceived(ch);
+                }
             } catch (UnsupportedFlavorException | IOException e1) {
                 LOGGER.error("Unsupported flavor", e1);
             }
         }
     }
 
-    private class T2Action implements ActionListener {
+    private class T1Action implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            t2Dialog.setVisible(true);
-            t2Dialog.requestFocusInWindow();
+            t1Dialog.setVisible(true);
+            t1Dialog.requestFocusInWindow();
         }
     }
 
@@ -451,26 +429,23 @@ public class GUI {
         }
     }
 
-    private class Zoom1Action implements ActionListener {
+    private class DecreaseFontAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            //screen1.setPixelSize(1);
+            int fs = screen1.getFontSize();
+            if (fs >= 10) fs -= 2;
+            screen1.setFontSize(fs);
             guiFrame.pack();
         }
     }
 
-    private class Zoom2Action implements ActionListener {
+    private class IncreaseFontAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            //screen1.setPixelSize(2);
-            guiFrame.pack();
-        }
-    }
-
-    private class Zoom4Action implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //screen1.setPixelSize(4);
+            int fs = screen1.getFontSize();
+            if (fs <= 30) fs += 2;
+            screen1.setFontSize(fs);
+            configMap.setProperty("term.fontsize", Integer.toString(fs));
             guiFrame.pack();
         }
     }
@@ -479,7 +454,7 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(guiFrame,
-                String.format("%s v. %s\nby Søren Roug",
+                String.format("%s v. %s%nby Søren Roug",
                     getClass().getPackage().getImplementationTitle(),
                     getClass().getPackage().getImplementationVersion()));
         }

@@ -155,8 +155,8 @@ from Dragon Data contains two items: this manual, and a single
 floppy disk. Because of the risk of inadvertently damaging the disk or deleting the
 files on it, you should NEVER use the disk for running STYLOGRAPH.
 Use the 'backup' command available on OS-9 to copy the original
-disk to a freshly formatted blank disk, and STORE THE ORIGINAL DISK
-IN A SAFE PLACE. Refer to the <citetitle pubwork="book">OS-9 User's Manual</citetitle> for instructions
+disk to a freshly formatted blank disk, and STORE THE ORIGINAL DISK IN A SAFE PLACE.
+Refer to the <citetitle pubwork="book">OS-9 User's Manual</citetitle> for instructions
 on how to use the 'backup' and 'format' commands.</para>
       <para>Now place the new disk
 in drive d0 (drive zero). Change your execution and data
@@ -170,8 +170,8 @@ of the disk, which you can now inspect by</para>
 OS9: dir
 </screen>
       <para>you will find some
-sample STYLOGRAPH workfiles and three directories - CMDS, STY, and
-SYS. The CMDS (commands) directory contains the files that you need
+sample STYLOGRAPH workfiles and three directories - CMDS, STY, and SYS.
+The CMDS (commands) directory contains the files that you need
 to run STYLOGRAPH. You can inspect it by:</para>
       <screen>
 os9: dir cmds
@@ -382,20 +382,22 @@ file names by using the PAGE STATUS command which is explained in
 the CONTROL COMMANDS section of this manual.</para>
     </section>
     <section>
-      <title>USING DIFFERENT PRINTERS</title>
-      <para>STYLOGRAPH must know
-what kind of printer you are using before it will work correctly.
+      <title>USING DIFFERENT TERMINALS AND PRINTERS</title>
+      <para>STYLOGRAPH must know what kind of terminal<footnote><para>The configuration of terminal type is not available on Dragon 64 or the Color Computer</para></footnote>
+and printer you are using before it will work correctly.
 You may configure STYLOGRAPH for your particular equipment by using
-the <quote>STYFIX</quote> command which is included on your STYLOGRAPH disk. The
-operation of this command is explained in the a <quote>Operating System
-Notes</quote> section of this manual. You may also specify the printer on
-the calling line. This portion of the command consists of a <quote>+</quote>
-sign, a <quote>P</quote> for printer, and a number specifying the particular
-equipment. The printer numbers are listed in the system
+the <quote>STYFIX</quote> command which is included on your STYLOGRAPH disk.
+The operation of this command is explained in the
+<quote>Operating System Notes</quote> section of this manual.
+You may also specify the terminal and printer on the calling line.
+This portion of the command consists of a <quote>+</quote> sign,
+a <quote>T</quote> for terminal or a <quote>P</quote> for printer,
+and a number specifying the particular equipment.
+The terminal and printer numbers are listed in the system
 configuration section of this manual. A command line for specifying
-a Diablo printer, printer type 0 (zero), would look like this:</para>
+a Diablo printer and a SOROQ IQ-130 terminal would look like this:</para>
       <screen>
-OS9: stylo letter +P0
+OS9: stylo letter +T3 +P0
 </screen>
     </section>
     <section>
@@ -772,8 +774,8 @@ during text editing that you will want to move a string from one
 place to another. This is easily accomplished with the SAVE, <quote>S</quote>
 and WITHDRAW, <quote>W</quote> functions. To do this you must first set of a a
 marker at the end of the string. This is done by moving the cursor
-to the end of the string and entering two marker characters <quote>}}</quote> Do
-not worry about these unwanted marker characters appearing in the
+to the end of the string and entering two marker characters <quote>}}</quote>.
+Do not worry about these unwanted marker characters appearing in the
 text since they will automatically disappear when you save the
 text. Now move the cursor to the beginning of the string and hit
 the <quote>S</quote> key indicating a SAVE. The text between the cursor and the
@@ -886,7 +888,7 @@ right of the screen.</para>
 things to keep in mind when placing the cursor before starting to
 enter text. If you are inserting text somewhere inside a line it
 makes the most sense to put the cursor on top of a space and then
-enter a apace as the first character. This assures that the words
+enter a space as the first character. This assures that the words
 that you are entering will always have a space before and after
 them as they would normally have when you are done. If you are
 starting a complete new tine which starts at the left side of the
@@ -2194,11 +2196,152 @@ OS9: chd /d0
 </screen>
     </section>
     <section>
+      <title>TERMINAL NUMBERS<footnote><para>Not available on Dragon 64 or the Color Computer</para></footnote></title>
+      <para>
+This table lists the various terminal types handled by STYLOGRAPH,
+and gives the associated numbers for use when calling STYLOGRAPH, or when using STYFIX.</para>
+      <informaltable frame="none" rowsep="0" colsep="0">
+        <tgroup cols="2">
+          <colspec colwidth="0.5in"/>
+          <colspec colwidth="5in"/>
+          <tbody>
+            <row>
+              <entry>T1</entry>
+              <entry>SOROC IQ-120</entry>
+            </row>
+            <row>
+              <entry>T2</entry>
+              <entry>SOROC IQ-140</entry>
+            </row>
+            <row>
+              <entry>T3</entry>
+              <entry>SOROC IQ-130/135</entry>
+            </row>
+            <row>
+              <entry>T4</entry>
+              <entry>Televideo TVI 912/920 and Lear-Siegler ADM-31</entry>
+            </row>
+            <row>
+              <entry>T5</entry>
+              <entry>Hazeltine 1500/1420</entry>
+            </row>
+            <row>
+              <entry>T6</entry>
+              <entry>Hazeltine 1400</entry>
+            </row>
+            <row>
+              <entry>T7</entry>
+              <entry>Lear Siegler ADM-3A</entry>
+            </row>
+            <row>
+              <entry>T8</entry>
+              <entry>Lear Siegler ADM-42</entry>
+            </row>
+            <row>
+              <entry>T9</entry>
+              <entry>Microterm MIME-2A</entry>
+            </row>
+            <row>
+              <entry>T10</entry>
+              <entry>Microterm ACT-5A</entry>
+            </row>
+            <row>
+              <entry>T11</entry>
+              <entry>Intertec INTERTUBE II</entry>
+            </row>
+            <row>
+              <entry>T12</entry>
+              <entry>SWTPC CT-82</entry>
+            </row>
+            <row>
+              <entry>T13</entry>
+              <entry>SWTPC CT-8209/12</entry>
+            </row>
+            <row>
+              <entry>T14</entry>
+              <entry>DEC VT-52</entry>
+            </row>
+            <row>
+              <entry>T15</entry>
+              <entry>ADDS REGENT 25</entry>
+            </row>
+            <row>
+              <entry>T16</entry>
+              <entry>Heath H-19, Zenith Z-10</entry>
+            </row>
+            <row>
+              <entry>T17</entry>
+              <entry>TEC 510, 610</entry>
+            </row>
+            <row>
+              <entry>T18</entry>
+              <entry>Beehive MICRO B2</entry>
+            </row>
+            <row>
+              <entry>T19</entry>
+              <entry>Beehive B100</entry>
+            </row>
+            <row>
+              <entry>T20</entry>
+              <entry>Volker-Craig VC-404</entry>
+            </row>
+            <row>
+              <entry>T21</entry>
+              <entry>Hewlett Packard 2621 A/P</entry>
+            </row>
+            <row>
+              <entry>T22</entry>
+              <entry>ADDS Viewpoint</entry>
+            </row>
+            <row>
+              <entry>T23</entry>
+              <entry>Motorola Exorterm</entry>
+            </row>
+            <row>
+              <entry>T24</entry>
+              <entry>Visual Technology Inc. VISUAL 300</entry>
+            </row>
+            <row>
+              <entry>T25</entry>
+              <entry>TEC70</entry>
+            </row>
+            <row>
+              <entry>T26</entry>
+              <entry>ANSI/DEC VT-100</entry>
+            </row>
+            <row>
+              <entry>T27</entry>
+              <entry>GIMIX 24x80 Video</entry>
+            </row>
+            <row>
+              <entry>T28</entry>
+              <entry>Volker-Craig VC4404</entry>
+            </row>
+            <row>
+              <entry>T29</entry>
+              <entry>CYBERNEX XL 87</entry>
+            </row>
+            <row>
+              <entry>T30</entry>
+              <entry>Perkin-Elmer 550 CRT</entry>
+            </row>
+            <row>
+              <entry>T31</entry>
+              <entry>Lear-Siegler ADM-5</entry>
+            </row>
+            <row>
+              <entry>T32</entry>
+              <entry>Hazeltine ESPRIT</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </section>
+    <section>
       <title>PRINTER TYPES AND CHARACTERISTICS</title>
-      <para>This table lists the
-various printer types handled by STYLOGRAPH, and gives the
-associated numbers for use when calling STYLOGRAPH, or when using
-STYFIX.</para>
+      <para>
+This table lists the various printer types handled by STYLOGRAPH,
+and gives the associated numbers for use when calling STYLOGRAPH, or when using STYFIX.</para>
       <informaltable frame="none" rowsep="0" colsep="0">
         <tgroup cols="3">
           <colspec colnum="1" colname="col1" colwidth="0.6in"/>
@@ -2215,8 +2358,7 @@ STYFIX.</para>
             <row>
               <entry>P0</entry>
               <entry>STYPS.D</entry>
-              <entry>All DIABLO, all C.ITOH, NEC 3515, 3525, 5515,5525,7715, 7725,
-QUME SPRINT, 5/xx or 9/xx</entry>
+              <entry>All DIABLO, all C.ITOH, NEC 3515, 3525, 5515, 5525, 7715, 7725, QUME SPRINT, 5/xx or 9/xx</entry>
             </row>
             <row>
               <entry>P10</entry>
@@ -2249,13 +2391,11 @@ printers will support: Underline. Overline, Boldface, Superscript,
 Subscript, and proportional spacing.</para>
         </listitem>
         <listitem>
-          <para>P30 type printers will
-support: Underline, Overline, and Boldface, but no proportional
+          <para>P30 type printers will support: Underline, Overline, and Boldface, but no proportional
 spacing.</para>
         </listitem>
         <listitem>
-          <para>P40 type printers
-support no character modifications and no proportional spacing.
+          <para>P40 type printers support no character modifications and no proportional spacing.
 Most matrix printers are of this type.</para>
         </listitem>
       </orderedlist>

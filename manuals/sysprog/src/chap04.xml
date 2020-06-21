@@ -321,7 +321,7 @@ FCS, directives only to initialize all required data space.
 <bridgehead renderas="sect5">Write Protect</bridgehead>
 <para>
 If the system MMU has this feature and the OS-9 option is enabled,
-OS-9 will write-protect any blocks containing Sharable memory modules.
+OS-9 will write-protect any blocks containing sharable memory modules.
 Sharable modules have the <quote>reentrant</quote> bit set in the module header. This
 increases system security by protecting all tasks sharing a copy of a
 memory module from another process accidentally (or deliberately)

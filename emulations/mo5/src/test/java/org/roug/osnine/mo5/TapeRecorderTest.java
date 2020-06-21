@@ -3,9 +3,9 @@ package org.roug.osnine.mo5;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.roug.osnine.Bus8Motorola;
-import org.roug.osnine.BusStraight;
-import org.roug.osnine.BitReceiver;
+import org.roug.usim.Bus8Motorola;
+import org.roug.usim.BusStraight;
+import org.roug.usim.BitReceiver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

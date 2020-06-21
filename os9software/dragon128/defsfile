@@ -1,0 +1,14 @@
+ opt -c
+ opt f
+* NOTE: This file assumes Defs Directory in on Root
+*       of current Disk Device
+ ifp1
+ use systype.128
+ use sysdefs.128
+ use os9defs.x
+ use os9iodefs
+ use os9rbfdefs
+ use os9sysdefs.lii.x
+
+DriveCnt set 4 drives max on system
+ endc

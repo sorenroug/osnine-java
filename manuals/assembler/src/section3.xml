@@ -994,7 +994,7 @@ DB:E EXAMPLE <keycap>RETURN</keycap>                     <lineannotation>prepare
       SP  CC  A  B  DP  X    Y    U    PC
      0DF3 C8 00 01  0D 0DFF 0E00 0D00 9214
 
-DB:B .+2E <keycap>RETURN</keycap>                        <lineannotation>set breakpoint at 9223</lineannotation>
+DB:B .+2E <keycap>RETURN</keycap>                        <lineannotation>set breakpoint at 922E</lineannotation>
 DB:G <keycap>RETURN</keycap>                             <lineannotation>run program</lineannotation>
 HELLO WORLD
 hello computer

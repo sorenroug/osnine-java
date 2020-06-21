@@ -1,0 +1,52 @@
+M0088    fcb   $FF,$FF,$FF,$FF    Cursor on
+M008C    fcb   $FF,$FF,$FF,$FF    Cursor off
+M0090    fcb   $1B,'[,'m,$FF,$FF,$00,$00,$00   Terminal setup
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00
+M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
+M00A8    fcb   $FF,$FF,$00,$00    Cursor right
+         fcb   $FF,$FF,$00,$00    Cursor ??
+CURSPOS  fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00    Cyrsor XY
+M00B8    fcb   $1B,'[,'K,$FF,$00,$00    Cursor clear to EOL
+M00BE    fcb   $1B,'[,'J,$FF,$00,$00    Cursor clear to end of screen
+REVON    fcb   $1B,'[,'7,'m,$FF,$00,$00,$00
+REVOFF   fcb   $1B,'[,'0,'m    Reverse off
+M00D0    fcb   $FF,$00,$00,$00
+M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
+M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
+M00DE    fcc   "                "  Terminal name (16 chars)
+M00EE    fcb   $00
+         fcb   $00
+M00F0    fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+         fcb   $00
+M00F7    fcb   $04  Log-off key
+M00F8    fcb   $00  Upper case only
+         fcb   $00  line feeds after each line
+M00FA    fcb   $00
+M00FB    fcb   $00  keep helps  T/F
+         fcb   $FF  print borders  T/F
+         fcb   79  printer page width
+         fcb   $00  Pagination  T/F
+M00FF    fcb   57  Lines per page
+M0100    fcb   '{     Up-arrow
+DOWNKEY  fcb   '}     Down-arrow
+         fcb   '[     Left-arrow
+         fcb   ']     Right-arrow
+         fcb   $14     Home key    (Ctrl-T)
+         fcb   $60     Jump window (`)
+M0106    fcb   $07   Bell character
+GETADDR  fcb   $09   Get address (Tab)
+         fcb   $03   Flush type-ahead buffer (Ctrl-C)
+         fcb   $08   Backspace key
+         fcb   $20   direct cursor addressing row offset
+         fcb   $20   direct cursor addressing columns offset
+M010C    fcb   $00
+         fcb   24   number of rows on screen
+         fcb   79  number of columns on screen
+         fcb   $09  Edit overlay (Tab)
+M0110    fcb   $03  Flush type-ahead buffer
+         fcb   $05  Edit from entry level (Ctrl-E)

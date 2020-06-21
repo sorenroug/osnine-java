@@ -3,6 +3,7 @@
 * mo5 - Thomson MO5
 * exbasic - Extended BASIC that interfaces with a UART
 * os9dragon - Boots OS-9 from the Dragon 64
+* genericos9 - Graphical user interface with two terminals running OS-9
 * tinybasic - Tiny BASIC
 
 ## Syntax of the properties file
@@ -38,7 +39,7 @@ This can be put into a script. To try some of the other properties files, you gi
 Telnet service
 --------------
 
-The v6809 can be configured to start to make a serial port available as a telnet port. This is set up in the telnet.properties file.
+The v6809 in os9dragon can be configured to start to make a serial port available as a telnet port. This is set up in the telnet.properties file.
 
 In order to match assumptions of Linux users the end-of-file has been changed from ESC to CTRL-D,
 and the reprint-line has been changed from CTRL-D to CTRL-R. The Telnet service also launches the Login command because now it is a multi-user system.

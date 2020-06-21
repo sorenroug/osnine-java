@@ -1,10 +1,11 @@
 package org.roug.osnine.os9;
 
 import java.util.Calendar;
-import org.roug.osnine.MC6809;
-import org.roug.osnine.Register;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.roug.usim.mc6809.MC6809;
+import org.roug.usim.Register;
 
 import java.lang.reflect.Method;
 /**

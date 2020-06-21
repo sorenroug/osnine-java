@@ -1,0 +1,114 @@
+ ttl Descriptor Module
+ page
+*************************
+*
+*  Drive Descriptor Module
+*
+*
+
+Type set DEVIC+OBJCT
+Revs set REENT+1
+ mod DescEnd,DescName,Type,Revs,DscMgr,DscDrv
+ fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
+ fcb $F
+ fdb DPort port address
+ ifeq DrvSiz-535
+DrvTyp set 0 5" drive
+Cyls set 35
+ ifeq Densy
+SecTrk set 10
+SecTr0 set 10
+ else
+SecTrk set 16
+SecTr0 set 10
+ endc
+ endc
+ ifeq DrvSiz-535-40
+DrvTyp set $40 5" drive (Percom)
+Cyls set 35
+SecTrk set 10
+SecTr0 set 10
+ endc
+ ifeq DrvSiz-540
+DrvTyp set 0 5" drive
+Cyls set 40
+ ifeq Densy
+SecTrk set 10
+SecTr0 set 10
+ else
+SecTrk set 16
+SecTr0 set 10
+ endc
+ endc
+ ifeq DrvSiz-580
+DrvTyp set 0 5" drive
+Cyls set 80
+ ifeq Densy
+SecTrk set 10
+SecTr0 set 10
+ else
+SecTrk set 16
+SecTr0 set 10
+ endc
+ endc
+ ifeq DrvSiz-877
+DrvTyp set 1 8" drive
+Cyls set 77
+ ifeq Densy
+SecTrk set 16
+SecTr0 set 16
+ else
+SecTrk set 28
+SecTr0 set 16
+ endc
+ endc
+ fcb DescName-*-1 Bytes of options
+ fcb DT.RBF,Drive Rbf devic and drive no.
+ fcb StpRat
+ fcb DrvTyp
+ fcb Density
+ fdb Cyls Number of cylinders
+ fcb Sides
+ fcb 0 Verify turned on
+ fdb SecTrk
+ fdb SecTr0
+ fcb IntrLeav Sector interleave offset
+ fcb 8 Sector allocation size
+ ifeq Pass
+DescName equ *
+ endc
+ fcb 'D,'0+Drive+$80
+ ifeq Pass
+DscMgr equ *
+ endc
+ fcs "RBF" Rbfman
+ ifeq Pass
+DscDrv equ *
+ endc
+ ifeq NamSiz-2
+ fcb L1,L2+$80
+ endc
+ ifeq NamSiz-3
+ fcb L1,L2,L3+$80
+ endc
+ ifeq NamSiz-4
+ fcb L1,L2,L3,L4+$80
+ endc
+ ifeq NamSiz-5
+ fcb L1,L2,L3,L4,L5+$80
+ endc
+ ifeq NamSiz-6
+ fcb L1,L2,L3,L4,L5,L6+$80
+ endc
+
+ emod
+ ifeq Pass
+DescEnd equ *
+
+Pass set 1
+ endc
+
+Drive set Drive+1
+ ifne DriveCnt-Drive
+ use desc_module
+ endc

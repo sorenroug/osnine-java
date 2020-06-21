@@ -26,13 +26,13 @@ u0013    rmb   1
 u0014    rmb   1
 u0015    rmb   1
 u0016    rmb   1
-u0017    rmb   1
+u0017    rmb   1   Pointer to M09F0
 u0018    rmb   1
 u0019    rmb   1
 MEMPTR   rmb   2
 u001C    rmb   1
-u001D    rmb   1   Flag for help text discarded
-u001E    rmb   2
+u001D    rmb   1   Flag for help texts discarded
+u001E    rmb   2   address of help texts routine
 u0020    rmb   1
 u0021    rmb   1
 u0022    rmb   1
@@ -48,7 +48,7 @@ u002B    rmb   1
 u002C    rmb   1
 u002D    rmb   2
 u002F    rmb   1
-u0030    rmb   2
+u0030    rmb   2  pointer to buffer at M0331
 u0032    rmb   1
 u0033    rmb   1
 u0034    rmb   1
@@ -65,7 +65,7 @@ u003F    rmb   1
 u0040    rmb   1
 PARAMS   rmb   2
 u0043    rmb   1
-u0044    rmb   1
+u0044    rmb   1   Contains $700
 u0045    rmb   1
 u0046    rmb   1
 u0047    rmb   2
@@ -209,7 +209,7 @@ u00E3    rmb   1
 u00E4    rmb   1
 u00E5    rmb   3
 u00E8    rmb   1
-u00E9    rmb   2
+u00E9    rmb   2  Pointer to buffer at M0280
 u00EB    rmb   1
 u00EC    rmb   1
 u00ED    rmb   1
@@ -257,6 +257,7 @@ u06C0    rmb   64
 u0700    rmb   776
 u0A08    rmb   11000
 size     equ   .
+
 name     equ   *
          fcs   /Dynacalc/
 
@@ -364,6 +365,7 @@ L00EE    lbsr  L05A1
 L00F3    ldb   #$80
          lbsr  L03A5
          lbra  L04B0
+
 L00FB    suba  #$1C
          lsla
          pshs  b,a
@@ -387,6 +389,7 @@ L0123    cmpb  <u00D2
          beq   L012C
          lbsr  L03A5
          bra   L011B
+
 L012C    lda   <u0076
          suba  #$12
          bls   L00EE
@@ -457,6 +460,7 @@ L01A5    lbsr  L2ACF  Copy floating point value from X to buffer in U
 L01C3    lda   <u00FD
          leax  a,u
          lbra  L2ACF  Copy floating point value from X to buffer in U
+
          tst   <u00D9
          beq   L01E5
          lda   <u00FD
@@ -475,10 +479,12 @@ L01E5    lda   #$FF
 L01E9    lda   <u00FD
          leax  a,u
          lbra  L2AAB
+
 L01F0    bsr   L01C3
          clra
          lbsr  L044A
          bra   L01E9
+
 L01F8    lbsr  L026D
          lbsr  L2ACF  Copy floating point value from X to buffer in U
          ldb   <u00F1
@@ -489,8 +495,10 @@ L01F8    lbsr  L026D
          lbsr  L044A
          puls  x
          lbra  L2AAB
+
 L0210    bsr   L01F0
          bra   L01F8
+
          lbsr  L2AED
          bsr   L0210
          lbsr  L2AF0
@@ -501,10 +509,12 @@ L0210    bsr   L01F0
          lbsr  L044A
          ldx   <u00F8
          lbra  L2AAB
+
 L022C    leax  $08,u
          lbsr  L2ACF  Copy floating point value from X to buffer in U
          lda   #$02
          lbra  L044A
+
          lda   <u0036
          cmpa  #$0B
          lbne  L048D
@@ -524,10 +534,13 @@ L024B    sta   <u00B3
          lbsr  L009C
 L025B    leax  >L2AAE,pcr
          bra   L0271
+
 L0261    leax  >L2AEA,pcr
          bra   L0271
+
 L0267    leax  >L2AE1,pcr
          bra   L0271
+
 L026D    leax  >L2AE4,pcr
 L0271    pshs  b,a
          ldd   ,x
@@ -536,6 +549,7 @@ L0271    pshs  b,a
 
 L0279    lda   #$09
          lbra  L0468
+
          pshs  b
          lda   <u0036
          cmpa  #$0B
@@ -557,6 +571,7 @@ L029E    leax  $08,x
          dec   <u0036
          bne   L029E
          bra   L02BA
+
 L02AA    bsr   L0261
 L02AC    leax  $08,x
          bsr   L0305
@@ -564,6 +579,7 @@ L02AC    leax  $08,x
          dec   <u0036
          bne   L02AC
          bra   L02BA
+
 L02B8    bne   L0279
 L02BA    lbsr  L2AA5
          lbsr  L05BA
@@ -596,6 +612,7 @@ L02BA    lbsr  L2AA5
 
 L02FD    pshs  u
          bra   L030B
+
 L0301    lda   #$07
 L0303    sta   <u0025
 L0305    pshs  u
@@ -644,6 +661,7 @@ L034B    lda   b,y
          puls  u,b
          addb  #$02
          bra   L036E
+
 L035D    leax  b,y
          addb  #$08
          cmpa  #$C0
@@ -683,6 +701,7 @@ L038F    pshs  a
 L03A5    bsr   L0349
          leau  -$08,u
          bra   L03AE
+
 L03AB    lbsr  L0443
 L03AE    clra
          cmpb  <u00D2
@@ -696,6 +715,7 @@ L03AE    clra
          bne   L03C6
          lbsr  L0589
          bra   L03AE
+
 L03C6    lda   #$06
          lbsr  L044A
          lda   #$02
@@ -703,6 +723,7 @@ L03C6    lda   #$06
          lda   #$05
          bsr   L044A
          bra   L03AE
+
 L03D5    tst   <u00FE
          lbeq  L048D
          cmpa  #$0A
@@ -749,12 +770,14 @@ L042C    puls  u,b
          addb  #$03
          leas  $02,s
          lbra  L0123
+
 L0435    bsr   L043A
          sta   <u00FD
 L0439    rts
 L043A    lbsr  L025B
          lbsr  L2AA5
          lbra  L05BA
+
 L0443    sta   <u0036
          lbsr  L034B
          lda   <u0036
@@ -793,8 +816,10 @@ L0484    lbsr  L08F8 Read character from keyboard
 
 L0489    lda   #$03
          bra   L0468
+
 L048D    lda   #$02
          bra   L0468
+
 L0491    tst   <u0033
          beq   L0497
          coma
@@ -804,10 +829,13 @@ L0497    lda   #$08
          beq   L04A3
          lbmi  L038B
          bra   L0468
+
 L04A3    clra
          bra   L0468
+
 L04A6    lda   #$33
          bra   L0468
+
 L04AA    lbsr  L4ED0
          ldx   <u00AF
          rts
@@ -894,10 +922,12 @@ L053F    ldd   <u00BA
          dec   <u0087
          bne   L0530
 L054D    lbra  L4ED3
+
 L0550    bsr   L04E5
          lbsr  L0901
          lbsr  L1AD1
          bra   L057F
+
 L055A    ldb   #$80
          clr   <u00D0
 L055E    bsr   L0589
@@ -922,6 +952,7 @@ L057F    lbra  L1A9E
 
 L0582    lbeq  L04A3
          lbra  L04A6
+
 L0589    lda   b,y
          incb
          cmpa  #$3F
@@ -971,7 +1002,7 @@ L05BF    inca
 L05D7    fcc   "Recalc ..."
          fcb   $00
 
-L05E2    fcb   $8D,$03   jsr   L05E7
+L05E2    bsr  L05E7
          lbra  L00EE
 
 L05E7    lda   $0F,u
@@ -987,6 +1018,7 @@ L05F7    adda  #$08
          clr   b,u
          decb
          bra   L05F7
+
 L0600    suba  #$08
          beq   L05F0
          sta   <u0036
@@ -1025,6 +1057,7 @@ L0613    fcb   $65,$2E,$E0,$D3,$1E,$0F,$C4,$86   Value=57.29578
          tst   <u00D9
          bne   L066D
          bra   L0663
+
 L0650    lbsr  L2AA5
          lda   #$03
          lbsr  L044A
@@ -1091,8 +1124,10 @@ L06D6    fcb   $13,$5D,$8D,$DD,$AA,$A8,$AE,$82  Value=2.302585
          anda  #$7F
          sta   $08,u
          bra   L067D
+
          inc   <u00D9
          bra   L0705
+
          lbsr  L026D
          pshs  b
          lbsr  L2ACF  Copy floating point value from X to buffer in U
@@ -1149,6 +1184,7 @@ L075E    lbsr  L0375
          lbsr  L0301
          bne   L077D
          bra   L0798
+
 L076E    tst   <u00FB
          lbne  L0804
          lbsr  L0301
@@ -1186,6 +1222,7 @@ L0798    ldd   <u00F2
          bne   L07C3
          ldb   <u00C2
          bra   L07C5
+
 L07C3    lda   <u00C1
 L07C5    tfr   d,u
 L07C7    lbsr  L1ACB
@@ -1207,9 +1244,12 @@ L07E8    stu   $03,x
          ldu   <MEMPTR
          lda   #$FF
          lbra  L0478
+
 L07F1    lbra  L04DF
+
 L07F4    lbsr  L025B
          bra   L07FC
+
 L07F9    lbsr  L037E
 L07FC    ldu   <MEMPTR
          lbsr  L2AA5
@@ -1232,6 +1272,7 @@ L0804    pshs  u
          lbsr  L2AAB
          puls  u
          lbra  L077B
+
          tst   <u00D9
          bne   L0847
          lbsr  L05BA
@@ -1306,7 +1347,7 @@ L08E3    lbra  L154A
 L08E6    lbra  L1798
 L08E9    lbra  L0D57
 L08EC    lbra  L1575
-L08EF    lbra  L0C57
+L08EF    lbra  L0C57    Display help page
 L08F2    lbra  L0D95
 L08F5    lbra  L1286
 L08F8    lbra  L0EC3 Read character from keyboard
@@ -1324,7 +1365,7 @@ L0919    lbra  L0EA7
 L091C    lbra  L0DE3
          lbra  L0DD3
 L0922    lbra  L0D36
-L0925    lbra  L0A8B
+L0925    lbra  L0A8B  Print character
 L0928    lbra  L0A98
 L092B    lbra  L1043
 L092E    lbra  L15D0
@@ -1347,7 +1388,7 @@ L0947    suba  #$04
          bne   L0947
 L0958    pshs  b
          lda   #$02
-         leax  >L0983,pcr
+         leax  >L0983,pcr   "Can't load"
          tfr   x,y
          os9   I$WritLn
          puls  b
@@ -1423,6 +1464,7 @@ L09F1    lds   <u0017
          beq   L0A20
          clr   <u00EF
          lbra  L3AEA
+
 L0A20    ldu   <u006E
          lbsr  L1ADD
          lda   <u0091
@@ -1435,7 +1477,7 @@ L0A20    ldu   <u006E
          clr   <u0092
          bsr   L0A82
          ldu   <MEMPTR  beginning of data
-         leau  >u03B8,u
+         leau  >M03B8,u
          lbsr  L1AB9  output string pointed to in U
 L0A40    tst   <u00C8
          beq   L0A47
@@ -1445,7 +1487,7 @@ L0A47    tst   <u00CC
          lbsr  L1ADA
 L0A4E    bsr   L0A8B
          ldu   <MEMPTR  beginning of data
-         leau  >u0398,u
+         leau  >M0398,u
          stu   <u0057
          clrb
          clra
@@ -1467,7 +1509,8 @@ L0A4E    bsr   L0A8B
          lbsr  L0E5D
          clr   <u0060
          lbra  L0F9D
-L0A82    ldx   #$011A
+
+L0A82    ldx   #$011A  line 1 column 26?
 L0A85    lbsr  L0D55
          lbra  L1A19
 
@@ -1499,7 +1542,7 @@ L0ABE    rts
 L0ABF    pshs  b,a
          tst   <u0075
          bne   L0ACB
-         ldx   #$03BE
+         ldx   #M03BE  Pointer to 'Value'
          lbsr  L0D41
 L0ACB    lbsr  L0B89
          lda   #$0A
@@ -1522,7 +1565,7 @@ L0ACB    lbsr  L0B89
          lbge  L12B4
          lbra  L10D9
 
-         ldx   #$03C4
+         ldx   #M03C4  Pointer to 'Label'
          lbsr  L0D41
          ldy   <u00E9
          lda   <u0064
@@ -1530,6 +1573,7 @@ L0ACB    lbsr  L0B89
          cmpa  #$27
          lbeq  L0F81
          lbra  L0F34
+
          tst   <u0091
          lbne  L0BF5
          tst   <u00A5
@@ -1544,6 +1588,7 @@ L0ACB    lbsr  L0B89
          bne   L0B58
 L0B35    lbsr  L0D23
          lbra  L0BF5
+
 L0B3B    tst   <u004C
          beq   L0B35
          ldb   <u0059
@@ -1572,6 +1617,7 @@ L0B6A    bsr   L0B89
          tst   <u00BB
          lbne  L0F81
          lbra  L0F1E
+
 L0B7B    ldb   #$FF
          leax  >L0B9C,pcr
 L0B81    incb
@@ -1606,6 +1652,7 @@ L0BAB    lda   <u0093
          bne   L0C06
          lbsr  L0CD7
          lbra  L0F81
+
 L0BC1    dec   <u0059
          ldu   <u006E
          bra   L0BE4
@@ -1678,6 +1725,7 @@ L0C45    sta   <u0022
          clr   <u00C8
          rts
 
+* display help page?
 L0C57    tst   <u0075
          lbne  L0B9B
          pshs  x,b,a
@@ -1696,8 +1744,10 @@ L0C63    clr   <u00CD
          blt   L0C80
 L0C7C    bsr   L0C85
          bra   L0CBA
+
 L0C80    lbsr  L0DE3
          bra   L0CBA
+
 L0C85    lda   #$0D
          lbsr  L0DE8
 L0C8A    lda   <u000E
@@ -1711,6 +1761,7 @@ L0C91    incb
          dec   <u0077
          bpl   L0C91
 L0C9F    lbra  L3AF3
+
 L0CA2    ldb   <u005B
          subb  <u000E
          bpl   L0C7C
@@ -1719,6 +1770,7 @@ L0CA8    tst   <u005B
          ldb   #$FF
          bsr   L0C85
          bra   L0CB7
+
 L0CB2    lda   #$0D
          lbsr  L0DE3
 L0CB7    lbsr  L1A19
@@ -1737,6 +1789,7 @@ L0CC2    lda   <u005B
          lda   #$D4   Destructive backspace
          lbsr  L0DC4  print control sequence
          bra   L0CBA
+
 L0CD7    leas  -$04,s
 L0CD9    sta   <u005C
          lda   b,y
@@ -1756,6 +1809,7 @@ L0CEB    bsr   L0D23
          tst   <u005B
          bmi   L0CA8
          lbra  L0C63
+
 L0CFF    cmpb  <u005B
          bne   L0D07
          tst   <u0055
@@ -1790,6 +1844,8 @@ L0D36    ldx   #$0000
 L0D39    bsr   L0D55
          lbsr  L19DB
          lbra  L3AF3
+
+* Print string at X offset in Trm-file
 L0D41    stx   <u006C
          lbsr  L1AB3
          sta   <u00C4
@@ -1799,6 +1855,8 @@ L0D41    stx   <u006C
          lbsr  L1AB9  output string pointed to in U
          ldx   #$0200
 L0D55    stx   <u00BD
+
+* Move cursor to coord stored in u00BD
 L0D57    pshs  u,x,b
          tst   <u00E0
          bne   L0D8A
@@ -1828,6 +1886,7 @@ L0D8A    lda   #$04
 L0D8E    lda   <u0093
          bsr   L0DE3
          lbra  L0CBA
+
 L0D95    pshs  b,a
          lda   <u0059
          ldb   <u005B
@@ -1839,6 +1898,7 @@ L0D95    pshs  b,a
          cmpa  #$81
          lblt  L0BA9
          bra   L0DBA
+
 L0DAC    cmpa  #$C1
          lblt  L0BA9
          suba  #$40
@@ -1860,6 +1920,7 @@ L0DC4    pshs  b
          leau  d,u
          puls  b
          bra   L0DD3
+
 L0DD1    bsr   L0E24 Write char
 L0DD3    lda   ,u+
          bpl   L0DD1
@@ -2010,6 +2071,7 @@ L0EDA    cmpb  -$01,x
          bne   L0EE3
          lda   <u0093
          lbra  L0DE3
+
 L0EE3    stb   -$02,x
          sta   b,x
 L0EE7    rts
@@ -2044,6 +2106,7 @@ L0F16    lbsr  L17DC
 
 L0F1E    bsr   L0F23
 L0F20    lbra  L0D55
+
 L0F23    lda   #$02
          ldb   <u005B
          incb
@@ -2087,6 +2150,7 @@ L0F5A    stx   -$04,u
          stb   <u005B
          lda   <u0003
          bra   L0F9D
+
 L0F75    lda   #$20
          lbsr  L0DE3
 L0F7A    bsr   L0F1E
@@ -2104,6 +2168,7 @@ L0F8A    stb   <u005B
          cmpa  b,y
          beq   L0F8A
          bra   L0F9D
+
 L0F97    lbsr  L3AF3
          lbsr  L0EE8
 L0F9D    ldu   <u0057
@@ -2161,11 +2226,13 @@ L0FFD    tst   <u0043
          bne   L1011
          jsr   >$F800
          lbra  L08C8
+
 L1011    cmpa  <u0009  Edit overlay (Ctrl-O)
          bne   L101E
          tst   <u008B
          lbne  L0F34
          lbra  L0F7E
+
 L101E    cmpa  #$20
          lbcs  L0F81
          tst   <u008B
@@ -2174,12 +2241,14 @@ L101E    cmpa  #$20
          lbne  L0F81
          ldb   #$01
          bra   L0FCB
+
 L1034    leas  $05,s
          cmpb  #$03
          lbne  L0F34
 L103C    tst   <u00AD
          bne   L1043
          lbra  L3AE4
+
 L1043    sta   <u0088
          sty   <u0089
          ldb   <u005B
@@ -2238,6 +2307,7 @@ L10D9    ldb   #$1E
          bgt   L10EA
          sta   <u0053
          lbra  L0F7E
+
 L10EA    cmpa  #'E
          beq   L1109
          cmpa  #'e
@@ -2249,9 +2319,11 @@ L10EA    cmpa  #'E
          sta   <u0053
          sta   <u004F
          lbra  L0F7E
+
 L1101    tst   <u0053
          lbeq  L0F7E
          bra   L1121
+
 L1109    tst   <u004E
          bne   L111E
          lda   #$65
@@ -2261,7 +2333,9 @@ L1109    tst   <u004E
          sta   <u004E
          sta   <u004F
          lbra  L0F81
+
 L111E    lbra  L0BF5
+
 L1121    cmpa  #',
          bne   L1129
          tst   <u0068
@@ -2296,6 +2370,7 @@ L1158    inca
          bne   L1167
          stb   <u0051
          bra   L1158
+
 L1167    cmpb  #$65
          beq   L11A3
          cmpb  #$45
@@ -2308,6 +2383,7 @@ L1167    cmpb  #$65
          beq   L1158
          dec   <u0052
          bra   L1158
+
 L117F    tst   <u0051
          bne   L1185
          inc   <u0056
@@ -2316,6 +2392,7 @@ L1185    inc   <u004D
          beq   L1158
          stb   ,x+
          bra   L1158
+
 L118F    inca
          lbmi  L0BA9
          ldb   a,y
@@ -2326,6 +2403,7 @@ L118F    inca
          rts
 L119F    com   <u0050
          bra   L118F
+
 L11A3    clr   <u0050
          bsr   L118F
          deca
@@ -2337,6 +2415,7 @@ L11A3    clr   <u0050
          beq   L11BB
          negb
          bra   L11BB
+
 L11BA    clrb
 L11BB    clr   ,x
          addb  <u0056
@@ -2386,6 +2465,7 @@ L1208    tst   <u0075
          lbsr  L1352
          inc   <u005B
          bra   L124B
+
 L121F    ldb   #$20
 L1221    lda   #$03
 L1223    sta   <u0022
@@ -2411,6 +2491,7 @@ L124B    ldb   #$32
          stb   <u0061
          lda   <u0064
          lbra  L0F9D
+
 L1254    leax  >L2ADE,pcr
          ldd   ,x
          leax  d,x    X now points to the constant PI
@@ -2433,6 +2514,7 @@ L126B    ldb   <u005B
          decb
          stb   <u005B
          lbra  L0C57
+
 L1286    lda   <u005A
 L1288    clr   ,-s
          pshs  a
@@ -2445,6 +2527,7 @@ L128C    inc   ,s
          bls   L129D
 L129A    clrb
          bra   L12A3
+
 L129D    addb  $01,s
          stb   <u006B
          bcs   L12AF
@@ -2483,6 +2566,7 @@ L12DC    sta   <u004C
          lbsr  L0C57
          lbsr  L0D95
          lbra  L0F81
+
          bne   L1314
          tst   <u00A5
          beq   L12F1
@@ -2493,6 +2577,7 @@ L12F1    ldb   <u005A
 L12F7    tst   <u004C
          bne   L133C
          lbra  L147B
+
 L12FE    tsta
          bmi   L12B3
          cmpa  #$2E
@@ -2503,6 +2588,7 @@ L1307    inc   <u0059
          lbeq  L124B
          bsr   L133F
          lbra  L124B
+
 L1314    tst   <u004C
          beq   L133C
          tst   <u0053
@@ -2519,9 +2605,11 @@ L1326    lbsr  L0C57
          beq   L1337
          lbsr  L0D23
          lbra  L0BAB
+
 L1337    dec   <u006B
 L1339    lbra  L0F81
 L133C    lbra  L0BF5
+
 L133F    ldb   <u006A
          decb
          ldx   <u0073
@@ -2554,6 +2642,7 @@ L1376    cmpa  #$28
          bne   L133C
          inc   <u0068
          bra   L1391
+
          cmpa  #$29
          bne   L133C
          tst   <u0068
@@ -2568,6 +2657,7 @@ L1391    lbsr  L0D95
          beq   L139B
          lbsr  L0B7B
 L139B    lbra  L0B60
+
          cmpa  #$23
          beq   L133C
          leax  >L193F,pcr   Function names
@@ -2635,6 +2725,7 @@ L141A    ldb   <u0076
          blt   L145A
 L1420    dec   <u005A
 L1422    lbra  L0F9D
+
 L1425    ldy   <u00E9
          ldb   <u0076
          addb  #$10
@@ -2643,6 +2734,7 @@ L1425    ldy   <u00E9
          ldx   <u006C
          dec   <u005B
          bra   L13FC
+
 L1437    inc   <u0076
          ldb   <u0076
          cmpb  #$1B
@@ -2652,6 +2744,7 @@ L1437    inc   <u0076
          inc   <u0059
          ldy   <u00E9
          lbra  L0BAB
+
 L144C    cmpa  #$40
          bne   L14A2
          lbsr  L0C57
@@ -2659,6 +2752,7 @@ L144C    cmpa  #$40
          stb   <u0061
          lbsr  L0D95
 L145A    lbra  L0F81
+
          ldb   #$0A
          cmpb  <u0061
          beq   L1479
@@ -2667,6 +2761,7 @@ L145A    lbra  L0F81
          cmpa  <u0007
          beq   L14A2
          lbra  L15C7
+
 L146E    ldx   <u006E
          stx   <u0070
          ldx   <u00A2
@@ -2691,7 +2786,9 @@ L1493    cmpa  ,u+
          inc   <u0040
          bne   L1493
          bra   L14C1
+
 L14A2    lbra  L0BF5
+
 L14A5    tfr   b,a
          orb   #$01
          addb  ,x
@@ -2724,11 +2821,13 @@ L14E1    lbsr  L0D95
          ldu   <u0070
          bsr   L1524
          lbra  L0F81
+
 L14EB    tst   <u0061
          bne   L14A2
          lda   <u0093
          lbsr  L0DE3
 L14F4    lbra  L1A98
+
 L14F7    pshs  y,a
          ldu   <u006E
          ldd   <u00B8
@@ -2749,6 +2848,7 @@ L1513    pshs  b,a
          lbsr  L1AD1
          lbsr  L0F1E
          bra   L1538
+
 L1524    pshs  y,a
          ldy   <u00A2
 L1529    ldx   $02,y
@@ -2783,11 +2883,13 @@ L154A    lda   <u0071
 L1564    bsr   L158A
          tfr   b,a
 L1568    bra   L158C
+
 L156A    ldd   #$0502
          bsr   L158A
          bsr   L158A
          lda   #$06
          bra   L158C
+
 L1575    ldb   <u0070
          lda   #$3F
 L1579    inca
@@ -2799,6 +2901,7 @@ L1579    inca
 L1584    addb  #$5B
          tfr   b,a
          bra   L158E
+
 L158A    exg   a,b
 L158C    adda  #$30
 L158E    tst   <u0075
@@ -2806,6 +2909,7 @@ L158E    tst   <u0075
          tst   <u0078
          lbne  L171D
          lbra  L0DE8
+
 L159B    sta   <u0054
          sta   <u0055
          pshs  b
@@ -2819,8 +2923,10 @@ L15AC    ldb   #$FE
          stb   <u005C
          leas  $05,s
          lbra  L0BAB
+
          sta   <u00C3
          bra   L15C7
+
 L15B9    dec   <u005B
          lbmi  L1937
          tst   <u008B
@@ -2844,6 +2950,7 @@ L15DE    stb   <u0072
          subb  #$02
          stb   <u005B
          bra   L15DE
+
 L15E9    sta   b,y
          ldx   <MEMPTR  beginning of data
          leax  >$0400,x
@@ -2854,6 +2961,7 @@ L15E9    sta   b,y
          sta   <u0088
          lda   ,y
          lbra  L0ABF
+
 L1601    tst   <u00C3
          lbeq  L1A95
          clr   <u0064
@@ -2867,6 +2975,7 @@ L1601    tst   <u00C3
          lda   <u001C
          lbsr  L0024
          bra   L1622
+
 L1620    clr   <u00C3
 L1622    lbsr  L0A98
          clr   <u0075
@@ -2879,6 +2988,7 @@ L1622    lbsr  L0A98
          clrb
          leax  >L19BB,pcr   String 'ERROR'
          lbra  L13D3
+
 L163E    tfr   y,d
          addb  ,y
          adca  #$00
@@ -2926,6 +3036,7 @@ L167B    cmpb  #$40
          ldb   <u0065
          stb   <u0020
          bra   L1709
+
 L16A7    ldb   ,y+
          leax  >L0B9C,pcr
          andb  #$3F
@@ -2963,6 +3074,7 @@ L16ED    ldb   -$01,y
          cmpy  <u007A
          bcs   L167B
 L16F4    lbra  L3AF3
+
 L16F7    bsr   L1710
          tst   <u00BC
          beq   L1709
@@ -2975,12 +3087,14 @@ L16F7    bsr   L1710
 L1709    cmpy  <u007A
          bcc   L16F4
          bra   L16A7
+
 L1710    stb   <u0078
          ldb   #$FF
          stb   <u0075
          ldu   ,y++
          stu   <u0070
          lbra  L1548
+
 L171D    tst   <u008D
          bpl   L1734
          pshs  x
@@ -2998,6 +3112,7 @@ L1737    lda   ,u+
          beq   L1734
          bsr   L172B
          bra   L1737
+
 L173F    clr   <u00B7
          ldb   #$02
          cmpb  ,y
@@ -3051,6 +3166,7 @@ L1798    clr   <u007C
          bsr   L17DC
          bsr   L1757
          bra   L17A9
+
 L17A5    bsr   L1757
          sta   <u007C
 
@@ -3086,6 +3202,7 @@ L17E2    incb
          cmpb  <u005B
          bhi   L17A9
          bra   L17EC
+
 * Move left
 L17E9    decb
          bmi   L17A9
@@ -3158,6 +3275,7 @@ L185F    lda   <u007C
          nega
          lbsr  L0C8C
          bra   L1806
+
 L1869    tst   <u00F1
          bne   L185A
          ldb   <u007C
@@ -3179,6 +3297,7 @@ L1877    incb
          lbcc  L1800
          decb
          bra   L185F
+
 L1892    ldx   #$0128
          ldu   <u00BD
          lbsr  L0D55
@@ -3188,6 +3307,7 @@ L1892    ldx   #$0128
          leau  >L18B1,pcr
          lbsr  L1AB9  output string pointed to in U
          bra   L18AC
+
 L18A9    lbsr  L1A19
 L18AC    lbsr  L17DC
          bra   L185A
@@ -3203,6 +3323,7 @@ L18BB    lda   #$3C
          clr   <u0075
          clr   <u00BB
          bra   L191B
+
          cmpa  #$0D
          beq   L18D9
          clr   <u0064
@@ -3239,13 +3360,16 @@ L1900    stu   <u006A
          tst   <u0064
          bne   L18EC
 L191B    lbra  L0F81
+
          cmpa  <u0005
          bne   L1928
          ldy   <u00A2
          lbra  L1AC2
+
 L1928    cmpa  #$21
          bne   L192F
          lbra  L001E
+
 L192F    cmpa  #$0D
          lbne  L1AE3
          clr   <u00E3
@@ -3323,7 +3447,9 @@ L19C5    incb
          bpl   L19C5
          pshs  x
 L19D5    lbra  L1A19
+
 L19D8    lbra  L19DB
+
 L19DB    ldu   <MEMPTR  beginning of data
          leau  >$BE,u  Cursor clear to end of screen
          tst   ,u
@@ -3353,11 +3479,13 @@ L1A09    bsr   L1A19
          puls  u
          stu   <u00BD
          lbra  L0D57
+
 L1A19    pshs  x,b
          lbsr  L0E35
          bcs   L1A24
          ldb   <u000E
          bra   L1A2F
+
 L1A24    abx
          cmpa  ,x
          bcc   L1A4E
@@ -3367,11 +3495,12 @@ L1A24    abx
 L1A2F    sta   <u00BE
          ldu   <MEMPTR  beginning of data
          leau  >$B8,u   Cursor clear to EOL
-         tst   ,u
-         bmi   L1A40
+         tst   ,u     Defined?
+         bmi   L1A40  ..no
          puls  x,b
-         lbra  L0DD3
-L1A40    lda   #$20
+         lbra  L0DD3  Print control sequence
+
+L1A40    lda   #$20   Clear line with spaces
 L1A42    lbsr  L0DE8
          decb
          bne   L1A42
@@ -3407,15 +3536,19 @@ L1A50    ldu   <u006C
          puls  pc,u,x,b
 
 L1A82    lbra  L0E24 Write char
+
 L1A85    clra
          incb
          stb   <u0025
-         lbra  L47A1
-         ora   <u004F
+L1A89    lbra  L47A1
+
+L1A8C    ora   <u004F
          ldb   <u0028
          beq   L1A9B
          tsta
          beq   L1A98
+
+* Offset for menus
 L1A95    lbra  L1C26
 L1A98    lbra  L1E28
 L1A9B    lbra  L1DF5
@@ -3486,6 +3619,7 @@ L1B3C    lbra  L093A
 L1B3F    bsr   L1B3C
          tfr   b,a
 L1B43    lbra  L091C
+
 L1B46    tfr   u,d
 L1B48    bsr   L1B5B
          bcs   L1B5A
@@ -3541,6 +3675,7 @@ L1BA1    ldu   ,x++
          lda   <u00FD
          deca
          bra   L1B8B
+
 L1BAD    ldu   <u00F8
          ldd   <u00F8
          suba  <u00BF
@@ -3642,11 +3777,12 @@ L1C4D    pshs  b,a
          tst   <u0074
          beq   L1C86
          bra   L1C77
+
 L1C73    tst   <u0074
          bne   L1C86
 L1C77    tst   <u0090
          beq   L1C86
-         leau  >L29E9,pcr
+         leau  >L29E9,pcr   "Type mismatch"
          lbsr  L21C8
          lbne  L1D0C
 L1C86    puls  b,a
@@ -3703,6 +3839,7 @@ L1CEA    tst   <u00B6
          ldx   <u007E
          lbsr  L0021
          bra   L1CFB
+
 L1CF5    lbsr  L0027
          lbsr  L0901
 L1CFB    bsr   L1D5C
@@ -3719,6 +3856,7 @@ L1D0C    lds   <u0034
 
 L1D14    sta   <u00E3
 L1D16    lbra  L1DF5
+
 L1D19    leas  $02,s
 L1D1B    tfr   x,d
          stu   <u006C
@@ -3726,6 +3864,7 @@ L1D1B    tfr   x,d
          tfr   b,a
          ldx   <u00AF
          lbra  L1CBC
+
 L1D28    stx   <u00AF
          ldx   <MEMPTR
          leax  <$20,x
@@ -3751,12 +3890,15 @@ L1D52    std   ,x++
          stx   <u00AF
          tfr   u,x
          bra   L1D43
+
 L1D5C    ldx   #$0111
          lbsr  L20E3
 L1D62    lbra  L4EB5
+
 L1D65    bsr   L1D5C
          ldu   <u0068
          lbra  L1E2C
+
 L1D6C    lda   <u000E
          inca
          sta   <u0079
@@ -3824,6 +3966,7 @@ L1DF5    ldx   <u006E
          clr   <u0061
          sta   <u0075
          lbra  L08CB
+
 L1E00    lbsr  L20E0
          leau  >L29C8,pcr   String 'GO TO'
          lbsr  L28D9
@@ -3837,9 +3980,11 @@ L1E11    ldx   <u00A2
          bcc   L1E2C
 L1E1B    leau  >L1FC0,pcr
          lbra  L2123
+
 L1E22    ldu   <u00A2
          ldu   $0A,u
          bra   L1E2C
+
 L1E28    ldu   <u0070
          clr   <u00D5
 L1E2C    clr   <u0054
@@ -3849,6 +3994,7 @@ L1E2E    bsr   L1DDE
          lbsr  L08D7
          lbsr  L1F0D
          bra   L1E3F
+
 L1E3C    lbsr  L1D6C
 L1E3F    ldy   <u00A2
          lda   #$FF
@@ -3875,6 +4021,7 @@ L1E68    stb   <u00D5
          tst   <u0077
          lbeq  L2832
 L1E74    lbra  L1D0C
+
 L1E77    stu   $0D,y
          ldd   -$06,y
          std   -$04,y
@@ -3900,6 +4047,7 @@ L1E97    leay  $01,y
          bsr   L1ED0
          stu   ,y
          bra   L1E51
+
 L1EA6    tstb
          bmi   L1EB2
          lda   $0D,y
@@ -3907,6 +4055,7 @@ L1EA6    tstb
          inca
          sta   $0D,y
          bra   L1E97
+
 L1EB2    lda   $0F,y
          sta   <u00B3
          sta   <u0094
@@ -3918,10 +4067,12 @@ L1EBA    lda   $0D,y
          dec   $0D,y
          clr   <u00B3
          bra   L1EBA
+
 L1EC8    tst   <u00B3
          beq   L1E97
          dec   $0D,y
          bra   L1E97
+
 L1ED0    ldd   <u0097
          beq   L1EFE
 L1ED4    pshs  u,x
@@ -3956,100 +4107,155 @@ L1F0D    pshs  u
          lda   #$04
          puls  pc,u
 
-L1F16    fcc   "Commands"
+CMDSTR    fcc   "Commands"
          fcb   $00
 
-         fcb   'A,$05,$a2
-         fcb   'B,$06,$cc
-         fcb   'C,$07,$20
-         fcb   'D,$25,$d0
-         fcb   'E,$07,$62
-         fcb   'F,$0c,$1b
-         fcb   'I,$25,$d0
-         fcb   'L,$25,$d5  (Locate-Not in the manual)
-         fcb   'M,$25,$d0
-         fcb   'P,$2d,$03
-         fcb   'Q,$05,$87
-         fcb   'R,$25,$d0
-         fcb   'S,$05,$93
-         fcb   'T,$05,$99
-         fcb   'W,$05,$a8
+         fcb   'A
+         fdb   L2037-L1A95   $05a2
+         fcb   'B
+         fdb   L2161-L1A95   $06cc
+         fcb   'C
+         fdb   L21B5-L1A95   $0720
+         fcb   'D
+         fdb   L4065-L1A95   $25d0
+         fcb   'E
+         fdb   L21F7-L1A95   $0762
+         fcb   'F
+         fdb   L26B0-L1A95   $0c1b
+         fcb   'I
+         fdb   L4065-L1A95   $25d0
+         fcb   'L
+         fdb   L406A-L1A95   $25d5  (Locate-Not in the manual)
+         fcb   'M
+         fdb   L4065-L1A95   $25d0
+         fcb   'P
+         fdb   L4798-L1A95   $2d03
+         fcb   'Q
+         fdb   L201C-L1A95   $0587
+         fcb   'R
+         fdb   L4065-L1A95   $25d0
+         fcb   'S
+         fdb   L2028-L1A95   $0593
+         fcb   'T
+         fdb   L202E-L1A95   $0599
+         fcb   'W
+         fdb   L203D-L1A95   $05a8
          fcb   '?,$80
 
 L1F4E    fcc   "Attributes"
          fcb   0
 
-         fcb   'B,$06,$51
-         fcb   'D,$0E,$FA
-         fcb   'G,$0E,$B0
-         fcb   'H,$06,$3C
-         fcb   'L,$06,$67
-         fcb   'M,$08,$CA
-         fcb   'O,$06,$C4
-         fcb   'P,$2C,$F8
-         fcb   'R,$06,$C0
-         fcb   'S,$25,$D0
-         fcb   'T,$06,$5D
-         fcb   'W,$05,$8D
+         fcb   'B
+         fdb   L20E6-L1A95   $0651
+         fcb   'D
+         fdb   L298F-L1A95   $0EFA
+         fcb   'G
+         fdb   L2945-L1A95   $0EB0
+         fcb   'H
+         fdb   L20D1-L1A95   $063C
+         fcb   'L
+         fdb   L20FC-L1A95   $0667
+         fcb   'M
+         fdb   L235F-L1A95   $08CA
+         fcb   'O
+         fdb   L2159-L1A95   $06C4
+         fcb   'P
+         fdb   L478D-L1A95   $2CF8
+         fcb   'R
+         fdb   L2155-L1A95   $06C0
+         fcb   'S
+         fdb   L4065-L1A95   $25d0
+         fcb   'T  Type protection
+         fdb   L20F2-L1A95   $065D
+         fcb   'W
+         fdb   L2022-L1A95   $058D
          fcb   '?,$82
 
 L1F7F    fcc   "Formats"
          fcb   0
 
-L1F87    fcb   'D,$0C,$6D
-         fcb   $47,$0C,$6D
-         fcb   $52,$0C,$6D
-         fcb   $4C,$0C,$6D
-         fcb   $50,$0C,$6D
-         fcb   $49,$0C,$6D
-         fcb   $24,$0C,$6D
-         fcb   $43,$0C,$6D
+L1F87    fcb   'D
+         fdb   L2702-L1A95   $0C6D
+         fcb   'G
+         fdb   L2702-L1A95   $0C6D
+         fcb   'R
+         fdb   L2702-L1A95   $0C6D
+         fcb   'L
+         fdb   L2702-L1A95   $0C6D
+         fcb   'P
+         fdb   L2702-L1A95   $0C6D
+         fcb   'I
+         fdb   L2702-L1A95   $0C6D
+         fcb   '$
+         fdb   L2702-L1A95   $0C6D
+         fcb   'C
+         fdb   L2702-L1A95   $0C6D
          fcb   '?,$88
 
 L1FA1    fcc   "Windows"
          fcb   $00
 
-         fcb   'D,$06,$70
-         fcb   $46,$0C,$39
-         fcb   $48,$0C,$91
-         fcb   $4E,$0D,$78
-         fcb   $53,$0D,$9D
-         fcb   $55,$0D,$BD
-         fcb   $56,$0C,$AA
+         fcb   'D
+         fdb   L2105-L1A95   $0670
+         fcb   'F
+         fdb   L26CE-L1A95   $0C39
+         fcb   'H
+         fdb   L2726-L1A95   $0C91
+         fcb   'N
+         fdb   L280D-L1A95   $0D78
+         fcb   'S
+         fdb   L2832-L1A95   $0D9D
+         fcb   'U
+         fdb   L2852-L1A95   $0DBD
+         fcb   'V
+         fdb   L273F-L1A95   $0CAA
          fcb   '?,$8A
 
 L1FC0    fcc   " In "
 L1FC4    fcc   "Titles"
          fcb   $00
 
-         fcb   'B,$0C,$FE
-         fcb   $48,$0D,$00
-         fcb   $4E,$0D,$36
-         fcb   $56,$0D,$02
+         fcb   'B
+         fdb   L2793-L1A95   $0CFE
+         fcb   'H
+         fdb   L2795-L1A95   $0D00
+         fcb   'N
+         fdb   L27CB-L1A95   $0D36
+         fcb   'V
+         fdb   L2797-L1A95   $0D02
          fcb   '?,$8C
 
 L1FD9    fcc   "System"
          fcb   $00
 
-         fcb   $43,$0E,$D2
-         fcb   $4C,$0E,$F1
-         fcb   $53,$0E,$F4
-         fcb   'X,$0E,$F7
-         fcb   '#,$2C,$F8
+         fcb   'C
+         fdb   L2967-L1A95   $0ED2   change directory
+         fcb   'L
+         fdb   L2986-L1A95   $0EF1
+         fcb   'S
+         fdb   L2989-L1A95   $0EF4
+         fcb   'X
+         fdb   L298C-L1A95   $0EF7   fork
+         fcb   '#
+         fdb   L478D-L1A95   $2CF8
          fcb   '?,$8E
 
 L1FF1    fcc   "Column width"
          fcb  0
 
-         fcb  $43,$0D,$C2
-         fcb  $57,$0E,$83
+         fcb  'C
+         fdb  L2857-L1A95   $0DC2
+         fcb  'W
+         fdb  L2918-L1A95   $0E83
          fcb  '?,$90
 
 L2006    fcc   "Quit"
          fcb  0
 
-         fcb  'O,$06,$F9
-         fcb  'S,$07,$17
+         fcb  'O
+         fdb  L218E-L1A95   $06F9
+         fcb  'S
+         fdb  L21AC-L1A95   $0717
          fcb  '?,$92
 
 L2013    ldx   #$011A
@@ -4057,26 +4263,26 @@ L2013    ldx   #$011A
          sta   <u0092
          rts
 
-         leau  >L2006,pcr
+L201C    leau  >L2006,pcr    "Quit"
          bra   L2047
 
-         leau  >L1FF1,pcr
+L2022    leau  >L1FF1,pcr    "Column width"
          bra   L2047
 
-         leau  >L1FD9,pcr
+L2028    leau  >L1FD9,pcr    "System"
          bra   L2047
 
-         leau  >L1FC4,pcr
+L202E    leau  >L1FC4,pcr    "Titles"
          ldy   <u00A2
          bra   L2047
 
-         leau  >L1F4E,pcr   Attributes
+L2037    leau  >L1F4E,pcr   Attributes
          bra   L2047
 
-         leau  >L1FA1,pcr   Windows
+L203D    leau  >L1FA1,pcr   Windows
          bra   L2047
 
-L2043    leau  >L1F16,pcr   String 'Commands'
+L2043    leau  >CMDSTR,pcr   String 'Commands'
 L2047    bsr   L2013
          sta   <u009A
          clr   <u00E3
@@ -4084,15 +4290,15 @@ L204D    lbsr  L2234  output string pointed to in U
          stu   <u008E
          lda   #':
          lbsr  L1B3C  output char in A
-L2057    lda   ,u
-         cmpa  #'?
-         bne   L2061
-         tst   <u001D
+L2057    lda   0,u
+         cmpa  #'?  Is this help commmand?
+         bne   L2061 ..no
+         tst   <u001D  help texts discarded?
          bne   L2064
 L2061    lbsr  L1B3C  output char in A
 L2064    leau  3,u
-         cmpa  #'?
-         bne   L2057
+         cmpa  #'?   help is last
+         bne   L2057 not at last char
          lbsr  L20DD  Has now listed all command characters
          lbsr  L3AF3
 L2070    lbsr  L0904
@@ -4100,8 +4306,8 @@ L2070    lbsr  L0904
          ldx   <u008E
 L2076    cmpa  ,x+
          bne   L2092
-         cmpa  #'?
-         beq   L20A1
+         cmpa  #'?    help command?
+         beq   L20A1 .. yes
          tfr   x,u
          pshs  pc,b,a
          ldd   ,x
@@ -4120,8 +4326,9 @@ L2092    incb
          cmpb  #$3F
          bne   L2076
          bra   L2070
-L20A1    tst   <u001D
-         bne   L20AD
+
+L20A1    tst   <u001D    texts discarded?
+         bne   L20AD  ..yes
          ldu   <u001E
          pshs  u
          jsr   [,s++]
@@ -4136,7 +4343,7 @@ L20AD    leau  >L20BC,pcr   String 'helps not available'
 L20BC    fcc   "HELPS NOT AVAILABLE."
          fcb 0
 
-L20D1    tst   <u001D
+L20D1    tst   <u001D  help texts discarded?
          lbne  L215E
          ldu   <u001E
          leau  $03,u
@@ -4146,20 +4353,22 @@ L20DD    lbsr  L1F0D
 L20E0    ldx   #$0200
 L20E3    lbra  L08CE
 
-         ldx   #$0193
+* Toggle Bell
+L20E6    ldx   #$0193
          leau  >L29C0,pcr  String 'Signal'
          ldb   <u0006
          lbra  L0039
 
-         ldx   #$0190
+* Tupe protection
+L20F2    ldx   #$0190
          leau  >L29D0,pcr  String 'Protection'
 L20F9    lbra  L0036
 
-         ldx   #$01E8
+L20FC    ldx   #$01E8
          leau  >L29DC,pcr  String 'Label entry'
          bra   L20F9
 
-         ldb   <u00A3
+L2105    ldb   <u00A3
          lda   #$05
          ldx   #$FFF2
          leax  d,x
@@ -4183,25 +4392,30 @@ L2130    tst   <u00BC
          clr   <u0091
          lbsr  L0027
          bra   L215E
+
+* Wait for input
 L213B    pshs  y
          lbsr  L3AF3
          ldy   #$1000
 L2144    ldx   #$0001
          os9   F$Sleep
-         lbsr  L0907
+         lbsr  L0907   Read character
          bne   L2153
          leay  -$01,y
          bne   L2144
 L2153    puls  pc,y
 
-         com   <u00B6
+L2155    com   <u00B6
          bra   L215B
-         com   <u00B5  Row or column mode
+
+L2159    com   <u00B5  Row or column mode
 L215B    lbsr  L1D8A
 L215E    lbra  L1D0C
-         tst   <u0080
+
+* Attributes B
+L2161    tst   <u0080
          beq   L215E
-         leau  >L2A4B,pcr
+         leau  >L2A4B,pcr  "Blank cell"
          lbsr  L21C8
          bne   L215E
 L216E    lda   #$0D
@@ -4216,10 +4430,11 @@ L216E    lda   #$0D
 L217E    fcc   "Clear Worksheet"
          fcb 0
 
-         fcb $33
-L218F    bsr   L218F
-         lsr   >$8D34
-         bne   L215E
+* Quit
+L218E    leau  >L2006,pcr
+         bsr  L21C8
+         bne  L215E
+
 L2196    clr   <u00ED
          clr   <u00EE
          lbsr  L0922
@@ -4229,19 +4444,22 @@ L2196    clr   <u00ED
          clrb
          lbsr  L3AF3
          os9   F$Exit
-         lbsr  L0922
+
+L21AC    lbsr  L0922
          lbsr  L0919
          lbra  L08C8
-         leau  >L217E,pcr
+
+L21B5    leau  >L217E,pcr   "Clear worksheet"
          bsr   L21C8
          lbeq  L08C5 Initialise data and terminal
          lbra  L1D0C
 
 L21C2    leau  >L21E1,pcr
          bra   L21D1
+
 L21C8    lbsr  L2013
          bsr   L2234  output string pointed to in U
-         leau  >L21DE,pcr
+         leau  >L21DE,pcr    "Sure?"
 L21D1    bsr   L2234  output string pointed to in U
          lbsr  L1F0D
          sta   <u009A
@@ -4255,14 +4473,17 @@ L21E1    fcc   "ure?"
 
 L21E6    lbsr  L20E3
 L21E9    lbra  L1F0D
+
 L21EC    lda   #$20
          bra   L21F3
+
 L21F0    lbsr  L1B3C  output char in a
 L21F3    decb
          bpl   L21F0
          rts
 
-         tst   <u0080
+* Attribute E
+L21F7    tst   <u0080
          lbeq  L215E
          tst   <u00CD
          bne   L2204
@@ -4285,12 +4506,15 @@ L2227    bsr   L2234  output string pointed to in U
          lbsr  L20DD
          clr   <u00CD
          lbra  L08E6
+
 L2231    lbsr  L1B3C  output char in a
 L2234    lda   ,u+
          bne   L2231
          lbra  L3AF3
+
 L223B    lbsr  L2369
 L223E    lbra  L1D0C
+
 L2241    bne   L2245
 L2243    ldb   <u000E
 L2245    subb  #$04
@@ -4349,6 +4573,7 @@ L22A2    cmpy  <u004D
          bsr   L2243
          adda  #$04
          bra   L2265
+
 L22B8    sta   <u00BE
          ldb   <u0098
          subb  <u000E
@@ -4358,6 +4583,7 @@ L22B8    sta   <u00BE
 
 L22C4    lda   #REVOFF   Location of reverse off
 L22C6    lbra  L093D
+
 L22C9    clr   -$02,y
 L22CB    lda   <u0070
          bsr   L2306
@@ -4384,6 +4610,7 @@ L22F7    decb
          beq   L22F6
          cmpb  #$04
          lbra  L21EC
+
          addb  <u00BE
          stb   <u00BE
 L2303    lbra  L08E9
@@ -4433,6 +4660,7 @@ L234E    ldy   <MEMPTR
 L235F    clr   <u00AC
          lbsr  L19D8
          lbra  L223B
+
 L2367    leas  $04,s
 L2369    lbsr  L1B1F
          lbsr  L4ECD
@@ -4490,6 +4718,7 @@ L23A5    lda   <u009E
          sta   <u009E
          inc   <u00BD
          bra   L238F
+
 L23DC    lda   <u0098
          bne   L237F
 L23E0    lda   #$FF
@@ -4498,6 +4727,7 @@ L23E0    lda   #$FF
          clr   <u0015
          lbsr  L4ED0
          lbra  L3AF3
+
 L23EE    tst   <u00E0
          beq   L23F5
          lbsr  L478F
@@ -4517,6 +4747,7 @@ L240D    beq   L2415
          adda  #$04
          sta   <u00BE
          bra   L2443
+
 L2415    clr   <u0078
          lbsr  L2303
          sta   <u007D
@@ -4603,6 +4834,7 @@ L24C3    ldb   <u009D
          addb  <u0020
          stb   <u009D
          bra   L24E9
+
 L24CB    ldb   <u0097
          orb   <u0098
          beq   L24DB
@@ -4677,6 +4909,7 @@ L2559    lbsr  L1B3A
          decb
          bne   L2559
          bra   L2566
+
 L2561    bsr   L2541
 L2563    lbsr  L2303
 L2566    sta   <u007D
@@ -4689,6 +4922,7 @@ L256A    tst   <u007D
          leau  -1,u
          stu   -$0D,y
          lbra  L25FC
+
 L257B    leau  1,u
          stu   -$0D,y
 L257F    lda   ,x
@@ -4743,6 +4977,7 @@ L25DE    lsla
          lda   #'<
          lbsr  L1B3C  output char in a
          bra   L25FC
+
 L25EF    ldu   $02,x
          lbsr  L1BD9
          leax  $01,x
@@ -4751,6 +4986,7 @@ L25F6    ldb   -$01,x
          bne   L2601
 L25FC    ldb   <u0020
          lbra  L21EC
+
 L2601    lda   <u0022
          cmpa  #$07
          beq   L2633
@@ -4795,9 +5031,11 @@ L2665    pshs  y,b,a
          lda   #$FF
          sta   <u007C
          bra   L2678
+
 L266D    pshs  y,b,a
          leay  <$20,y
          bra   L2676
+
          pshs  y,b,a
 L2676    clr   <u007C
 L2678    stu   $0D,y
@@ -4825,10 +5063,12 @@ L269D    leay  $01,y
          bne   L267C
 L26A4    stb   <u0025
          puls  pc,y,b,a
-         lda   <u0093
+
+L26A8    lda   <u0093
          lbsr  L1B43
          lbra  L1D0C
-         ldu   <MEMPTR
+
+L26B0    ldu   <MEMPTR
          leay  >u0113,u
          lbsr  L2013
          bsr   L26DD
@@ -4840,12 +5080,14 @@ L26A4    stb   <u0025
          ora   <u0025
          sta   $01,x
          lbra  L1D0C
-         ldy   <u00A2
+
+L26CE    ldy   <u00A2
          lbsr  L2013
          inc   <u00E1
          bsr   L26E1
          com   <u00AC
          lbra  L1D0C
+
 L26DD    tst   <u0080
          beq   L26FB
 L26E1    leau  >L2A2D,pcr
@@ -4860,12 +5102,15 @@ L26E1    leau  >L2A2D,pcr
          lbsr  L1B38
 L26FB    leau  >L1F7F,pcr
          lbra  L204D
-         lda   $09,y
+
+* Set format of cell
+L2702    lda   $09,y
          anda  #$F8
          stb   <u0025
          ora   <u0025
          sta   $09,y
          rts
+
 L270D    ldd   <u0097
          bne   L278C
          ldu   <MEMPTR
@@ -4878,7 +5123,8 @@ L271C    clr   ,u+
          ldd   $08,y
          std   -$08,u
          rts
-         bsr   L270D
+
+L2726    bsr   L270D
          ldb   -$04,y
          incb
          cmpb  <u000D
@@ -4891,7 +5137,8 @@ L271C    clr   ,u+
          cmpb  $01,y
          bls   L278C
          bra   L275F
-         bsr   L270D
+
+L273F    bsr   L270D
          ldb   -$03,y
          beq   L278C
          stb   <u0083
@@ -4925,17 +5172,20 @@ L275F    ldu   <MEMPTR
          ldd   ,x
          std   $02,x
          lbra  L235F
-L278C    leau  >L29B4,pcr
+
+L278C    leau  >L29B4,pcr  "NOT VALID"
          lbra  L2123
-         bsr   L27A9
-         leay  $01,y
-         bsr   L27A9
+
+L2793    bsr   L27A9
+L2795    leay  $01,y
+L2797    bsr   L27A9
 L2799    ldy   <u00A2
          clr   -$06,y
          lbsr  L2254
          ldy   <u00A2
          com   -$06,y
 L27A6    lbra  L1D0C
+
 L27A9    tst   $06,y
          bne   L278C
          lda   $02,y
@@ -4954,7 +5204,8 @@ L27A9    tst   $06,y
          addd  $06,u
          std   $0A,u
          rts
-         ldu   <u00DA
+
+L27CB    ldu   <u00DA
          ldd   $06,y
          stu   $06,y
          ldx   $0A,y
@@ -4966,8 +5217,10 @@ L27A9    tst   $06,y
          addd  -$02,y
          std   -$02,y
          bra   L2799
+
 L27E3    stu   -$06,y
          lbra  L235F
+
 L27E8    ldd   <u00A2
          cmpb  #$30
          bne   L27F0
@@ -4985,7 +5238,8 @@ L27F5    ldu   <u0097
          ldu   ,y
          stu   $02,y
          lbra  L1E2C
-         ldb   <u00A3
+
+L280D    ldb   <u00A3
          cmpb  #$10
          beq   L2829
          ldu   <MEMPTR
@@ -5002,6 +5256,7 @@ L2829    clr   <u0098
          clr   <u0097
          clr   <u00AB
          lbra  L235F
+
 L2832    ldu   <u00A2
          bsr   L27E8
          tfr   d,x
@@ -5018,9 +5273,11 @@ L2845    lda   2,u
          lda   #$FF
          sta   <u00AB
          lbra  L1E4A
-         clr   <u00AB
+
+L2852    clr   <u00AB
 L2854    lbra  L1D0C
-         ldb   #$43
+
+L2857    ldb   #$43
          lbsr  L28C5
          lda   <u006E
          lbsr  L2306
@@ -5036,6 +5293,7 @@ L286C    tst   ,x++
          beq   L287A
          bsr   L28E0
          bra   L2885
+
 L287A    lda   #$44
          lbsr  L08EF
          clr   ,x
@@ -5055,6 +5313,7 @@ L289D    ldx   <u00A2
          lda   <u006E
          sta   ,x
          lbra  L235F
+
 L28A6    tst   <u00BA
          beq   L2854
          ldx   <u00B8
@@ -5066,9 +5325,11 @@ L28B0    ldu   ,y++
          bcs   L28B0
          clr   ,x
          bra   L289D
+
 L28BC    leau  >L29B2,pcr
          bsr   L28D9
          lbra  L2129
+
 L28C5    ldx   #$011A
          leax  $0F,x
          lbsr  L20E3
@@ -5077,8 +5338,10 @@ L28C5    ldx   #$011A
          lbsr  L20DD
          leau  >L2A31,pcr
 L28D9    lbra  L3ADE
+
 L28DC    bsr   L28F8
          bra   L28E2
+
 L28E0    bsr   L28E9
 L28E2    beq   L28E8
          cmpb  #$03
@@ -5106,7 +5369,9 @@ L28F8    lda   #$20
          blt   L28BC
          andcc #$FB
          rts
-         ldb   #$57
+
+* Width of window
+L2918    ldb   #$57
          bsr   L28C5
          ldx   <u00A2
          lda   $08,x
@@ -5125,8 +5390,9 @@ L2926    ldy   <u00A2
          lbsr  L1DDE
          lbsr  L1D6C
          lbra  L1D0C
+
 L2943    sta   <u002D
-         ldx   #$0200
+L2945    ldx   #$0200
          lbsr  L20E3
          leau  >L2992,pcr
          lbsr  L2234  output string pointed to in U
@@ -5139,7 +5405,9 @@ L2959    lbsr  L0904
          cmpa  #$0D
          bne   L2959
 L2964    lbra  L1D0C
-         leau  >L2A66,pcr
+
+* Change directory
+L2967    leau  >L2A66,pcr  New directory
          lbsr  L28D9
          clr   <u009A
          lbsr  L3ADB
@@ -5152,10 +5420,11 @@ L2964    lbra  L1D0C
          os9   I$ChgDir
          bcc   L2964
          lbra  L3B05
-         lbra  L3AD8
-         lbra  L3AD5
-         lbra  L3AE1
-         lbra  L002D
+L2986    lbra  L3AD8
+L2989    lbra  L3AD5
+L298C    lbra  L3AE1  fork
+L298F    lbra  L002D
+
 L2992    fcc   "Graph is : "
          fcb   $00
 
@@ -5276,6 +5545,7 @@ L2AEA    fdb   $0D46
 
 L2AED    lbra  L2BD9
 L2AF0    lbra  L2BEE
+
 L2AF3    ldb   #$B8
          stb   $0F,u
          lbsr  L2F3B
@@ -5303,12 +5573,14 @@ L2B0F    cmpa  #$0D
          lbpl  L2F98
          lbra  L2FA2
 L2B28    lbra  L3008
+
 L2B2B    clrb
 L2B2C    cmpa  #$0A
          bcs   L2B43
          suba  #$0A
          incb
          bra   L2B2C
+
 L2B35    bsr   L2B47
          cmpa  #$30
          bcs   L2B43
@@ -5398,7 +5670,7 @@ L2B61    bsr   L2B35
 L2BD9    ldx   $08,u
          stx   <$18,u
          ldx   $0A,u
-         stx   <MEMPTR,u
+         stx   <$1A,u
          ldx   $0C,u
          stx   <$1C,u
          ldx   $0E,u
@@ -5406,7 +5678,7 @@ L2BD9    ldx   $08,u
          rts
 L2BEE    ldx   <$18,u
          stx   $08,u
-         ldx   <MEMPTR,u
+         ldx   <$1A,u
          stx   $0A,u
          ldx   <$1C,u
          stx   $0C,u
@@ -5449,6 +5721,7 @@ L2C2D    lbsr  L2ED8
 L2C49    lda   ,u
          ldb   $0D,y
          lbra  L2D47
+
 L2C50    ldd   ,x
          anda  #$7F
          ora   $0E,y
@@ -5486,9 +5759,11 @@ L2C7C    lsra
          lda   $0C,y
          bpl   L2CB6
          bra   L2CD4
+
 L2C94    inc   $01,y
          orcc  #$01
          bra   L2CB2
+
 L2C9A    ldb   -$01,u
          stb   $07,u
          ldd   ,u
@@ -5517,6 +5792,7 @@ L2CB6    lbsr  L2DCE
 L2CCB    lda   $0E,y
          sta   $0C,y
          bra   L2D0F
+
 L2CD1    rola
          coma
          asra
@@ -5594,6 +5870,7 @@ L2D59    lda   ,y
          beq   L2D8A
          bmi   L2D8A
          lbra  L3008
+
 L2D67    lbsr  L2ED8
          beq   L2D8A
          lda   -$01,u
@@ -5610,14 +5887,17 @@ L2D67    lbsr  L2ED8
          lda   $01,y
          bpl   L2D55
          lbra  L2EF7
+
 L2D8A    clra
          sta   $07,u
          lbra  L2E45
+
 L2D90    lbsr  L2ED8
          ldb   -$01,u
          bne   L2D9C
          lda   #$01
          lbra  L300A
+
 L2D9C    tsta
          beq   L2D8A
          lbsr  L2E50
@@ -5643,6 +5923,7 @@ L2D9C    tsta
          lda   $01,y
          bpl   L2DEC
          lbra  L2EF7
+
 L2DCE    ldd   $05,u
          adcb  -$02,u
          adca  -$03,u
@@ -5774,6 +6055,7 @@ L2E86    rol   $06,u
          sta   $01,y
          clra
          bra   L2E86
+
 L2EC7    ror   $01,y
          com   ,u
          com   $01,u
@@ -5878,6 +6160,7 @@ L2F81    lda   <u003A
          beq   L2F8F
          bmi   L2F8F
          lbra  L3008
+
 L2F8F    lda   -$0C,y
          lbeq  L3008
          lbra  L2FAC
@@ -5979,11 +6262,13 @@ L3041    lda   $0F,u
          lbsr  L2F98
          dec   <u002F
          bra   L3041
+
 L304E    lbsr  L333D
          bcs   L305A
          lbsr  L2FA2
          inc   <u002F
          bra   L304E
+
 L305A    ldb   $08,u
          bpl   L3064
          stb   <u0026
@@ -6003,11 +6288,13 @@ L306E    clr   -$0B,y
          lbsr  L30A4
          ldx   <u0046
          bra   L3098
+
 L3084    lbsr  L333D
          bcs   L3090
          inc   -$0B,y
          lbsr  L33B3
          bra   L3084
+
 L3090    ldb   -$0B,y
          lbsr  L30A4
          lbsr  L3001
@@ -6017,6 +6304,7 @@ L3098    dec   <u0025
          lda   <u002B
          sta   <u0036
          bra   L306E
+
 L30A4    ldx   -$10,y
          inc   <u002B
          stb   ,x+
@@ -6075,6 +6363,7 @@ L30FE    inc   <u002B
          bpl   L30FE
          inc   <u0029
          lbra  L3190
+
 L3124    dec   <u0021
          stb   <u002C
          addb  <u002B
@@ -6084,6 +6373,7 @@ L3124    dec   <u0021
          ldb   <u0021
          stb   <u002A
          lbra  L31FA
+
 L3137    subb  <u0021
          ble   L314A
          lda   <u002C
@@ -6092,6 +6382,7 @@ L3137    subb  <u0021
          cmpa  <u0021
          blt   L314E
          lbra  L32F6
+
 L314A    negb
          stb   <u002A
          clrb
@@ -6099,6 +6390,7 @@ L314E    subb  <u002B
          negb
          stb   <u0028
          lbra  L3190
+
 L3156    stb   <u0029
          subb  <u0021
          lbgt  L32B9
@@ -6111,6 +6403,7 @@ L3156    stb   <u0029
          cmpb  #$03
          lblt  L32F6
          bra   L317A
+
 L3171    tstb
          beq   L3190
          lda   <u002B
@@ -6160,6 +6453,7 @@ L31B0    incb
          ldb   #$01
          stb   >-$046F,y
          lbra  L30C0
+
 L31D3    clrb
 L31D4    incb
          lda   ,-x
@@ -6191,6 +6485,7 @@ L31FA    leax  >-$046F,y
          ldb   <u0020
          decb
          lbra  L32B4
+
 L320E    clrb
          lda   <u0029
          deca
@@ -6224,6 +6519,7 @@ L3232    lda   <u0020
          lda   #$3E
          lbsr  L3316
 L324B    bra   L32B0
+
 L324D    cmpa  #$03
          beq   L325A
          ldb   <u002A
@@ -6253,6 +6549,7 @@ L3283    lbsr  L32FE
 L3286    ldb   <u0027
          bne   L328C
          bra   L32B0
+
 L328C    lda   #$65
          lbsr  L3316
          tstb
@@ -6274,6 +6571,7 @@ L32B0    ldb   <u002A
          andb  <u00C7
 L32B4    lda   #$20
          lbra  L3312
+
 L32B9    cmpa  #$05
          bge   L32F6
 L32BD    lda   <u002F
@@ -6305,10 +6603,12 @@ L32EA    stb   <u0028
          decb
          stb   <u0028
 L32F3    lbra  L3190
+
 L32F6    lda   #$3E
          ldb   <u0020
          decb
          lbra  L3312
+
 L32FE    lda   ,x+
          adda  #$30
          bne   L3308
@@ -6517,12 +6817,15 @@ L3489    coma
          comb
          addd  #$0001
          bra   L34B5
+
 L3490    lbra  L3008
+
 L3493    lda   ,x
          lbpl  L2FFC
          ldb   #$FF
 L349B    tfr   b,a
          bra   L34B5
+
 L349F    lda   ,x
          bpl   L3490
          bita  #$7F
@@ -6530,6 +6833,7 @@ L349F    lda   ,x
          ldb   $01,x
          bne   L3490
          bra   L347A
+
 L34AD    ora   #$80
 L34AF    lsra
          rorb
@@ -6541,6 +6845,7 @@ L34B5    stb   $01,x
 L34BA    rts
 L34BB    lda   #$05
          lbra  L300A
+
          lda   $08,u
          bmi   L34BB
          lda   $0F,u
@@ -6584,6 +6889,7 @@ L34E0    stx   <u0046
          rts
 L3526    lda   #$06
          lbra  L300A
+
          inc   -$0C,y
          lda   $08,u
          bmi   L3526
@@ -6597,6 +6903,7 @@ L3526    lda   #$06
          sta   $0F,u
          clr   -$0D,y
          bra   L354E
+
 L3544    sta   -$0B,y
          lda   #$80
          sta   $0F,u
@@ -6685,6 +6992,7 @@ L35F6    leax  <$10,u
          stx   <u0046
          lbsr  L33BD
          bra   L35F6
+
 L361D    puls  pc,b
          leax  >L39E8,pcr
          lbsr  L2F98
@@ -6726,6 +7034,7 @@ L3666    lbsr  L2C18
          rts
 L3684    lda   #$07
          lbra  L300A
+
 L3689    lda   $08,u
          sta   -$0B,y
          anda  #$7F
@@ -6762,8 +7071,10 @@ L36B4    lbsr  L2C03
          leax  <$18,u
          lbsr  L2F98
          lbra  L2C18
+
          clra
          bra   L36E5
+
          lda   #$01
 L36E5    sta   -$0E,y
          lbsr  L36B4
@@ -6782,6 +7093,7 @@ L36E5    sta   -$0E,y
          leax  <$18,u
          lbsr  L2F98
          bra   L3728
+
 L3712    leax  >L3A30,pcr
          ldb   #$03
          lbsr  L35EF
@@ -6838,6 +7150,7 @@ L3766    lbsr  L2C18
 L3793    lbsr  L2FA2
          com   -$0D,y
          bra   L37D3
+
 L379A    adda  #$03
          sta   $0F,u
          lbsr  L3689
@@ -6997,7 +7310,7 @@ L3AD5    lbra  L3C78
 L3AD8    lbra  L3DF0
 L3ADB    lbra  L3B1F
 L3ADE    lbra  L3B33
-L3AE1    lbra  L3F8E
+L3AE1    lbra  L3F8E   Fork
 L3AE4    lbra  L3B11
 L3AE7    lbra  L3EA5
 L3AEA    lbra  L3CD3
@@ -7028,6 +7341,7 @@ L3B1F    com   <u008B
          inc   <u0060
          clr   <u00AD
 L3B2A    lbra  L08D4
+
 L3B2D    ldy   <u00E9
          lbsr  L08EF
 L3B33    lda   ,u+
@@ -7064,6 +7378,7 @@ L3B6A    clra
          lda   ,y
          lbsr  L3EA9
          bra   L3B86
+
 L3B81    lbsr  L3EA9
          sta   ,y
 L3B86    cmpx  #$000A
@@ -7080,6 +7395,7 @@ L3B9D    bcc   L3BA5
          cmpb  #$CB
          bne   L3BBE
          bra   L3BBC
+
 L3BA5    tst   <u0019
          bne   L3BEA
          ldx   <u0030
@@ -7138,6 +7454,7 @@ L3C09    leau  >L3FE1,pcr  String 'Load'
          stx   <u0044
          inc   <u00EF
          bra   L3C20
+
 L3C1E    bcs   L3C23
 L3C20    sta   <u00EE
          rts
@@ -7165,7 +7482,7 @@ L3C3F    lbsr  L1B0A
          decb
          stb   <u0071
          lbsr  L08E3
-         tst   <u001D
+         tst   <u001D  help texts discarded?
          bne   L3C62
          ldx   <u001E
          leax  $0A,x
@@ -7175,10 +7492,13 @@ L3C62    lbsr  L1AC5
          ora   <u00C2
          beq   L3C04
          lbra  L08C8
+
 L3C6E    bsr   L3C72
          tfr   b,a
 L3C72    lbra  L3EA9
+
 L3C75    lbra  L1AFB
+
 L3C78    lbsr  L3B95
          ldx   <MEMPTR
          lda   #$21
@@ -7270,6 +7590,7 @@ L3D2E    puls  pc,x,b,a
 L3D30    tst   <u00E1
          bmi   L3D37
 L3D34    lbra  L1A9E
+
 L3D37    cmpa  #$2F
          beq   L3D34
          leax  >$0440,y
@@ -7287,6 +7608,7 @@ L3D4C    ldb   <u00ED
 L3D54    stb   <u005B
          ldy   <u00E9
          bra   L3D73
+
 L3D5B    lbsr  L3B33
          leau  >L3FD9,pcr  String 'File?'
          lbsr  L3B33
@@ -7315,7 +7637,7 @@ L3D89    lda   <u005B
          adda  #$1D
 L3D93    tfr   a,b
          deca
-         ldx   #$2E63
+         ldx   #$2E63  ".cal"
          ldu   #$616C
          cmpu  a,y
          bne   L3DA7
@@ -7358,6 +7680,7 @@ L3DE6    sta   <u0079
          lda   $03,u
          lbsr  L08E0
          lbra  L3E56
+
 L3DF0    lbsr  L3C07
          ldu   <u006E
          stu   <u0068
@@ -7374,6 +7697,7 @@ L3E09    bsr   L3E20
          bsr   L3E20
          sta   ,u+
          bra   L3E09
+
 L3E15    bsr   L3E20
          tfr   a,b
          bsr   L3E20
@@ -7381,6 +7705,7 @@ L3E15    bsr   L3E20
          tfr   d,u
 L3E1F    rts
 L3E20    lbra  L3EA9
+
 L3E23    leau  >$04FF,x
          ldb   #$41
 L3E29    bsr   L3E20
@@ -7460,6 +7785,7 @@ L3EB6    pshs  a
          bne   L3ECC
 L3EC8    sta   ,x
          bra   L3ECE
+
 L3ECC    lda   ,x
 L3ECE    ldx   <u0044
          leax  $01,x
@@ -7495,6 +7821,7 @@ L3EE8    cmpu  <u00F4
          ora   <u0036
          sta   $01,x
          bra   L3EE5
+
 L3F15    sta   <u001C
          lbsr  L1AE6
          ldb   <u00FF
@@ -7505,6 +7832,7 @@ L3F20    lbsr  L3EA9
          decb
          bne   L3F20
          bra   L3EE5
+
 L3F2A    ldu   <u006E
          cmpu  #$FFFF
          lbne  L3F52
@@ -7550,9 +7878,10 @@ L3F74    lbsr  L0934    Read the option section from path #0
 L3F87    lda   #$02
          os9   F$PErr
          bra   L3F93
+
 L3F8E    lbsr  L0922
          bsr   L3FC6
-L3F93    leau  >L3FEF,pcr
+L3F93    leau  >L3FEF,pcr   String "OS9>"
          bsr   L3FC3
          clra
          ldx   <MEMPTR
@@ -7572,6 +7901,7 @@ L3F93    leau  >L3FEF,pcr
          bra   L3F93
 
 L3FC3    lbra  L1AB9  output string pointed to in U
+
 L3FC6    lbsr  L1B10
          ldx   <u0030
          leax  <$2F,x
@@ -7618,15 +7948,17 @@ L4039    rts
 L403A    bsr   L4024
          lbsr  L1AA4
          lbra  L1A9E
+
 L4042    fcb   $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
          fcb   $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-         fcb   $00,$20,$06
+         fcb   $00
 
-L4067    fcb   $16
-         fcb   $02
-         fcb   $41 A
-         lbra  L45E4
-         cmpa  #$53
+L4065    bra  L406D
+L4067    lbra  L42AB
+L406A    lbra  L45E4
+
+* Delete/Insert/move/replicate
+L406D    cmpa  #'S
          bne   L40DB
          lbsr  L1AB3
          leau  >L408B,pcr  String "Max Col/Row - "
@@ -7643,6 +7975,7 @@ L408B    fcc   "Max Col/Row - "
 
 L409A    ldy   <u0068
          bra   L40A2
+
 L409F    ldy   <u00CE
 L40A2    stx   ,y
          stu   $02,y
@@ -7659,8 +7992,10 @@ L40B4    ldd   ,y
          sta   $08,y
          rts
 L40BF    lbra  L1AB9  output string pointed to in U
+
 L40C2    lbsr  L0901
 L40C5    lbra  L1B0A
+
 L40C8    ldx   <MEMPTR
          leau  <$20,x
          stu   <u00F4
@@ -7690,6 +8025,7 @@ L40DB    cmpa  #'R
          lbsr  L4EC1
          bcc   L410E
          lbra  L1ACE
+
 L410E    lbsr  L1AB3
          leau  >L4705,pcr  String 'Replicate'
          bsr   L40BF
@@ -7792,12 +8128,14 @@ L41DA    bsr   L422B
          bne   L41F8
          lbsr  L1A95
          bra   L41DA
+
 L41F8    lda   <u001C
          clrb
          tst   <u0074
          beq   L4204
          lbsr  L1AAA
          bra   L41DA
+
 L4204    cmpx  #$0000
          beq   L41DA
          anda  #$07
@@ -7807,6 +8145,7 @@ L4204    cmpx  #$0000
          ora   <u0036
          sta   $01,x
          bra   L41DA
+
 L4217    puls  u
          clr   <u00BC
          lbsr  L1ADD
@@ -7814,9 +8153,12 @@ L4217    puls  u
          tst   <u00B6
          bne   L4228
          lbra  L001E
+
 L4228    lbra  L4088
+
 L422B    ldy   <u0068
          bra   L4233
+
 L4230    ldy   <u00CE
 L4233    clr   <u00C9
          ldd   $04,y
@@ -7866,6 +8208,7 @@ L4291    clrb
          lbsr  L40BF
          clrb
 L429C    lbra  L08FE
+
 L429F    lda   ,x+
 L42A1    cmpa  #$40
          bcs   L42AB
@@ -7875,13 +8218,15 @@ L42A1    cmpa  #$40
 L42AB    cmpx  <u0051
          bcs   L429F
 L42AF    rts
-L42B0    cmpa  #$44
+
+L42B0    cmpa  #'D
          lbeq  L4340
-         cmpa  #$4D
+         cmpa  #'M
          bne   L42C3
          clr   <u00DE
          leau  >L46F5,pcr  String 'Move'
          lbra  L4471
+
 L42C3    lbsr  L4463
          clr   $0E,y
          lbsr  L4499
@@ -7899,6 +8244,7 @@ L42DD    ldu   <u008E
          beq   L42EB
          leau  >L476E,pcr
          lbra  L1AEC
+
 L42EB    inc   $0E,y
          bne   L42DD
 L42EF    ldu   <u0073
@@ -7912,6 +8258,7 @@ L42F4    sta   -$10,y
          cmpa  -$0D,y
          bls   L42F4
 L4301    lbra  L4371
+
 L4304    pshs  y
          lbsr  L1B01
          puls  pc,y
@@ -7924,6 +8271,7 @@ L430B    pshs  y
          stu   <u00DC
          ldx   ,u
          bra   L432D
+
 L4320    ldu   <u008E
          pshs  y
          ldy   <u006C
@@ -7969,6 +8317,7 @@ L4374    clr   <u00E1
          lbsr  L1ADD
          lbsr  L0027
          lbra  L08C8
+
 L4385    pshs  y
          lbsr  L4499
          ldu   <u00B1
@@ -7986,6 +8335,7 @@ L439A    bsr   L43B0
          ldu   <u00AF
          stx   ,u
          bra   L439A
+
 L43A8    ldx   <u00DC
          ldu   <u00AF
          stx   ,u
@@ -8018,6 +8368,7 @@ L43DD    ldb   ,x+
          bsr   L442A
          sta   -$01,x
          bra   L43DD
+
 L43E9    lda   $01,x
          bita  #$10
          bne   L43CE
@@ -8039,17 +8390,20 @@ L43FB    lbsr  L42AB
          ldu   <u008E
          stu   -$02,x
          bra   L43FB
+
 L4413    lda   -$03,x
          anda  #$3F
          sta   -$03,x
          ldd   #$2A2C
          std   -$02,x
          bra   L43FB
+
 L4420    puls  x,b
          lda   ,x
          stb   ,x
          sta   -$08,x
          bra   L43CE
+
 L442A    cmpa  <u0089
          bcs   L445B
          bne   L4442
@@ -8060,6 +8414,7 @@ L442A    cmpa  <u0089
          beq   L4454
          lda   <u008A
          bra   L445B
+
 L443D    tst   <u00E1
          beq   L4454
          rts
@@ -8072,6 +8427,7 @@ L4442    cmpa  <u008A
          bne   L4454
          lda   <u0089
          bra   L445B
+
 L4454    inca
          tst   <u00E1
          beq   L445B
@@ -8118,7 +8474,9 @@ L44A6    lbsr  L1AB3
          bsr   L44B1
          leau  >L4762,pcr  String 'Working'
 L44B1    lbra  L40BF
+
 L44B4    lbra  L4088
+
          lbsr  L40C2
          leax  >L473B,pcr  String 'From...To'
          leau  >L46F5,pcr  String 'Move'
@@ -8199,6 +8557,7 @@ L4556    lbsr  L422B
          sta   <u0025
          lbsr  L002A
          bra   L458F
+
 L4577    lda   ,x+
          bsr   L45CF
          pshs  a
@@ -8226,6 +8585,7 @@ L458F    beq   L4556
          lbsr  L44CB
 L45A9    ldu   <u00C1
          bra   L4536
+
 L45AD    lbsr  L1ACB
          beq   L45CE
          ldd   ,x++
@@ -8256,6 +8616,7 @@ L45CF    cmpa  #$20
 L45E1    ora   #$80
 L45E3    rts
 
+* Locate command
 L45E4    leau  >L46CA,pcr String 'Search for?'
          lbsr  L3ADE
          clr   <u009A
@@ -8273,9 +8634,12 @@ L4602    inc   <u00E1
          clra
          clrb
          bra   L4629
+
 L4608    lbra  L4088
+
 L460B    ldd   <u00F1
          bra   L4629
+
 L460F    cmpa  #$1B
          beq   L460B
 L4613    ldd   <u006E
@@ -8324,6 +8688,7 @@ L4669    puls  u,x,b
 L466B    decb
          bne   L464C
          bra   L4613
+
 L4670    leas  $07,s
          clr   <u00CC
          lda   <MEMPTR
@@ -8348,6 +8713,7 @@ L467D    lda   <MEMPTR
          ldx   <u00F1
          stx   <u006E
          lbra  L1B0D
+
 L46AC    lda   ,u+
          cmpa  #$0D
          beq   L4670
@@ -8363,6 +8729,7 @@ L46C2    rts
 L46C3    tst   <u00B3
          beq   L46C2
          lbra  L0940
+
 L46CA    fcc   "Search for? "
          fcb 0
 
@@ -8409,8 +8776,8 @@ L476E    fcb $0D
          fcc "NO ROOM !"
          fcb 0
          fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-         fcb $20,$15
 
+L478D    bra L47A4
 L478F    lbra  L4A0E
 L4792    lbra  L4E73
 L4795    lbra  L4E2B
@@ -8423,8 +8790,10 @@ L47A4    cmpa  #'P
          bne   L47AF
          leau  >L4CDF,pcr  String 'Printer'
 L47AC    lbra  L1AEF
+
 L47AF    leau  >L4CBC,pcr  String 'Data file'
 L47B3    bra   L47AC
+
 L47B5    tst   <u00E0
          beq   L47C6
          cmpa  #$1B
@@ -8439,6 +8808,7 @@ L47C7    cmpa  #$03
          cmpa  #$0D
          bne   L47BD
 L47CF    lbra  L4977
+
 L47D2    lbsr  L0928
          bsr   L4811
          leau  >L4C60,pcr   String 'Range?'
@@ -8457,6 +8827,7 @@ L47EA    ldb   <u005B
          tfr   y,u
          lbsr  L49B5  output string pointed to in U
          lbra  L0925
+
 L47FE    lbsr  L0904
          clra
          clrb
@@ -8466,7 +8837,10 @@ L47FE    lbsr  L0904
          leau  >L4C6B,pcr  String 'Entire'
          bsr   L4811
          bra   L47EA
+
 L4811    lbra  L3ADE
+
+* Printer
 L4814    leau  >-$0187,y
          lda   ,u
          sta   <u0069
@@ -8490,13 +8864,16 @@ L4814    leau  >-$0187,y
          clr   <u00EE
          bsr   L4850
          bra   L4869
+
 L484A    ldx   #$0200
          lbra  L08CE
+
 L4850    lbsr  L4D3A
          lda   <u000E
          suba  #$34
          leau  >$0400,y
          lbra  L3B08
+
 L485E    bsr   L484A
          leau  >L4C87,pcr  String 'Output'
          lbsr  L3B02
@@ -8509,6 +8886,7 @@ L4869    clr   <u00EE
          leau  >$0400,y
          lbsr  L3B0E
          bra   L487D
+
 L487B    bsr   L4850
 L487D    lda   #$0D
          sta   <u00D0
@@ -8603,9 +8981,11 @@ L4936    inc   -$02,y
          dec   <u0036
          bpl   L4936
          bra   L495F
+
 L4944    tst   <u00E2
          bne   L4956
          lbra  L093D
+
 L494B    leau  d,x
          lda   #$20
 L494F    ldb   ,x+
@@ -8649,13 +9029,16 @@ L4977    lds   <u00CE
          tst   <u0013
          lbne  L4D82
          lbra  L4B50
+
 L49AA    lda   #$20
          lbsr  L3AE7 write char
          decb
          bne   L49AA
 L49B2    lbra  L3AF3
 
+
 L49B5    lbra  L1AB9  output string pointed to in U
+
 L49B8    clr   <u00E0
          leau  >L4E24,pcr   Series of newlines
          bsr   L49B5  output string pointed to in U
@@ -8666,7 +9049,7 @@ L49B8    clr   <u00E0
          ldb   <u00F1
          bsr   L49AA
 L49CE    ldu   <MEMPTR
-         leau  >u0562,u
+         leau  >u0562,u    Date string M0562
          bsr   L49B5  output string pointed to in U
          tst   <u0091
          bne   L4A08
@@ -8694,6 +9077,7 @@ L4A08    rts
 
 L4A09    lda   #$0D
          lbra  L4AE5
+
 L4A0E    tst   <u0062
          bne   L4A2D
          ldb   <u00F4
@@ -8735,14 +9119,15 @@ L4A44    clr   <u00B3
          tst   <u00EF
          beq   L4A75
          lbsr  L4C4D
-         cmpa  #$2F
+         cmpa  #'/
          bne   L4A75
          lbsr  L4C22
          lbsr  L4C41
          anda  #$5F
-         cmpa  #$52
+         cmpa  #'R
          beq   L4A85
          bra   L4A7D
+
 L4A75    sta   <u00D7
          lda   <u00EC
          cmpa  #$F0
@@ -8789,9 +9174,12 @@ L4AD8    lda   #$3E
          bsr   L4AE5
          bsr   L4AE0
          bra   L4B16
+
 L4AE0    lbra  L4A09
+
 L4AE3    bsr   L4AE5
 L4AE5    lbra  L091C
+
 L4AE8    sta   <u0036
          leax  $01,x
          lda   ,x
@@ -8801,6 +9189,7 @@ L4AE8    sta   <u0036
          tst   $01,x
          bmi   L4ACD
          bra   L4AD8
+
 L4AFA    ldb   #$14
          bita  #$10
          beq   L4B0C
@@ -8831,6 +9220,7 @@ L4B24    lda   $06,u
          bsr   L4AE5
          bsr   L4AE0
          bra   L4B1A
+
 L4B38    leau  1,u
          exg   d,u
          cmpb  #$F1
@@ -8841,6 +9231,7 @@ L4B44    rts
 L4B45    clr   <u00E0
          clr   <u0091
 L4B49    lbra  L3AEA
+
          clr   >$0400,y
 L4B50    clra
          sta   <u00D0
@@ -8894,6 +9285,7 @@ L4BA2    lbsr  L4C4D
          clrb
          pshs  b
          bra   L4BD1
+
 L4BB6    bsr   L4B65
          pshs  cc
          cmpa  #$27
@@ -8910,6 +9302,7 @@ L4BCC    sta   b,y
          bpl   L4BD5
 L4BD1    bsr   L4C41
          bra   L4BDB
+
 L4BD5    bsr   L4C22
          cmpa  #$0D
          bne   L4BCC
@@ -8922,10 +9315,12 @@ L4BDB    decb
          clra
          lbsr  L092B
          bra   L4BF0
+
 L4BED    lbsr  L092E
 L4BF0    ldu   <u00EB
          inc   $04,u
          bra   L4BA2
+
 L4BF6    clrb
 L4BF7    bsr   L4C22
          lbsr  L4B65
@@ -8937,6 +9332,7 @@ L4BF7    bsr   L4C22
          mul
          addb  ,s+
          bra   L4BF7
+
 L4C0B    cmpa  #$0D
          beq   L4C11
          bsr   L4C41
@@ -8948,6 +9344,7 @@ L4C11    incb
          addb  $04,u
          stb   $04,u
          lbra  L4BA2
+
 L4C22    lda   <u00D7
          bne   L4C2C
          lbsr  L3AFC
@@ -8963,6 +9360,7 @@ L4C2F    ldu   <u00F6
          lbsr  L0027
 L4C3C    inc   <u00ED
          lbra  L4B49
+
 L4C41    pshs  a
 L4C43    bsr   L4C22
          cmpa  #$0D
@@ -9004,14 +9402,14 @@ L4CBC    fcc   "Data file"
 
          fcb   'L,$30,$e7
          fcb   'S,$2f,$f4
-         fcb   $3f,$86
+         fcb   '?,$86
 
 L4CCE    fcc   "Order"
          fcb   $00
          fcb   'C,$2f,$e8
          fcb   $44,$2f,$c7
          fcb   $52,$2f,$f0
-         fcb   $3f,$a2
+         fcb   '?,$a2
 
 L4CDF    fcc   "Printer"
          fcb   $00
@@ -9022,11 +9420,12 @@ L4CDF    fcc   "Printer"
          fcb   $53
          fcb   $33,$12
          fcb   $57,$32,$d3
-         fcb   $3f,$94
+         fcb   '?,$94
 
          ldx   #$00FE   Pagination variable (T/F)
          leau  >L4DC5,pcr  String 'Pagination now'
          bra   L4D0B
+
          ldx   #$00FC   Borders variable (T/F)
          leau  >L4DB8,pcr  String 'Borders now'
 L4D0B    pshs  u,x
@@ -9053,6 +9452,7 @@ L4D2A    ldb   #$3D
 L4D37    lbsr  L4AE5
 L4D3A    lda   #$20
          lbra  L4AE3
+
 L4D3F    lda   #$42
 L4D41    leax  >-$0184,y
          bsr   L4D2A
@@ -9241,6 +9641,7 @@ L4EDC    ldd   <PARAMS
          subd  <u0017
          addd  ,s++
          lbra  L4795
+
 L4EEE    clra
          ldx   <u007E
          beq   L4EFB
@@ -9254,6 +9655,7 @@ L4EFB    ldu   <u006E
          lda   <u00BC
          bne   L4F17
          lbra  L1ACE
+
 L4F08    ldx   <u0081
          stx   <u0084
          leay  d,x
@@ -9262,6 +9664,7 @@ L4F08    ldx   <u0081
          bcc   L4F1A
          stx   <u0081
 L4F17    lbra  L1AD7
+
 L4F1A    ldx   <u007E
          beq   L4F20
          bsr   L4F31
