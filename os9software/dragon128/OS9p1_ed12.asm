@@ -1,21 +1,69 @@
- nam OS-9 Level II kernal, part 1
- ttl System Type definitions
+ nam OS-9 Level II V1.2
+ ttl Module Header
 
 ********************************
 * Extracted from Dragon 128/Dragon Beta computer.
 * The CPUType is called DRG128, and CPUSpeed is TwoMHz
 ********************************
 
+************************************************************
+*                                                          *
+*           OS-9 Level II V1.2 - Kernal, part 1            *
+*                                                          *
+* Copyright 1982 by Microware Systems Corporation          *
+* Reproduced Under License                                 *
+*                                                          *
+* This source code is the proprietary confidential prop-   *
+* erty of Microware Systems Corporation, and is provided   *
+* to the licensee solely for documentation and educational *
+* purposes. Reproduction, publication, or distribution in  *
+* any form to any party other than the licensee is         *
+* is strictly prohibited !!!                               *
+*                                                          *
+************************************************************
+
+************************************************************
+*
+*     Module Header
+*
  use defsfile
 
-*****
-*
-*  Module Header
-*
-Revs set REENT+8
- mod OS9End,OS9Nam,SYSTM,Revs,0,0
 
-OS9Nam fcs /OS9p1/
+Type set Systm
+Revs set ReEnt+8
+ mod OS9End,OS9Name,Type,Revs,0,0
+
+OS9Name fcs /OS9p1/
+
+************************************************************
+*
+*     Edition History
+*
+* Edition $28 - Beginning of history
+*   pre-82/8/10
+*
+* Edition   1 - Addition of 6829 modifications
+*   82/8/10
+*
+* Edition   2 - Addition of Profitel & Gimix2 CPU types
+*   82/10/1
+*
+* Edition   3 - changes in timing of process state flag switching
+*   82/11/6
+*
+* Edition   4 -
+*             - change "AllImage to set DAT image change flag after
+*               actually changing the image
+*             - change "Slice" to not decrement "D.Slice" below zero
+*
+* Edition   5 - change "SetImage" to set DAT image change flag after
+*   83/01/20    actually changing the image
+*
+* Edition   6 - complete changes for write-protecting modules
+*   83/01/26  - change initialization for Positron systems
+
+
+
  fcb 12 Edition number
 
 LORAM set $20
@@ -800,7 +848,7 @@ PARITY leas -1,s  Save space on stack
  leax 2,X
  lbsr ADJBLK Go to next DAT block?
  ldb #M$IDSize-2
- lda #$4A  M$ID1^M$ID2
+ lda #(M$ID1!M$ID2)-(M$ID1&M$ID2)   M$ID1 xor M$ID2
 PARI10 sta 0,S
  lbsr GETBYTE
  eora 0,S Add parity of next byte
