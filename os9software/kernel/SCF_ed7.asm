@@ -9,12 +9,12 @@
 * File Man mod, 6809 obj, re-en, R/O
 
          nam   SCF
-         ttl   os9 file manager     
+         ttl   os9 file manager
 
          ifp1
          use   os9defs
          endc
-tylg     set   FlMgr+Objct   
+tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,start,size
@@ -22,7 +22,7 @@ u0000    rmb   0
 size     equ   .
 name     equ   *
          fcs   /SCF/
-         fcb   $07 
+         fcb   $07
 start    equ   *
          lbra  Create
          lbra  Open
@@ -45,12 +45,12 @@ Create    ldx   $03,y
          ldu   $06,y
          ldx   $04,u
          pshs  y
-         os9   F$PrsNam 
+         os9   F$PrsNam
          bcs   L00C7
          lda   -$01,y
          bmi   L0053
          leax  ,y
-         os9   F$PrsNam 
+         os9   F$PrsNam
          bcc   L00C7
 L0053    sty   $04,u
          puls  y
@@ -58,10 +58,10 @@ L0053    sty   $04,u
          bita  $01,y
          beq   L009C
          ldd   #$0001
-         os9   F$SRqMem 
+         os9   F$SRqMem
          bcs   L00CC
          stu   $08,y
-         clrb  
+         clrb
          bsr   L008B
 
 * cute message:
@@ -72,14 +72,14 @@ L0053    sty   $04,u
 
 * put cute message into our newly allocated PD buffer
 L008B    puls  x                       get PC into X
-         clra  
+         clra
 L008E    eora  ,x+
          sta   ,u+
-         decb  
+         decb
          cmpa  #$0D
          bne   L008E
 L0097    sta   ,u+
-         decb  
+         decb
          bne   L0097
 L009C    ldu   $03,y
          beq   MakDir
@@ -92,37 +92,37 @@ L009C    ldu   $03,y
          leax  d,x
          lda   $01,y
          anda  #$02
-         asra  
+         asra
          pshs  a
          lda   $01,y
          anda  #$01
-         lsla  
+         lsla
          ora   ,s+
-         os9   I$Attach 
+         os9   I$Attach
          bcs   L00CC
          stu   $0A,y
 * seek/delete routine
 Seek
-Delete    clra  
-         rts   
+Delete    clra
+         rts
 L00C7    puls  pc,y
 
 * ChgDir/MakDir entry
 ChgDir
 MakDir   comb
          ldb   #$D7
-L00CC    rts   
+L00CC    rts
 Term    tst   $02,y
          bne   L00E3
          ldu   $0A,y
          beq   L00D8
-         os9   I$Detach 
+         os9   I$Detach
 L00D8    ldu   $08,y
          beq   L00E2
          ldd   #$0001
-         os9   F$SRtMem 
-L00E2    clra  
-L00E3    rts   
+         os9   F$SRtMem
+L00E2    clra
+L00E3    rts
 
 GetStat    ldx   $06,y
          lda   $02,x
@@ -149,13 +149,13 @@ L010E    ldx   $04,x
          ldb   #$1A
 L0115    lda   ,x+
          sta   ,y+
-         decb  
+         decb
          bne   L0115
-L011C    clrb  
-         rts   
-         comb  
+L011C    clrb
+         rts
+         comb
          ldb   #$D0
-L0121    rts   
+L0121    rts
 
 Read    lbsr  L0328
          bcs   L0121
@@ -167,7 +167,7 @@ Read    lbsr  L0328
          ldu   $04,u
          lbsr  L027F
          bcs   L0143
-         tsta  
+         tsta
          beq   L0159
          cmpa  <$2C,y
          bne   L0151
@@ -175,7 +175,7 @@ L0141    ldb   #$D3
 L0143    leas  $02,s
          pshs  b
          bsr   L016A
-         comb  
+         comb
          puls  pc,b
 L014C    lbsr  L027F
          bcs   L0143
@@ -211,7 +211,7 @@ L018B    lbsr  L027F
          ldb   #$29
 L0198    cmpa  b,y
          beq   L01CA
-         incb  
+         incb
          cmpb  #$31
          bls   L0198
 L01A1    cmpx  $0D,y
@@ -235,7 +235,7 @@ L01C5    lbsr  L02B0
 L01CA    pshs  pc,x
          leax  >L01DD,pcr
          subb  #$29
-         lslb  
+         lslb
          leax  b,x
          stx   $02,s
          puls  x
@@ -282,7 +282,7 @@ L0227    leax  ,x
          bsr   L0252
 L0232    ldx   #$0000
          ldu   $08,y
-         rts   
+         rts
 L0238    leax  ,x
          lbeq  L02BE
          leau  -$01,u
@@ -311,7 +311,7 @@ L025F    cmpx  $0D,y
          bne   L025D
          leau  -$01,u
 L0274    leax  -$01,x
-L0276    rts   
+L0276    rts
 L0277    pshs  u,y,x
          ldx   $0A,y
          ldu   $03,y
@@ -338,14 +338,14 @@ L02A0    tst   <$21,y
          cmpa  #$7A
          bhi   L02AF
          suba  #$20
-L02AF    rts   
+L02AF    rts
 L02B0    tst   <$24,y
          bne   L02BF
          cmpa  #$0D
          bne   L02BE
          tst   <$25,y
          bne   L02BF
-L02BE    rts   
+L02BE    rts
 L02BF    cmpa  #$20
          bcc   L02C7
          cmpa  #$0D
@@ -365,7 +365,7 @@ L02DC    beq   L02E6
          cmpa  $04,x
          bne   L02E6
          clr   $04,x
-L02E6    rts   
+L02E6    rts
 L02E7    pshs  x,a
          ldx   $02,x
          lda   $04,x
@@ -375,14 +375,14 @@ L02E7    pshs  x,a
          pshs  a
          bsr   L02D2
          puls  a
-         os9   F$IOQu   
+         os9   F$IOQu
          inc   $0F,y
          ldx   D.Proc
          ldb   <$36,x
          puls  x,a
          beq   L02E7
-         coma  
-         rts   
+         coma
+         rts
 L0309    lda   ,s
          sta   $04,x
          sta   $03,x
@@ -395,7 +395,7 @@ L0309    lda   ,s
          lda   <$34,y
          beq   L0325
          sta   $06,x
-L0325    clra  
+L0325    clra
          puls  pc,x,a
 L0328    ldx   D.Proc
          lda   ,x
@@ -411,7 +411,7 @@ L033C    tst   $0F,y
          bne   L0328
          clr   $0C,y
 L0342    ldu   $06,y
-         rts   
+         rts
 
 WriteLn    bsr   L0328
          bra   L034D
@@ -495,7 +495,7 @@ L03EC    bsr   L03FF
 L03F0    lda   #$00
          dec   ,s
          bpl   L03EC
-         clra  
+         clra
 L03F7    leas  $01,s
 L03F9    puls  pc,u,x,a
 L03FB    bsr   L03FF

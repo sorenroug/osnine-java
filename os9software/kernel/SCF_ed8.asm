@@ -1,29 +1,32 @@
 *
 * Original edition from Dragon Data OS-9
 *
-* Header for : SCF
-* Module size: $416  #1046
-* Module CRC : $770E8D (Good)
-* Hdr parity : $FA
-* Edition    : $08  #8
-* Ty/La At/Rv: $D1 $81
-* File Manager mod, 6809 Obj, re-ent, R/O
+ nam   SCF
 
-         nam   SCF
-         ttl   os9 file manager     
+* Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
+* Reproduced Under License
 
-         ifp1
-         use   os9defs
-         endc
-tylg     set   FlMgr+Objct   
+*
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than 
+* the licensee is strictly prohibited!!
+*
+
+
+ use defsfile
+
+ ttl   Sequential Character file manager
+
+tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   0
-size     equ   .
-name     equ   *
+         mod   SCFEnd,SCFNam,tylg,atrv,start,0
+
+SCFNam     equ   *
          fcs   /SCF/
-         fcb   $08 
+         fcb   8
 
 start    equ   *
          lbra  Create
@@ -45,25 +48,25 @@ Open
 Create   ldx   PD.DEV,y
          stx   <$3B,y
          ldu   $06,y
-         ldx   $04,u
+         ldx   R$X,u
          pshs  y
-         os9   F$PrsNam 
+         os9   F$PrsNam
          bcs   L00C7
-         lda   -$01,y
+         lda   -1,y
          bmi   L0053
          leax  ,y
-         os9   F$PrsNam 
+         os9   F$PrsNam
          bcc   L00C7
-L0053    sty   $04,u
+L0053    sty   R$X,u
          puls  y
          lda   #$01
          bita  $01,y
          beq   L009C
          ldd   #$0001
-         os9   F$SRqMem 
+         os9   F$SRqMem
          bcs   L00CC
          stu   $08,y
-         clrb  
+         clrb
          bsr   L008B
 
 * cute message:
@@ -74,14 +77,14 @@ L0053    sty   $04,u
 
 * put cute message into our newly allocated PD buffer
 L008B    puls  x                       get PC into X
-         clra  
+         clra
 L008E    eora  ,x+
          sta   ,u+
-         decb  
+         decb
          cmpa  #$0D
          bne   L008E
 L0097    sta   ,u+
-         decb  
+         decb
          bne   L0097
 L009C    ldu   $03,y
          beq   MakDir
@@ -94,38 +97,38 @@ L009C    ldu   $03,y
          leax  d,x
          lda   $01,y
          anda  #$02
-         asra  
+         asra
          pshs  a
          lda   $01,y
          anda  #$01
-         lsla  
+         lsla
          ora   ,s+
-         os9   I$Attach 
+         os9   I$Attach
          bcs   L00CC
          stu   $0A,y
 * seek/delete routine
 Seek
 Delete   clra
-         rts   
+         rts
 L00C7    puls  pc,y
 
 * ChgDir/MakDir entry
 ChgDir
 MakDir   comb
          ldb   #$D7
-L00CC    rts   
+L00CC    rts
 
 Term     tst   $02,y
          bne   L00E3
          ldu   $0A,y
          beq   L00D8
-         os9   I$Detach 
+         os9   I$Detach
 L00D8    ldu   $08,y
          beq   L00E2
          ldd   #$0001
-         os9   F$SRtMem 
-L00E2    clra  
-L00E3    rts   
+         os9   F$SRtMem
+L00E2    clra
+L00E3    rts
 
 GetStat  ldx   $06,y
          lda   $02,x
@@ -153,13 +156,13 @@ L010E    ldx   $04,x
          ldb   #$1A
 L0115    lda   ,x+
          sta   ,y+
-         decb  
+         decb
          bne   L0115
-L011C    clrb  
-         rts   
-         comb  
+L011C    clrb
+         rts
+         comb
          ldb   #$D0
-L0121    rts   
+L0121    rts
 
 Read     lbsr  L0327
          bcs   L0121
@@ -171,7 +174,7 @@ Read     lbsr  L0327
          ldu   $04,u
          lbsr  L027E
          bcs   L0143
-         tsta  
+         tsta
          beq   L0159
          cmpa  <$2C,y
          bne   L0151
@@ -179,7 +182,7 @@ L0141    ldb   #$D3
 L0143    leas  $02,s
          pshs  b
          bsr   L016A
-         comb  
+         comb
          puls  pc,b
 L014C    lbsr  L027E
          bcs   L0143
@@ -211,12 +214,12 @@ L0181    pshs  x
          lbsr  L0231
 L018B    lbsr  L027E
          lbcs  L0217
-         tsta  
+         tsta
          beq   L01A0
          ldb   #$29
 L0197    cmpa  b,y
          beq   L01C9
-         incb  
+         incb
          cmpb  #$31
          bls   L0197
 L01A0    cmpx  $0D,y
@@ -240,12 +243,13 @@ L01C4    lbsr  L02AF
 L01C9    pshs  pc,x
          leax  >L01DC,pcr
          subb  #$29
-         lslb  
+         lslb
          leax  b,x
          stx   $02,s
          puls  x
          jsr   [,s++]
          bra   L018B
+
 L01DC    bra   L0237
          bra   L0226
          bra   L01EE
@@ -253,6 +257,7 @@ L01DC    bra   L0237
          bra   L0255
          bra   L025E
          puls  pc
+
          bra   L0226
          bra   L0226
 L01EE    leas  $02,s
@@ -287,7 +292,7 @@ L0226    leax  ,x
          bsr   L0251
 L0231    ldx   #$0000
          ldu   $08,y
-         rts   
+         rts
 L0237    leax  ,x
          lbeq  L02BD
          leau  -$01,u
@@ -316,7 +321,7 @@ L025E    cmpx  $0D,y
          bne   L025C
          leau  -$01,u
 L0273    leax  -$01,x
-L0275    rts   
+L0275    rts
 L0276    pshs  u,y,x
          ldx   $0A,y
          ldu   $03,y
@@ -343,14 +348,16 @@ L029F    tst   <$21,y
          cmpa  #$7A
          bhi   L02AE
          suba  #$20
-L02AE    rts   
+L02AE    rts
+
 L02AF    tst   <$24,y
          bne   L02BE
          cmpa  #$0D
          bne   L02BD
          tst   <$25,y
          bne   L02BE
-L02BD    rts   
+L02BD    rts
+
 L02BE    cmpa  #$20
          bcc   L02C6
          cmpa  #$0D
@@ -370,7 +377,8 @@ L02DB    beq   L02E5
          cmpa  $04,x
          bne   L02E5
          clr   $04,x
-L02E5    rts   
+L02E5    rts
+
 L02E6    pshs  x,a
          ldx   $02,x
          lda   $04,x
@@ -380,14 +388,14 @@ L02E6    pshs  x,a
          pshs  a
          bsr   L02D1
          puls  a
-         os9   F$IOQu   
+         os9   F$IOQu
          inc   $0F,y
          ldx   D.Proc
          ldb   <$36,x
          puls  x,a
          beq   L02E6
-         coma  
-         rts   
+         coma
+         rts
 L0308    lda   ,s
          sta   $04,x
          sta   $03,x
@@ -400,8 +408,9 @@ L0308    lda   ,s
          lda   <$34,y
          beq   L0324
          sta   $06,x
-L0324    clra  
+L0324    clra
          puls  pc,x,a
+
 L0327    ldx   D.Proc
          lda   ,x
          clr   $0F,y
@@ -416,7 +425,7 @@ L033B    tst   $0F,y
          bne   L0327
          clr   $0C,y
 L0341    ldu   $06,y
-         rts   
+         rts
 
 WriteLn  bsr   L0327
          bra   L034C
@@ -456,6 +465,7 @@ L038D    lbra  L02D1
 L0390    pshs  b,cc
          bsr   L0385
          puls  pc,b,cc
+
 L0396    pshs  u,x,a
          ldx   $0A,y
          beq   L03F6
@@ -499,11 +509,13 @@ L03E9    bsr   L03FC
 L03ED    lda   #$00
          dec   ,s
          bpl   L03E9
-         clra  
+         clra
 L03F4    leas  $01,s
 L03F6    puls  pc,u,x,a
+
 L03F8    bsr   L03FC
          puls  pc,u,x,a
+
 L03FC    ldu   #$0006
 L03FF    pshs  u,y,x,a
          ldu   $02,x
@@ -516,4 +528,4 @@ L03FF    pshs  u,y,x,a
          jsr   ,x
          puls  pc,u,y,x
          emod
-eom      equ   *
+SCFEnd      equ   *

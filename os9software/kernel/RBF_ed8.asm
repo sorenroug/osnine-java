@@ -9,7 +9,7 @@
 * File Manager mod, 6809 Obj, re-ent, R/O
 
          nam   Rbf
-         ttl   os9 file manager     
+         ttl   Module Header & entries
 
          ifp1
          use   defsfile
@@ -39,6 +39,9 @@ start    equ   *
          lbra  GetStat
          lbra  PutStat
          lbra  Close
+
+ ttl Random Block file service request routines
+
 L0039    pshs  y
          leas  -$05,s
          lda   $02,u

@@ -204,6 +204,7 @@
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
         <assemble src="coco_485.cor" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="dragon64_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
+        <assemble src="go80.trm" home="dynacalc" verify="030ee069f87e960399010f8e9bbe97df"/>
         <!--
         <assemble src="ansi_473.cor" home="dynacalc" verify="02016e1718d3a188e20fb19dab1d2d79"/>
         -->
