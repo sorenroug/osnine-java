@@ -1,0 +1,53 @@
+PROCEDURE mem2ex
+REM
+REM Extracts bytes from memory and writes an S-Record file
+
+DIM fd,chunk,checksum,i,byt:INTEGER
+DIM first,org,last:REAL
+INPUT "Start address (0-$FFFF) $", f$
+INPUT "End address (0-$FFFF) $", l$
+first = VAL("$"+f$)
+last = VAL("$"+l$)
+IF first >= last THEN
+  PRINT "Start higher than end"
+  STOP
+ENDIF
+INPUT "Save to file name? ", fn$
+
+org = first
+CREATE #fd,fn$:WRITE
+checksum = LEN(fn$)+3
+PRINT #fd USING "'S0',H2,H4",checksum,0;
+FOR i = 1 to LEN(fn$)
+  byt = ASC(MID$(fn$,i,1))
+  PRINT #fd USING "H2", byt;
+  checksum = checksum + byt
+NEXT i
+PRINT #fd USING "H2", LNOT(MOD(checksum,256))
+
+REPEAT
+  IF first + 32 <= last THEN
+    chunk = 32
+  ELSE
+    chunk = last - first
+  ENDIF
+  checksum = chunk+3
+  PRINT #fd USING "'S1',H2,H4",chunk+3,FIX(first);
+  checksum = checksum + (first / 256)
+  checksum = checksum + MOD(first,256)
+
+  FOR i = 0 TO chunk-1
+    byt = PEEK(i+first)
+    PRINT #fd USING "H2", byt;
+    checksum = checksum + byt
+  NEXT i
+  PRINT #fd USING "H2", LNOT(MOD(checksum,256))
+  first = first + chunk
+UNTIL first=last
+checksum = 3
+PRINT #fd USING "'S903',H4", FIX(org);
+checksum = checksum + (org / 256)
+checksum = checksum + MOD(org,256)
+PRINT #fd USING "H2", LNOT(MOD(checksum,256))
+CLOSE #fd
+END
