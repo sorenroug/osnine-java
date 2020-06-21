@@ -1289,7 +1289,7 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * Decimal Addition Ajust.
+     * Decimal Addition Adjust.
      */
     private void daa() {
         int c = 0;
@@ -1308,7 +1308,7 @@ public class MC6809 extends USimMotorola {
 
         {
             int t = a.intValue() + c;
-            cc.setC(btst(t, 8));
+            cc.setC(btst(t, 8) || cc.isSetC());
             a.set(t);
         }
 

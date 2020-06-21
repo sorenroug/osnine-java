@@ -235,10 +235,11 @@ public class InstructionsTest extends Framework {
      * The Negative flag is set equal to the new value of bit 7 in Accumulator A.
      * The Zero flag is set if the new value of Accumulator A is zero; cleared otherwise.
      * The affect this instruction has on the Overflow flag is undefined.
-     * The Carry flag is set if the BCD addition produced a carry; cleared otherwise.
+     * The Carry flag is set if a carry is generated or if the carry bit was set before the
+     * operation; cleared otherwise.
      */
     @Test
-    public void testDAA() {
+    public void testDAA1() {
         myTestCPU.write(0xB00, 0x19);
         myTestCPU.cc.clear();
         setA(0x7f);
@@ -249,6 +250,32 @@ public class InstructionsTest extends Framework {
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
         assertEquals(0, myTestCPU.cc.getC());
+    }
+
+    /**
+     * Load $91 into A, Add $91, then do DAA
+     * Carry must be set.
+     */
+    @Test
+    public void testDAA2() {
+        myTestCPU.write(0xB00, 0x86);   // LDA
+        myTestCPU.write(0xB01, 0x91);
+        myTestCPU.write(0xB02, 0x8B);   // ADDA
+        myTestCPU.write(0xB03, 0x91);
+        myTestCPU.write(0xB04, 0x19); // DAA
+        myTestCPU.cc.clear();
+        setA(0x0);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x91, myTestCPU.a.intValue());
+        myTestCPU.execute();
+        assertEquals(0x22, myTestCPU.a.intValue());
+        myTestCPU.execute();
+        assertEquals(0x82, myTestCPU.a.intValue());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
     }
 
     @Test
