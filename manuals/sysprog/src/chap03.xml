@@ -386,7 +386,7 @@ of memory that are common to more than one map.
       <para>
 The diagram below illustrates the design of a <emphasis>typical</emphasis> memory
 management system. For ease of explanation, a system with 16 memory
-maps with a 4k block block size will be described.
+maps with a 4k block size will be described.
 </para>
       <informalfigure>
         <screen>

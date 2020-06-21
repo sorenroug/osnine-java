@@ -2007,7 +2007,7 @@ the procedure is suspended. Only list the current procedure may be listed.
 
 
 <synopsis>
-<command>PRINT [#<replaceable>expr</replaceable>,] [USING <replaceable>expr</replaceable>,] <replaceable>expr list</replaceable></command>
+<command>PRINT [#<replaceable>expr</replaceable>] [USING <replaceable>expr</replaceable>,] <replaceable>expr list</replaceable></command>
 </synopsis>
 This is exactly the same as the <productname>BASIC09</productname> PRINT statement and can be used
 to examine the present value of variables in the suspended program. All
@@ -4751,7 +4751,7 @@ Syntax:
 <command>PRINT <replaceable>output list</replaceable></command>
 <command>PRINT #<replaceable>int expr</replaceable>, <replaceable>output list</replaceable></command>
 <command>PRINT USING <replaceable>str expr</replaceable>, <replaceable>output list</replaceable></command>
-<command>PRINT #<replaceable>int expr</replaceable>, USING <replaceable>str expr</replaceable>, <replaceable>output list</replaceable></command>
+<command>PRINT #<replaceable>int expr</replaceable> USING <replaceable>str expr</replaceable>, <replaceable>output list</replaceable></command>
 </synopsis>
 This statement outputs the values of the items given in the output list
 to the standard output device (path #1, the terminal) unless another
@@ -5317,7 +5317,7 @@ and other applications where formatted output is required. The
 output editing uses the PRINT USING statement which has the following
 syntax:
 <synopsis>
-<command>PRINT [<replaceable>expr#</replaceable>,] USING <replaceable>str expr</replaceable> , <replaceable>output list</replaceable></command>
+<command>PRINT [<replaceable>#expr</replaceable>] USING <replaceable>str expr</replaceable> , <replaceable>output list</replaceable></command>
 </synopsis>
 The optional path number expression can be used to specify the path
 number of any output file or device. If it is omitted, the output is
