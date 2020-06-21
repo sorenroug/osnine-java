@@ -43,6 +43,8 @@
         -->
         <assemble src="D0"/>
         <assemble src="D1"/>
+        <assemble src="D2"/>
+        <assemble src="D3"/>
         <assemble src="HWClock"/>
         <assemble src="SysGoMulti"/>
         <assemble src="SysGoSingle"/>

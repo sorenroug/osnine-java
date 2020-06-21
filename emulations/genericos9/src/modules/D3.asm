@@ -1,7 +1,7 @@
 ********************************************************************
 * disk device descriptor
 *
-         nam   D0
+         nam   D3
          ttl   40-track floppy disk device descriptor
 
          ifp1
@@ -16,7 +16,7 @@ rev      set   $01
          fdb   $FFD1  physical controller address
          fcb   initsize-*-1  initilization table size
          fcb   1 device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   0 drive number
+         fcb   3 drive number
          fcb   0 step rate
          fcb   $20 drive device type
          fcb   1 media density:0=single,1=double
@@ -29,7 +29,7 @@ rev      set   $01
          fcb   8 minimum size of sector allocation
 initsize equ   *
 name     equ   *
-         fcs   /D0/
+         fcs   /D3/
 mgrnam   equ   *
          fcs   /RBF/
 drvnam   equ   *
