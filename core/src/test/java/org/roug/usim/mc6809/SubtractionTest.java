@@ -200,10 +200,10 @@ public class SubtractionTest extends Framework {
 
     /**
      * Test the SBCA instruction.
+     * A=0xFF - 0xFE - C=1 becomes 0x00
      */
     @Test
     public void testSBCA1() {
-        // A=0xFF - 0xFE - C=1 becomes 0x00
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setC(1);
@@ -221,10 +221,10 @@ public class SubtractionTest extends Framework {
 
     /**
      * Test the SBCA instruction.
+     * A=0x00 - 0xFF - C=0 becomes 0x01
      */
     @Test
     public void testSBCA2() {
-        // A=0x00 - 0xFF - C=0 becomes 0x01
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -243,10 +243,10 @@ public class SubtractionTest extends Framework {
 
     /**
      * Test the SBCA instruction.
+     * A=0x00 - 0x01 - C=0 becomes 0xFF
      */
     @Test
     public void testSBCA3() {
-        // A=0x00 - 0x01 - C=0 becomes 0xFF
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -263,9 +263,32 @@ public class SubtractionTest extends Framework {
     }
 
     /**
+     * Test the SBCA instruction.
+     * A=0x00 - 0xFF - C=1 becomes 0x00
+     */
+    @Test
+    public void testSBCA4() {
+        myTestCPU.cc.setN(1);
+        myTestCPU.cc.setZ(0);
+        myTestCPU.cc.setV(1);
+        myTestCPU.cc.setC(1);
+        setA(0x00);
+        myTestCPU.write(0xB00, 0x82);  // SBCA immediate
+        myTestCPU.write(0xB01, 0xFF);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x00, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+        assertEquals(1, myTestCPU.cc.getC());
+    }
+
+    /**
      * Test the SUBA instruction.
-     * The overflow (V) bit indicates signed two’s complement overflow, which occurs when the
-     * sign bit differs from the carry bit after an arithmetic operation.
+     * The overflow (V) bit indicates signed two’s complement overflow, which
+     * occurs when the sign bit differs from the carry bit after an arithmetic
+     * operation.
      */
     @Test
     public void testSUBA1() {
@@ -287,10 +310,12 @@ public class SubtractionTest extends Framework {
         assertEquals(1, myTestCPU.cc.getC());
     }
 
+    /**
+     * A=0x00 - 0x01 becomes 0xFF
+     * positive - positive = negative
+     */
     @Test
     public void testSUBA2() {
-        // A=0x00 - 0x01 becomes 0xFF
-        // positive - positive = negative
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -518,10 +543,12 @@ public class SubtractionTest extends Framework {
         assertEquals(1, myTestCPU.cc.getC());
     }
 
+    /**
+     * D=0x0800 - 0x8000 = 8800
+     * positive - negative = negative + overflow
+     */
     @Test
     public void testSUBD4() {
-        // D=0x0800 - 0x8000 = 8800
-        // positive - negative = negative + overflow
         myTestCPU.d.set(0x0800);
         myTestCPU.write(0xB00, 0x83); //SUBD
         writeword(0xB01, 0x8000);
