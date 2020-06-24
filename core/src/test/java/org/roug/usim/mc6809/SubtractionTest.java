@@ -246,7 +246,7 @@ public class SubtractionTest extends Framework {
      * A=0x00 - 0x01 - C=0 becomes 0xFF
      */
     @Test
-    public void testSBCA3() {
+    public void SBCA3() {
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -267,7 +267,7 @@ public class SubtractionTest extends Framework {
      * A=0x00 - 0xFF - C=1 becomes 0x00
      */
     @Test
-    public void testSBCA4() {
+    public void SBCA4() {
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
@@ -279,7 +279,7 @@ public class SubtractionTest extends Framework {
         myTestCPU.execute();
         assertEquals(0x00, myTestCPU.a.intValue());
         assertEquals(0, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
@@ -291,7 +291,7 @@ public class SubtractionTest extends Framework {
      * operation.
      */
     @Test
-    public void testSUBA1() {
+    public void SUBA1() {
         // A=0x00 - 0xFF becomes 0x01
         // positive - negative = positive
         myTestCPU.cc.setN(1);

@@ -13,7 +13,7 @@ public class LoadStoreTest extends Framework {
      * Load 0 into A.
      */
     @Test
-    public void testLDAZero() {
+    public void LDAZero() {
         setA(0x02);
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
@@ -28,7 +28,7 @@ public class LoadStoreTest extends Framework {
     }
 
     @Test
-    public void testLDA_X_pos() {
+    public void LDA_X_pos() {
         // Test INDEXED INDIRECT mode:   LDA [$10,X]
         //
         // Set register X to point to a location
@@ -53,7 +53,7 @@ public class LoadStoreTest extends Framework {
     }
 
     @Test
-    public void testLDA_U_neg() {
+    public void LDA_U_neg() {
         // Test INDEXED INDIRECT mode:   LDA [$10,U]
         //
         // Set register X to point to a location
@@ -81,7 +81,7 @@ public class LoadStoreTest extends Framework {
      * Test the LDB - Load into B - instruction.
      */
     @Test
-    public void testLDB_A_pos_S() {
+    public void LDB_A_pos_S() {
         // Test INDEXED mode:   LDB   A,S
         //
         // Set up a word to test at address 0x205
@@ -105,7 +105,7 @@ public class LoadStoreTest extends Framework {
     }
 
     @Test
-    public void testLDB_A_neg_S() {
+    public void LDB_A_neg_S() {
         // Test INDEXED mode:   LDB   A,S where A is negative
         //
         // Set up a word to test at address 0x205
@@ -131,7 +131,7 @@ public class LoadStoreTest extends Framework {
      * Test the LDD - Load into D - instruction.
      */
     @Test
-    public void testLDD() {
+    public void LDD() {
         // Test INDEXED mode:   LDD   2,Y
         //
         // Set up a word to test at address 0x205
@@ -196,7 +196,7 @@ public class LoadStoreTest extends Framework {
      * Test the LDS - Load into S - instruction.
      */
     @Test
-    public void testLDS() {
+    public void LDS() {
         myTestCPU.s.set(0xA11);
         myTestCPU.write(0xB00, 0x10); // LDS
         myTestCPU.write(0xB01, 0xCE);
@@ -213,7 +213,7 @@ public class LoadStoreTest extends Framework {
      * Test the LDY - Load into Y - instruction.
      */
     @Test
-    public void testLDYextended() {
+    public void LDYextended() {
         writeword(0x0E81, 0x0202); // Set up a value of 0x0202 at 0x0E81
         // Set register D to something
         myTestCPU.d.set(0x105);
@@ -234,7 +234,7 @@ public class LoadStoreTest extends Framework {
      * Test the LDY - Load into Y - instruction.
      */
     @Test
-    public void testLDYextendedIndirect() {
+    public void LDYextendedIndirect() {
         writeword(0x0202, 0xB3FF); // Set up a word to test at address 0x202
         writeword(0x0E81, 0x0202); // Set up a pointer to 0x0202 at 0x0E81
         // Set register D to something
@@ -257,7 +257,7 @@ public class LoadStoreTest extends Framework {
      * Store S direct to 0x129F
      */
     @Test
-    public void testSTSdirect() {
+    public void STSdirect() {
         // Set register DP to the offset
         myTestCPU.dp.set(0x12);
         myTestCPU.s.set(0x0AAA);
@@ -277,7 +277,7 @@ public class LoadStoreTest extends Framework {
      * STB [$F,X]
      */
     @Test
-    public void testSTBindexed() {
+    public void STBindexed() {
         setB(0xE5);
         setX(0x056A);
         myTestCPU.write(0x0579, 0x03);
@@ -299,7 +299,7 @@ public class LoadStoreTest extends Framework {
      * STA 0x20
      */
     @Test(expected = RuntimeException.class)
-    public void testSTAillegal() {
+    public void STAillegal() {
         setA(0xE5);
         myTestCPU.write(0xB00, 0x87); // illegal
         myTestCPU.write(0xB01, 0x20);
@@ -313,7 +313,7 @@ public class LoadStoreTest extends Framework {
      * STB 0x20
      */
     @Test(expected = RuntimeException.class)
-    public void testSTBillegal() {
+    public void STBillegal() {
         setB(0xE5);
         myTestCPU.write(0xB00, 0xC7); // illegal
         myTestCPU.write(0xB01, 0x20);
@@ -327,7 +327,7 @@ public class LoadStoreTest extends Framework {
      * STD 0x20
      */
     @Test(expected = RuntimeException.class)
-    public void testSTDillegal() {
+    public void STDillegal() {
         setB(0xE5);
         myTestCPU.write(0xB00, 0xCD); // illegal
         myTestCPU.write(0xB01, 0x20);
@@ -342,7 +342,7 @@ public class LoadStoreTest extends Framework {
      * STS 0x2020
      */
     @Test(expected = RuntimeException.class)
-    public void testSTSillegal() {
+    public void STSillegal() {
         myTestCPU.s.set(0x01E5);
         myTestCPU.write(0xB00, 0x10); // illegal
         myTestCPU.write(0xB01, 0xCF);
@@ -358,7 +358,7 @@ public class LoadStoreTest extends Framework {
      * STX 0x20
      */
     @Test(expected = RuntimeException.class)
-    public void testSTXillegal() {
+    public void STXillegal() {
         setB(0xE5);
         myTestCPU.write(0xB00, 0x8F); // illegal
         myTestCPU.write(0xB01, 0x20);

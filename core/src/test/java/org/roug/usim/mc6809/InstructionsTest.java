@@ -252,12 +252,28 @@ public class InstructionsTest extends Framework {
         assertEquals(0, myTestCPU.cc.getC());
     }
 
+
+    @Test
+    public void testDAA5() {
+        myTestCPU.write(0xB00, 0x19);
+        myTestCPU.cc.clear();
+        myTestCPU.cc.setC(1);
+        setA(0x40);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xA0, myTestCPU.a.intValue());
+        assertEquals(0, myTestCPU.cc.getH());
+        assertEquals(1, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(1, myTestCPU.cc.getC());
+    }
+
     /**
      * Load $91 into A, Add $91, then do DAA
      * Carry must be set.
      */
     @Test
-    public void testDAA2() {
+    public void testDAA8() {
         myTestCPU.write(0xB00, 0x86);   // LDA
         myTestCPU.write(0xB01, 0x91);
         myTestCPU.write(0xB02, 0x8B);   // ADDA
@@ -274,7 +290,6 @@ public class InstructionsTest extends Framework {
         assertEquals(0x82, myTestCPU.a.intValue());
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(1, myTestCPU.cc.getV());
         assertEquals(1, myTestCPU.cc.getC());
     }
 

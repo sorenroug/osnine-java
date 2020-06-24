@@ -184,11 +184,31 @@ static void SBCA3() {
     setCCflag(1, CC_V);
     setA(0x00);
     copydata(CODESTRT, testins, sizeof testins);
-    runtest("SBCA2");
+    runtest("SBCA3");
     assertA(0xFF);
     assertCC(0, CC_V);
     assertCC(0, CC_Z);
     assertCC(1, CC_N);
+}
+
+/**
+ * Test the SBCA instruction.
+ * A=0x00 - 0xFF - C=1 becomes 0x00
+ */
+static void SBCA4() {
+    static char testins[] = {0x82, 0xFF, RTS};
+    setCCflag(1, CC_N);
+    setCCflag(0, CC_Z);
+    setCCflag(1, CC_V);
+    setCCflag(1, CC_C);
+    setA(0x00);
+    copydata(CODESTRT, testins, sizeof testins);
+    runtest("SBCA4");
+    assertA(0x00);
+    assertCC(0, CC_N);
+    assertCC(1, CC_Z);
+    assertCC(0, CC_V);
+    assertCC(1, CC_C);
 }
 
 /**
@@ -304,6 +324,7 @@ int main() {
     SBCA1();
     SBCA2();
     SBCA3();
+    SBCA4();
     SUBA1();
     SUBA2();
     SUBB1();

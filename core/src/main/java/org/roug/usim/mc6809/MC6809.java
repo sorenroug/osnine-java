@@ -1323,6 +1323,9 @@ public class MC6809 extends USimMotorola {
         setBitZ(x);
     }
 
+    /**
+     * Exclusive OR.
+     */
     private void help_eor(UByte x) {
         x.set(x.intValue() ^ fetch_operand());
         cc.setV(0);
@@ -1587,7 +1590,7 @@ public class MC6809 extends USimMotorola {
     }
 
     /**
-     * PULS: Pull Registers from Hardware Stack.
+     * PULS: Pull Registers from System Stack.
      * The stack grows downwards, and this means that when you PULL, the
      * stack pointer is increased.
      */
@@ -1596,6 +1599,9 @@ public class MC6809 extends USimMotorola {
         help_pul(w, s, u);
     }
 
+    /**
+     * PULU: Pull Registers from User Stack.
+     */
     private void pulu() {
         int w = fetch();
         help_pul(w, u, s);
@@ -1676,7 +1682,7 @@ public class MC6809 extends USimMotorola {
 
     /**
      * Subtract with carry.
-     * The half-carry is undefined after this operation.
+     * The half-carry (V) is undefined after this operation.
      */
     private void help_sbc(UByte regB) {
         int m = fetch_operand();
@@ -1685,6 +1691,7 @@ public class MC6809 extends USimMotorola {
         cc.setH(((t & 0x0f) < (m & 0x0f))); // half-carry
         cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
         cc.setC(btst(t, 8));
+        t = t & 0xFF;
         cc.setN(btst(t, 7));
         cc.setZ(t == 0);
         regB.set(t);
@@ -1699,6 +1706,9 @@ public class MC6809 extends USimMotorola {
         setBitZ(a);
     }
 
+    /**
+     * Store byte in memory.
+     */
     private void help_st(UByte data) {
         int addr = fetch_effective_address();
         write(addr, data);
@@ -1707,6 +1717,9 @@ public class MC6809 extends USimMotorola {
         setBitZ(data);
     }
 
+    /**
+     * Store word in memory.
+     */
     private void help_st(Word dataW) {
         int addr = fetch_effective_address();
         write_word(addr, dataW.intValue());

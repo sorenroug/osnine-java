@@ -150,10 +150,10 @@ static void DAA() {
     setA(0x40);
     runtest("DAA4");
     assertA(0x46);
-    assertCC(0, CC_C);
-    assertCC(0, CC_Z);
-    assertCC(0, CC_N);
     assertCC(1, CC_H);
+    assertCC(0, CC_N);
+    assertCC(0, CC_Z);
+    assertCC(0, CC_C);
 
     /* Perform DAA on MSN if carry is set */
     setCC(0);
@@ -161,10 +161,10 @@ static void DAA() {
     setA(0x40);
     runtest("DAA5");
     assertA(0xA0);
-    assertCC(0, CC_C);
-    assertCC(0, CC_Z);
-    assertCC(1, CC_N);
     assertCC(0, CC_H);
+    assertCC(1, CC_N);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_C);
 
     /* Perform DAA of 9A */
     setCC(0);
@@ -172,10 +172,10 @@ static void DAA() {
     setA(0x9A);
     runtest("DAA6");
     assertA(0x00);
-    assertCC(1, CC_C);
-    assertCC(1, CC_Z);
-    assertCC(0, CC_N);
     assertCC(0, CC_H);
+    assertCC(0, CC_N);
+    assertCC(1, CC_Z);
+    assertCC(1, CC_C);
 
     /* Perform DAA of A2 */
     setCC(0);
@@ -183,9 +183,27 @@ static void DAA() {
     setA(0xA2);
     runtest("DAA7");
     assertA(0x02);
-    assertCC(1, CC_C);
-    assertCC(0, CC_Z);
     assertCC(0, CC_N);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_C);
+}
+
+/**
+ * Set A to 0x91, add 0x91, then do DAA.
+ * Result should be C=1.
+ */
+static void DAA8() {
+    static char testins[] = {0x8b, 0x91, 0x19, RTS};
+
+    setCC(0);
+    setA(0x91);
+    copydata(CODESTRT, testins, sizeof testins);
+    runtest("DAA8");
+
+    assertA(0x82);
+    assertCC(1, CC_N);
+    assertCC(0, CC_Z);
+    assertCC(1, CC_C);
 }
 
 /**
@@ -300,6 +318,7 @@ int main()
     BITimm();
     COMA();
     DAA();
+    DAA8();
     EXGdx();
     TFR();
     MUL();
