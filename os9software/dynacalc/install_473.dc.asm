@@ -231,6 +231,7 @@ QTERM equ *
 * Ask for terminal here
 *
  ifeq ASKTERM
+         lbsr Q.TNAME
          leax  >H.TERM,pcr   Terminal characteristics heading
          lbsr  OUT.SECT
          bcs   QHELPS
@@ -540,8 +541,7 @@ L046E    stb   <u0005
 L0479    lda   <u0005
          puls  pc,u,x
 
-* Ask for terminal
-* (dead code)
+* Ask for terminal model name
 Q.TNAME  leax  >L0C62,pcr  Enter your terminal's name
          lbsr  CRTEXT
          lbsr  L0654 Read line
