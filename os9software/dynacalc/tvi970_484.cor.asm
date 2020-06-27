@@ -1,3 +1,11 @@
+ ifp1
+ use defsfile
+DYNAVERS equ $0484
+ endc
+ opt m
+ org 0
+
+
 M0000 fcb $F5,$A8,$E9,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcc "DYNACALC, Version 4.8:4              "
       fcc "Copyright (C) 1982,1984 by Scott Schaeferle."
@@ -8,12 +16,16 @@ M0000 fcb $F5,$A8,$E9,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 M0088 fcb $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
       fcb $1B,'[,'?,'3,'h,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
       fcb $1B,'[,'?,'3,'l,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-      fcb $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$1B,'[,'K,$FF,$FF,$FF,$1B,'[
+      fcb $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+M00B8 fcb $1B,'[,'K,$FF,$FF,$FF,$1B,'[
       fcb 'J,$FF,$FF,$FF,$1B,'[,'7,'m,$FF,$FF,$FF,$FF,$1B,'[,'0,';
       fcb '1,'m,$FF,$FF,$08,$20,$08,$FF,$FF,$FF,$08,$FF,$FF,$FF
-      fcb 'T,'e,'l,'e,'v,'i,'d,'e,'o,' ,'9,'7,'0,' ,' ,' 
+M00DE fcc "Televideo 970   "
 M00EE fcb $04,$FF
-      fcb $FF,$FF,$00,$00,$00,$FF,$FF,$0E,$00,$00,$00,$00,$FF,'Y,$00,'A
+      fcb $FF,$FF,$00,$00,$00,$FF,$FF
+M00F7 fcb $0E
+M00F8 fcb $00,$00
+M00FA fcb $00,$00,$FF,'Y,$00,'A
 M0100 fcb $05,$18,$13,$04,$10,$03,$07,$19,$08,$7F,$00,$00,$00,$18,'~,$12
       fcb $02,$07,$00,$00,$00,$00,$00,'a,$F0,$00,'X,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$04,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
@@ -85,9 +97,12 @@ M0500 fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00
-      fcb ' ,' ,' ,' ,' ,' ,'M,'a,'y,' ,'2,'9,',,' 
-      fcb '1,'9,'8,'4
-      fcb $00,$06,$00,'F,'-,$9E,$CA,$20,$02,'j,'b,'9
+
+M0562 fcb ' ,' ,' ,' ,' ,' ,'M,'a,'y,' ,'2,'9,',,' ,'1,'9,'8,'4
+      fcb $00
+
+M0575 fcb $06,$00,'F,'-,$9E,$CA
+M057B fcb $20,$02,'j,'b,'9
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
@@ -109,11 +124,11 @@ M0600 fcb $00,'$,$00,$00,$00,$00,$00,$00,$10,$8E,$00,'P,'0,$8D,$00,$19
       fcb 'n,'t,'i,'n,'u,'e,'.
       fcb $0D,$0A
       fcb $00,$00,$00,$00,$00,$00,$00
-      fcb '!,' ,'s,'p,'l,$20,'-,'n,'h,$20,'-,'n,'j,$20,$00,$00
+M0680 fcb '!,' ,'s,'p,'l,$20,'-,'n,'h,$20,'-,'n,'j,$20,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-      fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+M06C0 fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
       fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
@@ -188,48 +203,217 @@ M09F0 nop
       nop
       nop
 
-      fcb $16,$00,$1F
-      fcb $16,$00,$16,'4,$12,$1F,'Q,'0
-      fcb $89,$A3,$F1,$AF,$8D,$FB,'^,$86,$FF,$A7,$C9,$01,'C,'5,$12,$20
-      fcb 'S,$10,$83,$04,$84,'','C,$86,$02,'0,$8D,$00,$0B,$10,$8E,$FF
-      fcb $FF,$10,'?,$8C,'_,$10,'?,$06
+M0A05    lbra  M0A27
+
+* Entry point for start routine in dynacalc program
+* X contains the program counter a few instructions before the jump.
+M0A08    lbra  M0A21
+
+         pshs  x,a
+         tfr   pc,x
+         leax  >-$5C0F,x
+         stx   >M0575,pcr
+         lda   #$FF
+         sta   >$0143,u
+         puls  x,a
+         bra   M0A74
+
+M0A21    cmpd  #$0484
+         beq   M0A6A
+M0A27    lda   #$02
+         leax  >M0A38,pcr
+         ldy   #$FFFF
+         os9   I$WritLn
+         clrb
+         os9   F$Exit
 
 M0A38    fcc   "DYNACALC and DYNACALC.TRM are different versions."
          fcb   $0D
-      fcb '0
-      fcb $89,$F4,$CC,$AF,$8D
-      fcb $FB,$03,'5,'v,$ED,$C9,$01,$C1,$1F,$B8,'L,$1F,$8B,$9F,'A,$DF
-      fcb $1A,'0,$C9,$02,$80,$9F,$E9,$8E,$07,$00,$9F,'D,$0F,$ED,$0F,$EE
-      fcb $0F,$19,$0F,$A7,'o,$8D,$FC,'(,$DE,$1A,'0,$C9,$09,$F0,$9F,$17
-      fcb $1F,$14,'0,$C9,$03,'1,$9F,'0,'0,$88,'/,'O,'_,$10,'?,$8D
-      fcb '0,$8D,$FB,'L,'O,'_,$ED,$1E,$A7,$1C,'C,'S,$ED,$1A,'0,$8D
-      fcb $FB,$BE,$86,$02,$10,'?,$84,'$,$13,'0,$8D,$FB,$B3,$86,$02,$C6
-      fcb $1B,$10,'?,$83,'$,$06,'o,$8D,$FB,$A6,$20,'5,$97,$12,$9E,'0
-      fcb '_,$10,'?,$8D,'%,$20,$9E,'0,'_,$A6,$84,'',$13,'J,'&,$16
-      fcb $96,$12,$C6,$02,$10,'?,$8D,'%,$0D,$10,'?,$88,'%,$08,$C6,$FF
-M0B00 fcb $D7,$13,'&,$0D,$20,$04,'o,$8D,$FB,'v,$96,$12,$10,'?,$8F,$0F
-      fcb $12,$9E,'0,$10,'?,$15,'1,$06,'3,$8D,$FA,'_,$C6,$04,$A6,'?
-      fcb $88,'Z,'I,$A8,$A2,$A7,$C2,'Z,'&,$F8,'1,$8D,$FA,'4,$A6,$01
-      fcb 'J,$81,$0B,'#,$01,'O,$C6,$09,'=,'3,$8D,$01,$D3,'3,$CB,$C6
-      fcb $09,$A6,$C0,$A7,$A0,'Z,'&,$F9,$86,$20,$A7,$A0,$E6,$02,$8D,$14
-      fcb $CC,',,$20,$ED,$A1,$CC,'1,'9,$ED,$A1,$9E,'0,$E6,$84,$8D,$04
-      fcb 'o,$A4,$20,$1C,'O,$CE,$07,$00,$DF,'D,$EE,$8D,$FA,$07,$AD,$C9
-      fcb 'I,'P,$CE,$07,$00,$DF,'D,$DC,$1A,'3,$CB,$EC,'C,$ED,$A1,'9
-      fcb $10,$AE,$8D,$F9,$F0,$AD,$A9,$0F,$FF,$E6,$01,'&,$04,$E6,$8D,$F5
-      fcb 'g,$E7,$8D,$F5,'e,'o,$0C,'o,$0F,'o,$88,$10,'o,$88,$11,'o
-      fcb $88,$16,'o,$04,'o,$07,$AD,$A9,$10,$0A,$CE,$01,$F1,$DF,$EB,$0F
-      fcb $E0,$0F,$E8,$0F,$C4,'m,$8D,$F4,$FF,'*,$02,$0A,$0E,'m,$8D,$F5
-      fcb '6,'&,$06,$86,$04,$A7,$8D,$F5,'.,$86,$90,$10,$AE,$8D,$F9,$A5
-      fcb $AD,$A9,$0F,$86,$86,$FF,$97,$F0,$AD,$A9,$0F,$00,$86,$0F,'3,$8D
-      fcb $F4,$FC,'0,$8D,$02,$10,$E6,$C6,$E7,$86,'J,'*,$F9,$DC,$0D,$83
-      fcb $0A,'&,'D,'T,$DD,$BD
+
+M0A6A    leax  >-$0B34,x
+         stx   >M0575,pcr
+         puls  u,y,x,b,a
+M0A74    std   >$01C1,u
+         tfr   dp,a
+         inca
+         tfr   a,dp
+         stx   <$0041
+         stu   <$001A
+         leax  >$0280,u
+         stx   <$00E9
+         ldx   #$0700
+         stx   <$0044
+         clr   <$00ED
+         clr   <$00EE
+         clr   <$0019
+         clr   <$00A7
+         clr   >M06C0,pcr
+         ldu   <$001A
+         leax  >$09F0,u
+         stx   <$0017
+         tfr   x,s
+         leax  >$0331,u
+         stx   <$0030
+         leax  <$2F,x
+         clra
+         clrb
+         os9   I$GetStt
+         leax  >M0600,pcr
+         clra
+         clrb
+         std   -$02,x
+         sta   -$04,x
+         coma
+         comb
+         std   -$06,x
+         leax  >M0680,pcr
+         lda   #$02
+         os9   I$Open
+         bcc   M0ADC
+         leax  >M0680,pcr
+         lda   #$02
+         ldb   #$1B
+         os9   I$Create
+         bcc   M0ADC
+         clr   >M0680,pcr
+         bra   M0B11
+M0ADC    sta   <$0012
+         ldx   <$0030
+         clrb
+         os9   I$GetStt
+
+         bcs   M0B06
+         ldx   <$0030
+         clrb
+         lda   ,x
+         beq   M0B00
+         deca
+         bne   M0B06
+         lda   <$0012
+         ldb   #$02      Get file size
+         os9   I$GetStt
+         bcs   M0B06
+         os9   I$Seek
+         bcs   M0B06
+         ldb   #$FF
+M0B00    stb   <$0013
+         bne   M0B11
+         bra   M0B0A
+
+M0B06    clr   >M0680,pcr
+M0B0A    lda   <$0012   data file path number
+         os9   I$Close
+         clr   <$0012   data file path number
+
+M0B11    ldx   <$0030
+         os9   F$Time
+
+* Seed the random number generator
+         leay  $06,x
+         leau  >M057B,pcr
+         ldb   #$04
+         lda   -$01,y
+         eora  #$5A
+M0B22    rola
+         eora  ,-y
+         sta   ,-u
+         decb
+         bne   M0B22
+         leay  >M0562,pcr
+         lda   $01,x
+         deca
+         cmpa  #$0B
+         bls   M0B36
+         clra
+M0B36    ldb   #$09
+         mul
+         leau  >MONTHS,pcr
+         leau  d,u
+         ldb   #$09
+M0B41    lda   ,u+
+         sta   ,y+
+         decb
+         bne   M0B41
+         lda   #$20
+         sta   ,y+
+         ldb   $02,x
+         bsr   M0B64
+         ldd   #$2C20
+         std   ,y++
+         ldd   #$3139
+         std   ,y++
+         ldx   <$0030
+         ldb   ,x
+         bsr   M0B64
+         clr   ,y
+         bra   M0B80
+
+M0B64    clra
+         ldu   #$0700
+         stu   <$0044
+         ldu   >M0575,pcr
+         jsr   >$4950,u
+         ldu   #$0700
+         stu   <$0044
+         ldd   <$001A
+         leau  d,u
+         ldd   $03,u
+         std   ,y++
+         rts
+
+M0B80         ldy   >M0575,pcr
+         jsr   >$0FFF,y
+         ldb   $01,x
+         bne   M0B91       L0011
+         ldb   >M00F8,pcr
+M0B91         stb   >M00FA,pcr
+         clr   $0C,x
+         clr   $0F,x
+         clr   <$10,x
+         clr   <$11,x
+
+         clr   <$16,x
+         clr   $04,x
+         clr   $07,x
+         jsr   >$100A,y
+         ldu   #$01F1
+         stu   <$00EB
+         clr   <$00E0
+         clr   <$00E8
+         clr   <$00C4
+         tst   >M00B8,pcr
+         bpl   M0BBD
+         dec   <$000E
+M0BBD    tst   >M00F7,pcr
+         bne   M0BC9
+         lda   #$04
+         sta   >M00F7,pcr
+M0BC9    lda   #$90
+         ldy   >M0575,pcr
+         jsr   >$0F86,y
+         lda   #$FF
+         sta   <$00F0
+         jsr   >$0F00,y
+* Copy terminal name
+         lda   #$0F
+         leau  >M00DE,pcr
+         leax  >M0DF6,pcr
+M0BE6    ldb   a,u
+         stb   a,x
+         deca
+         bpl   M0BE6
+         ldd   <$000D
+         subd  #$0A26
+         lsra
+         lsrb
+         std   <$00BD
          ldb   #$04
          leau  >BANNER,pcr
 M0BFC jsr   >$0F1B,y
          jsr   >$1CA4,y
          inc   <$00BD     Add 1 to line
          inc   <$00BD     Add 1 to line
-         decb  
+         decb
          bne   M0BFC
          jsr   >$0F1B,y
          ldd   <$00C1
@@ -255,8 +439,16 @@ M0C62 fcb $10,$AE,$8D,$F9,$0E,$AD,$A9,$1C,$A4,$C6,$04,$D7,'%,$AD
       fcb '0,$01,'4,$10,$9E,$1A,'m,$89,$00,$FB,'5,$10,'&,$0D,'0,$1E
       fcb $0F,$1D,$10,$AE,$8D,$F8,$9E,$AD,$A9,'<,$AA,$12,$1F,$10,$DD,$1E
       fcb $93,$17,'D,'V,$D3,$17,$DD,'#,$EE,$8D,$F8,$89,'n,$C9,'P,$BA
-      fcb $03,$81,$03,$AC,$03,$82,$03,$AD,$03,$83,$03,$AE,$03,$84,$03,$AF
-M0D00 fcb $03,$AA,$03,$AA,$03,$A7,$03,$A7,$03,$80,$03,$80,$03,$80,$03,$80
+
+      fdb $0381
+      fcb $03,$AC,$03,$82,$03,$AD,$03,$83,$03,$AE,$03,$84,$03,$AF
+M0D00 fcb $03,$AA,$03,$AA,$03,$A7,$03,$A7
+         fdb   $0380
+         fdb   $0380
+         fdb   $0380
+         fdb   $0380
+
+
 MONTHS   fcc   "  January"
          fcc   " February"
          fcc   "    March"
@@ -276,7 +468,8 @@ BANNER   fcc   "          **** DYNACALC ****"
          fcb   0
          fcc   "Copyright (C) 1984 by Scott Schaeferle"
          fcb   0
-         fcc   "    Customized for the ADDS Viewpoint   "
+         fcc   "    Customized for the "
+M0DF6    fcc   "ADDS Viewpoint   "
          fcb   0
       fcc "        (Press any key to continue)"
          fcb   0
@@ -785,12 +978,6 @@ ERROR01  fcc   "Path table full."
 ERROR02  fcc   "Illegal path number."
          fcb   $00
 
-ERROR03 equ *
-ERROR04 equ *
-ERROR05 equ *
-ERROR06 equ *
-ERROR09 equ *
-ERROR11 equ *
 ERRORXX equ *
   fcc "See description."
          fcb   $00
@@ -843,15 +1030,15 @@ ERROR50  fcc   "Unknown error code."
 * Offsets to error codes
 ERRTBL   fdb   ERROR01-ERRMSGS
          fdb   ERROR02-ERRMSGS
-         fdb   ERROR03-ERRMSGS
-         fdb   ERROR04-ERRMSGS
-         fdb   ERROR05-ERRMSGS
-         fdb   ERROR06-ERRMSGS
+         fdb   ERRORXX-ERRMSGS
+         fdb   ERRORXX-ERRMSGS
+         fdb   ERRORXX-ERRMSGS
+         fdb   ERRORXX-ERRMSGS
          fdb   ERROR07-ERRMSGS
          fdb   ERROR08-ERRMSGS
-         fdb   ERROR09-ERRMSGS
+         fdb   ERRORXX-ERRMSGS
          fdb   ERROR10-ERRMSGS
-         fdb   ERROR11-ERRMSGS
+         fdb   ERRORXX-ERRMSGS
          fdb   ERROR12-ERRMSGS
          fdb   ERRORXX-ERRMSGS
          fdb   ERRORXX-ERRMSGS
@@ -900,21 +1087,21 @@ ERRTBL   fdb   ERROR01-ERRMSGS
 HELPTBL  fdb   $0000
          fdb   H.ATTRS-HELPS
          fdb   H.ARIT-HELPS
-      fcb $08,$FE
- fcb $05,'J
- fcb $0A,'(
- fcb $09,'l
- fcb $07,$D4
- fcb $0E,$DF
- fcb $07,'q
- fcb $0D,'h
- fcb $05,$00
- fcb $06,$F4
- fcb $0B,$B2
- fcb $10,$A1
+         fdb   H.SAVE-HELPS
+         fdb   H.CFMT-HELPS
+         fdb   H.WINDOW-HELPS
+         fdb   H.TITLE-HELPS
+         fdb   H.SYSTM-HELPS
+         fdb   H.WIDTH-HELPS
+         fdb   H.QUIT-HELPS
+         fdb   H.PRINT-HELPS
+         fdb   H.DEL-HELPS
+         fdb   H.INS-HELPS
+         fdb   H.WFMT-HELPS
+         fdb   H.TRIG-HELPS
          fdb   H.ERRMSG-HELPS
          fdb   H.MOVE-HELPS
          fdb   H.ORDER-HELPS
 ENDHELP equ *
  fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-      fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+ fcb $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
