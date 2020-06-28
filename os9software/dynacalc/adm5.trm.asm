@@ -29,8 +29,8 @@ CTRL equ $40
  fcb   $1B,$47,$FF,$FF,$FF,$FF,$FF,$FF    Hilite off (7 bytes)
  fcb   $08,$20,$08,$FF,$FF,$FF  Destructive backspace (5 bytes)
  fcb   $08,$FF,$FF,$FF   non-destructive backspace (3 bytes)
- fcc   "                "  Terminal name (16 chars)
- fcb   $00
+ fcc   "ADM-5           "  Terminal name (16 chars)
+ fcb   $04
  fcb   $00
  fcb   $00
  fcb   $00
