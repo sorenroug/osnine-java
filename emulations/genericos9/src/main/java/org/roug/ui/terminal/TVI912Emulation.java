@@ -56,15 +56,12 @@ public class TVI912Emulation extends EmulationCore {
             break;
         case KeyEvent.VK_DOWN:
             dataReceived((char) 0x0A);
-            dataReceived('B');
             break;
         case KeyEvent.VK_UP:
             dataReceived((char) 0x0B);
-            dataReceived('A');
             break;
         case KeyEvent.VK_RIGHT:
-            dataReceived((char) 0x0C);
-            dataReceived('C');
+            dataReceived((char) 0x0C); // Ctrl-L
             break;
         case KeyEvent.VK_HOME:
             dataReceived((char) 0x1E);
