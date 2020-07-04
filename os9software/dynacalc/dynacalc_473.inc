@@ -1477,7 +1477,7 @@ L0A20    ldu   <u006E
          clr   <u0092
          bsr   L0A82
          ldu   <MEMPTR  beginning of data
-         leau  >M03B8,u
+         leau  >M03B8,u  "Ready"
          lbsr  L1AB9  output string pointed to in U
 L0A40    tst   <u00C8
          beq   L0A47

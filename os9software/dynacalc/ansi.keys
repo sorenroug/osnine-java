@@ -1,8 +1,14 @@
+*
+* Terminal characteristics for an 80-column ANSI compatible terminal
+* For T/F values, $00 if False, $FF if True
+* Sequences must always end with $FF
+*
 M0088    fcb   $FF,$FF,$FF,$FF    Cursor on
 M008C    fcb   $FF,$FF,$FF,$FF    Cursor off
-M0090    fcb   $1B,'[,'m,$FF,$FF,$00,$00,$00   Terminal setup
-         fcb   $00,$00,$00,$00,$00,$00,$00,$00
-M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00   Terminal kiss-off
+* Terminal setup (15 bytes)
+M0090    fcb   $1B,'[,'m,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+* Terminal kiss-off (7 bytes)
+M00A0    fcb   $FF,$FF,$00,$00,$00,$00,$00,$00
 M00A8    fcb   $FF,$FF,$00,$00    Cursor right
          fcb   $FF,$FF,$00,$00    Cursor ??
 CURSPOS  fcb   $FF,$FF,$FF,$FF,$FF,$00,$00,$00    Cyrsor XY
@@ -13,8 +19,8 @@ REVOFF   fcb   $1B,'[,'0,'m    Reverse off
 M00D0    fcb   $FF,$00,$00,$00
 M00D4    fcb   $08,$20,$08,$FF,$00,$00  Destructive backspace
 M00DA    fcb   $08,$FF,$00,$00   non-destructive backspace
-M00DE    fcc   "                "  Terminal name (16 chars)
-M00EE    fcb   $00
+M00DE    fcc   "ANSI            "  Terminal name (16 chars)
+M00EE    fcb   $04
          fcb   $00
 M00F0    fcb   $00
          fcb   $00

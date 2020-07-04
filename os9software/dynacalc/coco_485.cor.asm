@@ -3,7 +3,7 @@
 *
  ifp1
  use defsfile
-DYNAVERS equ 485
+DYNAVERS equ $485
  endc
  opt m
  org 0

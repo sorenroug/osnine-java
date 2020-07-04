@@ -1,5 +1,5 @@
-         fcb   $59,$A6,$59,$00,$00,$00,$00,$00,$87,$41,$0D,$09,$40,$01,$04,$09
-* copy right starts at $10
+         fdb   $59A6,$5900,$0000,$0000,$8741,$0D09,$4001,$0409
+* copyright starts at $10
          fcc   "DYNACALC, Version 4.7:3              "
          fcc   "Copyright (C) 1982,1983 by Scott Schaeferle."
          fcb   $00

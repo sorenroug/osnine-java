@@ -53,8 +53,8 @@ u025E    rmb   366
 u03CC    rmb   1024
 u07CC    rmb   11386
 size     equ   .
-name     equ   *
-         fcs   /INSTALL/
+
+NAME     fcs   /INSTALL/
          fcc   "     Install- a utility for DYNACALC  "
          fcb   $0D
          fcb   $0A
@@ -175,6 +175,7 @@ LOADTRM  ldx   <u0028
          bcc   L0191
 L018A    leax  >L07CA,pcr  Error loading dynacalc.cor
          lbra  ERREXIT
+
 L0191    ldu   <u0028
          leax  >$88+TRMBASE,u
          lda   <u0026
@@ -231,8 +232,12 @@ QTERM equ *
 * Ask for terminal here
 *
  ifeq ASKTERM
-         lbsr Q.TNAME
-         leax  >H.TERM,pcr   Terminal characteristics heading
+* Only ask if not loaded from TRM file.
+*        tst   <u0003
+*        bne QCHARS
+*        lbsr Q.TNAME
+
+QCHARS   leax  >H.TERM,pcr   Terminal characteristics heading
          lbsr  OUT.SECT
          bcs   QHELPS
 * First ask for ANSI
@@ -706,7 +711,7 @@ Q.YESNO2    lda   #'?
          lbsr  L0682
          cmpa  #$11   Ctrl-Q
          lbne  L05D5
-         leax  >L080E,pcr  Unconditional quit
+         leax  >E.QUIT,pcr  Unconditional quit
          clrb
          lbra  ERREXIT
 L05D5    anda  #$5F
@@ -949,7 +954,7 @@ L07E7    fcc   "Fatal error"
          fcb   C$EOT
 L07F3    fcc   "Error writing Dynacalc.trm"
          fcb   C$EOT
-L080E    fcc   "Unconditional quit"
+E.QUIT   fcc   "Unconditional quit"
          fcb   C$EOT
 L0821    fcc   "- Installation aborted !!"
          fcb   $07
@@ -961,9 +966,55 @@ L083D    fcc   "Output file (Dynacalc.trm) already exists in"
          fcb   C$EOT
 L088A    fcc   "Installation complete."
          fcb   C$EOT
+
 L08A1    fcc   "DYNACALC Customization program, Version 4.7:3"
          fcb   $0D
          fcb   C$EOT
+
+* FLEX instructions:
+* INSTRUCTIONS-
+* THIS PROGRAM WILL PROMPT YOU FOR VARIOUS ATTRIBUTES OF YOUR TERMINAL AND
+* PRINTER. YOU MAY RESPOND BY PRESSING THE APPROPRIATE KEY, ENTERING THE HEX
+* VALUE (IE, $20), OR AN AMPERSAND (&) FOLLOWED BY A LETTER OR SYMBOL WHICH
+* WILL BE CONVERTED TO ITS CONTROL EQUIVALENT. TO ENTER A "$" OR "&" AS A
+* CHARACTER, SIMPLY TYPE THEM TWICE AND THE FIRST ONE WILL BE "SWALLOWED"
+* EACH FUNCTION AND ITS CURRENT SETTING (IF IT HAS ONE) WILL BE DISPLAYED.
+* YOU THEN HAVE THE OPTION OF CHANGING IT, OR GOING TO THE NEXT ONE BY
+* HITTING THE SPACE BAR. THIS IMPLIES THAT IF A SPACE IS MEANT TO BE
+* ENTERED, ONE MUST ENTER EITHER "$20" OR "& (SPACE)". IF YOU ARE INPUTTING
+* NUMBER STRINGS, YOU CAN USE THE "BACKSPACE CHARACTER" (SEE FLEX'S "TTYSET")
+* TO BACK UP TO THE PREVIOUS VALUE. THIS ALSO IMPLIES THAT TO ENTER THE BACK-
+* SPACE CHARACTER YOU MUST TYPE "$08" OR "&H" (IF B.S. IS SET TO THAT).
+* PRESSING A CARRIAGE RETURN WILL MOVE YOU TO THE NEXT CATEGORY.
+* A CARRIAGE RETURN IN RESPONSE TO A YES/NO QUESTION WILL BE TAKEN AS NO.
+*
+* DON'T WORRY IF YOU MAKE A MISTAKE ENTERING ANYTHING, AS YOU WILL BE
+* GIVEN ANOTHER CHANCE BEFORE ANY DISK WRITING IS DONE. HAVE FUN !!!
+
+* If terminal questions are not activated then we know this is the 51 columns
+ ifeq ASKTERM
+L.INSTR fcc "INSTRUCTIONS-"
+ fcc   "INSTALL.DC is a program for changing some of the characteristics of DYNACALC."
+ fcb   $0D
+ fcc   "To use it, you must have the file DYNACALC.COR in your execution directory,"
+ fcb   $0D
+ fcc   "and you must delete your old DYNACALC.TRM, eg:"
+ fcb   $0D
+ fcc   "   OS9: del /d0/cmds/dynacalc.trm"
+ fcb   $0D
+ fcc   "INSTALL will prompt you for various attributes of your terminal and printer."
+ fcb   $0D
+ fcc   "Pressing ENTER will retain the existing setting and move to the next category."
+ fcb   $0D
+ fcc   "Pressing ENTER in response to a YES/NO question will be taken as NO."
+ fcb   $0D
+ fcb   $0A
+ fcc   "Don't worry if you make a mistake entering anything. You will be given another"
+ fcb   $0D
+ fcc   "chance before INSTALL changes DYNACALC on the disk."
+ fcb   $0D
+ fcb   C$EOT
+ else
 L.INSTR    fcc   "INSTRUCTIONS-"
          fcb   $0D
          fcc   "INSTALL.DC is a program for changing some of"
@@ -996,6 +1047,7 @@ L.INSTR    fcc   "INSTRUCTIONS-"
          fcc   "before INSTALL changes DYNACALC on the disk."
          fcb   $0D
          fcb   C$EOT
+ endc
 
 * Unused
 L0B29    fcc   "Now set-up for :"
@@ -1018,16 +1070,21 @@ L0BEC    fcb   $0D
          fcc   "Enter your printer device pathname (Limit 60 char.):"
          fcb   $0D
          fcb   C$EOT
+
+* Unused
 L0C23    fcc   "Do you wish to change any screen/keyboard values"
          fcb   C$EOT
 
+* Unused
 L0C54    fcc   "Terminal name"
          fcb   C$EOT
+
 L0C62    fcb   $0D
          fcc   "Enter your terminal's name (Up to 16 characters):"
          fcb   $0D
          fcb   C$EOT
 
+* Unused
 L0C96    fcc   "Special keys"
          fcb   C$EOT
 

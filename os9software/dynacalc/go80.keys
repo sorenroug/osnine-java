@@ -17,8 +17,8 @@ REVON    fcb   $1B,$46,$FF,$FF,$FF,$FF,$FF,$FF    Hilite on (7 bytes)
 REVOFF   fcb   $1B,$47,$FF,$FF,$FF,$FF,$FF,$FF    Hilite off (7 bytes)
 M00D4    fcb   $08,$20,$08,$FF,$FF,$FF  Destructive backspace (5 bytes)
 M00DA    fcb   $08,$FF,$FF,$FF   non-destructive backspace (3 bytes)
-M00DE    fcc   "                "  Terminal name (16 chars)
-M00EE    fcb   $00
+M00DE    fcc   "DragonPlus Board"  Terminal name (16 chars)
+M00EE    fcb   $04
          fcb   $00
 M00F0    fcb   $00
          fcb   $00

@@ -6,5 +6,9 @@ LGENUK rmb 1
 
 LANG set LGENUS
 
+org 1
+STANDARD rmb 1
+CUSTOM rmb 1
+
  use /d0/DEFS/os9defs
  use /d0/DEFS/scfdefs

@@ -400,12 +400,7 @@ M03A4    fcb   $58
          fcb   $2F /
          fcb   $FF
          fcb   $FF   M03B0
-         fcb   $20
-         fcb   $20
-         fcb   $28 (
-         fcb   $58 X
-         fcb   $29 )
-         fcb   $20
+         fcc   "  (X) "
          fcb   $00
 M03B8    fcc   "Ready"
          fcb   $00
@@ -1364,6 +1359,18 @@ M0BAD    lda   #$90
          lda   #$FF
          sta   <$00F0
          jsr   >L0D36-PGBEGIN,y
+
+ ifeq ISSUE-STANDARD
+* Copy terminal name to banner
+         lda   #$0F
+         leau  >M00DE,pcr
+         leax  >TRMBANNR,pcr
+M0BE6    ldb   a,u
+         stb   a,x
+         deca
+         bpl   M0BE6
+ endc
+
 M0BC0    ldd   <$000D    See M10D in trmfile
          subd  #$0A26    Line 10 column 38
          lsra              Change to line 5
@@ -1509,3 +1516,31 @@ MONTHS   fcc   "  January"
          fcc   "  October"
          fcc   " November"
          fcc   " December"
+ ifeq ISSUE-STANDARD
+BANNER   fcc   "          **** DYNACALC ****"
+         fcb   0
+         fcc   "        Version Number - 4.7:3"
+         fcb   0
+         fcc   "Copyright (C) 1982 by Scott Schaeferle"
+         fcb   0
+         fcc   "    Customized for the "
+TRMBANNR fcc   "ADDS Viewpoint   "
+         fcb   0
+         fcc   "        (Press any key to continue)"
+         fcb   0
+MLOAD    fcc   "                    Loading "
+         fcb   0
+ else
+BANNER   fcc   "      **** DYNACALC ****"
+         fcb   0
+         fcc   "                              "
+         fcb   0
+         fcc   " "
+         fcb   0
+         fcc   "      for the Dragon 64"
+         fcb   0
+         fcc   " (Press any key to continue)  "
+         fcb   0
+MLOAD    fcc   "      Loading "
+         fcb   0
+ endc
