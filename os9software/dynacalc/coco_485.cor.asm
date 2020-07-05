@@ -46,7 +46,7 @@ M00DE    fcc   "                "  Terminal name (16 chars)
 M00F7    fcb   $04  Log-off key
 M00F8    fcb   $00  Upper case only
          fcb   $00
-         fcb   $01
+M00FA    fcb   $01
 M00FB    fcb   $00  keep helps  T/F
          fcb   $FF  print borders  T/F
          fcb   79  printer page width
@@ -393,7 +393,7 @@ M0575    fcb   $08
          fcb   $D4 T
          fcb   $6A j
          fcb   $B5 5
-         fcb   $20
+M057B    fcb   $20
          fcb   $02
          fcb   $6A j
          fcb   $62 b
@@ -733,7 +733,7 @@ M0A13    nop
 M0A28    lbra  M0A4D
 * Entry point for start routine in dynacalc program
 * X contains the program counter a few instructions before the jump.
-M0A2B    lbra  M0A21
+M0A2B    lbra  M0A44
 
          pshs  x,a
          tfr   pc,x
@@ -744,7 +744,7 @@ M0A2B    lbra  M0A21
          puls  x,a
          bra   L0A97
 
-M0A21    cmpd  #$0485   version number test
+M0A44    cmpd  #$0485   version number test
          beq M0A8D
 M0A4D    lda   #$02
          leax  >M0A5B,pcr
@@ -768,7 +768,6 @@ L0A97         std   >$01C1,u
          leax  >$0280,u
          stx   <$00E9
          ldx   #$0700
-
          stx   <$0044
          clr   <$00ED
          clr   <$00EE
@@ -782,8 +781,6 @@ L0A97         std   >$01C1,u
          leax  >$0331,u
          stx   <$0030
          leax  <$2F,x
-
-
          clra
          clrb    Code 0 - SS.Opt
          os9   I$GetStt
@@ -834,7 +831,7 @@ M0B0F    sta   <$0012
          os9   I$Seek   
          bcs   M0B39
          ldb   #$FF
-M0B33         stb   <$0013
+M0B33    stb   <$0013
          bne   M0B44
          bra   M0B3D
 
@@ -844,448 +841,204 @@ M0B3D    lda   <$0012   data file path number
          clr   <$0012   data file path number
 M0B44    ldx   <$0030
          os9   F$Time
-         fcb   $31 1
-         fcb   $06
-         fcb   $33 3
-         fcb   $8D
-         fcb   $FA z
-         fcb   $2C ,
-         fcb   $C6 F
-         fcb   $04
-         fcb   $A6 &
-         fcb   $3F ?
-         fcb   $88
-         fcb   $5A Z
-         fcb   $49 I
-         fcb   $A8 (
-         fcb   $A2 "
-         fcb   $A7 '
-         fcb   $C2 B
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $F8 x
-         fcb   $31 1
-         fcb   $8D
-         fcb   $FA z
-         fcb   $01
-         fcb   $A6 &
-         fcb   $01
-         fcb   $4A J
-         fcb   $81
-         fcb   $0B
-         fcb   $23 #
-         fcb   $01
-         fcb   $4F O
-         fcb   $C6 F
-         fcb   $09
-         fcb   $3D =
-         fcb   $33 3
-         fcb   $8D
-         fcb   $01
-         fcb   $B1 1
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $C6 F
-         fcb   $09
-         fcb   $A6 &
-         fcb   $C0 @
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $F9 y
-         fcb   $86
-         fcb   $20
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $E6 f
-         fcb   $02
-         fcb   $8D
-         fcb   $14
-         fcb   $CC L
-         fcb   $2C ,
-         fcb   $20
-         fcb   $ED m
-         fcb   $A1 !
-         fcb   $CC L
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $ED m
-         fcb   $A1 !
-         fcb   $9E
-         fcb   $30 0
-         fcb   $E6 f
-         fcb   $84
-         fcb   $8D
-         fcb   $04
-         fcb   $6F o
-         fcb   $A4 $
-         fcb   $20
-         fcb   $1C
-         fcb   $4F O
-         fcb   $CE N
-         fcb   $07
-         fcb   $00
-         fcb   $DF _
-         fcb   $44 D
-         fcb   $EE n
-         fcb   $8D
-         fcb   $F9 y
-         fcb   $D4 T
-         fcb   $AD -
-         fcb   $C9 I
-         fcb   $49 I
-         fcb   $28 (
-         fcb   $CE N
-         fcb   $07
-         fcb   $00
-         fcb   $DF _
-         fcb   $44 D
-         fcb   $DC \
-         fcb   $1A
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $EC l
-         fcb   $43 C
-         fcb   $ED m
-         fcb   $A1 !
-         fcb   $39 9
-         fcb   $10
-         fcb   $AE .
-         fcb   $8D
-         fcb   $F9 y
-         fcb   $BD =
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $10
-         fcb   $96
-         fcb   $E6 f
-         fcb   $01
-         fcb   $26 &
-         fcb   $04
-         fcb   $E6 f
-         fcb   $8D
-         fcb   $F5 u
-         fcb   $34 4
-         fcb   $E7 g
-         fcb   $8D
-         fcb   $F5 u
-         fcb   $32 2
-         fcb   $6F o
-         fcb   $0C
-         fcb   $6F o
-         fcb   $0F
-         fcb   $6F o
-         fcb   $88
-         fcb   $10
-         fcb   $6F o
-         fcb   $88
-         fcb   $11
-         fcb   $6F o
-         fcb   $88
-         fcb   $16
-         fcb   $6F o
-         fcb   $04
-         fcb   $6F o
-         fcb   $07
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $10
-         fcb   $A1 !
-         fcb   $CE N
-         fcb   $01
-         fcb   $F1 q
-         fcb   $DF _
-         fcb   $EB k
-         fcb   $0F
-         fcb   $E0 `
-         fcb   $0F
-         fcb   $E8 h
-         fcb   $0F
-         fcb   $C4 D
-         fcb   $6D m
-         fcb   $8D
-         fcb   $F5 u
-         fcb   $0B
-         fcb   $26 &
-         fcb   $06
-         fcb   $86
-         fcb   $04
-         fcb   $A7 '
-         fcb   $8D
-         fcb   $F5 u
-         fcb   $03
-         fcb   $86
-         fcb   $90
-         fcb   $10
-         fcb   $AE .
-         fcb   $8D
-         fcb   $F9 y
-         fcb   $7A z
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $10
-         fcb   $48 H
-         fcb   $86
-         fcb   $FF
-         fcb   $97
-         fcb   $F0 p
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0F
-         fcb   $C6 F
-         fcb   $33 3
-         fcb   $8D
-         fcb   $01
-         fcb   $82
-         fcb   $DC \
-         fcb   $0D
-         fcb   $83
-         fcb   $10
-         fcb   $1F
-         fcb   $44 D
-         fcb   $54 T
-         fcb   $34 4
-         fcb   $06
-         fcb   $EC l
-         fcb   $C1 A
-         fcb   $27 '
-         fcb   $0E
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $1F
-         fcb   $01
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0F
-         fcb   $DF _
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1C
-         fcb   $94
-         fcb   $20
-         fcb   $EE n
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $DC \
-         fcb   $C1 A
-         fcb   $10
-         fcb   $83
-         fcb   $00
-         fcb   $01
-         fcb   $23 #
-         fcb   $47 G
-         fcb   $10
-         fcb   $9E
-         fcb   $41 A
-         fcb   $A6 &
-         fcb   $A4 $
-         fcb   $81
-         fcb   $2D -
-         fcb   $27 '
-         fcb   $2E .
-         fcb   $C6 F
-         fcb   $11
-         fcb   $9E
-         fcb   $E9 i
-         fcb   $A6 &
-         fcb   $A0
-         fcb   $81
-         fcb   $20
-         fcb   $27 '
-         fcb   $1C
-         fcb   $81
-         fcb   $0D
-         fcb   $27 '
-         fcb   $09
-         fcb   $5C \
-         fcb   $D7 W
-         fcb   $ED m
-         fcb   $A7 '
-         fcb   $85
-         fcb   $C1 A
-         fcb   $2F /
-         fcb   $26 &
-         fcb   $ED m
-         fcb   $0D
-         fcb   $ED m
-         fcb   $27 '
-         fcb   $23 #
-         fcb   $33 3
-         fcb   $8D
-         fcb   $01
-         fcb   $BC <
-         fcb   $10
-         fcb   $AE .
-         fcb   $8D
-         fcb   $F9 y
-         fcb   $18
-         fcb   $20
-         fcb   $32 2
-         fcb   $A6 &
-         fcb   $A0
-         fcb   $81
-         fcb   $20
-         fcb   $27 '
-         fcb   $FA z
-         fcb   $31 1
-         fcb   $3F ?
-         fcb   $E6 f
-         fcb   $21 !
-         fcb   $C4 D
-         fcb   $5F _
-         fcb   $10
-         fcb   $83
-         fcb   $2D -
-         fcb   $48 H
-         fcb   $26 &
-         fcb   $DF _
-         fcb   $A7 '
-         fcb   $8D
-         fcb   $F4 t
-         fcb   $86
-         fcb   $20
-         fcb   $D9 Y
-         fcb   $10
-         fcb   $AE .
-         fcb   $8D
-         fcb   $F8 x
-         fcb   $F9 y
-         fcb   $C6 F
-         fcb   $04
-         fcb   $D7 W
-         fcb   $25 %
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1C
-         fcb   $A0
-         fcb   $26 &
-         fcb   $04
-         fcb   $0A
-         fcb   $25 %
-         fcb   $26 &
-         fcb   $F6 v
-         fcb   $0D
-         fcb   $43 C
-         fcb   $27 '
-         fcb   $03
-         fcb   $17
-         fcb   $25 %
-         fcb   $6F o
-         fcb   $C6 F
-         fcb   $08
-         fcb   $30 0
-         fcb   $8D
-         fcb   $F4 t
-         fcb   $69 i
-         fcb   $33 3
-         fcb   $8D
-         fcb   $00
-         fcb   $66 f
-         fcb   $10
-         fcb   $9E
-         fcb   $1A
-         fcb   $A6 &
-         fcb   $80
-         fcb   $34 4
-         fcb   $16
-         fcb   $EC l
-         fcb   $C1 A
-         fcb   $30 0
-         fcb   $AB +
-         fcb   $A6 &
-         fcb   $E4 d
-         fcb   $A7 '
-         fcb   $84
-         fcb   $EC l
-         fcb   $C1 A
-         fcb   $30 0
-         fcb   $AB +
-         fcb   $35 5
-         fcb   $02
-         fcb   $A7 '
-         fcb   $84
-         fcb   $35 5
-         fcb   $14
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $E7 g
-         fcb   $AE .
-         fcb   $8D
-         fcb   $F8 x
-         fcb   $BA :
-         fcb   $31 1
-         fcb   $A9 )
-         fcb   $0F
-         fcb   $00
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $97
-         fcb   $1D
-         fcb   $0F
-         fcb   $7D ý
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $06
-         fcb   $7D ý
-         fcb   $DD ]
-         fcb   $6C l
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $33 3
-         fcb   $AB +
-         fcb   $9E
-         fcb   $41 A
-         fcb   $30 0
-         fcb   $01
-         fcb   $34 4
-         fcb   $10
-         fcb   $9E
-         fcb   $1A
-         fcb   $6D m
-         fcb   $89
-         fcb   $00
-         fcb   $FB
-         fcb   $35 5
-         fcb   $10
-         fcb   $26 &
-         fcb   $0D
-         fcb   $30 0
-         fcb   $1E
-         fcb   $0F
-         fcb   $1D
-         fcb   $10
-         fcb   $AE .
-         fcb   $8D
-         fcb   $F8 x
-         fcb   $8D
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $3C <
-         fcb   $6A j
-         fcb   $12
-         fcb   $1F
-         fcb   $10
-         fcb   $DD ]
-         fcb   $1E
-         fcb   $93
-         fcb   $17
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $D3 S
-         fcb   $17
-         fcb   $DD ]
-         fcb   $23 #
-         fcb   $EE n
-         fcb   $8D
-         fcb   $F8 x
-         fcb   $78 x
-         fcb   $6E n
-         fcb   $C9 I
-         fcb   $50 P
-         fcb   $B2 2
 
-         fdb   $0381  Up-arrow
+* Seed the random number generator
+         leay  $06,x
+         leau  >M057B,pcr
+         ldb   #$04
+         lda   -$01,y
+         eora  #$5A
+M0B55    rola  
+         eora  ,-y
+         sta   ,-u
+         decb  
+         bne   M0B55
+         leay  >M0562,pcr
+         lda   $01,x
+         deca  
+         cmpa  #$0B
+         bls   M0B69
+         clra  
+
+M0B69    ldb   #$09
+         mul   
+         leau  >MONTHS,pcr
+         leau  d,u
+         ldb   #$09
+M0B74    lda   ,u+
+         sta   ,y+
+         decb  
+         bne   M0B74
+         lda   #$20
+         sta   ,y+
+         ldb   $02,x
+         bsr   M0B97
+         ldd   #$2C20
+         std   ,y++
+         ldd   #$3139
+
+         std   ,y++
+         ldx   <$0030
+         ldb   ,x
+         bsr   M0B97
+         clr   ,y
+         bra   M0BB3
+M0B97    clra  
+         ldu   #$0700
+         stu   <$0044
+         ldu   >M0575,pcr
+         jsr   >$4928,u
+         ldu   #$0700
+         stu   <$0044
+
+         ldd   <$001A
+         leau  d,u
+         ldd   $03,u
+         std   ,y++
+         rts   
+M0BB3    ldy   >M0575,pcr
+         jsr   >$1096,y
+         ldb   $01,x
+         bne   M0BC4
+         ldb   >M00F8,pcr
+M0BC4    stb   >M00FA,pcr
+         clr   $0C,x
+
+         clr   $0F,x
+         clr   <$10,x
+         clr   <$11,x
+         clr   <$16,x
+         clr   $04,x
+         clr   $07,x
+         jsr   >$10A1,y
+         ldu   #$01F1
+         stu   <$00EB
+         clr   <$00E0
+         clr   <$00E8
+         clr   <$00C4
+         tst   >M00F7,pcr
+         bne   M0BF4
+         lda   #$04
+         sta   >M00F7,pcr
+M0BF4    lda   #$90
+         ldy   >M0575,pcr
+         jsr   >$1048,y
+         lda   #$FF
+         sta   <$00F0
+         jsr   >$0FC6,y
+         leau  >BANNER,pcr
+         ldd   <$000D
+         subd  #$101F
+         lsra  
+         lsrb  
+         pshs  b,a
+M0C14    ldd   ,u++
+         beq   M0C26
+         addd  ,s
+         tfr   d,x
+         jsr   >$0FDF,y
+         jsr   >$1C94,y
+         bra   M0C14
+
+M0C26    leas  $02,s
+         ldd   <$00C1
+         cmpd  #$0001
+         bls   M0C77
+         ldy   <$0041
+         lda   ,y
+         cmpa  #$2D    minus
+         beq   M0C67
+         ldb   #$11
+         ldx   <$00E9
+M0C3D    lda   ,y+
+         cmpa  #$20
+         beq   M0C5F
+         cmpa  #$0D
+         beq   M0C50
+         incb  
+         stb   <$00ED
+         sta   b,x
+         cmpb  #$2F
+         bne   M0C3D
+M0C50    tst   <$00ED
+         beq   M0C77
+         leau  >M0E14,pcr
+         ldy   >M0575,pcr
+         bra   M0C91
+
+M0C5F    lda   ,y+
+         cmpa  #$20
+         beq   M0C5F
+         leay  -$01,y
+M0C67    ldb   $01,y
+         andb  #$5F
+         cmpd  #$2D48  -H  deletes builtin help messages
+         bne   M0C50
+         sta   >M00FB,pcr
+         bra   M0C50
+
+M0C77    ldy   >M0575,pcr
+         ldb   #$04
+         stb   <$0025
+M0C80    jsr   >$1CA0,y
+         bne   M0C8A
+         dec   <$0025
+         bne   M0C80
+M0C8A    tst   <$0043
+         beq   M0C91
+         lbsr  $3200
+M0C91    ldb   #$08
+         leax  >M0100,pcr
+         leau  >M0D01,pcr
+         ldy   <$001A
+M0C9E    lda   ,x+
+         pshs  x,b,a
+         ldd   ,u++
+         leax  d,y
+         lda   ,s
+         sta   ,x
+         ldd   ,u++
+         leax  d,y
+         puls  a
+         sta   ,x
+         puls  x,b
+         decb  
+         bne   M0C9E
+         ldx   >M0575,pcr
+         leay  >$0F00,y
+         ldd   $06,y
+         sta   <$001D
+         clr   <$007D
+         lsra  
+         rorb  
+         ror   <$007D
+         std   <$006C
+         ldd   $06,y
+         leau  d,y
+         ldx   <$0041
+         leax  $01,x
+         pshs  x
+         ldx   <$001A
+         tst   >$00FB,x
+         puls  x
+         bne   M0CEC
+         leax  -$02,x
+         clr   <$001D  Clear helps flag
+         ldy   >M0575,pcr
+         jsr   >$3C6A,y
+M0CEC    nop   
+         tfr   x,d
+         std   <$001E
+         subd  <$0017
+         lsra  
+         rorb  
+         addd  <$0017
+         std   <$0023
+         ldu   >M0575,pcr
+         jmp   >$50B2,u
+
+
+M0D01    fdb   $0381  Up-arrow
          fcb   $03
          fcb   $AC ,
          fcb   $03
@@ -1352,7 +1105,7 @@ BANNER   fcb   $03
          fcb   $00
          fcb   $00
          fcb   $00
-         fcb   $00
+M0E14    fcb   $00
          fcb   $00
          fcb   $00
          fcb   $00
@@ -1383,38 +1136,22 @@ M0F00    lbra  M0F79
          lbra  M0F0D
          fdb   ENDHELP-M0F00   $1E4D
          fdb   ENDHELP-M0F00+$6100      $6100+$1e4d
-         fcb   $16
-         fcb   $01
-         fcb   $41 A
+         lbra  M104E
 
-M0F0D    ldu   <$1A
-         fcb   $10
-         fcb   $AE .
-         fcb   $C9 I
-         fcb   $05
-         fcb   $75 u
-         fcb   $33 3
-         fcb   $8D
-         fcb   $00
-         fcb   $44 D
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1C
-         fcb   $94
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $0A
-         fcb   $CF O
-         fcb   $81
-         fcb   $59 Y
-         fcb   $27 '
-         fcb   $04
-         fcb   $6E n
-         fcb   $A9 )
-         fcb   $1C
-         fcb   $79 y
-         fcb   $DE ^
-         fcb   $1E
+M0F0D    ldu   <$001A
+         ldy   >$0575,u
+         leau  >M0F5C,pcr
+         jsr   >$1C94,y
+         jsr   >$0ACF,y
+         cmpa  #$59
+         beq   M0F28
+         jmp   >$1C79,y
+
+* Delete helps
+M0F28    ldu   <$001E
+
+
+
          fcb   $9E
          fcb   $41 A
          fcb   $30 0
@@ -1682,49 +1419,25 @@ M0F79    fcb   $34 4
          fcb   $A9 )
          fcb   $0A
          fcb   $FC
-         fcb   $DE ^
-         fcb   $1A
-         fcb   $10
-         fcb   $AE .
-         fcb   $C9 I
-         fcb   $05
-         fcb   $75 u
-         fcb   $CC L
-         fcb   $2C ,
-         fcb   $20
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $1C
-         fcb   $7C ü
-         fcb   $D6 V
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $8D
-         fcb   $1C
-         fcb   $59 Y
-         fcb   $C0 @
-         fcb   $C8 H
-         fcb   $C1 A
-         fcb   $35 5
-         fcb   $23 #
-         fcb   $02
-         fcb   $C6 F
-         fcb   $36 6
-         fcb   $58 X
-         fcb   $3A :
-         fcb   $EC l
-         fcb   $84
-         fcb   $33 3
-         fcb   $8D
-         fcb   $19
-         fcb   $12
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $AD -
-         fcb   $A9 )
-         fcb   $41 A
-         fcb   $32 2
-         rts
+
+M104E    ldu   <$001A
+         ldy   >$0575,u
+         ldd   #$2C20
+         jsr   >$1C7C,y
+         ldb   <$0025
+         leax  >ERRTBL,pcr
+         subb  #$C8
+         cmpb  #$35
+         bls   M106A
+         ldb   #$36
+M106A    lslb  
+         abx   
+         ldd   ,x
+         leau  >ERRMSGS,pcr
+         leau  d,u
+         jsr   >$4132,y
+         rts   
+
 
  use help32.inc
 Target set $3200

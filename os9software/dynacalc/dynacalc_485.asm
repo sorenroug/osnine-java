@@ -3599,10 +3599,13 @@ L1C5D    fcc   "ERROR"
 
 L1C6D    lbra  L1C78
 L1C70    lbra  L1C73
+
 L1C73    lda   #$0B
          lbra  L1081
+
 L1C78    lda   #$04
          lbra  L107C
+
          neg   <u0000
          neg   <u0000
          neg   <u0000
@@ -3621,7 +3624,7 @@ L1C9A    lbra  L1E3F
          lbra  L2212
 L1CA3    lbra  L21E2
 L1CA6    lbra  L278E
-L1CA9    lbra  L2450
+L1CA9    lbra  L2450  output string pointed to in U
 L1CAC    lbra  L1F71
          lbra  L2570
 L1CB2    lbra  L2A16
@@ -4281,7 +4284,7 @@ L227B    tst   <u001D
          jsr   [,s++]
          bra   L224A
 L2287    leau  >L2296,pcr   String 'helps not available'
-         lbsr  L2450
+         lbsr  L2450  output string pointed to in U
          lbsr  L2355
          lbsr  L0B05
          bra   L224A
@@ -4431,9 +4434,9 @@ L23D6    leau  >L23F5,pcr
          bra   L23E5
 
 L23DC    lbsr  L22B5
-         bsr   L2450
+         bsr   L2450  output string pointed to in U
          leau  >L23F2,pcr
-L23E5    bsr   L2450
+L23E5    bsr   L2450  output string pointed to in U
          lbsr  L20E5
          sta   <u009A
          lbsr  L0AE4
@@ -4463,7 +4466,7 @@ L240F    decb
          lbsr  L1F53
 L2420    lbsr  L21E2
          leau  >L2BC3,pcr
-         bsr   L2450
+         bsr   L2450  output string pointed to in U
          leau  >L2BCB,pcr
          ldx   <u007E
          ldb   ,x
@@ -4475,7 +4478,7 @@ L2420    lbsr  L21E2
          stb   <u008B
          clr   <u009A
          leau  >L2BD1,pcr
-L2443    bsr   L2450
+L2443    bsr   L2450  output string pointed to in U
          lbsr  L22B2
          clr   <u00CD
          lbra  L0AC6
