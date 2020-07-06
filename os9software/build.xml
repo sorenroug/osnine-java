@@ -137,6 +137,7 @@
         <assemble src="DDisk_ed2" home="dragon64" verify="65f9fcc1627581c6a9247454ec9bd23d"/>
         <assemble src="DDisk_desc" home="dragon64" verify="db6f08610c19d1716bc6afc946d14c17"/>
         <assemble src="TMode" home="dragon64" verify="2c260e14617b8b191b995b0538157f81"/>
+        <assemble src="Boot" home="dragon64" verify="cecec3da6e7b6681a0f8397c4c1cc2df"/>
     </target>
 
     <!-- CMS 9609 -->
@@ -204,10 +205,8 @@
         <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
         <assemble src="coco_485.cor" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
         <assemble src="dragon64_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
-        <assemble src="go80.trm" home="dynacalc" verify="030ee069f87e960399010f8e9bbe97df"/>
-        <!--
-        <assemble src="ansi_473.cor" home="dynacalc" verify="02016e1718d3a188e20fb19dab1d2d79"/>
-        -->
+        <assemble src="ansi_473.cor" home="dynacalc" verify="5874eeb0766df190b3946575c42228a7"/>
+        <assemble src="go80.trm" home="dynacalc" verify="0bc8c7638d215ab6730bb1c93a96eaa2"/>
     </target>
 
     <!-- Stylograph -->
