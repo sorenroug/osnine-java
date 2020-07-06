@@ -6,7 +6,15 @@ The purpose of this project is to create an 6809 emulator that can
 be configured at runtime with a range of memory mapped devices.
 You can allocate RAM, load data into the memory and set up devices.
 
-Devices:
+## Emulators
+
+The most interesting is the _genericos9_. It is a graphics application
+that runs OS-9 Level 1 in multi-user mode with two terminals, two disk
+drives and a printer. The other called _mo5_ emulates a Thomson MO-5
+with a cassette tape device.
+
+## Devices
+
 * Acia6551 emulates a Roswell 6551 UART.
 * Acia6850 emulates a Motorola 6850 UART.
 * Both Acias can be configured with 3 different user interfaces: AciaConsoleUI writes to Java's System.out and reads from System.in.  AciaGraphicalUI uses Java Swing to create a simple terminal and AciaTelnetUI opens a socket on port 2323, which the user can `telnet` to.
