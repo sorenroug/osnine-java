@@ -129,6 +129,9 @@ public class DiskInfo {
         int pointer = 0;
         printNumber("Number of sectors", read_triple(pointer));
         printNumber("Sectors per track", read_byte(pointer + IdentificationSector.DD_TKS));
+        // Round up number of tracks.
+        int trackRounded = read_triple(pointer) + read_byte(pointer + IdentificationSector.DD_TKS) - 1;
+        printNumber("Number of tracks", trackRounded / read_byte(pointer + IdentificationSector.DD_TKS));
         printNumber("Bytes in alloc map", read_word(pointer + IdentificationSector.DD_MAP));
         printNumber("Sectors per cluster", read_word(pointer + IdentificationSector.DD_BIT));
         printNumber("Starting sector", read_triple(pointer + IdentificationSector.DD_DIR));
