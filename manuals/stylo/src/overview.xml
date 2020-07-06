@@ -395,7 +395,7 @@ a <quote>T</quote> for terminal or a <quote>P</quote> for printer,
 and a number specifying the particular equipment.
 The terminal and printer numbers are listed in the system
 configuration section of this manual. A command line for specifying
-a Diablo printer and a SOROQ IQ-130 terminal would look like this:</para>
+a Diablo printer and a SOROC IQ-130 terminal would look like this:</para>
       <screen>
 OS9: stylo letter +T3 +P0
 </screen>
@@ -808,7 +808,7 @@ SAVE buffer available for another SAVE command.</para>
 erasing (removing) a large portion of the text is to use the ZAP,
 <quote>Z</quote> command. To use this function, set a couple of markers at the
 end of the string that you want to delete and move the cursor to
-the beginning bf the string. Hit the <quote>Z</quote> key and a message will
+the beginning of the string. Hit the <quote>Z</quote> key and a message will
 appear similar to this:</para>
       <screen>
 *** DELETE 345 CHARACTERS?
