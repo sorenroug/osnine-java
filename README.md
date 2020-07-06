@@ -8,6 +8,8 @@ You can allocate RAM, load data into the memory and set up devices.
 
 ## Emulators
 
+The original emulator is _v6809_. It uses a Java properties file for
+the configuration. Several examples are provided.
 The most interesting is the _genericos9_. It is a graphics application
 that runs OS-9 Level 1 in multi-user mode with two terminals, two disk
 drives and a printer. The other called _mo5_ emulates a Thomson MO-5

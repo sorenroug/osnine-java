@@ -1,12 +1,5 @@
-# Emulator core
+# Common devices
 
+This directory contains emulations of Motorola 6809 MPU, 6850 ACIA, 6821 PIA and Rockwell 6551.
 
-## Docker image
-
-The docker image build a configuration that makes it possible to have OS9 on a host on the Internet. To build do:
-```
-docker build -t sorenroug/v6809:latest .
-docker push sorenroug/v6809:latest
-```
-It then expects a volume to be mounted at /var/local where it can find its two disks and the configuration file.
-
+Additionally, it contains Swing classes to emulate an ASCII terminal or printer connected to a serial port.
