@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd target
-java -jar ../../../core/target/osnine-core-1.0-SNAPSHOT-jar-with-dependencies.jar $@
+java -jar ../../v6809/target/v6809-1.0-SNAPSHOT-jar-with-dependencies.jar $@

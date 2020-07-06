@@ -50,7 +50,7 @@ kernel:
   environment:
     TZ: Europe/Copenhagen
     JAVA_OPTS: |
-      -Dorg.slf4j.simpleLogger.log.org.roug.osnine.Acia6551=info
+      -Dorg.slf4j.simpleLogger.log.org.roug.usim.Acia6551=info
       -Dorg.slf4j.simpleLogger.showDateTime=true
       -Dorg.slf4j.simpleLogger.showLogName=false
       -Dorg.slf4j.simpleLogger.showShortLogName=true

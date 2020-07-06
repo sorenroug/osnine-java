@@ -1,4 +1,4 @@
 #!/bin/sh
 cd target
 java -Dorg.slf4j.simpleLogger.defaultLogLevel=debug \
-  -jar ../../../core/target/osnine-core-1.0-SNAPSHOT-jar-with-dependencies.jar $@
+  -jar ../../v6809/target/v6809-1.0-SNAPSHOT-jar-with-dependencies.jar @$
