@@ -1500,7 +1500,9 @@ ALLIMG20 leax -1,X
  bne ALLIMG10
  ldx ,s++
  beq ALLIMG60
- leau DAT.ImSz,U
+ ifeq CPUType-DRG128
+ leau 32,U Skip the lowest 32 blocks as it is used for screen
+ endc
 ALLIMG30 lda ,u+
  bne ALLIMG40
  leax -1,X
@@ -1529,7 +1531,9 @@ ALLIMG50 ldb #E$MemFul
  puls PC,U,Y,X,D
 
 ALLIMG60 puls U,Y,X
- leau DAT.ImSz,U
+ ifeq CPUType-DRG128
+ leau 32,U Skip the lowest 32 blocks as it is used for screen
+ endc
 ALLIMG65 ldd ,Y++
  cmpd #DAT.Free
  bne ALLIMG70
