@@ -27,9 +27,10 @@ class DiskImage {
  *  Write READ_BYTE in to OPCODE register. This will place a byte from the
  *  buffer into the valueRegister and increment the bufferRegister.
  *
- * The class can handle 4 individual disk. The disk selection is the upper
+ * The class can handle 4 individual disks. The disk selection is the upper
  * two bits of the opcode value.
  *
+ * BUGS: Can only handle LSNs up to 65536 (16 bits).
  */
 public class VirtualDisk extends MemorySegment {
 
