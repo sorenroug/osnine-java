@@ -78,10 +78,10 @@ public class BusDragonBeta extends BusStraight {
     public void write(int offset, int val) {
         if (offset == TASK_REG) {
             currentTask = val & 0x0F;
-            if (((val & 0x40) == 0x40) && ((val | 0x80) == 0x00)) {
-                bankingLines = 0xF0000;
-            } else {
+            if (((val & 0x80) == 0x80) && ((val & 0x40) == 0x00)) {
                 bankingLines = 0;
+            } else {
+                bankingLines = 0xF0000;
             }
             return;
         } else if (offset >= DAT_REGS && offset < DAT_REGS + 16) {

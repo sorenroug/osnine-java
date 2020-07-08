@@ -9,7 +9,10 @@ import org.junit.Test;
 
 public class BusDragonBetaTest {
 
-   private BusDragonBeta bus;
+    private static final int TASK_REG = 0xFCC0;
+    private static final int DAT_REGS = 0xFE00;
+
+    private BusDragonBeta bus;
 
     @Before
     public void setup() {
@@ -66,9 +69,20 @@ public class BusDragonBetaTest {
         MemorySegment newMemory = new ReadOnlyMemory(0xFC000, 0x1000);
         newMemory.burn(0xFC100, 0xAA);
         bus.addMemorySegment(newMemory);
-        bus.write(0xFCC0, 0xF9); // Set task to 0x09 and turn off mmu
-        bus.write(0xFE03, 0xFC); // Set block 3 in task 9 to 0xFC000
+        bus.write(TASK_REG, 0xF9); // Set task to 0x09 and turn off mmu
+        bus.write(DAT_REGS + 3, 0xFC); // Set block 3 in task 9 to 0xFC000
+        assertEquals(0x00, bus.read(0x3100));
+        bus.write(TASK_REG, 0x89); // Set task to 0x09 and turn on mmu
+        assertEquals(0xAA, bus.read(0x3100));
+        bus.write(TASK_REG, 0x09); // Set task to 0x09 and turn off mmu
+        assertEquals(0x00, bus.read(0x3100));
+
+        bus.write(TASK_REG, 0x79); // Set task to 0x09 and turn off mmu
+        assertEquals(0x00, bus.read(0x3100));
+
+        bus.write(TASK_REG, 0xB9); // Set task to 0x09 and turn on mmu
         assertEquals(0xAA, bus.read(0x3100));
     }
+
 }
 
