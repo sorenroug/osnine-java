@@ -40,6 +40,8 @@ public abstract class EmulationCore extends KeyAdapter {
 
     /**
      * Write a character to the terminal.
+     *
+     * @param c the 7-bit character to write.
      */
     protected void writeChar(int c) {
         LOGGER.debug("Char: {}", c);
@@ -48,6 +50,8 @@ public abstract class EmulationCore extends KeyAdapter {
 
     /**
      * Sends characters to the host.
+     *
+     * @param c the 7-bit character to write.
      */
     protected void dataReceived(char c) {
         term.dataReceived(c);

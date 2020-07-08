@@ -1,7 +1,6 @@
 package org.roug.ui.terminal;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
 //          Class newClass = Class.forName(guiClassStr);
 //          Constructor<Runnable> constructor = newClass.getConstructor(Acia.class);

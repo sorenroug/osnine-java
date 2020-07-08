@@ -84,5 +84,34 @@ public class BusDragonBetaTest {
         assertEquals(0xAA, bus.read(0x3100));
     }
 
+
+    /**
+     * Test that it is possible to write via the MMU
+     */
+    @Test
+    public void mmuWrite() {
+        MemorySegment newMemory = new RandomAccessMemory(0xFE000, 0x1000);
+        newMemory.burn(0xFE100, 0xAA);
+        bus.addMemorySegment(newMemory);
+        bus.write(TASK_REG, 0xF9); // Set task to 0x09 and turn off mmu
+        bus.write(DAT_REGS + 3, 0xFE); // Set block 3 in task 9 to 0xFE000
+        bus.write(0xE100, 0x01);
+        assertEquals(0x00, bus.read(0x3100));
+        assertEquals(0x01, bus.read(0xE100));
+        bus.write(TASK_REG, 0x89); // Set task to 0x09 and turn on mmu
+        assertEquals(0x01, bus.read(0x3100));
+        bus.write(0x3100, 0x11);
+        assertEquals(0x11, bus.read(0x3100));
+        bus.write(TASK_REG, 0x09); // Set task to 0x09 and turn off mmu
+        assertEquals(0x00, bus.read(0x3100));
+        assertEquals(0x11, bus.read(0xE100));
+
+        bus.write(TASK_REG, 0x79); // Set task to 0x09 and turn off mmu
+        assertEquals(0x00, bus.read(0x3100));
+
+        bus.write(TASK_REG, 0xB9); // Set task to 0x09 and turn on mmu
+        assertEquals(0x11, bus.read(0x3100));
+    }
+
 }
 

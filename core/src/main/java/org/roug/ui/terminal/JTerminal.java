@@ -80,6 +80,9 @@ public class JTerminal extends JPanel implements UIDevice {
 
     /**
      * Create the canvas for text.
+     *
+     * @param acia the serial port that characters are received from.
+     * @param emulation the terminal emulation (ADM-3A etc.)
      */
     public JTerminal(Acia acia, EmulationCore emulation) {
         super();
@@ -176,6 +179,8 @@ public class JTerminal extends JPanel implements UIDevice {
 
     /**
      * Get the font size in points.
+     *
+     * @return the current font size in points.
      */
     public int getFontSize() {
         return currentFontSize;
@@ -403,6 +408,8 @@ public class JTerminal extends JPanel implements UIDevice {
 
     /**
      * Get cursor location.
+     *
+     * @return the location of the cursor in Dimension object.
      */
     public Dimension getCursorXY() {
         cursorCoord.setSize(cursorX, cursorY);

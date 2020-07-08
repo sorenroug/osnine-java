@@ -89,10 +89,12 @@ public class BusDragonBeta extends BusStraight {
             return;
         } else {
             int mmuInx = ((offset & 0xF000) >> 12);
-            if (offset >= 0x0C000) {
-                offset |= mmu[currentTask][mmuInx] | bankingLines;
+            if (bankingLines == 0) {
+                offset = offset & 0x0FFF | mmu[currentTask][mmuInx];
             } else {
-                offset |= mmu[currentTask][mmuInx];
+                if (offset >= 0x0C000) {
+                    offset |= bankingLines;
+                }
             }
         }
         super.write(offset, val);
