@@ -192,7 +192,7 @@ COLD20 pshs X
  subd D.BlkMap
  cmpb #DAT.BlMx Last block?
  beq COLD25 ..yes
- stb DAT.Regs+1
+ stb DAT.Regs+RAMCount Map block above allocated RAM
  ldu 0,y Get current value
  ldx #$00FF Get bit pattern
  stx 0,Y Store it
@@ -222,6 +222,9 @@ COLD35 lda 0,X
  leas -32,S
  leay 0,S
  bsr COLD90
+*
+* Scan ROM blocks for modules
+*
  pshs X
  ldx #$0000
 COLD40 pshs Y,X
@@ -2186,23 +2189,26 @@ IOPOLL orcc #CARRY
 DATInit clra
  tfr a,dp
  ldx #DAT.Task ($FCC0)
- lda 1,X
- lbne SYNCWAIT
- ldb #$04
+ lda 1,X Is PIA reset yet?
+ lbne SYNCWAIT ..no
+ ldb #4  Select output register in PIA
  stb 1,X
- lda #$F0
+ lda #$F0 Set values in output register
  sta 0,X
  clra
- sta 1,X
- lda #$CF
+ sta 1,X Select data direction register
+ lda #%11001111 Set direction: output=1, input=0
  sta 0,X
  lda #$FF
  sta 2,X
- lda #$3E
- sta 1,X
- stb 3,X
- lda #$D8
+ lda #%00111110 select output register et al
+ sta 1,X Set value in control register A
+ stb 3,X Set value in control register B
+ lda #%11011000
  sta 2,X
+*
+* Initialize all tasks in DAT registers
+*
  ldy #DAT.Regs
  ldb #$F0
 DATINT10 stb 0,X
@@ -2253,7 +2259,7 @@ DATINT20 lda ,y+
  cmpb #CRTCSIZ
  bcs DATINT20
 
- lda #$B0
+ lda #%10110000 Turn on MMU by turning of bit 6
  sta DAT.Task
  ldx #$6000  Start of graphics memory
  ldd #$2008  Space + attribute

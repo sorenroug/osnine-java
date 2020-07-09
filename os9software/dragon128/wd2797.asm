@@ -75,7 +75,7 @@ DSKENT    equ   *
          lbra  GETSTA
          lbra  PUTSTA
          lbra  TERMINAT
-         lbra  L02A8
+         lbra  BOOT
 
 FDMASK   fcb  $00 no flip bits
          fcb  $80
@@ -100,7 +100,7 @@ INIDSK   lda   #4
          os9   F$IRQ
          bcs   RETCS
          inc   >u00AC,u
-         ldx   #$FCC0
+         ldx   #DAT.Task
          lda   ,x
          pshs  cc
          orcc  #$50
@@ -389,7 +389,7 @@ TERMINAT    pshs  u
          ldd   #$0100
          os9   F$SRtMem
          puls  u
-         ldx   #$FCC0
+         ldx   #DAT.Task
          lda   $01,x
          anda  #$FE
          sta   $01,x
@@ -400,7 +400,8 @@ TERMINAT    pshs  u
          clrb
          rts
 
-L02A8    pshs  u,y,x,b,a
+* Boot from floppy disk.
+BOOT    pshs  u,y,x,b,a
          leas  <-$1D,s
          ldd   #$0100
          os9   F$SRqMem
@@ -487,6 +488,7 @@ L034B    lda   $04,y
          ldy   -$03,y
          lda   ,y
          rts
+
 L0364    clr   ,u
          lda   #$88
          sta   u000F,u
@@ -563,6 +565,7 @@ L0400    decb
          cmpa  $02,y
          bne   L03FC
          rts
+
 L0408    lda   #$01
          sta   ,u
          lda   #$A8
@@ -701,7 +704,7 @@ L051E    leax  $03,y
          stx   <u0037
          lda   ,u
          sta   <u0039
-         ldx   #$FCC0
+         ldx   #DAT.Task
          lda   #$00
          sta   ,x
          ora   #$80
@@ -761,9 +764,10 @@ L0597    os9   F$Sleep
          lda   #$D0
          sta   ,y
          bsr   L05D7
-L05B4    lda   >$FCC0
+L05B4    lda   >DAT.Task
 L05B7    clr   u0002,u
          puls  pc,cc
+
 L05BB    ldb   u0003,u
 L05BD    clra
          andb  #$FC
@@ -788,7 +792,7 @@ L05D8    ldb   >$F2F4
 IRQSVC    ldy   u0001,u
          ldb   ,y
          stb   >u00AE,u
-         lda   >$FCC0
+         lda   >DAT.Task
          lda   V.WAKE,u
          beq   IRQEND
          clr   V.WAKE,u
