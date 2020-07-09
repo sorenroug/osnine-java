@@ -14,6 +14,8 @@ DAT.Regs equ $FD80 DAT Block Registers base address
 DAT.Task equ $FD90 Task register address
 *DAT.BlSz equ $1000
 DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
+DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
+
 ***************
 DAT.Free equ $FE Free Block Number
 
