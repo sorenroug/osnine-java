@@ -134,18 +134,17 @@ public class JTerminal extends JPanel implements UIDevice {
     }
 
     /**
-     * Set the color to use when displaying bolded text.
+     * Set cursor to be an block shape.
      *
-     * @param color - color to use.
      */
-    public void setBoldColor(Color color) {
-        boldedColor = color;
-    }
-
     public void setBlockCursor() {
         blockCursor = true;
     }
 
+    /**
+     * Set cursor to be an underscore.
+     *
+     */
     public void setUnderscoreCursor() {
         blockCursor = false;
     }
@@ -166,6 +165,15 @@ public class JTerminal extends JPanel implements UIDevice {
      */
     public void setCursorBlink(boolean blink) {
         cursorBlink = blink;
+    }
+
+    /**
+     * Set the color to use when displaying bolded text.
+     *
+     * @param color - color to use.
+     */
+    public void setBoldColor(Color color) {
+        boldedColor = color;
     }
 
     /**

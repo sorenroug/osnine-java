@@ -1,5 +1,6 @@
 package org.roug.ui.terminal;
 
+import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -15,6 +16,11 @@ public class TVI912Emulation extends EmulationCore {
     private static final Logger LOGGER
                 = LoggerFactory.getLogger(TVI912Emulation.class);
 
+    private static final Color DEFAULT_BACKGROUND = new Color(0x1b3231);
+    private static final Color DEFAULT_FOREGROUND = new Color(0x88FFFF);
+    private static final Color DEFAULT_DIMMED = new Color(0x00FFFF);
+    private static final Color DEFAULT_BOLDED = new Color(0xCCFFFF);
+
 
     private State termState = State.NORMAL;
 
@@ -22,7 +28,13 @@ public class TVI912Emulation extends EmulationCore {
     private int coordY;
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        term.setBackground(DEFAULT_BACKGROUND);
+        term.setForeground(DEFAULT_FOREGROUND);
+        term.setBoldColor(DEFAULT_BOLDED);
+        term.setDimColor(DEFAULT_DIMMED);
+        term.setBlockCursor();
+    }
 
     @Override
     public void resetState() {
