@@ -51,259 +51,127 @@ L004C    lda   >$FD05
          bmi   L004C
          lda   #$80
 
+         sta   >$FD05
+L0056    lda   >$FD05
+         bpl   L0056
+         lda   #$0A
+         sta   >$FC82
+         clr   >$FD05
+L0063    lda   >$FD05
+         bmi   L0063
+         lda   #$80
+         sta   >$FC60
+         sta   >$FD05
+L0070    lda   >$FD05
 
-         fcb   $B7 7
-         fcb   $FD 
-         fcb   $05 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $05 
-         fcb   $2A *
-         fcb   $FB 
-         fcb   $86 
-         fcb   $0A 
-         fcb   $B7 7
-         fcb   $FC 
-         fcb   $82 
-         fcb   $7F ÿ
-         fcb   $FD 
-         fcb   $05 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $05 
-         fcb   $2B +
-         fcb   $FB 
-         fcb   $86 
-         fcb   $80 
-         fcb   $B7 7
-         fcb   $FC 
-         fcb   $60 `
-         fcb   $B7 7
-         fcb   $FD 
-         fcb   $05 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $05 
-         fcb   $2A *
-         fcb   $FB 
-         fcb   $10 
-         fcb   $BE >
-         fcb   $FC 
-         fcb   $83 
-         fcb   $B6 6
-         fcb   $FC 
-         fcb   $80 
-         fcb   $8A 
-         fcb   $80 
-         fcb   $B7 7
-         fcb   $FC 
-         fcb   $80 
-         fcb   $7F ÿ
-         fcb   $FD 
-         fcb   $05 
-         fcb   $7F ÿ
-         fcb   $FC 
-         fcb   $60 `
-         fcb   $9E 
-         fcb   $92 
-         fcb   $10 
-         fcb   $AF /
-         fcb   $88 
-         fcb   $E0 `
-         fcb   $30 0
-         fcb   $02 
-         fcb   $8C 
-         fcb   $FC 
-         fcb   $60 `
-         fcb   $24 $
-         fcb   $06 
-         fcb   $6D m
-         fcb   $84 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $20 
-         fcb   $F3 s
-         fcb   $8E 
-         fcb   $FC 
-         fcb   $40 @
-         fcb   $9F 
-         fcb   $92 
-L009F    fcb   $9E 
-         fcb   $92 
-         fcb   $86 
-         fcb   $40 @
-         fcb   $A7 '
-         fcb   $01 
-L00A5    fcb   $DC \
-         fcb   $26 &
-         fcb   $16 
-         fcb   $00 
-         fcb   $A2 "
+         bpl   L0070
+         ldy   >$FC83
+         lda   >$FC80
+         ora   #$80
+         sta   >$FC80
+         clr   >$FD05
+         clr   >$FC60
+         ldx   <$0092
+         sty   <-$20,x
+L008D    leax  $02,x
+         cmpx  #$FC60
+         bcc   L009A
 
-CLKSRV         ldx   >CLKPRT,pcr
+         tst   ,x
+         bne   L009D
+         bra   L008D
+
+L009A    ldx   #$FC40
+L009D    stx   <$0092
+L009F    ldx   <$0092
+         lda   #$40
+         sta   $01,x
+L00A5    ldd   D.Poll
+         lbra  L014C
+
+CLKSRV   ldx   >CLKPRT,pcr
          lda   $01,x
          bita  #$04
+         lbeq  L0033
+         ldd   $06,x
+         dec   D.Tick
+         lbne  L014A
+         lda   <$0096
+         beq   L00CF
+         deca  
+         sta   <$0096
+         bne   L00E0
+         lda   >$FD1D
+         ora   #$C0
+         sta   >$FD1D
+L00CF    lda   <$009A
+         beq   L00E0
+         deca  
+         sta   <$009A
+         bne   L00E0
+         lda   >$FD1D
+         anda  #$7F
+         sta   >$FD1D
+L00E0    lda   <$0097
+         beq   L00F1
+L00E4    deca  
+         sta   <$0097
+         bne   L0102
+         lda   >$FD35
+         ora   #$40
+         sta   >$FD35
+L00F1    lda   <$009B
+         beq   L0102
+         deca  
+         sta   <$009B
+         bne   L0102
+         lda   >$FD35
+         ora   #$C0
+         sta   >$FD35
+L0102    ldd   D.Min
+ incb COUNT Second
+ cmpb #60 End of minute?
+ bcs TICK35 Branch if not
+ inca COUNT Minute
+ cmpa #60 End of hour?
+ bcs TICK30 Branch if not
+ ldd D.DAY Get day & hour
+ incb COUNT Hour
+ cmpb #24 End of day?
+ bcs TICK25 Branch if not
+ inca COUNT Day
+ leax MONTHS,PCR Get days/month table
+ ldb D.Month Get month
+ cmpb #2 Is it february?
+ bne TICK10 Branch if not
+ ldb D.YEAR Get year
+ beq TICK10 Branch if even hundred
+ andb #3 Is it leap year?
+ bne TICK10 Branch if not
+         clrb  
+         bra   L012D
 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $FF 
-         fcb   $7D ý
-         fcb   $EC l
-         fcb   $06 
-         fcb   $0A 
-         fcb   $2E .
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $8C 
-         fcb   $96 
-         fcb   $96 
-         fcb   $27 '
-         fcb   $0D 
-         fcb   $4A J
-         fcb   $97 
-         fcb   $96 
-         fcb   $26 &
-         fcb   $19 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $1D 
-         fcb   $8A 
-         fcb   $C0 @
-         fcb   $B7 7
-         fcb   $FD 
-         fcb   $1D 
-         fcb   $96 
-         fcb   $9A 
-         fcb   $27 '
-         fcb   $0D 
-         fcb   $4A J
-         fcb   $97 
-         fcb   $9A 
-         fcb   $26 &
-         fcb   $08 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $1D 
-         fcb   $84 
-         fcb   $7F ÿ
-         fcb   $B7 7
-         fcb   $FD 
-         fcb   $1D 
-         fcb   $96 
-         fcb   $97 
-         fcb   $27 '
-         fcb   $0D 
-         fcb   $4A J
-         fcb   $97 
-         fcb   $97 
-         fcb   $26 &
-         fcb   $19 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $35 5
-         fcb   $8A 
-         fcb   $40 @
-         fcb   $B7 7
-         fcb   $FD 
-         fcb   $35 5
-         fcb   $96 
-         fcb   $9B 
-         fcb   $27 '
-         fcb   $0D 
-         fcb   $4A J
-         fcb   $97 
-         fcb   $9B 
-         fcb   $26 &
-         fcb   $08 
-         fcb   $B6 6
-         fcb   $FD 
-         fcb   $35 5
-         fcb   $8A 
-         fcb   $C0 @
-         fcb   $B7 7
-         fcb   $FD 
-         fcb   $35 5
-         fcb   $DC \
-         fcb   $2C ,
-         fcb   $5C \
-         fcb   $C1 A
-         fcb   $3C <
-         fcb   $25 %
-         fcb   $3B ;
-         fcb   $4C L
-         fcb   $81 
-         fcb   $3C <
-         fcb   $25 %
-         fcb   $35 5
-         fcb   $DC \
-         fcb   $2A *
-         fcb   $5C \
-         fcb   $C1 A
-         fcb   $18 
-         fcb   $25 %
-         fcb   $2B +
-         fcb   $4C L
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $FF 
-         fcb   $0C 
-         fcb   $D6 V
-         fcb   $29 )
-         fcb   $C1 A
-         fcb   $02 
-         fcb   $26 &
-         fcb   $0B 
-         fcb   $D6 V
-         fcb   $28 (
-         fcb   $27 '
-         fcb   $07 
-         fcb   $C4 D
-         fcb   $03 
-         fcb   $26 &
-         fcb   $03 
-         fcb   $5F _
-         fcb   $20 
-         fcb   $02 
-         fcb   $D6 V
-         fcb   $29 )
-         fcb   $A1 !
-         fcb   $85 
-         fcb   $23 #
-         fcb   $0E 
-         fcb   $DC \
-         fcb   $28 (
-         fcb   $5C \
-         fcb   $C1 A
-         fcb   $0C 
-         fcb   $23 #
-         fcb   $03 
-         fcb   $4C L
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $DD ]
-         fcb   $28 (
-         fcb   $86 
-         fcb   $01 
-         fcb   $5F _
-         fcb   $DD ]
-         fcb   $2A *
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $DD ]
-         fcb   $2C ,
-         fcb   $86 
-         fcb   $64 d
-         fcb   $97 
-         fcb   $2E .
-         fcb   $DC \
-         fcb   $E0 `
-         fcb   $DD ]
-         fcb   $CE N
-         fcb   $6E n
-         fcb   $9F 
-         fcb   $00 
-         fcb   $E8 h
+TICK10    ldb   D.Month
+L012D    cmpa  b,x
+ bls TICK20 Branch if not
+ ldd D.YEAR Get year & month
+ incb COUNT Month
+         cmpb  #12
+         bls   TICK15
+         inca  
+         ldb   #$01
+TICK15 std D.YEAR Update year & month
+ lda #1 New day
+TICK20 clrb NEW Hour
+TICK25 std D.DAY Update day & hour
+ clra NEW Minute
+TICK30 clrb NEW Second
+TICK35 std D.MIN Update minute & second
+         lda   #100
+         sta   D.Tick
+L014A    ldd   D.Clock
+L014C    std   D.SvcIRQ
+         jmp   [>$00E8]
 
 *****
 *
