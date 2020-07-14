@@ -42,7 +42,8 @@
 
     <!-- All -->
     <target name="all" depends="prepare, required, level1,
-        gimix, swtpc, color, fm7, dragon64, color3, fm11, dragon128, virtual,
+        gimix, swtpc, color, fm7, dragon64, cms9609, cms9619,
+        color3, fm11, dragon128, cms9639, virtual,
         utilities, dynacalc, stylograph, rms, basic09">
     </target>
 
@@ -75,6 +76,8 @@
 
     <!-- Level I kernel modules (common) -->
     <target name="level1" depends="prepare">
+        <assemble src="Acia51_ed5" home="kernel" verify="6fea8182a7f80e7a5707503feacc8c9e"/>
+        <assemble src="Acia51_ed6" home="kernel" verify="1b5a16df7dc791dca2f585679540b862"/>
         <assemble src="RBF_ed6" home="kernel" verify="4be793b10285946279b781df94dcecf1"/>
         <assemble src="RBF_ed7" home="kernel" verify="f3b9848e9716821fd8f397d055ad717f"/>
         <assemble src="OS9p2_ed8" home="kernel" verify="4620b5340979f69d3d243c07592ec200"/>
@@ -144,6 +147,12 @@
     <target name="cms9609" depends="prepare">
         <assemble src="OS9p1" home="cms9609"  verify="ab5661de908ec546a45b31f2c8f72b0a"/>
         <assemble src="OS9p2" home="cms9609"  verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
+    </target>
+
+    <!-- CMS 9619 -->
+    <target name="cms9619" depends="prepare">
+        <assemble src="OS9p1" home="cms9619"  verify="6a999ed7c631733493fc077176cc4db3"/>
+        <assemble src="OS9p2" home="cms9619"  verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
     </target>
 
     <!-- COCO Level II -->

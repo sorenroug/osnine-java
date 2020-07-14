@@ -19,7 +19,7 @@ OS9Nam fcs /OS9p1/
  fcb 12 Edition number
 
 LORAM set $20
-HIRAM set $2000
+HIRAM set RAMCount*DAT.Blsz
 
 COLD ldx #LORAM Set ptr
  ldy #HIRAM-LORAM Set byte count
@@ -141,7 +141,7 @@ COLD20 pshs X
  subd D.BlkMap
          cmpb  #$FF
          beq   COLD25
-         stb   DAT.Regs+2
+         stb   DAT.Regs+RAMCount Map block above allocated RAM
  ldu 0,y Get current value
  ldx #$00FF Get bit pattern
  stx 0,Y Store it

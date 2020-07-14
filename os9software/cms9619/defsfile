@@ -1,19 +1,12 @@
 Level    equ   1
 
  ifp1
- use /d0/defs/swtpc/os9defs
- use /d0/defs/swtpc/os9sysdefs.li
- use /d0/defs/swtpc/os9iodefs
- use /d0/defs/swtpc/os9rbfdefs
- use /d0/defs/swtpc/li.equates
- use /d0/defs/swtpc/systype
+ use os9defs
+ use os9sysdefs.li
+ use os9iodefs
+ use os9rbfdefs
+ use systype
  endc
-*ifp1
-*use /d0/DEFS/os9defs
-*use /d0/DEFS/scfdefs
-*use /d0/DEFS/rbfdefs
-*use /d0/DEFS/systype
-*endc
 
 normal equ 0 normal screen size
 small equ 1 small screen size

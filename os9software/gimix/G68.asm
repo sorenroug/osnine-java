@@ -65,9 +65,9 @@ F.WRIT equ $A8 Write sector command
 F.TYP1 equ $D0 Force type 1 status
 F.WRTR equ $F4 Write track command
 
-FDMASK   fcb   $00 no flip bits
-         fcb   $40
-         fcb   $01
+FDMASK fcb   $00 no flip bits
+ fcb   $40
+ fcb   $01
 
 PUTSTA ldx PD.RGS,Y Point to parameters
  ldb R$B,X Get stat call
@@ -470,12 +470,12 @@ PHYSC4 inc 0,S Increment track number
  bcc PHYSC4 Repeat until less than 1 trk
 
 PHYSC5 lda DD.FMT,X
-         bita  #$02 Check density
-         beq   PHYSC6 Branch if single density
-         clr   >V.DENS,u
-PHYSC6    puls  a
-         addb  DD.TKS,x
-PHYSC7    stb   [>V.SECR,u]
+ bita  #$02 Check density
+ beq   PHYSC6 Branch if single density
+ clr   >V.DENS,u
+PHYSC6 puls  a
+ addb DD.TKS,x
+PHYSC7 stb   [>V.SECR,u]
  clrb
  rts
 
@@ -485,7 +485,7 @@ PHYERR comb
  pag
 
 Settrk pshs a
-         ldb   >V.DENS,u
+ ldb   >V.DENS,u
  orb CURDRV,U Mask into drive select
  stb CURDRV,U Save it
  stb [V.SEL,u]
@@ -638,19 +638,19 @@ WRTTRK lbsr SELECT
  beq WRTRK2 ..yes; skip side change
  com V.SIDE,U
 WRTRK2 bitb #%00000010 Double density?
-         beq   WRTRK5  ..yes
+ beq   WRTRK5  ..yes
  clr >V.DENS,u
 WRTRK5    lbsr  SETTRK
  ldx PD.RGS,Y
  ldx R$X,X Get buffer addr
-         ldb   #F.WRTR
-         lda   #$30
-         sta   V.TMP,u
-         lbsr  WCR0
-         ldb   [V.SEL,u]
-         bitb  #DMA.FLT
-         beq   WRTRK9
-         lda   #%10000000 Set drive ready status
+ ldb   #F.WRTR
+ lda   #$30
+ sta   V.TMP,u
+ lbsr  WCR0
+ ldb   [V.SEL,u]
+ bitb  #DMA.FLT
+ beq   WRTRK9
+ lda   #%10000000 Set drive ready status
 WRTRK9 lbra STCK Check status
  pag
 *********************************************
