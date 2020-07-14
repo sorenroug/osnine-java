@@ -36,8 +36,6 @@ Type set SYSTM+OBJCT
 Revs set REENT+1
  mod OS9End,OS9Nam,Type,Revs,COLD,0
 OS9Nam fcs /OS9/
- fcb 9 Edition number
- use copyright
 
 *************************
 *    Edition History
@@ -62,6 +60,8 @@ RamLimit set $E800
 RamLimit set $E000
  endc
 
+ fcb 9 Edition number
+ use copyright
 CNFSTR fcs /INIT/ Configuration module name
 OS9STR fcs /OS9P2/ Kernal, part 2 name
  page
