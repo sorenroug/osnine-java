@@ -1504,7 +1504,7 @@ ALLIMG20 leax -1,X
  ldx ,s++
  beq ALLIMG60
  ifeq CPUType-DRG128
- leau 32,U Skip the lowest 32 blocks as it is used for screen
+ leau DAT.GBlk,U Skip the lowest 32 blocks as it is used for screen
  endc
 ALLIMG30 lda ,u+
  bne ALLIMG40
@@ -1535,14 +1535,19 @@ ALLIMG50 ldb #E$MemFul
 
 ALLIMG60 puls U,Y,X
  ifeq CPUType-DRG128
- leau 32,U Skip the lowest 32 blocks as it is used for screen
+ leau DAT.GBlk,U Skip the lowest 32 blocks as it is used for screen
  endc
+
 ALLIMG65 ldd ,Y++
  cmpd #DAT.Free
  bne ALLIMG70
 ALLIMG68 equ *
- cmpu D.BlkMap+2
- beq ALLIMG75
+
+ ifeq CPUType-DRG128
+ cmpu D.BlkMap+2 Reached end of block map?
+ beq ALLIMG75 try the graphics area.
+ endc
+
  lda ,U+
  bne ALLIMG68
  inc ,-U
@@ -1554,7 +1559,6 @@ ALLIMG70 leax -1,X
 
  ifeq CPUType-DRG128
  bra ALLIMG99
-
 ALLIMG75 ldu D.BlkMap
  clrb
  bra ALLIMG85
@@ -1580,6 +1584,8 @@ ALLIMG88 lda B,Y
 ALLIMG90 leax -1,X
  bne ALLIMG80
  endc
+
+
 ALLIMG99 ldx 2,S Get process ptr
  lda P$State,X
  ora #ImgChg
@@ -2227,7 +2233,7 @@ DATINT10 stb 0,X
 *
 * Configure periphicals
 *
- ldx #A.Mouse
+ ldx #A.Mouse ($FC24)
  lda #$7F
  ldb #$04
  stb 1,X

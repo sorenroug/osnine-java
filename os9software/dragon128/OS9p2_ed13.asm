@@ -560,14 +560,17 @@ ALLPRC40 std ,X++
  lda #SysState
  sta P$State,U
 * Set up the DAT table
- ldb #DAT.BlCt-1
+ ldb #DAT.BlCt-MappedIO
  ldx #DAT.Free
  leay P$DATImg,U
 ALLPRC50 stx ,Y++
  decb
  bne ALLPRC50
+
+ ifne MappedIO
  ldx #IOBlock Mark last block as IO
  stx ,Y++
+ endc
 
  ifne EXTERR
  leay P$ErrNam,U    Area for error messages
@@ -696,7 +699,7 @@ CHAIN20 ldd ,X++
  ifge DAT.BlSz-$2000
  lsrb
  endc
- lda #DAT.BlCt-1
+ lda #DAT.BlCt-MappedIO
  pshs b
  suba ,S+  Subtract B from A
  leay P$DatImg,X
@@ -706,8 +709,10 @@ CHAIN20 ldd ,X++
 CHAIN30 stu ,Y++
  deca
  bne CHAIN30
+ ifne MappedIO
  ldu #IOBlock Mark last block as I/O block
  stu ,Y++
+ endc
  ldu 2,S get new process descriptor pointer
  stu D.PROC
  ldu 4,S
