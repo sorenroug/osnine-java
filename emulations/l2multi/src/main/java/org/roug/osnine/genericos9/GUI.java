@@ -115,7 +115,7 @@ public class GUI {
         RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x20000);
         bus.addMemorySegment(ram);
 
-        ReadOnlyMemory rom = new ReadOnlyMemory(0xFC000, 0x4000);
+        ReadOnlyMemory rom = new ReadOnlyMemory(0xFE000, 0x2000);
         bus.insertMemorySegment(rom);
 
 //      if (singleUser) {
@@ -124,7 +124,7 @@ public class GUI {
 //                  "Boot", "Clock", "VDisk_rv2");
 //      } else {
             loadROM(0xFF000, "OS9p1_ed12");
-            loadROM(0xFE000, "Boot", "InitNoDisk", "Shell", "Mdir", "Echo", "Mfree");
+            loadROM(0xFE000, "Boot", "Init", "Shell", "Mdir", "Echo", "VDisk_rv2", "D0");
 //      }
 
         //loadROM(0xFC000, "SCF", "IOMan", "Shell","Mdir","Echo");

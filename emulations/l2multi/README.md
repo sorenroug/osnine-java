@@ -29,11 +29,11 @@ facilitate multitasking.
 Memory Map
 ----------
 
-$FCB0-$FCB1 ACIA serial port address (/Term)
-$FCB2-$FCB3 ACIA serial port address (/T1)
-$FCB4-$FCB5 ACIA serial port address (/P)
-$FCC0-$FCC3 Task register (Only $FCC0 is used)
-$FCD0       Interrupts from clock (50 Hz)
-$FCD1-$FCD3 Virtual disk
-$FCDA-$FCDF Date and time from host
+$FFCB0-$FFCB1 ACIA serial port address (/Term)
+$FFCB2-$FFCB3 ACIA serial port address (/T1)
+$FFCB4-$FFCB5 ACIA serial port address (/P)
+$FFCC0-$FFCC3 Task register (Only $FCC0 is used)
+$FFCD0       Interrupts from clock (50 Hz)
+$FFCD1-$FFCD3 Virtual disk
+$FFCDA-$FFCDF Date and time from host
 $FE00-$FE0F DAT registers

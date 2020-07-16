@@ -1,31 +1,30 @@
+*****
 *
-* OS9 init module with virtual disk
-         nam   Init
-         ttl   os9 system module
+* Configuration Module
+*
+ nam Init
+ ttl Configuration Module
 
-         ifp1
-         use   os9defs
-         endc
-null     set   $0000
-tylg     set   Systm+$00
-atrv     set   ReEnt+rev
-rev      set   $01
+ use defsfile
 
-         mod   eom,initnam,tylg,atrv
-         fcb   0         Top of free RAM high byte
-         fdb   $F800     Top of free RAM
-         fcb   12        IRQ polling slots
-         fcb   12        System device slots
-         fdb   sysgo
-         fdb   SysDev      system device (sysdev)
-         fdb   systerm   system terminal
-         fdb   DefBoot   bootstrap module
-initnam  fcs   "Init"
+ mod INITEND,INITNAM,SYSTM,REENT+1
+ fcb $0B    Top of free RAM high byte
+ fdb $FFFF     Top of free RAM
+ fcb 14        IRQ polling slots
+ fcb 14        System device slots
 
-sysgo    fcs   "SysGo"
-SysDev   fcs   "/D0"
-systerm  fcs   "/Term"
-DefBoot  fcs   "Boot"
+ fdb SYSGO     Initial module name
+ fdb SYSDEV    system device (sysdev)
+ fdb SYSTERM
+ fdb BOOTST    bootstrap module (bootst)
+ fdb ERRMSG
+
+INITNAM  fcs   "Init"
+SYSGO    fcs   "SysGo"
+SYSDEV   fcs   "/D0"
+SYSTERM  fcs   "/term"
+BOOTST   fcs   "Boot"
+ERRMSG   fcs   "errmsg"
+
          emod
-eom      equ   *
-
+INITEND  equ   *
