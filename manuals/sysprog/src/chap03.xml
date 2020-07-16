@@ -692,7 +692,7 @@ information on what is in a process descriptor.</para>
         <para>The next step in the creation of a new process is allocation of
 data storage (RAM) memory for the process. The primary module's header
 contains a storage size value that is used unless the <quote>fork</quote> system
-call requested an optionally larger' size. OS-9 then attempts to
+call requested an optionally larger size. OS-9 then attempts to
 allocate a <emphasis/> memory area of this size from the free memory
 space.</para>
       </listitem>

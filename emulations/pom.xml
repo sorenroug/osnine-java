@@ -16,6 +16,7 @@
     <modules>
         <module>genericos9</module>
         <module>v6809</module>
+        <module>l2multi</module>
         <module>os9dragon</module>
         <module>gimix</module>
         <module>mo5</module>
