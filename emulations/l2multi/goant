@@ -1,0 +1,2 @@
+#!/bin/sh
+ant -Dmain.basedir=/home/roug/Projekter/osnine-java compile

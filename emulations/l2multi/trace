@@ -1,0 +1,3 @@
+#!/bin/sh
+java -Dorg.slf4j.simpleLogger.defaultLogLevel=trace \
+  -jar target/l2multi-1.0.0-jar-with-dependencies.jar
