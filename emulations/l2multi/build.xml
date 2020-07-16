@@ -29,16 +29,16 @@
         </copy>
 
         <copy todir="${targetdir}">
-          <filelist dir="src/binaries" files="IOMan SCF Mdir Echo"/>
+          <filelist dir="src/binaries" files="IOMan SCF Mdir Echo Shell Mfree"/>
         </copy>
 
         <copy todir="${targetdir}">
-          <filelist dir="../../os9software/target/virtual" files="BootDyn VDisk_rv2"/>
+          <filelist dir="../../os9software/target/virtual" files="VDisk_rv2"/>
         </copy>
+        <!--
         <copy todir="${targetdir}">
           <filelist dir="../../os9software/target/utilities" files="Shell"/>
         </copy>
-        <!--
         <copy todir="${targetdir}">
           <filelist dir="." files="OS9.dsk WORK.dsk"/>
         </copy>

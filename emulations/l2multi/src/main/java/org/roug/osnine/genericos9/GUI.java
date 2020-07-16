@@ -118,14 +118,14 @@ public class GUI {
         ReadOnlyMemory rom = new ReadOnlyMemory(0xFC000, 0x4000);
         bus.insertMemorySegment(rom);
 
-        if (singleUser) {
-            loadROM(0xFF000, "OS9p1");
-            loadROM(0xFE000, "OS9p2", "SysGo",
-                    "Boot", "Clock", "VDisk_rv2");
-        } else {
+//      if (singleUser) {
+//          loadROM(0xFF000, "OS9p1");
+//          loadROM(0xFE000, "OS9p2", "SysGo",
+//                  "Boot", "Clock", "VDisk_rv2");
+//      } else {
             loadROM(0xFF000, "OS9p1_ed12");
-            loadROM(0xFE000, "Boot", "InitNoDisk", "Shell", "Mdir", "Echo");
-        }
+            loadROM(0xFE000, "Boot", "InitNoDisk", "Shell", "Mdir", "Echo", "Mfree");
+//      }
 
         //loadROM(0xFC000, "SCF", "IOMan", "Shell","Mdir","Echo");
         //if (singleUser) loadROM("Shell"); // Don't rely on the harddisk
