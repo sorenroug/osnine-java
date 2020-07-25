@@ -168,6 +168,7 @@
         <assemble src="OS9p2_ed13" home="dragon128" verify="1e962babaad664249926cda12db82e47"/>
         <assemble src="Init"       home="dragon128" verify="8bbcbfd913f2fef3ff5df0e551b78ff5"/>
         <assemble src="Shell_ed21" home="dragon128" verify="89542e1bf04c29499d3ff696ac1bebb6"/>
+        <assemble src="IOMan_ed10" home="dragon128" verify="e96ceab669a671491ccc2790cc51e18d"/>
     </target>
 
     <!-- FM-11 Level II -->

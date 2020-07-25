@@ -8,13 +8,13 @@
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-         mod   SCFEnd,SCFNam,tylg,atrv,start,0
+         mod   SCFEnd,SCFNam,tylg,atrv,SCFEnt,0
 
 SCFNam     equ   *
          fcs   /SCF/
          fcb   5
 
-start    equ   *
+SCFEnt    equ   *
          lbra  Create
          lbra  Open
          lbra  MakDir
@@ -204,6 +204,7 @@ L016B    lda   $02,u
          os9   F$Move
          puls  y
 L018D    rts
+
 L018E    ldb   $07,u
          beq   L01B7
          clra
@@ -311,12 +312,13 @@ Read    lbsr  L04B1
          beq   L029B
          cmpa  <$2C,y
          bne   L0293
-L0279    ldb   #$D3
+L0279    ldb   #E$EOF
 L027B    leas  $02,s
          pshs  b
          bsr   L02AC
          comb
          puls  pc,b
+
 L0284    tfr   x,d
          tstb
          bne   L028E
@@ -394,6 +396,7 @@ L0316    pshs  pc,x
          puls  x
          jsr   [,s++]
          bra   L02D1
+
 L0329    bra   L037A
          bra   L0369
          bra   L033B
@@ -403,6 +406,7 @@ L0329    bra   L037A
          puls  pc
          bra   L0369
          bra   L0369
+
 L033B    leas  $02,s
          sta   ,u
          lbsr  L0403
@@ -547,6 +551,7 @@ L045D    beq   L0467
          bne   L0467
          clr   $04,x
 L0467    rts
+
 L0468    pshs  x,a
          ldx   $02,x
          pshs  cc
@@ -562,7 +567,7 @@ L0468    pshs  x,a
          os9   F$IOQu
          inc   $0F,y
          ldx   D.Proc
-         ldb   <$19,x
+         ldb   P$Signal,X
          puls  x,a
          beq   L0468
          coma
@@ -582,8 +587,10 @@ L0490    lda   $01,s
 L04AC    puls  cc
          clra
          puls  pc,x,a
-L04B1    ldx   D.Proc
-         lda   ,x
+
+* Wait for device 
+L04B1    ldx   D.Proc Get current process ID
+         lda   P$ID,x         Get process ID #
          clr   $0F,y
          ldx   $03,y
          bsr   L0468

@@ -447,7 +447,7 @@ UIDup    bsr   LocFrPth
 L0363    puls  pc,x,a
 
 SIDup    lda   $01,u
-L0367    lbsr  L0519
+L0367    lbsr  GetPDesc
          bcs   L036E
          inc   $02,y
 L036E    rts
@@ -612,20 +612,24 @@ L0490    lda   $01,u
 L04A1    comb
          ldb   #$C9
 L04A4    rts
+
          bsr   L0490
          bcc   L04AC
          rts
+
          lda   $01,u
-L04AC    bsr   L0519
+L04AC    bsr   GetPDesc
          lbcc  L05AA
          rts
+
          bsr   L0490
          bcc   L04BA
          rts
-         lda   $01,u
+
+SIRead   lda   R$A,u       get user path
 L04BA    pshs  b
          ldb   #$05
-L04BE    bsr   L0519
+L04BE    bsr   GetPDesc
          bcs   L0509
          bitb  $01,y
          beq   L0507
@@ -651,7 +655,7 @@ L04BE    bsr   L0519
          leax  b,x
 L04E7    pshs  a
          ldd   ,x++
-         cmpd  #$00C0
+         cmpd  #DAT.Free
          puls  a
          beq   L04FB
          deca
@@ -664,9 +668,11 @@ L04FB    ldb   #$F4
          beq   L0509
          ldb   #$F5
          bra   L0509
+
 L0507    ldb   #$D7
 L0509    com   ,s+
          rts
+
          bsr   L0490
          bcc   L0513
          rts
@@ -674,39 +680,43 @@ L0509    com   ,s+
 L0513    pshs  b
          ldb   #$02
          bra   L04BE
-L0519    pshs  x
+
+GetPDesc    pshs  x
          ldx   D.PthDBT
          os9   F$Find64
          puls  x
          lbcs  L04A1
 L0526    rts
-         lbsr  L0490
+
+UIGetStt lbsr  L0490
          ldx   D.Proc
          bcc   L0533
          rts
-         lda   $01,u
+
+SIGetStt lda   R$A,u
          ldx   D.SysPRC
 L0533    pshs  x,b,a
-         lda   $02,u
+         lda   R$B,u      get func code
          sta   $01,s
          puls  a
          lbsr  L04AC
          puls  x,a
          pshs  u,y,cc
          tsta
-         beq   L054B
+         beq   SSOpt
          cmpa  #$0E
-         beq   L055F
+         beq   SSDevNm
          puls  pc,u,y,cc
-L054B    lda   D.SysTsk
-         ldb   $06,x
-         leax  <$20,y
-L0552    ldy   #$0020
+SSOpt    lda   D.SysTsk
+         ldb   P$Task,x
+         leax  <PD.OPT,y
+SSCopy    ldy   #$0020
          ldu   $04,u
          os9   F$Move
          leas  $01,s
          puls  pc,u,y
-L055F    lda   D.SysTsk
+
+SSDevNm    lda   D.SysTsk
          ldb   $06,x
          pshs  b,a
          ldx   $03,y
@@ -714,7 +724,7 @@ L055F    lda   D.SysTsk
          ldd   $04,x
          leax  d,x
          puls  b,a
-         bra   L0552
+         bra   SSCopy
          lbsr  L0490
          bcs   L0526
          pshs  b
@@ -723,7 +733,7 @@ L055F    lda   D.SysTsk
          puls  b
          bra   L0582
          lda   $01,u
-L0582    bsr   L0519
+L0582    bsr   GetPDesc
          bcs   L0526
          dec   $02,y
          tst   $05,y
@@ -743,6 +753,7 @@ L059E    ldx   D.Proc
          bne   L0595
          stb   $05,y
 L05A9    rts
+
 L05AA    pshs  u,y,x,b
          bsr   L059E
          bcc   L05B4
@@ -1141,29 +1152,35 @@ L0895    lda   $0E,s
 L089F    leas  $04,s
          puls  pc,x
 
-* Probably special for Dragon 128
  ifeq CPUTYPE-DRG128
 L08A3 fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
       fcb $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$1D,$1E,$1F
  endc
 
+********************************
+*
+* F$PErr System call entry point
+*
+* Entry: U = Register stack pointer
+*
+
 FPErr
-         ldb   $02,u
+         ldb   R$B,u
          beq   L092F
          ldx   D.Proc
-         lda   <$32,x
-         beq   L092F
+         lda   <$32,x  P$Path+2
+         beq   L092F  return if not there
          pshs  u
          leas  <-$5B,s
          leau  ,s
-         std   ,u
+         std   0,u
          stx   $02,u
          ldy   D.SysPRC
          sty   D.Proc
-         lbsr  L0990
+         lbsr  L0990 Write label and error number
          clr   $0A,u
          ldx   $02,u
-L08E6    leax  >$00A0,x
+L08E6    leax  >P$ErrNam,x
          clr   $09,u
          pshs  u,x
          clra
@@ -1196,6 +1213,8 @@ L0924    ldy   $02,u
          puls  u
 L092F    clrb
          rts
+
+* Module linked
 L0931    tst   $09,u
          bne   L093F
          ldx   $04,u
@@ -1222,7 +1241,7 @@ L095B    lbsr  L09E1
          cmpb  $01,u
          bne   L095B
          pshs  x
-         leax  >L0A23,pcr
+         leax  >L0A23,pcr  Write hyphen
          ldy   #$0003
          bsr   L09BA
          puls  x
@@ -1237,8 +1256,10 @@ L0977    ldy   #$004F
          bra   L0921
 L098B    bsr   L09CE
          lbra  L0906
-L0990    leax  >L0A1C,pcr
-         ldy   #$0007
+
+* Write label and error number
+L0990    leax  >ERRORMSG,pcr
+         ldy   #$0007    length
          bsr   L09BA
          ldb   $01,u
          leax  $0B,u
@@ -1260,12 +1281,15 @@ L09BA    lda   ,u
          os9   I$WritLn
          rts
 
+* Seek to location
 L09C0    lda   $08,u
          pshs  u,x
          tfr   x,u
          ldx   #$0000
          os9   I$Seek
          puls  pc,u,x
+
+* close or unlink error file
 L09CE    lda   $08,u
          tst   $09,u
          bne   L09DD
@@ -1275,6 +1299,8 @@ L09CE    lda   $08,u
          puls  pc,u
 L09DD    os9   I$Close
          rts
+
+* Read one line from error message file
 L09E1    leax  $0B,u
          ldy   #$0050
          lda   $08,u
@@ -1294,6 +1320,7 @@ L0A01    leax  $0B,u
          sty   $06,u
          clrb
          rts
+
 L0A08    clrb
 L0A09    lda   ,x+
          beq   L0A1A
@@ -1307,7 +1334,7 @@ L0A09    lda   ,x+
 L0A1A    tstb
 L0A1B    rts
 
-L0A1C fcc "Error #"
+ERRORMSG fcc "Error #"
 L0A23 fcc " - "
 
  ifne EXTERR
@@ -1330,7 +1357,7 @@ L0A47    ldu   D.Proc
          lda   $06,u
          ldb   D.SysTsk
          ldy   #$0020
-         leau  >$00A0,u
+         leau  >P$ErrNam,u
          ldx   $02,s
          ldx   $04,x
          os9   F$Move
@@ -1342,11 +1369,11 @@ L0A63    puls  pc,u
  endc
 
 FIOQu    ldy   D.Proc
-L0A68    lda   <$10,y
+L0A68    lda   P$IOQN,y
          beq   L0A87
          cmpa  $01,u
          bne   L0A82
-         clr   <$10,y
+         clr   P$IOQN,y
          os9   F$GProcP
          bcs   L0ACA
          clr   $0F,y
@@ -1358,11 +1385,11 @@ L0A82    os9   F$GProcP
 L0A87    lda   $01,u
 L0A89    os9   F$GProcP
          bcs   L0ACA
-L0A8E    lda   <$10,y
+L0A8E    lda   P$IOQN,y
          bne   L0A89
          ldx   D.Proc
          lda   ,x
-         sta   <$10,y
+         sta   P$IOQN,y
          lda   ,y
          sta   $0F,x
          ldx   #$0000
@@ -1372,17 +1399,17 @@ L0A8E    lda   <$10,y
          beq   L0AC8
          os9   F$GProcP
          bcs   L0AC8
-         lda   <$10,y
+         lda   P$IOQN,y
          beq   L0AC8
-         lda   <$10,u
-         sta   <$10,y
+         lda   P$IOQN,u
+         sta   P$IOQN,y
          beq   L0AC8
-         clr   <$10,u
+         clr   P$IOQN,u
          os9   F$GProcP
          bcs   L0AC8
-         lda   $0F,u
-         sta   $0F,y
-L0AC8    clr   $0F,u
+         lda   P$IOQP,u
+         sta   P$IOQP,y
+L0AC8    clr   P$IOQP,u
 L0ACA    rts
          emod
 IOEnd      equ   *

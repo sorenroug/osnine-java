@@ -8,6 +8,7 @@
  use os9defs.x
  use os9iodefs
  use os9rbfdefs
+ use os9scfdefs.x
  use os9sysdefs.lii.x
 
 DriveCnt set 4 drives max on system

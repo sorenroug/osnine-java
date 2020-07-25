@@ -27,12 +27,14 @@ SCFEnt    equ   *
          lbra  PutStat
          lbra  Term
 
+* (Y) = Path descriptor pointer
+* (U) = Caller's register stack pointer
 Open
-Create    ldx   $03,y
+Create    ldx   PD.DEV,y
          stx   <$3D,y
-         ldu   $06,y
+         ldu   PD.RGS,y
          pshs  y
-         ldx   $04,u
+         ldx   R$X,u
          os9   F$PrsNam
          lbcs  L00D3
          tsta
@@ -40,12 +42,12 @@ Create    ldx   $03,y
          leax  ,y
          os9   F$PrsNam
          bcc   L00D3
-L0054    sty   $04,u
+L0054    sty   R$X,u        Save updated name pointer to caller
          puls  y
-         ldd   #$0200
+         ldd   #$0200     Specific for DRG128
          os9   F$SRqMem
          bcs   L00D8
-         stu   $08,y
+         stu   PD.BUF,y
          clr   >$0100,u
          clr   >$0103,u
          clrb
@@ -68,7 +70,8 @@ L0091    eora  ,x+
 L009A    sta   ,u+
          decb
          bne   L009A
-         ldu   $03,y
+
+         ldu   PD.DEV,y     Get device table entry address
          beq   MakDir
          ldx   $02,u
          lda   <$28,y
@@ -104,7 +107,7 @@ L00D3    puls  pc,y
 * ChgDir/MakDir entry
 ChgDir
 MakDir    comb
-         ldb   #$D7
+         ldb   #E$BPNam
 L00D8    rts
 
 Term    pshs  cc
@@ -119,9 +122,9 @@ Term    pshs  cc
          ldu   $0A,y
          beq   L00F2
          os9   I$Detach
-L00F2    ldu   $08,y
+L00F2    ldu   PD.BUF,y
          beq   L00FC
-         ldd   #$0200
+         ldd   #$0200     Specific for DRG128
          os9   F$SRtMem
 L00FC    clra
          rts
@@ -164,6 +167,7 @@ L0141    lda   ,s
          sta   $03,x
 L0147    puls  pc,y,x,b,a
 
+* Set macro
 L0149    lda   $06,u
          beq   L019A
          bsr   L01A4
@@ -205,13 +209,14 @@ L017B    puls  x
          leas  $02,s
 L019A    clrb
          rts
-
 L019C    leas  $02,s
 L019E    leas  $02,s
          comb
-         ldb   #$CF
+         ldb   #E$MemFul
          rts
-L01A4    ldx   $08,y
+
+* Clear macro
+L01A4    ldx   PD.BUF,y
          leax  >$0100,x
          lda   $06,u
          beq   L01F3
@@ -252,7 +257,8 @@ L01EF    leas  $02,s
          rts
 L01F3    clr   $03,x
          rts
-L01F6    ldx   $08,y
+
+L01F6    ldx   PD.BUF,y
          leax  >$0200,x
          pshs  x
          leax  >-$00FD,x
@@ -268,37 +274,38 @@ L0211    comb
 L0212    leas  $02,s
          rts
 
-
-GetStat    ldx   $06,y
-         lda   $02,x
-         cmpa  #$1C       SS.???
+* (Y) = Path descriptor pointer
+* (U) = Caller's register stack pointer
+GetStat  ldx   PD.RGS,y
+         lda   R$B,x
+         cmpa  #SS.Edit   $1C
          beq   L026B
          cmpa  #$00
          beq   L026A
-         ldb   #$09
+         ldb   #D$GSTA $09
 L0223    pshs  a
          clra
-         ldx   $03,y
+         ldx   PD.DEV,y
          ldu   $02,x
          ldx   ,x
-         addd  $09,x
+         addd  M$Exec,x
          leax  d,x
          puls  a
-         jmp   ,x
+         jmp   0,x    Call device driver
 
-PutStat    lbsr  L0753
+PutStat  lbsr  L0753
          bsr   L0240
          pshs  b,cc
          lbsr  L06FD
          puls  pc,b,cc
 
-L0240    lda   $02,u
-         cmpa  #$1D
+L0240    lda   R$B,u
+         cmpa  #SS.SMac $1D
          lbeq  L0149
-         cmpa  #$1E
+         cmpa  #SS.CMac  $1E
          lbeq  L01A4
-         ldb   #$0C
-         cmpa  #$00
+         ldb   #D$PSTA   $0C
+         cmpa  #SS.Opt   $00
          bne   L0223
          pshs  y
          ldx   D.Proc
@@ -449,15 +456,17 @@ L0387    ldx   $08,y
          puls  x
          bra   L0348
 
-ReadLn    lbsr  L0753
+* (Y) = Path descriptor pointer
+* (U) = Caller's register stack pointer
+ReadLn    lbsr  L0753        Go wait for device to be ready for us
          lbcs  L026A
-         ldx   $06,u
+         ldx   R$Y,u        Get character count
          beq   L034A
-         tst   $06,u
+         tst   R$Y,u               Past 256 bytes?
          beq   L03AB
-         ldx   #$0100
+         ldx   #$0100       Get new character count
 L03AB    tfr   x,d
-         addd  $08,y
+         addd  PD.BUF,y
          pshs  b,a
          lbsr  L0571
          clr   >$0100,u
@@ -825,15 +834,19 @@ L0697    leax  ,x
          ldu   #$0003
          lbsr  L0865
 L06A7    puls  pc,u,y,x
-L06A9    tst   <$21,y
+
+* Check for forced uppercase
+L06A9    tst   PD.UPC,y
          beq   L06B8
-         cmpa  #$61
+         cmpa  #'a
          bcs   L06B8
-         cmpa  #$7A
+         cmpa  #'z
          bhi   L06B8
          suba  #$20
 L06B8    rts
-L06B9    tst   <$24,y
+
+* Check for printable character
+L06B9    tst   PD.EKO,y       Echo turned on?
          beq   L06B8
 L06BE    cmpa  #$7F
          bcc   L06CD
@@ -842,10 +855,13 @@ L06BE    cmpa  #$7F
          cmpa  #$0D
          bne   L06CD
 L06CA    lbra  L07FC
-L06CD    pshs  a
-         lda   #$2E
+
+* Non-printable character
+L06CD    pshs  a              Save code
+         lda   #'.
          bsr   L06CA
          puls  pc,a
+
 L06D5    pshs  y,x
          ldd   ,s
          beq   L06FB
@@ -912,7 +928,7 @@ L0734    lda   ,s
 L0750    clra
          puls  pc,x,a
 
-* Wait for device 
+* Wait for device ?
 L0753    ldx   D.Proc Get current process ID
          lda   P$ID,x         Get process ID #
          clr   $0F,y
