@@ -29,7 +29,7 @@ IOINIT equ   *
          addd  #$00FF
          clrb
          os9   F$SRqMem
-         bcs   L0056
+         bcs   Crash
          leax  ,u
 L002E    clr   ,x+
          subd  #$0001
@@ -40,20 +40,49 @@ L002E    clr   ,x+
          stx   D.DevTbl
          ldx   D.PthDBT
          os9   F$All64
-         bcs   L0056
+         bcs   Crash
          stx   D.PthDBT
          os9   F$Ret64
-         leax  >L0677,pcr
+         leax  >IRQPoll,pcr
          stx   D.Poll
-         leay  <L005A,pcr
+         leay  <IOCalls,pcr
          os9   F$SSvc
          rts
 
-L0056    jmp   [>$FFEE]
+Crash    jmp   [>$FFEE]
 
-L005A   fcb $7F,$00,$8E,$01,$06,$39,$81,$06,$63,$0F,$08,$5D,$21
-        fcb $09,$BD,$AB,$09,$F9,$FF,$00,$81,$AA,$05,$83,$B3,$00,$01,$80
+******************************
+*
+* System service routine vector table
+*
+IOCalls  fcb $7F
+         fdb   UsrIO-*-2 
+         fcb   F$Load    
+         fdb   FLoad-*-2 
+         fcb   I$Detach  
+         fdb   IDetach0-*-2
+         fcb   F$PErr    
+         fdb   FPErr-*-2 
+ ifne EXTERR
+         fcb F$InsErr
+         fdb  FInsErr-*-2
+ endc
+         fcb   F$IOQu+$80
+         fdb   FIOQu-*-2 
+         fcb $FF
+         fdb   SysIO-*-2 
+         fcb   F$IRQ+$80 
+         fdb   FIRQ-*-2  
+         fcb F$IODel+$80
+         fdb   FIODel-*-2
+         fcb $80
 
+******************************
+*
+* Check device status service call?
+*
+* Entry: U = Callers register stack pointer
+*
 FIODel   ldx   R$X,u
          ldu   D.Init
          ldb   $0D,u
@@ -88,15 +117,45 @@ L009A    lsra
          cmpb  #$FF
          rts
 
-L00A7 fcb $00,$5F,$01,$D9,$02,$A7,$02,$DE,$02,$DE,$03,$07,$03,$24,$03,$5A
-      fcb $03,$FE,$04,$0C,$04,$65,$04,$0C,$04,$65,$04,$80,$03,$FE,$04,$CA,$03,$60
+UsrIODis fdb   IAttach-UsrIODis
+         fdb   IDetach-UsrIODis
+         fdb   UIDup-UsrIODis
+ fdb $02DE
+ fdb $02DE
+ fdb $0307
+ fdb $0324
+         fdb   IDelete-UsrIODis
+ fdb $03FE
+ fdb $040C
+ fdb $0465
+ fdb $040C
+ fdb $0465
+ fdb $0480
+ fdb $03FE
+ fdb $04CA
+         fdb   IDeletX-UsrIODis
 
-L00C9 fcb $00,$3D,$01,$B7,$02,$9C,$02,$CF,$02,$CF,$02,$E5,$03,$02,$03,$38
-      fcb $03,$E1,$03,$EF,$04,$48,$03,$EF,$04,$48,$04,$66,$03,$E1,$04,$B7,$03,$3E
+SysIODis fdb   IAttach-SysIODis
+         fdb   IDetach-SysIODis
+         fdb   SIDup-SysIODis
+ fdb $02CF
+ fdb $02CF
+ fdb $02E5
+ fdb $0302
+ fdb $0338
+ fdb $03E1
+ fdb $03EF
+ fdb $0448
+ fdb $03EF
+ fdb $0448
+ fdb $0466
+ fdb $03E1
+ fdb $04B7
+         fdb   IDeletX-SysIODis
 
-UsrIO    leax  <L00A7,pcr
+UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch
-SysIO    leax  <L00C9,pcr
+SysIO    leax  <SysIODis,pcr
 IODsptch    cmpb  #$90
          bhi   ErrSvc
          pshs  b
@@ -105,6 +164,7 @@ IODsptch    cmpb  #$90
          leax  d,x
          puls  b
          jmp   ,x
+
 ErrSvc    comb
          ldb   #$D0
          rts
@@ -146,6 +206,7 @@ L0108    clr   ,-s
 L0151    ldx   <$14,s
          stx   D.Proc
          bcc   L0166
+* Error on attach, so detach
 L0158    stb   <$17,s
          leau  ,s
          os9   I$Detach
@@ -155,7 +216,7 @@ L0158    stb   <$17,s
 
 L0166    stu   $06,s
          ldx   D.Init
-         ldb   $0D,x
+         ldb   $0D,x    get device entry count
          lda   $0D,x
          ldu   D.DevTbl
 L0170    ldx   $04,u
@@ -275,6 +336,8 @@ L0276    ldx   <$16,s
          leas  <$18,s
          clrb
          rts
+
+IDetach
          ldu   $08,u
          ldx   $04,u
          lda   #$FF
@@ -369,7 +432,8 @@ L032B    ldd   D.Proc
 L0349    lbsr  L05DA
          clrb
          rts
-         bsr   L036F
+
+UIDup    bsr   LocFrPth
          bcs   L036E
          pshs  x,a
          lda   $01,u
@@ -381,12 +445,14 @@ L0349    lbsr  L05DA
          sta   b,x
          rts
 L0363    puls  pc,x,a
-         lda   $01,u
+
+SIDup    lda   $01,u
 L0367    lbsr  L0519
          bcs   L036E
          inc   $02,y
 L036E    rts
-L036F    ldx   D.Proc
+
+LocFrPth    ldx   D.Proc
          leax  <$30,x
          clra
 L0375    tst   a,x
@@ -399,17 +465,19 @@ L0375    tst   a,x
          rts
 L0382    andcc #$FE
          rts
-         bsr   L036F
+
+IUsrCall bsr   LocFrPth
          bcs   L0397
          pshs  u,x,a
-         bsr   L0398
+         bsr   ISysCall
          puls  u,x,a
          bcs   L0397
          ldb   $01,u
          stb   a,x
          sta   $01,u
 L0397    rts
-L0398    pshs  b
+
+ISysCall    pshs  b
          ldb   $01,u
          bsr   L040F
          bcs   L03AC
@@ -420,7 +488,8 @@ L0398    pshs  b
          sta   $01,u
          rts
 L03AC    puls  pc,a
-         pshs  b
+
+IMakDir  pshs  b
          ldb   #$82
 L03B2    bsr   L040F
          bcs   L03AC
@@ -433,7 +502,8 @@ L03BB    pshs  b,cc
          ldx   D.PthDBT
          os9   F$Ret64
          puls  pc,b,cc
-         pshs  b
+
+IChgDir  pshs  b
          ldb   $01,u
          orb   #$80
          bsr   L040F
@@ -444,13 +514,13 @@ L03BB    pshs  b,cc
          ldu   D.Proc
          ldb   $01,y
          bitb  #$1B
-         beq   L03EF
+         beq   IChgExec
          ldx   $03,y
          stx   <$20,u
          inc   $08,x
-         bne   L03EF
+         bne   IChgExec
          dec   $08,x
-L03EF    bitb  #$24
+IChgExec    bitb  #$24
          beq   L03FE
          ldx   $03,y
          stx   <$26,u
@@ -459,13 +529,16 @@ L03EF    bitb  #$24
          dec   $08,x
 L03FE    clrb
          bra   L03BB
-         pshs  b
+
+IDelete  pshs  b
          ldb   #$02
          bra   L03B2
-         ldb   #$87
+
+IDeletX  ldb   #$87
          pshs  b
          ldb   $01,u
          bra   L03B2
+
 L040F    ldx   D.Proc
          pshs  u,x
          ldx   D.PthDBT
@@ -694,6 +767,7 @@ L05C7    pshs  b,cc
          bne   L05D8
          clr   $05,y
 L05D8    puls  pc,u,y,x,b,cc
+
 L05DA    pshs  y,x
          ldy   D.Proc
          bra   L05EE
@@ -705,9 +779,10 @@ L05E1    clr   <$10,y
 L05EE    lda   <$10,y
          bne   L05E1
          puls  pc,y,x
-         ldx   $04,u
-         ldb   ,x
-         ldx   $01,x
+
+FIRQ     ldx   R$X,u     get ptr to IRQ packet
+         ldb   ,x        B = flip byte
+         ldx   $01,x     X = mask/priority
          clra
          pshs  cc
          pshs  x,b
@@ -770,11 +845,20 @@ L066A    clr   ,x+
          deca
          bne   L066A
          puls  pc,a,cc
+
 L0671    leas  $04,s
 L0673    comb
-         ldb   #$CA
+         ldb   #E$Poll   
          rts
-L0677    ldy   D.PolTbl
+
+***************************
+*
+* Device polling routine
+*
+* Entry: None
+*
+
+IRQPoll  ldy   D.PolTbl
          ldx   D.Init
          ldb   $0C,x
          bra   L0685
@@ -791,9 +875,10 @@ L0685    lda   [,y]
          puls  y,b
          bcs   L0680
          rts
-         pshs  u
-         ldx   $04,u
-         bsr   L06E0
+
+FLoad    pshs  u
+         ldx   R$X,u     get pathname to load
+         bsr   LoadMod
          bcs   L06C4
          puls  y
 L06A3    pshs  y
@@ -811,9 +896,10 @@ L06A3    pshs  y
          sty   $06,x
          stu   $08,x
 L06C4    puls  pc,u
-         pshs  u
-         ldx   $04,u
-         bsr   L06E0
+
+IDetach0 pshs  u          save off regs ptr
+         ldx   R$X,u      get ptr to device name
+         bsr   LoadMod
          bcs   L06DE
          puls  y
          ldd   D.Proc
@@ -824,7 +910,13 @@ L06C4    puls  pc,u
          puls  x
          stx   D.Proc
 L06DE    puls  pc,u
-L06E0    os9   F$AllPrc
+
+* Load module from file
+* Entry: X = pathlist to file containing module(s)
+* A fake process descriptor is created, then the file is
+* opened and validated into memory.
+
+LoadMod    os9   F$AllPrc
          bcc   L06E6
          rts
 L06E6    leay  ,u
@@ -986,17 +1078,23 @@ L0803    pshs  y,x,b,a
          tfr   d,x
          ldy   D.BlkMap
          clra
+ ifeq CPUTYPE-DRG128
          ldb   #$20
          leay  b,y
+ else
+         clrb
+ endc
 L083B    tst   ,y+
          beq   L087A
 L083F    addd  #$0001
          cmpy  D.BlkMap+2
          bne   L083B
+
+* Probably special for Dragon 128
+ ifeq CPUTYPE-DRG128
          ldy   D.BlkMap
          clra
 L084B    pshs  y
-* Probably special for Dragon 128
          leay  >L08A3,pcr
          ldb   a,y
          puls  y
@@ -1005,9 +1103,13 @@ L084B    pshs  y
 L0859    inca
          cmpa  #$20
          bcs   L084B
+ endc
 L085E    comb
          ldb   #$CF
          bra   L089F
+
+* Probably special for Dragon 128
+ ifeq CPUTYPE-DRG128
 L0863    inc   b,y
          clr   ,u+
          stb   ,u+
@@ -1019,7 +1121,7 @@ L0863    inc   b,y
          leax  -$01,x
          bne   L0859
          bra   L088D
-
+ endc
 L087A    inc   -$01,y
          std   ,u++
          pshs  b,a
@@ -1040,9 +1142,12 @@ L089F    leas  $04,s
          puls  pc,x
 
 * Probably special for Dragon 128
+ ifeq CPUTYPE-DRG128
 L08A3 fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
       fcb $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$1D,$1E,$1F
+ endc
 
+FPErr
          ldb   $02,u
          beq   L092F
          ldx   D.Proc
@@ -1154,6 +1259,7 @@ L09AB    deca
 L09BA    lda   ,u
          os9   I$WritLn
          rts
+
 L09C0    lda   $08,u
          pshs  u,x
          tfr   x,u
@@ -1204,7 +1310,8 @@ L0A1B    rts
 L0A1C fcc "Error #"
 L0A23 fcc " - "
 
-         pshs u
+ ifne EXTERR
+FInsErr         pshs u
          ldx   $04,u
          clra
          os9   F$Link
@@ -1232,6 +1339,7 @@ L0A47    ldu   D.Proc
          stx   $04,u
          clrb
 L0A63    puls  pc,u
+ endc
 
 FIOQu    ldy   D.Proc
 L0A68    lda   <$10,y
