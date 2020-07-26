@@ -1494,7 +1494,7 @@ ALLIMG10 ldd ,Y++
  cmpd #DAT.Free
  beq ALLIMG20
  lda D,U
- cmpa #$01   #RAMinUse
+ cmpa #RAMinUse
  puls D
  bne ALLIMG50
  subd #1
@@ -1523,7 +1523,7 @@ ALLIMG45 lda B,Y
  leax -1,X
  beq ALLIMG60
 ALLIMG48 incb
- cmpb #DAT.ImSz
+ cmpb #DAT.GBlk
  bcs ALLIMG45
  endc
 
@@ -1584,7 +1584,6 @@ ALLIMG88 lda B,Y
 ALLIMG90 leax -1,X
  bne ALLIMG80
  endc
-
 
 ALLIMG99 ldx 2,S Get process ptr
  lda P$State,X
@@ -2192,6 +2191,7 @@ SVCIRQ jmp [D.Poll]
 IOPOLL orcc #CARRY
  rts
 
+ ifeq CPUType-DRG128
 DATInit clra
  tfr a,dp
  ldx #DAT.Task ($FCC0)
@@ -2324,6 +2324,42 @@ DMAOUT lda ,u+
  sta ,X
  bra DMAOUT
 
+         else
+*
+* Not DRG128 - virtual computer
+*
+DATInit clra
+ tfr a,dp
+ ldx #DAT.Task ($FCC0)
+ lda #$F0 Set values in output register
+ sta 0,X
+*
+* Initialize all tasks in DAT registers
+*
+ ldy #DAT.Regs
+ ldb #$F0
+DATINT10 stb 0,X
+ clra
+ sta 0,Y    RAM at $0000
+ lda #ROMBlock
+ sta $E,y   DAT.Regs+$E
+ lda #IOBlock
+ sta $F,y   DAT.Regs+$F
+ incb
+ bne DATINT10
+ lda #%10110000 Turn on MMU by turning of bit 6
+ sta DAT.Task
+DATINTBT lbra COLD
+
+* We don't use NMI in the Virtual OS-9
+*
+NMIHN rti
+
+*
+* END Not DRG128
+*
+         endc
+
 * Restore DAT image and return from interrupt
 *
 SVCRET ldb P$Task,x Get task number from process
@@ -2341,7 +2377,11 @@ PassSWI ldb P$Task,x Get task number from process
  emod
 OS9End equ *
 
+ ifeq CPUType-DRG128
 Target set $1225-$100
+ else
+Target set $1000-$100
+ endc
  use filler
 
 * Get byte at 0,X in task B
@@ -2446,7 +2486,11 @@ SWIRQ ldb #D.SWI
 NMI ldb #D.NMI
  bra SWITCH10
 
+ ifeq CPUType-DRG128
 Target set $1225-$20
+ else
+Target set $1000-$20
+ endc
  use filler
 
 SYSVEC fdb TICK+$FFE0-* Clock tick handler
