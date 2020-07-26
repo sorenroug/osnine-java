@@ -116,7 +116,7 @@ public class TVI912Emulation extends EmulationCore {
             break;
         */
         case '\b':
-            dataReceived((char) 0x7F);
+            dataReceived((char) 0x08);
             break;
         case '\n':
             eolReceived();
