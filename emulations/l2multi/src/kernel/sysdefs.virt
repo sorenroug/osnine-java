@@ -129,9 +129,10 @@ FPort set $FCE0 floppy disk controller
 HPort set $FD00 hard disk controller
 DrvCnt set 4 four drives
 DPort set FPort
-A.T1 set $FC40 serial port address
+A.Term set $FCB0 serial port address
+A.T1 set $FCB2 serial port address
 A.T.Init set $15 default ACIA initialisation byte
-A.P set $FC20 address of parallel printer port
+A.P set $FCB4 address of parallel printer port
 A.P1 set A.T1 address of serial printer port
 A.KBD set A.P+2 keyboard port address
 A.KLoad set A.KBD port whose control reg has keyboard LOAD

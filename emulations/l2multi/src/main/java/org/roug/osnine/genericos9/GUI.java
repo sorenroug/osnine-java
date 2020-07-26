@@ -112,23 +112,15 @@ public class GUI {
 
         bus = new BusDragonBeta();
 
-        RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x20000);
+        RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x40000);
         bus.addMemorySegment(ram);
 
         ReadOnlyMemory rom = new ReadOnlyMemory(0xFE000, 0x2000);
         bus.insertMemorySegment(rom);
 
-//      if (singleUser) {
-//          loadROM(0xFF000, "OS9p1");
-//          loadROM(0xFE000, "OS9p2", "SysGo",
-//                  "Boot", "Clock", "VDisk_rv2");
-//      } else {
-            loadROM(0xFF000, "OS9p1_ed12");
-            loadROM(0xFE000, "Boot", "Init", "Shell", "Mdir", "Echo", "VDisk_rv2", "D0");
-//      }
-
-        //loadROM(0xFC000, "SCF", "IOMan", "Shell","Mdir","Echo");
-        //if (singleUser) loadROM("Shell"); // Don't rely on the harddisk
+        loadROM(0xFF000, "OS9p1");
+        loadROM(0xFE000, "Boot", "Init", "Shell", "Mdir", "Term", "T1",
+            "VDisk_rv2", "D0", "D1", "D2", "D3");
 
         //IRQBeat irqBeat = new IRQBeat(0xFFCD0, bus, 20);
         //bus.insertMemorySegment(irqBeat);

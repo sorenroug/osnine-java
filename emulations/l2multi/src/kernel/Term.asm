@@ -1,58 +1,55 @@
-         nam term
-         use defsfile
-         ttl Device Descriptor for the Serial Port
+ nam TERM
+ ttl Device Descriptor for terminal
 
-***************
-* /Term module - serial port
-* for use as a terminal port.
-*
-***************
+ use   defsfile
 
-Type     set DEVIC+OBJCT
-Revs     set REENT+1
+ mod   TrmEnd,TrmNam,DEVIC+OBJCT,REENT+1,mgrnam,drvnam
+ fcb UPDAT. mode
+ fcb $F extended controller address
+ fdb A.TERM port address
+ fcb   initsize-*-1  initilization table size
+ fcb   $00 device type:0=scf,1=rbf,2=pipe,3=scf
 
-         mod TermEnd,TermNam,Type,Revs,TermMgr,TermDrv
-         fcb UPDAT. attributes
-         fcb   $0F extended controller address
-         fdb   $FCB0  physical controller address
-         fcb DD.Parms-*-1 option byte count
-OptStrt  fcb DT.SCF SCF type device
+* DEFAULT PARAMETERS
 
-* Default path options
+ fcb   0 case:0=up&lower,1=upper only
+ fcb   1 backspace:0=bsp,1=bsp then sp & bsp
+ fcb   0 delete:0=bsp over line,1=return
+ fcb   1 echo:0=no echo
+ fcb   1 auto line feed:0=off
+ fcb   0 end of line null count
+ fcb   1 pause:0=no end of page pause
+ fcb   24 lines per page
+ fcb   C$BSP backspace character
+ fcb   C$DEL delete line character
+ fcb   $0D end of record character
+ fcb   $1B end of file character
+ fcb   $04 reprint line character
+ fcb   C$RPET duplicate last line character
+ fcb   C$PAUS pause character
+ fcb   $03 interrupt character
+ fcb   $05 quit character
+ fcb   $08 backspace echo character
+ fcb C$BELL line overflow char
+ fcb A.T.init ACIA initialization
+ fcb   $00 baud rate
+ fdb   TrmNam copy of descriptor name address
+ fcb   $11 acia xon char
+ fcb   $13 acia xoff char
+ fcb   80 number of columns for display
+ fcb   $00   No-edit flag?
+initsize equ   *
+ fcb   $00 Lead-in character for input
+ fcb   $1B Lead-in character for output
+ fcb   $CB Move left code
+ fcb   $C3 Move right code
+ fcb   $B4 Move left key
+ fcb   $B6 Move right key
+ fcb   $AA Delete chr under cursor key
+ fcb   $A3 Delete to end of line key
 
-         fcb 0 case=UPPER and lower
-         fcb 1 backspace=BS,SP,BS
-         fcb 0 delete=backspace over line
-         fcb true       auto echo ON
-         fcb true       auto line feed ON
-         fcb 0 number of NULLS after CR
-         fcb true  end of page pause ON
-         fcb 24 lines per page
-         fcb C$BSP backspace key
-         fcb C$DEL delete line key
-         fcb C$CR end of record key
-         fcb C$EOF end of file key
-         fcb C$RPRT redisplay the line
-         fcb C$RPET repeat the line
-         fcb C$PAUS pause key
-         fcb C$INTR Keyboard Interrupt key
-         fcb C$QUIT Keyboard Quit key
-         fcb C$BSP backspace echo character
-         fcb C$BELL line overflow character
-         fcb   $15 init value for dev ctl reg
-         fcb 0 baud rate
-         fdb TermNam offset to pause device name
-         fcb   $00 acia xon char
-         fcb   $00 acia xoff char
-DD.Parms equ *
-
-TermNam    fcs 'Term' device name
-TermMgr    fcs 'SCF' file manager
-TermDrv    fcs 'ACIA' device driver
-
-         emod
-
-TermEnd    equ *
-
-         end
-
+TrmNam fcs /Term/
+mgrnam fcs /SCF/
+drvnam fcs /ACIA/
+ emod
+TrmEnd equ *

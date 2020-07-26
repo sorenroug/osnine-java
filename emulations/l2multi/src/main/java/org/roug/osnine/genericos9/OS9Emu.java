@@ -26,7 +26,7 @@ public class OS9Emu {
     private static Properties configMap = new Properties();
 
     private static boolean singleUser = false;
-    private static String terminalType = "go80";
+    private static String terminalType = "tvi912";
 
     public static void main(String[] args) {
 
@@ -80,7 +80,7 @@ public class OS9Emu {
         configMap.setProperty("t1.type", terminalType);
 
         String fontSize = op.getOptionArgument("f");
-        if (fontSize == null) fontSize = "16";
+        if (fontSize == null) fontSize = "24";
         configMap.setProperty("term.fontsize", fontSize);
         configMap.setProperty("t1.fontsize", fontSize);
 

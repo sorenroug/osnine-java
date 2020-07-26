@@ -29,7 +29,11 @@
         </copy>
 
         <copy todir="${targetdir}">
-          <filelist dir="src/binaries" files="IOMan SCF Mdir Echo Shell Mfree"/>
+          <filelist dir="src/binaries" files="Mdir Echo Shell Mfree"/>
+        </copy>
+
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/l2virt" files="OS9p1 OS9p2 IOMan SCF RBF"/>
         </copy>
 
         <copy todir="${targetdir}">
@@ -37,15 +41,14 @@
         </copy>
         <!--
         <copy todir="${targetdir}">
-          <filelist dir="../../os9software/target/utilities" files="Shell"/>
-        </copy>
-        <copy todir="${targetdir}">
           <filelist dir="." files="OS9.dsk WORK.dsk"/>
         </copy>
         -->
         <assemble src="Boot"/>
+        <!--
         <assemble src="OS9p1_ed12"/>
         <assemble src="OS9p2_ed13"/>
+        -->
         <assemble src="D0"/>
         <assemble src="D1"/>
         <assemble src="D2"/>
