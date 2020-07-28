@@ -44,7 +44,7 @@
     <target name="all" depends="prepare, required, level1,
         gimix, swtpc, color, fm7, dragon64, cms9609, cms9619,
         color3, fm11, dragon128, cms9639, virtual,
-        utilities, dynacalc, stylograph, rms, basic09">
+        utilities, y2k, dynacalc, stylograph, rms, basic09">
     </target>
 
     <!-- Required by other Maven modules -->
@@ -72,6 +72,13 @@
         <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>
         <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
         <assemble src="OS9p2_ed5" home="gimix" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
+
+        <assemble src="OS9p1" home="l2virt" verify="d8ed1eecffb6513a5c9675f1bcb5a399"/>
+        <assemble src="OS9p2" home="l2virt" verify="1e53b42985b0f6df246917177032a067"/>
+        <assemble src="RBF" home="l2virt" verify="2734756eb27024724ae05550fc0b9db7"/>
+        <assemble src="SCF" home="l2virt" verify=""/>
+        <assemble src="IOMan" home="l2virt" verify="584d625c7351bf2b7bdb9e718d7de0c0"/>
+
     </target>
 
     <!-- Level I kernel modules (common) -->
@@ -198,7 +205,9 @@
         <assemble src="Setime" home="utilities" verify="b37bf834061eaa8e2170ce99ef01dd98"/>
         <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
         <assemble src="Dir_ed3" home="utilities" verify="65c719c5dd0c511a2cc51a4243a081e9"/>
+    </target>
 
+    <target name="y2k" depends="prepare">
         <assemble src="Dir_normal_ed5" home="y2k" verify="fb0a982ace14691577771b4aaeb45dca"/>
         <assemble src="Dir_small_ed5" home="y2k" verify="68111b8e4c25b715085c85833acee3c3"/>
         <assemble src="Free_ed7" home="y2k" verify="17674e3c92e75ea9cc615a5b04e84382"/>
