@@ -29,11 +29,11 @@
         </copy>
 
         <copy todir="${targetdir}">
-          <filelist dir="src/binaries" files="Mdir Echo Shell Mfree"/>
+          <filelist dir="src/binaries" files="Shell"/>
         </copy>
 
         <copy todir="${targetdir}">
-          <filelist dir="../../os9software/target/l2virt" files="OS9p1 OS9p2 IOMan SCF RBF"/>
+          <filelist dir="../../os9software/target/l2virt" files="OS9p1"/>
         </copy>
 
         <copy todir="${targetdir}">

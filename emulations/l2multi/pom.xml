@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <name>Emulator for a multi-user OS-9 Level II</name>
-    <url>http://www.roug.org/retrocomputing/emulators/genericos9</url>
+    <url>http://www.roug.org/retrocomputing/emulators/l2virt</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,7 +67,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.roug.osnine.genericos9.OS9Emu</mainClass>
+                            <mainClass>org.roug.osnine.l2virt.OS9Emu</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>

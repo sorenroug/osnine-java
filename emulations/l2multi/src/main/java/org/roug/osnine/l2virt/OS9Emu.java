@@ -1,4 +1,4 @@
-package org.roug.osnine.genericos9;
+package org.roug.osnine.l2virt;
 
 import java.io.File;
 import java.util.Properties;

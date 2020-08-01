@@ -1,4 +1,4 @@
-package org.roug.osnine.genericos9;
+package org.roug.osnine.l2virt;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -119,7 +119,7 @@ public class GUI {
         bus.insertMemorySegment(rom);
 
         loadROM(0xFF000, "OS9p1");
-        loadROM(0xFE000, "Boot", "Init", "Shell", "Mdir", "Term", "T1",
+        loadROM(0xFE000, "Boot", "Init", "Shell", "Term", "T1",
             "VDisk_rv2", "D0", "D1", "Clock");
 
         IRQBeat irqBeat = new IRQBeat(0xFFCD0, bus, 20);

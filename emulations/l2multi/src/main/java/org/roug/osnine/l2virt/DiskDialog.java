@@ -1,4 +1,4 @@
-package org.roug.osnine.genericos9;
+package org.roug.osnine.l2virt;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
