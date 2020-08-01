@@ -31,11 +31,11 @@ SCFEnt    equ   *
 
 * Open/Create entry
 Open
-Create    ldx   $03,y
+Create    ldx   PD.DEV,y
          stx   <$3B,y
-         ldu   $06,y
+         ldu   PD.RGS,y
          pshs  y
-         ldx   $04,u
+         ldx   R$X,u
          os9   F$PrsNam
          lbcs  L00CB
          tsta
@@ -94,7 +94,7 @@ L0092    sta   ,u+
          sty   D.Proc
          puls  y
          bcs   L00D0
-         stu   $0A,y
+         stu   PD.FST,y
 
 * seek/delete routine
 Seek
@@ -105,22 +105,22 @@ L00CB    puls  pc,y
 * ChgDir/MakDir entry
 ChgDir
 MakDir    comb
-         ldb   #$D7
+         ldb   #E$BPNam
 L00D0    rts
 
 Term    pshs  cc
          orcc  #$50
-         ldx   $03,y
+         ldx   PD.DEV,y
          bsr   L00F6
-         ldx   $0A,y
+         ldx   PD.FST,y
          bsr   L00F6
          puls  cc
          tst   $02,y
          bne   L00F4
-         ldu   $0A,y
+         ldu   PD.FST,y
          beq   L00EA
          os9   I$Detach
-L00EA    ldu   $08,y
+L00EA    ldu   PD.BUF,y
          beq   L00F4
          ldd   #$0100
          os9   F$SRtMem
@@ -165,22 +165,26 @@ L0138    lda   ,s
          sta   $03,x
 L013E    puls  pc,y,x,b,a
 
-GetStat    ldx   $06,y
-         lda   $02,x
+* (Y) = Path descriptor pointer
+* (U) = Caller's register stack pointer
+GetStat  ldx   PD.RGS,y
+         lda   R$B,x
          cmpa  #$00
          beq   L018D
+* Special for FM-11
          cmpa  #$25
          beq   L018E
-         ldb   #$09
+*
+         ldb   #D$GSTA $09
 L014E    pshs  a
          clra
          ldx   $03,y
          ldu   $02,x
          ldx   ,x
-         addd  $09,x
+         addd  M$Exec,x
          leax  d,x
          puls  a
-         jmp   ,x
+         jmp   0,x
 
 PutStat    lbsr  L04B1
          bsr   L016B
@@ -188,11 +192,11 @@ PutStat    lbsr  L04B1
          lbsr  L0453
          puls  pc,b,cc
 
-L016B    lda   $02,u
-         ldb   #$0C
+L016B    lda   R$B,u
+         ldb   #D$PSTA   $0C
          cmpa  #$25
          beq   L01BC
-         cmpa  #$00
+         cmpa  #SS.Opt   $00
          bne   L014E
          pshs  y
          ldx   D.Proc
@@ -310,7 +314,7 @@ Read    lbsr  L04B1
          bcs   L027B
          tsta
          beq   L029B
-         cmpa  <$2C,y
+         cmpa  PD.EOF,y
          bne   L0293
 L0279    ldb   #E$EOF
 L027B    leas  $02,s
@@ -326,13 +330,13 @@ L0284    tfr   x,d
          ldu   $08,y
 L028E    lbsr  L03B9
          bcs   L027B
-L0293    tst   <$24,y
+L0293    tst   PD.EKO,y
          beq   L029B
-         lbsr  L055A
+         lbsr  L055A Print character
 L029B    leax  $01,x
          sta   ,u+
          beq   L02A6
-         cmpa  <$2B,y
+         cmpa  PD.EOR,y
          beq   L02AA
 L02A6    cmpx  ,s
          bcs   L0284
@@ -365,6 +369,7 @@ L02DD    cmpa  b,y
          incb
          cmpb  #$31
          bls   L02DD
+* Special for FM-11 start
          cmpa  #$0C
          beq   L0311
          cmpa  #$0B
@@ -376,6 +381,7 @@ L02DD    cmpa  b,y
 L02F6    cmpx  $0D,y
          bls   L02FC
          stx   $0D,y
+* Special for FM-11 end
 L02FC    leax  $01,x
          cmpx  ,s
          bcs   L030C
@@ -464,6 +470,7 @@ L03A1    cmpx  $0D,y
          leau  -$01,u
 L03B6    leax  -$01,x
 L03B8    rts
+
 L03B9    pshs  u,y,x
          ldx   $03,y
          ldu   $02,x
@@ -472,6 +479,7 @@ L03B9    pshs  u,y,x
          ldd   $09,x
          jsr   d,x
          puls  pc,u,y,x
+
 L03CA    pshs  u,y,x
          ldx   $0A,y
          ldu   $03,y
@@ -491,6 +499,8 @@ L03E1    leax  ,x
          ldu   #$0003
          lbsr  L05C3
 L03F1    puls  pc,u,y,x
+
+* Check for forced uppercase
 L03F3    tst   <$21,y
          beq   L0402
          cmpa  #$61
@@ -499,6 +509,8 @@ L03F3    tst   <$21,y
          bhi   L0402
          suba  #$20
 L0402    rts
+
+* Check for printable character
 L0403    tst   <$24,y
          beq   L0402
 L0408    cmpa  #$20
@@ -513,11 +525,14 @@ L0408    cmpa  #$20
          beq   L0420
          cmpa  #$0D
          bne   L0423
-L0420    lbra  L055A
+L0420    lbra  L055A Print character
+
+* Non-printable character
 L0423    pshs  a
-         lda   #$2E
+         lda   #'.
          bsr   L0420
          puls  pc,a
+
 L042B    pshs  y,x
          ldd   ,s
          beq   L0451
@@ -572,6 +587,7 @@ L0468    pshs  x,a
          beq   L0468
          coma
          rts
+
 L0490    lda   $01,s
          sta   $04,x
          sta   $03,x
@@ -637,7 +653,7 @@ L04FD    pshs  b,a
          sta   -$01,u
          ldy   D.Proc
          lda   $06,y
-         ldb   <D.SysTsk
+         ldb   D.SysTsk
          puls  y
          os9   F$Move
          puls  y,x
@@ -672,6 +688,8 @@ L0552    leas  $02,s
          pshs  b,cc
          bsr   L054B
          puls  pc,b,cc
+
+* Print character
 L055A    pshs  u,x,a
          ldx   $0A,y
          beq   L05BA

@@ -1,8 +1,8 @@
 
  nam TMODE
 
-* Tmode from Dragon 64 distribution. Serial I/O is through
-* an 6551 UART.
+* Tmode from Dragon 128 distribution. Serial I/O is through
+* a 6551 UART.
 
 * Copyright 1980 by Microware Systems Corp.,
 
@@ -29,7 +29,7 @@ SETNAM fcs "Tmode"
 *
 * Ed  8 - Add conditionals for Color Computer               KKK 01/05/83
 *
-* Ed  8 - Add options for 6551 UART (baud, XON, XOFF)
+* Ed  9 - Add options for Dragon 128 Screen (baud, XON, XOFF, Width, Edit)
  pag
 
  ifeq Screen-small
@@ -82,7 +82,7 @@ ZER0 equ 0
 NUMRIC equ 0
 BINARY equ 1
 
- fdb 23 Number of table entries (baud, XON, XOFF)
+ fdb 25 Number of table entries
 
 OPTTBL equ *
  fcb LOGCAL,NONZ,PD.UPC-PD.OPT,NONZ
@@ -123,14 +123,18 @@ OPTTBL equ *
  fcs "bse" Backspace echo char
  fcb BINARY,C$BELL,PD.OVF-PD.OPT,0
  fcs "bell" Bell character
- fcb BINARY,$15,PD.PAR-PD.OPT,0
+ fcb BINARY,$00,PD.PAR-PD.OPT,0
  fcs "type" Acia no-parity type
- fcb NUMRIC,$02,PD.BAU-PD.OPT,0
- fcs "baud" baud rate
  fcb BINARY,C$XON,PD.XON-PD.OPT,0
  fcs "xon" x-on char
  fcb BINARY,C$XOFF,PD.XOFF-PD.OPT,0
  fcs "xoff"
+ fcb NUMRIC,$02,PD.BAU-PD.OPT,0
+ fcs "baud" baud rate
+ fcb NUMRIC,$50,PD.Width-PD.OPT,0
+ fcs "width"
+ fcb LOGCAL,$04,PD.Edit-PD.OPT,$04
+ fcs "noedit"
 
 *****
 * Tmode
@@ -471,4 +475,3 @@ SEAR35 lda ,X+
  emod Module Crc
 
 SETSIZ equ *
-

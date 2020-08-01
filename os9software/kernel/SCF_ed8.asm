@@ -47,7 +47,7 @@ start    equ   *
 Open
 Create   ldx   PD.DEV,y
          stx   <$3B,y
-         ldu   $06,y
+         ldu   PD.RGS,y
          ldx   R$X,u
          pshs  y
          os9   F$PrsNam
@@ -65,7 +65,7 @@ L0053    sty   R$X,u
          ldd   #$0001
          os9   F$SRqMem
          bcs   L00CC
-         stu   $08,y
+         stu   PD.BUF,y
          clrb
          bsr   L008B
 
@@ -86,13 +86,14 @@ L008E    eora  ,x+
 L0097    sta   ,u+
          decb
          bne   L0097
-L009C    ldu   $03,y
+
+L009C    ldu   PD.DEV,y     Get device table entry address
          beq   MakDir
          ldx   $02,u
-         lda   <$28,y
-         sta   $07,x
-         ldx   $04,u
-         ldd   <$36,y
+         lda   PD.PAG,y  Get lines per page
+         sta   V.LINE,x
+         ldx   V$DESC,u
+         ldd   PD.D2P,y
          beq   Seek
          leax  d,x
          lda   $01,y
@@ -115,27 +116,27 @@ L00C7    puls  pc,y
 * ChgDir/MakDir entry
 ChgDir
 MakDir   comb
-         ldb   #$D7
+         ldb   #E$BPNam
 L00CC    rts
 
-Term     tst   $02,y
+Term     tst   PD.CNT,y
          bne   L00E3
-         ldu   $0A,y
+         ldu   PD.FST,y
          beq   L00D8
          os9   I$Detach
-L00D8    ldu   $08,y
+L00D8    ldu   PD.BUF,y
          beq   L00E2
          ldd   #$0001
          os9   F$SRtMem
 L00E2    clra
 L00E3    rts
 
-GetStat  ldx   $06,y
-         lda   $02,x
+GetStat  ldx   PD.RGS,y
+         lda   R$B,x
          cmpa  #$00
          beq   L011C
          pshs  a
-         ldd   #$0009
+         ldd   #D$GSTA
 L00F1    ldx   $03,y
          ldu   $02,x
          ldx   ,x
@@ -144,15 +145,15 @@ L00F1    ldx   $03,y
          puls  a
          jmp   ,x                      jump into driver
 
-PutStat  ldx   $06,y
-         lda   $02,x
+PutStat  ldx   PD.RGS,y
+         lda   R$B,x
          cmpa  #$00
          beq   L010E
          pshs  a
-         ldd   #$000C
+         ldd   #D$PSTA
          bra   L00F1
 L010E    ldx   $04,x
-         leay  <$20,y
+         leay  PD.OPT,y
          ldb   #$1A
 L0115    lda   ,x+
          sta   ,y+
@@ -160,6 +161,7 @@ L0115    lda   ,x+
          bne   L0115
 L011C    clrb
          rts
+
          comb
          ldb   #$D0
 L0121    rts
@@ -176,9 +178,9 @@ Read     lbsr  L0327
          bcs   L0143
          tsta
          beq   L0159
-         cmpa  <$2C,y
+         cmpa  PD.EOF,y
          bne   L0151
-L0141    ldb   #$D3
+L0141    ldb   #E$EOF
 L0143    leas  $02,s
          pshs  b
          bsr   L016A
@@ -186,7 +188,7 @@ L0143    leas  $02,s
          puls  pc,b
 L014C    lbsr  L027E
          bcs   L0143
-L0151    tst   <$24,y
+L0151    tst   PD.EKO,y
          beq   L0159
          lbsr  L0396
 L0159    leax  $01,x
@@ -250,16 +252,17 @@ L01C9    pshs  pc,x
          jsr   [,s++]
          bra   L018B
 
-L01DC    bra   L0237
-         bra   L0226
-         bra   L01EE
-         bra   L020D
-         bra   L0255
+L01DC    bra   L0237        Process PD.BSP
+         bra   L0226        Process PD.DEL
+         bra   L01EE        Process PD.EOR
+         bra   L020D        Process PD.EOF
+         bra   L0255        Process PD.RPR
          bra   L025E
          puls  pc
+         bra   L0226
+         bra   L0226
 
-         bra   L0226
-         bra   L0226
+* Process PD.EOR character
 L01EE    leas  $02,s
          sta   ,u
          lbsr  L02AF
@@ -274,10 +277,13 @@ L01FF    lda   ,u+
          bne   L01FF
          leas  $02,s
          lbra  L02D1
+
+* Process PD.EOF
 L020D    leas  $02,s
          leax  ,x
          lbeq  L0141
          bra   L01A0
+
 L0217    pshs  b
          lda   #$0D
          sta   ,u
@@ -285,28 +291,35 @@ L0217    pshs  b
          puls  b
          lbra  L0143
 L0224    bsr   L0237
+
+* Process interrupt
 L0226    leax  ,x
          beq   L0231
-         tst   <$23,y
+         tst   PD.DLO,y
          beq   L0224
          bsr   L0251
 L0231    ldx   #$0000
-         ldu   $08,y
+         ldu   PD.BUF,y
          rts
+
+* Process PD.BSP 
 L0237    leax  ,x
          lbeq  L02BD
-         leau  -$01,u
-         leax  -$01,x
-         tst   <$22,y
+         leau  -1,u
+         leax  -1,x
+         tst   PD.BSO,y
          beq   L024C
          bsr   L024C
          lda   #$20
          bsr   L024F
-L024C    lda   <$32,y
+L024C    lda   PD.BSE,y
 L024F    bra   L02C6
+
 L0251    lda   #$0D
          bra   L02C6
-L0255    lda   <$2B,y
+
+* Process PD.RPR
+L0255    lda   PD.EOR,y
          sta   ,u
          bsr   L0231
 L025C    bsr   L02BE
@@ -322,10 +335,12 @@ L025E    cmpx  $0D,y
          leau  -$01,u
 L0273    leax  -$01,x
 L0275    rts
+
 L0276    pshs  u,y,x
-         ldx   $0A,y
-         ldu   $03,y
+         ldx   PD.FST,y
+         ldu   PD.DEV,y
          bra   L0286
+
 L027E    pshs  u,y,x
          ldx   $03,y
          ldu   $0A,y
@@ -341,7 +356,9 @@ L028D    leax  ,x
          ldu   #$0003
          lbsr  L03FF
 L029D    puls  pc,u,y,x
-L029F    tst   <$21,y
+
+* Check for forced uppercase
+L029F    tst   PD.UPC,y
          beq   L02AE
          cmpa  #$61
          bcs   L02AE
@@ -350,11 +367,11 @@ L029F    tst   <$21,y
          suba  #$20
 L02AE    rts
 
-L02AF    tst   <$24,y
+L02AF    tst   PD.EKO,y       Echo turned on?
          bne   L02BE
          cmpa  #$0D
          bne   L02BD
-         tst   <$25,y
+         tst   PD.ALF,y
          bne   L02BE
 L02BD    rts
 
@@ -362,9 +379,11 @@ L02BE    cmpa  #$20
          bcc   L02C6
          cmpa  #$0D
          bne   L02C9
-L02C6    lbra  L0396
+L02C6    lbra  L0396 Print character
+
+* Non-printable character
 L02C9    pshs  a
-         lda   #$2E
+         lda   #'.
          bsr   L02C6
          puls  pc,a
 L02D1    ldx   D.Proc
@@ -391,11 +410,12 @@ L02E6    pshs  x,a
          os9   F$IOQu
          inc   $0F,y
          ldx   D.Proc
-         ldb   <$36,x
+         ldb   P$Signal,X
          puls  x,a
          beq   L02E6
          coma
          rts
+
 L0308    lda   ,s
          sta   $04,x
          sta   $03,x
@@ -412,7 +432,7 @@ L0324    clra
          puls  pc,x,a
 
 L0327    ldx   D.Proc
-         lda   ,x
+         lda   P$ID,x         Get process ID #
          clr   $0F,y
          ldx   $03,y
          bsr   L02E6
@@ -429,6 +449,7 @@ L0341    ldu   $06,y
 
 WriteLn  bsr   L0327
          bra   L034C
+
 Write    bsr   L0327
          inc   $0C,y
 L034C    ldx   $04,u
@@ -466,6 +487,7 @@ L0390    pshs  b,cc
          bsr   L0385
          puls  pc,b,cc
 
+* Print character
 L0396    pshs  u,x,a
          ldx   $0A,y
          beq   L03F6
@@ -477,7 +499,7 @@ L03A2    pshs  u,x,a
          cmpa  #$0D
          bne   L03F8
          ldu   $02,x
-         tst   $08,u
+         tst   V.PAUS,u
          bne   L03BF
          tst   $0C,y
          bne   L03D1
@@ -488,10 +510,10 @@ L03A2    pshs  u,x,a
          bra   L03C9
 L03BF    lbsr  L0276
          bcs   L03C9
-         cmpa  <$2F,y
+         cmpa  PD.PSC,y
          bne   L03BF
 L03C9    lbsr  L0276
-         cmpa  <$2F,y
+         cmpa  PD.PSC,y
          beq   L03C9
 L03D1    ldu   $02,x
          clr   $08,u
@@ -499,9 +521,9 @@ L03D1    ldu   $02,x
          bsr   L03FC
          tst   $0C,y
          bne   L03F6
-         ldb   <$26,y
+         ldb   PD.NUL,y
          pshs  b
-         tst   <$25,y
+         tst   PD.ALF,y  Add linefeed?
          beq   L03ED
          lda   #$0A
 L03E9    bsr   L03FC
@@ -510,18 +532,18 @@ L03ED    lda   #$00
          dec   ,s
          bpl   L03E9
          clra
-L03F4    leas  $01,s
+L03F4    leas  1,s
 L03F6    puls  pc,u,x,a
 
 L03F8    bsr   L03FC
          puls  pc,u,x,a
 
-L03FC    ldu   #$0006
+L03FC    ldu   #D$WRIT
 L03FF    pshs  u,y,x,a
-         ldu   $02,x
-         clr   $05,u
-         ldx   ,x
-         ldd   $09,x
+         ldu   V$STAT,x
+         clr   V.WAKE,u
+         ldx   V$DRIV,x
+         ldd   M$Exec,x
          addd  $05,s
          leax  d,x
          lda   ,s+

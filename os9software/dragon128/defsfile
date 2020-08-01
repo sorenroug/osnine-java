@@ -13,3 +13,8 @@
 
 DriveCnt set 4 drives max on system
  endc
+
+normal equ 0 normal screen size
+small equ 1 small screen size
+Screen equ normal
+

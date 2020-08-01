@@ -14,14 +14,15 @@ IOName  fcs /IOMan/  module name
 
          fcb   11
 
-IOINIT    equ   *
+IOINIT equ *
+* allocate device and polling tables
          ldx   D.Init
-         lda   $0C,x
-         ldb   #$09
+         lda   PollCnt,x   get number of entries in table
+         ldb   #POLSIZ
          mul
          pshs  b,a
-         lda   $0D,x
-         ldb   #$09
+         lda   DevCnt,x      get device count
+         ldb   #DEVSIZ
          mul
          addd  ,s
          addd  #$00FF
@@ -79,24 +80,24 @@ IOCalls  fcb $7F
 *
 FIODel   ldx   R$X,u
          ldu   D.Init
-         ldb   $0D,u
+         ldb   DevCnt,u      get device count
          ldu   D.DevTbl
-L007B    ldy   $04,u
+L007B    ldy   V$DESC,u      descriptor exists?
          beq   L008C
-         cmpx  $04,u
+         cmpx  V$DESC,u      device match?
          beq   L0093
          cmpx  ,u
          beq   L0093
          cmpx  $06,u
          beq   L0093
-L008C    leau  $09,u
+L008C    leau  DEVSIZ,u      move to next dev entry
          decb
          bne   L007B
          clrb
          rts
 
 L0093    comb
-         ldb   #$D1
+         ldb   #E$ModBsy     submit error
          rts
 
 L0097    lsra
@@ -112,12 +113,40 @@ L0097    lsra
          rts
 
 UsrIODis fdb   IAttach-UsrIODis
- fcb $01,$DF,$02,$AD,$02,$E4,$02,$E4,$03,$0D,$03,$2A,$03,$60
-  fcb $04,$04,$04,$12,$04,$6B,$04,$12,$04,$6B,$04,$86,$04,$04,$04,$D7,$03,$66
+         fdb   IDetach-UsrIODis
+         fdb   UIDup-UsrIODis
+ fcb $02,$E4
+ fcb $02,$E4
+ fcb $03,$0D
+ fcb $03,$2A
+ fcb $03,$60
+  fcb $04,$04
+ fcb $04,$12
+ fcb $04,$6B
+ fcb $04,$12
+ fcb $04,$6B
+ fcb $04,$86
+ fcb $04,$04
+ fcb $04,$D7
+         fdb   IDeletX-UsrIODis
 
 SysIODis fdb   IAttach-SysIODis
- fcb $01,$BD,$02,$A2,$02,$D5,$02,$D5,$02,$EB,$03,$08,$03,$3E
-  fcb $03,$E7,$03,$F5,$04,$4E,$03,$F5,$04,$4E,$04,$6C,$03,$E7,$04,$C4,$03,$44
+         fdb   IDetach-SysIODis
+         fdb   SIDup-SysIODis
+ fcb $02,$D5
+ fcb $02,$D5
+ fcb $02,$EB
+ fcb $03,$08
+ fcb $03,$3E
+ fcb $03,$E7
+ fcb $03,$F5
+ fcb $04,$4E
+ fcb $03,$F5
+ fcb $04,$4E
+ fcb $04,$6C
+ fcb $03,$E7
+ fcb $04,$C4
+         fdb   IDeletX-SysIODis
 
 UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch
@@ -132,7 +161,7 @@ IODsptch    cmpb  #$90
          jmp   ,x
 
 ErrSvc    comb
-         ldb   #$D0
+         ldb   #E$UnkSvc
          rts
 
 IAttach  ldb   #$17
@@ -144,11 +173,11 @@ L0105    clr   ,-s
          sta   $09,s
          ldx   D.Proc
          stx   <$14,s
-         leay  <$40,x
+         leay  P$DATImg,x    point to DAT img of curr proc
          ldx   D.SysPRC
          stx   D.Proc
-         ldx   $04,u
-         lda   #$F0
+         ldx   R$X,u        get caller's X
+         lda   #Devic+0        link to device desc
          os9   F$SLink
          bcs   L014E
          stu   $04,s
@@ -160,18 +189,19 @@ L0105    clr   ,-s
          std   $0C,s
          ldd   $0B,u
          leax  d,u
-         lda   #$E0
+         lda   #Drivr+0        driver
          os9   F$Link
          bcs   L014E
          stu   ,s
          ldu   $04,s
          ldd   $09,u
          leax  d,u
-         lda   #$D0
+         lda   #FlMgr+0      link to fm
          os9   F$Link
 L014E    ldx   <$14,s
          stx   D.Proc
          bcc   L0163
+* Error on attach, so detach
 L0155    stb   <$17,s
          leau  ,s
          os9   I$Detach
@@ -181,10 +211,10 @@ L0155    stb   <$17,s
 
 L0163    stu   $06,s
          ldx   D.Init
-         ldb   $0D,x
-         lda   $0D,x
+         ldb   DevCnt,x       get device entry count
+         lda   DevCnt,x       get device entry count
          ldu   D.DevTbl
-L016D    ldx   $04,u
+L016D    ldx   V$DESC,u       get dev desc ptr
          beq   L01AA
          cmpx  $04,s
          bne   L0188
@@ -197,7 +227,7 @@ L016D    ldx   $04,u
 L0182    puls  a
          bra   L016D
 L0186    stu   $0E,s
-L0188    ldx   $04,u
+L0188    ldx   V$DESC,u       get dev desc ptr
          ldy   $0F,x
          cmpy  $0C,s
          bne   L01AA
@@ -212,21 +242,23 @@ L0188    ldx   $04,u
          tst   $08,u
          beq   L01AA
          sta   $0A,s
-L01AA    leau  $09,u
+L01AA    leau  DEVSIZ,u      advance to the next device entry
          decb
          bne   L016D
          ldu   $0E,s
          lbne  L0261
          ldu   D.DevTbl
-L01B7    ldx   $04,u
+L01B7    ldx   V$DESC,u       get dev desc ptr
          beq   L01C8
-         leau  $09,u
+         leau  DEVSIZ,u     move to next dev table entry
          deca
          bne   L01B7
-         ldb   #$CC
+         ldb   #E$DevOvf      dev table overflow
          bra   L0155
-L01C4    ldb   #$CB
+
+L01C4    ldb   #E$BMode
          bra   L0155
+
 L01C8    ldx   $02,s
          lbne  L0258
          stu   $0E,s
@@ -264,9 +296,9 @@ L0214    leay  >$1000,y
          ldd   <$12,s
          std   ,u
          ldx   D.SysPRC
-         lda   $0C,x
-         ora   #$10
-         sta   $0C,x
+         lda   P$State,x
+         ora   #ImgChg
+         sta   P$State,x
          os9   F$ID
          ldy   <$10,s
 L0238    sty   <$10,s
@@ -304,16 +336,15 @@ L0279    ldx   <$16,s
          clrb
          rts
 
-IDetach
-         ldu   $08,u
-         ldx   $04,u
+IDetach  ldu   R$U,u
+         ldx   R$X,u
          lda   #$FF
          cmpa  $08,u
          lbeq  L034C
          dec   $08,u
          lbne  L032E
          ldx   D.Init
-         ldb   $0D,x
+         ldb   DevCnt,x      get device count
          pshs  u,b
          ldx   $02,u
          clr   $02,u
@@ -321,7 +352,7 @@ IDetach
          ldy   D.DevTbl
 L02A4    cmpx  $02,y
          beq   L0324
-         leay  $09,y
+         leay  DEVSIZ,y
          decb
          bne   L02A4
          ldy   D.Proc
@@ -419,7 +450,7 @@ L036A    lbsr  GetPDesc
          inc   $02,y
 L0371    rts
 
-LocFrPth    ldx   D.Proc
+LocFrPth ldx D.Proc
          leax  <$30,x
          clra
 L0378    tst   a,x
@@ -449,7 +480,7 @@ ISysCall    pshs  b
          bsr   L0412
          bcs   L03AF
          puls  b
-         lbsr  L05B4
+         lbsr  CallFMgr
          bcs   L03BE
          lda   ,y
          sta   $01,u
@@ -461,7 +492,7 @@ IMakDir  pshs  b
 L03B5    bsr   L0412
          bcs   L03AF
          puls  b
-         lbsr  L05B4
+         lbsr  CallFMgr
 L03BE    pshs  b,cc
          ldu   $03,y
          os9   I$Detach
@@ -476,7 +507,7 @@ IChgDir  pshs  b
          bsr   L0412
          bcs   L03AF
          puls  b
-         lbsr  L05B4
+         lbsr  CallFMgr
          bcs   L03BE
          ldu   D.Proc
          ldb   $01,y
@@ -487,7 +518,7 @@ IChgDir  pshs  b
          inc   $08,x
          bne   IChgExec
          dec   $08,x
-IChgExec    bitb  #$24
+IChgExec bitb  #$24
          beq   L0401
          ldx   $03,y
          stx   <$26,u
@@ -560,7 +591,7 @@ L047A    decb
 L047E    puls  u,x
          stx   D.Proc
          rts
-L0483    ldb   #$D7
+L0483    ldb   #E$BPNam
 L0485    pshs  b
          lda   ,y
          ldx   D.PthDBT
@@ -568,7 +599,8 @@ L0485    pshs  b
          puls  b
          coma
          bra   L047E
-L0493    lda   $01,u
+
+S2UPath    lda   $01,u
          cmpa  #$10
          bcc   L04A4
          ldx   D.Proc
@@ -580,16 +612,16 @@ L04A4    comb
          ldb   #E$BPNum
 L04A7    rts
 
-         bsr   L0493
+UISeek   bsr   S2UPath       get user path #
          bcc   L04AF
          rts
 
-         lda   $01,u
+SISeek   lda   R$A,u
 L04AF    bsr   GetPDesc
-         lbcc  L05B4
+         lbcc  CallFMgr
          rts
 
-         bsr   L0493
+UIRead   bsr   S2UPath       get user path #
          bcc   L04BD
          rts
 
@@ -628,7 +660,7 @@ L04EA    pshs  a
          deca
          bpl   L04EA
 L04F9    puls  b
-         lbra  L05B4
+         lbra  CallFMgr
 L04FE    ldb   #$F4
          lda   ,s
          bita  #$02
@@ -636,25 +668,27 @@ L04FE    ldb   #$F4
          ldb   #E$Write
          bra   L050C
 
-L050A    ldb   #E$BPNum
+L050A    ldb   #E$BPNum   New in ed. 11
 L050C    com   ,s+
          rts
 
-         bsr   L0493
+UIWrite  bsr   S2UPath
          bcc   L0516
          rts
-         lda   $01,u
+
+SIWrite  lda   R$A,u
 L0516    pshs  b
          ldb   #$02
          bra   L04C1
-GetPDesc    pshs  x
+
+GetPDesc pshs  x
          ldx   D.PthDBT
          os9   F$Find64
          puls  x
          lbcs  L04A4
 L0529    rts
 
-UIGetStt lbsr  L0493
+UIGetStt lbsr  S2UPath
          ldx   D.Proc
          bcc   L0536
          rts
@@ -680,13 +714,13 @@ L0553    puls  pc,u,y,b,cc  New in ed. 11
 SSOpt    lda   D.SysTsk
          ldb   P$Task,x
          leax  <PD.OPT,y
-SSCopy    ldy   #PD.OPT
+SSCopy   ldy   #PD.OPT
          ldu   R$X,u
          os9   F$Move
          leas  $01,s
          puls  pc,u,y,b  New in ed. 11
 
-SSDevNm    lda   D.SysTsk
+SSDevNm  lda   D.SysTsk
          ldb   P$Task,x
          pshs  b,a
          ldx   $03,y
@@ -695,20 +729,22 @@ SSDevNm    lda   D.SysTsk
          leax  d,x
          puls  b,a
          bra   SSCopy
-         lbsr  L0493
+
+UIClose  lbsr  S2UPath       get user path #
          bcs   L0529
          pshs  b
          ldb   $01,u
          clr   b,x
          puls  b
          bra   L058C
-         lda   $01,u
+
+SIClose  lda   R$A,u
 L058C    bsr   GetPDesc
          bcs   L0529
          dec   $02,y
          tst   $05,y
          bne   L0598
-         bsr   L05B4
+         bsr   CallFMgr
 L0598    tst   $02,y
          bne   L0529
          lbra  L03BE
@@ -724,7 +760,7 @@ L05A8    ldx   D.Proc
          stb   $05,y
 L05B3    rts
 
-L05B4    pshs  u,y,x,b
+CallFMgr pshs  u,y,x,b
          bsr   L05A8
          bcc   L05BE
          leas  $01,s
@@ -768,7 +804,7 @@ FIRQ     ldx   R$X,u     get ptr to IRQ packet
          pshs  cc
          pshs  x,b
          ldx   D.Init
-         ldb   $0C,x
+         ldb   PollCnt,x   get number of entries in table
          ldx   D.PolTbl
          ldy   $04,u
          beq   L0650
@@ -902,7 +938,7 @@ LoadMod  os9   F$AllPrc
          bcc   L06F0
          rts
 L06F0    leay  ,u
-         ldu   #$0000
+         ldu   #0
          pshs  u,y,x,b,a
          leas  <-$11,s
          clr   $07,s
@@ -974,7 +1010,7 @@ L0790    lda   $06,s
          beq   L0797
          os9   I$Close
 L0797    ldd   $02,s
-         addd  #$0FFF
+         addd #DAT.BlSz-1 Round up
          lsra
          lsra
          lsra
@@ -1037,7 +1073,7 @@ L080D    pshs  y,x,b,a
          std   $04,s
          cmpd  $08,s
          bls   L086C
-         addd  #$0FFF   Round up to block
+         addd #DAT.BlSz-1 Round up
          lsra
          lsra
          lsra
@@ -1063,17 +1099,17 @@ L080D    pshs  y,x,b,a
          clrb
 L0840    tst   ,y+
          beq   L0851
-L0844    addd  #$0001
+L0844    addd  #1
          cmpy  D.BlkMap+2
          bne   L0840
 L084C    comb
          ldb   #$CF
          bra   L0876
-L0851    inc   -$01,y
+L0851    inc   -1,y
          std   ,u++
          pshs  b,a
          ldd   $0A,s
-         addd  #$1000
+         addd  #DAT.BlSz
          std   $0A,s
          puls  b,a
          leax  -$01,x
@@ -1097,7 +1133,7 @@ L0876    leas  $04,s
 
 ErrHead   fcc "ERROR #"
 ErrNum   equ   *-ErrHead 
- fcb  $2F,$3A,$30
+ fcb  '0-1,'9+1,'0
          fcb   C$CR
 ErrMessL equ   *-ErrHead 
 
@@ -1117,7 +1153,7 @@ L089D    inc   ErrNum+0,s
          subb  #100
          bcc   L089D
 L08A3    dec   ErrNum+1,s
-         addb  #$0A
+         addb  #10
          bcc   L08A3
          addb  #$30
          stb   ErrNum+2,s
@@ -1136,48 +1172,53 @@ L08BD    os9   F$Move
          leas  ErrMessL,s  purge the buffer
 L08CC    rts
 
+*****
+* Enter I/O Queue and perform a timed sleep
+* Input: A = Process number
+*
 FIOQu    ldy   D.Proc
-L08D0    lda   <$10,y
+L08D0    lda   P$IOQN,y
          beq   L08EF
          cmpa  $01,u
          bne   L08EA
-         clr   <$10,y
+         clr   P$IOQN,y
          os9   F$GProcP
          bcs   L0932
          clr   $0F,y
          ldb   #$01
          os9   F$Send
          bra   L08F6
+
 L08EA    os9   F$GProcP
          bcc   L08D0
 L08EF    lda   $01,u
 L08F1    os9   F$GProcP
          bcs   L0932
-L08F6    lda   <$10,y
+L08F6    lda   P$IOQN,y
          bne   L08F1
          ldx   D.Proc
          lda   ,x
-         sta   <$10,y
+         sta   P$IOQN,y
          lda   ,y
          sta   $0F,x
          ldx   #$0000
          os9   F$Sleep
          ldu   D.Proc
-         lda   $0F,u
+         lda   P$IOQP,u
          beq   L0930
          os9   F$GProcP
          bcs   L0930
-         lda   <$10,y
+         lda   P$IOQN,y
          beq   L0930
-         lda   <$10,u
-         sta   <$10,y
+         lda   P$IOQN,u
+         sta   P$IOQN,y
          beq   L0930
-         clr   <$10,u
+         clr   P$IOQN,u
          os9   F$GProcP
          bcs   L0930
-         lda   $0F,u
-         sta   $0F,y
-L0930    clr   $0F,u
+         lda   P$IOQP,u
+         sta   P$IOQP,y
+L0930    clr   P$IOQP,u
 L0932    rts
          emod
 IOEnd      equ   *

@@ -87,15 +87,19 @@ L009F    ldx   <$0092
          lda   #$40
          sta   $01,x
 L00A5    ldd   D.Poll
-         lbra  L014C
+         lbra  TICK55
 
+* Read the control register. If the clock didn't cause the
+* interrupt then exit.
 CLKSRV   ldx   >CLKPRT,pcr
          lda   $01,x
          bita  #$04
          lbeq  L0033
+
+* Handle the interrupt
          ldd   $06,x
          dec   D.Tick
-         lbne  L014A
+         lbne  TICK50
          lda   <$0096
          beq   L00CF
          deca  
@@ -169,9 +173,9 @@ TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
          lda   #100
          sta   D.Tick
-L014A    ldd   D.Clock
-L014C    std   D.SvcIRQ
-         jmp   [>$00E8]
+TICK50    ldd   D.Clock
+TICK55    std   D.SvcIRQ
+         jmp   [D.XIRQ]
 
 *****
 *
