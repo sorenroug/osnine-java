@@ -40,7 +40,7 @@ int sortdir(dir)
     int entsize, dirsize, i, total;
     char *p;
 
-    int dirfd = open(dir, S_IFDIR + S_IWRITE + S_IREAD);
+    int dirfd = open(dir, S_IFDIR + S_ISHARE + S_IWRITE + S_IREAD);
     if (dirfd == -1) return -1;
 
     dirsize = filesize(dirfd);
