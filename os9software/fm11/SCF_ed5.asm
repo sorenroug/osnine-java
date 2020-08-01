@@ -404,8 +404,8 @@ L0316    pshs  pc,x
          bra   L02D1
 
 L0329    bra   L037A
-         bra   L0369
-         bra   L033B
+         bra   L0369        Process PD.DEL
+         bra   L033B        Process PD.EOR
          bra   L0350
          bra   L0398
          bra   L03A1
@@ -413,6 +413,7 @@ L0329    bra   L037A
          bra   L0369
          bra   L0369
 
+* Process PD.EOR character
 L033B    leas  $02,s
          sta   ,u
          lbsr  L0403
@@ -426,13 +427,17 @@ L0350    leas  $02,s
          leax  ,x
          lbeq  L0279
          bra   L02F6
+
 L035A    pshs  b
          lda   #$0D
          sta   ,u
          bsr   L0393
          puls  b
          lbra  L027B
+
 L0367    bsr   L037A
+
+* Process interrupt?
 L0369    leax  ,x
          beq   L0374
          tst   <$23,y
