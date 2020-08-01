@@ -18,7 +18,7 @@ public class TVI912Emulation extends EmulationCore {
 
     private static final Color DEFAULT_BACKGROUND = new Color(0x1b3231);
     private static final Color DEFAULT_FOREGROUND = new Color(0x88FFFF);
-    private static final Color DEFAULT_DIMMED = new Color(0x00FFFF);
+    private static final Color DEFAULT_DIMMED = new Color(0x00D0D0);
     private static final Color DEFAULT_BOLDED = new Color(0xCCFFFF);
 
 
