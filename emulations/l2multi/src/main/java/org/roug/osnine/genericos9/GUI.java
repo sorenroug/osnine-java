@@ -120,10 +120,10 @@ public class GUI {
 
         loadROM(0xFF000, "OS9p1");
         loadROM(0xFE000, "Boot", "Init", "Shell", "Mdir", "Term", "T1",
-            "VDisk_rv2", "D0", "D1", "D2", "D3");
+            "VDisk_rv2", "D0", "D1", "Clock");
 
-        //IRQBeat irqBeat = new IRQBeat(0xFFCD0, bus, 20);
-        //bus.insertMemorySegment(irqBeat);
+        IRQBeat irqBeat = new IRQBeat(0xFFCD0, bus, 20);
+        bus.insertMemorySegment(irqBeat);
 
         term = new Acia6850(0xFFCB0, bus);
         bus.insertMemorySegment(term);

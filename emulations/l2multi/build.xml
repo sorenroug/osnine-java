@@ -45,19 +45,12 @@
         </copy>
         -->
         <assemble src="Boot"/>
-        <!--
-        <assemble src="OS9p1_ed12"/>
-        <assemble src="OS9p2_ed13"/>
-        -->
         <assemble src="D0"/>
         <assemble src="D1"/>
         <assemble src="D2"/>
         <assemble src="D3"/>
-        <!--
         <assemble src="Clock"/>
-        -->
         <assemble src="Init"/>
-        <assemble src="InitNoDisk"/>
         <assemble src="SysGo"/>
         <assemble src="Term"/>
         <assemble src="T1"/>

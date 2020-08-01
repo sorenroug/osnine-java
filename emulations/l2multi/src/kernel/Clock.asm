@@ -2,7 +2,9 @@
  ttl   Definitions
 
 ***************************
-* This is still a Level 1 module
+
+* ****************               PRIMARY COPY
+* This is a Level 2 module
 ***************************
 
  use   defsfile
@@ -17,7 +19,7 @@ clockctl set   $FCD0
 ClkNam fcs /Clock/
  fcb 2  edition
 
-TkPerSec set   50
+TkPerSec set 50
 
 
 TIMSVC   fcb   F$Time
@@ -45,10 +47,8 @@ MONTHS fcb 0 Uninitialized month
 * interrupt then exit.
 CLKSRV lda   >clockctl   Read the control register.
  bne TICK  If there is an interrupt then check devices.
-
- ldd   D.Poll
- std   D.SvcIRQ
-  jmp   [>D.SvcIRQ]
+ ldd D.Poll
+ lbra  TICK55
 
 TICK clra SET Direct page
  tfr A,DP
@@ -91,9 +91,11 @@ TICK25 std D.DAY Update day & hour
  clra NEW Minute
 TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
- lda   #TkPerSec  Get ticks/second
+ lda #TkPerSec  Get ticks/second
  sta D.Tick
-TICK50   jmp   [D.Clock]
+TICK50 ldd D.Clock
+TICK55 std D.SvcIRQ
+ jmp [D.XIRQ]
 
 *****
 *
@@ -115,7 +117,7 @@ ClkEnt pshs  dp,cc
  OS9 F$SSVC Set time sevice routine
 
 * Start the heart beat every 20 milliseconds.
- lda   #20
+ lda   #1000/TkPerSec
  sta   >clockctl
 
  puls  pc,dp,cc
