@@ -1676,7 +1676,7 @@ already been opened by another process, an error (#253) will be returned.
       <para>
 A feature of non-sharable files is that they may be duplicated using
 the I$Dup system call so that they may be inherited, and therefore
-accessible to more.than one process at a time. Non-sharable means only
+accessible to more than one process at a time. Non-sharable means only
 that the file may be opened once at a time. It is usually a very bad
 idea to have two processes actively use any disk file through the same
 (inherited) path.
@@ -1699,7 +1699,7 @@ creates a file for sequential output. As soon as the file is created,
 EOF Lock is gained, and no other process will be able to <quote>pass</quote> the
 writer in processing the file. For example, if an assembly listing is
 redirected to a disk file, a spooler utility might open and begin
-listing the file before the assembler has -written even the first line of
+listing the file before the assembler has written even the first line of
 output. Record locking will always keep the spooler 'one step behind'
 the assembler, making the listing come out as desired.
 </para>
@@ -1739,7 +1739,7 @@ file for update if you only intend to read from it. Files open for read
 only will not cause records to be locked out, and they will generally
 help the system to run faster. If files are routinely opened for update
 on a multi-user system, users may sometimes become record locked for
-extended periods of time, When this occurs, users sometimes think the
+extended periods of time. When this occurs, users sometimes think the
 system has died, and exhibit panic behavior.
 </para>
       <para>
@@ -1763,8 +1763,6 @@ that problems will eventually occur if it is used in update mode regularly.
 Read and ReadLine cause records to be locked out only if the file is
 open in update mode. The locked out area includes all bytes starting
 with the current file pointer and extending for the number of bytes
-</para>
-      <para>
 requested. Thus, if a ReadLine call is made for 256 bytes, exactly 256
 bytes will be locked out, regardless of how many bytes are actually read
 before a carriage return is encountered. EOF Lock will be gained if the

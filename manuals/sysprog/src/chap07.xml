@@ -225,10 +225,10 @@ The table below describes the path descriptors used by SCF and SCF-type device d
 <row><entry>PD.PAG</entry><entry>$28</entry><entry>1</entry><entry>Lines per page</entry></row>
 <row><entry>PD.BSP</entry><entry>$29</entry><entry>1</entry><entry>Backspace character</entry></row>
 <row><entry>PD.DEL</entry><entry>$2A</entry><entry>1</entry><entry>Delete line character</entry></row>
-<row><entry>PD.EOR</entry><entry>$25</entry><entry>1</entry><entry>End of record character (read only)</entry></row>
+<row><entry>PD.EOR</entry><entry>$2B</entry><entry>1</entry><entry>End of record character (read only)</entry></row>
 <row><entry>PD.EOF</entry><entry>$2C</entry><entry>1</entry><entry>End of file character (read only)</entry></row>
 <row><entry>PD.RPR</entry><entry>$2D</entry><entry>1</entry><entry>Reprint line character</entry></row>
-<row><entry>PD.DUP</entry><entry>$25</entry><entry>1</entry><entry>Duplicate last line character</entry></row>
+<row><entry>PD.DUP</entry><entry>$2E</entry><entry>1</entry><entry>Duplicate last line character</entry></row>
 <row><entry>PD.PSC</entry><entry>$2F</entry><entry>1</entry><entry>Pause character</entry></row>
 <row><entry>PD.INT</entry><entry>$30</entry><entry>1</entry><entry>Keyboard interrupt character (CTL C)</entry></row>
 <row><entry>PD.QUT</entry><entry>$31</entry><entry>1</entry><entry>Keyboard abort character (CTL Q)</entry></row>
