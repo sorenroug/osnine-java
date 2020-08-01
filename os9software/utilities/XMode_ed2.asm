@@ -182,7 +182,7 @@ L0199    lda   ,x+
          os9   F$CRC
          com   0,u
          com   1,u
-         com   NOTSET,u
+         com   2,u
 L01BC    ldu   <u0000
          beq   L01C3
          os9   F$UnLink

@@ -74,10 +74,6 @@
         <assemble src="OS9p2_ed5" home="gimix" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
 
         <assemble src="OS9p1" home="l2virt" verify="d8ed1eecffb6513a5c9675f1bcb5a399"/>
-        <assemble src="OS9p2" home="l2virt" verify="1e53b42985b0f6df246917177032a067"/>
-        <assemble src="RBF" home="l2virt" verify="2734756eb27024724ae05550fc0b9db7"/>
-        <assemble src="SCF" home="l2virt" verify=""/>
-        <assemble src="IOMan" home="l2virt" verify="584d625c7351bf2b7bdb9e718d7de0c0"/>
 
     </target>
 
@@ -112,7 +108,7 @@
         <assemble src="OS9p2" home="swtpc" verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
     </target>
 
-    <!-- FM-11 Level II -->
+    <!-- FM-7 Level I -->
     <target name="fm7" depends="prepare">
         <assemble src="OS9p1" home="fm7" verify="dc7e4c39ac16fc1dae814e6bb1d99aeb"/>
         <assemble src="OS9p2" home="fm7" verify="2da082350df89cb057c7a846a5f33b76"/>
@@ -176,6 +172,13 @@
         <assemble src="Init"       home="dragon128" verify="8bbcbfd913f2fef3ff5df0e551b78ff5"/>
         <assemble src="Shell_ed21" home="dragon128" verify="89542e1bf04c29499d3ff696ac1bebb6"/>
         <assemble src="IOMan_ed10" home="dragon128" verify="e96ceab669a671491ccc2790cc51e18d"/>
+    </target>
+
+    <target name="l2virt" depends="prepare">
+        <assemble src="OS9p2" home="l2virt" verify="1e53b42985b0f6df246917177032a067"/>
+        <assemble src="RBF" home="l2virt" verify="2734756eb27024724ae05550fc0b9db7"/>
+        <assemble src="SCF" home="l2virt" verify=""/>
+        <assemble src="IOMan" home="l2virt" verify="584d625c7351bf2b7bdb9e718d7de0c0"/>
     </target>
 
     <!-- FM-11 Level II -->
