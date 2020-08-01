@@ -119,7 +119,7 @@ public class GUI {
         bus.insertMemorySegment(rom);
 
         loadROM(0xFF000, "OS9p1");
-        loadROM(0xFE000, "Boot", "Init", "Shell", "Term", "T1",
+        loadROM(0xFE000, "Boot", "Init", "Shell", "Term", "T1", "P",
             "VDisk_rv2", "D0", "D1", "Clock");
 
         IRQBeat irqBeat = new IRQBeat(0xFFCD0, bus, 20);
