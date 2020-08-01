@@ -14,6 +14,8 @@
 DriveCnt set 4 drives max on system
  endc
 
+Y2K equ 1
+
 normal equ 0 normal screen size
 small equ 1 small screen size
 Screen equ normal

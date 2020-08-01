@@ -64,9 +64,9 @@ Header fcb C$LF
 HeadEnd  equ   *
 
 DIRENT leay <Buffer,u
- sty <BufPtr
- clr <ExeDir
- clr <Extended
+ sty BufPtr
+ clr ExeDir
+ clr Extended
  lbsr ParsOpts
  lda ,-x
  cmpa #C$CR End of argument string?
@@ -74,7 +74,7 @@ DIRENT leay <Buffer,u
  leax >DEFDIR,pcr
 DIRENT10 stx <DIRPATH
  lda #DIR.+READ.
- ora <ExeDir
+ ora ExeDir
  os9 I$Open
  lbcs Exit
  sta <DirPN
@@ -95,7 +95,7 @@ DIRENT20 lda ,x+ Print directory path name
  leax DATEBUF+3,u
  lbsr PRTIME
  lbsr WrLine
- tst <Extended
+ tst Extended
  beq BEGIN ..no
  lda <DirPN
  ldb #SS.OPT
@@ -113,7 +113,7 @@ DIRENT20 lda ,x+ Print directory path name
  lbsr OUTCHR
  lbsr OUTSPC
  leax <Buffer,u
- stx <BufPtr
+ stx BufPtr
  lda #READ.
  os9 I$Open Open entire disk
  lbcs  Exit
@@ -133,14 +133,14 @@ BEGIN lda <DirPN
 
 PRENT tst <DIRREC Deleted entry?
  beq NEXTENT ..yes
- tst <Extended
+ tst Extended
  bne LSTEXT ..yes
 
 * Multi-column listing
  leay DIRREC,u
  lbsr WrString
 PRENT10 lbsr OUTSPC
- ldb <BufPtr+1
+ ldb BufPtr+1
  subb #Buffer
  cmpb #MARGIN Space for more on line?
  bhi NEWLINE ..no
@@ -168,7 +168,7 @@ LSTEXT pshs u
 * Print extended entry
  ifeq Screen-small
  lbsr PRTDAT
- ldd <FileDesc+FD.OWN
+ ldd FileDesc+FD.OWN
  clr <SUPZER
  bsr HEXWORD
  bsr OUTSPC
@@ -183,7 +183,7 @@ LSTEXT pshs u
  else
  lbsr ATTRS
  bsr OUTSPC
- ldd <FileDesc+FD.OWN
+ ldd FileDesc+FD.OWN
  clr <SUPZER
  bsr HEXWORD
  bsr OUTSPC
@@ -257,9 +257,9 @@ OUT1HX adda #'0 Convert to ascii
 
 OUTSPC lda #C$SPAC
 OUTCHR pshs x
- ldx <BufPtr
+ ldx BufPtr
  sta ,x+
- stx <BufPtr
+ stx BufPtr
  puls pc,x
 
 PermFlgs fcc "dsewrewr"
@@ -287,7 +287,7 @@ WrLine pshs  y,x,a
  lda #C$CR
  bsr OUTCHR
  leax <Buffer,u
- stx <BufPtr
+ stx BufPtr
  ldy #80
  lda #1
  os9 I$WritLn
@@ -321,7 +321,7 @@ PRTI20 bsr OUTCHR
 *****
 * Prtnum
 *   Print 8-Bit Ascii Number In (,X+)
-*
+*   Only used for date and time
 PRTNUM ldb ,X+
  lda #'0-1
  cmpb #100
@@ -352,7 +352,7 @@ ParsOpts  ldd   ,x+
  bne PARSE10
  cmpb #$30
  bcc PARSE10
- inc <Extended
+ inc Extended
  bra ParsOpts
 PARSE10 lda -$01,x
  eora #'X
@@ -361,7 +361,7 @@ PARSE10 lda -$01,x
  cmpb #'0 followed by a letter?
  bcc PARSE20
  lda #EXEC.
- sta <ExeDir
+ sta ExeDir
  bra ParsOpts
 PARSE20 rts
  emod

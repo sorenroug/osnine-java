@@ -8,39 +8,34 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   2
-u0002    rmb   1
-u0003    rmb   1
+         mod   DIREND,name,tylg,atrv,DIRENT,size
+DIRPATH    rmb   2
+DirPN    rmb   1
+Extended    rmb   1
 ExeDir    rmb   1
-u0005    rmb   1
-u0006    rmb   1
-u0007    rmb   1
+DISKPN    rmb   1
+SUPZER    rmb   1
+BufPtr    rmb   1
 u0008    rmb   1
-u0009    rmb   3
-u000C    rmb   3
-DirEnt    rmb   29
+DATEBUF    rmb   6
+DIRREC    rmb   29
 LSN1    rmb   1
 LSN2    rmb   1
 LSN3    rmb   1
-FileDesc    rmb   1
-u0030    rmb   2
-u0032    rmb   6
-u0038    rmb   2
-u003A    rmb   2
-u003C    rmb   530
+FileDesc    rmb   13
+Buffer    rmb   530
 size     equ   .
 name     equ   *
          fcs   /Dir/
          fcb   $04
 
 L0011    fcb   $10
-L0012    fcb   $30
+MARGIN    fcb   $30
 
 DirOf    fcb   C$LF
          fcs "   directory of "
 
-L0024    fcb   $2E .
+DEFDIR    fcb   $2E .
          fcb   C$CR
 
 L0026    fcb   $40 @
@@ -53,174 +48,174 @@ Header    fcb   C$LF
          fcb   C$CR
 
 
-start    equ   *
-         leay  <u003C,u
-         sty   <u0007
-         clr   <ExeDir
-         clr   <u0003
+DIRENT   leay  Buffer,u
+         sty   BufPtr
+         clr   ExeDir
+         clr   Extended
          lbsr  ParsOpts
          lda   ,-x
          cmpa  #C$CR     End of argument string?
-         bne   L00B0
-         leax  >L0024,pcr
-L00B0    stx   <u0000
-         lda   #$81
-         ora   <ExeDir
+         bne   DIRENT10
+         leax  >DEFDIR,pcr
+DIRENT10 stx DIRPATH
+ lda #DIR.+READ.
+         ora   ExeDir
          pshs  x,a
          os9   I$Open
-         sta   <u0002
+         sta   DirPN
          puls  x,a
-         lbcs  L019D
+         lbcs  Exit
          os9   I$ChgDir
-         lbcs  L019D
+         lbcs  Exit
          pshs  x
          leay  >DirOf,pcr
          lbsr  WrString
-         ldx   <u0000
-L00D5    lda   ,x+
+         ldx   DIRPATH
+DIRENT20    lda   ,x+
          lbsr  OUTCHR
          cmpx  ,s
-         bcs   L00D5
+         bcs   DIRENT20
          leas  $02,s
          lbsr  ParsOpts
-         lbsr  WrSpace
-         lbsr  WrSpace
-         leax  u0009,u
+         lbsr  OUTSPC
+         lbsr  OUTSPC
+         leax  DATEBUF,u
          os9   F$Time
-         leax  u000C,u
+         leax  DATEBUF+3,u
          lbsr  PRTIME
          lbsr  WrLine
-         tst   <u0003
-         beq   L0118
+         tst   Extended
+         beq   BEGIN
          lda   #$01
-         ora   <ExeDir
+         ora   ExeDir
          leax  >L0026,pcr
          os9   I$Open
-         lbcs  L019D
-         sta   <u0005
+         lbcs  Exit
+         sta   DISKPN
          leax  >Header,pcr
          ldy   #$0071
          lda   #$01
          os9   I$WritLn
-L0118    lda   <u0002
+BEGIN    lda   DirPN
          ldx   #$0000
          pshs  u
          ldu   #$0040
          os9   I$Seek
          puls  u
-         bra   L018B
-L0129    tst   <DirEnt
-         beq   L018B
-         tst   <u0003
-         bne   L014D
-         leay  DirEnt,u
+         bra   NEXTENT
+PRENT    tst   DIRREC
+         beq   NEXTENT
+         tst   Extended
+         bne   LSTEXT
+         leay  DIRREC,u
          lbsr  WrString
-L0136    lbsr  WrSpace
-         ldb   <u0008
-         subb  #$3C
-         cmpb  >L0012,pcr
-         bhi   L0188
-L0143    subb  >L0011,pcr
-         bhi   L0143
-         bne   L0136
-         bra   L018B
-L014D    pshs  u
-         lda   <LSN3
+PRENT10 lbsr OUTSPC
+ ldb BufPtr+1
+ subb #Buffer
+         cmpb  MARGIN,pcr
+         bhi   NEWLINE
+PRENT20    subb  >L0011,pcr
+         bhi   PRENT20
+         bne   PRENT10
+         bra   NEXTENT
+LSTEXT    pshs  u
+         lda   LSN3
          clrb
          tfr   d,u
-         ldx   <LSN1
-         lda   <u0005
+         ldx   LSN1
+         lda   DISKPN
          os9   I$Seek
          puls  u
-         bcs   L019D
+         bcs   Exit
          leax  <FileDesc,u
          ldy   #13
          os9   I$Read
-         bcs   L019D
+         bcs   Exit
 
-         ldd   <u0030
-         clr   <u0006
-         bsr   L01A8
-         bsr   WrSpace
+         ldd   FileDesc+FD.OWN
+         clr   SUPZER
+         bsr   HEXWORD
+         bsr   OUTSPC
          lbsr  PRTDAT
-         bsr   WrSpace
-         lbsr  Attrs
-         bsr   WrSpace
-         bsr   WrSpace
-         bsr   L01A2
-         bsr   L01B4
-         leay  DirEnt,u
+         bsr   OUTSPC
+         lbsr  ATTRS
+         bsr   OUTSPC
+         bsr   OUTSPC
+         bsr   WrStart
+         bsr   WrSize
+         leay  DIRREC,u
          lbsr  WrString
-L0188    lbsr  WrLine
-L018B    leax  DirEnt,u
+NEWLINE    lbsr  WrLine
+NEXTENT    leax  DIRREC,u
          ldy   #$0020
-         lda   <u0002
+         lda   DirPN
          os9   I$Read
-         bcc   L0129
+         bcc   PRENT
          cmpb  #$D3
-         bne   L019D
+         bne   Exit
          clrb
-L019D    bsr   WrLine
+Exit    bsr   WrLine
          os9   F$Exit
 
-L01A2    lda   <LSN1
-         bsr   L01CC
+WrStart    lda   LSN1
+         bsr   OUTHEX10
          ldd   <LSN2
-L01A8    bsr   L01CE
+HEXWORD    bsr   OUTHEX20
          tfr   b,a
-         bsr   L01C2
-         inc   <u0006
-         bsr   L01D0
-         bra   WrSpace
-L01B4    ldd   <u0038
-         bsr   L01CC
+         bsr   OUTHEX
+         inc   SUPZER
+         bsr   OUTHEX30
+         bra   OUTSPC
+WrSize ldd <FileDesc+FD.SIZ
+         bsr   OUTHEX10
          tfr   b,a
-         bsr   L01CE
-         bsr   WrSpace
-         ldd   <u003A
-         bra   L01A8
+         bsr   OUTHEX20
+         bsr   OUTSPC
+ ldd <FileDesc+FD.SIZ+2
+         bra   HEXWORD
 
-L01C2    pshs  a
+OUTHEX    pshs  a
          lsra
          lsra
          lsra
          lsra
-         bsr   L01D2
+         bsr   OUTHEX40
          puls  pc,a
-L01CC    clr   <u0006
-L01CE    bsr   L01C2
-L01D0    anda  #$0F
-L01D2    tsta
+
+OUTHEX10    clr   SUPZER
+OUTHEX20    bsr   OUTHEX
+OUTHEX30    anda  #$0F
+OUTHEX40    tsta
          beq   L01D7
-         sta   <u0006
-L01D7    tst   <u0006
-         bne   L01DF
+         sta   SUPZER
+L01D7    tst   SUPZER
+         bne   OUT1HX
          lda   #$20
          bra   OUTCHR
-L01DF    adda  #$30
+OUT1HX    adda  #$30
          cmpa  #$39
          bls   OUTCHR
          adda  #$07
          bra   OUTCHR
-WrSpace    lda   #$20
+OUTSPC    lda   #$20
 OUTCHR    pshs  x
-         ldx   <u0007
+         ldx   BufPtr
          sta   ,x+
-         stx   <u0007
+         stx   BufPtr
          puls  pc,x
 
 PermFlgs fcc   "dsewrewr"
          fcb   $FF        stop byte
 
-Attrs    ldb  <FileDesc
+ATTRS    ldb  <FileDesc
          leax  <PermFlgs,pcr
          lda   ,x+
-L0205    lslb
-         bcs   L020A
+ATTRS10    lslb
+         bcs   ATTRS20
          lda   #$2D
-L020A    bsr   OUTCHR
+ATTRS20    bsr   OUTCHR
          lda   ,x+
-         bpl   L0205
+         bpl   ATTRS10
          rts
 
 WrString    lda   ,y
@@ -233,8 +228,8 @@ WrString    lda   ,y
 WrLine    pshs  y,x,a
          lda   #$0D
          bsr   OUTCHR
-         leax  <u003C,u
-         stx   <u0007
+         leax  Buffer,u
+         stx   BufPtr
          ldy   #$0050
          lda   #$01
          os9   I$WritLn
@@ -244,72 +239,79 @@ WrLine    pshs  y,x,a
 * Prtdat
 *   Print "YY/MM/DD"
 *
-PRTDAT   leax  FileDesc+FD.DAT,u
-         bsr   PRTNUM
-         bsr   PRSLSH
-         bsr   PRSLSH
-         bsr   WrSpace
-         bsr   PRTNUM
-         bsr   PRTNUM
-         bra   WrSpace
+PRTDAT leax FileDesc+FD.DAT,u
+ bsr PRTNUM
+ bsr PRSLSH
+ bsr PRSLSH
+ bsr OUTSPC
+ bsr PRTNUM
+ bsr PRTNUM
+ bra OUTSPC
+
 PRSLSH    lda   #$2F
-         bra   L024D
+         bra   PRTI20
 
 *****
 * Prtime
 *   Print "HH:MM:SS"
 *
 PRTIME    bsr   PRTNUM
-         bsr   L024B
-L024B    lda   #$3A
-L024D    bsr   OUTCHR
+         bsr   PRTI10
+PRTI10    lda   #$3A
+PRTI20    bsr   OUTCHR
 
 *****
 * Prtnum
 *   Print 8-Bit Ascii Number In (,X+)
-*
-PRTNUM    ldb   ,x+
-         lda   #$2F
-         cmpb  #$64
-         bcs   PRTN10
-         clrb
-PRTN10    inca
-         subb  #$64
-         bcc   PRTN10
-         cmpa  #$30
-         beq   PRTN20
-         bsr   OUTCHR
-PRTN20   lda #'9+1
-PRTN30   deca Form Tens digit
-         addb  #$0A
-         bcc   PRTN30
-         lbsr  OUTCHR
-         tfr   b,a
+*   Only used for date and time
+PRTNUM ldb ,X+
+ ifne Y2K
+PRTN10 subb #100 Remove any hundreds
+ else
+ lda #'0-1
+ cmpb #100
+ bcs PRTN10
+ clrb
+PRTN10 inca
+ subb #100 Remove any hundreds
+ endc
+ bcc PRTN10
+ ifeq Y2K
+ cmpa  #'0
+ beq PRTN20 Print if not zero
+ bsr OUTCHR
+ endc
+PRTN20 lda #'9+1
+PRTN30 deca Form Tens digit
+ addb #10
+ bcc PRTN30
+ lbsr OUTCHR
+ tfr b,a
  adda #'0  Form units digit
-         lbra  OUTCHR
+ lbra OUTCHR
 
+ParsOpts  ldd   ,x+
+ cmpa #$20    Space
+ beq ParsOpts
+ cmpa #$2C    Comma
+ beq ParsOpts
+ eora #'E
+ anda #$DF
+ bne PARSE10
+ cmpb #$30
+ bcc PARSE10
+ inc Extended
+ bra ParsOpts
+PARSE10 lda -$01,x
+ eora #'X
+ anda #$DF
+ bne PARSE20
+ cmpb #'0 followed by a letter?
+ bcc PARSE20
+ lda #EXEC.
+ sta ExeDir
+ bra ParsOpts
+PARSE20 rts
+ emod
 
-ParsOpts ldd   ,x+
-         cmpa  #$20
-         beq   ParsOpts
-         cmpa  #$2C
-         beq   ParsOpts
-         eora  #$45
-         anda  #$DF
-         bne   L028C
-         cmpb  #$30
-         bcc   L028C
-         inc   <u0003
-         bra   ParsOpts
-L028C    lda   -$01,x
-         eora  #$58
-         anda  #$DF
-         bne   L029E
-         cmpb  #$30
-         bcc   L029E
-         lda   #$04
-         sta   <ExeDir
-         bra   ParsOpts
-L029E    rts
-         emod
-eom      equ   *
+DIREND equ *
