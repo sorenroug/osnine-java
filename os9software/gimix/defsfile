@@ -1,15 +1,16 @@
-Level    equ   1
+Level equ 1
 
- use /d0/DEFS/os9defs
- use /d0/DEFS/scfdefs
- use /d0/DEFS/rbfdefs
- use /d0/DEFS/systype
+ use os9defs.1
+ use os9sysdefs.li
+ use li.equates
+ use os9iodefs
+ use os9scfdefs.1
+ use os9rbfdefs.2
+ use systype
 
 normal equ 0 normal screen size
 small equ 1 small screen size
 Screen equ normal
-
- use Sysdefs.sys
 
 * Version 1.1 equates
 CPUTYP equ CPUType

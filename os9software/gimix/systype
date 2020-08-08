@@ -68,5 +68,5 @@ ClocType set 0
 
 
  opt l
- use ../../defs/sysdefs.gimix
+ use sysdefs.gimix
 
