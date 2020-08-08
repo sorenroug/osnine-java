@@ -63,8 +63,8 @@ OS9Nam   fcs   /OS9p1/
  fcb 13
  fcc "FM11L2"
 
-LORAM set $20
-HIRAM set $1000
+LoRAM set $20        set low RAM limit
+HiRAM set DAT.Blsz*RAMCount
 
 COLD ldx #LORAM Set ptr
  ldy #HIRAM-LORAM Set byte count
@@ -157,12 +157,16 @@ COLD08 ldd ,Y++ get vector
 *
  clra
  clrb
- std ,X++ Mark block 0 in SysDAT
- ldy #13        Dat.BlCt-RAMCount-ROMCount-IOCount
+ std ,X++ use block zero for system
+ ifge RAMCount-2
+ incb block one
+ std ,x++
+ endc
+ ldy #13        Dat.BlCt-ROMCount-RAMCount-1
  ldd #DAT.Free  Initialize the rest of the blocks to be free
-COLD10 std ,X++
+Cold16 std ,X++
  leay -1,Y
- bne COLD10
+ bne Cold16
          ldd   #$0001  ?? type of block ROM?
  std ,X++
  ldb #IOBlock Mark IO block (Note: LDB)
@@ -171,129 +175,153 @@ COLD10 std ,X++
  inc 0,X  Reserve task 0
  ldx D.SysMem
  ldb D.ModDir+2
-COLD15 inc ,X+
+Cold17 inc ,X+
  decb
- bne COLD15
+ bne Cold17
 *
-* Map every physical block into block 1 to see if there is RAM
+*      build Memory Block Map
 *
  ldy #HIRAM
  ldx D.BlkMap
-COLD20 pshs X
+Cold20  equ *
+ pshs X
  ldd 0,S
  subd D.BlkMap
  cmpb #DAT.BlMx Last block?
- beq COLD25 ..yes
+ beq Cold30 ..yes
  stb DAT.Regs+1
- ldu 0,y Get current value
- ldx #$00FF Get bit pattern
- stx 0,Y Store it
+ ldu 0,y get current contents
+ ldx #$00FF get first test pattern
+ stx 0,Y store it
  cmpx 0,Y Is it there?
- bne COLD25 If not, end of ram
+ bne Cold30 If not, end of ram
  ldx #$FF00 Try a different pattern
  stx 0,Y Store it
  cmpx 0,Y Did it take?
- bne COLD25 If not, eor
+ bne Cold30 If not, eor
  stu 0,y Replace current value
- bra COLD30
+ bra Cold40
 
-COLD25 ldb #NotRAM
+Cold30 ldb #NotRAM
  stb [,s]
-COLD30 puls X
+Cold40 puls X
  leax 1,X
  cmpx D.BlkMap+2
- bcs COLD20
+ bcs Cold20
+*
+*      search Not-Ram, excluding I/O, for modules
+*
  ldx D.BlkMap
  inc 0,X
          lda   #$80
          sta   1,x
-COLD35    lda  0,x
- beq COLD60
+Cold50    lda  0,x is this RAM block?
+ beq Cold80
  tfr X,D
  subd D.BlkMap
- leas -32,S
+ leas -(DAT.BlCt*2),s
  leay 0,S
- lbsr COLD90
- pshs X
- ldx #$0000
+ lbsr MovDAT
+ pshs x save Block Map ptr
+ ldx #0 make block offset
+Cold55 equ *
          cmpb  #$FF
-         bne   COLD40
+         bne   Cold57
          ldx   #$0800
-COLD40 pshs Y,X
- lbsr ADJBLK jump to next block?
+Cold57 pshs Y,X
+ lbsr AdjImg jump to next block?
  ldb 1,Y
  stb DAT.Regs
          ldd   ,x
          clr   DAT.Regs
          puls  y,x
          cmpd  #$87CD
-         beq   COLD44
+         beq   Cold62
          puls  x
-         bra   COLD57
-COLD42    pshs  y,x
-         lbsr  ADJBLK
-         ldb   1,y
-         stb   DAT.Regs
-         lda   ,x
+         bra   Cold79
+Cold60 pshs Y,X
+ lbsr AdjImg jump to next block?
+ ldb 1,Y
+ stb DAT.Regs
+ lda 0,X
  clr DAT.Regs
  puls Y,X
- cmpa #M$ID1
- bne COLD50
-COLD44    lbsr  VALMOD
- bcc COLD45
+ cmpa #$87
+ bne Cold70
+Cold62 lbsr ValMod validate module
+ bcc Cold65
  cmpb #E$KwnMod Is it a known module
- bne COLD50
-COLD45 ldd #M$Size Get module size
+ bne Cold70
+Cold65 ldd #M$Size Get module size
  lbsr F.LDDDXY
  leax D,X Skip module
- bra COLD55
-COLD50 leax 1,X Try next location
-COLD55 tfr X,D
+ bra Cold75
+Cold70 leax 1,X Try next location
+Cold75 tfr X,D
  tstb
-         bne   COLD42
- bita #$0F   at $0F00?
-         bne   COLD42
- lsra Calculate block number
+ bne Cold60
+ bita #^DAT.Addr end of block?
+ bne Cold60 branch if not
+ lsra make block count
  lsra
+ ifge DAT.BlSz-2048
  lsra
+ ifge DAT.BlSz-4096
  lsra
- deca
+ endc
+ endc
+ deca adjust number
  puls X
  leax A,X
-COLD57    leas 32,S Make space on stack
-COLD60 leax 1,X
+Cold79 leas DAT.BlCt*2,s throw away temp DAT area
+Cold80 leax 1,x move Block Map ptr
  cmpx D.BlkMap+2
- bcs COLD35
+ bcs Cold50
 
-COLD65 leax CNFSTR,pcr Get initial module name ptr
- bsr LINKTO Link to configuration module
- bcc COLD70
+Cold.z1 leax InitName,pcr Get initial module name ptr
+ bsr LinkSys Link to configuration module
+ bcc Cold.z2
  os9 F$Boot
- bcc COLD65
- bra COLD80
+ bcc Cold.z1
+ bra ColdErr
 
-COLD70 stu D.Init
-COLD75 leax OS9STR,pcr
- bsr LINKTO
- bcc COLD85
+Cold.z2 stu D.Init
+Cold.z3 leax OS9STR,pcr
+ bsr LinkSys
+ bcc Cold.xit
  os9 F$Boot
- bcc COLD75
-COLD80    jmp   [>$FFFE]
+ bcc Cold.z3
+ColdErr jmp [>$FFFE]
 
-COLD85 jmp 0,Y Let os9 part two finish
+Cold.xit jmp 0,y go to "OS9p2"
 
-LINKTO lda #SYSTM Get system type module
+LinkSys lda #SYSTM Get system type module
  os9 F$Link
  rts
 
-* Copies value on stack to all positions in block
-COLD90 pshs Y,X,D
+
+************************************************************
+*
+*       Subroutine MovDAT
+*
+*   Make temporary image of of DAT-Block Addr
+*
+*  Input: D = DAT image offset
+*         Y = ptr to DAT temp area
+*
+* Output: DAT image moved to temp area
+*
+*   Data: D.TmpDAT
+*
+*  Calls: None
+*
+MovDAT pshs Y,X,D
  ldb #DAT.BlCt  blocks/address space
  ldx 0,S
-COLD95 stx ,Y++
+MovDAT.B stx ,Y++
  leax 1,X
  decb
- bne COLD95
+ bne MovDAT.B
  puls PC,Y,X,D
 
  page
@@ -368,7 +396,7 @@ SVCTBL equ *
  fdb FMODUL-*-2
  fcb $80
 
-CNFSTR fcs /Init/ Configuration module name
+InitName fcs /Init/ Configuration module name
 OS9STR fcs /OS9p2/ Kernal, part 2 name
 BTSTR fcs /Boot/
 
@@ -846,7 +874,7 @@ IDCHK pshs Y,X
  bra CRCC20 exit
 PARITY leas -1,s  Save space on stack
  leax 2,X
- lbsr ADJBLK Go to next DAT block?
+ lbsr AdjImg Go to next DAT block?
  ldb #M$IDSize-2
  lda #(M$ID1!M$ID2)-(M$ID1&M$ID2)   M$ID1 xor M$ID2
 PARI10 sta 0,S
@@ -875,7 +903,7 @@ CRCCHK puls Y,X
  ldd #$FFFF
  pshs D Init crc register
  pshs B Init crc register
- lbsr ADJBLK
+ lbsr AdjImg
  leau 0,S Get crc register ptr
 CRCC05 tstb
  bne CRCC10
@@ -969,7 +997,7 @@ CRCGen ldd R$Y,u get byte count
  ldx D.Proc
  leay P$DATImg,X
  ldx 11,S
- lbsr ADJBLK
+ lbsr AdjImg
 CRCGen10 lbsr GETBYTE get next data byte
  lbsr CRCCAL update crc
  ldd 9,S
@@ -1079,7 +1107,7 @@ FMOD40 stb 1,S Save B on stack
 
 * Skip spaces
 SKIPSP pshs y
-SKIP10 lbsr ADJBLK
+SKIP10 lbsr AdjImg
  lbsr H.LDAXY Get byte from other DAT
  leax 1,x move forward
  cmpa #'  compare with space
@@ -1116,7 +1144,7 @@ PNam.x stx R$Y,U Return name end ptr
  rts
 
 F.PRSNAM pshs y
- lbsr ADJBLK
+ lbsr AdjImg
  pshs Y,X
  lbsr GETBYTE Get first char
  cmpa #'/ Slash?
@@ -1214,11 +1242,11 @@ F.CMPNAM ldx R$Y,u Get module name
 F.CHKNAM pshs U,Y,X,D Save registers
  ldu 2,S
  pulu Y,X
- lbsr ADJBLK
+ lbsr AdjImg
  pshu Y,X
  ldu 4,S
  pulu Y,X
- lbsr ADJBLK
+ lbsr AdjImg
  bra CHKN15
 
 CHKN10 ldu 4,S
@@ -1645,7 +1673,7 @@ F.DATLOG pshs X,D
 * offset by X.
 LDAXY ldx R$X,u Block offset
  ldy R$Y,u DAT image pointer
-         bsr   ADJBLK
+         bsr   AdjImg
  bsr H.LDAXY
  sta R$A,u Store result
  clrb
@@ -1673,12 +1701,12 @@ GETBYTE lda 1,Y
  lda ,x+
  clr DAT.Regs
  puls cc
- bra ADJBLK
+ bra AdjImg
 
-ADJBLK10 leax >-DAT.BlSz,X
+AdjImg10 leax >-DAT.BlSz,X
  leay 2,Y
-ADJBLK cmpx #DAT.BlSz
- bcc ADJBLK10
+AdjImg cmpx #DAT.BlSz
+ bcc AdjImg10
  rts
 
 *****
@@ -1698,7 +1726,7 @@ LDDDXY ldd R$D,u Offset to the offset within DAT image
 * Get word at D offset into X
 F.LDDDXY pshs Y,X
  leax D,X
- bsr ADJBLK
+ bsr AdjImg
  bsr GETBYTE
  pshs A
  bsr H.LDAXY

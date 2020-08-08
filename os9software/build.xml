@@ -177,7 +177,6 @@
     <target name="l2virt" depends="prepare">
         <assemble src="OS9p2" home="l2virt" verify="1e53b42985b0f6df246917177032a067"/>
         <assemble src="RBF" home="l2virt" verify="2734756eb27024724ae05550fc0b9db7"/>
-        <assemble src="SCF" home="l2virt" verify=""/>
         <assemble src="IOMan" home="l2virt" verify="584d625c7351bf2b7bdb9e718d7de0c0"/>
     </target>
 

@@ -1,27 +1,74 @@
-         nam   Clock
-         ttl   os9 system module    
+ nam Clock Module
+ ttl Module Header
+* opt -c
 
+************************************************************
+*                                                          *
+*     Clock Module                                         *
+*                                                          *
+* Copyright 1982 by Microware Systems Corporation          *
+* Reproduced Under License                                 *
+*                                                          *
+* This source code is the proprietary confidential prop-   *
+* erty of Microware Systems Corporation, and is provided   *
+* to the licensee solely for documentation and educational *
+* purposes. Reproduction, publication, or distribution in  *
+* any form to any party other than the licensee is         *
+* is strictly prohibited !!!                               *
+*                                                          *
+************************************************************
+ ifne TimePoll
+************************************************************
+*
+* This version maintains a time polling table. Device
+* drivers may install themselves in the table via a
+* F$Timer request. They are then called at every tick.
+* This necessitates the Clock tick routine duplicating
+* some of the User/System switching normally done in
+* UserIRQ in OS9p1, to allow the routines to use
+* system calls such as F$Send.
+*
+*************************************************************
+ endc
+*
+ ifeq CPUType-DRG128
+*   Initialise PIA for VSYNC interrupts,
+ endc
+ ifne TimePoll
+*   Set up Timer Polling Table, for device drivers needing to
+*   run a timing routine every tick,
+ endc
+*   and take control of IRQ vector
+*
+*   Edition 3 - time polling table added.  Vivaway Ltd  83/11/07 PSD
+*
 
+CPORT set A.Clock
  use defsfile
-
-CPORT equ $FCC2
-
+*************************************************************
+*
+*  MODULE HEADER
+*
 Type set SYSTM+OBJCT
 Revs set REENT+1
  mod ClkEnd,ClkNam,Type,Revs,ClkEnt,CPORT
-
 ClkNam fcs /Clock/
  fcb 3 Edition number
-
-
-CLKPRT equ M$Mem Stack has clock port address
-
-TIMSVC fcb F$Time
+*
+* CLOCK DATA DEFINITIONS
+*
+TIMSVC fcb F$TIME
  fdb TIME-*-2
- fcb F$Timer+$80
- fdb TIMER-*-2
+ ifne TimePoll
+ fcb F$Timer+SysState
+ fdb Install-*-2
+ endc
  fcb $80
+CLKPRT equ M$Mem Memory has Clock port address
 
+*
+*  DAYS IN MONTHS TABLE
+*
 MONTHS fcb 0 Uninitialized month
  fcb 31 January
  fcb 28 February
@@ -36,17 +83,30 @@ MONTHS fcb 0 Uninitialized month
  fcb 30 November
  fcb 31 December
 
-NOTCLK ldd   D.Poll
-         lbra  L00B6
+ ifne ClocType
+*************************************************************
+*
+*     Non-Clock Interrupt Service
+*
+NOTCLK ldd D.Poll
+ lbra  TICK50
 
-CLKSRV   ldx   >CLKPRT,pcr
- lda 1,X Get control register
-         bita  #$40
-         beq   NOTCLK
-         sta   D.LtPen
-         lda   ,x
+CLKSRV ldx CLKPRT,pcr
+ ifeq CPUType-DRG128
+ lda 1,X get CRA of 6821
+ bita #$40 test Cx2 interrupt flag
+ beq NOTCLK
+ sta D.LtPen save reg for light pen flag
+ lda ,x clear the interrupt
+ endc
+
+Tick equ *
+ ifne (ClocType-M58167)*(ClocType-MC146818)
+*
+* UPDATE CURRENT TIME
+*
  dec D.Tick Count tick
- bne TICK50 Branch if not end of second
+ bne Tick40 Branch if not end of second
  ldd D.MIN Get minute & second
  incb COUNT Second
  cmpb #60 End of minute?
@@ -84,119 +144,154 @@ TICK25 std D.DAY Update day & hour
  clra NEW Minute
 TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
+ ifeq (ClocType-MC6840)*(ClocType-VIA)*(ClocType-VSYNC)
+ ifne (CPUType-Profitel)
  lda   #50  Get ticks/second
-
+ else
+ endc
+ endc
  sta D.Tick
-TICK50   leau  0,s
-         ldx   D.SysIRQ
-         cmpx  D.XIRQ
-         beq   L0093
-         lds   D.SysStk
-         ldd   D.SysSvc
-         std   D.XSWI2
-L0093    pshs  u
-         ldx   D.TimTbl
-         beq   L00B0
-         ldb   #$40
-         pshs  x,dp,b
-L009D    ldy   ,x++
-         beq   L00AE
+ else
+ endc
+ ifne TimePoll
+Tick40 leau  0,s
+ ldx   D.SysIRQ
+ cmpx  D.XIRQ
+ beq   Tick41
+ lds   D.SysStk
+ ldd   D.SysSvc
+ std   D.XSWI2
 
-         ldu   ,x++
-         stx   $02,s
-         jsr   ,y
-         ldx   $02,s
-         dec   ,s
-         bne   L009D
-L00AE    puls  x,dp,b
-L00B0    ldd   D.Clock
-         puls  u
-         leas  ,u
-L00B6    std   D.SvcIRQ
-         jmp   [>D.XIRQ]
+Tick41 pshs  u
+
+ ldx D.TimTbl
+ beq Tick47
+ ldb #64
+ pshs x,dp,b
+Tick42 ldy ,x++
+ beq Tick45
+
+ ldu ,x++
+ stx 2,s
+ jsr ,y
+ ldx 2,s
+ dec ,s
+ bne Tick42
+Tick45 puls x,dp,b
+Tick47 ldd D.Clock
+ puls u
+ leas ,u
+ else
+ endc
+TICK50 std D.SvcIRQ
+ jmp [D.XIRQ]
 
 *****
 *
-*  Clock Initialization Entry
+*  CLOCK INITIALIZATION ENTRY
 *
-ClkEnt   clrb  
-         ldx   D.TimTbl
-         bne   L0104
-         pshs  cc
-         lda   #50
-         sta   D.Tick
-         lda   #$05
-         sta   D.TSlice
-         sta   D.Slice
-         ldd   #$0100
-         pshs  u
-         os9   F$SRqMem 
-         bcs   L00E5
-         stu   D.TimTbl
-         ldy   #$0000
-         ldb   #$80
-L00DF    sty   ,u++
-         decb  
-         bne   L00DF
-L00E5    puls  u
- orcc #IRQMask+FIRQMask Set intrpt masks
-         leax  >CLKSRV,pcr
-         stx   D.IRQ
-         ldx   >CLKPRT,pcr
-         lda   0,x
-         lda   1,x
-         ora   #$18
-         sta   1,x
-         puls  cc
+ClkEnt equ *
+ ifne TimePoll
+ clrb
+ ldx   D.TimTbl
+ bne   ClkEnt3
+ endc
+ ifne ClocType
+ pshs  cc
+ ifeq (ClocType-MC6840)*(ClocType-VIA)*(ClocType-VSYNC)
+ ifne (CPUType-Profitel)
+ lda   #TickSec
+ else
+ endc
+ endc
+ sta D.Tick
+ lda #TickSec/10 set ticks/time slice
+ sta D.TSlice
+ sta D.Slice
+ ifne TimePoll
+ ldd #256
+ pshs u
+ os9 F$SRqMem
+ bcs ClkEnt2
+ stu D.TimTbl
+ ldy #0
+ ldb #64*2
+ClkEnt1 sty ,u++
+ decb
+ bne ClkEnt1
+ClkEnt2 puls  u
+ endc
+ orcc #IntMasks set interrupt masks
+ leax  CLKSRV,pcr GET SERVICE ROUTINE
+ stx   D.IRQ SET INTERRUPT VECTOR
+ ifeq ClocType-VSYNC
+ ldx CLKPRT,pcr
+ lda 0,x
+ lda 1,x
+ ifne Cx2Int
+ ora #$18 positive edge interrupt on CA2 (CB2)
+ else
+ endc
+ sta 1,x
+ endc
+ puls  cc
  leay TIMSVC,PCR
- OS9 F$SSVC Set time service routine
-L0104    rts   
+ OS9 F$SSVC SET TIME SERVICE ROUTINE
+ClkEnt3    rts
 
-
-TIMER    pshs  cc
+ ifeq ClocType-M58167
+ endc
+ ifne TimePoll
+****************************************
+*
+* Install caller in timer polling table
+*
+Install pshs cc
  orcc #IRQMask+FIRQMask Set intrpt masks
-         ldx   D.TimTbl
-         ldb   #$40
-         ldy   R$X,u
-         beq   L0132
-L0112    ldy   ,x
-         beq   L0122
-         leax  $04,x
-         decb  
-         bne   L0112
-         puls  cc
-         comb  
-         ldb   #E$Poll
-         rts   
+ ldx D.TimTbl
+ ldb #$40
+ ldy R$X,u
+ beq Remove
+Install1 ldy ,x
+ beq Install2
+ leax $04,x
+ decb
+ bne Install1
 
-L0122    ldy   R$X,u
-         sty   ,x++
-         ldy   R$U,u
-L012B    sty   ,x
-L012E    puls  cc
-         clrb  
-         rts   
+InsErr puls  cc
+ comb
+ ldb #E$Poll
+ rts
 
-L0132    ldy   R$U,u
-L0135    cmpy  $02,x
-         beq   L0141
-         leax  $04,x
-         decb  
-         bne   L0135
-         bra   L012E
-L0141    decb  
-         beq   L0155
-L0144    ldy   $04,x
-         beq   L0155
-         sty   ,x++
-         ldy   $04,x
-         sty   ,x++
-         decb  
-         bne   L0144
-L0155    ldy   #$0000
-         sty   ,x++
-         bra   L012B
+Install2 ldy R$X,u
+ sty ,x++
+ ldy R$U,u
+Install3    sty   ,x
+Install4    puls  cc
+ clrb
+ rts
 
+Remove    ldy   R$U,u
+Remove1    cmpy  $02,x
+ beq   Remove2
+ leax  $04,x
+ decb
+ bne   Remove1
+ bra   Install4
+
+Remove2 decb
+ beq Remove4
+Remove3 ldy 4,x
+ beq Remove4
+ sty ,x++
+ ldy 4,x
+ sty ,x++
+ decb
+ bne Remove3
+Remove4 ldy #0 delete this entry
+ sty ,x++
+ bra Install3
+ endc
 
  page
 *****
@@ -205,15 +300,17 @@ L0155    ldy   #$0000
 *
 * Return Time Of Day
 *
-TIME     lda   D.SysTsk
-         ldx   D.Proc
-         ldb   P$Task,x
-         ldx   #D.Year
-         ldy   #6
-         ldu   R$X,u
-         os9   F$Move
-         rts   
-
+TIME equ *
+ ifeq (ClocType-M58167)
+ endc
+ lda D.SysTsk
+ ldx D.Proc
+ ldb P$Task,x
+ ldx #D.Time
+ ldy #6
+ ldu R$X,u
+ os9 F$Move
+ rts
 
  emod
 ClkEnd equ *

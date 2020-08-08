@@ -1,5 +1,17 @@
 * This systype file is reverse engineered
 *
+ ifne LEVEL-1
+ org 1
+BlockTyp rmb 1 check only first bytes of RAM block
+ByteType rmb 1 check all bytes of RAM
+ org 1
+Limited rmb 1 check only top 64k for ROM modules
+UnLimitd rmb 1 check all NotRAM for modules
+* NOTE: The UnLimitd check assumes any NotRAM
+*       with a module will always have $87CD
+*       as the first two bytes in the block.
+ endc
+
 ************************************************************
 *
 *     Dynamic Address Translator Definitions
@@ -17,6 +29,11 @@ DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
 ***************
 DAT.Free equ $8000 Free Block Number
 
+DAT.BlMx equ $FF maximum block number
+DAT.BMSz equ $100 Block Map size (one byte per block)
+DAT.WrPr equ 0 no Block Write Protect bit
+DAT.WrEn equ 0 no Block Write Enable bit
+
 ***************
 *
 * DAT.Addr calculates a mask for the top bits of the
@@ -30,7 +47,11 @@ SysTask equ $80 System Task number
 *
 ***************
 
-*IOBlock equ $FF The block number for the I/O
+IOBlock equ $FF The block number for the I/O
 ROMBlock equ $FF ROM block
-
+ROMCount equ 0 number of blocks of ROM to so map in
 RAMCount equ 2 initial blocks of RAM
+
+ROMCheck equ Limited check only top 64k for ROM
+RAMCheck equ BlockTyp check only first bytes of RAM blocks
+

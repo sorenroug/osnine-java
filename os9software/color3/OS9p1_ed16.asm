@@ -56,7 +56,7 @@ COLD05 std ,X++ Clear two bytes
  std D.CCMem
  ldd #HIRAM
  std D.CCStk
- leax >JMPMINX,pcr
+ leax >IntXfr,pcr
  tfr X,D
  ldx #D.SWI3
 COLD06 std ,x++
@@ -112,28 +112,31 @@ COLD08 ldd ,Y++ get vector
  sta P$Prior,x
  sta P$Age,x
  leax P$DATImg,x
- stx D.SysDAT
+ stx D.SysDAT set system DAT image ptr
 *
 * Set up memory blocks in system DAT image
 *
  clra
  clrb
- std ,x++
+ std ,X++ use block zero for system
          ldy   #$0006        Dat.BlCt-ROMCount-RAMCount-1
- ldd #DAT.Free  Initialize the rest of the blocks to be free
-COLD10    std   ,x++
-         leay  -1,y
-         bne   COLD10
+ ldd #DAT.Free get free block code
+Cold16 std ,X++ mark free entry
+ leay -1,Y count block
+ bne Cold16 branch if more
          ldd   #ROMBlock
          std   ,x++
          ldx   D.Tasks
          inc   ,x
          inc   1,x
-         ldx   D.SysMem
+ ldx D.SysMem get system memory map ptr
          ldb   D.CCStk
-COLD15    inc   ,x+
-         decb
-         bne   COLD15
+Cold17 inc ,X+ claim page
+ decb count it
+ bne Cold17 branch if more
+*
+*      build Memory Block Map
+*
          clr   D.MemSz
          ldd   #$0313
          std   >DAT.Regs+5
@@ -145,9 +148,9 @@ COLD15    inc   ,x+
          inc   D.MemSz
 COLD18    ldy   #HIRAM
          ldx   D.BlkMap
-COLD20    pshs  x
+Cold20    pshs  x
          ldd   ,s
-         subd  D.BlkMap
+ subd D.BlkMap get block number
          cmpb  #$3F   IOBlock?
          bne   COLD22
          ldb   #$01
@@ -157,7 +160,7 @@ COLD22    lda   D.MemSz
          cmpb  #$0F
          bcc   COLD25
 COLD23    stb   >$FFA1   DAT.Regs+1
-         ldu   ,y
+ ldu 0,y get current contents
  ldx #$00FF Get bit pattern
  stx 0,Y Store it
  cmpx 0,Y Is it there?
@@ -172,18 +175,21 @@ COLD23    stb   >$FFA1   DAT.Regs+1
 COLD25    ldb   #NotRAM
 COLD28    stb   [,s]
 COLD30    puls  x
-         leax  1,x
-         cmpx  D.BlkMap+2
-         bcs   COLD20
-         ldx   D.BlkMap
-         inc   ,x
-         ldx   D.BlkMap+2
+ leax 1,X next Block Map entry
+ cmpx D.BlkMap+2 end of map?
+ bcs Cold20 branch if not
+*
+*      search Not-Ram, excluding I/O, for modules
+*
+ ldx D.BlkMap
+ inc 0,X claim block zero for system
+ ldx D.BlkMap+2
          leax  >-1,x
          tfr   x,d
          subd  D.BlkMap
          leas  -16,s
          leay  ,s
-         lbsr  COLD90
+         lbsr  MovDAT
          pshs  x
          ldx   #$0D00
 COLD40    pshs  y,x
@@ -192,38 +198,37 @@ COLD40    pshs  y,x
          stb   DAT.Regs
          lda   ,x
          clr   DAT.Regs
-         puls  y,x
-         cmpa  #M$ID1
-         bne   COLD50
-         lbsr  VALMOD
-         bcc   COLD45
-         cmpb  #E$KwnMod Is it known module
-         bne   COLD50
-COLD45 ldd #M$Size Get module size
+ puls y,x retrieve ptrs
+ cmpa #$87 could be module?
+ bne Cold70 branch if not
+Cold62 lbsr ValMod validate module
+ bcc Cold65 branch if successful
+ cmpb #E$KwnMod known module?
+ bne Cold70 branch if not
+Cold65 ldd #M$Size get module size offset
  lbsr F.LDDDXY
- leax D,X Skip module
- bra COLD55
-
-COLD50    leax  1,x
-COLD55    cmpx  #$1E00  DAT.Addr?
+ leax D,X move ptr
+ bra Cold75
+Cold70 leax 1,X move ptr
+Cold75    cmpx  #$1E00  DAT.Addr?
          bcs   COLD40
          bsr   L01D2
-COLD65 leax CNFSTR,pcr Get initial module name ptr
- bsr LINKTO Link to configuration module
- bcc COLD70
+Cold.z1 leax InitName,pcr Get initial module name ptr
+ bsr LinkSys Link to configuration module
+ bcc Cold.z2
  os9 F$Boot
- bcc COLD65
- bra COLD80
+ bcc Cold.z1
+ bra ColdErr
 
-COLD70 stu D.Init
-COLD75 leax OS9STR,pcr
- bsr LINKTO
- bcc COLD85
+Cold.z2 stu D.Init
+Cold.z3 leax P2Name,pcr
+ bsr LinkSys
+ bcc Cold.xit
  os9 F$Boot
- bcc COLD75
-COLD80 jmp D.Crash
+ bcc Cold.z3
+ColdErr jmp D.Crash
 
-COLD85    jmp 0,Y Let os9 part two finish
+Cold.xit    jmp 0,Y Let os9 part two finish
 
 L01D2    ldx   D.SysMem
          leax  >$00ED,x
@@ -238,12 +243,27 @@ L01E1    sta   ,x+
          sta   -1,x
          rts
 
-LINKTO lda #SYSTM Get system type module
+LinkSys lda #SYSTM Get system type module
  os9 F$Link
  rts
 
-* Copies value on stack to all positions in block
-COLD90 pshs Y,X,D
+
+************************************************************
+*
+*       Subroutine MovDAT
+*
+*   Make temporary image of of DAT-Block Addr
+*
+*  Input: D = DAT image offset
+*         Y = ptr to DAT temp area
+*
+* Output: DAT image moved to temp area
+*
+*   Data: D.TmpDAT
+*
+*  Calls: None
+*
+MovDAT pshs Y,X,D
  ldb #DAT.BlCt  blocks/address space
  ldx 0,S
 COLD95 stx ,y++
@@ -330,21 +350,21 @@ SVCTBL equ *
 
  fcb $80
 
-CNFSTR fcs /Init/ Configuration module name
-OS9STR fcs /OS9p2/ Kernal, part 2 name
-BTSTR fcs /Boot/
+InitName fcs /Init/ Configuration module name
+P2Name fcs /OS9p2/ Kernal, part 2 name
+BootName fcs /Boot/
 
-JMPMINX jmp [<(D.XSWI3-D.SWI3),x] Jump to the "x" version of the interrupt
+IntXfr jmp [<(D.XSWI3-D.SWI3),x] Jump to the "x" version of the interrupt
 
-SWI3HN ldx D.Proc
+UserSWI3 ldx D.Proc
          ldu   P$SWI3,x
-         beq   L028E
+         beq   UserSvc
 
 USRSWI    lbra  PassSWI
 
 SWI2HN   ldx   D.Proc
          ldu   P$SWI2,x
-         beq   L028E
+         beq   UserSvc
          bra   USRSWI
 
 SWIHN    ldx   D.Proc
@@ -353,7 +373,7 @@ SWIHN    ldx   D.Proc
 
 * Process software interupts from a user state
 * Entry: X=Process descriptor pointer of process that made system call
-L028E    ldd   D.SysSvc
+UserSvc    ldd   D.SysSvc
          std   D.XSWI2
          ldd   D.SysIRQ
          std   D.XIRQ
@@ -364,31 +384,31 @@ L028E    ldd   D.SysSvc
          leas  (P$Stack-R$Size),x
          andcc #^IntMasks
          leau  ,s
-         bsr   CpySP2U
+         bsr   GetRegs
          ldb   P$Task,x
          ldx   R$PC,u
          lbsr  H.LDBBX
          leax  1,x
          stx   $0A,u
          ldy   D.UsrDis
-         lbsr  DISPCH
+         lbsr  Dispatch
          ldb   ,u
          andb  #$AF
          stb   ,u
          ldx   D.Proc
-         bsr   CpyU2SP
+         bsr   PutRegs
          lda   P$State,x
          anda  #$7F
          lbra  IRQHN20
 
-CpySP2U    pshs  u,y,x,cc
+GetRegs    pshs  u,y,x,cc
          ldb   $06,x
          ldx   $04,x
          lbsr  L0BF5
          leax  >-$6000,x
          bra   L02E9
 
-CpyU2SP    pshs  u,y,x,cc
+PutRegs    pshs  u,y,x,cc
          ldb   $06,x
          ldx   $04,x
          lbsr  L0BF5
@@ -442,10 +462,10 @@ SYSREQ leau 0,S Copy stack ptr
 SYSREQ10 ldb ,X+ Get service code
 SYSREQ20 stx R$PC,U Update program counter
  ldy D.SysDis Get system service routine table
- bsr DISPCH Call service routine
+ bsr Dispatch Call service routine
  lbra SYSRET
 
-DISPCH aslb SHIFT For two byte table entries
+Dispatch aslb SHIFT For two byte table entries
  bcc DISP10 Branch if not i/o
  rorb RE-ADJUST Byte
  ldx IOEntry,y Get i/o routine
@@ -1349,7 +1369,7 @@ BOOT comb set carry
  beq BOOT05 No boot string in init module
  leax d,x Get name ptr
  bra BOOT06
-BOOT05 leax  BTSTR,pcr
+BOOT05 leax  BootName,pcr
 BOOT06 lda #SYSTM+OBJCT get type
  OS9 F$LINK find bootstrap module
  bcs BOOTXX Can't boot without module
@@ -2116,7 +2136,7 @@ NXTP30 bita #CONDEM Is process condemmed?
 *
  leas -R$Size,S Make space for copy
  leau 0,S Copy stack pointer
- lbsr CpySP2U Copy 12 bytes from P$SP to U
+ lbsr GetRegs Copy 12 bytes from P$SP to U
  lda P$Signal,X
  sta 2,U
  ldd P$SigVec,X Get intercept vector
@@ -2127,7 +2147,7 @@ NXTP30 bita #CONDEM Is process condemmed?
  ldd P$SP,X
  subd #R$Size Make space for copy
  std P$SP,X
- lbsr CpyU2SP Copy 12 bytes from U to P$SP
+ lbsr PutRegs Copy 12 bytes from U to P$SP
  leas R$Size,S Reset stack
  ldu P$SP,X
  clrb
@@ -2284,7 +2304,7 @@ OS9End equ *
  fcc /99999/
 
 SYSVEC fdb TICK+$FFDE-* Clock tick handler
- fdb SWI3HN+$FFE0-* Swi3 handler
+ fdb UserSWI3+$FFE0-* Swi3 handler
  fdb SWI2HN+$FFE2-* Swi2 handler
  fdb 0000+$FFE4-*  Fast irq handler
  fdb IRQHN+$FFE6-* Irq handler

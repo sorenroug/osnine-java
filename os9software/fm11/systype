@@ -17,6 +17,13 @@ DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
 DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
 
 ***************
+*
+* DAT.Addr calculates a mask for the top bits of the
+* logical address that are mapped by the MMU
+DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
+*
+
+***************
 DAT.Free equ $FE Free Block Number
 
 DAT.BlMx equ $FF maximum block number
@@ -25,6 +32,8 @@ DAT.BMSz equ $100 Block Map size (one byte per block)
 SysTask equ $80
 
 IOBlock equ $FF The block number for the I/O
+
+RAMCount equ 1
 
 ClocType equ 0
 

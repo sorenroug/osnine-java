@@ -1,13 +1,20 @@
-             nam   wd2797
-         ttl   os9 device driver
+ nam WD2797
+ TTL Floppy disk driver with bootstrap
 
 
  use defsfile
 
+Drvcnt SET 4
+FULLSIZE equ 1
+DDTRACK0 equ 1
+DBLTRACK equ 1
+TRYBOTH equ 0
+EXTFMT equ 1
+
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-         mod   DSKEND,DSKNAM,tylg,atrv,DSKENT,DSKSTA
+         mod   DSKEND,Dknam,tylg,atrv,Dkent,DSKSTA
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
@@ -49,7 +56,7 @@ u00AE    rmb   1
 u00AF    rmb   2
 u00B1    rmb   2
 u00B3    rmb   2
-u00B5    rmb   2
+V.Lsn    rmb   2
 u00B7    rmb   1
 u00B8    rmb   1
 u00B9    rmb   3
@@ -59,17 +66,17 @@ u00C1    rmb   1
 u00C2    rmb   1
 u00C3    rmb   2
 u00C5    rmb   1
-V.FREZ    rmb   1
-u00C7    rmb   1
+V.Freeze    rmb   1
+V.DDTr0    rmb   1
 DSKSTA     equ   .
 
  fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
 
-DSKNAM fcs /wd2797/
+Dknam fcs /wd2797/
  fcb  1 Edition
 
-DSKENT    equ   *
-         lbra  INIDSK
+Dkent    equ   *
+         lbra  Idisk
          lbra  READSK
          lbra  WRTDSK
          lbra  GETSTA
@@ -81,7 +88,10 @@ FDMASK   fcb  $00 no flip bits
          fcb  $80
          fcb  $80
 
-INIDSK   lda   #4
+* Initialise Controller And Storage
+* Input: Y=Device Descriptor Pointer
+*        U=Global Storage Pointer
+Idisk   lda   #Drvcnt
          sta   u0006,u
          leax  u000F,u
          stx   >u00A7,u
@@ -90,7 +100,7 @@ INIDSK   lda   #4
          lbsr  L0334
  ldd #256 "d" passes memory req size
          os9   F$SRqMem Request 1 pag of mem
-         bcs   WRERR9
+         bcs   Ierr
          tfr   u,d
          puls  u
          std   >V.BUF,u
@@ -98,7 +108,7 @@ INIDSK   lda   #4
          leax  <FDMASK,pcr
          leay  >IRQSVC,pcr
          os9   F$IRQ
-         bcs   RETCS
+         bcs   Init30
          inc   >u00AC,u
          ldx   #DAT.Task
          lda   ,x
@@ -108,20 +118,20 @@ INIDSK   lda   #4
          ora   #$03
          sta   $01,x
          puls  cc
-         leax  >L05F7,pcr
+         leax  >TimSrv,pcr
          os9   F$Timer
-         bcs   RETCS
+         bcs   Init30
          leax  u000F,u
          ldb   #$04 #DriveCnt
          lda   #$FF
 INILUP    sta   $01,x
          sta   <$15,x
  leax DRVMEM,X Point to next drive table
- decb DONE
+ decb
          bne   INILUP
          clrb
-RETCS    rts
-WRERR9    puls  pc,u
+Init30    rts
+Ierr    puls  pc,u
 
  pag
 *************************************************************
@@ -137,33 +147,33 @@ WRERR9    puls  pc,u
 *
 * Error: Cc=Set, B=Error Code
 *
-READSK    bsr   PHYSIC
-         bcs   RETCS
-         ldx   >u00B5,u
-         bne   L00BE
-         bsr   L00BE
-         bcs   RETCS
+READSK    bsr   Rngtst
+         bcs   Init30
+         ldx   V.Lsn,u
+         bne   Read1
+         bsr   Read1
+         bcs   Init30
  ldx PD.BUF,Y Point to buffer
          pshs  y,x
-         tst   >V.FREZ,u
-         bne   L00B8
+         tst   >V.Freeze,u
+         bne   Read2
          ldy   >u00A7,u
          ldb   #$14
-READ01    lda   b,x
+Copytb    lda   b,x
          sta   b,y
          decb
-         bpl   READ01
-L00B8    clr   >V.FREZ,u
+         bpl   Copytb
+Read2    clr   >V.Freeze,u
          puls  pc,y,x
 
-L00BE    leax  >L0364,pcr
+Read1    leax  >L0364,pcr
 L00C2    pshs  u,y
          ldy   u0001,u
          leau  >u00AB,u
          jsr   ,x
          puls  pc,u,y
 
-WRTDSK    bsr   PHYSIC
+WRTDSK    bsr   Rngtst
          bcs   L0151
          leax  >L0408,pcr
          bsr   L00C2
@@ -183,19 +193,19 @@ WRTDSK    bsr   PHYSIC
 **************************************************************
 *
 * Convert Logical Sector Number
-* To Physical Track And Sector
+* To Rngtstal Track And Sector
 *
 *  Input:  B = Msb Of Logical Sector Number
 *          X = Lsb'S Of Logical Sector Number
-*  Output: A = Physical Track Number
-*          Sector Reg = Physical Sector Number
+*  Output: A = Rngtstal Track Number
+*          Sector Reg = Rngtstal Sector Number
 *  Error:  Carry Set & B = Error Code
 *
-PHYSIC    tstb
-         bne   PHYERR
-         stx   >u00B5,u
-         bsr   SELECT
-         bitb  #$40
+Rngtst    tstb
+         bne   Rngerr
+         stx   V.Lsn,u
+         bsr   Getdrv
+         bitb  #$40 Non-Os9 Format?
          beq   L012F
          anda  #$F8
          pshs  a
@@ -222,9 +232,9 @@ L0127    lda   <$26,y
 L012F    clra
          ldb   $03,x
          std   >u00B1,u
-L0136    ldd   >u00B5,u
+L0136    ldd   V.Lsn,u
          cmpd  $01,x
-         bhi   PHYERR
+         bhi   Rngerr
          ldd   $08,y
          std   >u00BD,u
          ldd   PD.T0S,y
@@ -232,20 +242,20 @@ L0136    ldd   >u00B5,u
          clrb
          rts
 
-PHYERR comb
+Rngerr comb
  ldb #E$SECT Error: bad sector number
 L0151    rts
  pag
 ***************************************************************
 *
-* Select Drive
+* Getdrv Drive
 *
 *  Input: (U)= Pointer To Global Storage
 *
 * Output: Curtbl,U=Current Drive Tbl
 *         Curdrv,U=Drive Number
 *
-SELECT    ldx   >u00A7,u
+Getdrv    ldx   >u00A7,u
          beq   L015F
          lda   >u00BC,u
          sta   <$15,x
@@ -267,7 +277,7 @@ L015F    lda   PD.DRV,y
          lda   <$10,x
          ldb   PD.TYP,y
          andb  #$20
-         stb   >u00C7,u
+         stb   >V.DDTr0,u
          ldb   PD.TYP,y
          bitb  #$40
          bne   L01A5
@@ -309,19 +319,19 @@ L01D0    comb
          rts
 
 SETFRZ    ldb   #$01
-         stb   >V.FREZ,u
+         stb   >V.Freeze,u
          clrb
          puls  pc,u,y
 
 SETSPT    ldx   $04,x
          pshs  x
-         lbsr  SELECT
+         lbsr  Getdrv
          puls  b,a
          std   $03,x
          clrb
          puls  pc,u,y
 
-RESTOR    lbsr  SELECT
+RESTOR    lbsr  Getdrv
          ldx   >u00A7,u
          clr   <$15,x
          leax  >L04E8,pcr
@@ -338,19 +348,19 @@ RESTOR    lbsr  SELECT
 WRTTRK    lda   $07,x
          ldb   $09,x
          pshs  b,a
-         lbsr  SELECT
+         lbsr  Getdrv
          ldd   <$29,y
          std   >u00B1,u
          ldd   <$2B,y
          std   >u00AF,u
          ldd   #$0000
-         std   >u00B5,u
+         std   V.Lsn,u
          puls  b,a
          sta   <$10,x
          stb   >u00C2,u
          anda  #$01
          sta   >u00C5,u
-         lbsr  SELECT
+         lbsr  Getdrv
          ldd   #$2900
          os9   F$SRqMem
          bcs   L0281
@@ -801,7 +811,7 @@ IRQSVC    ldy   u0001,u
 IRQEND    clrb
          rts
 
-L05F7    tst   >u00B9,u
+TimSrv    tst   >u00B9,u
          beq   L0612
          tst   >u00AD,u
          bne   L0612

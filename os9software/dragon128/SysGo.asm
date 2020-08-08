@@ -3,59 +3,73 @@
 
  use defsfile
 
-
-*****
+***********************************************************
 *
-*  Coldstart Module
+*     Program SysGo
 *
-* Starts Cmd Module On Path "/Term"
+*   Sets execution directory, executes startup file,
+*   and loops, forking a shell and waiting for it
 *
-Type set PRGRM+OBJCT
+TEST set 0
+Type set Prgrm+Objct
 Revs set 1
- mod CldEnd,CldNam,Type,Revs,CldEnt,CldMem
-CldNam fcs /SysGo/
- fcb 2 
+ mod SGoEnd,SGoNam,Type,Revs,SGoEnt,SGoMem
+SGoNam fcs /SysGo/
 
- rmb   256
-CldMem equ .
+ fcb 2 Edition Number
+*****
+* REVISION HISTORY
+* edition 1: prehistoric
+* edition 2: made nonreentrant and bcs on chdir removed MGH 4/8/83
+*****
+
+SGoMem equ 256 Total Static Storage requirement
 
 DirStr fcc "Cmds"
  fcb $D
-CMDSTR fcc "Shell"
+CmdStr fcc "Shell"
  fcb $D
-SHLFUN fcc "Startup -p"
+ ifne TEST
+ else
+ShlFun fcc "Startup -p"
+ endc
  fcb $D
-FUNSIZ equ *-SHLFUN
+FunSiz equ *-ShlFun
 
-CldEnt leax CLICPT,PCR Set up signal intercept
+SGoEnt leax SGoIncpt,pc set up signal intercept
  OS9 F$ICPT
+ ifeq TEST
  leax DirStr,PCR Get directory name ptr
- lda #EXEC. Get execution mode
+ lda #Exec. Get execution mode
  OS9 I$ChgDir Change execution directory
-* NOTE: do not test for error, at least system will boot
-         os9   F$ID     
-         ldb   #$80
-         os9   F$SPrior 
- leax CMDSTR,PCR Get ptr to "shell"
- leau SHLFUN,PCR Get ptr to startup file name
- ldd #OBJCT*256 Get type
- ldy #FUNSIZ Size of parameters
- OS9 F$FORK Execute startup file
- bcs CLDERR Branch if error
- OS9 F$WAIT Wait for it
-CLDM10 leax CMDSTR,PCR Get command name ptr
- ldd #OBJCT*256
- ldy #0 No parameters
- OS9 F$FORK Start new process
- bcs CLDERR
+*edition 2: removed to allow sys to come up even if
+*           the chgdir fails-
+*bcs SGoErr Branch if error
+ endc
+ os9 F$ID get process ID
+ ldb #128 get medium priority
+ os9 F$SPrior set priority
+ leax CmdStr,PCR get ptr to "SHELL"
+ leau ShlFun,PCR get ptr to startup file name
+ ldd #Objct*256 Get Type
+ ldy #FunSiz size of parameters
+ OS9 F$Fork execute startup file
+ bcs SGoErr branch if error
+ OS9 F$Wait Wait for it
+SysG.A leax CmdStr,PCR get command name ptr
+ ldd #Objct*256
+ ldy #0 no parameters
+ OS9 F$Fork start new process
+ bcs SGoErr
  OS9 F$WAIT Wait for it to die
- bcc CLDM10
+ bcc SysG.A
 
-CLDERR jmp [$FFEE]
+SGoErr jmp [D$REBOOT]
 
-CLICPT rti COLDSTART Intercept routine
+SGoIncpt rti do-nothing intercept
 
- emod Module Crc
+ emod Module CRC
 
-CldEnd equ *
+SGoEnd equ *
 
+ end

@@ -2,8 +2,8 @@
  opt f
 * NOTE: This file assumes Defs Directory in on Root
 *       of current Disk Device
- ifp1
  use systype.128
+ ifp1
  use sysdefs.128
  use os9defs.x
  use os9iodefs
