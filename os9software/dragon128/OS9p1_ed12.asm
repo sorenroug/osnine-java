@@ -256,7 +256,7 @@ Cold20 equ *
  ifeq MappedIO-true
  cmpb #IOBlock is this I/O block?
  else
- jmp NOWHERE Code is not available
+ cmpb #DAT.BlMx Last block?
  endc
  beq Cold30 branch of so
  stb DAT.Regs+RAMCount set block register
@@ -313,7 +313,21 @@ Cold50 lda 0,x is this RAM block?
  endc
 Cold55 equ *
  ifeq ROMCheck-UnLimitd
- jmp NOWHERE Code is not available
+* The code in this conditional branch is retrieved from Fujitsu FM-11
+ cmpb #DAT.BlMx
+ bne Cold57
+ ldx #2048   Should this be DAT.BlSz?
+Cold57 pshs Y,X save ptrs
+ lbsr AdjImg adjust DAT image ptr
+ ldb 1,Y get DAT image
+ stb DAT.Regs set block zero register
+ ldd ,x
+ clr DAT.Regs
+ puls y,x retrieve ptrs
+ cmpd #$87CD
+ beq Cold62
+ puls x
+ bra Cold79
  endc
 Cold60 pshs Y,X save ptrs
  lbsr AdjImg adjust DAT image ptr
@@ -452,9 +466,9 @@ SvcTbl equ *
  fcb F$BtMem+SysState
  fdb SRqMem-*-2
  fcb F$Move+SysState
- fdb MOVE-*-2
+ fdb Move-*-2
  fcb F$AllRAM
- fdb ALLRAM-*-2
+ fdb AllRAM-*-2
  fcb F$AllImg+SysState
  fdb AllImg-*-2
  fcb F$SetImg+SysState
@@ -464,15 +478,15 @@ SvcTbl equ *
  fcb F$FreeHB+SysState
  fdb FreeHB-*-2
  fcb F$AllTsk+SysState
- fdb ALLTSK-*-2
+ fdb AllTsk-*-2
  fcb F$DelTsk+SysState
  fdb DELTSK-*-2
  fcb F$SetTsk+SysState
- fdb SETTSK-*-2
+ fdb SetTsk-*-2
  fcb F$ResTsk+SysState
  fdb RESTSK-*-2
  fcb F$RelTsk+SysState
- fdb RELTSK-*-2
+ fdb RelTsk-*-2
  fcb F$DATLog+SysState
  fdb DATLOG-*-2
  fcb F$LDAXY+SysState
@@ -1759,37 +1773,38 @@ BootXX rts
 *
 *     Subroutine RAMBlk
 *
+*   Search Memory Block Map for contiguous free RAM blocks
 *
-ALLRAM ldb R$B,u Get number of blocks
- bsr RAMBlk
- bcs ALRAM05
- std R$D,U
-ALRAM05 rts
+AllRAM ldb R$B,u get block count
+ bsr RAMBlk allocate blocks
+ bcs AllRAM10 branch if failed
+ std R$D,u get block number
+AllRAM10 rts
 
-RAMBlk pshs Y,X,D
- ldx D.BlkMap
-RAMBlk10 leay 0,X
- ldb 1,S
-RAMBlk20 cmpx D.BlkMap+2
- bcc RAMBlk30
- lda ,x+
- bne RAMBlk10 Reset B counter
- decb
- bne RAMBlk20
- tfr Y,D
- subd D.BlkMap
- sta 0,S
- lda 1,S
- stb 1,S
-RAMBlk25 inc ,y+
- deca
- bne RAMBlk25
- clrb
+RAMBlk pshs Y,X,D save registers
+ ldx D.BlkMap get Block Map ptr
+RAMBlk10 leay 0,X copy map ptr
+ ldb 1,S get block count
+RAMBlk20 cmpx D.BlkMap+2 end of map?
+ bcc RAMBlk30 branch if so
+ lda ,x+ free block?
+ bne RAMBlk10 branch if not
+ decb found enough?
+ bne RAMBlk20 branch if not
+ tfr Y,D copy beginning block ptr
+ subd D.BlkMap get block number
+ sta 0,S return block number
+ lda 1,S get block count
+ stb 1,S return block number
+RAMBlk25 inc ,y+ update flags
+ deca done?
+ bne RAMBlk25 branch if not
+ clrb clear carry
  puls PC,Y,X,D
  page
-RAMBlk30 comb
- ldb #E$NoRam
- stb 1,S Save error code
+RAMBlk30 comb set carry
+ ldb #E$NoRam err: no RAM
+ stb 1,S
  puls PC,Y,X,D
 
 ***********************************************************
@@ -2312,7 +2327,7 @@ F.STABX ldd R$D,U get data & task number
 *
 * Calls: Mover
 *
-MOVE ldd R$D,u get user D register
+Move ldd R$D,u get user D register
  ldx R$X,u get user X register
  ldy R$Y,u get user Y register
  ldu R$U,u get user U register
@@ -2340,7 +2355,9 @@ MoveNone rts
 *
 *     Subroutine AllTsk
 *
-ALLTSK ldx R$X,u Get process descriptor
+*   Process Task allocation service routine
+*
+AllTsk ldx R$X,u get process ptr
 *
 *     fall through to AllPrTsk
 *
@@ -2348,13 +2365,15 @@ ALLTSK ldx R$X,u Get process descriptor
 *
 *     Subroutine AllPrTsk
 *
-AllPrTsk ldb P$Task,X
- bne ALLTSK10
- bsr ResvTask Reserve task number
- bcs AllPrXit
- stb P$Task,X
- bsr SetPrTsk Set process task registers
-ALLTSK10 clrb
+*   Allocate process task number
+*
+AllPrTsk ldb P$Task,x get process task number
+ bne AllPrT10 branch if assigned
+ bsr ResvTask get free DAT
+ bcs AllPrXit branch if none
+ stb P$Task,x set process task number
+ bsr SetPrTsk set process task
+AllPrT10 clrb clear carry
 AllPrXit rts
  page
 ***********************************************************
@@ -2363,7 +2382,7 @@ AllPrXit rts
 *
 *   Deallocate Process Task service routine
 *
-DELTSK ldx R$X,u  Get process descriptor
+DELTSK ldx R$X,u get process ptr
 *
 *     fall through to DelPrTsk
 *
@@ -2371,10 +2390,12 @@ DELTSK ldx R$X,u  Get process descriptor
 *
 *     Subroutine DelPrTsk
 *
-DelPrTsk ldb P$Task,X
- beq AllPrXit
- clr P$Task,X
- bra RelsTask
+*   Deallocate Process Task number
+*
+DelPrTsk ldb P$Task,x get process task
+ beq AllPrXit branch if none
+ clr P$Task,x clear process task
+ bra RelsTask release task number
  page
 ***********************************************************
 *
@@ -2382,9 +2403,9 @@ DelPrTsk ldb P$Task,X
 *
 *   Update process task in DAT image has changed
 *
-ChkPrTsk lda P$State,X
- bita #ImgChg Did task image change?
- bne SetPrTsk Set process task registers
+ChkPrTsk lda P$State,x get process state
+ bita #ImgChg has DAT image changed?
+ bne SetPrTsk branch if so
  rts
  page
 ***********************************************************
@@ -2393,13 +2414,15 @@ ChkPrTsk lda P$State,X
 *
 *   Set task DAT registers service routine
 *
-SETTSK ldx R$X,U Process descriptor pointer
+SetTsk ldx R$X,U get process ptr
 *
 *     fall through to SetPrTsk
 *
 ***********************************************************
 *
 *     Subroutine SetPrTsk
+*
+*   Set Process Task DAT registers
 *
 SetPrTsk lda P$State,X
  anda #^ImgChg
@@ -2423,15 +2446,15 @@ RESTSK bsr ResvTask
 ResvTask pshs x
  ldb #1
  ldx D.Tasks
-RESTSK10 lda B,X
- beq RESTSK20
+ResTsk10 lda B,X
+ beq ResTsk20
  incb
  cmpb #DAT.TkCt Last task slot?
- bne RESTSK10 ..yes
+ bne ResTsk10 ..yes
  comb
  ldb #E$NoTask
  bra ResTsk30
-RESTSK20 inc b,x Mark occupied
+ResTsk20 inc b,x reserve task
  orb D.SysTsk
  clra
 ResTsk30 puls PC,X
@@ -2442,15 +2465,16 @@ ResTsk30 puls PC,X
 *
 *   Release Task number
 *
-RELTSK ldb R$B,u Task number
-RelsTask pshs x,b
- ldb D.SysTsk
- comb
- andb 0,S
- beq RELTSK20
- ldx D.Tasks
- clr B,X
-RELTSK20 puls PC,x,b
+RelTsk ldb R$B,u get task number
+
+RelsTask pshs x,b save registers
+ ldb D.SysTsk get selected bits
+ comb make mask
+ andb 0,S clear selected bits
+ beq RelTsk10 branch if system task
+ ldx D.Tasks get task number table
+ clr B,X release task number
+RelTsk10 puls PC,x,b
  page
 ***********************************************************
 *
@@ -2508,7 +2532,7 @@ Slic.a clrb clear carry
 *
 *   Put process in Active Process Queue Service routine
 *
-AProc ldx R$X,U  Address of process descriptor
+AProc ldx R$X,U get process ptr
 *
 *     fall through to ActvProc
 *
@@ -2516,21 +2540,31 @@ AProc ldx R$X,U  Address of process descriptor
 *
 *     Subroutine ActvProc
 *
+*   Put process in Active Process Queue
+*
+* Input: X = Process Descriptor ptr
+*
+* Output: Carry clear
+*
+* Data: D.AProcQ
+*
+* Calls: none
+*
 ActvProc clrb
  pshs U,Y,X,CC
  lda P$Prior,X Get process priority/age
  sta P$AGE,X Set age to priority
  orcc #IRQMask+FIRQMask Set interrupt masks
  ldu #D.AProcQ-P$Queue Fake process ptr
- bra ACTP30
-ACTP10 inc P$AGE,U
- bne ACTP20 is not 0
+ bra ActvPr30
+ActvPr10 inc P$AGE,U
+ bne ActvPr20 is not 0
  dec P$AGE,u too high
-ACTP20 cmpa P$AGE,U Who has bigger priority?
- bhi ACTP40
-ACTP30 leay 0,U Copy ptr to this process
-ACTP40 ldu P$Queue,U Get ptr to next process
- bne ACTP10
+ActvPr20 cmpa P$AGE,U Who has bigger priority?
+ bhi ActvPr40
+ActvPr30 leay 0,U Copy ptr to this process
+ActvPr40 ldu P$Queue,U Get ptr to next process
+ bne ActvPr10
  ldd P$Queue,Y
  stx P$Queue,Y
  std P$Queue,X
@@ -2539,21 +2573,31 @@ ACTP40 ldu P$Queue,U Get ptr to next process
 *
 *     User Hardware Interrupt Service Routine
 *
-UserIRQ ldx D.Proc
- sts P$SP,x Save stack pointer of running process
- lds D.SysStk
- ldd D.SysSvc
- std D.XSWI2
- ldd D.SysIRQ
- std D.XIRQ
- jsr [D.SvcIRQ] Go to interrupt service
- bcc UserRet branch if service failed
- ldx D.Proc
- ldb P$Task,X
- ldx P$SP,X
- lbsr LDABX Get saved cc
- ora #IntMasks inhibit interrupts in process
- lbsr STABX Save CC
+*   Handle state/stack, call polling routine, & return
+*
+* Input: S = value of stack after interrupt
+*
+* Output: none directly
+*
+* Data: D.Proc, D.SysSvc, D.SWI2, D.SysIRQ, D.IRQ, D.Poll
+*
+* Calls: [D.Poll], UIRQRet
+*
+UserIRQ ldx D.Proc get process ptr
+ sts P$SP,x save stack ptr
+ lds D.SysStk move to system stack
+ ldd D.SysSvc get system service routine
+ std D.XSWI2 set SWI 2 vector
+ ldd D.SysIRQ get system interrupt routine
+ std D.XIRQ set IRQ vector
+ jsr [D.SvcIRQ] call IRQ service
+ bcc UserRet branch if serviced
+ ldx D.Proc get process ptr
+ ldb P$Task,X get process task number
+ ldx P$SP,x get process stack
+ lbsr LDABX get condition codes
+ ora #IntMasks set interrupt masks
+ lbsr STABX update condition codes
 *
 *     fall through to UserRet
 *
@@ -2561,16 +2605,27 @@ UserIRQ ldx D.Proc
 *
 *     Subroutine UserRet
 *
-UserRet orcc #IntMasks
- ldx D.Proc
- ldu P$SP,X
- lda P$State,X
- bita #TimOut
- beq NXTP30
-UsrRet.a anda #^TimOut
- sta P$State,X
- lbsr DelPrTsk
-GoActv bsr ActvProc
+*   Return to User process after interrupt
+*
+* Input: A = Process State flags
+*        X = Process Descriptor ptr
+*
+* Output: none
+*
+* Data: none
+*
+* Calls: NextProc (@ CurrProc), ActvProc, NextProc
+*
+UserRet orcc #IntMasks set interrupt masks
+ ldx D.Proc get process ptr
+ ldu P$SP,x get process stack ptr
+ lda P$State,x get process state
+ bita #TimOut time slice over?
+ beq CurrProc branch if not
+UsrRet.a anda #^TimOut clear time-out flag
+ sta P$State,X update state
+ lbsr DelPrTsk deallocate process task
+GoActv bsr ActvProc put in active process queue
 *
 *    fall through to NextProc
 *
@@ -2614,7 +2669,7 @@ NextPr40 ldx P$Queue,Y get ptr to next proc
  ldu P$SP,X get process stack ptr
  lda P$State,X get process state flags
  bmi SysRet branch if system state
-NXTP30 bita #CONDEM is process condemmed?
+CurrProc bita #Condem is process condemmed?
  bne KillProc branch if so
  lbsr ChkPrTsk update process task
  ldb P$Signal,X is signal waiting?
@@ -2697,6 +2752,9 @@ SysRet ldx D.SysPrc get system process ptr
 
 
 ***********************************************************
+*
+*     In-System IRQ Transfer
+*
 GoPoll jmp [D.Poll] call polling routine
 
 ***********************************************************
@@ -2877,15 +2935,10 @@ DATIn1 stb 0,X
  lda #%10110000 Turn on MMU by turning of bit 6
  sta DAT.Task
 DATINTBT lbra COLD
-
-* We don't use NMI in the Virtual OS-9
-*
-DMACNMI rti
-
 *
 * END Virtual computer
 *
-         endc
+ endc
 
 ***********************************************************
 *
@@ -2928,11 +2981,24 @@ OS9End equ *
 
 
  ifeq CPUType-DRG128
-Target set $1225-$100
- else
-Target set $1000-$100
- endc
+
+**********
+*
+* Skip 768 byte I/O block
+*
+Target set *+768
  use filler
+ opt -c
+* Filler bytes included
+ opt l
+ opt c
+*
+ endc
+
+ ifeq CPUType-L2VIRT
+Target set $1000-$100
+ use filler
+ endc
 
 LDABX andcc #^Carry clear carry
  pshs B,CC save registers
@@ -2991,6 +3057,7 @@ LDBBX andcc #^Carry clear carry
 *     Subroutines Mover00
 *
 *   Actual move routine (MUST be in upper 256 bytes)
+*
 Mover00 orcc #IntMasks
  ifeq DAT.Uniq
  jmp NOWHERE Code is not available
@@ -3086,12 +3153,21 @@ NMIRQ ldb #D.NMI get direct page offset
  bra Switch10
  page
 
- ifeq CPUType-DRG128
-Target set $1225-$20
- else
-Target set $1000-$20
+ ifeq CPUType-PAL1M92
  endc
+ ifeq CPUType-DRG128
+target set $400+OS9End-$20
  use filler
+ opt -c
+* Filler bytes included
+ opt l
+ opt c
+*
+ endc
+ ifeq CPUType-L2VIRT
+Target set $1000-$20
+ use filler
+ endc
 
 offset set $FFE0-*
 
@@ -3105,10 +3181,11 @@ HdlrVec fdb Tick+offset
  fdb offset
  fdb UserIRQ+offset
  fdb UserSWI+offset
- fdb DMACNMI+offset
  ifeq CPUType-DRG128
+ fdb DMACNMI+offset
  fdb Cold+offset reboot entry vector = COLDStart
  else
+ fdb offset
  fdb Cold+offset reboot entry vector = COLDStart
  endc
 
