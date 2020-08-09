@@ -35,7 +35,7 @@ import org.roug.ui.terminal.EmulationCore;
 import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
 import org.roug.usim.Bus8Motorola;
-import org.roug.usim.BusDragonBeta;
+import org.roug.usim.BusGimixEnhanced;
 import org.roug.usim.HWClock;
 import org.roug.usim.IRQBeat;
 import org.roug.usim.mc6809.MC6809;
@@ -110,7 +110,7 @@ public class GUI {
         addDevicesMenu(guiMenuBar);
         addHelpMenu(guiMenuBar);
 
-        bus = new BusDragonBeta();
+        bus = new BusGimixEnhanced();
 
         RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x40000);
         bus.addMemorySegment(ram);

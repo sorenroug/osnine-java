@@ -11,7 +11,7 @@ atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
          fcb   $FF mode byte
-         fcb   $0F extended controller address
+         fcb IOBlock/DAT.BlCt port bank
          fdb   $FCD1  physical controller address
          fcb   initsize-*-1  initilization table size
          fcb   1 device type:0=scf,1=rbf,2=pipe,3=scf

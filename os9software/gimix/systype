@@ -21,9 +21,17 @@ Exorsr rmb 1
 S09 rmb 1
 Swtc rmb 1
 Cms9609 rmb 1
+Cms9619 rmb 1
 Mm19 rmb 1
 Percom rmb 1
 Elektra rmb 1
+Digalog rmb 1
+Matrix rmb 1
+TCSF1 rmb 1
+TCSF2 rmb 1
+MatrixRB rmb 1 rom based Matrix CPU
+PT69 RMB 1 Peripheral Technology Computer
+SAT96 rmb 1
  endc
 
 OneMHz equ 1

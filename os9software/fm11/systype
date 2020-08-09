@@ -35,5 +35,30 @@ IOBlock equ $FF The block number for the I/O
 
 RAMCount equ 1
 
+***************
+*
+* If the I/O is addressed whenever the top
+* address lines of the micro, (ie the logical
+* bus), take a certain value, rather than being
+* addressed through the DAT, then MappedIO must
+* be set false (0)
+MappedIO equ 0
+*
+***************
+
 ClocType equ 0
+
+ ifne LEVEL-1
+ org 1
+BlockTyp rmb 1 check only first bytes of RAM block
+ByteType rmb 1 check all bytes of RAM
+ org 1
+Limited rmb 1 check only top 64k for ROM modules
+UnLimitd rmb 1 check all NotRAM for modules
+* NOTE: The UnLimitd check assumes any NotRAM
+*       with a module will always have $87CD
+*       as the first two bytes in the block.
+ endc
+
+ROMCheck equ UnLimitd check all NotRAM
 

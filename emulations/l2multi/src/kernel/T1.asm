@@ -7,7 +7,7 @@
 
  mod TxEnd,TxNam,DEVIC+OBJCT,REENT+1,TxMGR,TxDrv
  fcb UPDAT. mode
- fcb $F extended controller address
+ fcb IOBlock/DAT.BlCt port bank
  fdb A.T1 port address
  fcb OptEnd-*-1  initilization table size
  fcb DT.SCF Device Type: SCF

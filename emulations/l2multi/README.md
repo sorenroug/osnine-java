@@ -5,9 +5,9 @@ This emulator is a Java Swing GUI application, that supports two serial terminal
 
 Instead of launching Shell at start up, it starts Login on terminal /T1 and TSMon on /T2. You can log in on any of the terminals and try what it was like to use OS-9 as a multi-user system.
 
-To use it you must download the disk image, and rename it to OS9.dsk. It is a raw image of a small harddisk. It is also possible to use a OS-9 boot diskette as long as it contains the commands Shell, Login, TSMon and a password file.
+To use it you must download the disk image, and rename it to boot-os9l2.dsk. It is a raw image of a small harddisk. It is also possible to use a OS-9 boot diskette as long as it contains the commands Shell, Login, TSMon and a password file.
 
-java -jar genericos9-1.0.0-jar-with-dependencies.jar
+java -jar l2multi-1.0.0-jar-with-dependencies.jar
 
 It is possible to start it up in single user mode by giving a '-s' argument.
 
@@ -32,8 +32,8 @@ Memory Map
 $FFCB0-$FFCB1 ACIA serial port address (/Term)
 $FFCB2-$FFCB3 ACIA serial port address (/T1)
 $FFCB4-$FFCB5 ACIA serial port address (/P)
-$FFCC0-$FFCC3 Task register (Only $FCC0 is used)
-$FFCD0       Interrupts from clock (50 Hz)
+$FFCD0        Interrupts from clock (50 Hz)
 $FFCD1-$FFCD3 Virtual disk
 $FFCDA-$FFCDF Date and time from host
-$FE00-$FE0F DAT registers
+$FF7F         Task register
+$FFF0-$FFFF DAT registers

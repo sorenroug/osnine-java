@@ -5,7 +5,7 @@
 
  mod TrmEnd,TrmNam,DEVIC+OBJCT,REENT+1,TrmMgr,TrmDrv
  fcb UPDAT. mode
- fcb $F extended controller address
+ fcb IOBlock/DAT.BlCt port bank
  fdb A.TERM port address
  fcb initsize-*-1  initilization table size
  fcb DT.SCF Device Type: SCF

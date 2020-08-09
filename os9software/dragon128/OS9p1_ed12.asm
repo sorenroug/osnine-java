@@ -2911,29 +2911,29 @@ DMACRead lda ,u+ get byte from memory
 
  ifeq CPUType-L2VIRT
 *
-* Virtual computer
+* Virtual computer using GIMIX DAT
 *
+Target set $1000-$100
+ use filler
+
 DATInit clra
  tfr a,dp
- ldx #DAT.Task ($FCC0)
- lda #$F0 Set values in output register
- sta 0,X
+ ldx #DAT.Task ($FF7F)
 *
 * Initialize all tasks in DAT registers
 *
  ldy #DAT.Regs
  ldb #$F0
 DATIn1 stb 0,X
- clra
- sta 0,Y    RAM at $0000
+ clr 0,Y    RAM at $0000
  lda #ROMBlock
  sta $E,y   DAT.Regs+$E
  lda #IOBlock
  sta $F,y   DAT.Regs+$F
  incb
  bne DATIn1
- lda #%10110000 Turn on MMU by turning of bit 6
- sta DAT.Task
+ lda #$20 Set values in output register
+ sta 0,X
 DATINTBT lbra COLD
 *
 * END Virtual computer
@@ -2993,11 +2993,6 @@ Target set *+768
  opt l
  opt c
 *
- endc
-
- ifeq CPUType-L2VIRT
-Target set $1000-$100
- use filler
  endc
 
 LDABX andcc #^Carry clear carry
@@ -3169,6 +3164,7 @@ Target set $1000-$20
  use filler
  endc
 
+
 offset set $FFE0-*
 
 ***********************************************************
@@ -3188,7 +3184,6 @@ HdlrVec fdb Tick+offset
  fdb offset
  fdb Cold+offset reboot entry vector = COLDStart
  endc
-
 
 ***********************************************************
 *

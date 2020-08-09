@@ -11,8 +11,8 @@
 
  mod TrmEnd,TrmNam,DEVIC+OBJCT,REENT+1,TrmMgr,TrmDrv
  fcb UPDAT. attributes
- fcb $F extended controller address
- fdb $FCB4  physical controller address
+ fcb IOBlock/DAT.BlCt port bank
+ fdb A.P  physical controller address
  fcb initsize-*-1  initilization table size
 OptStrt fcb DT.SCF SCF type device
 

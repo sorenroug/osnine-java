@@ -73,7 +73,7 @@
         <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
         <assemble src="OS9p2_ed5" home="gimix" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
 
-        <assemble src="OS9p1" home="l2virt" verify="d8ed1eecffb6513a5c9675f1bcb5a399"/>
+        <assemble src="OS9p1" home="l2virt" verify=""/>
 
     </target>
 
