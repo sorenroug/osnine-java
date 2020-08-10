@@ -7,12 +7,12 @@
 * This is a Level 2 module
 ***************************
 
- use   defsfile
+ use defsfile
 
-Type     set   Systm+Objct   
-Revs     set   ReEnt+1
+Type set   Systm+Objct   
+Revs set   ReEnt+1
 
-clockctl set   $FCD0
+clockctl set A.Clock
 
  mod ClkEnd,ClkNam,Type,Revs,ClkEnt,0
 

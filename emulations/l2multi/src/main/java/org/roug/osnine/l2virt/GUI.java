@@ -119,13 +119,12 @@ public class GUI {
         bus.insertMemorySegment(rom);
 
         loadROM(0xFF000, "OS9p1");
-        loadROM(0xFE000, "Boot", "Init", "Shell", "Term", "T1", "P",
-            "VDisk_rv2", "D0", "D1", "Clock");
+        loadROM(0xFE000, "Boot","Init");
 
-        IRQBeat irqBeat = new IRQBeat(0xFFCD0, bus, 20);
+        IRQBeat irqBeat = new IRQBeat(0xFECD0, bus, 20);
         bus.insertMemorySegment(irqBeat);
 
-        term = new Acia6850(0xFFCB0, bus);
+        term = new Acia6850(0xFECB0, bus);
         bus.insertMemorySegment(term);
         EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
         screen1 = new JTerminal(term, emulation);
@@ -133,22 +132,22 @@ public class GUI {
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
-        t1 = new Acia6850(0xFFCB2, bus);
+        t1 = new Acia6850(0xFECB2, bus);
         bus.insertMemorySegment(t1);
 
         t1Dialog = new Terminal2(guiFrame, t1, terminalType);
 
         printerDialog = new PrinterDialog(guiFrame);
 
-        t2 = new Acia6850(0xFFCB4, bus);
+        t2 = new Acia6850(0xFECB4, bus);
         bus.insertMemorySegment(t2);
         AciaToScreen atc3 = new AciaToScreen(t2, printerDialog);
         atc3.execute();
 
-        hwClock = new HWClock(0xFFCDA, bus);
+        hwClock = new HWClock(0xFECDA, bus);
         bus.insertMemorySegment(hwClock);
 
-        diskDevice = new VirtualDisk(0xFFCD1, bus);
+        diskDevice = new VirtualDisk(0xFECD1, bus);
         bus.insertMemorySegment(diskDevice);
 
         d0Dialog = new DiskDialog(guiFrame, diskDevice, 0);

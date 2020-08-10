@@ -125,23 +125,23 @@ D$REBOOT equ $FFEE use an unused vector
 ClocType set VSYNC
 TickSec set 50 ticks per second (50 for UK, 60 for USA)
 Cx2Int set 1 CA2 (CB2) interrupt input
-FPort set $FCD1 floppy disk controller
+FPort set $ECD1 floppy disk controller
 HPort set $FD00 hard disk controller
 DrvCnt set 4 four drives
 DPort set FPort
-A.Term set $FCB0 serial port address
-A.T1 set $FCB2 serial port address
+A.Term set $ECB0 serial port address
+A.T1 set $ECB2 serial port address
 A.T.Init set $15 default ACIA initialisation byte
-A.P set $FCB4 address of parallel printer port
+A.P set $ECB4 address of parallel printer port
 A.P1 set A.T1 address of serial printer port
 A.KBD set A.P+2 keyboard port address
 A.KLoad set A.KBD port whose control reg has keyboard LOAD
 A.GCon equ DAT.Task+2 graphics control port
 A.Cont equ DAT.Task+1 control reg with CONTROL bit
-A.Clock set A.GCon clock VSYNC interrupts come in on CB2
-A.Crtc equ $FC80 address of 6845 CRTC
+A.Clock set $ECD0
+*A.Crtc equ $FC80 address of 6845 CRTC
 *A.ColMap equ $FCA0 address of colour map
-A.Mouse equ $FC24 mouse and disk select
+*A.Mouse equ $FC24 mouse and disk select
 A.DskSel equ A.Mouse disk select port
 A.Beeper equ A.DskSel+2 port with beeper on it
 A.ChrSet equ A.Beeper port with 'character set select'

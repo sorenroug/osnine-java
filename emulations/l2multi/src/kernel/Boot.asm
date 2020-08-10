@@ -11,7 +11,7 @@
 BootNam fcs /Boot/
  fcb 1 Edition
 
-DISKDEV equ $FCD1
+DISKDEV equ FPort
 
 * Variables
  org 0
