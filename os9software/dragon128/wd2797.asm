@@ -1,26 +1,74 @@
  nam WD2797
  TTL Floppy disk driver with bootstrap
 
+****************************************
+*
+* Floppy disc driver with bootstrap routine
+* for the Western Digital 2797 disc controller.
+*
+* For the Dragon 128 computer.
+*
+* last mod 21/12/83
+*
+****************************************
 
+****************************************
+*
+* The boot routine is an extension to
+* OS-9 standard disc driver capabilities.
+* The entry point is the 7th entry in the
+* branch table, The bootstrap routine expects
+* the Y register to contain the address of
+* the Device Descriptor for the boot device.
+*
+* This driver can handle both mini and
+* full-size drives, provided the appropiate
+* bit is set in the Device Descriptor.
+*
+* This driver can handle discs formatted with
+* 128 byte sectors. The first sector on each
+* trach must be sector 1. The Device
+* Descriptor 'sectors per track' entries must
+* contain the number of sectors per track
+* divided by two, and bit 5 of the DD.TYP
+* entry must be set, (this is an extension
+* to the standard OS-9 definitions for this
+* byte). Bit 6 should also be set, to indicate
+* Non-OS9 Format.
+*
+*
+* Written by Paul Dayan of Vivaway Ltd
+*
+* History:
+* Written 3rd November 1983
+*
+****************************************
+    
  use defsfile
 
-Drvcnt SET 4
-FULLSIZE equ 1
-DDTRACK0 equ 1
-DBLTRACK equ 1
-TRYBOTH equ 0
-EXTFMT equ 1
+ TTL Floppy disk driver with bootstrap
 
-tylg     set   Drivr+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   DSKEND,Dknam,tylg,atrv,Dkent,DSKSTA
+Drvcnt SET 4 Four Drives
+FULLSIZE equ 1 include 8" drives
+DDTRACK0 equ 1 single and double density on track 0
+DBLTRACK equ 1 single and double track density
+TRYBOTH equ 0 get track 0 density info from PD
+EXTFMT equ 1 multiple formats
+HLFSECT equ 1 256 and 128 byte sectors
+DBLSIDE equ 1 single and double sided
+STEPIN equ 1 step in before restore
+
+ ifeq EXTFMT
+ endc
+
+
+ org 0
 u0000    rmb   1
-u0001    rmb   1
+XV.Port    rmb   1
 u0002    rmb   1
 u0003    rmb   1
 u0004    rmb   1
-XV.WAKE    rmb   1
+XV.Wake    rmb   1
 u0006    rmb   2
 u0008    rmb   1
 u0009    rmb   1
@@ -46,45 +94,53 @@ u0039    rmb   23
 u0050    rmb   48
 u0080    rmb   38
 u00A6    rmb   1
-u00A7    rmb   2
-V.BUF    rmb   1
+
+ ORG Drvbeg reserve RBF static storage
+ RMB Drvmem*Drvcnt drive tables
+V.Cdrv RMB 2 address of current drive table
+V.Vbuff    rmb   1
 u00AA    rmb   1
-u00AB    rmb   1
-u00AC    rmb   1
+V.Wrtf    rmb   1
+V.Wait    rmb   1
 u00AD    rmb   1
-u00AE    rmb   1
-u00AF    rmb   2
-u00B1    rmb   2
+V.Status    rmb   1
+V.T0stk    rmb   2
+V.Stk    rmb   2
 u00B3    rmb   2
 V.Lsn    rmb   2
-u00B7    rmb   1
-u00B8    rmb   1
-u00B9    rmb   3
-u00BC    rmb   1
+V.fmt    rmb   1
+V.TwoStp    rmb   1
+V.Timer    rmb   3
+V.CrTrk    rmb   1
 u00BD    rmb   4
-u00C1    rmb   1
+V.Step    rmb   1
 u00C2    rmb   1
-u00C3    rmb   2
+V.Select    rmb   2
 u00C5    rmb   1
 V.Freeze    rmb   1
 V.DDTr0    rmb   1
-DSKSTA     equ   .
+Dskmem     equ   .
 
- fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
+Type     set   drivr+objct
+Revs     set   reent+1
 
-Dknam fcs /wd2797/
+         mod   Dkend,Dknam,Type,Revs,Dkent,Dskmem
+
+ fcb $FF
+
+Dknam fcs 'wd2797'
  fcb  1 Edition
 
 Dkent    equ   *
          lbra  Idisk
          lbra  READSK
-         lbra  WRTDSK
-         lbra  GETSTA
-         lbra  PUTSTA
-         lbra  TERMINAT
+         lbra  Write
+         lbra  Gstat
+         lbra  Pstat
+         lbra  Term
          lbra  BOOT
 
-FDMASK   fcb  $00 no flip bits
+Fdcpol   fcb  $00 no flip bits
          fcb  $80
          fcb  $80
 
@@ -94,22 +150,22 @@ FDMASK   fcb  $00 no flip bits
 Idisk   lda   #Drvcnt
          sta   u0006,u
          leax  u000F,u
-         stx   >u00A7,u
+         stx   >V.Cdrv,u
  pshs U Save "u" we need it later
-         leau  >u00AB,u
-         lbsr  L0334
+         leau  >V.Wrtf,u
+         lbsr  Getdd
  ldd #256 "d" passes memory req size
          os9   F$SRqMem Request 1 pag of mem
          bcs   Ierr
          tfr   u,d
          puls  u
-         std   >V.BUF,u
+         std   >V.Vbuff,u
          ldd   #$FCC1
-         leax  <FDMASK,pcr
-         leay  >IRQSVC,pcr
+         leax  <Fdcpol,pcr
+         leay  Fdcsrv,pcr
          os9   F$IRQ
          bcs   Init30
-         inc   >u00AC,u
+         inc   >V.Wait,u
          ldx   #DAT.Task
          lda   ,x
          pshs  cc
@@ -126,7 +182,7 @@ Idisk   lda   #Drvcnt
          lda   #$FF
 INILUP    sta   $01,x
          sta   <$15,x
- leax DRVMEM,X Point to next drive table
+ leax DRVMEM,X next
  decb
          bne   INILUP
          clrb
@@ -157,7 +213,7 @@ READSK    bsr   Rngtst
          pshs  y,x
          tst   >V.Freeze,u
          bne   Read2
-         ldy   >u00A7,u
+         ldy   >V.Cdrv,u
          ldb   #$14
 Copytb    lda   b,x
          sta   b,y
@@ -165,24 +221,24 @@ Copytb    lda   b,x
          bpl   Copytb
 Read2    clr   >V.Freeze,u
          puls  pc,y,x
+Read1    leax  >Rsect,pcr
 
-Read1    leax  >L0364,pcr
-L00C2    pshs  u,y
-         ldy   u0001,u
-         leau  >u00AB,u
+Call    pshs  u,y
+         ldy   V.Port,u
+         leau  >V.Wrtf,u
          jsr   ,x
          puls  pc,u,y
 
-WRTDSK    bsr   Rngtst
-         bcs   L0151
-         leax  >L0408,pcr
-         bsr   L00C2
-         bcs   L0151
+Write    bsr   Rngtst
+         bcs   Return
+         leax  >Wsect,pcr
+         bsr   Call
+         bcs   Return
          lda   <$28,y
-         bne   L0151
+         bne   Return
          ldd   $08,y
          pshs  b,a
-         ldd   >V.BUF,u
+         ldd   >V.Vbuff,u
          std   $08,y
          bsr   READSK
          puls  x
@@ -206,7 +262,7 @@ Rngtst    tstb
          stx   V.Lsn,u
          bsr   Getdrv
          bitb  #$40 Non-Os9 Format?
-         beq   L012F
+         beq   Rng4
          anda  #$F8
          pshs  a
          lda   PD.SID,y
@@ -218,9 +274,9 @@ L010C    ldb   PD.DNS,y
          bitb  #$01
          beq   L0115
          ora   #$02
-L0115    sta   >u00B7,u
+L0115    sta   >V.fmt,u
          ldd   PD.SCT,y
-         std   >u00B1,u
+         std   >V.Stk,u
          lda   PD.SID,y
          deca
          beq   L0127
@@ -228,23 +284,23 @@ L0115    sta   >u00B7,u
 L0127    lda   <$26,y
          mul
          std   $01,x
-         bra   L0136
-L012F    clra
+         bra   Rng5
+Rng4    clra
          ldb   $03,x
-         std   >u00B1,u
-L0136    ldd   V.Lsn,u
+         std   >V.Stk,u
+Rng5    ldd   V.Lsn,u
          cmpd  $01,x
          bhi   Rngerr
          ldd   $08,y
          std   >u00BD,u
          ldd   PD.T0S,y
-         std   >u00AF,u
+         std   >V.T0stk,u
          clrb
          rts
 
 Rngerr comb
  ldb #E$SECT Error: bad sector number
-L0151    rts
+Return    rts
  pag
 ***************************************************************
 *
@@ -255,25 +311,25 @@ L0151    rts
 * Output: Curtbl,U=Current Drive Tbl
 *         Curdrv,U=Drive Number
 *
-Getdrv    ldx   >u00A7,u
-         beq   L015F
-         lda   >u00BC,u
+Getdrv    ldx   >V.Cdrv,u
+         beq   Get5
+         lda   >V.CrTrk,u
          sta   <$15,x
-L015F    lda   PD.DRV,y
+Get5    lda   PD.DRV,y
          sta   >u00B3,u
  ldb #DRVMEM
          mul
          leax  u000F,u
          leax  d,x
-         stx   >u00A7,u
+         stx   >V.Cdrv,u
          lda   <$15,x
-         sta   >u00BC,u
+         sta   >V.CrTrk,u
          lda   PD.STP,y
          anda  #$03
-         sta   >u00C1,u
+         sta   >V.Step,u
          ldb   PD.DNS,y
          andb  #$02
-         stb   >u00B8,u
+         stb   >V.TwoStp,u
          lda   <$10,x
          ldb   PD.TYP,y
          andb  #$20
@@ -283,17 +339,17 @@ L015F    lda   PD.DRV,y
          bne   L01A5
          bita  #$04
          beq   L01A5
-         clr   >u00B8,u
+         clr   >V.TwoStp,u
 L01A5    bitb  #$01
          beq   L01AB
          ora   #$80
 L01AB    bitb  #$08
          beq   L01B1
          ora   #$08
-L01B1    sta   >u00B7,u
+L01B1    sta   >V.fmt,u
          rts
 
-GETSTA    bra   L01D0
+Gstat bra Pstat1
 
  pag
 ************************************************************
@@ -302,7 +358,7 @@ GETSTA    bra   L01D0
 *
 *
 *
-PUTSTA pshs U,Y
+Pstat pshs U,Y
  ldx PD.RGS,Y Point to parameters
  ldb R$B,X Get stat call
  cmpb #SS.Reset Restore call?
@@ -314,7 +370,7 @@ PUTSTA pshs U,Y
  cmpb #SS.SPT Set sect/trk?
  beq SETSPT Yes; ....set it.
          puls  u,y
-L01D0    comb
+Pstat1    comb
          ldb   #$D0
          rts
 
@@ -332,10 +388,10 @@ SETSPT    ldx   $04,x
          puls  pc,u,y
 
 RESTOR    lbsr  Getdrv
-         ldx   >u00A7,u
+         ldx   >V.Cdrv,u
          clr   <$15,x
-         leax  >L04E8,pcr
-         lbsr  L00C2
+         leax  >Brstor,pcr
+         lbsr  Call
          puls  pc,u,y
 
 *****************************************************************
@@ -350,9 +406,9 @@ WRTTRK    lda   $07,x
          pshs  b,a
          lbsr  Getdrv
          ldd   <$29,y
-         std   >u00B1,u
+         std   >V.Stk,u
          ldd   <$2B,y
-         std   >u00AF,u
+         std   >V.T0stk,u
          ldd   #$0000
          std   V.Lsn,u
          puls  b,a
@@ -375,18 +431,18 @@ WRTTRK    lda   $07,x
          leax  ,u
          ldu   $02,s
          stx   >u00BD,u
-         leau  >u00AB,u
+         leau  >V.Wrtf,u
          ldy   >-u00AA,u
          lbsr  L0413
          bcs   L0281
-         lbsr  L0492
+         lbsr  Settrk
          ldd   #$2900
          std   <u0014,u
          lda   #$F0
          sta   u000F,u
          lda   #$01
          sta   ,u
-         lbsr  L0502
+         lbsr  IssXfr
          pshs  b,cc
          ldu   <u0012,u
          ldd   #$2900
@@ -394,8 +450,8 @@ WRTTRK    lda   $07,x
          puls  b,cc
 L0281    puls  pc,u,y
 
-TERMINAT    pshs  u
-         ldu   >V.BUF,u
+Term    pshs  u
+         ldu   >V.Vbuff,u
          ldd   #$0100
          os9   F$SRtMem
          puls  u
@@ -418,18 +474,18 @@ BOOT    pshs  u,y,x,b,a
          bcs   L032F
          stu   <$12,s
          leau  ,s
-         clr   u0001,u
+         clr   V.Port,u
 L02BC    clra
          clrb
          std   u000A,u
          ldy   <$21,s
-         bsr   L0334
+         bsr   Getdd
          lda   >$FCC1
          ora   #$01
          sta   >$FCC1
-         lbsr  L04E8
+         lbsr  Brstor
          bcs   L02BC
-         lbsr  L0364
+         lbsr  Rsect
          bcs   L02BC
          ldx   <u0012,u
          lda   <$10,x
@@ -448,26 +504,26 @@ L02E8    clra
          ldx   <$16,x
          os9   F$SRtMem
          ldd   <$1D,s
-         beq   L0328
+         beq   Noboot
          os9   F$BtMem
          bcs   L032F
          stu   <$1F,s
          stu   <$12,s
          leau  ,s
-L0310    pshs  x,a
+Boot10    pshs  x,a
          stx   u000A,u
-         bsr   L0364
+         bsr   Rsect
          bcs   L032D
          puls  x,a
          leax  $01,x
          inc   <u0012,u
          deca
-         bne   L0310
+         bne   Boot10
          leas  <$1D,s
          clrb
          puls  pc,u,y,x,b,a
 
-L0328    comb
+Noboot    comb
          ldb   #$F9
          bra   L032F
 
@@ -475,7 +531,7 @@ L032D    leas  $03,s
 L032F    leas  <$1F,s
          puls  pc,u,y,x
 
-L0334    leay  <$12,y
+Getdd    leay  <$12,y
          lda   $01,y
          sta   u0008,u
          lda   $02,y
@@ -499,10 +555,13 @@ L034B    lda   $04,y
          lda   ,y
          rts
 
-L0364    clr   ,u
+* Read Sector Routine
+*
+
+Rsect    clr   ,u
          lda   #$88
          sta   u000F,u
-L036A    lda   #$DB
+Xfr    lda   #$DB
          pshs  a
          lda   u000C,u
          bita  #$08
@@ -510,7 +569,7 @@ L036A    lda   #$DB
          ldd   #$0080
          std   <u0014,u
          bsr   L039E
-         bcs   L03F9
+         bcs   Xfr70
          ldd   <u0012,u
          leas  $01,s
          pshs  b,a
@@ -521,14 +580,14 @@ L036A    lda   #$DB
          bsr   L039E
          puls  x
          stx   <u0012,u
-         bra   L03F9
+         bra   Xfr70
 L0398    ldd   #$0100
          std   <u0014,u
 L039E    ldd   u000A,u
          bne   L03A5
-L03A2    lbsr  L04E8
+L03A2    lbsr  Brstor
 L03A5    bsr   L0413
-         bcs   L03F9
+         bcs   Xfr70
          clr   <u0017,u
          clr   <u001A,u
          ldd   u000A,u
@@ -554,38 +613,38 @@ L03D7    tst   <u001C,u
          beq   L03DD
          incb
 L03DD    stb   <u0010,u
-L03E0    lbsr  L0492
+Xfr50    lbsr  Settrk
          lda   <u0010,u
-         bsr   L03FC
-         lbsr  L0502
-         bcc   L03F9
+         bsr   SetSect
+         lbsr  IssXfr
+         bcc   Xfr70
          cmpb  #E$NotRdy Error: drive not ready
          orcc  #$01
-         beq   L03F9
+         beq   Xfr70
          lsr   ,s
          bcc   L03A2
-         bne   L03E0
-L03F9    leas  $01,s
+         bne   Xfr50
+Xfr70    leas  $01,s
          rts
 
-L03FC    sta   $02,y
+SetSect    sta   $02,y
          ldb   #$0C
-L0400    decb
-         bne   L0400
+SetSect1    decb
+         bne   SetSect1
          cmpa  $02,y
-         bne   L03FC
+         bne   SetSect
          rts
 
-L0408    lda   #$01
+Wsect    lda   #$01
          sta   ,u
          lda   #$A8
          sta   u000F,u
-         lbra  L036A
+         lbra  Xfr
 L0413    lda   u0008,u
          cmpa  #$04
          bcs   L041D
          comb
-         ldb   #E$Unit Error: illegal unit (drive)
+         ldb   #E$Unit bad unit
          rts
 
 L041D    coma
@@ -603,7 +662,7 @@ L041D    coma
 L0437    leax  -$01,x
          bne   L0437
          sta   >$FC24
-         tst   u0001,u
+         tst   V.Port,u
          bne   L0450
          ldb   #$03
 L0444    ldx   #$61A8
@@ -621,35 +680,38 @@ L0456    anda  #$FB
          lda   #$FA
          sta   u000E,u
          bitb  #$10
-         beq   L0485
-         ldb   u000C,u
-         bmi   L0485
-         tst   u0001,u
+         beq   Sele5
+         ldb   V.Fmt-V.Wrtf,u
+         bmi   Sele5
+         tst   V.Port,u
          bne   L047F
          ldb   #$0C
-L0473    ldx   #$61A8
+Sele7    ldx   #$61A8
 L0476    leax  -$01,x
          bne   L0476
          decb
-         bne   L0473
-         bra   L0485
+         bne   Sele7
+         bra   Sele5
 L047F    ldx   #$003C
          os9   F$Sleep
-L0485    lda   ,y
+Sele5    lda   ,y
          clrb
          bita  #$80
-         beq   L0491
+         beq   Sele4
          clr   u0002,u
          comb
          ldb   #$F6
-L0491    rts
+Sele4    rts
 
-L0492    lda   <u0011,u
+*
+* Seek routine
+*
+Settrk    lda   <u0011,u
          clr   <u0019,u
          tst   u000D,u
-         beq   L049D
+         beq   Sett1
          lsla
-L049D    sta   $01,y
+Sett1    sta   $01,y
          lda   <u0017,u
          ldb   u000C,u
          bmi   L04AA
@@ -683,19 +745,19 @@ L04E2    lda   <u0011,u
          sta   $01,y
          rts
 
-L04E8    lbsr  L0413
+Brstor    lbsr  L0413
          clr   <u0011,u
          ldb   #$05
-L04F0    lda   #$48
+RESTR2    lda   #$48
          ora   <u0016,u
          pshs  b
          bsr   L056E
          puls  b
          decb
-         bne   L04F0
+         bne   RESTR2
          lda   #$08
          bra   L04D3
-L0502    clrb
+IssXfr    clrb
          pshs  cc
          ldb   u000F,u
          tst   <u001A,u
@@ -750,17 +812,18 @@ L056E    pshs  cc
          stb   u000E,u
          stb   u0002,u
          sta   ,y
-         tst   u0001,u
-         bne   L058C
-L057E    sync
+         tst   V.Port,u
+         bne   Fdccmd
+
+IssFdc    sync
          lda   >$FCC1
          bita  #$80
-         beq   L057E
+         beq   IssFdc
          lda   ,y
          sta   u0003,u
          bra   L05B4
-L058C    ldx   #$00C8
-         lda   >-u00A7,u
+Fdccmd    ldx   #$00C8
+         lda   >-V.Cdrv,u
          sta   >-u00A6,u
 L0597    os9   F$Sleep
          orcc  #$50
@@ -786,41 +849,41 @@ L05C2    lslb
          inca
          bcc   L05C2
          deca
-         leax  <L05D8,pcr
+         leax  <ERTABLE,pcr
          ldb   a,x
          cmpb  #$F4
-         bne   L05D6
+         bne   STCK2
          tst   ,u
-         beq   L05D6
+         beq   STCK2
          ldb   #$F5
-L05D6    coma
+STCK2    coma
 L05D7    rts
 
-L05D8    ldb   >$F2F4
+ERTABLE    ldb   >$F2F4
          stb   >$F4F4
 
-IRQSVC    ldy   u0001,u
+Fdcsrv    ldy   V.Port,u
          ldb   ,y
-         stb   >u00AE,u
+         stb   >V.Status,u
          lda   >DAT.Task
-         lda   V.WAKE,u
-         beq   IRQEND
-         clr   V.WAKE,u
+         lda   V.Wake,u
+         beq   Fdcsrc2
+         clr   V.Wake,u
  ldb #S$Wake
  os9 F$Send
-IRQEND    clrb
+Fdcsrc2    clrb
          rts
 
-TimSrv    tst   >u00B9,u
-         beq   L0612
+TimSrv    tst   >V.Timer,u
+         beq   TimSrv1
          tst   >u00AD,u
-         bne   L0612
-         dec   >u00B9,u
-         bne   L0612
+         bne   TimSrv1
+         dec   >V.Timer,u
+         bne   TimSrv1
          lda   #$7F
          sta   >$FC24
-         sta   >u00C3,u
-L0612    rts
+         sta   >V.Select,u
+TimSrv1    rts
 
          emod
-DSKEND equ *
+Dkend equ *

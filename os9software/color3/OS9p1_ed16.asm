@@ -119,15 +119,15 @@ COLD08 ldd ,Y++ get vector
  clra
  clrb
  std ,X++ use block zero for system
-         ldy   #$0006        Dat.BlCt-ROMCount-RAMCount-1
+         ldy   #$0006        Dat.BlCt-ROMCount-RAMCount
  ldd #DAT.Free get free block code
 Cold16 std ,X++ mark free entry
  leay -1,Y count block
  bne Cold16 branch if more
          ldd   #ROMBlock
          std   ,x++
-         ldx   D.Tasks
-         inc   ,x
+ ldx D.Tasks get task number table
+ inc 0,X claim system task
          inc   1,x
  ldx D.SysMem get system memory map ptr
          ldb   D.CCStk

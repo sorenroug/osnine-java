@@ -83,14 +83,14 @@ SysTask equ $80 System Task number
 *
 ***************
 
-IOBlock equ $FF The block number for the I/O
+IOBlock equ $FE The block number for the I/O
 
 ***************
 *
 * OS9-P1 ColdStart initially sets up the system map
-* with RAM block 0 at $0000, a ROMBlock at $E000,
-* and the IOBlock at $F000.
-ROMBlock equ $FE ROM block mapped in on ColdStart at $E000
+* with RAM block 0 at $0000, a ROMBlock at $F000,
+* and the IOBlock at $E000.
+ROMBlock equ $FF ROM block mapped in on ColdStart at $F000
 ROMCount equ 1 number of blocks of ROM to so map in
 RAMCount equ 1 initial blocks of RAM
 *
@@ -139,9 +139,6 @@ A.KLoad set A.KBD port whose control reg has keyboard LOAD
 A.GCon equ DAT.Task+2 graphics control port
 A.Cont equ DAT.Task+1 control reg with CONTROL bit
 A.Clock set $ECD0
-*A.Crtc equ $FC80 address of 6845 CRTC
-*A.ColMap equ $FCA0 address of colour map
-*A.Mouse equ $FC24 mouse and disk select
 A.DskSel equ A.Mouse disk select port
 A.Beeper equ A.DskSel+2 port with beeper on it
 A.ChrSet equ A.Beeper port with 'character set select'

@@ -621,103 +621,109 @@ RETPRCX puls pc,U,X,b,a
 *
 * Execute Overlay
 *
-CHAIN    pshs  u
-         lbsr  F.ALLPRC
-         bcc   CHAIN10
-         puls  pc,u
+CHAIN pshs U Save register ptr
+ lbsr F.ALLPRC
+ bcc CHAIN10
+ puls PC,U
 
-CHAIN10    ldx   D.PROC
-         pshs  u,x
-         leax  P$SP,x
-         leau  P$SP,u
-         ldy   #$007E
-CHAIN20    ldd   ,x++
-         std   ,u++
-         leay  -$01,y
-         bne   CHAIN20
-         ldx   D.PROC
-         clra
-         clrb
-         stb   P$Task,x
-         std   P$SWI,x
-         std   P$SWI2,x
-         std   P$SWI3,x
-         sta   P$Signal,x
-         std   P$SigVec,x
-         ldu   P$PModul,x
-         os9   F$UnLink
-         ldb   P$PagCnt,x
-         addb  #(DAT.BlSz/256)-1     round up to the nearest block
-         lsrb
-         lsrb
-         lsrb
-         lsrb
+CHAIN10 ldx D.PROC Get process ptr
+ pshs U,X
+ leax P$SP,X
+ leau P$SP,U
+ ldy #$7E Copy properties
+CHAIN20 ldd ,X++
+ std ,U++
+ leay -1,Y
+ bne CHAIN20
+ ldx D.PROC
+ clra
+ clrb
+ stb P$Task,X
+ std P$SWI,X
+ std P$SWI2,X
+ std P$SWI3,X
+ sta P$Signal,X
+ std P$SigVec,X
+ ldu P$PModul,X Get primary module ptr
+ os9 F$UnLink
+ ldb P$PagCnt,X
+ addb #(DAT.BlSz/256)-1     round up to the nearest block
+ lsrb
+ lsrb
+ lsrb
+ lsrb
  ifge DAT.BlSz-$2000
-         lsrb
+ lsrb
  endc
-         lda   #$10   counter
-         pshs  b
-         suba  ,s+
-         leay  P$DatImg,x
-         lslb
-         leay  b,y
-         ldu   #$00FE  DAT.Free
-CHAIN30    stu   ,y++
-         deca
-         bne   CHAIN30
-         ldu   $02,s
-         stu   D.PROC
-         ldu   $04,s
-         lbsr  SETPRC
-         lbcs  CHAINERR
-         pshs  b,a
-         os9   F$AllTsk
-         bcc   CHAIN40
-CHAIN40    ldu   D.PROC
-         lda   P$Task,u
-         ldb   $06,x
-         leau  (P$Stack-R$Size),x
-         leax  ,y
-         ldu   P$SP,u
-         pshs  u
-         cmpx  ,s++
-         puls  y
-         bhi   CHAIN60
-         beq   CHAIN70
-         leay  ,y
-         beq   CHAIN70
-         pshs  x,b,a
-         tfr   y,d
-         leax  d,x
-         pshs  u
-         cmpx  ,s++
-         puls  x,b,a
-         bls   CHAIN60
-         pshs  u,y,x,b,a
-         tfr   y,d
-         leax  d,x
-         leau  d,u
-CHAIN50    ldb   ,s
-         leax  -$01,x
-         os9   F$LDABX
-         exg   x,u
-         ldb   $01,s
-         leax  -$01,x
-         os9   F$STABX
-         exg   x,u
-         leay  -$01,y
-         bne   CHAIN50
-         puls  u,y,x,b,a
-         bra   CHAIN70
-CHAIN60    os9   F$Move
+ lda #DAT.BlCt-MappedIO
+ pshs b
+ suba ,S+  Subtract B from A
+ leay P$DatImg,X
+ lslb
+ leay B,Y go to the offset
+ ldu #DAT.Free Mark blocks above as free
+CHAIN30 stu ,Y++
+ deca
+ bne CHAIN30
 
-CHAIN70    lda   D.SysTsk
-         ldx   ,s
-         ldu   $04,x
-         leax  (P$Stack-R$Size),x
-         ldy   #$000C
-         os9   F$Move
-         puls  u,x
+ ldu 2,S get new process descriptor pointer
+ stu D.PROC
+ ldu 4,S
+ lbsr SETPRC Set up process
+ lbcs CHAINERR
+ pshs b,a
+ os9 F$AllTsk
+ bcc CHAIN40 Branch if successful
+* Do nothing if failure...
+
+CHAIN40 ldu D.PROC
+ lda P$Task,U new task number
+ ldb P$Task,X old task number
+ leau (P$Stack-R$Size),X
+ leax 0,Y
+ ldu P$SP,U
+ pshs u
+ cmpx ,S++
+ puls y
+ bhi CHAIN60 Branch if something to move
+ beq CHAIN70 Branch if X is 0
+ leay 0,Y any bytes to move?
+ beq CHAIN70 ..no
+ pshs X,D
+ tfr Y,D
+ leax d,X
+ pshs u
+ cmpx ,S++
+ puls X,D
+ bls CHAIN60 Use F$Move if from <= to
+
+* Otherwise handle where from > to
+ pshs U,Y,X,B,A
+ tfr Y,D
+ leax D,X
+ leau D,U
+CHAIN50 ldb 0,S Get new task number
+ leax -1,X
+ os9 F$LDABX
+ exg X,U
+ ldb 1,S Get old task number
+ leax -1,X
+ os9 F$STABX
+ exg X,U
+ leay -1,Y
+ bne CHAIN50
+ puls U,Y,X,B,A
+ bra CHAIN70
+
+CHAIN60 os9 F$Move
+
+CHAIN70 lda D.SysTsk
+ ldx 0,S Get old process dsc ptr
+ ldu P$SP,X
+ leax (P$Stack-R$Size),X
+ ldy #R$Size
+ os9 F$Move move the stack over
+ puls U,X
          lda   ,u
          lbsr  F.RETPRC
          os9   F$DelTsk

@@ -560,15 +560,19 @@ ALLPRC40 std ,X++
  lda #SysState
  sta P$State,U
 * Set up the DAT table
- ldb #DAT.BlCt-MappedIO
+ ifeq (CPUType-DRG128)*(CPUType-L2VIRT)
+ ldb #DAT.BlUs
+ else
+ ldb #DAT.BlCt
+ endc
  ldx #DAT.Free
  leay P$DATImg,U
 ALLPRC50 stx ,Y++
  decb
  bne ALLPRC50
 
- ifne MappedIO
- ldx #IOBlock Mark last block as IO
+ ifeq (CPUType-DRG128)*(CPUType-L2VIRT)
+ ldx #$FF Mark last block as used by ROM
  stx ,Y++
  endc
 
@@ -699,7 +703,11 @@ CHAIN20 ldd ,X++
  ifge DAT.BlSz-$2000
  lsrb
  endc
- lda #DAT.BlCt-MappedIO
+ ifeq (CPUType-DRG128)*(CPUType-L2VIRT)
+ lda #DAT.BlUs
+ else
+ lda #DAT.BlCt
+ endc
  pshs b
  suba ,S+  Subtract B from A
  leay P$DatImg,X
@@ -709,8 +717,8 @@ CHAIN20 ldd ,X++
 CHAIN30 stu ,Y++
  deca
  bne CHAIN30
- ifne MappedIO
- ldu #IOBlock Mark last block as I/O block
+ ifeq (CPUType-DRG128)*(CPUType-L2VIRT)
+ ldu #$FF Mark last block as used by ROM
  stu ,Y++
  endc
  ldu 2,S get new process descriptor pointer

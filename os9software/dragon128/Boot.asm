@@ -31,7 +31,7 @@ Revs set REENT+1
 
  mod Btend,Btnam,Type,Revs,Btent,0
 
- fcb   $FF capabilities
+ fcb $FF capabilities
 
 Btnam fcs 'Boot'
 

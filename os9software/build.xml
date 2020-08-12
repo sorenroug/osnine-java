@@ -49,6 +49,8 @@
 
     <!-- Required by other Maven modules -->
     <target name="required" depends="prepare">
+        <assemble src="OS9p1" home="l2virt" verify=""/>
+
         <assemble src="Shell" home="utilities" verify="91209757f1b55d768536629eca4c984c"/>
         <assemble src="Acia51_ed4" home="kernel" verify="6ed6dc592328cc3916e3e92b62fe36c0"/>
         <assemble src="Acia_ed2" home="kernel" verify="6c8d9746cee87d8f71f818b8e059c607"/>
@@ -72,8 +74,6 @@
         <assemble src="OS9p1" home="gimix" verify="fc8df0c641cc8411069476e09da83560"/>
         <assemble src="OS9p2" home="gimix" verify="4620b5340979f69d3d243c07592ec200"/>
         <assemble src="OS9p2_ed5" home="gimix" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
-
-        <assemble src="OS9p1" home="l2virt" verify=""/>
 
     </target>
 

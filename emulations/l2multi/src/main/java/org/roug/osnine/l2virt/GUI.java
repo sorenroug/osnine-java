@@ -115,11 +115,11 @@ public class GUI {
         RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x40000);
         bus.addMemorySegment(ram);
 
-        ReadOnlyMemory rom = new ReadOnlyMemory(0xFE000, 0x2000);
+        ReadOnlyMemory rom = new ReadOnlyMemory(0xFF000, 0x1000);
         bus.insertMemorySegment(rom);
 
-        loadROM(0xFF000, "OS9p1");
-        loadROM(0xFE000, "Boot","Init");
+        loadROM(0xFF200, "OS9p1");
+        loadROM(0xFF000, "Boot","Init");
 
         IRQBeat irqBeat = new IRQBeat(0xFECD0, bus, 20);
         bus.insertMemorySegment(irqBeat);

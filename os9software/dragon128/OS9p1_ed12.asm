@@ -219,10 +219,21 @@ Cold16 std ,X++ mark free entry
  leay -1,Y count block
  bne Cold16 branch if more
  ifle DAT.BlMx-255
+
+   ifeq CPUType-DRG128
+* The DRG has IOblock at $FF and ROMBlock at $FE
+* I suspect they have changed here without a conditional
  ldb #ROMBlock get ROM block number
  std ,X++ set ROM block
  ldd #IOBlock get I/O block number
  std ,X++ set I/O block
+   else
+ ldd #IOBlock get I/O block number
+ std ,X++ set I/O block
+ ldd #ROMBlock get I/O block number
+ std ,X++ set I/O block
+   endc
+
  else
  jmp NOWHERE Code is not available
  endc
@@ -2220,7 +2231,7 @@ GfxMap50 comb error -
 *     Subroutine GClr
 *
 * Input: B = block count per 64k page
-*       A = 0 bottom 64k page only
+*        A = 0 bottom 64k page only
 *           1 both 64k pages
 *       X = beginning block number in first page
 *
@@ -2251,6 +2262,14 @@ GfxClr30 clrb clear carry
 *     Subroutine FreeHB
 *
 *   Free High Block Service routine
+*
+* Input: U = registers ptr
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: none
+*
+* Calls: FreeHBlk
 *
 FreeHB ldb R$B,u get block count
  ldy R$Y,u get DAT image ptr
@@ -2312,8 +2331,17 @@ FrLB10 rts
 *
 *   Search DAT image for lowest free block
 *
+* Input: B = block count
+*        Y = DAT image ptr
+*
+* Output: A = beginning block number
+*
+* Data: none
+*
+* Calls: FreeBlk
+*
 FreeLBlk lda #-1 set low beginning
- pshs X,D
+ pshs X,D save beginning, count & register
  lda #1 set next-try increment
  subb #DAT.BlCt+1 get negative limit
  negb get limit block
@@ -2326,14 +2354,28 @@ FreeLBlk lda #-1 set low beginning
 *
 *   Search DAT image for free block
 *
+* Input: Y = DAT image ptr
+*        0,S = next-try increment
+*        1,S = search limit
+*        2,S = beginning block number
+*        3,S = block count
+*        4,S:5,S = return address
+*
+* Output: A = beginning block number
+*         B = block count
+*
+* Data: none
+*
+* Calls: none
+*
 FreeBlk clra clear found count
  ldb 2,S get beginning block number
  addb 0,S add increment
  stb 2,S save beginning
  cmpb 1,S hit limit?
- bne FreeB20
- ldb #E$MemFul
- stb 3,S Save error code
+ bne FreeB20 branch if not
+ ldb #E$MemFul err: memory full
+ stb 3,S save for return
  comb set carry
  bra FreeBXit
 FreeB10 tfr A,B copy found count
@@ -2706,6 +2748,14 @@ AllTsk ldx R$X,u get process ptr
 *
 *   Allocate process task number
 *
+* Input: X = Process ptr
+*
+* Output: carry clear if successful; set otherwise
+*
+* Data: none
+*
+* Calls: ResvTask, SetPrTsk
+*
 AllPrTsk ldb P$Task,x get process task number
  bne AllPrT10 branch if assigned
  bsr ResvTask get free DAT
@@ -2845,6 +2895,14 @@ ResTsk30 puls PC,X
 *     Subroutine RelsTask
 *
 *   Release Task number
+*
+* Input: B = Task number
+*
+* Output: none
+*
+* Data: D.Tasks
+*
+* Calls: none
 *
 RelTsk ldb R$B,u get task number
 
@@ -3314,13 +3372,13 @@ DATInit clra
  ldb #$F0
 DATIn1 stb 0,X
  clr 0,Y    RAM at $0000
- lda #ROMBlock
- sta $E,y   DAT.Regs+$E
  lda #IOBlock
+ sta $E,y   DAT.Regs+$E
+ lda #ROMBlock
  sta $F,y   DAT.Regs+$F
  incb
  bne DATIn1
- lda #$20 Set values in output register
+ lda #$20 Set values in task register
  sta 0,X
 InitI05 lbra COLD
 *

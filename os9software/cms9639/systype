@@ -49,7 +49,7 @@ SysTask equ $80 System Task number
 
 IOBlock equ $FF The block number for the I/O
 ROMBlock equ $FF ROM block
-ROMCount equ 0 number of blocks of ROM to so map in
+ROMCount equ 1 number of blocks of ROM to so map in
 RAMCount equ 2 initial blocks of RAM
 
 ROMCheck equ Limited check only top 64k for ROM

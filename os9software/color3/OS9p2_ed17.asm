@@ -428,7 +428,7 @@ DIVBKSZ addd #DAT.Blsz-1
 * Creates New Child Process
 *
 FORK     pshs  u
-         lbsr  L02EA
+         lbsr  F.ALLPRC
          bcc   L0238
          puls  pc,u
 L0238    pshs  u
@@ -466,7 +466,7 @@ L0276    sta   ,u+
          bne   L026C
          ldx   ,s
          ldu   $02,s
-         lbsr  L04B1
+         lbsr  SETPRC
          bcs   L02CF
          pshs  b,a
          os9   F$AllTsk
@@ -509,49 +509,56 @@ L02CF    puls  x
          comb
          puls  pc,u,b
 
+*****
+* Allocate Image RAM blocks
+*
 ALLPRC   pshs  u
-         bsr   L02EA
-         bcs   L02E8
+         bsr   F.ALLPRC
+         bcs   ALLPRC10
          ldx   ,s
          stu   $08,x
-L02E8    puls  pc,u
+ALLPRC10    puls  pc,u
 
-L02EA    ldx   D.PrcDBT
-L02EC    lda   ,x+
-         bne   L02EC
+F.ALLPRC    ldx   D.PrcDBT
+ALLPRC20    lda   ,x+
+         bne   ALLPRC20
          leax  -1,x
          tfr   x,d
          subd  D.PrcDBT
          tsta
-         beq   L02FE
+         beq   ALLPRC30
          comb
          ldb   #E$PrcFul
-         bra   L032F
-L02FE    pshs  b
+         bra   ALLPRC60
+ALLPRC30    pshs  b
          ldd   #$0200
          os9   F$SRqMem
          puls  a
-         bcs   L032F
+         bcs   ALLPRC60
          sta   ,u
          tfr   u,d
          sta   ,x
          clra
          leax  1,u
          ldy   #$0080
-L0317    std   ,x++
+ALLPRC40    std   ,x++
          leay  -1,y
-         bne   L0317
+         bne   ALLPRC40
          lda   #SysState
          sta   P$State,u
          ldb   #$08     counter
          ldx   #DAT.Free
          leay  P$DATImg,u
-L0329    stx   ,y++
-         decb
-         bne   L0329
-         clrb
-L032F    rts
+ALLPRC50 stx ,Y++
+ decb
+ bne ALLPRC50
 
+ clrb
+ALLPRC60 rts
+
+*****
+* Deallocate process descriptor
+*
 DELPRC   lda R$A,u
          bra   L0386
  page
@@ -642,19 +649,19 @@ L03AC    puls  pc,u,x,b,a
 * Execute Overlay
 *
 CHAIN pshs U Save register ptr
-         lbsr  L02EA
-         bcc   L03B7
-         puls  pc,u
+ lbsr F.ALLPRC
+ bcc CHAIN10
+ puls PC,U
 
-L03B7    ldx   D.PROC
-         pshs  u,x
-         leax  P$SP,x
-         leau  P$SP,u
-         ldy   #$007E
-L03C3    ldd   ,x++
-         std   ,u++
-         leay  -1,y
-         bne   L03C3
+CHAIN10 ldx D.PROC Get process ptr
+ pshs U,X
+ leax P$SP,X
+ leau P$SP,U
+ ldy #$7E Copy properties
+CHAIN20 ldd ,X++
+ std ,U++
+ leay -1,Y
+ bne CHAIN20
 
  ifeq CPUType-COLOR3 * COCO specific start
          ldu   $02,s
@@ -666,49 +673,52 @@ L03C3    ldd   ,x++
          stu   a,x
  endc
 
-         ldx   D.PROC
-         clra
-         clrb
-         stb   P$Task,x
-         std   P$SWI,x
-         std   P$SWI2,x
-         std   P$SWI3,x
-         sta   P$Signal,x
-         std   P$SigVec,x
-         ldu   P$PModul,x
-         os9   F$UnLink
-         ldb   P$PagCnt,x
-         addb  #(DAT.BlSz/256)-1
-         lsrb
-         lsrb
-         lsrb
-         lsrb
+ ldx D.PROC
+ clra
+ clrb
+ stb P$Task,X
+ std P$SWI,X
+ std P$SWI2,X
+ std P$SWI3,X
+ sta P$Signal,X
+ std P$SigVec,X
+ ldu P$PModul,X Get primary module ptr
+ os9 F$UnLink
+ ldb P$PagCnt,X
+ addb #(DAT.BlSz/256)-1     round up to the nearest block
+ lsrb
+ lsrb
+ lsrb
+ lsrb
  ifge DAT.BlSz-$2000
-         lsrb
+ lsrb
  endc
          lda   #$08   counter
-         pshs  b
-         suba  ,s+
-         leay  P$DatImg,x
-         lslb
-         leay  b,y
-         ldu   #DAT.Free
-L040C    stu   ,y++
-         deca
-         bne   L040C
-         ldu   $02,s
-         stu   D.PROC
-         ldu   $04,s
-         lbsr  L04B1
-         lbcs  L04A1
+ pshs b
+ suba ,S+  Subtract B from A
+ leay P$DatImg,X
+ lslb
+ leay B,Y go to the offset
+ ldu #DAT.Free Mark blocks above as free
+CHAIN30 stu ,Y++
+ deca
+ bne CHAIN30
+
+ ldu 2,S get new process descriptor pointer
+ stu D.PROC
+ ldu 4,S
+         lbsr  SETPRC
+         lbcs  CHAINERR
          pshs  b,a
          os9   F$AllTsk
-         bcc   L0425
-L0425    ldu   D.PROC
-         lda   u0006,u
-         ldb   $06,x
-         leau  (P$Stack-R$Size),x
-         leax  ,y
+         bcc   CHAIN40
+* Do nothing if failure...
+
+CHAIN40 ldu D.PROC
+ lda P$Task,U new task number
+ ldb P$Task,X old task number
+ leau (P$Stack-R$Size),X
+ leax 0,Y
          ldu   P$SP,u
          pshs  u
          cmpx  ,s++
@@ -759,14 +769,14 @@ L0474    lda   D.SysTsk
          sta   $0C,x
          os9   F$AProc
          os9   F$NProc
-L04A1    puls  u,x
+CHAINERR    puls  u,x
          stx   D.PROC
          pshs  b
          lda   ,u
          lbsr  L0386
          puls  b
          os9   F$Exit
-L04B1    pshs  u,y,x,b,a
+SETPRC    pshs  u,y,x,b,a
          ldd   D.PROC
          pshs  b,a
          stx   D.PROC

@@ -148,13 +148,13 @@ COLD08 ldd ,Y++ get vector
  incb block one
  std ,x++
  endc
- ldy #Dat.BlCt-ROMCount-RAMCount-1
+ ldy #Dat.BlCt-ROMCount-RAMCount
  ldd #DAT.Free get free block code
 Cold16 std ,X++ mark free entry
  leay -1,Y count block
  bne Cold16 branch if more
- ldd #IOBlock get I/O block number
- std ,X++ set I/O block
+ ldd #ROMBlock get ROM block number
+ std ,X++ set ROM block
  ldx D.Tasks get task number table
  inc 0,X claim system task
  ldx D.SysMem get system memory map ptr
