@@ -62,9 +62,9 @@ SCF lbra SCCrea create
  lbra SCPstat set status
  lbra SCClose close
 
-EXTEND equ 1
-MACROS equ 1
-BuffSize equ $100
+EXTEND equ 1 include extended editing facilities
+MACROS equ 1 include macros
+BuffSize equ $100 path buffer size
 OutBfSiz equ 32 maximum size of output "buffer"
  ifne MACROS
 MacBfSiz equ $100 macro buffer size
@@ -170,18 +170,18 @@ OPNER9 rts
 
 SCClose pshs cc save interrupt masks
  orcc #IntMasks set interrupt masks
- ldx   PD.DEV,y get device table ptr
- bsr   DenyDev disassociate device signals
- ldx   PD.DV2,y get attached device
- bsr   DenyDev disassociate it too
- puls  cc retrieve interrupt masks
- tst   PD.CNT,y Last Image?
- bne   Close.C ..No; exit
- ldu   PD.DV2,y get echo/pause device
- beq   Close.B branch if none
- os9   I$Detach detach echo/pause device
+ ldx PD.DEV,y get device table ptr
+ bsr DenyDev disassociate device signals
+ ldx PD.DV2,y get attached device
+ bsr DenyDev disassociate it too
+ puls cc retrieve interrupt masks
+ tst PD.CNT,y Last Image?
+ bne Close.C ..No; exit
+ ldu PD.DV2,y get echo/pause device
+ beq Close.B branch if none
+ os9 I$Detach detach echo/pause device
 Close.B ldu PD.BUF,y get buffer address
- beq   Close.C ..no buffer to return
+ beq Close.C ..no buffer to return
  ifne MACROS
  ldd #BuffSize+MacBfSiz get buffer size
  else
@@ -200,29 +200,29 @@ DenyDev leax  0,x device in use?
  beq Close.C ..No; exit
  ldx V$STAT,x get static storage ptr
  ldb PD.PD,y get this path number
- lda   PD.CPR,y current Process ID
- pshs  y,x,b,a
- cmpa  V.LPRC,x is this last process?
- bne   Deny.Z exit if not
- ldx   D.Proc process ptr
- leax  P$Path,x ptr to path table
+ lda PD.CPR,y current Process ID
+ pshs y,x,b,a
+ cmpa V.LPRC,x is this last process?
+ bne Deny.Z exit if not
+ ldx D.Proc process ptr
+ leax P$Path,x ptr to path table
  clra start with path #0
 Deny.A cmpb  a,x will this path still be open?
- beq   Deny.Z ..Yes; retain control
+ beq Deny.Z ..Yes; retain control
  inca
- cmpa  #NumPaths all paths checked?
- bcs   Deny.A ..no; repeat
- pshs  y save PD ptr
- ldd   #SS.Relea*256+D$PSTA
- lbsr  SCGST1 send Release putstat to driver
- puls  y
+ cmpa #NumPaths all paths checked?
+ bcs Deny.A ..no; repeat
+ pshs y save PD ptr
+ ldd #SS.Relea*256+D$PSTA
+ lbsr SCGST1 send Release putstat to driver
+ puls y
 
- ldx   D.Proc
- lda   P$PID,x parent's ID
- sta   0,s Try to stick parent with device
- os9   F$GProcP (Y)=parent's Process ptr
- leax  P$Path,y parent's path tbl
- ldb  1,s restore path number
+ ldx D.Proc
+ lda P$PID,x parent's ID
+ sta 0,s Try to stick parent with device
+ os9 F$GProcP (Y)=parent's Process ptr
+ leax P$Path,y parent's path tbl
+ ldb 1,s restore path number
  clra
 Deny.B cmpb a,x Parent still own path?
  beq Deny.C Yes; return control to parent
@@ -233,7 +233,7 @@ Deny.B cmpb a,x Parent still own path?
 Deny.C lda 0,s responsible party
  ldx 2,s Static storage ptr
  sta V.LPRC,x
-Deny.Z puls  pc,y,x,b,a
+Deny.Z puls pc,y,x,b,a
 
 ***************
  ifne MACROS
@@ -255,11 +255,11 @@ SCInMac1 lda ,x+ get code
  ldb ,x+ get byte count
  abx skip this entry
  cmpx ,s any more room?
- bcc   SCInMac3 ..no; error - no room
- bra   SCInMac1 ..try next
+ bcc SCInMac3 ..no; error - no room
+ bra SCInMac1 ..try next
 
 SCInMac2 ldb R$Y+1,u get byte count
- pshs  x save ptr
+ pshs x save ptr
  abx add in byte count
  leax 1,x plus room for byte count
  cmpx 2,s enough room?
@@ -269,18 +269,18 @@ SCInMac2 ldb R$Y+1,u get byte count
 SCInMac5 puls x retrieve ptr
  stb ,x+ set byte count
  clra
- pshs  y,b,a stack byte count and PD ptr
- lda   R$Y,u get key code
- sta   -2,x set it
- ldy   D.Proc get process ptr
- lda   P$Task,y get source task
- ldb   D.SysTsk get destination task (system)
- ldu   R$X,u get source ptr
- exg   x,u swap ptrs
- puls  y get byte count
- os9   F$Move copy the macro
- puls  y retrieve PD Ptr
- leas  2,s return scratch
+ pshs y,b,a stack byte count and PD ptr
+ lda R$Y,u get key code
+ sta -2,x set it
+ ldy D.Proc get process ptr
+ lda P$Task,y get source task
+ ldb D.SysTsk get destination task (system)
+ ldu R$X,u get source ptr
+ exg x,u swap ptrs
+ puls y get byte count
+ os9 F$Move copy the macro
+ puls y retrieve PD Ptr
+ leas 2,s return scratch
 SCInMac6 clrb no error
  rts
 
@@ -293,28 +293,28 @@ SCInMac3 leas 2,s ditch scratch
 ********************
 * Clear a macro
 *
-SCClrM    ldx   PD.BUF,y
- leax  BuffSize,x
- lda   R$Y,u
- beq   SCClrM3
- leax  MacBfSiz,x
- pshs  x
- leax  -MacBfSiz+3,x
-SCClrM1    cmpa  ,x
- beq   SCClrM2
- tst   ,x+
- beq   SCClrM4
- ldb   ,x+
+SCClrM ldx PD.BUF,y get buffer ptr
+ leax BuffSize,x point at macro buffer
+ lda R$Y,u get key to delete
+ beq SCClrM3
+ leax MacBfSiz,x
+ pshs x
+ leax -MacBfSiz+3,x
+SCClrM1 cmpa  ,x
+ beq SCClrM2
+ tst ,x+
+ beq SCClrM4
+ ldb ,x+
  abx
- cmpx  ,s
- bcs   SCClrM1
- bra   SCClrM4
+ cmpx ,s
+ bcs SCClrM1
+ bra SCClrM4
 
-SCClrM2    ldb   1,x
- pshs  y
- tfr   x,y
+SCClrM2 ldb 1,x
+ pshs y
+ tfr x,y
  abx
- leax  $02,x
+ leax $02,x
 SCClrM7    cmpx  $02,s
  bcc   SCClrM5
  tst   ,x
@@ -346,14 +346,14 @@ SCFMac    ldx   PD.BUF,y
 SCFMac1    tst   ,x+
          beq   SCFMac3
          ldb   ,x+
-         cmpa  -$02,x
+         cmpa  -2,x
          beq   SCFMac2
          abx
          cmpx  ,s
          bcs   SCFMac1
-SCFMac3    comb
-SCFMac2    leas  $02,s
-         rts
+SCFMac3 comb
+SCFMac2 leas 2,s
+ rts
  endc
 
 * (Y) = Path descriptor pointer
@@ -369,20 +369,20 @@ SCGStat ldx PD.RGS,y
  ldb #D$GSTA
 
 SCGST1 pshs  a
-         clra
-         ldx   PD.DEV,y
-         ldu   V$STAT,x
-         ldx   V$DRIV,x
-         addd  M$Exec,x
-         leax  d,x
-         puls  a restore status function code
-         jmp   0,x    into the hands of a friendly driver
+ clra
+ ldx   PD.DEV,y
+ ldu   V$STAT,x
+ ldx   V$DRIV,x
+ addd  M$Exec,x driver's lbra table
+ leax  d,x
+ puls a restore status function code
+ jmp 0,x into the hands of a friendly driver
 
 SCPstat  lbsr  SCALOC
-         bsr   PutStat
-         pshs  b,cc
-         lbsr  IODONE
-         puls  pc,b,cc
+ bsr   PutStat
+ pshs  b,cc
+ lbsr  IODONE
+ puls  pc,b,cc
 
 PutStat lda R$B,u get status code
  ifne MACROS
@@ -591,18 +591,18 @@ SCRdLine lbsr SCALOC Allocate device(s)
  else
  endc
 
-SCRd05 ldx   R$Y,u Get byte count
- beq   SCRead3 ..zero; return (gained ownership)
- tst   R$Y,u Byte count above 255?
- beq   SCRd10 ..no
- ldx   #256 Maximum of 256 permitted
+SCRd05 ldx R$Y,u Get byte count
+ beq SCRead3 ..zero; return (gained ownership)
+ tst R$Y,u Byte count above 255?
+ beq SCRd10 ..no
+ ldx #256 Maximum of 256 permitted
  ifne EXTEND
 SCRd10 tfr x,d
  addd PD.BUF,y
  pshs b,a
  else
  endc
- lbsr  SCDEL9
+ lbsr SCDEL9
  ifne MACROS
  clr BuffSize,u cancel any current macro
  endc
@@ -612,37 +612,39 @@ SCRd20 lbsr GetChr Input one char
  tsta null?
  beq SCRd30 Ignore control char checking if null
  ldb #PD.BSP
-SCRd25 cmpa  b,y control character?
- beq   SCCTLC
+SCRd25 cmpa b,y control character?
+ beq SCCTLC ..yes; dispatch to routine
  incb
- cmpb #PD.QUT
- bls SCRd25
+ cmpb #PD.QUT more to check?
+ bls SCRd25 ..yes; repeat
  ifne EXTEND
 
- pshs  y
- bsr   SCGetDev
- bcs   SCRd27
+ pshs y save path descriptor ptr
+ bsr SCGetDev get device descriptor options ptr
+ bcs SCRd27 skip if editing functions not available
 
- cmpa  PD.LdIn-PD.OPT,Y lead-in code?
- bne   SCRd60
- pshs  y
- ldy   $02,s
- lbsr  GetChr
- puls  y
- bcs   SCRd90
- ora   #$80
-SCRd60 ldb #PD.QUT+1
- leay  PD.Left-PD.OPT,y
-SCRd65    cmpa  ,y+
- beq   SCRd70
+ cmpa PD.LdIn-PD.OPT,Y lead-in code?
+ bne SCRd60 ..no
+ pshs y save options ptr
+ ldy 2,s retrieve PD ptr
+ lbsr GetChr get next chr
+ puls y restore options ptr
+ bcs SCRd90 ..error
+ ora #$80 set bit 7 for matching
+
+SCRd60 ldb #PD.QUT+1 point to next dispatch table
+ leay PD.Left-PD.OPT,y point at edit key-codes
+SCRd65 cmpa ,y+ this key?
+ beq SCRd70 ..yes
  incb
- cmpb  #PD.QUT+PD.DEol-PD.Left+1 more?
- bls   SCRd65
-SCRd27    puls  y
+ cmpb #PD.QUT+PD.DEol-PD.Left+1 more?
+ bls SCRd65 ..yes
+* anda #$7F used to clear bit 7 and fall through
+SCRd27 puls y retrieve PD ptr
  else
  endc
  ifne MACROS
- lbra SCChkMac
+ lbra SCChkMac check for macros
  endc
  ifne MACROS+EXTEND
 SCRd30
@@ -653,12 +655,12 @@ SCRd35 leax 1,x
  leax -1,x
  endc
  blo SCRd40
-SCRd37    lda   PD.OVF,y
+SCRd37 lda PD.OVF,y
  lbsr OUTCHR
  ifeq EXTEND
  endc
- bra   SCRd20
-SCRd40    lbsr  UPCASE
+ bra SCRd20
+SCRd40 lbsr UPCASE
  ifne EXTEND
  lbsr  SCINS
  else
@@ -669,7 +671,7 @@ SCRd50 bra SCRd20 Go get more
 SCRd90 puls y
  lbra SCABT
 
-SCRd70 puls y
+SCRd70 puls y retrieve path descriptor ptr, fall through
 
  endc
 
@@ -677,45 +679,45 @@ SCCTLC pshs pc,x save regs
  leax  CTLTBL,pcr get dispatch table
  subb  #PD.BSP
  ifne EXTEND
- pshs  a
- lslb
- ldd   b,x
- leax  d,x
- puls  a
+ pshs a save chr
+ lslb two bytes per entry
+ ldd b,x get routine offset
+ leax d,x make routine address
+ puls a retrieve chr
  else
  endc
- stx   2,s
- puls  x
+ stx 2,s address of table dispatch
+ puls x
  jsr [,s++] call routine
  ifne EXTEND
- lbra SCRd20
+ lbra SCRd20 back to main loop
  else
  endc
  ifne EXTEND
+ page
 * Process "Edit" character
-* Sets Y
 SCGetDev pshs a save A
  lda PD.Edit,y
  pshs  a
- ldy   PD.DEV,y
- ldy   V$DESC,y
- leay  M$DTyp,y
+ ldy PD.DEV,y
+ ldy V$DESC,y
+ leay M$DTyp,y
  coma
- lda ,s+ editing functions available
+ lda ,s+ editing functions available?
  bne SCGetD1 ..no
  clra clear carry
-SCGetD1 puls  pc,a
+SCGetD1 puls pc,a
  endc
 
 **********
 * Path control char Dispatch Table
 CTLTBL
  ifne EXTEND
- fdb SCBSP-CTLTBL        Process PD.BSP
- fdb SCDEL-CTLTBL        Process PD.DEL
- fdb SCEOL-CTLTBL        Process PD.EOR
- fdb SCEOF-CTLTBL        Process PD.EOF
- fdb SCPRNT-CTLTBL        Process PD.RPR
+ fdb SCBSP-CTLTBL Pd.bsp
+ fdb SCDEL-CTLTBL Pd.del
+ fdb SCEOL-CTLTBL Pd.eor
+ fdb SCEOF-CTLTBL Pd.eof
+ fdb SCPRNT-CTLTBL Pd.rpr
  fdb SCRPET-CTLTBL Pd.dup
  fdb SCDEL4-CTLTBL Pd.psc (ignore)
  fdb SCDEL-CTLTBL Pd.int
@@ -728,44 +730,43 @@ CTLTBL
  else
  endc
 
-* Process PD.EOR character
-SCEOL leas 2,s
+SCEOL leas 2,s discard return addr
  ifne EXTEND
- bsr SCMKEL
+ bsr SCMKEL Mark end of line with CR
  else
  endc
- lbsr  CHKEKO
- ldu   PD.RGS,y
+ lbsr CHKEKO Echo character
+ ldu PD.RGS,y
  ifne EXTEND
- bsr SCGetLen
+ bsr SCGetLen calculate number of chrs
  endc
- leax 1,x
+ leax 1,x count CR
  stx R$Y,u
- lbsr RetData
- leas 2,s
+ lbsr RetData return line
+ leas 2,s ditch max count
  lbra IODONE
 
  ifne EXTEND
-SCGetLen    exg   x,d
-         subd  PD.BUF,y
-         exg   d,x
-         rts
+SCGetLen exg x,d calculate line length
+ subd  PD.BUF,y
+ exg   d,x
+ rts
 
-SCMKEL    lda   #C$CR
-         sta   ,x
-         rts
+SCMKEL lda #C$CR
+ sta ,x
+ rts
 
-SCChkEol    pshs  x
-         cmpu  ,s
-         puls  pc,x
+SCChkEol pshs x
+ cmpu ,s
+ puls pc,x
  endc
 
-SCEOF    leas 2,s
+SCEOF leas 2,s
  ifne EXTEND
- cmpx  PD.BUF,y
- lbne  SCRd30
- ldx   #0
- lbra  SCEOFX
+ cmpx PD.BUF,y
+ lbne SCRd30
+ ldx #0
+ lbra SCEOFX
  else
  endc
 
@@ -877,18 +878,18 @@ SCRT20 tfr u,d calculate chrs to move back..
          ldu   PD.BUF,y
          bra   SCDLL2 move to start of line
 
-SCLFT    cmpu  PD.BUF,y
-         beq   SCLFT20
-         bsr   SCMLFT
-         bcs   SCLFT10
-         leau  -1,u update cursor
-SCLFT10    rts
+SCLFT cmpu PD.BUF,y at start of line?
+ beq SCLFT20 ..yes; move to end of line
+ bsr SCMLFT move back one
+ bcs SCLFT10 skip if couldn't
+ leau -1,u update cursor
+SCLFT10 rts
 
-SCLFT20    bsr   SCChkE
-         beq   SCLFT30
-         leau  $01,u
-         bsr   SCMRT
-         bcc   SCLFT20
+SCLFT20 bsr SCChkE at end of line?
+ beq SCLFT30 ..yes; finished
+ leau 1,u bump cursor
+ bsr SCMRT move right one
+ bcc SCLFT20 repeat if OK
 
 SCLFT30 rts
 
@@ -919,7 +920,7 @@ SCBSP    cmpu  PD.BUF,y at start
  endc
 SCBSP2 lda PD.BSE,y Get backspace echo char
  ifne EXTEND
-OUTCHR    lbra  EKOBYT Print character
+OUTCHR lbra EKOBYT Print character
  else
  endc
 
@@ -947,29 +948,30 @@ SCDLL2    lbsr  SCMLFT
          puls  pc,a
 
 * Delete character under cursor
-SCDLRT    bsr   SCChkE
-         bcc   L05C9
-         leax  -$01,x
-         clrb
-         bsr   SCChkE
-         bcc   SCDL1
-         leax  $01,x
-         bra   SCDL
+SCDLRT bsr SCChkE at end of line?
+ bcc SCDLR1
+ leax -1,x
+ clrb
+ bsr SCChkE
+ bcc SCDL1
+ leax 1,x
+ bra SCDL
 
-L05C9    rts
+SCDLR1 rts
 
 * Display to end of line
-SCShLn    clrb
-         pshs  u,b
-L05CD    bsr   SCChkE
-         bcc   L05DE
-         lda   ,u+
-         cmpa  #$0D done?
-         beq   L05DE
-         lbsr  CHKEKO
-         inc   ,s
-         bra   L05CD
-L05DE    puls  pc,u,b
+SCShLn clrb clear byte count
+ pshs u,b save count and U
+SCShL1 bsr SCChkE end of line?
+ bcc SCShL2 ..yes
+         lda   ,u+ get a chr
+         cmpa  #C$CR done?
+         beq   SCShL2 ..yes
+         lbsr  CHKEKO display the chr
+         inc ,s keep count
+         bra   SCShL1
+
+SCShL2 puls  pc,u,b return with forward count
 
 * Insert a character into the buffer
 SCINS    bsr   SCChkE
@@ -980,10 +982,10 @@ SCINS    bsr   SCChkE
 
 SCINS1    pshs  u
          leau  ,x
-L05EF    ldb   ,-u
+SCINS3    ldb   ,-u
          stb   $01,u
          cmpu  ,s
-         bne   L05EF
+         bne   SCINS3
          leas  $02,s
          sta   ,u
          leax  $01,x
@@ -998,11 +1000,11 @@ EKOCR    lda   #C$CR
          lbra  EKOBYT Print character
 
  ifne EXTEND
-SCPRNT    lbsr  SCMKEL
+SCPRNT lbsr SCMKEL
  else
  endc
  ifne EXTEND
-         lbsr  SCDEL9
+ lbsr SCDEL9
  else
  endc
 SCPRT1 lbsr EKOCHR
@@ -1073,29 +1075,41 @@ SCRd120 pshs  b push byte count
 * GetChr
 *   get one character from Input device
 
+* Passed:  (Y)=File Descriptor address
+* returns: (A)=char
+*          (B)=error, cc set if error
+
 GetDv2    pshs  u,y,x
          ldx   PD.FST,y
          ldu   PD.DEV,y
-         bra   L0690
+         bra   GetChr1
 
 GetChr    pshs  u,y,x
          ldx   PD.DEV,y
          ldu   PD.FST,y
-         beq   L0697
-L0690    ldu   $02,u
+         beq   GetChr2
+GetChr1    ldu   $02,u
          ldb   PD.PAG,y
          stb   V.LINE,u
-L0697    leax  ,x
-         beq   L06A7
+GetChr2    leax  ,x
+         beq   GetChr3
          tfr   u,d
          ldu   V$STAT,x
          std   V.DEV2,u
          ldu   #D$READ
          lbsr  IOEXEC
-L06A7    puls  pc,u,y,x
+GetChr3    puls  pc,u,y,x
 
-*
-UPCASE    tst   PD.UPC,y
+***************
+* UPCASE
+*   Convert lower-case to upper-case
+
+* Passed: (A)=char
+*         (Y)=PD
+* Returns: (A)=upcased
+* Destroys: none
+
+UPCASE tst PD.UPC,y uppercase only?
          beq   UPCAS9
          cmpa  #'a
          bcs   UPCAS9
@@ -1121,9 +1135,16 @@ EKOCH2    pshs  a              Save code
          bsr   EKOBYT Print character
          puls  pc,a
 
+***************
+* Subroutine RetData
+*   Return Data to User's address space
+*
+* Passed: (X)=Bytecount
+*         (Y)=PD ptrs
+
 RetData    pshs  y,x
          ldd   ,s
-         beq   L06FB
+         beq   RetDat30
          tstb
          bne   RetDat10
          deca
@@ -1133,25 +1154,26 @@ RetDat10    clrb
          leau  d,u
          clra
          ldb  1,s
-         bne   L06EC
+         bne   RetDat20
          inca
-L06EC    pshs  b,a
+RetDat20    pshs  b,a
          lda   D.SysTsk
          ldx   D.Proc
          ldb   $06,x
          ldx   $08,y
          puls  y
          os9   F$Move
-L06FB    puls  pc,y,x
+RetDat30    puls  pc,y,x
 
 *****************
 * IODONE
-IODONE    ldx  D.Proc
+
+IODONE ldx D.Proc
          lda   P$ID,x
          ldx   PD.DEV,y
-         bsr   L0707
+         bsr   IODO10
          ldx   $0A,y
-L0707    beq   IODO90
+IODO10    beq   IODO90
          ldx   $02,x
          cmpa  $04,x
          bne   IODO90
@@ -1176,7 +1198,7 @@ GetDev    pshs  x,a
          coma
          rts
 
-GetDev10    lda 0,s
+GetDev10 lda 0,s
          sta   V.Busy,x mark device as owned
          sta   V.LPRC,x
          lda   PD.PSC,y
@@ -1213,11 +1235,12 @@ SCAL90    ldu PD.RGS,y
 * SCWrLine
 *   Process Write Line Request
 
-SCWrLine  bsr   SCALOC
-         bra   SCWrit00
+SCWrLine bsr SCALOC
+ bra SCWrit00
 
 ***************
 * SCWrite
+
 SCWrite    bsr   SCALOC
          inc   PD.RAW,y
 SCWrit00    ldx   R$Y,u
@@ -1292,36 +1315,38 @@ PutDv2    pshs  u,x,a
          ldx   PD.DV2,y
          beq   PutChr9
 
-         tst   $0C,y
+         tst   PD.RAW,y
          bne   PutChr2
 
          cmpa  #$0D
          bne   PutChr2
-         bra   L083B
+         bra   PutChr17
+
 PutChr    pshs  u,x,a
-         ldx   $03,y
-         tst   $0C,y
+         ldx   PD.DEV,y
+
+         tst   PD.RAW,y
          bne   PutChr2
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   PutChr2
-         ldu   $02,x
+         ldu   V$STAT,x
          tst   V.PAUS,u
-         bne   L0829
+         bne   PutChr1
          tst   PD.PAU,y
-         beq   L083B
+         beq   PutChr17
          dec   V.LINE,u
-         bne   L083B
-         bra   L0833
-L0829    lbsr  GetDv2
-         bcs   L0833
+         bne   PutChr17
+         bra   PutChr15
+PutChr1    lbsr  GetDv2
+         bcs   PutChr15
          cmpa  PD.PSC,y
-         bne   L0829
-L0833    lbsr  GetDv2
+         bne   PutChr1
+PutChr15    lbsr  GetDv2
          cmpa  PD.PSC,y
-         beq   L0833
-L083B    ldu   $02,x
-         clr   $08,u
-         lda   #$0D
+         beq   PutChr15
+PutChr17 ldu V$STAT,x
+         clr V.PAUS,u
+         lda   #C$CR
          bsr   WrChar
 **********
 * tst PD.RAW,Y "cooked" mode?
@@ -1340,21 +1365,21 @@ EOL      ldb   PD.NUL,y
          tst   PD.ALF,y  Add linefeed?
          beq   EOL1
          lda   #$0A
-L084F    bsr   WrChar
-         bcs   L085A
+EOL0    bsr   WrChar
+         bcs   EOL2
 EOL1    lda   #$00
          dec   ,s
-         bpl   L084F
+         bpl   EOL0
          clra
-L085A    leas  1,s
-PutChr9    puls  pc,u,x,a
+EOL2    leas  1,s
+PutChr9 puls pc,u,x,a return
 
-PutChr2    bsr   WrChar
-         puls  pc,u,x,a
+PutChr2 bsr WrChar write character
+ puls pc,u,x,a
 
-WrChar    ldu   #D$WRIT
+WrChar ldu #D$WRIT
 
-IOEXEC    pshs  u,y,x,a
+IOEXEC pshs u,y,x,a
          ldu   V$STAT,x
          clr   V.WAKE,u
          ldx   V$DRIV,x
@@ -1365,5 +1390,5 @@ IOEXEC    pshs  u,y,x,a
          jsr   0,x
          puls  pc,u,y,x
 
- emod
+ emod Module CRC
 SCFEnd equ *

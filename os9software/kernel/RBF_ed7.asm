@@ -101,7 +101,7 @@ L00A7    cmpb  #E$EOF
          lbsr  L04AB
          bcs   CREATE20
          lbsr  L0237
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          lbsr  RdCurDir
 L00BC    leau  ,x
          lbsr  ZerDir
@@ -124,7 +124,7 @@ L00CE    clra
          ldx   $01,s
          stb   <$1D,u
          stx   <$1E,u
-         lbsr  L0CA5
+         lbsr  PCPSEC
          bcs   L0144
          ldu   $08,y
          bsr   ZerBuf
@@ -156,7 +156,7 @@ L00CE    clra
          stb   FDSL.A,x
 L012B    ldb   ,s
          ldx   $01,s
-         lbsr  L0CA7
+         lbsr  PUTSEC
          bcs   L0144
          lbsr  Remove
          stb   <PD.FD,y
@@ -272,10 +272,10 @@ MakDir   lbsr  Create
          sta   <DIR.SZ+DIR.FD,u
          ldd   <PD.FD+1,y
          std   <DIR.SZ+DIR.FD+1,u
-         lbsr  L0CA5
+         lbsr  PCPSEC
 MakDir90 bra   KillPth1
 
-L0237    lbsr  L0C43
+L0237    lbsr  GETFD
 
 * Write file size in memory to file descriptor
 L023A    ldx   PD.BUF,y
@@ -284,7 +284,7 @@ L023A    ldx   PD.BUF,y
          ldd   <PD.SIZ+2,y
          std   FD.SIZ+2,x
          clr   PD.SMF,y
-L0247    lbra  L0C9D
+L0247    lbra  PUTFD
 
 * Y points to path descriptor
 Close    clra
@@ -293,7 +293,7 @@ Close    clra
          ldb   PD.MOD,y
          bitb  #WRITE.
          beq   KillPth1
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          bcs   KillPth1
          ldd   <PD.FD,y
          bne   CLOSE10
@@ -309,7 +309,8 @@ CLOSE20  rts
 
 L0273    ldb   #E$FNA   File not accessible
 KillPth0    coma
-FreeBufY puls  y
+
+KillPth puls  y
 KillPth1  pshs  b,cc
          ldu   PD.BUF,y
          beq   L0284
@@ -318,7 +319,7 @@ KillPth1  pshs  b,cc
 L0284    puls  pc,b,cc
 
 * Get date
-DateMod  lbsr  L0C43
+DateMod  lbsr  GETFD
          ldu   PD.BUF,y
          lda   FD.LNK,u   Save link count as it will be overwritten by F$Time
          pshs  a
@@ -334,7 +335,7 @@ ChgDir   pshs  y
          ora   #$80
          sta   PD.MOD,y
          lbsr  Open
-         bcs   FreeBufY
+         bcs   KillPth
          ldx   D.Proc
          lda   <$21,y
          ldu   <PD.FD+1,y
@@ -351,12 +352,12 @@ L02BD    ldb   $01,y
          std   <$22,x
          stu   <$24,x
 L02CC    clrb
-         bra   FreeBufY
+         bra   KillPth
 
 ********************************************************************
 Delete   pshs  y
          lbsr  SchDir
-         bcs   FreeBufY
+         bcs   KillPth
          ldd   <PD.FD+1,y
          bne   L02E2
          tst   <PD.FD,y
@@ -366,12 +367,12 @@ L02E2    lda   #$42
          bcs   L0356
          ldu   PD.RGS,y
          stx   R$X,u
-         lbsr  L0C43
+         lbsr  GETFD
          bcs   L0356
          ldx   $08,y
          dec   $08,x
          beq   L02FD
-         lbsr  L0C9D
+         lbsr  PUTFD
          bra   L0323
 L02FD    clra
          clrb
@@ -389,14 +390,14 @@ L02FD    clra
          std   <$1A,y
          lbsr  SECDEA
 L0323    bcs   L0356
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          lbsr  Remove
          lda   <PD.DFD,y
          sta   <PD.FD,y
          ldd   <PD.DFD+1,y
          std   <PD.FD+1,y
          lbsr  L07A7
-         lbsr  L0C43
+         lbsr  GETFD
          bcs   L0356
          lbsr  L01BC Copy from file descriptor to path descriptor
          ldd   <PD.DCP,y
@@ -406,8 +407,8 @@ L0323    bcs   L0356
          lbsr  RdCurDir
          bcs   L0356
          clr   ,x
-         lbsr  L0CA5
-L0356    lbra  FreeBufY
+         lbsr  PCPSEC
+L0356    lbra  KillPth
 
 ********************************************************************
 Seek     ldb   PD.SMF,y
@@ -420,7 +421,7 @@ Seek     ldb   PD.SMF,y
          lda   $04,u
          sbca  $0B,y
          beq   L0376
-L036D    lbsr  L0CD5   Is buffer modified?
+L036D    lbsr  CLRBUF   Is buffer modified?
          bcs   L037A
 L0372    ldd   $04,u
          std   PD.CP,y
@@ -514,7 +515,7 @@ L0403    ldd   $04,u
 L0409    lda   $0A,y
          bita  #$02
          bne   L042D
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          bcs   L0400
          tst   $0E,y
          bne   L0428
@@ -544,7 +545,7 @@ L0440    pshs  b,a
          addb  $0E,y
          stb   $0E,y
          bne   L045C
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          inc   $0D,y
          bne   L045C
          inc   $0C,y
@@ -674,7 +675,7 @@ L052F    cmpb  #SS.Pos
 
 L053C    cmpb  #SS.FD  Read PD sector
          bne   L0556
-         lbsr  L0C43
+         lbsr  GETFD
          bcs   L052E
          ldu   PD.RGS,y
          ldd   R$Y,u
@@ -807,7 +808,7 @@ L0633    lbsr  L0C30
          std   <PD.FD+1,y
 L0655    stx   $04,s
          stx   $08,s
-L0659    lbsr  L0CD5   Is buffer modified?
+L0659    lbsr  CLRBUF   Is buffer modified?
          lbsr  L07A7
          bcs   L06DA
          lda   ,s
@@ -891,7 +892,7 @@ RdNxtDir    ldb   $0E,y
          addb  #$20
          stb   $0E,y
          bcc   RdCurDir
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          inc   $0D,y
          bne   RdCurDir
          inc   $0C,y
@@ -946,7 +947,7 @@ CHKACC    tfr   a,b
          anda  #$07
          andb  #$C0
          pshs  x,b,a
-         lbsr  L0C43
+         lbsr  GETFD
          bcs   L079C
          ldu   $08,y
          ldx   D.Proc
@@ -989,7 +990,7 @@ L07B6    bsr   L0812
          bne   L07C6
          lda   <$12,y
          beq   L080D
-L07C6    lbsr  L0C43
+L07C6    lbsr  GETFD
          bcs   L080A
          ldx   PD.CP,y
          ldu   PD.CP+2,y
@@ -1033,7 +1034,7 @@ L0812    ldd   <$10,y
 L0820    pshs  u,x
          lbsr  L08C3
          bcs   L085C
-         lbsr  L0C43
+         lbsr  GETFD
          bcs   L085C
          ldu   $08,y
          clra
@@ -1108,7 +1109,7 @@ L08B3    ldd   $0A,u
          std   $0A,u
          bcc   L08BE
          inc   $09,u
-L08BE    lbsr  L0C9D
+L08BE    lbsr  PUTFD
 L08C1    puls  pc,u,x
 
 L08C3    pshs  u,y,x,b,a
@@ -1313,12 +1314,12 @@ L0A6A    bsr   SECDEA
          leas  $04,s
          cmpb  #E$IBA
 L0A72    bne   L0A79
-L0A74    lbsr  L0C43
+L0A74    lbsr  GETFD
          bcc   L0A84
 L0A79    coma
 L0A7A    rts
 
-L0A7B    lbsr  L0C43
+L0A7B    lbsr  GETFD
          bcs   L0AD4
          puls  x,b,a
          std   $03,x
@@ -1343,7 +1344,7 @@ L0A99    ldd   -$02,x
          bsr   SECDEA
          bcs   L0AD4
          stx   $02,s
-         lbsr  L0C43
+         lbsr  GETFD
          bcs   L0AD4
          ldx   $02,s
          clra
@@ -1351,7 +1352,7 @@ L0A99    ldd   -$02,x
          std   -$05,x
          sta   -$03,x
          std   -$02,x
-L0ABF    lbsr  L0C9D
+L0ABF    lbsr  PUTFD
          bcs   L0AD4
          ldx   $02,s
          leax  $05,x
@@ -1417,7 +1418,7 @@ L0B25    bsr   L0B49
          bcc   L0B47
 L0B46    coma
 L0B47    puls  pc,u,y,x,a
-L0B49    lbsr  L0CD5   Is buffer modified?
+L0B49    lbsr  CLRBUF   Is buffer modified?
          bra   L0B53
 
 L0B4E    os9   F$IOQu
@@ -1445,7 +1446,7 @@ L0B76    rts
 L0B77    clra
          tfr   d,x
          clrb
-         lbsr  L0CA7
+         lbsr  PUTSEC
 L0B7E    pshs  cc
          ldx   <$1E,y
          lda   $05,y
@@ -1456,7 +1457,7 @@ L0B8D    puls  pc,cc
 L0B8F    clra
          tfr   d,x
          clrb
-         lbra  L0C62
+         lbra  GETSEC
 L0B96    pshs  u,x
          bsr   L0BB8
          bcs   L0BA7
@@ -1468,7 +1469,7 @@ L0B96    pshs  u,x
 L0BA7    puls  pc,u,x
 
          pshs  u,x
-         lbsr  L0CA5
+         lbsr  PCPSEC
          bcs   L0BB6
          lda   $0A,y
          anda  #$FE
@@ -1489,7 +1490,7 @@ L0BD0    clrb
          rts
 
 L0BD2    pshs  u
-         bsr   L0C43
+         bsr   GETFD
          bcs   L0C2C
          clra
          clrb
@@ -1532,31 +1533,33 @@ L0C1D    ldd   ,x
 L0C2C    leas  $02,s
          puls  pc,u
 L0C30    pshs  x,b
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          bcs   L0C3F
          clrb
          ldx   #$0000
-         bsr   L0C62
+         bsr   GETSEC
          bcc   L0C41
 L0C3F    stb   ,s
 L0C41    puls  pc,x,b
 
 * Check/load descriptor sector into buffer
-L0C43    ldb   PD.SMF,y
+GETFD    ldb   PD.SMF,y
          bitb  #$04
          bne   L0BD0      Clear B and return
-         lbsr  L0CD5   Is buffer modified?
+         lbsr  CLRBUF   Is buffer modified?
          bcs   L0CBD
          ldb   PD.SMF,y
          orb   #$04
          stb   PD.SMF,y
          ldb   <PD.FD,y
          ldx   <PD.FD+1,y
-         bra   L0C62
-L0C5C    bsr   L0CD5   Is buffer modified?
+         bra   GETSEC
+
+L0C5C    bsr   CLRBUF   Is buffer modified?
          bcs   L0CBD
-         bsr   L0CBE
-L0C62    lda   #1*3    Read entry in branch table
+         bsr   GETCP
+GETSEC    lda   #1*3    Read entry in branch table
+
 L0C64    pshs  u,y,x,b,a
          ldu   PD.DEV,y
          ldu   V$STAT,u
@@ -1588,11 +1591,12 @@ L0C8B    pshs  pc,x,b,a
          std   $04,s
          puls  pc,x,b,a
 
-L0C9D    ldb   <PD.FD,y
+PUTFD    ldb   <PD.FD,y
          ldx   <PD.FD+1,y
-         bra   L0CA7
-L0CA5    bsr   L0CBE
-L0CA7    lda   #2*3 Write-entry in branch table
+         bra   PUTSEC
+
+PCPSEC    bsr   GETCP
+PUTSEC    lda   #2*3 Write-entry in branch table
          pshs  x,b,a
          ldd   <PD.DSK,y
          beq   L0CB6
@@ -1604,7 +1608,7 @@ L0CB6    puls  x,b,a
          ldb   #E$DIDC  Disk ID change
 L0CBD    rts
 
-L0CBE    ldd   $0C,y
+GETCP    ldd   $0C,y
          subd  <$14,y
          tfr   d,x
          ldb   $0B,y
@@ -1615,8 +1619,11 @@ L0CBE    ldd   $0C,y
          adcb  <$16,y
          rts
 
-* is the buffer modified?
-L0CD5    clrb
+***************
+* Subroutine CLRBUF
+*   Clear Buffer
+
+CLRBUF    clrb
          pshs  u,x
          ldb   PD.SMF,y
          andb  #$06
@@ -1630,7 +1637,7 @@ L0CD5    clrb
          stb   PD.SMF,y
          bita  #$02
          beq   L0CF2
-         bsr   L0CA5
+         bsr   PCPSEC
 L0CF2    puls  pc,u,x
          emod
 RBFEnd      equ   *

@@ -3369,35 +3369,29 @@ DMACRead lda ,u+ get byte from memory
  bra DMACRead
  endc
 
- ifeq CPUType-L2VIRT
+ ifeq CPUType-GIMIX
 *
-* Virtual computer using GIMIX DAT
+* Computer using GIMIX DAT
 *
 Target set $0E00-$100
  use filler
 
 DATInit clra
  tfr a,dp
+ clr $E231 Clear m58167 interrupts
  ldx #DAT.Task ($FF7F)
 *
-* Initialize all tasks in DAT registers
+* Initialize DAT registers for task 0
 *
  ldy #DAT.Regs
- ldb #$F0
+ ldb #SysTask
 DATIn1 stb 0,X
- clr 0,Y    RAM at $0000
+ clr 0,Y RAM block at $0000
  lda #IOBlock
- sta $E,y   DAT.Regs+$E
+ sta $E,y
  lda #ROMBlock
- sta $F,y   DAT.Regs+$F
- incb
- bne DATIn1
- lda #$20 Set values in task register
- sta 0,X
-InitI05 lbra COLD
-*
-* END Virtual computer
-*
+ sta $F,y
+ lbra COLD
  endc
 
 ***********************************************************
@@ -3616,7 +3610,7 @@ target set $400+OS9End-$20
  opt c
 *
  endc
- ifeq CPUType-L2VIRT
+ ifeq CPUType-GIMIX
  emod
 OS9End equ *
 target set $0E00-$20

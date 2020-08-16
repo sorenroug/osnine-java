@@ -3,7 +3,7 @@
 * Note: Microware has not put a copyright statement on this file
 *
  ttl Module Header & entries
-         use defsfile
+ use defsfile
 
 included equ 1
  ifeq LEVEL-1
@@ -137,18 +137,18 @@ Create pshs y save PD
  bcs Create10
 ERCEF ldb #E$CEF
 Create10 cmpb  #E$PNNF Pathname not found?
-         bne   CRTEX1 No; abort
-         cmpa  #PDELIM end of pathlist?
-         beq   CRTEX1 ..No; abort: dir not found
-         pshs  x save pathlist ptr
-         ldx   PD.RGS,Y
-         stu   R$X,x return updated ptr
+ bne   CRTEX1 No; abort
+ cmpa  #PDELIM end of pathlist?
+ beq   CRTEX1 ..No; abort: dir not found
+ pshs  x save pathlist ptr
+ ldx   PD.RGS,Y
+ stu   R$X,x return updated ptr
 
 * Allocate File Descriptor Sector
          ldb   PD.SBP,y
-         ldx   <$17,y
-         lda   <$19,y
-         ldu   <$1A,y
+         ldx   PD.SBP+1,y
+         lda   PD.SSZ,y
+         ldu   PD.SSZ+1,y
          pshs  u,x,b,a
          clra
          ldb   #$01
@@ -159,17 +159,17 @@ CRTEX1    leas  $05,s
          lbra  KillPth0
 Create20 std   S.SctSiz+8,s
          ldb   PD.SBP,y
-         ldx   <$17,y
+         ldx   PD.SBP+1,y
          stb   $08,s
          stx   $09,s
          puls  u,x,b,a
          stb   PD.SBP,y
-         stx   <$17,y
-         sta   <$19,y
-         stu   <$1A,y
+         stx   PD.SBP+1,y
+         sta   PD.SSZ,y
+         stu   PD.SSZ+1,y
 
 * Find Free Entry in dir
-         ldd   <$3A,y
+         ldd   PD.DCP,y
          std   $0B,y
          ldd   <$3C,y
          std   $0D,y
@@ -247,7 +247,7 @@ Create40    ldb   ,s
          lbsr  PUTSEC
          bcs   CRTERR
          lbsr  Remove
-         stb   <$34,y
+         stb   PD.FD,y
          stx   <$35,y
          lbsr  Insert
          leas  $05,s
@@ -262,9 +262,9 @@ Create40    ldb   ,s
 *  Error: Deallocate sectors & return
 CRTERR    puls  u,x,a
          sta   PD.SBP,y
-         stx   <$17,y
-         clr   <$19,y
-         stu   <$1A,y
+         stx   PD.SBP+1,y
+         clr   PD.SSZ,y
+         stu   PD.SSZ+1,y
          pshs  b
          lbsr  SECDEA
          puls  b
@@ -299,7 +299,7 @@ Open    pshs  y
          stx   $04,u
          ldd   <$35,y
          bne   Open15
-         lda   <$34,y
+         lda   PD.FD,y
          bne   Open15
          ldb   $01,y
          andb  #$80
@@ -314,7 +314,7 @@ Open    pshs  y
          sta   <$1B,y
          ldd   ,x
          std   $0F,y
-         std   <$19,y
+         std   PD.SSZ,y
          puls  pc,y
 
 * Check File Accessibility
@@ -338,7 +338,7 @@ InitPD10    clra
          std   $0D,y
          std   PD.SBL,y
          sta   <$15,y
-         sta   <$19,y
+         sta   PD.SSZ,y
          lda   ,u
          sta   <$33,y
          ldd   <$10,u
@@ -346,7 +346,7 @@ InitPD10    clra
          lda   <$12,u
          sta   <$18,y
          ldd   <$13,u
-         std   <$1A,y
+         std   PD.SSZ+1,y
          ldd   $09,u
          ldx   $0B,u
  ifeq RCD.LOCK-included
@@ -399,7 +399,7 @@ MakDir    lbsr  Create
          sta   <$1D,u
          ldd   <$38,y
          std   <$1E,u
-         lda   <$34,y
+         lda   PD.FD,y
          sta   <$3D,u
          ldd   <$35,y
          std   <$3E,u
@@ -429,7 +429,7 @@ Close    clra
          ldb   $01,y
          bitb  #$02
          beq   KillPth1
-         ldd   <$34,y
+         ldd   PD.FD,y
          bne   L028D
          lda   <$36,y
          beq   KillPth1
@@ -467,6 +467,10 @@ DateMod  lbsr  GETFD
          ldu   PD.BUF,y
          lda   FD.LNK,u
  ifeq LEVEL-1
+ pshs  a
+ leax  FD.DAT,u
+ os9   F$Time
+ puls  a
  else
  ldx   D.Proc
  pshs  x,a
@@ -496,13 +500,13 @@ ChgDir    pshs  y
          ldb   $01,y
          bitb  #$03
          beq   L02FB
-         ldb   <$34,y
+         ldb   PD.FD,y
          std   <$22,x
          stu   <$24,x
 L02FB    ldb   $01,y
          bitb  #$04
          beq   L030A
-         ldb   <$34,y
+         ldb   PD.FD,y
          std   <$28,x
          stu   <$2A,x
 L030A    clrb
@@ -516,7 +520,7 @@ Delete    pshs  y
          bcs   KillPth
          ldd   <$35,y
          bne   L0320
-         tst   <$34,y
+         tst   PD.FD,y
          lbeq  IllAcces
 L0320    lda   #$42
          lbsr  CHKACC
@@ -537,28 +541,28 @@ L033B    clra
          std   <$11,y
          lbsr  TRIM
          bcs   Delete99
-         ldb   <$34,y
+         ldb   PD.FD,y
          ldx   <$35,y
          stb   PD.SBP,y
-         stx   <$17,y
+         stx   PD.SBP+1,y
          ldx   $08,y
          ldd   <$13,x
          addd  #$0001
-         std   <$1A,y
+         std   PD.SSZ+1,y
          lbsr  SECDEA
 
 L0361    bcs   Delete99
          lbsr  CLRBUF
          lbsr  Remove
          lda   <$37,y
-         sta   <$34,y
+         sta   PD.FD,y
          ldd   <$38,y
          std   <$35,y
          lbsr  Insert
          lbsr  GETFD
          bcs   Delete99
          lbsr  InitPD10
-         ldd   <$3A,y
+         ldd   PD.DCP,y
          std   $0B,y
          ldd   <$3C,y
          std   $0D,y
@@ -950,7 +954,7 @@ PSt100    cmpb  #$02
          bne   PSt110
          ldd   <$35,y
          bne   L05E3
-         tst   <$34,y
+         tst   PD.FD,y
          lbeq  L0684
 L05E3    lda   $01,y
          bita  #$02
@@ -1080,7 +1084,7 @@ SchDir ldd  #$100
          leas  -$04,s
          clra
          clrb
-         sta   <$34,y
+         sta   PD.FD,y
          std   <$35,y
          std   <$1C,y
 
@@ -1112,7 +1116,7 @@ SchDir20    anda  #$7F
          beq   L06ED
          leau  $06,u
 L06ED    ldb   $03,u
-         stb   <$34,y
+         stb   PD.FD,y
          ldd   $04,u
          std   <$35,y
 
@@ -1128,21 +1132,21 @@ SchDir30    ldu   $03,y
          lda   ,s
          anda  #$7F
          cmpa  #$40
-         bne   L0718
+         bne   SchDir35
          leax  $01,x
          bra   L073A
 
-L0718    lbsr  GETDD
+SchDir35    lbsr  GETDD
          lbcs  L07BF
          ldu   $08,y
          ldd   $0E,u
          std   <$1C,y
          ldd   <$35,y
          bne   L073A
-         lda   <$34,y
+         lda   PD.FD,y
          bne   L073A
          lda   $08,u
-         sta   <$34,y
+         sta   PD.FD,y
          ldd   $09,u
          std   <$35,y
 
@@ -1153,7 +1157,7 @@ SchDir60    lbsr  CLRBUF
          bcs   L07BF
          lda   ,s
          cmpa  #$2F
-         bne   L07A1
+         bne   SchDir85
          clr   $02,s
          clr   $03,s
          lda   $01,y
@@ -1188,13 +1192,13 @@ SchDir80    bcs   DirErr
          bcs   L0776
          bsr   SaveDir
          lda   <$1D,x
-         sta   <$34,y
+         sta   PD.FD,y
          ldd   <$1E,x
          std   <$35,y
          lbsr  Remove
          bra   SchDir60
 
-L07A1    ldx   $08,s
+SchDir85    ldx   $08,s
          tsta
          bmi   L07AE
          os9   F$PrsNam
@@ -1226,12 +1230,12 @@ SaveDel    pshs  b,a
 
 SaveDir    pshs  b,a
          stx   $06,s
-         lda   <$34,y
+         lda   PD.FD,y
          sta   <$37,y
          ldd   <$35,y
          std   <$38,y
          ldd   $0B,y
-         std   <$3A,y
+         std   PD.DCP,y
          ldd   $0D,y
          std   <$3C,y
 L07EA    puls  pc,b,a
@@ -1378,9 +1382,9 @@ Insert    pshs  u,y,x
          clrb
          std   $0B,y
          std   $0D,y
-         sta   <$19,y
-         std   <$1A,y
-         ldb   <$34,y
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
+         ldb   PD.FD,y
          ldx   <$35,y
          pshs  x,b
          ldu   <$1E,y
@@ -1393,7 +1397,7 @@ L08D7    ldu   $03,u
 L08D9    ldx   $03,u
          beq   Insert80
          ldx   $01,x
-         ldd   <$34,x
+         ldd   PD.FD,x
          cmpd  ,s
          bcs   L08D7
          bhi   Insert80
@@ -1665,7 +1669,7 @@ L0AEF    puls  pc,u,y,b,a
 EXPAND    pshs  u,x
 L0AF3    bsr   EXPSUB
          bne   EXPA15
-         cmpx  <$1A,y
+         cmpx  PD.SSZ+1,y
          bcs   EXPA45
          bne   EXPA15
          lda   <$12,y
@@ -1798,7 +1802,7 @@ SEGALErr    bcs   SEGA30
          cmpb  PD.SBP,y
          puls  b,a
          bne   SEGA20
-         cmpd  <$17,y
+         cmpd  PD.SBP+1,y
          bne   SEGA20
 * Now insure that they are in same bitmap sector
          ldu   <$1E,y
@@ -1810,7 +1814,7 @@ SEGALErr    bcs   SEGA30
          pshs  b,a
          ldd   -$05,x
          eora  PD.SBP,y
-         eorb  <$17,y
+         eorb  PD.SBP+1,y
          lsra
          rorb
          lsra
@@ -1822,7 +1826,7 @@ SEGALErr    bcs   SEGA30
          std   -$02,s
          bne   SEGA20
          ldd   -$02,x
-         addd  <$1A,y
+         addd  PD.SSZ+1,y
          bcs   SEGA20
          std   -$02,x
          bra   L0C1F
@@ -1830,10 +1834,10 @@ SEGA20    ldd   PD.SBP,y
          std   ,x
          lda   <$18,y
          sta   $02,x
-         ldd   <$1A,y
+         ldd   PD.SSZ+1,y
          std   $03,x
 L0C1F    ldd   FD.SIZ+1,u
-         addd  <$1A,y
+         addd  PD.SSZ+1,y
          std   FD.SIZ+1,u
          bcc   L0C2A
          inc   FD.SIZ,u
@@ -2007,20 +2011,20 @@ SECA22    lda   $07,s
          ldb   $0C,s
          ldx   $09,s
          ldy   <$11,s
-         std   <$17,y
-         stx   <$1A,y
+         std   PD.SBP+1,y
+         stx   PD.SSZ+1,y
          ldd   $03,s
          bra   L0D6C
 L0D5D    lsl   <$18,y
-         rol   <$17,y
+         rol   PD.SBP+1,y
          rol   PD.SBP,y
          lsl   <$1B,y
-         rol   <$1A,y
+         rol   PD.SSZ+1,y
 L0D6C    lsra
          rorb
          bcc   L0D5D
          clrb
-         ldd   <$1A,y
+         ldd   PD.SSZ+1,y
          bra   SECA90
 L0D76    ldb   #$F8
 L0D78    ldy   <$11,s
@@ -2053,7 +2057,7 @@ TRIM    clra
          bra   L0DED
 L0DAC    ldd   <$14,y
          subd  $0C,y
-         addd  <$1A,y
+         addd  PD.SSZ+1,y
          tst   $0E,y
          beq   L0DBB
          subd  #$0001
@@ -2065,14 +2069,14 @@ L0DBB    pshs  b,a
          comb
          anda  ,s+
          andb  ,s+
-         ldu   <$1A,y
-         std   <$1A,y
+         ldu   PD.SSZ+1,y
+         std   PD.SSZ+1,y
          beq   L0DEF
          tfr   u,d
-         subd  <$1A,y
+         subd  PD.SSZ+1,y
          pshs  x,b,a
-         addd  <$17,y
-         std   <$17,y
+         addd  PD.SBP+1,y
+         std   PD.SBP+1,y
          bcc   L0DE5
          inc   PD.SBP,y
 L0DE5    bsr   SECDEA
@@ -2103,7 +2107,7 @@ L0DFF    ldu   $08,y
 
 L0E14    ldd   -$02,x
          beq   L0E47
-         std   <$1A,y
+         std   PD.SSZ+1,y
          ldd   -$05,x
          std   PD.SBP,y
          lda   -$03,x
@@ -2127,8 +2131,8 @@ TRIM65    lbsr  PUTFD
          bcs   L0E14
 L0E47    clra
          clrb
-         sta   <$19,y
-         std   <$1A,y
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
 TRIM80    leas  $04,s
          rts
  page
@@ -2140,22 +2144,22 @@ SECDEA    pshs  u,y,x,a
          ldx   <$1E,y
          ldd   $06,x
          subd  #$0001
-         addd  <$17,y
-         std   <$17,y
+         addd  PD.SBP+1,y
+         std   PD.SBP+1,y
          ldd   $06,x
          bcc   L0E7A
          inc   PD.SBP,y
          bra   L0E7A
 L0E6B    lsr   PD.SBP,y
-         ror   <$17,y
+         ror   PD.SBP+1,y
          ror   <$18,y
-         lsr   <$1A,y
+         lsr   PD.SSZ+1,y
          ror   <$1B,y
 L0E7A    lsra
          rorb
          bcc   L0E6B
          clrb
-         ldd   <$1A,y
+         ldd   PD.SSZ+1,y
          beq   L0EC2
          ldd   PD.SBP,y
          lsra
@@ -2179,9 +2183,9 @@ L0EA0    bsr   LockBit
          bsr   ReadBit
          bcs   L0EC1
          ldx   $08,y
-         ldd   <$17,y
+         ldd   PD.SBP+1,y
          anda  #$07
-         ldy   <$1A,y
+         ldy   PD.SSZ+1,y
          os9   F$DelBit
          ldy   $03,s
          ldb   ,s
@@ -2199,10 +2203,10 @@ L0EC9    os9   F$IOQu
          bsr   ChkSignl
 L0ECE    bcs   L0EDD
          ldx   <$1E,y
-         lda   <$17,x
+         lda   V.BMB,x
          bne   L0EC9
          lda   $05,y
-         sta   <$17,x
+         sta   V.BMB,x
 L0EDD    rts
 
 ***************
@@ -2231,9 +2235,9 @@ PUTBIT    clra
 RLSBIT    pshs  cc
          ldx   <$1E,y
          lda   $05,y
-         cmpa  <$17,x
+         cmpa  V.BMB,x
          bne   L0F0A
-         clr   <$17,x
+         clr   V.BMB,x
 L0F0A    puls  pc,cc
  page
 ***************
@@ -2263,10 +2267,10 @@ CHKSEG    ldd   $0C,y
          tfr   d,x
          ldb   $0B,y
          sbcb  <$13,y
-         cmpb  <$19,y
+         cmpb  PD.SSZ,y
          bcs   L0F3A
          bhi   GETSEG
-         cmpx  <$1A,y
+         cmpx  PD.SSZ+1,y
          bcc   GETSEG
 L0F3A    clrb
          rts
@@ -2304,8 +2308,8 @@ L0F6E    stb   <$13,y
          bcs   FNDS10
 GETS10    clra
          clrb
-         sta   <$19,y
-         std   <$1A,y
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
          comb
          ldb   #$D5
          bra   L0F96
@@ -2314,7 +2318,7 @@ L0F87    ldd   ,x
          lda   $02,x
          sta   <$18,y
          ldd   $03,x
-         std   <$1A,y
+         std   PD.SSZ+1,y
 L0F96    leas  $02,s
          puls  pc,u
  page
@@ -2342,7 +2346,7 @@ GETFD    ldb   $0A,y
          ldb   $0A,y
          orb   #$04
          stb   $0A,y
-         ldb   <$34,y
+         ldb   PD.FD,y
          ldx   <$35,y
 
 ***************
@@ -2394,7 +2398,7 @@ GODRIV    pshs  pc,x,b,a
 ***************
 * Subroutine PUTFD
 
-PUTFD    ldb   <$34,y
+PUTFD    ldb   PD.FD,y
          ldx   <$35,y
          bra   PUTSEC
 
@@ -2428,7 +2432,7 @@ GETCP    ldd   $0C,y
          ldb   $0B,y
          sbcb  PD.SBL,y
          exg   d,x
-         addd  <$17,y
+         addd  PD.SBP+1,y
          exg   d,x
          adcb  PD.SBP,y
          rts

@@ -27,7 +27,7 @@
 *
 * This driver can handle discs formatted with
 * 128 byte sectors. The first sector on each
-* trach must be sector 1. The Device
+* track must be sector 1. The Device
 * Descriptor 'sectors per track' entries must
 * contain the number of sectors per track
 * divided by two, and bit 5 of the DD.TYP
@@ -76,7 +76,7 @@ u000A    rmb   2
 u000C    rmb   1
 u000D    rmb   1
 u000E    rmb   1
-u000F    rmb   1
+XDrvbeg    rmb   1
 u0010    rmb   1
 u0011    rmb   1
 u0012    rmb   2
@@ -98,58 +98,94 @@ u00A6    rmb   1
  ORG Drvbeg reserve RBF static storage
  RMB Drvmem*Drvcnt drive tables
 V.Cdrv RMB 2 address of current drive table
-V.Vbuff    rmb   1
-u00AA    rmb   1
+V.Vbuff rmb   2
 V.Wrtf    rmb   1
 V.Wait    rmb   1
-u00AD    rmb   1
-V.Status    rmb   1
-V.T0stk    rmb   2
-V.Stk    rmb   2
-u00B3    rmb   2
+V.Active rmb   1
+V.Status rmb   1
+V.T0stk rmb   2
+V.Stk rmb   2
+u00B3  rmb   2
 V.Lsn    rmb   2
-V.fmt    rmb   1
-V.TwoStp    rmb   1
-V.Timer    rmb   3
+V.Fmt    rmb   1
+V.TwoStp rmb   1
+V.Timer rmb 1
+V.Cmd rmb 1
+V.Sector rmb 1
 V.CrTrk    rmb   1
-u00BD    rmb   4
-V.Step    rmb   1
-u00C2    rmb   1
-V.Select    rmb   2
+V.Buff rmb 2
+V.Bytc rmb 2
+V.Step rmb   1
+V.Track rmb   1
+V.Select rmb 1
+u00C4 rmb 1
 u00C5    rmb   1
 V.Freeze    rmb   1
 V.DDTr0    rmb   1
-Dskmem     equ   .
 
-Type     set   drivr+objct
-Revs     set   reent+1
+ ifne DDTRACK0
+DDTr0 set 16
+ endc
+Dskmem equ .
+Btmem equ Dskmem-V.Wrtf Memory for bootstrap
+* Controller commands
+*
+F.WRIT equ $A8 write sector
+F.READ equ $88 read sector
+F.SEEK equ $18 seek
+F.STPI equ $48 step in
+F.REST equ $08 restore
+F.WRTR equ $F0 write track
+F.TERM equ $D0 forced terminate
+*
+* Controller registers
+*
+ org 0
+STTREG equ . status register
+CMDREG rmb 1 command register
+TRKREG rmb 1 track register
+SECREG rmb 1 sector register
+DATREG rmb 1 data register
+*
+* PIA equates
+*
+SELREG equ A.DskSel select register
+INTPIA equ DAT.Task interrupt port data reg
 
-         mod   Dkend,Dknam,Type,Revs,Dkent,Dskmem
+Type set drivr+objct
+Revs set reent+1
 
- fcb $FF
+ mod   Dkend,Dknam,Type,Revs,Dkent,Dskmem
+ FCB $FF
 
 Dknam fcs 'wd2797'
- fcb  1 Edition
+ fcb 1 Edition
 
-Dkent    equ   *
-         lbra  Idisk
-         lbra  READSK
-         lbra  Write
-         lbra  Gstat
-         lbra  Pstat
-         lbra  Term
-         lbra  BOOT
+*Entry Table
+Dkent lbra Idisk
+ lbra Read
+ lbra Write
+ lbra Gstat
+ lbra Pstat
+ lbra Term
+ lbra Boot
 
 Fdcpol   fcb  $00 no flip bits
          fcb  $80
          fcb  $80
+
+Maxcyl equ 40
+Scttrk equ 18
+Trkcyl equ 1
+Sctcyl equ Scttrk*Trkcyl
+Maxsct equ (Maxcyl*Sctcyl)-1
 
 * Initialise Controller And Storage
 * Input: Y=Device Descriptor Pointer
 *        U=Global Storage Pointer
 Idisk   lda   #Drvcnt
          sta   u0006,u
-         leax  u000F,u
+         leax  Drvbeg,u
          stx   >V.Cdrv,u
  pshs U Save "u" we need it later
          leau  >V.Wrtf,u
@@ -166,18 +202,18 @@ Idisk   lda   #Drvcnt
          os9   F$IRQ
          bcs   Init30
          inc   >V.Wait,u
-         ldx   #DAT.Task
+         ldx   #INTPIA
          lda   ,x
          pshs  cc
-         orcc  #$50
-         lda   $01,x
-         ora   #$03
+         orcc #IntMasks
+         lda   1,x
+         ora   #3
          sta   $01,x
          puls  cc
          leax  >TimSrv,pcr
          os9   F$Timer
          bcs   Init30
-         leax  u000F,u
+         leax  Drvbeg,u
          ldb   #$04 #DriveCnt
          lda   #$FF
 INILUP    sta   $01,x
@@ -186,7 +222,7 @@ INILUP    sta   $01,x
  decb
          bne   INILUP
          clrb
-Init30    rts
+Init30 rts
 Ierr    puls  pc,u
 
  pag
@@ -203,7 +239,7 @@ Ierr    puls  pc,u
 *
 * Error: Cc=Set, B=Error Code
 *
-READSK    bsr   Rngtst
+Read    bsr   Rngtst
          bcs   Init30
          ldx   V.Lsn,u
          bne   Read1
@@ -223,7 +259,15 @@ Read2    clr   >V.Freeze,u
          puls  pc,y,x
 Read1    leax  >Rsect,pcr
 
-Call    pshs  u,y
+* Fall Through To Call Controller Subroutine
+
+* Call Controller Subroutine
+* Get Controller Pointer, Adjust Static Storage
+* Pointer, And Call Routine
+
+* Input: U=Static Storage Pointer
+
+Call pshs u,y
          ldy   V.Port,u
          leau  >V.Wrtf,u
          jsr   ,x
@@ -240,7 +284,7 @@ Write    bsr   Rngtst
          pshs  b,a
          ldd   >V.Vbuff,u
          std   $08,y
-         bsr   READSK
+         bsr   Read
          puls  x
          stx   $08,y
          rts
@@ -274,7 +318,7 @@ L010C    ldb   PD.DNS,y
          bitb  #$01
          beq   L0115
          ora   #$02
-L0115    sta   >V.fmt,u
+L0115    sta   >V.Fmt,u
          ldd   PD.SCT,y
          std   >V.Stk,u
          lda   PD.SID,y
@@ -285,14 +329,15 @@ L0127    lda   <$26,y
          mul
          std   $01,x
          bra   Rng5
-Rng4    clra
+Rng4 equ *
+ clra
          ldb   $03,x
          std   >V.Stk,u
 Rng5    ldd   V.Lsn,u
          cmpd  $01,x
          bhi   Rngerr
          ldd   $08,y
-         std   >u00BD,u
+         std   >V.Buff,u
          ldd   PD.T0S,y
          std   >V.T0stk,u
          clrb
@@ -319,7 +364,7 @@ Get5    lda   PD.DRV,y
          sta   >u00B3,u
  ldb #DRVMEM
          mul
-         leax  u000F,u
+         leax  Drvbeg,u
          leax  d,x
          stx   >V.Cdrv,u
          lda   <$15,x
@@ -346,7 +391,7 @@ L01A5    bitb  #$01
 L01AB    bitb  #$08
          beq   L01B1
          ora   #$08
-L01B1    sta   >V.fmt,u
+L01B1    sta   >V.Fmt,u
          rts
 
 Gstat bra Pstat1
@@ -362,24 +407,24 @@ Pstat pshs U,Y
  ldx PD.RGS,Y Point to parameters
  ldb R$B,X Get stat call
  cmpb #SS.Reset Restore call?
- beq RESTOR ..yes; do it.
+ beq Rstor ..yes; do it.
  cmpb #SS.WTrk Write track call?
- beq WRTTRK ..yes; do it.
+ beq Wtrk ..yes; do it.
  cmpb #SS.FRZ Freeze dd. info?
- beq SETFRZ Yes; ....flag it.
+ beq SetFrz Yes; ....flag it.
  cmpb #SS.SPT Set sect/trk?
- beq SETSPT Yes; ....set it.
+ beq SetSpt Yes; ....set it.
          puls  u,y
 Pstat1    comb
          ldb   #$D0
          rts
 
-SETFRZ    ldb   #$01
+SetFrz    ldb   #$01
          stb   >V.Freeze,u
          clrb
          puls  pc,u,y
 
-SETSPT    ldx   $04,x
+SetSpt    ldx   $04,x
          pshs  x
          lbsr  Getdrv
          puls  b,a
@@ -387,7 +432,7 @@ SETSPT    ldx   $04,x
          clrb
          puls  pc,u,y
 
-RESTOR    lbsr  Getdrv
+Rstor    lbsr  Getdrv
          ldx   >V.Cdrv,u
          clr   <$15,x
          leax  >Brstor,pcr
@@ -401,7 +446,7 @@ RESTOR    lbsr  Getdrv
 *         (Y)=Path Descriptor
 *         (U)=Global Storage
 *
-WRTTRK    lda   $07,x
+Wtrk lda R$Y+1,x
          ldb   $09,x
          pshs  b,a
          lbsr  Getdrv
@@ -413,88 +458,101 @@ WRTTRK    lda   $07,x
          std   V.Lsn,u
          puls  b,a
          sta   <$10,x
-         stb   >u00C2,u
+         stb   >V.Track,u
          anda  #$01
          sta   >u00C5,u
          lbsr  Getdrv
-         ldd   #$2900
+         ldd   #41*256
          os9   F$SRqMem
-         bcs   L0281
+         bcs   Wtrk8
          ldx   <u0050
          lda   $06,x
          ldb   D.SysTsk
          ldy   ,s
          ldx   $06,y
          ldx   $04,x
-         ldy   #$2900
+         ldy   #41*256
          os9   F$Move
          leax  ,u
          ldu   $02,s
-         stx   >u00BD,u
+         stx   >V.Buff,u
          leau  >V.Wrtf,u
-         ldy   >-u00AA,u
-         lbsr  L0413
-         bcs   L0281
+         ldy   V.Port-V.Wrtf,u get port address
+         lbsr  Select
+         bcs   Wtrk8
          lbsr  Settrk
-         ldd   #$2900
+         ldd   #41*256
          std   <u0014,u
          lda   #$F0
-         sta   u000F,u
+         sta   Drvbeg,u
          lda   #$01
          sta   ,u
          lbsr  IssXfr
          pshs  b,cc
          ldu   <u0012,u
-         ldd   #$2900
+         ldd   #41*256
          os9   F$SRtMem
          puls  b,cc
-L0281    puls  pc,u,y
+Wtrk8    puls  pc,u,y
+
+* Terminate Device Usage
+*
+* Input: U=Static Storage
 
 Term    pshs  u
          ldu   >V.Vbuff,u
          ldd   #$0100
          os9   F$SRtMem
          puls  u
-         ldx   #DAT.Task
-         lda   $01,x
+         ldx   #INTPIA
+         lda   1,x
          anda  #$FE
          sta   $01,x
          ldx   #$0000
          os9   F$IRQ
-         ldx   #$0000
+         ldx   #0
          os9   F$Timer
          clrb
          rts
 
-* Boot from floppy disk.
-BOOT    pshs  u,y,x,b,a
-         leas  <-$1D,s
+
+
+
+****************************************
+*
+* Bootstrap Routine, And Disk Controller
+* Interface Routines
+*
+****************************************
+
+Boot    pshs  u,y,x,b,a
+         leas  <-Btmem,s Get Global Storage
          ldd   #$0100
          os9   F$SRqMem
-         bcs   L032F
-         stu   <$12,s
+         bcs   Bterr2
+         stu   V.Buff-V.Wrtf,s
          leau  ,s
-         clr   V.Port,u
-L02BC    clra
+         clr   V.Wait-V.Wrtf,u
+Boot40    clra
          clrb
-         std   u000A,u
+         std   V.Lsn-V.Wrtf,u
          ldy   <$21,s
          bsr   Getdd
          lda   >$FCC1
          ora   #$01
          sta   >$FCC1
          lbsr  Brstor
-         bcs   L02BC
+         bcs   Boot40
          lbsr  Rsect
-         bcs   L02BC
+         bcs   Boot40
          ldx   <u0012,u
          lda   <$10,x
          ora   u000C,u
          sta   u000C,u
          bita  #$04
-         beq   L02E8
+         beq   Boot20
          clr   u000D,u
-L02E8    clra
+Boot20    clra
          ldb   $03,x
          std   u0006,u
          ldd   <$18,x
@@ -506,7 +564,7 @@ L02E8    clra
          ldd   <$1D,s
          beq   Noboot
          os9   F$BtMem
-         bcs   L032F
+         bcs   Bterr2
          stu   <$1F,s
          stu   <$12,s
          leau  ,s
@@ -522,16 +580,16 @@ Boot10    pshs  x,a
          leas  <$1D,s
          clrb
          puls  pc,u,y,x,b,a
-
 Noboot    comb
          ldb   #$F9
-         bra   L032F
+         bra   Bterr2
 
 L032D    leas  $03,s
-L032F    leas  <$1F,s
+Bterr2    leas  <$1F,s
          puls  pc,u,y,x
 
-Getdd    leay  <$12,y
+* Get Parameters From Device Descriptor
+Getdd    leay $12,y
          lda   $01,y
          sta   u0008,u
          lda   $02,y
@@ -560,15 +618,15 @@ L034B    lda   $04,y
 
 Rsect    clr   ,u
          lda   #$88
-         sta   u000F,u
+         sta   Drvbeg,u
 Xfr    lda   #$DB
          pshs  a
          lda   u000C,u
          bita  #$08
-         beq   L0398
+         beq   Xfr1
          ldd   #$0080
          std   <u0014,u
-         bsr   L039E
+         bsr   Xfr2
          bcs   Xfr70
          ldd   <u0012,u
          leas  $01,s
@@ -577,16 +635,16 @@ Xfr    lda   #$DB
          std   <u0012,u
          lda   #$DB
          pshs  a
-         bsr   L039E
+         bsr   Xfr2
          puls  x
          stx   <u0012,u
          bra   Xfr70
-L0398    ldd   #$0100
+Xfr1    ldd   #$0100
          std   <u0014,u
-L039E    ldd   u000A,u
+Xfr2    ldd   u000A,u
          bne   L03A5
-L03A2    lbsr  Brstor
-L03A5    bsr   L0413
+Xfr10    lbsr  Brstor
+L03A5    bsr   Select
          bcs   Xfr70
          clr   <u0017,u
          clr   <u001A,u
@@ -615,6 +673,9 @@ L03D7    tst   <u001C,u
 L03DD    stb   <u0010,u
 Xfr50    lbsr  Settrk
          lda   <u0010,u
+* Extend to check of sector reg once written
+* as recommended by Western Digital for the 2797
+* sta SECREG,Y set it in fdc
          bsr   SetSect
          lbsr  IssXfr
          bcc   Xfr70
@@ -622,25 +683,31 @@ Xfr50    lbsr  Settrk
          orcc  #$01
          beq   Xfr70
          lsr   ,s
-         bcc   L03A2
+         bcc   Xfr10
          bne   Xfr50
 Xfr70    leas  $01,s
          rts
 
 SetSect    sta   $02,y
          ldb   #$0C
-SetSect1    decb
+SetSect1 decb
          bne   SetSect1
          cmpa  $02,y
          bne   SetSect
          rts
 
+* Write Sector Routine
+*
+
 Wsect    lda   #$01
          sta   ,u
          lda   #$A8
-         sta   u000F,u
+         sta   Drvbeg,u
          lbra  Xfr
-L0413    lda   u0008,u
+
+* Select Drive Routine
+*
+Select    lda   u0008,u
          cmpa  #$04
          bcs   L041D
          comb
@@ -726,7 +793,7 @@ L04B0    bcs   L04BD
          stb   <u0018,u
          stb   >$FC24
 L04BD    cmpa  <u0011,u
-         beq   L04E2
+         beq   Sett8
          sta   <u0011,u
          tst   u000D,u
          beq   L04CA
@@ -737,15 +804,22 @@ L04CA    ldb   #$04
          lda   #$18
 L04D3    ora   <u0016,u
          lbsr  L056E
-         bsr   L04E2
+         bsr   Sett8
          ldb   u0003,u
          andb  #$90
-         lbra  L05BD
-L04E2    lda   <u0011,u
+         lbra  STCK
+
+Sett8    lda   <u0011,u
          sta   $01,y
          rts
 
-Brstor    lbsr  L0413
+
+* Restore Drive Routine
+*
+*
+* INPUT: (Y)= POINTER TO PATH DECSRIPTOR
+
+Brstor    lbsr  Select
          clr   <u0011,u
          ldb   #$05
 RESTR2    lda   #$48
@@ -759,28 +833,34 @@ RESTR2    lda   #$48
          bra   L04D3
 IssXfr    clrb
          pshs  cc
-         ldb   u000F,u
+         ldb   Drvbeg,u
          tst   <u001A,u
          beq   L0510
          orb   #$02
-         stb   u000F,u
-L0510    orcc  #$50
+         stb   Drvbeg,u
+L0510    orcc #IntMasks
          ldx   <u0035
-         beq   L051E
+         beq   IssXfr2
          ldx   #$0001
          os9   F$Sleep
          bra   L0510
-L051E    leax  $03,y
+IssXfr2    leax  $03,y
          stx   <u0035
          ldx   <u0012,u
          stx   <u0037
          lda   ,u
          sta   <u0039
+
+**********
+
          ldx   #DAT.Task
          lda   #$00
          sta   ,x
          ora   #$80
          sta   ,x
+
+**********
+
          tst   <u001C,u
          bne   L054B
          ldb   u000C,u
@@ -794,10 +874,10 @@ L054B    lda   <u0018,u
          anda  #$BF
          sta   >$FC24
          sta   <u0018,u
-L0556    lda   u000F,u
+L0556    lda   Drvbeg,u
          ora   <u0019,u
          bsr   L056E
-         bsr   L05BB
+         bsr   ChkErr
          ldx   #$0000
          stx   <u0035
          bcc   L056C
@@ -807,7 +887,7 @@ L0556    lda   u000F,u
 L056C    puls  pc,cc
 
 L056E    pshs  cc
-         orcc  #$50
+         orcc #IntMasks
          ldb   #$FA
          stb   u000E,u
          stb   u0002,u
@@ -822,11 +902,13 @@ IssFdc    sync
          lda   ,y
          sta   u0003,u
          bra   L05B4
+
+* Start FDC and Wait by Sleeping
 Fdccmd    ldx   #$00C8
          lda   >-V.Cdrv,u
          sta   >-u00A6,u
 L0597    os9   F$Sleep
-         orcc  #$50
+         orcc #IntMasks
          tst   >-u00A6,u
          beq   L05B7
          leax  ,x
@@ -837,12 +919,13 @@ L0597    os9   F$Sleep
          lda   #$D0
          sta   ,y
          bsr   L05D7
-L05B4    lda   >DAT.Task
+L05B4    lda   >INTPIA
 L05B7    clr   u0002,u
          puls  pc,cc
 
-L05BB    ldb   u0003,u
-L05BD    clra
+ChkErr    ldb   u0003,u
+
+STCK    clra
          andb  #$FC
          beq   L05D7
 L05C2    lslb
@@ -859,13 +942,17 @@ L05C2    lslb
 STCK2    coma
 L05D7    rts
 
-ERTABLE    ldb   >$F2F4
-         stb   >$F4F4
+ERTABLE fcb E$NotRdy,E$WP,E$Read,E$Seek
+ fcb E$Read,E$Read
+
+* Interrupt Request Service For Fdc
+*
+* Input: U=Static Storage
 
 Fdcsrv    ldy   V.Port,u
          ldb   ,y
          stb   >V.Status,u
-         lda   >DAT.Task
+         lda   >INTPIA
          lda   V.Wake,u
          beq   Fdcsrc2
          clr   V.Wake,u
@@ -874,16 +961,16 @@ Fdcsrv    ldy   V.Port,u
 Fdcsrc2    clrb
          rts
 
-TimSrv    tst   >V.Timer,u
+TimSrv tst V.Timer,u
          beq   TimSrv1
-         tst   >u00AD,u
+         tst   >V.Active,u
          bne   TimSrv1
          dec   >V.Timer,u
          bne   TimSrv1
          lda   #$7F
          sta   >$FC24
          sta   >V.Select,u
-TimSrv1    rts
+TimSrv1 rts
 
          emod
 Dkend equ *

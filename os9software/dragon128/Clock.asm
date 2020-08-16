@@ -31,6 +31,14 @@
 *************************************************************
  endc
 *
+ ifeq ClocType-MC6840
+ endc
+ ifeq ClocType-VIA
+ endc
+ ifeq ClocType-M58167
+ endc
+ ifeq ClocType-MC146818
+ endc
  ifeq CPUType-DRG128
 *   Initialise PIA for VSYNC interrupts,
  endc
@@ -65,7 +73,7 @@ TIMSVC fcb F$TIME
  endc
  fcb $80
 CLKPRT equ M$Mem Memory has Clock port address
-
+ ifne (ClocType-M58167)*(ClocType-MC146818)
 *
 *  DAYS IN MONTHS TABLE
 *
@@ -82,18 +90,35 @@ MONTHS fcb 0 Uninitialized month
  fcb 31 October
  fcb 30 November
  fcb 31 December
-
+ else
+ endc
+ page
  ifne ClocType
 *************************************************************
 *
 *     Non-Clock Interrupt Service
 *
-NOTCLK ldd D.Poll
+NOTCLK ldd D.Poll get polling routine ptr
  lbra  TICK50
 
-CLKSRV ldx CLKPRT,pcr
+
+*************************************************************
+*
+*     Clock Interrupt Service routine
+*
+* NOTE: the stack pointer is invalid when this routine is
+*       entered. It must not be used, but it must not be 
+*       lost.
+*
+CLKSRV ldx CLKPRT,PCR  GET CLOCK ADDRESS
+ ifeq ClocType-MC6840
+ endc
+ ifeq ClocType-VIA
+ endc
+ ifeq (ClocType-M58167)*(ClocType-MC146818)
+ endc
  ifeq CPUType-DRG128
- lda 1,X get CRA of 6821
+ lda 1,x get CRA of 6821
  bita #$40 test Cx2 interrupt flag
  beq NOTCLK
  sta D.LtPen save reg for light pen flag
@@ -105,14 +130,14 @@ Tick equ *
 *
 * UPDATE CURRENT TIME
 *
- dec D.Tick Count tick
- bne Tick40 Branch if not end of second
- ldd D.MIN Get minute & second
- incb COUNT Second
- cmpb #60 End of minute?
- bcs TICK35 Branch if not
- inca COUNT Minute
- cmpa #60 End of hour?
+ dec D.Tick COUNT TICK
+ bne Tick40 BRANCH IF NOT END OF SECOND
+ ldd D.MIN GET MINUTE & SECOND
+ incb COUNT SECOND
+ cmpb #60 END OF MINUTE?
+ bcs TICK35 BRANCH IF NOT
+ inca COUNT MINUTE
+ cmpa #60 END OF HOUR?
  bcs TICK30 Branch if not
  ldd D.DAY Get day & hour
  incb COUNT Hour
@@ -146,7 +171,7 @@ TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
  ifeq (ClocType-MC6840)*(ClocType-VIA)*(ClocType-VSYNC)
  ifne (CPUType-Profitel)
- lda   #50  Get ticks/second
+ lda #TickSec  Get ticks presecond
  else
  endc
  endc
@@ -154,7 +179,7 @@ TICK35 std D.MIN Update minute & second
  else
  endc
  ifne TimePoll
-Tick40 leau  0,s
+Tick40 leau ,s copy sp
  ldx   D.SysIRQ
  cmpx  D.XIRQ
  beq   Tick41
@@ -162,7 +187,7 @@ Tick40 leau  0,s
  ldd   D.SysSvc
  std   D.XSWI2
 
-Tick41 pshs  u
+Tick41 pshs u
 
  ldx D.TimTbl
  beq Tick47
@@ -247,37 +272,37 @@ ClkEnt3    rts
 * Install caller in timer polling table
 *
 Install pshs cc
- orcc #IRQMask+FIRQMask Set intrpt masks
- ldx D.TimTbl
- ldb #$40
- ldy R$X,u
- beq Remove
-Install1 ldy ,x
- beq Install2
- leax $04,x
- decb
- bne Install1
+ orcc #IntMasks mask interrupts
+ ldx D.TimTbl get table pointer
+ ldb #64 max entries
+ ldy R$X,u get routine address
+ beq Remove skip for remove
+Install1 ldy ,x this one free?
+ beq Install2 ..yes
+ leax 4,x move to next
+ decb table full?
+ bne Install1 ..no
 
-InsErr puls  cc
- comb
- ldb #E$Poll
+InsErr puls cc retrieve masks
+ comb error -
+ ldb #E$Poll polling table full
  rts
 
-Install2 ldy R$X,u
- sty ,x++
- ldy R$U,u
-Install3    sty   ,x
-Install4    puls  cc
- clrb
+Install2 ldy R$X,u get routine address
+ sty ,x++ set it
+ ldy R$U,u get static storage
+Install3 sty ,x set it
+Install4 puls cc retrieve masks
+ clrb no error
  rts
 
-Remove    ldy   R$U,u
-Remove1    cmpy  $02,x
+Remove ldy R$U,u
+Remove1 cmpy 2,x
  beq   Remove2
- leax  $04,x
+ leax 4,x
  decb
- bne   Remove1
- bra   Install4
+ bne Remove1
+ bra Install4
 
 Remove2 decb
  beq Remove4
@@ -290,27 +315,29 @@ Remove3 ldy 4,x
  bne Remove3
 Remove4 ldy #0 delete this entry
  sty ,x++
- bra Install3
+ bra Install3 and exit
  endc
-
  page
-*****
+*************************************************************
 *
-*  Subroutine Time
+*     Subroutine Time
 *
-* Return Time Of Day
+*   Time of Day service routine
 *
 TIME equ *
  ifeq (ClocType-M58167)
  endc
- lda D.SysTsk
- ldx D.Proc
- ldb P$Task,x
- ldx #D.Time
- ldy #6
- ldu R$X,u
- os9 F$Move
+ lda D.SysTsk get system task number
+ ldx D.Proc get process ptr
+ ldb P$Task,x get process task number
+ ldx #D.Time get source ptr
+ ldy #6 get byte count
+ ldu R$X,u get specified location
+ os9 F$Move move time to user
  rts
 
  emod
 ClkEnd equ *
+
+ opt c
+ end

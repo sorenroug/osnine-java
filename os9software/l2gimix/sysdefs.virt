@@ -1,9 +1,9 @@
  opt -l
- ttl System Type Definitions for a virtual Level 2
+ ttl System Type Definitions for a GIMIX Level 2
  page
 ****************************************
 
- ifeq CPUType-L2VIRT
+ ifeq CPUType-GIMIX
 ************************************************************
 *
 *     Dynamic Address Translator Definitions

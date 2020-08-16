@@ -28,7 +28,6 @@ Pal1M92 rmb 1
 Generic rmb 1
 Gen6829 rmb 1
 DRG128 rmb 1 Dragon 128
-L2VIRT rmb 1 Level 2 on virtual hardware
 
  ifeq LEVEL-1
 Exorsr rmb 1
@@ -142,7 +141,7 @@ TimePoll equ 0 include timer polling function
 *
 * SYSTEM SELECTION
 *
-CPUType set L2VIRT
+CPUType set GIMIX
 CPUSpeed set TwoMHz
 *
 ***************
