@@ -8,17 +8,6 @@
 *
 *     Dynamic Address Translator Definitions
 *
-
-***************
-*
-* Note that DAT.BlCt is also understood by AllProc and
-* Chain (in OS9-P2) to be the number of blocks available
-* to each task. If less than 64k is available, these
-* routines must be modified to put DAT.Free in the
-* blocks that can be allocated, and the required values
-* into the other blocks, (eg the I/O block), to complete
-* the DAT image.
-*
 DAT.BlCt equ 16 D.A.T. blocks/address space available
 *
 ***************
@@ -37,10 +26,6 @@ DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
 ***************
 
 
-***************
-*
-* This version is assuming that the MMU access
-* and operate keys are the same register
 DAT.Task equ $FF7F Task register address
 DAT.TMsk equ $0F bits of register for task number
 DAT.Uniq equ 1 bits of DAT Task register are not used for other things
@@ -48,7 +33,7 @@ DAT.Uniq equ 1 bits of DAT Task register are not used for other things
 ***************
 
 DAT.TkCt equ 16 task maps in the MMU
-DAT.Regs equ $FFF0 DAT RAM base address
+DAT.Regs equ $FFF0 DAT Block Registers base address
 
 ***************
 *
@@ -56,7 +41,7 @@ DAT.Regs equ $FFF0 DAT RAM base address
 * contain memory, (ROM or RAM). That block number
 * is used by OS9 in the block map and DAT images
 * to indicate an unallocated logical block
-DAT.Free equ $C0
+DAT.Free equ $FC
 *
 ***************
 
@@ -66,30 +51,11 @@ DAT.WrPr equ 0 no Block Write Protect bit
 DAT.WrEn equ 0 no Block Write Enable bit
 
 ***************
-*
-* A task number of 0 is used to indicate
-* 'no DAT task map allocated'. Therefore
-* no actual DAT task number can be 0. The easiest
-* thing to do is to set a bit in SysTask that
-* has no effect on the DAT. If the DAT register
-* cares about all 8 bits, then DATInit, SvcRet,
-* PassSWI, LDABX, STABX, LDBBX, Mover00, SetDAT00,
-* and Switch, (all at the end of OS9-P1), must be
-* altered to ensure that the bits are correctly
-* set
-* For the Dragon 128, the chosen value of SysTask
-* includes fixed outputs, LMap and DPIRQ.
-SysTask equ $80 System Task number
+SysTask equ $20 Gimix System Task number
 *
 ***************
 
 IOBlock equ $FE The block number for the I/O
-
-***************
-*
-* OS9-P1 ColdStart initially sets up the system map
-* with RAM block 0 at $0000, a ROMBlock at $F000,
-* and the IOBlock at $E000.
 ROMBlock equ $FF ROM block mapped in on ColdStart at $F000
 ROMCount equ 1 number of blocks of ROM to so map in
 RAMCount equ 1 initial blocks of RAM
@@ -98,7 +64,7 @@ RAMCount equ 1 initial blocks of RAM
 
 ROMCheck equ Limited check only top 64k for ROM
 RAMCheck equ BlockTyp check only first bytes of RAM blocks
-LastRAM equ $BF maximum RAM block number
+LastRAM equ IOBlock maximum RAM block number
 
 
 
@@ -109,7 +75,7 @@ LastRAM equ $BF maximum RAM block number
 * bus), take a certain value, rather than being
 * addressed through the DAT, then MappedIO must
 * be set false (0)
-MappedIO equ 1
+MappedIO equ true
 *
 ***************
 **********
