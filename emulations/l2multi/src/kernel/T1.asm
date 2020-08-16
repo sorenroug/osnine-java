@@ -39,16 +39,16 @@
  fcb $11 acia xon char
  fcb $13 acia xoff char
  fcb 80 number of columns for display
- fcb 0 No-edit flag
+ fcb 0 No-edit flag (4 = no-edit)
 OptEnd equ *
- fcb $10 Lead-in character for input
- fcb 2 Lead-in character for output
- fcb $80+$11 Move left code
- fcb $10 Move right code
- fcb $0B Move left key
- fcb $0C Move right key
- fcb 6 Delete chr under cursor key
- fcb 7 Delete to end of line key
+ fcb 0 Lead-in character for input
+ fcb 0 Lead-in character for output
+ fcb $08 Move left code
+ fcb $0C Move right code
+ fcb $0B Move left key (Ctrl-K)
+ fcb $0C Move right key (Ctrl-L)
+ fcb 6 Delete chr under cursor key (Ctrl-F)
+ fcb 7 Delete to end of line key (Ctrl-G)
 
 TxNam fcs /T1/
 TxMGR fcs /SCF/

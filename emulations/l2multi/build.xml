@@ -27,13 +27,13 @@
             files="Acia_ed2 PipeMan Piper Pipe"
           />
         </copy>
-
+<!--
         <copy todir="${targetdir}">
           <filelist dir="src/binaries" files="Shell"/>
         </copy>
-
+-->
         <copy todir="${targetdir}">
-          <filelist dir="../../os9software/target/l2virt" files="OS9p1"/>
+          <filelist dir="../../os9software/target/l2gimix" files="OS9p1"/>
         </copy>
 
         <copy todir="${targetdir}">

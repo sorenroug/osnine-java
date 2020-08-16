@@ -7,7 +7,7 @@
  fcb UPDAT. mode
  fcb IOBlock/DAT.BlCt port bank
  fdb A.TERM port address
- fcb initsize-*-1  initilization table size
+ fcb OptEnd-*-1  initilization table size
  fcb DT.SCF Device Type: SCF
 
 * DEFAULT PARAMETERS
@@ -24,29 +24,29 @@
  fcb C$DEL delete line character
  fcb C$CR end of record character
  fcb C$EOF end of file character
- fcb $04 reprint line character
+ fcb C$RPRT reprint line character
  fcb C$RPET duplicate last line character
  fcb C$PAUS pause character
- fcb $03 interrupt character
- fcb $05 quit character
- fcb $08 backspace echo character
+ fcb C$INTR interrupt character
+ fcb C$QUIT quit character
+ fcb C$BSP backspace echo character
  fcb C$BELL line overflow char
  fcb A.T.init ACIA initialization
- fcb $00 baud rate
+ fcb 6 baud rate = 9600
  fdb TrmNam copy of descriptor name address
  fcb $11 acia xon char
  fcb $13 acia xoff char
  fcb 80 number of columns for display
- fcb $04 No-edit flag
-initsize equ *
- fcb $00 Lead-in character for input
- fcb $1B Lead-in character for output
- fcb $CB Move left code
- fcb $C3 Move right code
- fcb $B4 Move left key
- fcb $B6 Move right key
- fcb $AA Delete chr under cursor key
- fcb $A3 Delete to end of line key
+ fcb 0 No-edit flag (4 = no-edit)
+OptEnd equ *
+ fcb 0 Lead-in character for input
+ fcb 0 Lead-in character for output
+ fcb $08 Move left code
+ fcb $0C Move right code
+ fcb $0B Move left key (Ctrl-K)
+ fcb $0C Move right key (Ctrl-L)
+ fcb 6 Delete chr under cursor key (Ctrl-F)
+ fcb 7 Delete to end of line key (Ctrl-G)
 
 TrmNam fcs /Term/
 TrmMgr fcs /SCF/
