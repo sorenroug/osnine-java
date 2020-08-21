@@ -75,9 +75,9 @@ specifies initial table sizes, initial system device names, etc.
 Level 2 - Input/Output Manager (IOMAN)
 </bridgehead>
 <para>
-The second level is the Input/Output Manager (IOMAN). It provides
-common processing to all I/O operations. The I/0 Manager is required if
-any OS-supported I/0 is to be performed.
+The second level is the Input/Output Manager (IOMAN).
+It provides common processing to all I/O operations.
+The I/O Manager is required if any OS-supported I/O is to be performed.
 </para>
 
 
