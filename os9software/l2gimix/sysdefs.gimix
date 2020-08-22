@@ -95,11 +95,13 @@ FPort set $ECD1 floppy disk controller
 HPort set $FD00 hard disk controller
 DrvCnt set 4 four drives
 DPort set FPort
-A.Term set $ECB0 serial port address
-A.T1 set $ECB2 serial port address
-A.T.Init set $15 default ACIA initialisation byte
-A.P set $ECB4 address of parallel printer port
-A.P1 set A.T1 address of serial printer port
+A.Term equ $E004
+A.T1 equ $E020
+A.T2 equ $E024
+A.T3 equ $E030
+A.T.init equ $15
+A.P1 equ $E000
+A.P equ $E042
 A.KBD set A.P+2 keyboard port address
 A.KLoad set A.KBD port whose control reg has keyboard LOAD
 A.GCon equ DAT.Task+2 graphics control port

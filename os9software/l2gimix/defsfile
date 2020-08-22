@@ -3,8 +3,8 @@
 * NOTE: This file assumes Defs Directory in on Root
 *       of current Disk Device
  ifp1
- use systype.virt
- use sysdefs.virt
+ use systype.gimix
+ use sysdefs.gimix
  use os9defs
  use os9iodefs
  use os9rbfdefs
