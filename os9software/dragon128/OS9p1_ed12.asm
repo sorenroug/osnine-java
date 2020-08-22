@@ -221,8 +221,9 @@ Cold16 std ,X++ mark free entry
  ifle DAT.BlMx-255
 
    ifeq CPUType-DRG128
-* The DRG has IOblock at $FF and ROMBlock at $FE
-* I suspect they have changed here without a conditional
+* The DRG128 has IOblock at $FF and ROMBlock at $FE
+* I suspect they have swapped statements here without a conditional
+* Especially since the first instruction is 'ldb', not 'ldd'.
  ldb #ROMBlock get ROM block number
  std ,X++ set ROM block
  ldd #IOBlock get I/O block number
@@ -230,8 +231,8 @@ Cold16 std ,X++ mark free entry
    else
  ldd #IOBlock get I/O block number
  std ,X++ set I/O block
- ldd #ROMBlock get I/O block number
- std ,X++ set I/O block
+ ldb #ROMBlock get ROM block number
+ std ,X++ set ROM block
    endc
 
  else
@@ -404,7 +405,7 @@ Cold.z3 leax P2Name,pcr get name str str
  ifne TEST
  jmp NOWHERE Code is not available
  endc
- os9 F$Boot call boostrapper
+ os9 F$Boot call bootstrapper
  bcc Cold.z3 branch if bootstrapped
 ColdErr equ *
  jmp [D$REBOOT]
@@ -3373,24 +3374,23 @@ DMACRead lda ,u+ get byte from memory
 *
 * Computer using GIMIX DAT
 *
-Target set $0E00-$100
- use filler
+*Target set $0E00-$100
+* use filler
 
 DATInit clra
  tfr a,dp
- clr $E231 Clear m58167 interrupts
- ldx #DAT.Task ($FF7F)
 *
 * Initialize DAT registers for task 0
 *
- ldy #DAT.Regs
  ldb #SysTask
-DATIn1 stb 0,X
+ stb DAT.Task
+ ldy #DAT.Regs
  clr 0,Y RAM block at $0000
  lda #IOBlock
  sta $E,y
  lda #ROMBlock
  sta $F,y
+* clr $E231 Clear m58167 interrupts
  lbra COLD
  endc
 
@@ -3613,8 +3613,8 @@ target set $400+OS9End-$20
  ifeq CPUType-GIMIX
  emod
 OS9End equ *
-target set $0E00-$20
- use filler
+*target set $0E00-$20
+* use filler
  endc
 
 

@@ -32,10 +32,12 @@
  endc
 *
  ifeq ClocType-MC6840
+* Initialize 6840 Timer Chip For 50Ms Intervals
  endc
  ifeq ClocType-VIA
  endc
  ifeq ClocType-M58167
+* Initialize M58167 Clock Chip For 100Ms Intervals
  endc
  ifeq ClocType-MC146818
  endc
@@ -91,6 +93,20 @@ MONTHS fcb 0 Uninitialized month
  fcb 30 November
  fcb 31 December
  else
+SecMilli equ 0
+SecTenth equ 1
+Second equ 2
+Minute equ 3
+Hour equ 4
+DayWeek equ 5
+DayMonth equ 6
+Month equ 7
+Status equ 16
+Control equ 17
+CountRst equ 18
+LatchRst equ 19
+RollOver equ 20
+Go equ 21
  endc
  page
  ifne ClocType
@@ -116,11 +132,13 @@ CLKSRV ldx CLKPRT,PCR  GET CLOCK ADDRESS
  ifeq ClocType-VIA
  endc
  ifeq (ClocType-M58167)*(ClocType-MC146818)
+ lda Status,X Get status/clear interrupt
+ beq NOTCLK Branch if not clock
  endc
  ifeq CPUType-DRG128
  lda 1,x get CRA of 6821
  bita #$40 test Cx2 interrupt flag
- beq NOTCLK
+ beq NOTCLK not a clock interrupt
  sta D.LtPen save reg for light pen flag
  lda ,x clear the interrupt
  endc
@@ -180,36 +198,36 @@ TICK35 std D.MIN Update minute & second
  endc
  ifne TimePoll
 Tick40 leau ,s copy sp
- ldx   D.SysIRQ
+ ldx   D.SysIRQ in system mode?
  cmpx  D.XIRQ
- beq   Tick41
- lds   D.SysStk
- ldd   D.SysSvc
+ beq   Tick41 ..yes; no switch required
+
+ lds   D.SysStk get system stack
+ ldd   D.SysSvc set system service table
  std   D.XSWI2
 
-Tick41 pshs u
+Tick41 pshs u save the sp as was
 
- ldx D.TimTbl
- beq Tick47
- ldb #64
- pshs x,dp,b
-Tick42 ldy ,x++
- beq Tick45
-
- ldu ,x++
- stx 2,s
- jsr ,y
- ldx 2,s
- dec ,s
- bne Tick42
-Tick45 puls x,dp,b
-Tick47 ldd D.Clock
- puls u
- leas ,u
+ ldx D.TimTbl get timer polling table pointer
+ beq Tick47 ..there isn't one
+ ldb #64 max entries
+ pshs x,dp,b save regs
+Tick42 ldy ,x++ get routine address
+ beq Tick45 ..no more
+ ldu ,x++ get static
+ stx 2,s save ptr
+ jsr ,y call routine
+ ldx 2,s retrieve ptr
+ dec ,s all done?
+ bne Tick42 ..no
+Tick45 puls x,dp,b restore regs
+Tick47 ldd D.Clock get clock routine ptr
+ puls u retrieve saved sp
+ leas ,u restore it
  else
  endc
-TICK50 std D.SvcIRQ
- jmp [D.XIRQ]
+TICK50 std D.SvcIRQ set IRQ service routine
+ jmp [D.XIRQ] enter system
 
 *****
 *
@@ -217,52 +235,64 @@ TICK50 std D.SvcIRQ
 *
 ClkEnt equ *
  ifne TimePoll
- clrb
- ldx   D.TimTbl
- bne   ClkEnt3
+ clrb clear carry
+ ldx   D.TimTbl table already exists?
+ bne   ClkEnt3 ..yes; skip initialisation
  endc
  ifne ClocType
- pshs  cc
+ pshs  cc save interrupt masks
  ifeq (ClocType-MC6840)*(ClocType-VIA)*(ClocType-VSYNC)
  ifne (CPUType-Profitel)
- lda   #TickSec
+ lda #TickSec get ticks per second
  else
  endc
+ endc
+ ifeq ClocType-M58167 M58167 CLOCK CHIP
+ endc
+ ifeq ClocType-MC146818 MC146818 Clock chip
  endc
  sta D.Tick
  lda #TickSec/10 set ticks/time slice
  sta D.TSlice
  sta D.Slice
  ifne TimePoll
- ldd #256
+ ldd #256 allocate memory for timer polling table
  pshs u
  os9 F$SRqMem
- bcs ClkEnt2
- stu D.TimTbl
- ldy #0
- ldb #64*2
+ bcs ClkEnt2 ..none
+ stu D.TimTbl save table address
+ ldy #0 clear it out
+ ldb #64*2 number of entries*2 (4 bytes/entry)
 ClkEnt1 sty ,u++
  decb
  bne ClkEnt1
 ClkEnt2 puls  u
  endc
  orcc #IntMasks set interrupt masks
- leax  CLKSRV,pcr GET SERVICE ROUTINE
- stx   D.IRQ SET INTERRUPT VECTOR
+ leax CLKSRV,pcr GET SERVICE ROUTINE
+ stx D.IRQ SET INTERRUPT VECTOR
+ ifeq ClocType-MC6840
+ endc
+ ifeq ClocType-VIA
+ endc
  ifeq ClocType-VSYNC
- ldx CLKPRT,pcr
- lda 0,x
- lda 1,x
+ ldx CLKPRT,pcr get PIA address
+ lda ,x clear any current interrupts
+ lda 1,x get Control register
  ifne Cx2Int
  ora #$18 positive edge interrupt on CA2 (CB2)
  else
  endc
- sta 1,x
+ sta 1,x set control register
  endc
- puls  cc
+ ifeq ClocType-M58167 M58167 CLOCK CHIP
+ endc
+ ifeq ClocType-MC146818 MC146818 Clock chip
+ endc
+ puls cc retrieve masks
  leay TIMSVC,PCR
  OS9 F$SSVC SET TIME SERVICE ROUTINE
-ClkEnt3    rts
+ClkEnt3 rts
 
  ifeq ClocType-M58167
  endc
@@ -296,22 +326,22 @@ Install4 puls cc retrieve masks
  clrb no error
  rts
 
-Remove ldy R$U,u
-Remove1 cmpy 2,x
- beq   Remove2
- leax 4,x
- decb
- bne Remove1
- bra Install4
+Remove ldy R$U,u get user's static
+Remove1 cmpy 2,x found it?
+ beq Remove2 ..yes
+ leax 4,x move to next
+ decb all searched?
+ bne Remove1 ..no
+ bra Install4 ..exit; can't find
 
-Remove2 decb
- beq Remove4
-Remove3 ldy 4,x
- beq Remove4
+Remove2 decb number to copy over
+ beq Remove4 ..none
+Remove3 ldy 4,x copy down next entry
+ beq Remove4 skip if empty; end of entries
+ sty ,x++ copy down
+ ldy 4,x and static
  sty ,x++
- ldy 4,x
- sty ,x++
- decb
+ decb ..all done?
  bne Remove3
 Remove4 ldy #0 delete this entry
  sty ,x++
@@ -326,6 +356,39 @@ Remove4 ldy #0 delete this entry
 *
 TIME equ *
  ifeq (ClocType-M58167)
+ ldx CLKPRT,PCR Get clock port address
+ pshs CC Save masks
+ orcc #IntMasks Set interrupt masks
+TIME10 lda Second,X get second
+ sta D.SEC Set second
+ lda Minute,X get minute
+ sta D.MIN Set minute
+ lda Hour,X Get hour
+ sta D.HOUR Set hour
+ lda DayMonth,X Get day
+ sta D.DAY Set day
+ lda Month,X get month
+ sta D.Month Set month
+ lda RollOver,X Check for rollover
+ rora
+ bcs TIME10 Branch if so
+ puls CC Retrieve interrupt masks
+ ldx #D.Month Get date ptr
+TIME20 lda 0,X Get bcd byte
+ anda #$F0 Get msn
+ tfr A,B Copy it
+ eora 0,X Get lsn
+ sta 0,X Save it
+ lsrb ADJUST Msn
+ lsrb
+ lsrb
+ lsrb
+ lda #10
+ mul
+ addb 0,X Add lsn
+ stb ,X+ Save converted byte
+ cmpx #D.SEC+1
+ bcs TIME20
  endc
  lda D.SysTsk get system task number
  ldx D.Proc get process ptr

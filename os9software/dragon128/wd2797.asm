@@ -118,8 +118,10 @@ V.Bytc rmb 2
 V.Step rmb   1
 V.Track rmb   1
 V.Select rmb 1
-u00C4 rmb 1
-u00C5    rmb   1
+V.NewTrk rmb 1
+ ifne DBLSIDE
+V.Side rmb 1
+ endc
 V.Freeze    rmb   1
 V.DDTr0    rmb   1
 
@@ -184,7 +186,7 @@ Maxsct equ (Maxcyl*Sctcyl)-1
 * Input: Y=Device Descriptor Pointer
 *        U=Global Storage Pointer
 Idisk   lda   #Drvcnt
-         sta   u0006,u
+         sta   V.Ndrv,u
          leax  Drvbeg,u
          stx   >V.Cdrv,u
  pshs U Save "u" we need it later
@@ -460,7 +462,7 @@ Wtrk lda R$Y+1,x
          sta   <$10,x
          stb   >V.Track,u
          anda  #$01
-         sta   >u00C5,u
+         sta   >V.Side,u
          lbsr  Getdrv
          ldd   #41*256
          os9   F$SRqMem
@@ -554,7 +556,7 @@ Boot40    clra
          clr   u000D,u
 Boot20    clra
          ldb   $03,x
-         std   u0006,u
+         std   V.Stk-V.Wrtf,u
          ldd   <$18,x
          std   <u001D,u
          ldd   #$0100
@@ -618,7 +620,9 @@ L034B    lda   $04,y
 
 Rsect    clr   ,u
          lda   #$88
-         sta   Drvbeg,u
+         sta   V.Cmd-V.Wrtf,u
+
+* Set up for Read/Write Transfer
 Xfr    lda   #$DB
          pshs  a
          lda   u000C,u
@@ -628,40 +632,40 @@ Xfr    lda   #$DB
          std   <u0014,u
          bsr   Xfr2
          bcs   Xfr70
-         ldd   <u0012,u
+         ldd  V.Buff-V.Wrtf,u
          leas  $01,s
          pshs  b,a
          addd  #$0080
-         std   <u0012,u
+         std   V.Buff-V.Wrtf,u
          lda   #$DB
          pshs  a
          bsr   Xfr2
          puls  x
-         stx   <u0012,u
+         stx   V.Buff-V.Wrtf,u
          bra   Xfr70
-Xfr1    ldd   #$0100
-         std   <u0014,u
-Xfr2    ldd   u000A,u
+Xfr1    ldd   #$100
+         std  V.Bytc-V.Wrtf,u
+Xfr2    ldd  V.Lsn-V.Wrtf,u
          bne   L03A5
 Xfr10    lbsr  Brstor
 L03A5    bsr   Select
          bcs   Xfr70
-         clr   <u0017,u
-         clr   <u001A,u
-         ldd   u000A,u
-         cmpd  u0004,u
-         bcs   L03CD
-         subd  u0004,u
-L03B8    inc   <u0017,u
-         subd  u0006,u
-         bcc   L03B8
-         addd  u0006,u
-         lda   u000C,u
+         clr   V.Track-V.Wrtf,u
+         clr   V.Side-V.Wrtf,u
+         ldd   V.Lsn-V.Wrtf,u
+         cmpd  V.T0stk-V.Wrtf,u
+         bcs   Xfr40
+         subd  V.T0stk-V.Wrtf,u
+Xfr30    inc   V.Track-V.Wrtf,u
+         subd  V.Stk-V.Wrtf,u
+         bcc   Xfr30
+         addd  V.Stk-V.Wrtf,u
+         lda   V.Fmt-V.Wrtf,u
          bita  #$01
-         beq   L03CD
-         lsr   <u0017,u
-         rol   <u001A,u
-L03CD    lda   u000C,u
+         beq   Xfr40
+         lsr   V.Track-V.Wrtf,u
+         rol   V.Side-V.Wrtf,u
+Xfr40    lda   V.Fmt-V.Wrtf,u
          bita  #$08
          beq   L03D7
          lslb

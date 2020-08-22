@@ -1,39 +1,59 @@
          nam   Input/Output Manager
          ttl   Module Header
 
+* Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
+* Copyright 1982 by Microware Systems Corporation
+* Reproduced Under License
+
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than
+* the licensee is strictly prohibited!
+
 * This is a disassembly of the IOMan edition 10 distributed with OS-9 for Dragon 128
 * OS-9 Level 2. It contains modifications in some allocation routines.
 
-tylg     set   Systm+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   IOEnd,IOName,tylg,atrv,IOINIT,0
+***************
+* I/O Manager
 
-IOName  fcs /IOMan/  module name
+ mod IOEnd,IOName,Systm+Objct,ReEnt+1,IOINIT,0
+IOName fcs /IOMan/  module name
 
-         fcb 10
+*******************************************
+*
+*    Edition History
+
+*  10      83/11/01 add error path/module messages, improved error printing
+*                                 Vivaway Ltd.             PSD
+
+ fcb 10 edition number
 
  use   defsfile
 
-IOINIT equ *
-* allocate device and polling tables
-         ldx   D.Init
+ ttl Initialization
+ page
+**********
+* Ioinit
+* Entry Point For Start-Up Initialization
+*
+IOINIT ldx D.Init
          lda   PollCnt,x   get number of entries in table
          ldb   #POLSIZ
          mul
          pshs  b,a
-         lda   DevCnt,x      get device count
+         lda DEVCNT,X Get device table size
          ldb   #DEVSIZ
          mul
-         addd  ,s
-         addd  #$00FF  Round up
+         addd  0,s
+         addd  #$00FF
          clrb
          os9   F$SRqMem
          bcs   Crash
          leax  ,u
-L002E    clr   ,x+
+IOINI1    clr   ,x+
          subd  #$0001
-         bhi   L002E
+         bhi   IOINI1
          stu   D.PolTbl
          ldd   ,s++
          leax  d,u
@@ -45,7 +65,7 @@ L002E    clr   ,x+
          os9   F$Ret64
          leax  >IRQPoll,pcr
          stx   D.Poll
-         leay  <IOCalls,pcr
+         leay  <SVCTBL,pcr
          os9   F$SSvc
          rts
 
@@ -55,24 +75,28 @@ Crash    jmp   [>$FFEE]
 *
 * System service routine vector table
 *
-IOCalls  fcb $7F
-         fdb   UsrIO-*-2 
-         fcb   F$Load    
-         fdb   FLoad-*-2 
-         fcb   I$Detach  
-         fdb   IDetach0-*-2
-         fcb   F$PErr    
-         fdb   FPErr-*-2 
+system set $80 system only calls
+user set $7F system or user calls
+
+SVCTBL equ *
+ fcb $FF&user
+         fdb   USERIO-*-2
+         fcb   F$Load&user
+         fdb   FLoad-*-2
+         fcb   I$Detach
+         fdb   SysLoad-*-2
+         fcb   F$PErr
+         fdb   PrtErr-*-2
  ifne EXTERR
-         fcb F$InsErr
-         fdb  FInsErr-*-2
+         fcb F$InsErr&user
+         fdb  InsErr-*-2
  endc
          fcb   F$IOQu+$80
-         fdb   FIOQu-*-2 
+         fdb   IOQueu-*-2
          fcb $FF
-         fdb   SysIO-*-2 
-         fcb   F$IRQ+$80 
-         fdb   FIRQ-*-2  
+         fdb   SysIO-*-2
+         fcb   F$IRQ+$80
+         fdb   FIRQ-*-2
          fcb F$IODel+$80
          fdb   FIODel-*-2
          fcb $80
@@ -105,7 +129,7 @@ L0096    comb
          ldb   #E$ModBsy     submit error
          rts
 
-L009A    lsra
+PortBlk    lsra
          rorb
          lsra
          rorb
@@ -113,51 +137,66 @@ L009A    lsra
          rorb
          lsra
          rorb
-         anda  #$00
-         cmpb  #$FF
+         anda  #DAT.BlMx/256 clear untranslated bits
+         cmpb  #IOBlock
          rts
 
-UsrIODis fdb   IAttach-UsrIODis
-         fdb   IDetach-UsrIODis
-         fdb   UIDup-UsrIODis
-         fdb   IUsrCall-UsrIODis
-         fdb   IUsrCall-UsrIODis
-         fdb   IMakDir-UsrIODis
-         fdb   IChgDir-UsrIODis
-         fdb   IDelete-UsrIODis
-         fdb   UISeek-UsrIODis
-         fdb   UIRead-UsrIODis
-         fdb   UIWrite-UsrIODis
-         fdb   UIRead-UsrIODis
-         fdb   UIWrite-UsrIODis
-         fdb   UIGetStt-UsrIODis
-         fdb   UISeek-UsrIODis
-         fdb   UIClose-UsrIODis
-         fdb   IDeletX-UsrIODis
+UTABLE equ *
+TBLBGN set UTABLE
+ fdb ATTACH-TBLBGN
+ fdb DETACH-TBLBGN
+ fdb UDUPE-TBLBGN
+ fdb UCREAT-TBLBGN
+ fdb UOPEN-TBLBGN
+ fdb UMDIR-TBLBGN
+ fdb UCDIR-TBLBGN
+ fdb UDELET-TBLBGN
+ fdb USEEK-TBLBGN
+ fdb UREAD-TBLBGN
+ fdb UWRITE-TBLBGN
+ fdb URDLN-TBLBGN
+ fdb UWRLN-TBLBGN
+ fdb UGSTT-TBLBGN
+ fdb USSTT-TBLBGN
+ fdb UCLOSE-TBLBGN
+ fdb UDELETX-TBLBGN
 
-SysIODis fdb   IAttach-SysIODis
-         fdb   IDetach-SysIODis
-         fdb   SIDup-SysIODis
-         fdb   ISysCall-SysIODis
-         fdb   ISysCall-SysIODis
-         fdb   IMakDir-SysIODis
-         fdb   IChgDir-SysIODis
-         fdb   IDelete-SysIODis
-         fdb   SISeek-SysIODis
-         fdb   SIRead-SysIODis
-         fdb   SIWrite-SysIODis
-         fdb   SIRead-SysIODis
-         fdb   SIWrite-SysIODis
-         fdb   SIGetStt-SysIODis
-         fdb   SISeek-SysIODis
-         fdb   SIClose-SysIODis
-         fdb   IDeletX-SysIODis
+STABLE equ *
+TBLBGN set STABLE
+ fdb ATTACH-TBLBGN Attach (x)=device, (a)=mode
+ fdb   DETACH-TBLBGN
+ fdb   SDUPE-TBLBGN
 
-UsrIO    leax  <UsrIODis,pcr
-         bra   IODsptch
-SysIO    leax  <SysIODis,pcr
-IODsptch    cmpb  #$90
-         bhi   ErrSvc
+* File Manager Name Functions
+*          (X)=Pathname Ptr
+*          (A)=Mode
+ fdb   SCREAT-TBLBGN
+ fdb   SOPEN-TBLBGN
+ fdb   SMDIR-TBLBGN
+ fdb   SCDIR-TBLBGN
+ fdb   SDELET-TBLBGN
+
+* File Manager Path Functions
+*         (A)=Path Number
+ fdb   SSEEK-TBLBGN
+ fdb   SREAD-TBLBGN
+ fdb   SWRITE-TBLBGN
+ fdb   SRDLN-TBLBGN
+ fdb   SWRLN-TBLBGN
+ fdb   SGSTT-TBLBGN
+ fdb   SSSTT-TBLBGN
+ fdb   SCLOSE-TBLBGN
+ fdb   SDELETX-TBLBGN
+
+**********
+* I/O Dispatcher
+*
+USERIO leax <UTABLE,pcr
+ bra SYSIO1
+
+SysIO leax <STABLE,pcr
+SYSIO1 cmpb #I$DeletX
+         bhi   SYSIO2
          pshs  b
          lslb
          ldd   b,x
@@ -165,15 +204,36 @@ IODsptch    cmpb  #$90
          puls  b
          jmp   ,x
 
-ErrSvc    comb
+SYSIO2    comb
          ldb   #E$UnkSvc
          rts
+ page
+**********
+* Attach I/O Device
+*
+* Passed: (A)=R/W/Exec Mode
+*         (X)=Device Name Ptr
+* Returns: (U)=Dev Tbl Ptr
+*
+ org 0
+ rmb DEVSIZ
+S.MODE rmb 1
+S.BUSY rmb 1
+S.PORT rmb 3
+S.DEVT rmb 2
+ ifgt LEVEL-1
+S.LclAdr rmb 2
+S.Block rmb 2
+S.Proc rmb 2
+ endc
+S.STAK rmb 2
+S.TMPS equ .
 
-IAttach  ldb   #$17
-L0108    clr   ,-s
+ATTACH ldb #S.TMPS-1
+ATTA02    clr   ,-s
          decb
-         bpl   L0108
-         stu   <$16,s
+         bpl   ATTA02
+         stu   S.STAK,s
          lda   $01,u
          sta   $09,s
          ldx   D.Proc
@@ -184,7 +244,7 @@ L0108    clr   ,-s
          ldx   R$X,u        get caller's X
          lda   #Devic+0        link to device desc
          os9   F$SLink
-         bcs   L0151
+         bcs   ATTERR0
          stu   $04,s
          ldy   <$16,s
          stx   R$X,y         save updated X
@@ -196,31 +256,36 @@ L0108    clr   ,-s
          leax  d,u
          lda   #Drivr+0        driver
          os9   F$Link
-         bcs   L0151
+         bcs   ATTERR0
          stu   ,s
          ldu   $04,s
          ldd   $09,u
          leax  d,u
-         lda   #FlMgr+0      link to fm
+         lda   #FLMGR
          os9   F$Link
-L0151    ldx   <$14,s
+ATTERR0
+   ldx   <$14,s
          stx   D.Proc
-         bcc   L0166
-* Error on attach, so detach
-L0158    stb   <$17,s
+         bcc   ATTA15
+
+ATTERR    stb   <$17,s
          leau  ,s
          os9   I$Detach
          leas  <$17,s
          comb
          puls  pc,b
 
-L0166    stu   $06,s
+*
+* Device Moudle Components Are All Located
+* Search Device Tbl For Device
+*
+ATTA15    stu   $06,s
          ldx   D.Init
          ldb   DevCnt,x       get device entry count
          lda   DevCnt,x       get device entry count
          ldu   D.DevTbl
 L0170    ldx   V$DESC,u       get dev desc ptr
-         beq   L01AD
+         beq   ATTA30
          cmpx  $04,s
          bne   L018B
          ldx   $02,u
@@ -235,19 +300,19 @@ L0189    stu   $0E,s
 L018B    ldx   V$DESC,u       get dev desc ptr
          ldy   $0F,x
          cmpy  $0C,s
-         bne   L01AD
+         bne   ATTA30
          ldy   $0E,x
          cmpy  $0B,s
-         bne   L01AD
+         bne   ATTA30
          ldx   ,u
          cmpx  ,s
-         bne   L01AD
+         bne   ATTA30
          ldx   $02,u
          stx   $02,s
          tst   $08,u
-         beq   L01AD
+         beq   ATTA30
          sta   $0A,s
-L01AD    leau  DEVSIZ,u      advance to the next device entry
+ATTA30    leau  DEVSIZ,u      advance to the next device entry
          decb
          bne   L0170
          ldu   $0E,s
@@ -259,44 +324,48 @@ L01BA    ldx   V$DESC,u       get desc ptr
          deca
          bne   L01BA
          ldb   #E$DevOvf      dev table overflow
-         bra   L0158
+         bra   ATTERR
 
-L01C7    ldb   #E$BMode
-         bra   L0158
+ERMODE    ldb   #E$BMode
+         bra   ATTERR
 
 L01CB    ldx   $02,s
-         lbne  L0255
+         lbne  ATTA60
          stu   $0E,s
          ldx   ,s
          ldd   $0B,x
          addd  #$00FF
          clrb
          os9   F$SRqMem
-         lbcs  L0158
+         lbcs  ATTERR
          stu   $02,s
 L01E4    clr   ,u+
          subd  #$0001
          bhi   L01E4
          ldd   $0B,s
-         lbsr  L009A
+         lbsr  PortBlk
          std   <$12,s
          ldu   #$0000
          tfr   u,y
          stu   <$10,s
          ldx   D.SysDAT
-L01FD    ldd   ,x++
+IOMap20    ldd   ,x++
+ ifne DAT.WrEn+DAT.WrPr
+ endc
          cmpd  <$12,s
-         beq   L0235
+         beq   IOMap40
          cmpd  #$00C0
-         bne   L0211
+         bne   IOMap30
          sty   <$10,s
          leau  -$02,x
-L0211    leay  >$1000,y
-         bne   L01FD
+IOMap30 leay DAT.BLSz,y
+         bne   IOMap20
          ldb   #$CF
          cmpu  #$0000
-         lbeq  L0158
+         lbeq  ATTERR
          ldd   <$12,s
+ ifne DAT.WrEn
+ endc
          std   ,u
          ldx   D.SysPRC
          lda   P$State,x
@@ -304,9 +373,9 @@ L0211    leay  >$1000,y
          sta   P$State,x
          os9   F$ID
          ldy   <$10,s
-L0235    sty   <$10,s
+IOMap40    sty   <$10,s
          ldd   $0C,s
-         anda  #$0F
+         anda  #^DAT.Addr
          addd  <$10,s
          ldu   $02,s
          clr   ,u
@@ -315,9 +384,9 @@ L0235    sty   <$10,s
          ldx   ,s
          ldd   $09,x
          jsr   d,x
-         lbcs  L0158
+         lbcs  ATTERR
          ldu   $0E,s
-L0255    ldb   #$08
+ATTA60    ldb   #$08
 L0257    lda   b,s
          sta   b,u
          decb
@@ -329,7 +398,7 @@ L025E    ldx   $04,u
          ldx   ,u
          anda  $0D,x
          cmpa  $09,s
-         lbne  L01C7
+         lbne  ERMODE
          inc   $08,u
          bne   L0276
          dec   $08,u
@@ -338,14 +407,18 @@ L0276    ldx   <$16,s
          leas  <$18,s
          clrb
          rts
-
-IDetach  ldu   R$U,u
+ page
+**********
+* Process Detach Request
+*
+DETACH  ldu   R$U,u
          ldx   R$X,u
          lda   #$FF
          cmpa  $08,u
          lbeq  L0349
          dec   $08,u
-         lbne  L032B
+         lbne  DETACH80
+
          ldx   D.Init
          ldb   DevCnt,x      get device count
          pshs  u,b
@@ -358,6 +431,7 @@ L02A1    cmpx  $02,y
          leay  DEVSIZ,y
          decb
          bne   L02A1
+
          ldy   D.Proc
          ldb   ,y
          stb   $08,u
@@ -375,38 +449,41 @@ L02A1    cmpx  $02,y
          addd  #$00FF
          clrb
          os9   F$SRtMem
+
+* Determine if this was the only active I/O port in it's
+* memory block, and release the block if so
          ldx   $01,s
          ldx   $04,x
          ldd   $0E,x
          beq   L0321
-         lbsr  L009A
+         lbsr  PortBlk
          beq   L0321
          tfr   d,x
          ldb   ,s
          pshs  x,b
          ldu   D.DevTbl
-L02E4    cmpu  $04,s
-         beq   L02F9
+UnMap10    cmpu  $04,s
+         beq   UnMap20
          ldx   $04,u
-         beq   L02F9
+         beq   UnMap20
          ldd   $0E,x
-         beq   L02F9
-         lbsr  L009A
+         beq   UnMap20
+         lbsr  PortBlk
          cmpd  $01,s
          beq   L031F
-L02F9    leau  $09,u
+UnMap20    leau  $09,u
          dec   ,s
-         bne   L02E4
+         bne   UnMap10
          ldx   D.SysPRC
          ldu   D.SysDAT
-         ldy   #$0010
+         ldy   #DAT.BlCt
 L0307    ldd   ,u++
          cmpd  $01,s
-         beq   L0314
+         beq   UnMap30
          leay  -$01,y
          bne   L0307
          bra   L031F
-L0314    ldd   #$00C0
+UnMap30 ldd #DAT.Free
          std   -$02,u
          lda   $0C,x
          ora   #$10
@@ -417,10 +494,13 @@ L0321    puls  u,b
          clr   $04,u
          clr   $05,u
          clr   $08,u
-L032B    ldd   D.Proc
+DETACH80
+ ifgt LEVEL-1
+ ldd   D.Proc
          pshs  b,a
          ldd   D.SysPRC
          std   D.Proc
+ endc
          ldy   ,u
          ldu   $06,u
          os9   F$UnLink
@@ -430,30 +510,33 @@ L032B    ldd   D.Proc
          os9   F$UnLink
          puls  b,a
          std   D.Proc
-L0349    lbsr  L05DA
+L0349    lbsr  UnQueue
          clrb
          rts
 
-UIDup    bsr   LocFrPth
-         bcs   L036E
+UDUPE    bsr   FNDPTH
+         bcs   SDUP90
          pshs  x,a
          lda   $01,u
          lda   a,x
-         bsr   L0367
+         bsr   SDUP10
          bcs   L0363
          puls  x,b
          stb   $01,u
          sta   b,x
          rts
+
 L0363    puls  pc,x,a
 
-SIDup    lda   $01,u
-L0367    lbsr  GetPDesc
-         bcs   L036E
+SDUPE    lda   $01,u
+SDUP10    lbsr  FPATH
+         bcs   SDUP90
          inc   $02,y
-L036E    rts
+SDUP90    rts
 
-LocFrPth ldx D.Proc
+ ttl I/O Name function calls
+ page
+FNDPTH ldx D.Proc
          leax  <$30,x
          clra
 L0375    tst   a,x
@@ -467,35 +550,44 @@ L0375    tst   a,x
 L0382    andcc #$FE
          rts
 
-IUsrCall bsr   LocFrPth
-         bcs   L0397
+UCREAT equ *
+UOPEN bsr   FNDPTH
+         bcs   UOPEN9
          pshs  u,x,a
-         bsr   ISysCall
+         bsr   SOPEN
          puls  u,x,a
-         bcs   L0397
+         bcs   UOPEN9
          ldb   $01,u
          stb   a,x
          sta   $01,u
-L0397    rts
+UOPEN9    rts
 
-ISysCall    pshs  b
+SCREAT equ *
+SOPEN pshs B
          ldb   $01,u
-         bsr   L040F
-         bcs   L03AC
+         bsr   PDINIT
+         bcs   SOPENX
          puls  b
-         lbsr  CallFMgr
+         lbsr  FMEXEC
          bcs   L03BB
          lda   ,y
          sta   $01,u
          rts
-L03AC    puls  pc,a
 
-IMakDir  pshs  b
+SOPENX    puls  pc,a
+
+**********
+* Makdir
+*   Process Makdir Request
+*
+UMDIR equ *
+SMDIR  pshs  b
          ldb   #$82
-L03B2    bsr   L040F
-         bcs   L03AC
+SMDIR1    bsr   PDINIT
+         bcs   SOPENX
          puls  b
-         lbsr  CallFMgr
+         lbsr  FMEXEC
+
 L03BB    pshs  b,cc
          ldu   $03,y
          os9   I$Detach
@@ -504,24 +596,26 @@ L03BB    pshs  b,cc
          os9   F$Ret64
          puls  pc,b,cc
 
-IChgDir  pshs  b
+UCDIR equ *
+SCDIR  pshs  b
          ldb   $01,u
          orb   #$80
-         bsr   L040F
-         bcs   L03AC
+         bsr   PDINIT
+         bcs   SOPENX
          puls  b
-         lbsr  CallFMgr
+         lbsr  FMEXEC
          bcs   L03BB
          ldu   D.Proc
          ldb   $01,y
          bitb  #$1B
-         beq   IChgExec
+         beq   SCDIR2
          ldx   $03,y
          stx   <$20,u
          inc   $08,x
-         bne   IChgExec
+         bne   SCDIR2
          dec   $08,x
-IChgExec bitb  #$24
+
+SCDIR2 bitb  #$24
          beq   L03FE
          ldx   $03,y
          stx   <$26,u
@@ -531,20 +625,26 @@ IChgExec bitb  #$24
 L03FE    clrb
          bra   L03BB
 
-IDelete  pshs  b
+UDELET equ *
+SDELET  pshs  b
          ldb   #$02
-         bra   L03B2
+         bra   SMDIR1
 
-IDeletX  ldb   #$87
+UDELETX equ *
+SDELETX ldb #I$Delete
          pshs  b
-         ldb   $01,u
-         bra   L03B2
+         ldb   R$A,u
+         bra   SMDIR1
 
-L040F    ldx   D.Proc
+**********
+* Pdinit
+*
+PDINIT
+ ldx   D.Proc
          pshs  u,x
          ldx   D.PthDBT
          os9   F$All64
-         bcs   L047B
+         bcs   PDIN90
          inc   $02,y
          stb   $01,y
          ldx   D.Proc
@@ -563,9 +663,9 @@ L0424    os9   F$LDABX
          bitb  #$24
          beq   L0442
          ldx   <$26,x
-         bra   L0445
+         bra   PDIN30
 L0442    ldx   <$20,x
-L0445    beq   L0480
+PDIN30    beq   ERRBPN
          ldd   D.SysPRC
          std   D.Proc
          ldx   $04,x
@@ -574,7 +674,7 @@ L0445    beq   L0480
 L0451    pshs  y
          os9   F$PrsNam
          puls  y
-         bcs   L0480
+         bcs   ERRBPN
          lda   $01,y
          os9   I$Attach
          stu   $03,y
@@ -591,54 +691,78 @@ L0473    lda   ,x+
 L0477    decb
          bpl   L0473
          clrb
-L047B    puls  u,x
+PDIN90    puls  u,x
          stx   D.Proc
          rts
-L0480    ldb   #E$BPNam
+ERRBPN    ldb   #E$BPNam
 L0482    pshs  b
          lda   ,y
          ldx   D.PthDBT
          os9   F$Ret64
          puls  b
          coma
-         bra   L047B
+         bra   PDIN90
 
-S2UPath  lda   $01,u
+ ttl I/O Path function calls
+ page
+**********
+* Chkpth
+*   Validate User Path, And Map Into System Path
+*
+* Passed: (U)=User Regs, (R$A)=User Path#
+* Returns: (A)=System Path#
+*          (X)=User Path Table Ptr
+*
+CHKPTH  lda   $01,u
          cmpa  #$10
-         bcc   L04A1
+         bcc   CHKERR
          ldx   D.Proc
          leax  <$30,x
          andcc #$FE
          lda   a,x
          bne   L04A4
-L04A1    comb
+CHKERR    comb
          ldb   #E$BPNum
 L04A4    rts
 
-UISeek   bsr   S2UPath       get user path #
-         bcc   L04AC
+
+**********
+* Seek
+*   Position File
+*
+USEEK   bsr   CHKPTH       get user path #
+         bcc   SSEEK1
          rts
 
-SISeek   lda   R$A,u
-L04AC    bsr   GetPDesc
-         lbcc  CallFMgr
+SSEEK   lda   R$A,u
+SSEEK1    bsr   FPATH
+         lbcc  FMEXEC
          rts
 
-UIRead   bsr   S2UPath       get user path #
-         bcc   L04BA
+**********
+* Read
+* Process Read Or Readln Request
+*
+UREAD equ *
+URDLN   bsr   CHKPTH       get user path #
+         bcc   SRDLN1
          rts
 
-SIRead   lda   R$A,u       get user path
-L04BA    pshs  b
+SREAD equ *
+SRDLN   lda   R$A,u       get user path
+SRDLN1    pshs  b
          ldb   #$05
-L04BE    bsr   GetPDesc
-         bcs   L0509
+L04BE    bsr   FPATH
+         bcs   SRDLNX
          bitb  PD.MOD,y    test bits against mode in path desc
-         beq   L0507
+         beq   BADPTH
+*
+*    check limits of read/write buffer
+*
          ldd   R$Y,u       else get count from user
          beq   L04F6
          addd  R$X,u       else update buffer pointer with size
-         bcs   L04FB
+         bcs   BADBUF
          subd  #1
          lsra
          lsra
@@ -652,74 +776,78 @@ L04BE    bsr   GetPDesc
          pshs  b
          suba  ,s+
          ldx   D.Proc
-         leax  <P$DATImg,x
-         lslb
+         leax P$DATImg,x
+         aslb
          leax  b,x
-L04E7    pshs  a
+SRDLN.c    pshs  a
          ldd   ,x++
          cmpd  #DAT.Free
          puls  a
-         beq   L04FB
+         beq   BADBUF
          deca
-         bpl   L04E7
+         bpl   SRDLN.c
 L04F6    puls  b
-         lbra  CallFMgr
-L04FB    ldb   #$F4
+         lbra  FMEXEC
+
+BADBUF    ldb   #$F4
          lda   ,s
          bita  #$02
-         beq   L0509
+         beq   SRDLNX
          ldb   #E$Write
-         bra   L0509
+         bra   SRDLNX
 
-L0507    ldb   #E$BPNam
-L0509    com   ,s+
+BADPTH    ldb   #E$BPNam
+SRDLNX    com   ,s+
          rts
 
-UIWrite  bsr   S2UPath
-         bcc   L0513
+UWRITE equ *
+UWRLN  bsr   CHKPTH
+         bcc   SWRLN1
          rts
 
-SIWrite  lda   R$A,u
-L0513    pshs  b
+SWRITE equ *
+SWRLN  lda   R$A,u
+SWRLN1    pshs  b
          ldb   #$02
          bra   L04BE
 
-GetPDesc    pshs  x
+FPATH    pshs  x
          ldx   D.PthDBT
          os9   F$Find64
          puls  x
-         lbcs  L04A1
+         lbcs  CHKERR
 L0526    rts
 
-UIGetStt lbsr  S2UPath
+UGSTT lbsr  CHKPTH
          ldx   D.Proc
-         bcc   L0533
+         bcc   SGSTT10
          rts
 
-SIGetStt lda   R$A,u
+SGSTT lda   R$A,u
+
          ldx   D.SysPRC
-L0533    pshs  x,b,a
-         lda   R$B,u      get func code
+SGSTT10    pshs  x,b,a
+         lda   R$B,u
          sta   $01,s
          puls  a
-         lbsr  L04AC
+         lbsr  SSEEK1
          puls  x,a
          pshs  u,y,cc
          tsta
-         beq   SSOpt
+         beq   SGSTT20
          cmpa  #$0E
-         beq   SSDevNm
+         beq   SGSTT30
          puls  pc,u,y,cc
-SSOpt    lda   D.SysTsk
+SGSTT20    lda   D.SysTsk
          ldb   P$Task,x
          leax  <PD.OPT,y
-SSCopy    ldy   #$0020
+SGSTT25    ldy   #$0020
          ldu   $04,u
          os9   F$Move
          leas  $01,s
          puls  pc,u,y
 
-SSDevNm  lda   D.SysTsk
+SGSTT30  lda   D.SysTsk
          ldb   $06,x
          pshs  b,a
          ldx   $03,y
@@ -727,9 +855,14 @@ SSDevNm  lda   D.SysTsk
          ldd   $04,x
          leax  d,x
          puls  b,a
-         bra   SSCopy
+         bra   SGSTT25
 
-UIClose  lbsr  S2UPath       get user path #
+***********
+* PSTT
+USSTT equ USEEK
+SSSTT equ SSEEK
+
+UCLOSE  lbsr  CHKPTH       get user path #
          bcs   L0526
          pshs  b
          ldb   $01,u
@@ -737,13 +870,13 @@ UIClose  lbsr  S2UPath       get user path #
          puls  b
          bra   L0582
 
-SIClose  lda   R$A,u
-L0582    bsr   GetPDesc
+SCLOSE  lda   R$A,u
+L0582    bsr   FPATH
          bcs   L0526
          dec   $02,y
          tst   $05,y
          bne   L058E
-         bsr   CallFMgr
+         bsr   FMEXEC
 L058E    tst   $02,y
          bne   L0526
          lbra  L03BB
@@ -759,7 +892,7 @@ L059E    ldx   D.Proc
          stb   $05,y
 L05A9    rts
 
-CallFMgr pshs  u,y,x,b
+FMEXEC pshs  u,y,x,b
          bsr   L059E
          bcc   L05B4
          leas  $01,s
@@ -775,7 +908,7 @@ L05B4    stu   $06,y
          mul
          jsr   d,x
 L05C7    pshs  b,cc
-         bsr   L05DA
+         bsr   UnQueue
          ldy   $04,s
          ldx   D.Proc
          lda   ,x
@@ -784,7 +917,7 @@ L05C7    pshs  b,cc
          clr   $05,y
 L05D8    puls  pc,u,y,x,b,cc
 
-L05DA    pshs  y,x
+UnQueue    pshs  y,x
          ldy   D.Proc
          bra   L05EE
 L05E1    clr   P$IOQN,y
@@ -816,7 +949,7 @@ FIRQ     ldx   R$X,u     get ptr to IRQ packet
          lda   $03,x
          bne   L0671
          orcc  #$50
-L061B    ldb   $02,s
+IOPOL1    ldb   $02,s
          cmpb  -(POLSIZ-Q$PRTY),x compare with prev entry's prior
          bcs   L062E
          ldb   #POLSIZ
@@ -825,7 +958,7 @@ L0623    lda   ,-x
          decb
          bne   L0623
          cmpx  D.PolTbl
-         bhi   L061B
+         bhi   IOPOL1
 L062E    ldd   $01,u
          std   ,x
          ldd   ,s++
@@ -841,14 +974,14 @@ L062E    ldd   $01,u
 L0646    leas  $04,s
          ldy   $08,u
 L064B    cmpy  $06,x
-         beq   L0657
+         beq   IOPOL6
          leax  POLSIZ,x
          decb
          bne   L064B
          clrb
          rts
 
-L0657    pshs  b,cc
+IOPOL6    pshs  b,cc
          orcc  #$50
          bra   L0664
 L065D    ldb   $09,x
@@ -865,7 +998,7 @@ L066A    clr   ,x+
 
 L0671    leas  $04,s
 L0673    comb
-         ldb   #E$Poll   
+         ldb   #E$Poll
          rts
 
 ***************************
@@ -895,8 +1028,8 @@ L0685    lda   [Q$POLL,y]  get device's status register
 
 FLoad    pshs  u
          ldx   R$X,u     get pathname to load
-         bsr   LoadMod
-         bcs   L06C4
+         bsr   LModule
+         bcs   LoadXit
          puls  y
 L06A3    pshs  y
          stx   R$X,y       save updated pathlist
@@ -908,15 +1041,15 @@ L06A3    pshs  y
          std   $01,x
          leax  ,u
          os9   F$ELink
-         bcs   L06C4
+         bcs   LoadXit
          ldx   ,s
          sty   $06,x
          stu   $08,x
-L06C4    puls  pc,u
+LoadXit    puls  pc,u
 
-IDetach0 pshs  u          save off regs ptr
+SysLoad pshs  u          save off regs ptr
          ldx   R$X,u      get ptr to device name
-         bsr   LoadMod
+         bsr   LModule
          bcs   L06DE
          puls  y
          ldd   D.Proc
@@ -933,7 +1066,7 @@ L06DE    puls  pc,u
 * A fake process descriptor is created, then the file is
 * opened and validated into memory.
 
-LoadMod  os9   F$AllPrc
+LModule  os9   F$AllPrc
          bcc   L06E6
          rts
 L06E6    leay  ,u
@@ -959,7 +1092,7 @@ L06E6    leay  ,u
          stx   D.Proc
 L0716    ldd   #$0009
          ldx   $02,s
-         lbsr  L0803
+         lbsr  GetModul
          bcs   L077E
          ldu   <$15,s
          lda   $06,u
@@ -974,7 +1107,7 @@ L0716    ldd   #$0009
          bne   L077C
          ldd   M$Size,u
          subd  #M$IDSize
-         lbsr  L0803
+         lbsr  GetModul
          bcs   L077E
          ldy   <$15,s     get proc desc ptr
          leay  <P$DATImg,y
@@ -1006,9 +1139,9 @@ L077E    stb   $07,s
          beq   L0786
          std   D.Proc
 L0786    lda   $06,s
-         beq   L078D
+         beq   LMod.O
          os9   I$Close
-L078D    ldd   $02,s
+LMod.O    ldd   $02,s
          addd #DAT.BlSz-1 Round up
          lsra
          lsra
@@ -1016,13 +1149,13 @@ L078D    ldd   $02,s
          lsra
          sta   $02,s
          ldb   ,s
-         beq   L07BA
+         beq   LMod.Q
          lsrb
          lsrb
          lsrb
          lsrb
          subb  $02,s
-         beq   L07BA
+         beq   LMod.Q
          ldx   <$15,s
          leax  <P$DATImg,x
          lsla
@@ -1034,7 +1167,7 @@ L07B2    ldd   ,x++
          clr   d,u
          leay  -$01,y
          bne   L07B2
-L07BA    ldx   <$15,s
+LMod.Q    ldx   <$15,s
          lda   P$ID,x
          os9   F$DelPrc
          ldd   <$17,s
@@ -1042,7 +1175,7 @@ L07BA    ldx   <$15,s
          ldb   $07,s
          stb   <$12,s
          comb
-         bra   L07FE
+         bra   LModXit
 L07CF    ldu   D.ModDir
          ldx   <$11,s
          ldd   <$17,s
@@ -1053,7 +1186,7 @@ L07D9    leau  MD$ESize,u
          comb
          ldb   #E$MNF
          stb   <$12,s
-         bra   L07FE
+         bra   LModXit
 L07E8    cmpx  MD$MPtr,u
          bne   L07D9
          cmpd  [MD$MPDAT,u]
@@ -1064,21 +1197,34 @@ L07E8    cmpx  MD$MPtr,u
          std   MD$Link,u
 L07FA    stu   <$17,s
          clrb
-L07FE    leas  <$11,s
+LModXit    leas  <$11,s
          puls  pc,u,y,x,b,a
 
-L0803    pshs  y,x,b,a
+*****************************************************
+*
+*            GetModul routine
+*
+*  Input: D = Size of new section
+*         X = Present module size in RAM
+*
+* Output: X = New module size in RAM
+*
+GetModul    pshs  y,x,b,a
          addd  $02,s
-         std   $04,s
-         cmpd  $08,s
-         lbls  L0895
-         addd #DAT.BlSz-1 Round up
+         std 4,s
+         cmpd  $08,s is there enough RAM?
+ ifeq CPUType-DRG128
+ lbls GetM.R yes. skip mem request
+ else
+ bls GetM.R yes. skip mem request
+ endc
+ addd #DAT.BlSz-1 round to next block
          lsra
          lsra
          lsra
          lsra
          cmpa  #DAT.BlCt-1
-         bhi   L085E
+         bhi   GetM.Err
          ldb   $08,s
          lsrb
          lsrb
@@ -1095,40 +1241,38 @@ L0803    pshs  y,x,b,a
          tfr   d,x
          ldy   D.BlkMap
          clra
+TESTM set 0
  ifeq CPUTYPE-DRG128
-         ldb   #DAT.GBlk
-         leay  b,y
+ ldb #DAT.GBlk start above graphics blocks
+ leay  b,y
  else
-         clrb
+ clrb
  endc
-L083B    tst   ,y+
-         beq   L087A
-L083F    addd  #1
+GetM.B    tst   ,y+
+         beq   GetM.D
+GetM.C    addd  #1
          cmpy  D.BlkMap+2
-         bne   L083B
-
-* Probably special for Dragon 128
+         bne   GetM.B
  ifeq CPUTYPE-DRG128
          ldy   D.BlkMap
          clra
-D084B    pshs  y
-         leay  TRANSTBL,pcr
+GetM.F    pshs  y
+         leay  BlkTrans,pcr
          ldb   a,y
          puls  y
          tst   b,y
-         beq   D0863
-D0859    inca
+         beq   GetM.H
+GetM.G    inca
          cmpa  #DAT.GBlk
-         bcs   D084B
+         bcs   GetM.F
  endc
 
-L085E    comb
-         ldb   #E$MemFul
-         bra   L089F
+GetM.Err    comb
+ ldb #E$MemFul
+         bra   GetM.X
 
-* Probably special for Dragon 128
- ifeq CPUTYPE-DRG128
-D0863    inc   b,y
+ ifeq CPUTYPE-DRG128+TESTM
+GetM.H inc b,y
          clr   ,u+
          stb   ,u+
          pshs  a
@@ -1137,11 +1281,10 @@ D0863    inc   b,y
          std   $09,s
          puls  a
          leax  -1,x
-         bne   D0859
-         bra   L088D
+         bne   GetM.G
+         bra   GetM.I
  endc
-
-L087A    inc   -1,y
+GetM.D    inc   -1,y
          std   ,u++
          pshs  b,a
          ldd   $0A,s
@@ -1149,48 +1292,65 @@ L087A    inc   -1,y
          std   $0A,s
          puls  b,a
          leax  -1,x
-         bne   L083F
-L088D    ldx   <$1D,s
+         bne   GetM.C
+GetM.I    ldx   <$1D,s
          os9   F$SetTsk
-         bcs   L089F
-L0895    lda   $0E,s
+         bcs   GetM.X
+GetM.R    lda   $0E,s
          ldx   $02,s
          ldy   ,s
          os9   I$Read
-L089F    leas  $04,s
-         puls  pc,x
+GetM.X leas 4,s return scratch
+ puls pc,x done
 
  ifeq CPUTYPE-DRG128
-TRANSTBL fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
+BlkTrans fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
       fcb $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$1D,$1E,$1F
  endc
 
-********************************
+*****
 *
-* F$PErr System call entry point
+*  Print Error Routine
 *
-* Entry: U = Register stack pointer
-*
- ifne EXTERR
-ERRMSGLN equ 80
 
-FPErr
-         ldb   R$B,u
-         beq   L092F
+ ifne EXTERR
+**********************************************
+*
+*       Subroutine PrtErr
+*
+*  Print error message
+*
+ERRMSGLN equ 80
+PrtBufSz equ 80
+ org 0
+PrtPath rmb 1
+PrtNum rmb 1
+PrtProc rmb 2
+PrtMod rmb 2
+PrtTbl rmb 2
+PrtEPath rmb 1
+PrtPFlag rmb 1
+PrtFlag rmb 1
+PrtBuf rmb PrtBufSz
+PrtMem equ .
+
+PrtErr ldb   R$B,u
+         beq   PrtErr90
          ldx   D.Proc
          lda   <P$PATH+2,x  get stderr path
-         beq   L092F  return if not there
+         beq   PrtErr90  return if not there
          pshs  u
-         leas  -(ERRMSGLN+$B),s
+         leas  -PrtMem,s
          leau  ,s
          std   0,u
          stx   $02,u
          ldy   D.SysPRC
          sty   D.Proc
-         lbsr  L0990 Write label and error number
+         lbsr  PrtErrNm Write label and error number
          clr   $0A,u
          ldx   $02,u
-D08E6    leax  >P$ErrNam,x
+
+D08E6    leax  P$ErrNam,x
          clr   $09,u
          pshs  u,x
          clra
@@ -1198,80 +1358,85 @@ D08E6    leax  >P$ErrNam,x
          tfr   u,y
          puls  u,x
          sty   $04,u
-         bcc   L0931
+         bcc   PrtErr20
+
          lda   #$05
          os9   I$Open
          sta   $08,u
          inc   $09,u
-         bcc   L0931
+         bcc   PrtErr20
+
 D0906    tst   $0A,u
          bne   L0910
          inc   $0A,u
          ldx   D.SysPRC
          bra   D08E6
+
 L0910    lda   #$0D  Write carriage return
          pshs  a
          leax  ,s
          ldy   #1
-         lbsr  D09BA
+         lbsr  PrtLine
          leas  1,s
          bra   L0924
 
-L0921    lbsr  L09CE
+L0921    lbsr  PrtUndo
 L0924    ldy   $02,u
          sty   D.Proc
          leas  <$5B,s
          puls  u
-L092F    clrb
+PrtErr90    clrb
          rts
 
 * Module linked
-L0931    tst   $09,u
+PrtErr20    tst   $09,u
          bne   L093F
          ldx   $04,u
          ldd   $0D,x
          leax  d,x
          stx   $06,u
-         bra   L095B
+         bra   PrtErr40
+
 L093F    ldx   #$000D
          bsr   D09C0
-         bcs   L098B
+         bcs   PrtErr70
          lda   $08,u
          ldy   #$0002
          leas  -$02,s
          leax  ,s
          os9   I$Read
          puls  x
-         bcs   L098B
+         bcs   PrtErr70
          bsr   D09C0
-         bcs   L098B
-L095B    lbsr  L09E1
-         bcs   L098B
-         lbsr  L0A08
-         beq   L098B
+         bcs   PrtErr70
+
+PrtErr40    lbsr  PrtRdRcd
+         bcs   PrtErr70
+         lbsr  PrtGetNm
+         beq   PrtErr70
          cmpb  $01,u
-         bne   L095B
+         bne   PrtErr40
          pshs  x
-         leax  >ErrSepa,pcr  Write hyphen
+         leax  >ErrMsg2,pcr  Write hyphen
          ldy   #$0003
-         bsr   D09BA
+         bsr   PrtLine
          puls  x
-L0977    ldy   #$004F
-         bsr   D09BA
-         bsr   L09E1
+PrtErr50    ldy   #PrtBufSz-1
+         bsr   PrtLine
+         bsr   PrtRdRcd
          bcs   L0921
          lda   ,x+
          beq   L0921
          cmpa  #$30
-         bcs   L0977
+         bcs   PrtErr50
          bra   L0921
-L098B    bsr   L09CE
+
+PrtErr70    bsr   PrtUndo
          lbra  D0906
 
-* Write label and error number
-L0990    leax  >ErrHead,pcr
-         ldy   #ErrHLen    length
-         bsr   D09BA
+PrtErrNm    leax  >ErrMsg1,pcr
+         ldy   #MsgLen1    length
+         bsr   PrtLine
          ldb   $01,u
          leax  $0B,u
          tfr   x,y
@@ -1288,7 +1453,7 @@ L09AB    deca
          addb  #'0
          stb   ,y+
          ldy   #3
-D09BA    lda   ,u
+PrtLine    lda   ,u
          os9   I$WritLn
          rts
 
@@ -1301,7 +1466,7 @@ D09C0    lda   $08,u
          puls  pc,u,x
 
 * close or unlink error file
-L09CE    lda   $08,u
+PrtUndo    lda   $08,u
          tst   $09,u
          bne   L09DD
          pshs  u
@@ -1312,28 +1477,31 @@ L09DD    os9   I$Close
          rts
 
 * Read one line from error message file
-L09E1    leax  $0B,u
+PrtRdRcd    leax  $0B,u
          ldy   #ERRMSGLN
          lda   $08,u
          tst   $09,u
          beq   L09F1
          os9   I$ReadLn
          rts
+
 L09F1    tfr   y,d
          ldy   $06,u
+
 D09F6    lda   ,y+
          sta   ,x+
          decb
          beq   L0A01
          cmpa  #$0D
          bne   D09F6
+
 L0A01    leax  $0B,u
          sty   $06,u
          clrb
          rts
 
 * Parse number in ASCII
-L0A08    clrb
+PrtGetNm    clrb
 L0A09    lda   ,x+
          beq   L0A1A
          suba  #'0
@@ -1346,29 +1514,46 @@ L0A09    lda   ,x+
 L0A1A    tstb
 L0A1B    rts
 
-ErrHead fcc "Error #"
-ErrHLen   equ   *-ErrHead 
-ErrSepa fcc " - "
+ErrMsg1 fcc "Error #"
+MsgLen1   equ   *-ErrMsg1
+ErrMsg2 fcc " - "
+MsgLen2   equ   *-ErrMsg2
 
+******************************
 *
-* Insert error message module
+*       Subroutine InsErr
 *
-FInsErr  pshs u
+*  Install error message path/module
+*  name string
+*
+* Input: U = Registers ptr
+*         R$X,U=ptr to name string
+*
+* Output: U unchanged
+*         Carry set if error, B has error code
+*
+* Data: D.Proc
+*
+* Calls: F$Move, F$Link, F$UnLink, I$Open, I$Close
+*
+* The name string MUST be 32 chrs or less
+*
+InsErr  pshs u
          ldx   R$X,u
          clra
          os9   F$Link Is it already loaded?
-         bcs   D0A37 ..no, then try to open the file
+         bcs   InsErr1 ..no, then try to open the file
          pshs  x
          os9   F$UnLink
-         bra   D0A47
-D0A37    ldu   ,s
+         bra   InsErr2
+InsErr1    ldu   ,s
          ldx   R$X,u
          lda   #READ.
          os9   I$Open
-         bcs   D0A63
+         bcs   InsErrx
          pshs  x
          os9   I$Close
-D0A47    ldu   D.Proc
+InsErr2    ldu   D.Proc
          lda   P$Task,u
          ldb   D.SysTsk
          ldy   #$0020
@@ -1380,7 +1565,7 @@ D0A47    ldu   D.Proc
          puls  x
          stx   R$X,u
          clrb
-D0A63    puls  pc,u
+InsErrx    puls  pc,u
 
  else
 * Normal error service
@@ -1392,17 +1577,17 @@ D0A63    puls  pc,u
 * Entry: U = Register stack pointer
 *
 
-ErrHead   fcc "ERROR #"
-ErrNum   equ   *-ErrHead 
+ErrMsg1   fcc "ERROR #"
+ErrNum   equ   *-ErrMsg1
  fcb  '0-1,'9+1,'0
          fcb   C$CR
-ErrMessL equ   *-ErrHead 
+ErrMessL equ   *-ErrMsg1
 
-FPErr    ldx   D.Proc
+PrtErr    ldx   D.Proc
          lda   <P$PATH+2,x  get stderr path
          beq   L08CC
          leas  -ErrMessL,s  make room on stack
-         leax  <ErrHead,pcr
+         leax  <ErrMsg1,pcr
          leay  ,s
 L0893    lda   ,x+
          sta   ,y+
@@ -1434,31 +1619,44 @@ L08BD    os9   F$Move
 L08CC    rts
 
  endc
-
+ page
 *****
 * Enter I/O Queue and perform a timed sleep
 * Input: A = Process number
 *
-FIOQu    ldy   D.Proc
-L0A68    lda   P$IOQN,y
+IOQueu    ldy   D.Proc
+IOQ.A    lda   P$IOQN,y
          beq   L0A87
          cmpa  R$A,u
-         bne   L0A82
+         bne   IOQ.B
          clr   P$IOQN,y
-         os9   F$GProcP
-         bcs   L0ACA
+
+ ifeq LEVEL-1
+ else
+ os9 F$GProcP get process ptr
+ endc
+
+         bcs   IOQuExit
          clr   P$IOQP,y
          ldb   #S$Wake
          os9   F$Send
          bra   L0A8E
 
-L0A82    os9   F$GProcP
-         bcc   L0A68
+IOQ.B
+ ifeq LEVEL-1
+ else
+ os9 F$GProcP get process ptr
+ endc
+         bcc   IOQ.A
 L0A87    lda   R$A,u
-L0A89    os9   F$GProcP
-         bcs   L0ACA
+IOQ.D
+ ifeq LEVEL-1
+ else
+ os9 F$GProcP get process ptr
+ endc
+         bcs   IOQuExit
 L0A8E    lda   P$IOQN,y
-         bne   L0A89
+         bne   IOQ.D
          ldx   D.Proc
          lda   P$ID,x
          sta   P$IOQN,y
@@ -1468,20 +1666,34 @@ L0A8E    lda   P$IOQN,y
          os9   F$Sleep
          ldu   D.Proc
          lda   P$IOQP,u
-         beq   L0AC8
-         os9   F$GProcP
-         bcs   L0AC8
+         beq   IOQ.F
+
+ ifeq LEVEL-1
+ else
+ os9 F$GProcP get process ptr
+ endc
+
+         bcs   IOQ.F
          lda   P$IOQN,y
-         beq   L0AC8
+         beq   IOQ.F
+*
+* Graceful Abnormal Queue Queue Exit
+*
          lda   P$IOQN,u
          sta   P$IOQN,y
-         beq   L0AC8
+         beq   IOQ.F
          clr   P$IOQN,u
-         os9   F$GProcP
-         bcs   L0AC8
+
+ ifeq LEVEL-1
+ else
+ os9 F$GProcP get process ptr
+ endc
+
+         bcs   IOQ.F
          lda   P$IOQP,u
          sta   P$IOQP,y
-L0AC8    clr   P$IOQP,u
-L0ACA    rts
-         emod
-IOEnd      equ   *
+IOQ.F    clr   P$IOQP,u
+IOQuExit rts
+
+ emod
+IOEnd equ   *
