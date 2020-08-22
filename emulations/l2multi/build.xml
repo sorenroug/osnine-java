@@ -52,8 +52,10 @@
         <assemble src="Clock"/>
         <assemble src="Init"/>
         <assemble src="SysGo"/>
+        <!--
         <assemble src="Term"/>
         <assemble src="T1"/>
+        -->
         <assemble src="P"/>
     </target>
 

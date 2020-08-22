@@ -118,13 +118,13 @@ public class GUI {
         ReadOnlyMemory rom = new ReadOnlyMemory(0xFF000, 0x1000);
         bus.insertMemorySegment(rom);
 
-        loadROM(0xFF200, "OS9p1");
+        loadROMToEnd(0x100000, "OS9p1");
         loadROM(0xFF000, "Boot","Init");
 
         IRQBeat irqBeat = new IRQBeat(0xFECD0, bus, 20);
         bus.insertMemorySegment(irqBeat);
 
-        term = new Acia6850(0xFECB0, bus);
+        term = new Acia6850(0xFE004, bus);
         bus.insertMemorySegment(term);
         EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
         screen1 = new JTerminal(term, emulation);
@@ -132,7 +132,7 @@ public class GUI {
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
 
-        t1 = new Acia6850(0xFECB2, bus);
+        t1 = new Acia6850(0xFE020, bus);
         bus.insertMemorySegment(t1);
 
         t1Dialog = new Terminal2(guiFrame, t1, terminalType);
@@ -196,7 +196,7 @@ public class GUI {
     }
 
     /**
-     * Open a file to load into RAM.
+     * Open a file to load into RAM or ROM.
      *
      * @param fileToLoad Name of file to load
      * @return Opened file
@@ -217,6 +217,37 @@ public class GUI {
         return moduleStream;
     }
 
+    /**
+     * Load files containing data for memory aligned to end.
+     *
+     * @param endAddress Address to align end of files to
+     * @param filesToLoad Files to load
+     * @throws IOException if there is no file
+     * @throws FileNotFoundException if there is no file
+     */
+    private void loadROMToEnd(int endAddress, String... filesToLoad)
+                            throws IOException, FileNotFoundException {
+        int sumSize = 0;
+
+        for (String fileToLoad : filesToLoad) {
+            InputStream moduleStream = openFile(fileToLoad);
+            int s = 0;
+            int b = moduleStream.read();
+            while (b != -1) {
+                s++;
+                b = moduleStream.read();
+            }
+            moduleStream.close();
+            if (s == 0)
+                throw new RuntimeException("Zero file size: " + fileToLoad);
+            sumSize += s;
+        }
+        if (sumSize > endAddress) {
+            throw new RuntimeException("Collective size of files to load is too big");
+        }
+        loadROM(endAddress - sumSize, filesToLoad);
+    }
+
     private void loadROM(String... filesToLoad)
                             throws IOException, FileNotFoundException {
         loadROM(loadStart, filesToLoad);
@@ -224,6 +255,11 @@ public class GUI {
 
     /**
      * Load a file containing data for memory.
+     *
+     * @param loadAddress Address to load at
+     * @param filesToLoad Files to load
+     * @throws IOException if there is no file
+     * @throws FileNotFoundException if there is no file
      */
     private void loadROM(int loadAddress, String... filesToLoad)
                             throws IOException, FileNotFoundException {
