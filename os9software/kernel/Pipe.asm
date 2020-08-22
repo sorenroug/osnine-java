@@ -1,24 +1,24 @@
-         nam   Pipe
-         ttl   os9 device descriptor
+ nam Pipe Device Descriptor
+ ttl Definitions 
 
-         ifp1
-         use   os9defs
-         endc
-tylg     set   Devic+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,mgrnam,drvnam
-         fcb   $03 mode byte
-         fcb   $00 extended controller address
-         fdb   $0000  physical controller address
-         fcb   initsize-*-1  initilization table size
-         fcb   $02 device type:0=scf,1=rbf,2=pipe,3=scf
+ use defsfile
+
+**********************************************************
+*     Module Header
+*
+Type set Devic+Objct   
+Revs set ReEnt+1
+ mod   PipeEnd,PipeNam,Type,Revs,PipeMgr,PipeDrv
+ fcb UPDAT. mode
+ fcb 0,0,0 no port address
+ fcb 1 option byte count
+ fcb DT.Pipe
 initsize equ   *
-name     equ   *
-         fcs   /Pipe/
-mgrnam   equ   *
-         fcs   /PipeMan/
-drvnam   equ   *
-         fcs   /Piper/
-         emod
-eom      equ   *
+PipeNam fcs "Pipe" device name
+PipeMgr fcs "PipeMan" file manager
+PipeDrv fcs "Piper" device driver
+
+ emod Module CRC
+PipeEnd equ *
+
+ end

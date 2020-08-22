@@ -1,14 +1,20 @@
-         nam   PipeMan
-         ttl   os9 file manager   
-*
+ nam Pipe File Manager
+
+* Copyright 1980 by Microware Systems Corp.,
+
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than
+* the licensee is strictly prohibited!
+
+ ttl Module Header   
+*********
 *    Pipe File Manager
 *
-
-
 Type set FlMgr+Objct 
 Revs set ReEnt+1
- mod   PipeEnd,PipeNam,Type,Revs,PipeEnt,0
-
+ mod PipeEnd,PipeNam,Type,Revs,PipeEnt,0
 PipeNam fcs "PipeMan"
 **********
 * Revision History
@@ -17,7 +23,7 @@ PipeNam fcs "PipeMan"
 *                           from Illegal Service Routines
 *                           to No Action Service Routines
 
- fcb   3 edition number
+ fcb 3 edition number
 
 **********
 *
@@ -45,122 +51,170 @@ Signal rmb 1
 RWSwitch equ (PD.FRead!PD.FWrit)-(PD.FRead&PD.FWrit)
 
 
-PipeEnt  equ   *
-         lbra  POpen     Create
-         lbra  POpen     Open
-         lbra  UnkSvc    MakDir
-         lbra  UnkSvc    ChgDir
-         lbra  UnkSvc    Delete
-         lbra  NoOp      Seek
-         lbra  PRead
-         lbra  PWrite
-         lbra  PRdLn
-         lbra  PWrLn
-         lbra  NoOp
-         lbra  NoOp
-         lbra  Close
+PipeEnt equ *
+ lbra Create
+ lbra Open
+ lbra MakDir
+ lbra ChgDir
+ lbra Delete
+ lbra Seek
+ lbra PRead
+ lbra PWrite
+ lbra PRdLn
+ lbra PWrLn
+ lbra Getstat
+ lbra Putstat
+ lbra Close
 
-UnkSvc   comb
-         ldb   #E$UnkSVC
-         rts 
+**************************************************
+*
+*     Illegal Service routines
+*
+Makdir equ *
+ChgDir equ *
+Delete equ *
+ comb
+ ldb #E$UnkSVC err: unknown service request
+ rts 
 
-NoOp     clrb
-         rts 
+**************************************************
+*
+*     No Action Service routines
+*
+GetStat equ *
+PutStat equ *
+Seek equ *
+ clrb
+ rts 
+ page
+**********
+* Open - Pipe File Manager
+*
+Create equ *
+Open equ *
+ ldu PD.RGS,y
+ ldx R$X,u
+ pshs y
+ ifeq level-1
+ os9 F$PrsNam parse the device name
+ bcs OpenErr branch if error
+ lda -1,y
+ else
+ os9 F$PrsNam parse the device name
+ bcs OpenErr branch if error
+ ldx D.Proc
+ ldb P$Task,x
+ leax -1,y
+ OS9 F$LDABX
+ tsta
+ endc
+ bmi Open.A
+ leax  0,y
+ os9   F$PrsNam 
+ bcc   OpenErr
+Open.A    sty   R$X,u
+ puls  y
+ ldd   #$0100
+ ifeq level-1
+ os9 F$SRqMem get buffer
+ else
+ os9 F$SRqMem get buffer
+ endc
+ bcs   Open.B
+ stu   PD.BUF,y
+ stu   PD.NxIn,y
+ stu   PD.NxOut,y
+ leau  d,u
+ stu   PD.BEnd,y
+Open.B    rts 
 
-POpen    ldu   PD.RGS,y
-         ldx   R$X,u
-         pshs  y
-         os9   F$PrsNam 
-         bcs   L0073
-         lda   -1,y
-         bmi   L0058
-         leax  0,y
-         os9   F$PrsNam 
-         bcc   L0073
-L0058    sty   R$X,u
-         puls  y
-         ldd   #$0100
-         os9   F$SRqMem 
-         bcs   L0072
-         stu   PD.BUF,y
-         stu   PD.NxIn,y
-         stu   PD.NxOut,y
-         leau  d,u
-         stu   PD.BEnd,y
-L0072    rts 
-
-L0073    comb
-         ldb   #E$BPNam
-         puls  pc,y
-
+OpenErr comb
+ ldb   #E$BPNam
+ puls  pc,y
+ page
+**************************************************
+*
 Close    lda   PD.CNT,y
-         bne   L0086
+         bne   Clos.A
          ldu   PD.BUF,y
          ldd   #$0100
          os9   F$SRtMem 
-         bra   L00A1
-L0086    cmpa  PD.NRead,y  $0B
-         bne   L008E
+         bra   Send.A
+Clos.A    cmpa  PD.NRead,y  $0B
+         bne   Clos.B
          leax  PD.FST,y
-         bra   L0094
-L008E    cmpa  PD.NWrit,y
-         bne   L00A1
+         bra   SendSign
+Clos.B    cmpa  PD.NWrit,y
+         bne   Send.A
          leax  PD.FWrit,y
-L0094    lda   PD.FRead-PD.FST,x
-         beq   L00A1
+SendSign    lda   PD.FRead-PD.FST,x
+         beq   Send.A
          ldb   PD.WRead-PD.FST,x
-         beq   L00A1
+         beq   Send.A
          clr   PD.WRead-PD.FST,x
          os9   F$Send 
-L00A1    clrb
+Send.A    clrb
          rts 
-
+ page
+**************************************************
+*
 PRdLn    ldb   #$0D
          stb   PD.RdLn,y
-         bra   L00AB
+         bra   Read
 
 PRead    clr   PD.RdLn,y
-L00AB    leax  PD.FST,y
-         lbsr  L0140
-         bcs   L00EB
+Read    leax  PD.FST,y
+         lbsr  GetCon
+         bcs   Read.G
          ldd   $06,u
-         beq   L00EB
-         ldx   $04,u
-         addd  $04,u
-         pshs  b,a
-         bra   L00C9
-L00BE    pshs  x
+         beq   Read.G
+         ldx   R$X,u
+         addd  R$X,u
+         pshs  d
+         bra   Read.C
+Read.A    pshs  x
          leax  PD.FST,y
-         lbsr  L016B
+         lbsr  Wait
+ ifeq level-1
          puls  x
-         bcs   L00DC
-L00C9    lbsr  L01DD
-         bcs   L00BE
+         bcs   Read.E
+ else
+ jmp NOWHERE
+ endc
+Read.C    lbsr  BuffOut
+         bcs   Read.A
+ ifeq level-1
          sta   ,x+
+ else
+ OS9 F$STABX transfer byte
+ leax 1,x move ptr
+ endc
          tst   PD.RdLn,y
-         beq   L00D8
+         beq   Read.D
          cmpa  PD.RdLn,y
-         beq   L00DC
-L00D8    cmpx  ,s
-         bcs   L00C9
-L00DC    tfr   x,d
+         beq   Read.E
+Read.D    cmpx  ,s
+         bcs   Read.C
+Read.E    tfr   x,d
          subd  ,s++
          addd  $06,u
          std   $06,u
-         bne   L00EA
+         bne   Read.F
          ldb   #E$EOF
-         bra   L00EB
-L00EA    clrb
-L00EB    leax  PD.FST,y
-         lbra  L019D
-
+         bra   Read.G
+Read.F    clrb
+Read.G    leax  PD.FST,y
+         lbra  RelCon
+ page
+**************************************************
+*
 PWrLn    ldb   #$0D
          stb   PD.WrLn,y
-         bra   L00FA
+         bra   Write
 
 PWrite   clr   PD.WrLn,y
-L00FA    leax  PD.FWrit,y
-         lbsr  L0140
+Write    leax  PD.FWrit,y
+         lbsr  GetCon
          bcs   L013C
          ldd   $06,u
          beq   L013C
@@ -168,14 +222,14 @@ L00FA    leax  PD.FWrit,y
          addd  $04,u
          pshs  b,a
          bra   L0118
-L010D    pshs  x
+Writ.A    pshs  x
          leax  PD.FWrit,y
-         lbsr  L016B
+         lbsr  Wait
          puls  x
          bcs   L0130
 L0118    lda   ,x
-         lbsr  L01B7
-         bcs   L010D
+         lbsr  BuffIn
+         bcs   Writ.A
          leax  $01,x
          tst   PD.WrLn,y
          beq   L012B
@@ -191,35 +245,40 @@ L0130    pshs  b,cc
          std   $06,u
          puls  x,b,cc
 L013C    leax  PD.FWrit,y
-         bra   L019D
-L0140    lda   ,x
-         beq   L0165
+         bra   RelCon
+ page
+**************************************************
+*
+GetCon    lda   ,x
+         beq   GetC.B
          cmpa  $05,y
-         beq   L0169
+         beq   GetC.C
          inc   $01,x
          ldb   $01,x
          cmpb  $02,y
-         bne   L0153
-         lbsr  L0094
-L0153    os9   F$IOQu 
+         bne   GetC.A
+         lbsr  SendSign
+GetC.A    os9   F$IOQu 
          dec   $01,x
          pshs  x
          ldx   D.Proc
          ldb   P$Signal,x
          puls  x
-         beq   L0140
+         beq   GetCon
          coma
          rts 
 
-L0165    ldb   $05,y
+GetC.B    ldb   $05,y
          stb   0,x
-L0169    clrb
+GetC.C    clrb
          rts 
-
-L016B    ldb   $01,x
+ page
+**************************************************
+*
+Wait    ldb   $01,x
          incb
          cmpb  $02,y
-         beq   L0199
+         beq   Wait.A
          stb   $01,x
          ldb   #$01
          stb   $02,x
@@ -228,7 +287,7 @@ L016B    ldb   $01,x
          tfr   x,d
          eorb  #$04
          tfr   d,x
-         lbsr  L0094
+         lbsr  SendSign
          ldx   #$0000
          os9   F$Sleep
          ldx   D.Proc
@@ -240,24 +299,30 @@ L016B    ldb   $01,x
          clrb
          rts 
 
-L0199    ldb   #E$Write
+Wait.A equ *
+ ldb   #E$Write
 L019B    coma
          rts 
 
-L019D    pshs  u,b,cc
+**************************************************
+*
+RelCon    pshs  u,b,cc
          ldu   D.Proc
          lda   <$11,u
          bne   L01AA
          ldb   $01,x
-         bne   L01B5
+         bne   RelC.B
 L01AA    sta   ,x
          tfr   x,d
          eorb  #$04
          tfr   d,x
-         lbsr  L0094
-L01B5    puls  pc,u,b,cc
+         lbsr  SendSign
+RelC.B    puls  pc,u,b,cc
 
-L01B7    pshs  x,b
+ page
+**************************************************
+*
+BuffIn    pshs  x,b
          ldx   PD.NxIn,y
          ldb   PD.Data,y
          beq   L01C9
@@ -276,22 +341,21 @@ L01D7    stx   PD.NxIn,y
          clrb
          puls  pc,x,b
 
-L01DD    lda   PD.Data,y
-         bne   L01E4
+BuffOut lda   PD.Data,y
+         bne   BufO.A
          comb
          rts 
-
-L01E4    pshs  x
+BufO.A    pshs  x
          ldx   PD.NxOut,y
          lda   ,x+
          cmpx  PD.BEnd,y
-         bcs   L01F2
+         bcs   BufO.B
          ldx   PD.BUF,y
-L01F2    stx   PD.NxOut,y
+BufO.B    stx   PD.NxOut,y
          cmpx  PD.NxIn,y
-         bne   L01FD
+         bne   BufO.C
          clr   PD.Data,y
-L01FD    andcc #$FE
+BufO.C    andcc #$FE
          puls  pc,x
 
          emod

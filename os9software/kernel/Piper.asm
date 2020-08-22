@@ -1,44 +1,34 @@
- nam   Piper
- ttl   os9 device driver
+ nam Pipe Device Driver
+ ttl Definitions
 
- ifp1
- use   os9defs
- endc
+Type set Drivr+Objct
+Revs set ReEnt+1
+ mod   PipeEnd,PipeNam,Type,Revs,PipeEnt,V.User
+ fcb Updat. mode
+PipeNam fcs "Piper"
+ fcb 2 edition number
 
- mod   PIPEND,PIPNAM,DRIVR+OBJCT,ReEnt+1,INIPIP,PIPSTA
-u0000    rmb   6
-PIPSTA equ .
+ use defsfile
 
- fcb 3 Edition
-
-PIPNAM fcs "Piper"
- fcb 2
-
-* A device driver normally has six LBRA statements. These take the
-* same number of bytes
-
-INIPIP clrb
+PipeEnt clrb
  rts
  nop
-
-READPIP clrb
+ clrb read
  rts
  nop
-
-WRTPIP clrb
+ clrb write
  rts
  nop
-
-GETSTA clrb
+ clrb getstat
  rts
  nop
-
-PUTSTA clrb
+ clrb putstat
  rts
  nop
-
-TERMNT clrb
+ clrb terminate
  rts
 
  emod
-PIPEND equ *
+PipeEnd equ *
+
+ end
