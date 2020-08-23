@@ -55,20 +55,32 @@ var
   q1,q2: integer;
   docked : boolean;
 
-{ Returns a random number between 0.0 and 1.0 }
-function random(var block:integer) : real; external;
-procedure randomize(var block:integer); external;
-
 { Provide a random real 0 <= x < 1 }
-function rnd1:real;
+function rand:real;
+  const
+    MAXVAL = 32767;
   begin
-    rnd1 := random(randstate);
+    mathabort(false);
+    randstate := randstate * 11035 + 6971;
+    randstate := randstate mod MAXVAL;
+    rand := randstate / MAXVAL;
+    mathabort(true);
   end;
+
+{ Create random seed based on system clock }
+procedure randomize;
+  var
+    year, month, day, hour, minute, second : integer;
+  begin
+    systime(year, month, day, hour, minute, second);
+    randstate := second * 391 + minute * 13 + 23;
+  end;
+
 
 { Provide a random integer 0 <= x < maxval }
 function rnd(maxval:integer):integer;
   begin
-    rnd := trunc(random(randstate) * maxval);
+    rnd := trunc(rand * maxval);
   end;
 
 { Return a random integer between 1 and 8 }
@@ -382,7 +394,7 @@ procedure newquadrant;
     k3 := 0;
     b3 := 0;
     s3 := 0;
-    d4 := 0.5 * rnd1;
+    d4 := 0.5 * rand;
     known[q1,q2] := galaxy[q1,q2];
     namequadrant(q1,q2,false,g2);
     writeln;
@@ -430,7 +442,7 @@ procedure newquadrant;
           insertfeature('+K+', r1, r2);
           k[i].sectx := r1;
           k[i].secty := r2;
-          k[i].energy := K_ENERGY * (0.5 + rnd1)
+          k[i].energy := K_ENERGY * (0.5 + rand)
         end;
 
     if b3>0 then
@@ -557,7 +569,7 @@ function phasereffect(available:real; num:integer):real;
   begin
     dx := k[num].sectx - s1;
     dy := k[num].secty - s2;
-    phasereffect := (available / distance(dx, dy)) * (rnd1 + 2);
+    phasereffect := (available / distance(dx, dy)) * (rand + 2);
   end;
 
 { KLINGONS SHOOTING }
@@ -581,14 +593,14 @@ procedure enemyfire;
 
         h := phasereffect(k[i].energy,i);
         shield := shield - round(h);
-        k[i].energy := k[i].energy/(3 + rnd1);
+        k[i].energy := k[i].energy/(3 + rand);
         writeln(h:3:0,' unit hit on Enterprise from sector ',k[i].sectx:1,',',k[i].secty:1);
         if shield <= 0 then begin destruction; goto 5 end;
         writeln('      <SHIELDS DOWN TO ',shield:1,' UNITS>');
         if h < 20 then goto 4;
-        if (rnd1 > 0.6) or (h/shield <= 0.02) then goto 4;
+        if (rand > 0.6) or (h/shield <= 0.02) then goto 4;
         rd := rnd8i;
-        dmg[rd] := dmg[rd]-h/shield - 0.5*rnd1;
+        dmg[rd] := dmg[rd]-h/shield - 0.5*rand;
         write('Damage control reports:    ''');
         l := writedevice(rd);
         writeln(' damaged by the hit''');
@@ -751,12 +763,12 @@ procedure coursecontrol;
     enemyfire;
     repairs(w1);
 
-    if rnd1 < 0.2 then
+    if rand < 0.2 then
       begin
         rd := rnd8i;
         write('Damage control report:  ');
         l := writedevice(rd);
-        if rnd1 >= 0.6 then
+        if rand >= 0.6 then
           begin
             dmg[rd] := dmg[rd]+rnd(3)+1;
             writeln(' state of repair improved')
@@ -912,7 +924,7 @@ procedure phaser;
         end;
     until energy >= tofire;
     energy := energy - tofire;
-    if dmg[DMG_COM]<0 then tofire := round(tofire * rnd1);
+    if dmg[DMG_COM]<0 then tofire := round(tofire * rand);
 
     h1 := tofire / k3;
     for i := 1 to 3 do
@@ -1331,7 +1343,7 @@ procedure initialize;
         begin
           k3 := 0;
           known[i,j] := 0;
-          t1 := rnd1;
+          t1 := rand;
           if t1 > 0.98 then
             begin
               k3 := k3 + 1;
@@ -1349,7 +1361,7 @@ procedure initialize;
             end;
           
           b3 := 0;
-          if rnd1 > 0.96 then
+          if rand > 0.96 then
             begin
               b3 := 1;
               starbases := starbases+1;
@@ -1393,8 +1405,7 @@ procedure initialize;
 
 { MAIN }
 begin
-  randstate := 0;
-  randomize(randstate);
+  randomize;
 
   repeat
     gameison := true;
