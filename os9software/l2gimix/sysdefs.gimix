@@ -88,8 +88,8 @@ D$REBOOT equ $FFEE use an unused vector
 *
 **********
 
-ClocType set VSYNC
-TickSec set 50 ticks per second (50 for UK, 60 for USA)
+ClocType set M58167
+TickSec set 10 ticks per second
 Cx2Int set 1 CA2 (CB2) interrupt input
 FPort set $ECD1 floppy disk controller
 HPort set $FD00 hard disk controller

@@ -1,59 +1,59 @@
-         nam t1
+ nam T1
+ ttl Device Descriptor for terminal
 
-         use defsfile
-         ttl Device Descriptor for the Serial Port (Level 1)
+ use defsfile
+**************************
+*  TERMINAL device module
 
-***************
-* /T1 module - serial port
-* for use as a terminal port.
-*
-***************
+ mod TxEnd,TxNam,DEVIC+OBJCT,REENT+1,TxMGR,TxDrv
+ fcb UPDAT. mode
+ fcb IOBlock/DAT.BlCt port bank
+ fdb A.T1 port address
+ fcb OptEnd-*-1  initilization table size
+ fcb DT.SCF Device Type: SCF
 
-Type     set DEVIC+OBJCT
-Revs     set REENT+1
+* DEFAULT PARAMETERS
 
-         mod TermEnd,TermNam,Type,Revs,TermMgr,TermDrv
-         fcb UPDAT. attributes
-         fcb   $0F extended controller address
-         fdb   $FCB2  physical controller address
-         fcb DD.Parms-*-1 option byte count
-OptStrt  fcb DT.SCF SCF type device
+ fcb 0 case:0=up&lower,1=upper only
+ fcb 1 backspace:0=bsp,1=bsp then sp & bsp
+ fcb 0 delete:0=bsp over line,1=return
+ fcb 1 echo:0=no echo
+ fcb 1 auto line feed:0=off
+ fcb 0 end of line null count
+ fcb 1 pause:0=no end of page pause
+ fcb 24 lines per page
+ fcb C$BSP backspace character
+ fcb C$DEL delete line character
+ fcb C$CR end of record character
+ fcb C$EOF end of file character
+ fcb C$RPRT reprint line character
+ fcb C$RPET duplicate last line character
+ fcb C$PAUS pause character
+ fcb C$INTR interrupt character
+ fcb C$QUIT quit character
+ fcb C$BSP backspace echo character
+ fcb C$BELL line overflow char
+ fcb A.T.init ACIA initialization
+ fcb 6 baud rate = 9600
+ fdb TxNam copy of descriptor name address
+ fcb $11 acia xon char
+ fcb $13 acia xoff char
+ fcb 80 number of columns for display
+ fcb 0 No-edit flag (4 = no-edit)
+OptEnd equ *
+ fcb 0 Lead-in character for input
+ fcb 0 Lead-in character for output
+ fcb $08 Move left code
+ fcb $0C Move right code
+ fcb $0B Move left key (Ctrl-K)
+ fcb $0C Move right key (Ctrl-L)
+ fcb 6 Delete chr under cursor key (Ctrl-F)
+ fcb 7 Delete to end of line key (Ctrl-G)
 
-* Default path options
+TxNam fcs /T1/
+TxMGR fcs /SCF/
+TxDrv fcs /ACIA/
 
-         fcb 0 case=UPPER and lower
-         fcb 1 backspace=BS,SP,BS
-         fcb 0 delete=backspace over line
-         fcb true       auto echo ON
-         fcb true       auto line feed ON
-         fcb 0 number of NULLS after CR
-         fcb true  end of page pause ON
-         fcb 24 lines per page
-         fcb C$BSP backspace key
-         fcb C$DEL delete line key
-         fcb C$CR end of record key
-         fcb C$EOF end of file key
-         fcb C$RPRT redisplay the line
-         fcb C$RPET repeat the line
-         fcb C$PAUS pause key
-         fcb C$INTR Keyboard Interrupt key
-         fcb C$QUIT Keyboard Quit key
-         fcb C$BSP backspace echo character
-         fcb C$BELL line overflow character
-         fcb   $15 init value for dev ctl reg
-         fcb 0 baud rate
-         fdb TermNam offset to pause device name
-         fcb   $00 acia xon char
-         fcb   $00 acia xoff char
-DD.Parms equ *
+ emod Module CRC
 
-TermNam    fcs 'T1' device name
-TermMgr    fcs 'SCF' file manager
-TermDrv    fcs 'ACIA' device driver
-
-         emod
-
-TermEnd    equ *
-
-         end
-
+TxEnd equ *
