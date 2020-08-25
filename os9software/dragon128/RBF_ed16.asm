@@ -7,10 +7,13 @@
 
 included equ 1
  ifeq LEVEL-1
+RCD.LOCK equ 0
  else
 RCD.LOCK equ included
  endc
- page
+
+*C$CR equ $0D carriage return char
+
 ***************
 * Edition History
 
@@ -314,64 +317,64 @@ ZerBuf20 pshu X,D
 * Subroutine Open
 *   Locates File Descriptor and Initializes PD
 
-Open    pshs  y
-         lbsr  SchDir
-         bcs   CRTERR99
+Open pshs  y Save PD
+ lbsr SchDir Allocate buffer, search dir
+ bcs CRTERR99 ..Error; abort
 
-         ldu   PD.RGS,Y
-         stx   R$X,U
-         ldd   PD.FD+1,Y
-         bne   Open15
-         lda   PD.FD,Y
-         bne   Open15
-         ldb   PD.MOD,Y
-         andb  #Dir.
-         lbne  IllAcces
-         std   PD.SBP,Y
-         sta   PD.SBP+2,Y
-         std   PD.SBL,Y
-         sta   PD.SBL+2,Y
-         ldx   PD.DTB,Y
-         lda   DD.TOT+2,X
-         std   PD.SIZ+2,Y
-         sta   PD.SSZ+2,Y
-         ldd   DD.TOT,X
-         std   PD.SIZ,Y
-         std   PD.SSZ,Y
-         puls  PC,Y
+ ldu PD.RGS,Y
+ stx R$X,U return update pathlist ptr
+ ldd PD.FD+1,Y Using entire device?
+ bne Open15 ..No; open normal file
+ lda PD.FD,Y entire device?
+ bne Open15 ..No
+ ldb PD.MOD,Y check access
+ andb #Dir. trying to open as dir?
+ lbne IllAcces ..Yes; abort
+ std PD.SBP,Y Clear seg beg phys
+ sta PD.SBP+2,Y
+ std PD.SBL,Y Clear seg beginning logical
+ sta PD.SBL+2,Y
+ ldx PD.DTB,Y get device tbl ptr
+ lda DD.TOT+2,X get low byte of disk size
+ std PD.SIZ+2,Y Set low bytes of file size
+ sta PD.SSZ+2,Y Set low byt of seg size
+ ldd DD.TOT,X get disk size
+ std PD.SIZ,Y Set file size
+ std PD.SSZ,Y Set seg size
+ puls PC,Y
 
 * Check File Accessibility
-Open15 lda PD.MOD,Y
-         lbsr  CHKACC
-         bcs   CRTERR99
-         bita  #WRITE.
-         beq   InitPd
-         lbsr  DateMod
-         lbsr  PUTFD
+Open15 lda PD.MOD,Y get requested mode
+ lbsr CHKACC Check access
+ bcs CRTERR99 ..Not accessible; abort
+ bita #WRITE. write mode?
+ beq InitPd ..no
+ lbsr DateMod set date file modified
+ lbsr PUTFD update the FD
 
 * fall thru to Initpd
  page
 ***************
 * Initialize PD
 
-InitPd    puls  y
-InitPD10    clra
-         clrb
-         std PD.CP,Y
-         std PD.CP+2,Y
-         std   PD.SBL,Y
-         sta   <$15,Y
-         sta   PD.SSZ,Y
-         lda   ,U
-         sta   <$33,Y
-         ldd   <$10,U
-         std   PD.SBP,Y
-         lda   <$12,U
-         sta   <$18,Y
-         ldd   <$13,U
-         std   PD.SSZ+1,Y
-         ldd   $09,U
-         ldx   $0B,U
+InitPd puls y recover PD
+InitPD10 clra
+ clrb
+ std PD.CP,Y Clear current posn
+ std PD.CP+2,Y
+ std PD.SBL,Y Clear seg beginning logical
+ sta PD.SBL+2,Y
+ sta PD.SSZ,Y Clear high order seg siz
+ lda FD.ATT,U get file attributes
+ sta PD.ATT,Y
+ ldd FD.SEG+FDSL.A,U get first seg list entry
+ std PD.SBP,Y Set seg beginning physical
+ lda FD.SEG+FDSL.A+2,U
+ sta PD.SBP+2,Y
+ ldd FD.SEG+FDSL.B,U get seg size
+ std PD.SSZ+1,Y
+ ldd FD.SIZ,U get file size
+ ldx FD.SIZ+2,U
 
  ifeq RCD.LOCK-included
  ldu PD.Exten,Y get PE ptr
@@ -400,94 +403,94 @@ MakDir lbsr Create create file
 
  ifeq RCD.LOCK-included
  lda PD.ATT,Y
- ora #Share.
- lbsr CHKACC
- bcs MakDir90
+ ora #Share. protect baby dir until grown
+ lbsr CHKACC set File Lock
+ bcs MakDir90 ..abort if error
  endc
 
- ldd   #DIR.SZ*2 room for two Dir Rcds
- std   PD.SIZ+2,Y
- bsr   WrtFDS90 write FD sector
- bcs   MakDir90
- lbsr  EXPAND allocate first two entries
- bcs   MakDir90
- ldu PD.BUF,Y
+ ldd #DIR.SZ*2 room for two Dir Rcds
+ std PD.SIZ+2,Y
+ bsr WrtFDS90 write FD sector
+ bcs MakDir90 error; abort
+ lbsr EXPAND allocate first two entries
+ bcs MakDir90 error; abort
+ ldu PD.BUF,Y FD buffer ptr
  lda FD.ATT,u get file attributes
  ora #DIR. mark as dir
  sta FD.ATT,u update FD
- bsr WrtFDSiz
+ bsr WrtFDSiz update size in FD sector
  bcs MakDir90
- lbsr ZerBuf
+ lbsr ZerBuf clear first dir sector
  ldd #"..+$80
- std 0,U
- stb DIR.SZ,U
- lda PD.DFD,Y
- sta DIR.FD,U
+ std 0,U Parent Dir name, '..'
+ stb DIR.SZ,U Current Dir name, '.'
+ lda PD.DFD,Y get parent dir FD psn
+ sta DIR.FD,U put in new dir
  ldd PD.DFD+1,Y
  std DIR.FD+1,U
  lda PD.FD,Y get new dir FD psn
- sta DIR.FD+DIR.SZ,U
+ sta DIR.FD+DIR.SZ,U put in new dir
  ldd PD.FD+1,Y
  std DIR.FD+1+DIR.SZ,U
- lbsr PCPSEC
+ lbsr PCPSEC write first sector
 MakDir90 bra KillPth1
 
 ***************
 * Subroutine WrtFDSiz
 *   Update file size in FD sector.  Called by Create, Makdir.
 
-WrtFDSiz    lbsr  GETFD
-         ldx PD.BUF,Y
-         ldd   PD.SIZ,Y
-         std   $09,X
-         ldd   PD.SIZ+2,Y
-         std   $0B,X
-         clr   $0A,Y
-WrtFDS90    lbra  PUTFD
+WrtFDSiz lbsr GETFD read FD
+ ldx PD.BUF,Y
+ ldd PD.SIZ,Y
+ std FD.SIZ,X
+ ldd PD.SIZ+2,Y update file size in FD
+ std FD.SIZ+2,X
+ clr PD.SMF,Y clear buffer contents flag
+WrtFDS90 lbra PUTFD rewrite FD sector
  page
 ***************
 * Subroutine Close
 *   Close Path, Update FD if necessary
 
-Close    clra
-         tst   $02,Y
-         bne   Close99
-         lbsr  CLRBUF
-         bcs   KillPth1
-         ldb   $01,Y
-         bitb  #$02
-         beq   KillPth1
-         ldd   PD.FD,Y
-         bne   L028D
-         lda   <$36,Y
-         beq   KillPth1
-L028D    bsr   WrtFDSiz
-         lbsr  EOFTest
-         bcc   KillPth1
-         lbsr  TRIM
-         bra   KillPth1
+Close clra init carry clear
+ tst PD.CNT,Y last image?
+ bne Close99 ..No; exit, carry clear
+ lbsr CLRBUF clear buffer
+ bcs KillPth1 error; abort
+ ldb PD.MOD,Y get mode
+ bitb #WRITE. Write mode?
+ beq KillPth1 ..No; return resources, exit
+ ldd PD.FD,Y Using entire disk?
+ bne Close10 ..No; trim file
+ lda PD.FD+2,Y entire disk?
+ beq KillPth1 ..Yes; exit (carry clear)
+Close10 bsr WrtFDSiz write filesize
+ lbsr EOFTest at End of File?
+ bcc KillPth1 ..No; don't trim file
+ lbsr TRIM Trim file size
+ bra KillPth1 exit, return error status
 Close99 rts
 
 IllAcces ldb #E$FNA Err: file not accesible
 KillPth0 coma set carry
 
-KillPth    puls  y
-KillPth1    pshs  b,CC
-         ldu   PD.BUF,Y
-         beq   KillPth9
-         ldd   #$0100
-         os9   F$SRtMem
+KillPth puls y restore PD
+KillPth1 pshs B,CC save error status
+ ldu PD.BUF,Y get buffer ptr
+ beq KillPth9
+ ldd #$100 return one page
+ os9 F$SRtMem Return memory
 
  ifeq RCD.LOCK-included
-         ldx   PD.Exten,Y
-         beq   KillPth9
-         lbsr  Remove
-         lda   ,X
-         ldx   D.PthDBT
-         os9   F$Ret64
+ ldx PD.Exten,Y get Extension ptr
+ beq KillPth9
+ lbsr Remove Remove path from rcd-lock lists
+ lda 0,X (A)=PE number
+ ldx D.PthDBT
+ os9 F$Ret64 return path extension
  endc
 
-KillPth9    puls  PC,b,CC
+KillPth9 puls PC,B,CC return error status
  page
 ***************
 * Subroutine DateMod
@@ -497,21 +500,22 @@ KillPth9    puls  PC,b,CC
 * Returns: (U)=Buffer ptr, FD sector in buffer
 * Destroys: CC,D,X
 
-DateMod lbsr GETFD
+DateMod lbsr GETFD read FD sector
  ldu PD.BUF,Y
- lda FD.LNK,U
+ lda FD.LNK,U Link count
+
  ifeq LEVEL-1
  pshs a
  leax FD.DAT,U
- os9 F$Time
+ os9 F$Time Set time last modified
  puls a
  else
- ldx D.Proc
- pshs x,a
+ ldx D.Proc current process ID
+ pshs x,a save them
  ldx D.SysPrc
- stx D.Proc
+ stx D.Proc make system current process
  leax FD.DAT,U
- os9 F$Time
+ os9 F$Time Set time last modified
  puls x,a
  stx D.Proc
  endc
@@ -521,31 +525,34 @@ DateMod lbsr GETFD
 
 ***************
 * Subroutine Chgdir
+*   Change User'S Current Working Dir
 
-ChgDir    pshs  y
-         lda PD.MOD,Y
-         ora   #DIR.
-         sta   $01,Y
-         lbsr  Open
-         bcs   KillPth
-         ldx   D.Proc
-         lda   <$21,Y
-         ldu   <$35,Y
-         ldb   $01,Y
-         bitb  #READ.+WRITE. R/W dir?
-         beq   ChgDir10
-         ldb   PD.FD,Y
-         std   <$22,X
-         stu   <$24,X
-ChgDir10    ldb   $01,Y
-         bitb  #EXEC. execution dir?
-         beq   ChgDir90
-         ldb   PD.FD,Y
-         std   <$28,X
-         stu   <$2A,X
-ChgDir90    clrb
-         bra   KillPth
+* Passed: (Y)=PD
 
+ChgDir pshs Y save PD
+         lda PD.MOD,Y get mode
+         ora #DIR. set dir mode
+         sta PD.MOD,Y
+         lbsr Open open file
+         bcs KillPth error; abort
+         ldx D.Proc get process ptr
+         lda PD.DRV,Y get drive number
+         ldu PD.FD+1,Y get lsbs of FD psn
+         ldb PD.MOD,Y get mode
+         bitb #READ.+WRITE. R/W dir?
+         beq ChgDir10 ..no
+         ldb PD.FD,Y FD psn msb
+         std P$DIO+2,X set default
+         stu P$DIO+4,X
+ChgDir10 ldb PD.MOD,Y get mode
+         bitb #EXEC. execution dir?
+         beq ChgDir90 ..no; exit
+         ldb PD.FD,Y FD psn msb
+         std P$DIO+8,X set default
+         stu P$DIO+10,X Set up default dir
+ChgDir90 clrb clear carry
+ bra KillPth return resources; exit
+ page
 ***************
 * Subroutine Delete
 
@@ -658,20 +665,20 @@ ReadLn bsr ReadInit Chk conflicts; EOF; maximum
          exg   x,U
          ldy   #0
          lda   #$0D
-L03C9    leay  $01,Y
+RDLine10    leay  $01,Y
          cmpa  ,x+
-         beq   L03D2
+         beq   RDLine20
          decb
-         bne   L03C9
-L03D2    ldx   $06,S
+         bne   RDLine10
+RDLine20    ldx   $06,S
          bsr   ToUser
          sty   $0A,S
          puls  u,y,x,D
          ldd   $02,S
          leax  d,X
-RDLine0    rts
+RDLine0 rts
 
-ReadLn10 lbsr RBRW00
+ReadLn10 lbsr RBRW00 Init S.RWexit; enter RBRW
 
 * Read Line End Of Loop
 *  Entered with ALL StkTemps on stack
@@ -683,15 +690,16 @@ ReadLn10 lbsr RBRW00
  lbsr UserByte get last byte transferred
  endc
 
-         cmpa  #C$CR
-         beq   L03F2
-         ldd   $02,S
-         lbne  RBRW10
-L03F2    ldu   PD.RGS,Y
-         ldd   $06,U
-         subd  $02,S
-         std   $06,U
-         bra   Read90
+         cmpa #C$CR
+         beq ReadLn20
+         ldd $02,S
+         lbne RBRW10
+ReadLn20 ldu PD.RGS,Y get register ptr
+         ldd R$Y,U
+         subd S.BytCnt,S
+         std R$Y,U
+         bra Read90
+
  page
 ***************
 * Subroutine ReadInit
@@ -717,19 +725,19 @@ RDSET    pshs  D
          ldd   PD.SIZ,Y
          sbcb  $0C,Y
          sbca  $0B,Y
-         bcs   L042D
-         bne   L042A
+         bcs   RDSET80
+         bne   RDSET10
          tstb
-         bne   L042A
+         bne   RDSET10
          cmpx  ,S
-         bcc   L042A
+         bcc   RDSET10
          stx   ,S
-         beq   L042D
-L042A    clrb
+         beq   RDSET80
+RDSET10    clrb
          puls  PC,D
 
-L042D    comb
-         ldb   #$D3
+RDSET80    comb
+         ldb   #E$EOF
 ReadIERR leas 2,S
  ifeq RCD.LOCK-included
  bra Read95
@@ -741,6 +749,7 @@ ToUser lbra FromUser
  else
 ***************
 * Subroutine ToUser
+*   Copy bytes to user's addr space
 
 ToUser pshs x
  ldx D.Proc
@@ -753,10 +762,11 @@ ToUser pshs x
 
 ***************
 * Subroutine Read
+*   Read Requested Bytes from Current Position
 
-Read    bsr   ReadInit
-         beq   Read0
-         bsr   Read1
+Read bsr ReadInit Chk conflicts; EOF; maximum
+         beq Read0 Read 0 bytes? .. exit; carry cleared by ReadInit
+         bsr   Read1 init Read subroutine addr (S.RWaddr)
 
 * Subroutine RdByte
 
@@ -776,32 +786,32 @@ RBRWER1    leas  $0A,S
 Read95    pshs  b,CC
          lda   $01,Y
          bita  #$02
-         bne   L0469
+         bne   Read99
          lbsr  UnLock
-L0469    puls  b,CC
+Read99    puls  b,CC
          rts
  page
 ***************
 * Subroutine RBRW
 
-RBRW00    ldd   $04,U
-         ldx   $06,U
+RBRW00    ldd R$X,U
+         ldx R$Y,U
          pshs  x,D
-RBRW10    lda   $0A,Y
-         bita  #$02
-         bne   L0492
+RBRW10    lda PD.SMF,Y
+         bita  #SINBUF
+         bne   RBRW25
          tst   $0E,Y
-         bne   L048D
+         bne   RBRW20
          tst   $02,S
-         beq   L048D
+         beq   RBRW20
          leax  >WrByte,pcr
          cmpx  $06,S
-         bne   L048D
+         bne   RBRW20
          lbsr  CHKSEG
-         bra   L0490
-L048D    lbsr  RDCP
-L0490    bcs   RBRWER
-L0492    ldu   $08,Y
+         bra   RBRW22
+RBRW20    lbsr  RDCP
+RBRW22    bcs   RBRWER
+RBRW25    ldu   $08,Y
          clra
          ldb   $0E,Y
          leau  d,U
@@ -817,19 +827,20 @@ RBRW30    pshs  D
          ldb   $01,S
          addb  $0E,Y
          stb   $0E,Y
-         bne   L04C3
+         bne   RBRW35
          lbsr  CLRBUF
          inc   $0D,Y
-         bne   L04C1
+         bne   RBRW34
          inc   $0C,Y
-         bne   L04C1
+         bne   RBRW34
          inc   $0B,Y
-L04C1    bcs   RBRWER1
-L04C3    ldd   $04,S
+RBRW34    bcs   RBRWER1
+RBRW35    ldd   $04,S
          subd  ,s++
          std   $02,S
-         jmp   [<$04,s]
+         jmp   [S.RWexit,s] Go to end of loop
 
+ page
 ***************
 * Subroutine Writline
 *   Write Bytes to carriage return or Maximum
@@ -904,23 +915,23 @@ Write1 lbsr RBRW00 init S.RWexit; enter RBRW
 
 * Write Loop Exit
 * Note: entered with ALL StkTemps initialized
- lbne  RBRW10
- leas StkTemps,S
+ lbne  RBRW10 bra if more
+ leas StkTemps,S return Scratch
 
  ifeq RCD.LOCK-included
          ldy   PD.Exten,Y
-         lda   #$01
+         lda   #RcdLock
          lbsr  Release
-         ldy   $01,Y
+         ldy PE.PDptr,Y
  endc
-Write90 clrb
+Write90 clrb return without error
 Write99 rts
 
 ***************
 * Subroutine WriteSub
-*   Update current position, expand if needed
+*   Update current position, expand file if needed
 
-WriteSub addd PD.CP+2,Y
+WriteSub addd PD.CP+2,Y Add current posn
          tfr d,X
          ldd PD.CP,Y
          adcb  #0
@@ -929,10 +940,10 @@ WriteSub addd PD.CP+2,Y
 * (D,X)=new potential file size
 WriteS10    cmpd  PD.SIZ,Y
          bcs   Write90
-         bhi   L0542
+         bhi   WriteS80
          cmpx  PD.SIZ+2,Y
          bls   Write90
-L0542    pshs  u
+WriteS80    pshs  u
          ldu   PD.SIZ+2,Y
          stx   PD.SIZ+2,Y
          ldx   PD.SIZ,Y
@@ -940,10 +951,10 @@ L0542    pshs  u
          pshs  u,X
          lbsr  EXPAND
          puls  u,X
-         bcc   L055C
+         bcc   WriteS90
          stx   PD.SIZ,Y
          stu   PD.SIZ+2,Y
-L055C    puls  PC,U
+WriteS90    puls  PC,U
 
  ifeq LEVEL-1
 FromUser pshs u,y,x
@@ -985,6 +996,7 @@ FromUser pshs x
 
 ***************
 * Subroutine Getstat
+*   Get Specific Status Information
 
 GetStat ldb R$B,U
          cmpb  #SS.OPT
@@ -1034,6 +1046,7 @@ GetS.X lda #D$GSTA
  page
 ***************
 * Subroutine Putstat
+*   Set Specific Status Information
 
 PutStat  ldb  R$B,U
          cmpb  #SS.OPT
@@ -1043,6 +1056,7 @@ PutStat  ldb  R$B,U
          leau  <$22,Y
          ldy   #PD.SAS-PD.DRV
          lbra  FromUser
+
 PSt100    cmpb  #SS.Size
          bne   PSt110
          ldd   <$35,Y
@@ -1073,7 +1087,7 @@ PSt100.C    std   PD.SIZ,Y
          rts
 
 PSt100.D    comb
-         ldb   #$CB
+         ldb   #E$BMode
          rts
 
 PSt110    cmpb  #SS.FD
@@ -1089,11 +1103,11 @@ PSt110    cmpb  #SS.FD
          ldy   D.Proc
          ldd   $08,Y
          bne   PSt110.A
-         ldd   #$0102
+         ldd   #FD.OWN*256+2 copy 2 FD.OWN bytes
          bsr   PSt110.C
-PSt110.A    ldd   #$0305
+PSt110.A    ldd   #FD.DAT*256+5 copy 5 FD.DAT bytes
          bsr   PSt110.C
-         ldd   #$0D03
+         ldd   #FD.Creat*256+3 copy 3 FD.Creat bytes
          bsr   PSt110.C
          puls  y
          lbra  PUTFD
@@ -1917,77 +1931,77 @@ SEGALL    pshs  u,X
          beq   SEGA20
 
 *   Find Empty Segment List Entry
-         ldd   $08,Y
+         ldd PD.BUF,Y
          inca
          pshs  D
-         bra   L0BB8
+         bra   EMPS20
 
-EMPS10    clrb
-         ldd   FDSL.B-FDSL.S,X
-         beq   L0BC4
-         addd  $0A,U
-         std   $0A,U
-         bcc   L0BB8
-         inc   $09,U
-L0BB8    leax  $05,X
-         cmpx  ,S
-         bcs   EMPS10
-         lbsr  SECDEA
-         comb
-         ldb   #$D9
-L0BC4    leas  $02,S
-         leax  -$05,X
-SEGALErr    bcs   SEGA30
+EMPS10 clrb clear Carry
+         ldd   FDSL.B-FDSL.S,X get seg size
+         beq   EMPS30 bra if end of list
+         addd FD.SIZ+1,U Update file size
+         std FD.SIZ+1,U
+         bcc   EMPS20 bra if no carry
+         inc FD.SIZ,U
+EMPS20 leax FDSL.S,X Move to next entry
+ cmpx 0,S End of list?
+ bcs EMPS10 ..No
+ lbsr SECDEA return sectors allocated
+ comb set Carry
+ ldb #E$SLF Err: seg list full
+EMPS30 leas 2,S Return scratch
+ leax -FDSL.S,X Backup to entry
+SEGALErr bcs SEGA30
 
-         ldd   -$04,X
-         addd  -$02,X
-         pshs  D
-         ldb   -$05,X
-         adcb  #$00
-         cmpb  PD.SBP,Y
-         puls  D
-         bne   SEGA20
-         cmpd  PD.SBP+1,Y
-         bne   SEGA20
+ ldd FDSL.A-FDSL.S+1,X get lsb of last seg addr
+ addd FDSL.B-FDSL.S,X Add size last seg
+ pshs D save lsdb result
+ ldb FDSL.A-FDSL.S,X get msb last seg addr
+ adcb  #0 Proagate carry
+ cmpb  PD.SBP,Y End last = beginning new?
+ puls  D Retrieve lsdb result
+ bne   SEGA20 ..No
+ cmpd  PD.SBP+1,Y Make sure
+ bne   SEGA20 ..No
 * Now insure that they are in same bitmap sector
-         ldu   <$1E,Y
-         ldd   $06,U
-         ldu   $08,Y
-         subd  #$0001
-         coma
-         comb
-         pshs  D
-         ldd   -$05,X
-         eora  PD.SBP,Y
-         eorb  PD.SBP+1,Y
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         anda  ,s+
-         andb  ,s+
-         std   -$02,S
-         bne   SEGA20
-         ldd   -$02,X
-         addd  PD.SSZ+1,Y
-         bcs   SEGA20
-         std   -$02,X
-         bra   L0C1F
-SEGA20    ldd   PD.SBP,Y
-         std   ,X
-         lda   <$18,Y
-         sta   $02,X
-         ldd   PD.SSZ+1,Y
-         std   $03,X
-L0C1F    ldd   FD.SIZ+1,U
-         addd  PD.SSZ+1,Y
-         std   FD.SIZ+1,U
-         bcc   L0C2A
-         inc   FD.SIZ,U
-L0C2A    lbsr  PUTFD
-SEGA30    puls  PC,u,X
+ ldu PD.DTB,Y drive tbl ptr
+ ldd DD.BIT,U sectors per bit
+ ldu PD.BUF,Y restore buffer ptr
+ subd #1 form mask
+ coma
+ comb
+ pshs D
+ ldd FDSL.A-FDSL.S,X in same bitmap sector?
+ eora PD.SBP,Y
+ eorb PD.SBP+1,Y
+ lsra
+ rorb
+ lsra
+ rorb
+ lsra
+ rorb
+ anda ,s+ match significant bits
+ andb ,s+
+ std -2,S zero? (indicates match)
+ bne SEGA20 ..Different sectors, don't merge
+ ldd FDSL.B-FDSL.S,X get size last seg
+ addd PD.SSZ+1,Y Add size new
+ bcs SEGA20 nra if seg size overflow
+ std FDSL.B-FDSL.S,X Update seg size
+ bra   SEGA25
+SEGA20 ldd PD.SBP,Y get new seg physical
+ std FDSL.A,X Set seg beginning
+ lda PD.SBP+2,Y
+ sta FDSL.A+2,X
+ ldd PD.SSZ+1,Y get seg size
+ std FDSL.B,X Set seg size
+SEGA25 ldd FD.SIZ+1,U Set file size 
+ addd PD.SSZ+1,Y Add new seg size
+ std FD.SIZ+1,U
+ bcc SEGA27 bra if no carry
+ inc FD.SIZ,U Propagate carry
+SEGA27 lbsr PUTFD
+SEGA30 puls PC,u,X
  page
 ***************
 * Subroutine Secall

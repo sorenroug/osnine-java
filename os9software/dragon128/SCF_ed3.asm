@@ -80,17 +80,17 @@ MacBfSiz equ $100 macro buffer size
 
 SCCrea equ *
 SCOpen ldx PD.DEV,y copy Device Table Ptr
- stx   PD.TBL,y for user GetSts availability
- ldu   PD.RGS,y get caller's register stack
- pshs  y save PD ptr
- ldx   R$X,u get pathname ptr
- os9   F$PrsNam parse device name
- lbcs  SCOER1 ..error; bad name
+ stx PD.TBL,y for user GetSts availability
+ ldu PD.RGS,y get caller's register stack
+ pshs y save PD ptr
+ ldx R$X,u get pathname ptr
+ os9 F$PrsNam parse device name
+ lbcs SCOER1 ..error; bad name
  tsta High order bit set?
- bmi   Open0 ..Yes; end of name
- leax  0,y
- os9   F$PrsNam check for more name
- bcc   SCOER1 ..error if so
+ bmi Open0 ..Yes; end of name
+ leax 0,y
+ os9 F$PrsNam check for more name
+ bcc SCOER1 ..error if so
 Open0 sty   R$X,u save updated name ptr
  puls y retrieve PD ptr
  ifne MACROS
@@ -125,8 +125,8 @@ JAMMER puls x
 JAMM10 eora ,x+
  sta ,u+
  decb
- cmpa  #C$CR
- bne   JAMM10
+ cmpa #C$CR
+ bne JAMM10
 * end of optimizable code
 ***************
 
@@ -296,93 +296,93 @@ SCInMac3 leas 2,s ditch scratch
 SCClrM ldx PD.BUF,y get buffer ptr
  leax BuffSize,x point at macro buffer
  lda R$Y,u get key to delete
- beq SCClrM3
- leax MacBfSiz,x
- pshs x
- leax -MacBfSiz+3,x
-SCClrM1 cmpa  ,x
- beq SCClrM2
- tst ,x+
- beq SCClrM4
- ldb ,x+
- abx
- cmpx ,s
- bcs SCClrM1
- bra SCClrM4
+ beq SCClrM3 ..clear all
+ leax MacBfSiz,x calculate buffer end
+ pshs x save it
+ leax -MacBfSiz+3,x back to buffer
+SCClrM1 cmpa ,x this one?
+ beq SCClrM2 ..yes
+ tst ,x+ end of buffer?
+ beq SCClrM4 ..yes; not found
+ ldb ,x+ get entry size
+ abx skip this entry
+ cmpx ,s end of buffer?
+ bcs SCClrM1 ..no; try again
+ bra SCClrM4 ..not found
 
-SCClrM2 ldb 1,x
- pshs y
- tfr x,y
- abx
- leax $02,x
-SCClrM7    cmpx  $02,s
- bcc   SCClrM5
- tst   ,x
- beq   SCClrM5
- lda   ,x+
- sta   ,y+
- ldb   ,x+
- stb   ,y+
-SCClrM6    lda   ,x+
- sta   ,y+
+SCClrM2 ldb 1,x get byte count
+ pshs y save PD ptr
+ tfr x,y copy ptr
+ abx point to next entry
+ leax 2,x code and count
+SCClrM7 cmpx 2,s end of buffer?
+ bcc SCClrM5 ..yes; no copy needed
+ tst ,x entry to copy?
+ beq SCClrM5 ..no
+ lda ,x+ copy code
+ sta ,y+
+ ldb ,x+ get byte count
+ stb ,y+ copy it
+SCClrM6 lda ,x+ copy the data
+ sta ,y+
  decb
- bne   SCClrM6
- bra   SCClrM7
-SCClrM5    clr   ,y
- puls  y
-SCClrM4    leas  $02,s
- clrb
+ bne SCClrM6
+ bra SCClrM7 copy next
+
+SCClrM5 clr ,y delete last entry
+ puls y retrieve PD ptr
+SCClrM4 leas 2,s ditch scratch
+ clrb no error
  rts
-SCClrM3    clr   $03,x
+
+SCClrM3 clr 3,x delete first entry (and so all)
  rts
 
 ********************
 * Find a macro
 *
-SCFMac    ldx   PD.BUF,y
-         leax  BuffSize+MacBfSiz,x
-         pshs  x
-         leax  -MacBfSiz+3,x
-SCFMac1    tst   ,x+
-         beq   SCFMac3
-         ldb   ,x+
-         cmpa  -2,x
-         beq   SCFMac2
-         abx
-         cmpx  ,s
-         bcs   SCFMac1
-SCFMac3 comb
-SCFMac2 leas 2,s
+SCFMac ldx PD.BUF,y get buffer ptr
+ leax BuffSize+MacBfSiz,x point past macro buffer
+ pshs x save end pointer
+ leax -MacBfSiz+3,x point at buffer
+SCFMac1 tst ,x+ end of entries?
+ beq SCFMac3 ..yes; not found
+ ldb ,x+ get byte count
+ cmpa -2,x this one?
+ beq SCFMac2 ..yes; found it
+ abx skip this entry
+ cmpx ,s end of buffer?
+ bcs SCFMac1 ..no; try next
+SCFMac3 comb error - not found
+SCFMac2 leas 2,s ditch scratch
  rts
  endc
 
-* (Y) = Path descriptor pointer
-* (U) = Caller's register stack pointer
 SCGStat ldx PD.RGS,y
- lda R$B,x
+ lda R$B,x get status code
  ifne EXTEND
- cmpa #SS.Edit
- beq SCEdit
+ cmpa #SS.Edit edit line?
+ beq SCEdit ..yes; do it
  endc
  cmpa #SS.OPT copy options stat?
  beq SCRETN ..yes; return OK
  ldb #D$GSTA
 
-SCGST1 pshs  a
- clra
- ldx   PD.DEV,y
- ldu   V$STAT,x
- ldx   V$DRIV,x
- addd  M$Exec,x driver's lbra table
- leax  d,x
+SCGST1 pshs A save function code
+ clra extend entry offset to two bytes
+ ldx PD.DEV,y dev tbl ptr
+ ldu V$STAT,x static storage for driver
+ ldx V$DRIV,x
+ addd M$Exec,x driver's lbra table
+ leax D,X
  puls a restore status function code
  jmp 0,x into the hands of a friendly driver
 
-SCPstat  lbsr  SCALOC
- bsr   PutStat
- pshs  b,cc
- lbsr  IODONE
- puls  pc,b,cc
+SCPstat lbsr SCALOC allocate device(s)
+ bsr PutStat
+ pshs b,cc save error status
+ lbsr IODONE
+ puls pc,b,cc
 
 PutStat lda R$B,u get status code
  ifne MACROS
@@ -391,18 +391,18 @@ PutStat lda R$B,u get status code
  cmpa #SS.CMac clear macro?
  lbeq SCClrM ..yes
  endc
- ldb   #D$PSTA
- cmpa  #SS.Opt set options?
- bne   SCGST1 ..No; pass status call to driver
- pshs  y
- ldx   D.Proc
- lda   P$Task,x
- ldb   D.SysTsk
- ldx   R$X,u
- leau  PD.OPT,y
- ldy   #OptCnt
- os9   F$Move
- puls  y
+ ldb #D$PSTA
+ cmpa #SS.Opt set options?
+ bne SCGST1 ..No; pass status call to driver
+ pshs y save PD ptr
+ ldx D.Proc get process ptr
+ lda P$Task,x get process task
+ ldb D.SysTsk get system task
+ ldx R$X,u get user's option bytes
+ leau PD.OPT,y get options ptr
+ ldy #OptCnt get byte count
+ os9 F$Move copy options
+ puls y retrieve PD ptr
 SCRETN rts
 
  ttl Input Routines
@@ -416,48 +416,49 @@ SCRETN rts
 *   User regs: (X)=Pointer to buffer
 *              (Y)=Max byte count
 *              (U)=Start cursor position
+
 SCEdit lbsr SCALOC Allocate device(s)
- bcs   SCRETN exit if not allocated
+ bcs SCRETN exit if not allocated
 
- ldx   R$Y,u get byte count
- lbeq  SCRead3 ..zero; return (gained ownership)
- tst   R$Y,u byte count > 255?
- beq   SCEdit10 ..no
- ldx   #256 max 256
+ ldx R$Y,u get byte count
+ lbeq SCRead3 ..zero; return (gained ownership)
+ tst R$Y,u byte count > 255?
+ beq SCEdit10 ..no
+ ldx #256 max 256
 
-SCEdit10 pshs  y,x
- ldx   D.Proc
- lda   P$Task,x
- ldb   D.SysTsk
- ldx   R$X,u
- ldu   PD.BUF,y
- ldy   ,s
- os9   F$Move
- puls  y,x
- tfr   u,d
- leax  d,x
- pshs  x
- lbsr  SCRPET
- ldu   PD.RGS,y
- lda   R$U+1,u
- pshs  b
- cmpa  ,s+
- bcs SCEdit12
- tfr   b,a
-SCEdit12 pshs  a
- subb  ,s+
- pshs  b
- tfr   a,b
+SCEdit10 pshs y,x save regs
+ ldx D.Proc get process ptr
+ lda P$Task,x get source task
+ ldb D.SysTsk get destination task
+ ldx R$X,u get source ptr
+ ldu PD.BUF,y get destination ptr
+ ldy ,s get byte count
+ os9 F$Move get the line to edit
+ puls y,x retrieve regs
+ tfr u,d put buffer ptr in D
+ leax d,x calculate max EOL ptr
+ pshs x save it
+ lbsr SCRPET display the line, get EOL ptr
+ ldu PD.RGS,y get register ptr
+ lda R$U+1,u get desired cursor position
+ pshs b push chr count
+ cmpa ,s+ valid cursor?
+ bcs SCEdit12 ..yes
+ tfr b,a stop at end of line
+SCEdit12 pshs A save it
+ subb ,S+ calculate number to move back
+ pshs b save it
+ tfr a,b calculate cursor position
  clra
- addd  PD.BUF,y
- tfr   d,u
- ldb   ,s+
- beq   SCEDIT15
- bsr   SCEdit20
-SCEDIT15 lbra  SCRd20
+ addd PD.BUF,y add buffer start
+ tfr d,u put in U
+ ldb ,s+ get number to move back
+ beq SCEDIT15 ..none
+ bsr SCEdit20 move back to cursor position
+SCEDIT15 lbra SCRd20 and read in the response
 
-SCEdit20 pshs  b
- lbra  SCDLL2
+SCEdit20 pshs B stack the count
+ lbra SCDLL2 and move back
 
  endc
 ***************
@@ -467,11 +468,11 @@ SCEdit20 pshs  b
 * Passed: (Y)=File Descriptor Static Storage
 
 SCRead lbsr SCALOC allocate devices
-         bcs   SCRETN
-         inc   PD.RAW,y
-         ldx   R$Y,u
-         lbeq  SCRead4
-         pshs  x
+ bcs SCRETN ..exit if not gotten
+ inc PD.RAW,y read mode (don't cook CR)
+ ldx R$Y,u called with zero byte count?
+ lbeq SCRead4 ..yes; exit (gained ownership)
+ pshs X save byte count
  ifne EXTEND
  ldu PD.BUF,y reset buffer ptr
  ldx #0 and byte count
@@ -479,102 +480,103 @@ SCRead lbsr SCALOC allocate devices
  jmp NOWHERE
  endc
  ifne MACROS
-         pshs  x,a save regs
-         ldx   BuffSize+1,u get possible current macro ptr
-         ldb   BuffSize,u is there some?
-         bne   SCRead5 ..yes; send it
-         puls  x,a retrieve regs
+ pshs x,a save regs
+ ldx BuffSize+1,u get possible current macro ptr
+ ldb BuffSize,u is there some?
+ bne SCRead5 ..yes; send it
+ puls x,a retrieve regs
  endc
-         lbsr  GetChr get character
-         bcs   SCERR
-         tsta null byte?
-         beq   SCRead2
-         cmpa  PD.EOF,y
-         bne   SCRead15
-SCEOFX    ldb   #E$EOF
-SCERR    leas  2,s
-         pshs  b
-         bsr   SCRead3
-         comb
-         puls  pc,b
+ lbsr GetChr get character
+ bcs SCERR ..error; return it
+ tsta null byte?
+ beq SCRead2 ..yes
+ cmpa PD.EOF,y End-of-File?
+ bne SCRead15 ..no
+SCEOFX ldb #E$EOF
+SCERR leas 2,s
+ pshs b
+ bsr SCRead3
+ comb
+ puls PC,B return error
 
-SCRead1    tfr   x,d
-         tstb
-         bne   SCRead12
-         lbsr  RetData
-         ldu   PD.BUF,y
-SCRead12    lbsr  GetChr
-         bcs   SCERR
+SCRead1 tfr X,D check byte count
+ tstb buffer full?
+ bne SCRead12 branch if not
+ lbsr RetData return data to process
+ ldu PD.BUF,y reset buffer ptr
+SCRead12 lbsr GetChr
+ bcs SCERR ..error; return it
  ifne MACROS
-SCRead15 pshs  x,a
-         pshs  y
-         lbsr  SCGetDev
-         bcs   SCRead8
-         cmpa  PD.LdIn-PD.OPT,y
-         bne   SCRead8
-         ldy   ,s
-         lbsr  GetChr
-         ora   #$80
-         bcc   SCRead8
-         leas  5,s
-         bra   SCERR
-SCRead8    puls  y
-         sta   ,s
-         lbsr  SCFMac
-         bcc   SCRead5
-         puls  x,a
+SCRead15 pshs x,a save chr and byte count
+ pshs y save PD ptr
+ lbsr SCGetDev extended edit facilities?
+ bcs SCRead8 ..no
+ cmpa PD.LdIn-PD.OPT,y lead-in character?
+ bne SCRead8 ..no
+ ldy ,s retrieve PD ptr
+ lbsr GetChr get next chr
+ ora #$80 set bit 7 for matching
+ bcc SCRead8 ..no read error
+ leas 5,s ditch scratch
+ bra SCERR ..abort
+SCRead8 puls y retrieve PD ptr
+ sta ,s update the save character
+ lbsr SCFMac macro?
+ bcc SCRead5 ..yes
+ puls x,a retrieve regs
  tst PD.EKO,y echo on?
  else
 SCRead15 pshs x,a
  tst PD.EKO,y echo on?
  endc
-         beq   SCRead2
-         lbsr  PutDv2 Print character
-SCRead2  leax  1,x
-         sta   ,u+
-         beq   SCRead22
-         cmpa  PD.EOR,y
-         beq   SCRead25
-SCRead22    cmpx  ,s
-         bcs   SCRead1
-SCRead25    leas 2,s
-SCRead3    lbsr  RetData
-         ldu   PD.RGS,y
-         stx   R$Y,u
-SCRead4    lbra  IODONE
+ beq SCRead2 ..no
+ lbsr PutDv2 echo raw chars
+SCRead2 leax 1,x increment byte count
+ sta ,U+ put char in buffer
+ beq SCRead22
+ cmpa PD.EOR,y End-of-Record?
+ beq SCRead25 ..yes; exit
+SCRead22 cmpx 0,S bytes read >= byte count requested?
+ bcs SCRead1 ..no; repeat
+SCRead25 leas 2,s return scratch
+SCRead3 lbsr RetData return data to process
+ ldu PD.RGS,y get user stack
+ stx R$Y,u return actual byte count
+SCRead4 lbra IODONE
  ifne MACROS
 
-SCRead5 leas 1,s
-         pshs  x,b
-SCRead6    ldx  1,s
-         lda   ,x+
-         sta   ,u+
-         stx  1,s
-         dec   ,s
-         tst   PD.EKO,y
-         beq   SCRead62
-         lbsr  PutDv2 Print character
-SCRead62    ldx 3,s
-         leax 1,x
-         stx  3,s
-         cmpx 5,s
-         bcc   SCRead7
-         tfr   x,d
-         tstb
-         bne   SCRead65
-         lbsr  RetData
-         ldu   PD.BUF,y
-SCRead65    tst   ,s
-         bne   SCRead6
-         leas  5,s
-         lbra  SCRead12
-SCRead7    ldx   PD.BUF,y
-         puls  b
-         stb   BuffSize,x
-         puls  b,a
-         std   BuffSize+1,x
-         puls  x
-         bra   SCRead25
+SCRead5 leas 1,s ditch chr
+ pshs x,b save macro ptr and byte count
+SCRead6 ldx  1,s get macro ptr
+ lda ,x+ get a chr
+ sta ,u+ put in buffer
+ stx 1,s update ptr
+ dec ,s keep macro count
+ tst PD.EKO,y echo on?
+ beq SCRead62 ..no
+ lbsr PutDv2 echo chr
+SCRead62 ldx 3,s get byte count
+ leax 1,x bump it
+ stx 3,s update it
+ cmpx 5,s enough for caller?
+ bcc SCRead7 ..yes
+ tfr x,d buffer full?
+ tstb
+ bne SCRead65 ..no
+ lbsr RetData return a bufferfull
+ ldu PD.BUF,y update buffer ptr
+SCRead65 tst ,s end of macro?
+ bne SCRead6 ..no
+ leas 5,s ditch scratch
+ lbra SCRead12 and get next chr
+
+SCRead7 ldx PD.BUF,y get buffer ptr
+ puls b get remaining count
+ stb BuffSize,x save it
+ puls D get macro ptr
+ std BuffSize+1,x save that too
+ puls x retrieve byte count
+ bra SCRead25 and return to caller
  endc
  page
 ***************
@@ -641,6 +643,7 @@ SCRd65 cmpa ,y+ this key?
  bls SCRd65 ..yes
 * anda #$7F used to clear bit 7 and fall through
 SCRd27 puls y retrieve PD ptr
+
  else
  endc
  ifne MACROS
@@ -649,27 +652,27 @@ SCRd27 puls y retrieve PD ptr
  ifne MACROS+EXTEND
 SCRd30
  endc
-SCRd35 leax 1,x
- cmpx 0,s
+SCRd35 leax 1,x Increment byte count
+ cmpx 0,S Input overrun?
  ifne EXTEND
- leax -1,x
+ leax -1,x restore EOL ptr
  endc
- blo SCRd40
-SCRd37 lda PD.OVF,y
+ blo SCRd40 ..no
+SCRd37 lda PD.OVF,y Get line overflow char
  lbsr OUTCHR
  ifeq EXTEND
  endc
- bra SCRd20
-SCRd40 lbsr UPCASE
+ bra SCRd20 get next char
+SCRd40 lbsr UPCASE Check for upcase only
  ifne EXTEND
- lbsr  SCINS
+ lbsr SCINS put chr in buffer and echo
  else
  endc
 SCRd50 bra SCRd20 Go get more
  ifne EXTEND
 
-SCRd90 puls y
- lbra SCABT
+SCRd90 puls Y retrieve path descriptor ptr
+ lbra SCABT and abort
 
 SCRd70 puls y retrieve path descriptor ptr, fall through
 
@@ -695,14 +698,13 @@ SCCTLC pshs pc,x save regs
  endc
  ifne EXTEND
  page
-* Process "Edit" character
-SCGetDev pshs a save A
+SCGetDev pshs A save A
  lda PD.Edit,y
  pshs  a
  ldy PD.DEV,y
- ldy V$DESC,y
- leay M$DTyp,y
- coma
+ ldy V$DESC,y get device descriptor address
+ leay M$DTyp,y point at options section
+ coma set carry
  lda ,s+ editing functions available?
  bne SCGetD1 ..no
  clra clear carry
@@ -748,39 +750,39 @@ SCEOL leas 2,s discard return addr
 
  ifne EXTEND
 SCGetLen exg x,d calculate line length
- subd  PD.BUF,y
- exg   d,x
+ subd PD.BUF,y from EOL ptr
+ exg d,x
  rts
 
-SCMKEL lda #C$CR
- sta ,x
+SCMKEL lda #C$CR mark EOL with CR
+ sta ,X
  rts
 
-SCChkEol pshs x
- cmpu ,s
+SCChkEol pshs x stack EOL ptr
+ cmpu ,s check for EOL
  puls pc,x
  endc
 
-SCEOF leas 2,s
+SCEOF leas 2,s discard return addr
  ifne EXTEND
- cmpx PD.BUF,y
- lbne SCRd30
- ldx #0
- lbra SCEOFX
+ cmpx PD.BUF,y first chr?
+ lbne SCRd30 ..no
+ ldx #0 zero chr count
+ lbra SCEOFX end of file
  else
  endc
 
-SCABT    pshs  b
+SCABT pshs B save error code
  ifne EXTEND
- bsr   SCMKEL
+ bsr SCMKEL mark end of line with CR
  else
  endc
  ifne EXTEND
- lbsr  EKOCR
+ lbsr EKOCR Print carriage return
  else
  endc
-         puls  b
-         lbra  SCERR
+ puls B restore error code
+ lbra SCERR detach drivers; return error
 
  ifne EXTEND
 * Delete line left
@@ -822,20 +824,20 @@ SCDEL3    bsr   SCSPACE
 SCDELR    clr   ,-s clear counter
          pshs  u,x save cursor and EOL ptr
          leax  ,u new EOL ptr
-SCDELR1    cmpu  ,s check end of line
-         beq   SCDELR2 ..yes
-         leau  1,u bump cursor
-         bsr   SCSPACE clear a space
-         inc   4,s keep count
-         bra   SCDELR1
+SCDELR1 cmpu ,s check end of line
+ beq SCDELR2 ..yes
+ leau 1,u bump cursor
+ bsr SCSPACE clear a space
+ inc 4,s keep count
+ bra SCDELR1 until end of line
 
-SCDELR2    puls  u,b,a retrieve cursor and scratch
-         tst   ,s any backspaces needed?
-         lbne  SCDLL2 ..yes
-         puls  pc,b
+SCDELR2 puls U,D retrieve cursor and scratch
+ tst ,S any backspaces needed?
+ lbne SCDLL2 ..yes
+ puls PC,B
 
-SCSPACE    lda   #C$SPAC write a space
-         lbra  CHKEKO
+SCSPACE lda #C$SPAC write a space
+ lbra CHKEKO
 
 SCMLFT    pshs  y save path descriptor ptr
          lbsr  SCGetDev point into device descriptor
@@ -964,106 +966,106 @@ SCShLn clrb clear byte count
  pshs u,b save count and U
 SCShL1 bsr SCChkE end of line?
  bcc SCShL2 ..yes
-         lda   ,u+ get a chr
-         cmpa  #C$CR done?
-         beq   SCShL2 ..yes
-         lbsr  CHKEKO display the chr
-         inc ,s keep count
-         bra   SCShL1
+ lda ,u+ get a chr
+ cmpa #C$CR done?
+ beq SCShL2 ..yes
+ lbsr CHKEKO display the chr
+ inc ,s keep count
+ bra SCShL1
 
 SCShL2 puls  pc,u,b return with forward count
 
 * Insert a character into the buffer
-SCINS    bsr   SCChkE
-         bcs   SCINS1
-         sta   ,u+
-         leax  $01,x
-         lbra  CHKEKO
+SCINS bsr SCChkE at end of line?
+ bcs SCINS1 ..no
+ sta ,u+ put chr in buffer
+ leax 1,x bump EOL ptr
+ lbra CHKEKO and echo the chr
 
-SCINS1    pshs  u
-         leau  ,x
-SCINS3    ldb   ,-u
-         stb   $01,u
-         cmpu  ,s
-         bne   SCINS3
-         leas  $02,s
-         sta   ,u
-         leax  $01,x
-         bsr   SCShLn
-         leau  $01,u
+SCINS1 pshs u save cursor position
+ leau ,x point at end of line
+SCINS3 ldb ,-U move chrs right one
+ stb 1,u
+ cmpu ,s done?
+ bne SCINS3 ..no; loop
+ leas 2,s return scratch
+ sta ,u put chr in buffer
+ leax 1,x increment EOL ptr
+ bsr SCShLn display to end of line
+ leau 1,u move cursor forward one
  decb one less backspace
- pshs  b save count
+ pshs B save count
  bra SCDLL2 end move back to cursor position
 
  endc
-EKOCR    lda   #C$CR
-         lbra  EKOBYT Print character
+EKOCR lda #C$CR
+ lbra EKOBYT
 
  ifne EXTEND
-SCPRNT lbsr SCMKEL
+SCPRNT lbsr SCMKEL mark end of line
  else
  endc
  ifne EXTEND
- lbsr SCDEL9
+ lbsr SCDEL9 reset buffer ptr, count
  else
  endc
-SCPRT1 lbsr EKOCHR
+SCPRT1 lbsr EKOCHR Print one char
 
  ifne EXTEND
-SCRPET    ldx   $02,s
-         bsr   SCShLn
-         clra
-         pshs  u
-         addd  ,s++
-         tfr   d,x
-         leau  ,x
-         rts
+SCRPET ldx 2,s get max EOL
+ bsr SCShLn display rest of line
+ clra
+ pshs u
+ addd ,s++
+ tfr d,x put in X
+ leau ,x and U, cursor ptr
+ rts
  else
  endc
 
  ifne MACROS
 * Check character against macro table
-SCChkMac    pshs  x,a
-         lbsr  SCFMac
-         bcc   SCRd80
-         puls  x,a
-         lbra  SCRd35
-SCRd80    leas 1,s
-         pshs  x,b
-         ldx   $03,s
-         abx
-         cmpx  $05,s
-         bcs   SCRd87
-         leas  $03,s
-         puls  x
-         lbra  SCRd37
-SCRd87    pshs  u
-         cmpu  $05,s
-         bcc   SCRd95
-         ldu   $05,s
-         tfr   u,d
-         subd  ,s
-SCRd88    lda   ,-u
-         sta   ,-x
-         decb
-         bne   SCRd88
-         ldu   ,s
-         ldb   $02,s
-SCRd95    ldx   $03,s
-L065B    lda   ,x+
-         sta   ,u+
-         decb
-         bne   L065B
-         ldx   $05,s
-         ldb   $02,s
-         abx
-         stu   $03,s
-         ldu   ,s
-         lbsr  SCShLn
-         subb  $02,s
-         beq   L0674
-         bsr   SCRd120
-L0674    ldu 3,s
+SCChkMac pshs x,a save EOL ptr and chr
+ lbsr SCFMac macro key?
+ bcc SCRd80 ..yes
+ puls x,a retrieve EOL ptr and chr
+ lbra SCRd35
+SCRd80 leas 1,s ditch chr
+ pshs x,b save macro ptr and byte count
+ ldx 3,s get EOL ptr
+ abx add in count
+ cmpx 5,s room in buffer?
+ bcs SCRd87 ..yes
+ leas 3,s ditch scratch
+ puls x retrieve EOL ptr
+ lbra SCRd37 ..line overflow
+SCRd87 pshs u save buffer ptr
+ cmpu 5,s at end of line?
+ bcc SCRd95 ..yes; no copy
+ ldu 5,s get EOL ptr
+ tfr u,d put in d
+ subd ,s calculate chrs to move
+SCRd88 lda ,-u copy chrs forward
+ sta ,-x
+ decb
+ bne SCRd88
+ ldu ,s retrieve buffer ptr
+ ldb 2,s and byte count
+SCRd95 ldx 3,s get macro ptr
+SCRd100 lda ,x+ copy the macro
+ sta ,u+ (updates buffer ptr too)
+ decb
+ bne SCRd100
+ ldx 5,s get EOL ptr
+ ldb 2,s retrieve byte count
+ abx update EOL ptr
+ stu 3,s save new buffer ptr
+ ldu ,s retrieve old ptr
+ lbsr SCShLn display the line
+ subb 2,s need to move back?
+ beq SCRd110 ..no
+ bsr SCRd120 move back to cursor position
+SCRd110 ldu 3,s retrieve new buffer ptr
  leas 7,s ditch scratch
  lbra SCRd20 and go for next chr
 
@@ -1180,54 +1182,54 @@ IODO10    beq   IODO90
          clr   $04,x
 IODO90    rts
 
-GetDev    pshs  x,a
-         ldx   $02,x
-         lda   $04,x
-         beq   GetDev10
-         cmpa  ,s
-         beq   GetDev20
-         pshs  a
-         bsr   IODONE
-         puls  a
-         os9   F$IOQu
-         inc   $0F,y
-         ldx   D.Proc
-         ldb   P$Signal,X
-         puls  x,a
-         beq   GetDev
-         coma
-         rts
+GetDev pshs X,A save P$ID, Dev Tbl ptr
+ ldx V$STAT,x get ptr to device static storage
+ lda V.Busy,x is device busy?
+ beq GetDev10 ..no; return
+ cmpa 0,s current process owned?
+ beq GetDev20 ..yes; return
+ pshs a save device owner
+ bsr IODONE release devices
+ puls a restore device owner
+ os9 F$IOQu sleep until device is available
+ inc PD.MIN,y
+ ldx D.Proc
+ ldb P$Signal,X is it wake-up?
+ puls x,a
+ beq GetDev ..yes; try again
+ coma
+ rts return signal as error
 
 GetDev10 lda 0,s
-         sta   V.Busy,x mark device as owned
-         sta   V.LPRC,x
-         lda   PD.PSC,y
-         sta   V.PCHR,x initialize pause char
-         ldd   PD.INT,y
-         std   V.INTR,x
-         ldd   <$38,y
-         std   $0F,x
-         lda   <$34,y
-         beq   GetDev20
-         sta   $06,x
-GetDev20    clra
-         puls  pc,x,a
+ sta V.Busy,x mark device as owned
+ sta V.LPRC,x
+ lda PD.PSC,y
+ sta V.PCHR,x initialize pause char
+ ldd PD.INT,y
+ std V.INTR,x initialize Interrupt, Abort chars
+ ldd PD.XON,y
+ std V.XON,x initialize XON, XOFF chars
+ lda PD.PAR,y reset device type
+ beq GetDev20
+ sta V.Type,x
+GetDev20 clra
+ puls pc,x,a
 
-SCALOC    ldx   D.Proc
-         lda   P$ID,x get current process ID
-         clr   PD.MIN,y
-         ldx   PD.DEV,y
-         bsr   GetDev
-         bcs   SCAL90
-         ldx   $0A,y
-         beq   SCAL20
-         bsr   GetDev
-         bcs   SCAL90
-SCAL20    tst   $0F,y
-         bne   SCALOC
-         clr  PD.RAW,y
-SCAL90    ldu PD.RGS,y
-         rts
+SCALOC ldx D.Proc
+ lda P$ID,x get current process ID
+ clr PD.MIN,y
+ ldx PD.DEV,y
+ bsr GetDev allocate Input device
+ bcs SCAL90
+ ldx PD.DV2,y
+ beq SCAL20
+ bsr GetDev allocate output device
+ bcs SCAL90
+SCAL20 tst PD.MIN,y ..devices mine?
+ bne SCALOC ..no; try again
+ clr PD.RAW,y init to cooked mode
+SCAL90 ldu PD.RGS,y
+ rts
 
  ttl Output Routines
  page
@@ -1235,77 +1237,84 @@ SCAL90    ldu PD.RGS,y
 * SCWrLine
 *   Process Write Line Request
 
-SCWrLine bsr SCALOC
- bra SCWrit00
+* Passed: (Y)= Path Descriptor ptr
+
+SCWrLine bsr SCALOC get I/O devices
+ bra SCWrit00 write line
 
 ***************
 * SCWrite
+*   Write Characters to Output device
 
-SCWrite    bsr   SCALOC
-         inc   PD.RAW,y
-SCWrit00    ldx   R$Y,u
-         beq   L07F1
-         pshs  x
-         ldx   #0
-         bra   L0788
-SCWrit10    tfr   u,d
-         tstb
-         bne   SCWrit40
-L0788    pshs  y,x
-         ldd   ,s
-         ldu   $06,y
-         ldx   $04,u
-         leax  d,x
-         ldd   $06,u
-         subd  ,s
-         cmpd  #OutBfSiz
-         bls   L079F
-         ldd   #$0020
-L079F    pshs  b,a
-         ldd   $08,y
-         inca
-         subd  ,s
-         tfr   d,u
-         lda   #$0D
-         sta   -1,u
-         ldy   D.Proc
-         lda   P$Task,y
-         ldb   D.SysTsk
-         puls  y
-         os9   F$Move
-         puls  y,x
-SCWrit40    lda   ,u+
-         tst  PD.RAW,y
-         bne   SCWrit50
-         lbsr  UPCASE
-         cmpa  #$0A
-         bne   SCWrit50
-         lda   #$0D
-         tst   <$25,y
-         bne   SCWrit50
-         bsr   PutChr
-         bcs   SCWrErr
-         lda   #$0A
-SCWrit50    bsr   PutChr
-         bcs   SCWrErr
-         leax  $01,x
-         cmpx  ,s
-         bcc   L07EB
-         lda   -$01,u
-         beq   SCWrit10
-         cmpa  PD.EOR,y
-         bne   SCWrit10
-         tst   PD.RAW,y
-         bne   SCWrit10
-L07EB    leas  $02,s
-L07ED    ldu   PD.RGS,y
-         stx   R$Y,u
-L07F1    lbra  IODONE
+* Passed: (Y)=File Descriptor address
 
-SCWrErr    leas 2,s
-         pshs  b,cc
-         bsr   L07ED
-         puls  pc,b,cc
+SCWrite bsr SCALOC get I/O devices
+ inc PD.RAW,y write mode (don't cook CR)
+SCWrit00 ldx R$Y,u get caller's byte count
+ beq SCWrit99 none; return (have gained last CTL of device)
+ pshs x save byte count
+ ldx #0 clear byte count
+ bra SCWrit20
+
+SCWrit10 tfr U,D copy byte count
+ tstb end of buffer?
+ bne SCWrit40 branch if not
+SCWrit20 pshs  y,x save registers
+ ldd 0,s get byte count
+ ldu PD.Rgs,y get registers ptr
+ ldx R$X,u get source ptr
+ leax d,x get current ptr
+ ldd R$Y,u get byte count
+ subd 0,s get bytes remaining
+ cmpd #OutBfSiz more than one "chunk"?
+ bls SCWrit30 branch if not
+ ldd #OutBfSiz set max byte count
+SCWrit30 pshs D save byte count
+ ldd PD.Buf,y get buffer ptr
+ inca end of buffer + 1
+ subd 0,s minus bytes to read
+ tfr D,U (U)=destination ptr
+ lda #C$CR mark end of buffer
+ sta -1,u
+ ldy D.Proc get process ptr
+ lda P$Task,y get process task
+ ldb D.SysTsk get system task number
+ puls y retrieve byte count
+ os9 F$Move get user data
+ puls y,x retrieve registers
+SCWrit40 lda ,u+ get next output character
+ tst PD.RAW,y cooked mode?
+ bne SCWrit50 ..no
+* anda #$7F used to strip high order bit
+ lbsr UPCASE check for uppercase convert
+ cmpa #C$LF
+ bne SCWrit50
+ lda #C$CR output EOL for line feeds
+ tst PD.ALF,y auto line feed on?
+ bne SCWrit50 ..Yes
+ bsr PutChr output CR
+ bcs SCWrErr abort if write error
+ lda #C$LF
+SCWrit50 bsr PutChr put char in output buffer
+ bcs SCWrErr exit if write error
+ leax 1,x count byte
+ cmpx 0,s written enough?
+ bcc SCWrit60 branch if so
+ lda -1,u get last char
+ beq SCWrit10 nulls can't be end of lines
+ cmpa PD.EOR,y end of line?
+ bne SCWrit10 ..no; loop
+ tst PD.RAW,y write line mode?
+ bne SCWrit10 ..no; loop
+SCWrit60 leas 2,s return scratch
+SCWrit70 ldu PD.RGS,y get registers ptr
+ stx R$Y,u return to user
+SCWrit99 lbra IODONE
+
+SCWrErr leas 2,s return scratch
+ pshs b,cc save error status
+ bsr SCWrit70 return byte count sent
+ puls pc,b,cc return error status
  page
 ***************
 * PutChr
@@ -1378,6 +1387,18 @@ PutChr2 bsr WrChar write character
  puls pc,u,x,a
 
 WrChar ldu #D$WRIT
+
+***************
+* IOEXEC
+*   Execute SCF Device's Read/Write routine
+
+* Passed: (A)=output char (write)
+*         (X)=Device Table entry ptr
+*         (Y)= Path Descriptor ptr
+*         (U)=offset of routine (D$ReaD, D$Write)
+* returns: (A)=Input char (read)
+*          (B)=error code, C=set if error
+* Destroys: B,CC
 
 IOEXEC pshs u,y,x,a
          ldu   V$STAT,x
