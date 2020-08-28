@@ -79,42 +79,42 @@ ClkEnt pshs DP save direct page
  clra clear Dp
  tfr A,DP
  pshs CC save interrupt masks
-         lda #10 Set ticks / second
-         sta   D.TSec
-         sta   D.Tick
-         lda #1 Set ticks / time-slice
-         sta   D.TSlice
-         sta   D.Slice
-         orcc #IRQMask+FIRQMask Set intrpt masks
-         leax  >CLKSRV,pcr
+ lda #10 Set ticks / second
+ sta D.TSEC
+ sta D.Tick
+ lda #1 Set ticks / time-slice
+ sta D.TSlice
+ sta D.Slice
+ orcc #IRQMask+FIRQMask Set intrpt masks
+ leax CLKSRV,PCR Get service routine
  stx D.IRQ Set interrupt vector
  leas -5,S get scratch
  ldx #D.Month Get month ptr
-         bsr   CNVBB
-         stb   ,s
-         bsr   CNVBB
-         stb   $01,s
-         bsr   CNVBB
-         stb   $02,s
-         bsr   CNVBB
-         stb   $03,s
-         bsr   CNVBB
-         stb   $04,s
-         ldx   >CLKPRT,pcr
-         ldd   #$FF02
+ bsr CNVBB Convert binary to bcd
+ stb 0,S save month
+ bsr CNVBB Convert
+ stb 1,S save day
+ bsr CNVBB Convert
+ stb 2,S save hour
+ bsr CNVBB Convert
+ stb 3,S save minute
+ bsr CNVBB Convert
+ stb 4,S save second
+ ldx CLKPRT,PCR get clock address
+ ldd #$FF02
  sta LatchRst,X Reset latches
  lda Status,X Clear any interrupt
  stb Control,X enable 100 millisec line
  lda 0,S retrieve month
-         beq   SkipSet
-         sta   $07,x
-         lda   $01,s
-         beq   SkipSet
-         sta   $06,x
-         lda   $02,s
-         sta   $04,x
-         ldd   $03,s
-         sta   $03,x
+ beq SkipSet
+ sta Month,X set clock chip
+ lda 1,S retrieve day
+ beq SkipSet
+ sta DayMonth,X
+ lda 2,S retrieve hour
+ sta Hour,X Set clock chip
+ ldd 3,S retrieve minute & second
+ sta Minute,X set clock chip
  clr Go,X reset seconds
  stb Second,X
 SkipSet leas 5,S return scratch
@@ -141,32 +141,32 @@ CNVB20 decb Count Unit
 *
 TIME equ *
  ldx CLKPRT,PCR Get clock port address
-         pshs  cc
+ pshs CC Save masks
  orcc #IRQMask+FIRQMask Set interrupt masks
-TIME10    lda   $02,x
-         sta   D.Sec
-         lda   $03,x
-         sta   D.Min
-         lda   $04,x
-         sta   D.Hour
-         lda   $06,x
-         sta   D.Day
-         lda   $07,x
-         sta   D.Month
-         lda   <$14,x
-         rora  
-         bcs   TIME10
-         puls  cc
+TIME10 lda Second,X get second
+ sta D.SEC Set second
+ lda Minute,X get minute
+ sta D.MIN Set minute
+ lda Hour,X Get hour
+ sta D.HOUR Set hour
+ lda DayMonth,X Get day
+ sta D.DAY Set day
+ lda Month,X get month
+ sta D.Month Set month
+ lda RollOver,X Check for rollover
+ rora
+ bcs TIME10 Branch if so
+ puls CC Retrieve interrupt masks
  ldx #D.Month Get date ptr
 TIME20 lda 0,X Get bcd byte
-         anda  #$F0
-         tfr   a,b
-         eora  ,x
-         sta   ,x
-         lsrb  
-         lsrb  
-         lsrb  
-         lsrb  
+ anda #$F0 Get msn
+ tfr A,B Copy it
+ eora 0,X Get lsn
+ sta 0,X Save it
+ lsrb ADJUST Msn
+ lsrb
+ lsrb
+ lsrb
  lda #10
  mul
  addb 0,X Add lsn
@@ -174,15 +174,15 @@ TIME20 lda 0,X Get bcd byte
  cmpx #D.SEC+1
  bcs TIME20
 
-         ldx   4,u
-         ldd   D.Year
-         std   ,x
-         ldd   D.Day
-         std   $02,x
-         ldd   D.Min
-         std   $04,x
-         clrb  
-         rts   
+ ldx R$X,U Get specified location
+ ldd D.YEAR Get year & month
+ std 0,X
+ ldd D.DAY Get day & hour
+ std 2,X
+ ldd D.MIN Get minute & second
+ std 4,X
+ clrb Clear Carry
+ rts
 
          emod
 eom      equ   *
