@@ -90,7 +90,7 @@ D$REBOOT equ $FFEE use an unused vector
 
 ClocType set M58167
 TickSec set 10 ticks per second
-Cx2Int set 1 CA2 (CB2) interrupt input
+*Cx2Int set 1 CA2 (CB2) interrupt input
 FPort set $ECD1 floppy disk controller
 HPort set $FD00 hard disk controller
 DrvCnt set 4 four drives
@@ -106,10 +106,10 @@ A.KBD set A.P+2 keyboard port address
 A.KLoad set A.KBD port whose control reg has keyboard LOAD
 A.GCon equ DAT.Task+2 graphics control port
 A.Cont equ DAT.Task+1 control reg with CONTROL bit
-A.Clock set $ECD0
-A.DskSel equ A.Mouse disk select port
-A.Beeper equ A.DskSel+2 port with beeper on it
-A.ChrSet equ A.Beeper port with 'character set select'
+A.Clock set $E220
+*A.DskSel equ A.Mouse disk select port
+*A.Beeper equ A.DskSel+2 port with beeper on it
+*A.ChrSet equ A.Beeper port with 'character set select'
 A.Baud equ A.Beeper port with baud rate setting
 
 B.DPHalt equ $80 DMA processor HALT bit in disk Select port

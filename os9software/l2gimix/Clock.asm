@@ -1,1 +1,1 @@
- use /d0/dragon128/Clock.asm
+ use /d0/kernel/ClockL2_ed3.asm
