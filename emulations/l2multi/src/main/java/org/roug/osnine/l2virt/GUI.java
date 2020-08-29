@@ -112,7 +112,6 @@ public class GUI {
         bus.insertMemorySegment(rom);
 
         loadROMToEnd(0x100000, "OS9p1");
-       // loadROM(0xFF000, "Boot","Init");
         loadROM(0xFF000, "Boot");
 
         MM58167 irqBeat = new MM58167(0xFE220, bus);

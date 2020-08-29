@@ -49,7 +49,6 @@
         <assemble src="D1"/>
         <assemble src="D2"/>
         <assemble src="D3"/>
-        <assemble src="Clock"/>
         <assemble src="SysGo"/>
         <!--
         -->
