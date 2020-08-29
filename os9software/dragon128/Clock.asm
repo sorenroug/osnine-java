@@ -115,7 +115,7 @@ Go equ 21
 *     Non-Clock Interrupt Service
 *
 NOTCLK ldd D.Poll get polling routine ptr
- lbra  TICK50
+ lbra TICK50
 
 
 *************************************************************
@@ -126,7 +126,7 @@ NOTCLK ldd D.Poll get polling routine ptr
 *       entered. It must not be used, but it must not be 
 *       lost.
 *
-CLKSRV ldx CLKPRT,PCR  GET CLOCK ADDRESS
+CLKSRV ldx CLKPRT,PCR GET CLOCK ADDRESS
  ifeq ClocType-MC6840
  endc
  ifeq ClocType-VIA
@@ -189,7 +189,7 @@ TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
  ifeq (ClocType-MC6840)*(ClocType-VIA)*(ClocType-VSYNC)
  ifne (CPUType-Profitel)
- lda #TickSec  Get ticks presecond
+ lda #TickSec Get ticks presecond
  else
  endc
  endc
@@ -198,13 +198,13 @@ TICK35 std D.MIN Update minute & second
  endc
  ifne TimePoll
 Tick40 leau ,s copy sp
- ldx   D.SysIRQ in system mode?
- cmpx  D.XIRQ
- beq   Tick41 ..yes; no switch required
+ ldx D.SysIRQ in system mode?
+ cmpx D.XIRQ
+ beq Tick41 ..yes; no switch required
 
- lds   D.SysStk get system stack
- ldd   D.SysSvc set system service table
- std   D.XSWI2
+ lds D.SysStk get system stack
+ ldd D.SysSvc set system service table
+ std D.XSWI2
 
 Tick41 pshs u save the sp as was
 
@@ -225,6 +225,7 @@ Tick47 ldd D.Clock get clock routine ptr
  puls u retrieve saved sp
  leas ,u restore it
  else
+ ldd D.Poll get polling routine ptr
  endc
 TICK50 std D.SvcIRQ set IRQ service routine
  jmp [D.XIRQ] enter system
@@ -236,11 +237,11 @@ TICK50 std D.SvcIRQ set IRQ service routine
 ClkEnt equ *
  ifne TimePoll
  clrb clear carry
- ldx   D.TimTbl table already exists?
- bne   ClkEnt3 ..yes; skip initialisation
+ ldx D.TimTbl table already exists?
+ bne ClkEnt3 ..yes; skip initialisation
  endc
  ifne ClocType
- pshs  cc save interrupt masks
+ pshs cc save interrupt masks
  ifeq (ClocType-MC6840)*(ClocType-VIA)*(ClocType-VSYNC)
  ifne (CPUType-Profitel)
  lda #TickSec get ticks per second
@@ -248,6 +249,7 @@ ClkEnt equ *
  endc
  endc
  ifeq ClocType-M58167 M58167 CLOCK CHIP
+ lda #TickSec get ticks per second
  endc
  ifeq ClocType-MC146818 MC146818 Clock chip
  endc
@@ -266,7 +268,7 @@ ClkEnt equ *
 ClkEnt1 sty ,u++
  decb
  bne ClkEnt1
-ClkEnt2 puls  u
+ClkEnt2 puls u
  endc
  orcc #IntMasks set interrupt masks
  leax CLKSRV,pcr GET SERVICE ROUTINE
@@ -286,6 +288,36 @@ ClkEnt2 puls  u
  sta 1,x set control register
  endc
  ifeq ClocType-M58167 M58167 CLOCK CHIP
+ leas -5,S get scratch
+ ldx #D.Month Get month ptr
+ bsr CNVBB Convert binary to bcd
+ stb 0,S save month
+ bsr CNVBB Convert
+ stb 1,S save day
+ bsr CNVBB Convert
+ stb 2,S save hour
+ bsr CNVBB Convert
+ stb 3,S save minute
+ bsr CNVBB Convert
+ stb 4,S save second
+ ldx CLKPRT,PCR get clock address
+ ldd #$FF02
+ sta LatchRst,X Reset latches
+ lda Status,X Clear any interrupt
+ stb Control,X enable 100 millisec line
+ lda 0,S retrieve month
+ beq SkipSet
+ sta Month,X set clock chip
+ lda 1,S retrieve day
+ beq SkipSet
+ sta DayMonth,X
+ lda 2,S retrieve hour
+ sta Hour,X Set clock chip
+ ldd 3,S retrieve minute & second
+ sta Minute,X set clock chip
+ clr Go,X reset seconds
+ stb Second,X
+SkipSet leas 5,S return scratch
  endc
  ifeq ClocType-MC146818 MC146818 Clock chip
  endc
@@ -295,6 +327,16 @@ ClkEnt2 puls  u
 ClkEnt3 rts
 
  ifeq ClocType-M58167
+
+CNVBB lda ,X+ Get binary byte
+ ldb #$FA Init bcd byte
+CNVB10 addb #$10 Count ten
+ suba #10 Is there a ten?
+ bcc CNVB10 Branch if so
+CNVB20 decb Count Unit
+ inca Is there a unit?
+ bne CNVB20 Branch if so
+ rts
  endc
  ifne TimePoll
 ****************************************
