@@ -2,8 +2,16 @@
 <chapter xmlns="http://docbook.org/ns/docbook">
   <title>Standard Functions and Procedures</title>
   <abstract>
-    <para><application>OS-9 Pascal</application> includes a library of standard functions and procedures that perform a variety of useful tasks. These subprograms are <quote>built-in</quote> <application>OS-9 Pascal</application> and can be used in programs without any special declarations. This chapter describes the subprograms for mathematical and run-time control. Input/Output related standard subprograms are discussed in Chapter 8.</para>
-    <para><application>OS-9 Pascal</application> includes all ISO standard functions (except DISPOSE, PACK, AND UNPACK) plus a number of additional non-standard functions, which are denoted by an asterisk where they appear in the descriptions that follow.</para>
+    <para><application>OS-9 Pascal</application> includes a library of
+    standard functions and procedures that perform a variety of useful
+    tasks. These subprograms are <quote>built-in</quote>
+    <application>OS-9 Pascal</application> and can be used in programs without any special declarations.
+    This chapter describes the subprograms for mathematical and run-time control.
+    Input/Output related standard subprograms are discussed in Chapter 8.</para>
+    <para><application>OS-9 Pascal</application> includes all ISO
+    standard functions (except DISPOSE, PACK, AND UNPACK) plus a number
+    of additional non-standard functions, which are denoted by an asterisk
+    where they appear in the descriptions that follow.</para>
   </abstract>
   <para>Standard Procedures:</para>
   <simplelist>
@@ -75,7 +83,12 @@
       <varlistentry>
         <term>Procedure MATHABORT(logical-value:boolean)*</term>
         <listitem>
-          <para>If the value supplied is TRUE, arithmetic overflow, range error, and divide by zero errors will cause the program to abort (this is the default mode)* A value of FALSE will not abort the program and will keep the least significant bits of the result for integer overflow conditions and return zero for divide by zero conditions(See 12-4).</para>
+          <para>If the value supplied is TRUE, arithmetic overflow,
+          range error, and divide by zero errors will cause the program
+          to abort (this is the default mode)* A value of FALSE will
+          not abort the program and will keep the least significant bits
+          of the result for integer overflow conditions and return zero
+          for divide by zero conditions (See 12-4).</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -94,7 +107,14 @@
   </sect1>
   <sect1>
     <title>Standard Functions</title>
-    <para>The following is a list of non-I/O-related standard functions available. I/O-related functions are discussed in Chapter 8, The expected arguments and their type, and the type of the value returned by the function is given in the title line, followed by a description of the function's operation. Those functions which are extensions added to <application>OS-9 Pascal</application> but not called for in the ISO standard are marked by <quote>*</quote>. Programs that use these functions may not be portable to other Pascal compilers.</para>
+    <para>The following is a list of non-I/O-related standard functions
+    available. I/O-related functions are discussed in Chapter 8, The
+    expected arguments and their type, and the type of the value returned
+    by the function is given in the title line, followed by a description
+    of the function's operation. Those functions which are extensions
+    added to <application>OS-9 Pascal</application> but not called for
+    in the ISO standard are marked by <quote>*</quote>. Programs that use
+    these functions may not be portable to other Pascal compilers.</para>
     <variablelist>
     <?dbfo list-presentation="blocks"?>
       <varlistentry>
@@ -196,7 +216,16 @@
       <varlistentry>
         <term>Function SHELL(string-or-char-array): integer*</term>
         <listitem>
-          <para>This function calls the OS-9 SHELL, passing the string or character array in the parameter area to be executed as an OS-9 command. SHELL can be used to access any OS-9 command, utility, or to run other concurrent or sequential programs. The error code returned from SHELL is converted to an integer by prefixing 8 bits of zeros. If a string constant is used, it must be at least 2 characters long. If a character array is used, a carriage return character must be put in the array to terminate the command to SHELL. A carriage return character has a decimal value of 13.</para>
+          <para>This function calls the OS-9 SHELL, passing the string
+          or character array in the parameter area to be executed as an
+          OS-9 command. SHELL can be used to access any OS-9 command,
+          utility, or to run other concurrent or sequential programs. The
+          error code returned from SHELL is converted to an integer
+          by prefixing 8 bits of zeros. If a string constant is used,
+          it must be at least 2 characters long. If a character array
+          is used, a carriage return character must be put in the array
+          to terminate the command to SHELL. A carriage return character
+          has a decimal value of 13.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
