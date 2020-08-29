@@ -29,8 +29,8 @@ second to facilitate multitasking.
 Memory Map
 ----------
 
-$FFCB0-$FFCB1 ACIA serial port address (/Term)
-$FFCB2-$FFCB3 ACIA serial port address (/T1)
+$FE004-$FE005 ACIA serial port address (/Term)
+$FE020-$FE021 ACIA serial port address (/T1)
 $FECB4-$FECB5 ACIA serial port address (/P)
 $FECD0        Interrupts from clock (50 Hz)
 $FECD1-$FECD3 Virtual disk

@@ -36,8 +36,7 @@ import org.roug.usim.Acia;
 import org.roug.usim.Acia6850;
 import org.roug.usim.Bus8Motorola;
 import org.roug.usim.BusGimixEnhanced;
-import org.roug.usim.HWClock;
-import org.roug.usim.IRQBeat;
+import org.roug.usim.MM58167;
 import org.roug.usim.mc6809.MC6809;
 import org.roug.usim.RandomAccessMemory;
 import org.roug.usim.ReadOnlyMemory;
@@ -47,15 +46,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * GUI for generic emulator
+ * GUI for GIMIX-based OS-9 Level 2 emulator.
  */
 public class GUI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GUI.class);
-
-    private static final int CLOCKDELAY = 500;  // milliseconds
-    /** On MO5 the interrupt is 50 times a second. */
-    private static final int CLOCKPERIOD = 20;  // milliseconds
 
     private JFrame guiFrame;
 
@@ -70,8 +65,6 @@ public class GUI {
     private Acia6850 term,t1,t2;
 
     private VirtualDisk diskDevice;
-
-    private HWClock hwClock;
 
     /** The display of the emulator. */
     private JTerminal screen1;
@@ -119,9 +112,10 @@ public class GUI {
         bus.insertMemorySegment(rom);
 
         loadROMToEnd(0x100000, "OS9p1");
-        loadROM(0xFF000, "Boot","Init");
+       // loadROM(0xFF000, "Boot","Init");
+        loadROM(0xFF000, "Boot");
 
-        IRQBeat irqBeat = new IRQBeat(0xFECD0, bus, 20);
+        MM58167 irqBeat = new MM58167(0xFE220, bus);
         bus.insertMemorySegment(irqBeat);
 
         term = new Acia6850(0xFE004, bus);
@@ -143,9 +137,6 @@ public class GUI {
         bus.insertMemorySegment(t2);
         AciaToScreen atc3 = new AciaToScreen(t2, printerDialog);
         atc3.execute();
-
-        hwClock = new HWClock(0xFECDA, bus);
-        bus.insertMemorySegment(hwClock);
 
         diskDevice = new VirtualDisk(0xFECD1, bus);
         bus.insertMemorySegment(diskDevice);
