@@ -25,7 +25,7 @@ public class OS9Emu {
 
     private static Properties configMap = new Properties();
 
-    private static boolean singleUser = false;
+    private static boolean singleUser = true;
     private static String terminalType = "go80";
 
     public static void main(String[] args) {
@@ -65,7 +65,7 @@ public class OS9Emu {
     private static void parseArguments(String[] args) {
 
         OptionParser op = new OptionParser(args, "f:mst:0:1:2:3:");
-        singleUser = op.getOptionFlag("s");
+        //singleUser = op.getOptionFlag("s");
         if (op.getOptionFlag("m")) {
             singleUser = false;
         }
