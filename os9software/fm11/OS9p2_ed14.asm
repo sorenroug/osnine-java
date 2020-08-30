@@ -90,14 +90,14 @@ OS9Ent leay SVCTBL,PCR Get ptr to service routine table
  addd D.BlkMap
  tfr d,x
  ldb #$80
- bra COLD20
+ bra Cold.b
 
-COLD10 lda ,x+
- bne COLD20
+Cold.a lda ,x+
+ bne Cold.b
  stb -1,x
-COLD20 cmpx D.BlkMap+2
- bcs COLD10
-COLD30 ldu D.Init
+Cold.b cmpx D.BlkMap+2
+ bcs Cold.a
+Cold10 ldu D.Init
  ldd SYSSTR,U Get system device name
  beq SETSTDS No system device
  leax D,U Get name ptr
@@ -105,7 +105,7 @@ COLD30 ldu D.Init
  OS9 I$ChgDir Set default directory
  bcc SETSTDS
  os9 F$Boot
- bcc COLD30
+ bcc Cold10
 SETSTDS ldu D.Init
  ldd STDSTR,U get name offset
  beq LOADP3
@@ -411,11 +411,11 @@ DIVBKSZ addd #DAT.Blsz-1
 * Creates New Child Process
 *
 FORK pshs U
- lbsr F.ALLPRC Allocate process descriptor
- bcc FORK05
+ lbsr AllProc Allocate process descriptor
+ bcc Fork.A
  puls PC,U
 
-FORK05 pshs U Store new process descriptor
+Fork.A pshs U Store new process descriptor
  ldx D.PROC Get parent process ptr
  ldd P$USER,X Copy user index
  std P$User,U
@@ -424,17 +424,17 @@ FORK05 pshs U Store new process descriptor
  leax P$DIO,X Get parent path ptr
  leau P$DIO,U Get child path ptr
  ldb #DefIOSiz Get byte count
-FORK10 lda ,X+ Get parent byte
+Fork.C lda ,X+ Get parent byte
  sta ,U+ Pass to child
  decb COUNT Down
- bne FORK10 Branch if more
+ bne Fork.C Branch if more
  ldy #3 Get number of paths
 FORK20 lda ,X+ Get path number
- beq FORK25
+ beq Fork.E
  OS9 I$DUP Duplicate path
- bcc FORK25
+ bcc Fork.E
  clra CLEAR Path number
-FORK25 sta ,U+ Pass path to child
+Fork.E sta ,U+ Pass path to child
  leay -1,Y COUNT Down
  bne FORK20 Branch if more
 *
@@ -449,11 +449,14 @@ FORK28    lda   ,x+
  ldx 0,S
  ldu 2,S restore U
  lbsr SETPRC Set up process
- bcs FORK40 Branch if error
+ bcs ForkErr Branch if error
  pshs D
  os9 F$AllTsk
- bcc FORK30
-FORK30 lda P$PagCnt,X
+ bcc Fork.F
+*
+*   >>> need error routine here <<<
+*
+Fork.F lda P$PagCnt,X
  clrb
  subd 0,S
  tfr D,U
@@ -483,10 +486,9 @@ FORK30 lda P$PagCnt,X
  sta P$State,X Update child state
  OS9 F$AProc Activate child process
  rts
-
-FORK40 puls x
+ForkErr puls x
  pshs b Save error code
- lbsr CLOSEPD
+ lbsr TermProc
  lda 0,X
  lbsr F.RETPRC
  comb SET Carry
@@ -496,51 +498,52 @@ FORK40 puls x
 * Allocate Image RAM blocks
 *
 ALLPRC pshs U
- bsr F.ALLPRC
- bcs ALLPRC10
+ bsr AllProc
+ bcs AllPXit
  ldx 0,S Recover U register
  stu R$U,X
-ALLPRC10 puls PC,U
+AllPXit puls PC,U
 
 * Find unused process id
-F.ALLPRC ldx D.PrcDBT Get process block ptr
-ALLPRC20 lda ,X+
- bne ALLPRC20 branch if used
+AllProc ldx D.PrcDBT Get process block ptr
+AllP.A lda ,X+
+ bne AllP.A branch if used
  leax -1,X go back one
  tfr X,D
  subd D.PrcDBT
  tsta
- beq ALLPRC30
+ beq AllP.B
  comb
  ldb #E$PrcFul
- bra ALLPRC60
-
-ALLPRC30 pshs b
+ bra AllPrXit
+AllP.B pshs b
  ldd #P$Size
  os9 F$SRqMem
  puls a
- bcs ALLPRC60
+ bcs AllPrXit
  sta P$ID,U 
  tfr u,d
  sta 0,X Reserve slot in D.PrcDBT
  clra
  leax 1,U
- ldy #$0080 Clear process descriptor
-ALLPRC40 std ,X++
+ ldy #P$Size/4 clear first halt of descriptor
+AllP.C std ,X++
  leay -1,Y
- bne ALLPRC40
+ bne AllP.C
  lda #SysState
  sta P$State,U
-* Set up the DAT table
-         ldb   #DAT.BlCt
+ ldb #DAT.BlUs get usable block count
  ldx #DAT.Free
  leay P$DATImg,U
-ALLPRC50 stx ,Y++
+AllP.D stx ,Y++
  decb
- bne ALLPRC50
-
- clrb
-ALLPRC60 rts
+ bne AllP.D
+ ifne DAT.BlCt-DAT.BlUs
+ ldx #ROMBlock
+ stx ,Y++
+ endc
+ clrb clear carry
+AllPrXit rts
 
 *****
 * Deallocate process descriptor
@@ -622,7 +625,7 @@ RETPRCX puls pc,U,X,b,a
 * Execute Overlay
 *
 CHAIN pshs U Save register ptr
- lbsr F.ALLPRC
+ lbsr AllProc
  bcc CHAIN10
  puls PC,U
 
@@ -655,17 +658,20 @@ CHAIN20 ldd ,X++
  ifge DAT.BlSz-$2000
  lsrb
  endc
- lda #DAT.BlCt-MappedIO
+ lda #DAT.BlUs
  pshs b
  suba ,S+  Subtract B from A
  leay P$DatImg,X
  lslb
  leay B,Y go to the offset
  ldu #DAT.Free Mark blocks above as free
-CHAIN30 stu ,Y++
+Chain.C stu ,Y++
  deca
- bne CHAIN30
-
+ bne Chain.C
+ ifne DAT.BlCt-DAT.BlUs
+ ldu #IOBlock
+ stu ,Y++
+ endc
  ldu 2,S get new process descriptor pointer
  stu D.PROC
  ldu 4,S
@@ -821,7 +827,7 @@ SETPRC50    puls  b,a
 * Process Termination
 *
 EXIT     ldx   D.PROC
-         bsr   CLOSEPD
+         bsr   TermProc
          ldb R$B,u
          stb   <$19,x
          leay  $01,x
@@ -865,7 +871,7 @@ EXIT45    ldd   P$Queue,x
          os9   F$AProc
 EXIT50    os9   F$NProc
 
-CLOSEPD    pshs  u
+TermProc    pshs  u
          ldb   #$10
          leay  <$30,x
 CLOSE10    lda   ,y+

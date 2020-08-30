@@ -546,7 +546,7 @@ ALLPRC40    std   ,x++
          bne   ALLPRC40
          lda   #SysState
          sta   P$State,u
-         ldb   #$08     counter
+         ldb   #$08  #DAT.BlUs
          ldx   #DAT.Free
          leay  P$DATImg,u
 ALLPRC50 stx ,Y++
@@ -693,7 +693,7 @@ CHAIN20 ldd ,X++
  ifge DAT.BlSz-$2000
  lsrb
  endc
-         lda   #$08   counter
+         lda   #$08 #DAT.BlUs
  pshs b
  suba ,S+  Subtract B from A
  leay P$DatImg,X
@@ -1880,11 +1880,11 @@ L0B82    stx   ,y++
          lsla
  endc
          clrb
-         std   u0008,u
+         std   R$U,u
          puls  b,a
          leau  ,s
          os9   F$SetImg
-L0BA6    leas  <$10,s
+L0BA6    leas  <$10,s DAT.ImSz,S
          rts
 
 IBAERR    comb

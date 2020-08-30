@@ -1062,7 +1062,7 @@ PSt100    cmpb  #SS.Size
          ldd   <$35,Y
          bne   PSt100.A
          tst   PD.FD,Y
-         lbeq  L0684
+         lbeq  PStErr
 PSt100.A    lda   $01,Y
          bita  #$02
          beq   PSt100.D
@@ -1090,67 +1090,68 @@ PSt100.D    comb
          ldb   #E$BMode
          rts
 
-PSt110    cmpb  #SS.FD
-         bne   PSt200
-         lda   $01,Y
-         bita  #$02
-         beq   PSt100.D
-         lbsr  GETFD
-         bcs   Return99
-         pshs  y
-         ldx   R$X,U
-         ldu   $08,Y
-         ldy   D.Proc
-         ldd   $08,Y
-         bne   PSt110.A
-         ldd   #FD.OWN*256+2 copy 2 FD.OWN bytes
-         bsr   PSt110.C
-PSt110.A    ldd   #FD.DAT*256+5 copy 5 FD.DAT bytes
-         bsr   PSt110.C
-         ldd   #FD.Creat*256+3 copy 3 FD.Creat bytes
-         bsr   PSt110.C
-         puls  y
-         lbra  PUTFD
+PSt110 cmpb #SS.FD write FD option?
+ bne PSt200 ..no
+ lda PD.MOD,Y
+ bita #WRITE. open for write?
+ beq PSt100.D ..no; abort
+ lbsr GETFD read FD sector
+ bcs Return99 ..abort if error
+ pshs y save User ID, PD ptr
+ ldx R$X,U get user's addr
+ ldu PD.BUF,Y FD buffer addr
+ ldy D.Proc Get process descriptor
+ ldd P$User,Y get user ID; Super User?
+ bne PSt110.A ..No
+ ldd #FD.OWN*256+2 copy 2 FD.OWN bytes
+ bsr PSt110.C
+PSt110.A ldd #FD.DAT*256+5 copy 5 FD.DAT bytes
+ bsr PSt110.C
+ ldd #FD.Creat*256+3 copy 3 FD.Creat bytes
+ bsr PSt110.C
+ puls y restore PD ptr
+ lbra PUTFD update FD
 
-PSt110.C    pshs  u,X
-         leax  a,X
-         leau  a,U
-         clra
-         tfr   d,Y
-         lbsr  FromUser
-         puls  PC,u,X
+PSt110.C pshs U,X save regs
+ leax A,X (X)=ptr to user's bytes
+ leau A,U (U)=pre to FD posn
+ clra
+ tfr D,Y bytecnt
+ lbsr FromUser get user id
+ puls PC,U,X return
 
 PSt200
  ifeq RCD.LOCK-included
-    cmpb  #SS.Lock
-         bne   PSt300
-         ldd   $08,U
-         ldx   $04,U
-         cmpx  #$FFFF
-         bne   PSt200.A
-         cmpx  $08,U
-         bne   PSt200.A
-         ldu   PD.Exten,Y
-         lda   $07,U
-         ora   #$02
-         sta   $07,U
-         lda   #$FF
-PSt200.A    lbra  Gain
+ cmpb #SS.Lock Record Lock?
+ bne PSt300 ..No
+ ldd R$U,U get lsb size desired
+ ldx R$X,U get msb size
+ cmpx #$FFFF Lock entire file?
+ bne PSt200.A ..No
+ cmpx R$U,U
+ bne PSt200.A ..No
+ ldu PD.Exten,Y get PE ptr
+ lda PE.Lock,U
+ ora #FileLock
+ sta PE.Lock,U request file lockout
+ lda #$FF
+PSt200.A lbra Gain Gain segment requested
 
-PSt300    cmpb  #SS.Ticks
-         bne   PSt999
-         ldd   R$X,U
-         ldx   PD.Exten,Y
-         std   <$12,X
-         rts
+PSt300 cmpb #SS.Ticks set Gain Delay interval?
+ bne PSt999 ..No
+ ldd R$X,U get interval
+ ldx PD.Exten,Y
+ std PE.TmOut,X set it
+ rts (carry clear)
  endc
 
-PSt999    lda   #D$PStA
-         lbra  DEVDIS
+* Pass putstat to driver
+PSt999 lda #D$PStA get putstat entry
+ lbra DEVDIS Call driver
 
-L0684    comb
-         ldb   #$D0
-Return99    rts
+PStErr comb Return Carry set
+ ldb #e$unksvc Error: unknown service code
+Return99 rts
 
  ttl Internal Routines
  page
@@ -1212,6 +1213,7 @@ SchDir ldd  #$100 get one page
          ldy   $06,S
          bra   SchDir30
 
+* Default dir used; determine FD sector
 SchDir20    anda  #$7F
          cmpa  #$40
          beq   SchDir30
@@ -1222,9 +1224,9 @@ SchDir20    anda  #$7F
          ldu   D.Proc
          leau  <$20,U
          bita  #$24
-         beq   L06ED
+         beq   SchDir25
          leau  $06,U
-L06ED    ldb   $03,U
+SchDir25    ldb   $03,U
          stb   PD.FD,Y
          ldd   $04,U
          std   <$35,Y
@@ -1243,27 +1245,27 @@ SchDir30    ldu   $03,Y
          cmpa  #$40
          bne   SchDir35
          leax  $01,X
-         bra   L073A
+         bra   SchDir50
 
 SchDir35    lbsr  GETDD
-         lbcs  L07BF
+         lbcs  DirErr10
          ldu   $08,Y
          ldd   $0E,U
          std   <$1C,Y
          ldd   <$35,Y
-         bne   L073A
+         bne   SchDir50
          lda   PD.FD,Y
-         bne   L073A
+         bne   SchDir50
          lda   $08,U
          sta   PD.FD,Y
          ldd   $09,U
          std   <$35,Y
 
-L073A    stx   $04,S
+SchDir50    stx   $04,S
          stx   $08,S
 SchDir60    lbsr  CLRBUF
          lbsr  Insert
-         bcs   L07BF
+         bcs   DirErr10
          lda   ,S
          cmpa  #$2F
          bne   SchDir85
@@ -1286,11 +1288,11 @@ SchDir60    lbsr  CLRBUF
          bra   SchDir80
 
 * Repeat until name found, or error
-L0774    bsr   SaveDel
-L0776    bsr   RdNxtDir
+SchDir70    bsr   SaveDel
+SchDir75    bsr   RdNxtDir
 SchDir80    bcs   DirErr
          tst   ,X
-         beq   L0774
+         beq   SchDir70
          leay  ,X
          ldx   $04,S
          ldb   $01,S
@@ -1298,7 +1300,7 @@ SchDir80    bcs   DirErr
          os9   F$CmpNam
          ldx   $06,S
          exg   x,Y
-         bcs   L0776
+         bcs   SchDir75
          bsr   SaveDir
          lda   <$1D,X
          sta   PD.FD,Y
@@ -1309,81 +1311,94 @@ SchDir80    bcs   DirErr
 
 SchDir85    ldx   $08,S
          tsta
-         bmi   L07AE
+         bmi   SchDir90
          os9   F$PrsNam
          leax  ,Y
          ldy   $06,S
-L07AE    stx   $04,S
+SchDir90    stx   $04,S
          clra
-L07B1    lda   ,S
+SchDir99    lda   ,S
          leas  $04,S
          puls  PC,u,y,X
 
-DirErr    cmpb  #$D3
-         bne   L07BF
-         bsr   SaveDel
-         ldb   #$D8
-L07BF    coma
-         bra   L07B1
+* (Y)=PD, (B)=Error Code
+DirErr cmpb #E$EOF end of file?
+ bne DirErr10 ..No; abort
+ bsr SaveDel save end as next free; if not found
+ ldb #E$PNNF Return "Pathname not found"
+DirErr10 coma return carry set
+ bra SchDir99 abort
 
+ page
 ***************
 * Subroutine SaveDel, SaveDir
+*   Save the current dir file ptr
 
-SaveDel    pshs  D
-         lda   $04,S
-         cmpa  #$2F
-         beq   L07EA
-         ldd   $06,S
-         bne   L07EA
+* Passed: (X)=rcd ptr
+*         (Y)=PD
+* Returns: none
+* Destroys: CC
+* Updates: S.RcdPtr, PD.DFD, PD,DCP
+
+* SaveDel: saves the first deleted entry found during create.
+* It is unnecessary for OPEN (possible optimization).
+SaveDel pshs D save reg
+ lda S.Delim+4,S
+         cmpa  #PDELIM
+         beq   SaveD99
+         ldd S.RcdPtr+4,S
+         bne   SaveD99
          puls  D
 
-SaveDir    pshs  D
-         stx   $06,S
+SaveDir pshs D save reg
+         stx S.RcdPtr+4,S
          lda   PD.FD,Y
-         sta   <$37,Y
-         ldd   <$35,Y
-         std   <$38,Y
-         ldd   $0B,Y
-         std   PD.DCP,Y
-         ldd   $0D,Y
-         std   <$3C,Y
-L07EA    puls  PC,D
+         sta PD.DFD,Y
+         ldd PD.FD+1,Y
+         std PD.DFD+1,Y
+         ldd PD.CP,Y
+         std PD.DCP,Y
+         ldd PD.CP+2,Y
+         std PD.DCP+2,Y
+SaveD99 puls PC,D exit
+
  page
 ***************
 * Subroutine RdNxtDir
+*   Read Current or next dir rcd
 
-RdNxtDir    ldb   $0E,Y
-         addb  #$20
-         stb   $0E,Y
-         bcc   RdCurDir
-         lbsr  CLRBUF
-         inc   $0D,Y
+RdNxtDir ldb PD.CP+3,Y update current posn
+         addb  #DIR.SZ
+         stb PD.CP+3,Y
+         bcc RdCurDir
+         lbsr CLRBUF
+         inc PD.CP+2,Y
          bne   RdCurDir
-         inc   $0C,Y
+         inc PD.CP+1,Y
          bne   RdCurDir
-         inc   $0B,Y
+         inc PD.CP,Y
 
-RdCurDir    ldd   #$0020
-         lbsr  RDSET
-         bcs   RdNxtD90
+RdCurDir ldd #DIR.SZ size of one dir entry
+ lbsr RDSET eof test
+ bcs RdNxtD90
 
  ifeq RCD.LOCK-included
-         ldd   #$0020
-         lbsr  Gain00
-         bcs   RdNxtD90
+ ldd #DIR.SZ
+ lbsr Gain00 Dominate current dir sector
+ bcs RdNxtD90 ..File is busy; ABORT
  endc
 
-         lda   $0A,Y
-         bita  #$02
-         bne   L0821
-         lbsr  CHKSEG
-         bcs   RdNxtD90
-         lbsr  RDCP
-         bcs   RdNxtD90
-L0821    ldb   $0E,Y
-         lda   $08,Y
-         tfr   d,X
-         clrb
+ lda PD.SMF,Y
+ bita #SINBUF is current sector in buffer?
+ bne RdNxtD20 ..yes; return updated rcd ptr
+ lbsr CHKSEG get current seg ptr
+ bcs RdNxtD90 ..exit if EOF or error
+ lbsr RDCP read current buffer posn
+ bcs RdNxtD90 ..I/O error; abort
+RdNxtD20 ldb PD.CP+3,Y get LSB rcd ptr
+ lda PD.BUF,Y get MSB rcd ptr
+ tfr D,X
+ clrb return carry clear
 RdNxtD90 rts
  page
 
@@ -1392,15 +1407,19 @@ RdNxtD90 rts
 * Subroutine UserByte
 *   Return byte from (0,X) in caller's memory
 
-UserByte    pshs  u,x,b
-         ldu   D.Proc
-         ldb   P$Task,U
-         os9   F$LDABX
-         puls  PC,u,x,b
+* Passed: (X)=ptr to user's addr
+* Returns: (A)=byte at that addr
+* Destroys: CC
+UserByte pshs u,x,b save regs
+ ldu D.Proc
+ ldb P$Task,U get user's task number
+ os9 F$LDABX retrieve byte
+ puls PC,U,X,B
  endc
 
 ***************
 * Subroutine RBPNam
+*   Parse a legal RBF pathlist element
 
 RBPNam    os9   F$PrsNam
          pshs  x
@@ -1408,7 +1427,7 @@ RBPNam    os9   F$PrsNam
          clrb
 RBPNam10    pshs  a
          anda  #$7F
-         cmpa  #$2E
+         cmpa  #PDIR
          puls  a
          bne   RBPNam80
          incb
@@ -1419,74 +1438,81 @@ RBPNam10    pshs  a
  ifeq LEVEL-1
  lda 0,x
  else
- bsr UserByte
+ bsr UserByte get next user byte at (0,X)
  endc
-         cmpb  #3
-         bcs   RBPNam10
+
+ cmpb #3 less than 3 bytes examined?
+ blo RBPNam10 ..Yes; check for parental signal
 
 * The pathlist contains "..." (grandparent).  Code here
 * makes this look like "../.." for any number of dots.
-         lda   #$2F
-         decb
-         leax  -$03,X
+ lda #PDelim return "/" as delimiter
+ decb return NameSize=2
+ leax -3,X skip only the first dot
 
-RBPNam80    tstb
-         bne   L085F
-         comb
-         ldb   #$D7
-         puls  PC,X
-L085F    leay  ,X
-         andcc #$FE
-RBPNam99    puls  PC,X
+RBPNam80 tstb any pathlist found?
+ bne RBPNam90 ..Yes; return it
+ comb
+ ldb #E$bpnam error; Bad Pathname
+ puls PC,X abort
+RBPNam90 leay 0,X return (Y)=next pathptr
+ andcc #^carry return carry clear
+RBPNam99 puls PC,X
  page
 ***************
 * Subroutine ChkAcc
+*   Check File Accessibility
 
-CHKACC    tfr   a,b
-         anda  #$07
-         andb  #$C0
-         pshs  x,D
+* Passed: (A)=desired mode
+*         (Y)=PD
+* Returns: CC,B set if file inaccessable
+* Destroys: D
+
+CHKACC tfr A,B copy desired mode
+         anda  #EXEC.+UPDAT. get r/w/e bits
+         andb  #DIR.+SHARE. get dir and sharable bit
+         pshs  X,D save them
          lbsr  GETFD
-         bcs   L0894
+         bcs   CHKAbt
          ldu   $08,Y
          ldx   D.Proc
          ldd   $08,X
-         beq   L087D
+         beq   ChkAcc05
          cmpd  $01,U
-L087D    puls  a
-         beq   L0884
+ChkAcc05    puls  a
+         beq   CHKA10
          lsla
          lsla
          lsla
-L0884    ora   ,S
+CHKA10    ora   ,S
          anda  #$BF
          pshs  a
          ora   #$80
          anda  ,U
          cmpa  ,S
          beq   CHKA20
-         ldb   #$D6
-L0894    leas  $02,S
-         coma
-         puls  PC,X
+ ldb #E$FNA Err: file not accesible
+CHKAbt leas 2,S
+ coma set Carry
+ puls PC,X
 
-CHKAErr    ldb   #E$Share
-         bra   L0894
+CHKAErr ldb #E$Share non-sharable file busy
+ bra CHKAbt abort
 
 CHKA20
 
  ifeq RCD.LOCK-included
  ldb 1,S
-         orb   ,U
-         bitb  #$40
-         beq   CHKA90
-         ldx   PD.Exten,Y
-         cmpx  $05,X
-         bne   CHKAErr
-         lda   #$02
-         sta   $07,X
+ orb FD.ATT,U
+ bitb #SHARE. non-sharable file, or request?
+ beq CHKA90 ..No; exit
+ ldx PD.Exten,Y
+ cmpx PE.Confl,X empty conflict list?
+ bne CHKAErr ..Inaccessible if not
+ lda #FileLock
+ sta PE.Lock,X Lockout Entire File
  endc
-CHKA90    puls  PC,x,D
+CHKA90 puls PC,X,D return (carry clear)
 
  ifeq RCD.LOCK-included
  ttl Record Locking Subroutines
@@ -1506,40 +1532,45 @@ Insert    pshs  u,y,X
          pshs  x,b
          ldu   <$1E,Y
          ldy   PD.Exten,Y
-         sty   $05,Y
+         sty   PE.Confl,Y
          leau  <$15,U
-         bra   L08D9
+         bra   Insert20
 
-L08D7    ldu   $03,U
-L08D9    ldx   $03,U
+Insert10 ldu PE.NXFil,U move to next file in list
+* (Y)=PE ptr to file to be inserted
+* (U)=PE ptr to previous PE in File List
+Insert20 ldx PE.NXFil,U End of File list?
          beq   Insert80
          ldx   $01,X
          ldd   PD.FD,X
          cmpd  ,S
-         bcs   L08D7
+         bcs   Insert10
          bhi   Insert80
          ldb   <$36,X
          cmpb  $02,S
-         bcs   L08D7
-         bhi   Insert80
+         bcs   Insert10
+         bhi   Insert80 ..above; insert
+
+* Equal -File List already contains this file
          ldx   PD.Exten,X
          lda   $07,Y
-         bita  #$02
+         bita  #FileLock sharable?
          bne   SharErr
-         sty   $03,Y
-         ldd   $05,X
-         std   $05,Y
-         sty   $05,X
-         bra   L090E
-Insert80    ldx   $03,U
-         stx   $03,Y
-         sty   $03,U
-L090E    clrb
-L090F    leas  $03,S
-         puls  PC,u,y,X
-SharErr    comb
-         ldb   #$FD
-         bra   L090F
+         sty   PE.NxFil,Y
+         ldd   PE.Confl,X
+         std   PE.Confl,Y
+         sty   PE.Confl,X
+         bra   Insert90
+Insert80    ldx   PE.NxFil,U
+         stx   PE.NxFil,Y
+         sty   PE.NxFil,U
+Insert90    clrb
+Insert99 leas 3,S
+ puls PC,U,Y,X
+
+SharErr comb
+ ldb #E$Share ..Error; Non-sharable file in use
+ bra Insert99 abort
  page
 ***************
 * Subroutine Remove
@@ -1549,13 +1580,13 @@ SharErr    comb
 * Returns: none
 * Destroys: CC
 
-Remove    pshs  u,y,x,D
-         ldu   PD.DTB,Y
-         leau  V.FileHd-PE.NxFil,u (U)=psuedo PE Head of file list
-         ldx   PD.Exten,Y switch to path extension
-         leay  0,X
-         bsr   RelsALL
-         bra   Remove20
+Remove pshs U,Y,X,D save regs
+ ldu PD.DTB,Y
+ leau V.FileHd-PE.NxFil,u (U)=psuedo PE Head of file list
+ ldx PD.Exten,Y switch to path extension
+ leay 0,X
+ bsr RelsALL release any locked out seg
+ bra Remove20
 
 Remove10 ldx PE.Confl,x move to next path in conflict list
          beq Remove90
@@ -1617,17 +1648,23 @@ Releas10    ldx   PE.Wait,U
 Releas85    stu   PE.Wait,U
 Releas90    puls  PC,u,y,x,D
 
-LckSegER    comb
-         ldb   #$FD
+LckSegER comb
+ ldb #E$Share
 UnLock    pshs  y,b,CC
          ldy   PD.Exten,Y
          bsr   RelsALL
          puls  PC,y,b,CC
 
+ ttl Gain - Determined file lockout
+ page
+***************
+* Subroutine Gain
+*   Determined Lockout
+
 Gain00 ldx #0
  bra Gain
 
-Gain10    ldu   PD.Exten,Y
+Gain10 ldu PD.Exten,Y
          lda   PE.Req,U
          sta   PE.Lock,U
          puls  u,y,x,D
@@ -1637,12 +1674,12 @@ Gain    pshs  u,y,x,D
          sta   PE.Req,U
          lda   ,S
          lbsr  LockSeg
-         bcc   L0A1D
+         bcc   Gain90
          ldu   D.Proc
-         lda   <$14,X
+         lda PE.Owner,X
 Gain20    os9   F$GProcP
          bcs   Gain40
-         lda   <$1E,Y
+         lda P$DeadLk,Y
          beq   Gain40
          cmpa  P$ID,U
          bne   Gain20
@@ -1650,25 +1687,29 @@ Gain20    os9   F$GProcP
 * Deadly Embrace threat.
 * (X)=Dominant PE ptr
 * (U)=D.Proc
-         ldb   #$FE
-         bra   GainErr
+ ldb #E$DeadLk return Deadlock error
+ bra GainErr
 
-Gain40    lda   <$14,X
-         sta   <$1E,U
+* Enter Lockout Waiting Queue
+* (U)=D.Proc
+* (X)=Dominant PE
+Gain40    lda PE.Owner,X
+         sta P$DeadLk,U
          bsr   UnQueue
-         ldy   $04,S
+         ldy 4,S
+
          ldu   PD.Exten,Y
          ldd   PE.Wait,X
          stu   PE.Wait,X
          std   PE.Wait,U
-         ldx   <$12,U
+         ldx PE.TmOut,U
          os9   F$Sleep
          pshs  x
-         leax  ,U
-         bra   L09F1
-L09EE    ldx   PE.Wait,X
-L09F1    cmpu  PE.Wait,X
-         bne   L09EE
+         leax 0,U
+         bra   Gain55
+Gain50    ldx   PE.Wait,X
+Gain55    cmpu  PE.Wait,X
+         bne   Gain50
          ldd   PE.Wait,U
          std   PE.Wait,X
          stu   PE.Wait,U
@@ -1685,37 +1726,45 @@ L09F1    cmpu  PE.Wait,X
          ldb   #$FC
 GainErr    coma
          stb   $01,S
-L0A1D    puls  PC,u,y,x,D
+Gain90    puls  PC,u,y,x,D
 
 *******************
 * Subroutine UnQueue
+*   Wake next process in I/O queue (if any)
+*
+* Passed: none
+* Destroys: D,CC
 
-UnQueue    pshs  y,X
-         ldy   D.Proc
-         bra   L0A33
+UnQueue pshs Y,X Save regs
+ ldy D.Proc
+ bra UnQue80 While not last proc in IO Queue
 
-UnQue10    clr   P$IOQN,Y
-         ldb   #$01
-         os9   F$Send
+UnQue10 clr P$IOQN,Y Clear next ptr
+ ldb #S$Wake
+ os9 F$Send
 
  ifeq LEVEL-1
+ jmp NOWHERE code no available
  else
-         os9   F$GProcP
+ os9 F$GProcP Find next process descriptor
  endc
 
-         clr   $0F,Y
-L0A33    lda   P$IOQN,Y
-         bne   UnQue10
-         puls  PC,y,X
+ clr P$IOQP,Y clear previous link in next
+UnQue80 lda P$IOQN,Y Process ID of next process
+ bne UnQue10 Endwhile
+ puls PC,Y,X
 
+ ttl LockSeg -Lock out file seg
+ page
 ***************
 * Subroutine LockSeg
+*   Lock out given number of bytes at current posn
 
-LockSeg    std   -$02,S
-         bne   L0A45
+LockSeg std -2,S
+         bne   LckSeg10
          cmpx  #$0000
          lbeq  UnLock
-L0A45    bsr   Conflct
+LckSeg10    bsr   Conflct
          lbcs  LckSegER
          pshs  u,y,X
          ldy   PD.Exten,Y
@@ -1726,6 +1775,8 @@ L0A45    bsr   Conflct
          clrb
          puls  PC,u,y,X
 
+ ttl RBF Record lock Conflict recognition
+ page
 ***************
 * Subroutine Conflct
 *   Determines if rcd lockout conflict will occur
@@ -1822,9 +1873,12 @@ Conflc90 puls PC,u,y,D return
 Remove rts
  endc
  page
+***************
+* Subroutine Expand
+* Expand File Size, Allocate Storage
 
 EXPAND    pshs  u,X
-L0AF3    bsr   EXPSUB
+EXPA10    bsr   EXPSUB
          bne   EXPA15
          cmpx  PD.SSZ+1,Y
          bcs   EXPA45
@@ -1832,7 +1886,7 @@ L0AF3    bsr   EXPSUB
          lda   <$12,Y
          beq   EXPA45
 EXPA15    lbsr  GETFD
-         bcs   L0B47
+         bcs   EXPERR
          ldx   $0B,Y
          ldu   $0D,Y
          pshs  u,X
@@ -1846,37 +1900,37 @@ EXPA15    lbsr  GETFD
          stu   $0D,Y
          bcc   EXPA45
          cmpb  #$D5
-         bne   L0B47
+         bne   EXPERR
          bsr   EXPSUB
-         bne   L0B33
+         bne   EXPA30
          tst   <$12,Y
-         beq   L0B36
+         beq   EXPA35
          leax  $01,X
-         bne   L0B36
-L0B33    ldx   #$FFFF
-L0B36    tfr   x,d
+         bne   EXPA35
+EXPA30    ldx   #$FFFF
+EXPA35    tfr   x,d
          tsta
          bne   EXPA40
          cmpb  <$2E,Y
          bcc   EXPA40
          ldb   <$2E,Y
 EXPA40    bsr   SEGALL
-         bcc   L0AF3
-L0B47    coma
+         bcc   EXPA10
+EXPERR    coma
          puls  PC,u,X
 
 EXPA45    lbsr  CHKSEG
  ifeq RCD.LOCK-included
-         bcs   L0B47
-         bsr   NewSize
+ bcs EXPERR ..error; abort
+ bsr NewSize Copy size thru conflict list
  endc
- puls  PC,u,X
+ puls PC,U,X
 
-EXPSUB    ldd   <$10,Y
-         subd  <$14,Y
+EXPSUB ldd PD.SIZ+1,Y get file size
+         subd PD.SBL+1,Y
          tfr   d,X
          ldb   PD.SIZ,Y
-         sbcb  <$13,Y
+         sbcb PD.SBL,Y
          rts
 
  ifeq RCD.LOCK-included
@@ -1890,11 +1944,12 @@ EXPSUB    ldd   <$10,Y
 *          CC=Carry clear
 * Destroys: D
 
-NewSize    clra
-         ldb   #WRITE.
+NewSize clra
+ ldb #WRITE.
          pshs  u,X
          ldu   PD.Exten,Y
          bra   NewSiz20
+
 NewSiz10    ldu   $01,U
          ldx   PD.SIZ,Y
          stx   PD.SIZ,U
@@ -2048,11 +2103,11 @@ SECA05    clr   ,-s
          addb  $0E,X
          adca  #$00
          bra   SECA08
-L0C55    lsra
+SECA07    lsra
          rorb
 SECA08    lsr   $0B,S
          ror   $0C,S
-         bcc   L0C55
+         bcc   SECA07
          std   $01,S
 
 * Convert Sectors Requested to Bits Required
@@ -2373,37 +2428,41 @@ L0EC2    puls  PC,U,Y,X,A
 
 ***************
 * Subroutine LockBit
+*   LockOut Bitmap, Read first sector
 
 LockBit    lbsr  CLRBUF
-         bra   L0ECE
-L0EC9    os9   F$IOQu
+         bra   LckBit20
+
+LckBit10    os9   F$IOQu
          bsr   ChkSignl
-L0ECE    bcs   L0EDD
+LckBit20    bcs   LckBit99
          ldx   <$1E,Y
          lda   V.BMB,X
-         bne   L0EC9
+         bne   LckBit10
          lda   $05,Y
          sta   V.BMB,X
-L0EDD    rts
+LckBit99    rts
 
 ***************
 * Subroutine ChkSignal
+*   See if signal received caused death
 
 ChkSignl    ldu   D.Proc
          ldb   <$19,U
          cmpb  #$01
-         bls   L0EEB
+         bls   ChkSig10
          cmpb  #$03
-         bls   L0EF2
-L0EEB    clra
-         lda   $0C,U
-         bita  #$02
-         beq   L0EF3
-L0EF2    coma
-L0EF3    rts
+         bls   ChkSErr
+ChkSig10    clra
+         lda P$State,U
+         bita  #Condem
+         beq   ChkSig90
+ChkSErr    coma
+ChkSig90    rts
 
 ***************
 * Subroutine PUTBIT
+*   Rewrite/Release Bitmap
 
 PUTBIT    clra
          tfr   d,X
@@ -2413,31 +2472,35 @@ RLSBIT    pshs  cc
          ldx   <$1E,Y
          lda   $05,Y
          cmpa  V.BMB,X
-         bne   L0F0A
+         bne   RLSBIT99
          clr   V.BMB,X
-L0F0A    puls  PC,CC
+RLSBIT99    puls  PC,CC
  page
 ***************
 * Subroutine ReadBit
+*   Read Bitmap sector
 
-ReadBit    clra
-         tfr   d,X
-         clrb
-         lbra  GETSEC
+ReadBit clra
+ tfr D,X
+ clrb
+ lbra GETSEC read bitmap sector
 
 ***************
 * Subroutine WRCP
+*   Write Current Position Sector
 
 WRCP     pshs  u,X
          lbsr  PCPSEC
-         bcs   L0F20
+         bcs   WRCPXX
          lda   $0A,Y
          anda  #$FE
          sta   $0A,Y
-L0F20    puls  PC,u,X
+WRCPXX    puls  PC,u,X
+
  page
 ***************
 * Subroutine Chkseg
+*   Check Segment ptrs For Current Position
 
 CHKSEG    ldd   $0C,Y
          subd  <$14,Y
@@ -2445,41 +2508,42 @@ CHKSEG    ldd   $0C,Y
          ldb   $0B,Y
          sbcb  <$13,Y
          cmpb  PD.SSZ,Y
-         bcs   L0F3A
+         bcs   CHKSG90
          bhi   GETSEG
          cmpx  PD.SSZ+1,Y
          bcc   GETSEG
-L0F3A    clrb
-         rts
+CHKSG90 clrb
+ rts
 
 ***************
 * Subroutine GETSEG
+*   Get Segment Containing Current Position
 
-GETSEG    pshs  u
-         bsr   GETFD
-         bcs   L0F96
-         clra
-         clrb
-         std   <$13,Y
-         stb   <$15,Y
+GETSEG pshs U save regs
+ bsr GETFD
+ bcs GETS30 error; abort
+ clra clear D
+ clrb
+ std PD.SBL,Y
+         stb PD.SBL+2,Y
          ldu   $08,Y
          leax  <$10,U
          lda   $08,Y
-         ldb   #$FC
-         pshs  b,a
+         ldb   #-(FDSL.S-1) end-(entry size-1)
+         pshs D
 FNDS10    ldd   $03,X
          beq   GETS10
-         addd  <$14,Y
+         addd PD.SBL+1,Y
          tfr   d,U
          ldb   <$13,Y
          adcb  #$00
          cmpb  $0B,Y
-         bhi   L0F87
-         bne   L0F6E
+         bhi   GETS25
+         bne   FNDS20
          cmpu  $0C,Y
-         bhi   L0F87
-L0F6E    stb   <$13,Y
-         stu   <$14,Y
+         bhi   GETS25
+FNDS20    stb PD.SBL,Y
+         stu PD.SBL+1,Y
          leax  $05,X
          cmpx  ,S
          bcs   FNDS10
@@ -2488,36 +2552,38 @@ GETS10    clra
          sta   PD.SSZ,Y
          std   PD.SSZ+1,Y
          comb
-         ldb   #$D5
-         bra   L0F96
-L0F87    ldd   ,X
+         ldb   #E$NES
+         bra   GETS30
+GETS25    ldd   ,X
          std   PD.SBP,Y
          lda   $02,X
          sta   <$18,Y
          ldd   $03,X
          std   PD.SSZ+1,Y
-L0F96    leas  $02,S
+GETS30    leas  $02,S
          puls  PC,U
  page
 ***************
 * Subroutine GETDD
+*   Get Device Desc
 
-GETDD    pshs  x,b
+GETDD pshs X,B
          lbsr  CLRBUF
-         bcs   L0FA9
+         bcs   GETDD10
          clrb
          ldx   #$0000
          bsr   GETSEC
-         bcc   L0FAB
-L0FA9    stb   ,S
-L0FAB    puls  PC,x,b
+         bcc   GETDD20
+GETDD10    stb   ,S
+GETDD20    puls  PC,x,b
 
 ***************
 * Subroutine GETFD
+*   Get File Descriptor
 
-GETFD    ldb   PD.SMF,Y
-         bitb  #$04
-         bne   L0F3A
+GETFD ldb PD.SMF,Y get flag
+         bitb  #FDBUF
+         bne   CHKSG90
          lbsr  CLRBUF
          bcs   PUTS99
          ldb   PD.SMF,Y
@@ -2528,8 +2594,10 @@ GETFD    ldb   PD.SMF,Y
 
 ***************
 * Subroutine GETSEC
+*   Get Specified Sector
 
-GETSEC    lda   #$03
+GETSEC    lda   #D$READ
+* Fall into DEVDIS
 
 ***************
 * Routine DEVDIS
@@ -2541,15 +2609,15 @@ GETSEC    lda   #$03
 DEVDIS    pshs  u,y,x,b,a
 
          lda   PD.SMF,Y
-         ora   #$20
+         ora   #InDriver
          sta   PD.SMF,Y
 
-         ldu   $03,Y
+         ldu PD.DEV,Y
          ldu   $02,U
-         bra   L0FD7
-L0FD4    os9   F$IOQu
-L0FD7    lda   $04,U
-         bne   L0FD4
+         bra   DEVD20
+DEVD10    os9   F$IOQu
+DEVD20    lda   $04,U
+         bne   DEVD10
          lda   $05,Y
          sta   $04,U
          ldd   ,S
@@ -2575,18 +2643,18 @@ GODRIV    pshs  PC,x,b,a
          ldd   V$DRIV,X
          ldx   V$DRIV,X
          addd  M$EXEC,X
-         addb  ,S
-         adca  #$00
-         std   $04,S
+         addb 0,S
+         adca  #0
+         std 4,S
          puls  PC,x,b,a
 
 ***************
 * Subroutine PUTFD
 *   Put File Descriptor
 
-PUTFD    ldb   PD.FD,Y
-         ldx   PD.FD+1,Y
-         bra   PUTSEC
+PUTFD ldb PD.FD,Y
+ ldx PD.FD+1,Y
+ bra PUTSEC
 
 ***************
 * Subroutine PCPSEC
@@ -2599,7 +2667,7 @@ PCPSEC bsr GETCP get addr of current posn
 * Subroutine PUTSEC
 *   Put Sector
 
-PUTSEC    lda #D$WRIT get entry offset
+PUTSEC lda #D$WRIT get entry offset
          pshs  x,b,a
          ldd PD.DSK,Y
          beq   PUTS10
@@ -2608,21 +2676,21 @@ PUTSEC    lda #D$WRIT get entry offset
 PUTS10    puls  x,b,a
          beq   DEVDIS
          comb
- ldb #E$DIDC
+ ldb #E$DIDC Err: disk ID change
 PUTS99 rts
 
 ***************
 * Subroutine GETCP
 *   Get Addr of Current Position Sector
 
-GETCP ldd PD.CP+1,Y
- subd PD.SBL+1,Y
- tfr d,X
- ldb PD.CP,Y
+GETCP ldd PD.CP+1,Y get current posn
+ subd PD.SBL+1,Y get offset in seg
+ tfr D,X save lsb
+ ldb PD.CP,Y get current posn msb
  sbcb PD.SBL,Y
- exg d,X
- addd PD.SBP+1,Y
- exg d,X
+ exg D,X Swap msb & lsb
+ addd PD.SBP+1,Y get sector physical addr
+ exg D,X
  adcb PD.SBP,Y
  rts
 
@@ -2659,11 +2727,11 @@ RDCP    pshs  u,X
 * Subroutine GCPSEC
 *   Get Current Position
 
-         bsr   CLRBUF
-         bcs   RDCPXX
+ bsr CLRBUF clear buffer
+ bcs RDCPXX error; abort
  ifeq RCD.LOCK-included
-GCPS05    ldb PD.CP,Y
-         ldu  PD.CP+1,Y
+GCPS05 ldb PD.CP,Y
+ ldu PD.CP+1,Y
          leax 0,Y
          ldy PD.Exten,Y
 GCPS10 ldx PD.Exten,X

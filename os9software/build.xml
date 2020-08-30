@@ -175,9 +175,11 @@
     </target>
 
     <target name="l2gimix" depends="prepare">
-        <assemble src="OS9p2" home="l2gimix" verify="da8d6d38b980442d740ace651761569e"/>
+        <assemble src="OS9p2" home="l2gimix" verify="73eabc222ffbdd44e7bc2f7522c3abdf"/>
         <assemble src="RBF" home="l2gimix" verify="2734756eb27024724ae05550fc0b9db7"/>
-        <assemble src="IOMan" home="l2gimix" verify="067ab09d0cb0916f3d961f4a9adc2daf"/>
+        <assemble src="IOMan" home="l2gimix" verify="770e503ee8488972bccee0d88ddca105"/>
+        <assemble src="Term" home="l2gimix" verify="f20b6b9b5c5adb4de70b9984e202f6fd"/>
+        <assemble src="T1" home="l2gimix" verify="d790fca59337ecdcef160f657d47ac8a"/>
     </target>
 
     <!-- FM-11 Level II -->

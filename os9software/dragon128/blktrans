@@ -1,0 +1,14 @@
+*
+* Graphics block translation table.
+* Optimizes graphics memory allocation
+*
+BlkTrans fcb 0,16,17,18,19
+ fcb 20,1,2,3,4
+ fcb 21,22,23,24,25
+ fcb 5,6,7,8,9 use these two if 320x256 16-colour has
+ fcb 26,27,28,29,30 priority over 640x512 2-colour
+* fcb 26,27,28,29,30 use these two if 640x512 2-colour has
+* fcb 5,6,7,8,9 priority over 320x256 16-colour
+ fcb 10,11,12,13,14
+ fcb 31,15
+ 

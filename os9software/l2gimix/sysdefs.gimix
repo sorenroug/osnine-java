@@ -75,7 +75,7 @@ LastRAM equ IOBlock maximum RAM block number
 * bus), take a certain value, rather than being
 * addressed through the DAT, then MappedIO must
 * be set false (0)
-MappedIO equ true
+MappedIO equ 1
 *
 ***************
 **********

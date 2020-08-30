@@ -1,27 +1,49 @@
-         nam   Clock
-         ttl   os9 system module    
+ nam Clock Module
+ ttl Module Header
+* opt -c
 
-
- use defsfile
+************************************************************
+*                                                          *
+*     Clock Module                                         *
+*                                                          *
+* Copyright 1982 by Microware Systems Corporation          *
+* Reproduced Under License                                 *
+*                                                          *
+* This source code is the proprietary confidential prop-   *
+* erty of Microware Systems Corporation, and is provided   *
+* to the licensee solely for documentation and educational *
+* purposes. Reproduction, publication, or distribution in  *
+* any form to any party other than the licensee is         *
+* is strictly prohibited !!!                               *
+*                                                          *
+************************************************************
 
 CPORT equ $FD38
-
+ use defsfile
+*************************************************************
+*
+*  MODULE HEADER
+*
 Type set SYSTM+OBJCT
 Revs set REENT+1
  mod ClkEnd,ClkNam,Type,Revs,ClkEnt,CPORT
-
-
 ClkNam fcs /Clock/
-         fcb   11
+ fcb 11
 
  fcc "FM11l2(C)SEIKOU"
 
-CLKPRT equ M$Mem Stack has clock port address
-
+*
+* CLOCK DATA DEFINITIONS
+*
 TIMSVC fcb F$Time
  fdb TIME-*-2
-         fcb   $80 
+ fcb $80 
 
+CLKPRT equ M$Mem Stack has clock port address
+
+*
+*  DAYS IN MONTHS TABLE
+*
 MONTHS fcb 29 Uninitialized month
  fcb 31 January
  fcb 28 February
@@ -36,7 +58,7 @@ MONTHS fcb 29 Uninitialized month
  fcb 30 November
  fcb 31 December
 
-L0033    lda   >$FD03
+NOTCLK    lda   >$FD03
          bita  #$40
          beq   L00A5
          ldd   >$FD00
@@ -87,19 +109,22 @@ L009F    ldx   <$0092
          lda   #$40
          sta   $01,x
 L00A5    ldd   D.Poll
-         lbra  TICK55
+         lbra  TICK50
 
 * Read the control register. If the clock didn't cause the
 * interrupt then exit.
 CLKSRV   ldx   >CLKPRT,pcr
          lda   $01,x
          bita  #$04
-         lbeq  L0033
+         lbeq  NOTCLK
 
 * Handle the interrupt
          ldd   $06,x
+*
+* UPDATE CURRENT TIME
+*
          dec   D.Tick
-         lbne  TICK50
+         lbne  Tick47
          lda   <$0096
          beq   L00CF
          deca  
@@ -153,10 +178,10 @@ L0102    ldd   D.Min
  andb #3 Is it leap year?
  bne TICK10 Branch if not
          clrb  
-         bra   L012D
+         bra   TICK12
 
 TICK10    ldb   D.Month
-L012D    cmpa  b,x
+TICK12 cmpa B,X End of month?
  bls TICK20 Branch if not
  ldd D.YEAR Get year & month
  incb COUNT Month
@@ -173,9 +198,9 @@ TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
          lda   #100
          sta   D.Tick
-TICK50    ldd   D.Clock
-TICK55    std   D.SvcIRQ
-         jmp   [D.XIRQ]
+Tick47 ldd D.Clock get clock routine ptr
+TICK50 std D.SvcIRQ set IRQ service routine
+ jmp [D.XIRQ] enter system
 
 *****
 *
@@ -190,14 +215,14 @@ ClkEnt    equ   *
          ora   #$10
          sta   >$FC61
          sta   >$FD02
-         lda   #$64
-         sta   D.Tick
-         lda   #$02
-         sta   D.TSlice
-         sta   D.Slice
-         orcc  #$50
-         leax  >CLKSRV,pcr
-         stx   D.IRQ
+         lda   #100
+ sta D.Tick
+         lda   #2   #TickSec/10 set ticks/time slice
+ sta D.TSlice
+ sta D.Slice
+ orcc #IntMasks set interrupt masks
+ leax CLKSRV,pcr GET SERVICE ROUTINE
+ stx D.IRQ SET INTERRUPT VECTOR
          ldx   >CLKPRT,pcr
          ldd   #$0009
          std   $02,x
@@ -213,18 +238,27 @@ ClkEnt    equ   *
          sta   $01,x
          lda   #$80
          sta   ,x
-         puls  cc
-         leay  >TIMSVC,pcr
-         os9   F$SSvc   
-         puls  pc,dp
+ puls cc retrieve masks
+ leay TIMSVC,PCR
+ OS9 F$SSVC SET TIME SERVICE ROUTINE
+ puls pc,dp
 
-TIME     lda   D.SysTsk
-         ldx   D.Proc
-         ldb   P$Task,x
-         ldx   #D.Year
-         ldy   #6
-         ldu   R$X,u
-         os9   F$Move   
-         rts   
-         emod
-ClkEnd      equ   *
+ page
+*************************************************************
+*
+*     Subroutine Time
+*
+*   Time of Day service routine
+*
+TIME equ *
+ lda D.SysTsk get system task number
+ ldx D.Proc get process ptr
+ ldb P$Task,x get process task number
+ ldx #D.Time get source ptr
+ ldy #6 get byte count
+ ldu R$X,u get specified location
+ os9 F$Move move time to user
+ rts
+
+ emod
+ClkEnd equ *

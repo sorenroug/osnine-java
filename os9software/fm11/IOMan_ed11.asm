@@ -85,32 +85,49 @@ FIODel   ldx   R$X,u
 L007B    ldy   V$DESC,u      descriptor exists?
          beq   L008C
          cmpx  V$DESC,u      device match?
-         beq   L0093
+         beq   IODELErr
          cmpx  ,u
-         beq   L0093
+         beq   IODELErr
          cmpx  $06,u
-         beq   L0093
+         beq   IODELErr
 L008C    leau  DEVSIZ,u      move to next dev entry
          decb
          bne   L007B
          clrb
          rts
 
-L0093    comb
+IODELErr    comb
          ldb   #E$ModBsy     submit error
          rts
 
-L0097    lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         anda  #$00
-         cmpb  #$FF
-         rts
+ ifgt LEVEL-1
+***************
+* Subrouting PortBlk
+
+PortBlk lsra
+ rorb
+ ifge DAT.BlSz-2048
+ lsra
+ rorb
+ ifge DAT.BlSz-4096
+ lsra
+ rorb
+ endc
+ endc
+ lsra
+ rorb (D)=Extended Block number
+ anda #DAT.BlMx/256 clear untranslated bits
+ ifle DAT.BlMx-255
+ ifeq MappedIO-true
+ cmpb #IOBlock System's I/O Block?
+ rts
+ else
+ cmpb #$FF  #ROMBlock System's ROM Block?
+ rts
+ endc
+ else
+ endc
+ endc
 
 UsrIODis fdb   IAttach-UsrIODis
          fdb   IDetach-UsrIODis
@@ -274,7 +291,7 @@ L01E1    clr   ,u+
          bhi   L01E1
          ldy   #$F000  New in ed. 11
          ldd   $0B,s
-         lbsr  L0097
+         lbsr  PortBlk
          beq   L0238  New in ed. 11
          std   <$12,s
          ldu   #$0000
@@ -376,7 +393,7 @@ L02A4    cmpx  $02,y
          ldx   $04,x
          ldd   $0E,x
          beq   L0324
-         lbsr  L0097
+         lbsr  PortBlk
          beq   L0324
          tfr   d,x
          ldb   ,s
@@ -388,7 +405,7 @@ L02E7    cmpu  $04,s
          beq   L02FC
          ldd   $0E,x
          beq   L02FC
-         lbsr  L0097
+         lbsr  PortBlk
          cmpd  $01,s
          beq   L0322
 L02FC    leau  $09,u
@@ -960,7 +977,7 @@ L06F0    leay  ,u
          stx   D.Proc
 L0720    ldd   #$0009
          ldx   $02,s
-         lbsr  L080D
+         lbsr  GetModul
          bcs   L0788
          ldu   <$15,s
          lda   P$Task,u
@@ -975,7 +992,7 @@ L0720    ldd   #$0009
          bne   L0786
          ldd   M$Size,u
          subd  #M$IDSize
-         lbsr  L080D
+         lbsr  GetModul
          bcs   L0788
          ldy   <$15,s     get proc desc ptr
          leay  <P$DATImg,y
@@ -1068,18 +1085,28 @@ L0804    stu   <$17,s
 L0808    leas  <$11,s
          puls  pc,u,y,x,b,a
 
-L080D    pshs  y,x,b,a
+
+*****************************************************
+*
+*            GetModul routine
+*
+*  Input: D = Size of new section
+*         X = Present module size in RAM
+*
+* Output: X = New module size in RAM
+*
+GetModul    pshs  y,x,b,a
          addd  $02,s
          std   $04,s
          cmpd  $08,s
-         bls   L086C
+         bls   GetM.R
          addd #DAT.BlSz-1 Round up
          lsra
          lsra
          lsra
          lsra
          cmpa  #$0F
-         bhi   L084C
+         bhi   GetM.Err
          ldb   $08,s
          lsrb
          lsrb
@@ -1098,14 +1125,15 @@ L080D    pshs  y,x,b,a
          clra
          clrb
 L0840    tst   ,y+
-         beq   L0851
+         beq   GetM.D
 L0844    addd  #1
          cmpy  D.BlkMap+2
          bne   L0840
-L084C    comb
+GetM.Err    comb
          ldb   #$CF
-         bra   L0876
-L0851    inc   -1,y
+         bra   GetM.X
+
+GetM.D    inc   -1,y
          std   ,u++
          pshs  b,a
          ldd   $0A,s
@@ -1116,12 +1144,12 @@ L0851    inc   -1,y
          bne   L0844
          ldx   <$1D,s
          os9   F$SetTsk
-         bcs   L0876
-L086C    lda   $0E,s
+         bcs   GetM.X
+GetM.R    lda   $0E,s
          ldx   $02,s
          ldy   ,s
          os9   I$Read
-L0876    leas  $04,s
+GetM.X    leas  $04,s
          puls  pc,x
 
 ********************************

@@ -9,55 +9,73 @@
  pag
 
 
-tylg     set   Systm+Objct   
+tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $02
-         mod   eom,name,tylg,atrv,BTENT,BTSTA
-u0000    rmb   2
+         mod   BTEND,BTNAM,tylg,atrv,BTENT,BTSTA
+BTNAM fcs "Boot"
+ fcb 1
+ fcc "(C) 1982 Microware"
+
+*********************************************************************
+*
+* Static Storage
+*
+*
+ org 0
+V.SEL rmb 2 Drive select reg addr.
 u0002    rmb   2
 u0004    rmb   2
-u0006    rmb   2
+V.CMDR    rmb   2
 u0008    rmb   2
 u000A    rmb   2
 u000C    rmb   2
-u000E    rmb   1
+V.SIDE    rmb   1
 u000F    rmb   4
 u0013    rmb   1
 u0014    rmb   1
-u0015    rmb   1
-u0016    rmb   2
+V.EFLG    rmb   1
+V.BUF    rmb   2
 u0018    rmb   1
 u0019    rmb   1
 u001A    rmb   2
 u001C    rmb   1
 u001D    rmb   1
 BTSTA     equ   .
-name     equ   *
-         fcs   /Boot/
-         fcb   $01 
-         fcc   "(C) 1982 Microware"
 
-L0024    fcb   $00 
-P.T0S    fcb   $0A 
-P.SCT    fcb   $10 
+*
+* Fd1771 Commands
+*
+
+F.REST equ $0B Restore command
+F.SEEK equ $1B Seek command
+F.STPI equ $4B Step in one track command
+F.READ equ $88 Read sector command
+F.WRIT equ $A8 Write sector command
+F.TYP1 equ $D0 Force type 1 status
+F.WRTR equ $F4 Write track command
+ pag
+
+Steprt fcb 0
+P.T0S    fcb   $0A
+P.SCT    fcb   $10
 
 BTENT clra
  ldb #BTSTA Get size of needed static
-
-L002A    pshs  a
-         decb  
-         bne   L002A
-         tfr   s,u
+INILUP pshs  a
+ decb
+ bne INILUP
+ tfr s,u Point "u" to static
          ldx   #$E3B0
-         stx   ,u
+ stx V.SEL,U Address of drive select reg.
          leax  $01,x
          stx   u0002,u
          leax  $01,x
          stx   u0004,u
          leax  $02,x
-         lda   #$D0
-         sta   ,x
-         stx   u0006,u
+ lda #F.Typ1
+ sta 0,x Inz controller chip
+         stx   V.CMDR,u
          leax  $01,x
          stx   u0008,u
          leax  $01,x
@@ -69,133 +87,156 @@ L002A    pshs  a
          lda   [,u]
          anda  #$01
          sta   <u0013,u
+
          pshs  u,x,b,a
          ldd   #$0100
-         os9   F$SRqMem 
-         bcs   L00CB
+         os9   F$SRqMem
+         bcs   BOOTE1
          tfr   u,d
          ldu   $04,s
-         std   <u0016,u
-         clrb  
-         ldx   #$0000
-         lbsr  L00F9
-         bcs   L00CB
-         ldy   <u0016,u
-         ldd   <$18,y
-         std   ,s
-         beq   L00C4
-         ldx   <$16,y
-         ldd   $01,y
+         std   <V.BUF,u
+ clrb
+ ldx #0 Get sector zero
+         lbsr  READSK
+         bcs   BOOTE1
+         ldy   <V.BUF,u
+ ldd DD.BSZ,Y Get bootstrap size
+ std 0,S Return to caller
+         beq   BOOT2
+ ldx DD.BT+1,Y Get boot sector
+ ldd DD.TOT+1,y
          std   <u001A,u
          lda   <$10,y
          sta   <u001C,u
          lda   $03,y
          sta   <u001D,u
          ldd   #$0100
-         ldu   <u0016,u
-         os9   F$SRtMem 
+         ldu   <V.BUF,u
+         os9   F$SRtMem
          ldd   ,s
-         os9   F$SRqMem 
-         bcs   L00CB
+         os9   F$SRqMem
+         bcs   BOOTE1
          tfr   u,d
          ldu   $04,s
          std   $02,s
-         std   <u0016,u
+         std   <V.BUF,u
          ldd   ,s
-L00B1    pshs  x,b,a
-         clrb  
-         bsr   L00F9
-         bcs   L00C9
-         puls  x,b,a
-         inc   <u0016,u
-         leax  $01,x
-         subd  #$0100
-         bhi   L00B1
-L00C4    clra  
+BOOT1 pshs D,X Save size, sector number
+ clrb
+ bsr READSK Read sector
+ bcs BOOTER
+ puls D,X Retrieve size, sector number
+ inc V.BUF,U Move buffer ptr
+ leax 1,X Up sector number
+ subd #$100 Subtract page read
+         bhi   BOOT1
+BOOT2    clra
          puls  b,a
-         bra   L00CD
-L00C9    leas  $04,s
-L00CB    leas  $02,s
-L00CD    puls  u,x
-         leas  <$1E,s
-L00D2    rts   
-L00D3    lda   #$01
+         bra   Bootz
+
+BOOTER leas 4,S Return scratch
+BOOTE1 leas 2,S Return scratch
+Bootz puls x,u
+ leas BTSTA,s De-allocate static fm stack
+Retrn1    rts
+
+RESTOR    lda   #$01
          sta   <u0019,u
          clr   <u0018,u
-         lda   #$05
-L00DD    ldb   #$4B
-         pshs  a
-         eorb  >L0024,pcr
+ lda #5 Repeat five times
+RESTR2 ldb #F.STPI Step in command
+ pshs A
+         eorb  >Steprt,pcr
          clr   <u0014,u
          lbsr  L01D0
          puls  a
-         deca  
-         bne   L00DD
-         ldb   #$0B
-         eorb  >L0024,pcr
+         deca
+         bne   RESTR2
+         ldb   #F.REST
+         eorb  >Steprt,pcr
          lbra  L01D0
-L00F9    lda   #$91
-         bra   L0105
-L00FD    bcc   L0105
+ pag
+*************************************************************
+*
+* Read Sector Command
+*
+* Input: B = Msb Of Logical Sector Number
+*        X = Lsb'S Of Logical Sector Number
+*        Y = Ptr To Path Descriptor
+*        U = Ptr To Global Storage
+*
+* Output: 256 Bytes Of Data Returned In Buffer
+*
+* Error: Cc=Set, B=Error Code
+*
+READSK lda #$91 Error retry code
+         bra   RDSK3
+
+RDSK1    bcc   RDSK3
          pshs  x,b,a
-         bsr   L00D3
+         bsr   RESTOR
          puls  x,b,a
-L0105    pshs  x,b,a
-         bsr   L0110
+RDSK3    pshs  x,b,a
+         bsr   READSC
          puls  x,b,a
-         bcc   L00D2
-         lsra  
-         bne   L00FD
-L0110    bsr   L0128
-         bcs   L00D2
-         ldx   <u0016,u
+         bcc   Retrn1
+         lsra
+         bne   RDSK1
+*
+* Fall Through To Try One Last Time
+*
+READSC    bsr   L0128
+         bcs   Retrn1
+         ldx   <V.BUF,u
          lda   #$10
          sta   <u0014,u
-         ldb   #$88
+ ldb #F.READ Read sector command
          lbsr  L01D0
          lbra  L020D
-L0124    comb  
-         ldb   #$F1
-         rts   
+
+PHYERR comb
+ ldb #E$Sect
+ rts
+
 L0128    lda   #$01
          sta   <u0019,u
          lda   #$20
          sta   u000F,u
-         clr   u000E,u
-         tstb  
-         bne   L0124
-         tfr   x,d
-         cmpd  #$0000
+         clr   V.SIDE,u
+ tstb CHECK Sector bounds
+ bne PHYERR  msb must be zero
+ tfr X,D Logical sector (os-9)
+ cmpd #0 Logical sector zero?
          beq   L019C
          cmpd  <u001A,u
-         bcc   L0124
+         bcc   PHYERR
          tst   <u0013,u
          bne   L0158
          subb  >P.T0S,pcr
          sbca  #$00
          bcc   L0167
-         clra  
+         clra
          addb  >P.T0S,pcr
          bra   L019C
 L0158    subb  >P.SCT,pcr
          sbca  #$00
          bcc   L0167
-         clra  
+         clra
          addb  >P.SCT,pcr
          bra   L019C
 L0167    stb   <u0014,u
-         clrb  
+         clrb
          pshs  b
          ldb   <u001C,u
-         lsrb  
+         lsrb
          ldb   <u0014,u
          bcc   L0185
-L0176    com   u000E,u
-         bne   L017C
-         inc   ,s
-L017C    subb  <u001D,u
-         sbca  #$00
-         bcc   L0176
+PHYSC3 com V.SIDE,U Switch sides
+ bne PHYSC4 Skip track inc if side 1
+ inc 0,S
+PHYSC4    subb  <u001D,u
+ sbca #0
+ bcc PHYSC3 Repeat until less than 1 trk
          bra   L018E
 L0185    inc   ,s
          subb  <u001D,u
@@ -217,17 +258,18 @@ L01AD    ldb   [,u]
          bitb  #$20
          bne   L01AD
          cmpa  <u0018,u
-         beq   L01CE
+         beq   Setrk9
          sta   <u0018,u
          sta   [<u000C,u]
-         ldb   #$1B
-         eorb  >L0024,pcr
+ ldb #F.SEEK Command
+         eorb  >Steprt,pcr
          clr   <u0014,u
          bsr   L01D0
-         lda   #$04
-         sta   <u0015,u
-L01CE    clrb  
-         rts   
+ lda #4
+ sta V.EFLG,u
+Setrk9 clrb
+ rts
+
 L01D0    stx   [<u0004,u]
          lda   <u0019,u
          tst   <u0013,u
@@ -235,55 +277,62 @@ L01D0    stx   [<u0004,u]
          ora   #$C0
 L01DD    sta   [,u]
          lda   <u0014,u
-         tst   u000E,u
+         tst   V.SIDE,u
          beq   L01E8
          ora   #$40
 L01E8    sta   [<u0002,u]
          tst   <u0014,u
          beq   L01FC
-         orb   <u0015,u
-         clr   <u0015,u
-         tst   u000E,u
+         orb   <V.EFLG,u
+         clr   <V.EFLG,u
+         tst   V.SIDE,u
          beq   L01FC
          orb   #$02
-L01FC    stb   [<u0006,u]
+L01FC    stb   [V.CMDR,u]
 L01FF    lda   [,u]
          bita  #$40
          beq   L01FF
-         lda   [<u0006,u]
-         rts   
+         lda   [V.CMDR,u]
+         rts
+
          bita  #$40
-         bne   L023A
+         bne   ERWP
 L020D    bita  #$04
          bne   L0227
-         bita  #$08
-         bne   L021F
-         bita  #$10
-         bne   L0223
-         bita  #$80
-         bne   L0236
-         clrb  
-         rts   
-L021F    comb  
-         ldb   #$F3
-         rts   
-L0223    comb  
-         ldb   #$F7
-         rts   
+         bita  #%00001000 Check sum ok?
+         bne   ERRCRC
+         bita  #%00010000 Seek error?
+         bne   ERSEEK
+         bita  #%10000000 Drive ready?
+         bne   ERNRDY
+         clrb
+         rts
+
+ERRCRC comb
+ ldb #E$CRC Error: bad check sum
+ rts
+
+ERSEEK comb
+ ldb #E$Seek
+ rts
+
 L0227    ldb   <u0014,u
          bitb  #$20
-         bne   L0232
-         comb  
-         ldb   #$F5
-         rts   
-L0232    comb  
-         ldb   #$F4
-         rts   
-L0236    comb  
-         ldb   #$F6
-         rts   
-L023A    comb  
-         ldb   #$F2
-         rts   
-         emod
-eom      equ   *
+         bne   RDERR
+         comb
+         ldb   #E$Write
+         rts
+
+RDERR comb
+ ldb #E$Read
+ rts
+
+ERNRDY comb
+ ldb #E$NotRdy
+ rts
+
+ERWP comb
+ ldb #E$WP
+ rts
+ emod
+BTEND equ *

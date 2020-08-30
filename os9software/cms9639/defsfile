@@ -1,4 +1,3 @@
-LEVEL equ 2 select level two
  ifp1
  use os9defs
  use os9sysdefs.lii

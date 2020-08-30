@@ -14,11 +14,8 @@
 * Clock module for GIMIX system. Implements M58167 clock chip
 * Identical to the Clock source in os9software except for edition number.
 
-CPort    equ $E220
 
-         ifp1
-         use   /dd/defs/os9defs
-         endc
+ use defsfile
 
 CLOCK set $FFE0
  opt c
@@ -29,19 +26,19 @@ CLOCK set $FFE0
 *  Clock Module
 *
 
-tylg     set   Systm+Objct   
+tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,ClkNam,tylg,atrv,ClkEnt,CPORT
 
 ClkNam fcs   /Clock/
-         fcb   $02 
+ fcb 2 Edition
 
 CLKPRT equ M$Mem Stack has clock port address
 
-TIMSVC   fcb   F$Time
-         fdb   TIME-*-2
-         fcb   $80
+TIMSVC fcb F$Time
+ fdb TIME-*-2
+ fcb $80
 
 SecMilli equ 0
 SecTenth equ 1

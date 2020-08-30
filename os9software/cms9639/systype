@@ -1,4 +1,36 @@
 * This systype file is reverse engineered
+LEVEL set 2
+ opt -l
+ ttl System Type Definitions
+ page
+************************************************************
+*
+*     CPU Type Definitions
+*
+ org 1
+Gimix rmb 1
+SSB rmb 1
+Kodak rmb 1
+MotGED rmb 1
+Primal rmb 1
+Helix rmb 1
+Positron rmb 1
+Profitel rmb 1
+Gimix2 rmb 1
+Color rmb 1
+Comtrol rmb 1
+Dragon rmb 1
+AcuPoint rmb 1
+Delco rmb 1
+CMS9639 rmb 1
+Sat rmb 1
+FM11L2 rmb 1
+Pal1M92 rmb 1
+Generic rmb 1
+Gen6829 rmb 1
+DRG128 rmb 1 Dragon 128
+
+
 *
  ifne LEVEL-1
  org 1
@@ -16,7 +48,6 @@ UnLimitd rmb 1 check all NotRAM for modules
 *
 *     Dynamic Address Translator Definitions
 *
-CMS9639 equ 15
 CPUType set CMS9639
 
 DAT.BlCt equ 16 D.A.T. blocks/address space
