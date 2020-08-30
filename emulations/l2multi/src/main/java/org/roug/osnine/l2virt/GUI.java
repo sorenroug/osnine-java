@@ -132,7 +132,7 @@ public class GUI {
 
         printerDialog = new PrinterDialog(guiFrame);
 
-        t2 = new Acia6850(0xFECB4, bus);
+        t2 = new Acia6850(0xFE000, bus);
         bus.insertMemorySegment(t2);
         AciaToScreen atc3 = new AciaToScreen(t2, printerDialog);
         atc3.execute();
@@ -347,7 +347,7 @@ public class GUI {
         menuItem.addActionListener(new T1Action());
         guiMenu.add(menuItem);
 
-        menuItem = new JMenuItem("Printer /P");
+        menuItem = new JMenuItem("Printer /P1");
         menuItem.addActionListener(new PrinterAction());
         guiMenu.add(menuItem);
 
