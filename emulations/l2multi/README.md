@@ -29,11 +29,10 @@ second to facilitate multitasking.
 Memory Map
 ----------
 
+$FE000-$FE001 ACIA serial port address (/P1)
 $FE004-$FE005 ACIA serial port address (/Term)
 $FE020-$FE021 ACIA serial port address (/T1)
-$FECB4-$FECB5 ACIA serial port address (/P)
-$FECD0        Interrupts from clock (50 Hz)
+$FE220-$FE239 MM58167 real time clock
 $FECD1-$FECD3 Virtual disk
-$FFCDA-$FFCDF Date and time from host
 $FF7F         Task register
 $FFF0-$FFFF DAT registers

@@ -3,7 +3,7 @@
 
  opt -c
 
- use   defsfile
+ use defsfile
 
  ttl Boot Module
  pag
@@ -66,7 +66,7 @@ INILUP pshs  a
  decb
  bne INILUP
  tfr s,u Point "u" to static
-         ldx   #$E3B0
+ ldx  #DPort
  stx V.SEL,U Address of drive select reg.
          leax  $01,x
          stx   u0002,u

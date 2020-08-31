@@ -180,6 +180,7 @@
         <assemble src="IOMan" home="l2gimix" verify="770e503ee8488972bccee0d88ddca105"/>
         <assemble src="Term" home="l2gimix" verify="f20b6b9b5c5adb4de70b9984e202f6fd"/>
         <assemble src="T1" home="l2gimix" verify="d790fca59337ecdcef160f657d47ac8a"/>
+        <assemble src="Acia" home="l2gimix" verify="bf0bef19aeac9bf0445827ed757c35a3"/>
     </target>
 
     <!-- FM-11 Level II -->

@@ -23,7 +23,7 @@ rev      set   $01
 *
  org V.SCF room for scf variables
 INXTI    rmb   1
-u001E    rmb   1
+INXTO    rmb   1
 INCNT    rmb   1
 ONXTI    rmb   1
 ONXTO    rmb   1
@@ -31,11 +31,8 @@ HALTED    rmb   1
 INHALT    rmb   1
 RDYSGNL    rmb   2
 ERRSTAT    rmb   1
-INPBUF    rmb   41
-u0050    rmb   39
-OUTBUF    rmb   9
-u0080    rmb   46
-u00AE    rmb   85
+INPBUF    rmb   INPSIZ
+OUTBUF    rmb   OUTSIZ
 ACIMEM     equ   .
 
 * HALTED state conditions
@@ -44,7 +41,7 @@ H.EMPTY equ 2 Output buffer is empty
 
  fcb UPDAT.
 ACINAM fcs "ACIA51"
-         fcb   $06 
+         fcb  6 
 
 ACIENT    equ   *
          lbra  INIT
@@ -78,13 +75,13 @@ INIT ldx V.PORT,U I/o port address
          leax  >ACMASK,pcr
          leay  >ACIRQ,pcr
          os9   F$IRQ    
-         bcs   L006D
+         bcs   INIT9
          ldx   V.PORT,u
          ldb   V.TYPE,u
          orb   #$09
          stb   $02,x
          clrb  
-L006D    rts   
+INIT9    rts   
 
 READ00    bsr   ACSLEP
 READ    lda   <INHALT,u
@@ -101,7 +98,7 @@ READ    lda   <INHALT,u
          stb   $02,x
 L008B    tst   <RDYSGNL,u
          bne   L00BC
-         ldb   <u001E,u
+         ldb   <INXTO,u
          leax  <INPBUF,u
          orcc  #$50
          cmpb  <INXTI,u
@@ -113,7 +110,7 @@ L008B    tst   <RDYSGNL,u
          cmpb  #$4F
          bls   L00A9
          clrb  
-L00A9    stb   <u001E,u
+L00A9    stb   <INXTO,u
          clrb  
          ldb   V.ERR,u
          beq   L00B9
@@ -128,67 +125,72 @@ L00BC    comb
          ldb   #$F6
          rts   
 
+**********
+* Acslep - Sleep for I/O activity
+
 ACSLEP    pshs  x,b,a
-         lda   <u0050
+         lda   D.Proc
          sta   V.Wake,u
-         ldx   <u0050
-         lda   $0C,x
-         ora   #$08
-         sta   $0C,x
-         andcc #$AF
-         ldx   #$0001
+         ldx   D.Proc
+         lda P$State,x
+         ora   #Suspend
+         sta P$State,x
+         andcc #^IntMasks
+         ldx   #1
          os9   F$Sleep  
-         ldx   <u0050
+         ldx   D.Proc
          ldb   <$19,x
-         beq   L00E1
+         beq   ACSL90
          cmpb  #$03
-         bls   L00EA
-L00E1    clra  
+         bls   ACSLER
+ACSL90    clra  
          lda   $0C,x
          bita  #$02
-         bne   L00EA
+         bne   ACSLER
          puls  pc,x,b,a
 
-L00EA    leas  $06,s
+ACSLER    leas  $06,s
          coma  
          rts   
 
-L00EE    bsr   ACSLEP
+WRIT00    bsr   ACSLEP
 WRITE    leax  <OUTBUF,u
          ldb   <ONXTI,u
          abx   
          sta   ,x
          incb  
          cmpb  #$8B
-         bls   L00FF
+         bls   WRIT10
          clrb  
-L00FF    orcc  #$50
+WRIT10    orcc  #$50
          cmpb  <ONXTO,u
-         beq   L00EE
+         beq   WRIT00
          stb   <ONXTI,u
          lda   <HALTED,u
-         beq   L011D
+         beq   Write80
          anda  #$FD
          sta   <HALTED,u
-         bne   L011D
+         bne   Write80
          lda   V.TYPE,u
          ora   #$05
          ldx   V.PORT,u
          sta   $02,x
-L011D    andcc #$AF
-L011F    clrb  
+Write80    andcc #$AF
+Write90    clrb  
          rts   
 
 GETSTA    cmpa  #$01
-         bne   L0130
+         bne   GETS10
          ldb   <INCNT,u
          beq   L00BC
          ldx   $06,y
          stb   $02,x
 L012E    clrb  
          rts   
-L0130    cmpa  #$06
-         beq   L011F
+
+GETS10    cmpa  #$06
+         beq   Write90
+
 L0134    comb  
          ldb   #$D0
          rts   
@@ -202,9 +204,11 @@ PUTSTA    cmpa  #$1A
          tst   <INCNT,u
          bne   L014E
          std   <RDYSGNL,u
-         bra   L011D
+         bra   Write80
+
 L014E    andcc #$AF
-         lbra  L0286
+         lbra  SendSig
+
 L0153    cmpa  #$1B
          beq   L0160
          cmpa  #$1F
@@ -251,20 +255,20 @@ BAUDTBL  fcb   $13        110 baud
          fcb   $1F      19200 baud
 
 TRMN00    lbsr  ACSLEP
-TRMNAT    ldx   <u0050
+TRMNAT    ldx   D.Proc
          lda   ,x
          sta   V.BUSY,u
          sta   V.LPRC,u
          ldb   <ONXTI,u
          orcc  #$50
-         cmpb  <ONXTO,u
+         cmpb  ONXTO,u
          bne   TRMN00
          lda   V.TYPE,u
          ora   #$08
          ldx   V.PORT,u
          sta   $02,x
          andcc #$AF
-         ldx   #$0000
+         ldx   #0
          os9   F$IRQ    
          rts   
 
@@ -329,19 +333,19 @@ L0232    anda  #$07
          bra   L0230
 
 InIRQ0    lda   ,x
-         beq   L0259
+         beq   InIRQ1
          cmpa  V.INTR,u
          beq   InAbort
          cmpa  V.QUIT,u
          beq   InQuit
          cmpa  V.PCHR,u
-         beq   L02B1
+         beq   InPause
          cmpa  V.XON,u
          beq   InXON
          cmpa  <V.XOFF,u
          lbeq  InXOFF
 
-L0259    leax  <INPBUF,u
+InIRQ1    leax  <INPBUF,u
          ldb   <INXTI,u
          abx   
          sta   ,x
@@ -349,23 +353,24 @@ L0259    leax  <INPBUF,u
          cmpb  #$4F
          bls   L0268
          clrb  
-L0268    cmpb  <u001E,u
+L0268    cmpb  <INXTO,u
          bne   L0275
          ldb   #$04
          orb   V.ERR,u
          stb   V.ERR,u
          bra   WAKEUP
+
 L0275    stb   <INXTI,u
          inc   <INCNT,u
          tst   <RDYSGNL,u
-         beq   L028B
+         beq   InIRQ4
          ldd   <RDYSGNL,u
          clr   <RDYSGNL,u
-L0286    os9   F$Send   
+SendSig    os9   F$Send   
          clrb  
          rts   
 
-L028B    lda   <V.XOFF,u
+InIRQ4    lda   <V.XOFF,u
          beq   WAKEUP
          ldb   <INCNT,u
          cmpb  #$46
@@ -382,10 +387,10 @@ L028B    lda   <V.XOFF,u
          stb   $02,x
          lbra  WAKEUP
 
-L02B1    ldx   V.DEV2,u
-         beq   L0259
+InPause    ldx   V.DEV2,u
+         beq   InIRQ1
          sta   $08,x
-         bra   L0259
+         bra   InIRQ1
 
 InAbort    ldb   #$03
          bra   InQuit10
@@ -395,9 +400,9 @@ InQuit10    pshs  a
          lda   V.LPRC,u
          beq   L02C9
          clr   V.Wake,u
-         bsr   L0286
+         bsr   SendSig
 L02C9    puls  a
-         bra   L0259
+         bra   InIRQ1
 
 InXON    lda   <HALTED,u
          anda  #$FE

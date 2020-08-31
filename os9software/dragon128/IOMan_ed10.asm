@@ -178,7 +178,7 @@ IODELErr comb I/O Delete module error
 
  ifgt LEVEL-1
 ***************
-* Subrouting PortBlk
+* Subroutine PortBlk
 
 * Passed: (D)=MS port addr
 * Returns: (D)=Port Extended Block number
