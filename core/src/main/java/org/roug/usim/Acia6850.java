@@ -170,24 +170,31 @@ public class Acia6850 extends MemorySegment implements Acia {
 
     /**
      * Get interrupted by reader thread and get the byte.
+     * If the Receive Data Register is Full then wait 100 ms for it to clear.
+     * If it is not clear by then, drop the byte. A normal terminal would
+     * probably beep at this point.
      */
     public synchronized void dataReceived(int val) {
         LOGGER.trace("get data received: {}", val);
         // Wait until the CPU has taken the current byte
-        while (isBitOn(statusRegister, RDRF)) {
+        if (isBitOn(statusRegister, RDRF)) {
             try {
-                wait();
+                wait(100);
             } catch (InterruptedException e) {
                 LOGGER.info("InterruptedException", e);
             }
         }
-        // RDRF is now 0
-        receiveData = val;
-        setStatusBit(RDRF);   // Read register is full.
-        if (receiveIrqEnabled) {
-            raiseIRQ();
+        if (isBitOn(statusRegister, RDRF)) {
+            // Drop byte. Acia was never ready
+        } else {
+            // RDRF is now 0
+            receiveData = val;
+            setStatusBit(RDRF);   // Read register is full.
+            if (receiveIrqEnabled) {
+                raiseIRQ();
+            }
+            notifyAll();
         }
-        notifyAll();
     }
 
     private void raiseIRQ() {

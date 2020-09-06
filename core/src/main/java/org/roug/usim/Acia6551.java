@@ -170,19 +170,23 @@ public class Acia6551 extends MemorySegment implements Acia {
      */
     public synchronized void dataReceived(int val) {
         // Wait until the CPU has taken the current byte
-        while (isReceiveRegisterFull()) {
+        if (isReceiveRegisterFull()) {
             try {
-                wait();
+                wait(100);
             } catch (InterruptedException e) {
                 LOGGER.info("InterruptedException", e);
             }
         }
-        receiveData = val;
-        setStatusBit(RDRF);   // We have set interrupt, Read register is full.
-        if (receiveIrqEnabled) {
-            raiseIRQ();
+        if (isReceiveRegisterFull()) {
+            // Drop byte. Acia was never ready
+        } else {
+            receiveData = val;
+            setStatusBit(RDRF);   // We have set interrupt, Read register is full.
+            if (receiveIrqEnabled) {
+                raiseIRQ();
+            }
+            notifyAll();
         }
-        notifyAll();
     }
 
     /**
