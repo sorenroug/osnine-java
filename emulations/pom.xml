@@ -14,7 +14,7 @@
     <name>Emulations</name>
 
     <modules>
-        <module>genericos9</module>
+        <module>l1ws</module>
         <module>v6809</module>
         <module>l2multi</module>
         <module>os9dragon</module>

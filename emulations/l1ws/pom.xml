@@ -10,12 +10,12 @@
     </parent>
 
     <groupId>roug.org.osnine</groupId>
-    <artifactId>genericos9</artifactId>
+    <artifactId>l2ws</artifactId>
     <version>2.1.0</version>
     <packaging>jar</packaging>
 
-    <name>Emulator for a generic OS-9 Level I</name>
-    <url>http://www.roug.org/retrocomputing/emulators/genericos9</url>
+    <name>Emulator for a OS-9 Level I workstation</name>
+    <url>http://www.roug.org/retrocomputing/emulators/l1ws</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,7 +67,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.roug.osnine.genericos9.OS9Emu</mainClass>
+                            <mainClass>org.roug.osnine.l1ws.OS9Emu</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
