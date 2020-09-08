@@ -203,6 +203,9 @@ TICK35 std D.MIN Update minute & second
  endc
  sta D.Tick
  else
+* M58167 code here. Probably:
+ ldd D.Clock
+ bra TICK50
  endc
  ifne TimePoll
 Tick40 leau ,s copy sp
