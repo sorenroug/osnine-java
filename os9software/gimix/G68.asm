@@ -114,8 +114,8 @@ INIDSK ldx V.PORT,U Point to i/o port
  leax 1,x   DMA starting address
  stx V.DMAADR,u
  leax 2,x  FD1797 Command/status register
- lda #$D0    Code for clear interrupt
- sta 0,x
+ lda #F.TYP1
+ sta 0,x Inz controller chip
  stx V.CMDR,u
  leax 1,x   FD1797 Track register
  stx V.TRKR,u
@@ -339,7 +339,7 @@ RDDSK3    pshs  x,b,a
          bne   RDDSK1
 READSC    bsr   SEEK
          bcs   L01E2
-         ldx   $08,y
+         ldx PD.BUF,y
          lda   #$10
          sta V.TMP,u
          ldb   #F.READ

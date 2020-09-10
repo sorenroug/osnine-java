@@ -24,24 +24,25 @@ BTNAM fcs "Boot"
 *
  org 0
 V.SEL rmb 2 Drive select reg addr.
-u0002    rmb   2
-u0004    rmb   2
-V.CMDR    rmb   2
-u0008    rmb   2
-u000A    rmb   2
-u000C    rmb   2
-V.SIDE    rmb   1
-u000F    rmb   4
-u0013    rmb   1
-u0014    rmb   1
-V.EFLG    rmb   1
-V.BUF    rmb   2
-u0018    rmb   1
-u0019    rmb   1
-u001A    rmb   2
-u001C    rmb   1
-u001D    rmb   1
-BTSTA     equ   .
+V.DMACTL rmb 2
+V.DMAADR rmb 2
+V.CMDR rmb 2
+V.TRKR rmb 2
+V.SECR rmb 2
+V.DATR rmb 2
+V.SIDE rmb 1
+V.DENS rmb 1
+u0010 rmb 3
+u0013 rmb 1
+V.TMP rmb 1
+V.EFLG rmb 1
+V.BUF rmb 2
+V.TRCK rmb 1
+u0019 rmb 1   FM-flag?
+V.TOT rmb 2 Total number of sectors on media
+V.FMT rmb 1
+V.TKS rmb 1
+BTSTA equ .
 
 *
 * Fd1771 Commands
@@ -57,8 +58,8 @@ F.WRTR equ $F4 Write track command
  pag
 
 Steprt fcb 0
-P.T0S    fcb   $0A
-P.SCT    fcb   $10
+P.T0S fcb 10
+P.SCT fcb 16
 
 BTENT clra
  ldb #BTSTA Get size of needed static
@@ -66,61 +67,61 @@ INILUP pshs  a
  decb
  bne INILUP
  tfr s,u Point "u" to static
- ldx  #DPort
+ ldx #DPort
  stx V.SEL,U Address of drive select reg.
-         leax  $01,x
-         stx   u0002,u
-         leax  $01,x
-         stx   u0004,u
-         leax  $02,x
+ leax 1,x
+ stx V.DMACTL,u
+ leax 1,x
+ stx V.DMAADR,u
+ leax 2,x
  lda #F.Typ1
  sta 0,x Inz controller chip
-         stx   V.CMDR,u
-         leax  $01,x
-         stx   u0008,u
-         leax  $01,x
-         stx   u000A,u
-         leax  $01,x
-         stx   u000C,u
-         lda   #$FF
-         sta   <u0018,u
-         lda   [,u]
+ stx V.CMDR,u
+ leax 1,X Address of track register
+ stx V.TRKR,U
+ leax 1,X Address of sector register
+ stx V.SECR,U
+ leax 1,X Address of data register
+ stx V.DATR,U
+ lda #$FF
+ sta V.TRCK,U Inz to high track count
+         lda   [V.SEL,u]
          anda  #$01
          sta   <u0013,u
 
-         pshs  u,x,b,a
-         ldd   #$0100
+         pshs  u,x,D
+         ldd   #256
          os9   F$SRqMem
          bcs   BOOTE1
          tfr   u,d
          ldu   $04,s
-         std   <V.BUF,u
+         std V.BUF,u
  clrb
  ldx #0 Get sector zero
          lbsr  READSK
          bcs   BOOTE1
-         ldy   <V.BUF,u
+         ldy V.BUF,u
  ldd DD.BSZ,Y Get bootstrap size
  std 0,S Return to caller
          beq   BOOT2
  ldx DD.BT+1,Y Get boot sector
- ldd DD.TOT+1,y
-         std   <u001A,u
-         lda   <$10,y
-         sta   <u001C,u
-         lda   $03,y
-         sta   <u001D,u
-         ldd   #$0100
-         ldu   <V.BUF,u
-         os9   F$SRtMem
-         ldd   ,s
-         os9   F$SRqMem
-         bcs   BOOTE1
+ ldd DD.TOT+1,y get total number of sectors
+ std V.TOT,u save it
+         lda DD.FMT,y
+         sta V.FMT,u
+         lda DD.TKS,y
+         sta V.TKS,u
+         ldd #256
+         ldu V.BUF,u
+         os9 F$SRtMem
+         ldd 0,s Get bootstrap size
+ OS9 F$SRqMem Get boot memory
+ bcs BOOTE1 Branch if none
          tfr   u,d
-         ldu   $04,s
-         std   $02,s
-         std   <V.BUF,u
-         ldd   ,s
+         ldu   4,s
+         std   2,s
+         std V.BUF,u
+         ldd   0,s
 BOOT1 pshs D,X Save size, sector number
  clrb
  bsr READSK Read sector
@@ -129,10 +130,10 @@ BOOT1 pshs D,X Save size, sector number
  inc V.BUF,U Move buffer ptr
  leax 1,X Up sector number
  subd #$100 Subtract page read
-         bhi   BOOT1
-BOOT2    clra
-         puls  b,a
-         bra   Bootz
+ bhi BOOT1
+BOOT2 clra
+ puls b,a
+ bra Bootz
 
 BOOTER leas 4,S Return scratch
 BOOTE1 leas 2,S Return scratch
@@ -140,21 +141,25 @@ Bootz puls x,u
  leas BTSTA,s De-allocate static fm stack
 Retrn1    rts
 
+*********************************************************
+*
+* Restore Drive To Track Zero
+*
 RESTOR    lda   #$01
          sta   <u0019,u
-         clr   <u0018,u
+ clr V.TRCK,U Old track = 0
  lda #5 Repeat five times
 RESTR2 ldb #F.STPI Step in command
  pshs A
-         eorb  >Steprt,pcr
-         clr   <u0014,u
-         lbsr  L01D0
-         puls  a
-         deca
-         bne   RESTR2
-         ldb   #F.REST
-         eorb  >Steprt,pcr
-         lbra  L01D0
+ eorb STEPRT,pcr
+ clr V.TMP,u
+ lbsr WCR0 Issue command, delay & wait for done.
+ puls A
+ deca DONE Stepping?
+ bne RESTR2
+ ldb #F.REST Restore command
+ eorb Steprt,pcr
+ lbra  WCR0
  pag
 *************************************************************
 *
@@ -185,128 +190,153 @@ RDSK3    pshs  x,b,a
 *
 * Fall Through To Try One Last Time
 *
-READSC    bsr   L0128
-         bcs   Retrn1
-         ldx   <V.BUF,u
-         lda   #$10
-         sta   <u0014,u
+READSC    bsr   PHYSIC
+         bcs   Retrn1 Sector out of range?
+         ldx V.BUF,u
+         lda #$10
+         sta V.TMP,u
  ldb #F.READ Read sector command
-         lbsr  L01D0
-         lbra  L020D
+         lbsr  WCR0
+         lbra  READCK
 
 PHYERR comb
  ldb #E$Sect
  rts
 
-L0128    lda   #$01
+**************************************************************
+*
+* Convert Logical Sector Number
+* To Physical Track And Sector
+*
+*  Input:  B = Msb Of Logical Sector Number
+*          X = Lsb'S Of Logical Sector Number
+PHYSIC    lda   #$01
          sta   <u0019,u
          lda   #$20
-         sta   u000F,u
+         sta   V.DENS,u
          clr   V.SIDE,u
  tstb CHECK Sector bounds
- bne PHYERR  msb must be zero
+ bne PHYERR msb must be zero
  tfr X,D Logical sector (os-9)
  cmpd #0 Logical sector zero?
-         beq   L019C
-         cmpd  <u001A,u
-         bcc   PHYERR
-         tst   <u0013,u
-         bne   L0158
-         subb  >P.T0S,pcr
-         sbca  #$00
-         bcc   L0167
+ beq PHYSC7 ..yes
+ cmpd V.TOT,u higher than max for disk?
+         bcc PHYERR branch if so
+         tst   u0013,u
+         bne PHYSC0
+         subb P.T0S,pcr On side 1 track zero?
+         sbca #0
+         bcc PHYSC1
          clra
-         addb  >P.T0S,pcr
-         bra   L019C
-L0158    subb  >P.SCT,pcr
-         sbca  #$00
-         bcc   L0167
+         addb P.T0S,pcr
+         bra PHYSC7
+
+PHYSC0 subb P.SCT,pcr
+         sbca #0
+         bcc PHYSC1
          clra
-         addb  >P.SCT,pcr
-         bra   L019C
-L0167    stb   <u0014,u
+         addb P.SCT,pcr
+         bra PHYSC7
+PHYSC1    stb V.TMP,u
          clrb
-         pshs  b
-         ldb   <u001C,u
-         lsrb
-         ldb   <u0014,u
-         bcc   L0185
-PHYSC3 com V.SIDE,U Switch sides
- bne PHYSC4 Skip track inc if side 1
+ pshs B Will be track number
+         ldb V.FMT,u Disk format
+ lsrb SHIFT Side bit to carry
+         ldb V.TMP,u
+         bcc PHYSC4
+PHYSC2 com V.SIDE,U Switch sides
+ bne PHYSC3 Skip track inc if side 1
  inc 0,S
-PHYSC4    subb  <u001D,u
+PHYSC3 subb V.TKS,u
  sbca #0
- bcc PHYSC3 Repeat until less than 1 trk
-         bra   L018E
-L0185    inc   ,s
-         subb  <u001D,u
+ bcc PHYSC2 Repeat until less than 1 trk
+ bra PHYSC5
+
+* Calculate track for single sided disk
+PHYSC4 inc 0,S Increment track number
+         subb V.TKS,u
          sbca  #$00
-         bcc   L0185
-L018E    lda   <u001C,u
-         bita  #$02
-         beq   L0197
-         clr   u000F,u
-L0197    puls  a
-         addb  <u001D,u
-L019C    stb   [<u000A,u]
-         ldb   u000F,u
+         bcc   PHYSC4
+PHYSC5    lda V.FMT,u
+         bita  #$02 Check density
+         beq   PHYSC6
+         clr   V.DENS,u
+PHYSC6    puls  a
+         addb V.TKS,u
+PHYSC7    stb   [V.SECR,u]
+         ldb   V.DENS,u
          orb   <u0019,u
          stb   <u0019,u
-         ldb   <u0018,u
-         stb   [<u0008,u]
-L01AD    ldb   [,u]
-         bitb  #$20
-         bne   L01AD
-         cmpa  <u0018,u
+         ldb   V.TRCK,u
+         stb [V.TRKR,u]
+L01AD    ldb [V.SEL,u]
+         bitb #$20
+         bne L01AD
+         cmpa V.TRCK,u
          beq   Setrk9
-         sta   <u0018,u
-         sta   [<u000C,u]
+         sta V.TRCK,u
+         sta [V.DATR,u]
  ldb #F.SEEK Command
-         eorb  >Steprt,pcr
-         clr   <u0014,u
-         bsr   L01D0
+ eorb Steprt,pcr
+ clr V.TMP,u
+ bsr WCR0 Issue command
  lda #4
  sta V.EFLG,u
 Setrk9 clrb
  rts
 
-L01D0    stx   [<u0004,u]
+****************************************************************
+*
+*
+* Write Command Register
+*
+WCR0    stx   [V.DMAADR,u]
          lda   <u0019,u
          tst   <u0013,u
          beq   L01DD
          ora   #$C0
-L01DD    sta   [,u]
-         lda   <u0014,u
+L01DD    sta   [V.SEL,u]
+         lda V.TMP,u
          tst   V.SIDE,u
          beq   L01E8
          ora   #$40
-L01E8    sta   [<u0002,u]
-         tst   <u0014,u
+L01E8    sta   [V.DMACTL,u]
+         tst   <V.TMP,u
          beq   L01FC
-         orb   <V.EFLG,u
-         clr   <V.EFLG,u
+         orb   V.EFLG,u
+         clr   V.EFLG,u
          tst   V.SIDE,u
          beq   L01FC
          orb   #$02
 L01FC    stb   [V.CMDR,u]
-L01FF    lda   [,u]
-         bita  #$40
+L01FF    lda   [V.SEL,u]
+         bita  #$40 Ready?
          beq   L01FF
-         lda   [V.CMDR,u]
+         lda   [V.CMDR,u] Get status
          rts
 
-         bita  #$40
-         bne   ERWP
-L020D    bita  #$04
-         bne   L0227
-         bita  #%00001000 Check sum ok?
-         bne   ERRCRC
-         bita  #%00010000 Seek error?
-         bne   ERSEEK
-         bita  #%10000000 Drive ready?
-         bne   ERNRDY
-         clrb
-         rts
+***********************************************************
+*
+* Check Status For Error Conditions
+*
+*  Input: (B)= Status Of Fd1797
+*
+*  If Error: (B)= Error Code & Carry Is Set
+*
+*  If No Error: Carry Is Clear
+*
+STCK bita #%01000000 Write protected?
+ bne WPERR
+READCK bita #%00000100 Lost data?
+ bne   RDWRER
+ bita #%00001000 Check sum ok?
+ bne ERRCRC
+ bita #%00010000 Seek error?
+ bne ERSEEK
+ bita #%10000000 Drive ready?
+ bne ERNRDY ..no; error
+ clrb
+ rts
 
 ERRCRC comb
  ldb #E$CRC Error: bad check sum
@@ -316,22 +346,20 @@ ERSEEK comb
  ldb #E$Seek
  rts
 
-L0227    ldb   <u0014,u
-         bitb  #$20
-         bne   RDERR
-         comb
-         ldb   #E$Write
-         rts
-
-RDERR comb
- ldb #E$Read
+RDWRER ldb V.TMP,u
+ bitb  #%00100000  Write fault?
+ bne RDERR
+WRERR    comb
+ ldb   #E$Write
  rts
-
+RDERR    comb
+ ldb   #E$Read
+ rts
 ERNRDY comb
  ldb #E$NotRdy
  rts
 
-ERWP comb
+WPERR comb
  ldb #E$WP
  rts
  emod
