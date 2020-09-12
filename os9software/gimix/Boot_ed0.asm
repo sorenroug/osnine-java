@@ -16,6 +16,7 @@
  mod BTEND,BTNAM,SYSTM+OBJCT,REENT+1,BTENT,BTSTA
 BTNAM fcs "Boot"
  fcb 0 Edition telltale byte
+ fcc "(C)1981Microware"
 
 *********************************************************************
 *
@@ -24,27 +25,28 @@ BTNAM fcs "Boot"
 *
  org 0
 V.SEL rmb 2 Drive select reg addr.
-u0002    rmb   2
-u0004    rmb   2
-u0006    rmb   2
-V.TRKR    rmb   2
-V.SECR    rmb   2
-V.DATR    rmb   2
-V.SIDE    rmb   1
-V.DENS    rmb   4
-u0013    rmb   1
-u0014    rmb   1
-V.EFLG    rmb   1
-V.BUF    rmb   2
-V.TRCK    rmb   1
-V.DRV    rmb   1
+V.DMACTL rmb 2 DMA control register ptr
+V.DMAADR rmb 2 DMA address register ptr
+V.CMDR rmb 2 Command/status register ptr
+V.TRKR rmb 2 Track register ptr
+V.SECR rmb 2 Sector register ptr
+V.DATR rmb 2 Data register ptr
+
+V.SIDE rmb 1
+V.DENS rmb 1
+u0010 rmb 3
+V.8INCH rmb 1
+V.TMP rmb 1
+V.EFLG rmb 1 Set "e" for head settle time
+V.BUF rmb 2
+V.TRCK rmb 1
+V.DRV rmb 1
 BTSTA equ . Total static requirement
 
 
-         fcc   "(C)1981Microware"
-L0022    fcb   $00
-P.T0S    fcb   10  Sectors in Track 0?
-P.SCT    fcb   16  Sectors per track?
+STEPRT fcb 0
+P.T0S fcb 10 Sectors in Track 0
+P.SCT fcb 16 Sectors per track
 
 *
 * Fd1771 Commands
@@ -77,14 +79,14 @@ INILUP pshs a
  tfr s,u Point "u" to static
  ldx #DPORT Point to controller addr
  stx V.SEL,U Address of drive select reg.
-         leax  $01,x
-         stx   u0002,u
-         leax  $01,x
-         stx   u0004,u
-         leax  $02,x
+ leax 1,x
+ stx V.DMACTL,u
+ leax 1,x
+ stx V.DMAADR,u
+ leax 2,x
  lda #F.Typ1
  sta 0,x Inz controller chip
-         stx   u0006,u
+ stx V.CMDR,u
  leax 1,X Address of track register
  stx V.TRKR,U
  leax 1,X Address of sector register
@@ -93,9 +95,9 @@ INILUP pshs a
  stx V.DATR,U
  lda #$FF
  sta V.TRCK,U Inz to high track count
-         lda   [V.SEL,u]
-         anda  #$01
-         sta   <u0013,u
+ lda [V.SEL,u]
+ anda #1 Check for 8-inch drive
+ sta V.8INCH,u
 
 *        Fall thru to do the boot
  pag
@@ -168,20 +170,20 @@ Bootz puls x,u
 *        Issuing The Restore.  As Suggested In The
 *        Application Notes.
 *
-RESTOR    lda   #1
+RESTOR lda #1 Select drive 0
  sta V.DRV,u
  clr V.TRCK,U Old track = 0
  lda #5 Repeat five times
 RESTR2 ldb #F.STPI Step in command
  pshs A
-         eorb  >L0022,pcr
-         clr   <u0014,u
+ eorb STEPRT,pcr
+ clr V.TMP,u
  lbsr WCR0 Issue command, delay & wait for done.
  puls A
  deca DONE Stepping?
  bne RESTR2 ...no; step again.
  ldb #F.REST Restore command
-         eorb  >L0022,pcr
+ eorb STEPRT,pcr
  lbra WCR0
  pag
 *************************************************************
@@ -223,11 +225,11 @@ RDSK3 pshs D,X
 READSC bsr PHYSIC Move head to track
  bcs Retrn1
  ldx V.BUF,u Point to buffer
-         lda   #$10
-         sta   <u0014,u
+ lda #$10
+ sta V.TMP,u
  ldb #F.READ Read sector command
  lbsr WCR0 Issue command
-         lbra  L01FE
+ lbra READCK
  pag
 **************************************************************
 *
@@ -244,10 +246,10 @@ PHYERR comb
  ldb #E$SECT Error: bad sector number
  rts
 
-PHYSIC    lda   #$01
-         sta   <V.DRV,u
-         lda   #$20
-         sta   V.DENS,u
+PHYSIC lda #1 select drive 0
+ sta V.DRV,u
+ lda #$20 set single density operation
+ sta V.DENS,u
  clr V.SIDE,u
  tstb CHECK Sector bounds
  bne PHYERR  msb must be zero
@@ -255,105 +257,117 @@ PHYSIC    lda   #$01
  cmpd #0 Logical sector zero?
  beq PHYSC7 ..yes; skip conversion.
  cmpd DD.TOT+1,Y Too high sector number?
-         bcc   PHYERR
-         tst   <u0013,u Test density of media
-         bne   L014A
-         subb  >P.T0S,pcr
-         sbca  #$00
-         bcc   PHYSC2
-         clra
-         addb  >P.T0S,pcr
-         bra   PHYSC7
-* 16 sectors
-L014A    subb  >P.SCT,pcr
-         sbca  #$00
-         bcc   PHYSC2  tr
-         clra
-         addb  >P.SCT,pcr
-         bra   PHYSC7
-
-* Read track 0
-PHYSC2    stb   <u0014,u
-         clrb
-         pshs  b
-         ldb   <DD.FMT,y
-         lsrb Move sides flag into carry
-         ldb   <u0014,u
-         bcc   L0176
-* Double sided read
-PHYSC3 com V.SIDE,U Switch sides
- bne PHYSC4 Skip track inc if side 1
- inc 0,S
-PHYSC4 subb DD.TKS,Y
+ bcc PHYERR branch if so
+ tst V.8INCH,u
+ bne PHYSC0
+ subb P.T0S,pcr On side 1 track zero?
  sbca #0
- bcc PHYSC3
-         bra   L017E
+ bcc PHYSC1
+ clra
+ addb P.T0S,pcr
+ bra PHYSC7
+* 16 sectors
+PHYSC0 subb P.SCT,pcr
+ sbca #0
+ bcc PHYSC1
+ clra
+ addb P.SCT,pcr
+ bra PHYSC7
+* Read track 0
+PHYSC1 stb V.TMP,u
+ clrb
+ pshs B Will be track number
+ ldb DD.FMT,y
+ lsrb SHIFT Side bit to carry
+ ldb V.TMP,u
+ bcc PHYSC4
+* Double sided read
+PHYSC2 com V.SIDE,U Switch sides
+ bne PHYSC3 Skip track inc if side 1
+ inc 0,S
+PHYSC3 subb DD.TKS,Y
+ sbca #0
+ bcc PHYSC2
+ bra PHYSC5
 
-* Single sided read
-L0176    inc   ,s
-         subb  DD.TKS,y
-         sbca  #$00
-         bcc   L0176
-
-L017E    lda   DD.FMT,y
-         bita  #$02    Test density
-         beq   L0187  double density
-         clr   V.DENS,u
-L0187    puls  a
-         addb  DD.TKS,y
-
+* Calculate track for single sided disk
+PHYSC4 inc 0,S Increment track number
+ subb DD.TKS,y
+ sbca #0
+ bcc PHYSC4
+PHYSC5 lda DD.FMT,y
+ bita #2 Check density
+ beq PHYSC6 branch if single track density
+ clr V.DENS,u double density
+PHYSC6 puls a
+ addb DD.TKS,y
 PHYSC7 stb [V.SECR,U] Put sector (b) in sector reg
-         ldb   V.DENS,u
-         orb   <V.DRV,u
-         stb   <V.DRV,u
-         ldb   <V.TRCK,u
-         stb   [<V.TRKR,u]
-L019C    ldb   [V.SEL,u]
-         bitb  #$20
-         bne   L019C
-         cmpa  <V.TRCK,u
-         beq   SETRK9
+ ldb V.DENS,u
+ orb V.DRV,u
+ stb V.DRV,u
+ ldb V.TRCK,u
+ stb [V.TRKR,u]
+PHYSC8 ldb [V.SEL,u]
+ bitb #$20 Motor starting up?
+ bne PHYSC8 ..yes; wait for bit to go away
+ cmpa V.TRCK,u already on the correct track?
+ beq Setrk9 branch if so
  sta V.TRCK,U Update with new track
  sta [V.DATR,U] Put new trk in data reg
  ldb #F.SEEK Command
-         eorb  >L0022,pcr
-         clr   <u0014,u
+ eorb Steprt,pcr
+ clr V.TMP,u
  bsr WCR0 Issue command
  lda #4
  sta V.EFLG,U
 Setrk9 clrb
  rts
- pag
-WCR0    stx   [<u0004,u]
-         lda   <V.DRV,u
-         tst   <u0013,u
-         beq   L01CC
-         ora   #$C0
-L01CC    sta   [V.SEL,u]
-         lda   <u0014,u
-         tst   V.SIDE,u
-         beq   L01D7
-         ora   #$40
-L01D7    ora   #$80
-         sta   [<u0002,u]
-         tst   <u0014,u
-         beq   L01ED
-         orb   <V.EFLG,u
-         clr   <V.EFLG,u
-         tst   V.SIDE,u
-         beq   L01ED
-         orb   #$02
-L01ED    stb   [<u0006,u]
-L01F0    lda   [V.SEL,u]
-         bita  #$40
-         beq   L01F0
-         lda   [<u0006,u]
-         rts
 
-         bita  #$40
-         bne   ERRWP
-L01FE    bita  #$04
-         bne   L0218
+****************************************************************
+*
+*
+* Write Command Register
+*
+WCR0 stx [V.DMAADR,u] Set buffer address
+ lda V.DRV,u
+ tst V.8INCH,u
+ beq WCR00
+ ora #$C0 Select 8" drive
+WCR00 sta [V.SEL,u]
+ lda V.TMP,u
+ tst V.SIDE,u
+ beq WCR01
+ ora #$40 Select side one
+WCR01 ora #$80 Enable interrupt
+ sta [V.DMACTL,u]
+ tst V.TMP,u
+ beq WCR
+ orb V.EFLG,u
+ clr V.EFLG,u
+ tst V.SIDE,u
+ beq WCR
+ orb #$02 Select side 1
+WCR stb [V.CMDR,u] Issue command
+WCR1 lda [V.SEL,u] Get status
+ bita #$40 Ready?
+ beq WCR1 ..no; check again
+ lda [V.CMDR,u] Get status and clear interrupt
+ rts
+
+***********************************************************
+*
+* Check Status For Error Conditions
+*
+*  Input: (B)= Status Of Fd1797
+*
+*  If Error: (B)= Error Code & Carry Is Set
+*
+*  If No Error: Carry Is Clear
+*
+STCK bita #%01000000 Write protected?
+ bne WPERR
+READCK bita #%00000100 Lost data?
+ bne RDWRER
  bita #%00001000 Check sum ok?
  bne ERRCRC ..no; return error
  bita #%00010000 Seek error?
@@ -368,27 +382,26 @@ ERRCRC comb
  rts
 
 ERSEEK comb
- ldb   #E$Seek
+ ldb #E$Seek Error: seek error
  rts
 
-L0218    ldb   <u0014,u
-         bitb  #$20
-         bne   RDERR
-         comb
-         ldb   #E$Write
-         rts
-
+RDWRER ldb V.TMP,u
+ bitb  #%00100000  Write fault?
+ bne RDERR
+WRERR comb
+ ldb #E$Write
+ rts
 RDERR comb
- ldb   #E$Read
+ ldb #E$Read
  rts
 
 ERNRDY comb
- ldb   #E$NotRdy
+ ldb #E$NotRdy Error: drive not ready
  rts
 
-ERRWP comb
+WPERR comb
  ldb   #E$WP
  rts
 
-         emod
-BTEND      equ   *
+ emod
+BTEND equ *

@@ -312,7 +312,7 @@ WCR01 sta [V.DMACTL,u]
  beq WCR
  orb #$02 Select side 1
 WCR stb [V.CMDR,u] Issue command
-WCR1 lda [V.SEL,u] Get statu
+WCR1 lda [V.SEL,u] Get status
  bita #$40 Ready?
  beq WCR1 ..no; check again
  lda [V.CMDR,u] Get status and clear interrupt
