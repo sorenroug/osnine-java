@@ -1,7 +1,3 @@
- opt -c
- opt f
-* NOTE: This file assumes Defs Directory in on Root
-*       of current Disk Device
  use systype.128
  ifp1
  use sysdefs.128
@@ -12,9 +8,8 @@
  use os9sysdefs.lii.x
 
 DriveCnt set 4 drives max on system
- endc
 
 normal equ 0 normal screen size
 small equ 1 small screen size
 Screen equ normal
-
+ endc

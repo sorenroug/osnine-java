@@ -1069,8 +1069,8 @@ SCRd110 ldu 3,s retrieve new buffer ptr
  leas 7,s ditch scratch
  lbra SCRd20 and go for next chr
 
-SCRd120 pshs  b push byte count
- lbra  SCDLL2 move back
+SCRd120 pshs B push byte count
+ lbra SCDLL2 move back
  endc
 
 ***************
@@ -1081,26 +1081,26 @@ SCRd120 pshs  b push byte count
 * returns: (A)=char
 *          (B)=error, cc set if error
 
-GetDv2    pshs  u,y,x
-         ldx   PD.FST,y
-         ldu   PD.DEV,y
-         bra   GetChr1
+GetDv2 pshs u,y,x
+ ldx PD.DV2,y
+ ldu PD.DEV,y get attached device
+ bra GetChr1
 
-GetChr    pshs  u,y,x
-         ldx   PD.DEV,y
-         ldu   PD.FST,y
-         beq   GetChr2
-GetChr1    ldu   $02,u
-         ldb   PD.PAG,y
-         stb   V.LINE,u
-GetChr2    leax  ,x
-         beq   GetChr3
-         tfr   u,d
-         ldu   V$STAT,x
-         std   V.DEV2,u
-         ldu   #D$READ
-         lbsr  IOEXEC
-GetChr3    puls  pc,u,y,x
+GetChr pshs U,Y,X
+ ldx PD.DEV,y
+ ldu PD.DV2,y get attached device ptr
+ beq GetChr2 return if no attached device
+GetChr1 ldu V$STAT,u
+ ldb PD.PAG,y
+ stb V.LINE,u reset lines-left count
+GetChr2 leax 0,x
+ beq GetChr3 ..exit if no Input device
+ tfr U,D
+ ldu V$STAT,x
+ std V.DEV2,u save static for pause
+ ldu #D$READ
+ lbsr IOEXEC read one character
+GetChr3 puls PC,U,Y,X
 
 ***************
 * UPCASE
@@ -1112,75 +1112,81 @@ GetChr3    puls  pc,u,y,x
 * Destroys: none
 
 UPCASE tst PD.UPC,y uppercase only?
-         beq   UPCAS9
-         cmpa  #'a
-         bcs   UPCAS9
-         cmpa  #'z
-         bhi   UPCAS9
-         suba  #'a-'A convert to uppercase
+ beq UPCAS9 ..no; return
+ cmpa #'a
+ bcs UPCAS9
+ cmpa #'z
+ bhi UPCAS9
+ suba #'a-'A convert to uppercase
 UPCAS9    rts
 
-* Check for printable character
-CHKEKO    tst   PD.EKO,y       Echo turned on?
-         beq   UPCAS9
-EKOCHR    cmpa  #$7F
-         bcc   EKOCH2
-         cmpa  #$20
-         bcc   EKOBYT Print character
-         cmpa  #$0D
-         bne   EKOCH2
-EKOBYT    lbra  PutDv2 Print character
+***************
+* CHKEKO
+*   If echo is appropriate, do it
 
-* Non-printable character
-EKOCH2    pshs  a              Save code
-         lda   #'.
-         bsr   EKOBYT Print character
-         puls  pc,a
+* Passed:  (A)=char to echo
+*          (Y)=File Descriptor
+
+CHKEKO tst PD.EKO,y echo?
+ beq UPCAS9 ..no
+
+EKOCHR cmpa #$7F control chr?
+ bcc EKOCH2 ..yes
+ cmpa #C$SPAC CTL char?
+ bhs EKOBYT ..no; echo it
+ cmpa #C$CR carriage return?
+ bne EKOCH2 ..no; check other CTL chars
+EKOBYT lbra PutDv2 echo char
+
+EKOCH2 pshs A save character
+ lda #C$PERD echo period for CTL chars
+ bsr EKOBYT
+ puls pc,a return char
 
 ***************
 * Subroutine RetData
 *   Return Data to User's address space
 *
 * Passed: (X)=Bytecount
-*         (Y)=PD ptrs
+*         (Y)=PD ptr
 
-RetData    pshs  y,x
-         ldd   ,s
-         beq   RetDat30
-         tstb
-         bne   RetDat10
-         deca
-RetDat10    clrb
-         ldu   $06,y
-         ldu   $04,u
-         leau  d,u
-         clra
-         ldb  1,s
-         bne   RetDat20
-         inca
-RetDat20    pshs  b,a
-         lda   D.SysTsk
-         ldx   D.Proc
-         ldb   $06,x
-         ldx   $08,y
-         puls  y
-         os9   F$Move
-RetDat30    puls  pc,y,x
+RetData pshs Y,X save registers
+ ldd 0,s get byte count
+ beq RetDat30
+ tstb end of buffer?
+ bne RetDat10 branch if not
+ deca adjust offset
+RetDat10 clrb make beginning of buffer
+ ldu PD.Rgs,y get registers ptr
+ ldu R$X,u get destination ptr
+ leau d,u get current position ptr
+ clra
+ ldb 1,s get byte count
+ bne RetDat20 branch if partial buffer
+ inca adjust byte count
+RetDat20 pshs D save byte count
+ lda D.SysTsk get system task
+ ldx D.Proc get process ptr
+ ldb P$Task,x get process task
+ ldx PD.BUF,y get buffer ptr
+ puls Y get byte count
+ os9 F$Move move data
+RetDat30 puls PC,Y,X
 
 *****************
 * IODONE
 
 IODONE ldx D.Proc
-         lda   P$ID,x
-         ldx   PD.DEV,y
-         bsr   IODO10
-         ldx   $0A,y
-IODO10    beq   IODO90
-         ldx   $02,x
-         cmpa  $04,x
-         bne   IODO90
-         clr   $04,x
-IODO90    rts
+ lda P$ID,x get current process ID
+ ldx PD.DEV,y from device table entry
+ bsr IODO10
+ ldx PD.DV2,y
+IODO10 beq IODO90 exit if null device
+ ldx V$STAT,x
+ cmpa V.Busy,x
+ bne IODO90
+ clr V.Busy,x set other device not busy
+IODO90 rts
 
 GetDev pshs X,A save P$ID, Dev Tbl ptr
  ldx V$STAT,x get ptr to device static storage
@@ -1320,43 +1326,48 @@ SCWrErr leas 2,s return scratch
 * PutChr
 *   put character in output buffer
 
-PutDv2    pshs  u,x,a
-         ldx   PD.DV2,y
-         beq   PutChr9
+* Passed:  (A)=char
+*          (Y)=PD address
+* Destroys: B,CC
 
-         tst   PD.RAW,y
-         bne   PutChr2
+PutDv2 pshs U,X,A
+ ldx PD.DV2,y
+ beq PutChr9 ..no output device
+**********
+ tst PD.RAW,y 'cooked' mode?
+ bne PutChr2 ..no
+**********
+ cmpa #C$CR carriage return?
+ bne PutChr2 ..no
+ bra PutChr17 check EOL functions if so
 
-         cmpa  #$0D
-         bne   PutChr2
-         bra   PutChr17
-
-PutChr    pshs  u,x,a
-         ldx   PD.DEV,y
-
-         tst   PD.RAW,y
-         bne   PutChr2
-         cmpa  #C$CR
-         bne   PutChr2
-         ldu   V$STAT,x
-         tst   V.PAUS,u
-         bne   PutChr1
-         tst   PD.PAU,y
-         beq   PutChr17
-         dec   V.LINE,u
-         bne   PutChr17
-         bra   PutChr15
-PutChr1    lbsr  GetDv2
-         bcs   PutChr15
-         cmpa  PD.PSC,y
-         bne   PutChr1
-PutChr15    lbsr  GetDv2
-         cmpa  PD.PSC,y
-         beq   PutChr15
-PutChr17 ldu V$STAT,x
-         clr V.PAUS,u
-         lda   #C$CR
-         bsr   WrChar
+PutChr pshs U,X,A
+ ldx PD.DEV,y
+**********
+ tst PD.RAW,y 'cooked' mode?
+ bne PutChr2 ..no
+**********
+ cmpa #C$CR carriage return?
+ bne PutChr2 ..no
+ ldu V$STAT,x get driver storage
+ tst V.PAUS,u immediate pause?
+ bne PutChr1 ..yes
+ tst PD.PAU,y End-of-Page pause?
+ beq PutChr17 ..no
+ dec V.LINE,u End-of-Page?
+ bne PutChr17 ..no
+ bra PutChr15
+PutChr1 lbsr  GetDv2
+ bcs PutChr15 ..continue if error
+ cmpa PD.PSC,y pause?
+ bne PutChr1 ..no; flush out type-ahead buffer
+PutChr15 lbsr  GetDv2 ..then pause for one char
+ cmpa PD.PSC,y pause?
+ beq PutChr15 ..yes; igore
+PutChr17 ldu V$STAT,x in device static storage
+ clr V.PAUS,u clear pause mode if set
+ lda #C$CR restore carriage return char
+ bsr WrChar write out carriage return
 **********
 * tst PD.RAW,Y "cooked" mode?
 * bne PutChr9 ..no; just return
@@ -1369,18 +1380,18 @@ PutChr17 ldu V$STAT,x
 * returns: B,CC=error code (if error)
 * Destroys: A
 
-EOL      ldb   PD.NUL,y
-         pshs  b
-         tst   PD.ALF,y  Add linefeed?
-         beq   EOL1
-         lda   #$0A
-EOL0    bsr   WrChar
-         bcs   EOL2
-EOL1    lda   #$00
-         dec   ,s
-         bpl   EOL0
-         clra
-EOL2    leas  1,s
+EOL ldb PD.NUL,y get null count
+ pshs B save null count
+ tst PD.ALF,y auto line feed?
+ beq EOL1 ..no
+ lda #C$LF get line feed character
+EOL0 bsr WrChar write it
+ bcs EOL2 ..exit if error
+EOL1 lda #C$Null get null char
+ dec 0,S enough nulls sent?
+ bpl EOL0 ..no; send more
+ clra return carry clear
+EOL2 leas 1,s
 PutChr9 puls pc,u,x,a return
 
 PutChr2 bsr WrChar write character
@@ -1400,16 +1411,16 @@ WrChar ldu #D$WRIT
 *          (B)=error code, C=set if error
 * Destroys: B,CC
 
-IOEXEC pshs u,y,x,a
-         ldu   V$STAT,x
-         clr   V.WAKE,u
-         ldx   V$DRIV,x
-         ldd   M$Exec,x
-         addd  $05,s
-         leax  d,x
-         lda   ,s+
-         jsr   0,x
-         puls  pc,u,y,x
+IOEXEC pshs U,Y,X,A save registers
+ ldu V$STAT,x get static storage for driver
+ clr V.WAKE,u clear wake-up call
+ ldx V$DRIV,x get driver module address
+ ldd M$Exec,x and offset of execution entries
+ addd 5,S offset by read/write
+ leax d,x absolute entry address
+ lda ,s+ restore char (for write)
+ jsr 0,x execute driver Read/Write
+ puls pc,u,y,x return (A)=char, (B)=error
 
  emod Module CRC
 SCFEnd equ *

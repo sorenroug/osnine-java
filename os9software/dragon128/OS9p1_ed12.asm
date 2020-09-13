@@ -1,11 +1,5 @@
  nam OS-9 Level II V1.2
  ttl Module Header
-
-********************************
-* Extracted from Dragon 128/Dragon Beta computer.
-* The CPUType is called DRG128, and CPUSpeed is TwoMHz
-********************************
-
 ************************************************************
 *                                                          *
 *           OS-9 Level II V1.2 - Kernal, part 1            *
@@ -21,6 +15,7 @@
 * is strictly prohibited !!!                               *
 *                                                          *
 ************************************************************
+
 
 ************************************************************
 *
@@ -80,7 +75,7 @@ OS9Name fcs /OS9p1/
 *             - change handling of UnMemTE and WritPrTE errors
 *               so debug can trap them.
 *             - added Low RAM save for MotGED restart.  D.CldRes
-*               setup for os9p3 to use as vedtor for restart
+*               setup for os9p3 to use as vector for restart
 *             - Reserved more RAM for copy area
 *
 * Edition  11 - Added Conditionals for Delco Cpu          RES 83/07/25
@@ -88,7 +83,7 @@ OS9Name fcs /OS9p1/
 * Edition  12 - Added conditionals for Dragon 128         PSD 83/11/04
 *               Vivaway Ltd
 
- fcb 12 Edition number
+ fcb 12 edition number
  ttl Coldstart Routines
  pag
 ************************************************************
@@ -138,7 +133,7 @@ Cold10 std ,X++ clear memory
  std D.SysPrc set system process ptr
  std D.Proc set current process
  adda #P$Size/256 allocate system process descriptor
- tfr D,s set stack
+ tfr d,s set stack
  inca allocate system stack
  std D.SysStk set top of system stack
  std D.SysMem set system memory map ptr
@@ -1013,7 +1008,7 @@ VModule pshs U save registers ptr
  bsr ValMod validate module
  ldx 0,s get registers ptr
  stu R$U,x return entry ptr
-VModXit puls PC,u
+VModXit puls pc,u
 
 
 
@@ -2555,6 +2550,7 @@ LDAXYP equ *
  clr DAT.Regs reset block zero
  puls cc reset interrupt masks
  else
+ jmp NOWHERE Code is not available
  endc
  bra AdjImg adjust image
 
@@ -3374,9 +3370,6 @@ DMACRead lda ,u+ get byte from memory
 *
 * Computer using GIMIX DAT
 *
-*Target set $0E00-$100
-* use filler
-
 DATInit clra
  tfr a,dp
 *
@@ -3390,7 +3383,7 @@ DATInit clra
  sta $E,y
  lda #ROMBlock
  sta $F,y
-* clr $E231 Clear m58167 interrupts
+ clr $E220+17 Clear m58167 interrupts
  lbra COLD
  endc
 
@@ -3421,9 +3414,8 @@ SvcRet ldb P$Task,x get task number
 
 PassSWI ldb P$Task,x get process task
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
- stb DAT.Task swith to task
+ stb DAT.Task switch to task
  jmp 0,u go to user routine
 
  ifeq CPUType-DRG128
@@ -3449,12 +3441,10 @@ LDABX andcc #^Carry clear carry
  pshs B,CC save registers
  orcc #IntMasks set interrupt masks
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
  stb DAT.Task switch tasks
  lda 0,X get data byte
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  else
  ldb #SysTask get system task
  endc
@@ -3466,12 +3456,10 @@ STABX andcc #^Carry clear carry
  pshs B,CC save registers
  orcc #IntMasks set interrupt masks
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
  stb DAT.Task switch tasks
  sta 0,X store data byte
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  else
  ldb #SysTask get system task
  endc
@@ -3482,19 +3470,16 @@ LDBBX andcc #^Carry clear carry
  pshs a,cc save registers
  orcc #IntMasks set interrupt masks
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
  stb DAT.Task switch tasks
  ldb 0,X get data byte
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  else
  lda #SysTask get system task
  endc
  sta DAT.Task switch tasks
  puls PC,A,CC
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
  page
 ***********************************************************
@@ -3505,7 +3490,6 @@ LDBBX andcc #^Carry clear carry
 *
 Mover00 orcc #IntMasks set interrupt masks
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
  bcc MoveRegs branch if no carry
  sta DAT.Task set source task
@@ -3523,7 +3507,6 @@ MoveRegs sta DAT.Task set source task
  exg b,dp switch back
  std ,u++
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  else
 Mover30 lda #SysTask get system task
  endc
@@ -3537,14 +3520,12 @@ Mover30 lda #SysTask get system task
 
 SetDAT00 orcc #IntMasks set interrupt masks
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  endc
 SetDAT10 lda 1,X get DAT image
  leax 2,X move image ptr
  stb DAT.Task set task register
  sta ,u+ set block register
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  else
  lda #SysTask get system task number
  endc
@@ -3580,7 +3561,6 @@ IRQ orcc #IntMasks set fast interrupt masks
  ldb #D.IRQ get direct page offset
 Switch equ *
  ifeq DAT.Uniq
- jmp NOWHERE Code is not available
  else
  lda #SysTask get system task number
  endc
@@ -3598,8 +3578,8 @@ NMIRQ ldb #D.NMI get direct page offset
  page
 
  ifeq CPUType-PAL1M92
- emod
-OS9End equ *
+* emod
+*OS9End equ *
  endc
  ifeq CPUType-DRG128
 target set $400+OS9End-$20
@@ -3609,14 +3589,10 @@ target set $400+OS9End-$20
  opt l
  opt c
 *
- endc
- ifeq CPUType-GIMIX
+ else
  emod
 OS9End equ *
-*target set $0E00-$20
-* use filler
  endc
-
 
 offset set $FFE0-*
 
