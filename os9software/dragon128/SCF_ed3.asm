@@ -786,44 +786,45 @@ SCABT pshs B save error code
 
  ifne EXTEND
 * Delete line left
-SCDEL    tfr   u,d
-         subd  PD.BUF,y
-         beq   SCDEL4
-         pshs  b
-         pshs  b
-         pshs  b
-         pshs  y
-         ldy   PD.BUF,y
-         bsr   SCChkEol
-         bcc   SCDEL5
-SCDEL1    lda   ,u+
-         sta   ,y+
-         inc   $04,s
-         bsr   SCChkEol
-         bcs   SCDEL1
-SCDEL5    leax  ,y
-         puls  y
-         ldu   PD.BUF,y
-         tst   PD.DLO,y
-         beq   SCDEL2
-         leas  $03,s
-         lbra  EKOCR
-SCDEL4    rts
+SCDEL tfr u,d calculate chrs to delete
+ subd PD.BUF,y
+ beq SCDEL4 exit if none
+ pshs B save count
+ pshs B three times
+ pshs B
+ pshs Y save path descriptor ptr
+ ldy PD.BUF,y point at start of buffer
+ bsr SCChkEol at end of line?
+ bcc SCDEL5 ..yes
+SCDEL1 lda ,u+ move chrs back in buffer
+ sta ,y+
+ inc 4,S keep count
+ bsr SCChkEol end of line?
+ bcs SCDEL1 ..no
+SCDEL5 leax ,y get new EOL ptr
+ puls y retrieve PD ptr
+ ldu PD.BUF,y reset cursor pointer
+ tst PD.DLO,y backspace over line?
+ beq SCDEL2 ..yes
+ leas 3,s ditch counters
+ lbra EKOCR and send CR-LF
 
-SCDEL2    bsr   SCMLFT
-         dec   ,s
-         bne   SCDEL2
-         lbsr  SCShLn
-SCDEL3    bsr   SCSPACE
-         dec  1,s
-         bne   SCDEL3
-         leas  $02,s
-         lbra  SCDLL2
+SCDEL4 rts
+
+SCDEL2 bsr SCMLFT back one
+ dec ,s at start of line?
+ bne SCDEL2 ..no
+ lbsr SCShLn display the line
+SCDEL3 bsr SCSPACE overwrite with spaces
+ dec 1,s
+ bne SCDEL3
+ leas 2,s return scratch
+ lbra SCDLL2 return to start of line
 
 * Delete line right
-SCDELR    clr   ,-s clear counter
-         pshs  u,x save cursor and EOL ptr
-         leax  ,u new EOL ptr
+SCDELR clr ,-s clear counter
+ pshs u,x save cursor and EOL ptr
+ leax ,u new EOL ptr
 SCDELR1 cmpu ,s check end of line
  beq SCDELR2 ..yes
  leau 1,u bump cursor
@@ -839,46 +840,46 @@ SCDELR2 puls U,D retrieve cursor and scratch
 SCSPACE lda #C$SPAC write a space
  lbra CHKEKO
 
-SCMLFT    pshs  y save path descriptor ptr
-         lbsr  SCGetDev point into device descriptor
-         bcs   SCMLFT20
-         ldb   #PD.Mlft-PD.OPT
-         bra   SCOutX10 send it
+SCMLFT pshs y save path descriptor ptr
+ lbsr SCGetDev point into device descriptor
+ bcs SCMLFT20
+ ldb #PD.Mlft-PD.OPT
+ bra SCOutX10 send it
 
-SCMLFT20    puls  y retrieve PD ptr
-         lbra  SCBSP2 use backspace echo chr
+SCMLFT20 puls y retrieve PD ptr
+ lbra SCBSP2 use backspace echo chr
 
-SCMRT    pshs  y save path descriptor ptr.
-         ldb   #PD.MRt-PD.OPT offset to 'move right' code
-SCOutX lbsr  SCGetDev point into device descriptor
- bcs SCMRT30
-SCOutX10    pshs  x
-         leax  ,y point at codes with X
-         ldy   2,s retrieve PD ptr
-         lda   b,x get code
-         bpl   SCMRT20
-         anda  #$7F clear high bit
-         pshs  a save code
-         lda   PD.LdOut-PD.OPT,X get lead-in chr
-         beq   SCMRT10 skip if none
-         bsr   OUTCHR Print lead-out character
-SCMRT10    puls  a
-SCMRT20    bsr   OUTCHR Print character
-SCMRT30    puls  pc,y,x
+SCMRT pshs y save path descriptor ptr.
+ ldb #PD.MRt-PD.OPT offset to 'move right' code
+SCOutX lbsr SCGetDev point into device descriptor
+ bcs SCMRT30 skip if no editing functions
+SCOutX10 pshs x save EOL ptr
+ leax ,y point at codes with X
+ ldy 2,s retrieve PD ptr
+ lda b,x get code
+ bpl SCMRT20
+ anda #$7F clear high bit
+ pshs a save code
+ lda PD.LdOut-PD.OPT,X get lead-in chr
+ beq SCMRT10 skip if none
+ bsr OUTCHR send lead-in
+SCMRT10 puls a retrieve code
+SCMRT20 bsr OUTCHR send it
+SCMRT30 puls pc,y,x
 
-SCRT    bsr   SCChkE at end of line?
-         bcc   SCRT20
-         bsr   SCMRT
-         bcs   SCRT10
-         leau  1,u bump the cursor
-SCRT10    rts
+SCRT bsr SCChkE at end of line?
+ bcc SCRT20 ..yes; go to start of line
+ bsr SCMRT else move right one
+ bcs SCRT10 skip if didn't move
+ leau 1,u bump the cursor
+SCRT10 rts
 
 SCRT20 tfr u,d calculate chrs to move back..
-         subd  PD.BUF,y
-         beq   SCRT10
-         pshs  b
-         ldu   PD.BUF,y
-         bra   SCDLL2 move to start of line
+ subd PD.BUF,y ..to start of line
+ beq SCRT10 ..none
+ pshs b stack the count
+ ldu PD.BUF,y reset the cursor
+ bra SCDLL2 move to start of line
 
 SCLFT cmpu PD.BUF,y at start of line?
  beq SCLFT20 ..yes; move to end of line
@@ -905,24 +906,24 @@ SCDEL9 ldx PD.BUF,y reset EOL ptr
  rts
 
  ifne EXTEND
-SCBSP    cmpu  PD.BUF,y at start
- beq   SCLFT30 ..yes; return
- bsr   SCChkE at end of line?
- bne   SCDLLF ..no; delete left
+SCBSP cmpu PD.BUF,y at start
+ beq SCLFT30 ..yes; return
+ bsr SCChkE at end of line?
+ bne SCDLLF ..no; delete left
  else
  endc
-         leau  -1,u
-         leax  -1,x
-         tst   PD.BSO,y
-         beq   SCBSP2
-         bsr   SCBSP2
+ leau -1,u Back up buffer ptr
+ leax -1,x Back up byte count
+ tst PD.BSO,y Bsp? or bsp,sp,bsp?
+ beq SCBSP2 ..just send bsp
+ bsr SCBSP2
  ifne EXTEND
- lbsr  SCSPACE send space
+ lbsr SCSPACE send space
  else
  endc
 SCBSP2 lda PD.BSE,y Get backspace echo char
  ifne EXTEND
-OUTCHR lbra EKOBYT Print character
+OUTCHR lbra EKOBYT
  else
  endc
 
@@ -930,34 +931,34 @@ OUTCHR lbra EKOBYT Print character
 SCChkE lbra SCChkEol
 
 * Delete left one
-SCDLLF    lbsr  SCMLFT
-         leau  -1,u
-SCDL    pshs  u
-SCDLL1    lda   1,u
-         sta   ,u+
-         bsr   SCChkE
-         bcs   SCDLL1
-         puls  u
-         leax  -1,x
-         bsr   SCShLn
-SCDL1    incb
-         pshs  b
-         lbsr  SCSPACE
+SCDLLF lbsr SCMLFT back one
+ leau -1,u move cursor back
+SCDL pshs U save cursor position
+SCDLL1 lda 1,u move characters back one
+ sta ,u+
+ bsr SCChkE all done?
+ bcs SCDLL1 ..no
+ puls u retrieve cursor position
+ leax -1,x decrement EOL ptr
+ bsr SCShLn display the line
+SCDL1 incb count space to come
+ pshs b save forward chr count
+ lbsr SCSPACE overwrite the last chr
 
-SCDLL2    lbsr  SCMLFT
-         dec   ,s
-         bne   SCDLL2
-         puls  pc,a
+SCDLL2 lbsr SCMLFT move back one
+ dec ,S all done?
+ bne SCDLL2 ..no
+ puls pc,a
 
 * Delete character under cursor
 SCDLRT bsr SCChkE at end of line?
- bcc SCDLR1
- leax -1,x
- clrb
- bsr SCChkE
- bcc SCDL1
- leax 1,x
- bra SCDL
+ bcc SCDLR1 ..yes; no action
+ leax -1,x decrement EOL ptr
+ clrb clear counter
+ bsr SCChkE last chr on line?
+ bcc SCDL1 ..yes; overwrite one chr
+ leax 1,x restore EOL ptr
+ bra SCDL delete the chr
 
 SCDLR1 rts
 
@@ -1018,7 +1019,7 @@ SCRPET ldx 2,s get max EOL
  pshs u
  addd ,s++
  tfr d,x put in X
- leau ,x and U, cursor ptr
+ leau ,X and U, cursor ptr
  rts
  else
  endc
