@@ -29,6 +29,11 @@ DAT.Free equ $FE Free Block Number
 
 DAT.BlMx equ $FF maximum block number
 DAT.BMSz equ $100 Block Map size (one byte per block)
+DAT.WrPr equ 0 no Block Write Protect bit
+DAT.WrEn equ 0 no Block Write Enable bit
+
+
+DAT.Uniq equ 1 bits of DAT Task register are not used for other things
 
 SysTask equ $80
 
