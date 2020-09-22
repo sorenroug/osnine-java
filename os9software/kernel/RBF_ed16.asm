@@ -1609,52 +1609,56 @@ CHKA90 puls PC,X,D return (carry clear)
 * Destroys: D
 
 Insert pshs U,Y,X save regs
-         clra
-         clrb
-         std PD.CP,Y
-         std PD.CP+2,Y clear current posn
-         sta   PD.SSZ,Y
-         std   PD.SSZ+1,Y clear current seg size
-         ldb   PD.FD,Y
-         ldx PD.FD+1,Y
-         pshs  x,b
-         ldu PD.DTB,Y
-         ldy   PD.Exten,Y
-         sty   PE.Confl,Y
-         leau  <$15,U
-         bra   Insert20
+ clra
+ clrb
+ std PD.CP,Y
+ std PD.CP+2,Y clear current posn
+ sta PD.SSZ,Y
+ std PD.SSZ+1,Y clear current seg size
+ ldb PD.FD,Y
+ ldx PD.FD+1,Y
+ pshs x,b save desired file's FD sector
+ ldu PD.DTB,Y (U)=Drive Table ptr in device static
+ ldy PD.Exten,Y Switch to PD extension
+ sty PE.Confl,Y Next Conflict=Self (none)
+ leau V.FileHd-PE.NxFil,U make static look like head PE
+ bra Insert20
 
 Insert10 ldu PE.NXFil,U move to next file in list
 * (Y)=PE ptr to file to be inserted
 * (U)=PE ptr to previous PE in File List
 Insert20 ldx PE.NXFil,U End of File list?
-         beq   Insert80
-         ldx PE.PDptr,X
-         ldd   PD.FD,X
-         cmpd 0,S
-         bcs   Insert10
-         bhi   Insert80
-         ldb  PD.FD+2,X
-         cmpb 2,S
-         bcs   Insert10
-         bhi   Insert80 ..above; insert
+ beq Insert80 ..Yes; extend File List with Self
+ ldx PE.PDptr,X get PD (X)=PD of next file
+ ldd PD.FD,X
+ cmpd 0,S Next file below file to be inserted
+ bcs Insert10 ..below; keep searching list
+ bhi Insert80 ..above; insert
+ ldb PD.FD+2,X
+ cmpb 2,S
+ bcs Insert10 ..below; keep searching list
+ bhi Insert80 ..above; insert
 
 * Equal -File List already contains this file
-         ldx   PD.Exten,X
-         lda PE.Lock,Y
-         bita #FileLock sharable?
-         bne SharErr
-         sty   PE.NxFil,Y
-         ldd   PE.Confl,X
-         std   PE.Confl,Y
-         sty   PE.Confl,X
-         bra   Insert90
-Insert80    ldx   PE.NxFil,U
-         stx   PE.NxFil,Y
-         sty   PE.NxFil,U
-Insert90    clrb
+ ldx PD.Exten,X PE of list member found
+ lda PE.Lock,Y
+ bita #FileLock sharable?
+ bne SharErr ..No; abort
+ sty PE.NxFil,Y Insert file NOT on File List
+ ldd PE.Confl,X Link file into conflict list
+ std PE.Confl,Y
+ sty PE.Confl,X
+ bra Insert90 ..Exit; no error
+
+* Insert new file into file list
+* (Y)=PE ptr to file to insert
+* (U)=PE ptr to predecessor in File list
+Insert80 ldx PE.NxFil,U
+ stx PE.NxFil,Y Inserted File --> tail of list
+ sty PE.NxFil,U Predecessor --> Inserted File
+Insert90 clrb
 Insert99 leas 3,S
- puls PC,U,Y,X
+ puls PC,U,Y,X return carry clear
 
 SharErr comb
  ldb #E$Share ..Error; Non-sharable file in use
@@ -1677,29 +1681,29 @@ Remove pshs U,Y,X,D save regs
  bra Remove20
 
 Remove10 ldx PE.Confl,x move to next path in conflict list
-         beq Remove90
-Remove20    cmpy PE.Confl,X
-         bne   Remove10
-         ldd   PE.Confl,Y
-         std   PE.Confl,X
-         bra   Remove40
+ beq Remove90 ..file not in conflict list; exit
+Remove20 cmpy PE.Confl,X find predecessor PE in list
+ bne Remove10 ..loop until found
+ ldd PE.Confl,Y
+ std PE.Confl,X remove path from circular conflict list
+ bra Remove40
 
 * Remove from File List if member
-Remove30    ldu   PE.NxFil,U
-Remove40    ldd   PE.NxFil,U
-         beq   Remove90
-         cmpy  PE.NxFil,U
-         bne   Remove30
+Remove30 ldu PE.NxFil,U move to next path in file list
+Remove40 ldd PE.NxFil,U End of file List?
+ beq Remove90 ..Yes; Exit -not on File List
+ cmpy PE.NxFil,U
+ bne Remove30 repeat until predecessor found
 
 * (U)=ptr to predecessor of (Y) on File List
-         ldx   PE.NxFil,Y
-         cmpy  PE.Confl,Y Single entry Conflict List?
-         beq   Remove50 ..Yes; remove file from list
-         ldx   PE.Confl,Y
-         ldd   PE.NxFil,Y
-         std   PE.NxFil,X
-Remove50    stx   PE.NxFil,U
-Remove90    sty   PE.Confl,Y clear Conflict ptr
+ ldx PE.NxFil,Y
+ cmpy PE.Confl,Y Single entry Conflict List?
+ beq Remove50 ..Yes; remove file from list
+ ldx PE.Confl,Y
+ ldd PE.NxFil,Y
+ std PE.NxFil,X
+Remove50 stx PE.NxFil,U
+Remove90 sty PE.Confl,Y clear Conflict ptr
  puls PC,u,y,x,D return
 
  ttl Release -Unlock Current Segment
@@ -1715,33 +1719,33 @@ Remove90    sty   PE.Confl,Y clear Conflict ptr
 
 RelsALL lda #RcdLock+FileLock+EofLock
 Release pshs U,Y,X,D save regs
-         bita PE.Lock,Y
-         beq Releas05
-         coma
-         anda PE.Lock,Y
-         sta PE.Lock,Y
-         bita #FileLock
-         bne Releas90
+ bita PE.Lock,Y Checked Locked Status
+ beq Releas05 ..Not releasing anything; exit
+ coma
+ anda PE.Lock,Y strip released bits
+ sta PE.Lock,Y Release lock
+ bita #FileLock entire file locked out?
+ bne Releas90 ..Yes; keep it
 Releas05 leau 0,Y
 Releas10 ldx PE.Wait,U
-         cmpy PE.Wait,U
-         beq Releas85
-         stu PE.Wait,U
-         leau 0,X
-         lda PE.Owner,U
-         ldb #S$Wake
-         os9 F$Send
-         bra Releas10
+ cmpy PE.Wait,U end of queue?
+ beq Releas85 ..Yes; exit
+ stu PE.Wait,U erase link
+ leau 0,X
+ lda PE.Owner,U sleeper's Current Process ID
+ ldb #S$Wake
+ os9 F$Send send Wake Up Call
+ bra Releas10 Wake up All contenders
 
 Releas85 stu PE.Wait,U initialize last link
 Releas90 puls PC,U,Y,X,D return
 
 LckSegER comb
  ldb #E$Share
-UnLock    pshs  y,b,CC
-         ldy   PD.Exten,Y
-         bsr   RelsALL
-         puls  PC,y,b,CC
+UnLock pshs Y,B,CC save error status, PD
+ ldy PD.Exten,Y switch to PE
+ bsr RelsALL
+ puls PC,Y,B,CC exit
 
  ttl Gain - Determined file lockout
  page
@@ -1749,28 +1753,33 @@ UnLock    pshs  y,b,CC
 * Subroutine Gain
 *   Determined Lockout
 
+* Passed: X,D=Byte count to lock out
+*         (Y)=PD
+* Returns: CC set, (B)=error code
+* Destroys: D,X
+
 Gain00 ldx #0
  bra Gain
 
 Gain10 ldu PD.Exten,Y
-         lda   PE.Req,U
-         sta   PE.Lock,U
-         puls  u,y,x,D
-Gain    pshs  u,y,x,D
-         ldu   PD.Exten,Y
-         lda   PE.Lock,U
-         sta   PE.Req,U
-         lda   ,S
-         lbsr  LockSeg
-         bcc   Gain90
-         ldu   D.Proc
-         lda PE.Owner,X
-Gain20    os9   F$GProcP
-         bcs   Gain40
-         lda P$DeadLk,Y
-         beq   Gain40
-         cmpa  P$ID,U
-         bne   Gain20
+ lda PE.Req,U Restore requested bits
+ sta PE.Lock,U
+ puls u,y,x,D restore regs
+Gain pshs  u,y,x,D save regs (Entry Pt)
+ ldu PD.Exten,Y
+ lda PE.Lock,U Save requested lock bits
+ sta PE.Req,U
+ lda 0,S Restore MS byte of size
+ lbsr LockSeg Lock out seg requested
+ bcc Gain90 ..success; return
+ ldu D.Proc
+ lda PE.Owner,X (A)=Proc ID of conflict's owner
+Gain20 os9 F$GProcP get (Y)=owners's Process Desc ptr
+ bcs Gain40 ..error; Strange -assume ok
+ lda P$DeadLk,Y also waiting?
+ beq Gain40 ..No; continue
+ cmpa P$ID,U Does it lead to ME?
+ bne Gain20 ..No; check next
 
 * Deadly Embrace threat.
 * (X)=Dominant PE ptr
