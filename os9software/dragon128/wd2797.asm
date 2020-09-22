@@ -527,68 +527,76 @@ Term    pshs  u
 *
 ****************************************
 
-Boot    pshs  u,y,x,b,a
-         leas  <-Btmem,s Get Global Storage
-         ldd   #$0100
-         os9   F$SRqMem
-         bcs   Bterr2
-         stu   V.Buff-V.Wrtf,s
-         leau  ,s
-         clr   V.Wait-V.Wrtf,u
-Boot40    clra
-         clrb
-         std   V.Lsn-V.Wrtf,u
-         ldy   <$21,s
-         bsr   Getdd
-         lda   >$FCC1
-         ora   #$01
-         sta   >$FCC1
-         lbsr  Brstor
-         bcs   Boot40
-         lbsr  Rsect
-         bcs   Boot40
-         ldx   <u0012,u
-         lda   <$10,x
-         ora   u000C,u
-         sta   u000C,u
-         bita  #$04
-         beq   Boot20
-         clr   u000D,u
-Boot20    clra
-         ldb   $03,x
-         std   V.Stk-V.Wrtf,u
-         ldd   <$18,x
-         std   <u001D,u
-         ldd   #$0100
-         leau  ,x
-         ldx   <$16,x
-         os9   F$SRtMem
-         ldd   <$1D,s
-         beq   Noboot
-         os9   F$BtMem
-         bcs   Bterr2
-         stu   <$1F,s
-         stu   <$12,s
-         leau  ,s
-Boot10    pshs  x,a
-         stx   u000A,u
-         bsr   Rsect
-         bcs   L032D
-         puls  x,a
-         leax  $01,x
-         inc   <u0012,u
-         deca
-         bne   Boot10
-         leas  <$1D,s
-         clrb
-         puls  pc,u,y,x,b,a
-Noboot    comb
-         ldb   #$F9
-         bra   Bterr2
-
-L032D    leas  $03,s
-Bterr2    leas  <$1F,s
-         puls  pc,u,y,x
+Boot pshs  u,y,x,b,a
+ leas -Btmem,s Get Global Storage
+ ldd #256 Get A Page
+ os9 F$SRqMem
+ bcs Bterr2 Skip If None
+ stu V.Buff-V.Wrtf,S Set Buffer Pointer
+ leau ,S Set Storage Pointer
+ clr V.Wait-V.Wrtf,u can't sleep
+Boot40 clra
+ clrb
+ std V.Lsn-V.Wrtf,u Logical Sector 0
+ ldy Btmem+4,S Get Device Descriptor Pointer
+ bsr Getdd Grab parameters
+ lda INTPIA+1 get control reg
+ ora #1 enable disk controller interrupts
+ sta INTPIA+1
+ lbsr Brstor Restore Drive
+ bcs Boot40 Skip If Error - Try Again
+ lbsr Rsect Read Sector 0
+ bcs Boot40 Try Again On Error
+ ldx V.Buff-V.Wrtf,u Get Buffer Pointer
+ ifne EXTFMT
+ lda Dd.Fmt,X Get Disk Format
+ ifne FULLSIZE
+ ora V.Fmt-V.Wrtf,u Set Drive Type In Format
+ sta V.Fmt-V.Wrtf,u Set It
+ endc
+ ifne DBLTRACK
+ bita #4 double track disk?
+ beq Boot20 ..no
+ clr V.TwoStp-V.Wrtf,u can't need double stepping
+Boot20 clra
+ ldb Dd.Tks,x Get Sects/Trk
+ std V.Stk-V.Wrtf,u Set It
+ endc
+ ldd Dd.Bsz,x Get Boot File Size
+ std Btmem,u
+ ldd #256 Return Page
+ leau  ,x
+ ldx DD.Bt+1,x Get Start Sector Number
+ os9 F$SRtMem
+ ldd Btmem,S was there a boot file?
+ beq Noboot
+ ifeq LEVEL-1
+ os9 F$SRqMem Get memory for bootstrap
+ else
+ os9 F$BtMem Get memory for bootstrap
+ endc
+ bcs Bterr2 Skip If None
+ stu Btmem+2,S Return Address To Caller
+ stu V.Buff-V.Wrtf,s Set Buffer Pointer
+ leau ,S Get Global Storage Pointer
+Boot10 pshs x,a Save Pages And Sector Number
+ stx V.Lsn-V.Wrtf,u Set Sector Number
+ bsr Rsect Read Sector
+ bcs Bterr1 Skip If Error
+ puls x,a Retrieve Pages And Sector Number
+ leax 1,x Next Sector
+ inc V.Buff-V.Wrtf,u Move Buffer Pointer
+ deca Done All Pages
+ bne Boot10 Loop If Not
+ leas Btmem,s Return Global Storage
+ clrb No Error, Clear Carry
+ puls pc,u,y,x,b,a Return, With Boot Address In D
+Noboot comb Set Carry
+ ldb #E$BTYP No Boot File
+ bra Bterr2
+Bterr1 leas 3,s Pitch Pages And Sector Number
+Bterr2 leas Btmem+2,S Pitch Global And D
+ puls pc,u,y,x
 
 * Get Parameters From Device Descriptor
 Getdd    leay $12,y
@@ -597,20 +605,32 @@ Getdd    leay $12,y
          lda   $02,y
          anda  #$03
          sta   <u0016,u
+ ifne EXTFMT
          lda   $03,y
          clrb
-         bita  #$01
-         beq   L034B
+ ifne FULLSIZE
+         bita  #1
+         beq   Getdd1
          ldb   #$80
-L034B    lda   $04,y
+ endc
+
+Getdd1 equ *
+ ifne DBLTRACK
+    lda   $04,y
          anda  #$02
          sta   u000D,u
+ endc
+ ifne DDTRACK0
+ ifeq TRYBOTH
          lda   $03,y
          anda  #$20
          sta   <u001C,u
+ endc
+ endc
          stb   u000C,u
          ldd   $0B,y
          std   u0004,u
+ endc
          ldy   -$03,y
          lda   ,y
          rts
@@ -703,7 +723,7 @@ SetSect1 decb
 * Write Sector Routine
 *
 
-Wsect    lda   #$01
+Wsect    lda   #1
          sta   ,u
          lda   #$A8
          sta   Drvbeg,u
@@ -965,16 +985,17 @@ Fdcsrv    ldy   V.Port,u
 Fdcsrc2    clrb
          rts
 
-TimSrv tst V.Timer,u
-         beq   TimSrv1
-         tst   >V.Active,u
-         bne   TimSrv1
-         dec   >V.Timer,u
-         bne   TimSrv1
-         lda   #$7F
-         sta   >$FC24
-         sta   >V.Select,u
+TimSrv tst V.Timer,u get counter
+ beq TimSrv1 ..none
+ tst V.Active,u command in progress?
+ bne TimSrv1 ..yes
+ dec V.Timer,u keep count
+ bne TimSrv1 ..not yet
+ lda #$FF-B.DPHalt turn everything off
+ sta >SELREG
+ sta V.Select,u
 TimSrv1 rts
 
-         emod
-Dkend equ *
+ EMOD
+
+Dkend EQU *
