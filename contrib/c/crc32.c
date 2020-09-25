@@ -3,21 +3,32 @@
  * This program exists to verify that files transferred are identical
  * at both source and destination.
  * It uses the same algoritm as zip files.
+ *
+ * OS-9/6809 edition
  */
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-#define uint8_t unsigned char
-#ifdef __STDC__
-#define uint32_t unsigned int
-#else
-#define uint32_t unsigned long
-#endif
+#define uint8_t char
+#define uint32_t long
 #define const 
+#define void int
 
 static int have_table = 0;
 static uint32_t table[256];
+
+/* Shift a long int right without keeping the sign
+ * Assumes that the sign bit is shifted right as well.
+ */
+uint32_t llsr(lp, num)
+    uint32_t lp;
+    int num;
+{
+    lp >>= 1;
+    if (lp < 0) lp &= 0x7FFFFFFFL;
+    num--;
+    lp >>= num;
+    return lp;
+}
 
 /* Calculate CRC table. */
 void table_init()
@@ -29,10 +40,10 @@ void table_init()
         rem = i;  /* remainder from polynomial division */
         for (j = 0; j < 8; j++) {
             if (rem & 1) {
-                rem >>= 1;
-                rem ^= 0xedb88320;
+                rem = llsr(rem, 1);
+                rem ^= 0xEDB88320L;
             } else
-                rem >>= 1;
+                rem = llsr(rem, 1);
         }
         table[i] = rem;
     }
@@ -55,7 +66,7 @@ rc_crc32(crc, buf, len)
     q = buf + len;
     for (p = buf; p < q; p++) {
             octet = *p;  /* Cast to unsigned octet. */
-            crc = (crc >> 8) ^ table[(crc & 0xff) ^ octet];
+            crc = llsr(crc, 8) ^ table[(crc & 0xff) ^ (octet & 0xff)];
     }
     return ~crc;
 }
@@ -74,9 +85,7 @@ int argc; char *argv[];
     char *teststr = "The quick brown fox jumps over the lazy dog";
     uint8_t buffer[BUFSIZ];
 
-#ifdef OS9_6809
     pflinit();
-#endif
     if (argc < 2) {
         fprintf(stderr, "Usage: %s file...\n", argv[0]);
         fprintf(stderr, "Calculates CRC of files.\n");
@@ -84,7 +93,7 @@ int argc; char *argv[];
         strcpy((char*)buffer, teststr);
         crc = 0;
         crc = rc_crc32(crc, buffer, strlen(teststr));
-        if (crc != 0x414fa339) {
+        if (crc != 0x414fa339L) {
             fprintf(stderr, "FAIL: Self-test gave wrong result: %lX, len=%d\n",
                     crc, strlen(teststr));
         }
@@ -93,7 +102,7 @@ int argc; char *argv[];
 
     for (argi = 1; argi < argc; argi++) {
         fn = argv[argi];
-        if ((inputFp = fopen(fn,  "rb")) == NULL) {
+        if ((inputFp = fopen(fn,  "r")) == NULL) {
             fprintf(stderr, "Can't open %s\n", fn);
         }
         filesize = 0;
@@ -102,8 +111,8 @@ int argc; char *argv[];
             filesize += num;
             crc = rc_crc32(crc, buffer, num);
         }
-        printf("%s: %X - size: %lu\n", fn, crc, filesize);
         fclose(inputFp);
+        printf("%s: %lX - size: %ld\n", fn, crc, filesize);
     }
     exit(0);
 }
