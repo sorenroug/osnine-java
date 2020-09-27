@@ -12,8 +12,7 @@ RCD.LOCK equ 0
 RCD.LOCK equ included
  endc
 
-*C$CR equ $0D carriage return char
-
+ pag
 ***************
 * Edition History
 
