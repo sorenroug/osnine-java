@@ -168,7 +168,7 @@ Create10 cmpb  #E$PNNF Pathname not found?
  ldx PD.SBP+1,Y
  lda PD.SSZ,Y
  ldu PD.SSZ+1,Y
- pshs u,x,b,a save them
+ pshs U,X,D save them
  clra
  ldb #1 request one FD sector
  lbsr SECALL Call sector allocation
@@ -182,7 +182,7 @@ Create20 std S.SctSiz+8,S Save sectors allocated
  ldx PD.SBP+1,Y
  stb S.SctAdr+8,S save for FD
  stx S.SctAdr+1+8,S
- puls u,x,b,a retrieve seg info
+ puls U,X,D retrieve seg info
  stb PD.SBP,Y set seg posn
  stx PD.SBP+1,Y
  sta PD.SSZ,Y Set high order seg size
@@ -560,6 +560,7 @@ ChgDir90 clrb clear carry
  page
 ***************
 * Subroutine Delete
+*   Remove file from Dir, return storage if link count zero.
 
 Delete pshs y Save PD
  lbsr SchDir Allocate buffer, search dir
@@ -997,9 +998,9 @@ WriteS80 pshs U save reg
  stx PD.SIZ+2,Y Set new size
  ldx PD.SIZ,Y
  std PD.SIZ,Y
- pshs u,X save Old size
+ pshs U,X save Old size
  lbsr EXPAND Expand file allocation
- puls u,X
+ puls U,X
  bcc WriteS90 exit if no error
  stx PD.SIZ,Y restore Old size
  stu PD.SIZ+2,Y
@@ -1007,7 +1008,7 @@ WriteS90 puls PC,U exit
 
  ifeq LEVEL-1
 FromUser pshs u,y,x
-         ldd   $02,s
+         ldd 2,s
          beq   L0506
          leay  d,u
          lsrb
@@ -1024,10 +1025,10 @@ L04F3    pshs  y
 L04F9    pulu  y,D
          std   ,x++
          sty   ,x++
-L0500    cmpx  ,s
+L0500    cmpx 0,s
          bcs   L04F9
-         leas  $02,s
-L0506    puls  PC,u,y,x
+         leas 2,s
+L0506    puls  PC,U,Y,X
  else
 ***************
 * Subroutine FromUser
@@ -1356,9 +1357,9 @@ SchDir60 lbsr CLRBUF clear buffer
  bra SchDir80
 
 * Repeat until name found, or error
-SchDir70    bsr   SaveDel Save deleted entry if appropriate
-SchDir75    bsr   RdNxtDir read next dir rcd
-SchDir80    bcs   DirErr ..exit if error of EOF
+SchDir70 bsr SaveDel Save deleted entry if appropriate
+SchDir75 bsr RdNxtDir read next dir rcd
+SchDir80 bcs DirErr ..exit if error of EOF
  tst 0,X deleted entry?
  beq SchDir70 ..Yes; record it
  leay 0,X
@@ -1410,6 +1411,7 @@ DirErr10 coma return carry set
 
 * SaveDel: saves the first deleted entry found during create.
 * It is unnecessary for OPEN (possible optimization).
+
 SaveDel pshs D save reg
  lda S.Delim+4,S
  cmpa #PDELIM is this the last pathlist element?
@@ -1790,40 +1792,41 @@ Gain20 os9 F$GProcP get (Y)=owners's Process Desc ptr
 * Enter Lockout Waiting Queue
 * (U)=D.Proc
 * (X)=Dominant PE
-Gain40    lda PE.Owner,X
-         sta P$DeadLk,U
-         bsr   UnQueue
-         ldy 4,S
+Gain40 lda PE.Owner,X Owner's process ID
+ sta P$DeadLk,U save for deadlock chk
+ bsr UnQueue Unlink anybody asleep in IOQue
+ ldy 4,S restore PD
 
-         ldu   PD.Exten,Y
-         ldd   PE.Wait,X
-         stu   PE.Wait,X
-         std   PE.Wait,U
-         ldx PE.TmOut,U
-         os9   F$Sleep
-         pshs  x
-         leax 0,U
-         bra   Gain55
-Gain50    ldx   PE.Wait,X
-Gain55    cmpu  PE.Wait,X
-         bne   Gain50
-         ldd   PE.Wait,U
-         std   PE.Wait,X
-         stu   PE.Wait,U
-         puls  x
-         ldu   D.Proc
-         clr P$DeadLk,U
-         lbsr  ChkSignl
-         bcs   GainErr
-         leax 0,X
-         bne   Gain10
-         ldu   PD.Exten,Y
-         ldx   PE.TmOut,U
-         beq   Gain10
-         ldb   #E$Lock
-GainErr    coma
-         stb 1,S
-Gain90    puls PC,u,y,x,D
+ ldu PD.Exten,Y
+ ldd PE.Wait,X
+ stu PE.Wait,X link into Waiting queue
+ std PE.Wait,U finish linking into queue
+ ldx PE.TmOut,U maximum tick count to wait
+ os9 F$Sleep wait for record
+ pshs X save tick count remaining
+ leax 0,U copy PE ptr
+ bra Gain55
+
+Gain50 ldx PE.Wait,X move to next element in ring
+Gain55 cmpu PE.Wait,X found one pointing to this?
+ bne Gain50 ..No; round about
+ ldd PE.Wait,U
+ std PE.Wait,X unlink
+ stu PE.Wait,U
+ puls x restore tick count remaining
+ ldu D.Proc
+ clr P$DeadLk,U erase Deadlock check
+ lbsr ChkSignl Interrogate wake up
+ bcs GainErr ..abort if error
+ leax 0,X Time elapsed?
+ bne Gain10 ..No; try again
+ ldu PD.Exten,Y (U)=PE ptr
+ ldx PE.TmOut,U waiting indefinately?
+ beq Gain10 ..Yes; try again
+ ldb #E$Lock ..No; Record Lock error
+GainErr coma set carry
+ stb 1,S return (B)=error code
+Gain90 puls PC,U,Y,X,D exit
 
 *******************
 * Subroutine UnQueue
@@ -1857,20 +1860,20 @@ UnQue80 lda P$IOQN,Y Process ID of next process
 * Subroutine LockSeg
 *   Lock out given number of bytes at current posn
 
-LockSeg std -2,S
-         bne   LckSeg10
-         cmpx  #0
-         lbeq  UnLock
-LckSeg10    bsr   Conflct
-         lbcs  LckSegER
-         pshs  u,y,X
-         ldy   PD.Exten,Y
-         lda   #RcdLock
-         lbsr  Release
-         ora   PE.Lock,Y
-         sta   PE.Lock,Y
-         clrb
-         puls  PC,U,Y,X
+LockSeg std -2,S Zero byte count requested?
+ bne LckSeg10 ..No; continue
+ cmpx #0 (cc=clear)
+ lbeq UnLock ..Yes; release all locks
+LckSeg10 bsr Conflct seg busy?
+ lbcs LckSegER ..Yes; abort
+ pshs u,y,X save regs
+ ldy PD.Exten,Y switch to path extension
+ lda #RcdLock
+ lbsr Release Unlock any of file owned
+ ora PE.Lock,Y set RcdLock bit
+ sta PE.Lock,Y Lock Out Record
+ clrb return carry clear
+ puls PC,U,Y,X return (X)=Dominant PE ptr
 
  ttl RBF Record lock Conflict recognition
  page
@@ -1886,81 +1889,81 @@ LckSeg10    bsr   Conflct
 * Error: CC=carry set if rcd is locked/unavailable
 * Destroys: none
 
-Conflct pshs  u,y,D
-         leau  0,Y
-         ldy   PD.Exten,Y
-         subd  #1
-         bcc   Conflc05
-         leax  -1,X
-Conflc05    addd PD.CP+2,U
-         exg   d,X
-         adcb PD.CP+1,U
-         adca PD.CP,U
-         bcc Conflc10
-         ldx #$FFFF
-         tfr X,D
+Conflct pshs  U,Y,D save regs
+ leau 0,Y copy PD ptr
+ ldy PD.Exten,Y Switch to Path Extension (PE)
+ subd #1
+ bcc Conflc05
+ leax -1,X
+Conflc05 addd PD.CP+2,U
+ exg d,X
+ adcb PD.CP+1,U
+ adca PD.CP,U
+ bcc Conflc10
+ ldx #$FFFF overflow; default max
+ tfr X,D
 Conflc10 std PE.HiLck,Y init desired Hi lock
-         stx PE.HiLck+2,Y
+ stx PE.HiLck+2,Y
 
 * Determine if EOF is required
-         cmpd  PD.SIZ,U
-         bcs   Conflc15
-         bhi   Conflc12
-         cmpx  PD.SIZ+2,U
-         bcs   Conflc15
-Conflc12    lda   PE.Lock,Y
-         ora   #EOFLock
-         sta   PE.Lock,Y
-         bra   Conflc17
+ cmpd PD.SIZ,U
+ bcs Conflc15 ..No
+ bhi Conflc12 ..Yes
+ cmpx PD.SIZ+2,U
+ bcs Conflc15 ..No
+Conflc12 lda PE.Lock,Y I/O involves EOF
+ ora #EOFLock Request it
+ sta PE.Lock,Y
+ bra Conflc17 continue
 
-Conflc15    lda   #EOFLock
-         bita  PE.Lock,Y
-         beq   Conflc17
-         lbsr  Release
+Conflc15 lda #EOFLock End of file is not involved
+ bita PE.Lock,Y Is EOFLock possesed?
+ beq Conflc17 ..No; continue
+ lbsr Release Release it if so
 
-Conflc17    ldd   PD.CP,U
-         ldx   PD.CP+2,U
-         std   PE.LoLck,Y
-         stx   PE.LoLck+2,Y
-         lda   PD.CPR,U
-         sta   PE.Owner,Y
+Conflc17 ldd PD.CP,U init desired Lo lock
+ ldx PD.CP+2,U
+ std PE.LoLck,Y
+ stx PE.LoLck+2,Y
+ lda PD.CPR,U get current process ID
+ sta PE.Owner,Y save process ID of "owner"
 
  leax 0,Y
-Conflc20 cmpy  PE.Confl,X end of conflict list?
-         beq   Conflc90
-         ldx   PE.Confl,X
-         ldb   PE.Owner,Y
-         cmpb  PE.Owner,X
-         beq   Conflc20
-         lda   PE.Lock,X
-         beq   Conflc20
-         ora   PE.Lock,Y
-         bita  #FileLock
-         bne   Conflc85
-         lda   PE.Lock,X
-         anda  PE.Lock,Y
-         bita  #EOFLock
-         bne   Conflc85
+Conflc20 cmpy PE.Confl,X end of conflict list?
+ beq Conflc90 ..Yes; return (no conflicts)
+ ldx PE.Confl,X next potential conflict PE
+ ldb PE.Owner,Y Same process owner test
+ cmpb PE.Owner,X
+ beq Conflc20 ..Yes; Ignore any conflict
+ lda PE.Lock,X Other user have abything locked out?
+ beq Conflc20 ..no, not a conflict
+ ora PE.Lock,Y
+ bita #FileLock Either user want entire file?
+ bne Conflc85 ..Yes; conflict
+ lda PE.Lock,X Any Lock bits set
+ anda PE.Lock,Y
+ bita #EOFLock Both users want End of File?
+ bne Conflc85 ..Yes; probable conflict
 
 * Check whether segments overlap
 * (X)=next PE
 * (Y)=requesting PE ptr
-         ldd PE.LoLck,X
-         cmpd PE.HiLck,Y
-         bhi   Conflc20
-         bcs   Conflc30
-         ldd PE.LoLck+2,X
-         cmpd PE.HiLck+2,Y
-         bhi   Conflc20
-         beq   Conflc85
+ ldd PE.LoLck,X Locked out Low LSN
+ cmpd PE.HiLck,Y above requested high?
+ bhi Conflc20 ..above; not a conflict
+ bcs Conflc30 ..below; possible conflict
+ ldd PE.LoLck+2,X
+ cmpd PE.HiLck+2,Y
+ bhi Conflc20 ..above; not a conflict
+ beq Conflc85 ..equal; is a conflict
 
-Conflc30    ldd PE.HiLck,X
-         cmpd PE.LoLck,Y
-         bcs   Conflc20
-         bhi   Conflc85
-         ldd PE.HiLck+2,X
-         cmpd PE.LoLck+2,Y
-         bcs   Conflc20 ..below; not a conflict
+Conflc30 ldd PE.HiLck,X Locked out HSN
+ cmpd PE.LoLck,Y below requested low?
+ bcs Conflc20 ..below; not a conflict
+ bhi Conflc85 ..above; a conflict
+ ldd PE.HiLck+2,X
+ cmpd PE.LoLck+2,Y
+ bcs Conflc20 ..below; not a conflict
 
 
 Conflc85 comb a conflict
@@ -1979,49 +1982,49 @@ Remove rts
 * Returns: None
 * Destroys: CC,D,X
 
-EXPAND    pshs  u,X
-EXPA10    bsr   EXPSUB
-         bne   EXPA15
-         cmpx  PD.SSZ+1,Y
-         bcs   EXPA45
-         bne   EXPA15
-         lda   PD.SIZ+3,Y
-         beq   EXPA45
-EXPA15    lbsr  GETFD
-         bcs   EXPERR
-         ldx PD.CP,Y
-         ldu PD.CP+2,Y
-         pshs  U,X
-         ldd   PD.SIZ,Y
-         std PD.CP,Y
-         ldd   PD.SIZ+2,Y
-         std PD.CP+2,Y
-         lbsr  GETSEG
-         puls  u,X
-         stx PD.CP,Y
-         stu PD.CP+2,Y
-         bcc   EXPA45
-         cmpb  #E$NES
-         bne   EXPERR
-         bsr   EXPSUB
-         bne   EXPA30
-         tst PD.SIZ+3,Y
-         beq   EXPA35
-         leax 1,X
-         bne EXPA35
-EXPA30    ldx #$FFFF
-EXPA35    tfr X,D
-         tsta
-         bne   EXPA40
-         cmpb PD.SAS,Y
-         bcc   EXPA40
-         ldb PD.SAS,Y
-EXPA40    bsr   SEGALL
-         bcc   EXPA10
-EXPERR    coma
-         puls  PC,u,X
+EXPAND pshs U,X save regs
+EXPA10 bsr EXPSUB get file size -seg beginning
+ bne EXPA15 ..Not this seg
+ cmpx PD.SSZ+1,Y In this seg?
+ bcs EXPA45 ..Yes
+ bne EXPA15 ..No
+ lda PD.SIZ+3,Y any of next sector used?
+ beq EXPA45 ..No
+EXPA15 lbsr GETFD get FD before changing PD.cp
+ bcs EXPERR error; abort
+ ldx PD.CP,Y get current posn
+ ldu PD.CP+2,Y
+ pshs U,X save it
+ ldd PD.SIZ,Y set current posn
+ std PD.CP,Y to file size
+ ldd PD.SIZ+2,Y
+ std PD.CP+2,Y
+ lbsr GETSEG get seg ptrs
+ puls U,X Retrieve current posn
+ stx PD.CP,Y Restore it
+ stu PD.CP+2,Y
+ bcc EXPA45 bra if they exist
+ cmpb #E$NES Not existing seg?
+ bne EXPERR ..No; abort
+ bsr EXPSUB get file size -seg beginning
+ bne EXPA30 Use Max if > $FFFF
+ tst PD.SIZ+3,Y Anything in last sector?
+ beq EXPA35 ..No
+ leax 1,X get extra sector
+ bne EXPA35 Continue of no overflow
+EXPA30 ldx #$FFFF Allocate maximum seg
+EXPA35 tfr X,D copy seg size
+ tsta request > minimum?
+ bne EXPA40 ..Yes
+ cmpb PD.SAS,Y request > minimum?
+ bcc EXPA40 ..Yes
+ ldb PD.SAS,Y get minimum
+EXPA40 bsr SEGALL Allocate new seg
+ bcc EXPA10 Check expansion
+EXPERR coma set Carry
+ puls PC,U,X
 
-EXPA45    lbsr  CHKSEG
+EXPA45 lbsr CHKSEG get current seg ptrs
  ifeq RCD.LOCK-included
  bcs EXPERR ..error; abort
  bsr NewSize Copy size thru conflict list
@@ -2029,11 +2032,11 @@ EXPA45    lbsr  CHKSEG
  puls PC,U,X
 
 EXPSUB ldd PD.SIZ+1,Y get file size
-         subd PD.SBL+1,Y
-         tfr   d,X
-         ldb   PD.SIZ,Y
-         sbcb PD.SBL,Y
-         rts
+ subd PD.SBL+1,Y Subtract seg beginning lsn
+ tfr D,X save lsdb
+ ldb PD.SIZ,Y get file size
+ sbcb PD.SBL,Y Do msb
+ rts
 
  ifeq RCD.LOCK-included
 ***************
@@ -2048,44 +2051,49 @@ EXPSUB ldd PD.SIZ+1,Y get file size
 
 NewSize clra
  ldb #WRITE.
-         pshs  u,X
-         ldu   PD.Exten,Y
-         bra   NewSiz20
+ pshs U,X save regs
+ ldu PD.Exten,Y (U)=PE ptr
+ bra NewSiz20 step through conflict list
 
-NewSiz10    ldu PE.PDptr,U
-         ldx   PD.SIZ,Y
-         stx   PD.SIZ,U
-         ldx   PD.SIZ+2,Y
-         stx   PD.SIZ+2,U
-         bitb PD.MOD,Y
-         beq   NewSiz15
-         inca
-NewSiz15    ldu   PD.Exten,U
-NewSiz20    ldu PE.Confl,U
-         cmpy PE.PDptr,U
-         bne   NewSiz10
+NewSiz10 ldu PE.PDptr,U switch to PD ptr
+ ldx PD.SIZ,Y copy file size
+ stx PD.SIZ,U
+ ldx PD.SIZ+2,Y
+ stx PD.SIZ+2,U update file size
+ bitb PD.MOD,Y (also) open for write?
+ beq NewSiz15 ..No
+ inca
+NewSiz15 ldu PD.Exten,U
+NewSiz20 ldu PE.Confl,U move to next PE in list
+ cmpy PE.PDptr,U end of list?
+ bne NewSiz10 ..No; loop
 * Note: carry is clear
-         tsta
- puls  PC,u,X
+ tsta return EQ flag
+ puls PC,U,X
  endc
 
 ***************
 * Subroutine SEGALL
 * Segment Allocation
 
-SEGALL    pshs  u,X
-         lbsr  SECALL
-         bcs   SEGALErr
-         lbsr  GETFD
-         bcs   SEGALErr
-         ldu PD.BUF,Y
-         clra
-         clrb
-         std FD.SIZ,U
-         std FD.SIZ+2,U
-         leax FD.SEG,U
-         ldd FDSL.B,X
-         beq   SEGA20
+* Passed: (D)=Number Sectors
+*         (Y)=PD
+* Returns: CC Carry Set On Error
+* Destroys: D
+
+SEGALL pshs U,X save regs
+ lbsr SECALL Call sector allocation
+ bcs SEGALErr
+ lbsr GETFD
+ bcs SEGALErr
+ ldu PD.BUF,Y get buffer addr
+ clra clear File size
+ clrb
+ std FD.SIZ,U
+ std FD.SIZ+2,U
+ leax FD.SEG,U get seg list ptr
+ ldd FDSL.B,X first empty?
+ beq SEGA20 ..Yes
 
 *   Find Empty Segment List Entry
  ldd PD.BUF,Y make ptr to end + 1
@@ -2158,7 +2166,7 @@ SEGA25 ldd FD.SIZ+1,U Set file size
  bcc SEGA27 bra if no carry
  inc FD.SIZ,U Propagate carry
 SEGA27 lbsr PUTFD
-SEGA30 puls PC,u,X
+SEGA30 puls PC,U,X
  page
 ***************
 * Subroutine Secall
@@ -2171,186 +2179,186 @@ SEGA30 puls PC,u,X
 
 * Stacked Temps
  org 0
-S.SASSct rmb 1
-S.SASCls rmb 2
-S.ClSize rmb 2
-S.MapSiz rmb 2
-S.MapSct rmb 1
-S.HiSct rmb 1
-S.HiSize rmb 2
-S.HiPosn rmb 2
-S.BitReq rmb 2
-S.x rmb 2
-S.PDptr rmb 2
+S.SASSct rmb 1 First sector with SAS bits free
+S.SASCls rmb 2 Segment alloc size in clusters
+S.ClSize rmb 2 Cluster size (sectors/bit)
+S.MapSiz rmb 2 (remaining) BitMap Size in bytes
+S.MapSct rmb 1 current bitmap sct number
+S.HiSct rmb 1 bitmap sector containing S.HiSize
+S.HiSize rmb 2 largest segment found in bitmap
+S.HiPosn rmb 2 addr of largest seg
+S.BitReq rmb 2 (D) Clusters (bits) requested
+S.x rmb 2 (X)
+S.PDptr rmb 2 (Y) PD
  rmb 2 (U)
 
-SECALL    pshs  u,y,x,D
-         ldb   #S.BitReq
-SECA05    clr   ,-s
-         decb
-         bne   SECA05
-         ldx PD.DTB,Y
-         ldd DD.MAP,X
-         std S.MapSiz,S
-         ldd DD.BIT,X
-         std S.ClSize,S
-         std S.HiPosn,S
+SECALL pshs U,Y,X,D save regs
+ ldb #S.BitReq
+SECA05 clr ,-S init stacked temps
+ decb
+ bne   SECA05
+ ldx PD.DTB,Y drive tbl ptr
+ ldd DD.MAP,X bitmap size
+ std S.MapSiz,S init bitmap size
+ ldd DD.BIT,X get sectors/bit
+ std S.ClSize,S init cluster size
+ std S.HiPosn,S HiPosn=scratch for divide
 
 * Convert Segment Allocation Size (SAS) to clusters
 * (D)=cluster size
-         ldx PD.DEV,Y
-         ldx V$DESC,X
-         leax M$DTyp,X
-         subd  #1
-         addb PD.SAS-PD.OPT,X
-         adca  #0
-         bra SECA08
-SECA07    lsra
-         rorb
-SECA08    lsr S.HiPosn,S
-         ror S.HiPosn+1,S
-         bcc   SECA07
-         std S.SASCls,S
+ ldx PD.DEV,Y Device Tbl Entry
+ ldx V$DESC,X Device Descriptor ptr
+ leax M$DTyp,X (X)=ptr to descriptor options
+ subd #1
+ addb PD.SAS-PD.OPT,X
+ adca #0 (D)=SAS + Clustersize - 1
+ bra SECA08 (While)
+SECA07 lsra
+ rorb
+SECA08 lsr S.HiPosn,S divide by cluster size
+ ror S.HiPosn+1,S (even power of two)
+ bcc SECA07
+ std S.SASCls,S save allocation cluster size
 
 * Convert Sectors Requested to Bits Required
-         ldd S.ClSize,S
-         std S.HiPosn,S
-         subd  #1
-         addd S.BitReq,S
-         bcc   SECA12
-         ldd   #$FFFF
-         bra   SECA12
+ ldd S.ClSize,S
+ std S.HiPosn,S scratch for divide
+ subd #1
+ addd S.BitReq,S (D)=SctReg + ClSize - 1
+ bcc SECA12
+ ldd #$FFFF get maximum sectors if overflow
+ bra SECA12
 SECA10 lsra While..
-         rorb
+ rorb
 SECA12 lsr S.HiPosn,S divide by cluster size
-         ror S.HiPosn+1,S (even power of two)
-         bcc   SECA10 ..Do
-         cmpa  #$08 greater than 256*8 (1-sector of bits)?
-         bcs   SECA13 ..Yes; good
-         ldd   #256*8 request whole sector
-SECA13    std S.BitReq,S
+ ror S.HiPosn+1,S (even power of two)
+ bcc SECA10 ..Do
+ cmpa #$08 greater than 256*8 (1-sector of bits)?
+ bcs SECA13 ..Yes; good
+ ldd #256*8 request whole sector
+SECA13  std S.BitReq,S set Bits Required
 
 * Set Map Beginning Addr
-         lbsr  LockBit
-         lbcs  SECA85
-         ldx PD.DTB,Y
-         ldd V.DiskID,X
-         cmpd DD.DSK,X Has disk changed?
-         bne   SECA14 ..Yes; start with 1st bitmap sector
-         lda V.BMapSz,X
-         cmpa DD.MAP,X
-         bne   SECA14
-         ldd S.BitReq,S
-         cmpd S.SASCls,S
-         bcs   SECA15
-         lda V.MapSct,X
-         cmpa DD.MAP,X
-         bcc   SECA14
-         sta S.MapSct,S
-         nega
-         adda S.MapSiz,S
-         sta S.MapSiz,S
-         bra   SECA15
+ lbsr LockBit lock out bitmap
+ lbcs SECA85 error; abort
+ ldx PD.DTB,Y Drive Tbl ptr
+ ldd V.DiskID,X
+ cmpd DD.DSK,X Has disk changed?
+ bne SECA14 ..Yes; start with 1st bitmap sector
+ lda V.BMapSz,X
+ cmpa DD.MAP,X Has disk changed?
+ bne SECA14 ..Yes
+ ldd S.BitReq,S get Bits required
+ cmpd S.SASCls,S greater than minimal allocation?
+ blo SECA15 ..No; begin searching at start of bitmap
+ lda V.MapSct,X get lowest productive bitmap sector
+ cmpa DD.MAP,X reasonable number?
+ bcc SECA14 ..No; start with sector one
+ sta S.MapSct,S
+ nega
+ adda S.MapSiz,S subtract from number of sectors to search
+ sta S.MapSiz,S
+ bra SECA15 begin bitmap search
 
-SECA14    ldd DD.DSK,X
-         std V.DiskID,X
-         lda DD.MAP,X
-         sta V.BMapSz,X
-         clr V.MapSct,X
-SECA15    inc S.MapSct,S
-         ldb S.MapSct,S
-         lbsr  ReadBit
-         lbcs  SECA85
-         ldd S.MapSiz,S
-         tsta
-         beq   SECA17
-         ldd   #$100 use entire buffer
-SECA17    ldx PD.BUF,Y
-         leau  d,X
-         ldy  S.BitReq,S
-         clra
-         clrb
-         os9   F$SchBit Search bitmap
-         pshs  D,CC save regs
-         tst   S.SASSct+3,S already found in Min allocation?
-         bne   SECA17a ..Yes; continue
-         cmpy S.SASCls+3,S
-         bcs   SECA17a
-         lda S.MapSct+3,S
-         sta S.SASSct+3,S
-SECA17a    puls  D,CC
-         bcc SECA20 found: Allocate bits
-         cmpy S.HiSize,S largest segment found?
-         bls   SECA18
-         sty   $09,S
-         std   $0B,S
-         lda   $07,S
-         sta   S.HiSct,S
-SECA18    ldy   <$11,S
-         tst   $05,S
-         beq   SECA18b
-         dec   $05,S
-         bra   SECA15 repeat
+SECA14 ldd DD.DSK,X
+ std V.DiskID,X save Disk ID
+ lda DD.MAP,X
+ sta V.BMapSz,X and Bitmap Size
+ clr V.MapSct,X default first bitmap sector
+SECA15 inc S.MapSct,S update bitmap sector
+ ldb S.MapSct,S
+ lbsr ReadBit read (next) bitmap sector
+ lbcs SECA85 error; abort
+ ldd S.MapSiz,S
+ tsta More than 256 bytes left?
+ beq SECA17 ..No; cont
+ ldd #$100 use entire buffer
+SECA17 ldx PD.BUF,Y ptr to bitmap
+ leau D,X ptr to bitmap end
+ ldy S.BitReq,S bits required
+ clra start at beginning
+ clrb
+ os9 F$SchBit Search bitmap
+ pshs D,CC save regs
+ tst S.SASSct+3,S already found in Min allocation?
+ bne SECA17a ..Yes; continue
+ cmpy S.SASCls+3,S Min alloc clusters found?
+ bcs SECA17a ..No; cont
+ lda S.MapSct+3,S
+ sta S.SASSct+3,S save lowest reasonable bitmap sector
+SECA17a puls D,CC restore regs
+ bcc SECA20 found: Allocate bits
+ cmpy S.HiSize,S largest segment found?
+ bls SECA18 ..No; read next sector
+ sty S.HiSize,S save largest size
+ std S.HiPosn,S save addr
+ lda S.MapSct,S
+ sta S.HiSct,S save bitmap sector
+SECA18 ldy S.PDptr,S restore PD
+ tst S.MapSiz,S end of bitmap?
+ beq SECA18b ..Yes, use largest found
+ dec S.MapSiz,S decr size left one sector
+ bra SECA15 repeat
 
-SECA18b    ldb S.HiSct,S
-         beq   SECA80
-         clra
-         cmpb  $07,S
-         beq   SECA19
-         stb   $07,S
-         lbsr  ReadBit
-SECA19    ldx PD.Buf,Y
-         ldd   $0B,S
-         ldy   $09,S
-SECA20    std   $0B,S
-         sty   $09,S
-         os9   F$AllBit
-         ldy S.PDptr,S restore PD
-         ldb S.MapSct,S
-         lbsr  PUTBIT
-         bcs   SECA85
-         lda S.SASSct,S
-         beq   SECA22
-         ldx PD.DTB,Y
-         deca
-         sta V.MapSct,X
-SECA22    lda S.MapSct,S
-         deca convert to bit offset
-         clrb times 8 bits/byte
-         lsla
-         rolb
-         lsla
-         rolb
-         lsla
-         rolb
-         stb   PD.SBP,Y save beginning addr msb
-         ora   $0B,S
-         ldb   $0C,S
-         ldx   $09,S
-         ldy   <$11,S
-         std   PD.SBP+1,Y
-         stx   PD.SSZ+1,Y
+SECA18b ldb S.HiSct,S any free space?
+ beq SECA80 ..No; abort
+ clra
+ cmpb S.MapSct,S already in buffer?
+ beq SECA19 ..Yes
+ stb S.MapSct,S
+ lbsr ReadBit reread bitmap sector
+SECA19 ldx PD.Buf,Y buffer ptr
+ ldd S.HiPosn,S bit addr
+ ldy S.HiSize,S bit count
+SECA20 std S.HiPosn,S save bit offset
+ sty S.HiSize,S save bit count
+ os9 F$AllBit Allocate in bitmap
+ ldy S.PDptr,S restore PD
+ ldb S.MapSct,S used bitmap sector number
+ lbsr PUTBIT rewrite/release bitmap
+ bcs SECA85 error; abort
+ lda S.SASSct,S Minimum allocation sector found?
+ beq SECA22 ..No; cont
+ ldx PD.DTB,Y
+ deca
+ sta V.MapSct,X ..Yes; save it
+SECA22 lda S.MapSct,S bitmap sector number
+ deca convert to bit offset
+ clrb times 8 bits/byte
+ lsla
+ rolb
+ lsla
+ rolb
+ lsla
+ rolb
+ stb PD.SBP,Y save beginning addr msb
+ ora S.HiPosn,S form mid
+ ldb S.HiPosn+1,S lsb
+ ldx S.HiSize,S size
+ ldy S.PDptr,S get PD
+ std PD.SBP+1,Y Set addr
+ stx PD.SSZ+1,Y Set size
 
-         ldd   $03,S
-         bra   SECA30
-SECA25    lsl   <$18,Y
-         rol   PD.SBP+1,Y
-         rol   PD.SBP,Y
-         lsl   <$1B,Y
-         rol   PD.SSZ+1,Y
-SECA30    lsra
-         rorb
-         bcc   SECA25
-         clrb
-         ldd   PD.SSZ+1,Y
-         bra   SECA90
+ ldd S.ClSize,S Mulitply sectors/bit
+ bra SECA30 While..
+SECA25 asl PD.SBP+2,Y times bit addr
+ rol PD.SBP+1,Y
+ rol PD.SBP,Y
+ asl PD.SSZ+2,Y and bit size
+ rol PD.SSZ+1,Y
+SECA30 lsra
+ rorb
+ bcc SECA25 ..Do
+ clrb clear Carry
+ ldd PD.SSZ+1,Y return sectors allocated
+ bra SECA90 exit
 
-SECA80    ldb   #E$FULL Err: media full
-SECA85    ldy  S.PDptr,S (Y)=PD
-         lbsr  RLSBIT release bitmap
-         coma abort: return carry set
-SECA90    leas S.x,S discard temps
-         puls  PC,u,y,X exit
+SECA80 ldb #E$FULL Err: media full
+SECA85 ldy S.PDptr,S (Y)=PD
+ lbsr RLSBIT release bitmap
+ coma abort: return carry set
+SECA90 leas S.x,S discard temps
+ puls PC,U,Y,X exit
  page
 ***************
 * Subroutine Trim
@@ -2360,108 +2368,110 @@ SECA90    leas S.x,S discard temps
 * Returns: None
 * Destroys: CC,D,X,U
 
-TRIM    clra clear carry
-         lda PD.MOD,Y
-         bita  #DIR.
-         bne   TrimE99
-         ldd   PD.SIZ,Y
-         std   PD.CP,Y
-         ldd   PD.SIZ+2,Y
-         std   PD.CP+2,Y
+TRIM clra clear carry
+ lda PD.MOD,Y
+ bita #DIR. dir file?
+ bne TrimE99 ..Yes; don't trim
+ ldd PD.SIZ,Y get file size
+ std PD.CP,Y set current posn
+ ldd PD.SIZ+2,Y
+ std PD.CP+2,Y
 
  ifeq RCD.LOCK-included
  ldd #$FFFF
  tfr d,X
- lbsr GAIN
- bcs TrimErr
- lbsr NewSize
- bne TrimE99
+ lbsr GAIN lockout from desired file to EOF
+ bcs TrimErr ..abort if error
+ lbsr NewSize Copy size thru conflict list
+ bne TrimE99 ..Return if other writer(s) exit
  endc
 
-         lbsr  GETSEG
-         bcc   TRIM10
-         cmpb  #E$NES Non-existing seg error?
-         bra   TRIM29
-TRIM10    ldd   <$14,Y
-         subd  $0C,Y
-         addd  PD.SSZ+1,Y
-         tst   $0E,Y
-         beq   TRIM20
-         subd  #1
-TRIM20    pshs  D
-         ldu   <$1E,Y
-         ldd   $06,U
-         subd  #$0001
-         coma
-         comb
-         anda  ,s+
-         andb  ,s+
-         ldu   PD.SSZ+1,Y
-         std   PD.SSZ+1,Y
-         beq   TRIM30
-         tfr   u,d
-         subd  PD.SSZ+1,Y
-         pshs  x,D
-         addd  PD.SBP+1,Y
-         std   PD.SBP+1,Y
-         bcc   TRIM26
-         inc   PD.SBP,Y
-TRIM26    bsr   SECDEA
-         bcc   TRIM40
-         leas  $04,S
-         cmpb  #E$IBA
-TRIM29 bne TrimErr
-TRIM30  lbsr  GETFD
+ lbsr GETSEG get last seg needed
+ bcc TRIM10 continu if no error
+ cmpb #E$NES Non-existing seg error?
+ bra TRIM29
+
+TRIM10 ldd PD.SBL+1,Y get seg beginning logical
+ subd PD.CP+1,Y Subtract current posn
+ addd PD.SSZ+1,Y get excess seg sectors
+ tst PD.CP+3,Y any of final sector used?
+ beq TRIM20 ..No
+ subd #1 Use it
+TRIM20 pshs D save excess size
+ ldu PD.DTB,Y get drive tbl ptr
+ ldd DD.BIT,U get sectors/bit
+ subd #1 form mask
+ coma
+ comb
+ anda ,s+ Mask msb
+ andb ,s+ Mask lsb
+ ldu PD.SSZ+1,Y get seg size
+ std PD.SSZ+1,Y Set excess
+ beq TRIM30 bra if no excess
+ tfr u,d Copy size
+ subd PD.SSZ+1,Y get sectors needed
+ pshs x,D save sectors & entry ptr
+ addd PD.SBP+1,Y Make ptr to excess
+ std PD.SBP+1,Y
+ bcc TRIM26 bra if no carry
+ inc PD.SBP,Y Propagate carry
+TRIM26 bsr SECDEA Deallocate excess
+ bcc TRIM40 bra if no error
+ leas 4,S Return scratch
+ cmpb #E$IBA Illegal block addr
+TRIM29 bne TrimErr ..No; abort
+TRIM30 lbsr GETFD
  bcc TRIM50
-TrimErr coma
+TrimErr coma set Carry
 TrimE99 rts
 
-TRIM40    lbsr  GETFD
-         bcs   TRIM80
-         puls  x,D
-         std   $03,X
-TRIM50    ldu   $08,Y
-         ldd   PD.SIZ+2,Y
-         std   $0B,U
-         ldd   PD.SIZ,Y
-         std   $09,U
-         tfr   x,d
-         clrb
-         inca
-         leax  $05,X
-         pshs  x,D
-         bra   TRIM65
+TRIM40 lbsr GETFD
+ bcs TRIM80
+ puls X,D get sectors needed & seg entry ptr
+ std FDSL.B,X Set seg size
+TRIM50 ldu PD.BUF,Y get buffer ptr
+ ldd PD.SIZ+2,Y get file size
+ std FD.SIZ+2,U
+ ldd PD.SIZ,Y
+ std FD.SIZ,U
+ tfr X,D Copy seg list ptr
+ clrb make Limit ptr
+ inca
+ leax FDSL.S,X
+ pshs x,D save ptr & limit
+ bra TRIM65
 
 TRIM60 ldd FDSL.B-FDSL.S,X get seg size
-         beq   TRIM75 bra if done
-         std   PD.SSZ+1,Y
-         ldd FDSL.A-FDSL.S,X
-         std   PD.SBP,Y
-         lda FDSL.A+2-FDSL.S,X
-         sta   <$18,Y
-         bsr   SECDEA
-         bcs   TRIM80
-         stx   $02,S
-         lbsr  GETFD
-         bcs   TRIM80
-         ldx   $02,S
-         clra
-         clrb
-         std FDSL.A-FDSL.S,X
-         sta FDSL.A+2-FDSL.S,X
-         std FDSL.B-FDSL.S,X
-TRIM65    lbsr PUTFD
-         bcs TRIM80
-         ldx 2,S
-         leax FDSL.S,X
-         cmpx  0,S
-         bcs   TRIM60
-TRIM75    clra
-         clrb
-         sta   PD.SSZ,Y
-         std   PD.SSZ+1,Y
-TRIM80    leas 4,S
+ beq TRIM75 bra if done
+ std PD.SSZ+1,Y save seg size
+ ldd FDSL.A-FDSL.S,X get sector number
+ std PD.SBP,Y
+ lda FDSL.A+2-FDSL.S,X
+ sta PD.SBP+2,Y
+ bsr SECDEA Deallocate sectors
+ bcs TRIM80
+ stx 2,S save entry ptr
+ lbsr GETFD
+ bcs TRIM80
+ ldx 2,S get entry ptr
+ clra
+ clrb
+ std FDSL.A-FDSL.S,X
+ sta FDSL.A+2-FDSL.S,X
+ std FDSL.B-FDSL.S,X
+TRIM65 lbsr PUTFD Rewrite FD
+ bcs TRIM80
+ ldx 2,S get entry ptr
+ leax FDSL.S,X
+ cmpx 0,S Done?
+ bcs TRIM60 ..No
+TRIM75 clra clear Carry
+ clrb
+ sta PD.SSZ,Y clear current seg size high byte
+ std PD.SSZ+1,Y clear current seg size low bytes
+TRIM80 leas 4,S
  rts
+
  page
 ***************
 * Subroutine SECDEA - Sector Deallocation
@@ -2473,114 +2483,135 @@ TRIM80    leas 4,S
 * Returns: CC,B set if error
 * Destroys: D
 
-SECDEA    pshs  u,y,x,a
-         ldx   <$1E,Y
-         ldd   $06,X
-         subd  #$0001
-         addd  PD.SBP+1,Y
-         std   PD.SBP+1,Y
-         ldd   $06,X
-         bcc   SECD10
-         inc   PD.SBP,Y
-         bra   SECD10
-SECD05    lsr   PD.SBP,Y
-         ror   PD.SBP+1,Y
-         ror   <$18,Y
-         lsr   PD.SSZ+1,Y
-         ror   <$1B,Y
-SECD10    lsra
-         rorb
-         bcc   SECD05
-         clrb
-         ldd   PD.SSZ+1,Y
-         beq   L0EC2
-         ldd   PD.SBP,Y
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         tfr   b,a
-         ldb   #E$IBA error code: Illegal Block Addr
-         cmpa DD.MAP,X
-         bhi SecDErr
-         cmpa  <$1D,X
-         bcc   SECD15
-         sta   <$1D,X
-SECD15    inca
-         sta   ,S
-SECD20 equ *
+SECDEA pshs U,Y,X,A save regs
+ ldx PD.DTB,Y get drive tbl ptr
+ ldd DD.BIT,X get sectors/bit
+ subd #1
+ addd PD.SBP+1,Y Segment Begin ptr
+ std PD.SBP+1,Y round up
+ ldd DD.BIT,X
+ bcc SECD10
+ inc PD.SBP,Y propagate carry
+ bra SECD10
+
+SECD05 lsr PD.SBP,Y convert Segment ptr
+ ror PD.SBP+1,Y to bit offset in bitmap
+ ror PD.SBP+2,Y
+ lsr PD.SSZ+1,Y convert segment size
+ ror PD.SSZ+2,Y to bits returning
+SECD10 lsra divide by sectors per bit
+ rorb (cluster size Must be even power of two)
+ bcc SECD05
+ clrb clear carry
+ ldd PD.SSZ+1,Y Any block left?
+ beq SECD90 ..No, return without error
+ ldd PD.SBP,Y ms bytes of bit offset
+ lsra
+ rorb divice by 8 bits/byte
+ lsra
+ rorb
+ lsra
+ rorb
+ tfr b,a
+ ldb #E$IBA error code: Illegal Block Addr
+ cmpa DD.MAP,X reasonable number?
+ bhi SecDErr ..No; abort
+ cmpa V.MapSct,X below low bitmap sector searched?
+ bcc SECD15 ..No; continue
+ sta V.MapSct,X
+SECD15 inca (B)=Bitmap sector addr
+ sta 0,S save sector num
+SECD20 equ * potential deadly loop
  bsr LockBit lockout bitmap
-         bcs   SECD20
-         ldb   ,S
-         bsr   ReadBit
-         bcs   SecDErr
-         ldx PD.BUF,Y
-         ldd PD.SBP+1,Y
-         anda #$07 mod 2048 bits/sector
-         ldy   PD.SSZ+1,Y
-         os9   F$DelBit
-         ldy 3,S
-         ldb   ,S
-         bsr   PUTBIT
-         bcc   L0EC2
-SecDErr    coma
-L0EC2    puls  PC,U,Y,X,A
+ bcs SECD20 ..error; keep trying
+ ldb 0,S get bitmap sector
+ bsr ReadBit read bitmap
+ bcs SecDErr ..error; abort
+ ldx PD.BUF,Y get buffer ptr
+ ldd PD.SBP+1,Y get beginning block number
+ anda #$07 mod 2048 bits/sector
+ ldy PD.SSZ+1,Y get block size
+ os9 F$DelBit De-allocate in bitmap
+ ldy 3,S PD
+ ldb 0,S Bitmap sector
+ bsr PUTBIT rewrite/release bitmap
+ bcc SECD90 ..return error status
+SecDErr coma set carry
+SECD90 puls PC,U,Y,X,A
 
 ***************
 * Subroutine LockBit
 *   LockOut Bitmap, Read first sector
 
-LockBit    lbsr  CLRBUF
-         bra   LckBit20
+* Passed: (Y)=PD
+* Returns: CC,B=set if error
+* Destroys: D,X,U
 
-LckBit10    os9   F$IOQu
-         bsr   ChkSignl
-LckBit20    bcs   LckBit99
-         ldx   <$1E,Y
-         lda   V.BMB,X
-         bne   LckBit10
-         lda   $05,Y
-         sta   V.BMB,X
-LckBit99    rts
+LockBit lbsr CLRBUF clear buffer
+ bra LckBit20
+
+LckBit10 os9 F$IOQU get in I/O queue
+ bsr ChkSignl Interrogate Signal recieved
+LckBit20 bcs LckBit99 ..exit if error
+ ldx PD.DTB,Y get drive tbl ptr
+ lda V.BMB,X bitmap busy?
+ bne LckBit10 ..Yes
+ lda PD.CPR,Y get current process ID
+ sta V.BMB,X Claim bitmap (carry clear)
+LckBit99 rts
 
 ***************
 * Subroutine ChkSignal
 *   See if signal received caused death
 
-ChkSignl    ldu   D.Proc
-         ldb   <$19,U
-         cmpb  #$01
-         bls   ChkSig10
-         cmpb  #$03
-         bls   ChkSErr
-ChkSig10    clra
-         lda P$State,U
-         bita  #Condem
-         beq   ChkSig90
-ChkSErr    coma
-ChkSig90    rts
+* Returns: CC,B=set if error
+* Destroys: D,U
+
+ChkSignl ldu D.Proc
+ ldb P$Signal,U
+ cmpb #S$Wake Wake-up signal?
+ bls ChkSig10 ..Continue if wakeup
+ cmpb #S$Intrpt deadly signal?
+ bls ChkSErr ..Yes; give up
+
+ChkSig10 clra clear carry
+ lda P$State,U check process state flags
+ bita #Condem has process died?
+ beq ChkSig90 ..No; return carry clear
+ChkSErr coma set carry
+ChkSig90 rts
 
 ***************
 * Subroutine PUTBIT
 *   Rewrite/Release Bitmap
 
-PUTBIT    clra
-         tfr   d,X
-         clrb
-         lbsr  PUTSEC
-RLSBIT    pshs  cc
-         ldx   <$1E,Y
-         lda   $05,Y
-         cmpa  V.BMB,X
-         bne   RLSBIT99
-         clr   V.BMB,X
-RLSBIT99    puls  PC,CC
+* Passed: (B)=bitmap sector number
+*         (Y)=PD
+* Returns: CC,B set if error
+* Destroys: D,X
+
+PUTBIT clra
+ tfr D,X
+ clrb (B,X)=sector number
+ lbsr PUTSEC
+RLSBIT pshs CC save error status
+ ldx PD.DTB,Y get drive tbl ptr
+ lda PD.CPR,Y current process ID
+ cmpa V.BMB,X this process controlling bitmap?
+ bne RLSBIT99 ..No; exit
+ clr V.BMB,X Release bitmap
+RLSBIT99 puls PC,CC return
+
  page
 ***************
 * Subroutine ReadBit
 *   Read Bitmap sector
+
+* Passed: (B)=sector number
+*         (Y)=PD
+* Returns: CC=carry set if error
+*         (B)=error code
+* Destroys: (X)
 
 ReadBit clra
  tfr D,X
@@ -2591,114 +2622,118 @@ ReadBit clra
 * Subroutine WRCP
 *   Write Current Position Sector
 
-WRCP     pshs  u,X
-         lbsr  PCPSEC
-         bcs   WRCPXX
-         lda   $0A,Y
-         anda  #$FE
-         sta   $0A,Y
-WRCPXX    puls  PC,u,X
+WRCP pshs U,X save regs
+ lbsr PCPSEC Put current sector
+ bcs WRCPXX error; abort
+ lda PD.SMF,Y get buffer flags
+ anda #$FF-BUFMOD Clear flags
+ sta PD.SMF,Y
+WRCPXX puls PC,U,X
 
  page
 ***************
 * Subroutine Chkseg
 *   Check Segment ptrs For Current Position
 
-CHKSEG    ldd   $0C,Y
-         subd  <$14,Y
-         tfr   d,X
-         ldb   $0B,Y
-         sbcb  <$13,Y
-         cmpb  PD.SSZ,Y
-         bcs   CHKSG90
-         bhi   GETSEG
-         cmpx  PD.SSZ+1,Y
-         bcc   GETSEG
-CHKSG90 clrb
+CHKSEG ldd PD.CP+1,Y get current posn
+ subd PD.SBL+1,Y Subtract seg beginning logical
+ tfr D,X
+ ldb PD.CP,Y
+ sbcb PD.SBL,Y
+ cmpb PD.SSZ,Y In this seg?
+ bcs CHKSG90 yes
+ bhi GETSEG No, ..get another
+ cmpx PD.SSZ+1,Y In this seg?
+ bcc GETSEG ..No
+CHKSG90 clrb clear carry
  rts
 
 ***************
 * Subroutine GETSEG
 *   Get Segment Containing Current Position
 
+* Passed: (Y)=PD ptr
+* Returns: CC Carry set if no segment found
+* Destroys: D
+
 GETSEG pshs U save regs
  bsr GETFD
  bcs GETS30 error; abort
  clra clear D
  clrb
- std PD.SBL,Y
-         stb PD.SBL+2,Y
-         ldu   $08,Y
-         leax  <$10,U
-         lda   $08,Y
-         ldb   #-(FDSL.S-1) end-(entry size-1)
-         pshs D
-FNDS10    ldd   $03,X
-         beq   GETS10
-         addd PD.SBL+1,Y
-         tfr   d,U
-         ldb   <$13,Y
-         adcb  #$00
-         cmpb  $0B,Y
-         bhi   GETS25
-         bne   FNDS20
-         cmpu  $0C,Y
-         bhi   GETS25
-FNDS20    stb PD.SBL,Y
-         stu PD.SBL+1,Y
-         leax  $05,X
-         cmpx  ,S
-         bcs   FNDS10
-GETS10    clra
-         clrb
-         sta   PD.SSZ,Y
-         std   PD.SSZ+1,Y
-         comb
-         ldb   #E$NES
-         bra   GETS30
-GETS25    ldd   ,X
-         std   PD.SBP,Y
-         lda   $02,X
-         sta   <$18,Y
-         ldd   $03,X
-         std   PD.SSZ+1,Y
-GETS30    leas  $02,S
-         puls  PC,U
+ std PD.SBL,Y Clear seg beginning logical
+ stb PD.SBL+2,Y
+ ldu PD.BUF,Y get buffer addr
+ leax FD.SEG,U get seg list ptr
+ lda PD.BUF,Y make limit ptr at
+ ldb #-(FDSL.S-1) end-(entry size-1)
+ pshs D save limit ptr
+FNDS10 ldd FDSL.B,X get seg size
+ beq GETS10 bra if end of used entries
+ addd PD.SBL+1,Y Add seg beginning logical
+ tfr D,U save it
+ ldb PD.SBL,Y get msb
+ adcb #0 Propagate carry
+ cmpb PD.CP,Y This seg?
+ bhi GETS25 ..Yes
+ bne FNDS20 ..No
+ cmpu PD.CP+1,Y Make sure
+ bhi GETS25 bra if in this seg
+FNDS20 stb PD.SBL,Y Actually in next seg
+ stu PD.SBL+1,Y
+FNDS25 leax FDSL.S,X Move to next entry
+ cmpx 0,S End of list?
+ bcs FNDS10 ..No
+GETS10 clra
+ clrb
+ sta PD.SSZ,Y Clear seg size high byte
+ std PD.SSZ+1,Y Clear seg size low bytes
+ comb set Carry
+ ldb #E$NES Err: non-existing seg
+ bra GETS30
+GETS25 ldd FDSL.A,X get seg beginning
+ std PD.SBP,Y Set set beginning physical
+ lda FDSL.A+2,X
+ sta PD.SBP+2,Y
+ ldd FDSL.B,X get seg size
+ std PD.SSZ+1,Y
+GETS30 leas 2,S return scratch
+ puls PC,U
  page
 ***************
 * Subroutine GETDD
 *   Get Device Desc
 
 GETDD pshs X,B
-         lbsr  CLRBUF
-         bcs   GETDD10
-         clrb
-         ldx   #$0000
-         bsr   GETSEC
-         bcc   GETDD20
-GETDD10    stb   ,S
-GETDD20    puls  PC,x,b
+ lbsr CLRBUF clear buffer
+ bcs GETDD10 error; abort
+ clrb
+ ldx #0
+ bsr GETSEC get sector
+ bcc GETDD20 bra if no error
+GETDD10 stb 0,S
+GETDD20 puls PC,X,B
 
 ***************
 * Subroutine GETFD
 *   Get File Descriptor
 
 GETFD ldb PD.SMF,Y get flag
-         bitb  #FDBUF
-         bne   CHKSG90
-         lbsr  CLRBUF
-         bcs   PUTS99
-         ldb   PD.SMF,Y
-         orb   #$04
-         stb   PD.SMF,Y
-         ldb   PD.FD,Y
-         ldx   <$35,Y
+ bitb #FDBUF FD in buffer
+ bne CHKSG90 ..Yes; return (carry clear) ..Yes
+ lbsr CLRBUF clear buffer
+ bcs PUTS99 error; abort
+ ldb PD.SMF,Y get flags
+ orb #FDBUF Mark FD in buffer
+ stb PD.SMF,Y
+ ldb PD.FD,Y FD addr
+ ldx PD.FD+1,Y
 
 ***************
 * Subroutine GETSEC
 *   Get Specified Sector
 
-GETSEC    lda   #D$READ
+GETSEC lda #D$READ Set entry offset
 * Fall into DEVDIS
 
 ***************
@@ -2708,47 +2743,47 @@ GETSEC    lda   #D$READ
 * Passed: (A)=Entry offset
 *         (Y)=PD ptr
 
-DEVDIS    pshs  u,y,x,b,a
+DEVDIS pshs U,Y,X,D save regs
 
-         lda   PD.SMF,Y
-         ora   #InDriver
-         sta   PD.SMF,Y
+ lda PD.SMF,Y
+ ora #InDriver indicate I/O "in progress"
+ sta PD.SMF,Y
 
-         ldu PD.DEV,Y
-         ldu   $02,U
-         bra   DEVD20
-DEVD10    os9   F$IOQu
-DEVD20    lda   $04,U
-         bne   DEVD10
-         lda   $05,Y
-         sta   $04,U
-         ldd   ,S
-         ldx   $02,S
-         pshs  u
-         bsr   GODRIV
-         puls  u
+ ldu PD.DEV,Y get device tbl entry
+ ldu V$STAT,U get device static storage
+ bra DEVD20
+DEVD10 os9 F$IOQU Wait for device
+DEVD20 lda V.BUSY,U Device busy?
+ bne DEVD10 ..Yes
+ lda PD.CPR,Y get process ID
+ sta V.BUSY,U Set busy flag
+ ldd 0,S get code & sector psn msb
+ ldx 2,S get sector psn lsbs
+ pshs U save static storage
+ bsr GODRIV Go to driver
+ puls U Retrieve static storage
 
-         ldy   $04,S
-         pshs  cc
-         lda   PD.SMF,Y
-         anda  #^InDriver signal I/O finished
-         sta   PD.SMF,Y
+ ldy 4,S restore PD ptr
+ pshs cc save error status
+ lda PD.SMF,Y
+ anda #^InDriver signal I/O finished
+ sta PD.SMF,Y
 
-         clr V.BUSY,U
-         puls  cc
-         bcc   DEVD30
-         stb 1,S
-DEVD30    puls  PC,u,y,x,b,a
+ clr V.BUSY,U Clear busy flag
+ puls cc restore error status
+ bcc DEVD30 bra if no error
+ stb 1,S return error code
+DEVD30 puls PC,U,Y,X,D
 
-GODRIV    pshs  PC,x,b,a
-         ldx   PD.DEV,Y
-         ldd   V$DRIV,X
-         ldx   V$DRIV,X
-         addd  M$EXEC,X
-         addb 0,S
-         adca  #0
-         std 4,S
-         puls  PC,x,b,a
+GODRIV pshs PC,X,D save regs
+ ldx PD.DEV,Y get device driver addr
+ ldd V$DRIV,X get module addr
+ ldx V$DRIV,X get module addr
+ addd M$EXEC,X Add module entry offset
+ addb 0,S Add entry tbl offset
+ adca #0 Propagate carry
+ std 4,S Put in stack for dispatch
+ puls PC,X,D Dispatch
 
 ***************
 * Subroutine PUTFD
@@ -2770,14 +2805,14 @@ PCPSEC bsr GETCP get addr of current posn
 *   Put Sector
 
 PUTSEC lda #D$WRIT get entry offset
-         pshs  x,b,a
-         ldd PD.DSK,Y
-         beq   PUTS10
-         ldx   <$1E,Y
-         cmpd  $0E,X
-PUTS10    puls  x,b,a
-         beq   DEVDIS
-         comb
+ pshs X,D save regs
+ ldd PD.DSK,Y get disk ID
+ beq PUTS10 bra if clear
+ ldx PD.DTB,Y get drive tbl ptr
+ cmpd DD.DSK,X same disk?
+PUTS10 puls X,D restore regs
+ beq DEVDIS ..Yes; execute Write
+ comb set Carry
  ldb #E$DIDC Err: disk ID change
 PUTS99 rts
 
@@ -2800,22 +2835,22 @@ GETCP ldd PD.CP+1,Y get current posn
 * Subroutine CLRBUF
 *   Clear Buffer
 
-CLRBUF    clrb
-         pshs  u,X
-         ldb   PD.SMF,Y
-         andb  #SINBUF+FDBUF
-         beq   CLRB10
-         tfr   b,a
-         eorb  PD.SMF,Y
-         stb   PD.SMF,Y
-         andb  #$01
-         beq   CLRB10
-         eorb  PD.SMF,Y
-         stb   PD.SMF,Y
-         bita  #$02
-         beq   CLRB10
-         bsr   PCPSEC
-CLRB10    puls  PC,u,X
+CLRBUF clrb clear Carry
+ pshs U,X save regs
+ ldb PD.SMF,Y get flags
+ andb #SINBUF+FDBUF Sector in buffer?
+ beq CLRB10 ..No
+ tfr b,a Copy flag
+ eorb PD.SMF,Y Clear sector in buffer
+ stb PD.SMF,Y
+ andb #BUFMOD Buffer modified?
+ beq CLRB10 ..No
+ eorb PD.SMF,Y clear buffer modified
+ stb PD.SMF,Y
+ bita #SINBUF current sector in buffer?
+ beq CLRB10 ..No
+ bsr PCPSEC Write current sector
+CLRB10 puls PC,U,X
 
 ***************
 * Subroutine RDCP
@@ -2834,29 +2869,29 @@ RDCP pshs U,X save regs
  ifeq RCD.LOCK-included
 GCPS05 ldb PD.CP,Y
  ldu PD.CP+1,Y
-         leax 0,Y
-         ldy PD.Exten,Y
-GCPS10 ldx PD.Exten,X
-         cmpy  $05,X
-         beq   GCPS90
-         ldx   $05,X
-         ldx   $01,X
-         cmpu  $0C,X
-         bne   GCPS10
-         cmpb  $0B,X
-         bne   GCPS10
-         lda   PD.SMF,X
-         bita  #$20
-         bne   GCPS15
-         bita  #$02
-         beq   GCPS10
-         bra   GCPS20
-GCPS15    lda   $05,X
-         ldy   $01,Y
-         os9   F$IOQu
-         lbsr  ChkSignl
-         bcc   GCPS05
-         bra   RDCPXX
+ leax 0,Y Point X at Current PD
+ ldy PD.Exten,Y Change to PE of Path
+GCPS10 ldx PD.Exten,X Point X at testing PE
+ cmpy PE.Confl,X End of conflict list?
+ beq GCPS90 Yes .. Read in sector
+ ldx PE.Confl,X Next PE in Conflict List
+ ldx PE.PDptr,X Move to PD
+ cmpu PD.CP+1,X Match sector addr bytes 1&2
+ bne GCPS10 No .. Try next path
+ cmpb PD.CP,X Match sector addr byte 0
+ bne GCPS10 No .. Try next path
+ lda PD.SMF,X
+ bita #InDriver Other path doing I/O on this sector?
+ bne GCPS15 Yes, wait for it to finish
+ bita #SINBUF Is sector in buffer?
+ beq GCPS10 ..No; try next path
+ bra GCPS20 ..Yes, go copy it
+GCPS15 lda PD.CPR,X get other path's owner ID
+ ldy PE.PDptr,Y
+ os9 F$IOQu Wait for I/O to finish
+ lbsr ChkSignl Interrogate signal recieved
+ bcc GCPS05
+ bra RDCPXX Abort if error
 
 GCPS20 ldy PE.PDptr,Y Move to PD
  ldd PD.Buf,X Swap buffer pointers
@@ -2866,7 +2901,7 @@ GCPS20 ldy PE.PDptr,Y Move to PD
  lda PD.SMF,X Get state Flags
  sta PD.SMF,Y  from holding PD
  clr PD.SMF,X
- puls PC,u,X
+ puls PC,U,X
 GCPS90 ldy PE.PDptr,Y Restore registers
  endc
  lbsr GETCP get addr of current posn
@@ -2875,7 +2910,7 @@ GCPS90 ldy PE.PDptr,Y Restore registers
  lda PD.SMF,Y
  ora #SINBUF Set sector in buffer
  sta PD.SMF,Y
-RDCPXX puls PC,u,X
+RDCPXX puls PC,U,X
 
  emod
 RBFEnd equ *

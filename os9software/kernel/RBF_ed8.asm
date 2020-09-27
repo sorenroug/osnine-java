@@ -14,7 +14,7 @@
          ifp1
          use   defsfile
          endc
-tylg     set   FlMgr+Objct   
+tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,start,size
@@ -22,32 +22,32 @@ u0000    rmb   0
 size     equ   .
 name     equ   *
          fcs   /Rbf/
-         fcb   $08 
+         fcb   $08
 L0011    fcb   $26
 
 start    equ   *
-         lbra  L0039
+         lbra  Create
          lbra  L0176
-         lbra  L01ED
-         lbra  L0299
-         lbra  L02CF
-         lbra  L0357
+         lbra  MakDir
+         lbra  ChgDir
+         lbra  Delete
+         lbra  Seek
          lbra  L03E8
          lbra  L0483
-         lbra  L0379
-         lbra  L0463
+         lbra  ReadLn
+         lbra  WritLine
          lbra  GetStat
          lbra  PutStat
          lbra  Close
 
  ttl Random Block file service request routines
 
-L0039    pshs  y
+Create    pshs  y
          leas  -$05,s
          lda   $02,u
          anda  #$7F
          sta   $02,u
-         lbsr  L05B6
+         lbsr  SchDir
          bcs   L004A
          ldb   #$DA
 L004A    cmpb  #$D8
@@ -62,7 +62,7 @@ L004A    cmpb  #$D8
          lda   <$19,y
          ldu   <$1A,y
          pshs  u,x,b,a
-         clra  
+         clra
          ldb   #$01
          lbsr  L08C1
          bcc   L0075
@@ -100,17 +100,17 @@ L00A7    cmpb  #$D3
 L00BC    leau  ,x
          lbsr  L015C
          puls  x
-         os9   F$PrsNam 
+         os9   F$PrsNam
          bcs   L0070
          cmpb  #$1D
          bls   L00CE
          ldb   #$1D
-L00CE    clra  
+L00CE    clra
          tfr   d,y
          lbsr  L04DB
          tfr   y,d
          ldy   $05,s
-         decb  
+         decb
          lda   b,u
          ora   #$80
          sta   b,u
@@ -121,7 +121,7 @@ L00CE    clra
          lbsr  L0CA3
          bcs   L0144
          ldu   $08,y
-         bsr   L0163
+         bsr   ZerBuf
          lda   #$04
          sta   $0A,y
          ldx   $06,y
@@ -130,7 +130,7 @@ L00CE    clra
          ldx   D.Proc
          ldd   $09,x
          std   $01,u
-         lbsr  L0286
+         lbsr  DateMod
          ldd   $03,u
          std   $0D,u
          ldb   $05,u
@@ -170,17 +170,17 @@ L0159    lbra  L0275
 L015C    pshs  u,x,b,a
          leau  <$20,u
          bra   L0169
-L0163    pshs  u,x,b,a
+ZerBuf    pshs  u,x,b,a
          leau  >$0100,u
-L0169    clra  
-         clrb  
+L0169    clra
+         clrb
          tfr   d,x
 L016D    pshu  x,b,a
          cmpu  $04,s
          bhi   L016D
          puls  pc,u,x,b,a
 L0176    pshs  y
-         lbsr  L05B6
+         lbsr  SchDir
          bcs   L0159
          ldu   $06,y
          stx   $04,u
@@ -207,8 +207,8 @@ L01B3    lda   $01,y
          lbsr  L076B
          bcs   L0159
 L01BA    puls  y
-L01BC    clra  
-         clrb  
+L01BC    clra
+         clrb
          std   $0B,y
          std   $0D,y
          std   <$13,y
@@ -226,24 +226,32 @@ L01BC    clra
          ldx   $0B,u
          std   $0F,y
          stx   <$11,y
-         clrb  
-         rts   
-L01ED    lbsr  L0039
-         bcs   L0235
+         clrb
+         rts
+
+ page
+***************
+* Subroutine Makdir
+*   Creates A New (Sub-Ordinate) Dir
+
+* Passed: (Y)=PD
+
+MakDir    lbsr  Create
+         bcs   MakDir90
          ldd   #$0040
          std   <$11,y
-         bsr   L0247
-         bcs   L0235
+         bsr   WrtFDS90
+         bcs   MakDir90
          lbsr  L07B2
-         bcs   L0235
+         bcs   MakDir90
          ldu   $08,y
          lda   ,u
          anda  #$BF
          ora   #$80
          sta   ,u
          bsr   L0237
-         bcs   L0235
-         lbsr  L0163
+         bcs   MakDir90
+         lbsr  ZerBuf
          ldd   #$2EAE
          std   ,u
          stb   <$20,u
@@ -256,58 +264,80 @@ L01ED    lbsr  L0039
          ldd   <$35,y
          std   <$3E,u
          lbsr  L0CA3
-L0235    bra   L0278
-L0237    lbsr  L0C41
+MakDir90    bra   KillPth1
+
+***************
+* Subroutine WrtFDSiz
+*   Update file size in FD sector.  Called by Create, Makdir.
+
+L0237    lbsr  GETFD
 L023A    ldx   $08,y
          ldd   $0F,y
          std   $09,x
          ldd   <$11,y
          std   $0B,x
          clr   $0A,y
-L0247    lbra  L0C9B
-Close    clra  
+WrtFDS90    lbra  PUTFD
+
+ page
+***************
+* Subroutine Close
+*   Close Path, Update FD if necessary
+
+Close    clra
          tst   $02,y
          bne   L0272
          ldb   $01,y
          bitb  #$02
-         beq   L0278
+         beq   KillPth1
          lbsr  L0CD3
-         bcs   L0278
+         bcs   KillPth1
          ldd   <$34,y
          bne   L0264
          lda   <$36,y
-         beq   L0278
-L0264    bsr   L0286
+         beq   KillPth1
+L0264    bsr   DateMod
          bsr   L023A
          lbsr  L0513
-         bcc   L0278
+         bcc   KillPth1
          lbsr  L0A16
-         bra   L0278
-L0272    rts   
+         bra   KillPth1
+L0272    rts
+
 L0273    ldb   #$D6
-L0275    coma  
-L0276    puls  y
-L0278    pshs  b,cc
+L0275    coma
+
+KillPth    puls  y
+KillPth1    pshs  b,cc
          ldu   $08,y
          beq   L0284
          ldd   #$0100
-         os9   F$SRtMem 
+         os9   F$SRtMem
+
 L0284    puls  pc,b,cc
-L0286    lbsr  L0C41
+
+DateMod    lbsr  GETFD
          ldu   $08,y
          lda   $08,u
          pshs  a
          leax  $03,u
-         os9   F$Time   
+         os9   F$Time
          puls  a
          sta   $08,u
-         rts   
-L0299    pshs  y
+         rts
+
+***************
+* Subroutine Chgdir
+*   Change User'S Current Working Dir
+
+* Passed: (Y)=PD
+
+ChgDir    pshs  y
          lda   $01,y
          ora   #$80
          sta   $01,y
          lbsr  L0176
-         bcs   L0276
+         bcs   KillPth
          ldx   D.Proc
          lda   <$21,y
          ldu   <$35,y
@@ -323,11 +353,16 @@ L02BD    ldb   $01,y
          ldb   <$34,y
          std   <$22,x
          stu   <$24,x
-L02CC    clrb  
-         bra   L0276
-L02CF    pshs  y
-         lbsr  L05B6
-         bcs   L0276
+L02CC    clrb
+         bra   KillPth
+
+ page
+***************
+* Subroutine Delete
+
+Delete    pshs  y
+         lbsr  SchDir
+         bcs   KillPth
          ldd   <$35,y
          bne   L02E0
          tst   <$34,y
@@ -337,15 +372,15 @@ L02E0    lda   #$42
          bcs   L0354
          ldu   $06,y
          stx   $04,u
-         lbsr  L0C41
+         lbsr  GETFD
          bcs   L0354
          ldx   $08,y
          dec   $08,x
          beq   L02FB
-         lbsr  L0C9B
+         lbsr  PUTFD
          bra   L0321
-L02FB    clra  
-         clrb  
+L02FB    clra
+         clrb
          std   $0F,y
          std   <$11,y
          lbsr  L0A16
@@ -367,7 +402,7 @@ L0321    bcs   L0354
          ldd   <$38,y
          std   <$35,y
          lbsr  L07A5
-         lbsr  L0C41
+         lbsr  GETFD
          bcs   L0354
          lbsr  L01BC
          ldd   <$3A,y
@@ -378,8 +413,14 @@ L0321    bcs   L0354
          bcs   L0354
          clr   ,x
          lbsr  L0CA3
-L0354    lbra  L0276
-L0357    ldb   $0A,y
+L0354    lbra  KillPth
+
+***************
+* Subroutine Seek
+*   Change Path's current posn ptr
+* Flush buffer is (not empty and ptr moves to new sector)
+
+Seek    ldb   $0A,y
          bitb  #$02
          beq   L0370
          lda   $05,u
@@ -395,8 +436,8 @@ L0370    ldd   $04,u
          std   $0B,y
 L0374    ldd   $08,u
          std   $0D,y
-L0378    rts   
-L0379    bsr   L03B5
+L0378    rts
+ReadLn    bsr   L03B5
          bsr   L039E
          pshs  u,y,x,b,a
          exg   x,u
@@ -405,7 +446,7 @@ L0379    bsr   L03B5
 L0387    leay  $01,y
          cmpa  ,x+
          beq   L0390
-         decb  
+         decb
          bne   L0387
 L0390    ldx   $06,s
          bsr   L03E5
@@ -413,7 +454,7 @@ L0390    ldx   $06,s
          puls  u,y,x,b,a
          ldd   $02,s
          leax  d,x
-         rts   
+         rts
 L039E    bsr   L0401
          lda   ,-x
          cmpa  #$0D
@@ -425,12 +466,12 @@ L03AA    ldu   $06,y
          subd  $02,s
          std   $06,u
          leas  $08,s
-         rts   
+         rts
 L03B5    ldd   $06,u
          bsr   L03BE
          bcs   L03E2
          std   $06,u
-         rts   
+         rts
 L03BE    pshs  b,a
          ldd   <$11,y
          subd  $0D,y
@@ -440,18 +481,18 @@ L03BE    pshs  b,a
          sbca  $0B,y
          bcs   L03DF
          bne   L03DC
-         tstb  
+         tstb
          bne   L03DC
          cmpx  ,s
          bcc   L03DC
          stx   ,s
          beq   L03DF
-L03DC    clrb  
+L03DC    clrb
          puls  pc,b,a
-L03DF    comb  
+L03DF    comb
          ldb   #$D3
 L03E2    leas  $02,s
-         rts   
+         rts
 L03E5    lbra  L04DB
 L03E8    bsr   L03B5
          bsr   L03F9
@@ -461,12 +502,12 @@ L03EC    pshs  u,y,x,b,a
          bsr   L03E5
          puls  u,y,x,b,a
          leax  d,x
-         rts   
+         rts
 L03F9    bsr   L0401
          bne   L0407
-         clrb  
+         clrb
 L03FE    leas  $08,s
-         rts   
+         rts
 L0401    ldd   $04,u
          ldx   $06,u
          pshs  x,b,a
@@ -487,10 +528,10 @@ L0407    lda   $0A,y
 L0426    lbsr  L0B94
 L0429    bcs   L03FE
 L042B    ldu   $08,y
-         clra  
+         clra
          ldb   $0E,y
          leau  d,u
-         negb  
+         negb
          sbca  #$FF
          ldx   ,s
          cmpd  $02,s
@@ -513,8 +554,8 @@ L045A    ldd   $04,s
          subd  ,s++
          std   $02,s
          jmp   [<$04,s]
-L0463    pshs  y
-         clrb  
+WritLine    pshs  y
+         clrb
          ldy   $06,u
          beq   L0481
          ldx   $04,u
@@ -524,8 +565,8 @@ L046D    leay  -$01,y
          cmpa  #$0D
          bne   L046D
          tfr   y,d
-         nega  
-         negb  
+         nega
+         negb
          sbca  #$00
          addd  $06,u
          std   $06,u
@@ -543,12 +584,12 @@ L048D    pshs  y,b,a
          lda   $0A,y
          ora   #$03
          sta   $0A,y
-         rts   
+         rts
 L049E    lbsr  L0401
          lbne  L0407
          leas  $08,s
-L04A7    clrb  
-L04A8    rts   
+L04A7    clrb
+L04A8    rts
 L04A9    addd  $0D,y
          tfr   d,x
          ldd   $0B,y
@@ -575,11 +616,11 @@ L04DB    pshs  u,y,x
          ldd   $02,s
          beq   L0504
          leay  d,u
-         lsrb  
+         lsrb
          bcc   L04EA
          lda   ,x+
          sta   ,u+
-L04EA    lsrb  
+L04EA    lsrb
          bcc   L04F1
          ldd   ,x++
          std   ,u++
@@ -599,34 +640,34 @@ GetStat    ldb   $02,u
          cmpb  #$06
          bne   L0518
          clr   $02,u
-         clra  
+         clra
 L0513    ldb   #$01
          lbra  L03BE
 L0518    cmpb  #$01
          bne   L051F
          clr   $02,u
-         rts   
+         rts
 L051F    cmpb  #$02
          bne   L052D
          ldd   $0F,y
          std   $04,u
          ldd   <$11,y
          std   $08,u
-L052C    rts   
+L052C    rts
 L052D    cmpb  #$05
          bne   L053A
          ldd   $0B,y
          std   $04,u
          ldd   $0D,y
          std   $08,u
-         rts   
+         rts
 L053A    cmpb  #$0F
          bne   L0554
-         lbsr  L0C41
+         lbsr  GETFD
          bcs   L052C
          ldu   $06,y
          ldd   $06,u
-         tsta  
+         tsta
          beq   L054D
          ldd   #$0100
 L054D    ldx   $04,u
@@ -669,28 +710,28 @@ L0594    std   $0F,y
          puls  u,x
          stx   $0B,y
          stu   $0D,y
-         rts   
-L05A9    comb  
+         rts
+L05A9    comb
          ldb   #$CB
-         rts   
+         rts
 
 L05AD    lda   #$0C
          lbra  L0C62
 
-L05B2    comb  
+L05B2    comb
          ldb   #$D0
-L05B5    rts   
-L05B6    ldd   #$0100
+L05B5    rts
+SchDir    ldd   #$0100
          stb   $0A,y
-         os9   F$SRqMem 
+         os9   F$SRqMem
          bcs   L05B5
          stu   $08,y
          ldx   $06,y
          ldx   $04,x
          pshs  u,y,x
          leas  -$04,s
-         clra  
-         clrb  
+         clra
+         clrb
          sta   <$34,y
          std   <$35,y
          std   <$1C,y
@@ -724,7 +765,7 @@ L0610    ldu   $03,y
          stu   <$3E,y
          lda   <$21,y
          ldb   >L0011,pcr
-         mul   
+         mul
          addd  $02,u
          addd  #$000F
          std   <$1E,y
@@ -780,8 +821,8 @@ L0691    bcs   L06D0
          leay  ,x
          ldx   $04,s
          ldb   $01,s
-         clra  
-         os9   F$CmpNam 
+         clra
+         os9   F$CmpNam
          ldx   $06,s
          exg   x,y
          bcs   L068F
@@ -793,13 +834,13 @@ L0691    bcs   L06D0
          lbsr  L07B1
          bra   L0657
 L06BA    ldx   $08,s
-         tsta  
+         tsta
          bmi   L06C7
-         os9   F$PrsNam 
+         os9   F$PrsNam
          leax  ,y
          ldy   $06,s
 L06C7    stx   $04,s
-         clra  
+         clra
 L06CA    lda   ,s
          leas  $04,s
          puls  pc,u,y,x
@@ -807,7 +848,7 @@ L06D0    cmpb  #$D3
          bne   L06D8
          bsr   L06DB
          ldb   #$D8
-L06D8    coma  
+L06D8    coma
          bra   L06CA
 L06DB    pshs  b,a
          lda   $04,s
@@ -850,30 +891,30 @@ L071A    ldd   #$0020
 L0732    ldb   $0E,y
          lda   $08,y
          tfr   d,x
-         clrb  
-L0739    rts   
-L073A    os9   F$PrsNam 
+         clrb
+L0739    rts
+L073A    os9   F$PrsNam
          pshs  x
          bcc   L0769
-         clrb  
+         clrb
 L0742    pshs  a
          anda  #$7F
          cmpa  #$2E
          puls  a
          bne   L075D
-         incb  
+         incb
          leax  $01,x
-         tsta  
+         tsta
          bmi   L075D
          lda   ,x
          cmpb  #$03
          bcs   L0742
          lda   #$2F
-         decb  
+         decb
          leax  -$03,x
-L075D    tstb  
+L075D    tstb
          bne   L0765
-         comb  
+         comb
          ldb   #$D7
          puls  pc,x
 L0765    leay  ,x
@@ -883,7 +924,7 @@ L076B    tfr   a,b
          anda  #$07
          andb  #$C0
          pshs  x,b,a
-         lbsr  L0C41
+         lbsr  GETFD
          bcs   L079A
          ldu   $08,y
          ldx   D.Proc
@@ -892,9 +933,9 @@ L076B    tfr   a,b
          cmpd  $01,u
 L0783    puls  a
          beq   L078A
-         lsla  
-         lsla  
-         lsla  
+         lsla
+         lsla
+         lsla
 L078A    ora   ,s
          anda  #$BF
          pshs  a
@@ -904,18 +945,18 @@ L078A    ora   ,s
          beq   L07A3
          ldb   #$D6
 L079A    leas  $02,s
-         coma  
+         coma
          puls  pc,x
          ldb   #$FD
          bra   L079A
 L07A3    puls  pc,x,b,a
-L07A5    clra  
-         clrb  
+L07A5    clra
+         clrb
          std   $0B,y
          std   $0D,y
          sta   <$19,y
          std   <$1A,y
-L07B1    rts   
+L07B1    rts
 L07B2    pshs  u,x
 L07B4    bsr   L0810
          bne   L07C4
@@ -924,7 +965,7 @@ L07B4    bsr   L0810
          bne   L07C4
          lda   <$12,y
          beq   L080B
-L07C4    lbsr  L0C41
+L07C4    lbsr  GETFD
          bcs   L0808
          ldx   $0B,y
          ldu   $0D,y
@@ -948,14 +989,14 @@ L07C4    lbsr  L0C41
          bne   L07F7
 L07F4    ldx   #$FFFF
 L07F7    tfr   x,d
-         tsta  
+         tsta
          bne   L0804
          cmpb  <$2E,y
          bcc   L0804
          ldb   <$2E,y
 L0804    bsr   L081E
          bcc   L07B4
-L0808    coma  
+L0808    coma
          puls  pc,u,x
 L080B    lbsr  L0BB6
          puls  pc,u,x
@@ -964,25 +1005,25 @@ L0810    ldd   <$10,y
          tfr   d,x
          ldb   $0F,y
          sbcb  <$13,y
-         rts   
+         rts
 L081E    pshs  u,x
          lbsr  L08C1
          bcs   L085A
-         lbsr  L0C41
+         lbsr  GETFD
          bcs   L085A
          ldu   $08,y
-         clra  
-         clrb  
+         clra
+         clrb
          std   $09,u
          std   $0B,u
          leax  <$10,u
          ldd   $03,x
          beq   L08A2
          ldd   $08,y
-         inca  
+         inca
          pshs  b,a
          bra   L084D
-L0840    clrb  
+L0840    clrb
          ldd   -$02,x
          beq   L0856
          addd  $0A,u
@@ -992,7 +1033,7 @@ L0840    clrb
 L084D    leax  $05,x
          cmpx  ,s
          bcs   L0840
-         comb  
+         comb
          ldb   #$D9
 L0856    leas  $02,s
          leax  -$05,x
@@ -1011,18 +1052,18 @@ L085A    bcs   L08BF
          ldd   $06,u
          ldu   $08,y
          subd  #$0001
-         coma  
-         comb  
+         coma
+         comb
          pshs  b,a
          ldd   -$05,x
          eora  <$16,y
          eorb  <$17,y
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
          anda  ,s+
          andb  ,s+
          std   -$02,s
@@ -1043,12 +1084,12 @@ L08B1    ldd   $0A,u
          std   $0A,u
          bcc   L08BC
          inc   $09,u
-L08BC    lbsr  L0C9B
+L08BC    lbsr  PUTFD
 L08BF    puls  pc,u,x
 L08C1    pshs  u,y,x,b,a
          ldb   #$0D
 L08C5    clr   ,-s
-         decb  
+         decb
          bne   L08C5
          ldx   <$1E,y
          ldd   $04,x
@@ -1063,8 +1104,8 @@ L08C5    clr   ,-s
          addb  $0E,x
          adca  #$00
          bra   L08E9
-L08E7    lsra  
-         rorb  
+L08E7    lsra
+         rorb
 L08E9    lsr   $0B,s
          ror   $0C,s
          bcc   L08E7
@@ -1076,8 +1117,8 @@ L08E9    lsr   $0B,s
          bcc   L0903
          ldd   #$FFFF
          bra   L0903
-L0901    lsra  
-         rorb  
+L0901    lsra
+         rorb
 L0903    lsr   $0B,s
          ror   $0C,s
          bcc   L0901
@@ -1101,7 +1142,7 @@ L0910    std   $0D,s
          cmpa  $04,x
          bcc   L0942
          sta   $07,s
-         nega  
+         nega
          adda  $05,s
          sta   $05,s
          bra   L094F
@@ -1115,15 +1156,15 @@ L094F    inc   $07,s
          lbsr  L0B8D
          lbcs  L0A0A
          ldd   $05,s
-         tsta  
+         tsta
          beq   L0962
          ldd   #$0100
 L0962    ldx   $08,y
          leau  d,x
          ldy   $0D,s
-         clra  
-         clrb  
-         os9   F$SchBit 
+         clra
+         clrb
+         os9   F$SchBit
          pshs  b,a,cc
          tst   $03,s
          bne   L097D
@@ -1146,7 +1187,7 @@ L098F    ldy   <$11,s
          bra   L094F
 L099B    ldb   $08,s
          beq   L0A08
-         clra  
+         clra
          cmpb  $07,s
          beq   L09A9
          stb   $07,s
@@ -1156,7 +1197,7 @@ L09A9    ldx   $08,y
          ldy   $09,s
 L09B0    std   $0B,s
          sty   $09,s
-         os9   F$AllBit 
+         os9   F$AllBit
          ldy   <$11,s
          ldb   $07,s
          lbsr  L0B75
@@ -1164,17 +1205,17 @@ L09B0    std   $0B,s
          lda   ,s
          beq   L09CE
          ldx   <$1E,y
-         deca  
+         deca
          sta   <$1D,x
 L09CE    lda   $07,s
-         deca  
-         clrb  
-         lsla  
-         rolb  
-         lsla  
-         rolb  
-         lsla  
-         rolb  
+         deca
+         clrb
+         lsla
+         rolb
+         lsla
+         rolb
+         lsla
+         rolb
          stb   <$16,y
          ora   $0B,s
          ldb   $0C,s
@@ -1189,19 +1230,19 @@ L09EF    lsl   <$18,y
          rol   <$16,y
          lsl   <$1B,y
          rol   <$1A,y
-L09FE    lsra  
-         rorb  
+L09FE    lsra
+         rorb
          bcc   L09EF
-         clrb  
+         clrb
          ldd   <$1A,y
          bra   L0A12
 L0A08    ldb   #$F8
 L0A0A    ldy   <$11,s
          lbsr  L0B7C
-         coma  
+         coma
 L0A12    leas  $0F,s
          puls  pc,u,y,x
-L0A16    clra  
+L0A16    clra
          lda   $01,y
          bita  #$80
          bne   L0A78
@@ -1223,8 +1264,8 @@ L0A3E    pshs  b,a
          ldu   <$1E,y
          ldd   $06,u
          subd  #$0001
-         coma  
-         comb  
+         coma
+         comb
          anda  ,s+
          andb  ,s+
          ldu   <$1A,y
@@ -1242,11 +1283,11 @@ L0A68    bsr   L0AD5
          leas  $04,s
          cmpb  #$DB
 L0A70    bne   L0A77
-L0A72    lbsr  L0C41
+L0A72    lbsr  GETFD
          bcc   L0A82
-L0A77    coma  
-L0A78    rts   
-L0A79    lbsr  L0C41
+L0A77    coma
+L0A78    rts
+L0A79    lbsr  GETFD
          bcs   L0AD2
          puls  x,b,a
          std   $03,x
@@ -1256,8 +1297,8 @@ L0A82    ldu   $08,y
          ldd   $0F,y
          std   $09,u
          tfr   x,d
-         clrb  
-         inca  
+         clrb
+         inca
          leax  $05,x
          pshs  x,b,a
          bra   L0ABD
@@ -1271,26 +1312,26 @@ L0A97    ldd   -$02,x
          bsr   L0AD5
          bcs   L0AD2
          stx   $02,s
-         lbsr  L0C41
+         lbsr  GETFD
          bcs   L0AD2
          ldx   $02,s
-         clra  
-         clrb  
+         clra
+         clrb
          std   -$05,x
          sta   -$03,x
          std   -$02,x
-L0ABD    lbsr  L0C9B
+L0ABD    lbsr  PUTFD
          bcs   L0AD2
          ldx   $02,s
          leax  $05,x
          cmpx  ,s
          bcs   L0A97
-L0ACA    clra  
-         clrb  
+L0ACA    clra
+         clrb
          sta   <$19,y
          std   <$1A,y
 L0AD2    leas  $04,s
-         rts   
+         rts
 L0AD5    pshs  u,y,x,a
          ldx   <$1E,y
          ldd   $06,x
@@ -1306,19 +1347,19 @@ L0AEE    lsr   <$16,y
          ror   <$18,y
          lsr   <$1A,y
          ror   <$1B,y
-L0AFD    lsra  
-         rorb  
+L0AFD    lsra
+         rorb
          bcc   L0AEE
-         clrb  
+         clrb
          ldd   <$1A,y
          beq   L0B45
          ldd   <$16,y
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
          tfr   b,a
          ldb   #$DB
          cmpa  $04,x
@@ -1326,7 +1367,7 @@ L0AFD    lsra
          cmpa  <$1D,x
          bcc   L0B20
          sta   <$1D,x
-L0B20    inca  
+L0B20    inca
          sta   ,s
 L0B23    bsr   L0B47
          bcs   L0B23
@@ -1337,16 +1378,16 @@ L0B23    bsr   L0B47
          ldd   <$17,y
          anda  #$07
          ldy   <$1A,y
-         os9   F$DelBit 
+         os9   F$DelBit
          ldy   $03,s
          ldb   ,s
          bsr   L0B75
          bcc   L0B45
-L0B44    coma  
+L0B44    coma
 L0B45    puls  pc,u,y,x,a
 L0B47    lbsr  L0CD3
          bra   L0B51
-L0B4C    os9   F$IOQu   
+L0B4C    os9   F$IOQu
          bsr   L0B61
 L0B51    bcs   L0B60
          ldx   <$1E,y
@@ -1354,21 +1395,21 @@ L0B51    bcs   L0B60
          bne   L0B4C
          lda   $05,y
          sta   <$17,x
-L0B60    rts   
+L0B60    rts
 L0B61    ldu   D.Proc
          ldb   <$36,u
          beq   L0B6C
          cmpb  #$03
          bls   L0B73
-L0B6C    clra  
+L0B6C    clra
          lda   $0D,u
          bita  #$02
          beq   L0B74
-L0B73    coma  
-L0B74    rts   
-L0B75    clra  
+L0B73    coma
+L0B74    rts
+L0B75    clra
          tfr   d,x
-         clrb  
+         clrb
          lbsr  L0CA5
 L0B7C    pshs  cc
          ldx   <$1E,y
@@ -1377,9 +1418,9 @@ L0B7C    pshs  cc
          bne   L0B8B
          clr   <$17,x
 L0B8B    puls  pc,cc
-L0B8D    clra  
+L0B8D    clra
          tfr   d,x
-         clrb  
+         clrb
          lbra  L0C60
 L0B94    pshs  u,x
          bsr   L0BB6
@@ -1407,13 +1448,13 @@ L0BB6    ldd   $0C,y
          bhi   L0BD0
          cmpx  <$1A,y
          bcc   L0BD0
-L0BCE    clrb  
-         rts   
+L0BCE    clrb
+         rts
 L0BD0    pshs  u
-         bsr   L0C41
+         bsr   GETFD
          bcs   L0C2A
-         clra  
-         clrb  
+         clra
+         clrb
          std   <$13,y
          stb   <$15,y
          ldu   $08,y
@@ -1437,11 +1478,11 @@ L0C02    stb   <$13,y
          leax  $05,x
          cmpx  ,s
          bcs   L0BE9
-L0C0E    clra  
-         clrb  
+L0C0E    clra
+         clrb
          sta   <$19,y
          std   <$1A,y
-         comb  
+         comb
          ldb   #$D5
          bra   L0C2A
 L0C1B    ldd   ,x
@@ -1455,13 +1496,13 @@ L0C2A    leas  $02,s
 L0C2E    pshs  x,b
          lbsr  L0CD3
          bcs   L0C3D
-         clrb  
+         clrb
          ldx   #$0000
          bsr   L0C60
          bcc   L0C3F
 L0C3D    stb   ,s
 L0C3F    puls  pc,x,b
-L0C41    ldb   $0A,y
+GETFD    ldb   $0A,y
          bitb  #$04
          bne   L0BCE
          lbsr  L0CD3
@@ -1480,7 +1521,7 @@ L0C62    pshs  u,y,x,b,a
          ldu   $03,y
          ldu   $02,u
          bra   L0C6D
-L0C6A    os9   F$IOQu   
+L0C6A    os9   F$IOQu
 L0C6D    lda   $04,u
          bne   L0C6A
          lda   $05,y
@@ -1504,7 +1545,7 @@ L0C89    pshs  pc,x,b,a
          adca  #$00
          std   $04,s
          puls  pc,x,b,a
-L0C9B    ldb   <$34,y
+PUTFD    ldb   <$34,y
          ldx   <$35,y
          bra   L0CA5
 L0CA3    bsr   L0CBC
@@ -1516,9 +1557,9 @@ L0CA5    lda   #$06
          cmpd  $0E,x
 L0CB4    puls  x,b,a
          beq   L0C62
-         comb  
+         comb
          ldb   #$FB
-L0CBB    rts   
+L0CBB    rts
 L0CBC    ldd   $0C,y
          subd  <$14,y
          tfr   d,x
@@ -1528,8 +1569,8 @@ L0CBC    ldd   $0C,y
          addd  <$17,y
          exg   d,x
          adcb  <$16,y
-         rts   
-L0CD3    clrb  
+         rts
+L0CD3    clrb
          pshs  u,x
          ldb   $0A,y
          andb  #$06
