@@ -28,9 +28,9 @@ V.SECR    rmb   2
 V.DATR    rmb   2
 V.SIDE rmb 1 Current side; 0:=side 0
 V.DENS    rmb   1
-u00BA    rmb   1
+V.WPROT rmb 1 Software write protection
 V.FDSTA rmb 1  FD status
-u00BC  rmb 1
+V.EXTDMA rmb 1 Extended DMA address (lower nibble)
 V.TMP rmb 1 Temporary save byte
 V.EFLG rmb 1 Set "e" for head settle time
 V.BUF rmb 2 Local buffer addr
@@ -249,22 +249,66 @@ L0151    stb   $01,s
 
 WCR0 lda V.TMP,u
          beq   L016E
+ ifeq LEVEL-2
+         bsr DMAADDR Set DMA buffer address
+ else
          stx   [V.DMAADR,u]
+ endc
 L0160    lda   D.DMAReq Wait for other DMA to finish
          beq   L016C
          ldx   #1
          os9   F$Sleep
          bra   L0160
 
+ ifeq LEVEL-2
+*********************************************************
+*
+* Set the DMA extended address from logical address
+*
+* Input: (X)=logical address
+* Data: V.EXTDMA
+
+DMAADDR
+ pshs B
+ tfr X,D
+ anda #$F0
+ lsra Shift block number to lower nibble
+ lsra
+ lsra
+ ldy D.SysDAT Get system DAT
+ ldd A,Y get block number
+ clra
+ lsrb set the DMA extended bits
+ rora
+ lsrb
+ rora
+ lsrb
+ rora
+ lsrb
+ rora
+ stb V.EXTDMA,u
+ pshs A make copy of block number
+ pshs X
+ lda 0,S
+ anda #$0F
+ ora 2,S load the high nibble of block
+ sta 0,S
+ puls X
+ stx [V.DMAADR,u] Set buffer address
+ puls A
+ puls B
+ rts
+ endc
+
 L016C    inc   D.DMAReq
 L016E    lda   CURDRV,u
          bmi   L017E
-         tst   <$22,y
+         tst   PD.STP,y
          bpl   L017E
          tstb
          bmi   L017E
          ora   #$C0
-L017E    tst   >u00BA,u
+L017E    tst   V.WPROT,u
          bne   L0186
          ora   #$10  Write enable
 L0186    sta   [>V.SEL,u]
@@ -273,6 +317,10 @@ L0186    sta   [>V.SEL,u]
          beq   L0196 .. no
          ora   #DMA.SD1   select side 1
 L0196    ora   #DMA.INT   Enable interrupts
+ ifeq LEVEL-2
+* LEVEL2 Or in the extended bank address here
+ ora V.EXTDMA,u
+ endc
          sta   [V.DMACTL,u]
          tst   V.TMP,u
          beq   L01B2
@@ -290,7 +338,7 @@ L01BA    ldx   #$0032
          lda   V.WAKE,u
          bne   L01BA
          lda   >V.FDSTA,u
-         tst   <$22,y
+         tst   PD.STP,y
          bpl   L01E2
          tstb
          bmi   L01E2
