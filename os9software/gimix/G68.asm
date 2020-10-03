@@ -247,18 +247,24 @@ L0151    stb   $01,s
          comb
          puls  pc,x,b,a
 
+****************************************************************
+*
+*
+* Write Command Register
+*
+*
 WCR0 lda V.TMP,u
-         beq   L016E
+ beq WCR
  ifeq LEVEL-2
-         bsr DMAADDR Set DMA buffer address
+ bsr DMAADDR Set DMA buffer address
  else
-         stx   [V.DMAADR,u]
+ stx [V.DMAADR,u] set the DMA address
  endc
-L0160    lda   D.DMAReq Wait for other DMA to finish
-         beq   L016C
-         ldx   #1
-         os9   F$Sleep
-         bra   L0160
+WCR01 lda D.DMAReq is DMA free to use?
+ beq WCR02 ..yes; continue
+ ldx #1 sleep for a tick
+ os9 F$Sleep
+ bra WCR01
 
  ifeq LEVEL-2
 *********************************************************
@@ -275,8 +281,9 @@ DMAADDR
  lsra Shift block number to lower nibble
  lsra
  lsra
- ldy D.SysDAT Get system DAT
- ldd A,Y get block number
+ pshs X put X on stack for later manipulation
+ ldx D.SysDAT Get system DAT
+ ldd A,X get block number
  clra
  lsrb set the DMA extended bits
  rora
@@ -288,38 +295,37 @@ DMAADDR
  rora
  stb V.EXTDMA,u
  pshs A make copy of block number
- pshs X
- lda 0,S
+ lda 1,S load high byte of X
  anda #$0F
- ora 2,S load the high nibble of block
- sta 0,S
+ ora 0,S load the high nibble of block
+ sta 1,S
+ puls A
  puls X
  stx [V.DMAADR,u] Set buffer address
- puls A
  puls B
  rts
  endc
 
-L016C    inc   D.DMAReq
-L016E    lda   CURDRV,u
-         bmi   L017E
+WCR02 inc D.DMAReq reserve DMA
+
+WCR    lda   CURDRV,u
+         bmi   WCR10
          tst   PD.STP,y
-         bpl   L017E
+         bpl   WCR10
          tstb
-         bmi   L017E
+         bmi   WCR10
          ora   #$C0
-L017E    tst   V.WPROT,u
-         bne   L0186
+WCR10    tst   V.WPROT,u
+         bne   WCR20
          ora   #$10  Write enable
-L0186    sta   [>V.SEL,u]
-         lda   >V.TMP,u
-         tst   V.SIDE,u  Is it side 1?
-         beq   L0196 .. no
+WCR20    sta   [V.SEL,u]
+         lda   V.TMP,u
+         tst   V.SIDE,u is it side 1?
+         beq   WCR30 .. no
          ora   #DMA.SD1   select side 1
-L0196    ora   #DMA.INT   Enable interrupts
+WCR30    ora   #DMA.INT   Enable interrupts
  ifeq LEVEL-2
-* LEVEL2 Or in the extended bank address here
- ora V.EXTDMA,u
+ ora V.EXTDMA,U add in the extended bank address
  endc
          sta   [V.DMACTL,u]
          tst   V.TMP,u
@@ -328,16 +334,16 @@ L0196    ora   #DMA.INT   Enable interrupts
          clr   V.EFLG,u
          tst   V.SIDE,u
          beq   L01B2
-         orb   #$02
+         orb   #$02 set side 1
 L01B2    lda   V.BUSY,u
          sta   V.WAKE,u
-         stb   [>V.CMDR,u]
-L01BA    ldx   #$0032
+         stb   [V.CMDR,u]
+L01BA    ldx   #50 sleep 5 seconds
          os9   F$Sleep
-         tst   [>V.TRKR,u]
+         tst   [V.TRKR,u]
          lda   V.WAKE,u
          bne   L01BA
-         lda   >V.FDSTA,u
+         lda   V.FDSTA,u
          tst   PD.STP,y
          bpl   L01E2
          tstb
@@ -447,7 +453,7 @@ SELECT lda PD.DRV,Y Get drive number
          clra
          sta   V.TMP,u
          ldb   #$13
-         lbsr  L0196
+         lbsr  WCR30
 L0268    puls  a
          leax  <L0290,pcr
          ldb   PD.TYP,y

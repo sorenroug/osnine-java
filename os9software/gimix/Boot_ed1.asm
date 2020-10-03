@@ -33,7 +33,9 @@ V.DATR rmb 2 Data register ptr
 
 V.SIDE rmb 1
 V.DENS rmb 1
-u0010 rmb 3
+V.WPROT rmb 1 Software write protection
+V.FDSTA rmb 1  FD status
+V.EXTDMA rmb 1 Extended DMA address (lower nibble)
 V.8INCH rmb 1
 V.TMP rmb 1
 V.EFLG rmb 1 Set "e" for head settle time
@@ -222,7 +224,7 @@ PHYSIC lda #1 select drive 0
  bne PHYERR msb must be zero
  tfr X,D Logical sector (os-9)
  cmpd #0 Logical sector zero?
- beq PHYSC7 ..yes
+ beq PHYSC7 ..yes; skip conversion.
  cmpd V.TOT,u higher than max for disk?
  bcc PHYERR branch if so
  tst V.8INCH,u
@@ -233,13 +235,14 @@ PHYSIC lda #1 select drive 0
  clra
  addb P.T0S,pcr
  bra PHYSC7
-
+* 16 sectors
 PHYSC0 subb P.SCT,pcr
  sbca #0
  bcc PHYSC1
  clra
  addb P.SCT,pcr
  bra PHYSC7
+* Read track 0
 PHYSC1 stb V.TMP,u
  clrb
  pshs B Will be track number
@@ -247,6 +250,7 @@ PHYSC1 stb V.TMP,u
  lsrb SHIFT Side bit to carry
  ldb V.TMP,u
  bcc PHYSC4
+* Double sided read
 PHYSC2 com V.SIDE,U Switch sides
  bne PHYSC3 Skip track inc if side 1
  inc 0,S
@@ -293,13 +297,51 @@ Setrk9 clrb
 *
 * Write Command Register
 *
-WCR0 stx [V.DMAADR,u] Set buffer address
+* Level 2: Set the DMA extended address from logical address
+*
+* Input: (X)=logical address
+*        (B)=FDC command
+WCR0 equ *
+
+ ifeq LEVEL-2
+ pshs B
+ tfr X,D
+ anda #$F0
+ lsra Shift block number to lower nibble
+ lsra
+ lsra
+ ldy D.SysDAT Get system DAT
+ ldd A,Y get block number
+ clra
+ lsrb set the DMA extended bits
+ rora
+ lsrb
+ rora
+ lsrb
+ rora
+ lsrb
+ rora
+ stb V.EXTDMA,u
+ pshs A make copy of block number
+ pshs X
+ lda 0,S
+ anda #$0F
+ ora 2,S load the high nibble of block
+ sta 0,S
+ puls X
+ puls A,B
+ endc
+
+ stx [V.DMAADR,u] Set buffer address
  lda V.SELFLG,u
  tst V.8INCH,u
  beq WCR00
  ora #$C0 Select 8" drive
 WCR00 sta [V.SEL,u]
  lda V.TMP,u
+ ifeq LEVEL-2
+ ora V.EXTDMA,u add in the extended bank address
+ endc
  tst V.SIDE,u
  beq WCR01
  ora #$40 Select side one
