@@ -627,9 +627,9 @@ Getdd1 equ *
          sta   <u001C,u
  endc
  endc
-         stb   u000C,u
+         stb  V.Fmt-V.Wrtf,u
          ldd   $0B,y
-         std   u0004,u
+         std  V.T0stk-V.Wrtf,u
  endc
          ldy   -$03,y
          lda   ,y
@@ -638,7 +638,7 @@ Getdd1 equ *
 * Read Sector Routine
 *
 
-Rsect    clr   ,u
+Rsect    clr   V.Wrtf-V.Wrtf,u
          lda   #$88
          sta   V.Cmd-V.Wrtf,u
 
@@ -666,9 +666,9 @@ Xfr    lda   #$DB
 Xfr1    ldd   #$100
          std  V.Bytc-V.Wrtf,u
 Xfr2    ldd  V.Lsn-V.Wrtf,u
-         bne   L03A5
+         bne   Xfr20
 Xfr10    lbsr  Brstor
-L03A5    bsr   Select
+Xfr20    bsr   Select
          bcs   Xfr70
          clr   V.Track-V.Wrtf,u
          clr   V.Side-V.Wrtf,u
@@ -677,33 +677,43 @@ L03A5    bsr   Select
          bcs   Xfr40
          subd  V.T0stk-V.Wrtf,u
 Xfr30    inc   V.Track-V.Wrtf,u
+ ifne EXTFMT
          subd  V.Stk-V.Wrtf,u
          bcc   Xfr30
          addd  V.Stk-V.Wrtf,u
+ else
+ endc
+ ifne DBLSIDE
          lda   V.Fmt-V.Wrtf,u
          bita  #$01
          beq   Xfr40
          lsr   V.Track-V.Wrtf,u
          rol   V.Side-V.Wrtf,u
+ endc
+ ifne HLFSECT
 Xfr40    lda   V.Fmt-V.Wrtf,u
          bita  #$08
-         beq   L03D7
+         beq   Xfr90
          lslb
          decb
-         bra   L03DD
-L03D7    tst   <u001C,u
-         beq   L03DD
+         bra   Xfr95
+ endc
+Xfr90 equ *
+ ifne DDTRACK0
+         tst  V.DDTr0-V.Wrtf,u
+         beq   Xfr95
          incb
-L03DD    stb   <u0010,u
+ endc
+Xfr95    stb  V.Sector-V.Wrtf,u
 Xfr50    lbsr  Settrk
-         lda   <u0010,u
+         lda   V.Sector-V.Wrtf,u
 * Extend to check of sector reg once written
 * as recommended by Western Digital for the 2797
 * sta SECREG,Y set it in fdc
-         bsr   SetSect
-         lbsr  IssXfr
-         bcc   Xfr70
-         cmpb  #E$NotRdy Error: drive not ready
+         bsr   SetSect set sector number in FDC
+         lbsr  IssXfr Do Transfer
+         bcc   Xfr70 Skip If No Error
+         cmpb  #E$NotRdy not ready?
          orcc  #$01
          beq   Xfr70
          lsr   ,s
@@ -712,8 +722,11 @@ Xfr50    lbsr  Settrk
 Xfr70    leas  $01,s
          rts
 
+* Set the sector number in the WD2797
+* wait for 32usec, then check it
+* as recommended by Western Digital
 SetSect    sta   $02,y
-         ldb   #$0C
+         ldb   #12
 SetSect1 decb
          bne   SetSect1
          cmpa  $02,y
@@ -724,9 +737,9 @@ SetSect1 decb
 *
 
 Wsect    lda   #1
-         sta   ,u
+         sta   V.Wrtf-V.Wrtf,u
          lda   #$A8
-         sta   Drvbeg,u
+         sta   V.Cmd-V.Wrtf,u
          lbra  Xfr
 
 * Select Drive Routine
@@ -756,9 +769,9 @@ L0437    leax  -$01,x
          tst   V.Port,u
          bne   L0450
          ldb   #$03
-L0444    ldx   #$61A8
-L0447    leax  -$01,x
-         bne   L0447
+L0444    ldx   #25000 100ms
+Sele8    leax  -1,x
+         bne   Sele8
          decb
          bne   L0444
          bra   L0456
@@ -789,7 +802,7 @@ Sele5    lda   ,y
          clrb
          bita  #$80
          beq   Sele4
-         clr   u0002,u
+         clr   V.Active-V.Wrtf,u
          comb
          ldb   #$F6
 Sele4    rts
@@ -797,11 +810,13 @@ Sele4    rts
 *
 * Seek routine
 *
-Settrk    lda   <u0011,u
-         clr   <u0019,u
-         tst   u000D,u
-         beq   Sett1
-         lsla
+Settrk lda V.CrTrk-V.Wrtf,u get current track
+ clr V.NewTrk-V.Wrtf,u clear 'new track'
+ ifne DBLTRACK
+ tst V.TwoStp-V.Wrtf,u double stepping?
+ beq Sett1 ..no
+ lsla double the track
+ endc
 Sett1    sta   $01,y
          lda   <u0017,u
          ldb   u000C,u
@@ -826,8 +841,8 @@ L04CA    ldb   #$04
          stb   <u0019,u
          sta   $03,y
          lda   #$18
-L04D3    ora   <u0016,u
-         lbsr  L056E
+Sett3    ora   <u0016,u
+         lbsr  Outcom
          bsr   Sett8
          ldb   u0003,u
          andb  #$90
@@ -841,38 +856,51 @@ Sett8    lda   <u0011,u
 * Restore Drive Routine
 *
 *
-* INPUT: (Y)= POINTER TO PATH DECSRIPTOR
+*   INPUT: (Y)= POINTER TO PATH DECSRIPTOR
+*          (U)= POINTER TO GLOBAL STORAGE
+*
+*   IF ERROR: (B)= ERROR CODE & CARRY IS SET
+*
+ ifne STEPIN
+* NOTE:  WE ARE STEPPING IN SEVERAL TRACKS BEFORE
+*        ISSUINT THE RESTORE AS SUGGESTED IN THE
+*        FD 1973 APPLICATION NOTES.
+ endc
 
-Brstor    lbsr  Select
-         clr   <u0011,u
+Brstor    lbsr  SELECT
+         clr  V.CrTrk-V.Wrtf,u
          ldb   #$05
 RESTR2    lda   #$48
-         ora   <u0016,u
+         ora  V.Step-V.Wrtf,u
          pshs  b
-         bsr   L056E
+         bsr   Outcom
          puls  b
          decb
          bne   RESTR2
          lda   #$08
-         bra   L04D3
+         bra   Sett3
+
+* Execute Transfer Requiring DMA
+*
+
 IssXfr    clrb
          pshs  cc
-         ldb   Drvbeg,u
-         tst   <u001A,u
+         ldb   V.Cmd-V.Wrtf,u
+         tst   V.Side-V.Wrtf,u
          beq   L0510
-         orb   #$02
+         orb   #2
          stb   Drvbeg,u
 L0510    orcc #IntMasks
-         ldx   <u0035
+         ldx   D.DMport
          beq   IssXfr2
-         ldx   #$0001
+         ldx   #1
          os9   F$Sleep
          bra   L0510
 IssXfr2    leax  $03,y
-         stx   <u0035
-         ldx   <u0012,u
-         stx   <u0037
-         lda   ,u
+         stx   D.DMPort
+         ldx   V.Buff-V.Wrtf,u
+         stx   D.DMMem
+         lda   V.Wrtf-V.Wrtf,u
          sta   <u0039
 
 **********
@@ -885,38 +913,42 @@ IssXfr2    leax  $03,y
 
 **********
 
-         tst   <u001C,u
-         bne   L054B
-         ldb   u000C,u
-         tst   <u0017,u
+ ifne EXTFMT
+ ifne DDTRACK0
+         tst   V.DDTr0-V.Wrtf,u
+         bne   IssXfr4
+ endc
+         ldb   V.Fmt-V.Wrtf,u
+         tst   V.Track-V.Wrtf,u
          bne   L0547
-         tst   <u001A,u
-         beq   L0556
+         tst  V.Side-V.Wrtf,u
+         beq   IssXfr5
 L0547    bitb  #$02
-         beq   L0556
-L054B    lda   <u0018,u
+         beq   IssXfr5
+ endc
+IssXfr4    lda   V.Select-V.Wrtf,u
          anda  #$BF
          sta   >$FC24
-         sta   <u0018,u
-L0556    lda   Drvbeg,u
-         ora   <u0019,u
-         bsr   L056E
+         sta   V.Select-V.Wrtf,u
+IssXfr5    lda   V.Cmd-V.Wrtf,u
+         ora   V.NewTrk-V.Wrtf,u
+         bsr   Outcom
          bsr   ChkErr
          ldx   #$0000
          stx   <u0035
-         bcc   L056C
+         bcc   IssXfr3
          lda   ,s
          ora   #$01
          sta   ,s
-L056C    puls  pc,cc
+IssXfr3    puls  pc,cc
 
-L056E    pshs  cc
+Outcom    pshs  cc
          orcc #IntMasks
          ldb   #$FA
-         stb   u000E,u
-         stb   u0002,u
+         stb  V.Timer-V.Wrtf,u
+         stb  V.Active-V.Wrtf,u
          sta   ,y
-         tst   V.Port,u
+         tst   V.Wait-V.Wrtf,u
          bne   Fdccmd
 
 IssFdc    sync
@@ -924,47 +956,49 @@ IssFdc    sync
          bita  #$80
          beq   IssFdc
          lda   ,y
-         sta   u0003,u
+         sta   V.Status-V.Wrtf,u
          bra   L05B4
 
 * Start FDC and Wait by Sleeping
 Fdccmd    ldx   #$00C8
-         lda   >-V.Cdrv,u
-         sta   >-u00A6,u
+         lda   V.Busy-V.Wrtf,u
+         sta   V.Wake-V.Wrtf,u
 L0597    os9   F$Sleep
          orcc #IntMasks
-         tst   >-u00A6,u
+         tst   V.Wake-V.Wrtf,u
          beq   L05B7
          leax  ,x
          bne   L0597
-         clr   >-u00A6,u
+         clr   V.Wake-V.Wrtf,u
          lda   #$80
-         sta   u0003,u
+         sta   V.Status-V.Wrtf,u
          lda   #$D0
          sta   ,y
-         bsr   L05D7
+         bsr   STCK3
 L05B4    lda   >INTPIA
-L05B7    clr   u0002,u
+L05B7    clr   V.Active-V.Wrtf,u
          puls  pc,cc
-
-ChkErr    ldb   u0003,u
+*
+* Translate error status
+*
+ChkErr    ldb   V.Status-V.Wrtf,u
 
 STCK    clra
          andb  #$FC
-         beq   L05D7
-L05C2    lslb
+         beq   STCK3
+SCK1    lslb
          inca
-         bcc   L05C2
+         bcc   SCK1
          deca
          leax  <ERTABLE,pcr
          ldb   a,x
          cmpb  #$F4
          bne   STCK2
-         tst   ,u
+         tst   V.Wrtf-V.Wrtf,u
          beq   STCK2
          ldb   #$F5
 STCK2    coma
-L05D7    rts
+STCK3    rts
 
 ERTABLE fcb E$NotRdy,E$WP,E$Read,E$Seek
  fcb E$Read,E$Read

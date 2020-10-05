@@ -310,7 +310,7 @@ ATTA02 clr ,-S Clear out temporary storage
  ldx D.Proc get process ptr
  stx S.Proc,s save it
  leay P$DATImg,x get process dat image ptr
- ldx D.SysPRC get syste, process ptr
+ ldx D.SysPRC get system process ptr
  stx D.Proc make current for link
  endc
  ldx R$X,u Get device name ptr
@@ -546,74 +546,74 @@ DETACH ldu R$U,u Get device tbl addr
 * storage, and if none are found, execute TERMINATE routine.
 
 * (U)=device table ptr to delete
-         ldx   D.Init
-         ldb   DevCnt,x      get device count
-         pshs  u,b
-         ldx   $02,u
-         clr   $02,u
-         clr   $03,u
-         ldy   D.DevTbl
-DETACH10    cmpx  $02,y
-         beq   DETACH20
-         leay  DEVSIZ,y
-         decb
-         bne   DETACH10
+ ldx D.Init from configuration module
+ ldb DevCnt,x get number of device tbl entries
+ pshs U,B
+ ldx V$STAT,u Static is unique per incarnation
+ clr V$STAT,u mar device as terminating
+ clr V$STAT+1,u
+ ldy D.DevTbl beginning of device table
+DETACH10 cmpx V$STAT,Y The one we're deleting?
+ beq DETACH20 ..yes; don't executte termination routine
+ leay DEVSIZ,y Skip to next devtbl entry
+ decb any left
+ bne DETACH10 ..yes; keep looking
 
 * Terminate Physical Device
 *   (X)-Static Storage Addr
-         ldy   D.Proc
-         ldb P$ID,y
-         stb   $08,u
-         ldy   $04,u
-         ldu   ,u
-         exg   x,u
-         ldd   $09,x
-         leax  d,x
-         pshs  u
-         jsr   $0F,x
-         puls  u
-         ldx 1,s
-         ldx V$Driv,x
-         ldd M$Mem,x
-         addd  #$FF
-         clrb
-         os9   F$SRtMem
+ ldy D.Proc
+ ldb P$ID,y get terminating Process ID
+ stb V$USRS,u save it in USE COUNT for Attach
+ ldy V$DESC,u (Y) = Descriptor ptr
+ ldu V$DRIV,u Get device driver module addr
+ exg x,u (u)=static storage addr
+ ldd M$EXEC,x Get execution entry offset
+ leax d,x Make absolute
+ pshs u save static storage addr
+ jsr D$TERM,x Execute termination routine
+ puls u static storage
+ ldx 1,s Device Tbl entry of deleted device
+ ldx V$Driv,x Device Driver Ptr
+ ldd M$Mem,x (D)=Memory requirement
+ addd #$FF
+ clrb Round up to nearest page
+ os9 F$SRtMem return Static Storage
 
 * Determine if this was the only active I/O port in it's
 * memory block, and release the block if so
-         ldx 1,s
-         ldx V$DESC,x
+ ldx 1,s Device Tbl Ptr
+ ldx V$DESC,x (X)=Descriptor module
  ifgt LEVEL-1
- ldd M$PORT,x
+ ldd M$PORT,X
  beq DETACH20 ..No port
-         lbsr  PortBlk
-         beq   DETACH20
+ lbsr PortBlk
+ beq DETACH20 ..Zero means UNDECODED I/O Block
  tfr D,X
  ldb 0,s Size of DevTbl
  pshs x,b
  ldu D.DevTbl
-UnMap10    cmpu 4,s
-         beq   UnMap20
-         ldx V$DESC,u
-         beq   UnMap20
-         ldd M$PORT,x
-         beq   UnMap20
-         lbsr  PortBlk
-         cmpd 1,s
-         beq UnMap90
-UnMap20 leau DevSiz,u
-         dec 0,s
-         bne UnMap10
-         ldx D.SysPRC
-         ldu D.SysDAT
-         ldy #DAT.BlCt number of DAT Blocks per image
-UnMap25 ldd ,u++
+UnMap10 cmpu 4,s is this the entry being deleted?
+ beq UnMap20 ..Yes; skip it
+ ldx V$DESC,u else get Descriptor addr
+ beq UnMap20 ..Unused entry; skip it
+ ldd M$PORT,x
+ beq UnMap20 ..No port
+ lbsr PortBlk (D)=Block addr of suspect port
+ cmpd 1,s same as block being deleted?
+ beq UnMap90 ..Yes; don't release block
+UnMap20 leau DevSiz,u skip to next Tbl entry
+ dec 0,s entire table searched?
+ bne UnMap10 ..No; repeat
+ ldx D.SysPRC Systen process ptr
+ ldu D.SysDAT system DAT image ptr
+ ldy #DAT.BlCt number of DAT Blocks per image
+UnMap25 ldd ,u++ get entry
  ifne DAT.WrEn+DAT.WrPr
  endc
-         cmpd 1,s
-         beq   UnMap30
-         leay  -1,y
-         bne   UnMap25
+ cmpd 1,s this the block?
+ beq UnMap30 branch if so
+ leay -1,y count block
+ bne UnMap25 branch if more
 * that's odd, block not found ???
  bra UnMap90
 UnMap30 ldd #DAT.Free
@@ -624,11 +624,11 @@ UnMap30 ldd #DAT.Free
 UnMap90 leas 3,S discard scratch
  endc
 
-DETACH20    puls  u,b
-         ldx V$DESC,u
-         clr V$DESC,u
-         clr V$DESC+1,u
-         clr V$USRS,u
+DETACH20 puls u,b entry count, desc tbl entry
+ ldx V$DESC,u
+ clr V$DESC,u Mark Dev Tbl Entry FREE
+ clr V$DESC+1,u
+ clr V$USRS,u
 
 DETACH80
  ifgt LEVEL-1
@@ -650,31 +650,31 @@ DETACH80
  std D.Proc restore it
  endc
 DETACH90 lbsr UnQueue Restart any process in I/O queue
- clrb
+ clrb return without error
  rts
 
 **********
 * Dupe
 *   Process Path Duplication Request
 *
-UDUPE    bsr   FNDPTH
-         bcs   SDUP90
-         pshs  x,a
-         lda R$A,u
-         lda   a,x
-         bsr   SDUP10
-         bcs   SDUPER
-         puls  x,b
-         stb R$A,u
-         sta   b,x
-         rts
+UDUPE bsr FNDPTH Find available path
+ bcs SDUP90 ..path not found; return error
+ pshs x,a Save path#, path tbl ptr
+ lda R$A,u Get caller's path
+ lda a,x Make system path#
+ bsr SDUP10 incr pd use count
+ bcs SDUPER Error; return it
+ puls x,b
+ stb R$A,u Return new path# to user
+ sta b,x Duplicate path number
+ rts
 
-SDUPER    puls  pc,x,a
+SDUPER puls pc,x,a Return error
 
-SDUPE    lda R$A,u
-SDUP10    lbsr  FPATH
-         bcs   SDUP90
-         inc PD.CNT,y
+SDUPE lda R$A,u Get path number
+SDUP10 lbsr FPATH find (y)=path #
+ bcs SDUP90 ..error; return it
+ inc PD.CNT,y Increment pd use count
 SDUP90 rts
 
  ttl I/O Name function calls
@@ -683,17 +683,23 @@ SDUP90 rts
 * Fndpth
 *   Find Unused Entry in User'S Local Path Tbl
 *
+* Passed: None
+* Returns: (A)=User Path# found
+*          (X)=User Path Tbl Ptr
+*         B,CC=Set if Error
+* Destroys: None
+*
 FNDPTH ldx D.Proc
-         leax P$PATH,x
-         clra
-FNDPD1    tst   a,x
-         beq   FNDP90
-         inca
-         cmpa  #NumPaths
-         bcs   FNDPD1
-         comb
-         ldb   #E$PthFul
-         rts
+ leax P$PATH,x User's path table ptr
+ clra
+FNDPD1 tst A,X Available path?
+ beq FNDP90 ..yes; return carry clear
+ inca
+ cmpa #NumPaths End of user's path table?
+ bcs FNDPD1 ..no; keep looking
+ comb RETURN Carry set
+ ldb #E$PthFul Error: path table full
+ rts
 FNDP90 andcc #$FF-CARRY Return carry clear
  rts
 
@@ -701,108 +707,118 @@ FNDP90 andcc #$FF-CARRY Return carry clear
 * Open
 *   Process Open/Create Request
 *
+* Passed: (R$A)=Mode: R/W/Exec
+*         (R$X)=Pathname Ptr (Preceeding Spaces Ok)
+*
 UCREAT equ *
-UOPEN bsr   FNDPTH
-         bcs   UOPEN9
-         pshs  u,x,a
-         bsr   SOPEN
-         puls  u,x,a
-         bcs   UOPEN9
-         ldb   R$A,u
-         stb   a,x
-         sta   R$A,u
-UOPEN9    rts
+UOPEN bsr FNDPTH Find available local path#
+ bcs UOPEN9 ..return error if none available
+ pshs u,x,a User path#, path tbl ptr, stack
+ bsr SOPEN Execute system open/create
+ puls u,x,a
+ bcs UOPEN9 Error; return error code
+ ldb R$A,u Get system path number
+ stb a,x Store in user's path table
+ sta R$A,u Return user path#
+UOPEN9 rts
 
 SCREAT equ *
-SOPEN pshs B
-         ldb R$A,u
-         bsr   PDINIT
-         bcs   SOPENX
-         puls  b
-         lbsr  FMEXEC
-         bcs   SMDIR2
-         lda PD.PD,y
-         sta R$A,u
-         rts
+SOPEN pshs B Save function code
+ ldb R$A,u Get r/w/exec mode
+ bsr PDINIT Allocate & initialize path desc
+ bcs SOPENX ..return if error
+ puls b Restore function code
+ lbsr FMEXEC Execute file mgr's function
+ bcs SMDIR2 ..error; return path
+ lda PD.PD,y Return path number to user
+ sta R$A,u
+ rts
 
-SOPENX    puls  pc,a
+SOPENX puls pc,a Return error
 
 **********
 * Makdir
 *   Process Makdir Request
 *
 UMDIR equ *
-SMDIR  pshs  b
-         ldb   #DIR.+WRITE.
-SMDIR1    bsr   PDINIT
-         bcs   SOPENX
-         puls  b
-         lbsr  FMEXEC
+SMDIR pshs B Save function code
+ ldb #DIR.+WRITE. Mode=write new dir
+SMDIR1 bsr PDINIT Initialize path descriptor
+ bcs SOPENX ..return if error
+ puls B
+ lbsr FMEXEC Execute file mgr's routine
 
-SMDIR2    pshs  b,cc
-         ldu PD.DEV,y
-         os9   I$Detach
-         lda PD.PD,y
-         ldx   D.PthDBT
-         os9   F$Ret64
-         puls  pc,b,cc
+SMDIR2 pshs b,cc Save error status, error code
+ ldu PD.DEV,y
+ os9 I$Detach Detach I/O device
+ lda PD.PD,y
+ ldx D.PthDBT
+ os9 F$Ret64 Return path descriptor
+ puls pc,b,cc return error status
 
 **********
 * Cdir
 *   Process Change Directory Request
 *
 UCDIR equ *
-SCDIR  pshs  b
-         ldb  R$A,u
-         orb   #DIR.
-         bsr   PDINIT
-         bcs   SOPENX
-         puls  b
-         lbsr  FMEXEC
-         bcs   SMDIR2
+SCDIR pshs B Save function code
+ ldb R$A,u Get caller's mode
+ orb #DIR. Must be directory file
+ bsr PDINIT Allocate/initialize path descriptor
+ bcs SOPENX ..return if error
+ puls B Restore function code
+ lbsr FMEXEC Execute file mgr's routine
+ bcs SMDIR2 ..error; detach device, return pd
 
-         ldu   D.Proc
-         ldb PD.MOD,y
-         bitb  #PREAD.+PWRIT.+READ.+WRITE.
-         beq   SCDIR2
-         ldx PD.DEV,y
-         stx P$DIO,u
-         inc V$USRS,x
-         bne   SCDIR2
-         dec V$USRS,x
+ ldu D.Proc
+ ldb PD.MOD,y Check caller's mode
+ bitb #PREAD.+PWRIT.+READ.+WRITE.
+ beq SCDIR2 ..no; don't update r/w default
+ ldx PD.DEV,y
+ stx P$DIO,u Setup new default
+ inc V$USRS,x
+ bne SCDIR2 branch if no overflow
+ dec V$USRS,x keep high count
 
-SCDIR2 bitb  #PEXEC.+EXEC.
-         beq   SCDIR5
-         ldx PD.DEV,y
-         stx P$DIO+6,u
-         inc V$USRS,x
-         bne   SCDIR5
-         dec V$USRS,x
+SCDIR2 bitb #PEXEC.+EXEC. Execute mode?
+ beq SCDIR5 ..no; dont update exec default
+ ldx PD.DEV,y
+ stx P$DIO+6,u
+ inc V$USRS,x
+ bne SCDIR5 branch if no overflow
+ dec V$USRS,x keep high count
 
-SCDIR5    clrb
-         bra   SMDIR2
+SCDIR5 clrb CLEAR Error status
+ bra SMDIR2 Detach device, release pd
 
 **********
 * Delet
 *   Process Delete Request
 *
 UDELET equ *
-SDELET  pshs  b
-         ldb   #$02
-         bra   SMDIR1
+SDELET pshs B Save function code
+ ldb #WRITE. Default write mode
+ bra SMDIR1
 
 **********
 * DeletX
 *  delete from specified directory
 *
 UDELETX equ *
-SDELETX ldb #I$Delete
-         pshs  B
-         ldb   R$A,u
-         bra   SMDIR1
+SDELETX ldb #I$Delete make a delete call
+ pshs B save function code
+ ldb R$A,u get deletion mode
+ bra SMDIR1
+
 
 **********
 * Pdinit
+*   Allocate And Initialize Path Descriptor
+*
+* Passed: (B)=Mode (R/W/Exec)
+*         (U)=User Stack
+* Returns: (Y)=Pd
+*         B,CC=Set if Error
 *
 PDINIT
  ifeq LEVEL-1
@@ -812,12 +828,12 @@ PDINIT
  pshs u,x save process & registers ptr
  endc
  ldx D.PthDBT Get addr of path descr block tbl
-         os9   F$All64
-         bcs   PDIN90
-         inc PD.CNT,y
-         stb PD.MOD,y
+ os9 F$All64 Allocate pd storage
+ bcs PDIN90 Error - memory full
+ inc PD.CNT,y
+ stb PD.MOD,y Save mode
  ifeq LEVEL-1
-PDIN10    lda   ,x+
+PDIN10 lda ,x+
  else
  ldx D.Proc get process ptr
  ldb P$Task,x get process task number
@@ -827,45 +843,45 @@ PDIN10 os9 F$LDABX get next character
  endc
  cmpa #$20 Skip spaces
  beq PDIN10
-         leax  -1,x
-         stx R$X,u
-         ldb PD.MOD,y
-         cmpa  #PDELIM
-         beq   PDIN40
-         ldx   D.Proc
-         bitb  #$24
-         beq   PDIN20
-         ldx P$DIO+6,x
-         bra   PDIN30
-PDIN20    ldx P$DIO,x
-PDIN30    beq   ERRBPN
+ leax -1,x Back up to non-space character
+ stx R$X,u Save updated pathname ptr
+ ldb PD.MOD,y get mode
+ cmpa #PDELIM Path delimiter?
+ beq PDIN40 ..yes; don't use default name
+ ldx D.Proc Get process descriptor addr
+ bitb #PEXEC.+EXEC. ..execute mode?
+ beq PDIN20 ..no
+ ldx P$DIO+6,x Default execution directory
+ bra PDIN30
+PDIN20 ldx P$DIO,x Default data directory
+PDIN30 beq ERRBPN ..no default; bad path name
  ifgt LEVEL-1
  ldd D.SysPRC get system process ptr
  std D.Proc set current process ptr
  endc
  ldx V$DESC,x Device descriptor module ptr
-         ldd M$NAME,x
-         leax  d,x
-PDIN40    pshs  y
-         os9   F$PrsNam
-         puls  y
-         bcs   ERRBPN
-         lda   $01,y
-         os9   I$Attach
-         stu   $03,y
-         bcs   PDIN.ERR
-         ldx   $04,u
-         leax  <$11,x
-         ldb   ,x+
-         leau  <$20,y
-         cmpb  #$20
-         bls   PDIN60
-         ldb   #$1F
-PDIN50    lda   ,x+
-         sta   ,u+
-PDIN60    decb
-         bpl   PDIN50
-         clrb
+ ldd M$NAME,x Name offset
+ leax D,X Device descriptor name ptr
+PDIN40 pshs y Save path descriptor
+ os9 F$PrsNam Parse device name
+ puls y Restore path descriptor
+ bcs ERRBPN ..oops; bad path name
+ lda PD.MOD,y
+ os9 I$Attach
+ stu PD.DEV,y
+ bcs PDIN.ERR
+ ldx V$DESC,u
+ leax M$OPT,x
+ ldb ,x+
+ leau PD.OPT,y
+ cmpb #PDSIZE-PD.OPT
+ bls PDIN60
+ ldb #PDSIZE-PD.OPT-1 Move entire options field
+PDIN50 lda ,x+
+ sta ,u+ Copy the bytes
+PDIN60 decb
+ bpl PDIN50
+ clrb RETURN Carry clear
 PDIN90
  ifeq LEVEL-1
  puls PC,U
@@ -875,14 +891,14 @@ PDIN90
  rts
  endc
 
-ERRBPN    ldb   #E$BPNam
-PDIN.ERR    pshs  b
-         lda PD.PD,y
-         ldx   D.PthDBT
-         os9   F$Ret64
-         puls  b
-         coma
-         bra   PDIN90
+ERRBPN ldb #E$BPNam Error: bad path name
+PDIN.ERR pshs B
+ lda PD.PD,y
+ ldx D.PthDBT
+ os9 F$Ret64 return path
+ puls b
+ coma return carry set
+ bra PDIN90 return error
 
  ttl I/O Path function calls
  page
@@ -893,18 +909,20 @@ PDIN.ERR    pshs  b
 * Passed: (U)=User Regs, (R$A)=User Path#
 * Returns: (A)=System Path#
 *          (X)=User Path Table Ptr
+* Destroys: None
+* Error: (B)=Error Code, CC=Set
 *
-CHKPTH  lda R$A,u
-         cmpa  #NumPaths
-         bcc   CHKERR
-         ldx   D.Proc
-         leax P$PATH,x
-         andcc #$FF-CARRY
-         lda   a,x
-         bne   CHKP90
-CHKERR    comb
-         ldb   #E$BPNum
-CHKP90    rts
+CHKPTH lda R$A,u Get caller's path number
+ cmpa #NumPaths Illegal path number?
+ bcc CHKERR ..yes; return error
+ ldx D.Proc Get caller's process descriptor addr
+ leax P$PATH,x Get caller's local path table
+ andcc #$FF-CARRY return carry clear
+ lda a,x Get actual path number
+ bne CHKP90 ..exit if path is used
+CHKERR comb return Carry set
+ ldb #E$BPNum Error: bad path number
+CHKP90 rts
 
 
 **********
@@ -1306,25 +1324,34 @@ IOIRQ2 lda [Q$POLL,y] Poll device
 *
 *   Load Module service routine
 *
+* Input: U = registers ptr
+*            R$X,y = Path name string ptr
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: none
+*
+* Calls: Lmodule
+*
 Load pshs u save registers ptr
  ldx R$X,u get path name ptr
  bsr LModule load module
-         bcs   LoadXit
-         puls  y
-Load.A    pshs  y
-         stx   R$X,y       save updated pathlist
-         ldy   ,u          get DAT image pointer
-         ldx   $04,u       get offset within DAT image
-         ldd   #$0006
+         bcs   LoadXit branch if load error
+         puls  y retrieve registers ptr
+Load.A    pshs  y save registers ptr
+         stx   R$X,y return update ptr
+         ldy   MD$MPDAT,u get module DAT image ptr
+         ldx   MD$MPtr,u get module offset
+         ldd   #M$Type
          os9   F$LDDDXY
-         ldx   ,s
-         std   $01,x
-         leax  ,u
+         ldx   0,s
+         std  R$D,x
+         leax  0,u
          os9   F$ELink
          bcs   LoadXit
-         ldx   ,s
-         sty   $06,x
-         stu   $08,x
+         ldx   0,s
+         sty  R$Y,x
+         stu  R$U,x
 LoadXit    puls  pc,u
  page
 ************************************************************
@@ -1372,8 +1399,8 @@ stacked set 0
 
 
 LModule os9 F$AllPrc get process descriptor
-         bcc   LMod.1
-         rts
+ bcc LMod.1 branch if successful
+ rts
 LMod.1 leay 0,u copy process ptr
  ldu #0 clear directory entry ptr
  pshs u,y,x,b,a save registers
@@ -1527,6 +1554,10 @@ stacked set stacked+8
 *
 * Output: X = New module size in RAM
 *
+*   Data: ProcPtr(stacked), D.BlkMap, Totram(stacked)
+*
+*  Calls: None
+*
 GetModul pshs y,x,b,a save regs
  addd 2,s find new totmod size
  std 4,s save it for caller
@@ -1558,15 +1589,15 @@ GetModul pshs y,x,b,a save regs
  endc
  pshs b stack it
  exg b,a
-         subb  ,s+
-         lsla
-         ldu ProcPtr+stacked,s
-         leau P$DATImg,u
-         leau  a,u
-         clra
-         tfr   d,x
-         ldy   D.BlkMap
-         clra
+ subb ,s+ get delta blks
+ lsla adj for 2 byte entries
+ ldu ProcPtr+stacked,s get process ptr
+ leau P$DATImg,u make it ptr to DAT image
+ leau a,u make ptr to free space
+ clra
+ tfr d,x get count of blocks in X
+ ldy D.BlkMap get blk bits
+ clra init blk number
 TESTM set 0
  ifeq CPUTYPE-DRG128+TESTM
  ldb #DAT.GBlk start above graphics blocks
@@ -1575,22 +1606,22 @@ TESTM set 0
  clrb
  endc
 GetM.B tst ,y+ chk if blk free
-         beq   GetM.D bra if so
-GetM.C    addd  #1 update blk number
-         cmpy  D.BlkMap+2
-         bne   GetM.B
+ beq GetM.D bra if so
+GetM.C addd #1 update blk number
+ cmpy D.BlkMap+2 chk if end of map
+ bne GetM.B bra if not end
  ifeq CPUTYPE-DRG128+TESTM
  ldy D.BlkMap now try graphics blocks
  clra
-GetM.F pshs y
-         leay  BlkTrans,pcr
-         ldb   a,y
-         puls  y
-         tst   b,y
-         beq   GetM.H
-GetM.G    inca
-         cmpa  #DAT.GBlk
-         bcs   GetM.F
+GetM.F pshs y save map ptr
+ leay BlkTrans,pcr point at translation table
+ ldb a,y get block number
+ puls y retrieve map ptr
+ tst b,y is block free?
+ beq GetM.H ..yes; claim it
+GetM.G inca bump counter
+ cmpa #DAT.GBlk any blocks left?
+ bcs GetM.F ..yes
  endc
 GetM.Err    comb
  ldb #E$MemFul
@@ -1689,23 +1720,23 @@ BlkTrans fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
 * message tables can be left on disk to save memory, or
 * loaded into memory for speed.
 *
-PrtBufSz equ 80
+PrtBufSz equ 80 line buffer size
  org 0
-PrtPath rmb 1
-PrtNum rmb 1
-PrtProc rmb 2
-PrtMod rmb 2
-PrtTbl rmb 2
-PrtEPath rmb 1
-PrtPFlag rmb 1
-PrtFlag rmb 1
-PrtBuf rmb PrtBufSz
+PrtPath rmb 1 error output path number
+PrtNum rmb 1 error number
+PrtProc rmb 2 process descriptor ptr
+PrtMod rmb 2 error messages module ptr
+PrtTbl rmb 2 error messages table ptr
+PrtEPath rmb 1 error messages path number
+PrtPFlag rmb 1 Path in use flag
+PrtFlag rmb 1 user/system path flag
+PrtBuf rmb PrtBufSz reserve line buffer
 PrtMem equ .
 
-PrtErr ldb   R$B,u
+PrtErr ldb R$B,u get error number
          beq   PrtErr90
          ldx   D.Proc
-         lda   <P$PATH+2,x  get stderr path
+         lda P$PATH+2,x  get stderr path
          beq   PrtErr90  return if not there
          pshs  u
          leas  -PrtMem,s
@@ -1718,7 +1749,7 @@ PrtErr ldb   R$B,u
          clr   $0A,u
          ldx   $02,u
 
-PrtErr10    leax  P$ErrNam,x
+PrtErr10 leax P$ErrNam,x
          clr   $09,u
          pshs  u,x
          clra

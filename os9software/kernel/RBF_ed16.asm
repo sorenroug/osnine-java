@@ -761,6 +761,7 @@ ReadIERR leas 2,S return scratch
  ifeq RCD.LOCK-included
  bra Read95
  else
+ rts
  endc
 
  ifeq LEVEL-1
@@ -891,7 +892,7 @@ RBRW35 ldd S.BytCnt+2,S get requested
 WritLine pshs y Save PD
  clrb clear Carry
  ldy R$Y,U get maximum
- beq   WritLn20 ..None; release current seg
+ beq WritLn20 ..None; release current seg
 
  ifeq LEVEL-1
  ldx R$X,u Get address of buffer to write to
@@ -1969,6 +1970,12 @@ Conflc85 comb a conflict
 Conflc90 puls PC,u,y,D return
 
  else
+Insert    clra
+         clrb
+         std   $0B,y
+         std   $0D,y
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
 Remove rts
  endc
 

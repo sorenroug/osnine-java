@@ -26,8 +26,8 @@ SCFEnt    equ   *
          lbra  ReadLn
          lbra  WriteLn
          lbra  GetStat
-         lbra  PutStat
-         lbra  Term
+         lbra  SCPstat
+         lbra  SCClose
 
 * Open/Create entry
 Open
@@ -50,7 +50,7 @@ L0054    sty   $04,u
          bcs   L00D0
          stu   $08,y
          clrb
-         bsr   L0086
+         bsr   JAMMER
 
 * cute message:
 * "by K.Kaplan, L.Crane, R.Doggett"
@@ -59,16 +59,16 @@ L0054    sty   $04,u
          fcb   $72,$7C,$6A,$2B,$08,$00,$02,$11,$00,$79
 
 * put cute message into our newly allocated PD buffer
-L0086    puls  x
+JAMMER    puls  x
          clra
 L0089    eora  ,x+
          sta   ,u+
          decb
          cmpa  #$0D
          bne   L0089
-L0092    sta   ,u+
+Open1    sta   ,u+
          decb
-         bne   L0092
+         bne   Open1
          ldu   $03,y
          beq   MakDir
          ldx   $02,u
@@ -108,7 +108,7 @@ MakDir    comb
          ldb   #E$BPNam
 L00D0    rts
 
-Term    pshs  cc
+SCClose    pshs  cc
          orcc  #$50
          ldx   PD.DEV,y
          bsr   L00F6
@@ -145,7 +145,7 @@ L010C    cmpb  a,x
          bcs   L010C
          pshs  y
          ldd   #$1B0C
-         bsr   L014E
+         bsr   SCGST1
          puls  y
          ldx   D.Proc
          lda   $01,x
@@ -170,13 +170,14 @@ L013E    puls  pc,y,x,b,a
 GetStat  ldx   PD.RGS,y
          lda   R$B,x
          cmpa  #$00
-         beq   L018D
+         beq   SCRETN
 * Special for FM-11
          cmpa  #$25
          beq   L018E
 *
          ldb   #D$GSTA $09
-L014E    pshs  a
+
+SCGST1    pshs  a
          clra
          ldx   $03,y
          ldu   $02,x
@@ -186,7 +187,7 @@ L014E    pshs  a
          puls  a
          jmp   0,x
 
-PutStat    lbsr  L04B1
+SCPstat    lbsr  SCALOC
          bsr   L016B
          pshs  b,cc
          lbsr  L0453
@@ -197,7 +198,7 @@ L016B    lda   R$B,u
          cmpa  #$25
          beq   L01BC
          cmpa  #SS.Opt   $00
-         bne   L014E
+         bne   SCGST1
          pshs  y
          ldx   D.Proc
          lda   $06,x
@@ -207,7 +208,7 @@ L016B    lda   R$B,u
          ldy   #$001A
          os9   F$Move
          puls  y
-L018D    rts
+SCRETN    rts
 
 L018E    ldb   $07,u
          beq   L01B7
@@ -303,7 +304,7 @@ L0245    puls  u
 L025A    puls  pc,u,y,a
 
 
-Read    lbsr  L04B1
+Read    lbsr  SCALOC
          bcs   L02B6
          inc   $0C,y
          ldx   $06,u
@@ -348,7 +349,7 @@ L02B3    lbra  L0453
 L02B6    rts
 
 
-ReadLn    lbsr  L04B1
+ReadLn    lbsr  SCALOC
          bcs   L02B6
          ldx   $06,u
          beq   L02AC
@@ -610,7 +611,7 @@ L04AC    puls  cc
          puls  pc,x,a
 
 * Wait for device 
-L04B1    ldx   D.Proc Get current process ID
+SCALOC    ldx   D.Proc Get current process ID
          lda   P$ID,x         Get process ID #
          clr   $0F,y
          ldx   $03,y
@@ -621,15 +622,15 @@ L04B1    ldx   D.Proc Get current process ID
          bsr   L0468
          bcs   L04CB
 L04C5    tst   $0F,y
-         bne   L04B1
+         bne   SCALOC
          clr   $0C,y
 L04CB    ldu   $06,y
          rts
 
-WriteLn    bsr   L04B1
+WriteLn    bsr   SCALOC
          bra   L04D6
 
-Write    bsr   L04B1
+Write    bsr   SCALOC
          inc   $0C,y
 L04D6    ldx   $06,u
          beq   L054F
