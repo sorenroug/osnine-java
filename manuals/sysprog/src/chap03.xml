@@ -619,7 +619,7 @@ choice where in your block it is mapped, but the system call returns the
 logical address where the blocks were inserted. Note that there must be
 sufficient unused space in the process' map. For example, suppose the
 I/O block in your system is located at extended addresses $FD000-$FEFFF
-(blocks $FD and $FE). The following system Call would map them to your
+(blocks $FD and $FE). The following system call would map them to your
 address space:
 </para>
       <programlisting>

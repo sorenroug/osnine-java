@@ -101,7 +101,7 @@ Example which copies all files on <quote>d2</quote> to <quote>d1</quote>:
 chd /d2                          <lineannotation>(select <quote>from</quote> directory)</lineannotation>
 dsave /d2 &gt;/d0/makecopy       <lineannotation>(make procedure file <quote>makecopy</quote>)</lineannotation>
 chd /d1                          <lineannotation>(select <quote>to</quote> directory)</lineannotation>
-/d0/makcopy                      <lineannotation>(run procedure file)</lineannotation>
+/d0/makecopy                      <lineannotation>(run procedure file)</lineannotation>
 
 chd /d0/MYFILES/STUFF
 dsave -is32 /d0 /d1/BACKUP/STUFF &gt;saver

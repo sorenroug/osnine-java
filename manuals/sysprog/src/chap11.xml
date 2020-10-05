@@ -2161,7 +2161,7 @@ time interval if a signal is received, therefore. sleeping indefinately
 is a good way to wait for a signal or interrupt without wasting CPU time.
 </para>
       <para>
-The duration of a <quote>tick</quote> is system independent but is usually 100
+The duration of a <quote>tick</quote> is system dependent but is usually 100
 milliseconds on Level I (50 ms with 6840) and 10 milliseconds on Level II.
 </para>
       <para>Due to the fact that it is not known when the <xref linkend="f.sleep"/> request was

@@ -87,7 +87,7 @@ process.
       </note>
     </sect2>
     <sect2 xml:id="f.allprc" xreflabel="F$AllPrc">
-      <title>F$AllPrc - Allocate Image RAM blocks</title>
+      <title>F$AllPrc - Allocate Process descriptor</title>
       <variablelist role="factsheet">
         <varlistentry>
           <term>ASSEMBLER CALL:</term>
@@ -140,7 +140,7 @@ process.
         </varlistentry>
       </variablelist>
       <para>
-FUNCTION: ALLPROC allocates and initializes a BIZ-byte process
+FUNCTION: ALLPROC allocates and initializes a 512-byte process
 descriptor. The address of the descriptor is kept in the process
 descriptor table. Initialization consists of clearing the first 256
 bytes of the descriptor, setting up the state as system state, and
@@ -528,7 +528,7 @@ program area.
         </varlistentry>
       </variablelist>
       <note>
-        <para>This is a privileged system mode service request.</para>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
       </note>
     </sect2>
     <sect2 xml:id="f.cpymem" xreflabel="F$CpyMem">
@@ -1729,6 +1729,12 @@ offsetting into the DAT image to a block number is specified.
           </listitem>
         </varlistentry>
         <varlistentry>
+          <term>ROUTINE LOCATION:</term>
+          <listitem>
+            <para>OS9p2</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
           <term>INPUT:</term>
           <listitem>
             <simplelist>
@@ -1767,7 +1773,7 @@ offsetting into the DAT image to a block number is specified.
 FUNCTION: MAPBLK maps specified block(s) into unallocated blocks of
 process space. Blocks are mapped in from the top down. In other words,
 new blocks are mapped into the highest address available in the address
-space. See F$ClrBlk for information on <quote>unmapping</quote>.
+space. See <xref linkend="f.clrblk"/> for information on <quote>unmapping</quote>.
 </para>
       <variablelist role="factsheet">
         <varlistentry>
@@ -1784,7 +1790,7 @@ space. See F$ClrBlk for information on <quote>unmapping</quote>.
         </varlistentry>
       </variablelist>
       <note>
-        <para>This is a privileged system mode service request.</para>
+        <para>This is a <emphasis>user mode</emphasis> service request.</para>
       </note>
     </sect2>
     <sect2 xml:id="f.move" xreflabel="F$Move">
