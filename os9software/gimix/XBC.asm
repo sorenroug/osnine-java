@@ -1,13 +1,11 @@
-         nam   XBC
-         ttl   Driver Module
+ nam   XBC
+ ttl   Driver Module
 
 *       OS-9 XBC Winchester Disk Driver Module Source Code
 *
 *           Software For GIMIX/XEBEC Winchester Controller
 
-         ifp1
-         use   defsfile
-         endc
+ use defsfile
 
  mod DSKEND,DSKNAM,DRIVR+OBJCT,REENT+1,DSKENT,DSKSTA
  fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
@@ -29,10 +27,8 @@ CURTBL    rmb   2
 u005F    rmb   1
 V.USEDMA rmb 1  Use DMA
 V.DCB0    rmb   1
-V.DCB1    rmb   1
-V.BUF    rmb   1
-u0064    rmb   1
-u0065    rmb   1
+V.DMAADR    rmb   3
+V.CMD    rmb   1
 DRVSLCT    rmb   1
 u0067    rmb   2
 u0069    rmb   1
@@ -52,7 +48,7 @@ DSKENT lbra INIDSK Initialize i/o
 
 HDMASK fcb 0 no flip bits
  fcb $80 Irq polling mask
- fcb $01 Priority
+ fcb 1 Priority
 
 * XEBEC S-1410 opcodes
 F.DRVRDY equ $00  Test drive ready command
@@ -63,15 +59,31 @@ F.WRIT equ $0A Write sectors command
 F.SEEK equ $0B Seek command
 F.INITL equ $0C Initialize disk size command
 
-RPORT0 equ $00
-RPORT1 equ $01
-RPORT2 equ $02
-RPORT3 equ $03
-WPORT0 equ $00
-WPORT1 equ $01
-WPORT2 equ $02
-WPORT3 equ $03
+* SASI card port addresses
+*
+R.STAT equ 0 Status register
+R.DATA equ 4 SASI data port
+W.CTRL equ 0 Control register
+W.ADDR16 equ 1 DMA address register (A19-A16)
+W.ADDR8 equ 2 DMA address register (A15-AB)
+W.ADDR0 equ 3 DMA address register (A7-AO)
+W.DATA equ 4 SASI data port
 
+* Control register bitmasks
+C.RST equ %10000000 reset SASI
+C.INTE equ %1000000 enable interrupts
+C.DMA equ %100000 enable DMA transfer
+C.SELMSK equ %11111 select controller mask
+
+* Status register bitmasks
+S.REQ equ %1 request for data transfer
+S.MSG equ %10 second byte of command status waiting
+S.CD equ %100 command block being sent or received
+S.BUSY equ %1000 external controller busy
+S.IO equ %10000 data from SASI to host
+S.DMA equ %100000 DMA transfer enabled
+S.INTE equ %1000000 Interrupts to host enabled
+S.INT equ %10000000 command complete
 
 DRIVE0 equ $00
 DRIVE1 equ $20
@@ -84,13 +96,13 @@ DRIVE1 equ $20
 *
 INIDSK ldx V.PORT,U Point to i/o port
  clra
-         sta   WPORT0,x
+ sta W.CTRL,x
          sta   <u005F,u
-         sta   <V.DCB1,u
-         sta   <V.USEDMA,u
-         ldb   #$80
-         stb   WPORT0,x
-         sta   WPORT0,x
+         sta V.DMAADR,u
+         sta V.USEDMA,u
+ ldb #C.RST
+ stb W.CTRL,x reset SASI
+ sta W.CTRL,x clear reset
  leay DRVBEG,U Point to first drive table
  lda #HDCnt
  sta V.NDRV,U Inz number of drives
@@ -103,8 +115,8 @@ INILUP stb DD.TOT,y Inz to non-zero
  bne INILUP ...no; inz more.
  leay ,x Point to i/o port
  tfr y,d
- leax  >HDMASK,pcr
- leay  >IRQSVC,pcr
+ leax HDMASK,pcr
+ leay IRQSVC,pcr
  os9 F$IRQ
  bcs RETRN1
  clrb
@@ -130,7 +142,7 @@ READSK tstb Could this be sector zero?
  bsr RDDSK3
  bcs WRERR9
  pshs y,x
- ldx V.BUF,u
+ ldx V.DMAADR+1,u
  ldy CURTBL,U
  ldb #DD.SIZ-1
 READ01 lda B,X
@@ -144,7 +156,7 @@ WRERR9 rts
 RDDSK3 bsr SELECT
  bcs WRERR9
  lda #F.READ   Read command
- lbra  L0134
+ lbra WCR
 
 ***************************************************************
 *
@@ -164,7 +176,7 @@ RDDSK3 bsr SELECT
 WRTDSK    bsr   SELECT
          bcs   WRERR9
          lda   #F.WRIT   Write command
-         lbra  L0134
+         lbra  WCR
 ***************************************************************
 *
 * Select Drive
@@ -179,7 +191,13 @@ SELECT lda PD.DRV,Y Get drive number
  lbhs ERUNIT ..no; report error.
  pshs y,x,b
  ldx PD.BUF,y
- stx V.BUF,U Save for future use
+ ifge LEVEL-2
+* Register X must be modified here to calculate the extended address
+* This must then be stored in V.DMAADR,U and the high nibble in X
+* changed to block number
+ jmp NOWHERE
+ endc
+ stx V.DMAADR+1,U store LSBs of DMA address
  cmpa CURDRV,u
  beq SELCT2 Already current drive
  sta CURDRV,U
@@ -194,19 +212,19 @@ SELECT lda PD.DRV,Y Get drive number
          andb  #DRIVE1
          stb   <DRVSLCT,u
          puls  b
-         andb  #$1F
-         stb   <V.DCB0,u
+         andb  #C.SELMSK reset IRQ, DMA
+         stb   V.DCB0,u
          bitb  <u005F,u
          bne   SELCT2
          lda   #F.INITL   Init drive
-         leax  >DRVCHRS,pcr
-         bsr   L0134
+         leax DRVCHRS,pcr get drive characteristics
+         bsr   WCR
          bcc   SELCT1
          puls  x,a
          bra   SELCT4
 
 SELCT1    ldb   PD.TYP,y
-         andb  #$1F
+         andb  #C.SELMSK
          orb   <u005F,u
          stb   <u005F,u
 SELCT2 puls x,b
@@ -223,9 +241,9 @@ SELCT3    lda   #$01
          sta   <u0069,u
          lda   #$04
          sta   <u006A,u
-         lda   <V.DCB0,u
+         lda   V.DCB0,u
          ora   #$60
-         sta   <V.DCB0,u
+         sta   V.DCB0,u
          ldy   ,s
          pshs  b
          ldb   PD.TYP,y
@@ -249,37 +267,43 @@ DRVCHRS fdb $0132  Number of cylinders
  fdb $0132  Starting write precompensation cylinder
  fcb 11     Maximum error burst length
 
+***********************************************************
 * Send command to disk
-L0134 pshs y,x
+*
+* Input: (A) = command to controller
+*
+WCR pshs y,x
  ldy V.PORT,U Point to i/o port
-         sta   <u0065,u
-         cmpa  #F.STATUS
-         beq   L0148
-         cmpa  #F.INITL
-         bcs   L016C lower than $0C
+         sta   V.CMD,u
+         cmpa  #F.STATUS is it a status check?
+         beq   WCRSTAT ..yes
+         cmpa  #F.INITL code lower than F.INITL?
+         bcs   L016C ..yes
          cmpa  #$0D
          bne   L0157
-L0148    inc   <V.USEDMA,u
-         bsr   L0188
-         clr   <V.USEDMA,u
+
+WCRSTAT    inc   V.USEDMA,u
+         bsr   WRTCMD
+         clr   V.USEDMA,u
          ldx   ,s
-         lbsr  L01D7
+         lbsr  RDSASI
          bra   L0167
+
 * Initialize drive
-L0157    cmpa  #F.INITL
-         bne   L016C
-         inc   <V.USEDMA,u
-         bsr   L0188
-         clr   <V.USEDMA,u
+L0157    cmpa  #F.INITL Is it initialize disk size command?
+         bne   L016C ..no
+         inc   V.USEDMA,u
+         bsr   WRTCMD
+         clr   V.USEDMA,u
          ldx   ,s
-         bsr   L01C6
+         bsr   WRTSASI
 L0167    lbsr  L01E9
          bra   L017C
 
 * Use DMA for these opcodes
 L016C    lda   V.BUSY,u
          sta   V.WAKE,u
-         bsr   L0188
+         bsr   WRTCMD
 L0172    ldx   #0
          os9   F$Sleep
          lda   V.WAKE,u
@@ -290,23 +314,24 @@ L017C    lda   #$02
          lbsr  L01FB
 L0186    puls  pc,y,x
 
-L0188    ldd   <V.DCB1,u
-         sta   $01,y
-         stb   $02,y
-         lda   <u0064,u
-         sta   $03,y
-         lda   <V.DCB0,u
-         sta   WPORT0,y
-         leax  <u0065,u
-         ldb   #$04
-L019E    bsr   L01E2
+* Reserve DMA and send command
+WRTCMD    ldd  V.DMAADR,u
+         sta   W.ADDR16,y
+         stb   W.ADDR8,y
+         lda   V.DMAADR+2,u
+         sta   W.ADDR0,y
+         lda   V.DCB0,u
+         sta   W.CTRL,y
+         leax  V.CMD,u
+         ldb   #4 send four bytes to SASI
+L019E    bsr   WAITSASI
          lda   ,x+
-         sta   $04,y
+         sta   W.DATA,y
          decb
          bpl   L019E
-         bsr   L01E2
+         bsr   WAITSASI
          lda   ,x+
-         tst   <V.USEDMA,u
+         tst   V.USEDMA,u
          bne   L01C3
 L01B0    ldb   D.DMAReq Wait for other DMA to finish
          beq   L01C0
@@ -315,58 +340,62 @@ L01B0    ldb   D.DMAReq Wait for other DMA to finish
          os9   F$Sleep
          puls  x
          bra   L01B0
-
 L01C0    incb
-         stb   D.DMAReq
-L01C3    sta   $04,y
+         stb   D.DMAReq reserve DMA
+L01C3    sta W.DATA,y
          rts
 
-L01C6    bsr   L01E2
-         bita  #$14
-         bne   L01C6
-L01CC    lda   ,x+
-         sta   $04,y
-         bsr   L01E2
-         bita  #$04
-         beq   L01CC
+* Write data to SASI controller without DMA
+WRTSASI    bsr   WAITSASI
+         bita  #S.IO+S.CD
+         bne   WRTSASI
+WRTSASI1    lda   ,x+
+         sta   W.DATA,y
+         bsr   WAITSASI
+         bita  #S.CD
+         beq   WRTSASI1
          rts
 
-L01D7    lda   $04,y
+* Read data from SASI controller without DMA
+*
+* Input: X = ptr to data buffer
+*
+RDSASI    lda R.DATA,y
          sta   ,x+
-         bsr   L01E2
-         bita  #$04
-         beq   L01D7
+         bsr   WAITSASI
+         bita  #S.CD
+         beq   RDSASI
          rts
 
-* Wait for status
-L01E2    lda  RPORT0,y
-         bita  #$01
-         beq   L01E2
+* Wait for transfer request
+WAITSASI    lda  R.STAT,y
+         bita  #S.REQ SASI requesting more data?
+         beq   WAITSASI ..no
          rts
 
-L01E9    bsr   L01E2
+L01E9    bsr   WAITSASI
          ldb   $04,y
          stb   <u005B,u
-L01F0    bsr   L01E2
-         bita  #$01
+L01F0    bsr   WAITSASI
+         bita  #S.REQ
          beq   L01F0
          lda   $04,y
          bitb  #$02
          rts
 
-L01FB    ldb   #$03
-         stb   <u0065,u
-         ldb   <V.DCB0,u
-         andb  #$1F
-         stb   <V.DCB0,u
-         inc   <V.USEDMA,u
-         lbsr  L0188
-         clr   <V.USEDMA,u
-L0211    bsr   L01E2
-         bita  #$10
-         beq   L0211
+L01FB    ldb   #F.STATUS
+         stb   V.CMD,u
+         ldb   V.DCB0,u
+         andb  #C.SELMSK
+         stb   V.DCB0,u
+         inc   V.USEDMA,u
+         lbsr  WRTCMD set DMA address
+         clr   V.USEDMA,u
+L0211    bsr   WAITSASI
+         bita  #S.IO SASI sending data?
+         beq   L0211 branch is so
          leax  <u006B,u
-         bsr   L01D7
+         bsr   RDSASI
          bsr   L01E9
          beq   L0225
          ldb   #$3F
@@ -376,7 +405,7 @@ L0225    lda   <u006B,u
          beq   L023F
          cmpa  #$18    Correctable data error
          beq   L023F
-         leay  >ERRTBL,pcr
+         leay ERRTBL,pcr
 L0234    cmpa  ,y++
          beq   L023C
          tst   ,y
@@ -393,15 +422,15 @@ L023F    rts
 * Returns: Nothing
 *
 IRQSVC ldy V.PORT,U Point to i/o port
-         ldb   RPORT0,y
+         ldb   R.STAT,y
          bitb  #$40
          beq   L0269
          lda   V.WAKE,u
          beq   L0268
-         ldb   <V.DCB0,u
-         andb  #$1F
-         stb   WPORT0,y
-         tst   <V.USEDMA,u
+         ldb   V.DCB0,u
+         andb  #C.SELMSK
+         stb   W.CTRL,y
+         tst   V.USEDMA,u
          bne   L025B
          clr   D.DMAReq
 L025B    pshs  a
@@ -452,12 +481,12 @@ GETSTA comb ...NO; Error
 
 
 RESTOR lbsr SELECT
-         lda   <V.DCB0,u
-         anda  #$1F
+         lda   V.DCB0,u
+         anda  #C.SELMSK
          ora   #$40
-         sta   <V.DCB0,u
+         sta   V.DCB0,u
          lda   #$01
-         lbra  L0134
+         lbra  WCR
 
 WRTTRK ldd R$U,x Track number
          bne   L032D
@@ -467,10 +496,10 @@ WRTTRK ldd R$U,x Track number
          ldx   #$0000
          lbsr  SELECT
          bcs   L032E
-         lda   <V.DCB0,u
-         anda  #$1F
+         lda   V.DCB0,u
+         anda  #C.SELMSK
          ora   #$40
-         sta   <V.DCB0,u
+         sta   V.DCB0,u
          ldb   <DRVSLCT,u
          andb  #$E0
          stb   <DRVSLCT,u
@@ -481,7 +510,7 @@ WRTTRK ldd R$U,x Track number
          ldb   #$04     Step option
          std   <u0069,u Store interleave and step option
 L02E6    lda   #F.FORMAT
-         lbsr  L0134
+         lbsr  WCR
          bcc   L032D
          cmpb  #E$BTyp
          bne   L032E
@@ -529,22 +558,22 @@ DCMD    pshs  y,x
          bcs   L032E
          ldy   R$Y,x
          ldd   ,y++
-         ora   <V.DCB0,u
-         std   <V.DCB0,u
+         ora   V.DCB0,u
+         std   V.DCB0,u
          ldd   ,y++
-         std   <V.BUF,u
+         std   V.DMAADR+1,u
          ldd   ,y++
          pshs  a
-         sta   <u0065,u
+         sta   V.CMD,u
          leay  $02,y
          ldd   ,y++
          std   <u0069,u
          puls  a
          ldx   $08,x
-         lbra  L0134
+         lbra  WCR
 
 Termnt ldy V.PORT,U Point to i/o port
- clr   WPORT0,y
+ clr   W.CTRL,y
  ldx   #0
  os9   F$IRQ
  rts
