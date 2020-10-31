@@ -255,26 +255,7 @@ L0151    stb   $01,s
 *
 WCR0 lda V.TMP,u
  beq WCR
- ifeq LEVEL-2
- bsr DMAADDR Set DMA buffer address
- else
- stx [V.DMAADR,u] set the DMA address
- endc
-WCR01 lda D.DMAReq is DMA free to use?
- beq WCR02 ..yes; continue
- ldx #1 sleep for a tick
- os9 F$Sleep
- bra WCR01
-
- ifeq LEVEL-2
-*********************************************************
-*
-* Set the DMA extended address from logical address
-*
-* Input: (X)=logical address
-* Data: V.EXTDMA
-
-DMAADDR
+ ifge LEVEL-2
  pshs B
  tfr X,D
  anda #$F0
@@ -301,10 +282,14 @@ DMAADDR
  sta 1,S
  puls A
  puls X
- stx [V.DMAADR,u] Set buffer address
  puls B
- rts
  endc
+ stx [V.DMAADR,u] set the DMA address
+WCR01 lda D.DMAReq is DMA free to use?
+ beq WCR02 ..yes; continue
+ ldx #1 sleep for a tick
+ os9 F$Sleep
+ bra WCR01
 
 WCR02 inc D.DMAReq reserve DMA
 

@@ -15,200 +15,218 @@ SCFNam     equ   *
          fcb   5
 
 SCFEnt    equ   *
-         lbra  Create
-         lbra  Open
-         lbra  MakDir
-         lbra  ChgDir
-         lbra  Delete
-         lbra  Seek
-         lbra  Read
-         lbra  Write
-         lbra  ReadLn
-         lbra  WriteLn
-         lbra  GetStat
+         lbra  SCCrea
+         lbra  SCOpen
+         lbra  SCOErr
+         lbra  SCOErr
+         lbra  Open90
+         lbra  Open90
+         lbra  SCRead
+         lbra  SCWrite
+         lbra  SCRdLine
+         lbra  SCWrLine
+         lbra  SCGStat
          lbra  SCPstat
          lbra  SCClose
 
-* Open/Create entry
-Open
-Create    ldx   PD.DEV,y
-         stx   <$3B,y
-         ldu   PD.RGS,y
-         pshs  y
-         ldx   R$X,u
-         os9   F$PrsNam
-         lbcs  L00CB
-         tsta
-         bmi   L0054
-         leax  ,y
-         os9   F$PrsNam
-         bcc   L00CB
-L0054    sty   $04,u
-         puls  y
-         ldd   #$0100
-         os9   F$SRqMem
-         bcs   L00D0
-         stu   $08,y
-         clrb
-         bsr   JAMMER
+BuffSize equ $100 path buffer size
+OutBfSiz equ 32 maximum size of output "buffer"
 
-* cute message:
+ ttl Open/Close/GetStat etc.
+ page
+***************
+* SCCrea & SCOpen
+*   Process Create/Open Request
+
+* Passed: (Y) = Path Descriptor ptr
+
+SCCrea equ *
+SCOpen ldx PD.DEV,y copy Device Table Ptr
+ stx PD.TBL,y for user GetSts availability
+ ldu PD.RGS,y get caller's register stack
+ pshs y save PD ptr
+ ldx R$X,u get pathname ptr
+ os9 F$PrsNam parse device name
+ lbcs SCOER1 ..error; bad name
+ tsta High order bit set?
+ bmi Open0 ..Yes; end of name
+ leax 0,y
+ os9 F$PrsNam check for more name
+ bcc SCOER1 ..error if so
+Open0 sty   R$X,u save updated name ptr
+ puls y retrieve PD ptr
+ ldd #BuffSize
+ os9 F$SRqMem allocate buffers
+ bcs OPNER9 ..error; return it
+ stu PD.BUF,y save buffer ptr
+ clrb
+
+***************
+* This code may be optimized by "lda #C$CR"
+* In severe cases when memory is expensive
+ bsr JAMMER
 * "by K.Kaplan, L.Crane, R.Doggett"
-         fcb   $62,$1B,$59,$6B,$65,$65,$2A,$11,$1C,$0D,$0F
-         fcb   $42,$0C,$6C,$62,$6D,$31,$13,$0F,$0B,$49,$0C
-         fcb   $72,$7C,$6A,$2B,$08,$00,$02,$11,$00,$79
+ fcb $62,$1B,$59
+ fcb $6B,$65,$65,$2A,$11,$1C,$0D,$0F
+ fcb $42,$0C
+ fcb $6C,$62,$6D,$31,$13,$0F,$0B
+ fcb $49,$0C
+ fcb $72,$7C,$6A,$2B,$08,$00,$02,$11,$00
+ fcb $79
 
-* put cute message into our newly allocated PD buffer
 JAMMER    puls  x
          clra
-L0089    eora  ,x+
+JAMM10    eora  ,x+
          sta   ,u+
          decb
          cmpa  #$0D
-         bne   L0089
-Open1    sta   ,u+
-         decb
-         bne   Open1
-         ldu   $03,y
-         beq   MakDir
-         ldx   $02,u
-         lda   <$28,y
-         sta   $07,x
-         ldx   $04,u
-         ldd   <$36,y
-         beq   Seek
-         leax  d,x
-         lda   $01,y
-         lsra
-         rorb
-         lsra
-         rolb
-         rola
-         rorb
-         rola
-         pshs  y
-         ldy   D.Proc
-         ldu   D.SysPrc
-         stu   D.Proc
-         os9   I$Attach
-         sty   D.Proc
-         puls  y
-         bcs   L00D0
-         stu   PD.FST,y
+         bne   JAMM10
+* end of optimizable code
+***************
 
-* seek/delete routine
-Seek
-Delete    clra
-         rts
-L00CB    puls  pc,y
+Open1 sta ,u+ clear out buffer
+ decb
+ bne Open1
+ ldu PD.DEV,y
+ beq SCOErr ..exit if no physical device
+ ldx V$STAT,u
+ lda PD.PAG,y reset lines-left count
+ sta V.LINE,x
+ ldx V$DESC,u now open echo/pause path
+ ldd PD.D2P,y
+ beq Open90
+ leax d,x get offset of secondary pathname
+ lda PD.MOD,y
+ lsra reverse read & write modes
+ rorb
+ lsra
+ rolb
+ rola
+ rorb
+ rola
+ pshs y save Path ptr
+ ldy D.Proc
+ ldu D.SysPrc
+ stu D.Proc temp switch to System process
+ os9 I$Attach attach auxilary device
+ sty D.Proc switch back to User process
+ puls y restore Path ptr
+ bcs OPNER9 ..exit if error
+ stu PD.DV2,y save echo/pause device
+Open90 clra return carry clear
+ rts
 
-* ChgDir/MakDir entry
-ChgDir
-MakDir    comb
-         ldb   #E$BPNam
-L00D0    rts
+SCOER1 puls pc,y error; return it
 
-SCClose    pshs  cc
-         orcc  #$50
-         ldx   PD.DEV,y
-         bsr   L00F6
-         ldx   PD.FST,y
-         bsr   L00F6
-         puls  cc
-         tst   $02,y
-         bne   L00F4
-         ldu   PD.FST,y
-         beq   L00EA
-         os9   I$Detach
-L00EA    ldu   PD.BUF,y
-         beq   L00F4
-         ldd   #$0100
-         os9   F$SRtMem
-L00F4    clra
-         rts
+SCOErr comb return carry set
+ ldb #E$BPNam error - bad path name
+OPNER9 rts
 
-L00F6    leax  ,x
-         beq   L00F4
-         ldx   $02,x
-         ldb   ,y
-         lda   $05,y
-         pshs  y,x,b,a
-         cmpa  $03,x
-         bne   L013E
-         ldx   D.Proc
-         leax  <$30,x
-         clra
-L010C    cmpb  a,x
-         beq   L013E
-         inca
-         cmpa  #$10
-         bcs   L010C
-         pshs  y
-         ldd   #$1B0C
-         bsr   SCGST1
-         puls  y
-         ldx   D.Proc
-         lda   $01,x
-         sta   ,s
-         os9   F$GProcP
-         leax  <$30,y
-         ldb   $01,s
-         clra
-L012D    cmpb  a,x
-         beq   L0138
-         inca
-         cmpa  #$10
-         bcs   L012D
-         clr   ,s
-L0138    lda   ,s
-         ldx   $02,s
-         sta   $03,x
-L013E    puls  pc,y,x,b,a
+SCClose pshs cc save interrupt masks
+ orcc #IntMasks set interrupt masks
+ ldx PD.DEV,y get device table ptr
+ bsr DenyDev disassociate device signals
+ ldx PD.DV2,y get attached device
+ bsr DenyDev disassociate it too
+ puls cc retrieve interrupt masks
+ tst PD.CNT,y Last Image?
+ bne Close.C ..No; exit
+ ldu PD.DV2,y get echo/pause device
+ beq Close.B branch if none
+ os9 I$Detach detach echo/pause device
+Close.B ldu PD.BUF,y get buffer address
+ beq Close.C ..no buffer to return
+ ldd #BuffSize
+ os9 F$SRtMem return buffers to system store
+Close.C clra
+ rts
 
-* (Y) = Path descriptor pointer
-* (U) = Caller's register stack pointer
-GetStat  ldx   PD.RGS,y
-         lda   R$B,x
-         cmpa  #$00
-         beq   SCRETN
+***************
+* Subroutine DenyDev
+*   Eliminate ownership of device for this Process
+* Passed: (X)=device tbl ptr of entry to deny
+
+DenyDev leax  0,x device in use?
+ beq Close.C ..No; exit
+ ldx V$STAT,x get static storage ptr
+ ldb PD.PD,y get this path number
+ lda PD.CPR,y current Process ID
+ pshs y,x,b,a
+ cmpa V.LPRC,x is this last process?
+ bne Deny.Z exit if not
+ ldx D.Proc process ptr
+ leax P$Path,x ptr to path table
+ clra start with path #0
+Deny.A cmpb  a,x will this path still be open?
+ beq Deny.Z ..Yes; retain control
+ inca
+ cmpa #NumPaths all paths checked?
+ bcs Deny.A ..no; repeat
+ pshs y save PD ptr
+ ldd #SS.Relea*256+D$PSTA
+ bsr SCGST1 send Release putstat to driver
+ puls y
+
+ ldx D.Proc
+ lda P$PID,x parent's ID
+ sta 0,s Try to stick parent with device
+ os9 F$GProcP (Y)=parent's Process ptr
+ leax P$Path,y parent's path tbl
+ ldb 1,s restore path number
+ clra
+Deny.B cmpb a,x Parent still own path?
+ beq Deny.C Yes; return control to parent
+ inca
+ cmpa #NumPaths
+ bcs Deny.B repeat until all paths checked
+ clr 0,s Nobody responsible for abort signals
+Deny.C lda 0,s responsible party
+ ldx 2,s Static storage ptr
+ sta V.LPRC,x
+Deny.Z puls pc,y,x,b,a
+
+SCGStat ldx PD.RGS,y
+ lda R$B,x get status code
+ cmpa #SS.OPT copy options stat?
+ beq SCRETN ..yes; return OK
 * Special for FM-11
          cmpa  #$25
          beq   L018E
 *
          ldb   #D$GSTA $09
 
-SCGST1    pshs  a
-         clra
-         ldx   $03,y
-         ldu   $02,x
-         ldx   ,x
-         addd  M$Exec,x
-         leax  d,x
-         puls  a
-         jmp   0,x
+SCGST1 pshs A save function code
+ clra extend entry offset to two bytes
+ ldx PD.DEV,y dev tbl ptr
+ ldu V$STAT,x static storage for driver
+ ldx V$DRIV,x
+ addd M$Exec,x driver's lbra table
+ leax D,X
+ puls a restore status function code
+ jmp 0,x into the hands of a friendly driver
 
-SCPstat    lbsr  SCALOC
-         bsr   L016B
-         pshs  b,cc
-         lbsr  L0453
-         puls  pc,b,cc
+SCPstat lbsr SCALOC allocate device(s)
+ bsr PutStat
+ pshs b,cc save error status
+ lbsr IODONE
+ puls pc,b,cc
 
-L016B    lda   R$B,u
-         ldb   #D$PSTA   $0C
+PutStat lda R$B,u get status code
+ ldb #D$PSTA
          cmpa  #$25
          beq   L01BC
-         cmpa  #SS.Opt   $00
-         bne   SCGST1
-         pshs  y
-         ldx   D.Proc
-         lda   $06,x
-         ldb   <D.SysTsk
-         ldx   $04,u
-         leau  <$20,y
-         ldy   #$001A
-         os9   F$Move
-         puls  y
-SCRETN    rts
+ cmpa #SS.Opt set options?
+ bne SCGST1 ..No; pass status call to driver
+ pshs y save PD ptr
+ ldx D.Proc get process ptr
+ lda P$Task,x get process task
+ ldb D.SysTsk get system task
+ ldx R$X,u get user's option bytes
+ leau PD.OPT,y get options ptr
+ ldy #OptCnt get byte count
+ os9 F$Move copy options
+ puls y retrieve PD ptr
+SCRETN rts
 
 L018E    ldb   $07,u
          beq   L01B7
@@ -230,7 +248,7 @@ L018E    ldb   $07,u
 L01B5    leas  $02,s
 L01B7    rts
 
-L01B8    fcb   $4B,$53,$79,$f3
+L01B8    fcs  "KSys"
 
 L01BC lda   $09,u
          pshs  u,y,a
@@ -250,9 +268,9 @@ L01DB    clr   ,u+
          decb
          bne   L01DB
          puls  u
-         leax  >L03D2,pcr
+         leax  >GetChr,pcr
          stx   ,u
-         leax  >L055A,pcr
+         leax  >PutDv2,pcr
          stx   $02,u
          ldx   D.Proc
          pshs  y,x
@@ -278,6 +296,7 @@ L0207    lda   ,s
          ldx   $04,x
          os9   F$Move
 L0223    puls  pc,u,y,a
+
 L0225    lda   <$11,y
          beq   L025A
          ldu   D.Proc
@@ -303,70 +322,75 @@ L0245    puls  u
          clr   <$11,y
 L025A    puls  pc,u,y,a
 
+***************
+* SCRead
+*   Process Read Request
+*
+* Passed: (Y)=File Descriptor Static Storage
 
-Read    lbsr  SCALOC
+SCRead    lbsr  SCALOC
          bcs   L02B6
-         inc   $0C,y
-         ldx   $06,u
-         beq   L02B3
-         pshs  x
+ inc PD.RAW,y read mode (don't cook CR)
+ ldx R$Y,u called with zero byte count?
+ beq SCRead4 ..yes; exit (gained ownership)
+ pshs X save byte count
          lbsr  L0374
          lbsr  L03B9
-         bcs   L027B
-         tsta
-         beq   L029B
-         cmpa  PD.EOF,y
-         bne   L0293
-L0279    ldb   #E$EOF
-L027B    leas  $02,s
-         pshs  b
-         bsr   L02AC
-         comb
-         puls  pc,b
+ bcs SCERR ..error; return it
+ tsta null byte?
+ beq SCRead2 ..yes
+ cmpa PD.EOF,y End-of-File?
+ bne SCRead15 ..no
+SCEOFX ldb #E$EOF
+SCERR leas 2,s
+ pshs b
+ bsr SCRead3
+ comb
+ puls PC,B return error
 
-L0284    tfr   x,d
-         tstb
-         bne   L028E
-         lbsr  L042B
-         ldu   $08,y
-L028E    lbsr  L03B9
-         bcs   L027B
-L0293    tst   PD.EKO,y
-         beq   L029B
-         lbsr  L055A Print character
-L029B    leax  $01,x
+SCRead1 tfr X,D check byte count
+ tstb buffer full?
+ bne SCRead12 branch if not
+ lbsr RetData return data to process
+ ldu PD.BUF,y reset buffer ptr
+SCRead12    lbsr  L03B9
+         bcs   SCERR
+SCRead15    tst   PD.EKO,y
+         beq   SCRead2
+         lbsr  PutDv2 Print character
+SCRead2    leax  $01,x
          sta   ,u+
-         beq   L02A6
+         beq   SCRead22
          cmpa  PD.EOR,y
-         beq   L02AA
-L02A6    cmpx  ,s
-         bcs   L0284
-L02AA    leas  $02,s
-L02AC    lbsr  L042B
-         ldu   $06,y
-         stx   $06,u
-L02B3    lbra  L0453
+         beq   SCRead25
+SCRead22 cmpx 0,S bytes read >= byte count requested?
+ bcs SCRead1 ..no; repeat
+SCRead25 leas 2,s return scratch
+SCRead3 lbsr RetData return data to process
+ ldu PD.RGS,y get user stack
+ stx R$Y,u return actual byte count
+SCRead4 lbra IODONE
 L02B6    rts
 
 
-ReadLn    lbsr  SCALOC
+SCRdLine    lbsr  SCALOC
          bcs   L02B6
          ldx   $06,u
-         beq   L02AC
+         beq   SCRead3
          tst   $06,u
-         beq   L02C7
+         beq   SCRd10
          ldx   #$0100
-L02C7    pshs  x
+SCRd10    pshs  x
          ldd   #$FFFF
          std   $0D,y
          lbsr  L0374
-L02D1    lbsr  L03B9
-         lbcs  L035A
+SCRd20    lbsr  L03B9
+         lbcs  SCABT
          tsta
          beq   L02F6
          ldb   #$29
 L02DD    cmpa  b,y
-         beq   L0316
+         beq   SCCTLC
          incb
          cmpb  #$31
          bls   L02DD
@@ -389,25 +413,25 @@ L02FC    leax  $01,x
          lda   <$33,y
          lbsr  L0390
          leax  -$01,x
-         bra   L02D1
-L030C    lbsr  L03F3
+         bra   SCRd20
+L030C    lbsr  UPCASE
          sta   ,u+
-L0311    lbsr  L0403
-         bra   L02D1
-L0316    pshs  pc,x
-         leax  >L0329,pcr
+L0311    lbsr  CHKEKO
+         bra   SCRd20
+SCCTLC    pshs  pc,x
+         leax  CTLTBL,pcr
          subb  #$29
          lslb
          leax  b,x
          stx   $02,s
          puls  x
          jsr   [,s++]
-         bra   L02D1
+         bra   SCRd20
 
-L0329    bra   L037A
+CTLTBL    bra   L037A
          bra   L0369        Process PD.DEL
-         bra   L033B        Process PD.EOR
-         bra   L0350
+         bra   SCEOL        Process PD.EOR
+         bra   SCEOF
          bra   L0398
          bra   L03A1
          puls  pc
@@ -415,26 +439,27 @@ L0329    bra   L037A
          bra   L0369
 
 * Process PD.EOR character
-L033B    leas  $02,s
+SCEOL    leas  $02,s
          sta   ,u
-         lbsr  L0403
-         ldu   $06,y
-         leax  $01,x
-         stx   $06,u
-         lbsr  L042B
-         leas  $02,s
-         lbra  L0453
-L0350    leas  $02,s
+         lbsr  CHKEKO
+ ldu PD.RGS,y
+ leax 1,x count CR
+ stx R$Y,u
+ lbsr RetData return line
+ leas 2,s ditch max count
+ lbra IODONE
+
+SCEOF leas 2,s discard return addr
          leax  ,x
-         lbeq  L0279
+         lbeq  SCEOFX
          bra   L02F6
 
-L035A    pshs  b
+SCABT pshs B save error code
          lda   #$0D
          sta   ,u
-         bsr   L0393
-         puls  b
-         lbra  L027B
+         bsr   EKOCR
+ puls B restore error code
+ lbra SCERR detach drivers; return error
 
 L0367    bsr   L037A
 
@@ -443,7 +468,7 @@ L0369    leax  ,x
          beq   L0374
          tst   <$23,y
          beq   L0367
-         bsr   L0393
+         bsr   EKOCR
 L0374    ldx   #$0000
          ldu   $08,y
          rts
@@ -457,9 +482,11 @@ L037A    leax  ,x
          lda   #$20
          bsr   L0390
 L038D    lda   <$32,y
-L0390    lbra  L0420
-L0393    lda   #$0D
-         lbra  L0420
+L0390    lbra  EKOBYT
+
+EKOCR lda #C$CR
+ lbra EKOBYT
+
 L0398    lda   <$2B,y
          sta   ,u
          bsr   L0374
@@ -489,158 +516,192 @@ L03B9    pshs  u,y,x
 L03CA    pshs  u,y,x
          ldx   $0A,y
          ldu   $03,y
-         bra   L03DA
-L03D2    pshs  u,y,x
+         bra   GetChr1
+
+GetChr    pshs  u,y,x
 L03D4    ldx   $03,y
-         ldu   $0A,y
-         beq   L03E1
-L03DA    ldu   $02,u
-         ldb   <$28,y
-         stb   $07,u
-L03E1    leax  ,x
-         beq   L03F1
+ ldu PD.DV2,y get attached device ptr
+ beq GetChr2 return if no attached device
+GetChr1 ldu V$STAT,u
+ ldb PD.PAG,y
+ stb V.LINE,u reset lines-left count
+GetChr2    leax  ,x
+         beq   GetChr3
          tfr   u,d
          ldu   $02,x
          std   $09,u
-         ldu   #$0003
-         lbsr  L05C3
-L03F1    puls  pc,u,y,x
+ ldu #D$READ
+ lbsr IOEXEC read one character
+GetChr3 puls PC,U,Y,X
 
-* Check for forced uppercase
-L03F3    tst   <$21,y
-         beq   L0402
-         cmpa  #$61
-         bcs   L0402
-         cmpa  #$7A
-         bhi   L0402
-         suba  #$20
-L0402    rts
+***************
+* UPCASE
+*   Convert lower-case to upper-case
 
-* Check for printable character
-L0403    tst   <$24,y
-         beq   L0402
+* Passed: (A)=char
+*         (Y)=PD
+* Returns: (A)=upcased
+* Destroys: none
+
+UPCASE tst PD.UPC,y uppercase only?
+ beq UPCAS9 ..no; return
+ cmpa #'a
+ bcs UPCAS9
+ cmpa #'z
+ bhi UPCAS9
+ suba #'a-'A convert to uppercase
+UPCAS9    rts
+
+***************
+* CHKEKO
+*   If echo is appropriate, do it
+
+* Passed:  (A)=char to echo
+*          (Y)=File Descriptor
+
+CHKEKO tst PD.EKO,y echo?
+ beq UPCAS9 ..no
+
 L0408    cmpa  #$20
-         bcc   L0420
+         bcc   EKOBYT
          cmpa  #$0C
-         beq   L0420
+         beq   EKOBYT
          cmpa  #$0B
-         beq   L0420
+         beq   EKOBYT
          cmpa  #$15
-         beq   L0420
+         beq   EKOBYT
          cmpa  #$16
-         beq   L0420
-         cmpa  #$0D
-         bne   L0423
-L0420    lbra  L055A Print character
+         beq   EKOBYT
+ cmpa #C$CR carriage return?
+ bne EKOCH2 ..no; check other CTL chars
+EKOBYT lbra PutDv2 echo char
 
-* Non-printable character
-L0423    pshs  a
-         lda   #'.
-         bsr   L0420
-         puls  pc,a
+EKOCH2 pshs A save character
+ lda #C$PERD echo period for CTL chars
+ bsr EKOBYT
+ puls pc,a return char
 
-L042B    pshs  y,x
-         ldd   ,s
-         beq   L0451
-         tstb
-         bne   L0435
-         deca
-L0435    clrb
-         ldu   $06,y
-         ldu   $04,u
-         leau  d,u
-         clra
-         ldb   $01,s
-         bne   L0442
-         inca
-L0442    pshs  b,a
-         lda   <D.SysTsk
-         ldx   D.Proc
-         ldb   $06,x
-         ldx   $08,y
-         puls  y
-         os9   F$Move
-L0451    puls  pc,y,x
-L0453    ldx   D.Proc
-         lda   ,x
-         ldx   $03,y
-         bsr   L045D
-         ldx   $0A,y
-L045D    beq   L0467
-         ldx   $02,x
-         cmpa  $04,x
-         bne   L0467
-         clr   $04,x
-L0467    rts
 
-L0468    pshs  x,a
-         ldx   $02,x
+***************
+* Subroutine RetData
+*   Return Data to User's address space
+*
+* Passed: (X)=Bytecount
+*         (Y)=PD ptr
+
+RetData pshs Y,X save registers
+ ldd 0,s get byte count
+ beq RetDat30
+ tstb end of buffer?
+ bne RetDat10 branch if not
+ deca adjust offset
+RetDat10 clrb make beginning of buffer
+ ldu PD.Rgs,y get registers ptr
+ ldu R$X,u get destination ptr
+ leau d,u get current position ptr
+ clra
+ ldb 1,s get byte count
+ bne RetDat20 branch if partial buffer
+ inca adjust byte count
+RetDat20 pshs D save byte count
+ lda D.SysTsk get system task
+ ldx D.Proc get process ptr
+ ldb P$Task,x get process task
+ ldx PD.BUF,y get buffer ptr
+ puls Y get byte count
+ os9 F$Move move data
+RetDat30 puls PC,Y,X
+
+*****************
+* IODONE
+
+IODONE ldx D.Proc
+ lda P$ID,x get current process ID
+ ldx PD.DEV,y from device table entry
+ bsr IODO10
+ ldx PD.DV2,y
+IODO10 beq IODO90 exit if null device
+ ldx V$STAT,x
+ cmpa V.Busy,x
+ bne IODO90
+ clr V.Busy,x set other device not busy
+IODO90 rts
+
+GetDev pshs X,A save P$ID, Dev Tbl ptr
+ ldx V$STAT,x get ptr to device static storage
          pshs  cc
          orcc  #$50
          lda   $04,x
-         beq   L0490
+         beq   GetDev10
          cmpa  $01,s
-         beq   L04AC
+         beq   GetDev20
          puls  cc
          pshs  a
-         bsr   L0453
+         bsr   IODONE
          puls  a
          os9   F$IOQu
          inc   $0F,y
          ldx   D.Proc
          ldb   P$Signal,X
          puls  x,a
-         beq   L0468
+         beq   GetDev
          coma
          rts
 
-L0490    lda   $01,s
-         sta   $04,x
-         sta   $03,x
-         lda   <$2F,y
-         sta   $0D,x
-         ldd   <$30,y
-         std   $0B,x
-         ldd   <$38,y
-         std   $0F,x
-         lda   <$34,y
-         beq   L04AC
-         sta   $06,x
-L04AC    puls  cc
+GetDev10 lda 1,s
+ sta V.Busy,x mark device as owned
+ sta V.LPRC,x
+ lda PD.PSC,y
+ sta V.PCHR,x initialize pause char
+ ldd PD.INT,y
+ std V.INTR,x initialize Interrupt, Abort chars
+ ldd PD.XON,y
+ std V.XON,x initialize XON, XOFF chars
+ lda PD.PAR,y reset device type
+ beq GetDev20
+ sta V.Type,x
+GetDev20    puls  cc
          clra
          puls  pc,x,a
 
-* Wait for device 
-SCALOC    ldx   D.Proc Get current process ID
-         lda   P$ID,x         Get process ID #
-         clr   $0F,y
-         ldx   $03,y
-         bsr   L0468
-         bcs   L04CB
-         ldx   $0A,y
-         beq   L04C5
-         bsr   L0468
-         bcs   L04CB
-L04C5    tst   $0F,y
-         bne   SCALOC
-         clr   $0C,y
-L04CB    ldu   $06,y
-         rts
+SCALOC ldx D.Proc
+ lda P$ID,x get current process ID
+ clr PD.MIN,y
+ ldx PD.DEV,y
+ bsr GetDev allocate Input device
+ bcs SCAL90
+ ldx PD.DV2,y
+ beq SCAL20
+ bsr GetDev allocate output device
+ bcs SCAL90
+SCAL20 tst PD.MIN,y ..devices mine?
+ bne SCALOC ..no; try again
+ clr PD.RAW,y init to cooked mode
+SCAL90 ldu PD.RGS,y
+ rts
 
-WriteLn    bsr   SCALOC
-         bra   L04D6
+ ttl Output Routines
+ page
+***************
+* SCWrLine
+*   Process Write Line Request
 
-Write    bsr   SCALOC
+* Passed: (Y)= Path Descriptor ptr
+
+SCWrLine    bsr   SCALOC
+         bra   SCWrit00
+
+SCWrite    bsr   SCALOC
          inc   $0C,y
-L04D6    ldx   $06,u
-         beq   L054F
+SCWrit00    ldx   $06,u
+         beq   SCWrit99
          pshs  x
          ldx   #$0000
-         bra   L04E6
-L04E1    tfr   u,d
+         bra   SCWrit20
+SCWrit10    tfr   u,d
          tstb
-         bne   L0518
-L04E6    pshs  y,x
+         bne   SCWrit40
+SCWrit20    pshs  y,x
          ldd   ,s
          ldu   $06,y
          ldx   $04,u
@@ -648,9 +709,9 @@ L04E6    pshs  y,x
          ldd   $06,u
          subd  ,s
          cmpd  #$0020
-         bls   L04FD
+         bls   SCWrit30
          ldd   #$0020
-L04FD    pshs  b,a
+SCWrit30    pshs  b,a
          ldd   $08,y
          inca
          subd  ,s
@@ -663,58 +724,60 @@ L04FD    pshs  b,a
          puls  y
          os9   F$Move
          puls  y,x
-L0518    lda   ,u+
+SCWrit40    lda   ,u+
          tst   $0C,y
-         bne   L0532
-         lbsr  L03F3
+         bne   SCWrit50
+         lbsr  UPCASE
          cmpa  #$0A
-         bne   L0532
+         bne   SCWrit50
          lda   #$0D
          tst   <$25,y
-         bne   L0532
-         bsr   L0566
-         bcs   L0552
+         bne   SCWrit50
+         bsr   PutChr
+         bcs   SCWrErr
          lda   #$0A
-L0532    bsr   L0566
-         bcs   L0552
+SCWrit50    bsr   PutChr
+         bcs   SCWrErr
          leax  $01,x
          cmpx  ,s
-         bcc   L0549
+         bcc   SCWrit60
          lda   -$01,u
-         beq   L04E1
+         beq   SCWrit10
          cmpa  <$2B,y
-         bne   L04E1
+         bne   SCWrit10
          tst   $0C,y
-         bne   L04E1
-L0549    leas  $02,s
-L054B    ldu   $06,y
+         bne   SCWrit10
+SCWrit60    leas  $02,s
+SCWrit70    ldu   $06,y
          stx   $06,u
-L054F    lbra  L0453
-L0552    leas  $02,s
+SCWrit99    lbra  IODONE
+
+SCWrErr    leas  $02,s
          pshs  b,cc
-         bsr   L054B
+         bsr   SCWrit70
          puls  pc,b,cc
 
 * Print character
-L055A    pshs  u,x,a
+PutDv2    pshs  u,x,a
          ldx   $0A,y
-         beq   L05BA
+         beq   PutChr9
          cmpa  #$0D
-         bne   L05BC
-         bra   L0595
-L0566    pshs  u,x,a
+         bne   PutChr2
+         bra   PutChr17
+
+PutChr    pshs  u,x,a
          ldx   $03,y
          cmpa  #$0D
-         bne   L05BC
+         bne   PutChr2
          ldu   $02,x
          tst   $08,u
          bne   L0583
          tst   <$27,y
-         beq   L0595
+         beq   PutChr17
          tst   $0C,y
-         bne   L0595
+         bne   PutChr17
          dec   $07,u
-         bne   L0595
+         bne   PutChr17
          bra   L058D
 L0583    lbsr  L03CA
          bcs   L058D
@@ -723,39 +786,53 @@ L0583    lbsr  L03CA
 L058D    lbsr  L03CA
          cmpa  <$2F,y
          beq   L058D
-L0595    ldu   $02,x
+PutChr17    ldu   $02,x
          clr   $08,u
          lda   #$0D
-         bsr   L05C0
+         bsr   WrChar
          tst   $0C,y
-         bne   L05BA
+         bne   PutChr9
          ldb   <$26,y
          pshs  b
          tst   <$25,y
-         beq   L05B1
+         beq   EOL1
          lda   #$0A
-L05AD    bsr   L05C0
-         bcs   L05B8
-L05B1    lda   #$00
+EOL0    bsr   WrChar
+         bcs   EOL2
+EOL1    lda   #$00
          dec   ,s
-         bpl   L05AD
+         bpl   EOL0
          clra
-L05B8    leas  $01,s
-L05BA    puls  pc,u,x,a
+EOL2    leas  $01,s
+PutChr9    puls  pc,u,x,a
 
-L05BC    bsr   L05C0
-         puls  pc,u,x,a
+PutChr2 bsr WrChar write character
+ puls pc,u,x,a
 
-L05C0    ldu   #$0006
-L05C3    pshs  u,y,x,a
-         ldu   $02,x
-         clr   $05,u
-         ldx   ,x
-         ldd   $09,x
-         addd  $05,s
-         leax  d,x
-         lda   ,s+
-         jsr   ,x
-         puls  pc,u,y,x
-         emod
-SCFEnd      equ   *
+WrChar ldu #D$WRIT
+
+***************
+* IOEXEC
+*   Execute SCF Device's Read/Write routine
+
+* Passed: (A)=output char (write)
+*         (X)=Device Table entry ptr
+*         (Y)= Path Descriptor ptr
+*         (U)=offset of routine (D$ReaD, D$Write)
+* returns: (A)=Input char (read)
+*          (B)=error code, C=set if error
+* Destroys: B,CC
+
+IOEXEC pshs U,Y,X,A save registers
+ ldu V$STAT,x get static storage for driver
+ clr V.WAKE,u clear wake-up call
+ ldx V$DRIV,x get driver module address
+ ldd M$Exec,x and offset of execution entries
+ addd 5,S offset by read/write
+ leax d,x absolute entry address
+ lda ,s+ restore char (for write)
+ jsr 0,x execute driver Read/Write
+ puls pc,u,y,x return (A)=char, (B)=error
+
+ emod Module CRC
+SCFEnd equ *

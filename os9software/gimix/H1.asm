@@ -1,7 +1,5 @@
- nam H0
- ttl os9 device descriptor
-
-* 19 Mbyte 5" Winchester
+ nam   H1
+ ttl   os9 device descriptor
 
  use defsfile
 
@@ -14,9 +12,9 @@ rev      set   $01
  fdb   $E3B8  physical controller address
  fcb   initsize-*-1  initilization table size
  fcb   $01 device type:0=scf,1=rbf,2=pipe,3=scf
- fcb   $00 drive number
+ fcb   $01 drive number
  fcb   $02 step rate
- fcb   $81 drive device type
+ fcb   $81+$20 drive device type
  fcb   $00 media density:0=single,1=double
  fdb   $0132 number of cylinders (tracks)
  fcb   $06 number of sides
@@ -27,7 +25,7 @@ rev      set   $01
  fcb   $08 minimum size of sector allocation
 initsize equ   *
 
-name fcs  "H0"
+name fcs "H1"
 mgrnam fcs "RBF"
 drvnam fcs "XBC"
          emod

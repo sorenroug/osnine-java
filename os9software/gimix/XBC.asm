@@ -24,12 +24,12 @@ HDCnt equ 2
 u005B    rmb   1
 CURDRV    rmb   1
 CURTBL    rmb   2
-u005F    rmb   1
+V.DRVNUM    rmb   1
 V.USEDMA rmb 1  Use DMA
 V.DCB0    rmb   1
 V.DMAADR    rmb   3
 V.CMD    rmb   1
-DRVSLCT    rmb   1
+V.LUN    rmb   1 Logical Unit number in bits 5-7
 u0067    rmb   2
 u0069    rmb   1
 u006A    rmb   1
@@ -65,8 +65,8 @@ R.STAT equ 0 Status register
 R.DATA equ 4 SASI data port
 W.CTRL equ 0 Control register
 W.ADDR16 equ 1 DMA address register (A19-A16)
-W.ADDR8 equ 2 DMA address register (A15-AB)
-W.ADDR0 equ 3 DMA address register (A7-AO)
+W.ADDR8 equ 2 DMA address register (A15-A8)
+W.ADDR0 equ 3 DMA address register (A7-A0)
 W.DATA equ 4 SASI data port
 
 * Control register bitmasks
@@ -85,9 +85,6 @@ S.DMA equ %100000 DMA transfer enabled
 S.INTE equ %1000000 Interrupts to host enabled
 S.INT equ %10000000 command complete
 
-DRIVE0 equ $00
-DRIVE1 equ $20
-
 ****************************************************************
 *
 * Initialize The I/O Port
@@ -97,7 +94,7 @@ DRIVE1 equ $20
 INIDSK ldx V.PORT,U Point to i/o port
  clra
  sta W.CTRL,x
-         sta   <u005F,u
+         sta V.DRVNUM,u clear drive number
          sta V.DMAADR,u
          sta V.USEDMA,u
  ldb #C.RST
@@ -191,12 +188,41 @@ SELECT lda PD.DRV,Y Get drive number
  lbhs ERUNIT ..no; report error.
  pshs y,x,b
  ldx PD.BUF,y
+
  ifge LEVEL-2
-* Register X must be modified here to calculate the extended address
+* Register X is modified here to calculate the extended address
 * This must then be stored in V.DMAADR,U and the high nibble in X
 * changed to block number
- jmp NOWHERE
+* This code can definitely be optimized
+ pshs A save drive number
+ tfr X,D
+ anda #$F0
+ lsra Shift block number to lower nibble
+ lsra
+ lsra
+ pshs X put X on stack for later manipulation
+ ldx D.SysDAT Get system DAT
+ ldd A,X get block number
+ clra
+ lsrb set the DMA extended bits
+ rora
+ lsrb
+ rora
+ lsrb
+ rora
+ lsrb
+ rora
+ stb V.DMAADR,u
+ pshs A make copy of block number
+ lda 1,S load high byte of X
+ anda #$0F
+ ora 0,S load the high nibble of block
+ sta 1,S
+ puls A
+ puls X
+ puls A
  endc
+
  stx V.DMAADR+1,U store LSBs of DMA address
  cmpa CURDRV,u
  beq SELCT2 Already current drive
@@ -209,13 +235,13 @@ SELECT lda PD.DRV,Y Get drive number
          clr   V.TRAK,x
          ldb   PD.TYP,y
          pshs  b
-         andb  #DRIVE1
-         stb   <DRVSLCT,u
+         andb  #S.DMA
+         stb   <V.LUN,u
          puls  b
          andb  #C.SELMSK reset IRQ, DMA
          stb   V.DCB0,u
-         bitb  <u005F,u
-         bne   SELCT2
+         bitb  V.DRVNUM,u Drive number set?
+         bne   SELCT2 ..yes
          lda   #F.INITL   Init drive
          leax DRVCHRS,pcr get drive characteristics
          bsr   WCR
@@ -225,8 +251,8 @@ SELECT lda PD.DRV,Y Get drive number
 
 SELCT1    ldb   PD.TYP,y
          andb  #C.SELMSK
-         orb   <u005F,u
-         stb   <u005F,u
+         orb   V.DRVNUM,u
+         stb   V.DRVNUM,u
 SELCT2 puls x,b
  ldy CURTBL,u
  cmpb DD.TOT,y Too high sector number?
@@ -247,9 +273,9 @@ SELCT3    lda   #$01
          ldy   ,s
          pshs  b
          ldb   PD.TYP,y
-         andb  #DRIVE1
+         andb  #S.DMA
          orb   ,s
-         stb   <DRVSLCT,u
+         stb   <V.LUN,u
          puls  b
          clra
          stx   <u0067,u
@@ -500,9 +526,9 @@ WRTTRK ldd R$U,x Track number
          anda  #C.SELMSK
          ora   #$40
          sta   V.DCB0,u
-         ldb   <DRVSLCT,u
+         ldb   <V.LUN,u
          andb  #$E0
-         stb   <DRVSLCT,u
+         stb   <V.LUN,u
          clra
          clrb
          std   <u0067,u
@@ -530,7 +556,7 @@ L02E6    lda   #F.FORMAT
          pshs  a
          orb   ,s
          puls  a
-         stb   <DRVSLCT,u
+         stb   <V.LUN,u
          puls  b
 L031A    puls  x
          ldy   CURTBL,u

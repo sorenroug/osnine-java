@@ -930,82 +930,82 @@ CHKP90 rts
 *   Position File
 *
 USEEK bsr CHKPTH Validate path number
- bcc SSEEK1 ..continue if va
+ bcc SSEEK1 ..continue if valid
  rts
 
 SSEEK lda R$A,u Get (system) path#
-SSEEK1    bsr   FPATH
-         lbcc  FMEXEC
-         rts
+SSEEK1 bsr FPATH Find (y)=path descriptor
+ lbcc FMEXEC go call file manager
+ rts
 
 **********
 * Read
 * Process Read Or Readln Request
 *
 UREAD equ *
-URDLN   bsr   CHKPTH       get user path #
-         bcc   SRDLN1
-         rts
+URDLN bsr   CHKPTH Validate path number
+ bcc SRDLN1 ..continue if valid
+ rts
 
 SREAD equ *
-SRDLN   lda   R$A,u       get user path
-SRDLN1    pshs  b
-         ldb   #$05
-SRDLN2    bsr   FPATH
-         bcs   SRDLNX
-         bitb  PD.MOD,y    test bits against mode in path desc
-         beq   BADPTH
+SRDLN lda R$A,u Get (system) path#
+SRDLN1 pshs B Save function code
+ ldb #READ.+EXEC.
+SRDLN2 bsr FPATH Find (y)=path descriptor
+ bcs SRDLNX ..return error if any
+ bitb PD.MOD,y Legal i/o on this path?
+ beq BADPTH ..no; error - bad path number
 *
 *    check limits of read/write buffer
 *
-         ldd   R$Y,u       else get count from user
-         beq   SRDLN.d
-         addd  R$X,u       else update buffer pointer with size
-         bcs   BADBUF
+ ldd R$Y,u get transfer size
+ beq SRDLN.d branch if none
+ addd R$X,u add buffer address
+ bcs BADBUF branch if overflow
  ifge LEVEL-2
-         subd  #1
-         lsra
-         lsra
+ subd #1 get buffer end address
+ lsra get last block number
+ lsra
  ifge DAT.BlSz-2048
  lsra
  ifge DAT.BlSz-4096
  lsra
  endc
  endc
-         ldb   R$X,u       get address of buffer to hold read data
-         lsrb
-         lsrb
+ ldb R$X,u get MSB buffer address
+ lsrb get DAT image index
+ lsrb
  ifge DAT.BlSz-2048
  lsrb
  ifge DAT.BlSz-4096
  lsrb
  endc
  endc
-         pshs  b
-         suba  ,s+
-         ldx   D.Proc
-         leax P$DATImg,x
-         aslb
-         leax  b,x
-SRDLN.c    pshs  a
-         ldd   ,x++
-         cmpd  #DAT.Free
-         puls  a
-         beq   BADBUF
-         deca
-         bpl   SRDLN.c
+ pshs b make temp
+ suba ,s+ get block count - 1
+ ldx D.Proc get process ptr
+ leax P$DATImg,x get DAT image ptr
+ aslb convert index to offset
+ leax b,x get block ptr
+SRDLN.c pshs a save count
+ ldd ,x++ get block number
+ cmpd #DAT.Free is it allocated?
+ puls a retrieve count
+ beq BADBUF branch if not allocated
+ deca count block
+ bpl SRDLN.c branch if more
  endc
-SRDLN.d    puls  b
-         lbra  FMEXEC
+SRDLN.d puls B Restore function code
+ lbra FMEXEC ..execute file mgr's function
 
-BADBUF    ldb   #E$Read
-         lda 0,s
-         bita  #WRITE.
-         beq   SRDLNX
-         ldb   #E$Write
-         bra   SRDLNX
+BADBUF ldb #E$Read err: read error
+ lda 0,s get function
+ bita #WRITE. writing?
+ beq SRDLNX branch if not
+ ldb #E$Write err: write error
+ bra SRDLNX
 
-BADPTH ldb #E$BPNam
+BADPTH ldb #E$BPNam Error: bad path number
 SRDLNX com ,S+
  rts
 
@@ -1014,15 +1014,15 @@ SRDLNX com ,S+
 *   Process Write or Writeln Request
 *
 UWRITE equ *
-UWRLN  bsr   CHKPTH
-         bcc   SWRLN1
-         rts
+UWRLN bsr CHKPTH Validate path number
+ bcc SWRLN1 ..continue if valid
+ rts
 
 SWRITE equ *
-SWRLN  lda   R$A,u
-SWRLN1    pshs  b
-         ldb   #$02
-         bra   SRDLN2
+SWRLN lda R$A,U Get (system) path#
+SWRLN1 pshs B Save function code
+ ldb #WRITE.
+ bra SRDLN2 Get pd, check code, exec function
 
 FPath pshs x save x
  ldx D.PthDBT
@@ -1035,46 +1035,46 @@ FPath9 rts
 * Gstt
 *   Process Getstat Request
 *
-UGSTT lbsr  CHKPTH
+UGSTT lbsr CHKPTH Validate path number
  ifgt LEVEL-1
  ldx D.Proc get process ptr
  endc
  bcc SGSTT10 ..good
  rts
 
-SGSTT lda   R$A,u
+SGSTT lda R$A,U Get system path#
 
  ifeq LEVEL-1
  else
-         ldx   D.SysPRC
-SGSTT10    pshs  x,b,a
-         lda   R$B,u
-         sta   $01,s
-         puls  a
-         lbsr  SSEEK1
-         puls  x,a
-         pshs  u,y,cc
-         tsta
-         beq   SGSTT20
-         cmpa  #$0E
-         beq   SGSTT30
-         puls  pc,u,y,cc
+ ldx D.SysPRC get system process ptr
+SGSTT10 pshs D,X save function code, process ptr
+ lda R$B,u recover getstat code
+ sta 1,S
+ puls a
+ lbsr SSEEK1 exec file manager getstat
+ puls x,a restore getstat code, process ptr
+ pshs u,y,cc save error status
+ tsta Read options Getstat code?
+ beq SGSTT20 ..yes
+ cmpa #SS.DevNm Read Device Name?
+ beq SGSTT30 ..Ues
+ puls pc,u,y,cc return error status
 
-SGSTT20    lda D.SysTsk
-         ldb P$Task,x
-         leax PD.OPT,y
+SGSTT20 lda D.SysTsk get source task
+ ldb P$Task,x get destination task
+ leax PD.OPT,y get source ptr
 SGSTT25 ldy #32 Copy 32 Bytes
-         ldu R$X,u
-         os9   F$Move
-         leas 1,s
-         puls pc,u,y
+ ldu R$X,u get destination ptr
+ os9 F$Move move options
+ leas 1,s
+ puls pc,u,y
 
-SGSTT30  lda   D.SysTsk
-         ldb  P$Task,x
-         pshs D
-         ldx PD.DEV,y
-         ldx V$DESC,x
-         ldd M$Name,x
+SGSTT30 lda D.SysTsk source task
+ ldb P$Task,x Destination task
+ pshs D
+ ldx PD.DEV,y device table ptr
+ ldx V$DESC,x Device descriptor
+ ldd M$Name,x Name offset
  leax D,X
  puls D
  bra SGSTT25 move 32 bytes
@@ -1089,40 +1089,46 @@ SSSTT equ SSEEK
 * Close
 *   Process Close Request
 *
-UCLOSE  lbsr  CHKPTH       get user path #
-         bcs   FPATH9
-         pshs  b
-         ldb   $01,u
-         clr   b,x
-         puls  b
-         bra   SCLOS1
+UCLOSE lbsr CHKPTH Validate path number
+ bcs FPATH9 ..return if error
+ pshs b
+ ldb R$A,u Get user's path number
+ clr b,x Release user's path tbl entry
+ puls b Restore function code
+ bra SCLOS1
 
-SCLOSE  lda   R$A,u
-SCLOS1    bsr   FPATH
-         bcs   FPATH9
-         dec   $02,y
-         tst   $05,y
-         bne   SCClos2
-         bsr   FMEXEC
-SCClos2    tst Pd.Cnt,y
-         bne   FPATH9
-         lbra  SMDIR2
+SCLOSE lda R$A,u
+SCLOS1 bsr FPATH Find (y)=path desc ptr
+ bcs FPATH9 ..return if error
+ dec PD.CNT,y decrement image count
+ tst PD.CPR,y is path currently busy?
+ bne SCClos2 ..Yes; don't interrupt File Manager
+ bsr FMEXEC ..else notify FM of dead user
+SCClos2 tst Pd.Cnt,y detach only if last
+ bne FPATH9 ..close only if last image
+ lbra SMDIR2 Detach device, release pd
 
 ***************
 * Subroutine GainPath
 *   Gain control of Current Path
 
-GainP.zz    os9   F$IOQu
-         comb
-         ldb   <$19,x
-         bne   GainP.9
-GainPath    ldx   D.Proc
-         ldb   ,x
-         clra
-         lda   $05,y
-         bne   GainP.zz
-         stb   $05,y
-GainP.9    rts
+* Passed: none
+* Returns: CC carry set, B=signal code if signal error
+*          B=PD.CPR = this process if success
+* Destroys: A,B,X
+
+GainP.zz os9 F$IOQU Wait in I/O queue
+ comb set carry
+ ldb P$Signal,x Wake up signal?
+ bne GainP.9 ..no; return signal as error
+
+GainPath ldx D.PROC
+ ldb P$ID,x get current process id
+ clra clear carry
+ lda PD.CPR,y Path descriptor busy?
+ bne GainP.zz ..Yes; sleep for user
+ stb PD.CPR,y mark current user
+GainP.9 rts
 
 ***************
 * Subroutine FMEXEC
@@ -1164,7 +1170,7 @@ FMEX90 puls pc,u,y,x,b,cc return
 * Subroutine UnQueue
 *   Wake next process in I/O queue (if any)
 
-UnQueue pshs y,x save regs
+UnQueue pshs Y,X save regs
  ldy D.Proc
  bra UnQue80 While not last proc in IO queue
 
@@ -1173,8 +1179,8 @@ UnQue10 clr P$IOQN,y clear next ptr
  os9 F$Send wake up next process in queue
 
  ifeq LEVEL-1
-         ldx D.PrcDBT
-         os9   F$Find64
+ ldx D.PrcDBT
+ os9 F$Find64 find next process descriptor
  else
  os9 F$GProcP find next process descriptor
  endc
@@ -1336,27 +1342,39 @@ IOIRQ2 lda [Q$POLL,y] Poll device
 Load pshs u save registers ptr
  ldx R$X,u get path name ptr
  bsr LModule load module
-         bcs   LoadXit branch if load error
-         puls  y retrieve registers ptr
-Load.A    pshs  y save registers ptr
-         stx   R$X,y return update ptr
-         ldy   MD$MPDAT,u get module DAT image ptr
-         ldx   MD$MPtr,u get module offset
-         ldd   #M$Type
-         os9   F$LDDDXY
-         ldx   0,s
-         std  R$D,x
-         leax  0,u
-         os9   F$ELink
-         bcs   LoadXit
-         ldx   0,s
-         sty  R$Y,x
-         stu  R$U,x
-LoadXit    puls  pc,u
+ bcs LoadXit branch if load error
+ puls y retrieve registers ptr
+Load.A pshs y save registers ptr
+ stx R$X,y return update ptr
+ ldy MD$MPDAT,u get module DAT image ptr
+ ldx MD$MPtr,u get module offset
+ ldd #M$Type get module type offset
+ os9 F$LDDDXY get type & revision bytes
+ ldx 0,s get registers ptr
+ std R$D,x return type & revision
+ leax 0,u copy module entry ptr
+ os9 F$ELink link module in
+ bcs LoadXit branch if error
+ ldx 0,s get registers ptr
+ sty R$Y,x return execution entry
+ stu R$U,x return module ptr
+LoadXit puls pc,u
  page
 ************************************************************
 *
 *     Subroutine Sysload
+*
+*   System Load service routine
+*
+* Input: U = registers ptr
+*        R$X,u = Path name string ptr
+*        R$U,u = Process Descriptor to load
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: D.Proc
+*
+* Calls: Lmodule, Load.A
 *
 SysLoad pshs u save registers ptr
  ldx R$X,u get name string ptr
@@ -1378,7 +1396,18 @@ SysLXit puls pc,u
 *     Subroutine Lmodule
 *
 *   Open specified path, read and validate modules until error
-
+*
+* Input: X = Path Name string ptr
+*
+* Output: U = Module Directory entry of first module loaded
+*
+* Data: D.Blkmap, D.Proc, D.Sysprc
+*
+* Calls: none
+*
+*
+*     Local Definitions
+*
 realorg set .
  org 0
 TotRAM rmb 2 total ram acquired for block
@@ -1406,77 +1435,77 @@ LMod.1 leay 0,u copy process ptr
  pshs u,y,x,b,a save registers
  leas -locals,s make room for scratch
  clr ErrCode+stacked,s clear error code
-         stu TotRAM+stacked,s
-         stu TotMod+stacked,s
-         ldu   D.Proc
-         stu CurrProc+stacked,s
-         clr Path+stacked,s
-         lda   P$Prior,u  get priority
-         sta   P$Prior,y  save
-         lda   #EXEC.     from exec dir
-         os9   I$Open
-         bcs   LModErr
-         sta Path+stacked,s
-         stx PathName+stacked,s
-         ldx ProcPtr+stacked,s
-         os9   F$AllTsk
-         bcs   LModErr
-         stx   D.Proc
-LMod.J    ldd   #M$IDSize
-         ldx TotMod+stacked,s
-         lbsr  GetModul
-         bcs   LModErr
-         ldu ProcPtr+stacked,s
-         lda P$Task,u
-         ldb   D.SysTsk
-         leau Header+stacked,s
-         pshs x
+ stu TotRAM+stacked,s clear total ram
+ stu TotMod+stacked,s clear total module
+ ldu D.Proc get current process ptr
+ stu CurrProc+stacked,s save it
+ clr Path+stacked,s clear path number
+ lda P$Prior,u get requesting process priority
+ sta P$Prior,y set loading process priority
+ lda #EXEC. get open mode
+ os9 I$Open open path
+ bcs LModErr branch if error
+ sta Path+stacked,s save path number
+ stx PathName+stacked,s save string ptr
+ ldx ProcPtr+stacked,s get process ptr
+ os9 F$AllTsk set task
+ bcs LModErr branch if error
+ stx D.Proc install as current process
+LMod.J ldd #M$IDSize get header size
+ ldx TotMod+stacked,s get present module size
+ lbsr GetModul check/expand RAM space, read ID
+ bcs LModErr branch if error
+ ldu ProcPtr+stacked,s get new process ptr
+ lda P$Task,u get process task number
+ ldb D.SysTsk get system task number
+ leau Header+stacked,s get module header ptr
+ pshs x save advanced TotMod ptr
 stacked set stacked+2
-         ldx ToTMod+stacked,s
-         os9   F$Move
-         puls  x
+ ldx ToTMod+stacked,s get mod beg ptr
+ os9 F$Move move header here
+ puls x restore advanced TotMod ptr
 stacked set stacked-2
  ldd 0,u get module sync bytes
-         cmpd #M$ID12
-         bne   LModErrA
-         ldd   M$Size,u
-         subd  #M$IDSize
+ cmpd #M$ID12 are they good?
+ bne LModErrA branch if not
+ ldd M$Size,u get module size
+ subd #M$IDSize subtract header, already gotten
 * X already contains old modsiz + new ID
-         lbsr  GetModul
-         bcs   LModErr
-         ldy   <$15,s     get proc desc ptr
-         leay  <P$DATImg,y
-         tfr   y,d
-         ldx   $02,s
-         os9   F$VModul
-         bcc   LMod.K
-         cmpb  #E$KwnMod
-         beq   LMod.L
-         bra   LModErr
-LMod.K    ldd   $02,s
-         addd  $0A,s
-         std   $02,s
-LMod.L    ldd   <$17,s
-         bne   LMod.J
-         ldd   MD$MPtr,u
-         std   <$11,s
-         ldx MD$MPDAT,u
-         ldd 0,x
-         std   <$17,s
-         ldd   $06,u
-         addd #1
-         beq LMod.J
-         std MD$Link,u
-         bra   LMod.J
-LModErrA    ldb   #E$BMID
-LModErr    stb   $07,s
-         ldd   $04,s
-         beq   LMod.M
-         std   D.Proc
-LMod.M    lda   $06,s
-         beq   LMod.O
-         os9   I$Close
-LMod.O    ldd   $02,s
+ lbsr GetModul check/expand RAM, read module
+ bcs LModErr branch if error
+ ldy ProcPtr+stacked,s get process ptr
+ leay P$DATImg,y make ptr to DAT image
+ tfr y,d
+ ldx TotMod+stacked,s get module beginning ptr
+ os9 F$VModul validate module
+ bcc LMod.K branch if no error
+ cmpb #E$KwnMod is it known module?
+ beq LMod.L branch if so
+ bra LModErr
+LMod.K ldd TotMod+stacked,s get total size
+ addd Header+M$Size+stacked,s add module size
+ std TotMod+stacked,s update size
+LMod.L ldd ModBlk+stacked,s module found/loaded?
+ bne LMod.J branch if so
+ ldd MD$MPtr,u get module offset ptr
+ std ModPtr+stacked,s save module ptr
+ ldx MD$MPDAT,u get DAT image ptr
+ ldd 0,x get first block number
+ std ModBlk+stacked,s save it
+ ldd MD$Link,u get link count
+ addd #1 bump it temporarily
+ beq LMod.J Skip store if rollover
+ std MD$Link,u save new count
+ bra LMod.J branch to check all
+LModErrA ldb #E$BMID err: bad module id
+LModErr stb ErrCode+stacked,s save err for return
+ ldd CurrProc+stacked,s get current process ptr
+ beq LMod.M branch if not set
+ std D.Proc return to current process status
+LMod.M lda Path+stacked,s get path number
+ beq LMod.O branch if none
+ os9 I$Close close path
+LMod.O ldd TotMod+stacked,s get modules size
  addd #DAT.BlSz-1 round to next block
  lsra get block number
  lsra
@@ -1623,43 +1652,43 @@ GetM.G inca bump counter
  cmpa #DAT.GBlk any blocks left?
  bcs GetM.F ..yes
  endc
-GetM.Err    comb
+GetM.Err comb set carry for error
  ldb #E$MemFul
  bra GetM.X exit
 
  ifeq CPUTYPE-DRG128+TESTM
-GetM.H inc b,y
-         clr   ,u+
-         stb   ,u+
-         pshs  a
+GetM.H inc b,y claim block
+ clr ,u+ put block number in image
+ stb ,u+
+ pshs a save count
 stacked set stacked+1
-         ldd   $09,s
-         addd  #DAT.BlSz
-         std   $09,s
-         puls  a
+ ldd TotRAM+stacked,s get old RAM count
+ addd #DAT.BlSz add new block
+ std TotRAM+stacked,s save RAM count
+ puls a retrieve block count
 stacked set stacked-1
-         leax  -1,x
-         bne   GetM.G
-         bra   GetM.I
+ leax -1,x count down blocks
+ bne GetM.G ..more needed
+ bra GetM.I ..finish off
  endc
-GetM.D    inc   -1,y
-         std   ,u++
+GetM.D inc -1,y allocate block
+ std ,u++ save blk # in image
 stacked set stacked+2
-         pshs d
-         ldd   $0A,s
-         addd  #DAT.BlSz
-         std   $0A,s
-         puls d
+ pshs d save blk number
+ ldd TotRAM+stacked,s get old RAM count
+ addd #DAT.BlSz add new block
+ std TotRAM+stacked,s save new RAM count
+ puls d restore lbk number
 stacked set stacked-2
-         leax  -1,x
-         bne   GetM.C
-GetM.I    ldx   <$1D,s
-         os9   F$SetTsk
-         bcs   GetM.X
-GetM.R    lda   $0E,s
-         ldx   $02,s
-         ldy   ,s
-         os9   I$Read
+ leax -1,x count down blocks needed. done?
+ bne GetM.C bra if not
+GetM.I ldx ProcPtr+stacked,s get process ptr
+ os9 F$SetTsk set DAT image for task
+ bcs GetM.X bra if error
+GetM.R lda Path+stacked,s get path number
+ ldx 2,s get ptr to RAM for module
+ ldy 0,s get size of read
+ os9 I$Read get the module
 GetM.X leas 4,s return scratch
  puls pc,x done
 

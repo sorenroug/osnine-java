@@ -44,7 +44,7 @@ CLKPRT equ M$Mem Stack has clock port address
 *
 *  DAYS IN MONTHS TABLE
 *
-MONTHS fcb 29 Uninitialized month
+MONTHS fcb 29 February in leap year
  fcb 31 January
  fcb 28 February
  fcb 31 March
@@ -62,7 +62,7 @@ NOTCLK    lda   >$FD03
          bita  #$40
          beq   L00A5
          ldd   >$FD00
-         std   <$0094
+         std D.Kbdsta
          lsra  
          bcc   L009F
          cmpb  >$FC69
@@ -93,7 +93,7 @@ L0070    lda   >$FD05
          sta   >$FC80
          clr   >$FD05
          clr   >$FC60
-         ldx   <$0092
+         ldx  D.keyno
          sty   <-$20,x
 L008D    leax  $02,x
          cmpx  #$FC60
@@ -104,8 +104,8 @@ L008D    leax  $02,x
          bra   L008D
 
 L009A    ldx   #$FC40
-L009D    stx   <$0092
-L009F    ldx   <$0092
+L009D    stx D.keyno
+L009F    ldx D.keyno
          lda   #$40
          sta   $01,x
 L00A5    ldd   D.Poll
@@ -120,43 +120,46 @@ CLKSRV   ldx   >CLKPRT,pcr
 
 * Handle the interrupt
          ldd   $06,x
+
+Tick equ *
 *
 * UPDATE CURRENT TIME
 *
-         dec   D.Tick
-         lbne  Tick47
-         lda   <$0096
+ dec D.Tick COUNT TICK
+         lbne  Tick47 Branch if not end of second
+         lda D.DskTmr count down disk timer
          beq   L00CF
          deca  
-         sta   <$0096
+         sta D.DskTmr
          bne   L00E0
          lda   >$FD1D
          ora   #$C0
          sta   >$FD1D
-L00CF    lda   <$009A
+L00CF    lda D.DskMto
          beq   L00E0
          deca  
-         sta   <$009A
+         sta D.DskMto
          bne   L00E0
          lda   >$FD1D
          anda  #$7F
          sta   >$FD1D
-L00E0    lda   <$0097
+L00E0    lda D.DskTmr+1
          beq   L00F1
 L00E4    deca  
-         sta   <$0097
+         sta D.DskTmr+1
          bne   L0102
          lda   >$FD35
          ora   #$40
          sta   >$FD35
-L00F1    lda   <$009B
+L00F1    lda D.DskMto+1
          beq   L0102
          deca  
-         sta   <$009B
+         sta D.DskMto+1
          bne   L0102
          lda   >$FD35
          ora   #$C0
          sta   >$FD35
+
 L0102    ldd   D.Min
  incb COUNT Second
  cmpb #60 End of minute?
@@ -177,18 +180,17 @@ L0102    ldd   D.Min
  beq TICK10 Branch if even hundred
  andb #3 Is it leap year?
  bne TICK10 Branch if not
-         clrb  
-         bra   TICK12
-
-TICK10    ldb   D.Month
+ clrb Get February entry for leap year
+ bra TICK12
+TICK10 ldb D.Month Get month
 TICK12 cmpa B,X End of month?
  bls TICK20 Branch if not
  ldd D.YEAR Get year & month
  incb COUNT Month
-         cmpb  #12
-         bls   TICK15
-         inca  
-         ldb   #$01
+ cmpb #12 Next year?
+ bls TICK15 Branch if same year
+ inca COUNT Year
+ ldb #1 New month
 TICK15 std D.YEAR Update year & month
  lda #1 New day
 TICK20 clrb NEW Hour
@@ -196,8 +198,8 @@ TICK25 std D.DAY Update day & hour
  clra NEW Minute
 TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
-         lda   #100
-         sta   D.Tick
+ lda #100 Get ticks per second
+ sta D.Tick
 Tick47 ldd D.Clock get clock routine ptr
 TICK50 std D.SvcIRQ set IRQ service routine
  jmp [D.XIRQ] enter system
