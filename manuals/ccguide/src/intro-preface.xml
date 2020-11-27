@@ -181,7 +181,7 @@ before returning.
 Chown() has been fixed to not wipe out disks.
 </para>
 <para>
-Toascii() has been added to stdio.h
+Toascii() has been added to ctype.h
 </para>
 <para>
 Calls to scanf() now do not cause the linker to reports

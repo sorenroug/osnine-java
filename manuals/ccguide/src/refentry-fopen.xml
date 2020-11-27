@@ -19,7 +19,7 @@
   <funcdef>FILE *<function>freopen</function></funcdef>
   <paramdef>char *<parameter>filename</parameter></paramdef>
   <paramdef>char *<parameter>action</parameter></paramdef>
-  <paramdef>FILE *<parameter>streak</parameter></paramdef>
+  <paramdef>FILE *<parameter>stream</parameter></paramdef>
 </funcprototype>
 
 <funcprototype>
@@ -134,12 +134,11 @@ file is made unbuffered by a call to setbuf() (q.v.).
 Freopen is usually used to attach stdin, stdout, and stderr to
 specified files. Freopen substitutes the file passed to it
 instead of the open stream. The original stream is closed.
-NOTE that the original stream will be closed even if the open
-does not succeed.
+NOTE that the original stream will be closed even if the open does not succeed.
 </para>
 <para>
-Fdopen associates a stream with a file descriptor. The streams
-type(r,w,a) must be the same as the mode of the open file.
+Fdopen associates a stream with a file descriptor.
+The streams type (r,w,a) must be the same as the mode of the open file.
 </para>
 </refsect1>
 
