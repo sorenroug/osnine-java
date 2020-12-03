@@ -515,12 +515,17 @@ public class JTerminal extends JPanel implements UIDevice {
 
         /**
          * Truncate line to new character count.
+         *
+         * @param newCount column to truncate at.
          */
         void truncate(int newCount) {
             attrCache = null;
-            countChar = newCount; 
-            for (int i = 0; i < maxLength; i++)
+            int lowest = (newCount < countChar) ? newCount : countChar;
+            for (int i = lowest; i < maxLength; i++) {
                 attributes[i] = NOATTRS;
+                line[i] = ' ';
+            }
+            countChar = newCount;
         }
 
         /**
