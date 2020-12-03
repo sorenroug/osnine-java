@@ -71,7 +71,7 @@ public class MM58167 extends MemorySegment {
 
     private int clockPeriod = CLOCKPERIOD;
 
-    private Timer timer;
+    private Timer timer = null;
 
     /**
      * Constructor.
@@ -86,8 +86,6 @@ public class MM58167 extends MemorySegment {
         this.bus = bus;
         clockPeriod = period;
         clocktask = new MMClockTick(bus);
-        timer = new Timer("clock", true);
-
     }
 
     /**
@@ -149,8 +147,12 @@ public class MM58167 extends MemorySegment {
             // If value is 2 then enable 100 millisec interrupts
             // If value is 4 then enable 1000 millisec interrupts (not impl.)
             if (val == 0) {
-                timer.cancel();
+                if (timer != null) {
+                    timer.cancel();
+                    timer = null;
+                }
             } else if (val == 2) {
+                timer = new Timer("clock", true);
                 timer.schedule(clocktask, CLOCKDELAY, 100);
             }
             break;
