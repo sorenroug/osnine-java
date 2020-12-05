@@ -69,4 +69,5 @@ UnLimitd rmb 1 check all NotRAM for modules
  endc
 
 ROMCheck equ UnLimitd check all NotRAM
+RAMCheck equ BlockTyp check only first bytes of RAM blocks
 
