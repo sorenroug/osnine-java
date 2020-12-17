@@ -271,7 +271,7 @@ This command line will assemble the file <filename>it_works</filename>.
       </varlistentry>
     </variablelist>
     <synopsis>
-asm rent_a_duck 1,5,w72,d25 #10k
+asm rent_a_duck l,s,w72,d25 #10k
 </synopsis>
     <para>
 This command line will assemble the file <filename>rent_a_duck</filename>.
