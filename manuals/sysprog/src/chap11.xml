@@ -37,16 +37,16 @@ permits a BCS or BCC instruction immediately following the system
 call to branch on error/no error.</para>
   <para>Here is an example system call for the <xref linkend="i.close"/> service request:</para>
   <programlisting>
-LDA PATHNUM 
-SWI2 
-FCB $8B 
-BCS ERROR 
+LDA PATHNUM
+SWI2
+FCB $8B
+BCS ERROR
 </programlisting>
   <para>Using the assembler's <quote>OS9</quote> directive simplifies the call:</para>
   <programlisting>
-LDA PATHNUM 
-OS9 I$Close 
-BCS ERROR 
+LDA PATHNUM
+OS9 I$Close
+BCS ERROR
 </programlisting>
   <para>The I/O service requests are simpler to use than in many other
 operating systems because the calling program does not have to
@@ -2874,7 +2874,7 @@ previous call to F$STime has been made.
       <para>
 FUNCTION: UNLINK tells OS-9 that the module is no longer needed by the
 calling process. The module's link count is decremented, and the module
-is destroyed and.itstemory deallocated when the link count equals zero.
+is destroyed and its memory deallocated when the link count equals zero.
 The module will not be destroyed if in use by any other process(es)
 because its link count will be non-zero. In Level Two systems, the
 module is usually switched out of the process' address space. Also, any
@@ -2913,14 +2913,14 @@ module directory.
       <simplelist>
         <member>LI - 
             <simplelist type="inline">
-                <member>F$IoDel</member>
+                <member>F$IODel</member>
                 <member>F$DelBit*</member>
             </simplelist>
         </member>
         <member>LII -
             <simplelist type="inline">
                 <member>F$LDDDXY*</member>
-                <member>F$IoDel</member>
+                <member>F$IODel</member>
             </simplelist>
         </member>
       </simplelist>

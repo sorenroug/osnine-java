@@ -4,8 +4,8 @@
   <para>
 The Random Block File Manager (RBF) is a file manager module that
 supports random-access, block-oriented mass storage devices such as disk
-systems, bubble memory systems, and high-performance tape systems. RBP
-can handle any number or type of such systems simultaneously. RBF is a
+systems, bubble memory systems, and high-performance tape systems.
+RBF can handle any number or type of such systems simultaneously. RBF is a
 reentrant subroutine package called by IOMAN for I/O service requests to
 random-access devices. It is responsible for maintaining the logical and
 physical file structures.
@@ -18,7 +18,8 @@ the subroutines in the associated device drivers. All data transfers are
 performed using 256 byte data blocks. RBF does not directly deal with
 physical addresses such as tracks, cylinders, etc. Instead, it passes to
 device driver modules address parameters using a standard address called
-a <quote>logical sector number</quote>, or <quote>LSN</quote>. LSNs are integers in the range of 0
+a <quote>logical sector number</quote>, or <quote>LSN</quote>.
+LSNs are integers in the range of 0
 to <emphasis>n</emphasis>-1, where <emphasis>n</emphasis> is the maximum number of sectors on the media.
 The driver is responsible for translating the logical sector number to actual
 cylinder/track/sector values.
@@ -60,8 +61,8 @@ logical sector number is given in the information LSN 0 (DD.Dir).
       <para>
 Logical sector number zero contains a description of the physical and
 logical characteristics of the volume which are established by the
-"<command>format</command>" command program when the media is initialized. The table below
-gives the OS-9 mnemonic name, byte address, size, and description of each
+"<command>format</command>" command program when the media is initialized.
+The table below gives the OS-9 mnemonic name, byte address, size, and description of each
 value stored in this sector.
 </para>
       <informaltable frame="none" colsep="0" rowsep="0">

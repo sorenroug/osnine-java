@@ -195,7 +195,7 @@ marking as unallocated as much of the DAT image as the system allows
         <varlistentry>
           <term>OUTPUT:</term>
           <listitem>
-            <para>None.</para>
+            <para>(D) = Beginning RAM block number</para>
           </listitem>
         </varlistentry>
         <varlistentry>
