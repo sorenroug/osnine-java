@@ -11,7 +11,7 @@
 
     <groupId>roug.org.osnine</groupId>
     <artifactId>l2multi</artifactId>
-    <version>1.0.0</version>
+    <version>0.7.1</version>
     <packaging>jar</packaging>
 
     <name>Emulator for a multi-user OS-9 Level II</name>
@@ -275,7 +275,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
