@@ -20,6 +20,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java_version>1.8</java_version>
+        <!--
+        <maven.compiler.release>15</maven.compiler.release>
+        -->
     </properties>
 
     <scm>
@@ -34,6 +37,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
+                    <!--
+                    <release>11</release>
+                    -->
                     <compilerVersion>${java_version}</compilerVersion>
                     <source>${java_version}</source>
                     <target>${java_version}</target>
