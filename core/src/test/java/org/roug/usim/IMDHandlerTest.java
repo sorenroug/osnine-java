@@ -3,7 +3,9 @@ package org.roug.usim;
 import java.io.File;
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -26,22 +28,30 @@ public class IMDHandlerTest {
      */
     @Test
     public void readOS9Imd() throws IOException {
-        IMDHandler img = new IMDHandler(diskPath("OS9_V1.2.imd"));
+        IMDHandler disk = new IMDHandler(diskPath("OS9_V1.2.imd"));
         assertEquals("IMD 1.18: 14/07/2014 11:05:31\r\n"
-                   + "os-9 gmx I v 1.2\r\n", img.getLabel());
-        assertEquals(1, img.getNumSides());
-        assertEquals(80, img.getNumTracks());
-        assertEquals(10, img.getNumSectors(0, 10));
+                   + "os-9 gmx I v 1.2\r\n", disk.getLabel());
+        assertEquals(1, disk.getNumSides());
+        assertEquals(80, disk.getNumTracks());
+        assertEquals(10, disk.getNumSectors(0, 10));
 
-        byte[] sector0 = img.readSector(0, 0, 0);
-        assertEquals(0x00, sector0[0]);
-        assertEquals(0x03, sector0[1]);
-        assertEquals(0x20, sector0[2]);
+        assertFalse(disk.isMFM(0, 0)); // Side 0, Track 0
+        assertFalse(disk.isMFM(0, 1)); // Side 0, Track 1
 
-        byte[] sector1 = img.readSector(0, 0, 1);
-        assertEquals(-1, sector1[0]);
-        assertEquals(-1, sector1[1]);
-        assertEquals(-1, sector1[2]);
+        byte[] sector = disk.readSector(0, 0, 0);
+        assertEquals(0x00, sector[0]);
+        assertEquals(0x03, sector[1]);
+        assertEquals(0x20, sector[2]);
+
+        sector = disk.readSector(0, 0, 1);
+        assertEquals(-1, sector[0]);
+        assertEquals(-1, sector[1]);
+        assertEquals(-1, sector[2]);
+
+        sector = disk.readSector(0, 79, 5);
+        assertEquals(-27, sector[0]);
+        assertEquals(-27, sector[1]);
+        assertEquals(-27, sector[2]);
     }
 
     /*
@@ -50,15 +60,22 @@ public class IMDHandlerTest {
      */
     @Test
     public void readK4FImd() throws IOException {
-        IMDHandler img = new IMDHandler(diskPath("SBASIC.imd"));
+        IMDHandler disk = new IMDHandler(diskPath("SBASIC.imd"));
         assertEquals("IMD 1.18: 10/06/2019 15:28:47\r\n"
-                   + "CP/M 2.2 og S-BASIC for Kaypro\r\n", img.getLabel());
-        assertEquals(2, img.getNumSides());
-        assertEquals(40, img.getNumTracks());
-        assertEquals(10, img.getNumSectors(0, 10)); // This is the physical number of sectors on each side.
-        assertEquals(512, img.getSectorSize(0, 10));
+                   + "CP/M 2.2 og S-BASIC for Kaypro\r\n", disk.getLabel());
+        assertEquals(2, disk.getNumSides());
+        assertEquals(40, disk.getNumTracks());
+        assertEquals(10, disk.getNumSectors(0, 10)); // This is the physical number of sectors on each side.
+        assertEquals(512, disk.getSectorSize(0, 10));
 
-        byte[] sector0 = img.readSector(0, 0, 12);
+        assertTrue(disk.isMFM(0, 1)); // Side 0, Track 1
+        assertTrue(disk.isMFM(0, 18)); // Side 0, Track 18
+
+        assertTrue(disk.isBadSector(0, 0, 1));
+        assertTrue(disk.isBadSector(0, 0, 11));
+        assertFalse(disk.isBadSector(0, 0, 2));
+
+        byte[] sector0 = disk.readSector(0, 0, 12);
         assertEquals(0x00, sector0[0]);
         assertEquals(0x55, sector0[1]);
         assertEquals(0x4E, sector0[2]);

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +43,17 @@ public class IMDHandler {
 
     private File imageFile;
 
+    /** Tracks on disk. First index is side, second track number. */
     private Track[][] tracks;
+
+    /** Mapping from logical head,track,sect to physical. */
+    private HashMap<SectorMap,SectorMap> logSectMap;
+
+    /** Mapping from logical head,track to physical. */
+    private HashMap<TrackMap,TrackMap> logTrackMap;
 
     private static final Logger LOGGER =
                 LoggerFactory.getLogger(IMDHandler.class);
-
-    /** Mapping from logical head,track,sect to physical. */
-    private HashMap<SectorMap,SectorMap> logicalMap;
 
     /**
      * Constructor.
@@ -70,6 +75,8 @@ public class IMDHandler {
 
     /**
      * Constructor. Loads the ImageDisk file.
+     *
+     * @param fileName - path of file to load.
      */
     public IMDHandler(String fileName) throws IOException {
         this(new File(fileName));
@@ -77,6 +84,8 @@ public class IMDHandler {
 
     /**
      * Constructor. Loads the ImageDisk file.
+     *
+     * @param imdFile - file to load.
      */
     public IMDHandler(File imdFile) throws IOException {
         byte[] disk;
@@ -89,8 +98,11 @@ public class IMDHandler {
         is.read(disk);
         this.imageFile = imdFile;
         is.close();
+
+        // Verify format
         if (disk[0] != 'I' || disk[1] != 'M' || disk[2] != 'D')
             throw new IOException("Bad file format");
+
         // Read label
         int inx = labelLen(disk);
         try {
@@ -103,31 +115,15 @@ public class IMDHandler {
         inx++;
         numTracks = 0;
         while (inx < disk.length) {
-            int mode = disk[inx++];
-            int transferRate = 500;
-            boolean mfm = true;
-            switch (mode) {
-                case 0: transferRate = 500;
-                    mfm = false; break;
-                case 1: transferRate = 300;
-                    mfm = false; break;
-                case 2: transferRate = 250;
-                    mfm = false; break;
-                case 3: transferRate = 500;
-                    mfm = true; break;
-                case 4: transferRate = 300;
-                    mfm = true; break;
-                case 5: transferRate = 250;
-                    mfm = true; break;
-                default:
-                    throw new IOException("Unsupported mode");
-            }
+            byte mode = disk[inx++];
+            if (mode < 0 || mode > 5)
+                throw new IOException("Unsupported mode");
+
             int trackNum = disk[inx++];
             int head = disk[inx++];
             int numSectors = disk[inx++];
             Track track = new Track(head, trackNum, numSectors);
-            track.transferRate = transferRate;
-            track.mfm = mfm;
+            track.mode = mode;
             int sectorType = disk[inx++];
             if (sectorType > 6)
                 throw new IOException("Unsupported sector size");
@@ -142,9 +138,9 @@ public class IMDHandler {
             inx += track.numSectors;
             // Read sector cylinder map
             if (hasCylMap) {
-                track.setTrackMap(disk, inx);
+                track.setSectCylMap(disk, inx);
                 inx += track.numSectors;
-//LOGGER.info("Side {} track {} cylinder map {}", head, trackNum, track.cylinderMap);
+//LOGGER.info("Side {} track {} cylinder map {}", head, trackNum, track.sectCylMap);
             }
             // Read sector head map
             if (hasHeadMap) {
@@ -157,7 +153,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
             tracks[head][trackNum] = track;
             if (trackNum > numTracks) numTracks = trackNum;
         }
-        numTracks++;
+        numTracks++;  // Count track 0
         buildReverseMap();
     }
 
@@ -168,32 +164,90 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
     private void buildReverseMap() {
         int totSects = 0;
         for (int head = 0; head < numHeads; head++) {
-//LOGGER.info("Head: {} of {}", head, numHeads);
             for (int trackNum = 0; trackNum < numTracks; trackNum++) {
                 totSects += tracks[head][trackNum].numSectors;
             }
         }
-        logicalMap = new HashMap<SectorMap,SectorMap>(totSects);
+        logSectMap = new HashMap<SectorMap,SectorMap>(totSects);
+        logTrackMap = new HashMap<TrackMap,TrackMap>(numHeads * numTracks);
 
         for (int head = 0; head < numHeads; head++) {
 
             for (int trackNum = 0; trackNum < numTracks; trackNum++) {
-                Track t = tracks[head][trackNum];
-                for (int sect = 0; sect < t.numSectors; sect++) {
-                    SectorMap key = new SectorMap(t.getLogHead(sect),
-                        t.getLogTrack(sect), t.getLogSect(sect));
+                Track track = tracks[head][trackNum];
+                TrackMap tkey = new TrackMap(track.getLogHead(0),
+                        track.getLogTrack(0));
+                TrackMap tval = new TrackMap(head, trackNum);
+                logTrackMap.put(tkey, tval);
+                for (int sect = 0; sect < track.numSectors; sect++) {
+                    SectorMap key = new SectorMap(track.getLogHead(sect),
+                        track.getLogTrack(sect), track.getLogSect(sect));
                     SectorMap val = new SectorMap(head, trackNum, sect);
 //LOGGER.info("Key {} Value {}", key, val);
-                    logicalMap.put(key, val);
+                    logSectMap.put(key, val);
                 }
             }
         }
-//        for (SectorMap s : logicalMap.keySet()) {
+//        for (SectorMap s : logSectMap.keySet()) {
 //            LOGGER.info("Key {}", s);
 //        }
     }
 
-    /*
+    /**
+     * Is track MFM?
+     *
+     * @param head - logical side of disk.
+     * @param trackNum - logical track number.
+     */
+    public boolean isMFM(int head, int trackNum) {
+        Track t = getPhysTrack(head, trackNum);
+
+        switch (t.mode) {
+            case 0: 
+            case 1:
+            case 2:
+                return false;
+            case 3:
+            case 4:
+            case 5:
+                return true;
+            default:
+                throw new RuntimeException("Unsupported mode");
+        }
+    }
+
+    /**
+     * Get transfer rate for track.
+     * These should be identical for all tracks.
+     *
+     * @param head - logical side of disk.
+     * @param trackNum - logical track number.
+     */
+    public int getTransferRate(int head, int trackNum) {
+        Track t = getPhysTrack(head, trackNum);
+
+        switch (t.mode) {
+            case 0:
+            case 3:
+                return 500;
+            case 1:
+            case 4:
+                return 300;
+            case 2:
+            case 5:
+                return 250;
+            default:
+                throw new RuntimeException("Unsupported mode");
+        }
+    }
+
+    private Track getPhysTrack(int head, int trackNum) {
+        TrackMap key = new TrackMap(head, trackNum);
+        TrackMap physLoc = logTrackMap.get(key);
+        return tracks[physLoc.head][physLoc.track];
+    }
+
+    /**
      * Read each sector on one track and create it as an object.
      *
      * @return index into file after completion.
@@ -201,6 +255,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
     private int readSectorsFromArray(byte[] disk, int inx, Track track) {
         for (int i = 0; i < track.numSectors; i++) {
             Sector sector = new Sector();
+            sector.sectorSize = track.sectorSize;
             track.sectors[i] = sector;
             int sectorCode = disk[inx++];
             switch (sectorCode) {
@@ -261,27 +316,91 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         return label;
     }
 
+    private Sector getPhysSector(int head, int trackNum, int sector) {
+        SectorMap key = new SectorMap(head, trackNum, sector);
+        SectorMap physLoc = logSectMap.get(key);
+        Track t = tracks[physLoc.head][physLoc.track];
+        int physSector = physLoc.sector;
+        return t.sectors[physSector];
+    }
+
     /**
      * Read sector from memory structure.
+     * Logical numbering
+     *
+     * @param side - value 0 or 1.
+     * @param track - 0 to numTracks - 1
+     * @param sector - sector on track
+     * @return array of bytes
+     */
+    public byte[] readSector(int side, int track, int sector) {
+        Sector s  = getPhysSector(side, track, sector);
+        if (s.bad)
+            throw new RuntimeException("Bad sector");
+        byte[] buf = new byte[s.sectorSize];
+        if (s.compressed) {
+            // for (int i = 0; i < s.sectorSize; i++) buf[i] = s.fill;
+            Arrays.fill(buf, s.fill);
+        } else {
+            System.arraycopy(s.data, 0, buf, 0, s.sectorSize);
+        }
+        return buf;
+    }
+
+    /**
+     * Write sector into memory structure.
+     * Logical numbering
+     *
      * @param side - value 0 or 1.
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
      */
-    public byte[] readSector(int side, int track, int sector) {
-        SectorMap key = new SectorMap(side, track, sector);
-        SectorMap physLoc = logicalMap.get(key);
-        Track t = tracks[physLoc.head][physLoc.track];
-        byte[] buf = new byte[t.sectorSize];
-        int physSector = physLoc.sector;
-        Sector s = t.sectors[physSector];
-        if (s.bad)
-            throw new RuntimeException("Bad sector");
-        if (s.compressed) {
-            for (int i = 0; i < t.sectorSize; i++) buf[i] = s.fill;
-        } else {
-            System.arraycopy(s.data, 0, buf, 0, t.sectorSize);
+    public void writeSector(int side, int track, int sector, byte[] data) {
+        Sector s  = getPhysSector(side, track, sector);
+        s.bad = false;
+        if (data.length != s.sectorSize)
+            throw new RuntimeException("Bad size of buffer");
+
+        boolean compressable = true;
+        for (int i = 0; i < s.sectorSize; i++) {
+            if (data[i] != data[0]) {
+                compressable = false;
+                break;
+            }
         }
-        return buf;
+        if (compressable) {
+            s.fill = data[0];
+            if (!s.compressed) {
+                s.compressed = true;
+                s.data = null;
+            }
+        } else {
+            if (s.compressed) {
+                s.compressed = false;
+                s.data = Arrays.copyOf(data, data.length);
+                /*
+                s.data = new byte[s.sectorSize];
+                for (int i = 0; i < s.sectorSize; i++)
+                    s.data[i] = data[i];
+                */
+            } else {
+                System.arraycopy(data, 0, s.data, 0, s.sectorSize);
+            }
+        }
+    }
+
+    /**
+     * Determine if a sector is bad.
+     * Logical numbering
+     *
+     * @param side - value 0 or 1.
+     * @param track - 0 to numTracks - 1
+     * @param sector - sector on track
+     * @return true is track is bad
+     */
+    public boolean isBadSector(int side, int track, int sector) {
+        Sector s  = getPhysSector(side, track, sector);
+        return s.bad;
     }
 
     /**
@@ -319,16 +438,43 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         Track t = tracks[side][track];
         return t.sectorSize;
     }
-/*
-    private class TrackHeader {
-        byte mode;
-        byte cylinder;
-        byte head;
-        byte sectors;
-        byte sectorSize;
-    }
-*/
 
+    /**
+     * Map logical head and track to physical head and track.
+     */
+    private class TrackMap {
+        int head, track;
+
+        TrackMap(int head, int track) {
+            this.head = head;
+            this.track = track;
+        }
+
+        @Override
+        public String toString() {
+            return "{" + Integer.toString(head) + ";" + Integer.toString(track) + "}";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            TrackMap mapObj = (TrackMap) obj;
+            if (head == mapObj.head && track == mapObj.track)
+                return true;
+            else
+                return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int h = (head << 24) + (track << 8);
+            return h;
+        }
+
+    }
+
+    /**
+     * Map logical head, track and to physical head, track and sector.
+     */
     private class SectorMap {
         int head, track, sector;
 
@@ -362,6 +508,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
     }
 
     private class Sector {
+        int sectorSize;
         byte[] data;
         byte fill;
         boolean compressed;
@@ -370,13 +517,15 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         boolean dirty;
     }
 
+    /**
+     * CLASS: Track.
+     */
     private class Track {
         int side, trackNum, numSectors;
         int sectorSize;
-        int transferRate;
-        boolean mfm;
+        byte mode;
         byte[] sectorMap;
-        byte[] cylinderMap;
+        byte[] sectCylMap;
         byte[] headMap;
         Sector[] sectors;
         
@@ -385,7 +534,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
             this.trackNum = trackNum;
             this.numSectors = numSectors;
             sectorMap = new byte[numSectors];
-            cylinderMap = null;
+            sectCylMap = null;
             headMap = null;
             sectors = new Sector[numSectors];
         }
@@ -394,25 +543,14 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
             System.arraycopy(disk, inx, sectorMap, 0, numSectors);
         }
 
-        void setTrackMap(byte[] disk, int inx) {
-            cylinderMap = new byte[numSectors];
-            System.arraycopy(disk, inx, cylinderMap, 0, numSectors);
+        void setSectCylMap(byte[] disk, int inx) {
+            sectCylMap = new byte[numSectors];
+            System.arraycopy(disk, inx, sectCylMap, 0, numSectors);
         }
 
         void setHeadMap(byte[] disk, int inx) {
             headMap = new byte[numSectors];
             System.arraycopy(disk, inx, headMap, 0, numSectors);
-        }
-
-        /*
-         * Find a sector.
-         * TODO: invert the table.
-         */
-        int findSector(int secNum) throws RuntimeException {
-            for (int i = 0; i < numSectors; i++) {
-                if (sectorMap[i] == secNum) return i;
-            }
-            throw new RuntimeException("Bad sector number");
         }
 
         /**
@@ -427,8 +565,8 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
          * Get logical track of physical sector given.
          */
         int getLogTrack(int sect) {
-            if (cylinderMap == null) return trackNum;
-            else return cylinderMap[sect];
+            if (sectCylMap == null) return trackNum;
+            else return sectCylMap[sect];
         }
 
         /**
