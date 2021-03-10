@@ -1,13 +1,15 @@
 package org.roug.usim;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.File;
-import java.util.HashMap;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,10 +126,10 @@ public class IMDHandler {
             int numSectors = disk[inx++];
             Track track = new Track(head, trackNum, numSectors);
             track.mode = mode;
-            int sectorType = disk[inx++];
-            if (sectorType > 6)
+            track.sectorType = disk[inx++];
+            if (track.sectorType > 6)
                 throw new IOException("Unsupported sector size");
-            track.sectorSize = (1 << sectorType) * 128;
+            track.sectorSize = (1 << track.sectorType) * 128;
             boolean hasCylMap = (head & 0x80) == 0x80;
             boolean hasHeadMap = (head & 0x40) == 0x40;
             head &= 0x01;
@@ -261,6 +263,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
             switch (sectorCode) {
                 // 00      Sector data unavailable - could not be read
                 case 0:
+                    sector.unavailable = true;
                     sector.bad = true;
                     break;
                 // 01 .... Normal data: (Sector Size) bytes follow
@@ -324,6 +327,71 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         return t.sectors[physSector];
     }
 
+
+    /**
+     * Save disk to file.
+     *
+     * @param imdFile - The name of the file to save to.
+     */
+    public void saveDisk(File imdFile) throws FileNotFoundException,
+            UnsupportedEncodingException, IOException {
+        FileOutputStream outFp = new FileOutputStream(imdFile);
+        outFp.write(label.getBytes("US-ASCII"));
+        outFp.write(0x1A);
+        Track track;
+        for (int h = 0; h < numHeads; h++) {
+            for (int t = 0; t < numTracks; t++) {
+                track =  tracks[h][t];
+                outFp.write(track.mode);
+                outFp.write(track.trackNum);
+                outFp.write(track.side);
+                outFp.write(track.numSectors);
+                outFp.write(track.sectorType);
+                outFp.write(track.sectorMap);
+                if (track.sectCylMap != null)
+                    outFp.write(track.sectCylMap);
+                if (track.headMap != null)
+                    outFp.write(track.headMap);
+                for (int s = 0; s < track.numSectors; s++) {
+                    Sector sector = track.sectors[s];
+                    outFp.write(makeSectorCode(sector));
+                    if (sector.unavailable) continue;
+                    if (sector.compressed) outFp.write(sector.fill);
+                    else outFp.write(sector.data);
+                }
+            }
+        }
+        outFp.close();
+    }
+
+    /**
+     * Create sector code from flags.
+     * This can not be done with bit masks.
+     *
+     * @param sector - the sector object.
+     */
+    private int makeSectorCode(Sector sector) {
+        if (sector.unavailable) return 0;
+
+        if (sector.compressed) {
+            if (sector.bad) {
+                if (sector.deleted) return 8;
+                else return 6;
+            } else {
+                if (sector.deleted) return 4;
+                else return 2;
+            }
+        } else {
+            if (sector.bad) {
+                if (sector.deleted) return 7;
+                else return 5;
+            } else {
+                if (sector.deleted) return 3;
+                else return 1;
+            }
+        }
+    }
+
     /**
      * Read sector from memory structure.
      * Logical numbering
@@ -335,8 +403,8 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
      */
     public byte[] readSector(int side, int track, int sector) {
         Sector s  = getPhysSector(side, track, sector);
-        if (s.bad)
-            throw new RuntimeException("Bad sector");
+        if (s.unavailable)
+            throw new RuntimeException("Sector unavailable");
         byte[] buf = new byte[s.sectorSize];
         if (s.compressed) {
             // for (int i = 0; i < s.sectorSize; i++) buf[i] = s.fill;
@@ -357,9 +425,10 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
      */
     public void writeSector(int side, int track, int sector, byte[] data) {
         Sector s  = getPhysSector(side, track, sector);
-        s.bad = false;
         if (data.length != s.sectorSize)
             throw new RuntimeException("Bad size of buffer");
+        s.unavailable = false;
+        s.bad = false;
 
         boolean compressable = true;
         for (int i = 0; i < s.sectorSize; i++) {
@@ -514,6 +583,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         boolean compressed;
         boolean deleted;
         boolean bad;
+        boolean unavailable;
         boolean dirty;
     }
 
@@ -522,6 +592,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
      */
     private class Track {
         int side, trackNum, numSectors;
+        byte sectorType;
         int sectorSize;
         byte mode;
         byte[] sectorMap;

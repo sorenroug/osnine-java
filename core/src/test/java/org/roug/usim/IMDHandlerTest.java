@@ -24,7 +24,8 @@ public class IMDHandlerTest {
     }
 
     /**
-     * 
+     * Read OS-9 disk with 80 tracks and 10 sectors/track.
+     * FM formatted.
      */
     @Test
     public void readOS9Imd() throws IOException {
@@ -52,6 +53,13 @@ public class IMDHandlerTest {
         assertEquals(-27, sector[0]);
         assertEquals(-27, sector[1]);
         assertEquals(-27, sector[2]);
+
+    }
+
+    @Test
+    public void copyOS9Imd() throws IOException {
+        IMDHandler disk = new IMDHandler(diskPath("OS9_V1.2.imd"));
+        disk.saveDisk(diskPath("savedos9.imd"));
     }
 
     /*
