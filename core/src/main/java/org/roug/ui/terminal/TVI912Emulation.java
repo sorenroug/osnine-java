@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Emulation of a Heath H-19 / Zenith Z-19 terminal.
+ * Emulation of a TeleVideo 912 terminal.
  */
 public class TVI912Emulation extends EmulationCore {
 

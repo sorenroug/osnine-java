@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import org.roug.ui.UIDevice;
 
+/**
+ * Emulation of simple printer.
+ */
 public class JPrinter extends JTextPane implements UIDevice {
 
     private static final Logger LOGGER =

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Parse the control sequences from the host and the keys of the keyboard.
+ * Emulation of 51x24 screen for Dragon/Coco
  */
 public class GO51Emulation extends EmulationCore {
 
