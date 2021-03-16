@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -19,7 +21,6 @@ import org.slf4j.LoggerFactory;
  * Since sectors can be compressed, there is no random access.
  * You must read the image into memory and then parse it into the structure.
  *
- * TODO: Incomplete.
  */
 public class IMDHandler {
 
@@ -31,15 +32,13 @@ public class IMDHandler {
 
     private String label;
 
+    private String header;
+
     /** Number of heads on media: 1 or 2. */
     private int numHeads;
 
     /** Number of tracks on one side. */
     private int numTracks;
-
-    private int dirty; // Boolean?
-
-    private boolean writeProtect;
 
     private boolean readOnly;
 
@@ -61,6 +60,7 @@ public class IMDHandler {
      * Constructor.
      * TODO
      */
+    /*
     public IMDHandler(int sides, int numTracks, int sectors, int sectorSize) {
         this.numTracks = numTracks;
         numHeads = sides;
@@ -74,6 +74,7 @@ public class IMDHandler {
             }
         }
     }
+    */
 
     /**
      * Constructor. Loads the ImageDisk file.
@@ -105,10 +106,17 @@ public class IMDHandler {
         if (disk[0] != 'I' || disk[1] != 'M' || disk[2] != 'D')
             throw new IOException("Bad file format");
 
-        // Read label
-        int inx = labelLen(disk);
+        int hEnd = headerLen(disk, 0);
         try {
-            label = new String(disk, 0, inx, "US-ASCII");
+            header = new String(disk, 0, hEnd - 2, "US-ASCII");
+        } catch (UnsupportedEncodingException e) {
+            throw new IOException("Bad header in file");
+        }
+
+        // Read label
+        int inx = labelLen(disk, hEnd);
+        try {
+            label = new String(disk, hEnd, inx - hEnd, "US-ASCII");
         } catch (UnsupportedEncodingException e) {
             throw new IOException("Bad label in file");
         }
@@ -148,7 +156,7 @@ public class IMDHandler {
             if (hasHeadMap) {
                 track.setHeadMap(disk, inx);
                 inx += track.numSectors;
-LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
+//LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
             }
 //LOGGER.info("Inx: {}", inx);
             inx = readSectorsFromArray(disk, inx, track);
@@ -264,7 +272,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
                 // 00      Sector data unavailable - could not be read
                 case 0:
                     sector.unavailable = true;
-                    sector.bad = true;
+                    sector.readError = true;
                     break;
                 // 01 .... Normal data: (Sector Size) bytes follow
                 // 03 .... Normal data with "Deleted-Data address mark"
@@ -279,7 +287,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
                     if (sectorCode == 3 || sectorCode == 7)
                         sector.deleted = true;
                     if (sectorCode == 5 || sectorCode == 7)
-                        sector.bad = true;
+                        sector.readError = true;
                     break;
                 // 02 xx   Compressed: All bytes in sector have same value (xx)
                 // 04 xx   Compressed  with "Deleted-Data address mark"
@@ -292,24 +300,49 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
                     if (sectorCode == 4 || sectorCode == 8)
                         sector.deleted = true;
                     if (sectorCode == 6 || sectorCode == 8)
-                        sector.bad = true;
+                        sector.readError = true;
                     break;
             }
         }
         return inx;
     }
 
+    private int headerLen(byte[] disk, int inx) {
+        for (; inx < disk.length; inx++) {
+            if (disk[inx] == 0x0A) break;
+        }
+        return inx + 1;
+    }
+
+    /**
+     * Return the label of the IMD file.
+     */
+    public String getHeader() {
+        return header;
+    }
+
+    private static final String DATE_TIME_FORMAT = "'IMD' 1.18: dd/MM/yyyy hh:mm:ss";
+
+    /** Date-time format. */
+    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
+
+    public void newHeader() {
+        setHeader(new Date());
+    }
+
+    public void setHeader(Date newDate) {
+        header = dateTimeFormat.format(newDate);
+    }
+
     /**
      * Return the length of the label.
      * Size of header is one larger.
      */
-    private int labelLen(byte[] disk) {
-        int i;
-
-        for (i = 0; i < disk.length; i++) {
-            if (disk[i] == 0x1A) break;
+    private int labelLen(byte[] disk, int inx) {
+        for (; inx < disk.length; inx++) {
+            if (disk[inx] == 0x1A) break;
         }
-        return i;
+        return inx;
     }
 
     /**
@@ -319,9 +352,18 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         return label;
     }
 
-    private Sector getPhysSector(int head, int trackNum, int sector) {
+    /**
+     * Set a new label - must be ASCII.
+     */
+    public void setLabel(String newLabel) {
+        label = newLabel;
+    }
+
+    private Sector getPhysSector(int head, int trackNum, int sector) throws IOException {
         SectorMap key = new SectorMap(head, trackNum, sector);
         SectorMap physLoc = logSectMap.get(key);
+        if (physLoc == null)
+            throw new IOException("No such sector on disk");
         Track t = tracks[physLoc.head][physLoc.track];
         int physSector = physLoc.sector;
         return t.sectors[physSector];
@@ -336,32 +378,38 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
     public void saveDisk(File imdFile) throws FileNotFoundException,
             UnsupportedEncodingException, IOException {
         FileOutputStream outFp = new FileOutputStream(imdFile);
-        outFp.write(label.getBytes("US-ASCII"));
-        outFp.write(0x1A);
-        Track track;
-        for (int h = 0; h < numHeads; h++) {
-            for (int t = 0; t < numTracks; t++) {
-                track =  tracks[h][t];
-                outFp.write(track.mode);
-                outFp.write(track.trackNum);
-                outFp.write(track.side);
-                outFp.write(track.numSectors);
-                outFp.write(track.sectorType);
-                outFp.write(track.sectorMap);
-                if (track.sectCylMap != null)
-                    outFp.write(track.sectCylMap);
-                if (track.headMap != null)
-                    outFp.write(track.headMap);
-                for (int s = 0; s < track.numSectors; s++) {
-                    Sector sector = track.sectors[s];
-                    outFp.write(makeSectorCode(sector));
-                    if (sector.unavailable) continue;
-                    if (sector.compressed) outFp.write(sector.fill);
-                    else outFp.write(sector.data);
+        try {
+            outFp.write(header.getBytes("US-ASCII"));
+            outFp.write(0x0D);
+            outFp.write(0x0A);
+            outFp.write(label.getBytes("US-ASCII"));
+            outFp.write(0x1A);
+            Track track;
+            for (int h = 0; h < numHeads; h++) {
+                for (int t = 0; t < numTracks; t++) {
+                    track =  tracks[h][t];
+                    outFp.write(track.mode);
+                    outFp.write(track.trackNum);
+                    outFp.write(track.side);
+                    outFp.write(track.numSectors);
+                    outFp.write(track.sectorType);
+                    outFp.write(track.sectorMap);
+                    if (track.sectCylMap != null)
+                        outFp.write(track.sectCylMap);
+                    if (track.headMap != null)
+                        outFp.write(track.headMap);
+                    for (int s = 0; s < track.numSectors; s++) {
+                        Sector sector = track.sectors[s];
+                        outFp.write(makeSectorCode(sector));
+                        if (sector.unavailable) continue;
+                        if (sector.compressed) outFp.write(sector.fill);
+                        else outFp.write(sector.data);
+                    }
                 }
             }
+        } finally {
+            outFp.close();
         }
-        outFp.close();
     }
 
     /**
@@ -374,7 +422,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         if (sector.unavailable) return 0;
 
         if (sector.compressed) {
-            if (sector.bad) {
+            if (sector.readError) {
                 if (sector.deleted) return 8;
                 else return 6;
             } else {
@@ -382,7 +430,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
                 else return 2;
             }
         } else {
-            if (sector.bad) {
+            if (sector.readError) {
                 if (sector.deleted) return 7;
                 else return 5;
             } else {
@@ -400,11 +448,12 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
      * @return array of bytes
+     * @throws java.io.IOException if unable to read sector
      */
-    public byte[] readSector(int side, int track, int sector) {
+    public byte[] readSector(int side, int track, int sector) throws IOException {
         Sector s  = getPhysSector(side, track, sector);
         if (s.unavailable)
-            throw new RuntimeException("Sector unavailable");
+            throw new IOException("Sector unavailable");
         byte[] buf = new byte[s.sectorSize];
         if (s.compressed) {
             // for (int i = 0; i < s.sectorSize; i++) buf[i] = s.fill;
@@ -423,12 +472,13 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
      */
-    public void writeSector(int side, int track, int sector, byte[] data) {
+    public void writeSector(int side, int track, int sector, byte[] data)
+                throws IOException {
         Sector s  = getPhysSector(side, track, sector);
         if (data.length != s.sectorSize)
-            throw new RuntimeException("Bad size of buffer");
+            throw new IOException("Bad size of buffer");
         s.unavailable = false;
-        s.bad = false;
+        s.readError = false;
 
         boolean compressable = true;
         for (int i = 0; i < s.sectorSize; i++) {
@@ -439,48 +489,45 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
         }
         if (compressable) {
             s.fill = data[0];
-            if (!s.compressed) {
-                s.compressed = true;
-                s.data = null;
-            }
+            s.compressed = true;
+            s.data = null;
         } else {
             if (s.compressed) {
                 s.compressed = false;
                 s.data = Arrays.copyOf(data, data.length);
-                /*
-                s.data = new byte[s.sectorSize];
-                for (int i = 0; i < s.sectorSize; i++)
-                    s.data[i] = data[i];
-                */
-            } else {
+            } else { // Reuse array
                 System.arraycopy(data, 0, s.data, 0, s.sectorSize);
             }
         }
     }
 
     /**
-     * Determine if a sector is bad.
-     * Logical numbering
+     * Determine if a sector had read errors when read.
+     * There might still be data, but the CRC was wrong.
+     * Logical sector addressing.
      *
      * @param side - value 0 or 1.
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
      * @return true is track is bad
      */
-    public boolean isBadSector(int side, int track, int sector) {
+    public boolean isBadSector(int side, int track, int sector)
+                throws IOException {
         Sector s  = getPhysSector(side, track, sector);
-        return s.bad;
+        return s.readError;
     }
 
     /**
-     * Get number of sides.
+     * Get number of physical sides.
+     * It is possible for a disk format to continue the numbering of sectors
+     * on the next side, pretending the disk has only one side.
      */
     public int getNumSides() {
         return numHeads;
     }
 
     /**
-     * Get number of tracks on one side.
+     * Get number of physical tracks on one side.
      */
     public int getNumTracks() {
         return numTracks;
@@ -526,6 +573,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
 
         @Override
         public boolean equals(Object obj) {
+            if (obj == null) return false;
             TrackMap mapObj = (TrackMap) obj;
             if (head == mapObj.head && track == mapObj.track)
                 return true;
@@ -561,6 +609,7 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
 
         @Override
         public boolean equals(Object obj) {
+            if (obj == null) return false;
             SectorMap mapObj = (SectorMap) obj;
             if (head == mapObj.head && track == mapObj.track && sector == mapObj.sector)
                 return true;
@@ -576,15 +625,14 @@ LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
 
     }
 
-    private class Sector {
+    private static class Sector {
         int sectorSize;
         byte[] data;
         byte fill;
         boolean compressed;
         boolean deleted;
-        boolean bad;
+        boolean readError;
         boolean unavailable;
-        boolean dirty;
     }
 
     /**
