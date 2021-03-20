@@ -4,143 +4,150 @@
          use   defsfile
 
          mod   eom,name,Systm+Objct,ReEnt+3,start,size
+DriveCnt equ 4
 
-u0000    rmb   1
-u0001    rmb   6
-u0007    rmb   96
-u0067    rmb   1
-u0068    rmb   2
-u006A    rmb   2
-u006C    rmb   18
-u007E    rmb   1
-u007F    rmb   2
-u0081    rmb   2
-u0083    rmb   4
+ org DRVBEG
+ rmb Drvmem*DriveCnt
+
+X.CURDRV    rmb   1  Current drive #
+X.CURLSN    rmb   2
+X.SIZE    rmb   2
+X.BUFADR  rmb   2  $6C
+u006E rmb 16
+X.STAT    rmb   1
+X.DRVTBL    rmb   2 $7F
+X.DELAY    rmb   2 $81
+CTLREXEC    rmb   4 $83
 u0087    rmb   2
-u0089    rmb   2
+CTLRADDR    rmb   2
 size     equ   .
+
 name     equ   *
          fcs   /Boot/
          fcb   $02
 
-L0012    fcs "EXORctlr"
+CTLRNAME    fcs "EXORctlr"
 
-L001A    jmp   [>$FFFE]
+REBOOT    jmp   [>$FFFE]
 
 start    equ   *
          pshs  u,y,x,b,a
          ldd   #$0100
-         os9   F$SRQM
-         bcs   L001A
+         os9   F$SRQM Get memory address in reg. U
+         bcs   REBOOT
          clra
          clrb
-         sta   <u0067,u
-         std   <u0068,u
+         sta   X.CURDRV,u
+         std   X.CURLSN,u
          pshs  u,y
-         lda   #$E0
-         leax  <L0012,pcr
+         lda   #Drivr
+         leax  <CTLRNAME,pcr
          os9   F$Link
          tfr   u,x
          puls  u,y
-         bcs   L001A
-         stx   >u0089,u
-         ldd   $09,x
+         bcs   REBOOT
+         stx   >CTLRADDR,u
+         ldd   M$Exec,x
          leax  d,x
-         stx   >u0083,u
-         leax  $06,x
+         stx   >CTLREXEC,u
+         leax  6,x  Address of third address in jump table
          stx   >u0087,u
          ldy   #$EC00
-         sty   u0001,u
-         leax  u0007,u
-         stx   <u007F,u
+         sty   V.PORT,u
+         leax  DRVBEG,u
+         stx   <X.DRVTBL,u
          ldd   #$FFFF
-         std   <$15,x
-         ldd   #$0010
-         stb   $03,x
-         std   <$11,x
-         lda   #$01
-         sta   <$10,x
+         std   V.TRAK,x
+         ldd   #$0010 16 tracks?
+         stb   DD.TKS,x
+         std   DD.SPT,x
+         lda   #$01   Double-sided, single density
+         sta   DD.FMT,x
          ldd   #$00EA
-         std   >u0081,u
-         jsr   [>u0083,u]
+         std   >X.DELAY,u
+         jsr   [>CTLREXEC,u]
          ldb   #$04
-         stb   <u007E,u
+         stb   <X.STAT,u
          jsr   [>u0087,u]
          ldb   #$08
-         stb   <u007E,u
+         stb   <X.STAT,u
          jsr   [>u0087,u]
-         bcs   L00F0
+         bcs   ERRRTRN
          pshs  u
          ldd   #$0100
          os9   F$SRQM
          tfr   u,y
          puls  u
-         bcs   L00F0
+         bcs   ERRRTRN
          ldd   #$0001
          ldx   #$0000
          pshs  y
          bsr   L00FB
          jsr   [>u0087,u]
          puls  y
-         bcs   L00F0
+         bcs   ERRRTRN
          ldd   #$0100
          pshs  u,y
          tfr   y,u
          os9   F$SRTM
          puls  u,y
          bsr   L011F
-         ldd   <$18,y
+         ldd   DD.BSZ,y
          std   ,s
-         beq   L00EE
+         beq   BADMEDIA
          pshs  u,y
-         os9   F$SRQM
+         os9   F$SRQM Request memory (D = size)
          tfr   u,x
          puls  u,y
-         bcs   L00F0
+         bcs   ERRRTRN Unable to allocate memory
          stx   $02,s
          exg   x,y
-         ldd   <$18,x
+         ldd   DD.BSZ,x
          tstb
          beq   L00DB
-         inca
+         inca  Round up boot size
 L00DB    clrb
          exg   a,b
-         ldx   <$16,x
+         ldx   DD.BT+1,x Get boot sector
          bsr   L00FB
          jsr   [>u0087,u]
-         bcs   L00F0
-         bsr   L010D
+         bcs   ERRRTRN
+         bsr   TRMINATE
          clrb
          puls  pc,u,y,x,b,a
 
-L00EE    ldb   #$F9
-L00F0    pshs  b
-         bsr   L010D
+BADMEDIA ldb   #E$BTyp Bad media type
+ERRRTRN    pshs  b
+         bsr   TRMINATE
          comb
          puls  b
-         leas  $02,s
+         leas  2,s
          puls  pc,u,y,x
 
-L00FB    sty   <u006C,u
-         std   <u006A,u
-         stx   <u0068,u
+L00FB    sty   <X.BUFADR,u Buffer address
+         std   <X.SIZE,u Size to read
+         stx   <X.CURLSN,u Sector to start read at
          clrb
-         stb   <u007E,u
-         ldy   u0001,u
+         stb   <X.STAT,u
+         ldy   V.PORT,u
          rts
-L010D    pshs  u
-         ldu   >u0089,u
+
+TRMINATE pshs  u
+         ldu   >CTLRADDR,u
          os9   F$UnLk
          puls  u
-         ldd   #$0100
-         os9   F$SRTM
+         ldd   #256
+         os9   F$SRTM Return memory
          rts
-L011F    ldx   <u007F,u
-         ldb   #$14
+
+* Copy 20 bytes (DD.SIZ in OS9 1.1 ?)
+L011F    ldx   <X.DRVTBL,u
+         ldb   #20
 L0124    lda   b,y
          sta   b,x
          decb
          bpl   L0124
          rts
+
          emod
 eom      equ   *

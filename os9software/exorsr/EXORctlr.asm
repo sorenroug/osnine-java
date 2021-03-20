@@ -4,38 +4,55 @@
 
  use defsfile
 
-tylg     set   Drivr+Objct
-atrv     set   ReEnt+3
+DriveCnt equ 4
 
-         mod   eom,name,tylg,atrv,start,0
+ org DRVBEG
+ rmb Drvmem*DriveCnt
+
+X.CURDRV    rmb   1  Current drive #
+X.CURLSN equ $68
+X.SIZE equ $6A
+X.BUFADR equ $6C
+
+X.ORGNMI equ $75 Address of original NMI intercept
+X.STACK equ $77
+X.TRAK equ $79 Current track number
+X.STAT equ $7E
+X.DRVTBL equ $7F
+X.DELAY equ $81
+
+ mod   CTLREND,name,Drivr+Objct,ReEnt+3,CTLRENT,0
 
 name fcs   /EXORctlr/
 
-start    equ   *
-         lbra  L0393
-         lbra  L03B8
-         andcc #$FE
+CTLRENT    equ   *
+         lbra  INITCTLR ??
+         lbra  READSK ??
+
+* Third routine in jump table.
+* Execute a read of a sector?
+         andcc #^CARRY
          pshs  x,dp,b,a,cc
          clra
          tfr   a,dp
          lda   #$00
          sta   <$6E,u
-         sts   <$77,u
-         ldx   <D.NMI
-         stx   <$75,u
+         sts   X.STACK,u
+         ldx   D.NMI
+         stx   X.ORGNMI,u
          leax  >L0126,pcr
-         stx   <D.NMI
-         ldx   <$7F,u
-         lda   <$16,x
-         sta   <$79,u
-         lda   <$12,x
+         stx   D.NMI
+         ldx   X.DRVTBL,u
+         lda   <$16,x   V.TRAK+1
+         sta   X.TRAK,u
+         lda   <$12,x  DD.SPT+1
          sta   $02,s
          lda   #$66
-         ldb   <$67,u
+         ldb   <X.CURDRV,u
          lsrb
          beq   L004E
          lda   #$46
-L004E    sta   $01,y
+L004E    sta   $01,y Drive select?
          lda   #$02
          bcc   L0055
          lsra
@@ -45,26 +62,28 @@ L0055    sta   ,y
          lsla
          sta   <$73,u
          bcs   L00DE
-         ldb   <$10,x
+         ldb   <$10,x  DD.FMT
          bitb  #$01
          bne   L0069
          ora   #$80
-L0069    ldb   <$7E,u
+L0069    ldb   X.STAT,u
          bitb  #$04
          lbne  L0365
          andb  #$08
          beq   L007A
          lda   #$0B
          bra   L00AE
+
+* Calculate track from LSN
 L007A    sta   <$73,u
-L007D    ldx   <$7F,u
+L007D    ldx   X.DRVTBL,u
          lda   #$FF
          pshs  a
-         ldd   <$68,u
+         ldd   <X.CURLSN,u
 L0087    inc   ,s
-         subd  <$11,x
+         subd  <$11,x DD.SPT
          bcc   L0087
-         addd  <$11,x
+         addd  <$11,x DD.SPT
          puls  a
          clr   <$74,u
          tst   <$73,u
@@ -76,8 +95,8 @@ L00A1    decb
          stb   <$70,u
          ldx   <$6A,u
          stx   <$71,u
-         ldb   <$79,u
-L00AE    sta   <$79,u
+         ldb   X.TRAK,u
+L00AE    sta   X.TRAK,u
          pshs  b
          suba  ,s+
          beq   L00EC
@@ -94,7 +113,7 @@ L00C0    andb  #$EF
          ldb   ,y
          bpl   L00C0
 L00CE    bsr   L0112
-         ldb   <$7E,u
+         ldb   X.STAT,u
          tsta
          ble   L00F9
          bitb  #$08
@@ -103,12 +122,15 @@ L00DA    ldb   #$F7
          bra   L012C
 L00DE    ldb   #$F6
          bra   L012C
-L00E2    lda   <$79,u
+
+* Command #8 - seek to track 0
+L00E2    lda   X.TRAK,u
          beq   L00DA
          clra
          ldb   #$56
          bra   L00AE
-L00EC    lda   <$7E,u
+
+L00EC    lda   X.STAT,u
          bita  #$08
          bne   L00E2
          bita  #$10
@@ -128,24 +150,27 @@ L010C    stb   <$7A,u
          lbra  L01A4
 L0112    ldx   #$0360
          bra   L0167
-L0117    lda   <$7E,u
+L0117    lda   X.STAT,u
          bpl   L0131
          anda  #$40
-         sta   <$7E,u
+         sta   X.STAT,u
          beq   L0131
          lbra  L007D
-L0126    lds   <$77,u
+
+* NMI Interrupt routine
+*
+L0126    lds   X.STACK,u
          ldb   #$FB
 L012C    stb   <$6E,u
          inc   ,s
 L0131    lda   #$3C
          sta   $02,y
-         ldx   <$75,u
+         ldx   <X.ORGNMI,u
          stx   <D.NMI
          ldb   #$01
          bitb  ,s
          bne   L0147
-         ldb   <$7E,u
+         ldb   X.STAT,u
          cmpb  #$10
          beq   L014F
 L0147    lda   $01,y
@@ -153,22 +178,24 @@ L0147    lda   $01,y
          ora   #$03
          sta   $01,y
 L014F    clra
-         ldb   <$79,u
-         ldx   <$7F,u
-         std   <$15,x
+         ldb   X.TRAK,u
+         ldx   X.DRVTBL,u
+         std   V.TRAK,x Current track number
          puls  pc,x,dp,b,a,cc
 
 L015B    ldb   #$34
          stb   $02,y
          ldb   #$3C
          stb   $02,y
-         ldx   >$0081,u
+* Create delay
+         ldx   X.DELAY,u
 L0167    ldb   <$7C,u
 L016A    decb
          bne   L016A
          leax  -$01,x
          bne   L0167
          rts
+
 L0172    ldx   #$D0D8
          stx   $04,y
          lda   #$50
@@ -193,7 +220,7 @@ L0195    deca
          sta   <$70,u
          bsr   L015B
          lbsr  L0112
-         inc   <$79,u
+         inc   X.TRAK,u
          clr   <$74,u
 L01A4    lda   ,s
          tfr   a,cc
@@ -224,14 +251,14 @@ L01DF    lda   ,s
          lda   #$80
          stx   <$71,u
          nega
-         ldb   <$7E,u
+         ldb   X.STAT,u
          lslb
          bpl   L01F0
          clra
 L01F0    adda  #$80
          sta   <$6F,u
          lbsr  L0357
-         lda   <$79,u
+         lda   X.TRAK,u
          orb   #$0C
          cmpa  #$2B
          bls   L0203
@@ -248,7 +275,7 @@ L0211    lbsr  L0172
          bne   L0211
          lbsr  L018E
          lda   $05,y
-         cmpb  <$79,u
+         cmpb  X.TRAK,u
          bne   L0211
          lbsr  L018E
          lda   $05,y
@@ -266,7 +293,7 @@ L0241    lbsr  L018E
          cmpa  $05,y
          deca
          bne   L0241
-         ldb   <$7E,u
+         ldb   X.STAT,u
          bmi   L02CB
          ldb   <$7C,u
          lslb
@@ -276,7 +303,7 @@ L0252    cmpb  $04,y
          bne   L0252
          ldb   #$04
 L025B    lbsr  L0172
-         ldx   <$6C,u
+         ldx   X.BUFADR,u
 L0261    lda   $04,y
          bpl   L0261
          lda   $05,y
@@ -299,7 +326,7 @@ L0289    ldb   #$F2
          lbra  L012C
 L028E    ldb   #$FA
          lbra  L012C
-L0293    ldb   <$7E,u
+L0293    ldb   X.STAT,u
          lslb
          bmi   L02AA
          ldb   #$80
@@ -324,7 +351,7 @@ L02BD    suba  #$03
          bhi   L02BD
          lda   $01,y
          bmi   L0276
-         stx   <$6C,u
+         stx   X.BUFADR,u
          lbra  L01A4
 
 L02CB    lda   <$7C,u
@@ -355,7 +382,7 @@ L02F7    ldx   #$0005
          lda   <$7A,u
          ldx   #$83F5
          stx   $04,y
-         ldx   <$6C,u
+         ldx   X.BUFADR,u
          sta   $05,y
          lda   <L0311,pcr
          bra   L031C
@@ -373,7 +400,7 @@ L031C    lda   ,x
          leax  $02,x
 L0328    decb
          bne   L0311
-         stx   <$6C,u
+         stx   X.BUFADR,u
          lda   #$40
 L0330    bita  $04,y
          beq   L0330
@@ -394,6 +421,7 @@ L034C    bita  $04,y
          dec   $01,y
          dec   $01,y
          lbra  L01A4
+
 L0357    lda   #$36
          sta   $03,y
          lda   #$3E
@@ -430,7 +458,8 @@ L037D    incb
 L038D    stb   <$7D,u
          lbra  L0131
 
-L0393    pshs  x,b,a
+* Y contains $EC00
+INITCTLR   pshs  x,b,a
          clra
          clrb
          std   $02,y
@@ -448,27 +477,40 @@ L0393    pshs  x,b,a
          stx   $02,y
          puls  pc,x,b,a
 
-L03B8    tstb
+*************************************************************
+*
+* Read Sector Command
+*
+* Input: B = Msb Of Logical Sector Number
+*        X = Lsb'S Of Logical Sector Number
+*        Y = Ptr To Path Descriptor
+*        U = Ptr To Global Storage
+*
+* Output: 256 Bytes Of Data Returned In Buffer
+*
+* Error: Cc=Set, B=Error Code
+*
+READSK   tstb
          bne   PHYERR
-         sta   <$7E,u
-         lda   <$21,y
-         cmpa  $06,u
+         sta   X.STAT,u
+         lda   PD.DRV,y
+         cmpa  V.NDRV,u
          bcc   L03EF
-         sta   <$67,u
-         ldb   #$18
+         sta   X.CURDRV,u
+         ldb   #DRVMEM
          mul
          pshs  x
-         leax  $07,u
+         leax  DRVBEG,u
          leax  d,x
-         stx   <$7F,u
+         stx   X.DRVTBL,u
          puls  b,a
-         cmpd  $01,x
+         cmpd  DD.TOT+1,x
          bhi   PHYERR
-         std   <$68,u
-         ldd   $08,y
-         std   <$6C,u
+         std   X.CURLSN,u
+         ldd PD.BUF,y
+         std   X.BUFADR,u
          ldd   #$0001
-         std   <$6A,u
+         std   X.SIZE,u
          clrb
          rts
 
@@ -481,4 +523,4 @@ L03EF    comb
          rts
 
          emod
-eom      equ   *
+CTLREND  equ   *
