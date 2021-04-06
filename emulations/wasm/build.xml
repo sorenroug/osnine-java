@@ -1,0 +1,60 @@
+<project name="BuildModules" default="compile">
+
+    <property name="homedir" value="src/modules"/>
+    <property name="os9dir" value="${main.basedir}/os9software" />
+    <property name="targetdir" value="target/classes" />
+    <macrodef name="assemble">
+        <attribute name="src" />
+        <sequential>
+            <echo message="Assembling: @{src}"/>
+            <java jar="../../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    fork="true" dir="${homedir}">
+                <env key="OSNINEDIR" value="${os9dir}"/>
+                <arg value="-m"/>
+                <arg value="20000"/>
+                <arg value="asm"/>
+                <arg value="@{src}.asm"/>
+                <arg value="o=a.out"/>
+            </java>
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{src}" />
+        </sequential>
+    </macrodef>
+
+    <target name="compile">
+        <mkdir dir="${targetdir}"/>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/kernel"
+            files="Acia_ed2 IOMan_ed4 SCF_ed8 RBF_ed8 PipeMan Piper Pipe"
+          />
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/color" files="OS9p1 OS9p2"/>
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/virtual" files="BootDyn VDisk_rv2"/>
+        </copy>
+        <copy todir="${targetdir}">
+          <filelist dir="../../os9software/target/utilities" files="Shell"/>
+        </copy>
+
+<!--
+        <copy todir="${targetdir}">
+          <filelist dir="." files="boot.dsk"/>
+          <filelist dir="." files="VeraMoBd.ttf"/>
+        </copy>
+-->
+
+        <assemble src="D0"/>
+        <assemble src="D1"/>
+        <assemble src="D2"/>
+        <assemble src="D3"/>
+        <assemble src="HWClock"/>
+        <assemble src="SysGoSingle"/>
+        <assemble src="Term"/>
+        <!--
+        <assemble src="T1"/>
+        <assemble src="P"/>
+        -->
+    </target>
+
+</project>
