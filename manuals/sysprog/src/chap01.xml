@@ -42,8 +42,8 @@ yet elegant structure.
 By no means, however, is OS-9 a direct duplication of UNIX. Even though the system
 functions and interfaces are generally compatible, OS-9 has been designed
 for better efficiency, greater reliability, and compact size. OS-9 also
-pioneers several new concepts such as support of reentrant, position-
-independent software that can be shared by several users simultaneously
+pioneers several new concepts such as support of reentrant, position-independent
+software that can be shared by several users simultaneously
 to reduce overall memory requirements.
 </para>
 
