@@ -13,10 +13,23 @@ OS9Name     equ   *
          fcs   /OS9p1/
          fcb   11
 
+ ttl Coldstart Routines
+ pag
+************************************************************
+*
+*     Routine Cold
+*
+*   System Coldstart; determines system state, initializes
+* system data structures, searches for the remainder of the
+* system and attempts to start operation.
+*
+LoRAM set $20 set low RAM limit
+HiRAM set $1800
+
 COLD    ldx   #$0346
          lda   #$03
          clrb
-L0019    stx   >$FF80
+L0019    stx   >DAT.Regs
          sta   >$0000
          leax  $02,x
          incb
@@ -25,24 +38,24 @@ L0019    stx   >$FF80
          ldu   #$0000
          clrb
 L002A    ldx   #$0344
-         stx   >$FF80
+         stx   >DAT.Regs
          lda   b,u
          leax  $04,x
          lslb
          leax  b,x
          lsrb
-         stx   >$FF80
+         stx   >DAT.Regs
          sta   >$0002
          incb
          cmpb  #$04
          bne   L002A
          ldx   #$0144
-         stx   >$FF80
+         stx   >DAT.Regs
          lda   >$0000
          anda  #$E0
          bne   L0080
          ldx   #$0350
-         stx   >$FF80
+         stx   >DAT.Regs
          lda   #$80
          sta   >$0003
          clr   >$0000
@@ -64,7 +77,7 @@ L0080    ldx   #$0300
          ldy   #$0000
 L0087    clra
          clrb
-         stx   >$FF80
+         stx   >DAT.Regs
 L008C    clr   d,y
          incb
          cmpb  #$50
@@ -77,107 +90,111 @@ L008C    clr   d,y
          cmpx  #$0340
          bne   L0087
          ldx   #$0308
-         stx   >$FF80
+         stx   >DAT.Regs
          ldd   #$0702
          std   ,y++
          ldd   #$0401
          std   ,y
          ldx   #$0200
-         stx   >$FF80
-         ldx   #$0020
-         ldy   #$17E0
+         stx   >DAT.Regs
+ ldx #LoRAM get low limit ptr
+ ldy #HiRAM-LoRAM get byte count
  clra clear d
  clrb
-Cold10    std   ,x++
-         leay  -$02,y
-         bne   Cold10
-         inca
-         std   D.Tasks
-         addb  #$08
-         std   D.TmpDAT
-         clrb
-         inca
-         std   D.BlkMap
-         adda  #$02
-         std   D.BlkMap+2
-         std   D.SysDis
-         inca
-         std   D.UsrDis
-         inca
-         std   D.PrcDBT
-         inca
-         std   D.SysPrc
-         std   D.Proc
-         adda  #$02
-         tfr   d,s
-         inca
-         std   D.SysStk
-         std   D.SysMem
-         inca
-         std   D.ModDir
-         std   D.ModEnd
+Cold10 std ,X++ clear memory
+ leay -2,Y count bytes
+ bne Cold10 branch if more
+*
+*     initialize DAT image, Memory Block Map, &
+*        Module Directory ptrs
+*
+ inca skip direct page
+ std D.Tasks set Task User Table ptr
+ addb #DAT.TkCt allocate Task User Table
+ std D.TmpDAT set temporary DAT stack ptr
+ clrb
+ inca allocate DAT stack
+ std D.BlkMap set free memory block map
+ adda #DAT.BMSz/256 allocate memory block map
+ std D.BlkMap+2 set initialization ptr
+ std D.SysDis set System Dispatch Table ptr
+ inca allocate table
+ std D.UsrDis set User Dispatch Table ptr
+ inca allocate table
+ std D.PrcDBT set Process Descriptor Block ptr
+ inca allocate table
+ std D.SysPrc set system process ptr
+ std D.Proc set current process
+ adda #P$Size/256 allocate system process descriptor
+ tfr d,s set stack
+ inca allocate system stack
+ std D.SysStk set top of system stack
+ std D.SysMem set system memory map ptr
+ inca allocate memory map
+ std D.ModDir set module directory ptr
+ std D.ModEnd set end of directory ptr
          adda  #$07
-         std   D.ModDir+2
-         std   D.ModDAT
+ std D.ModDir+2 set end ptr
+ std D.ModDAT set end ptr for Module DAT area
  leax IntXfr,pcr get interrupt transfer
-         tfr   x,d
-         ldx   #$00F2
-Cold14    std   ,x++
-         cmpx  #$00FC
-         bls   Cold14
-         leax  >ROMEnd,pcr
-         pshs  x
-         leay  >HdlrVec,pcr
-         ldx   #$00E0
-Cold15    ldd   ,y++
-         addd  ,s
-         std   ,x++
-         cmpx  #$00EC
-         bls   Cold15
-         leas  $02,s
-         ldx   D.XSWI2
-         stx   D.UsrSvc
-         ldx   D.XIRQ
-         stx   D.UsrIRQ
-         leax  >SysSvc,pcr
-         stx   D.SysSvc
-         stx   D.XSWI2
-         leax  >SysIRQ,pcr
-         stx   D.SysIRQ
-         stx   D.XIRQ
-         leax  >GoPoll,pcr
-         stx   D.SvcIRQ
-         leax  >IOPoll,pcr
-         stx   D.POLL
-         leay  >SvcTbl,pcr
-         lbsr  SetSvc
-         ldu   D.PrcDBT
-         ldx   D.SysPrc
-         stx   ,u
-         stx   $01,u
-         lda   #$01
-         sta   ,x
-         lda   #$80
-         sta   $0C,x
-         lda   #$80
-         sta   D.SysTsk
-         sta   $06,x
-         lda   #$FF
-         sta   $0A,x
-         sta   $0B,x
-         leax  <$40,x
-         stx   D.SysDAT
+ tfr X,D copy it
+ ldx #D.SWI3 get entry vectors ptr
+Cold14 std ,X++ set vector
+ cmpx #D.NMI end of vectors?
+ bls Cold14 branch if not
+ leax ROMEnd,PCR get entry offset
+ pshs X save it
+ leay HdlrVec,PCR get interrupt handlers
+ ldx #D.Clock get psuedo-vector ptr
+Cold15 ldd ,Y++ get vector
+ addd 0,s add offset
+ std ,X++ set psuedo-vector
+ cmpx #D.XNMI end of vectors?
+ bls Cold15 branch if not
+ leas 2,s return scratch
+ ldx D.XSWI2 get user service routine
+ stx D.UsrSvc set user entry
+ ldx D.XIRQ get user IRQ routine
+ stx D.UsrIRQ set user entry
+ leax SysSvc,PCR get system service routine
+ stx D.SysSVC set system entry
+ stx D.XSWI2 set system entry
+ leax SysIRQ,PCR get system IRQ routine
+ stx D.SysIRQ set system entry
+ stx D.XIRQ set IRQ entry
+ leax GoPoll,pcr get call to [D.Poll]
+ stx D.SvcIRQ set in-system IRQ service
+ leax IOPoll,PCR get polling routine ptr
+ stx D.POLL set it
+ leay SvcTbl,PCR get service routine initial
+ lbsr SetSvc install service routines
+ ldu D.PrcDBT get process descriptor block ptr
+ ldx D.SysPrc get system process ptr
+ stx 0,u set process zero page
+ stx 1,u set process one page
+ lda #1 set process ID
+ sta P$ID,X
+ lda #SysState get system state
+ sta P$State,X set state
+ lda #SysTask get system task
+ sta D.SysTsk set system task number
+ sta P$Task,X set process task number
+ lda #255 get high priority
+ sta P$Prior,X set process priority
+ sta P$Age,X set process age
+ leax P$DATImg,X get DAT image ptr
+ stx D.SysDAT set system DAT image ptr
          ldd   #$0200
-         std   ,x++
+ std ,X++ use block zero for system
          incb
          std   ,x++
          incb
          std   ,x++
          ldy   #$0019
-         ldd   #$015F
-Cold16    std   ,x++
-         leay  -$01,y
-         bne   Cold16
+         ldd   #DAT.Free
+Cold16 std ,X++ mark free entry
+ leay -1,Y count block
+ bne Cold16 branch if more
          ldd   #$0350
          std   ,x++
          ldd   #$0340
@@ -186,53 +203,64 @@ Cold16    std   ,x++
 L0190    std   ,x++
          incb
          bne   L0190
-         ldx   D.Tasks
-         inc   ,x
+ ldx D.Tasks get task number table
+ inc 0,X claim system task
          inc   $01,x
-         ldx   D.SysMem
-         ldb   D.ModDir+2
-Cold17    inc   ,x+
-         decb
-         bne   Cold17
+ ldx D.SysMem get system memory map ptr
+ ldb D.ModDir+2 get number of pages used
+Cold17 inc ,X+ claim page
+ decb count it
+ bne Cold17 branch if more
+*
+*      build Memory Block Map
+*
          ldy   #$1800
          ldx   D.BlkMap
-L01AA    pshs  x
-         ldd   ,s
-         subd  D.BlkMap
+Cold20 equ *
+ ifeq RAMCheck-BlockTyp
+ pshs X
+ ldd 0,s
+ endc
+ subd D.BlkMap get block number
          cmpd  #$0100
          bcc   Cold30
          ora   #$02
          std   >$FF86
+ ifeq RAMCheck-BlockTyp
  ldu 0,y get current contents
  ldx #$00FF get first test pattern
  stx 0,Y store it
-         cmpx  ,y
-         bne   Cold30
-         ldx   #$FF00
-         stx   ,y
-         cmpx  ,y
-         bne   Cold30
-         stu   ,y
-         bra   L01D7
-Cold30    ldb   #$80
-         stb   [,s]
-L01D7    puls  x
-         leax  $01,x
-         cmpx  D.BlkMap+2
-         bcs   L01AA
+ cmpx 0,Y did it store?
+ bne Cold30 branch if not
+ ldx #$FF00 get second test pattern
+ stx 0,Y store it
+ cmpx 0,Y did it store?
+ bne Cold30 branch if not
+ stu 0,y replace original contents
+ bra Cold40
+Cold30 ldb #NotRAM get not-RAM flag
+ stb [0,s] mark block not-RAM
+Cold40 puls x retrieve block map ptr
+ leax 1,X next Block Map entry
+ cmpx D.BlkMap+2 end of map?
+ bcs Cold20 branch if not
+ endc
+*
+*      search Not-Ram, excluding I/O, for modules
+*
          ldx   D.BlkMap
          inc   ,x
          inc   $01,x
          inc   $02,x
          ldx   D.BlkMap+2
-         leax  >-$0040,x
-L01ED    lda   ,x
-         beq   L0248
+       leax >-(DAT.BlCt*2),x check uppermost 64K only
+Cold50    lda   ,x
+         beq   Cold80
          tfr   x,d
          subd  D.BlkMap
-         cmpd  #$015F
-         beq   L0248
-         leas  <-$40,s
+         cmpd  #DAT.Free
+         beq   Cold80
+ leas -(DAT.BlCt*2),s reserve temp DAT area on stack
          leay  ,s
          bsr   MovDAT
          pshs  x
@@ -240,23 +268,23 @@ L01ED    lda   ,x
 L0207    pshs  y,x
          lbsr  AdjImg
          ldd   ,y
-         std   >$FF80
+         std   >DAT.Regs
          lda   ,x
          ldx   #$0200
-         stx   >$FF80
+         stx   >DAT.Regs
          puls  y,x
          cmpa  #$87
-         bne   L0232
+         bne   Cold70
          lbsr  ValMod
-         bcc   L0228
+         bcc   Cold65
          cmpb  #$E7
-         bne   L0232
-L0228    ldd   #$0002
+         bne   Cold70
+Cold65    ldd   #$0002
          lbsr  LDDDXY
          leax  d,x
-         bra   L0234
-L0232    leax  $01,x
-L0234    tfr   x,d
+         bra   Cold75
+Cold70    leax  $01,x
+Cold75    tfr   x,d
          tstb
          bne   L0207
          bita  #$07
@@ -268,9 +296,9 @@ L023F    lsra
          puls  x
          leax  a,x
          leas  <$40,s
-L0248    leax  $01,x
+Cold80    leax  $01,x
          cmpx  D.BlkMap+2
-         bcs   L01ED
+         bcs   Cold50
 Cold.z1    leax  >InitName,pcr
          bsr   LinkSys
          bcc   Cold.z2
@@ -294,10 +322,10 @@ LinkSys    lda   #$C0
 MovDAT    pshs  y,x,b,a
          ldb   #$20
          ldx   ,s
-L027E    stx   ,y++
+MovDAT.B    stx   ,y++
          leax  $01,x
          decb
-         bne   L027E
+         bne   MovDAT.B
          puls  pc,y,x,b,a
 
  ttl Coldstart Constants
@@ -380,20 +408,60 @@ InitName fcs "Init"
 P2Name fcs "OS9p2"
 BootName fcs "Boot"
 
-IntXfr      fdb $6E98
-         subb  >$9E50
-         ldu   <$17,x
-         beq   UserSvc
 
-UsrSWI10    lbra  PassSWI
-         ldx   D.Proc
-         ldu   <$15,x
-         beq   UserSvc
-         bra   UsrSWI10
-         ldx   D.Proc
-         ldu   <$13,x
-         bne   UsrSWI10
 
+ ttl System Service Request Routines
+ pag
+************************************************************
+*
+*     Interrupt Transfer
+*
+IntXfr jmp [-16,x] transfer to interrupt routine
+
+
+
+************************************************************
+*
+*     User State Interrupt Routines
+*
+*   Checks for user defined routine; uses system if none
+*
+* Data: D.Proc
+*
+* Calls: UserSvc
+*
+UserSWI3 ldx D.Proc get current process ptr
+ ldu P$SWI3,X get user interrupt routine
+ beq UserSvc branch if none
+UsrSWI10 lbra PassSWI
+
+UserSWI2 ldx D.Proc get current process ptr
+ ldu P$SWI2,X get user interrupt routine
+ beq UserSvc branch if none
+ bra UsrSWI10
+
+UserSWI ldx D.Proc get current process ptr
+ ldu P$SWI,X get SWI routine
+ bne UsrSWI10 branch if set
+*
+*     fall through to UserSvc
+*
+ page
+************************************************************
+*
+*     User Service Request Routine
+*
+*   Process User service requests
+*
+* Input: X = Process descriptor ptr
+*        S = value of stack after interrupt
+*
+* Output: none
+*
+* Data: D.SysSvc, D.SWI2, D.SysIRQ, D.IRQ, D.Proc, D.UsrDis
+*
+* Calls: GetRegs, PutRegs, LDBBX, Dispatch, UserRet
+*
 UserSvc    ldd   D.SysSvc
          std   D.XSWI2
          ldd   D.SysIRQ
@@ -434,7 +502,7 @@ L035E    pshs  u,y,x,cc
          leax  >-$2000,x
          exg   x,u
 L036D    pshs  u
-         ldu   #$FF80
+         ldu   #DAT.Regs
          leau  a,u
          orcc  #$50
          stb   >$FFCA
@@ -529,20 +597,25 @@ SysLink    pshs  u
          std   $01,u
          leax  ,y
 EntLink    bitb  #$80
-         bne   L0435
+         bne   Link10
          ldd   $06,x
-         beq   L0435
+         beq   Link10
          ldb   #$D1
          bra   LinkErr
-L0435    ldd   $04,x
+Link10    ldd   $04,x
          pshs  x,b,a
          ldy   ,x
          ldd   $02,x
-         addd  #$07FF
-         tfr   a,b
-         lsrb
-         lsrb
-         lsrb
+ addd #DAT.BlSz-1 round to next block
+ tfr a,b copy MSB size
+ lsrb get block count
+ lsrb
+ ifge DAT.BlSz-2048
+ lsrb
+ ifge DAT.BlSz-4096
+ lsrb
+ endc
+ endc
          pshs  b
          leau  ,y
          bsr   SrchPDAT
@@ -680,14 +753,19 @@ L054E    cmpx  D.ModEnd
          cmpy  [,x]
          bne   L054C
          bsr   FreDATI
-ValMod55    puls  u
-         ldx   D.BlkMap
-         ldd   $02,u
-         addd  #$07FF
-         lsra
-         lsra
-         lsra
-         ldy   ,u
+ValMod55 puls U rid pos ptr
+ ldx D.BlkMap get block map ptr
+ ldd MD$MBSiz,u get block size
+ addd #DAT.BlSz-1 round to next block
+ lsra get block count
+ lsra
+ ifge DAT.BlSz-2048
+ lsra
+ ifge DAT.BlSz-4096
+ lsra
+ endc
+ endc
+ ldy MD$MPDAT,u get ptr to DAT img
 L056C    pshs  x,a
          ldd   ,y++
          leax  d,x
@@ -1128,7 +1206,7 @@ SRqMem   ldd   $01,u
 L08BC    ldx   D.SysDAT
          lslb
          ldd   b,x
-         cmpd  #$015F
+         cmpd  #DAT.Free
          beq   L08D5
          ldx   D.BlkMap
          anda  #$01
@@ -1136,15 +1214,15 @@ L08BC    ldx   D.SysDAT
          cmpa  #$01
          bne   L08D6
          leay  $08,y
-         bra   L08DD
+         bra   SRqMem40
 L08D5    clra
 L08D6    ldb   #$08
 L08D8    sta   ,y+
          decb
          bne   L08D8
-L08DD    inc   ,s
+SRqMem40    inc   ,s
          ldb   ,s
-         cmpb  #$20
+         cmpb  #DAT.BlCt
          bcs   L08BC
 L08E5    ldb   $01,u
 L08E7    cmpy  D.SysMem
@@ -1199,9 +1277,9 @@ L0937    ldb   ,x
          deca
          bne   L0937
          ldx   D.SysDAT
-         ldy   #$0020
+         ldy   #DAT.BlCt
 L0946    ldd   ,x
-         cmpd  #$015F
+         cmpd  #DAT.Free
          beq   L0978
          ldu   D.BlkMap
          anda  #$01
@@ -1223,7 +1301,7 @@ L0964    lda   ,u+
          ldu   D.BlkMap
          anda  #$01
          clr   d,u
-         ldd   #$015F
+         ldd   #DAT.Free
          std   ,x
 L0978    leax  $02,x
          leay  -$01,y
@@ -1325,7 +1403,7 @@ AllImage    pshs  u,y,x,b,a
          ldu   D.BlkMap
          pshs  u,y,x,b,a
 L0A2D    ldd   ,y++
-         cmpd  #$015F
+         cmpd  #DAT.Free
          beq   AllI.B
          anda  #$01
          lda   d,u
@@ -1351,7 +1429,7 @@ L0A59    ldb   #$CF
          puls  pc,u,y,x,b,a
 AllI.E    puls  u,y,x
 AllI.F    ldd   ,y++
-         cmpd  #$015F
+         cmpd  #DAT.Free
          bne   AllI.H
 L0A6C    lda   ,u+
          bne   L0A6C
@@ -1391,7 +1469,7 @@ FreeHB    ldb   $02,u
 L0A94    rts
 
 FreeHBlk    tfr   b,a
-         suba  #$21
+FreeHB10 suba #DAT.BlCt+1 get negative beginning
          nega
          pshs  x,b,a
          ldd   #$FFFF
@@ -1408,7 +1486,7 @@ FrLB10    rts
 FreeLBlk    lda   #$FF
          pshs  x,b,a
          lda   #$01
-         subb  #$21
+ subb #DAT.BlCt+1 get negative limit
          negb
          pshs  b,a
          bra   FreeBlk
@@ -1427,7 +1505,7 @@ L0ACE    tfr   a,b
          addb  $02,s
 L0AD2    lslb
          ldx   b,y
-         cmpx  #$015F
+         cmpx  #DAT.Free
          bne   FreeBlk
          inca
          cmpa  $03,s
@@ -1496,10 +1574,10 @@ F.LDAXY        ldx   $04,u
 LDAXY    pshs  x,b,cc
          ldd   ,y
          orcc  #$50
-         std   >$FF80
+         std   >DAT.Regs
          lda   ,x
          ldx   #$0200
-         stx   >$FF80
+         stx   >DAT.Regs
          puls  pc,x,b,cc
  page
 ***********************************************************
@@ -1521,10 +1599,10 @@ LDAXY    pshs  x,b,cc
 LDAXYP    pshs  x,b,cc
          ldd   ,y
          orcc  #$50
-         std   >$FF80
+         std   >DAT.Regs
          lda   ,x
          ldx   #$0200
-         stx   >$FF80
+         stx   >DAT.Regs
          puls  x,b,cc
          leax  $01,x
          bra   AdjImg
@@ -1568,10 +1646,10 @@ LDDDXY    pshs  y,x
          pshs  a,cc
          ldd   ,y
          orcc  #$50
-         std   >$FF80
+         std   >DAT.Regs
          ldb   ,x
          ldx   #$0200
-         stx   >$FF80
+         stx   >DAT.Regs
          puls  pc,y,x,a,cc
 
 F.LDABX ldb R$B,u get task number
@@ -1613,7 +1691,7 @@ Mover    pshs  u,y,x,b,a
          leay  ,y
          lbeq  MoveNone
          pshs  y,b,a
-         ldu   #$FF80
+         ldu   #DAT.Regs
          lbsr  L0C6F
          leay  a,u
          pshs  y,x
@@ -1710,21 +1788,21 @@ L0C7F    puls  pc,b
 LDABX    andcc #$FE
          pshs  u,x,b,cc
          bsr   L0C6F
-         ldu   #$FF80
+         ldu   #DAT.Regs
          orcc  #$50
          stb   >$FFCA
          ldu   a,u
          ldb   D.SysTsk
          stb   >$FFCA
-         stu   >$FF80
+         stu   >DAT.Regs
          lda   ,x
          ldu   #$0200
-         stu   >$FF80
+         stu   >DAT.Regs
          puls  pc,u,x,b,cc
 STABX    andcc #$FE
          pshs  u,x,b,a,cc
          bsr   L0C6F
-         ldu   #$FF80
+         ldu   #DAT.Regs
          orcc  #$50
          stb   >$FFCA
          ldd   a,u
@@ -1733,25 +1811,25 @@ STABX    andcc #$FE
          ldb   D.SysTsk
          stb   >$FFCA
          lda   $01,s
-         stu   >$FF80
+         stu   >DAT.Regs
          sta   ,x
          ldu   #$0200
-         stu   >$FF80
+         stu   >DAT.Regs
          puls  pc,u,x,b,a,cc
 
 L0CCB    andcc #$FE
          pshs  u,x,a,cc
          bsr   L0C6F
-         ldu   #$FF80
+         ldu   #DAT.Regs
          orcc  #$50
          stb   >$FFCA
          ldu   a,u
          ldb   D.SysTsk
          stb   >$FFCA
-         stu   >$FF80
+         stu   >DAT.Regs
          ldb   ,x
          ldu   #$0200
-         stu   >$FF80
+         stu   >DAT.Regs
          puls  pc,u,x,a,cc
 
 AllTsk      ldx   $04,u
@@ -1801,7 +1879,7 @@ SetPrTsk    lda   $0C,x
          ldb   $06,x
          leax  <$40,x
          ldy   #$0020
-         ldu   #$FF80
+         ldu   #DAT.Regs
          orcc  #$50
          stb   >$FFCA
 L0D2B    ldd   ,x++
@@ -2076,7 +2154,7 @@ L0ECA    stx   ,--y
          ldx   #$0350
          stx   ,--y
          ldb   #$19
-         ldx   #$015F
+         ldx   #DAT.Free
 L0EE0    stx   ,--y
          decb
          bne   L0EE0
@@ -2104,41 +2182,49 @@ L0EE8    std   ,--y
 *
 * Calls: none
 *
-SvcRet    ldb   $06,x
-         orcc  #$50
-         stb   >$FFCB
+SvcRet ldb P$Task,x get task number
+ orcc #IntMasks set interrupt masks
+         stb   DAT.Task
          leas  ,u
          ldb   #$02
          stb   >$FFC9
          rti
 
 PassSWI    ldb   $06,x
-         stb   >$FFCB
+         stb   DAT.Task
          ldb   #$03
          stb   >$FFC9
-         jmp   ,u
-         orcc  #$50
-         ldb   #$F2
-         bra   L0F22
-         orcc  #$50
-         ldb   #$F4
-         bra   L0F22
-         ldb   #$F6
-         bra   L0F22
-         orcc  #$50
-         ldb   #$F8
-L0F22    lda   #$80
-         sta   >$FFCB
-         clra
-         tfr   a,dp
-         tfr   d,x
-         jmp   [,x]
-         ldb   #$FA
-         bra   L0F22
-         ldb   #$FC
-         bra   L0F22
-         emod
-OS9End      equ   *
+ jmp 0,u go to user routine
+
+SWI3RQ orcc #IntMasks set interrupt masks
+ ldb #D.SWI3 get direct page offset
+ bra Switch
+
+SWI2RQ orcc #IntMasks set interrupt masks
+ ldb #D.SWI2 get direct page offset
+ bra Switch
+
+FIRQ ldb #D.FIRQ get direct page offset
+ bra Switch
+
+IRQ orcc #IntMasks set fast interrupt masks
+ ldb #D.IRQ get direct page offset
+Switch equ *
+ lda #SysTask get system task number
+ sta DAT.Task set system memory
+ clra
+ tfr a,dp clear direct page register
+ tfr d,x copy direct page ptr
+ jmp [0,x] go through vector
+
+SWIRQ ldb #D.SWI get direct page offset
+ bra Switch
+
+NMIRQ ldb #D.NMI get direct page offset
+ bra Switch
+ page
+ emod
+OS9End equ *
 
  fcb $39,$39,$39,$39,$39,$39,$39
  fcb $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
@@ -2148,8 +2234,34 @@ OS9End      equ   *
  fcb $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
  fcb $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
 
-HdlrVec fcb $FD,$AD,$F3,$38,$F3,$42,$F0,$40,$FE,$12,$F3,$4B,$F0,$40,$F0,$40
- fcb $F0,$40,$FF,$4E,$FF,$54,$FF,$5A,$FF,$5E,$FF,$6E,$FF,$72,$FE,$F6
+offset set $FFE0-*
+
+
+***********************************************************
+*
+*     System Interrupt Psuedo-Vectors
+*
+HdlrVec fdb Tick+offset
+ fdb UserSWI3+offset
+ fdb UserSWI2+offset
+ fdb offset
+ fdb UserIRQ+offset
+ fdb UserSWI+offset
+ fdb offset
+ fdb offset
+
+***********************************************************
+*
+*     System Interrupt Vectors
+*
+ fdb offset
+ fdb SWI3RQ+offset
+ fdb SWI2RQ+offset
+ fdb FIRQ+offset
+ fdb IRQ+offset
+ fdb SWIRQ+offset
+ fdb NMIRQ+offset
+ fdb DATInit+offset
 
 ROMEnd equ *
 

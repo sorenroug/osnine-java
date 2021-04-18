@@ -1,0 +1,15 @@
+ use systype.p9000
+ ifp1
+ use sysdefs.p9000
+ use os9defs.x
+ use os9iodefs
+ use os9rbfdefs
+ use os9scfdefs.x
+ use os9sysdefs.lii.x
+
+DriveCnt set 4 drives max on system
+
+normal equ 0 normal screen size
+small equ 1 small screen size
+Screen equ normal
+ endc
