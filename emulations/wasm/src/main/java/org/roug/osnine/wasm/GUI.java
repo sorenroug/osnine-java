@@ -1,13 +1,16 @@
 package org.roug.osnine.wasm;
 
+import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +21,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -25,6 +29,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import org.roug.ui.terminal.AvailableEmulations;
 import org.roug.ui.terminal.JTerminal;
@@ -57,6 +62,8 @@ public class GUI {
 
     private DiskDialog d0Dialog, d1Dialog;
 
+    private CatalogDialog catalogDialog;
+
     private Bus8Motorola bus;
     private MC6809 cpu;
 
@@ -72,12 +79,12 @@ public class GUI {
     private int loadStart = 0;
 
     private Properties configMap = new Properties();
+
     /**
      * Create emulator application.
      */
     public GUI(Properties config) throws Exception {
         configMap = config;
-        //String bootMode = configMap.getProperty("bootmode", "multiuser");
         String terminalType = configMap.getProperty("term.type");
         String fontSizeStr = configMap.getProperty("term.fontsize");
         int fontSize;
@@ -88,14 +95,12 @@ public class GUI {
         }
 
         guiFrame = new JFrame("OS-9 emulator");
-        //guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar guiMenuBar = new JMenuBar();
         guiFrame.setJMenuBar(guiMenuBar);
 
         addFileMenu(guiMenuBar);
-        //addEditMenu(guiMenuBar);
         addDevicesMenu(guiMenuBar);
-        //addHelpMenu(guiMenuBar);
 
         bus = new BusStraight();
 
@@ -112,7 +117,6 @@ public class GUI {
         bus.insertMemorySegment(term);
         EmulationCore emulation = AvailableEmulations.createEmulation(terminalType);
         screen1 = new JTerminal(term, emulation);
-//      screen1.setFontFace("Bitstream Vera Sans Mono");
         screen1.setFontSize(fontSize);
         AciaToScreen atc1 = new AciaToScreen(term, screen1);
         atc1.execute();
@@ -125,6 +129,7 @@ public class GUI {
 
         d0Dialog = new DiskDialog(guiFrame, diskDevice, 0);
         d1Dialog = new DiskDialog(guiFrame, diskDevice, 1);
+        catalogDialog = new CatalogDialog(guiFrame, configMap);
 
         loadROM(0xF000, "OS9p1", "OS9p2", "SysGoSingle",
                     "BootDyn", "HWClock", "VDisk_rv2");
@@ -142,7 +147,7 @@ public class GUI {
         setWord(MC6809.IRQ_ADDR, 0x10C);
         setWord(MC6809.FIRQ_ADDR, 0x10F);
 
-        guiFrame.add(screen1);
+        addContentPane();
 
         guiFrame.pack();
 
@@ -163,6 +168,27 @@ public class GUI {
         Thread cpuThread = new Thread(cpu, "cpu");
         cpuThread.start();
 
+    }
+
+    private void addContentPane() {
+        JPanel content = new JPanel(new BorderLayout());
+        JPanel buttons = new JPanel();
+
+        JButton ctrlKey;
+
+        String labels[] = {"Escape", "Ctrl-A", "Ctrl-C", "Ctrl-E", "Backspace" };
+        String actions[] = {"\u001b", "\u0001", "\u0003", "\u0005", "\u0008" };
+
+        for (int i = 0; i < labels.length; i++) {
+            ctrlKey = new JButton(labels[i]);
+            ctrlKey.addActionListener(new PasteAction(actions[i]));
+            buttons.add(ctrlKey);
+        }
+
+        content.add(screen1, BorderLayout.CENTER);
+        content.add(buttons, BorderLayout.PAGE_END);
+
+        guiFrame.add(content);
     }
 
     /**
@@ -236,16 +262,12 @@ public class GUI {
 
         JMenuItem menuItem;
 
-        menuItem = new JMenuItem("Decrease font size");
-        menuItem.addActionListener(new DecreaseFontAction());
-        guiMenu.add(menuItem);
-
-        menuItem = new JMenuItem("Increase font size");
-        menuItem.addActionListener(new IncreaseFontAction());
-        guiMenu.add(menuItem);
-
         menuItem = new JMenuItem("Reset CPU");
         menuItem.addActionListener(new ResetAction());
+        guiMenu.add(menuItem);
+
+        menuItem = new JMenuItem("Catalog");
+        menuItem.addActionListener(new CatalogAction());
         guiMenu.add(menuItem);
 
         menuItem = new JMenuItem("Exit");
@@ -295,6 +317,13 @@ public class GUI {
         }
     }
 
+    private class CatalogAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            catalogDialog.setVisible(true);
+        }
+    }
+
     private class ResetAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -332,4 +361,39 @@ public class GUI {
                     getClass().getPackage().getImplementationVersion()));
         }
     }
+
+    private class PasteAction implements ActionListener {
+
+        private String cannedText = null;
+
+        public PasteAction(String str) {
+            super();
+            cannedText = str;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String pasteBuffer;
+            try {
+                if (cannedText == null) {
+                    Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    pasteBuffer = (String) cb.getContents(null)
+                                    .getTransferData(DataFlavor.stringFlavor);
+                } else {
+                    pasteBuffer = cannedText;
+                }
+                LOGGER.debug("To paste:{}", pasteBuffer);
+                for (char ch : pasteBuffer.toCharArray()) {
+                    if (ch == '\n')
+                        term.eolReceived();
+                    else
+                        term.dataReceived(ch);
+                }
+                screen1.requestFocusInWindow();
+            } catch (UnsupportedFlavorException | IOException e1) {
+                LOGGER.error("Unsupported flavor", e1);
+            }
+        }
+    }
+
 }

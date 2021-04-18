@@ -2,11 +2,13 @@ package org.roug.osnine.wasm;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Properties;
 
 import org.roug.usim.OptionParser;
@@ -19,6 +21,7 @@ import org.roug.ui.terminal.EmulationRec;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.Font;
+
 /**
  * Generic emulator for OS-9. Parse arguments and launch GUI.
  */
@@ -29,65 +32,55 @@ public class OS9Emu {
     /** List of unrecognized command line arguments. */
     private static String[] unusedArguments = new String[0];
     private static String[] diskArgs = new String[4];
-    private static String[] defaultDisks = { "/files/boot.dsk" };
+    private static String[] defaultDisks = { "OS9.dsk" };
 
     private static Properties configMap = new Properties();
 
-    private static boolean singleUser = true;
     private static String terminalType = "go80";
+    private static String copyDiskFrom;
+    private static String catalogRoot;
 
     public static void main(String[] args) {
 
         try {
-
-//          GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-
-            OutputStream outputStream = null;
-//          InputStream fStream = OS9Emu.class.getResourceAsStream("/VeraMoBd.ttf");
-//          Font font = Font.createFont(Font.TRUETYPE_FONT, fStream);
-//          ge.registerFont(font);
-
-//Font[] fs = ge.getAllFonts();
-//LOGGER.info("Number: {} - {}", fs.length, fs);
-
-            File bootFile = new File("/files/boot.dsk");
-            if (!bootFile.exists()) {
-    //          InputStream inStream = OS9Emu.class.getResourceAsStream("/boot.dsk");
-                InputStream inStream = new FileInputStream("/app/emul/boot.dsk");
-    //          LOGGER.info("Opened /boot.dsk");
-                outputStream = new FileOutputStream(bootFile);
-    //          LOGGER.info("Opened {} for out", bootFile);
-                if (inStream == null) LOGGER.error("instream is null");
-                if (outputStream == null) LOGGER.error("outputStream is null");
-                //FIXME: loop
-                byte[] b = new byte[256000];
-                int siz = inStream.read(b);
-                if (siz <= 100000)  LOGGER.error("siz is {}", siz);
-                outputStream.write(b);
-                b = null;
-                inStream.close();
-                outputStream.close();
-                LOGGER.info("DSK copied to /files");
-            }
-
             parseArguments(args);
-            GUI app = new GUI(configMap);
-            if (unusedArguments.length == 0) unusedArguments = defaultDisks;
-            for (int i = 0; i < 4; i++) {
-                if (i < unusedArguments.length) {
-                    app.setDisk(i, new File(unusedArguments[i]));
+
+            if (copyDiskFrom != null && diskArgs[0] != null) {
+                File bootFile = new File(diskArgs[0]);
+                if (!bootFile.exists()) {
+                    copyDisk(new File(catalogRoot, copyDiskFrom), bootFile);
                 }
             }
 
+            GUI app = new GUI(configMap);
             for (int i = 0; i < 4; i++) {
                 if (diskArgs[i] != null) {
                     app.setDisk(i, new File(diskArgs[i]));
                 }
             }
+
         } catch (Exception e) {
             LOGGER.error("Failed to start", e);
             System.exit(1);
         }
+    }
+
+    static void copyDisk(File src, File dst)
+                    throws FileNotFoundException, IOException {
+        InputStream inStream = new FileInputStream(src);
+        OutputStream outputStream = new FileOutputStream(dst);
+        if (inStream == null) LOGGER.error("instream is null");
+        if (outputStream == null) LOGGER.error("outputStream is null");
+
+        byte[] b = new byte[65536];
+        int sz;
+        while((sz = inStream.read(b)) > 0) {
+            outputStream.write(b, 0, sz);
+        }
+        b = null;
+        inStream.close();
+        outputStream.close();
+        LOGGER.info("{} copied to {}", src, dst);
     }
 
     /**
@@ -103,25 +96,20 @@ public class OS9Emu {
      */
     private static void parseArguments(String[] args) {
 
-        OptionParser op = new OptionParser(args, "f:mst:0:1:2:3:");
-        //singleUser = op.getOptionFlag("s");
-        if (op.getOptionFlag("m")) {
-            singleUser = false;
-        }
-        if (singleUser)
-            configMap.setProperty("bootmode", "singleuser");
-        else
-            configMap.setProperty("bootmode", "multiuser");
+        OptionParser op = new OptionParser(args, "r:c:t:w:0:1:2:3:");
         String tt = op.getOptionArgument("t");
         if (tt != null) terminalType = tt;
         validateTermType();
         configMap.setProperty("term.type", terminalType);
-        configMap.setProperty("t1.type", terminalType);
 
-        String fontSize = op.getOptionArgument("f");
-        if (fontSize == null) fontSize = "16";
-        configMap.setProperty("term.fontsize", fontSize);
-        configMap.setProperty("t1.fontsize", fontSize);
+        copyDiskFrom = op.getOptionArgument("c");
+        catalogRoot = op.getOptionArgument("r");
+        if (catalogRoot == null)
+            catalogRoot = ".";
+        configMap.setProperty("catalog", catalogRoot);
+
+        String workDir = op.getOptionArgument("w");
+        if (workDir != null) configMap.setProperty("workdir", workDir);
 
         for (int i = 0; i < 4; i++) {
             String a = op.getOptionArgument(Integer.toString(i));

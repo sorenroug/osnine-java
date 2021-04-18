@@ -24,6 +24,8 @@ public class DiskDialog {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiskDialog.class);
 
+    private static File startDir = new File("/files");
+
     private JFrame guiFrame;
 
     private JDialog diskDialog;
@@ -34,10 +36,10 @@ public class DiskDialog {
 
     private int driveNumber;
 
-    private final JFileChooser fc = new JFileChooser(new File("."));
+    private final JFileChooser fc = new JFileChooser(startDir);
 
     /**
-     * Create disk dialog
+     * Create disk dialog.
      */
     public DiskDialog(JFrame parent, VirtualDisk diskDevice, int driveNum) throws Exception {
         guiFrame = parent;
@@ -71,7 +73,7 @@ public class DiskDialog {
         diskDialog.setSize(300,300);
  
         fc.setAcceptAllFileFilterUsed(false);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("DSK images", "dsk", "vdk");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("DSK images", "dsk");
         fc.addChoosableFileFilter(filter);
     }
 

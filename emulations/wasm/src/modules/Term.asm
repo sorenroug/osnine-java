@@ -29,7 +29,7 @@ OptStrt  fcb DT.SCF SCF type device
          fcb 0 number of NULLS after CR
          fcb true  end of page pause ON
          fcb 24 lines per page
-         fcb $7F C$BSP backspace key
+         fcb C$BSP backspace key
          fcb C$DEL delete line key
          fcb C$CR end of record key
          fcb C$EOF end of file key
