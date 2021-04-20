@@ -76,19 +76,8 @@ PD.BAU rmb 1 ACIA BAUD RATE (Color Computer)
 PD.D2P rmb 2 OFFSET of DEV2 name
 PD.XON rmb 1 ACIA X-ON char
 PD.XOFF rmb 1 ACIA X-OFF char
-PD.Width rmb 1 Chars per line
-PD.Edit rmb 1 0=Extended editing features
 OPTCNT set .-PD.OPT Total user settable options
 PD.ERR rmb 1 most recent I/O error status
 PD.TBL rmb 2 Device Table addr (copy)
 
- org PD.ERR
-PD.LdIn rmb 1 Lead-in character for input
-PD.LdOut rmb 1 Lead-in character for output
-PD.MLft rmb 1 Move left code
-PD.MRt rmb 1 Move right code
-PD.Left rmb 1 Move left key
-PD.Right rmb 1 Move right key
-PD.DelCh rmb 1 Delete chr under cursor key
-PD.DEol rmb 1 Delete to end of line key
  opt l

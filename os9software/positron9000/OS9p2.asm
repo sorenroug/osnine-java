@@ -1,5 +1,21 @@
-         nam   OS9p2
-         ttl   os9 system module    
+ nam OS-9 Level II V1.2, part 2
+ ttl Module Header
+ spc 5
+************************************************************
+*                                                          *
+*           OS-9 Level II V1.2 - Kernal, part 2            *
+*                                                          *
+* Copyright 1982 by Microware Systems Corporation          *
+* Reproduced Under License                                 *
+*                                                          *
+* This source code is the proprietary confidential prop-   *
+* erty of Microware Systems Corporation, and is provided   *
+* to the licensee solely for documentation and educational *
+* purposes. Reproduction, publication, or distribution in  *
+* any form to any party other than the licensee is         *
+* is strictly prohibited !!!                               *
+*                                                          *
+************************************************************
 
  use defsfile
 
@@ -59,28 +75,41 @@ u00FC    rmb   4
 size     equ   .
 name     equ   *
          fcs   /OS9p2/
-         fcb   $0C 
-
-Cold    equ   *
-         leay  >SvcTbl,pcr
-         os9   F$SSvc   
-         ldu   D.Init
-         ldd   u0009,u
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         addd  D.BlkMap
-         tfr   d,x
-         ldb   #$80
-         bra   Cold.b
-Cold.a    lda   ,x+
-         bne   Cold.b
-         stb   -$01,x
-Cold.b    cmpx  D.BlkMap+2
-         bcs   Cold.a
+         fcb   12
+ ttl Coldstart Routines
+ page
+*************************************************************
+*
+*    Routine Cold
+*
+*   System Coldstart continued; add more service requests,
+* set default directories, start initial process
+*
+Cold leay SvcTbl,pcr get service routine initial
+ OS9 F$SSvc install service routines
+ ldu D.Init get initializations
+ ldd MaxMem,U get memory limit
+ lsra convert to block number
+ rorb
+ lsra
+ rorb
+ ifge DAT.BlSz-2048
+ lsra
+ rorb
+ ifge DAT.BlSz-4096
+ lsra
+ rorb
+ endc
+ endc
+ addd D.BlkMap make block map ptr
+ tfr D,X copy it
+ ldb #NotRAM get not RAM flag
+ bra Cold.b
+Cold.a lda ,X+ get block flags
+ bne Cold.b branch if not free RAM
+ stb -1,X mark as not RAM
+Cold.b cmpx D.BlkMap+2 end of map?
+ bcs Cold.a branch if not
 
          ldx   #$0144
          ldy   #$0350
@@ -89,10 +118,10 @@ Cold.b    cmpx  D.BlkMap+2
          sty   >$FF80
          anda  #$E0
          beq   L0090
-         lsla  
-         rola  
-         rola  
-         rola  
+         lsla
+         rola
+         rola
+         rola
          adda  #$08
          sta   <u0004
          lda   #$93
@@ -174,32 +203,32 @@ L00F7    ldx   #$0200
          pshs  b
          leas  -$02,s
 
-         ldu   D.Init
-         ldd   <u0010,u ldd SysStr,U get system device name offset
-         beq   L012C
+ ldu D.Init get initializations
+ ldd SysStr,U get system device name offset
+         beq   Cold20
          leax  d,u
 L010A    lda   #$F1
          stx   ,s
          tst   ,x+
-         beq   L012C
-         os9   F$Link   
+         beq   Cold20
+         os9   F$Link
          bcs   L010A
          lda   <u0014,u
          pshs  x,a
-         os9   F$UnLink 
+         os9   F$UnLink
          puls  x,a
          bita  $02,s
          beq   L010A
          ldx   ,s
-         lda   #$05
-         os9   I$ChgDir 
-L012C    leas  $03,s
-         ldu   D.Init
-         ldd   <u0012,u ldd StdStr,U get standard I/O offset
-         beq   L0180
+ lda #EXEC.+READ. set both data & execution
+ OS9 I$ChgDir change directories
+Cold20    leas  $03,s
+ ldu D.Init get initialization ptr
+ ldd StdStr,U get standard I/O offset
+         beq   Cold40
          leax  d,u
-         ldd   <u0016,u
-         beq   L0180
+         ldd  ProtFlag,u   Problem - ProtFlag is only one byte
+         beq   Cold40
          leay  d,u
          ldd   #$0300
          std   >$FF80
@@ -217,23 +246,24 @@ L012C    leas  $03,s
          leax  ,y
 L0162    ldd   #$0200
          std   >$FF80
-         lda   #$03
-         os9   I$Open   
-         bcs   L0180
-         ldx   D.Proc
-         sta   <$30,x
-         os9   I$Dup    
-         sta   <$31,x
-         os9   I$Dup    
-         sta   <$32,x 
-L0180    ldu   D.Init
-         ldd   u000E,u
-         leax  d,u
-         lda   #$01
-         clrb  
-         ldy   #$0000
-         os9   F$Fork   
-         os9   F$NProc  
+ lda #UPDAT. open for update
+ OS9 I$OPEN open path
+         bcs   Cold40
+ ldx D.Proc get process ptr
+ sta P$PATH,X set standard input
+ OS9 I$DUP count open image
+ sta P$PATH+1,X set standard output
+ OS9 I$DUP count open image
+ sta P$PATH+2,X set standard error
+Cold40 equ *
+ ldu D.Init get initialization ptr
+ ldd InitStr,U get initial module offset
+ leax D,U get name ptr
+ lda #OBJCT set type
+ clrb no memory over-ride
+ ldy #0 no parameters
+ os9 F$Fork startup initial process
+Cold80 os9 F$NProc go into normal action
 
 L0193    ldb   #$80
          stb   <u0003
@@ -328,311 +358,459 @@ IOHook pshs D,X,Y,U save registers
  bcs IOHook20 branch if not successful
  bsr IOLink Link IOMan again
  bcs IOHook20 branch if not found
-IOHook10    jsr   ,y
-         puls  u,y,x,b,a
-         ldx   >$00FE,y
-         jmp   ,x
-IOHook20    stb   $01,s
-         puls  pc,u,y,x,b,a
+IOHook10 jsr 0,Y call IOMan init
+ puls D,X,Y,U retrieve registers
+ ldx IOEntry,Y get IOMan entry
+ jmp 0,x
+IOHook20 stb 1,S return error code
+ puls D,X,Y,U,PC
 
-IOLink    leax  >IOStr,pcr
-         lda   #$C1
-         os9   F$Link   
-         rts   
+IOLink leax IOStr,PCR get IOMan name ptr
+ lda #SYSTM+OBJCT get type
+ OS9 F$LINK
+ rts
+ page
+************************************************************
+*
+*      Subroutine UnLink
+*
+*   Service routine to locate a Module in the Module Directory
+*   and decrement its link count, removing it from the directory
+*   if its link count reaches zero
+*
+* Input: U = registers ptr
+*            R$U,u = Module ptr
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: D.Proc, D.BlkMap, D.ModDir
+*
+* Calls: none
+*
+UnLink pshs u,d save registers
+ ldd R$U,U get module ptr
+ ldx R$U,U get module ptr
+ lsra get DAT image index
+ lsra
+ ifge DAT.BlSz-2048
+ lsra
+ ifge DAT.BlSz-4096
+ lsra
+ endc
+ endc
+ sta 0,s save it
+ beq UnLinkX1 branch if none
+ ldu D.Proc get process ptr
+ leay P$DATImg,u get DAT image ptr
+ asla shift for two-byte entries
+ ldd A,Y get DAT image
+ ldu D.BlkMap get block map ptr
+ ifne DAT.WrPr+DAT.WrEn
+ anda #1
+ endc
+ ldb d,u get block flags
+ bitb #ModBlock are there modules there?
+ beq UnLinkX1 branch if not
+ leau P$Links-P$DATImg,Y get block links ptr
+ bra UnLink15
+UnLink10 dec 0,s count index down
+ beq UnLinkX1 branch if lost
+UnLink15 ldb 0,S get DAT index
+ aslb shift for two-byte entries
+ ldd B,U get block link count
+ beq UnLink10 branch if not beginning
+ lda 0,S get DAT index
+ asla make module ptr offset
+ asla
+ ifge DAT.BlSz-2048
+ asla
+ ifge DAT.BlSz-4096
+ asla
+ endc
+ endc
+ clrb
+ nega
+ leax D,X get expect module ptr
+ ldb 0,S get DAT index
+ aslb shift for two-byte entries
+ ldd B,Y get block number
+ ifne DAT.WrPr+DAT.WrEn
+ anda #1
+ endc
+ ldu D.ModDir get module directory ptr
+ bra UnLink25
+UnLink20 leau MD$ESize,U move to next entry
+ cmpu D.ModEnd is there another?
+ bcs UnLink25 branch if so
+UnLinkX1 bra UnLink80
+UnLink25 cmpx MD$MPtr,U do ptrs match?
+ bne UnLink20 branch if not
+ cmpd [MD$MPDAT,U] do block numbers match?
+ bne UnLink20 branch if not
+ ldx MD$Link,U get module link count
+ beq UnLink30 branch if not in use
+ leax -1,X decrease use
+ stx MD$Link,U update link count
+ bne UnLink70 branch if still in use
+UnLink30 ldx 2,S get registers ptr
+ ldx R$U,X get module ptr
+ ldd #M$Type get module type offset
+ OS9 F$LDDDXY get module type
+ cmpa #FLMGR is it I/O module?
+ bcs UnLink35 branch if not
+ os9 F$IODel remove from I/O system
+ bcc UnLink35 branch if no error
+ ldx MD$Link,U get link count
+ leax 1,X reset link count
+ stx MD$Link,U
+ bra UnLinErr
+UnLink35 bsr ClrDir clear directory entry
+UnLink70 ldb 0,S get DAT index
+ aslb shift for two-byte entries
+ leay b,y make DAT image ptr
+ ldx P$Links-P$DATImg,y get link count
+ leax -1,X count link down
+ stx P$Links-P$DATImg,y update link count
+ bne UnLink80 branch if block in use
+ ldd MD$MBSiz,U get block size
+ bsr BlkCnt get block count
+ ldx #DAT.Free get free block code
+UnLink75 stx ,Y++ mark DAT free
+ deca count block
+ bne UnLink75 branch if more
+UnLink80 clrb clear carry
+UnLinErr leas 2,s return scratch
+ puls pc,u
 
-UnLink    pshs  u,b,a
-         ldd   u0008,u
-         ldx   u0008,u
-         lsra  
-         lsra  
-         lsra  
-         sta   ,s
-         beq   L0281
-         ldu   D.Proc
-         leay  D.BlkMap,u
-         lsla  
-         ldd   a,y
-         ldu   D.BlkMap
-         anda  #$01
-         ldb   d,u
-         bitb  #$02
-         beq   L0281
-         leau  <$40,y
-         bra   UnLink15
-L025B    dec   ,s
-         beq   L0281
-UnLink15    ldb   ,s
-         lslb  
-         ldd   b,u
-         beq   L025B
-         lda   ,s
-         lsla  
-         lsla  
-         lsla  
-         clrb  
-         nega  
-         leax  d,x
-         ldb   ,s
-         lslb  
-         ldd   b,y
-         anda  #$01
-         ldu   D.ModDir
-         bra   UnLink25
-L027A    leau  u0008,u
-         cmpu  D.ModEnd
-         bcs   UnLink25
-L0281    bra   L02CE
-UnLink25    cmpx  u0004,u
-         bne   L027A
-         cmpd  [,u]
-         bne   L027A
-         ldx   u0006,u
-         beq   L0296
-         leax  -$01,x
-         stx   u0006,u
-         bne   L02B3
-L0296    ldx   $02,s
-         ldx   $08,x
-         ldd   #$0006
-         os9   F$LDDDXY 
-         cmpa  #$D0
-         bcs   L02B1
-         os9   F$IODel  
-         bcc   L02B1
-         ldx   u0006,u
-         leax  $01,x
-         stx   u0006,u
-         bra   L02CF
-L02B1    bsr   ClrDir
-L02B3    ldb   ,s
-         lslb  
-         leay  b,y
-         ldx   <$40,y
-         leax  -$01,x
-         stx   <$40,y
-         bne   L02CE
-         ldd   u0002,u
-         bsr   BlkCnt
-         ldx   #$015F
-L02C9    stx   ,y++
-         deca  
-         bne   L02C9
-L02CE    clrb  
-L02CF    leas  $02,s
-         puls  pc,u
+
+ClrDir ldx D.BlkMap get block map ptr
+ ldd [MD$MPDAT,U] get module block number
+ lda D,X get block flags
+ bmi ClrD.F branch if not-RAM
+ ldx D.ModDir get module directory ptr
+ClrD.A ldd [MD$MPDAT,X] get next block number
+ cmpd [MD$MPDAT,U] is it this block?
+ bne ClrD.B branch if not
+ ldd MD$Link,X get link count
+ bne ClrD.F branch if in use
+ClrD.B leax MD$ESize,X move to next entry
+ cmpx D.ModEnd is there another?
+ bcs ClrD.A branch if so
+ ldx D.BlkMap get block map ptr
+ ldd MD$MBSiz,U get module block size
+ bsr BlkCnt
+ pshs y save y-reg
+ ldy MD$MPDAT,U get mod DAT image ptr
+ClrD.C pshs x,a save count, blkmap
+ ldd 0,Y get block number
+ clr ,Y+
+ clr ,Y+ clear out DAT image ptr
+ leax D,X get ptr to blk status
+ ldb 0,X get status bits
+ andb #^(ModBlock+RAMinUse) clear module and Ram in use
+ stb 0,X save bits
+ puls X,A get count, blkmap ptr
+ deca next block
+ bne ClrD.C branch back till done
+ puls Y restore y-reg
+ ldx D.ModDir get Module Directory ptr
+ ldd MD$MPDAT,U get DAT image ptr
+ClrD.D cmpd MD$MPDAT,X this module in group?
+ bne ClrD.E branch if not
+ clr MD$MPDAT,x clear entry
+ clr MD$MPDAT+1,x
+ClrD.E leax MD$ESize,x move to next entry
+ cmpx D.ModEnd is there another?
+ bcs ClrD.D branch if so
+ClrD.F rts
 
 
-ClrDir    ldx   D.BlkMap
-         ldd   [,u]
-         lda   d,x
-         bmi   L0323
-         ldx   D.ModDir
-L02DD    ldd   [,x]
-         cmpd  [,u]
-         bne   L02E8
-         ldd   $06,x
-         bne   L0323
-L02E8    leax  $08,x
-         cmpx  D.ModEnd
-         bcs   L02DD
-         ldx   D.BlkMap
-         ldd   u0002,u
-         bsr   BlkCnt
-         pshs  y
-         ldy   ,u
-L02F9    pshs  x,a
-         ldd   ,y
-         clr   ,y+
-         clr   ,y+
-         leax  d,x
-         ldb   ,x
-         andb  #$FC
-         stb   ,x
-         puls  x,a
-         deca  
-         bne   L02F9
-         puls  y
-         ldx   D.ModDir
-         ldd   ,u
-L0314    cmpd  ,x
-         bne   L031D
-         clr   ,x
-         clr   $01,x
-L031D    leax  $08,x
-         cmpx  D.ModEnd
-         bcs   L0314
-L0323    rts   
+BlkCnt addd #DAT.Blsz-1 round to next block
+ lsra get block count
+ lsra
+ ifge DAT.BlSz-2048
+ lsra
+ ifge DAT.BlSz-4096
+ lsra
+ endc
+ endc
+ rts
+ page
+************************************************************
+*
+*      Subroutine Fork
+*
+*   Initiate new process
+*
+* Input: U = registers ptr
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: D.PrcDBT, D.Proc
+*
+* Calls: InitProc
+*
+Fork pshs U save registers ptr
+ lbsr AllProc get process descriptor
+ bcc Fork.A branch if successful
+ puls PC,U
+Fork.A pshs U save child process ptr
+ ldx D.Proc get parent process ptr
+ ldd P$USER,X get parent user index
+ std P$User,U copy to child
+ lda P$Prior,X get parent priority
+ sta P$Prior,U copy to child
+ leax P$DIO,X get parent default I/O ptr
+ leau P$DIO,U get child default I/O ptr
+ ldb #DefIOSiz get area size
+Fork.C lda ,X+ get byte
+ sta ,U+ copy it
+ decb count it
+ bne Fork.C branch if more
+ ldy #3 set count
+Fork.D lda ,X+ get path number
+ beq Fork.E branch if more
+ OS9 I$DUP duplicate path
+ bcc Fork.E branch if successful
+ clra set path closed
+Fork.E sta ,U+ set path number
+ leay -1,Y count path
+ bne Fork.D
+ ldx 0,S get child ptr
+ ldu 2,S get registers ptr
+ lbsr InitProc initialize process
+ bcs ForkErr branch if error
+ pshs D save byte count
+ os9 F$AllTsk allocate child task
+ bcc Fork.F branch if successful
+*
+*   >>> need error routine here <<<
+*
+Fork.F lda P$PagCnt,X get high memory found
+ clrb
+ subd 0,s get destination ptr
+ tfr D,U copy it
+ ldb P$Task,X get destination task
+ ldx D.Proc get parent ptr
+ lda P$Task,X get source task
+ leax 0,Y copy source ptr
+ puls Y get byte count
+ os9 F$Move move parameter area
+ ldx 0,S get child ptr
+ lda D.SysTsk get system task
+ ldu P$SP,X get process stack
+ leax P$Stack-R$Size,X get local stack
+ ldy #R$Size get byte count
+ os9 F$Move copy stack to process
+ puls U,X retrieve child & registers ptr
+ os9 F$DelTsk deallocate child task number
+ ldy D.Proc get parent process
+ lda P$ID,X get child process ID
+ sta R$A,U return it to parent
+ ldb P$CID,Y get parent's child ID
+ sta P$CID,Y install new child
+ lda P$ID,Y get parent process id
+ std P$PID,X install parent & siblings
+ lda P$State,X get child state
+ anda #^SysState clear system state
+ sta P$State,X update state
+ OS9 F$AProc put child in active queue
+ rts
+ForkErr puls x retrieve child process ptr
+ pshs b save error code
+ lbsr TermProc infanticide !
+ lda 0,X get process ID
+ lbsr RetProc dispose of body
+ comb set carry
+ puls pc,u,b
+ page
+************************************************************
+*
+*     Subroutine AllPrc
+*
+*   Process Descriptor allocation service routine
+*
+* Input: U = registers ptr
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: none
+*
+* Calls: AllProc
+*
+AllPrc pshs u save registers ptr
+ bsr AllProc get process descriptor
+ bcs AllPXit branch if error
+ ldx 0,S get registers ptr
+ stu R$U,X return process ptr
+AllPXit puls pc,u
 
-BlkCnt    addd  #$07FF
-         lsra  
-         lsra  
-         lsra  
-         rts   
 
-Fork       pshs  u
-         lbsr  AllProc
-         bcc   Fork.A
-         puls  pc,u
-Fork.A    pshs  u
-         ldx   D.Proc
-         ldd   $08,x
-         std   u0008,u
-         lda   $0A,x
-         sta   u000A,u
-         leax  <$20,x
-         leau  <u0020,u
-         ldb   #$10
-L0348    lda   ,x+
-         sta   ,u+
-         decb  
-         bne   L0348
-         ldy   #$0003
-L0353    lda   ,x+
-         beq   L035D
-         os9   I$Dup    
-         bcc   L035D
-         clra  
-L035D    sta   ,u+
-         leay  -$01,y
-         bne   L0353
-         ldx   ,s
-         ldu   $02,s
-         lbsr  InitProc
-         bcs   ForkErr
-         pshs  b,a
-         os9   F$AllTsk 
-         bcc   L0373
-L0373    lda   $07,x
-         clrb  
-         subd  ,s
-         tfr   d,u
-         ldb   $06,x
-         ldx   D.Proc
-         lda   $06,x
-         leax  ,y
-         puls  y
-         os9   F$Move   
-         ldx   ,s
-         lda   D.SysTsk
-         ldu   $04,x
-         leax  >$01F4,x
-         ldy   #$000C
-         os9   F$Move   
-         puls  u,x
-         os9   F$DelTsk 
-         ldy   D.Proc
-         lda   ,x
-         sta   u0001,u
-         ldb   $03,y
-         sta   $03,y
-         lda   ,y
-         std   $01,x
-         lda   $0C,x
-         anda  #$7F
-         sta   $0C,x
-         os9   F$AProc  
-         rts   
-ForkErr    puls  x
-         pshs  b
-         lbsr  TermProc
-         lda   ,x
-         lbsr  RetProc
-         comb  
-         puls  pc,u,b
 
-AllPrc        pshs  u
-         bsr   AllProc
-         bcs   L03CF
-         ldx   ,s
-         stu   $08,x
-L03CF    puls  pc,u
-
+************************************************************
+*
+*     Subroutine AllProc
+*
+*   Allocate Process Descriptor
+*
+* Input: none
+*
+* Output: X   destroyed
+*         U = Process Descriptor ptr
+*
+* Data: D.PrcDBT
+*
+* Calls: none
+*
 AllProc    ldx   D.PrcDBT
-L03D3    lda   ,x+
-         bne   L03D3
+AllP.A    lda   ,x+
+         bne   AllP.A
          leax  -$01,x
          tfr   x,d
          subd  D.PrcDBT
-         tsta  
-         beq   L03E5
-         comb  
+         tsta
+         beq   AllP.B
+         comb
          ldb   #$E5
-         bra   L0416
-L03E5    pshs  b
+         bra   AllPrXit
+AllP.B    pshs  b
          ldd   #$0200
-         os9   F$SRqMem 
+         os9   F$SRqMem
          puls  a
-         bcs   L0416
+         bcs   AllPrXit
          sta   ,u
          tfr   u,d
          sta   ,x
-         clra  
+         clra
          leax  u0001,u
          ldy   #$0080
-L03FE    std   ,x++
+AllP.C    std   ,x++
          leay  -$01,y
-         bne   L03FE
+         bne   AllP.C
          lda   #$80
          sta   u000C,u
          ldb   #$20
          ldx   #$015F
          leay  D.BlkMap,u
-L0410    stx   ,y++
-         decb  
-         bne   L0410
-         clrb  
-L0416    rts   
+AllP.D    stx   ,y++
+         decb
+         bne   AllP.D
+ clrb clear carry
+AllPrXit rts
 
-DelPrc         lda   u0001,u
-         bra   RetProc
 
-Wait         ldx   D.Proc
-         lda   $03,x
-         beq   L043F
-L0421    lbsr  GetProc
-         lda   $0C,y
-         bita  #$01
-         bne   ChildSts
-         lda   $02,y
-         bne   L0421
-         sta   u0001,u
-         pshs  cc
-         orcc  #$50
-         ldd   <u0054
-         std   $0D,x
-         stx   <u0054
-         puls  cc
-         lbra  ZZZProc
-L043F    comb  
-         ldb   #$E2
-         rts   
 
-ChildSts    lda   ,y
-         ldb   <$19,y
-         std   u0001,u
-         leau  ,y
-         leay  $01,x
-         bra   L0453
-L0450    lbsr  GetProc
-L0453    lda   $02,y
-         cmpa  ,u
-         bne   L0450
-         ldb   u0002,u
-         stb   $02,y
-
+************************************************************
+*
+*    Subroutine DelPrc
+*
+* Deallocate Process Descriptor service routine
+*
+* Input: U = registers ptr
+*            R$A,u = Process ID
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: none
+*
+* Calls: RetProc
+*
+DelPrc lda R$A,U get process ID
+ bra RetProc
+ page
+************************************************************
+*
+*  Subroutine Wait
+*
+* Wait for Child Process to Exit
+*
+* Input: U = registers ptr
+*
+* Output: Carry clear if successful; set otherwise
+*
+* Data: D.Proc, D.WProcQ
+*
+* Calls: ChildSts, ZZZProc
+*
+Wait ldx D.Proc get process ptr
+ lda P$CID,X get first child ID
+ beq NoChdErr branch if none
+Wait10 lbsr GetProc get process ptr
+ lda P$State,Y get process state
+ bita #DEAD is it dead process?
+ bne ChildSts branch if so
+ lda P$SID,Y is there another child?
+ bne Wait10 branch if so
+ sta R$A,U return process number
+ pshs CC save interrupt masks
+ orcc #IntMasks set interrupt masks
+ ldd D.WProcQ get waiting process queue ptr
+ std P$Queue,X link to new process
+ stx D.WProcQ set new queue
+ puls cc retrieve interrupt masks
+ lbra ZZZProc
+NoChdErr comb set carry
+ ldb #E$NoChld
+ rts
+ page
+************************************************************
+*
+*  Subroutine ChildSts
+*
+* Return Child's Death Status to Parent
+*
+* Input:  X - Parent Process ptr
+*         Y - Child Process ptr
+*         U - Parent Process Register ptr
+*
+* Output: Carry clear
+*
+* Data: none
+*
+* Calls: RetProc
+*
+ChildSts lda P$ID,Y get child process ID
+ ldb P$Signal,Y get exit status
+ std R$D,U return to parent
+ leau 0,Y copy child process ptr
+ leay P$CID-P$SID,X make sibling of parent
+ bra ChildS20
+ChildS10 lbsr GetProc get process ptr
+ChildS20 lda P$SID,Y get next sibling
+ cmpa P$ID,U is child next sibling?
+ bne ChildS10 branch if not
+ ldb P$SID,U get child's next sibling
+ stb P$SID,Y remove child from sibling list
+*
+*     fall through to RetProc
+*
+************************************************************
+*
+*     Subroutine RetProc
+*
+*   Return process descriptor memory to free
+*
+* Input: A = Process ID
+*
+* Output: Carry clear
+*
+* Data: D.PrcDBT
+*
+* Calls: none
+*
 RetProc    pshs  u,x,b,a
          ldb   ,s
          ldx   D.PrcDBT
-         abx   
+         abx
          lda   ,x
          beq   L0478
-         clrb  
+         clrb
          stb   ,x
          tfr   d,x
-         os9   F$DelTsk 
+         os9   F$DelTsk
          leau  ,x
          ldd   #$0200
-         os9   F$SRtMem 
+         os9   F$SRtMem
 L0478    puls  pc,u,x,b,a
 
 Chain         pshs  u
@@ -649,8 +827,8 @@ L048F    ldd   ,x++
          leay  -$01,y
          bne   L048F
          ldx   D.Proc
-         clra  
-         clrb  
+         clra
+         clrb
          stb   $06,x
          std   <$13,x
          std   <$15,x
@@ -658,92 +836,109 @@ L048F    ldd   ,x++
          sta   <$19,x
          std   <$1A,x
          ldu   <$11,x
-         os9   F$UnLink 
+         os9   F$UnLink
          ldb   $07,x
-         addb  #$07
-         lsrb  
-         lsrb  
-         lsrb  
-         lda   #$20
-         pshs  b
-         suba  ,s+
-         leay  <$40,x
-         lslb  
-         leay  b,y
-         ldu   #$015F
-L04C8    stu   ,y++
-         deca  
-         bne   L04C8
-         ldu   $02,s
-         stu   D.Proc
-         ldu   $04,s
-         lbsr  InitProc
-         lbcs  L055D
-         pshs  b,a
-         os9   F$AllTsk 
-         bcc   Chain.D
-Chain.D    ldu   D.Proc
-         lda   u0006,u
-         ldb   $06,x
-         leau  >$01F4,x
-         leax  ,y
-         ldu   u0004,u
-         pshs  u
-         cmpx  ,s++
-         puls  y
-         bhi   L052D
-         beq   Chain30
-         leay  ,y
-         beq   Chain30
-         pshs  x,b,a
-         tfr   y,d
-         leax  d,x
-         pshs  u
-         cmpx  ,s++
-         puls  x,b,a
-         bls   L052D
-         pshs  u,y,x,b,a
-         tfr   y,d
-         leax  d,x
-         leau  d,u
-L0513    ldb   ,s
-         leax  -$01,x
-         os9   F$LDABX  
-         exg   x,u
-         ldb   $01,s
-         leax  -$01,x
-         os9   F$STABX  
-         exg   x,u
-         leay  -$01,y
-         bne   L0513
-         puls  u,y,x,b,a
-         bra   Chain30
-L052D    os9   F$Move   
-Chain30    lda   D.SysTsk
-         ldx   ,s
-         ldu   $04,x
-         leax  >$01F4,x
-         ldy   #$000C
-         os9   F$Move   
-         puls  u,x
-         lda   ,u
-         lbsr  RetProc
-         os9   F$DelTsk 
-         orcc  #$50
-         ldd   <u004A
-         std   D.Proc
-         lda   $0C,x
-         anda  #$7F
-         sta   $0C,x
-         os9   F$AProc  
-         os9   F$NProc  
-L055D    puls  u,x
-         stx   D.Proc
-         pshs  b
-         lda   ,u
-         lbsr  RetProc
-         puls  b
-         os9   F$Exit   
+ addb #(DAT.BlSz-1)/256 round to next block
+ lsrb get next block number
+ lsrb
+ ifge DAT.BlSz-2048
+ lsrb
+ ifge DAT.BlSz-4096
+ lsrb
+ endc
+ endc
+ lda #DAT.BlUs get number of useable blocks
+ pshs b save next block number
+ suba ,S+ get number of blocks left
+ leay P$DatImg,X get DAT image ptr
+ aslb shift for two-byte entries
+ leay B,Y get block ptr
+ ldu #DAT.Free get free block number
+Chain.C stu ,Y++ mark block free
+ deca count block
+ bne Chain.C branch if more
+ ifne DAT.BlCt-DAT.BlUs
+ ifeq CPUType-DRG128
+ ldu #IOBlock
+ else
+ ldu #ROMBlock
+ endc
+ stu ,Y++
+ endc
+ ldu 2,S get new process ptr
+ stu D.Proc make it current
+ ldu 4,S get registers ptr
+ lbsr InitProc initialize process
+ lbcs ChainErr branch if error
+ pshs d save byte count
+ os9 F$AllTsk get process task number
+ bcc Chain.D branch if no error
+*
+* >>> need error routine here
+*
+Chain.D ldu D.Proc get process copy ptr
+ lda P$Task,U get source task
+ ldb P$Task,X get destination task
+ leau (P$Stack-R$Size),X get new registers
+ leax 0,Y copy source ptr
+ ldu R$X,U get destination ptr
+ pshs u copy destination ptr
+ cmpx ,S++ moving down?
+ puls y retrieve byte count
+ bhi Chain20 branch if so
+ beq Chain30 branch if no movement
+ leay 0,Y zero byte count?
+ beq Chain30 branch if so
+ pshs X,D save registers
+ tfr Y,D copy byte count
+ leax d,X get source end ptr
+ pshs u save destination ptr
+ cmpx ,S++ is there overlap?
+ puls X,D retrieve registers
+ bls Chain20 branch if no overlap
+ pshs U,Y,X,B,A save registers
+ tfr Y,D copy byte count
+ leax D,X get source end ptr
+ leau D,U get destination end ptr
+Chain15 ldb 0,S get source task
+ leax -1,X predecrement ptr
+ os9 F$LDABX get byte
+ exg X,U swap source & destination
+ ldb 1,S get destination task
+ leax -1,X predecrement ptr
+ os9 F$STABX copy byte
+ exg X,U swap source & destination
+ leay -1,Y count byte
+ bne Chain15 branch if more
+ puls U,Y,X,B,A retrieve registers
+ bra Chain30
+Chain20 os9 F$Move move data
+Chain30 lda D.SysTsk get system task
+ ldx 0,S get process ptr
+ ldu P$SP,X get process stack
+ leax P$Stack-R$Size,X get local stack
+ ldy #R$Size get byte count
+ os9 F$Move copy stack to process
+ puls U,X retrieve process ptrs
+ lda P$ID,U get process ID
+ lbsr RetProc return process descriptor
+ os9 F$DelTsk return task number
+ orcc #IntMasks set interrupt masks
+ ldd D.SysPrc get system process ptr
+ std D.Proc set current process
+ lda P$State,X get process state
+ anda #^SysState clear system state
+ sta P$State,X update state
+ os9 F$AProc put in active process queue
+ os9 F$NProc start next process
+ChainErr puls u,x retrieve process ptrs
+ stx D.Proc restore current process ptr
+ pshs b save error code
+ lda P$ID,U get new process ID
+ lbsr RetProc return process descriptor
+ puls b retrieve error code
+ os9 F$Exit kill process
+ page
 
 InitProc    pshs  u,y,x,b,a
          ldd   D.Proc
@@ -753,12 +948,12 @@ InitProc    pshs  u,y,x,b,a
          ldx   u0004,u
          ldy   ,s
          leay  <$40,y
-         os9   F$SLink  
+         os9   F$SLink
          bcc   L0593
          ldd   ,s
          std   D.Proc
          ldu   $04,s
-         os9   F$Load   
+         os9   F$Load
          bcc   L0593
          leas  $04,s
          puls  pc,u,y,x
@@ -778,17 +973,17 @@ L0593    stu   $02,s
          ldb   #$EA
 L05B0    leas  $02,s
          stb   $03,s
-         comb  
+         comb
          bra   L05FA
 L05B7    ldd   #$000B
          leay  <$40,x
          ldx   <$11,x
-         os9   F$LDDDXY 
+         os9   F$LDDDXY
          cmpa  u0002,u
          bcc   L05CA
          lda   u0002,u
-         clrb  
-L05CA    os9   F$Mem    
+         clrb
+L05CA    os9   F$Mem
          bcs   L05B0
          ldx   $06,s
          leay  >$01F4,x
@@ -806,9 +1001,9 @@ L05CA    os9   F$Mem
          std   $06,s
          lda   #$80
          sta   ,y
-         clra  
+         clra
          sta   $03,y
-         clrb  
+         clrb
          std   $08,y
          stx   $0A,y
 L05FA    puls  b,a
@@ -857,8 +1052,8 @@ L064E    ldd   $0D,x
          ldu   $04,x
          ldu   u0008,u
          lbsr  ChildSts
-         os9   F$AProc  
-L065E    os9   F$NProc  
+         os9   F$AProc
+L065E    os9   F$NProc
 
 TermProc    pshs  u
          ldb   #$10
@@ -867,27 +1062,27 @@ L0668    lda   ,y+
          beq   L0675
          clr   -$01,y
          pshs  b
-         os9   I$Close  
+         os9   I$Close
          puls  b
-L0675    decb  
+L0675    decb
          bne   L0668
-         clra  
+         clra
          ldb   $07,x
          beq   L0685
          addb  #$07
-         lsrb  
-         lsrb  
-         lsrb  
-         os9   F$DelImg 
+         lsrb
+         lsrb
+         lsrb
+         os9   F$DelImg
 L0685    ldd   D.Proc
          pshs  b,a
          stx   D.Proc
          ldu   <$11,x
-         os9   F$UnLink 
+         os9   F$UnLink
          puls  u,b,a
          std   D.Proc
-         os9   F$DelTsk 
-         rts   
+         os9   F$DelTsk
+         rts
 
 Mem      ldx   D.Proc
          ldd   u0001,u
@@ -900,7 +1095,7 @@ L06A8    cmpa  $07,x
          beq   L06EE
          pshs  a
          bcc   L06BC
-         deca  
+         deca
          ldb   #$F4
          cmpd  $04,x
          bcc   L06BC
@@ -908,49 +1103,49 @@ L06A8    cmpa  $07,x
          bra   L06DD
 L06BC    lda   $07,x
          adda  #$07
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
          ldb   ,s
          addb  #$07
          bcc   L06CD
          ldb   #$CF
          bra   L06DD
-L06CD    lsrb  
-         lsrb  
-         lsrb  
+L06CD    lsrb
+         lsrb
+         lsrb
          pshs  a
          subb  ,s+
          beq   L06EA
          bcs   L06E2
-         os9   F$AllImg 
+         os9   F$AllImg
          bcc   L06EA
 L06DD    leas  $01,s
 L06DF    orcc  #$01
-         rts   
+         rts
 L06E2    pshs  b
          adda  ,s+
-         negb  
-         os9   F$DelImg 
+         negb
+         os9   F$DelImg
 L06EA    puls  a
          sta   $07,x
 L06EE    lda   $07,x
-         clrb  
+         clrb
          std   u0001,u
          std   u0006,u
-         rts   
+         rts
 
 Send         ldx   D.Proc
          lda   u0001,u
          bne   L0708
-         inca  
+         inca
 L06FD    cmpa  ,x
          beq   L0703
          bsr   L0708
-L0703    inca  
+L0703    inca
          bne   L06FD
-         clrb  
-         rts   
+         clrb
+         rts
 
 L0708    lbsr  GetProc
          pshs  u,y,a,cc
@@ -976,15 +1171,15 @@ L0731    lda   $0C,y
          sta   $0C,y
          lda   <$19,y
          beq   L0745
-         deca  
+         deca
          beq   L0745
          inc   ,s
          ldb   #$E9
          bra   L07AA
 L0745    stb   <$19,y
          ldx   #$0049
-         clra  
-         clrb  
+         clra
+         clrb
 L074D    leay  ,x
          ldx   $0D,x
          beq   L0789
@@ -1024,12 +1219,12 @@ L078C    leay  ,x
 L0796    ldd   $0D,x
          std   $0D,y
          lda   <$19,x
-         deca  
+         deca
          bne   L07A7
          sta   <$19,x
          lda   ,s
          tfr   a,cc
-L07A7    os9   F$AProc  
+L07A7    os9   F$AProc
 L07AA    puls  pc,u,y,a,cc
 
 Intercpt         ldx   D.Proc
@@ -1037,19 +1232,19 @@ Intercpt         ldx   D.Proc
          std   <$1A,x
          ldd   u0008,u
          std   <$1C,x
-         clrb  
-         rts   
+         clrb
+         rts
 
 Sleep         pshs  cc
          ldx   D.Proc
          orcc  #$50
          lda   <$19,x
          beq   L07D2
-         deca  
+         deca
          bne   L07CB
          sta   <$19,x
 L07CB    puls  cc
-         os9   F$AProc  
+         os9   F$AProc
          bra   ZZZProc
 L07D2    ldd   u0004,u
          beq   L081D
@@ -1069,8 +1264,8 @@ L07E2    std   u0004,u
          ldd   u0004,u
          subd  $04,y
          bcc   L07E2
-         nega  
-         negb  
+         nega
+         negb
          sbca  #$00
          std   $04,y
 L07FF    puls  y,x
@@ -1093,8 +1288,8 @@ L0820    leay  ,x
          ldx   $0D,x
          bne   L0820
          ldx   D.Proc
-         clra  
-         clrb  
+         clra
+         clrb
          stx   $0D,y
          std   $0D,x
          puls  cc
@@ -1106,15 +1301,15 @@ ZZZProc    pshs  pc,u,y,x
          ldb   $06,x
          cmpb  D.SysTsk
          beq   L0842
-         os9   F$DelTsk 
+         os9   F$DelTsk
 L0842    ldd   $04,x
          pshs  dp,b,a,cc
          sts   $04,x
-         os9   F$NProc  
+         os9   F$NProc
 WakeProc    pshs  x
          ldx   D.Proc
          std   $04,x
-         clrb  
+         clrb
          puls  pc,x
 
 SetPri         lda   u0001,u
@@ -1127,35 +1322,35 @@ SetPri         lda   u0001,u
          bne   L086D
 L0867    lda   u0002,u
          sta   $0A,y
-         clrb  
-         rts   
-L086D    comb  
+         clrb
+         rts
+L086D    comb
          ldb   #$E0
-L0870    rts   
+L0870    rts
 
 GetID         ldx   D.Proc
          lda   ,x
          sta   u0001,u
          ldd   $08,x
          std   u0006,u
-         clrb  
-         rts   
+         clrb
+         rts
 
 SetSWI         ldx   D.Proc
          leay  <$13,x
          ldb   u0001,u
-         decb  
+         decb
          cmpb  #$03
          bcc   L088F
-         lslb  
+         lslb
          ldx   u0004,u
          stx   b,y
-         rts   
-L088F    comb  
+         rts
+L088F    comb
          ldb   #$E3
-         rts   
+         rts
 
-ClockNam    coma  
+ClockNam    coma
          inc   $0F,s
          com   d,s
 
@@ -1167,20 +1362,20 @@ Setime         ldx   u0004,u
          lda   $06,y
          ldb   D.SysTsk
          ldy   #$0006
-         os9   F$Move   
+         os9   F$Move
          ldx   D.Proc
          pshs  x
          ldx   <u004A
          stx   D.Proc
          lda   #$C1
          leax  <ClockNam,pcr
-         os9   F$Link   
+         os9   F$Link
          puls  x
          stx   D.Proc
          bcs   L08C6
          jmp   ,y
 
-L08C6    rts   
+L08C6    rts
 
 UsrABit         ldd   u0001,u
          ldx   u0004,u
@@ -1198,41 +1393,41 @@ SetBit    ldy   u0006,u
          beq   L091C
          sta   ,-s
          bmi   L08F7
-         os9   F$LDABX  
+         os9   F$LDABX
 L08E8    ora   ,s
          leay  -$01,y
          beq   L0917
          lsr   ,s
          bcc   L08E8
-         os9   F$STABX  
+         os9   F$STABX
          leax  $01,x
 L08F7    lda   #$FF
          bra   L0902
-L08FB    os9   F$STABX  
+L08FB    os9   F$STABX
          leax  $01,x
          leay  -$08,y
 L0902    cmpy  #$0008
          bhi   L08FB
          beq   L0917
-L090A    lsra  
+L090A    lsra
          leay  -$01,y
          bne   L090A
-         coma  
+         coma
          sta   ,s
-         os9   F$LDABX  
+         os9   F$LDABX
          ora   ,s
-L0917    os9   F$STABX  
+L0917    os9   F$STABX
          leas  $01,s
-L091C    clrb  
-         rts   
+L091C    clrb
+         rts
 
 CnvBit    pshs  y,b
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
          leax  d,x
          puls  b
          leay  <CnvBit.T,pcr
@@ -1262,36 +1457,36 @@ DBit         ldd   u0001,u
          ldb   D.SysTsk
 ClrBit    ldy   u0006,u
          beq   L0990
-         coma  
+         coma
          sta   ,-s
          bpl   L096C
-         os9   F$LDABX  
+         os9   F$LDABX
 L095D    anda  ,s
          leay  -$01,y
          beq   L098B
          asr   ,s
          bcs   L095D
-         os9   F$STABX  
+         os9   F$STABX
          leax  $01,x
-L096C    clra  
+L096C    clra
          bra   L0976
-L096F    os9   F$STABX  
+L096F    os9   F$STABX
          leax  $01,x
          leay  -$08,y
 L0976    cmpy  #$0008
          bhi   L096F
          beq   L098B
-         coma  
-L097F    lsra  
+         coma
+L097F    lsra
          leay  -$01,y
          bne   L097F
          sta   ,s
-         os9   F$LDABX  
+         os9   F$LDABX
          anda  ,s
-L098B    os9   F$STABX  
+L098B    os9   F$STABX
          leas  $01,s
-L0990    clrb  
-         rts   
+L0990    clrb
+         rts
 
 UsrSBit         ldd   u0001,u
          ldx   u0004,u
@@ -1306,8 +1501,8 @@ SBit         ldd   u0001,u
          ldb   D.SysTsk
 
 FindBit    pshs  u,y,x,b,a,cc
-         clra  
-         clrb  
+         clra
+         clrb
          std   $03,s
          ldy   u0001,u
          sty   $07,s
@@ -1320,7 +1515,7 @@ L09B9    lsr   $01,s
 L09C1    cmpx  u0008,u
          bcc   L09EA
          ldb   $02,s
-         os9   F$LDABX  
+         os9   F$LDABX
          sta   ,s
 L09CC    leay  $01,y
          lda   ,s
@@ -1338,25 +1533,25 @@ L09CC    leay  $01,y
          bra   L09B9
 L09EA    ldd   $03,s
          std   u0006,u
-         comb  
+         comb
          ldd   $05,s
          bra   L09F5
 L09F3    ldd   $07,s
 L09F5    std   u0001,u
          leas  $09,s
-         rts   
+         rts
 
 GPrDsc         ldx   D.Proc
          ldb   $06,x
          lda   u0001,u
-         os9   F$GProcP 
+         os9   F$GProcP
          bcs   L0A12
          lda   D.SysTsk
          leax  ,y
          ldy   #$0200
          ldu   u0004,u
-         os9   F$Move   
-L0A12    rts   
+         os9   F$Move
+L0A12    rts
 
 GBlkMp         ldd   #$0800
          std   u0001,u
@@ -1369,8 +1564,8 @@ GBlkMp         ldd   #$0800
          ldb   $06,x
          ldx   D.BlkMap
          ldu   u0004,u
-         os9   F$Move   
-         rts   
+         os9   F$Move
+         rts
 
 GModDr         ldd   <u0046
          subd  D.ModDir
@@ -1387,14 +1582,14 @@ GModDr         ldd   <u0046
          ldb   $06,x
          ldx   D.ModDir
          ldu   u0004,u
-         os9   F$Move   
-         rts   
+         os9   F$Move
+         rts
 
 SetUser         ldx   D.Proc
          ldd   u0006,u
          std   $08,x
-         clrb  
-         rts   
+         clrb
+         rts
 
 CpyMem         ldd   u0006,u
          beq   CpyMem90
@@ -1412,9 +1607,9 @@ CpyMem         ldd   u0006,u
          ldb   #$20
          pshs  u,b
          ldu   $06,s
-L0A7E    clra  
-         clrb  
-         os9   F$LDDDXY 
+L0A7E    clra
+         clrb
+         os9   F$LDDDXY
          std   ,u++
          leax  $02,x
          dec   ,s
@@ -1428,26 +1623,26 @@ L0A94    cmpx  #$0800
          leax  >-$0800,x
          leay  $02,y
          bra   L0A94
-L0AA1    os9   F$LDAXY  
+L0AA1    os9   F$LDAXY
          ldb   ,s
          pshs  x
          leax  ,u+
-         os9   F$STABX  
+         os9   F$STABX
          puls  x
          leax  $01,x
          cmpu  $01,s
          bcs   L0A94
          puls  y,x,b
          sty   <u0022
-CpyMem90    clrb  
-         rts   
+CpyMem90    clrb
+         rts
 
 UnLoad         pshs  u
          lda   u0001,u
          ldx   D.Proc
          leay  <$40,x
          ldx   u0004,u
-         os9   F$FModul 
+         os9   F$FModul
          puls  y
          bcs   L0B07
          stx   $04,y
@@ -1458,7 +1653,7 @@ UnLoad         pshs  u
          bne   L0B06
 L0ADB    cmpa  #$D0
          bcs   L0B03
-         clra  
+         clra
          ldx   [,u]
          ldy   <u004C
 L0AE5    adda  #$02
@@ -1466,42 +1661,42 @@ L0AE5    adda  #$02
          bcc   L0B03
          cmpx  a,y
          bne   L0AE5
-         lsla  
-         lsla  
-         clrb  
+         lsla
+         lsla
+         clrb
          addd  u0004,u
          tfr   d,x
-         os9   F$IODel  
+         os9   F$IODel
          bcc   L0B03
          ldx   u0006,u
          leax  $01,x
          stx   u0006,u
          bra   L0B07
 L0B03    lbsr  ClrDir
-L0B06    clrb  
-L0B07    rts   
+L0B06    clrb
+L0B07    rts
 
 F64         lda   u0001,u
          ldx   u0004,u
          bsr   FindPD
          bcs   L0B13
          sty   u0006,u
-L0B13    rts   
+L0B13    rts
 
 FindPD    pshs  b,a
-         tsta  
+         tsta
          beq   L0B28
-         clrb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
+         clrb
+         lsra
+         rorb
+         lsra
+         rorb
          lda   a,x
          tfr   d,y
          beq   L0B28
          tst   ,y
          bne   L0B29
-L0B28    coma  
+L0B28    coma
 L0B29    puls  pc,b,a
 
 A64         ldx   u0004,u
@@ -1514,30 +1709,30 @@ L0B37    bsr   L0B57
          bcs   L0B40
          sta   u0001,u
          sty   u0006,u
-L0B40    rts   
+L0B40    rts
 
 L0B41    pshs  u
          ldd   #$0100
-         os9   F$SRqMem 
+         os9   F$SRqMem
          leax  ,u
          puls  u
          bcs   L0B56
-         clra  
-         clrb  
+         clra
+         clrb
 L0B51    sta   d,x
-         incb  
+         incb
          bne   L0B51
-L0B56    rts   
+L0B56    rts
 
 L0B57    pshs  u,x
-         clra  
+         clra
 
 ALCPD1    pshs  a
-         clrb  
+         clrb
          lda   a,x
          beq   L0B6C
          tfr   d,y
-         clra  
+         clra
 L0B64    tst   d,y
          beq   L0B6E
          addb  #$40
@@ -1546,16 +1741,16 @@ L0B6C    orcc  #$01
 L0B6E    leay  d,y
          puls  a
          bcc   L0B99
-         inca  
+         inca
          cmpa  #$40
          bcs   ALCPD1
-         clra  
+         clra
 L0B7A    tst   a,x
          beq   L0B88
-         inca  
+         inca
          cmpa  #$40
          bcs   L0B7A
-         comb  
+         comb
          ldb   #$C8
          bra   L0BA6
 
@@ -1567,15 +1762,15 @@ L0B88    pshs  x,a
          tfr   a,b
          puls  x,a
          stb   a,x
-         clrb  
+         clrb
 
-L0B99    lslb  
-         rola  
-         lslb  
-         rola  
+L0B99    lslb
+         rola
+         lslb
+         rola
          ldb   #$3F
 L0B9F    clr   b,y
-         decb  
+         decb
          bne   L0B9F
          sta   ,y
 L0BA6    puls  pc,u,x
@@ -1586,27 +1781,27 @@ L0BA8    leas  $03,s
 R64         lda   u0001,u
          ldx   u0004,u
          pshs  u,y,x,b,a
-         clrb  
-         tsta  
+         clrb
+         tsta
          beq   L0BDA
-         lsra  
-         rorb  
-         lsra  
-         rorb  
+         lsra
+         rorb
+         lsra
+         rorb
          pshs  a
          lda   a,x
          beq   L0BD8
          tfr   d,y
          clr   ,y
-         clrb  
+         clrb
          tfr   d,u
-         clra  
+         clra
 L0BC8    tst   d,u
          bne   L0BD8
          addb  #$40
          bne   L0BC8
-         inca  
-         os9   F$SRtMem 
+         inca
+         os9   F$SRtMem
          lda   ,s
          clr   a,x
 L0BD8    clr   ,s+
@@ -1616,48 +1811,50 @@ GetPrc         lda   u0001,u
          bsr   GetProc
          bcs   L0BE5
          sty   u0006,u
-L0BE5    rts   
+L0BE5    rts
 
 GetProc    pshs  x,b,a
          ldb   ,s
          beq   L0BF8
          ldx   D.PrcDBT
-         abx   
+         abx
          lda   ,x
          beq   L0BF8
-         clrb  
+         clrb
          tfr   d,y
          puls  pc,x,b,a
 L0BF8    puls  x,b,a
-         comb  
+         comb
          ldb   #$EE
-         rts   
+         rts
 
 DelImg         ldx   u0004,u
          ldd   u0001,u
          leau  <$40,x
-         lsla  
+         lsla
          leau  a,u
-         clra  
+         clra
          tfr   d,y
          pshs  x
-L0C0D    ldd   ,u
-         anda  #$01
-         addd  D.BlkMap
-         tfr   d,x
-         lda   ,x
-         anda  #$FE
-         sta   ,x
+DelImg10    ldd   ,u
+ ifne DAT.WrPr+DAT.WrEn
+ anda #1
+ endc
+ addd D.BlkMap get block map entry ptr
+ tfr D,X copy it
+ lda 0,X get block flags
+ anda #^RAMInUse clear RAM in use flag
+ sta 0,X update entry
          ldd   #$015F
          std   ,u++
          leay  -$01,y
-         bne   L0C0D
+         bne   DelImg10
          puls  x
          lda   $0C,x
          ora   #$10
          sta   $0C,x
-         clrb  
-         rts   
+         clrb
+         rts
 
 MapBlk        lda   u0002,u
          cmpa  #$20
@@ -1667,33 +1864,33 @@ MapBlk        lda   u0002,u
          leay  ,s
 L0C3B    stx   ,y++
          leax  $01,x
-         deca  
+         deca
          bne   L0C3B
          ldb   u0002,u
          ldx   D.Proc
          leay  <$40,x
-         os9   F$FreeHB 
+         os9   F$FreeHB
          bcs   MapB.xit
          pshs  b,a
-         lsla  
-         lsla  
-         lsla  
-         clrb  
+         lsla
+         lsla
+         lsla
+         clrb
          std   u0008,u
          puls  b,a
          leau  ,s
-         os9   F$SetImg 
+         os9   F$SetImg
 MapB.xit    leas  <$40,s
-         rts   
+         rts
 
-MapB.err    comb  
+MapB.err    comb
          ldb   #$DB
-         rts   
+         rts
 
 ClrBlk         ldb   u0002,u
          beq   ClBl.c
          ldd   u0008,u
-         tstb  
+         tstb
          bne   MapB.err
          bita  #$07
          bne   MapB.err
@@ -1702,26 +1899,26 @@ ClrBlk         ldb   u0002,u
          anda  #$F8
          suba  u0008,u
          bcs   L0C83
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
          cmpa  u0002,u
          bcs   MapB.err
 L0C83    lda   $0C,x
          ora   #$10
          sta   $0C,x
          lda   u0008,u
-         lsra  
-         lsra  
+         lsra
+         lsra
          leay  <$40,x
          leay  a,y
          ldb   u0002,u
          ldx   #$015F
 ClBl.b    stx   ,y++
-         decb  
+         decb
          bne   ClBl.b
-ClBl.c    clrb  
-         rts   
+ClBl.c    clrb
+         rts
 
 DelRAM         ldb   u0002,u
          beq   L0CC4
@@ -1729,7 +1926,7 @@ DelRAM         ldb   u0002,u
          subd  D.BlkMap
          subd  u0004,u
          bls   L0CC4
-         tsta  
+         tsta
          bne   L0CB3
          cmpb  u0002,u
          bcc   L0CB3
@@ -1741,10 +1938,10 @@ L0CB3    ldx   D.BlkMap
 L0CBB    lda   ,x
          anda  #$FE
          sta   ,x+
-         decb  
+         decb
          bne   L0CBB
-L0CC4    clrb  
-         rts   
+L0CC4    clrb
+         rts
 
 Sewage         ldx   D.ModDir
          bra   L0CD0
@@ -1808,8 +2005,8 @@ L0D3A    leay  $02,y
          leay  -$04,y
          leax  -$02,x
          bra   L0D1C
-L0D46    clrb  
-         rts   
+L0D46    clrb
+         rts
 
 ChgImgP    pshs  u
          ldu   D.ModDir

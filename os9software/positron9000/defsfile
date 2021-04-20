@@ -1,11 +1,11 @@
  use systype.p9000
  ifp1
  use sysdefs.p9000
- use os9defs.x
+ use os9defs
  use os9iodefs
  use os9rbfdefs
- use os9scfdefs.x
- use os9sysdefs.lii.x
+ use os9scfdefs
+ use os9sysdefs.lii
 
 DriveCnt set 4 drives max on system
 

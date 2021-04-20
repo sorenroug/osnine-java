@@ -52,9 +52,6 @@ F$UnLoad rmb 1 Unlink Module by name
 F$Ctime rmb 1 Com-Trol clock read
 F$Cstime rmb 1 Com-Trol set time
 F$CTswi2 rmb 1 Com-Trol double postbyte swi2
- ifne EXTERR
-F$InsErr rmb 1 install error messages path/module
- endc
  ORG $28 Beginning of System Reserved Calls
 F$SRqMem rmb 1 System Memory Request
 F$SRtMem rmb 1 System Memory Return
@@ -101,14 +98,6 @@ F$MapBlk rmb 1 Map Specific Block
 F$ClrBlk rmb 1 Clear Specific Block
 F$DelRAM rmb 1 Deallocate RAM blocks
 F$GCMDir rmb 1 Pack module directory
-**********
-* Extensions for the Dragon 128
-*
-F$Timer rmb 1 Install timer routine
-F$GMap rmb 1 request graphics memory
-F$GClr rmb 1 return graphics memory
-*
-**********
  pag
 ************************************************************
 *
@@ -193,11 +182,6 @@ SS.RFM rmb 1 Read past File Mark
 SS.ELog rmb 1 Read Error Log
 SS.SSig rmb 1 Send signal on data ready
 SS.Relea rmb 1 Release device
-SS.Edit rmb 1 Edit line (SCF)
-SS.SMac rmb 1 Set macro (SCF)
-SS.CMac rmb 1 Clear macro (SCF)
-SS.Baud rmb 1 select baud rate (b.r. in X)
-SS.Mouse rmb 1 get/reset mouse position (Dragon 128)
 
  ttl Structure Formats
  pag
@@ -250,9 +234,6 @@ InitStr rmb 2 Initial Module Name
 SysStr rmb 2 System Device Name
 StdStr rmb 2 Standard I/O Pathlist
 BootStr rmb 2 Bootstrap Module name
- ifne EXTERR
-ErrStr rmb 2 error messages path name
- endc
 ProtFlag rmb 1 Write protect enable flag
  pag
 ************************************************************

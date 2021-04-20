@@ -39,19 +39,6 @@ D.Boot rmb 1 Bootstrap attempted flag
 D.MotOn rmb 1 Floppy Disk Motor-On time out
 D.ErrCod rmb 1 Reset Error Code
 D.Daywk rmb 1 day of week, com-trol clock
-**********
-*
-* Extensions for the Dragon 128
-*
-D.DMPort rmb 2 port address for DMA
-D.DMMem rmb 2 memory address for DMA
-D.DMDir rmb 1 direction of DMA (1=write to port)
-D.TimTbl rmb 2 address of timer polling table
-D.GRReg rmb 1 current value of graphics control port
-D.LtPen rmb 1 current value of control reg with light pen IRQ
-D.Baud rmb 1 current value of baud rate port
-*
-**********
  org $40
 D.BlkMap rmb 4 Memory Block Map ptr
 D.ModDir rmb 4 Module Directory ptrs
@@ -115,9 +102,6 @@ IOEntry equ 254
 *
 DefIOSiz equ 16 Default I/O Data Length
 NumPaths equ 16 Number of Local Paths
- ifne EXTERR
-ErrNamSz equ 32 size of error messages path name area
- endc
 
  ORG 0
 P$ID rmb 1 Process ID
@@ -147,9 +131,6 @@ P$DIO rmb DefIOSiz Default I/O ptrs
 P$Path rmb NumPaths I/O Path Table
 P$DATImg rmb 64 DAT Image
 P$Links rmb 32 Block Link counts
- ifne EXTERR
-P$ErrNam rmb ErrNamSz area for error messages path name
- endc
  rmb $200-. Local stack
 P$Stack equ . Top of Stack
 P$Size equ . Size of Process Descriptor
