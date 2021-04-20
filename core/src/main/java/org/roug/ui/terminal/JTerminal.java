@@ -7,10 +7,12 @@ import java.awt.FontMetrics;
 import java.awt.font.TextAttribute;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.text.AttributedString;
+import java.io.InputStream;
 import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
@@ -54,6 +56,9 @@ public class JTerminal extends JPanel implements UIDevice {
     private int currentFontSize = 24;
     private Font font;
 
+    private static String defaultFont;
+    private String fontFace = Font.MONOSPACED;
+
     private volatile boolean cursorBlink = true;
     private volatile boolean cursorVisible = true;
     private volatile boolean blockCursor = true;
@@ -78,6 +83,22 @@ public class JTerminal extends JPanel implements UIDevice {
 
     private EmulationCore emulator;
 
+
+    static {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//      InputStream fStream = JTerminal.class.getResourceAsStream("/clacon.ttf");
+//          defaultFont = "Classic Console";
+        InputStream fStream = JTerminal.class.getResourceAsStream("/Lucida Console.ttf");
+        try {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, fStream);
+            ge.registerFont(font);
+            defaultFont = "Lucida Console";
+        } catch (Exception e) {
+            defaultFont = Font.MONOSPACED;
+        }
+
+    }
+
     /**
      * Create the canvas for text.
      *
@@ -87,6 +108,7 @@ public class JTerminal extends JPanel implements UIDevice {
     public JTerminal(Acia acia, EmulationCore emulation) {
         super();
         this.acia = acia;
+        fontFace = defaultFont;
 
         this.columns = emulation.getColumns();
         this.rows = emulation.getRows();
@@ -123,7 +145,7 @@ public class JTerminal extends JPanel implements UIDevice {
         if (currentFontSize == fs)
             return;
         currentFontSize = fs;
-        font = new Font(Font.MONOSPACED, Font.BOLD, currentFontSize);
+        font = new Font(fontFace, Font.PLAIN, currentFontSize);
         FontMetrics fm = getFontMetrics(font);
         colWidth = fm.charWidth('M');
         rowHeight = fm.getHeight();
@@ -131,6 +153,14 @@ public class JTerminal extends JPanel implements UIDevice {
         lineOffset = fm.getAscent();
         invalidateCache();
         repaint();
+    }
+
+    public void setFontFace(String face) {
+        fontFace = face;
+    }
+
+    public String getFontFace() {
+        return fontFace;
     }
 
     /**

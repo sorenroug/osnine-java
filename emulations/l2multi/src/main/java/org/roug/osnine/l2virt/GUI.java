@@ -105,7 +105,7 @@ public class GUI {
 
         bus = new BusGimixEnhanced();
 
-        RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0x40000);
+        RandomAccessMemory ram = new RandomAccessMemory(0x0000, 0xB0000);
         bus.addMemorySegment(ram);
 
         ReadOnlyMemory rom = new ReadOnlyMemory(0xFF000, 0x1000);

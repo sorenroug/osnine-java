@@ -1,6 +1,7 @@
 package org.roug.usim;
 
 import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -101,6 +102,7 @@ public class IMDHandler {
         is.read(disk);
         this.imageFile = imdFile;
         is.close();
+        ByteArrayInputStream bdisk = new ByteArrayInputStream(disk);
 
         // Verify format
         if (disk[0] != 'I' || disk[1] != 'M' || disk[2] != 'D')
@@ -123,18 +125,20 @@ public class IMDHandler {
 
         // Read tracks
         inx++;
+        bdisk.reset();
+        bdisk.skip(inx);
         numTracks = 0;
-        while (inx < disk.length) {
-            byte mode = disk[inx++];
+        while (bdisk.available() > 0) {
+            int mode = bdisk.read();
             if (mode < 0 || mode > 5)
                 throw new IOException("Unsupported mode");
 
-            int trackNum = disk[inx++];
-            int head = disk[inx++];
-            int numSectors = disk[inx++];
+            int trackNum = bdisk.read();
+            int head = bdisk.read();
+            int numSectors = bdisk.read();
             Track track = new Track(head, trackNum, numSectors);
             track.mode = mode;
-            track.sectorType = disk[inx++];
+            track.sectorType = bdisk.read();
             if (track.sectorType > 6)
                 throw new IOException("Unsupported sector size");
             track.sectorSize = (1 << track.sectorType) * 128;
@@ -143,26 +147,24 @@ public class IMDHandler {
             head &= 0x01;
             if (head > numHeads - 1) numHeads = head + 1;
 
-            track.setSectorMap(disk, inx);
+            track.setSectorMap(bdisk);
 //LOGGER.info("Side {} track {} sector map {}", head, trackNum, track.sectorMap);
-            inx += track.numSectors;
             // Read sector cylinder map
             if (hasCylMap) {
-                track.setSectCylMap(disk, inx);
-                inx += track.numSectors;
+                track.setSectCylMap(bdisk);
 //LOGGER.info("Side {} track {} cylinder map {}", head, trackNum, track.sectCylMap);
             }
             // Read sector head map
             if (hasHeadMap) {
-                track.setHeadMap(disk, inx);
-                inx += track.numSectors;
+                track.setHeadMap(bdisk);
 //LOGGER.info("Side {} track {} head map {}", head, trackNum, track.headMap);
             }
 //LOGGER.info("Inx: {}", inx);
-            inx = readSectorsFromArray(disk, inx, track);
+            readSectorsFromArray(bdisk, track);
             tracks[head][trackNum] = track;
             if (trackNum > numTracks) numTracks = trackNum;
         }
+        bdisk.close();
         numTracks++;  // Count track 0
         buildReverseMap();
     }
@@ -262,12 +264,12 @@ public class IMDHandler {
      *
      * @return index into file after completion.
      */
-    private int readSectorsFromArray(byte[] disk, int inx, Track track) {
+    private void readSectorsFromArray(ByteArrayInputStream bdisk, Track track) {
         for (int i = 0; i < track.numSectors; i++) {
             Sector sector = new Sector();
             sector.sectorSize = track.sectorSize;
             track.sectors[i] = sector;
-            int sectorCode = disk[inx++];
+            int sectorCode = bdisk.read();
             switch (sectorCode) {
                 // 00      Sector data unavailable - could not be read
                 case 0:
@@ -282,8 +284,7 @@ public class IMDHandler {
                 case 5:
                     sector.compressed = false;
                     sector.data = new byte[track.sectorSize];
-                    System.arraycopy(disk, inx, sector.data, 0, track.sectorSize);
-                    inx += track.sectorSize;
+                    bdisk.read(sector.data, 0, track.sectorSize);
                     if (sectorCode == 3 || sectorCode == 7)
                         sector.deleted = true;
                     if (sectorCode == 5 || sectorCode == 7)
@@ -296,7 +297,7 @@ public class IMDHandler {
                 case 4:
                 case 6:
                     sector.compressed = true;
-                    sector.fill = disk[inx++];
+                    sector.fill = (byte) bdisk.read();
                     if (sectorCode == 4 || sectorCode == 8)
                         sector.deleted = true;
                     if (sectorCode == 6 || sectorCode == 8)
@@ -304,7 +305,6 @@ public class IMDHandler {
                     break;
             }
         }
-        return inx;
     }
 
     private int headerLen(byte[] disk, int inx) {
@@ -640,9 +640,9 @@ public class IMDHandler {
      */
     private class Track {
         int side, trackNum, numSectors;
-        byte sectorType;
+        int sectorType;
         int sectorSize;
-        byte mode;
+        int mode;
         byte[] sectorMap;
         byte[] sectCylMap;
         byte[] headMap;
@@ -658,18 +658,18 @@ public class IMDHandler {
             sectors = new Sector[numSectors];
         }
         
-        void setSectorMap(byte[] disk, int inx) {
-            System.arraycopy(disk, inx, sectorMap, 0, numSectors);
+        void setSectorMap(ByteArrayInputStream bdisk) {
+            bdisk.read(sectorMap, 0, numSectors);
         }
 
-        void setSectCylMap(byte[] disk, int inx) {
+        void setSectCylMap(ByteArrayInputStream bdisk) {
             sectCylMap = new byte[numSectors];
-            System.arraycopy(disk, inx, sectCylMap, 0, numSectors);
+            bdisk.read(sectCylMap, 0, numSectors);
         }
 
-        void setHeadMap(byte[] disk, int inx) {
+        void setHeadMap(ByteArrayInputStream bdisk) {
             headMap = new byte[numSectors];
-            System.arraycopy(disk, inx, headMap, 0, numSectors);
+            bdisk.read(headMap, 0, numSectors);
         }
 
         /**

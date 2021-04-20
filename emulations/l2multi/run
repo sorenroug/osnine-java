@@ -1,2 +1,2 @@
 #!/bin/sh
-java -jar target/l2multi-1.0.0-jar-with-dependencies.jar $@
+java -jar target/l2multi-0.7.1-jar-with-dependencies.jar $@
