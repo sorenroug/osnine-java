@@ -105,7 +105,7 @@ u0069    rmb   2
 u006B    rmb   2
 u006D    rmb   1
 u006E    rmb   1
-u006F    rmb   1
+u006F    rmb   1 Variable for max pages
 u0070    rmb   2
 u0072    rmb   1
 u0073    rmb   2
@@ -374,7 +374,7 @@ L0155    bsr   L010B
 
 L0169    bsr   L0172
          beq   L0171
-         bsr   L0155
+         bsr   L0155   Read keyboard
          bra   L0169
 L0171    rts
 
@@ -458,19 +458,22 @@ L01FD    bcs   L020F
          andcc #$FC
          puls  pc,u,x,b,a
 L020F    stb   <u0003
-         cmpb  #$DA
+         cmpb  #E$CEF  Creating Existing File
          bne   L0219
          orcc  #$03
          puls  pc,u,x,b,a
 L0219    orcc  #Carry
          andcc #$FD
          puls  pc,u,x,b,a
+
 L021F    pshs  u,x,b,a
          lda   #$02
          ldb   #$03
          os9   I$Create
          ldx   <u001A
          bra   L01FD
+
+* Create path from stydir
 L022C    pshs  y,x,b,a
          leax  >STYDIR,pcr
          ldy   <u0012
@@ -487,6 +490,7 @@ L0243    lda   ,x+
          ldx   <u0012
          bsr   L0276
          puls  pc,y,x,b,a
+
 L024F    pshs  u,x,a
          lda   #$01
          os9   I$Open
@@ -497,7 +501,8 @@ L0258    bcs   L0264
          stu   ,x
          stu   $02,x
          puls  pc,u,x,a
-L0264    cmpb  #$D8
+
+L0264    cmpb  #E$PNNF   File not found
          beq   L0270
          stb   <u0003
          orcc  #Carry
@@ -528,6 +533,9 @@ L029A    lda   $04,x
          clr   $04,x
          os9   I$Close
 L02A3    puls  pc,x,a
+
+*
+* Delete routine
 L02A5    pshs  y,x,b,a
          ldy   <u0012
 L02AA    lda   ,x+
@@ -547,10 +555,12 @@ L02C5    pshs  b,a
          lda   #$01
          os9   F$PErr
          puls  pc,b,a
+
 L02D0    pshs  x
          ldx   <u0018
 L02D4    lbsr  L0437
          puls  pc,x
+
 L02D9    pshs  x
          ldx   <u001A
          bra   L02D4
@@ -583,12 +593,13 @@ L030A    lda   ,x+
          os9   I$Close
          orcc  #$03
          puls  pc,u,y,x,b,a
-L0320    cmpb  #$D8
+L0320    cmpb  #E$PNNF Path name not found?
          beq   L032C
 L0324    stb   <u0003
          orcc  #Carry
          andcc #$FD
          puls  pc,u,y,x,b,a
+
 L032C    tst   <u005D
          beq   L0348
          ldx   <u000A
@@ -664,6 +675,7 @@ L03AF    lda   ,x+
          lbcs  L0324
 L03CF    andcc #^Carry
          puls  pc,u,y,x,b,a
+
 L03D3    pshs  u,y,x,b,a
          pshs  x
          ldx   <TTYSTATE
@@ -849,16 +861,16 @@ L04F3    fcb   $15
 L04F4    fcb   $2D -
 L04F5    fcb   $7C
 PRCCHR FCC ',' PROC COMMAND CHARACTER
-L04F7    fcb   $7D
-L04F8    fcb   $23 #
-         fcb   $7C
+MRKCHR FCC '}' MARKER CHARACTER
+PNCHR    fcb   $23 #
+STMODC  fcb   $7C
 L04FA    fcb   $3E >
 L04FB    fcb   $3C <
 YCHR    fcb   $59 Y L04FC
-L04FD    fcb   $4E N
-         fcb   $53 S
-L04FF    fcb   $41 A
-L0500    fcb   $53 S
+NCHR    fcb   $4E N
+SCHR FCC 'S' STOP
+ACHR    fcb   $41 A
+PSCHR    fcb   $53 S
 L0501    fcb   $54 T
 L0502    fcb   $42 B
 L0503    fcb   $43 C
@@ -869,8 +881,8 @@ L0507    fcb   $58 X
 L0508    fcb   $59 Y
 L0509    fcb   $5A Z
 CTMCHR    fcb   $54 T
-L050B    fcb   $50 P
-L050C    fcb   $4D M
+CPTCHR FCC 'P' COMMAND LINE PRINTER OPTION
+CPGCHR    fcb   $4D M
 OPTCHR    fcb   $2B +
 L050E    fcb   $7D
 LBCHR    fcb   $7B
@@ -881,158 +893,97 @@ L0512    fcb   $00
 L0513    fcb   $00
 L0514    fcb   $00
 STPL FCB 66 PAGE LENGTH
-L0516    fcb   $0C
-L0517    fcb   $06
-L0518    fcb   $04
-         fcb   $00
-L051A    fcb   $00
-L051B    fcb   $00
-L051C    fcb   $00
+STCS FCB 12 CHARACTERS/INCH
+STVS FCB 6 VERTICAL SPACING
+STBFS FCB 4 BOLDFACE STRIKE COUNT
+STPS FCB 0 NON-PROPORTIONAL SPACE
+STPADC    fcb   $00
+STMMC    fcb   $00
+STPC    fcb   $00
 
 *VECTORS FOR THE STRINGS
 
 FMTTBL    fdb  XFMTTBL $05B1
+ERRTBL    fdb   XERRTBL
+BELS1    fdb  XBELS1 $064F
+BAVM1    fdb XBAVM1  $0658
+PAGS1    fdb  XPAGS1 $0681
 
-L051F    fdb   $0625
-L0521    fdb   $064F
-         fdb   $0658
-L0525    fdb   $0681
-L0527    fcb   $06
-         fcb   $1C
-L0529    fcb   $06
-         fcb   $2C ,
-         fcb   $06
-         fcb   $37 7
-L052D    fcb   $06
-         fcb   $43 C
-L052F    fcb   $06
-         fcb   $48 H
-L0531    fcb   $06
-         fcb   $93
-L0533    fcb   $06
-         fcb   $98
-L0535    fcb   $06
-         fcb   $AF /
-L0537    fcb   $06
-         fcb   $BA :
-L0539    fcb   $06
-         fcb   $C8 H
-L053B    fcb   $06
-         fcb   $E6 f
-L053D    fcb   $07
-         fcb   $02
-L053F    fcb   $07
-         fcb   $0E
-L0541    fcb   $07
-         fcb   $20
-L0543    fcb   $07
-         fcb   $3C <
-L0545    fcb   $07
-         fcb   $5D ]
-L0547    fcb   $07
-         fcb   $6D m
-L0549    fcb   $07
-         fcb   $97
-         fcb   $07
-         fcb   $AC ,
-L054D    fcb   $08
-         fcb   $27 '
-L054F    fcb   $08
-         fcb   $36 6
-L0551    fcb   $09
-         fcb   $25 %
-L0553    fcb   $09
-         fcb   $3A :
-L0555    fcb   $09
-         fcb   $49 I
-L0557    fcb   $09
-         fcb   $67 g
-L0559    fcb   $09
-         fcb   $79 y
-L055B    fcb   $09
-         fcb   $A7 '
-L055D    fcb   $09
-         fcb   $C8 H
-L055F    fcb   $09
-         fcb   $D3 S
-L0561    fcb   $09
-         fcb   $E0 `
-L0563    fcb   $09
-         fcb   $FB
-L0565    fcb   $0A
-         fcb   $12
-L0567    fcb   $0A
-         fcb   $24 $
-L0569    fcb   $0A
-         fcb   $40 @
-L056B    fcb   $0A
-         fcb   $72 r
-L056D    fcb   $0A
-         fcb   $8B
-L056F    fcb   $0A
-         fcb   $9C
-L0571    fcb   $0A
-         fcb   $AE .
-L0573    fcb   $08
-         fcb   $5C \
-L0575    fcb   $08
-         fcb   $7B û
-L0577    fcb   $08
-         fcb   $99
-L0579    fcb   $08
-         fcb   $B6 6
-L057B    fcb   $08
-         fcb   $C0 @
-L057D    fcb   $08
-         fcb   $CB K
-L057F    fcb   $08
-         fcb   $E9 i
-L0581    fcb   $08
-         fcb   $FB
-L0583    fcb   $09
-         fcb   $09
-L0585    fcb   $0A
-         fcb   $C9 I
-L0587    fcb   $0A
-         fcb   $D6 V
-L0589    fcb   $0A
-         fcb   $F7 w
-L058B    fcb   $0B
-         fcb   $09
-L058D    fcb   $0B
-         fcb   $16
-L058F    fcb   $0B
-         fcb   $23 #
-L0591    fcb   $0B
-         fcb   $38 8
-L0593    fcb   $0B
-         fcb   $44 D
-L0595    fcb   $0B
-         fcb   $53 S
+L0527    fdb   L061C
+L0529    fdb   L062C
+         fdb   L0637
+L052D    fdb   L0643
+L052F    fdb   L0648
+PGBS1    fdb XPGBS1  $0693
+SAVM1    fdb XSAVM1  $0698
+SAVMB    fdb XSAVMB  $06AF
+SAVM2    fdb XSAVM2  $06BA
+SAVM3    fdb XSAVM3  $06C8
+L053B    fdb XSAVM4  $06E6
+L053D    fdb XSAVM5  $0702
+L053F    fdb XSVMS1  $070E
+L0541    fdb XDSTM1  $0720
+L0543    fdb XDSTM2  $073C
+DSTM3    fdb XDSTM3  $075D
+DSTM5    fdb XDSTM5  $076D
+DSTM6    fdb XDSTM6  $0797
+DSTM7    fdb XDSTM7  $07AC
+OSPS1    fdb XOSPS1  $0827
+OSPS2    fdb XOSPS2  $0836
+EXTM1    fdb XEXTM1  $0925
+EXTM2    fdb XEXTM2  $093A
+ERMM1    fdb XERMM1  $0949
+L0557    fdb   $0967
+L0559    fdb   $0979
+L055B    fdb   $09A7
+L055D    fdb   $09C8
+L055F    fdb   $09D3
+PRNS1    fdb XPRNS1
+PRNS2    fdb XPRNS2  $09FB
+L0565    fdb XPRNS3  $0A12
+PRNS4    fdb XPRNS4  $0A24
+OTXS1    fdb XOTXS1  $0A40
+L056B    fdb XOTXS2  $0A72
+L056D    fdb   $0A8B
+L056F    fdb   $0A9C
+L0571    fdb   $0AAE
+PSQS1    fdb   XPSQS1
+L0575    fdb   $087B
+L0577    fdb   $0899
+L0579    fdb   $08B6
+L057B    fdb   $08C0
+L057D    fdb   $08CB
+L057F    fdb   $08E9
+L0581    fdb   $08FB
+L0583    fdb XNEWM9  $0909
+L0585    fdb   $0AC9
+L0587    fdb   $0AD6
+L0589    fdb   $0AF7
+L058B    fdb XRPLS1  $0B09
+RPLS2    fdb XRPLS2  $0B16
+L058F    fdb XRPLS3  $0B23
+L0591    fdb XBDLS1  $0B38
+L0593    fdb XBDLS2  $0B44
+L0595    fdb XSUPS1  $0B53
 BANNER    fdb  XBANNER $0D57
 HLPS1 fdb XHLPS1 $0D87
 HLPS2 FDB XHLPS2
-         fcb   $0E
-         fcb   $20
-         fcb   $0E
-         fcb   $28 (
-         fcb   $0E
-         fcb   $30 0
-         fcb   $0E
-         fcb   $38 8
+HLPS3   fdb XHLPS3  $0E20
+HLPS4    fdb XHLPS4  $0E28
+HLPS5    fdb XHLPS5  $0E30
+HLPS6    fdb XHLPS6  $0E38
+HLPS7    fdb XHLPS7  $0E40
 
-HLPS7    fdb   XHLPS7  $0E40
-         fdb   $0E48
-
-L05A9    fdb   $0E51
-L05AB    fdb   $07BB
+         fdb   L0E48
+L05A9    fdb   L0E51
+L05AB    fdb   L07BB
          fdb   L07F4
 
 TMODE  fdb  XTMODE
 
 
 *FORMAT COMMAND TABLE
-XFMTTBL EQU *
+XFMTTBL EQU *  $05B1
  FCC 'CE'
  FCB 0
  FCC 'LL'
@@ -1099,28 +1050,30 @@ XFMTTBL EQU *
  FCB 0
  FCB 0 END OF TABLE
 
-         fcc   "STYPSTAT"
-         fcb   $00
-         fcc   "STYERR"
-         fcb   $00
-         fcc   "---NONE---"
-         fcb   $00
-         fcc   "STATUS:    "
-         fcb   $00
-         fcc   "OPEN"
-         fcb   $00
-         fcc   "CLOSED"
-         fcb   $00
-         fcc   "NO ERROR"
+L061C    fcc   "STYPSTAT"
          fcb   $00
 
+XERRTBL  fcc   "STYERR"
+         fcb   $00
+L062C    fcc   "---NONE---"
+         fcb   $00
+L0637    fcc   "STATUS:    "
+         fcb   $00
+L0643    fcc   "OPEN"
+         fcb   $00
+L0648    fcc   "CLOSED"
+         fcb   $00
+XBELS1   fcc   "NO ERROR"
+         fcb   $00
+
+* $0658
 XBAVM1   fcc   "CANNOT MOVE TO LAST PAGE, TOO MANY PAGES"
  FCB 0
 XPAGS1 FCC "*********** PAGE="
  FCB 0
 XPGBS1 FCC 'PAGE'
  FCB 0
- fcc 'Save under file name "'
+XSAVM1 FCC 'Save under file name "'
  FCB 0
 XSAVMB FCC '" (Y*/N)? '
  FCB 0
@@ -1141,13 +1094,16 @@ XDSTM2 FCC 'ENTIRE FILE MAY NOT BE LOADED!!!'
  FCB 0
 XDSTM3 FCC 'FILE NOT LOADED'
  FCB 0
+* $076D
 XDSTM5 FCB $D,$A
  FCC 'ILLEGAL PRINTER, TERMINAL, OR FILE NAME'
  FCB 0
-XDSTM6 FCC 'INPUT FILE NOT FOUND-NO TEXT LOADED'
+XDSTM6 FCC 'INPUT FILE NOT FOUND-'
+XDSTM7 FCC 'NO TEXT LOADED'
  FCB 0
+
 *NOTE: Typo in original code: NUMBBER
- fcc "BAD TERM_STY/PRINT_STY OR TERMINAL/PRINTER NUMBBER!!!!"
+L07BB fcc "BAD TERM_STY/PRINT_STY OR TERMINAL/PRINTER NUMBBER!!!!"
          fcb   $0D
          fcb   $0A
          fcb   $00
@@ -1159,7 +1115,7 @@ L07F4    fcc "CANT FIND PRINTER FILE."
          fcb   $0D
          fcb   $0A
          fcb   $00
-         fcc  "DOS command:  "
+XOSPS1   fcc  "DOS command:  "
          fcb   $00
 XOSPS2 FCB 7
  FCC 'Command not allowed with files open.'
@@ -1233,7 +1189,7 @@ XRPLS3 FCC '*** REPLACE (Y-N-A)?'
  FCB 0
 XBDLS1 FCC '*** DELETE '
  FCB 0
-XBDLS2 FCC '  CHARACTERS? '
+XBDLS2 FCC '  CHARACTERS? '  $0B44
  FCB 0
 
 XSUPS1 equ *
@@ -1262,6 +1218,7 @@ XSUPS1 equ *
  fcc   "NEW --------- new text from input file"
  FCB 0
 
+* $0D57
 XBANNER FCC "STYLOGRAPH WORD PROCESSING SYSTEM V3.0 (c) 1984"
  FCB 0
 
@@ -1292,9 +1249,9 @@ XHLPS6 FCC "STYHLP5"
 XHLPS7 FCC "STYHLP6"
  FCB 0
 
- FCC "TERM_STY"
+L0E48 FCC "TERM_STY"
  FCB 0
- FCC "PRINT_STY"
+L0E51 FCC "PRINT_STY"
  FCB 0
 
 XTMODE   fcc   "TMODE  -PAUSE"
@@ -1617,7 +1574,7 @@ TRMSEQ equ *
          fcb   'I+N
 TRMEND   equ *
 
-L1016    pshs  b
+OUTREPT    pshs  b
          ldb   <u003F
          cmpb  <u0046
          puls  b
@@ -1703,7 +1660,7 @@ L10AD    pshs  x,b,a
          ldx   b,x
          beq   L10CA
          lda   $01,x
-         cmpa  #$FF
+         cmpa  #$FF  Is the terminal sequence a Macro?
          beq   L10CC
 L10BB    lda   ,x+
          pshs  a
@@ -1860,7 +1817,7 @@ L11D8    cmpb  <u0065
          lbsr  L0287
 L11DF    rts
 
-L11E0    ldx   >L05AB,pcr
+L11E0    ldx   >L05AB,pcr "Bad sty file"
          lbsr  L02C5
          lbra  L0421
 L11EA    ldd   >L05A9,pcr
@@ -1876,7 +1833,7 @@ L11EA    ldd   >L05A9,pcr
          ldx   <u0016
          lda   $04,x
          ldx   #$0000
-         lbsr  L04B4
+         lbsr  L04B4 os9 seek
          ldx   <u0049
          leax  <$3A,x
          ldy   <u0049
@@ -1941,10 +1898,12 @@ L12A1    tst   <u00E1
          lda   #$0F
          bsr   L12B8
 L12B6    lda   #$0D
+
 L12B8    pshs  u
          ldu   <u0057
          jsr   ,u
          puls  pc,u
+
 L12C0    ldb   <u004B
          andb  #$04
          beq   L12D3
@@ -2227,9 +2186,11 @@ start    equ   *
          tfr   d,u
          tfr   d,x
          clra
+* Clear page
 L1507    clr   ,u+
          adda  #$01
          bcc   L1507
+
          stx   <u0087
          leay  $01,y
          sty   <u006B
@@ -2283,13 +2244,13 @@ L1507    clr   ,u+
          lda   >L000D,pcr Get terminal type
          sta   <u0041
          lda   >L000F,pcr
-         sta   <u006F
+         sta   <u006F max pages
          lbsr  L3418
          lbsr  L0EEA
          lbsr  L112F
          lbsr  L11EA
          ldx   <u007F
-         lda   <u006F
+         lda   <u006F max pages
          ldb   #$38
          mul
          leax  d,x
@@ -2355,18 +2316,18 @@ L1621    stb   <$1C,y
          ldb   <u0046
 L1645    stb   <$20,y
          com   $08,y
-         ldb   >L0516,pcr
+         ldb   >STCS,pcr 12 CHARACTERS/INCH
          stb   <$2D,y
-         ldb   >L0517,pcr
+         ldb   >STVS,pcr VERTICAL SPACING
          stb   <$2E,y
-         ldb   >L0518,pcr
+         ldb   >STBFS,pcr BOLDFACE STRIKE COUNT
          stb   <$2F,y
          ldb   #$01
-         ldb   >L051A,pcr
+         ldb   >STPADC,pcr
          stb   <$32,y
-         ldb   >L051B,pcr
+         ldb   >STMMC,pcr
          stb   <$33,y
-         ldb   >L051C,pcr
+         ldb   >STPC,pcr
          stb   <$31,y
          stb   <$12,y
          tfr   y,x
@@ -2384,7 +2345,7 @@ L1645    stb   <$20,y
          lbra  L4EB8
 L1698    lbsr  L0172
          beq   L16A9
-L169D    lbsr  L0155
+L169D    lbsr  L0155   Read keyboard
          anda  #$7F
          tst   <u00AB
          beq   L16A8
@@ -2510,7 +2471,7 @@ L1786    lda   <u00D5
          tst   <u0081
          beq   L17AD
          lda   >L04FB,pcr
-         lbsr  L1016
+         lbsr  OUTREPT
          bra   L17D1
 L17AD    lda   <u00A4
          suba  <u00A3
@@ -2520,7 +2481,7 @@ L17AD    lda   <u00A4
          tst   <u0081
          beq   L17C2
          lda   >L04FA,pcr
-         lbsr  L1016
+         lbsr  OUTREPT
 L17C2    lda   <u00D8
          ora   #$50
          sta   <u00D8
@@ -2551,7 +2512,7 @@ L17DC    lda   <u00A4
          lda   >L04FB,pcr
 L17FC    tst   <u0081
          beq   L1803
-         lbsr  L1016
+         lbsr  OUTREPT
 L1803    inc   <u00A4
          bra   L17DC
 L1807    tst   <u00D8
@@ -2567,7 +2528,7 @@ L1807    tst   <u00D8
 L181B    lda   >L04F5,pcr
          bra   L1823
 L1821    lda   #$20
-L1823    lbsr  L1016
+L1823    lbsr  OUTREPT
 L1826    cmpu  <u0022
          bne   L187D
          clr   <u00A2
@@ -2634,7 +2595,7 @@ L18A3    bsr   L18D6
          lda   $01,y
          bra   L18AB
 L18A9    clr   <u00DF
-L18AB    cmpa  >L04F8,pcr
+L18AB    cmpa  >PNCHR,pcr
          bne   L18B4
          lbsr  L1B18
 L18B4    anda  #$7F
@@ -2653,6 +2614,7 @@ L18C6    lda   <u002D,u
          sta   <u00DE
          lbra  L1443
 L18D5    rts
+
 L18D6    ldb   ,y
          andb  #$7F
          cmpb  #$5F
@@ -2795,7 +2757,7 @@ L19E0    lda   ,x
          cmpa  #$2C
          beq   L19DE
          lbsr  L16B4
-         cmpa  >L0500,pcr
+         cmpa  >PSCHR,pcr 'S'
          beq   L1A36
          cmpa  >L0501,pcr
          beq   L1A5C
@@ -2826,8 +2788,8 @@ L1A36    lda   $01,x
 L1A47    pshs  x
          lda   #$03
          lbsr  L1185
-         ldx   >L0573,pcr
-         lbsr  L32FC
+         ldx   >PSQS1,pcr Hit any key to restart printer
+         lbsr  WRLINE3
          lbsr  L1698
          puls  x
          bra   L19DE
@@ -2904,14 +2866,14 @@ L1AF4    tst   <u007D
          lda   #$5F
          bra   L1B0A
 L1B00    lda   $01,y
-         cmpa  >L04F8,pcr
+         cmpa  >PNCHR,pcr
          bne   L1B0A
          bsr   L1B18
 L1B0A    lbra  L1026
-L1B0D    cmpa  >L04F8,pcr
+L1B0D    cmpa  >PNCHR,pcr
          bne   L1B15
          bsr   L1B18
-L1B15    lbra  L1016
+L1B15    lbra  OUTREPT
 L1B18    tst   u0008,u
          bne   L1B1D
          rts
@@ -3171,7 +3133,7 @@ L1D43    cmpu  <u0022
          ldd   u000F,u
          subd  <u005F
          addb  #$02
-         cmpb  <u006F
+         cmpb  <u006F max pages
          bcs   L1D68
          lda   <u0024,u
          inca
@@ -3415,6 +3377,7 @@ L1F6D    clrb
          lda   #$10
          lbsr  L2AF4
          rts
+
 L1F8B    lbsr  L1173
          clr   <u00CA
 L1F90    ldu   <u0022
@@ -3956,7 +3919,7 @@ L2447    lbsr  L26BF
          bcs   L241D
          lbsr  L16B4
          ldu   <u0022
-         leax  >CURUC,pcr
+         leax  >ESCTBL,pcr Start of keyboard commands i,l,...
          leay  >L2481,pcr
          bsr   L2466
          bcc   L2464
@@ -3979,55 +3942,33 @@ L2473    pshs  a
          andcc #^Carry
          puls  pc,a
 
-L2481    fcb   $44 D
-         tsta
-         fcb   $45 E
-         lsla
-         lsra
-         std   <LASTROW
-         ora   #$45
-         ldu   u0006,u
-         fcb   $14
-         coma
-         sta   >$440F
-         rti
-         fcb   $11
-         rti
-         cmpa  -$01,x
-         adda  #$3A
-         bhi   L24D4
-         cmpa  >$39A7
-         leay  -$09,y
-         abx
-         fcb   $65 e
-         rora
-         andb  u0006,u
-         com   >$45C3
-         asra
-         subd  #$3B04
-         asra
-         dec   $03,y
-         cmpb  u0008,u
-         fcb   $61 a
-         lsla
-         ror   >$4883
-         rola
-         ldx   #$38EE
-         fcb   $38 8
-         ldu   -$08,y
-         ldu   -$08,y
-         ldu   -$08,y
-         ldu   -$07,y
-         suba  #$45
-         lsla
-         fcb   $45 E
-         ora   #$44
-         tsta
-         lsra
-         std   <LASTROW
-         lsla
-         lsra
-         clr   <u0000
+L2481    fdb   L444D  I: Cursor up
+         fdb   L4548  L: Cursor right
+         fdb   L44DD  ,: Cursor down
+         fdb L458A  J:Cursor left
+ fdb $45EE
+ fdb $4614
+ fdb $43B7
+ fdb L440F
+ fdb L3B11
+ fdb L3BA1
+ fdb L1F8B
+ fdb $3A22
+ fdb $3AB1
+
+ fdb $39A7,$3137,$3A65,$46E4,$4673,$45C3,$4783
+ fdb L3B04,$476A,$23E1,$4861,$4876,$4883
+
+ fdb $498E
+ fdb L38EE,L38EE,L38EE,L38EE,L38EE,$3980,L4548
+ fdb L458A
+ fdb L444D
+ fdb L44DD
+ fdb L4548
+ fdb L440F
+
+ fcb $00
+
 L24D0    stx   <u0078
          ldu   <u0020
 L24D4    ldy   <u0022
@@ -4245,7 +4186,7 @@ L26A6    lda   #$30
 L26B1    bne   L26A6
 L26B3    puls  pc,y,x,b,a
 
-L26B5    fcb  $27,$10,$03,$E8,$00,$64,$00,$0A,$00,$01
+L26B5    fdb  10000,1000,100,10,1
 
 * Check for control codes
 L26BF    pshs  y,x,b,a
@@ -4312,7 +4253,7 @@ L272C    lbsr  L2AFF
 L2732    lda   #$FF
          sta   <u006D
          lbsr  L10FB
-         leax  >L0527,pcr
+         leax  >L0527,pcr "STYPSTAT"
          ldd   ,x
          leax  >0,pcr
          leax  d,x
@@ -4339,7 +4280,7 @@ L2766    ldd   #$010D
 L2776    ldx   <u0030
          lbsr  L312A
          bra   L2780
-L277D    lbsr  L310F
+L277D    lbsr  L310F  Write string in X
 L2780    ldd   #$040E
          lbsr  GOROWCOL
          tst   <u006E
@@ -4349,7 +4290,7 @@ L2780    ldd   #$040E
 L2790    ldx   <u0032
          lbsr  L312A
          bra   L279A
-L2797    lbsr  L310F
+L2797    lbsr  L310F  Write string in X
 L279A    ldd   #$0208
          lbsr  GOROWCOL
          tst   <u005D
@@ -4357,7 +4298,7 @@ L279A    ldd   #$0208
          ldx   >L052D,pcr
          bra   L27AE
 L27AA    ldx   >L052F,pcr
-L27AE    lbsr  L310F
+L27AE    lbsr  L310F  Write string in X
          ldd   #$0508
          lbsr  GOROWCOL
          tst   <u005E
@@ -4365,7 +4306,7 @@ L27AE    lbsr  L310F
          ldx   >L052D,pcr
          bra   L27C5
 L27C1    ldx   >L052F,pcr
-L27C5    lbsr  L310F
+L27C5    lbsr  L310F  Write string in X
          clr   <u00A9
          lda   #$07
          sta   <u00A8
@@ -4472,7 +4413,7 @@ L28B2    pshs  b
          lbsr  GOROWCOL
          inc   <u00A8
          puls  a
-         lbsr  L1016
+         lbsr  OUTREPT
          rts
 
 L28C5    tst   <u00A2
@@ -4762,7 +4703,7 @@ L2AFF    pshs  x,b,a
          lbsr  GOROWCOL
          ldb   #$01
          pshs  b
-         leax  >L051F,pcr
+         leax  >ERRTBL,pcr
          ldd   ,x
          leax  >0,pcr
          leax  d,x
@@ -4796,8 +4737,8 @@ L2B56    puls  b
          orcc  #Carry
          puls  pc,x,b,a
 
-L2B5C    ldx   >L0521,pcr
-         lbsr  L310F  Write string in X
+L2B5C    ldx   >BELS1,pcr
+         lbsr  L310F  Write string in X  Write string in X
          bra   L2B41
 L2B65    pshs  u,y,x,b,a
          tst   <u0075
@@ -5286,24 +5227,24 @@ L2F83    ldd   u000F,u
          lbsr  L2672
          ldb   #$1B
          lda   #$2D
-L2F8F    lbsr  L1016
+L2F8F    lbsr  OUTREPT
          decb
          bne   L2F8F
          lda   #$20
-         lbsr  L1016
-         ldx   >L0531,pcr
-         lbsr  L310F
+         lbsr  OUTREPT
+         ldx   >PGBS1,pcr
+         lbsr  L310F  Write string in X
          ldx   <u0034
          leax  $02,x
          lbsr  L312A
          lda   #$20
-         lbsr  L1016
+         lbsr  OUTREPT
          lda   #$2D
-L2FAF    lbsr  L1016
+L2FAF    lbsr  OUTREPT
          ldb   <u003F
          cmpb  <u0046
          bcs   L2FAF
-         lbsr  L1016
+         lbsr  OUTREPT
          lbra  L2CAB
 L2FBE    pshs  y
          lbsr  L0120
@@ -5365,7 +5306,7 @@ L3030    tst   <u001D,u
          addb  <u0029,u
          beq   L3045
          lda   #$20
-L303F    lbsr  L1016
+L303F    lbsr  OUTREPT
          decb
          bne   L303F
 L3045    cmpy  u0006,u
@@ -5421,14 +5362,14 @@ L30B0    ldb   <u0046
          lda   #$20
 L30B4    cmpb  <u003F
          bls   L30BD
-         lbsr  L1016
+         lbsr  OUTREPT
          bra   L30B4
 L30BD    ldy   u0002,u
          ldb   -$01,y
          cmpb  #$F0
          bne   L30CA
          lda   >L04F5,pcr
-L30CA    lbsr  L1016
+L30CA    lbsr  OUTREPT
 L30CD    lda   <u003E
          ldb   <u0066
          lbsr  GOROWCOL
@@ -5458,13 +5399,14 @@ L30FE    tst   <u001D,u
          subb  <u0029,u
 L310C    stb   <u00A0
          rts
+
 L310F    pshs  b,a
          lbsr  L0120
          tfr   x,d
          leax  >0,pcr
          leax  d,x
          bra   L3121
-L311E    lbsr  L1016
+L311E    lbsr  OUTREPT
 L3121    lda   ,x+
          bne   L311E
          lbsr  L0121
@@ -5473,7 +5415,7 @@ L312A    pshs  b,a
          lbsr  L0120
          bra   L3121
 L3131    lbsr  L0169
-         lbra  L0155
+         lbra  L0155   Read keyboard
 L3137    lbsr  L10FB
          clr   <u00EB
          lda   #$FF
@@ -5485,13 +5427,13 @@ L3140    lbsr  L10F3
          beq   L3156
          clr   <u00F8
          ldx   >L0541,pcr
-         lbsr  L32FC
+         lbsr  WRLINE3
          bra   L3163
 L3156    lda   <u00F7
          beq   L3163
          clr   <u00F7
-         ldx   >L0549,pcr
-         lbsr  L32FC
+         ldx   >DSTM6,pcr
+         lbsr  WRLINE3
 L3163    puls  x,a
          ldu   <u0022
          tst   <u00EB
@@ -5512,13 +5454,24 @@ L3179    tsta
          leax  >0,pcr
          jmp   d,x
 
-L3192    fcb $32,$07,$36,$68,$34,$81,$34,$E1,$35,$F1,$32,$82,$33,$05
-         fcb $32,$16,$32,$B7,$36,$31,$49,$B6,$4B,$C8,$00,$00,$00,$00
+L3192    fdb L3207 EDIT
+         fdb L3668 PRINT
+         fdb L3481 Save/return
+ fdb L34E1 Save
+ fdb $35F1 SAVE TO MARK
+ fdb L3282 Return
+ fdb $3305 Load
+ fdb L3216 Erase
+ fdb L32B7 PASS
+ fdb $3631 SPOOL
+ fdb $49B6 WHEEL
+ fdb $4BC8 NEW
+ fdb $0000,$0000
 
 L31AE    ldx   <u001C
          leay  <$37,x
          sty   <u0061
-L31B6    lbsr  L0155
+L31B6    lbsr  L0155   Read keyboard
          cmpa  >ESCC,pcr
          beq   L3207
          cmpa  >LNDELC,pcr
@@ -5534,7 +5487,7 @@ L31B6    lbsr  L0155
 L31D7    sta   ,x+
          cmpa  #$0D
          beq   L31E2
-         lbsr  L1016
+         lbsr  OUTREPT
          bra   L31B6
 L31E2    rts
 L31E3    cmpx  <u001C
@@ -5550,37 +5503,41 @@ L31F3    leax  -$01,x
          decb
          lbsr  GOROWCOL
          lda   #$20
-         lbsr  L1016
+         lbsr  OUTREPT
          ldd   <u003E
          decb
          lbsr  GOROWCOL
          rts
+
 L3207    ldu   <u0022
          clr   <u005A
          tst   u0008,u
          lbeq  L23E7
          lbsr  L1D2C
          bra   L3207
-         clr   <u00F8
+
+* Erase text
+L3216    clr   <u00F8
          clr   <u00F7
          tst   <u005D
          bne   L3222
          tst   <u005E
          beq   L322C
-L3222    ldx   >L054F,pcr
-         lbsr  L32ED
+L3222    ldx   >OSPS2,pcr 'Command not allowed with files open.'
+         lbsr  WRLINE0 Write at 0,0
          lbra  L3140
-L322C    ldx   >L0555,pcr
-         lbsr  L32F2
+
+L322C    ldx   >ERMM1,pcr
+         lbsr  WRLINE1
          lbsr  L3131
-         lbsr  L1016
+         lbsr  OUTREPT
          lbsr  L16B4
          cmpa  >YCHR,pcr
          lbne  L3140
-         ldx   >L0553,pcr
-         lbsr  L32F7
+         ldx   >EXTM2,pcr 'Are you sure? '
+         lbsr  WRLINE2
          lbsr  L3131
-         lbsr  L1016
+         lbsr  OUTREPT
          lbsr  L16B4
          cmpa  >YCHR,pcr
          lbne  L3140
@@ -5599,31 +5556,34 @@ L322C    ldx   >L0555,pcr
          lbsr  L1D2C
          clr   <u006E
          lbra  L3140
-         tst   <u005E
+
+L3282    tst   <u005E
          bne   L3222
-         ldx   >L0551,pcr
-         bsr   L32F2
+         ldx   >EXTM1,pcr 'Is the text secure? '
+         bsr   WRLINE1
          lbsr  L3131
          lbsr  WrA2BUF
          lbsr  L16B4
          cmpa  >YCHR,pcr
          lbne  L3140
-         ldx   >L0553,pcr
-         bsr   L32F7
+         ldx   >EXTM2,pcr 'Are you sure? '
+         bsr   WRLINE2
          lbsr  L3131
          lbsr  WrA2BUF
          lbsr  L16B4
          cmpa  >YCHR,pcr
          lbne  L3140
          lbra  L173B
-         lda   #$01
+
+* Pass command
+L32B7    lda   #$01
          bne   L32C7
          tst   <u005D
          lbne  L3222
          tst   <u005E
          lbne  L3222
-L32C7    ldx   >L054D,pcr
-         bsr   L32ED
+L32C7    ldx   >OSPS1,pcr "DOS command:  "
+         bsr   WRLINE0 Write at 0,0
          lbsr  L31AE
          ldx   <u001C
          lda   #$0D
@@ -5637,17 +5597,22 @@ L32D4    cmpa  ,x+
          lbsr  L02C5
 L32E7    lbsr  L3131
          lbra  L3137
-L32ED    ldd   #$0000
+
+WRLINE0  ldd   #$0000
          bra   L32FF
-L32F2    ldd   #$0100
+
+WRLINE1  ldd   #$0100
          bra   L32FF
-L32F7    ldd   #$0200
+
+WRLINE2  ldd   #$0200
          bra   L32FF
-L32FC    ldd   #$0300
+
+WRLINE3  ldd   #$0300
 L32FF    lbsr  GOROWCOL
-         lbra  L310F
+         lbra  L310F  Write string in X
+
          ldx   >L053D,pcr
-         bsr   L32ED
+         bsr   WRLINE0 Write at 0,0
          lbsr  L31AE
          leax  -$01,x
          cmpx  <u001C
@@ -5711,7 +5676,7 @@ L3389    sta   ,y+
          lda   #$07
          lbsr  WrA2BUF
          ldx   >L0541,pcr
-         lbsr  L32FC
+         lbsr  WRLINE3
          bra   L33A0
 L339E    bvc   L33ED
 L33A0    lbsr  L0287
@@ -5743,15 +5708,15 @@ L33D7    ldd   #$0100
          lbsr  GOROWCOL
          lbsr  L02C5
          lbsr  L0287
-         ldx   >L0545,pcr
-         lbsr  L32FC
+         ldx   >DSTM3,pcr
+         lbsr  WRLINE3
          lbra  L3140
 L33ED    ldd   #$0100
          lbsr  GOROWCOL
          lbsr  L02C5
          lbsr  L0287
          ldx   >L0543,pcr
-         lbsr  L32FC
+         lbsr  WRLINE3
          bra   L33A0
 L3402    pshs  x,a
 L3404    lda   ,x+
@@ -5795,9 +5760,9 @@ L3449    pshs  x
          lbsr  L16B4
          cmpa  >CTMCHR,pcr
          beq   L346F
-         cmpa  >L050B,pcr  Printer type
+         cmpa  >CPTCHR,pcr  Printer option
          beq   L3473
-         cmpa  >L050C,pcr
+         cmpa  >CPGCHR,pcr  'M'
          bne   L3477
          stb   <u006F
          bra   L3443
@@ -5806,12 +5771,16 @@ L3449    pshs  x
 L346F    stb   <u0041
          bra   L3443
 
+* Set printer type from command line
 L3473    stb   <u0048
          bra   L3443
-L3477    ldx   >L0547,pcr
-         lbsr  L310F
+
+L3477    ldx   >DSTM5,pcr 'ILLEGAL PRINTER, TERMINAL, OR FILE NAME'
+         lbsr  L310F  Write string in X
          lbra  L0421
-         lda   #$01
+
+* Save/return
+L3481    lda   #$01
          sta   <u00D2
          clr   <u00D0
          tst   <u005E
@@ -5819,6 +5788,7 @@ L3477    ldx   >L0547,pcr
          leax  >L02D0,pcr
          stx   <u0063
          lbra  L359D
+
 L3494    tst   <u005D
          beq   L34BD
          ldx   <u007F
@@ -5853,7 +5823,9 @@ L34D2    lbsr  L0281
          lbsr  L028D
          lbsr  L0293
          lbra  L0421
-         clr   <u00D2
+
+* Save
+L34E1    clr   <u00D2
          clr   <u00D0
          tst   <u005D
          lbne  L3222
@@ -5863,27 +5835,27 @@ L34F1    leax  >L02D9,pcr
          stx   <u0063
          tst   <u006E
          beq   L3532
-L34FB    ldx   >L0533,pcr
-         lbsr  L32ED
+L34FB    ldx   >SAVM1,pcr 'Save under file name "'
+         lbsr  WRLINE0 Write at 0,0
          ldx   <u0032
          lbsr  L312A
-         ldx   >L0535,pcr
-         lbsr  L310F
+         ldx   >SAVMB,pcr
+         lbsr  L310F  Write string in X
          lbsr  L3131
          lbsr  L16B4
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          beq   L352F
          cmpa  >YCHR,pcr
          beq   L3524
          cmpa  #$0D
          bne   L34FB
 L3524    lda   >YCHR,pcr
-         lbsr  L1016
+         lbsr  OUTREPT
          ldx   <u0032
          bra   L354B
-L352F    lbsr  L1016
+L352F    lbsr  OUTREPT
 L3532    ldx   >L053D,pcr
-         lbsr  L32F2
+         lbsr  WRLINE1
          lbsr  L31AE
          leax  -$01,x
          cmpx  <u001C
@@ -5901,7 +5873,7 @@ L3557    ldx   <u0061
          bcc   L354B
          bvc   L3587
          ldx   >L053B,pcr
-         lbsr  L32F7
+         lbsr  WRLINE2
          lbsr  L3131
          lbsr  L16B4
          cmpa  >YCHR,pcr
@@ -5917,8 +5889,8 @@ L3577    lda   >YCHR,pcr
 L3587    ldd   #$0100
          lbsr  GOROWCOL
          lbsr  L02C5
-L3590    ldx   >L0537,pcr
-         lbsr  L32FC
+L3590    ldx   >SAVM2,pcr 'NO TEXT SAVED'
+         lbsr  WRLINE3
          lbsr  L0293
          lbra  L3140
 L359D    ldy   <u0069
@@ -5936,8 +5908,8 @@ L35B1    ldx   <u0063
 L35B7    ldd   #$0100
          lbsr  GOROWCOL
          lbsr  L02C5
-         ldx   >L0539,pcr
-         lbsr  L32FC
+         ldx   >SAVM3,pcr 'PART OR ALL OF TEXT NOT SAVED'
+         lbsr  WRLINE3
          lbra  L3140
 L35CA    ldy   <u0022
          ldy   ,y
@@ -5974,7 +5946,7 @@ L360F    lbsr  L02D9
 L3616    lda   #$07
          lbsr  WrA2BUF
          ldx   >L053F,pcr
-         lbsr  L32ED
+         lbsr  WRLINE0 Write at 0,0
          lbra  L3140
 L3625    ldd   #$0200
          lbsr  GOROWCOL
@@ -5986,7 +5958,7 @@ L3625    ldd   #$0200
          leax  >L365C,pcr
          stx   <u0057
          ldx   >L0571,pcr
-         lbsr  L32ED
+         lbsr  WRLINE0 Write at 0,0
          lbsr  L31AE
          ldx   <u001C
          lbsr  L3402
@@ -6000,11 +5972,13 @@ L365C    lbsr  L02D9
          rts
 L3662    lds   <u001E
          lbra  L3625
-         clr   <u00F2
+
+* Start printing
+L3668    clr   <u00F2
          leax  >L0124,pcr
          stx   <u0057
-         ldx   >L0561,pcr
-         lbsr  L32ED
+         ldx   >PRNS1,pcr  Ptr to "Different printer"
+         lbsr  WRLINE0 Write at 0,0
 L3677    lbsr  L3131
          cmpa  >ESCC,pcr
          lbeq  L3140
@@ -6012,40 +5986,40 @@ L3677    lbsr  L3131
          beq   L36B2
          lbsr  L16B4
          beq   L36B2
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          beq   L36B2
          cmpa  >YCHR,pcr
          beq   L369E
          lda   #$07
          lbsr  WrA2BUF
          bra   L3677
-L369E    lbsr  L1016
+L369E    lbsr  OUTREPT
          ldx   >L0565,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lbsr  L31AE
          ldx   <u001C
          lbsr  L3402
          bra   L36C3
-L36B2    lda   >L04FD,pcr
-         lbsr  L1016
-         ldd   >STYP1,pcr
+L36B2    lda   >NCHR,pcr
+         lbsr  OUTREPT
+         ldd   >STYP1,pcr '/p'
          leax  >0,pcr
          leax  d,x
-L36C3    lbsr  L0133
+L36C3    lbsr  L0133 Create file
          bcc   L36D6
          lbvc  L3625
-         ldx   >L0563,pcr
-         lbsr  L32F7
+         ldx   >PRNS2,pcr 'PRINT DRIVER NOT FOUND'
+         lbsr  WRLINE2
          lbra  L3140
 L36D6    lbsr  L129B
-         ldx   >L0567,pcr
-         lbsr  L32F2
+         ldx   >PRNS4,pcr 'Stop for new pages (Y/N*)? '
+         lbsr  WRLINE1
          clr   <u00AE
 L36E2    lbsr  L3131
          cmpa  >ESCC,pcr
          beq   L3715
          lbsr  L16B4
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          beq   L370C
          cmpa  #$0D
          beq   L370C
@@ -6054,11 +6028,11 @@ L36E2    lbsr  L3131
          lda   #$07
          lbsr  WrA2BUF
          bra   L36E2
-L3705    lbsr  L1016
+L3705    lbsr  OUTREPT
          inc   <u00AE
          bra   L3713
-L370C    lda   >L04FD,pcr
-         lbsr  L1016
+L370C    lda   >NCHR,pcr
+         lbsr  OUTREPT
 L3713    bsr   L3725
 L3715    lbsr  L014C
 L3718    clr   <u005A
@@ -6073,9 +6047,9 @@ L3725    lda   #$20
          clr   <u00E1
          clr   <u003D
          clr   <u003C
-         lda   >L0516,pcr
+         lda   >STCS,pcr 12 CHARACTERS/INCH
          lbsr  L12C0
-         lda   >L0517,pcr
+         lda   >STVS,pcr VERTICAL SPACING
          lbsr  L1302
          lda   #$01
          sta   <u0059
@@ -6084,12 +6058,12 @@ L3725    lda   #$20
 L3747    lda   #$03
          lbsr  L1185
          ldx   >L056B,pcr
-         lbsr  L32F7
+         lbsr  WRLINE2
 L3753    lbsr  L3131
          cmpa  >ESCC,pcr
          lbeq  L384B
          lbsr  L16B4
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          beq   L3785
          cmpa  #$0D
          beq   L3778
@@ -6099,13 +6073,13 @@ L3753    lbsr  L3131
          lbsr  WrA2BUF
          bra   L3753
 L3778    lda   >YCHR,pcr
-         lbsr  L1016
+         lbsr  OUTREPT
          clr   <u00C8
          ldb   #$FF
          bra   L37B0
-L3785    lbsr  L1016
+L3785    lbsr  OUTREPT
          ldx   >L056D,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lbsr  L31AE
          ldx   <u001C
          lbsr  L4364
@@ -6115,7 +6089,7 @@ L3785    lbsr  L1016
          decb
 L379D    stb   <u00C8
          ldx   >L056F,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lbsr  L31AE
          ldx   <u001C
          lbsr  L4364
@@ -6126,8 +6100,8 @@ L37B0    stb   <u00C9
          ldx   #$0000
          lbsr  L24D0
          lbsr  L25AC
-         ldx   >L0569,pcr
-         lbsr  L32FC
+         ldx   >OTXS1,pcr
+         lbsr  WRLINE3
          ldx   <u0022
          ldy   <u0024
          ldd   #$0038
@@ -6144,7 +6118,7 @@ L37D3    lda   <u0010,u
          bne   L380E
          lbsr  L0172
          beq   L380E
-         lbsr  L0155
+         lbsr  L0155   Read keyboard
          cmpa  #$20
          beq   L37FB
          cmpa  >ESCC,pcr
@@ -6183,9 +6157,9 @@ L3841    pshs  b
          puls  b
          decb
          bne   L3841
-L384B    lda   >L0516,pcr
+L384B    lda   >STCS,pcr 12 CHARACTERS/INCH
          lbsr  L12C0
-         lda   >L0517,pcr
+         lda   >STVS,pcr VERTICAL SPACING
          lbsr  L1302
          ldu   <u0022
          lbsr  L1D2C
@@ -6199,6 +6173,7 @@ L385F    lda   [,u]
          bne   L3874
 L3871    andcc #^Carry
          rts
+
 L3874    lda   <u002D,u
          lbsr  L12C0
          lda   <u002E,u
@@ -6254,7 +6229,8 @@ L38D2    decb
 L38E8    lbsr  L2C2B
          andcc #^Carry
          rts
-         ldb   [<u0006,u]
+
+L38EE    ldb   [<u0006,u]
          bmi   L3904
          clr   <u00CA
          bsr   L3924
@@ -6278,12 +6254,13 @@ L3913    ldy   u0006,u
          decb
          lbsr  GOROWCOL
 L3921    lbra  L4548
+
 L3924    pshs  a
          tst   <u00CA
          beq   L392C
          dec   <u00CA
-L392C    cmpa  >ULMCHR,pcr
-         beq   L3953
+L392C    cmpa  >ULMCHR,pcr Underline char?
+         beq   L3953 ..yes
          cmpa  >OLMCHR,pcr
          beq   L3957
          cmpa  >BFMCHR,pcr
@@ -6297,20 +6274,26 @@ L392C    cmpa  >ULMCHR,pcr
          inc   <u00CA
 L3950    clrb
          puls  pc,a
+* Underline
 L3953    ldb   #$01
          bra   L396F
+* Overline
 L3957    ldb   #$04
          bra   L396F
+* Bold
 L395B    ldb   #$02
          bra   L396F
+* Superscript
 L395F    ldb   <u00CA
-         andb  #$0F
+         andb  #$0F   Remove existing sub-/superscript attribute
          orb   #$40
          bra   L3979
+* Subscript
 L3967    ldb   <u00CA
          andb  #$0F
          orb   #$60
          bra   L3979
+
 L396F    lda   <u00CA
          anda  #$70
          bne   L3977
@@ -6320,6 +6303,7 @@ L3979    orb   #$80
          incb
          stb   <u00CA
          puls  pc,a
+
          lda   [<u0006,u]
          lbpl  L4548
          cmpa  #$F0
@@ -6455,13 +6439,13 @@ L3A8D    ldd   ,u
          subd  u0006,u
          lbsr  L2672
          ldx   >L0591,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          ldx   <u0034
          lbsr  L312A
          ldx   >L0593,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lbsr  L1698
-         lbsr  L1016
+         lbsr  OUTREPT
          anda  #$5F
          cmpa  >YCHR,pcr
          lbne  L241D
@@ -6474,11 +6458,13 @@ L3A8D    ldd   ,u
          lbsr  L3EC7
          sty   ,u
          lbra  L3A12
-         lda   >L04F7,pcr
+
+L3B04    lda   >MRKCHR,pcr
          lbsr  L2ABC
          lbsr  L237E
          lbra  L241D
-         clr   <u00F1
+
+L3B11    clr   <u00F1
          clr   <u00D3
          lda   #$01
          sta   <u007C
@@ -6494,7 +6480,7 @@ L3B29    lbsr  L3E8A
          ldd   #$0000
          lbsr  GOROWCOL
          ldx   >L0585,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
 L3B39    ldx   <u001C
          stx   <u00C0
          lbsr  L3D1D
@@ -6514,7 +6500,7 @@ L3B50    lbsr  L3DC4
          ldd   #$0200
          lbsr  GOROWCOL
          ldx   >L0587,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lda   #$01
          sta   <u0081
          lda   <u0077
@@ -6540,7 +6526,8 @@ L3B8C    lda   #$04
          sta   <u006D
          sta   <u0075
 L3B9E    lbra  L23E3
-         clr   <u00F1
+
+L3BA1    clr   <u00F1
          clr   <u00D3
          lda   #$01
          sta   <u007C
@@ -6557,7 +6544,7 @@ L3BBB    lbsr  L3E8A
          ldd   #$0000
          lbsr  GOROWCOL
          ldx   >L058B,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          ldx   <u001C
          stx   <u00C0
 L3BCF    lbsr  L3D1D
@@ -6572,8 +6559,8 @@ L3BCF    lbsr  L3D1D
          std   <u00BE
          ldd   #$0100
          lbsr  GOROWCOL
-         ldx   >L058D,pcr
-         lbsr  L310F
+         ldx   >RPLS2,pcr '*** WITH    '
+         lbsr  L310F  Write string in X
          lbsr  L3D1D
          bcs   L3BBB
 L3BF8    lbsr  L3DC4
@@ -6590,7 +6577,7 @@ L3BF8    lbsr  L3DC4
          ldd   #$0200
          lbsr  GOROWCOL
          ldx   >L058F,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lda   #$01
          sta   <u0081
          lda   #$04
@@ -6601,9 +6588,9 @@ L3C2D    lbsr  L1698
          cmpa  >ESCC,pcr
          lbeq  L3B8C
          anda  #$5F
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          beq   L3C92
-         cmpa  >L04FF,pcr
+         cmpa  >ACHR,pcr
          beq   L3C4E
          cmpa  >YCHR,pcr
          bne   L3C2D
@@ -6639,7 +6626,7 @@ L3C6E    ldd   <u00C0
 L3C92    ldd   #$0200
          lbsr  GOROWCOL
          ldx   >L0587,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lda   #$01
          sta   <u0081
          lda   #$04
@@ -6728,7 +6715,7 @@ L3D58    sta   b,x
 L3D6C    cmpa  #$F0
          bne   L3D74
          lda   >L04F5,pcr
-L3D74    lbsr  L1016
+L3D74    lbsr  OUTREPT
          bra   L3D29
 L3D79    tstb
          beq   L3DA4
@@ -6737,7 +6724,7 @@ L3D79    tstb
          decb
          lbsr  GOROWCOL
          lda   #$20
-         lbsr  L1016
+         lbsr  OUTREPT
          ldd   <u003E
          decb
          lbsr  GOROWCOL
@@ -6763,7 +6750,7 @@ L3DA7    lda   #$0D
          ldb   #$02
          lbsr  L1033
          ldx   >L0589,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          inc   <u00F1
          andcc #^Carry
          rts
@@ -6866,6 +6853,7 @@ L3E81    andcc #^Carry
          rts
 L3E86    clr   <u0077
          bra   L3E17
+
 L3E8A    clra
          lbsr  L1185
          lda   #$01
@@ -6875,16 +6863,17 @@ L3E8A    clra
          lda   #$03
          lbsr  L1185
          rts
+
 L3E9E    ldx   u0006,u
 L3EA0    lda   ,x+
          cmpx  <u0070
          beq   L3EBF
-         cmpa  >L04F7,pcr
+         cmpa  >MRKCHR,pcr
          bne   L3EA0
          lda   ,x+
          cmpx  <u0070
          beq   L3EBF
-         cmpa  >L04F7,pcr
+         cmpa  >MRKCHR,pcr
          bne   L3EA0
          leax  -$02,x
          stx   <u00CB
@@ -6976,55 +6965,13 @@ L3F64    lsla
          jmp   d,y
 
 * Labels here
-L3F6D    swi
-         fcb   $C3 C
-         nega
-         neg   -$01,y
-         addb  -$01,y
-         fcb   $38 8
-         nega
-         bge   L3FB8
-         adca  <u003F
-         fcb  $e7,$40
-         fcb   $05
-         fcb   $41 A
-         asr   <u0041
-         daa
-         fcb   $41 A
-         jsr   u0001,u
-         cmpb  -$01,y
-         cmpb  u0001,u
-         nega
-         fcb   $41 A
-         rts
-         fcb   $41 A
-         jmp   u0001,u
-         fcb   $4B K
-         swi
-         fcb   $B1 1
-         fcb   $42 B
-         fcb   $15
-         fcb   $42 B
-         fcb   $55 U
-         fcb   $42 B
-         bita  <u0042
-         anda  u0002,u
-         sta   >$42BD
-         fcb   $42 B
-         addd  #$42D5
-         fcb   $42 B
-         stb   u0002,u
-         eorb  >$433B
-         coma
-         rola
-         coma
-         comb
-         coma
-         decb
-         neg   <u0000
-         neg   <u0000
+L3F6D    fdb $3FC3,$4060,$3FEB,L3F38,$402C,$4099,$3FE7
+         fdb $4005,$4107,$4119,$41AD,$41E1,$3FE1,$4140
+         fdb $4139,$416E,$414B,L3FB1,$4215,$4255,$4295
+         fdb $42A4,$42B7,$42BD,$42C3,$42D5,$42E7,$42F8
+         fdb $433B,$4349,$4353,$435A,$0000,$0000
 
-         lbsr  L4364
+L3FB1    lbsr  L4364
          lbcs  L3F2E
 L3FB8    cmpb  <u002C,u
          lbls  L3F39
@@ -7502,7 +7449,8 @@ L43FB    stx   u0006,u
          adda  <u00A3
          sta   <u007E
          lbra  L2438
-         ldx   u0006,u
+
+L440F    ldx   u0006,u
 L4411    lda   ,x+
          bpl   L441F
          cmpa  #$F0
@@ -7531,8 +7479,10 @@ L4443    lda   <u00A3
          sta   <u007E
          lbsr  L44E2
          lbra  L2438
-         bsr   L4452
+
+L444D    bsr   L4452
          lbra  L2438
+
 L4452    tst   <u007C
          bne   L445A
          ldx   u000B,u
@@ -7600,7 +7550,8 @@ L44BC    tfr   b,a
          beq   L44DC
          lbsr  L2B65
 L44DC    rts
-         bsr   L44E2
+
+L44DD    bsr   L44E2
          lbra  L2438
 L44E2    lbsr  L1D2C
          bcc   L44ED
@@ -7650,6 +7601,8 @@ L4531    ldb   #$01
          sta   <u006D
          sta   <u0075
 L4547    rts
+
+* Cursor right
 L4548    bsr   L454D
          lbra  L2438
 L454D    ldx   u0006,u
@@ -7682,7 +7635,8 @@ L4578    stx   u0006,u
          adda  <u00A3
          sta   <u007E
          rts
-         bsr   L458F
+
+L458A    bsr   L458F
          lbra  L2438
 L458F    ldx   u0006,u
 L4591    cmpx  ,u
@@ -7917,8 +7871,8 @@ L4780    lbra  L2438
          lda   <u0077
          clrb
          lbsr  GOROWCOL
-         ldx   >L0525,pcr
-         lbsr  L310F
+         ldx   >PAGS1,pcr
+         lbsr  L310F  Write string in X
          ldx   <u001C
 L4797    lbsr  L1698
          anda  #$7F
@@ -7926,7 +7880,7 @@ L4797    lbsr  L1698
          lbeq  L241D
          cmpa  #$0D
          beq   L47D0
-         lbsr  L1016
+         lbsr  OUTREPT
          cmpa  #$30
          bcs   L47B7
          cmpa  #$39
@@ -8152,31 +8106,31 @@ L4988    lbsr  L458F
          sta   <u0077
          sta   <u007C
 L49CB    ldx   >L055B,pcr
-         lbsr  L32ED
+         lbsr  WRLINE0 Write at 0,0
          ldx   >L0557,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          ldx   >L055D,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
 L49E0    lbsr  L3131
          lbsr  L16B4
          cmpa  #$0D
          beq   L4A11
          cmpa  >YCHR,pcr
          beq   L4A11
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          beq   L49FD
          lda   #$07
          lbsr  WrA2BUF
          bra   L49E0
-L49FD    lbsr  L1016
+L49FD    lbsr  OUTREPT
          ldx   >L055F,pcr
-         lbsr  L32F2
+         lbsr  WRLINE1
          lbsr  L31AE
          ldx   <u001C
          lbsr  L3402
          bra   L4A20
 L4A11    lda   #$59
-         lbsr  L1016
+         lbsr  OUTREPT
 L4A16    ldd   >L0557,pcr
          leax  >0,pcr
          leax  d,x
@@ -8221,7 +8175,7 @@ L4A51    ldx   <u001C
          bra   L4A25
 L4A74    clr   <u00DB
          ldx   >L0559,pcr
-         lbsr  L32F7
+         lbsr  WRLINE2
          lbsr  L0287
          lbra  L3140
 L4A83    clr   <u0065
@@ -8327,20 +8281,20 @@ L4B3A    ldb   #$02
          ldd   #$1303
          lbsr  GOROWCOL
          ldx   >BANNER,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
 L4B5A    clr   <u00EC
 L4B5C    lda   #$20
-         lbsr  L1016
+         lbsr  OUTREPT
          lda   <u00EC
          adda  #$04
          clrb
          lbsr  GOROWCOL
          lda   #$3E
-         lbsr  L1016
+         lbsr  OUTREPT
          ldd   <u003E
          decb
          lbsr  GOROWCOL
-L4B74    lbsr  L0155
+L4B74    lbsr  L0155   Read keyboard
          lbsr  L16B4
          cmpa  #$0D
          beq   L4BAA
@@ -8373,7 +8327,7 @@ L4BAF    clrb
 L4BB2    clrb
          lbsr  GOROWCOL
          lda   #$20
-         lbsr  L1016
+         lbsr  OUTREPT
          lda   <u003E
          inca
          ldb   <u003E
@@ -8387,17 +8341,17 @@ L4BC8    clr   <u005B
          cmpd  <u005F
          bne   L4BDD
          ldx   >L0575,pcr
-         lbsr  L32ED
+         lbsr  WRLINE0 Write at 0,0
          lbra  L4C7A
 L4BDD    clra
          lbsr  L1185
          ldx   >L0577,pcr
-         lbsr  L32ED
+         lbsr  WRLINE0 Write at 0,0
          lbsr  L3131
          lbsr  L16B4
          cmpa  >ESCC,pcr
          lbeq  L3140
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          lbeq  L4CBC
          cmpa  #$0D
          beq   L4C0F
@@ -8414,11 +8368,11 @@ L4C0F    lda   >YCHR,pcr
          tst   <u006E
          beq   L4C51
          ldx   >L0579,pcr
-         lbsr  L32F2
+         lbsr  WRLINE1
          ldx   <u0032
          lbsr  L312A
          ldx   >L057B,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lbsr  L3131
          lbsr  L16B4
          cmpa  >ESCC,pcr
@@ -8427,12 +8381,12 @@ L4C0F    lda   >YCHR,pcr
          beq   L4C7A
          cmpa  #$0D
          beq   L4C7A
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          bne   L4C08
 L4C51    lda   #$01
          lbsr  L1185
          ldx   >L053D,pcr
-         lbsr  L32F2
+         lbsr  WRLINE1
          lbsr  L31AE
          leax  -$01,x
          cmpx  <u001C
@@ -8447,10 +8401,10 @@ L4C51    lda   #$01
 L4C7A    tst   <u005D
          bne   L4C87
          ldx   >L0583,pcr
-         lbsr  L32F7
+         lbsr  WRLINE2
          bra   L4CBF
 L4C87    ldx   >L057D,pcr
-         lbsr  L32F7
+         lbsr  WRLINE2
          lbsr  L3131
          lbsr  L16B4
          cmpa  >ESCC,pcr
@@ -8459,15 +8413,15 @@ L4C87    ldx   >L057D,pcr
          beq   L4CB1
          cmpa  #$0D
          beq   L4CB1
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          bne   L4C87
-         lbsr  L1016
+         lbsr  OUTREPT
          bra   L4CBF
 L4CB1    lda   >YCHR,pcr
-         lbsr  L1016
+         lbsr  OUTREPT
          inc   <u005C
          bra   L4CBF
-L4CBC    lbsr  L1016
+L4CBC    lbsr  OUTREPT
 L4CBF    tst   <u005B
          lbeq  L4DDA
          tst   <u005E
@@ -8481,12 +8435,12 @@ L4CD6    lbsr  L02F7
          bcc   L4CC9
          lbvc  L4EA2
 L4CDF    ldx   >L053B,pcr
-         lbsr  L32FC
+         lbsr  WRLINE3
          lbsr  L3131
          lbsr  L16B4
          cmpa  >ESCC,pcr
          lbeq  L3140
-         cmpa  >L04FD,pcr
+         cmpa  >NCHR,pcr
          lbeq  L3140
          cmpa  >YCHR,pcr
          beq   L4D06
@@ -8593,7 +8547,7 @@ L4DEC    std   <u0067
          cmpx  <u0067
          bcs   L4E07
          leax  >L057F,pcr
-         lbsr  L32FC
+         lbsr  WRLINE3
          lda   #$07
          lbsr  WrA2BUF
          lbra  L3140
@@ -8604,11 +8558,11 @@ L4E07    ldd   <u0070
          ldy   <u007A
          lbsr  L3EDA
          ldx   <u0070
-         leax  <-$64,x
+         leax  <-100,x
          stx   <u0067
-         leax  <-$32,x
+         leax  <-50,x
          stx   <u0063
-         leax  >-$03E8,x
+         leax  >-1000,x
          stx   <u0061
          tfr   y,x
          tst   <u005C
@@ -8640,7 +8594,7 @@ L4E57    cmpx  <u0067
          bra   L4E71
 L4E60    bvs   L4E6C
          ldx   >L0543,pcr
-         lbsr  L32F7
+         lbsr  WRLINE2
          lbsr  L02C5
 L4E6C    lbsr  L0281
          clr   <u005D
@@ -8670,7 +8624,7 @@ L4EA2    lda   #$02
          lda   #$03
          lbsr  L1185
          ldx   >L0581,pcr
-         lbsr  L310F
+         lbsr  L310F  Write string in X
          lbsr  L02C5
          bra   L4E9B
 L4EB8    tst   <u006E

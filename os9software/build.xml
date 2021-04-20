@@ -43,6 +43,7 @@
     <!-- All -->
     <target name="all" depends="prepare, required, level1,
         gimix, swtpc, color, fm7, dragon64, cms9609, cms9619,
+        exorsr,
         color3, fm11, dragon128, cms9639, virtual,
         utilities, y2k, dynacalc, stylograph, rms, basic09">
     </target>
@@ -156,6 +157,21 @@
     <target name="cms9619" depends="prepare">
         <assemble src="OS9p1" home="cms9619"  verify="6a999ed7c631733493fc077176cc4db3"/>
         <assemble src="OS9p2" home="cms9619"  verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
+    </target>
+
+    <!-- EXORset 30 -->
+    <target name="exorsr" depends="prepare">
+        <assemble src="EXORdisk3" home="exorsr" verify="6a0afcd8df0f6c5baf56252e8b37eec4"/>
+        <assemble src="OS9p1_ed9" home="exorsr"  verify="7bfef8a468a3a8269c973044abd74506"/>
+        <assemble src="OS9p2_ed5" home="exorsr"  verify="4b20dd87826af09ac1bae8ceb8487442"/>
+        <assemble verify="01914cb234a7192d2a18b11558b252c1" src="Boot" home="exorsr"/>
+        <assemble verify="38882ca08b0a9cac635c14fb1efb7031" src="EXORctlr" home="exorsr"/>
+        <assemble verify="b0210aa8e50ffa210b127dbbd4f9fd3c" src="Clock_ed3" home="exorsr"/>
+        <assemble verify="c9459c83e2dbc3a119c27ec0075d421f" src="Clock_v1" home="exorsr"/>
+        <assemble verify="433b40315cfc7f87fc77095f5bc58a9e" src="D0" home="exorsr"/>
+        <assemble verify="1014cec28bfb29238807bf8470ca36a5" src="D1" home="exorsr"/>
+        <assemble verify="f518763d5c98d2814b42df1a311e6b77" src="TERM" home="exorsr"/>
+        <assemble verify="e199b2a49281ff96b9d2034e3c958dd7" src="TCAcia" home="exorsr"/>
     </target>
 
     <!-- COCO Level II -->

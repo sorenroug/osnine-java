@@ -199,9 +199,9 @@ L000D    fcb   1  Display driver select
   else
 L000D    fcb   26  VT100/ANSI
   endc
-L000E    fcb   $00
+L000E    fcb   $00 Type 0 printer
          fcb   20  MAXPAGES
-L0010    fcb   $28
+L0010    fcb   40   Type 40 printer
 L0011    fcb   $00
          fcb   $00
          fcb   $00
@@ -365,7 +365,7 @@ L0153    bsr   L0109
 L0167    bsr   L0170
          beq   L016F
          bsr   L0153   Read keyboard
-         bra   L0167
+         bra   L0167 Read key if entered
 L016F    rts
 
 * Is there a character in keyboard buffer?
@@ -787,7 +787,7 @@ TXTEND EQU *
 
          lda   <u0045    Load driver number
          cmpa  #$20      Number of types
-         bhi   L149C
+         bhi   L149C branch if terminal number is too high
          tsta
          bne   L149F
 L149C    orcc  #Carry
@@ -853,7 +853,7 @@ TRMBEG   fdb   HP2621MV,TEC70MV,VT100MV,GIMIXMV,0,0,0,0
          fdb   0,0,0,0,0,0,0,0
   endc
 
-*THE NEXT BYTE SPECIFIES THE CHARACTERISTICS OF
+*THE FIRST BYTE SPECIFIES THE CHARACTERISTICS OF
 *THE TERMINAL.
 *THE NEXT 13 BYTES INDICATE THE SEQUENCE NUMBER
 *THAT IS CALLED FOR THE TERMINAL FUNCTIONS.
@@ -2232,7 +2232,7 @@ L1A0D    pshs  x,b
          ldb   #$14
          lbsr  L198F
          lbsr  L0109
-         ldx   #$2710
+         ldx   #10000
 L1A1E    leax  -$01,x
          bne   L1A1E
          puls  pc,x,b
@@ -2333,36 +2333,36 @@ L1A75    clr   ,u+
          lbsr  L0077
          lds   <u001E
          lda   >L000E,pcr
-         sta   <u0044
+         sta   <u0044 Active printer type
          lda   >L000D,pcr  Driver select
          sta   <u0045
          lda   >MAXPAGES,pcr
          sta   <u0062    Max pages
          lbsr  L3A44
          lbsr  TXTEND
-         lbcs  L3AA3
+         lbcs  L3AA3 branch to illegal printer or terminal
          lbsr  L1A0D
-         lda   <u0044
-         bne   L1B28
+         lda   <u0044 Active printer type
+         bne   L1B28 branch if not type 0
          lda   #$28
          ldb   #$78
          bra   L1B47
 
-L1B28    cmpa  #$0A
-         bne   L1B32
+L1B28    cmpa  #10 Printer type 10
+         bne   L1B32 branch if not type 10
          lda   #$0F
          ldb   #$78
          bra   L1B47
-L1B32    cmpa  #$14
-         bne   L1B3C
+L1B32    cmpa  #20
+         bne   L1B3C branch if not type 20
          lda   #$06
          ldb   #$96
          bra   L1B47
-L1B3C    cmpa  #$1E
+L1B3C    cmpa  #30 Printer type 30
+         beq   L1B47 branch if not type 30
+         cmpa  #40
          beq   L1B47
-         cmpa  #$28
-         beq   L1B47
-         lbra  L3AA3
+         lbra  L3AA3 branch to illegal printer or terminal
 L1B47    sta   <u00E3
          stb   <u00E4
          ldx   <u0072
@@ -2720,8 +2720,8 @@ L1E45    anda  #$7F
          tst   <u00DB
          beq   L1E57
          dec   <u00DB
-L1E57    lda   <u0044
-         cmpa  #$14
+L1E57    lda   <u0044 Active printer type
+         cmpa  #20
          beq   L1E6C
          lda   <u002C,u
          ldb   <u00E4
@@ -2781,7 +2781,7 @@ L1EC3    lda   <u00D5
          sta   <u00D5
 L1ED3    tst   <u002F,u
          beq   L1EE1
-         lda   <u0044
+         lda   <u0044 Active printer type
          cmpa  #$14
          beq   L1EE1
          lbsr  L2054
@@ -2794,7 +2794,7 @@ L1EE1    clr   <u00DF
          lda   <u00E3
 L1EEF    lbsr  L3F1D
          ldb   <u00D7
-         lda   <u0044
+         lda   <u0044 Active printer type
          cmpa  #$1E
          bcc   L1F21
          bitb  #$20
@@ -2805,8 +2805,8 @@ L1F01    bitb  #$10
          lbsr  L3F5B
 L1F08    bitb  #$04
          beq   L1F21
-         lda   <u0044
-         cmpa  #$14
+         lda   <u0044 Active printer type
+         cmpa  #20
          beq   L1F21
          lbsr  L3F5B
          lbsr  L3F5B
@@ -2815,10 +2815,10 @@ L1F08    bitb  #$04
          lbsr  L3F8B
 L1F21    bitb  #$01
          beq   L1F3D
-         lda   <u0044
+         lda   <u0044 Active printer type
          cmpa  #$1F
          bcc   L1F4C
-         cmpa  #$14
+         cmpa  #20
          beq   L1F34
          lbsr  L1FBF
          bra   L1F4C
@@ -2826,15 +2826,15 @@ L1F34    lda   #$0F
          sta   <u00E2
          lbsr  L3F53
          bra   L1F4C
-L1F3D    lda   <u0044
-         cmpa  #$14
+L1F3D    lda   <u0044 Active printer type
+         cmpa  #20
          bne   L1F4C
          tst   <u00E2
          beq   L1F4C
          lda   #$0E
          lbsr  L3F53
-L1F4C    lda   <u0044
-         cmpa  #$14
+L1F4C    lda   <u0044 Active printer type
+         cmpa  #20
          beq   L1F62
          bitb  #$02
          beq   L1F5B
@@ -2868,8 +2868,8 @@ L1F86    tsta
          puls  a
          lbsr  L3F53
          bra   L1F76
-L1F97    lda   <u0044
-         cmpa  #$14
+L1F97    lda   <u0044 Active printer type
+         cmpa  #20
          bhi   L1FAB
          bitb  #$20
          beq   L1FA4
@@ -2918,12 +2918,12 @@ L1FFC    lbsr  L3F53
 L1FFF    lda   #$08
          lbra  L3F53
 L2004    pshs  b
-         lda   <u0044
+         lda   <u0044 Active printer type
          cmpa  #$1E
          bls   L2010
          lda   <u00D5
          bra   L2037
-L2010    cmpa  #$0A
+L2010    cmpa  #10
          bhi   L203C
          lda   #$01
          lbsr  L3FB1
@@ -3364,10 +3364,11 @@ L23CD    ldb   <u00D9
          clra
          addd  <u005A
          lbra  L2326
+
 L23D5    tst   u0008,u
          beq   L23E1
          lda   [,u]
-         cmpa  >PRCCHR,pcr
+         cmpa  >PRCCHR,pcr PROC COMMAND CHARACTER
          beq   L2451
 L23E1    ldx   u0002,u
          cmpx  <u0063
@@ -3777,7 +3778,7 @@ L2778    pshs  a
 L2784    lbsr  L29C5
          lbra  L263A
 L278A    ldx   u0006,u
-         lbsr  L0167
+         lbsr  L0167 Read key if entered
          cmpx  ,u
          beq   L27DF
          lda   ,-x
@@ -4136,7 +4137,7 @@ L2A80    ldu   <u0022
          sta   <u006A
          lds   <u001E
          lbsr  L1C27
-         lbsr  L0167
+         lbsr  L0167 Read key if entered
 L2A8F    lbsr  L2CFB
          bcs   L2A65
          lbsr  L1C44
@@ -4801,7 +4802,7 @@ L3027    ldd   #$0000
          lbsr  L5129
          bra   L2FF9
 L3035    lbsr  L0281
-         lbsr  L0167
+         lbsr  L0167 Read key if entered
          lbsr  L1C27
 L303E    orcc  #Carry
          rts
@@ -5052,6 +5053,7 @@ L322C    lda   <u009E
          cmpa  <u006A
          bne   L3209
 L323A    puls  pc,u,y,x,b,a
+
 L323C    sta   <u0058
          clra
 L323F    subb  <u0058
@@ -5213,7 +5215,7 @@ L3397    ldx   u0002,u
          lbeq  L329A
          tst   <u004B
          beq   L33B6
-         lda   <u0044
+         lda   <u0044 Active printer type
          cmpa  #$14
          lbcs  L3451
          bne   L33B6
@@ -5650,7 +5652,7 @@ L374C    pshs  b,a
          lbsr  L011E  Start dimmed text
          bra   L3743
 
-L3753    lbsr  L0167
+L3753    lbsr  L0167 Read key if entered
          lbra  L0153   Read keyboard
 
 L3759    lbsr  L19DB
@@ -5748,16 +5750,16 @@ L380F    ldu   <u0022
          lbsr  L23D5
          bra   L380F
 
-L381E    ldx   >TTYS1,pcr
-         lbsr  L3916
+L381E    ldx   >TTYS1,pcr 'Output set for "TTY" printer.'
+         lbsr  WRLINE0 Ask question at 0,0
          lda   >L0010,pcr
-         sta   <u0044
+         sta   <u0044 Active printer type
          lbra  L3762
 
-L382E    ldx   >SPCLS1,pcr
-         lbsr  L3916
+L382E    ldx   >SPCLS1,pcr 'Output set for "Specialty" printer.'
+         lbsr  WRLINE0 Ask question at 0,0
          lda   >L000E,pcr
-         sta   <u0044
+         sta   <u0044 Active printer type
          lbra  L3762
 
 L383E    tst   <u004E
@@ -5765,19 +5767,19 @@ L383E    tst   <u004E
          tst   <u004F
          beq   L3850
 L3846    ldx   >OSPS2,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          lbra  L3762
 
 L3850    ldx   >ERMM1,pcr  Ptr to "Erase entire text?"
          lbsr  WRLINE1
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  OUTREPT
          lbsr  L1C44
          cmpa  >YCHR,pcr  character Y
          lbne  L3762
          ldx   >EXTM2,pcr  Ptr to "Are you sure?"
          lbsr  WRLINE2
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  OUTREPT
          lbsr  L1C44
          cmpa  >YCHR,pcr  character Y
@@ -5801,14 +5803,14 @@ L38A6    tst   <u004F
          lbne  L3846
          ldx   >EXTM1,pcr  "Is the text secure?"
          lbsr  WRLINE1
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  WrA2BUF
          lbsr  L1C44
          cmpa  >YCHR,pcr  character Y
          lbne  L3762
          ldx   >EXTM2,pcr
          lbsr  WRLINE2
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  WrA2BUF
          lbsr  L1C44
          cmpa  >YCHR,pcr  character Y
@@ -5820,8 +5822,8 @@ L38DF    lda   #$01
          lbne  L3846
          tst   <u004F
          lbne  L3846
-L38EF    ldx   >OSPS1,pcr
-         lbsr  L3916
+L38EF    ldx   >OSPS1,pcr 'OS-9 command:  '
+         lbsr  WRLINE0 Ask question at 0,0
          lbsr  L37B4
          ldx   <u001C
          lda   #$0D
@@ -5833,9 +5835,10 @@ L38FD    cmpa  ,x+
          lbsr  L03C4
          bcc   L3910
          lbsr  L02BF
-L3910    lbsr  L3753
+L3910    lbsr  L3753 Wait for key
          lbra  L3759
-L3916    ldd   #$0000
+
+WRLINE0    ldd   #$0000
          bra   L3928
 
 WRLINE1  ldd   #$0100   Line 1
@@ -5848,7 +5851,7 @@ WRLINE3  ldd   #$0300   Line 3
 L3928    lbsr  GOROWCOL
          lbra  L3731  Write string in X
 L392E    ldx   >SAVM5,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          lbsr  L37B4
          leax  -$01,x
          cmpx  <u001C
@@ -5968,13 +5971,13 @@ L3A3E    stx   <u0066
 
 L3A44    ldx   <u0030
          lbsr  L0183
-         bvs   L3AA3
+         bvs   L3AA3 branch to illegal printer or terminal
          bcc   L3A51
          clr   <u0061
          bra   L3A6F
 L3A51    ldx   <u0032
          lbsr  L0183
-         bvs   L3AA3
+         bvs   L3AA3 branch to illegal printer or terminal
          bcs   L3A60
          lda   #$02
          sta   <u0061
@@ -5993,7 +5996,7 @@ L3A75    pshs  x
          leax  $01,x
          lbsr  L4A0C
          puls  x
-         bcs   L3AA3
+         bcs   L3AA3 branch to illegal printer or terminal
          lda   ,x
          lbsr  L1C44
          cmpa  >CTMCHR,pcr   Character T
@@ -6001,17 +6004,17 @@ L3A75    pshs  x
          cmpa  >CPTCHR,pcr   Character P
          beq   L3A9F
          cmpa  >CPGCHR,pcr   Character M
-         bne   L3AA3
+         bne   L3AA3 branch to illegal printer or terminal
          stb   <u0062    Max pages
          bra   L3A6F
 
 L3A9B    stb   <u0045   Terminal type number
          bra   L3A6F
 
-L3A9F    stb   <u0044
+L3A9F    stb   <u0044 Active printer type
          bra   L3A6F
 
-L3AA3    ldx   >DSTM5,pcr
+L3AA3    ldx   >DSTM5,pcr 'ILLEGAL PRINTER, TERMINAL, OR FILE NAME'
          lbsr  L3731  Write string in X
          lbra  L0412
 L3AAD    lda   #$01
@@ -6067,12 +6070,12 @@ L3B1D    leax  >L02D3,pcr
          tst   <u0061
          beq   L3B5E
 L3B27    ldx   >SAVM1,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          ldx   <u0032
          lbsr  L374C  Write string in X
          ldx   >SAVMB,pcr
          lbsr  L3731  Write string in X
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  >NCHR,pcr  character N
          beq   L3B5B
@@ -6105,7 +6108,7 @@ L3B83    ldx   <u0052
          bvc   L3BB3
          ldx   >SAVM4,pcr
          lbsr  WRLINE2
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  >YCHR,pcr  character Y
          beq   L3BA3
@@ -6177,7 +6180,7 @@ L3C3B    lbsr  L02D3
 L3C42    lda   #$07
          lbsr  WrA2BUF
          ldx   >SVMS1,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          lbra  L3762
 L3C51    ldd   #$0200
          lbsr  GOROWCOL
@@ -6185,11 +6188,11 @@ L3C51    ldd   #$0200
          lbra  L3762
 L3C5D    lda   #$01
          sta   <u00EC
-         clr   <u00A2
+         clr   <u00A2 Stop for new page?
          leax  >L3C88,pcr
          stx   <u0048
          ldx   >SPLS1,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          lbsr  L37B4
          ldx   <u001C
          lbsr  L3A2E
@@ -6204,12 +6207,14 @@ L3C88    lbsr  L02D3
 
 L3C8E    lds   <u001E
          lbra  L3C51
+
+* Start printing
 L3C94    clr   <u00EC
          leax  >L0122,pcr
          stx   <u0048
-         ldx   >PRNS1,pcr  Ptr to "Different printer"
-         lbsr  L3916
-L3CA3    lbsr  L3753
+         ldx   >PRNS1,pcr  Ptr to "Different printer (Y/N*)? "
+         lbsr  WRLINE0 Ask question at 0,0
+L3CA3    lbsr  L3753 Wait for key
          cmpa  >ESCC,pcr  Escape
          lbeq  L3762
          cmpa  #$0D
@@ -6232,19 +6237,19 @@ L3CCA    lbsr  OUTREPT
          bra   L3CEF
 L3CDE    lda   >NCHR,pcr  character N
          lbsr  OUTREPT
-         ldd   >STYS1,pcr
+         ldd   >STYS1,pcr "/p"
          leax  >0,pcr
          leax  d,x
-L3CEF    lbsr  L0131
+L3CEF    lbsr  L0131  Create file
          bcc   L3D02
          lbvc  L3C51
-         ldx   >PRNS2,pcr
+         ldx   >PRNS2,pcr 'PRINT DRIVER NOT FOUND'
          lbsr  WRLINE2
          lbra  L3762
-L3D02    ldx   >PRNS4,pcr
+L3D02    ldx   >PRNS4,pcr 'Stop for new pages (Y/N*)? '
          lbsr  WRLINE1
-         clr   <u00A2
-L3D0B    lbsr  L3753
+         clr   <u00A2 Stop for new page?
+L3D0B    lbsr  L3753 Wait for key
          cmpa  >ESCC,pcr  Escape
          beq   L3D3E
          lbsr  L1C44
@@ -6258,7 +6263,7 @@ L3D0B    lbsr  L3753
          lbsr  WrA2BUF
          bra   L3D0B
 L3D2E    lbsr  OUTREPT
-         inc   <u00A2
+         inc   <u00A2 Stop for new page?
          bra   L3D3C
 L3D35    lda   >NCHR,pcr  character N
          lbsr  OUTREPT
@@ -6276,9 +6281,9 @@ L3D4E    lda   #$20
          clr   <u00D9
          clr   <u0047
          clr   <u0046
-         lda   >STCS,pcr
+         lda   >STCS,pcr CHARACTERS/INCH
          lbsr  L3F12
-         lda   >STVS,pcr
+         lda   >STVS,pcr VERTICAL SPACING
          lbsr  L3F25
          lda   #$01
          sta   <u004A
@@ -6286,9 +6291,9 @@ L3D4E    lda   #$20
          clr   <u0074
 L3D70    lda   #$03
          lbsr  L1A3F
-         ldx   >OTXS2,pcr
+         ldx   >OTXS2,pcr 'Print all pages (Y*/N)? '
          lbsr  WRLINE2
-L3D7C    lbsr  L3753
+L3D7C    lbsr  L3753 Wait for key
          cmpa  >ESCC,pcr  Escape
          lbeq  L3E6F
          lbsr  L1C44
@@ -6329,7 +6334,7 @@ L3DD9    stb   <u00C1
          ldx   #$0000
          lbsr  L2B0C
          lbsr  L2BE8
-         ldx   >OTXS1,pcr
+         ldx   >OTXS1,pcr 'Hit "ESC" to stop, any other key to continue. '
          lbsr  WRLINE3
          ldx   <u0022
          ldy   <u0024
@@ -6345,14 +6350,14 @@ L3DFC    lda   <u0010,u
          bcs   L3E6F
          tst   <u00EC
          bne   L3E35
-         lbsr  L0170
+         lbsr  L0170 Char in keyboard buffer
          beq   L3E35
          lbsr  L0153   Read keyboard
          cmpa  #$20
          beq   L3E22
          cmpa  >ESCC,pcr  Escape
          bne   L3E35
-L3E22    lbsr  L3753
+L3E22    lbsr  L3753 Wait for key
          cmpa  >ESCC,pcr  Escape
          beq   L3E35
          cmpa  #$20
@@ -6420,9 +6425,9 @@ L3EA8    lda   <u002B,u
          bls   L3EA8
          lda   #$01
          sta   <u004A
-         tst   <u00A2
+         tst   <u00A2 Stop for new page?
          beq   L3EA8
-L3EC4    lbsr  L3753
+L3EC4    lbsr  L3753 Wait for key
          cmpa  >ESCC,pcr  Escape
          beq   L3EA8
          cmpa  #$20
@@ -6445,8 +6450,8 @@ L3EEA    decb
          lda   #$20
          sta   <u00D5
          clr   <u00D7
-         lda   <u0044
-         cmpa  #$14
+         lda   <u0044 Active printer type
+         cmpa  #20
          bne   L3EFF
          lda   #$07
          sta   <u00D6
@@ -6461,8 +6466,8 @@ L3F0C    lbsr  L3249
          andcc #^Carry
          rts
 
-L3F12    ldb   <u0044
-         cmpb  #$0A
+L3F12    ldb   <u0044 Active printer type
+         cmpb  #10
          bhi   L3F37
          ldb   <u00E4
          lbsr  L323C
@@ -6470,8 +6475,9 @@ L3F1D    cmpa  <u0047
          beq   L3F37
          lbsr  L3FAF
          rts
-L3F25    ldb   <u0044
-         cmpb  #$0A
+
+L3F25    ldb   <u0044 Active printer type
+         cmpb  #10
          bhi   L3F37
          ldb   #$30
          lbsr  L323C
@@ -6479,6 +6485,7 @@ L3F25    ldb   <u0044
          beq   L3F37
          lbsr  L3FD9
 L3F37    rts
+
 L3F38    tst   <u00D9
          beq   L3F4D
          clr   <u00D5
@@ -6499,15 +6506,15 @@ L3F53    pshs  u
          puls  pc,u
 
 L3F5B    pshs  a
-         lda   <u0044
-         cmpa  #$14
+         lda   <u0044 Active printer type
+         cmpa  #20
          beq   L3F81
          bhi   L3F89
          lda   #$04
          lbsr  L3FDB
          lda   #$1B
          bsr   L3F53
-         tst   <u0044
+         tst   <u0044 Active printer type
          beq   L3F76
          lda   #$39
          bra   L3F78
@@ -6521,9 +6528,10 @@ L3F81    lda   #$1B
          lda   #$1E
          bsr   L3F53
 L3F89    puls  pc,a
+
 L3F8B    pshs  a
-         lda   <u0044
-         cmpa  #$14
+         lda   <u0044 Active printer type
+         cmpa  #20
          beq   L3FA5
          bhi   L3FAD
          lda   #$04
@@ -6538,20 +6546,21 @@ L3FA5    lda   #$1B
          lda   #$1C
          bsr   L3F53
 L3FAD    puls  pc,a
+
 L3FAF    sta   <u0047
 L3FB1    pshs  a
-         lda   <u0044
-         beq   L3FC9
-         cmpa  #$0A
+         lda   <u0044 Active printer type
+         beq   L3FC9 branch if type 0
+         cmpa  #10
          bne   L3FD7
-         lda   #$1B
+         lda   #$1B   ESC
          bsr   L3F53
-         lda   #$5D
+         lda   #$5D   ']
          bsr   L3F53
          lda   ,s
          adda  #$40
          bra   L3FD4
-L3FC9    lda   #$1B
+L3FC9    lda   #$1B   ESC Type 0 printer
          bsr   L3F53
          lda   #$1F
          bsr   L3F53
@@ -6559,15 +6568,16 @@ L3FC9    lda   #$1B
          inca
 L3FD4    lbsr  L3F53
 L3FD7    puls  pc,a
+
 L3FD9    sta   <u0046
 L3FDB    pshs  a
-         lda   <u0044
+         lda   <u0044 Active printer type
          beq   L3FF5
          cmpa  #$0A
          bne   L4005
          lda   #$1B
          lbsr  L3F53
-         lda   #$5D
+         lda   #$5D   ']
          lbsr  L3F53
          lda   ,s
          adda  #$4F
@@ -6604,6 +6614,7 @@ L402C    ldy   u0006,u
          decb
          lbsr  GOROWCOL
 L403A    lbra  L4B5E
+
 L403D    pshs  a
          tst   <u00C2
          beq   L4045
@@ -6878,7 +6889,7 @@ L42BD    clr   <u00EB
          clr   <u00CB
          lda   #$01
          sta   <u006F
-         clr   <u00A2
+         clr   <u00A2 Stop for new page?
          lda   #$04
          sta   <u006A
          clr   <u00CF
@@ -6912,7 +6923,7 @@ L42EB    lbsr  L443A
          bcs   L42D7
 L4314    lbsr  L44DF
          lbcs  L441C
-         tst   <u00A2
+         tst   <u00A2 Stop for new page?
          bne   L436C
          lda   #$05
          sta   <u0068
@@ -6942,7 +6953,7 @@ L4349    lbsr  L1C27
          cmpa  >YCHR,pcr  character Y
          bne   L4349
          bra   L436C
-L436A    inc   <u00A2
+L436A    inc   <u00A2 Stop for new page?
 L436C    ldd   <u00B2
          addd  #$0001
          addd  <u00B8
@@ -6965,7 +6976,7 @@ L438A    ldd   <u00B4
          sty   <u00CB
          lbsr  L2851
          lbsr  L29C5
-         tst   <u00A2
+         tst   <u00A2 Stop for new page?
          lbne  L4314
          lda   #$05
          sta   <u0060
@@ -7022,7 +7033,7 @@ L4421    lda   #$04
          lda   #$04
          cmpa  <u006A
          bne   L4432
-         tst   <u00A2
+         tst   <u00A2 Stop for new page?
          beq   L4437
 L4432    inca
          sta   <u0060
@@ -7547,6 +7558,7 @@ L48B8    ldd   <u006D
 L48C8    puls  u
 L48CA    std   <$13,u
          rts
+
 L48CE    lbsr  L4A0C
          lbcs  L4649
          cmpu  <u0022
@@ -7561,6 +7573,7 @@ L48CE    lbsr  L4A0C
          lbsr  L3111
 L48EB    stb   <u002C,u
          rts
+
 L48EF    lbsr  L4A0C
          lbcs  L4649
          cmpu  <u0022
@@ -7575,12 +7588,13 @@ L48EF    lbsr  L4A0C
          lbsr  L3111
 L490C    stb   <u002D,u
          rts
+
 L4910    lda   #$01
          sta   <u002F,u
          tst   <u004B
          beq   L492E
-         lda   <u0044
-         cmpa  #$14
+         lda   <u0044 Active printer type
+         cmpa  #20
          bne   L492E
          lda   #$0D
          lbsr  L3F53
@@ -7595,11 +7609,12 @@ L492E    tst   <u00D3
          lda   #$22
          lbra  L3111
 L493C    rts
+
 L493D    clr   <u002F,u
          tst   <u004B
          beq   L493C
-         lda   <u0044
-         cmpa  #$14
+         lda   <u0044 Active printer type
+         cmpa  #20
          bne   L493C
          lda   #$0D
          lbsr  L3F53
@@ -8294,12 +8309,12 @@ L4F29    ldx   #$0001
          sta   <u006A
          sta   <u006F
 L4F3E    ldx   >PSWS3,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          ldx   >PSWS1,pcr
          lbsr  L3731  Write string in X
          ldx   >PSWS4,pcr
          lbsr  L3731  Write string in X
-L4F53    lbsr  L3753
+L4F53    lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  #$0D
          beq   L4F84
@@ -8543,13 +8558,13 @@ L5143    clr   <u004C
          cmpd  <u0050
          bne   L5158
          ldx   >NEWM1,pcr
-         lbsr  L3916
+         lbsr  WRLINE0 Ask question at 0,0
          lbra  L51F5
 L5158    clra
          lbsr  L1A3F
          ldx   >NEWM3,pcr
-         lbsr  L3916
-         lbsr  L3753
+         lbsr  WRLINE0 Ask question at 0,0
+         lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  >ESCC,pcr  Escape
          lbeq  L3762
@@ -8575,7 +8590,7 @@ L518A    lda   >YCHR,pcr  character Y
          lbsr  L374C  Write string in X
          ldx   >NEWM5,pcr
          lbsr  L3731  Write string in X
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  >ESCC,pcr  Escape
          lbeq  L3762
@@ -8607,7 +8622,7 @@ L51F5    tst   <u004E
          bra   L523A
 L5202    ldx   >NEWM6,pcr
          lbsr  WRLINE2
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  >ESCC,pcr  Escape
          lbeq  L3762
@@ -8638,7 +8653,7 @@ L5251    lbsr  L02E8
          lbvc  L5417
 L525A    ldx   >SAVM4,pcr
          lbsr  WRLINE3
-         lbsr  L3753
+         lbsr  L3753 Wait for key
          lbsr  L1C44
          cmpa  >ESCC,pcr  Escape
          lbeq  L3762
@@ -8760,11 +8775,11 @@ L5384    ldd   <u0063
          ldy   <u006D
          lbsr  L45F5
          ldx   <u0063
-         leax  <-$64,x
+         leax  <-100,x
          stx   <u0056
-         leax  <-$32,x
+         leax  <-50,x
          stx   <u0054
-         leax  >-$03E8,x
+         leax  >-1000,x
          stx   <u0052
          tfr   y,x
          tst   <u004D

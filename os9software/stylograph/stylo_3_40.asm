@@ -7,7 +7,7 @@ tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $03
 
-L0000    mod   eom,name,tylg,atrv,start,size
+L0000    mod   BINEND,name,tylg,atrv,start,size
 
 u0000    rmb   1
 u0001    rmb   1
@@ -23,10 +23,11 @@ u000A    rmb   1
 u000B    rmb   1
 u000C    rmb   1
 u000D    rmb   1
-u000E    rmb   1
+TTYSTATE    rmb   1
 u000F    rmb   1
 u0010    rmb   1
-u0011    rmb   2
+u0011    rmb   1
+u0012    rmb   1
 u0013    rmb   1
 u0014    rmb   1
 u0015    rmb   1
@@ -191,7 +192,9 @@ u00E4    rmb   1
 u00E5    rmb   3
 u00E8    rmb   1
 u00E9    rmb   1
-u00EA    rmb   5
+u00EA    rmb   1
+u00EB    rmb   2
+u00ED    rmb   2
 u00EF    rmb   1
 u00F0    rmb   1
 u00F1    rmb   1
@@ -203,7 +206,8 @@ u00F7    rmb   1
 u00F8    rmb   1
 u00F9    rmb   1
 u00FA    rmb   5
-u00FF    rmb   20225
+u00FF    rmb   769
+u0400    rmb   19456
 size     equ   .
 
          fcb   $10
@@ -214,17 +218,17 @@ L0011    fcb   $00
          fcb   $00
 L0013    fcb   $00
          fcb   $00
-L0015    fcb   $01
+L0015    fcb   $01  Load STYPS
          fcb   $00
 
          fdb   $0556 TXTBEG
          fdb   $1621 TXTEND
-         fdb   $662B
-         fdb   $16BF
+         fdb   $662B   BINEND
+         fdb TRMBEG  $16BF
          fcb   $00
          fcb   $00
          fcb   $16
-         fcb   $ED m
+         fcb   $ED
          fcb   $00
          fcb   $00
          fcb   $00
@@ -248,1271 +252,595 @@ L0015    fcb   $01
          fcb   $0D
 name     equ   *
          fcs   /Stylo/
-L0067    fcb   $1F
-         fcb   $30 0
-         fcb   $1F
-         fcb   $42 B
-         fcb   $39 9
-L006C    fcb   $34 4
-         fcb   $36 6
-         fcb   $30 0
-         fcb   $68 h
-         fcb   $9F
-         fcb   $04
-         fcb   $9F
-         fcb   $06
-         fcb   $30 0
-         fcb   $8D
-         fcb   $00
-         fcb   $CD M
-         fcb   $CE N
-         fcb   $00
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $09
-         fcb   $9E
-         fcb   $8E
-         fcb   $31 1
-         fcb   $89
-         fcb   $01
-         fcb   $00
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0B
-         fcb   $B5 5
-         fcb   $9F
-         fcb   $0E
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0B
-         fcb   $D5 U
-         fcb   $9F
-         fcb   $10
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0B
-         fcb   $F5 u
-         fcb   $9F
-         fcb   $12
-         fcb   $DE ^
-         fcb   $14
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0B
-         fcb   $4D M
-         fcb   $AF /
-         fcb   $4A J
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0B
-         fcb   $59 Y
-         fcb   $AF /
-         fcb   $4C L
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0C
-         fcb   $4A J
-         fcb   $AF /
-         fcb   $C4 D
-         fcb   $8D
-         fcb   $4D M
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0C
-         fcb   $85
-         fcb   $AF /
-         fcb   $42 B
-         fcb   $8D
-         fcb   $45 E
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0C
-         fcb   $C0 @
-         fcb   $AF /
-         fcb   $44 D
-         fcb   $8D
-         fcb   $3D =
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $0C
-         fcb   $FB
-         fcb   $AF /
-         fcb   $46 F
-         fcb   $8D
-         fcb   $35 5
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $11
-         fcb   $00
-         fcb   $AF /
-         fcb   $48 H
-         fcb   $8D
-         fcb   $2D -
-         fcb   $9E
-         fcb   $8E
-         fcb   $30 0
-         fcb   $89
-         fcb   $0B
-         fcb   $65 e
-         fcb   $9F
-         fcb   $EB k
-         fcb   $9F
-         fcb   $ED m
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $9E
-         fcb   $0E
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8D
-         fcb   $10
-         fcb   $9E
-         fcb   $10
-         fcb   $CC L
-         fcb   $00
-         fcb   $20
-         fcb   $17
-         fcb   $4C L
-         fcb   $41 A
-         fcb   $9E
-         fcb   $10
-         fcb   $6F o
-         fcb   $04
-         fcb   $6F o
-         fcb   $07
-         fcb   $86
-         fcb   $FF
-         fcb   $A7 '
-         fcb   $0C
-         fcb   $A7 '
-         fcb   $0F
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8E
-         fcb   $35 5
-         fcb   $B6 6
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $33 3
-         fcb   $05
-         fcb   $EF o
-         fcb   $84
-         fcb   $EF o
-         fcb   $02
-         fcb   $6F o
-         fcb   $04
-         fcb   $35 5
-         fcb   $C0 @
-L0105    fcb   $34 4
-         fcb   $36 6
-         fcb   $9E
-         fcb   $EB k
-         fcb   $84
-         fcb   $7F ÿ
-         fcb   $A7 '
-         fcb   $80
-         fcb   $9F
-         fcb   $EB k
-         fcb   $30 0
-         fcb   $88
-         fcb   $B0 0
-         fcb   $9C
-         fcb   $ED m
-         fcb   $25 %
-         fcb   $15
-         fcb   $20
-         fcb   $02
-L0118    fcb   $34 4
-         fcb   $36 6
-         fcb   $DC \
-         fcb   $EB k
-         fcb   $93
-         fcb   $ED m
-         fcb   $27 '
-         fcb   $0B
-         fcb   $1F
-         fcb   $02
-         fcb   $9E
-         fcb   $ED m
-         fcb   $9F
-         fcb   $EB k
-         fcb   $86
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8A
-         fcb   $35 5
-         fcb   $B6 6
-L012D    fcb   $39 9
-L012E    fcb   $20
-         fcb   $E8 h
-         fcb   $39 9
-L0131    fcb   $8D
-         fcb   $E5 e
-         fcb   $34 4
-         fcb   $32 2
-         fcb   $1F
-         fcb   $41 A
-         fcb   $10
-         fcb   $8E
-         fcb   $00
-         fcb   $01
-         fcb   $86
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $89
-         fcb   $35 5
-         fcb   $32 2
-         fcb   $84
-         fcb   $7F ÿ
-         fcb   $39 9
-         fcb   $3B ;
-         fcb   $34 4
-         fcb   $06
-         fcb   $10
-         fcb   $3F ?
-         fcb   $15
-         fcb   $A6 &
-         fcb   $84
-         fcb   $E6 f
-         fcb   $05
-         fcb   $A7 '
-         fcb   $05
-         fcb   $E7 g
-         fcb   $84
-         fcb   $A6 &
-         fcb   $01
-         fcb   $E6 f
-         fcb   $04
-         fcb   $A7 '
-         fcb   $04
-         fcb   $E7 g
-         fcb   $01
-         fcb   $A6 &
-         fcb   $02
-         fcb   $E6 f
-         fcb   $03
-         fcb   $A7 '
-         fcb   $03
-         fcb   $E7 g
-         fcb   $02
-         fcb   $35 5
-         fcb   $86
-L0165    fcb   $34 4
-         fcb   $32 2
-         fcb   $1F
-         fcb   $41 A
-         fcb   $10
-         fcb   $8E
-         fcb   $00
-         fcb   $01
-         fcb   $96
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8A
-         fcb   $35 5
-         fcb   $B2 2
-L0174    fcb   $34 4
-         fcb   $16
-         fcb   $86
-         fcb   $02
-         fcb   $C6 F
-         fcb   $03
-         fcb   $10
-         fcb   $3F ?
-         fcb   $83
-         fcb   $25 %
-         fcb   $06
-         fcb   $97
-         fcb   $00
-         fcb   $1C
-         fcb   $FC
-         fcb   $35 5
-         fcb   $96
-         fcb   $D7 W
-         fcb   $03
-         fcb   $1A
-         fcb   $01
-         fcb   $1C
-         fcb   $FD
-         fcb   $35 5
-         fcb   $96
-L018D    fcb   $34 4
-         fcb   $02
-         fcb   $96
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8F
-         fcb   $35 5
-         fcb   $82
-L0196    fcb   $8D
-         fcb   $07
-         fcb   $27 '
-         fcb   $04
-         fcb   $8D
-         fcb   $95
-         fcb   $20
-         fcb   $F8 x
-         fcb   $39 9
-L019F    fcb   $34 4
-         fcb   $06
-         fcb   $86
-         fcb   $00
-         fcb   $C6 F
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8D
-         fcb   $25 %
-         fcb   $04
-         fcb   $1C
-         fcb   $FB
-         fcb   $35 5
-         fcb   $86
-         fcb   $1A
-         fcb   $04
-         fcb   $35 5
-         fcb   $86
-L01B2    fcb   $34 4
-         fcb   $36 6
-         fcb   $10
-         fcb   $9E
-         fcb   $04
-         fcb   $A6 &
-         fcb   $A0
-         fcb   $81
-         fcb   $0D
-         fcb   $27 '
-         fcb   $0E
-         fcb   $81
-         fcb   $20
-         fcb   $27 '
-         fcb   $F6 v
-         fcb   $81
-         fcb   $2C ,
-         fcb   $27 '
-         fcb   $F2 r
-         fcb   $81
-         fcb   $2D -
-         fcb   $27 '
-         fcb   $2A *
-         fcb   $20
-         fcb   $06
-         fcb   $1A
-         fcb   $01
-         fcb   $1C
-         fcb   $FD
-         fcb   $35 5
-         fcb   $B6 6
-         fcb   $31 1
-         fcb   $3F ?
-         fcb   $C6 F
-         fcb   $36 6
-         fcb   $A6 &
-         fcb   $A0
-         fcb   $81
-         fcb   $0D
-         fcb   $27 '
-         fcb   $0D
-         fcb   $81
-         fcb   $20
-         fcb   $27 '
-         fcb   $09
-         fcb   $81
-         fcb   $2C ,
-         fcb   $27 '
-         fcb   $05
-         fcb   $A7 '
-         fcb   $80
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $84
-         fcb   $31 1
-         fcb   $3F ?
-         fcb   $10
-         fcb   $9F
-         fcb   $04
-         fcb   $1C
-         fcb   $FE
-         fcb   $35 5
-         fcb   $B6 6
-         fcb   $A6 &
-         fcb   $A0
-         fcb   $81
-         fcb   $0D
-         fcb   $27 '
-         fcb   $D2 R
-         fcb   $81
-         fcb   $20
-         fcb   $27 '
-         fcb   $BA :
-         fcb   $81
-         fcb   $2C ,
-         fcb   $27 '
-         fcb   $B6 6
-         fcb   $20
-         fcb   $F0 p
-L0203    fcb   $34 4
-         fcb   $06
-         fcb   $9E
-         fcb   $06
-         fcb   $A6 &
-         fcb   $80
-         fcb   $81
-         fcb   $2D -
-         fcb   $27 '
-         fcb   $08
-         fcb   $81
-         fcb   $0D
-         fcb   $26 &
-         fcb   $F6 v
-         fcb   $1A
-         fcb   $01
-         fcb   $35 5
-         fcb   $86
-         fcb   $9F
-         fcb   $06
-         fcb   $1C
-         fcb   $FE
-         fcb   $35 5
-         fcb   $86
-L021B    fcb   $34 4
-         fcb   $56 V
-         fcb   $86
-         fcb   $02
-         fcb   $C6 F
-         fcb   $03
-         fcb   $10
-         fcb   $3F ?
-         fcb   $83
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $06
-         fcb   $25 %
-         fcb   $10
-         fcb   $A7 '
-         fcb   $04
-         fcb   $33 3
-         fcb   $05
-         fcb   $EF o
-         fcb   $84
-         fcb   $33 3
-         fcb   $C9 I
-         fcb   $04
-         fcb   $00
-         fcb   $EF o
-         fcb   $02
-         fcb   $1C
-         fcb   $FC
-         fcb   $35 5
-         fcb   $D6 V
-         fcb   $D7 W
-         fcb   $03
-         fcb   $C1 A
-         fcb   $DA Z
-         fcb   $26 &
-         fcb   $04
-         fcb   $1A
-         fcb   $03
-         fcb   $35 5
-         fcb   $D6 V
-         fcb   $1A
-         fcb   $01
-         fcb   $1C
-         fcb   $FD
-         fcb   $35 5
-         fcb   $D6 V
-L024A    fcb   $34 4
-         fcb   $56 V
-         fcb   $86
-         fcb   $02
-         fcb   $C6 F
-         fcb   $03
-         fcb   $10
-         fcb   $3F ?
-         fcb   $83
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $08
-         fcb   $20
-         fcb   $CF O
-L0259    fcb   $34 4
-         fcb   $36 6
-         fcb   $30 0
-         fcb   $8D
-         fcb   $13
-         fcb   $E1 a
-         fcb   $10
-         fcb   $9E
-         fcb   $12
-         fcb   $A6 &
-         fcb   $80
-         fcb   $27 '
-         fcb   $04
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $20
-         fcb   $F8 x
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $86
-         fcb   $2F /
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $35 5
-         fcb   $36 6
-         fcb   $9E
-         fcb   $12
-         fcb   $34 4
-         fcb   $52 R
-         fcb   $86
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $84
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $04
-         fcb   $20
-         fcb   $0B
-L0287    fcb   $34 4
-         fcb   $52 R
-         fcb   $86
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $84
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $84
-         fcb   $25 %
-         fcb   $0A
-         fcb   $A7 '
-         fcb   $04
-         fcb   $33 3
-         fcb   $05
-         fcb   $EF o
-         fcb   $84
-         fcb   $EF o
-         fcb   $02
-         fcb   $35 5
-         fcb   $D2 R
-         fcb   $C1 A
-         fcb   $D8 X
-         fcb   $27 '
-         fcb   $08
-         fcb   $D7 W
-         fcb   $03
-         fcb   $1A
-         fcb   $01
-         fcb   $1C
-         fcb   $FD
-         fcb   $35 5
-         fcb   $D2 R
-         fcb   $D7 W
-         fcb   $03
-         fcb   $1A
-         fcb   $03
-         fcb   $35 5
-         fcb   $D2 R
-L02B0    fcb   $34 4
-         fcb   $52 R
-         fcb   $86
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $84
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $02
-         fcb   $20
-         fcb   $D5 U
-L02BD    fcb   $34 4
-         fcb   $12
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $84
-         fcb   $20
-         fcb   $21 !
-L02C5    fcb   $34 4
-         fcb   $12
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $02
-         fcb   $20
-         fcb   $19
-L02CD    fcb   $34 4
-         fcb   $12
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $04
-         fcb   $20
-         fcb   $11
-L02D5    fcb   $34 4
-         fcb   $12
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $06
-         fcb   $20
-         fcb   $06
-L02DD    fcb   $34 4
-         fcb   $12
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $08
-         fcb   $17
-         fcb   $01
-         fcb   $E5 e
-         fcb   $A6 &
-         fcb   $04
-         fcb   $27 '
-         fcb   $05
-         fcb   $6F o
-         fcb   $04
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8F
-         fcb   $35 5
-         fcb   $92
-L02F1    fcb   $34 4
-         fcb   $36 6
-         fcb   $10
-         fcb   $9E
-         fcb   $12
-         fcb   $A6 &
-         fcb   $80
-         fcb   $27 '
-         fcb   $04
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $20
-         fcb   $F8 x
-         fcb   $30 0
-         fcb   $8D
-         fcb   $13
-         fcb   $5F _
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $9E
-         fcb   $12
-         fcb   $10
-         fcb   $3F ?
-         fcb   $87
-         fcb   $D7 W
-         fcb   $03
-         fcb   $35 5
-         fcb   $B6 6
-L0311    fcb   $34 4
-         fcb   $10
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $06
-         fcb   $17
-         fcb   $01
-         fcb   $9E
-         fcb   $35 5
-         fcb   $90
-L031C    fcb   $34 4
-         fcb   $10
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $08
-         fcb   $20
-         fcb   $F3 s
-L0324    fcb   $34 4
-         fcb   $06
-         fcb   $D6 V
-         fcb   $03
-         fcb   $86
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $0F
-         fcb   $35 5
-         fcb   $86
-L032F    fcb   $34 4
-         fcb   $14
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $84
-         fcb   $17
-         fcb   $01
-         fcb   $B8 8
-         fcb   $35 5
-         fcb   $94
-L033A    fcb   $34 4
-         fcb   $14
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $02
-         fcb   $20
-         fcb   $F3 s
-L0342    fcb   $34 4
-         fcb   $14
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $04
-         fcb   $20
-         fcb   $EB k
-L034A    fcb   $34 4
-         fcb   $14
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $04
-         fcb   $17
-         fcb   $01
-         fcb   $AE .
-         fcb   $35 5
-         fcb   $94
-L0355    fcb   $17
-         fcb   $FD
-         fcb   $C0 @
-         fcb   $17
-         fcb   $FF
-         fcb   $7A z
-         fcb   $17
-         fcb   $FF
-         fcb   $7F ÿ
-         fcb   $CC L
-         fcb   $00
-         fcb   $00
-         fcb   $9E
-         fcb   $0E
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8E
-         fcb   $5F _
-         fcb   $10
-         fcb   $DE ^
-         fcb   $18
-         fcb   $10
-         fcb   $3F ?
-         fcb   $06
-L036D    fcb   $34 4
-         fcb   $76 v
-         fcb   $10
-         fcb   $9E
-         fcb   $12
-         fcb   $9F
-         fcb   $0C
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $31 1
-         fcb   $3F ?
-         fcb   $30 0
-         fcb   $8D
-         fcb   $12
-         fcb   $E1 a
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $86
-         fcb   $01
-         fcb   $9E
-         fcb   $12
-         fcb   $10
-         fcb   $3F ?
-         fcb   $84
-         fcb   $25 %
-         fcb   $07
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8F
-         fcb   $1A
-         fcb   $03
-         fcb   $35 5
-         fcb   $F6 v
-         fcb   $C1 A
-         fcb   $D8 X
-         fcb   $27 '
-         fcb   $20
-         fcb   $D7 W
-         fcb   $03
-         fcb   $C1 A
-         fcb   $CF O
-         fcb   $27 '
-         fcb   $0A
-         fcb   $C1 A
-         fcb   $ED m
-         fcb   $27 '
-         fcb   $06
-         fcb   $1A
-         fcb   $01
-         fcb   $1C
-         fcb   $FD
-         fcb   $35 5
-         fcb   $F6 v
-         fcb   $AE .
-         fcb   $8D
-         fcb   $02
-         fcb   $34 4
-         fcb   $17
-         fcb   $3C <
-         fcb   $76 v
-         fcb   $AE .
-         fcb   $8D
-         fcb   $02
-         fcb   $2F /
-         fcb   $17
-         fcb   $3C <
-         fcb   $74 t
-         fcb   $20
-         fcb   $EA j
-         fcb   $0D
-         fcb   $63 c
-         fcb   $27 '
-         fcb   $1A
-         fcb   $9E
-         fcb   $0A
-         fcb   $26 &
-         fcb   $11
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $84
-         fcb   $A6 &
-         fcb   $04
-         fcb   $C6 F
-         fcb   $05
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8D
-         fcb   $25 %
-         fcb   $CB K
-         fcb   $9F
-         fcb   $08
-         fcb   $DF _
-         fcb   $0A
-         fcb   $17
-         fcb   $FE
-         fcb   $E7 g
-         fcb   $25 %
-         fcb   $C2 B
-         fcb   $9E
-         fcb   $0C
-         fcb   $10
-         fcb   $9E
-         fcb   $12
-         fcb   $86
-         fcb   $20
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $86
-         fcb   $20
-         fcb   $A7 '
-         fcb   $3F ?
-         fcb   $A6 &
-         fcb   $82
-         fcb   $81
-         fcb   $2F /
-         fcb   $27 '
-         fcb   $06
-         fcb   $9C
-         fcb   $0C
-         fcb   $26 &
-         fcb   $F6 v
-         fcb   $20
-         fcb   $02
-         fcb   $30 0
-         fcb   $01
-         fcb   $A6 &
-         fcb   $80
-         fcb   $27 '
-         fcb   $04
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $20
-         fcb   $F8 x
-         fcb   $30 0
-         fcb   $8D
-         fcb   $12
-         fcb   $5C \
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $86
-         fcb   $0D
-         fcb   $A7 '
-         fcb   $3F ?
-         fcb   $30 0
-         fcb   $8D
-         fcb   $12
-         fcb   $53 S
-         fcb   $1F
-         fcb   $20
-         fcb   $93
-         fcb   $12
-         fcb   $5C \
-         fcb   $1F
-         fcb   $02
-         fcb   $DE ^
-         fcb   $12
-         fcb   $CC L
-         fcb   $00
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $03
-         fcb   $10
-         fcb   $25 %
-         fcb   $FF
-         fcb   $74 t
-         fcb   $10
-         fcb   $3F ?
-         fcb   $04
-         fcb   $5D ]
-         fcb   $10
-         fcb   $26 &
-         fcb   $FF
-         fcb   $6C l
-         fcb   $0D
-         fcb   $63 c
-         fcb   $27 '
-         fcb   $33 3
-         fcb   $9E
-         fcb   $0C
-         fcb   $10
-         fcb   $9E
-         fcb   $12
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $31 1
-         fcb   $3F ?
-         fcb   $30 0
-         fcb   $8D
-         fcb   $12
-         fcb   $1E
-         fcb   $A6 &
-         fcb   $80
-         fcb   $A7 '
-         fcb   $A0
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $9E
-         fcb   $12
-         fcb   $86
-         fcb   $01
-         fcb   $10
-         fcb   $3F ?
-         fcb   $84
-         fcb   $10
-         fcb   $25 %
-         fcb   $FF
-         fcb   $46 F
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $84
-         fcb   $A7 '
-         fcb   $04
-         fcb   $9E
-         fcb   $08
-         fcb   $DE ^
-         fcb   $0A
-         fcb   $10
-         fcb   $3F ?
-         fcb   $88
-         fcb   $10
-         fcb   $25 %
-         fcb   $FF
-         fcb   $35 5
-         fcb   $1C
-         fcb   $FE
-         fcb   $35 5
-         fcb   $F6 v
-L0469    fcb   $34 4
-         fcb   $76 v
-         fcb   $34 4
-         fcb   $10
-         fcb   $9E
-         fcb   $0E
-         fcb   $CC L
-         fcb   $00
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8E
-         fcb   $35 5
-         fcb   $10
-         fcb   $1F
-         fcb   $13
-         fcb   $CC L
-         fcb   $00
-         fcb   $00
-         fcb   $6D m
-         fcb   $CB K
-         fcb   $27 '
-         fcb   $05
-         fcb   $C3 C
-         fcb   $00
-         fcb   $01
-         fcb   $20
-         fcb   $F7 w
-         fcb   $1F
-         fcb   $02
-         fcb   $31 1
-         fcb   $21 !
-         fcb   $30 0
-         fcb   $CB K
-         fcb   $86
-         fcb   $0D
-         fcb   $A7 '
-         fcb   $84
-         fcb   $CC L
-         fcb   $00
-         fcb   $00
-         fcb   $30 0
-         fcb   $8D
-         fcb   $11
-         fcb   $D7 W
-         fcb   $10
-         fcb   $3F ?
-         fcb   $03
-         fcb   $25 %
-         fcb   $16
-         fcb   $10
-         fcb   $3F ?
-         fcb   $04
-         fcb   $5D ]
-         fcb   $26 &
-         fcb   $10
-         fcb   $1C
-         fcb   $FE
-         fcb   $34 4
-         fcb   $01
-         fcb   $9E
-         fcb   $10
-         fcb   $CC L
-         fcb   $00
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8E
-         fcb   $35 5
-         fcb   $01
-         fcb   $35 5
-         fcb   $F6 v
-         fcb   $D7 W
-         fcb   $03
-         fcb   $1A
-         fcb   $01
-         fcb   $20
-         fcb   $EC l
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $EE n
-         fcb   $84
-         fcb   $A7 '
-         fcb   $C0 @
-         fcb   $EF o
-         fcb   $84
-         fcb   $11
-         fcb   $A3 #
-         fcb   $02
-         fcb   $27 '
-         fcb   $04
-         fcb   $1C
-         fcb   $FE
-         fcb   $35 5
-         fcb   $C0 @
-         fcb   $35 5
-         fcb   $40 @
-         fcb   $34 4
-         fcb   $36 6
-         fcb   $6D m
-         fcb   $04
-         fcb   $27 '
-         fcb   $1D
-         fcb   $1F
-         fcb   $12
-         fcb   $30 0
-         fcb   $25 %
-         fcb   $34 4
-         fcb   $10
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $AF /
-         fcb   $A4 $
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $27 '
-         fcb   $0F
-         fcb   $34 4
-         fcb   $06
-         fcb   $A6 &
-         fcb   $24 $
-         fcb   $35 5
-         fcb   $20
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8A
-         fcb   $25 %
-         fcb   $02
-         fcb   $35 5
-         fcb   $B6 6
-         fcb   $D7 W
-         fcb   $03
-         fcb   $35 5
-         fcb   $B6 6
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $EE n
-         fcb   $84
-         fcb   $11
-         fcb   $A3 #
-         fcb   $02
-         fcb   $27 '
-         fcb   $0A
-         fcb   $A6 &
-         fcb   $C0 @
-         fcb   $EF o
-         fcb   $84
-         fcb   $1C
-         fcb   $FE
-         fcb   $35 5
-         fcb   $C0 @
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $34 4
-         fcb   $30 0
-         fcb   $1F
-         fcb   $12
-         fcb   $A6 &
-         fcb   $24 $
-         fcb   $30 0
-         fcb   $25 %
-         fcb   $AF /
-         fcb   $A4 $
-         fcb   $10
-         fcb   $8E
-         fcb   $00
-         fcb   $36 6
-         fcb   $10
-         fcb   $3F ?
-         fcb   $89
-         fcb   $10
-         fcb   $9F
-         fcb   $57 W
-         fcb   $35 5
-         fcb   $30 0
-         fcb   $25 %
-         fcb   $0A
-         fcb   $DC \
-         fcb   $57 W
-         fcb   $33 3
-         fcb   $05
-         fcb   $33 3
-         fcb   $CB K
-         fcb   $EF o
-         fcb   $02
-         fcb   $20
-         fcb   $CD M
-         fcb   $C1 A
-         fcb   $D3 S
-         fcb   $26 &
-         fcb   $04
-         fcb   $1A
-         fcb   $03
-         fcb   $35 5
-         fcb   $C0 @
-         fcb   $1A
-         fcb   $01
-         fcb   $1C
-         fcb   $FD
-         fcb   $D7 W
-         fcb   $03
-         fcb   $35 5
-         fcb   $C0 @
 
-L0535    fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $04
-         fcb   $A6 &
-         fcb   $04
-         fcb   $8E
-         fcb   $00
-         fcb   $00
-         fcb   $10
-         fcb   $3F ?
-         fcb   $88
-         fcb   $39 9
+L0067    tfr   u,d
+         tfr   s,y
+         rts
 
-L0542    fcb   $C6 F
-         fcb   $0E
-         fcb   $10
-         fcb   $3F ?
-         fcb   $8D
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $16
-         fcb   $86
-         fcb   $00
-         fcb   $9E
-         fcb   $14
-         fcb   $AE .
-         fcb   $0C
-         fcb   $30 0
-         fcb   $01
-         fcb   $8D
-         fcb   $EE n
-         fcb   $35 5
-         fcb   $96
+L006C    pshs  y,x,b,a
+         leax  $08,s
+         stx   <u0004
+         stx   <u0006
+         leax  >IRQHNDLR,pcr
+         ldu   #$0000
+         os9   F$Icpt
+         ldx   <u008E
+         leay  >$0100,x
+         leax  >$0BB5,y
+         stx   <TTYSTATE
+         leax  >$0BD5,y
+         stx   <u0010
+         leax  >$0BF5,y
+         stx   <u0012
+         ldu   <u0014
+         leax  >$0B4D,y
+         stx   u000A,u
+         leax  >$0B59,y
+         stx   u000C,u
+         leax  >$0C4A,y
+         stx   ,u
+         bsr   L00F9
+         leax  >$0C85,y
+         stx   u0002,u
+         bsr   L00F9
+         leax  >$0CC0,y
+         stx   u0004,u
+         bsr   L00F9
+         leax  >$0CFB,y
+         stx   u0006,u
+         bsr   L00F9
+         leax  >$1100,y
+         stx   u0008,u
+         bsr   L00F9
+         ldx   <u008E
+         leax  >$0B65,x
+         stx   <u00EB
+         stx   <u00ED
+         clra
+         clrb
+         ldx   <TTYSTATE
+         os9   I$GetStt
+         ldy   <u0010
+         ldd   #$0020
+         lbsr  L4D27
+         ldx   <u0010
+         clr   $04,x
+         clr   $07,x
+         lda   #$FF
+         sta   $0C,x
+         sta   $0F,x
+         clra
+         clrb
+         os9   I$SetStt
+         puls  pc,y,x,b,a
+L00F9    pshs  u
+         leau  $05,x
+         stu   ,x
+         stu   $02,x
+         clr   $04,x
+         puls  pc,u
+L0105    pshs  y,x,b,a
+         ldx   <u00EB
+         anda  #$7F
+         sta   ,x+
+         stx   <u00EB
+         leax  <-$50,x
+         cmpx  <u00ED
+         bcs   L012B
+         bra   L011A
+L0118    pshs  y,x,b,a
+L011A    ldd   <u00EB
+         subd  <u00ED
+         beq   L012B
+         tfr   d,y
+         ldx   <u00ED
+         stx   <u00EB
+         lda   #$01
+         os9   I$Write
+L012B    puls  pc,y,x,b,a
+L012D    rts
+L012E    bra   L0118
+         rts
+
+* Read one character from stdin
+L0131    bsr   L0118
+         pshs  y,x,a
+         tfr   s,x
+         ldy   #$0001
+         lda   #$00
+         os9   I$Read
+         puls  y,x,a
+         anda  #$7F
+         rts
+
+* Interrupt handler
+IRQHNDLR    rti
+
+         pshs  b,a
+         os9   F$Time
+         lda   ,x
+         ldb   $05,x
+         sta   $05,x
+         stb   ,x
+         lda   $01,x
+         ldb   $04,x
+         sta   $04,x
+         stb   $01,x
+         lda   $02,x
+         ldb   $03,x
+         sta   $03,x
+         stb   $02,x
+         puls  pc,b,a
+
+L0165    pshs  y,x,a
+         tfr   s,x
+         ldy   #$0001
+         lda   <u0000
+         os9   I$Write
+         puls  pc,y,x,a
+
+L0174    pshs  x,b,a
+         lda   #$02
+         ldb   #$03
+         os9   I$Create
+         bcs   L0185
+         sta   <u0000
+         andcc #$FC
+         puls  pc,x,b,a
+
+L0185    stb   <u0003
+         orcc  #$01
+         andcc #$FD
+         puls  pc,x,b,a
+
+L018D    pshs  a
+         lda   <u0000
+         os9   I$Close
+         puls  pc,a
+
+L0196    bsr   L019F
+         beq   L019E
+         bsr   L0131   Read keyboard
+         bra   L0196
+L019E    rts
+
+L019F    pshs  b,a
+         lda   #$00
+         ldb   #$01
+         os9   I$GetStt
+         bcs   L01AE
+         andcc #$FB
+         puls  pc,b,a
+L01AE    orcc  #$04
+         puls  pc,b,a
+L01B2    pshs  y,x,b,a
+         ldy   <u0004
+L01B7    lda   ,y+
+         cmpa  #$0D
+         beq   L01CB
+         cmpa  #$20
+         beq   L01B7
+         cmpa  #$2C
+         beq   L01B7
+         cmpa  #$2D
+         beq   L01F3
+         bra   L01D1
+L01CB    orcc  #$01
+         andcc #$FD
+         puls  pc,y,x,b,a
+L01D1    leay  -$01,y
+         ldb   #$36
+L01D5    lda   ,y+
+         cmpa  #$0D
+         beq   L01E8
+         cmpa  #$20
+         beq   L01E8
+         cmpa  #$2C
+         beq   L01E8
+         sta   ,x+
+         decb
+         bne   L01D5
+L01E8    clr   ,x
+         leay  -$01,y
+         sty   <u0004
+         andcc #$FE
+         puls  pc,y,x,b,a
+L01F3    lda   ,y+
+         cmpa  #$0D
+         beq   L01CB
+         cmpa  #$20
+         beq   L01B7
+         cmpa  #$2C
+         beq   L01B7
+         bra   L01F3
+L0203    pshs  b,a
+         ldx   <u0006
+L0207    lda   ,x+
+         cmpa  #$2D
+         beq   L0215
+         cmpa  #$0D
+         bne   L0207
+         orcc  #$01
+         puls  pc,b,a
+L0215    stx   <u0006
+         andcc #$FE
+         puls  pc,b,a
+L021B    pshs  u,x,b,a
+         lda   #$02
+         ldb   #$03
+         os9   I$Create
+         ldx   <u0014
+         ldx   $06,x
+L0228    bcs   L023A
+         sta   $04,x
+         leau  $05,x
+         stu   ,x
+         leau  >u0400,u
+         stu   $02,x
+         andcc #$FC
+         puls  pc,u,x,b,a
+L023A    stb   <u0003
+         cmpb  #$DA
+         bne   L0244
+         orcc  #$03
+         puls  pc,u,x,b,a
+L0244    orcc  #$01
+         andcc #$FD
+         puls  pc,u,x,b,a
+L024A    pshs  u,x,b,a
+         lda   #$02
+         ldb   #$03
+         os9   I$Create
+         ldx   <u0014
+         ldx   $08,x
+         bra   L0228
+L0259    pshs  y,x,b,a
+         leax  >L1640,pcr
+         ldy   <u0012
+L0262    lda   ,x+
+         beq   L026A
+         sta   ,y+
+         bra   L0262
+L026A    ldx   $02,s
+         lda   #$2F
+         sta   ,y+
+L0270    lda   ,x+
+         sta   ,y+
+         bne   L0270
+         puls  y,x,b,a
+         ldx   <u0012
+         pshs  u,x,a
+         lda   #$01
+         os9   I$Open
+         ldx   <u0014
+         ldx   $04,x
+         bra   L0292
+L0287    pshs  u,x,a
+         lda   #$01
+         os9   I$Open
+         ldx   <u0014
+         ldx   ,x
+L0292    bcs   L029E
+         sta   $04,x
+         leau  $05,x
+         stu   ,x
+         stu   $02,x
+         puls  pc,u,x,a
+L029E    cmpb  #$D8
+         beq   L02AA
+         stb   <u0003
+         orcc  #$01
+         andcc #$FD
+         puls  pc,u,x,a
+L02AA    stb   <u0003
+         orcc  #$03
+         puls  pc,u,x,a
+L02B0    pshs  u,x,a
+         lda   #$01
+         os9   I$Open
+         ldx   <u0014
+         ldx   $02,x
+         bra   L0292
+L02BD    pshs  x,a
+         ldx   <u0014
+         ldx   ,x
+         bra   L02E6
+L02C5    pshs  x,a
+         ldx   <u0014
+         ldx   $02,x
+         bra   L02E6
+L02CD    pshs  x,a
+         ldx   <u0014
+         ldx   $04,x
+         bra   L02E6
+L02D5    pshs  x,a
+         ldx   <u0014
+         ldx   $06,x
+         bra   L02E3
+L02DD    pshs  x,a
+         ldx   <u0014
+         ldx   $08,x
+L02E3    lbsr  L04CB
+L02E6    lda   $04,x
+         beq   L02EF
+         clr   $04,x
+         os9   I$Close
+L02EF    puls  pc,x,a
+L02F1    pshs  y,x,b,a
+         ldy   <u0012
+L02F6    lda   ,x+
+         beq   L02FE
+         sta   ,y+
+         bra   L02F6
+L02FE    leax  >DOTBAK,pcr
+L0302    lda   ,x+
+         sta   ,y+
+         bne   L0302
+         ldx   <u0012
+         os9   I$Delete
+         stb   <u0003
+         puls  pc,y,x,b,a
+L0311    pshs  x
+         ldx   <u0014
+         ldx   $06,x
+L0317    lbsr  L04B8
+         puls  pc,x
+L031C    pshs  x
+         ldx   <u0014
+         ldx   $08,x
+         bra   L0317
+L0324    pshs  b,a
+         ldb   <u0003
+         lda   #$01
+         os9   F$PErr
+         puls  pc,b,a
+L032F    pshs  x,b
+         ldx   <u0014
+         ldx   ,x
+L0335    lbsr  L04F0
+         puls  pc,x,b
+L033A    pshs  x,b
+         ldx   <u0014
+         ldx   $02,x
+         bra   L0335
+L0342    pshs  x,b
+         ldx   <u0014
+         ldx   $04,x
+         bra   L0335
+L034A    pshs  x,b
+         ldx   <u0014
+         ldx   $04,x
+         lbsr  L0501
+         puls  pc,x,b
+L0355    lbsr  L0118
+         lbsr  L02D5
+         lbsr  L02DD
+         ldd   #$0000
+         ldx   <TTYSTATE
+         os9   I$SetStt
+         clrb
+         lds   <u0018
+         os9   F$Exit
+L036D    pshs  u,y,x,b,a
+         ldy   <u0012
+         stx   <u000C
+L0374    lda   ,x+
+         sta   ,y+
+         bne   L0374
+         leay  -$01,y
+         leax  >DOTBAK,pcr
+L0380    lda   ,x+
+         sta   ,y+
+         bne   L0380
+         lda   #$01
+         ldx   <u0012
+         os9   I$Open
+         bcs   L0396
+         os9   I$Close
+         orcc  #$03
+         puls  pc,u,y,x,b,a
+L0396    cmpb  #$D8
+         beq   L03BA
+L039A    stb   <u0003
+         cmpb  #$CF
+         beq   L03AA
+         cmpb  #$ED
+         beq   L03AA
+L03A4    orcc  #$01
+         andcc #$FD
+         puls  pc,u,y,x,b,a
+L03AA    ldx   >L05E2,pcr
+         lbsr  L4027
+         ldx   >L05E4,pcr
+         lbsr  L402C
+         bra   L03A4
+L03BA    tst   <u0063
+         beq   L03D8
+         ldx   <u000A
+         bne   L03D3
+         ldx   <u0014
+         ldx   ,x
+         lda   $04,x
+         ldb   #$05
+         os9   I$GetStt
+         bcs   L039A
+         stx   <u0008
+         stu   <u000A
+L03D3    lbsr  L02BD
+         bcs   L039A
+L03D8    ldx   <u000C
+         ldy   <u0012
+         lda   #$20
+         sta   ,y+
+L03E1    lda   ,x+
+         sta   ,y+
+         bne   L03E1
+         lda   #$20
+         sta   -$01,y
+L03EB    lda   ,-x
+         cmpa  #$2F
+         beq   L03F7
+         cmpx  <u000C
+         bne   L03EB
+         bra   L03F9
+L03F7    leax  $01,x
+L03F9    lda   ,x+
+         beq   L0401
+         sta   ,y+
+         bra   L03F9
+L0401    leax  >DOTBAK,pcr
+L0405    lda   ,x+
+         sta   ,y+
+         bne   L0405
+         lda   #$0D
+         sta   -$01,y
+         leax  >RENAME,pcr
+         tfr   y,d
+         subd  <u0012
+         incb
+         tfr   d,y
+         ldu   <u0012
+         ldd   #$0000
+         os9   F$Fork
+         lbcs  L039A
+         os9   F$Wait
+         tstb
+         lbne  L039A
+         tst   <u0063
+         beq   L0465
+         ldx   <u000C
+         ldy   <u0012
+L0437    lda   ,x+
+         sta   ,y+
+         bne   L0437
+         leay  -$01,y
+         leax  >DOTBAK,pcr
+L0443    lda   ,x+
+         sta   ,y+
+         bne   L0443
+         ldx   <u0012
+         lda   #$01
+         os9   I$Open
+         lbcs  L039A
+         ldx   <u0014
+         ldx   ,x
+         sta   $04,x
+         ldx   <u0008
+         ldu   <u000A
+         os9   I$Seek
+         lbcs  L039A
+L0465    andcc #$FE
+         puls  pc,u,y,x,b,a
+L0469    pshs  u,y,x,b,a
+         pshs  x
+         ldx   <TTYSTATE
+         ldd   #$0000
+         os9   I$SetStt
+         puls  x
+         tfr   x,u
+         ldd   #$0000
+L047C    tst   d,u
+         beq   L0485
+         addd  #$0001
+         bra   L047C
+L0485    tfr   d,y
+         leay  $01,y
+         leax  d,u
+         lda   #$0D
+         sta   ,x
+         ldd   #$0000
+         leax  >SHELL,pcr
+         os9   F$Fork
+         bcs   L04B1
+         os9   F$Wait
+         tstb
+         bne   L04B1
+         andcc #$FE
+L04A3    pshs  cc
+         ldx   <u0010
+         ldd   #$0000
+         os9   I$SetStt
+         puls  cc
+         puls  pc,u,y,x,b,a
+L04B1    stb   <u0003
+         orcc  #$01
+         bra   L04A3
+         rts
+L04B8    pshs  u
+         ldu   ,x
+         sta   ,u+
+         stu   ,x
+         cmpu  $02,x
+         beq   L04C9
+         andcc #$FE
+         puls  pc,u
+L04C9    puls  u
+L04CB    pshs  y,x,b,a
+         tst   $04,x
+         beq   L04EE
+         tfr   x,y
+         leax  $05,y
+         pshs  x
+         ldd   ,y
+         stx   ,y
+         subd  ,s++
+         beq   L04EE
+         pshs  b,a
+         lda   $04,y
+         puls  y
+         os9   I$Write
+         bcs   L04EC
+         puls  pc,y,x,b,a
+L04EC    stb   <u0003
+L04EE    puls  pc,y,x,b,a
+L04F0    pshs  u
+L04F2    ldu   ,x
+         cmpu  $02,x
+         beq   L0503
+         lda   ,u+
+         stu   ,x
+         andcc #$FE
+         puls  pc,u
+L0501    pshs  u
+L0503    pshs  y,x
+         tfr   x,y
+         lda   $04,y
+         leax  $05,y
+         stx   ,y
+         ldy   #$0036
+         os9   I$Read
+         sty   <u0057
+         puls  y,x
+         bcs   L0525
+         ldd   <u0057
+         leau  $05,x
+         leau  d,u
+         stu   $02,x
+         bra   L04F2
+L0525    cmpb  #$D3
+         bne   L052D
+         orcc  #$03
+         puls  pc,u
+L052D    orcc  #$01
+         andcc #$FD
+         stb   <u0003
+         puls  pc,u
+L0535    ldx   <u0014
+         ldx   $04,x
+         lda   $04,x
+         ldx   #$0000
+         os9   I$Seek
+         rts
+L0542    ldb   #$0E
+         os9   I$GetStt
+         rts
+         pshs  x,b,a
+         lda   #$00
+         ldx   <u0014
+         ldx   $0C,x
+         leax  $01,x
+         bsr   L0542
+         puls  pc,x,b,a
 
 *EQUATE FOR STYFIX
 TXTBEG EQU *
@@ -1523,7 +851,7 @@ ESCTBL EQU *
 
 CURUC    fcb   $49 I
          fcb   $4C L
-L0558    fcb   $2C ,
+CURDC    fcb   $2C , $0558
          fcb   $4A J
          fcb   $55 U
          fcb   $4D M
@@ -1539,7 +867,7 @@ L0558    fcb   $2C ,
          fcb   $44 D
          fcb   $4F O
          fcb   $2E .
-CURLRC    fcb   $4B K  L0568
+CURLRC FCC 'K' MOVE CURSOR LEFT-RIGHT  L0568
 L0569    fcb   $50 P
          fcb   $5D ]
          fcb   $14
@@ -1585,7 +913,7 @@ L0587    fcb   $10
  PAG
 
 *MISC. CHARACTER CONSTANTS
-L058F    fcb   $1B
+ESCC    fcb   $1B
 L0590    fcb   $14
 L0591    fcb   $15
 L0592    fcb   $2D -
@@ -1596,9 +924,9 @@ L0596    fcb   $23 #
          fcb   $7C
 L0598    fcb   $3E >
 L0599    fcb   $3C <
-L059A    fcb   $59 Y
-L059B    fcb   $4E N
-         fcb   $53 S
+YCHR    fcb   $59 Y
+NCHR    fcb   $4E N
+SCHR FCC 'S' STOP
 L059D    fcb   $41 A
 L059E    fcb   $53 S
 L059F    fcb   $54 T
@@ -1610,8 +938,8 @@ L05A4    fcb   $57 W
 L05A5    fcb   $58 X
 L05A6    fcb   $59 Y
 L05A7    fcb   $5A Z
-L05A8    fcb   $54 T
-L05A9    fcb   $50 P
+CTMCHR    fcb   $54 T
+CPTCHR FCC 'P' COMMAND LINE PRINTER OPTION
 L05AA    fcb   $4D M
 L05AB    fcb   $7D
 L05AC    fcb   $7B
@@ -1621,7 +949,7 @@ L05AE    fcb   $00
 L05AF    fcb   $00
 L05B0    fcb   $00
 L05B1    fcb   $00
-STPL    fcb   $42 B
+STPL FCB 66 PAGE LENGTH
 L05B3    fcb   $0C
 L05B4    fcb   $06
 L05B5    fcb   $04
@@ -1631,168 +959,87 @@ L05B8    fcb   $00
 L05B9    fcb   $00
 
 FMTTBL    fdb XFMTTBL
-L05BC    fcb   $06
-         fcb   $C9 I
-L05BE    fcb   $0D
-         fcb   $49 I
-         fcb   $0D
-         fcb   $52 R
-L05C2    fcb   $0D
-         fcb   $7B
-L05C4    fcb   $0A
-         fcb   $3D =
-L05C6    fcb   $0A
-         fcb   $7F ÿ
-L05C8    fcb   $0D
-         fcb   $0A
-L05CA    fcb   $0D
-         fcb   $18
-L05CC    fcb   $0D
-         fcb   $26 &
-L05CE    fcb   $0D
-         fcb   $31 1
-L05D0    fcb   $0D
-         fcb   $3D =
-L05D2    fcb   $0D
-         fcb   $42 B
-L05D4    fcb   $0D
-         fcb   $8D
-L05D6    fcb   $0D
-         fcb   $92
-L05D8    fcb   $0D
-         fcb   $A9 )
-L05DA    fcb   $0D
-         fcb   $B4 4
-L05DC    fcb   $0D
-         fcb   $C2 B
-L05DE    fcb   $0D
-         fcb   $E0 `
-L05E0    fcb   $0E
-         fcb   $09
-         fcb   $0E
-         fcb   $15
-         fcb   $0E
-         fcb   $3A :
-L05E6    fcb   $0E
-         fcb   $6F o
-         fcb   $0E
-         fcb   $81
-L05EA    fcb   $0E
-         fcb   $8E
-L05EC    fcb   $0E
-         fcb   $A8 (
-L05EE    fcb   $0E
-         fcb   $C9 I
-L05F0    fcb   $0E
-         fcb   $D9 Y
-L05F2    fcb   $0F
-         fcb   $03
-         fcb   $0F
-         fcb   $18
-L05F6    fcb   $0F
-         fcb   $9B
-L05F8    fcb   $0F
-         fcb   $AA *
-L05FA    fcb   $10
-         fcb   $99
-L05FC    fcb   $10
-         fcb   $AE .
-L05FE    fcb   $10
-         fcb   $BD =
-L0600    fcb   $10
-         fcb   $DB [
-L0602    fcb   $10
-         fcb   $ED m
-L0604    fcb   $11
-         fcb   $1B
-L0606    fcb   $11
-         fcb   $3C <
-L0608    fcb   $11
-         fcb   $47 G
-L060A    fcb   $11
-         fcb   $54 T
-L060C    fcb   $11
-         fcb   $6F o
-L060E    fcb   $11
-         fcb   $86
-L0610    fcb   $11
-         fcb   $A4 $
-L0612    fcb   $11
-         fcb   $A8 (
-L0614    fcb   $11
-         fcb   $C4 D
-L0616    fcb   $11
-         fcb   $DB [
-L0618    fcb   $11
-         fcb   $FC
-L061A    fcb   $12
-         fcb   $15
-L061C    fcb   $12
-         fcb   $26 &
-L061E    fcb   $12
-         fcb   $38 8
-L0620    fcb   $12
-         fcb   $73 s
-L0622    fcb   $0F
-         fcb   $D0 P
-L0624    fcb   $0F
-         fcb   $EF o
-L0626    fcb   $10
-         fcb   $0D
-L0628    fcb   $10
-         fcb   $2A *
-L062A    fcb   $10
-         fcb   $34 4
-L062C    fcb   $10
-         fcb   $3F ?
-L062E    fcb   $10
-         fcb   $5D ]
-L0630    fcb   $10
-         fcb   $6F o
-L0632    fcb   $10
-         fcb   $7D
-L0634    fcb   $12
-         fcb   $8E
-L0636    fcb   $12
-         fcb   $9B
-L0638    fcb   $12
-         fcb   $BC <
-L063A    fcb   $12
-         fcb   $CE N
-L063C    fcb   $12
-         fcb   $DB [
-L063E    fcb   $12
-         fcb   $E8 h
-L0640    fcb   $12
-         fcb   $FD
-L0642    fcb   $13
-         fcb   $09
-L0644    fcb   $13
-         fcb   $18
-L0646    fcb   $15
-         fcb   $1C
-L0648    fcb   $15
-         fcb   $4D M
-L064A    fcb   $15
-         fcb   $DE ^
-         fcb   $15
-         fcb   $E6 f
-         fcb   $15
-         fcb   $EE n
-         fcb   $15
-         fcb   $F6 v
-         fcb   $15
-         fcb   $FE
-         fcb   $16
-         fcb   $06
-L0656    fcb   $16
-         fcb   $0E
-L0658    fcb   $16
-         fcb   $17
-L065A    fcb   $0F
-         fcb   $27 '
-         fcb   $0F
-         fcb   $68 h
+L05BC    fdb   $06C9
+L05BE    fdb   $0D49
+         fdb   $0D52
+L05C2    fdb   $0D7B
+L05C4    fdb   $0A3D
+L05C6    fdb   $0A7F
+L05C8    fdb   $0D0A
+L05CA    fdb   $0D18
+L05CC    fdb   $0D26
+L05CE    fdb   $0D31
+L05D0    fdb   $0D3D
+L05D2    fdb   $0D42
+L05D4    fdb   $0D8D
+L05D6    fdb   $0D92
+L05D8    fdb   $0DA9
+L05DA    fdb   $0DB4
+L05DC    fdb   $0DC2
+L05DE    fdb   $0DE0
+L05E0    fdb   $0E09
+L05E2    fdb   $0E15
+L05E4    fdb   $0E3A
+L05E6    fdb   $0E6F
+         fdb   $0E81
+L05EA    fdb   $0E8E
+L05EC    fdb   $0EA8
+L05EE    fdb   $0EC9
+L05F0    fdb   $0ED9
+L05F2    fdb   $0F03
+         fdb   $0F18
+L05F6    fdb   $0F9B
+L05F8    fdb   $0FAA
+L05FA    fdb   $1099
+L05FC    fdb   $10AE
+L05FE    fdb   $10BD
+L0600    fdb   $10DB
+L0602    fdb   $10ED
+L0604    fdb   $111B
+L0606    fdb   $113C
+L0608    fdb   $1147
+L060A    fdb   $1154
+L060C    fdb   $116F
+L060E    fdb   $1186
+L0610    fdb   $11A4
+L0612    fdb   $11A8
+L0614    fdb   $11C4
+L0616    fdb   $11DB
+L0618    fdb   $11FC
+L061A    fdb   $1215
+L061C    fdb   $1226
+L061E    fdb   $1238
+L0620    fdb   $1273
+L0622    fdb   $0FD0
+L0624    fdb   $0FEF
+L0626    fdb   $100D
+L0628    fdb   $102A
+L062A    fdb   $1034
+L062C    fdb   $103F
+L062E    fdb   $105D
+L0630    fdb   $106F
+L0632    fdb   $107D
+L0634    fdb   $128E
+L0636    fdb   $129B
+L0638    fdb   $12BC
+L063A    fdb   $12CE
+L063C    fdb   $12DB
+L063E    fdb   $12E8
+L0640    fdb   $12FD
+L0642    fdb   $1309
+L0644    fdb   $1318
+L0646    fdb   $151C
+L0648    fdb   $154D
+L064A    fdb   $15DE
+         fdb   $15E6
+         fdb   $15EE
+         fdb   $15F6
+         fdb   $15FE
+         fdb   $1606
+L0656    fdb   $160E
+L0658    fdb   $1617
+L065A    fdb   L0F27 'BAD TERM_STY...
+         fdb   L0F68
 
 *FORMAT COMMAND TABLE
 XFMTTBL EQU *    $065E
@@ -1802,9 +1049,8 @@ XFMTTBL EQU *    $065E
  FCB 0
  FCC 'RJ'
  FCB 0
-         fcb   $54 T
-         fcb   $46 F
-         fcb   $00
+ FCC 'TF'
+ FCB 0
  FCC '*'
  FCB 0
  FCC 'PL'
@@ -1815,983 +1061,156 @@ XFMTTBL EQU *    $065E
  FCB 0
  FCC 'LM'
  FCB 0
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $00
-         fcb   $53 S
-         fcb   $53 S
-         fcb   $00
-         fcb   $48 H
-         fcb   $44 D
-         fcb   $00
-         fcb   $46 F
-         fcb   $54 T
-         fcb   $00
-         fcb   $4A J
-         fcb   $55 U
-         fcb   $00
-         fcb   $50 P
-         fcb   $4E N
-         fcb   $00
-         fcb   $50 P
-         fcb   $47 G
-         fcb   $00
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $00
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $00
-         fcb   $56 V
-         fcb   $54 T
-         fcb   $00
-         fcb   $43 C
-         fcb   $53 S
-         fcb   $00
-         fcb   $56 V
-         fcb   $53 S
-         fcb   $00
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $00
-         fcb   $4E N
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $00
-         fcb   $50 P
-         fcb   $43 C
-         fcb   $00
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $43 C
-         fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $43 C
-         fcb   $00
-         fcb   $4E N
-         fcb   $4C L
-         fcb   $00
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $00
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $00
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $00
+ FCC 'SP'
+ FCB 0
+ FCC 'SS'
+ FCB 0
+ FCC 'HD'
+ FCB 0
+ FCC 'FT'
+ FCB 0
+ FCC 'JU'
+ FCB 0
+ FCC 'PN'
+ FCB 0
+ FCC 'PG'
+ FCB 0
+ FCC 'SI'
+ FCB 0
+ FCC 'IN'
+ FCB 0
+ FCC 'VT'
+ FCB 0
+ FCC 'CS'
+ FCB 0
+ FCC 'VS'
+ FCB 0
+ FCC 'PS'
+ FCB 0
+ FCC 'NPS'
+ FCB 0
+ FCC 'PC'
+ FCB 0
+ FCC 'MMC'
+ FCB 0
+ FCC 'PADC'
+ FCB 0
+ FCC 'NL'
+ FCB 0
+ FCC 'PP'
+ FCB 0
+ FCC 'PPSI'
+ FCB 0
+ FCC 'PPSP'
+ FCB 0
  FCC 'PPNL'
  FCB 0
  FCC 'BFS'
  FCB 0
  FCB 0 END OF TABLE
 
-         fcb   $02
-         fcb   $4C L
-         fcb   $2F /
-         fcb   $52 R
-         fcb   $20
-         fcb   $53 S
-         fcb   $43 C
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $20
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $54 T
-         fcb   $20
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $20
-         fcb   $42 B
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $53 S
-         fcb   $00
-         fcb   $03
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $56 V
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $44 D
-         fcb   $20
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $45 E
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $20
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $07
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $50 P
-         fcb   $20
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $0A
-         fcb   $42 B
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $20
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $0B
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $4D M
-         fcb   $55 U
-         fcb   $4D M
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4D M
-         fcb   $49 I
-         fcb   $54 T
-         fcb   $00
-         fcb   $0C
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $56 V
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $44 D
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $00
-         fcb   $0D
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $56 V
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $55 U
-         fcb   $45 E
-         fcb   $20
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $54 T
-         fcb   $20
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $20
-         fcb   $42 B
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $53 S
-         fcb   $00
-         fcb   $0E
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $47 G
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $00
-         fcb   $0F
-         fcb   $43 C
-         fcb   $55 U
-         fcb   $52 R
-         fcb   $53 S
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $42 B
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $00
-         fcb   $10
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $20
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $00
-         fcb   $11
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $42 B
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $4B K
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $20
-         fcb   $42 B
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $00
-         fcb   $12
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $47 G
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $00
-         fcb   $14
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $42 B
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $4B K
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $42 B
-         fcb   $59 Y
-         fcb   $20
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $55 U
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $53 S
-         fcb   $00
-         fcb   $15
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $20
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4B K
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $00
-         fcb   $16
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $59 Y
-         fcb   $20
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $17
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $47 G
-         fcb   $48 H
-         fcb   $20
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $59 Y
-         fcb   $20
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $20
-         fcb   $44 D
-         fcb   $4F O
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $00
-         fcb   $18
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $2C ,
-         fcb   $20
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $57 W
-         fcb   $49 I
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $44 D
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $57 W
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $44 D
-         fcb   $55 U
-         fcb   $50 P
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $00
-         fcb   $19
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $59 Y
-         fcb   $20
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4C L
-         fcb   $59 Y
-         fcb   $20
-         fcb   $46 F
-         fcb   $55 U
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $00
-         fcb   $1A
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $59 Y
-         fcb   $20
-         fcb   $46 F
-         fcb   $55 U
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $00
-         fcb   $1B
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $20
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $59 Y
-         fcb   $20
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $42 B
-         fcb   $53 S
-         fcb   $00
-         fcb   $1C
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $20
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $20
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $42 B
-         fcb   $53 S
-         fcb   $20
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $00
-         fcb   $1D
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $27 '
-         fcb   $54 T
-         fcb   $20
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $42 B
-         fcb   $00
-         fcb   $1E
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $44 D
-         fcb   $20
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $00
-         fcb   $1F
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $4F O
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $46 F
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $57 W
-         fcb   $00
-         fcb   $20
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $00
-         fcb   $21 !
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $47 G
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $55 U
-         fcb   $4D M
-         fcb   $42 B
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $00
-         fcb   $22 "
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $20
-         fcb   $22 "
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $2D -
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $42 B
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $22 "
-         fcb   $20
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $00
-         fcb   $23 #
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $44 D
-         fcb   $20
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $00
-         fcb   $24 $
-         fcb   $46 F
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $59 Y
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $20
-         fcb   $47 G
-         fcb   $4F O
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $20
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $20
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $00
-         fcb   $25 %
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $47 G
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $53 S
-         fcb   $20
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $00
-         fcb   $26 &
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $47 G
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $53 S
-         fcb   $20
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $00
-         fcb   $27 '
-         fcb   $42 B
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $20
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $46 F
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $20
-         fcb   $4B K
-         fcb   $45 E
-         fcb   $59 Y
-         fcb   $42 B
-         fcb   $4F O
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $44 D
-         fcb   $00
-         fcb   $00
-         fcb   $2D -
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $55 U
-         fcb   $53 S
-         fcb   $20
-         fcb   $2D -
-         fcb   $00
+XERRTBL EQU *
+ FCB 2
+ FCC 'L/R SCROLL OUT OF BOUNDS'
+ FCB 0
+ FCB 3
+ FCC 'INVALID ESCAPE COMMAND ENTERED'
+ FCB 0
+ FCB 7
+ FCC 'TOP OF TEXT REACHED'
+ FCB 0
+ FCB 10
+ FCC 'BOTTOM OF TEXT REACHED'
+ FCB 0
+ FCB 11
+ FCC 'MAXIMUM PAGE LIMIT'
+ FCB 0
+ FCB 12
+ FCC 'INVALID FORMAT COMMAND'
+ FCB 0
+ FCB 13
+ FCC 'FORMAT VALUE OUT OF BOUNDS'
+ FCB 0
+ FCB 14
+ FCC 'ILLEGAL HEADER OR FOOTER COMMAND'
+ FCB 0
+ FCB 15
+ FCC "CURSOR ON FORMAT LINE - CAN'T BUNDLE"
+ FCB 0
+ FCB 16
+ FCC "HEADER OR FOOTER TOO LONG FOR PAGE"
+ FCB 0
+ FCB 17
+ FCC "CAN'T BACKSPACE TO BUNDLED FORMAT LINE"
+ FCB 0
+ FCB 18
+ FCC "ILLEGAL DELETE"
+ FCB 0
+ FCB 20
+ FCC "CAN'T DELETE - NOT BRACKETED BY RETURNS"
+ FCB 0
+ FCB 21
+ FCC "CAN'T FIND MARKER"
+ FCB 0
+ FCB 22
+ FCC "TEXT ALREADY SAVED"
+ FCB 0
+ FCB 23
+ FCC "NOT ENOUGH MEMORY TO DO COMMAND"
+ FCB 0
+ FCB 24
+ FCC "NO TEXT SAVED, CAN'T WITHDRAW OR DUPLICATE"
+ FCB 0
+ FCB 25
+ FCC "WARNING - MEMORY NEARLY FULL"
+ FCB 0
+ FCB 26
+ FCC "MEMORY FULL"
+ FCB 0
+ FCB 27
+ FCC "TOO MANY TABS"
+ FCB 0
+ FCB 28
+ FCC "NO MORE TABS SET"
+ FCB 0
+ FCB 29
+ FCC "CAN'T TAB"
+ FCB 0
+ FCB 30
+ FCC "WARNING - NONSTANDARD CHARACTER SPACING"
+ FCB 0
+ FCB 31
+ FCC "STRING OVERFLOW"
+ FCB 0
+ FCB 32
+ FCC "STRING NOT FOUND"
+ FCB 0
+ FCB 33
+ FCC "ILLEGAL PAGE NUMBER"
+ FCB 0
+ FCB 34
+ FCC 'WARNING - NO "PS-TABLE" SET'
+ FCB 0
+ FCB 35
+ FCC 'WARNING - NONSTANDARD VERTICAL SPACING'
+ FCB 0
+ FCB 36
+ FCC 'FATAL - TRYING TO GO PAST STYFIXED AMOUNT OF PAGES!!'
+ FCB 0
+ FCB 37
+ FCC 'ENTERED PROGRAMMERS MODE'
+ FCB 0
+ FCB 38
+ FCC 'EXITED PROGRAMMERS MODE'
+ FCB 0
+ FCB 39
+ FCC 'BAD CHARACTER FROM KEYBOARD'
+ FCB 0
+ FCB 0 END OF TABLE
+
+*MESSAGES AND NUMBER AREAS
+XPGMS1 FCC '- PAGE STATUS -'
+ FCB 0
          fcb   $52 R
          fcb   $45 E
          fcb   $41 A
@@ -3262,457 +1681,62 @@ XFMTTBL EQU *    $065E
          fcb   $53 S
          fcb   $49 I
          fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $48 H
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $48 H
-         fcb   $20
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $4E N
-         fcb   $4C L
-         fcb   $00
-         fcb   $00
-         fcb   $4A J
-         fcb   $55 U
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $4A J
-         fcb   $55 U
-         fcb   $2F /
-         fcb   $2C ,
-         fcb   $4E N
-         fcb   $4A J
-         fcb   $55 U
-         fcb   $00
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $50 P
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $2F /
-         fcb   $2C ,
-         fcb   $4E N
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $00
-         fcb   $00
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $43 C
-         fcb   $00
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $20
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $43 C
-         fcb   $00
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $2D -
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $4D M
-         fcb   $4D M
-         fcb   $43 C
-         fcb   $00
-         fcb   $00
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $4D M
-         fcb   $20
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $46 F
-         fcb   $54 T
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $3A :
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $00
-         fcb   $57 W
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $3A :
-         fcb   $20
-         fcb   $20
-         fcb   $00
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $55 U
-         fcb   $53 S
-         fcb   $3A :
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $00
+ FCC 'PARAGRAPH SPACE ------- ,PPSP'
+ FCB 0
+ FCC 'PARAGRAPH NEED LINES -- ,PPNL'
+ FCB 0
+ FCB 0
+ FCC 'JUSTIFIED ------------- ,JU/,NJU'
+ FCB 0
+ FCC 'PROPORTIONAL SPACED --- ,PS/,NPS'
+ FCB 0
+ FCB 0
+ FCC 'PRINTER CHARACTER ----- ,PC'
+ FCB 0
+ FCC 'SPACE PAD CHARACTER --- ,PADC'
+ FCB 0
+ FCC 'MAIL-MERGE CHARACTER -- ,MMC'
+ FCB 0
+ FCB 0
+ FCC 'ROOM LEFT'
+ FCB 0
+ FCB 0,0,0,0,0
+XPGM50 FCC 'READ FILE:   '
+ FCB 0
+XPGM51 FCC 'WRITE FILE:  '
+ FCB 0
+XPGM52 FCC '---NONE---'
+ FCB 0
+XPGM53 FCC 'STATUS:    '
+ FCB 0
+XPGM54 FCC 'OPEN'
+ FCB 0
+XPGM55 FCC 'CLOSED'
+ FCB 0
 
-         fcc   "OPEN"
-         fcb   $00
-         fcb   $43 C
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
 XBELS1   fcc   "NO ERROR"
-         fcb   $00
+ FCB 0
 
 XBAVM1   fcc   "CANNOT MOVE TO LAST PAGE, TOO MANY PAGES"
  FCB 0
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $3D =
-         fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $00
-         fcb   $53 S
-         fcb   $61 a
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $20
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $20
-         fcb   $22 "
-         fcb   $00
-         fcb   $22 "
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $54 T
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $20
-         fcb   $4F O
-         fcb   $46 F
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $43 C
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $20
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $64 d
-         fcb   $20
-         fcb   $42 B
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $4B K
-         fcb   $55 U
-         fcb   $50 P
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $20
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
+
+XPAGS1 FCC "*********** PAGE="
+ FCB 0
+
+XPGBS1 FCC 'PAGE'
+ FCB 0
+XSAVM1 FCC 'Save under file name "'
+ FCB 0
+XSAVMB FCC '" (Y*/N)? '
+ FCB 0
+XSAVM2 FCC 'NO TEXT SAVED'
+ FCB 0
+XSAVM3 FCC 'PART OR ALL OF TEXT NOT SAVED'
+ FCB 0
+XSAVM4 FCC 'Can old BACKUP file be replaced (Y*/N)? '
+ FCB 0
+XSAVM5 FCC 'File name? '
+ FCB 0
          fcb   $4E N
          fcb   $4F O
          fcb   $54 T
@@ -3803,24 +1827,8 @@ XBAVM1   fcc   "CANNOT MOVE TO LAST PAGE, TOO MANY PAGES"
          fcb   $45 E
          fcb   $2E .
          fcb   $00
-         fcb   $4D M
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $2E .
-         fcb   $00
+XSVMS1 FCC 'Marker not found.'
+ FCB 0
          fcb   $2C ,
          fcb   $2A *
          fcb   $20
@@ -3834,418 +1842,39 @@ XBAVM1   fcc   "CANNOT MOVE TO LAST PAGE, TOO MANY PAGES"
          fcb   $44 D
          fcb   $20
          fcb   $00
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $21 !
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $20
-         fcb   $4C L
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $59 Y
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $42 B
-         fcb   $45 E
-         fcb   $20
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $00
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $0D
-         fcb   $0A
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $47 G
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $2C ,
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $2C ,
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $00
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $50 P
-         fcb   $55 U
-         fcb   $54 T
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $2D -
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $20
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $42 B
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $5F _
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $5F _
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $28 (
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $62 b
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $20
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $4E N
-         fcb   $55 U
-         fcb   $4D M
-         fcb   $42 B
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $29 )
+XDSTM1 FCC 'WARNING! FILE TOO LARGE - '
+XDSTM2 FCC 'ENTIRE FILE MAY NOT BE LOADED!!!'
+ FCB 0
+XDSTM3 FCC 'FILE NOT LOADED'
+ FCB 0
+XDSTM5 FCB $D,$A
+ FCC 'ILLEGAL PRINTER, TERMINAL, OR FILE NAME'
+ FCB 0
+XDSTM6 FCC 'INPUT FILE NOT FOUND-NO TEXT LOADED'
+ FCB 0
+L0F27 fcc "BAD TERM_STY or PRINT_STY file (OR bad TERM or PRINTER NUMBER)"
          fcb   $0D
          fcb   $0A
          fcb   $00
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $2E .
+L0F68 fcc "CANT FIND PRINTER FILE."
          fcb   $0D
          fcb   $0A
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $3A :
+ fcc "ENTER CORRECT PATHNAME:"
          fcb   $0D
          fcb   $0A
          fcb   $00
-         fcb   $44 D
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $20
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $3A :
-         fcb   $20
-         fcb   $20
-         fcb   $00
-         fcb   $07
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $20
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $77 w
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $2E .
-         fcb   $00
-         fcb   $48 H
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $79 y
-         fcb   $20
-         fcb   $6B k
-         fcb   $65 e
-         fcb   $79 y
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $00
-         fcb   $4E N
-         fcb   $6F o
-         fcb   $20
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $70 p
-         fcb   $2E .
-         fcb   $20
-         fcb   $20
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $00
-         fcb   $44 D
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $70 p
-         fcb   $20
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $74 t
-         fcb   $20
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
+XOSPS1 FCC 'DOS command:  '
+ FCB 0
+XOSPS2 FCB 7
+ FCC 'Command not allowed with files open.'
+ FCB 0
+SQS1 FCC 'Hit any key to restart printer'
+ FCB 0
+
+XNEWM1 FCC 'No dump.  Cursor on top page.'
+ FCB 0
+XNEWM3 FCC "Dump text in memory (Y*/N)? "
+ FCB 0
          fcb   $44 D
          fcb   $75 u
          fcb   $6D m
@@ -4267,310 +1896,35 @@ XBAVM1   fcc   "CANNOT MOVE TO LAST PAGE, TOO MANY PAGES"
          fcb   $3F ?
          fcb   $20
          fcb   $00
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $20
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $70 p
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $4E N
-         fcb   $6F o
-         fcb   $20
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $20
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $2E .
-         fcb   $00
-         fcb   $44 D
-         fcb   $49 I
-         fcb   $53 S
-         fcb   $4B K
-         fcb   $20
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $00
-         fcb   $4E N
-         fcb   $6F o
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $2E .
-         fcb   $20
-         fcb   $20
-         fcb   $49 I
-         fcb   $6E n
-         fcb   $70 p
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $79 y
-         fcb   $2E .
-         fcb   $00
-         fcb   $49 I
-         fcb   $73 s
-         fcb   $20
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $20
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $74 t
-         fcb   $20
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $41 A
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20
-         fcb   $79 y
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $20
-         fcb   $73 s
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $20
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $00
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $50 P
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $54 T
-         fcb   $41 A
-         fcb   $42 B
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $00
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $22 "
-         fcb   $00
-         fcb   $22 "
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $54 T
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
-         fcb   $44 D
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $66 f
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $2A *
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
+XNEWM6 FCC 'Fill from input file (Y*/N)? '
+ FCB 0
+XNEWM7 FCC 'No room for fill.'
+ FCB 0
+XNEWM8 FCC 'DISK ERROR!!!'
+ FCB 0
+XNEWM9 FCC 'No fill.  Input file empty.'
+ FCB 0
+
+XEXTM1 FCC 'Is the text secure? '
+ FCB 0
+XEXTM2 FCC 'Are you sure? '
+ FCB 0
+XERMM1 FCC 'Erase entire file in memory? '
+ FCB 0
+
+XPSWS1 FCC 'STYPS'
+ FCB 0,0,0,0,0,0,0,0,0,0,0,0,0
+XPSWS2 FCC 'ERROR - PROPORTIONAL SPACING TABLE NOT LOADED'
+ FCB 0
+XPSWS3 FCC 'Set proportional spacing table "'
+ FCB 0
+XPSWS4 FCC '" (Y*/N)? '
+ FCB 0
+XPSWS5 FCC 'Table name? '
+ FCB 0
+
+XPRNS1 FCC 'Different printer (Y/N*)? '
+ FCB 0
 XPRNS2 FCC 'PRINT DRIVER NOT FOUND'
  FCB 0
          fcb   $20
@@ -4667,41 +2021,10 @@ XPRNS4 FCC 'Stop for new pages (Y/N*)? '
          fcb   $00
 XOTXS2 FCC 'Print all pages (Y*/N)? '
  FCB 0
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $20
-         fcb   $3D =
-         fcb   $20
-         fcb   $00
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $4C L
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $20
-         fcb   $3D =
-         fcb   $20
-         fcb   $00
+XOTXS3 FCC '   First page = '
+ FCB 0
+XOTXS4 FCC '     Last page = '
+ FCB 0
          fcb   $50 P
          fcb   $72 r
          fcb   $69 i
@@ -4761,133 +2084,20 @@ XOTXS2 FCC 'Print all pages (Y*/N)? '
          fcb   $74 t
          fcb   $2E .
          fcb   $00
-         fcb   $53 S
-         fcb   $70 p
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $70 p
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
+XSPLS1 FCC 'Spooled output file name? '
+ FCB 0
 XFNDS1 FCC '*** FIND    '
  FCB 0
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $4F O
-         fcb   $50 P
-         fcb   $20
-         fcb   $28 (
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $54 T
-         fcb   $29 )
-         fcb   $20
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $20
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $55 U
-         fcb   $45 E
-         fcb   $20
-         fcb   $28 (
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $00
-         fcb   $20
-         fcb   $55 U
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $2F /
-         fcb   $4C L
-         fcb   $4F O
-         fcb   $57 W
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $00
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $50 P
-         fcb   $4C L
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $00
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20
-         fcb   $57 W
-         fcb   $49 I
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $00
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $50 P
-         fcb   $4C L
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2D -
-         fcb   $4E N
-         fcb   $2D -
-         fcb   $41 A
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $00
+XFNDS2 FCC '*** STOP (RET) OR CONTINUE (SP)?'
+ FCB 0
+XFNDS3 FCC ' UPPER/LOWER CASE'
+ FCB 0
+XRPLS1 FCC '*** REPLACE '
+ FCB 0
+XRPLS2 FCC '*** WITH    '
+ FCB 0
+XRPLS3 FCC '*** REPLACE (Y-N-A)?'
+ FCB 0
 XBDLS1 FCC '*** DELETE '
  FCB 0
 XBDLS2 FCC '  CHARACTERS? '
@@ -4924,257 +2134,38 @@ XBANNER FCC "STYLOGRAPH WORD PROCESSING SYSTEM V3.40 (c) 1987"
 
 XHLPS1 FCC 'RETURN'
  FCB 0
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $45 E
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $00
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $4F O
-         fcb   $4C L
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $29 )
-         fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $7A z
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $29 )
-         fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20
-         fcb   $28 (
-         fcb   $6D m
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $63 c
-         fcb   $2E .
-         fcb   $29 )
-         fcb   $00
-         fcb   $44 D
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $79 y
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $31 1
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $32 2
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $33 3
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $34 4
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $35 5
-         fcb   $00
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $48 H
-         fcb   $4C L
-         fcb   $50 P
-         fcb   $36 6
-         fcb   $00
+ FCC 'ESCAPE Commands'
+ FCB 0
+ FCC 'CONTROL Commands'
+ FCB 0
+ FCC 'FORMAT Commands (vertical)'
+ FCB 0
+ fcc 'FORMAT Commands (horizontal)'
+ FCB 0
+ FCC 'FORMAT Commands (misc.)'
+ FCB 0
+ fcc 'Displayed character mods'
+ FCB 0
+XHLPS2 FCC "STYHLP1"
+ FCB 0
+XHLPS3 FCC "STYHLP2"
+ FCB 0
+XHLPS4 FCC "STYHLP3"
+ FCB 0
+XHLPS5 FCC "STYHLP4"
+ FCB 0
+XHLPS6 FCC "STYHLP5"
+ FCB 0
+XHLPS7 FCC "STYHLP6"
+ FCB 0
+
 TRMSTY FCC "TERM_STY"
  FCB 0
 PRTSTY FCC "PRINT_STY"
  FCB 0
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $2F /
-         fcb   $50 P
-         fcb   $31 1
+ FCC '                           /P1'
          fcb   $00
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $2F /
-         fcb   $68 h
-         fcb   $30 0
-         fcb   $2F /
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $59 Y
+L1640 FCC '                       /h0/STY'
          fcb   $00
 
 L165F    fdb   $1621
@@ -5194,7 +2185,7 @@ L1673    lbsr  L1A39
          lbcs  L19EC
          lda   <u003B
          ldb   #$D2
-         mul   
+         mul
          addd  #$02E4
          exg   d,u
          lbsr  L0535
@@ -5205,7 +2196,7 @@ L1673    lbsr  L1A39
          sta   <u0041
          lbsr  L0342
          lbcs  L19EC
-         deca  
+         deca
          sta   <u003F
          lbsr  L0342
          lbcs  L19EC
@@ -5215,46 +2206,45 @@ L1673    lbsr  L1A39
          ldy   <u003C
          lbra  L19B7
 
-L16BF
-         fcb   $19
-         fcb   $EB k
-         fcb   $19
-         fcb   $EB k
-         fcb   $16
-         fcb   $CF O
-         fcb   $19
-         fcb   $EB k
-         fcb   $19
-         fcb   $EB k
-         fcb   $19
-         fcb   $EB k
-         fcb   $19
-         fcb   $EB k
-         fcb   $19
-         fcb   $EB k
+*THE FIRST 16 BYTES ARE RESERVED FOR 8 ADDRESS
+*POINTERS TO MACHINE LANGUAGE ROUTINES IF USED.
 
+TRMBEG equ *       Address $16BF
+
+         fdb   L19EB
+         fdb   L19EB
+         fdb   L16CF
+         fdb   L19EB
+         fdb   L19EB
+         fdb   L19EB
+         fdb   L19EB
+         fdb   L19EB
+
+* ANSI cursor position
 L16CF    pshs  b,a
          lda   #$1B
          jsr   ,u
-         lda   #$5B
+         lda   #'[
          jsr   ,u
          lda   ,s
-         inca  
+         inca
          bsr   L16ED
-         lda   #$3B
+         lda   #';
          jsr   ,u
          lda   $01,s
-         inca  
+         inca
          bsr   L16ED
          lda   #$48
          jsr   ,u
-    puls  pc,b,a
+         puls  pc,b,a
+
+* Write byte as text number
 L16ED    cmpa  #$0A
          bcs   L1704
-         clrb  
+         clrb
 L16F2    suba  #$0A
          bcs   L16F9
-         incb  
+         incb
          bra   L16F2
 L16F9    adda  #$0A
          exg   a,b
@@ -5274,7 +2264,8 @@ L1712    pshs  b
          bhi   L1721
          inc   <u0039
          lbra  L0105
-L1721    rts   
+L1721    rts
+
 L1722    lbsr  L21F7
 L1725    cmpb  <u003A
          bne   L172B
@@ -5284,7 +2275,8 @@ L172B    pshs  b
          ldb   ,s+
          stb   <u003A
          lbsr  L18A8
-         rts   
+         rts
+
 L1737    pshs  b
          clr   <u006C
          ldb   <u003A
@@ -5340,8 +2332,8 @@ L1797    lda   ,x+
 L17A4    andcc #$FB
 L17A6    puls  pc,x,b,a
 L17A8    ldb   ,x
-         lslb  
-         leax  >L16BF,pcr
+         lslb
+         leax  >TRMBEG,pcr
          ldd   b,x
          leax  >L0000,pcr
          leax  d,x
@@ -5374,7 +2366,7 @@ L17ED    pshs  b,a
          ldb   #$0E
          bsr   L1789
          ldd   <u0038
-         deca  
+         deca
          lbsr  L1742
          puls  pc,b,a
 L17FB    pshs  b,a
@@ -5382,7 +2374,7 @@ L17FB    pshs  b,a
          bsr   L1789
          beq   L1809
          ldd   <u0038
-         inca  
+         inca
          lbsr  L1742
 L1809    puls  pc,b,a
 L180B    pshs  x,b
@@ -5411,6 +2403,7 @@ L1833    fcb   $1B
          fcb   $31 1
          fcb   $72 r
          fcb   $00
+
 L183B    pshs  b
          fcb   $C6 F
          fcb   $14
@@ -5451,7 +2444,7 @@ L1882    pshs  x,b,a
          ldd   <u0038
          pshs  b,a
          ldd   $02,s
-         clrb  
+         clrb
          lbsr  L1742
 L188E    ldb   #$0C
          lbsr  L1789
@@ -5462,7 +2455,7 @@ L1895    puls  b,a
 L189C    ldb   <u0040
          lda   #$20
 L18A0    lbsr  L0105
-         decb  
+         decb
          bpl   L18A0
          bra   L1895
 L18A8    pshs  b
@@ -5592,23 +2585,23 @@ L19A6    tst   <u006C
 L19B0    ldb   #$16
          lbsr  L1789
 L19B5    puls  pc,b
-L19B7    clrb  
+L19B7    clrb
          lbsr  L0342
          bcs   L19EC
          sta   <u006C
 L19BF    lbsr  L0342
          bcs   L19EC
          pshs  x
-         tsta  
+         tsta
          bpl   L19D0
          cmpa  #$80
          bne   L19D0
          ldx   #$0000
-L19D0    lslb  
+L19D0    lslb
          stx   b,y
-         asrb  
+         asrb
          puls  x
-         incb  
+         incb
          sta   ,x+
          bmi   L19E4
 L19DB    lbsr  L0342
@@ -5618,8 +2611,9 @@ L19DB    lbsr  L0342
 L19E4    cmpb  <u006C
          bcs   L19BF
          lbsr  L02CD
-         rts   
-L19EC    ldx   >L065A,pcr
+L19EB    rts
+
+L19EC    ldx   >L065A,pcr 'BAD TERM_STY...
          lbsr  L0324
          lbra  L0355
 L19F6    ldd   >L0658,pcr
@@ -5629,7 +2623,7 @@ L19F6    ldd   >L0658,pcr
          lbcs  L19EC
          lda   <u0042
          ldb   #$FF
-         mul   
+         mul
          addd  #$01B8
          exg   d,u
          lbsr  L0535
@@ -5701,21 +2695,21 @@ L1AB4    lda   ,x+
          cmpa  #$20
          beq   L1AC1
          sta   ,y+
-         decb  
+         decb
          bne   L1AB4
          bra   L1AC8
 L1AC1    lda   #$00
          sta   ,y+
-         decb  
+         decb
          bne   L1AB4
 L1AC8    tst   <u0042
          bpl   L1AD0
          lda   ,x+
          sta   <u0042
 L1AD0    lbsr  L02CD
-         rts   
+         rts
 L1AD4    pshs  y,b,a
-L1AD6    clrb  
+L1AD6    clrb
 L1AD7    cmpb  #$04
          beq   L1AF0
          lda   b,x
@@ -5723,9 +2717,9 @@ L1AD7    cmpb  #$04
          lda   b,y
          cmpa  <u006D
          bne   L1AE8
-         incb  
+         incb
          bra   L1AD7
-L1AE8    tsta  
+L1AE8    tsta
          beq   L1AF4
          leay  <$18,y
          bra   L1AD6
@@ -5736,14 +2730,14 @@ L1AF6    tfr   y,x
          puls  pc,y,b,a
 L1AFA    pshs  x,b
          adda  #$01
-L1AFE    deca  
+L1AFE    deca
          beq   L1B0E
          ldb   ,x+
          bne   L1AFE
          leax  -$01,x
          ldb   #$20
 L1B09    stb   ,x+
-         deca  
+         deca
          bne   L1B09
 L1B0E    leax  -$01,x
          sta   ,x
@@ -5784,13 +2778,13 @@ L1B53    lda   #$0D
          beq   L1B61
          lda   #$0A
          bsr   L1B6C
-L1B61    clra  
+L1B61    clra
          ldb   <u00F5
 L1B64    beq   L1B6B
          bsr   L1B6C
-         decb  
+         decb
          bra   L1B64
-L1B6B    rts   
+L1B6B    rts
 L1B6C    pshs  u
          ldu   <u005D
          jsr   ,u
@@ -5858,12 +2852,12 @@ L1BF0    lda   #$20
          sta   <u006D
          lda   #$0A
          lbsr  L1D50
-         rts   
+         rts
 L1BFA    lda   #$10
          sta   <u006D
          lda   #$0E
          lbsr  L1D50
-         rts   
+         rts
 L1C04    lda   #$04
          sta   <u006D
          lda   #$16
@@ -5885,7 +2879,7 @@ L1C04    lda   #$04
          lda   #$08
          lbsr  L1B6C
          lbsr  L1B2F
-L1C33    rts   
+L1C33    rts
 L1C34    lda   #$01
          sta   <u006D
          lda   #$12
@@ -5905,7 +2899,7 @@ L1C51    ldx   <u0030
          lbsr  L1B6C
 L1C5C    lda   #$08
          lbsr  L1B6C
-L1C61    rts   
+L1C61    rts
 L1C62    pshs  b
          lda   #$02
          sta   <u006D
@@ -5925,14 +2919,14 @@ L1C79    ldx   <u0043
          lbsr  L1B97
          bcs   L1CAD
          ldb   <u002F,u
-         asrb  
+         asrb
 L1C8C    lda   <u00D7
          lbsr  L1B6C
          lbsr  L1B6C
          lda   #$08
          lbsr  L1B6C
          lbsr  L1B6C
-         decb  
+         decb
          bne   L1C8C
          lda   <u00D8
          lbsr  L1B97
@@ -5943,7 +2937,7 @@ L1CA9    orcc  #$01
 L1CAD    ldb   <u002F,u
 L1CB0    lda   <u00D7
          lbsr  L1B6C
-         decb  
+         decb
          beq   L1CA9
          lda   #$08
          lbsr  L1B6C
@@ -5954,7 +2948,7 @@ L1CC1    lda   #$02
          beq   L1CCC
          lda   #$08
          lbsr  L1B6C
-L1CCC    rts   
+L1CCC    rts
 L1CCD    lda   <u00D7
          cmpa  <u0032,u
          bne   L1CDD
@@ -5973,12 +2967,12 @@ L1CDD    tst   <u0030,u
          ldb   <u00D8
          stb   <u00DB
          adda  <u00DB
-         asra  
+         asra
          sta   <u00D8
          ldx   <u0030
          ldb   <u00DA
-         clra  
-         lslb  
+         clra
+         lslb
          leax  d,x
          lda   $01,x
          ldb   <u00D7
@@ -6013,7 +3007,7 @@ L1D26    ldb   <u00D9
          anda  #$7F
          lbsr  L1B6C
 L1D46    andcc #$FE
-         rts   
+         rts
          lda   <u00DF
          lbsr  L1B97
          bra   L1D26
@@ -6037,8 +3031,8 @@ L1D6E    pshs  a
          bita  <u00E2
          puls  a
          beq   L1D86
-         inca  
-         inca  
+         inca
+         inca
          exg   a,b
          bsr   L1D89
          exg   a,b
@@ -6046,7 +3040,7 @@ L1D6E    pshs  a
          eora  <u006D
          sta   <u00E2
 L1D86    andcc #$FE
-L1D88    rts   
+L1D88    rts
 L1D89    pshs  x,b,a
          orcc  #$01
          ldx   <u0043
@@ -6251,7 +3245,7 @@ L1F23    stb   <$20,y
          lbra  L5E30
 L1F76    lbsr  L019F
          beq   L1F87
-L1F7B    lbsr  L0131
+L1F7B    lbsr  L0131   Read keyboard
          anda  #$7F
          tst   <u0056
          beq   L1F86
@@ -6289,7 +3283,7 @@ L1FAB    ldu   <u0020
          cmpx  <u0096
          beq   L1FDC
 L1FC5    lbsr  L25FD
-         tst   u000E,u
+         tst   TTYSTATE,u
          beq   L1FDC
          tst   u0008,u
          beq   L1FD8
@@ -7084,7 +4078,7 @@ L26AB    andcc #$FE
          rts
 L26AE    lda   #$01
          sta   u0008,u
-         lda   u000E,u
+         lda   TTYSTATE,u
          cmpa  #$01
          bne   L26C4
          ldx   #$0000
@@ -7112,7 +4106,7 @@ L26E5    lda   <u001E,u
          lda   <u001F,u
          sta   <u001A,u
          lbsr  L4FAD
-         clr   u000E,u
+         clr   TTYSTATE,u
          clr   u000D,u
          clr   <u002C,u
          ldx   <u0011,u
@@ -7178,7 +4172,7 @@ L276D    ldx   u0009,u
          ldx   u000B,u
          leax  $01,x
          stx   u000B,u
-         inc   u000E,u
+         inc   TTYSTATE,u
          tst   u0008,u
          bne   L27AF
          lda   <u0024,u
@@ -7233,7 +4227,7 @@ L27EE    clr   <u001D,u
          sta   <u001A,u
          lbsr  L4FAD
          lda   <u001B,u
-         cmpa  u000E,u
+         cmpa  TTYSTATE,u
          puls  b,a
          bhi   L27C2
          stb   <u001B,u
@@ -7564,7 +4558,7 @@ L2AF1    cmpa  >L057C,pcr
          lbeq  L2B97
          cmpa  #$0D
          beq   L2B28
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L2B2D
          cmpa  >L0590,pcr
          beq   L2B57
@@ -8236,7 +5230,7 @@ L30F2    pshs  y,x,b,a
          lbsr  L3E54
          ldx   >L31F4,pcr
          lbsr  L3E39
-         ldb   u000E,u
+         ldb   TTYSTATE,u
          clra
          lbsr  L3200
          ldx   <u002E
@@ -8507,7 +5501,7 @@ L33C9    std   ,y++
          sta   <u0053
          bsr   L3411
 L33FF    lbsr  L1F76
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L340E
          cmpa  >L0587,pcr
          bne   L33FF
@@ -8870,7 +5864,7 @@ L36F7    lbsr  L1709
 L3701    lbsr  L1F76
          cmpa  >L0585,pcr
          beq   L3710
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          bne   L3701
 L3710    orcc  #$01
          puls  pc,x,b,a
@@ -9718,7 +6712,7 @@ L3E54    pshs  b,a
          lbsr  L012D
          bra   L3E4B
 L3E5B    lbsr  L0196
-         lbra  L0131
+         lbra  L0131   Read keyboard
 L3E61    lbsr  L17D7
          clr   <u00E3
          lda   #$FF
@@ -9765,8 +6759,8 @@ L3EC2    fcb $3F,$37,$43,$A6,$41,$B9,$42,$19,$43,$2C,$3F,$B2,$40,$3D
 L3EDE    ldx   <u0016
          leay  <$37,x
          sty   <u0068
-L3EE6    lbsr  L0131
-         cmpa  >L058F,pcr
+L3EE6    lbsr  L0131   Read keyboard
+         cmpa  >ESCC,pcr
          beq   L3F37
          cmpa  >L0581,pcr
          beq   L3F13
@@ -9822,14 +6816,14 @@ L3F5C    ldx   >L05FE,pcr
          lbsr  L3E5B
          lbsr  L1709
          lbsr  L1F92
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          lbne  L3E6A
          ldx   >L05FC,pcr
          lbsr  L4027
          lbsr  L3E5B
          lbsr  L1709
          lbsr  L1F92
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          lbne  L3E6A
          ldx   #$0000
          lbsr  L2F49
@@ -9853,14 +6847,14 @@ L3F5C    ldx   >L05FE,pcr
          lbsr  L3E5B
          lbsr  L0105
          lbsr  L1F92
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          lbne  L3E6A
          ldx   >L05FC,pcr
          bsr   L4027
          lbsr  L3E5B
          lbsr  L0105
          lbsr  L1F92
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          lbne  L3E6A
          lbra  L2019
          lda   #$01
@@ -10043,9 +7037,9 @@ L4181    pshs  x
          bcs   L41AF
          lda   ,x
          lbsr  L1F92
-         cmpa  >L05A8,pcr
+         cmpa  >CTMCHR,pcr
          beq   L41A7
-         cmpa  >L05A9,pcr
+         cmpa  >CPTCHR,pcr
          beq   L41AB
          cmpa  >L05AA,pcr
          bne   L41AF
@@ -10118,13 +7112,13 @@ L4233    ldx   >L05D6,pcr
          lbsr  L3E39
          lbsr  L3E5B
          lbsr  L1F92
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          beq   L4267
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L425C
          cmpa  #$0D
          bne   L4233
-L425C    lda   >L059A,pcr
+L425C    lda   >YCHR,pcr
          lbsr  L1709
          ldx   <u002C
          bra   L4283
@@ -10151,11 +7145,11 @@ L428F    ldx   <u0068
          lbsr  L4027
          lbsr  L3E5B
          lbsr  L1F92
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L42AF
          cmpa  #$0D
          bne   L42C8
-L42AF    lda   >L059A,pcr
+L42AF    lda   >YCHR,pcr
          lbsr  L0105
          ldx   <u0068
          lbsr  L02F1
@@ -10256,14 +7250,14 @@ L43A0    lds   <u0018
 L43AE    ldx   >L060A,pcr
          lbsr  L401D
 L43B5    lbsr  L3E5B
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L3E6A
          cmpa  #$0D
          lbeq  L4454
          lbsr  L1F92
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          lbeq  L4454
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L43E6
          lda   #$07
          lbsr  L0105
@@ -10330,14 +7324,14 @@ L4471    lbsr  L1B3B
          lbsr  L4022
          clr   <u0059
 L447D    lbsr  L3E5B
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L44B0
          lbsr  L1F92
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          beq   L44A7
          cmpa  #$0D
          beq   L44A7
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L44A0
          lda   #$07
          lbsr  L0105
@@ -10345,7 +7339,7 @@ L447D    lbsr  L3E5B
 L44A0    lbsr  L1709
          inc   <u0059
          bra   L44AE
-L44A7    lda   >L059B,pcr
+L44A7    lda   >NCHR,pcr
          lbsr  L1709
 L44AE    bsr   L44C4
 L44B0    lbsr  L018D
@@ -10372,19 +7366,19 @@ L44D8    lda   #$03
          ldx   >L0618,pcr
          lbsr  L4027
 L44E4    lbsr  L3E5B
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L45EA
          lbsr  L1F92
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          beq   L4516
          cmpa  #$0D
          beq   L4509
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L4509
          lda   #$07
          lbsr  L0105
          bra   L44E4
-L4509    lda   >L059A,pcr
+L4509    lda   >YCHR,pcr
          lbsr  L1709
          clr   <u00C3
          ldb   #$FF
@@ -10430,15 +7424,15 @@ L4564    lda   <u0010,u
          bne   L45AD
          lbsr  L019F
          beq   L45AD
-         lbsr  L0131
+         lbsr  L0131   Read keyboard
          cmpa  #$20
          beq   L458C
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          bne   L45AD
 L458C    ldx   >L061E,pcr
          lbsr  L402C
          lbsr  L3E5B
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L45A6
          cmpa  #$20
          beq   L45A6
@@ -10511,7 +7505,7 @@ L4624    lda   <u002C,u
          ldx   >L061E,pcr
          lbsr  L402C
 L4647    lbsr  L3E5B
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L4624
          cmpa  #$20
          beq   L4624
@@ -10671,7 +7665,7 @@ L479B    stb   <u00C5
          puls  pc,a
 L479F    lbsr  L019F
          beq   L479F
-         lbsr  L0131
+         lbsr  L0131   Read keyboard
          anda  #$7F
          tst   <u0056
          beq   L47B0
@@ -10831,7 +7825,7 @@ L48D5    ldd   ,u
          lbsr  L1F76
          lbsr  L1709
          anda  #$5F
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          lbne  L2E8B
          ldy   <u00C6
          leay  $02,y
@@ -10893,7 +7887,7 @@ L499D    lbsr  L4C11
 L49C1    lbsr  L1F76
          cmpa  #$0D
          beq   L49D9
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L49D9
          cmpa  #$20
          bne   L49C1
@@ -10968,14 +7962,14 @@ L4A45    lbsr  L4C11
          clr   <u00D2
          lbsr  L37D6
 L4A7A    lbsr  L1F76
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L49D9
          anda  #$5F
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          beq   L4ADF
          cmpa  >L059D,pcr
          beq   L4A9B
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          bne   L4A7A
          bra   L4A9D
 L4A9B    inc   <u0059
@@ -11018,7 +8012,7 @@ L4ADF    ldd   #$0200
 L4AF7    lbsr  L1F76
          cmpa  #$0D
          lbeq  L49D9
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L49D9
          cmpa  #$20
          bne   L4AF7
@@ -11069,7 +8063,7 @@ L4B6A    lda   >L05AC,pcr
          clrb
          ldx   <u00BB
 L4B76    lbsr  L1F76
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L49D9
          cmpa  >L0581,pcr
          beq   L4BF1
@@ -11343,54 +8337,22 @@ L4DB1    lsla
          ldd   a,y
          leay  >0,pcr
          jmp   d,y
-L4DBA    fcb   $4E N
-         fcb   $10
-         fcb   $4E N
-         jsr   u000E,u
-         fcb   $38 8
-         fcb   $52 R
-         fcb   $10
-         tsta
-         bita  #$4E
-         rol   >$4EE8
-         fcb   $4E N
-         pshs  u,dp,b,a
-         fcb   $52 R
-         clra
-         lda   #$4F
-         eora  <u0050
-         fcb   $41 A
-         negb
-         fcb   $75 u
-         fcb   $4E N
-         bgt   L4E26
-         andb  <u004F
-         eora  >$5002
-         clra
-         stu   <u004D
-         ldu   >$50A9
-         negb
-         ldu   -u000F,u
-         leau  -u000F,u
-         rolb
-         fcb   $51 Q
-         lsr   >$517A
-         fcb   $51 Q
-         suba  #$51
-         sbca  <u0051
-         anda  -u000F,u
-         bita  >$51F8
-         fcb   $52 R
-         ror   <u0052
-         lbsr  L4DFC
-L4DFC    neg   <u0000
-         lbsr  L5221
+
+L4DBA    fdb  L4E10,$4EAD,$4E38,$5210,$4D85,L4E79
+ fdb $4EE8,$4E34,$4E52,$4F86,$4F98,$5041
+ fdb $5075,$4E2E,$4FD4,$4FB8,$5002,$4FDF
+ fdb L4DFE,$50A9,$50EE,$5133,$5159,$5174
+ fdb $517A,$5180,$5192,$51A4,$51B5,$51F8
+ fdb $5206,$5217,$0000,$0000
+
+L4DFE    lbsr  L5221
          lbcs  L4D7B
          cmpb  <u002C,u
          lbls  L4D86
          stb   <u002C,u
          rts
-         lbsr  L5221
+
+L4E10    lbsr  L5221
          lbcs  L4D7B
          cmpb  #$00
          bne   L4E1D
@@ -11434,7 +8396,8 @@ L4E4E    stb   <u0027,u
          lbhi  L4D86
          stb   <u0018,u
 L4E78    rts
-         lbsr  L5221
+
+L4E79    lbsr  L5221
          lbcs  L4D7B
          cmpd  #$0003
          lbcs  L4D86
@@ -12388,7 +9351,7 @@ L56B7    lbra  L2EA6
          ldx   <u0016
 L56CE    lbsr  L1F76
          anda  #$7F
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L2E8B
          cmpa  #$0D
          beq   L5707
@@ -12559,7 +9522,7 @@ L585C    cmpa  >L057C,pcr
          lbeq  L58DF
          cmpa  #$0D
          beq   L58A6
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L589B
          cmpa  >L0590,pcr
          lbeq  L58B6
@@ -12640,9 +9603,9 @@ L5937    lbsr  L3E5B
          lbsr  L1F92
          cmpa  #$0D
          beq   L5968
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L5968
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          beq   L5954
          lda   #$07
          lbsr  L0105
@@ -12819,11 +9782,11 @@ L5AB3    lda   #$20
          ldd   <u0038
          decb
          lbsr  L1742
-L5ACB    lbsr  L0131
+L5ACB    lbsr  L0131   Read keyboard
          lbsr  L1F92
          cmpa  #$0D
          beq   L5B0D
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          beq   L5B10
          cmpa  >CURUC,pcr
          beq   L5AFE
@@ -12831,7 +9794,7 @@ L5ACB    lbsr  L0131
          beq   L5AFE
          cmpa  >L057E,pcr
          beq   L5AF3
-         cmpa  >L0558,pcr
+         cmpa  >CURDC,pcr
          bne   L5ACB
 L5AF3    lda   <u00E4
          inca
@@ -12878,18 +9841,18 @@ L5B40    clra
          lbsr  L401D
          lbsr  L3E5B
          lbsr  L1F92
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L3E6A
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          lbeq  L5C1F
          cmpa  #$0D
          beq   L5B72
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L5B72
 L5B6B    lda   #$07
          lbsr  L0105
          bra   L5B2B
-L5B72    lda   >L059A,pcr
+L5B72    lda   >YCHR,pcr
          lbsr  L0105
          inc   <u0061
          tst   <u0064
@@ -12904,13 +9867,13 @@ L5B72    lda   >L059A,pcr
          lbsr  L3E39
          lbsr  L3E5B
          lbsr  L1F92
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L3E6A
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L5BDD
          cmpa  #$0D
          beq   L5BDD
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          bne   L5B6B
 L5BB4    lda   #$01
          lbsr  L1882
@@ -12936,17 +9899,17 @@ L5BEA    ldx   >L062C,pcr
          lbsr  L4027
          lbsr  L3E5B
          lbsr  L1F92
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L3E6A
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L5C14
          cmpa  #$0D
          beq   L5C14
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          bne   L5BEA
          lbsr  L1709
          bra   L5C22
-L5C14    lda   >L059A,pcr
+L5C14    lda   >YCHR,pcr
          lbsr  L1709
          inc   <u0062
          bra   L5C22
@@ -12967,15 +9930,15 @@ L5C42    ldx   >L05DE,pcr
          lbsr  L402C
          lbsr  L3E5B
          lbsr  L1F92
-         cmpa  >L058F,pcr
+         cmpa  >ESCC,pcr
          lbeq  L3E6A
-         cmpa  >L059B,pcr
+         cmpa  >NCHR,pcr
          lbeq  L5C7B
-         cmpa  >L059A,pcr
+         cmpa  >YCHR,pcr
          beq   L5C69
          cmpa  #$0D
          bne   L5C42
-L5C69    lda   >L059A,pcr
+L5C69    lda   >YCHR,pcr
          lbsr  L0105
          ldx   <u002C
          lbsr  L02F1
@@ -14028,4 +10991,4 @@ L6603 fcb $FA
       fcb $86,$A0,$FF,$FF,$D8,$F0,$00,$00,$03,$E8,$FF,$FF,$FF
       fcb $9C,$00,$00,$00,$0A,$FF,$FF,$FF,$FF,$01
          emod
-eom      equ   *
+BINEND      equ   *
