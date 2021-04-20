@@ -75,6 +75,7 @@
               <includes>stylo.xml</includes>
             </configuration>
           </execution>
+          
           <execution>
             <id>os9</id>
             <phase>package</phase>
@@ -88,6 +89,22 @@
               <sourceDirectory>${basedir}/src</sourceDirectory>
               <foCustomization>src/style.xslt</foCustomization>
               <includes>os9.xml</includes>
+            </configuration>
+          </execution>
+          
+          <execution>
+            <id>tutorial</id>
+            <phase>package</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+              <!--<goal>generate-html</goal>-->
+            </goals>
+            <configuration>
+              <!-- per execution configuration -->
+              <draftMode>no</draftMode>
+              <sourceDirectory>${basedir}/src</sourceDirectory>
+              <foCustomization>src/style.xslt</foCustomization>
+              <includes>tutorial.xml</includes>
             </configuration>
           </execution>
         </executions>

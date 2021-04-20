@@ -148,27 +148,23 @@ lesson.</para>
     <para>First of all, you must
 get your computer running. Refer to your computer manual for this.
 When you have the OS-9 prompt</para>
-    <screen>
-OS9:
+    <screen>OS9:
 </screen>
     <para>remove the system disk
 from drive 0 and put in your STYLOGRAPH disk. Change your execution
 and data directories to this disk by typing:</para>
-    <screen>
-OS9: chx /d0/cmds; chd /d0
+    <screen>OS9: chx /d0/cmds; chd /d0
 </screen>
     <para>If you are using a
 Dragon 64 and you are not already in the 51 characters by 24 lines
 screen mode, go into that mode with:</para>
-    <screen>
-OS9: go51
+    <screen>OS9: go51
 </screen>
     <para>To start the STYLOGRAPH
 system, all you have to do is to type in the STYLOGRAPH program
 name <quote>STYLO</quote> and the name of the file that you will be working on.
 To get you going, enter</para>
-    <screen>
-OS9: stylo lesson1
+    <screen>OS9: stylo lesson1
 </screen>
     <para>What this will do is
 first. load in the STYLOGRAPH word processor, and second, tell
@@ -197,8 +193,7 @@ is to EDIT some text, so move the pointer to EDIT, and hit
 RETURN.</para>
     <para>At this point, you
 should see something like this on your screen:</para>
-    <screen>
---------------------- PAGE 1 --------------------
+    <screen>--------------------- PAGE 1 --------------------
                                                 |
 </screen>
     <para>You are now in another
@@ -214,8 +209,7 @@ the INSERT model you only have to hit the semicolon key (<quote>;</quote>).</par
     <title>E. THE INSERT MODE</title>
     <para>Now the screen should
 look like this:</para>
-    <screen>
---------------------- PAGE 1 --------------------
+    <screen>--------------------- PAGE 1 --------------------
 ------------------------------------------------|
 </screen>
     <para>All you need to do now
@@ -240,8 +234,7 @@ typewriters.</para>
     </orderedlist>
     <para>Now, to show you some
 of the features of STYLOGRAPH, type in this sample bit of text:</para>
-    <screen>
---------------------- PAGE 1 ------------------------
+    <screen>--------------------- PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
 because STYLOGRAPH allows you to type in material as
@@ -253,8 +246,7 @@ it if you want to start typing in text on a new line. This is for
 new paragraphs, skipping lines, or any other time that you don't
 need to finish a line. For example, of you now hit a RETURN and
 type another line in the sample text, it will look like this:</para>
-    <screen>
------------------------- PAGE 1 ------------------------
+    <screen>------------------------ PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
 because STYLOGRAPH allows you to type in material as
@@ -278,8 +270,7 @@ on the final printed copy.</para>
 commands requires a line all for itself. You will have to hit
 another RETURN to enter the commands. Right and left margins are
 set separately. You can set the left margins by entering a:</para>
-    <screen>
-,lm 12
+    <screen>,lm 12
 </screen>
     <para>on the line. Note that
 the comma MUST be the first character on the line. (there must be
@@ -297,13 +288,11 @@ margin command. The right margins are set by allowing a certain
 line length for each line. If you only allow a certain number of
 spaces per line, this will naturally set the right margin. To set
 the right margin, hit another RETURN and enter:</para>
-    <screen>
-,ll 48
+    <screen>,ll 48
 </screen>
     <para>Your text should now
 look like this:</para>
-    <screen>
------------------------- PAGE 1 ------------------------
+    <screen>------------------------ PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
 because STYLOGRAPH allows you to type in material as
@@ -324,20 +313,17 @@ although 65 and 75 are the usual standards.</para>
 frustrating jobs in typing is centring titles on a page. This is
 easily done with another STYLOGRAPH format command, however. The
 centring command looks like this:</para>
-    <screen>
-,ce
+    <screen>,ce
 </screen>
     <para>Enter the command, hit
 a RETURN, and type in the following lane:</para>
-    <screen>
-       Presto! This line is centred.---------------|
+    <screen>       Presto! This line is centred.---------------|
 </screen>
     <para>Now hit the RETURN, and
 presto! the line is centred. The <command>,ce</command> command may be followed by any
 number, and STYLOGRAPH will automatically centre that next number
 of lines. For example, the command</para>
-    <screen>
-.ce 5
+    <screen>.ce 5
 </screen>
     <para>will centre the next
 five lines of text. Again, remember that you need to follow the
@@ -350,25 +336,21 @@ you often have to put things on the right margin. Examples of this
 dates of business letters, and the page numbers of reports. A
 STYLOGRAPH format command will also do this for you automatically.
 In your sample text, type in:</para>
-    <screen>
-,rj
+    <screen>,rj
 </screen>
     <para>followed by RETURN, and then:</para>
-    <screen>
-December 19, 1943-------------------   |
+    <screen>December 19, 1943-------------------   |
 </screen>
     <para>followed by another
 RETURN. This should result in the date being placed against the far
 right margin:</para>
-    <screen>
-                                              December 19, 1943  |
+    <screen>                                              December 19, 1943  |
 </screen>
     <para>As with the <command>,ce</command>
 command, you can follow the <command>,rj</command> command with any number, and
 STYLOGRAPH will automatically right-justify that many lines of
 following text. Your entire text should look like this now:</para>
-    <screen>
-Type in this sample text to demonstrate what kinds of
+    <screen>Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
 because STYLOGRAPH allows you to type in material as
 you go along and automatically puts words on the next
@@ -398,16 +380,14 @@ things that are printed at the bottom of the page are called
 <quote>footers</quote>. In combination with the <command>,rj</command> and <command>,ce</command> commands, you can do
 some very fancy formatting. You can define a <quote>header</quote> with the
 following commands:</para>
-    <screen>
-,hd
+    <screen>,hd
 ,,
 </screen>
     <para>Anything placed between
 the <command>,hd</command> and <command>,,</command> will be repeated at the top of every page of text.
 So, for example, if you entered the following chain of commands
 (remember to follow each of the with a carriage RETURN):</para>
-    <screen>
-,hd                                                    |
+    <screen>,hd                                                    |
                                                        |
 ,rj                                                    |
 19/12/43                                               |
@@ -418,13 +398,11 @@ So, for example, if you entered the following chain of commands
 every page of the text printout. Too see this work, enter the chain
 of commands, and then enter the following command which will skip
 to another page:</para>
-    <screen>
-,pg
+    <screen>,pg
 </screen>
     <para>After a RETURN, your
 entire screen should look something like this:</para>
-    <screen>
------------------------- PAGE 1 ------------------------
+    <screen>------------------------ PAGE 1 ------------------------
 Type in this sample text to demonstrate what kinds of
 things STYLOGRAPH can do. Typing is made much easier
 because STYLOGRAPH allows you to type in material as
@@ -455,8 +433,7 @@ appear on the right margin edge of the top of page 2 signify that
 these three lines are indeed, a header. You could now add
 additional text if you wanted. The <quote>footer</quote> command is essentially
 the same, except that the command looks like this:</para>
-    <screen>
-,ft
+    <screen>,ft
 ,,
 </screen>
     <para>and that any material
@@ -467,8 +444,7 @@ using the symbol <quote>#</quote> in any header or footer of a STYLOGRAPH text
 file, the page number will replace the symbol in the final
 printout. For example, enter the next set of commands (again,
 following each with a RETURN):</para>
-    <screen>
-,ft                                                    |
+    <screen>,ft                                                    |
                                                        |
 ,ce                                                    |
 PAGE #                                                 |
@@ -478,8 +454,7 @@ PAGE #                                                 |
     <para>and following these
 commands with another <command>,pg</command> command, Page 2 of your text will look
 like this:</para>
-    <screen>
------------------------- PAGE 2 -----------------------|
+    <screen>------------------------ PAGE 2 -----------------------|
                                                        -
                                               19/12/43 -
                                                        -
@@ -523,8 +498,7 @@ easily work on it. To <quote>work</quote> on any particular part of the text you
 will need to move the cursor to it (remember <quote>cursor</quote>'?). The
 cursor is moved by using four keys on the right side of the
 keyboard:</para>
-    <screen>
-                             I
+    <screen>                             I
                            J   L
                              ,
 </screen>
@@ -554,8 +528,7 @@ STYLOGRAPH system. One of the most powerful commands in the ESCAPE
 mode is the <quote>Find</quote> command. Place the cursor at the start of the
 text, and hit the <quote>F</quote> key. This will cause the following to be
 printed on the terminal:</para>
-    <screen>
-*** FIND {
+    <screen>*** FIND {
 </screen>
     <para>At this point, if you
 enter any string (remember string?) that is located anywhere in the
@@ -564,8 +537,7 @@ move the cursor to it. For example, enter the string <quote>typ</quote> and hit
 the RETURN. The cursor should now be placed in front of the word
 <quote>type</quote> in the second sentence of the text you have entered, and
 another message should have appeared:</para>
-    <screen>
-*** STOP (RET) OR CONTINUE (SP)?
+    <screen>*** STOP (RET) OR CONTINUE (SP)?
 </screen>
     <para>What STYLOGRAPH wants
 to know now is whether you want to keep looking for the string
@@ -589,23 +561,20 @@ the <quote>FIND</quote> command is the <quote>REPLACE</quote> command, which wil
 string, and replace it with any other specified string. Place the
 cursor at the top of the text again. Now, hit the <quote>R</quote> key. A
 message will appear:</para>
-    <screen>
-*** REPLACE {
+    <screen>*** REPLACE {
 </screen>
     <para>Now enter a string; for
 example, let's replace the word <quote>allows</quote> in the text with the word
 <quote>lets</quote>. Simply enter the word <quote>allows</quote> and hit the RETURN. At this
 point the screen should look like this:</para>
-    <screen>
-*** REPLACE {allows}
+    <screen>*** REPLACE {allows}
 *** WITH {
 </screen>
     <para>Now enter the word
 <quote>lets</quote> and again hit the RETURN. At this point, STYLOGRAPH will
 search for the string <quote>allows</quote> and place the cursor at it. You will
 also be asked whether or not you want to change it:</para>
-    <screen>
-*** REPLACE (Y-N-A)?
+    <screen>*** REPLACE (Y-N-A)?
 </screen>
     <para><quote>Y-N-A</quote> is an
 abbreviation of <quote>Yes-No-All</quote> If you answer <quote>Y</quote> then it will replace
@@ -669,8 +638,7 @@ computer. We are assuming that you are using a parallel printer ion
 the parallel printer port <quote>/p1</quote>. Once you've done that, hit the
 RETURN. This will cause STYLOGRAPH to ask you some questions that
 you needn't worry about right now:</para>
-    <screen>
-Different Printer (Y/N*)?
+    <screen>Different Printer (Y/N*)?
 Stop for New Pages (Y/N*)?
 Print all Pages (Y*/N)?
 </screen>
@@ -691,8 +659,7 @@ disk by positioning the pointer to the SAVE AND RETURN option. At
 this position, hit the RETURN again, and you will hear the disk run
 for a short time and then the screen will clear showing the OS-9
 prompt:</para>
-    <screen>
-OS9:
+    <screen>OS9:
 </screen>
     <para>If you look at the
 contents of the disk, using the 'dir' command, you should find that
@@ -700,8 +667,7 @@ a file named <quote>LESSON1</quote> exists on it. This is the text file you have
 created with STYLOGRAPH and this tutorial. In order to work on it
 further, simply repeat the command you used to create the file in
 the first place:</para>
-    <screen>
-OS9: stylo lesson1
+    <screen>OS9: stylo lesson1
 </screen>
     <para>This will again
 activate the STYLOGRAPH system, load in your text file, and put you

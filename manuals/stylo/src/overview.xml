@@ -1660,13 +1660,12 @@ for changing printwheels, etc.</para>
 for overprinting</para>
       <para>Tx tabs printer to the
 <quote>x</quote> column</para>
-      <para>Presuming the command
-,pc a has been previously executed, the following would be legal
-commands:</para>
+      <para>Presuming the command <command>,pc</command> a has been previously executed,
+      the following would be legal commands:</para>
       <para>The \b\x e and x would
 be overprinted, the printer would stop here\s\ and could be
 restarted from the keyboard, and the numbers <quote>12345</quote> would appear
-in column 70\t70\12345.</para>
+in column 70 \t70\12345.</para>
       <para>Notice that these
 printer sequences are not taken into account when the line length
 is calculated for the screen, so the line with these sequences
@@ -1700,7 +1699,7 @@ appear like this:</para>
     <title>CONTROL COMMANDS</title>
     <para>CONTROL commands can be
 executed from either the ESCAPE mode or the INSERT mode. To execute
-a CONTROL command you must hold down the COMTROL key and press the
+a CONTROL command you must hold down the CONTROL key and press the
 designated key at the same time. Some of the CONTROL commands have
 already been briefly described.</para>
     <section>
@@ -1720,8 +1719,7 @@ them.</para>
 sounds it means that STYLOGRAPH has encountered an error. If you
 want to see a description of the error just press CONTROL-N and the
 cursor line will be replaced with a description of the error. To
-return to the normal text do the command again or hit the ESCAPE
-key.</para>
+return to the normal text do the command again or hit the ESCAPE key.</para>
       <para>Most of the time the
 cause of the error will be obvious since the error usually is the
 result of something you have just entered. The error bell will also
@@ -1876,8 +1874,8 @@ Therefore, to underline a series of words, but not the spaces
 between them, you can hold down the CONTROL key and hit the <quote>U</quote> key
 to underline the words and the space bar to skip between the words.
 All of the character mods work in this manner. If the character is
-already modified, the new modification will be added to it. Also,
-the UNMOD key can be used in the same manner to remove
+already modified, the new modification will be added to it.
+Also, the UNMOD key can be used in the same manner to remove
 modifications of the character.</para>
       <para>In the INSERT mode
 CONTROL-U causes all characters entered after this point to be
