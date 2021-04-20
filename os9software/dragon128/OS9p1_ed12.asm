@@ -201,7 +201,7 @@ Cold15 ldd ,Y++ get vector
  else
 * Write Enable: The hypothesis is that the top bit in the logical address
 * is used for write enable and ignored for addressing.
- ldd #DAT.WrEn
+ ldd #DAT.WrEn*256
  endc
  std ,X++ use block zero for system
  ifge RAMCount-2
@@ -892,10 +892,23 @@ Link10 ldd MD$MPtr,X get module block ptr
  bra LinkErr
 Link20 lbsr SetImage set process DAT image
  ifne DAT.WrPr
- ora #DAT.WrPr hypothesis
  endc
  ifne DAT.WrEn
- ora #DAT.WrEn hypothesis
+         pshs  u,b,a
+         lsla
+         leau  a,y
+         ldy   $09,s
+         lda   $02,y
+         bita  #$40
+         beq   L0477
+         clra
+         tfr   d,y
+L046D    ldd   ,u
+         ora   #$02
+         std   ,u++
+         leay  -$01,y
+         bne   L046D
+L0477    puls  u,b,a
  endc
 Link30 leax P$Links,X get link count table ptr
  sta 0,s save block number
@@ -971,6 +984,7 @@ SrchD10 ldx 0,s get count
  pshs U,Y save DAT image ptrs
 SrchD20 ldd ,Y++ get search DAT block
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  cmpd ,u++ does it match target?
  bne SrchD30 branch if not
@@ -1767,6 +1781,7 @@ SRqMem10 ldx D.SysDAT get system DAT image ptr
  beq SRqMem20
  ldx D.BlkMap branch if so
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  lda D,X get block flags
  cmpa #RAMinUse is it allocatable?
@@ -1865,6 +1880,7 @@ SRtM.C ldd 0,X get block number
  beq SRtM.E branch if so
  ldu D.BlkMap get block map ptr
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  lda d,u get block flags
  cmpa #RAMinUse is it just RAM in use?
@@ -1888,6 +1904,7 @@ SRtM.D lda ,u+ get page flags
  ldd 0,X get block number
  ldu D.BlkMap get block map ptr
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  clr D,u mark block free
  ldd #DAT.Free get free block
@@ -1952,6 +1969,7 @@ Boot30 ldd 0,X get module beginning
  tfr D,X copy offset
  tfr Y,D pass DAT img ptr
  ifne DAT.WrEn
+ anda #^DAT.WrEn
  endc
  OS9 F$VModul validate module
  pshs B save error code (if any)
@@ -2067,6 +2085,7 @@ AllI.A ldd ,Y++ get current image
  cmpd #DAT.Free is block allocated?
  beq AllI.B branch if not
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  lda D,u get block flags
  cmpa #RAMinUse is it just RAM in use?
@@ -2124,6 +2143,7 @@ AllI.G lda ,u+ is this free block?
  tfr U,D copy map ptr
  subd D.BlkMap get block number
  ifne DAT.WrEn
+ ora #DAT.WrEn
  endc
  std -2,y set image
 AllI.H leax -1,x count block

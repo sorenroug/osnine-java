@@ -336,6 +336,7 @@ UnLink pshs u,d save registers
  ldd A,Y get DAT image
  ldu D.BlkMap get block map ptr
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  ldb d,u get block flags
  bitb #ModBlock are there modules there?
@@ -364,6 +365,7 @@ UnLink15 ldb 0,S get DAT index
  aslb shift for two-byte entries
  ldd B,Y get block number
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  ldu D.ModDir get module directory ptr
  bra UnLink25
@@ -2399,6 +2401,7 @@ DelImg ldx R$X,u get process ptr
  pshs X save process ptr
 DelImg10 ldd 0,U get block number
  ifne DAT.WrPr+DAT.WrEn
+ anda #1
  endc
  addd D.BlkMap get block map entry ptr
  tfr D,X copy it
