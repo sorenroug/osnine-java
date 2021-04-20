@@ -1,31 +1,18 @@
-         nam   EXORdisk3
-         ttl   os9 device driver
+ nam   EXORdisk3
+ ttl   os9 device driver
 
-* use defsfile
- use /dd/defs/os9defs
+ use defsfile
 
 Edition equ 4 Current Edition
 
-tylg     set   Drivr+Objct
-atrv     set   ReEnt+rev
-rev      set   $03
-         mod   DSKEND,DSKNAM,tylg,atrv,DSKENT,DSKSTA
+ mod DSKEND,DSKNAM,Drivr+Objct,ReEnt+3,DSKENT,DSKSTA
 
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   2
-u0006    rmb   1
-u0007    rmb   1
-u0008    rmb   1
-u0009    rmb   1
-u000A    rmb   1
-u000B    rmb   1
-u000C    rmb   1
-u000D    rmb   1
-u000E    rmb   1
-u000F    rmb   6
+DriveCnt equ 4
+ org DRVBEG
+ rmb Drvmem*DriveCnt
+
+ org $15
+
 u0015    rmb   2
 u0017    rmb   1
 u0018    rmb   1
@@ -35,10 +22,10 @@ u001B    rmb   1
 u001C    rmb   2
 u001E    rmb   24
 u0036    rmb   49
-u0067    rmb   1
+X.CURDRV    rmb   1
 u0068    rmb   2
 u006A    rmb   2
-u006C    rmb   2
+X.BUFADR    rmb   2
 u006E    rmb   5
 u0073    rmb   1
 u0074    rmb   5
@@ -46,12 +33,12 @@ u0079    rmb   3
 u007C    rmb   1
 u007D    rmb   1
 u007E    rmb   1
-u007F    rmb   2
+X.DRVTBL    rmb   2
 u0081    rmb   2
 u0083    rmb   2
 u0085    rmb   2
 u0087    rmb   2
-u0089    rmb   2
+CTLRADDR    rmb   2
 DSKSTA     equ   .
          fcb   $FF
 
@@ -67,37 +54,44 @@ DSKENT    equ   *
          lbra  PUTSTA
          lbra  TRMNAT
 
-L002A    fcs "EXORctlr"
+CTLRNAME    fcs "EXORctlr"
 
 L0032    fcb $0F,$0A,$06,$03
 
+ pag
+****************************************************************
+*
+* Initialize The I/O Port
+*
+*  Input: (U)= Pointer To Global Storage
+*
 INIT    pshs  u,y
-         lda   #$E0
-         leax  <L002A,pcr
+         lda   #Drivr
+         leax  <CTLRNAME,pcr
          os9   F$Link
          tfr   u,x
          puls  u,y
          lbcs  L00F0
-         stx   >u0089,u
-         ldd   $09,x
+         stx   >CTLRADDR,u
+         ldd   M$Exec,x
          leax  d,x
          stx   >u0083,u
          leax  $03,x
          stx   >u0085,u
          leax  $03,x
          stx   >u0087,u
-         lda   <$13,y
-         sta   <u0067,u
-         lda   <$14,y
+         lda   <$13,y  IT.DRV
+         sta   X.CURDRV,u
+         lda   <$14,y  IT.STP
          anda  #$03
          leay  <L0032,pcr
          lda   a,y
-         ldb   #$27
+         ldb   #$27  This is not DRVMEM
          mul
          std   >u0081,u
-         ldy   u0001,u
-         leax  u0007,u
-         stx   <u007F,u
+         ldy   V.PORT,u
+         leax  DRVBEG,u
+         stx   X.DRVTBL,u
          jsr   [>u0083,u]
          ldb   #$04
          stb   <u007E,u
@@ -118,9 +112,9 @@ L00AB    leax  >L0387,pcr
          stx   >L0312,pcr
          ldx   #$12BD
 L00B6    stx   >L0310,pcr
-L00BA    ldx   <u007F,u
-         lda   #$04
-         sta   u0006,u
+L00BA    ldx   X.DRVTBL,u
+         lda   #DriveCnt
+         sta   V.NDRV,u
          deca
          pshs  a
 L00C4    bsr   L00CF
@@ -143,17 +137,35 @@ L00CF    ldd   #$099F
          std   <$11,x
          clrb
 L00F0    rts
+
+* Insert delay
 L00F1    pshs  x,b
          ldx   #$0360
 L00F6    ldb   <u007C,u
 L00F9    decb
          bne   L00F9
-         leax  -$01,x
+         leax  -1,x
          bne   L00F6
          puls  pc,x,b
-WRTDSK    tst   [<u0001,u]
+
+***************************************************************
+*
+* Write Sector Command
+*
+* Input:
+*   B = Msb Of Logical Sector Number
+*   X = Lsb'S Of Logical Sector Number
+*   Y = Ptr To Path Descriptor
+*   U = Ptr To Global Storage
+*
+*
+* Error:
+*   Carry Set
+*   B = Error Code
+*
+WRTDSK    tst   [<V.PORT,u]
          lda   <$21,y
-         cmpa  <u0067,u
+         cmpa  X.CURDRV,u
          beq   L010F
          bsr   L00F1
 L010F    lda   #$80
@@ -162,7 +174,20 @@ L010F    lda   #$80
          lda   #$C0
 L0118    bra   L011E
 
-READSK    tst   [<u0001,u]
+*************************************************************
+*
+* Read Sector Command
+*
+* Input: B = Msb Of Logical Sector Number
+*        X = Lsb'S Of Logical Sector Number
+*        Y = Ptr To Path Descriptor
+*        U = Ptr To Global Storage
+*
+* Output: 256 Bytes Of Data Returned In Buffer
+*
+* Error: Cc=Set, B=Error Code
+*
+READSK    tst   [<V.PORT,u]
          clra
 L011E    jsr   [>u0085,u]
          bcs   L018D
@@ -172,7 +197,7 @@ L011E    jsr   [>u0085,u]
          bcs   L018D
          ldx   $08,y
          pshs  y,x
-         ldy   <u007F,u
+         ldy   X.DRVTBL,u
          ldb   <$10,x
          bitb  #$06
          bne   L018E
@@ -187,7 +212,7 @@ L0145    lda   b,x
 L014C    clrb
          puls  pc,y,x
 L014F    pshs  y,x
-         ldy   u0001,u
+         ldy   V.PORT,u
          jsr   [>u0087,u]
          bcc   L018B
          ldb   <u007E,u
@@ -201,10 +226,10 @@ L014F    pshs  y,x
          puls  y,x
          pshs  y,x
          ldd   $08,y
-         std   <u006C,u
+         std   <X.BUFADR,u
          ldd   #$0001
          std   <u006A,u
-         ldy   u0001,u
+         ldy   V.PORT,u
          jsr   [>u0087,u]
          bcc   L018B
 L0187    ldb   <u006E,u
@@ -212,31 +237,35 @@ L0187    ldb   <u006E,u
 L018B    puls  y,x
 L018D    rts
 L018E    comb
-         ldb   #$F9
+         ldb   #E$BTyp
          puls  pc,y,x
 
 GETSTA    clrb
          rts
 
-PUTSTA    ldx   $06,y
-         ldb   $02,x
-         cmpb  #$03
+PUTSTA    ldx PD.RGS,y
+         ldb  R$B,x
+         cmpb  #SS.RST $03 Device Restore
          beq   L01A5
-         cmpb  #$04
+         cmpb  #SS.WTK $04 Device Write Track
          beq   L01BE
          comb
-         ldb   #$D0
+         ldb   #E$USvc Unknown Service request
          rts
+
+* Restore head to track 0
 L01A5    pshs  y,x
          clrb
          ldx   #$0000
          lda   #$08
          jsr   [>u0085,u]
          bcs   L018D
-         ldy   u0001,u
+         ldy   V.PORT,u
          jsr   [>u0087,u]
          bcs   L0187
          puls  pc,y,x
+
+* Format track
 L01BE    pshs  y,x
          ldb   <$2A,y
          tst   <u0073,u
@@ -245,7 +274,7 @@ L01BE    pshs  y,x
 L01CB    lda   $09,x
          bne   L01F6
          pshs  x,b,a
-         ldx   <u007F,u
+         ldx   X.DRVTBL,u
          clr   <$10,x
          clr   $0E,x
          clr   $0F,x
@@ -275,26 +304,27 @@ L0203    clra
          lda   #$10
          jsr   [>u0085,u]
          lbcs  L018B
-         ldy   u0001,u
+         ldy   V.PORT,u
          jsr   [>u0087,u]
          lbcs  L018B
          ldy   $02,s
          bsr   L0262
          lbcs  L018B
          leax  <L0246,pcr
-         stx   <u006C,u
+         stx   <X.BUFADR,u
          ldd   #$0010
          std   <u006A,u
          ldb   #$C2
          stb   <u007E,u
-         ldy   u0001,u
+         ldy   V.PORT,u
          jsr   [>u0087,u]
          lbcs  L0187
          clrb
          puls  pc,y,x
-L0246    bitb  b,s
 
-TRMNAT    ldx   u0001,u
+L0246    fcb $E5,$E5
+
+TRMNAT    ldx   V.PORT,u
          lda   ,x
          ora   #$10
          sta   ,x
@@ -303,16 +333,16 @@ TRMNAT    ldx   u0001,u
          std   $02,x
          std   ,x
          pshs  u
-         ldu   >u0089,u
+         ldu   >CTLRADDR,u
          os9   F$UnLk
          clrb
          puls  pc,u
 
 L0262    leax  >L03FC,pcr
-         lda   <$2D,y
+         lda   <$2D,y   PD.ILV
          anda  #$03
          deca
-         ldb   #$10
+         ldb   #$10  Number of sectors on a track
          mul
          leax  d,x
          stx   <u0015
@@ -326,7 +356,7 @@ L0262    leax  >L03FC,pcr
          sta   <u001B
          lda   <u0079,u
          sta   <u0019
-         ldy   u0001,u
+         ldy   V.PORT,u
          pshs  u
          sts   <u001C
          ldb   ,y
@@ -361,8 +391,9 @@ L02B3    deca
          bne   L02D9
          lbsr  L03A8
          comb
-         ldb   #$F2
+         ldb   #E$WP
          puls  pc,u
+
 L02D9    anda  #$60
          sta   $01,y
 L02DD    lda   $03,y
@@ -446,6 +477,7 @@ L037A    lda   $03,y
          bsr   L03A8
          clrb
          puls  pc,u
+
 L0387    lda   #$82
          bita  <u0019
          rts
@@ -506,7 +538,7 @@ L03E8    lds   <u001C
          dec   <u001B
          lbne  L02AB
          comb
-         ldb   #$F5
+         ldb   #E$Wr Write Error
          puls  pc,u
 
 L03FC    fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
