@@ -28,6 +28,7 @@ Pal1M92 rmb 1
 Generic rmb 1
 Gen6829 rmb 1
 DRG128 rmb 1 Dragon 128
+P9000 rmb 1 Positron 9000
 
  ifeq LEVEL-1
 Exorsr rmb 1
@@ -134,14 +135,14 @@ UnLimitd rmb 1 check all NotRAM for modules
 *       as the first two bytes in the block.
  endc
 
-EXTERR equ 1 include extended error message handling
-TimePoll equ 1 include timer polling function
+EXTERR equ 0 include extended error message handling
+TimePoll equ 0 include timer polling function
  opt l
 ***************
 *
 * SYSTEM SELECTION
 *
-CPUType set DRG128
+CPUType set P9000
 CPUSpeed set TwoMHz
 *
 ***************

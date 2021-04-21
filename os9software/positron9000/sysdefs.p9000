@@ -3,7 +3,7 @@
  page
 ****************************************
 
- ifeq CPUType-DRG128
+ ifeq CPUType-P9000
 ************************************************************
 *
 *     Dynamic Address Translator Definitions
