@@ -82,7 +82,7 @@ SCOpen ldx PD.DEV,y copy Device Table Ptr
  leax 0,y
  os9 F$PrsNam check for more name
  bcc SCOER1 ..error if so
-Open0 sty   R$X,u save updated name ptr
+Open0 sty R$X,u save updated name ptr
  puls y retrieve PD ptr
  ldd #BuffSize
  os9 F$SRqMem allocate buffers
