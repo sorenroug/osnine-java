@@ -2,7 +2,7 @@
  ttl Select device containing definitions
 
  ifp1
- use /d0/defs/os9defs
+ use os9defs
  endc
 
  mod eom,name,Data+0,ReEnt+1,devname,0

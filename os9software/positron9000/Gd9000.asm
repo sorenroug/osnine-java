@@ -47,24 +47,44 @@ name     equ   *
          fcb   $01
 
 start    equ   *
-         lbra  L004E
-         lbra  L00B1
-         lbra  L00B3
-         lbra  L00F9
-         lbra  L0101
-         lbra  L0105
+         lbra  INIT
+         lbra  READ
+         lbra  WRITE
+         lbra  GETSTA
+         lbra  PUTSTA
+         lbra  TRMNAT
 
-L0027    fcb $00,$E0,$00,$00,$E3,$00,$01,$19,$01,$01,$30,$04,$01,$39
-         fcb $08,$01,$42,$06,$01,$4D,$09,$01,$B2,$09,$01,$C4,$08,$01
-         fcb $F1,$00,$02,$08,$02
+L0027    fdb L0107-L0027
+         fcb $00
+         fdb L010A-L0027
+         fcb $00
+         fdb L0140-L0027
+         fcb $01
+         fdb L0157-L0027
+         fcb $04
+         fdb L0160-L0027
+         fcb $08
+         fdb L0169-L0027
+         fcb $06
+         fdb L0174-L0027
+         fcb $09
+         fdb L01D9-L0027
+         fcb $09
+         fdb L01EB-L0027
+         fcb $08
+         fdb L0218-L0027
+         fcb $00
+         fdb L022F-L0027
+         fcb $02
+
 L0048    fcb $20,$10,$08,$04,$02,$01
 
 
-L004E    orcc  #$50
+INIT    orcc  #$50
          ldb   #$01
          ldx   #$0320
-         ldy   >$FF80
-         stx   >$FF80
+         ldy   >DAT.Regs
+         stx   >DAT.Regs
          ldx   #$0000
          lda   ,x
          cmpb  ,x
@@ -73,7 +93,7 @@ L004E    orcc  #$50
 L0066    stb   ,x
          cmpb  ,x
          beq   L0077
-         sty   >$FF80
+         sty   >DAT.Regs
          andcc #$AF
          comb
          ldb   #$F0
@@ -92,7 +112,7 @@ L0085    stb   ,x
          bra   L0090
 L008F    clrb
 L0090    sta   ,x
-         sty   >$FF80
+         sty   >DAT.Regs
          andcc #$AF
          tstb
          bne   L00A0
@@ -106,10 +126,21 @@ L00A3    std   <u0015,u
          clrb
 L00B0    rts
 
-L00B1    clrb
+***************
+* Read
+READ    clrb
          rts
 
-L00B3    tst   <u003C,u
+***************
+* Write
+*   Write char
+*
+* Passed: (A)=char to write
+*         (Y)=Path Descriptor
+*         (U)=Static Storage address
+* returns: CC=Set If Busy (output buffer Full)
+*
+WRITE    tst   <u003C,u
          bne   L00E1
          cmpa  #$0A
          bhi   L00F7
@@ -140,21 +171,26 @@ L00E1    leax  <u0041,u
          jmp   ,x
 L00F7    clrb
          rts
-L00F9    cmpa  #$01
-         beq   L0105
+
+GETSTA    cmpa  #$01
+         beq   TRMNAT
          cmpa  #$06
-         beq   L0105
-L0101    comb
+         beq   TRMNAT
+
+PUTSTA    comb
          ldb   #$D0
          rts
-L0105    clrb
+
+TRMNAT    clrb
          rts
-         lbra  L0267
-         pshs  u
-         ldu   >$FF80
+
+L0107    lbra  L0267
+
+L010A    pshs  u
+         ldu   >DAT.Regs
          ldx   #$0320
          orcc  #$50
-L0114    stx   >$FF80
+L0114    stx   >DAT.Regs
          ldx   #$0000
          tfr   x,y
 L011C    stx   ,y++
@@ -166,15 +202,16 @@ L011C    stx   ,y++
          tfr   d,y
          cmpa  #$08
          bne   L011C
-         ldx   >$FF80
+         ldx   >DAT.Regs
          leax  $01,x
          cmpx  #$033E
          bne   L0114
-         stu   >$FF80
+         stu   >DAT.Regs
          andcc #$AF
          puls  u
          lbra  L0267
-         lda   <u0041,u
+
+L0140    lda   <u0041,u
          bne   L0149
          lda   #$01
          bra   L0151
@@ -186,16 +223,20 @@ L0149    cmpa  #$04
          rora
 L0151    sta   <u0019,u
 L0154    lbra  L0267
-         leay  <u0041,u
+
+L0157    leay  <u0041,u
          lbsr  L026F
          lbra  L0267
-         leay  <u0041,u
+
+L0160    leay  <u0041,u
          lbsr  L02EE
          lbra  L0267
-         leay  <u0041,u
+
+L0169    leay  <u0041,u
          ldx   $04,y
          lbsr  L03F2
          lbra  L0267
+
 L0174    leay  <u0041,u
          lda   ,y+
          sta   <u003D,u
@@ -238,14 +279,16 @@ L01B9    tst   <u0038,u
          lbsr  L02EE
 L01D3    clr   <u0038,u
 L01D6    lbra  L0267
-         inc   <u0038,u
+
+L01D9    inc   <u0038,u
          leay  <u0041,u
          ldd   $01,y
          std   <u0034,u
          ldd   $03,y
          std   <u0036,u
          bra   L0174
-         leay  <u0041,u
+
+L01EB    leay  <u0041,u
          ldd   $04,y
          cmpd  ,y
          bls   L0216
@@ -263,7 +306,8 @@ L01D6    lbra  L0267
          ldd   $02,y
          std   <u0013,u
 L0216    bra   L0267
-         ldd   #$0000
+
+L0218    ldd   #$0000
          std   <u0011,u
          std   <u0013,u
          ldd   <u003E,u
@@ -271,7 +315,8 @@ L0216    bra   L0267
          ldd   #$00EF
          std   <u0017,u
          bra   L0267
-         ldd   <u0015,u
+
+L022F    ldd   <u0015,u
          cmpd  #$01DF
          bne   L0265
          leay  <u0041,u
@@ -287,10 +332,10 @@ L0216    bra   L0267
          ldx   #$0000
          pshs  u
          orcc  #$50
-         ldu   >$FF80
-         sty   >$FF80
+         ldu   >DAT.Regs
+         sty   >DAT.Regs
          sta   b,x
-         stu   >$FF80
+         stu   >DAT.Regs
          andcc #$AF
          puls  u
 L0265    bra   L0267
@@ -337,9 +382,9 @@ L02AE    dec   ,s
          coma
          sta   <u001B,u
          puls  x,a
-         ldy   >$FF80
+         ldy   >DAT.Regs
          orcc  #$50
-         stx   >$FF80
+         stx   >DAT.Regs
          tfr   d,x
          lda   ,x
          ldb   <u0019,u
@@ -351,7 +396,7 @@ L02DC    ora   <u001A,u
          anda  #$3F
          ora   <u0019,u
 L02E4    sta   ,x
-         sty   >$FF80
+         sty   >DAT.Regs
          andcc #$AF
 L02EC    puls  pc,y
 L02EE    clra

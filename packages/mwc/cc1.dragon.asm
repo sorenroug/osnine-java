@@ -2,7 +2,7 @@
          ttl   program module
 
          ifp1
-         use   /dd/defs/os9defs
+         use   os9defs
          endc
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev

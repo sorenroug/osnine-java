@@ -1,7 +1,7 @@
 
  ifp1
- use   /d0/defs/os9defs
- use   /d0/defs/scfdefs
+ use   os9defs
+ use   scfdefs
  endc
 
 DRVSLCT  equ $000D

@@ -38,6 +38,7 @@ You can allocate RAM, load data into the memory and set up devices.</description
         <module>os9l1</module>
         <module>tools</module>
         <module>os9software</module>
+        <module>packages</module>
         <module>manuals</module>
         <module>emulations</module>
     </modules>

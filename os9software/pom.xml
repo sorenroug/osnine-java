@@ -14,7 +14,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>OS-9 software</name>
+    <name>OS-9 system</name>
     <url>http://www.roug.org</url>
 
     <properties>
