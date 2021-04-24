@@ -428,15 +428,17 @@ SCCTLC    pshs  pc,x
          jsr   [,s++]
          bra   SCRd20
 
-CTLTBL    bra   L037A
-         bra   L0369        Process PD.DEL
+**********
+* Path control char Dispatch Table
+CTLTBL    bra   SCBSP
+         bra   SCDEL        Process PD.DEL
          bra   SCEOL        Process PD.EOR
          bra   SCEOF
-         bra   L0398
-         bra   L03A1
+         bra   SCPRNT
+         bra   SCRPET
          puls  pc
-         bra   L0369
-         bra   L0369
+         bra   SCDEL
+         bra   SCDEL
 
 * Process PD.EOR character
 SCEOL    leas  $02,s
@@ -461,10 +463,10 @@ SCABT pshs B save error code
  puls B restore error code
  lbra SCERR detach drivers; return error
 
-L0367    bsr   L037A
+L0367    bsr   SCBSP
 
-* Process interrupt?
-L0369    leax  ,x
+* Delete line left
+SCDEL    leax  ,x
          beq   L0374
          tst   <$23,y
          beq   L0367
@@ -472,7 +474,7 @@ L0369    leax  ,x
 L0374    ldx   #$0000
          ldu   $08,y
          rts
-L037A    leax  ,x
+SCBSP    leax  ,x
          beq   L03B8
          leau  -$01,u
          leax  -$01,x
@@ -487,11 +489,12 @@ L0390    lbra  EKOBYT
 EKOCR lda #C$CR
  lbra EKOBYT
 
-L0398    lda   <$2B,y
+SCPRNT    lda   <$2B,y
          sta   ,u
          bsr   L0374
 L039F    bsr   L0408
-L03A1    cmpx  $0D,y
+
+SCRPET    cmpx  $0D,y
          beq   L03B8
          leax  $01,x
          cmpx  $02,s
@@ -513,7 +516,7 @@ L03B9    pshs  u,y,x
          jsr   d,x
          puls  pc,u,y,x
 
-L03CA    pshs  u,y,x
+GetDv2    pshs  u,y,x
          ldx   $0A,y
          ldu   $03,y
          bra   GetChr1
@@ -779,11 +782,11 @@ PutChr    pshs  u,x,a
          dec   $07,u
          bne   PutChr17
          bra   L058D
-L0583    lbsr  L03CA
+L0583    lbsr  GetDv2
          bcs   L058D
          cmpa  <$2F,y
          bne   L0583
-L058D    lbsr  L03CA
+L058D    lbsr  GetDv2
          cmpa  <$2F,y
          beq   L058D
 PutChr17    ldu   $02,x
@@ -792,6 +795,7 @@ PutChr17    ldu   $02,x
          bsr   WrChar
          tst   $0C,y
          bne   PutChr9
+
          ldb   <$26,y
          pshs  b
          tst   <$25,y
