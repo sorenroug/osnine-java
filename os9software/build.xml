@@ -44,7 +44,7 @@
     <target name="all" depends="prepare, required, level1,
         gimix, swtpc, color, fm7, dragon64, cms9609, cms9619,
         exorsr,
-        color3, fm11, dragon128, cms9639, virtual,
+        color3, fm11, dragon128, cms9639, positron9000, virtual,
         utilities, y2k, dynacalc, stylograph, rms, basic09">
     </target>
 
@@ -190,6 +190,7 @@
         <assemble src="IOMan_ed10" home="dragon128" verify="e96ceab669a671491ccc2790cc51e18d"/>
     </target>
 
+    <!-- GIMIX Level II -->
     <target name="l2gimix" depends="prepare">
         <assemble src="Boot" home="l2gimix" verify="9b746701de4b4304523e4a9326dc0cab"/>
         <assemble src="G68" home="l2gimix" verify="3a94629a611619271ddc39ed59640cdb"/>
@@ -212,6 +213,19 @@
     <target name="cms9639" depends="prepare">
         <assemble src="OS9p1_ed12" home="cms9639"  verify="c62663295a8df03e8d370e1f2c9c2eb1"/>
         <assemble src="Boot" home="cms9639"  verify="921665455cf8e35d2e966368706e72f8"/>
+    </target>
+
+    <!-- Positron 9000 -->
+    <target name="positron9000" depends="prepare">
+        <assemble src="OS9p1" home="positron9000"  verify="ee22c19653e4a2b04eefae0fe570781d"/>
+        <assemble src="OS9p2" home="positron9000"  verify="9f8e54ac240df9b5879ad602f8fbf5e6"/>
+        <assemble src="Acia" home="positron9000"  verify="3f8f6b01e0966f2a8b1e135f73f75090"/>
+        <assemble src="Clock" home="positron9000"  verify="87bc3459fd407ff9504a0070e9feb4a8"/>
+        <assemble src="Cons" home="positron9000"  verify="5e5e75f768d7b82f4eab5e9bf84271e9"/>
+        <assemble src="Disk" home="positron9000"  verify="c1823bf4bcc2cddbc3836d0936d5c143"/>
+        <assemble src="Gd9000" home="positron9000"  verify="0b024fe067d7f4e112053670d2171ca6"/>
+        <assemble src="RBF" home="positron9000"  verify="2e81752ebd6658e1c68e6a3f74ecaf5d"/>
+        <assemble src="SCF" home="positron9000"  verify="43de9839d3df194c0394606e1757a398"/>
     </target>
 
     <target name="virtual" depends="prepare">
