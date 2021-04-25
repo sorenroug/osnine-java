@@ -1,0 +1,10 @@
+
+ ifp1
+ use   os9defs
+ use   scfdefs
+ endc
+
+DRVSLCT  equ $000D
+PRTTYPE  equ $000E
+MAXPAGES equ $000F
+LOADPROP equ $0011

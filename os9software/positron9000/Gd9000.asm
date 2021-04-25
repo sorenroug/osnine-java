@@ -96,8 +96,9 @@ L0066    stb   ,x
          sty   >DAT.Regs
          andcc #$AF
          comb
-         ldb   #$F0
+         ldb   #E$Unit
          bra   L00B0
+
 L0077    sta   ,x
          ldx   #$0028
          lda   ,x
@@ -178,7 +179,7 @@ GETSTA    cmpa  #$01
          beq   TRMNAT
 
 PUTSTA    comb
-         ldb   #$D0
+         ldb   #E$UnkSvc
          rts
 
 TRMNAT    clrb
@@ -203,7 +204,7 @@ L011C    stx   ,y++
          cmpa  #$08
          bne   L011C
          ldx   >DAT.Regs
-         leax  $01,x
+         leax  1,x
          cmpx  #$033E
          bne   L0114
          stu   >DAT.Regs
@@ -249,10 +250,11 @@ L0174    leay  <u0041,u
          ldd   $05,y
          std   ,y
          ldd   $07,y
-         std   $02,y
+         std   2,y
          leax  >L019C,pcr
          stx   <u0039,u
          bra   L01AF
+
 L019C    leay  <u0041,u
          lbsr  L02EE
          dec   <u003D,u
@@ -260,18 +262,19 @@ L019C    leay  <u0041,u
          ldd   $04,y
          std   ,y
          ldd   $06,y
-         std   $02,y
+         std   2,y
 L01AF    ldb   #$04
          stb   <u0040,u
          stb   <u003B,u
          clrb
          rts
+
 L01B9    tst   <u0038,u
          beq   L01D6
          ldd   $04,y
          std   ,y
          ldd   $06,y
-         std   $02,y
+         std   2,y
          ldd   <u0034,u
          std   $04,y
          ldd   <u0036,u
@@ -295,7 +298,7 @@ L01EB    leay  <u0041,u
          cmpd  <u003E,u
          bhi   L0216
          ldx   $06,y
-         cmpx  $02,y
+         cmpx  2,y
          bls   L0216
          cmpx  #$00EF
          bhi   L0216
@@ -303,7 +306,7 @@ L01EB    leay  <u0041,u
          stx   <u0017,u
          ldd   ,y
          std   <u0011,u
-         ldd   $02,y
+         ldd   2,y
          std   <u0013,u
 L0216    bra   L0267
 
@@ -349,13 +352,13 @@ L026F    pshs  y
          bcs   L02EC
          cmpx  <u0015,u
          bhi   L02EC
-         ldd   $02,y
+         ldd   2,y
          cmpd  <u0013,u
          bcs   L02EC
          cmpd  <u0017,u
          bhi   L02EC
          ldd   #$00EF
-         subd  $02,y
+         subd  2,y
          tfr   b,a
          lsrb
          lsrb
@@ -420,7 +423,7 @@ L0312    std   <u0024,u
          rorb
          std   <u0028,u
          ldd   $06,y
-         subd  $02,y
+         subd  2,y
          lbeq  L03C8
          bhi   L032F
          ldx   #$FFFF
@@ -450,9 +453,9 @@ L035F    lbsr  L026F
 L0365    ldd   ,y
          addd  <u001C,u
          std   ,y
-         ldd   $02,y
+         ldd   2,y
          addd  <u001E,u
-         std   $02,y
+         std   2,y
          ldd   <u0028,u
          addd  <u0026,u
          std   <u0028,u
@@ -464,26 +467,26 @@ L0384    subd  <u0024,u
          ldd   ,y
          addd  <u0020,u
          std   ,y
-         ldd   $02,y
+         ldd   2,y
          addd  <u0022,u
-         std   $02,y
+         std   2,y
 L0398    pshs  x
          lbsr  L026F
          puls  x
-         leax  $01,x
+         leax  1,x
          cmpx  <u0024,u
          bne   L0365
          rts
 L03A7    ldd   $06,y
-         subd  $02,y
+         subd  2,y
          beq   L03C4
          bhi   L03B5
          ldd   #$FFFF
          std   <u0022,u
 L03B5    lbsr  L026F
-         ldd   $02,y
+         ldd   2,y
          addd  <u0022,u
-         std   $02,y
+         std   2,y
          cmpd  $06,y
          bne   L03B5
 L03C4    lbsr  L026F
@@ -500,9 +503,9 @@ L03DB    lbsr  L026F
          ldd   ,y
          addd  <u001C,u
          std   ,y
-         ldd   $02,y
+         ldd   2,y
          addd  <u0022,u
-         std   $02,y
+         std   2,y
          cmpd  $06,y
          bne   L03DB
          rts
@@ -531,7 +534,7 @@ L040A    ldd   <u002A,u
          addd  #$0006
          bra   L043B
 L0426    ldx   <u002C,u
-         leax  -$01,x
+         leax  -1,x
          stx   <u002C,u
          ldd   <u002A,u
          subd  <u002C,u
@@ -543,7 +546,7 @@ L0426    ldx   <u002C,u
 L043B    addd  <u0032,u
          std   <u0032,u
          ldx   <u002A,u
-         leax  $01,x
+         leax  1,x
          stx   <u002A,u
          bra   L040A
 L044B    ldd   <u002A,u
@@ -585,7 +588,8 @@ L0457    ldd   <u002A,u
          ldd   <u002A,u
          bsr   L04AB
          rts
-L04AB    addd  $02,y
+
+L04AB    addd  2,y
          std   <u001E,u
          tfr   x,d
          addd  ,y
