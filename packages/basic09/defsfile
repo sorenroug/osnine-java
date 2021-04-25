@@ -1,3 +1,3 @@
-         use   /d0/DEFS/os9defs
-*        use   /d0/DEFS/scfdefs
+         use   os9defs
+*        use   scfdefs
          use   errcodes.asm
