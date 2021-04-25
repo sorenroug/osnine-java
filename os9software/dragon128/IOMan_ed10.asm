@@ -158,7 +158,7 @@ IODEL ldx R$X,u Get module addr
  ldu D.Init From configuration module
  ldb DevCnt,u Get device table size
  ldu D.DevTbl Get device table address
-IODEL10 ldy   V$DESC,u empty table entry?
+IODEL10 ldy V$DESC,u empty table entry?
  beq IODEL20 ..yes; skip it
  cmpx V$DESC,u This logical device?
  beq IODELErr ..yes; return error
@@ -1516,8 +1516,8 @@ LMod.O ldd TotMod+stacked,s get modules size
  endc
  endc
  sta TotMod+stacked,s save block number
-         ldb   ,s
-         beq   LMod.Q
+ ldb TotRAM+stacked,s get total ram size
+ beq LMod.Q branch if none
  lsrb make block count
  lsrb
  ifge DAT.BlSz-2048
@@ -1526,51 +1526,51 @@ LMod.O ldd TotMod+stacked,s get modules size
  lsrb
  endc
  endc
-         subb  $02,s
-         beq   LMod.Q
-         ldx   <$15,s
-         leax  <P$DATImg,x
-         lsla
-         leax  a,x
-         clra
-         tfr   d,y
-         ldu   D.BlkMap
-LMod.O2    ldd   ,x++
-         clr   d,u
-         leay  -$01,y
-         bne   LMod.O2
-LMod.Q    ldx   <$15,s
-         lda   P$ID,x
-         os9   F$DelPrc
-         ldd   <$17,s
-         bne   LMod.R
-         ldb   $07,s
-         stb   <$12,s
-         comb
-         bra   LModXit
-LMod.R    ldu   D.ModDir
-         ldx   <$11,s
-         ldd   <$17,s
-         leau  -MD$ESize,u
-LMod.S    leau  MD$ESize,u
-         cmpu  D.ModEnd
-         bcs   LMod.T
-         comb
-         ldb   #E$MNF
-         stb   <$12,s
-         bra   LModXit
-LMod.T    cmpx  MD$MPtr,u
-         bne   LMod.S
-         cmpd  [MD$MPDAT,u]
-         bne   LMod.S
-         ldd   MD$Link,u
-         beq   LMod.U
-         subd  #1
-         std   MD$Link,u
-LMod.U    stu   <$17,s
-         clrb
-LModXit    leas  <$11,s
-         puls  pc,u,y,x,b,a
+ subb TotMod+stacked,s get unused count
+ beq LMod.Q branch if none
+ ldx ProcPtr+stacked,s get proc ptr
+ leax P$DATImg,x make ptr to image
+ lsla make 2 byte entries
+ leax a,x get to extra blks
+ clra make proper reg
+ tfr d,y
+ ldu D.BlkMap get blk bits
+LMod.O2 ldd ,x++ get blk number
+ clr d,u show blk not in use
+ leay -1,y dec max blk cnt
+ bne LMod.O2 bra if more blks
+LMod.Q ldx ProcPtr+stacked,s get process ptr
+ lda P$ID,x get process ID
+ os9 F$DelPrc remove process
+ ldd ModBlk+stacked,s has entry been found?
+ bne LMod.R branch if so
+ ldb ErrCode+stacked,s any other errors?
+ stb locals+stacked+1,s return it
+ comb set carry
+ bra LModXit
+LMod.R ldu D.ModDir get ptr to module dir
+ ldx ModPtr+stacked,s get module offset in block
+ ldd ModBlk+stacked,s get module block number
+ leau -MD$ESize,u preset back one entry
+LMod.S leau MD$ESize,u get next dir entry
+ cmpu D.ModEnd end of search?
+ bcs LMod.T bra if not
+ comb
+ ldb #E$MNF module entry not found
+ stb locals+stacked+1,s
+ bra LModXit error exit
+LMod.T cmpx MD$MPtr,u is this module?
+ bne  LMod.S bra if no chance
+ cmpd [MD$MPDAT,u] is this really module?
+ bne LMod.S bra if not
+ ldd MD$Link,u get link count
+ beq LMod.U bra if already zero
+ subd #1 decrement link count(for above inc)
+ std MD$Link,u save it
+LMod.U stu ModBlk+stacked,s return U --> Mod Dir entry
+ clrb clear carry
+LModXit leas locals,s return scratch
+ puls pc,u,y,x,b,a
 
  page
 stacked set stacked+8
@@ -1763,146 +1763,147 @@ PrtBuf rmb PrtBufSz reserve line buffer
 PrtMem equ .
 
 PrtErr ldb R$B,u get error number
-         beq   PrtErr90
-         ldx   D.Proc
-         lda P$PATH+2,x  get stderr path
-         beq   PrtErr90  return if not there
-         pshs  u
-         leas  -PrtMem,s
-         leau  ,s
-         std   0,u
-         stx   $02,u
-         ldy   D.SysPRC
-         sty   D.Proc
-         lbsr  PrtErrNm Write label and error number
-         clr   $0A,u
-         ldx   $02,u
+ beq PrtErr90 ..none; exit
+ ldx D.Proc get user process descriptor
+ lda P$PATH+2,x get standard error path
+ beq PrtErr90 ..none; exit
+ pshs u save registers ptr
+ leas -PrtMem,s get memory
+ leau ,s point at it
+ std PrtPath,u save path and error number
+ stx PrtProc,u save process descriptor
+ ldy D.SysPRC fix process descriptor
+ sty D.Proc
+ lbsr PrtErrNm print the error number
+ clr PrtFlag,u clear 'tried system' flag
+ ldx PrtProc,u try user path first
 
-PrtErr10 leax P$ErrNam,x
-         clr   $09,u
-         pshs  u,x
-         clra
-         os9   F$Link
-         tfr   u,y
-         puls  u,x
-         sty   $04,u
-         bcc   PrtErr20
+PrtErr10 leax P$ErrNam,x point at error name
+ clr PrtPFlag,u clear path flag
+ pshs u,x save regs
+ clra module type=don't care
+ os9 F$Link try to link to module
+ tfr u,y put module ptr in Y
+ puls u,x retrieve regs
+ sty PrtMod,u save module ptr
+ bcc PrtErr20 skip if module found
 
-         lda   #$05
-         os9   I$Open
-         sta   $08,u
-         inc   $09,u
-         bcc   PrtErr20
+ lda #READ.+EXEC. try open file for read
+ os9 I$Open
+ sta PrtEPath,u save path number
+ inc PrtPFlag,u show path rather than module
+ bcc PrtErr20 skip if file opened
 
-PrtErr15    tst   $0A,u
-         bne   PrtErr85
-         inc   $0A,u
-         ldx   D.SysPRC
-         bra   PrtErr10
+PrtErr15 tst PrtFlag,u tried system path?
+ bne PrtErr85 ..yes; no more hope
+ inc PrtFlag,u show system path
+ ldx D.SysPRC get system process descriptor
+ bra PrtErr10 try on system path
 
-PrtErr85    lda   #C$CR just print CR-LF
-         pshs  a
-         leax  ,s
-         ldy   #1
-         lbsr  PrtLine
-         leas  1,s
-         bra   PrtErr95
+PrtErr85 lda #C$CR just print CR-LF
+ pshs a stack it
+ leax ,s point at it
+ ldy #1 one byte
+ lbsr PrtLine print it
+ leas 1,s return scratch
+ bra PrtErr95 and exit
 
-PrtErr80    lbsr  PrtUndo
-PrtErr95    ldy   $02,u
-         sty   D.Proc
-         leas  <$5B,s
-         puls  u
-PrtErr90 clrb
-         rts
+PrtErr80 lbsr PrtUndo unlink/close
+PrtErr95 ldy PrtProc,u restore process descriptor
+ sty D.Proc
+ leas PrtMem,s return memory
+ puls u retrieve regs ptr
+PrtErr90 clrb no error
+ rts
 
-PrtErr20    tst   $09,u
-         bne   PrtErr30
-         ldx   $04,u
-         ldd   $0D,x
-         leax  d,x
-         stx   $06,u
-         bra   PrtErr40
+PrtErr20 tst PrtPFlag,U module?
+ bne PrtErr30 ..no
+ ldx PrtMod,u get module address
+ ldd M$Mem+2,x GET TABLE OFFSET ***
+ leax d,x make table address
+ stx PrtTbl,u save table address
+ bra PrtErr40 print the message
 
-PrtErr30    ldx   #$000D
-         bsr   PrtSeek
-         bcs   PrtErr70
-         lda   $08,u
-         ldy   #$0002
-         leas  -$02,s
-         leax  ,s
-         os9   I$Read
-         puls  x
-         bcs   PrtErr70
-         bsr   PrtSeek
-         bcs   PrtErr70
+PrtErr30 ldx #M$Mem+2 seek to offset
+ bsr PrtSeek
+ bcs PrtErr70 skip if error
+ lda PrtEPath,u get path number
+ ldy #2 two bytes to read
+ leas -2,s get scratch
+ leax ,s point at it
+ os9 I$Read read the offset
+ puls x retrieve offset
+ bcs PrtErr70 ..error
+ bsr PrtSeek seek to table
+ bcs PrtErr70 ..error
 
-PrtErr40    lbsr  PrtRdRcd
-         bcs   PrtErr70
-         lbsr  PrtGetNm
-         beq   PrtErr70
-         cmpb  $01,u
-         bne   PrtErr40
-         pshs  x
-         leax  >ErrMsg2,pcr  Write hyphen
-         ldy   #$0003
-         bsr   PrtLine
-         puls  x
-PrtErr50    ldy   #PrtBufSz-1
-         bsr   PrtLine
-         bsr   PrtRdRcd
-         bcs   PrtErr80
-         lda   ,x+
-         beq   PrtErr80
-         cmpa  #$30
-         bcs   PrtErr50
-         bra   PrtErr80
+PrtErr40 lbsr PrtRdRcd read a record
+ bcs PrtErr70 ..error
+ lbsr PrtGetNm get error number
+ beq PrtErr70 ..end of table
+ cmpb PrtNum,u the one we want?
+ bne PrtErr40 ..no; try again
+ pshs x save message ptr
+ leax ErrMsg2,PCR " - " string
+ ldy #MsgLen2
+ bsr PrtLine print it
+ puls x
 
-PrtErr70    bsr   PrtUndo
-         lbra  PrtErr15
+PrtErr50 ldy #PrtBufSz-1 max line size
+ bsr PrtLine print the line
+ bsr PrtRdRcd read next record
+ bcs PrtErr80 ..no more; done
+ lda ,x+ get first byte
+ beq PrtErr80 ..zero; end of table
+ cmpa #'0 delimiter?
+ bcs PrtErr50 ..yes; another line
+ bra PrtErr80 ..else exit
 
-PrtErrNm    leax ErrMsg1,pcr
-         ldy   #MsgLen1 string length
-         bsr   PrtLine
-         ldb PrtNum,u
-         leax PrtBuf,u
-         tfr x,y
-         lda   #'0-1
-PrtNm1    inca
-         subb  #100
-         bcc PrtNm1
-         sta   ,y+
-         lda   #'9+1
-PrtNm2    deca
-         addb  #10
-         bcc   PrtNm2
-         sta   ,y+
-         addb  #'0
-         stb   ,y+
-         ldy   #3
+PrtErr70 bsr PrtUndo unlink/close
+ lbra PrtErr15 might try system path...
+
+PrtErrNm leax ErrMsg1,pcr point at "Error #"
+ ldy #MsgLen1 string length
+ bsr PrtLine print the string
+ ldb PrtNum,u get the error number
+ leax PrtBuf,u point at buffer area
+ tfr x,y twice
+ lda #'0-1 initialise hundreds
+PrtNm1 inca
+ subb #100 make hundreds
+ bcc PrtNm1
+ sta ,y+ put in buffer
+ lda #'9+1 initialise tens
+PrtNm2 deca
+ addb #10 make tens
+ bcc PrtNm2
+ sta ,y+ put in buffer
+ addb #'0 make units
+ stb ,y+ put in buffer
+ ldy #3 number size
 * Fall through to print it
 
-PrtLine    lda   ,u
-         os9   I$WritLn
-         rts
+PrtLine lda PrtPath,u get output path
+ os9 I$WritLn write the string
+ rts
 
-PrtSeek    lda   $08,u
-         pshs  u,x
-         tfr   x,u
-         ldx   #0
-         os9   I$Seek
-         puls  pc,u,x
+PrtSeek lda PrtEPath,u get path
+ pshs u,x save regs
+ tfr x,u put low word in U
+ ldx #0 high word is 0
+ os9 I$Seek seek!
+ puls pc,u,x retrieve regs and return
 
-PrtUndo    lda   $08,u
-         tst   $09,u
-         bne   PrtUndo1
-         pshs  u
-         ldu   $04,u
-         os9   F$UnLink
-         puls  pc,u
+PrtUndo lda PrtEPath,u get path
+ tst PrtPFlag,u
+ bne PrtUndo1 ..there is one
+ pshs U save U
+ ldu PrtMod,U get module ptr
+ os9 F$UnLink unlink it
+ puls U,PC
 
-PrtUndo1    os9   I$Close
-         rts
+PrtUndo1 os9 I$Close close the path
+ rts
 
 PrtRdRcd leax PrtBuf,u point at the buffer
  ldy #PrtBufSz max line length
@@ -1964,34 +1965,34 @@ MsgLen2 equ *-ErrMsg2
 *
 * The name string MUST be 32 chrs or less
 *
-InsErr  pshs u
-         ldx   R$X,u
-         clra
-         os9   F$Link Is it already loaded?
-         bcs   InsErr1 ..no, then try to open the file
-         pshs  x
-         os9   F$UnLink
-         bra   InsErr2
-InsErr1    ldu   ,s
-         ldx   R$X,u
-         lda   #READ.
-         os9   I$Open
-         bcs   InsErrx
-         pshs  x
-         os9   I$Close
-InsErr2    ldu   D.Proc
-         lda   P$Task,u
-         ldb   D.SysTsk
-         ldy   #$0020
-         leau  P$ErrNam,u
-         ldx   $02,s
-         ldx   $04,x
-         os9   F$Move
-         ldu   $02,s
-         puls  x
-         stx   R$X,u
-         clrb
-InsErrx    puls  pc,u
+InsErr pshs u save registers ptr
+ ldx R$X,u get name ptr
+ clra any module type
+ os9 F$Link try to link
+ bcs InsErr1 ..not found
+ pshs x save updated ptr
+ os9 F$UnLink don't hang on to it
+ bra InsErr2
+InsErr1 ldu ,s retrieve reg ptr
+ ldx R$X,u retrieve name ptr
+ lda #READ.
+ os9 I$Open try to open
+ bcs InsErrx ..couldn't
+ pshs x save updated name ptr
+ os9 I$Close close it again
+InsErr2 ldu D.Proc get process descriptor
+ lda P$Task,u get source task number
+ ldb D.SysTsk get destination (system)
+ ldy #ErrNamSz error name area size
+ leau P$ErrNam,u destination area ptr
+ ldx 2,s retrieve regs ptr
+ ldx R$X,X get source ptr
+ os9 F$Move move name into process descriptor
+ ldu 2,s retrieve regs ptr
+ puls x retrieve updated name ptr
+ stx R$X,u return to caller
+ clrb no error
+InsErrx puls U,PC
 
  else
 * Normal error service
@@ -2003,10 +2004,10 @@ InsErrx    puls  pc,u
 * Entry: U = Register stack pointer
 *
 
-ErrMsg1   fcc "ERROR #"
-ErrNum   equ   *-ErrMsg1
- fcb  '0-1,'9+1,'0
-         fcb   C$CR
+ErrMsg1 fcc "ERROR #"
+ErrNum  equ  *-ErrMsg1
+ fcb '0-1,'9+1,'0
+ fcb   C$CR
 ErrMessL equ   *-ErrMsg1
 
 PrtErr    ldx   D.Proc
@@ -2021,13 +2022,13 @@ L0893    lda   ,x+
          bne   L0893
          ldb   R$B,u
 * Convert error code to decimal
-L089D    inc   ErrNum+0,s
-         subb  #100
-         bcc   L089D
-L08A3    dec   ErrNum+1,s
+PrtNm1    inc   ErrNum+0,s
+ subb #100 make hundreds
+         bcc   PrtNm1
+PrtNm2    dec   ErrNum+1,s
          addb  #10
-         bcc   L08A3
-         addb  #$30
+         bcc   PrtNm2
+         addb  #'0
          stb   ErrNum+2,s
          ldx   D.Proc
          ldu   P$SP,x      get the stack pointer
@@ -2052,55 +2053,57 @@ L08CC    rts
 *
 * Link Process Into Ioqueue And Go To Sleep
 *
-IOQueu    ldy   D.Proc
-IOQ.A    lda   P$IOQN,y
-         beq   IOQ.C
-         cmpa  R$A,u
-         bne   IOQ.B
-         clr   P$IOQN,y
+IOQueu ldy D.Proc get process ptr
+IOQ.A lda P$IOQN,y get next process ID
+ beq IOQ.C branch if none
+ cmpa R$A,u is this queue process?
+ bne IOQ.B branch if not
+ clr P$IOQN,y clear link
 
  ifeq LEVEL-1
-         ldx   D.PrcDBT
-         os9   F$Find64
+ ldx D.PrcDBT
+ os9 F$Find64
  else
  os9 F$GProcP get process ptr
  endc
 
-         bcs   IOQuExit
-         clr   P$IOQP,y
-         ldb   #S$Wake
-         os9   F$Send
-         bra   IOQ.E
+ bcs IOQuExit branch if dead
+ clr P$IOQP,y clear link
+ ldb #S$Wake get signal
+ os9 F$Send wake process
+ bra IOQ.E
 
 IOQ.B
  ifeq LEVEL-1
+  jmp NOWHERE
  else
  os9 F$GProcP get process ptr
  endc
-         bcc   IOQ.A
-IOQ.C    lda   R$A,u
+ bcc IOQ.A branch if found
+IOQ.C lda R$A,u get queue process ID
 IOQ.D
  ifeq LEVEL-1
+    jmp NOWHERE
  else
  os9 F$GProcP get process ptr
  endc
-         bcs   IOQuExit
-IOQ.E    lda   P$IOQN,y
-         bne   IOQ.D
-         ldx   D.Proc
-         lda   P$ID,x
-         sta   P$IOQN,y
-         lda   P$ID,y
-         sta   P$IOQP,x
-         ldx   #0
-         os9   F$Sleep
-         ldu   D.Proc
-         lda   P$IOQP,u
-         beq   IOQ.F
+ bcs IOQuExit branch if error
+IOQ.E lda P$IOQN,y get net process ID
+ bne IOQ.D branch if there is one
+ ldx D.Proc get current process ptr
+ lda P$ID,x get current process ID
+ sta P$IOQN,y link into queue
+ lda P$ID,y get previous process ID
+ sta P$IOQP,x set predecessor link
+ ldx #0 sleep until signal
+ os9 F$Sleep
+ ldu D.Proc get process ptr
+ lda P$IOQP,u normal queue exit?
+ beq IOQ.F branch if so
 
  ifeq LEVEL-1
-         ldx   D.PrcDBT
-         os9   F$Find64
+ ldx D.PrcDBT
+ os9 F$Find64
  else
  os9 F$GProcP get process ptr
  endc
@@ -2117,8 +2120,8 @@ IOQ.E    lda   P$IOQN,y
  clr P$IOQN,u clear next process link
 
  ifeq LEVEL-1
-         ldx   D.PrcDBT
-         os9   F$Find64
+ ldx D.PrcDBT
+ os9 F$Find64
  else
  os9 F$GProcP get process ptr
  endc
