@@ -63,7 +63,7 @@ DAT.Free equ $015F
 DAT.BlMx equ $100 maximum block number
 DAT.BMSz equ $200 Block Map size (one byte per block)
 DAT.WrPr equ 0 no Block Write Protect bit
-DAT.WrEn equ 2 Block Write Enable bit
+DAT.WrEn equ $200 Block Write Enable bit
 
 ***************
 *
@@ -118,7 +118,7 @@ MappedIO equ 1
 * and retry, by jumping through a ROM
 * vector (usually the reset vector).
 *
-D$REBOOT equ $FFEE use an unused vector
+D$REBOOT equ $FFFE use an unused vector
 *
 **********
 

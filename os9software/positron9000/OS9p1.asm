@@ -27,18 +27,18 @@ LoRAM set $20 set low RAM limit
 HiRAM set DAT.Blsz*3
 
 TEST set 0 not test mode
-COLD    ldx   #$0346
+COLD    ldx   #$0A*DAT.BlCt+%00110+DAT.WrEn
          lda   #$03
          clrb
 L0019    stx   >DAT.Regs
          sta   >$0000
-         leax  $02,x
+         leax  2,x
          incb
          cmpb  #$05
          bne   L0019
          ldu   #$0000
          clrb
-L002A    ldx   #$0344
+L002A    ldx   #$0A*DAT.BlCt+%00100+DAT.WrEn
          stx   >DAT.Regs
          lda   b,u
          leax  $04,x
@@ -50,12 +50,12 @@ L002A    ldx   #$0344
          incb
          cmpb  #$04
          bne   L002A
-         ldx   #$0144
+         ldx   #$0A*DAT.BlCt+%00100
          stx   >DAT.Regs
          lda   >$0000
          anda  #$E0
          bne   L0080
-         ldx   #$0350
+         ldx   #$0A*DAT.BlCt+%10000+DAT.WrEn
          stx   >DAT.Regs
          lda   #$80
          sta   >$0003
@@ -74,7 +74,7 @@ L006B    deca
          sta   >$0003
          lda   #$12
          sta   >$0003
-L0080    ldx   #$0300
+L0080    ldx   #$08*DAT.BlCt+%00000+DAT.WrEn
          ldy   #$0000
 L0087    clra
          clrb
@@ -88,15 +88,15 @@ L008C    clr   d,y
          cmpa  #$08
          bne   L008C
          leax  $01,x
-         cmpx  #$0340
+         cmpx  #$0140+DAT.WrEn
          bne   L0087
-         ldx   #$0308
+         ldx   #$08*DAT.BlCt+%01000+DAT.WrEn
          stx   >DAT.Regs
          ldd   #$0702
          std   ,y++
          ldd   #$0401
          std   ,y
-         ldx   #$0200
+         ldx   #$00*DAT.BlCt+%00000+DAT.WrEn
          stx   >DAT.Regs
  ldx #LoRAM get low limit ptr
  ldy #HiRAM-LoRAM get byte count
@@ -189,7 +189,7 @@ Cold15 ldd ,Y++ get vector
  clra
  clrb
  else
- ldd #DAT.WrEn*256
+ ldd #DAT.WrEn
   endc
  std ,X++ use block zero for system
  ifge RAMCount-2
@@ -205,9 +205,9 @@ Cold15 ldd ,Y++ get vector
 Cold16 std ,X++ mark free entry
  leay -1,Y count block
  bne Cold16 branch if more
-         ldd   #$0350  IOBlock?
+         ldd   #$0150+DAT.WrEn  IOBlock?
          std   ,x++
-         ldd   #$0340
+         ldd   #$0140+DAT.WrEn
          std   ,x++
          ldd   #$01FE  ROMBlock?
 L0190    std   ,x++
@@ -236,7 +236,7 @@ Cold20 equ *
  subd D.BlkMap get block number
          cmpd  #$0100  DAT.BlMx?
          bcc   Cold30
-         ora   #$02
+         ora   #$02  Turn on Write-enable?
          std   >$FF86  DAT.Regs+RAMCount ?
  ifeq RAMCheck-BlockTyp
  ldu 0,y get current contents
@@ -292,7 +292,7 @@ Cold60 pshs Y,X save ptrs
          ldd   ,y
          std   >DAT.Regs
          lda   ,x
-         ldx   #$0200
+         ldx   #$0000+DAT.WrEn
          stx   >DAT.Regs
  puls y,x retrieve ptrs
  cmpa #$87 could be module?
@@ -846,16 +846,16 @@ Link20 lbsr SetImage set process DAT image
          pshs  u,b,a
          lsla
          leau  a,y
-         ldy   $09,s
-         lda   $02,y
+         ldy   9,s
+         lda   2,y
          bita  #$40
          beq   L0477
          clra
          tfr   d,y
 L046D    ldd   ,u
-         ora   #$02
+         ora   #(DAT.WrEn/256)
          std   ,u++
-         leay  -$01,y
+         leay  -1,y
          bne   L046D
 L0477    puls  u,b,a
  endc
@@ -1917,7 +1917,7 @@ Boot30 ldd 0,X get module beginning
  tfr D,X copy offset
  tfr Y,D pass DAT img ptr
  ifne DAT.WrEn
- anda #^DAT.WrEn
+ anda #^(DAT.WrEn/256)
  endc
  OS9 F$VModul validate module
  pshs B save error code (if any)
@@ -2066,7 +2066,7 @@ AllI.G lda ,u+ is this free block?
  tfr U,D copy map ptr
  subd D.BlkMap get block number
  ifne DAT.WrEn
- ora #DAT.WrEn
+ ora #(DAT.WrEn/256)
  endc
  std -2,y set image
 AllI.H leax -1,x count block
@@ -2337,7 +2337,7 @@ LDAXY    pshs  x,b,cc
          orcc  #$50
          std   >DAT.Regs
          lda   ,x
-         ldx   #$0200
+         ldx   #$0000+DAT.WrEn
          stx   >DAT.Regs
          puls  pc,x,b,cc
  page
@@ -2362,7 +2362,7 @@ LDAXYP    pshs  x,b,cc
          orcc  #$50
          std   >DAT.Regs
          lda   ,x
-         ldx   #$0200
+         ldx   #$0000+DAT.WrEn
          stx   >DAT.Regs
          puls  x,b,cc
          leax  $01,x
@@ -2439,7 +2439,7 @@ LDDDXY    pshs  y,x
          orcc  #$50
          std   >DAT.Regs
          ldb   ,x
-         ldx   #$0200
+         ldx   #$0000+DAT.WrEn
          stx   >DAT.Regs
          puls  pc,y,x,a,cc
  page
@@ -2638,7 +2638,7 @@ LDABX andcc #^Carry clear carry
          stb   >$FFCA
          stu   >DAT.Regs
          lda   ,x
-         ldu   #$0200
+         ldu   #$0000+DAT.WrEn
          stu   >DAT.Regs
          puls  pc,u,x,b,cc
 
@@ -2656,7 +2656,7 @@ STABX andcc #^Carry clear carry
          lda   $01,s
          stu   >DAT.Regs
          sta   ,x
-         ldu   #$0200
+         ldu   #$0000+DAT.WrEn
          stu   >DAT.Regs
          puls  pc,u,x,b,a,cc
 
@@ -2671,7 +2671,7 @@ LDBBX    andcc #$FE
          stb   >$FFCA
          stu   >DAT.Regs
          ldb   ,x
-         ldu   #$0200
+         ldu   #$0000+DAT.WrEn
          stu   >DAT.Regs
          puls  pc,u,x,a,cc
 
@@ -2822,7 +2822,7 @@ SetPrTsk lda P$State,X
 L0D2B    ldd   ,x++
          ora   #$02
          std   ,u++
-         leay  -$01,y
+         leay  -1,y
          bne   L0D2B
          ldb   D.SysTsk
          stb   >$FFCA
@@ -3191,27 +3191,27 @@ IOPoll orcc #Carry set carry
 DATInit  clra
          tfr   a,dp
          ldu   #$FFC8
-         ldb   #$07
+         ldb   #7
 L0EBE    stb   ,-u
          decb
          bne   L0EBE
          leay  ,-u
-         ldx   #$01FF
-         ldb   #$02
+         ldx   #$0F*DAT.BlCt+%11111
+         ldb   #2
 L0ECA    stx   ,--y
-         leax  -$01,x
+         leax  -1,x
          decb
          bne   L0ECA
-         ldx   #$0340
+         ldx   #$0A*DAT.BlCt+%00000+DAT.WrEn
          stx   ,--y
-         ldx   #$0350
+         ldx   #$0A*DAT.BlCt+%10000+DAT.WrEn
          stx   ,--y
          ldb   #Dat.BlCt-ROMCount-RAMCount-1 
          ldx   #DAT.Free
 L0EE0    stx   ,--y
          decb
          bne   L0EE0
-         ldd   #$0202
+         ldd   #$00*DAT.BlCt+%00010+DAT.WrEn
 L0EE8    std   ,--y
          decb
          bpl   L0EE8
