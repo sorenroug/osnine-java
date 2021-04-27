@@ -699,13 +699,7 @@ AllP.D stx ,Y++ clear DAT image
  decb count block
  bne AllP.D branch if more
  ifne DAT.BlCt-DAT.BlUs
- ifeq CPUType-DRG128
-* I suspect that Vivaway has changed the next line
-* without a conditional for drg128
- ldx #IOBlock
- else
  ldx #ROMBlock
- endc
  stx ,y++
  endc
  clrb clear carry

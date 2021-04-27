@@ -27,10 +27,10 @@ LoRAM set $20 set low RAM limit
 HiRAM set DAT.Blsz*3
 
 TEST set 0 not test mode
-COLD    ldx   #$0A*DAT.BlCt+%00110+DAT.WrEn
+COLD    ldx   #DAT.WrEn+$146
          lda   #$03
          clrb
-L0019    stx   >DAT.Regs
+L0019    stx   DAT.Regs
          sta   >$0000
          leax  2,x
          incb
@@ -38,25 +38,25 @@ L0019    stx   >DAT.Regs
          bne   L0019
          ldu   #$0000
          clrb
-L002A    ldx   #$0A*DAT.BlCt+%00100+DAT.WrEn
-         stx   >DAT.Regs
+L002A    ldx   #DAT.WrEn+$144
+         stx   DAT.Regs
          lda   b,u
-         leax  $04,x
+         leax  4,x
          lslb
          leax  b,x
          lsrb
-         stx   >DAT.Regs
+         stx   DAT.Regs
          sta   >$0002
          incb
-         cmpb  #$04
+         cmpb  #4
          bne   L002A
-         ldx   #$0A*DAT.BlCt+%00100
-         stx   >DAT.Regs
+         ldx   #$144
+         stx   DAT.Regs
          lda   >$0000
          anda  #$E0
          bne   L0080
-         ldx   #$0A*DAT.BlCt+%10000+DAT.WrEn
-         stx   >DAT.Regs
+         ldx   #DAT.WrEn+$150
+         stx   DAT.Regs
          lda   #$80
          sta   >$0003
          clr   >$0000
@@ -74,11 +74,11 @@ L006B    deca
          sta   >$0003
          lda   #$12
          sta   >$0003
-L0080    ldx   #$08*DAT.BlCt+%00000+DAT.WrEn
+L0080    ldx   #DAT.WrEn+$100
          ldy   #$0000
 L0087    clra
          clrb
-         stx   >DAT.Regs
+         stx   DAT.Regs
 L008C    clr   d,y
          incb
          cmpb  #$50
@@ -87,17 +87,17 @@ L008C    clr   d,y
          inca
          cmpa  #$08
          bne   L008C
-         leax  $01,x
-         cmpx  #$0140+DAT.WrEn
+         leax  1,x
+         cmpx  #DAT.WrEn+$140
          bne   L0087
-         ldx   #$08*DAT.BlCt+%01000+DAT.WrEn
-         stx   >DAT.Regs
+         ldx   #DAT.WrEn+$108
+         stx   DAT.Regs
          ldd   #$0702
          std   ,y++
          ldd   #$0401
          std   ,y
-         ldx   #$00*DAT.BlCt+%00000+DAT.WrEn
-         stx   >DAT.Regs
+         ldx   #DAT.WrEn+$000
+         stx   DAT.Regs
  ldx #LoRAM get low limit ptr
  ldy #HiRAM-LoRAM get byte count
  clra clear d
@@ -190,7 +190,7 @@ Cold15 ldd ,Y++ get vector
  clrb
  else
  ldd #DAT.WrEn
-  endc
+ endc
  std ,X++ use block zero for system
  ifge RAMCount-2
  incb
@@ -205,11 +205,11 @@ Cold15 ldd ,Y++ get vector
 Cold16 std ,X++ mark free entry
  leay -1,Y count block
  bne Cold16 branch if more
-         ldd   #$0150+DAT.WrEn  IOBlock?
+         ldd   #DAT.WrEn+$0150  IOBlock?
          std   ,x++
-         ldd   #$0140+DAT.WrEn
+         ldd   #DAT.WrEn+$0140
          std   ,x++
-         ldd   #$01FE  ROMBlock?
+         ldd   #ROMBlock ($01FE)
 L0190    std   ,x++
          incb
          bne   L0190
@@ -234,10 +234,12 @@ Cold20 equ *
  ldd 0,s
  endc
  subd D.BlkMap get block number
-         cmpd  #$0100  DAT.BlMx?
-         bcc   Cold30
-         ora   #$02  Turn on Write-enable?
-         std   >$FF86  DAT.Regs+RAMCount ?
+ cmpd #DAT.BlMx
+ bcc Cold30
+ ifne DAT.WrEn
+ ora #(DAT.WrEn/256)
+ endc
+ std DAT.Regs+(RAMCount*2) set block register
  ifeq RAMCheck-BlockTyp
  ldu 0,y get current contents
  ldx #$00FF get first test pattern
@@ -290,10 +292,10 @@ Cold55 equ *
 Cold60 pshs Y,X save ptrs
  lbsr AdjImg adjust DAT image ptr
          ldd   ,y
-         std   >DAT.Regs
+         std   DAT.Regs
          lda   ,x
          ldx   #$0000+DAT.WrEn
-         stx   >DAT.Regs
+         stx   DAT.Regs
  puls y,x retrieve ptrs
  cmpa #$87 could be module?
  bne Cold70 branch if not
@@ -2335,10 +2337,10 @@ F.LDAXY ldx R$X,u get block offset
 LDAXY    pshs  x,b,cc
          ldd   ,y
          orcc  #$50
-         std   >DAT.Regs
+         std   DAT.Regs
          lda   ,x
          ldx   #$0000+DAT.WrEn
-         stx   >DAT.Regs
+         stx   DAT.Regs
          puls  pc,x,b,cc
  page
 ***********************************************************
@@ -2360,10 +2362,10 @@ LDAXY    pshs  x,b,cc
 LDAXYP    pshs  x,b,cc
          ldd   ,y
          orcc  #$50
-         std   >DAT.Regs
+         std   DAT.Regs
          lda   ,x
          ldx   #$0000+DAT.WrEn
-         stx   >DAT.Regs
+         stx   DAT.Regs
          puls  x,b,cc
          leax  $01,x
          bra   AdjImg
@@ -2437,10 +2439,10 @@ LDDDXY    pshs  y,x
          pshs  a,cc
          ldd   ,y
          orcc  #$50
-         std   >DAT.Regs
+         std   DAT.Regs
          ldb   ,x
          ldx   #$0000+DAT.WrEn
-         stx   >DAT.Regs
+         stx   DAT.Regs
          puls  pc,y,x,a,cc
  page
 ***********************************************************
@@ -2636,10 +2638,10 @@ LDABX andcc #^Carry clear carry
          ldu   a,u
          ldb   D.SysTsk
          stb   >$FFCA
-         stu   >DAT.Regs
+         stu   DAT.Regs
          lda   ,x
          ldu   #$0000+DAT.WrEn
-         stu   >DAT.Regs
+         stu   DAT.Regs
          puls  pc,u,x,b,cc
 
 STABX andcc #^Carry clear carry
@@ -2654,10 +2656,10 @@ STABX andcc #^Carry clear carry
          ldb   D.SysTsk
          stb   >$FFCA
          lda   $01,s
-         stu   >DAT.Regs
+         stu   DAT.Regs
          sta   ,x
          ldu   #$0000+DAT.WrEn
-         stu   >DAT.Regs
+         stu   DAT.Regs
          puls  pc,u,x,b,a,cc
 
 LDBBX    andcc #$FE
@@ -2669,10 +2671,10 @@ LDBBX    andcc #$FE
          ldu   a,u
          ldb   D.SysTsk
          stb   >$FFCA
-         stu   >DAT.Regs
+         stu   DAT.Regs
          ldb   ,x
          ldu   #$0000+DAT.WrEn
-         stu   >DAT.Regs
+         stu   DAT.Regs
          puls  pc,u,x,a,cc
 
  page
@@ -3188,33 +3190,44 @@ IOPoll orcc #Carry set carry
 *
 *     Routine DATInit
 *
+* The DAT register map starts at $FF80 and uses 2 KB blocks. It therefore
+* has 32 sections mapped with a 16 bit word. I.e. the DAT RAM is located
+* at the address range $FF80 to $FFBF. In the 16 bit word, the bottom 9 bits
+* selects a 2 KB block. Bit 9 is write-enable and must be set for RAM.
+*
 DATInit  clra
          tfr   a,dp
-         ldu   #$FFC8
+         ldu   #$FFC0+8
          ldb   #7
 L0EBE    stb   ,-u
          decb
          bne   L0EBE
-         leay  ,-u
-         ldx   #$0F*DAT.BlCt+%11111
+         leay  ,-u  Make y = FFC0
+
+* Map top 4 KB of ROM to $F800 and $F000
+         ldx   #$1FF
          ldb   #2
 L0ECA    stx   ,--y
          leax  -1,x
          decb
          bne   L0ECA
-         ldx   #$0A*DAT.BlCt+%00000+DAT.WrEn
+* Devices
+         ldx   #DAT.WrEn+$140
          stx   ,--y
-         ldx   #$0A*DAT.BlCt+%10000+DAT.WrEn
+         ldx   #DAT.WrEn+$150
          stx   ,--y
+* Declare unused memory blocks
          ldb   #Dat.BlCt-ROMCount-RAMCount-1 
          ldx   #DAT.Free
 L0EE0    stx   ,--y
          decb
          bne   L0EE0
-         ldd   #$00*DAT.BlCt+%00010+DAT.WrEn
+* Map lowest 3 blocks of RAM to $1000, $0800 and $0000
+         ldd   #DAT.WrEn+2
 L0EE8    std   ,--y
          decb
          bpl   L0EE8
+
          clra
          sta   ,u
          lbra  COLD go to cold start
@@ -3237,14 +3250,14 @@ L0EE8    std   ,--y
 *
 SvcRet ldb P$Task,x get task number
  orcc #IntMasks set interrupt masks
-         stb   DAT.Task
-         leas  ,u
+ stb DAT.Task switch to task
+ leas 0,u move stack ptr
          ldb   #$02
          stb   >$FFC9
-         rti
+ rti
 
-PassSWI    ldb   $06,x
-         stb   DAT.Task
+PassSWI ldb P$Task,x get process task
+ stb DAT.Task switch to task
          ldb   #$03
          stb   >$FFC9
  jmp 0,u go to user routine
