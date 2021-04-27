@@ -1,0 +1,115 @@
+<project name="BuildModules" default="compile">
+
+    <property name="os9dir" value="${project.basedir}" />
+    <property name="targetdir" value="target" />
+
+    <macrodef name="assemble">
+        <attribute name="src" />
+        <attribute name="home" />
+        <attribute name="verify" default=""/>
+        <sequential>
+            <echo message="Assembling: @{src}"/>
+            <java jar="../tools/os9j/target/os9j-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    fork="true" dir="@{home}">
+                <env key="OSNINEDIR" value="${os9dir}"/>
+                <arg value="-m"/>
+                <arg value="50000"/>
+                <arg value="asm"/>
+                <arg value="@{src}.asm"/>
+                <arg value="o=a.out"/>
+            </java>
+            <mkdir dir="${targetdir}/@{home}"/>
+            <move file="${os9dir}/CMDS/a.out" tofile="${targetdir}/@{home}/@{src}" />
+            <local name="calculated"/>
+            <checksum file="${targetdir}/@{home}/@{src}" property="calculated"/>
+            <echo message="Checksum: ${calculated}"/>
+            <fail>
+                <condition>
+                   <not>
+                       <or>
+                           <equals arg1="@{verify}" arg2=""/>
+                           <equals arg1="@{verify}" arg2="${calculated}"/>
+                       </or>
+                   </not>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <target name="prepare">
+        <mkdir dir="${targetdir}"/>
+    </target>
+
+    <!-- All -->
+    <target name="all" depends="prepare, required, 
+         rms, basic09, stylograph">
+    </target>
+
+    <!-- Required by other Maven modules -->
+    <target name="required" depends="prepare">
+    <!--
+        <assemble src="OS9p2_ed5" home="gimix" verify="45f1fe6f5203175a81a46ea82a5e16bb"/>
+-->
+    </target>
+
+    <target name="utilities" depends="prepare">
+        <assemble src="Mfree_ed4" home="utilities" verify="f629490039f5f4b307604d495c543be1"/>
+        <assemble src="TSMon" home="utilities" verify="7501e649d06eb2fe81780ad7e257c99e"/>
+        <assemble src="Build" home="utilities" verify="3f975672b73771009f6f6cc06dc3bd1d"/>
+        <assemble src="Setime" home="utilities" verify="b37bf834061eaa8e2170ce99ef01dd98"/>
+        <assemble src="Dir_ed4" home="utilities" verify="fe84ce9a62feaba979223a3d64b5eae8"/>
+        <assemble src="Dir_ed3" home="utilities" verify="65c719c5dd0c511a2cc51a4243a081e9"/>
+    </target>
+
+    <target name="y2k" depends="prepare">
+        <assemble src="Dir_normal_ed5" home="y2k" verify="fb0a982ace14691577771b4aaeb45dca"/>
+        <assemble src="Dir_small_ed5" home="y2k" verify="68111b8e4c25b715085c85833acee3c3"/>
+        <assemble src="Free_ed7" home="y2k" verify="17674e3c92e75ea9cc615a5b04e84382"/>
+        <assemble src="Setime_ed12" home="y2k" verify="0299b94d5f67ff057c003d641d80f465"/>
+        <assemble src="Login_normal_ed10" home="y2k" verify="3269cd10bee3f11ea606db9a90b3a92f"/>
+        <assemble src="Login_small_ed10" home="y2k" verify="8e4f6948f7683bb31424520a5cba63e0"/>
+        <assemble src="Date_ed5" home="y2k" verify="a4b5cad5ff8d614a6313d865362e4b09"/>
+
+    </target>
+
+    <target name="dynacalc" depends="prepare">
+        <assemble src="install.dc_drg" home="dynacalc" verify="344403d808333757d194bbb0792c44df"/>
+        <assemble src="dynacalc_473" home="dynacalc" verify="3100d5e1003ffa10fa0578af294fb399"/>
+        <assemble src="dynacalc_485" home="dynacalc" verify="6ab199b1630bc8dd8d3fc798f36d287f"/>
+        <assemble src="coco_485.cor" home="dynacalc" verify="286f15fc5a7af616ef026cf31cef4fe5"/>
+        <assemble src="dragon64_473.cor" home="dynacalc" verify="81b8cf9c0bcdc9b9e67c1c0b0b9c7f78"/>
+        <assemble src="ansi_473.cor" home="dynacalc" verify="5874eeb0766df190b3946575c42228a7"/>
+        <assemble src="go80.trm" home="dynacalc" verify="0bc8c7638d215ab6730bb1c93a96eaa2"/>
+    </target>
+
+    <!-- Stylograph -->
+    <target name="stylograph" depends="prepare">
+        <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
+        <assemble src="stylo_std" home="stylograph" verify="5b6b54ab65c1ff865486639d5dbbd40f"/>
+        <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
+        <assemble src="stylo_3" home="stylo_3_0" verify="daf4c997f44cfbe4d57d5518f469dfa2"/>
+    </target>
+
+    <!-- RMS Report Management System -->
+    <target name="rms" depends="prepare">
+        <assemble src="rms" home="rms" verify="1e5af27b963b2ef3635edd2c526d495f"/>
+        <assemble src="report" home="rms" verify="f9820a325090ec307208d8f5667358da"/>
+    </target>
+
+    <!-- BASIC09 -->
+    <target name="basic09" depends="prepare">
+        <assemble src="basic09_d64_y2k" home="basic09" verify="df7d21b8ef4250f4927a2f2c9a3e4b69"/>
+        <assemble src="runb_tandy_y2k" home="basic09" verify="08da732414bafa6e7b1cc00e737d5195"/>
+        <assemble src="runb_generic_y2k" home="basic09" verify="5ae664915244495285014c500624b0b7"/>
+        <assemble src="runb_generic" home="basic09" verify="5c1e4a64e8ea15e10c02ba89cc4507c7"/>
+        <assemble src="basic09_generic_y2k" home="basic09" verify="67b113de00c1670c67c2817aaf93738f"/>
+        <assemble src="runb_tandy" home="basic09" verify="f6f4e66fe4cdd6e7c8e1eca5b74791ba"/>
+        <assemble src="basic09_tandy" home="basic09" verify="85136e22ffa826e607a897dcfb39fd64"/>
+        <assemble src="basic09_tandy_y2k" home="basic09" verify="2bd9a95d3d42cc5826ef43448e3ebaff"/>
+        <assemble src="basic09_d64" home="basic09" verify="3503d7e1d0169aaa54d9c81ceaef0000"/>
+        <assemble src="basic09_generic" home="basic09" verify="ede76a6833915309482772012db053ee"/>
+        <assemble src="gfx" home="basic09" verify="0eb5abf3b848f607b0e1a0e5b0d78ad9"/>
+        <assemble src="syscall" home="basic09" verify="c8de8a9616ef7a7e1bfbd44072cf9e06"/>
+    </target>
+
+</project>
