@@ -10,11 +10,11 @@
  fcb 14         IRQ polling slots
  fcb 14        System device slots
 
- fdb SYSGO
- fdb D4      system device (sysdev)
- fdb T1
- fdb $0000      bootstrap module (bootst)
- fdb term
+ fdb SYSGO    InitStr - offset $0E
+ fdb D4      system device (SysStr) offset $10
+ fdb T1      Standard I/O Pathlist (StdStr) offset $12
+ fdb $0000      bootstrap module (BootStr)  offset $14
+ fdb term    Console  offset $16
 
 INITNAM  fcs   /Init/
 sysgo fcs "SysGo"

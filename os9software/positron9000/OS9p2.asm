@@ -216,7 +216,7 @@ L010A    lda   #Devic+Objct
          beq   Cold20
          os9   F$Link
          bcs   L010A
-         lda   $14,u   Expansion of Init struct
+         lda   BootStr,u
          pshs  x,a
          os9   F$UnLink
          puls  x,a
@@ -230,7 +230,7 @@ Cold20    leas  3,s
  ldd StdStr,U get standard I/O offset
          beq   Cold40
          leax  d,u
-         ldd  $16,u   Expansion of Init struct
+         ldd  $16,u   Console device
          beq   Cold40
          leay  d,u
          ldd   #$0300
