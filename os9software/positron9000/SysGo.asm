@@ -11,73 +11,72 @@
 *   and loops, forking a shell and waiting for it
 *
 TEST set 0
-tylg     set   Prgrm+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   SGoEnd,SGoNam,tylg,atrv,start,200
+Type     set   Prgrm+Objct
+Revs     set   ReEnt+1
 
-SGoNam     equ   *
-         fcs   /SysGo/
-         fcb   $01
-DirStr    fcb   $43 C
-         fcb   $6D m
-         fcb   $64 d
-         fcb   $F3 s
-CmdStr    fcb   $53 S
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $0D
+ mod SGoEnd,SGoNam,Type,Revs,SGoEnt,200
+
+SGoNam fcs /SysGo/
+
+ fcb 1 Edition Number
+
+DirStr fcs "Cmds"
+
+CmdStr fcc "Shell"
+ fcb $0D
+
 Setime fcc "Setime"
-         fcb   $0D
+ fcb $0D
 
-Welcome    fcb   $0A
-         fcb   $0A
-         fcc "Positron Computers Limited"
-         fcb   $0A
-         fcb   $0A
-         fcc "********  Welcome  *******"
-         fcb   $0A
-         fcb   $0A
-         fcb   $0D
+Welcome fcb $0A
+ fcb $0A
+ fcc "Positron Computers Limited"
+ fcb $0A
+ fcb $0A
+ fcc "********  Welcome  *******"
+ fcb $0A
+ fcb $0A
+ fcb $0D
+WelcSiz equ *-Welcome
 
 ShlFun fcc "Startup"
-         fcb   $0D
-start    equ   *
-         leax  >SGoIncpt,pcr
-         os9   F$Icpt
-         leax  >DirStr,pcr
-         lda   #$04
-         os9   I$ChgDir
+ fcb $0D
+FunSiz equ *-ShlFun
+
+SGoEnt leax SGoIncpt,pc set up signal intercept
+ OS9 F$ICPT
+ leax DirStr,PCR Get directory name ptr
+ lda #Exec. Get execution mode
+ OS9 I$ChgDir Change execution directory
+
  os9 F$ID get process ID
  ldb #128 get medium priority
  os9 F$SPrior set priority
-         leax  >Setime,pcr
-         ldd   #$0100
-         ldy   #$0000
-         os9   F$Fork
-         bcs   L0092
-         os9   F$Wait
-L0092    leax  >Welcome,pcr
-         ldy   #$003B
-         lda   #$01
-         os9   I$WritLn
-         leax  >CmdStr,pcr
-         ldd   #$0100
-         ldy   #$0008
-         leau  >ShlFun,pcr
-         os9   F$Fork
-         bcs   L00B6
-         os9   F$Wait
-L00B6    leax  >CmdStr,pcr
-         ldd   #$0100
-         ldy   #$0000
-         os9   F$Fork
-         os9   F$Wait
-         bra   L00B6
+ leax Setime,pcr
+ ldd #Objct*256
+ ldy #0 no parameters
+ os9 F$Fork
+ bcs SysG.A
+ os9 F$Wait
+SysG.A leax Welcome,pcr
+ ldy #WelcSiz
+ lda #1
+ os9 I$WritLn
+ leax CmdStr,PCR get ptr to "SHELL"
+ ldd #Objct*256 Get Type
+ ldy #FunSiz size of parameters
+ leau ShlFun,pcr
+ os9 F$Fork
+ bcs SysG.B
+ os9 F$Wait
+SysG.B leax CmdStr,pcr
+ ldd #Objct*256
+ ldy #0 no parameters
+ OS9 F$Fork start new process
+ OS9 F$WAIT Wait for it to die
+ bra SysG.B
 
 SGoIncpt rti do-nothing intercept
 
-         emod
-SGoEnd      equ   *
+ emod
+SGoEnd equ *

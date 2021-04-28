@@ -13,3 +13,4 @@ Some of the files are from a OS-9 Sources distribution, which was shared
 by entusiasts and can be found various places.  Others are disassembled
 by volunteers over the last two decades.
 
+To build other packages do: `mvn install -Dpackage=basic09`

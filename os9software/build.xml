@@ -217,6 +217,8 @@
 
     <!-- Positron 9000 -->
     <target name="positron9000" depends="prepare">
+        <assemble src="SysGo" home="positron9000"  verify="352be770ab96dd0e37befdd381f2c0bc"/>
+        <assemble src="Init" home="positron9000"  verify="40e3fab961a67ab92e62068ce718615f"/>
         <assemble src="OS9p1" home="positron9000"  verify="ee22c19653e4a2b04eefae0fe570781d"/>
         <assemble src="OS9p2" home="positron9000"  verify="9f8e54ac240df9b5879ad602f8fbf5e6"/>
         <assemble src="Acia" home="positron9000"  verify="3f8f6b01e0966f2a8b1e135f73f75090"/>

@@ -268,7 +268,12 @@ Cold20 equ *
  beq Cold30 branch of so
  stb DAT.Regs+RAMCount set block register
  else
- jmp NOWHERE Code is not available
+ cmpd #DAT.BlMx
+ bcc Cold30
+ ifne DAT.WrEn
+ ora #(DAT.WrEn/256)
+ endc
+ std DAT.Regs+(RAMCount*2) set block register
  endc
  ifeq RAMCheck-BlockTyp
  ldu 0,y get current contents
