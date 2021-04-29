@@ -39,16 +39,19 @@ DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
 
 ***************
 *
-* This version is assuming that the MMU access
-* and operate keys are the same register
-DAT.Task equ $FFCB Task register address
+DAT.Regs equ $FF80 DAT RAM base address
+DAT.MMU0 equ DAT.Regs+$40 Start of MMU regs
+DAT.SBIT equ DAT.Regs+$48 S-bit register (Read-only)
+DAT.Fuse equ DAT.Regs+$49 Fuse register for delaying switch to user task
+DAT.Accs equ DAT.Regs+$4A Access register
+DAT.Task equ DAT.Regs+$4B Task register address (operate)
+
 DAT.TMsk equ $0F bits of register for task number
 DAT.Uniq equ 1 bits of DAT Task register are not used for other things
 *
 ***************
 
 DAT.TkCt equ 8 task maps in the MMU
-DAT.Regs equ $FF80 DAT RAM base address
 
 ***************
 *
@@ -122,7 +125,7 @@ D$REBOOT equ $FFFE use an unused vector
 *
 **********
 
-ClocType set VSYNC
+ClocType set MC6840
 CPort equ $E800
 TickSec set 100 ticks per second
 *Cx2Int set 1 CA2 (CB2) interrupt input
@@ -134,26 +137,7 @@ DrvCnt set 4 four drives
 *A.T.Init set $15 default ACIA initialisation byte
 *A.P set $FC20 address of parallel printer port
 *A.P1 set A.T1 address of serial printer port
-*A.KBD set A.P+2 keyboard port address
-*A.KLoad set A.KBD port whose control reg has keyboard LOAD
-*A.GCon equ DAT.Task+2 graphics control port
-*A.Cont equ DAT.Task+1 control reg with CONTROL bit
-*A.Clock set A.GCon clock VSYNC interrupts come in on CB2
-*A.Crtc equ $FC80 address of 6845 CRTC
-*A.ColMap equ $FCA0 address of colour map
-*A.Mouse equ $FC24 mouse and disk select
-*A.DskSel equ A.Mouse disk select port
-*A.Beeper equ A.DskSel+2 port with beeper on it
-*A.ChrSet equ A.Beeper port with 'character set select'
-*A.Baud equ A.Beeper port with baud rate setting
 
-*B.DPHalt equ $80 DMA processor HALT bit in disk Select port
-*B.DPNMI equ $80 DMA processor interrupt bit in DAT Task reg
-*B.Bell equ 1 beeper bit
-*B.Contrl equ $08 CA2 is CONTROL bit
-*B.ChrSet equ $40 character set select bit
-*B.MPHalt equ 2 Main Processor HALT bit
-*B.PDir equ $80 printer port buffer direction bit
  endc
  opt l
 

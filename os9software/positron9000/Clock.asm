@@ -17,6 +17,10 @@
 * is strictly prohibited !!!                               *
 *                                                          *
 ************************************************************
+*
+ ifeq ClocType-MC6840
+* Initialize 6840 Timer Chip For 50Ms Intervals
+ endc
 
  use defsfile
 
@@ -36,6 +40,10 @@ ClkNam fcs /Clock/
 TIMSVC fcb F$TIME
  fdb TIME-*-2
  fcb $80
+
+ ifeq ClocType-MC6840
+TCKCNT set 10000 #of mpu cycles/tick
+ endc
 
 CLKPRT equ M$Mem Memory has Clock port address
 
@@ -64,13 +72,15 @@ NOTCLK ldd D.Poll get polling routine ptr
  lbra TICK50
 
 CLKSRV ldx CLKPRT,PCR GET CLOCK ADDRESS
+ ifeq ClocType-MC6840 M6840 timer chip
  lda 1,x
- anda  #2
- beq NOTCLK
+ anda #2 Is it clock?
+ beq NOTCLK Branch if not
 *
 * UPDATE CURRENT TIME
 *
- ldd 4,x
+ ldd 4,X Clear intrpt (must be 16-bit)
+ endc
  dec D.Tick COUNT TICK
  bne Tick47
  ldd D.MIN GET MINUTE & SECOND
@@ -115,23 +125,51 @@ TICK35 std D.MIN Update minute & second
 Tick47 ldd D.Clock get clock routine ptr
 TICK50 std D.SvcIRQ set IRQ service routine
  jmp [D.XIRQ] enter system
-
-ClkEnt    equ   *
+*****
+*
+*  CLOCK INITIALIZATION ENTRY
+*
+ClkEnt equ *
  pshs CC save interrupt masks
  lda #TickSec get ticks per second
  sta D.Tick
-         lda   #$02
+ ifeq ClocType-MC6840
+ ifeq CPUSpeed-TwoMHz
+ lda #2 Set ticks/time-slice
+ else
+ lda #1 Set ticks / time-slice
+ endc
+ else
+ lda #1 Set ticks / time-slice
+ endc
  sta D.TSlice
  sta D.Slice
  orcc #IntMasks set interrupt masks
  leax CLKSRV,pcr GET SERVICE ROUTINE
  stx D.IRQ SET INTERRUPT VECTOR
-         ldx   >CLKPRT,pcr
-         ldd  #9999
-         std 4,x
-         ldb   #$53
-         stb 1,x
-         clr 0,x
+ ifeq ClocType-MC6840 M6840 timer chip
+ ldx CLKPRT,PCR get clock address
+ ldd #TCKCNT-1 Get tick count
+ ifeq M6840Typ-Missed
+ std 2,X store count in timer #1
+ ldd #1
+ std 4,X inz timer #2
+ ldb #$50 constant for control reg
+ stb 1,X put it there
+ ldd #90 max count of missed ticks
+ std 6,X store it
+ clr 0,X constant for C3
+ ldb #$51 constant for C2
+ stb 1,X store it
+ ldb #$92 constant for C1
+ stb 0,X enable timer operation
+ else
+ std 4,X Store in timer #2 count
+ ldb #$53 Constant for control reg.
+ stb 1,X Put it there.
+ clr 0,X Enable timer operation
+ endc
+ endc
  puls cc retrieve masks
  leay TIMSVC,PCR
  OS9 F$SSVC SET TIME SERVICE ROUTINE
@@ -155,3 +193,6 @@ TIME equ *
 
  emod
 ClkEnd equ *
+
+ opt c
+ end

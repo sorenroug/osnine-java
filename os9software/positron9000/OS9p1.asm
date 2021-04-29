@@ -24,7 +24,7 @@ OS9Name     equ   *
 * system and attempts to start operation.
 *
 LoRAM set $20 set low RAM limit
-HiRAM set DAT.Blsz*3
+HiRAM set DAT.Blsz*RAMCount
 
 TEST set 0 not test mode
 COLD    ldx   #DAT.WrEn+$146
@@ -597,10 +597,10 @@ PutRegs    pshs  u,y,x,cc
 PutReg.A    pshs  u
          ldu   #DAT.Regs
          leau  a,u
-         orcc  #$50
-         stb   >$FFCA
+ orcc #IntMasks set interrupt masks
+         stb   DAT.Accs
          pulu  y,b,a
-         clr   >$FFCA
+         clr   DAT.Accs
          ldu   #$FFBC
          pshu  y,b,a
          puls  u
@@ -2336,7 +2336,7 @@ F.LDAXY ldx R$X,u get block offset
 *
 LDAXY    pshs  x,b,cc
          ldd   ,y
-         orcc  #$50
+ orcc #IntMasks set interrupt masks
          std   DAT.Regs
          lda   ,x
          ldx   #$0000+DAT.WrEn
@@ -2361,13 +2361,13 @@ LDAXY    pshs  x,b,cc
 *
 LDAXYP    pshs  x,b,cc
          ldd   ,y
-         orcc  #$50
+ orcc #IntMasks set interrupt masks
          std   DAT.Regs
          lda   ,x
          ldx   #$0000+DAT.WrEn
          stx   DAT.Regs
          puls  x,b,cc
-         leax  $01,x
+         leax 1,x
          bra   AdjImg
 
 
@@ -2438,7 +2438,7 @@ LDDDXY    pshs  y,x
          bsr   LDAXYP
          pshs  a,cc
          ldd   ,y
-         orcc  #$50
+ orcc #IntMasks set interrupt masks
          std   DAT.Regs
          ldb   ,x
          ldx   #$0000+DAT.WrEn
@@ -2551,16 +2551,16 @@ Mover    pshs  u,y,x,b,a
          ldu   $04,s
          leau  >-$1800,u
 L0BD4    pshs  cc
-         orcc  #$50
+ orcc #IntMasks set interrupt masks
          lda   <$11,s
-         sta   >$FFCA
+         sta   DAT.Accs
          ldd   [<$0B,s]
-         clr   >$FFCA
+         clr   DAT.Accs
          std   >$FFB8
          lda   <$12,s
-         sta   >$FFCA
+         sta   DAT.Accs
          ldd   [<$07,s]
-         clr   >$FFCA
+         clr   DAT.Accs
          std   >$FFBA
          ldd   $0F,s
          cmpd  $01,s
@@ -2616,15 +2616,21 @@ L0C69    leas  <$10,s
 MoveNone    clrb
          puls  pc,u,y,x,b,a
 
-
+* Get page number from task address
+*
+* Input: X = task address
+*
+* Output: A = page number
+*         X = address in page
+*
 L0C6F    pshs  b
          tfr   x,d
-         anda  #$F8
+         anda  #$F8 mask all but page #
          beq   L0C7F
          exg   d,x
-         anda  #$07
+         anda  #$07 mask high bits of address
          exg   d,x
-         lsra
+         lsra find physical page
          lsra
 L0C7F    puls  pc,b
 
@@ -2634,12 +2640,12 @@ LDABX andcc #^Carry clear carry
          bsr   L0C6F
          ldu   #DAT.Regs
  orcc #IntMasks set interrupt masks
-         stb   >$FFCA
+         stb   DAT.Accs switch tasks
          ldu   a,u
-         ldb   D.SysTsk
-         stb   >$FFCA
+         ldb   D.SysTsk get system task
+         stb   DAT.Accs switch tasks
          stu   DAT.Regs
-         lda   ,x
+ lda 0,X get data byte
          ldu   #$0000+DAT.WrEn
          stu   DAT.Regs
          puls  pc,u,x,b,cc
@@ -2649,15 +2655,15 @@ STABX andcc #^Carry clear carry
          bsr   L0C6F
          ldu   #DAT.Regs
  orcc #IntMasks set interrupt masks
-         stb   >$FFCA
+         stb   DAT.Accs switch tasks
          ldd   a,u
-         ora   #$02
+         ora   #$02 activate write-enable
          tfr   d,u
-         ldb   D.SysTsk
-         stb   >$FFCA
-         lda   $01,s
-         stu   DAT.Regs
-         sta   ,x
+         ldb   D.SysTsk get system task
+         stb   DAT.Accs switch tasks
+         lda   1,s
+         stu   DAT.Regs load block into segment #0
+ sta 0,X store data byte
          ldu   #$0000+DAT.WrEn
          stu   DAT.Regs
          puls  pc,u,x,b,a,cc
@@ -2666,11 +2672,11 @@ LDBBX    andcc #$FE
          pshs  u,x,a,cc
          bsr   L0C6F
          ldu   #DAT.Regs
-         orcc  #$50
-         stb   >$FFCA
+ orcc #IntMasks set interrupt masks
+         stb   DAT.Accs
          ldu   a,u
          ldb   D.SysTsk
-         stb   >$FFCA
+         stb   DAT.Accs
          stu   DAT.Regs
          ldb   ,x
          ldu   #$0000+DAT.WrEn
@@ -2808,7 +2814,7 @@ SetTsk ldx R$X,u get process ptr
 *
 * Data: none
 *
-* Calls: MoveRegs
+* Calls: none
 *
 SetPrTsk lda P$State,X
  anda #^ImgChg
@@ -2819,15 +2825,15 @@ SetPrTsk lda P$State,X
  leax P$DATImg,X
  ldy #DAT.ImSz/2
  ldu #DAT.Regs
-         orcc  #$50
-         stb   >$FFCA
+ orcc #IntMasks set interrupt masks
+         stb   DAT.Accs
 L0D2B    ldd   ,x++
-         ora   #$02
+         ora   #$02 Turn on write-enable
          std   ,u++
          leay  -1,y
          bne   L0D2B
          ldb   D.SysTsk
-         stb   >$FFCA
+         stb   DAT.Accs
          puls  pc,u,y,x,b,a,cc
 
 ***********************************************************
@@ -3197,11 +3203,11 @@ IOPoll orcc #Carry set carry
 *
 DATInit  clra
          tfr   a,dp
-         ldu   #$FFC0+8
-         ldb   #7
-L0EBE    stb   ,-u
+         ldu   #DAT.MMU0+8 point to last MMU key value register + 1
+         ldb   #7 initialize value
+KVInit    stb   ,-u write unique value into each key value reg
          decb
-         bne   L0EBE
+         bne   KVInit
          leay  ,-u  Make y = FFC0
 
 * Map top 4 KB of ROM to $F800 and $F000
@@ -3229,7 +3235,7 @@ L0EE8    std   ,--y
          bpl   L0EE8
 
          clra
-         sta   ,u
+         sta   ,u Let MMU #0 go
          lbra  COLD go to cold start
 
 
@@ -3252,14 +3258,14 @@ SvcRet ldb P$Task,x get task number
  orcc #IntMasks set interrupt masks
  stb DAT.Task switch to task
  leas 0,u move stack ptr
-         ldb   #$02
-         stb   >$FFC9
+ ldb #2
+ stb DAT.Fuse delay switching to user task until rti is executed
  rti
 
 PassSWI ldb P$Task,x get process task
  stb DAT.Task switch to task
-         ldb   #$03
-         stb   >$FFC9
+ ldb #3
+ stb DAT.Fuse delay switching to user task until jmp is executed
  jmp 0,u go to user routine
 
 SWI3RQ orcc #IntMasks set interrupt masks
