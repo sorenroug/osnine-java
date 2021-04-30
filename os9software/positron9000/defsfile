@@ -7,7 +7,7 @@
  use os9scfdefs
  use os9sysdefs.lii
 
-DriveCnt set 4 drives max on system
+DriveCnt set 8 drives max on system
 
 normal equ 0 normal screen size
 small equ 1 small screen size

@@ -131,7 +131,7 @@ TickSec set 100 ticks per second
 *Cx2Int set 1 CA2 (CB2) interrupt input
 *FPort set $FCE0 floppy disk controller
 *HPort set $FD00 hard disk controller
-DrvCnt set 4 four drives
+DrvCnt set 8 eight drives
 *DPort set FPort
 *A.T1 set $FC40 serial port address
 *A.T.Init set $15 default ACIA initialisation byte

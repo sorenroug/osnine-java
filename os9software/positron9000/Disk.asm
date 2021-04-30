@@ -4,22 +4,17 @@
 
  use defsfile
 
-tylg     set   Drivr+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   1
-u0001    rmb   2
-u0003    rmb   3
-u0006    rmb   9
-u000F    rmb   53
-u0044    rmb   12
-u0050    rmb   59
-u008B    rmb   1
-u008C    rmb   68
-u00D0    rmb   111
-u013F    rmb   1
-u0140    rmb   2
+ mod DSKEND,DSKNAM,DRIVR+OBJCT,REENT+1,DSKENT,DSKSTA
+ fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
+
+u008B equ $8B
+u008C equ $8C
+
+ org Drvbeg
+ rmb Drvmem*DriveCnt
+
+V.LSNMSB    rmb   1 LSN most significant byte
+V.LSNLSW    rmb   2 LSN least significant word
 u0142    rmb   2
 u0144    rmb   1
 u0145    rmb   2
@@ -31,7 +26,7 @@ u014C    rmb   1
 u014D    rmb   1
 u014E    rmb   1
 u014F    rmb   1
-u0150    rmb   1
+X.DRV    rmb   1
 u0151    rmb   1
 u0152    rmb   2
 u0154    rmb   2
@@ -42,52 +37,70 @@ u015B    rmb   2
 u015D    rmb   2
 u015F    rmb   2
 u0161    rmb   32
-size     equ   .
-         fcb   $FF
-name     equ   *
-         fcs   /Disk/
+DSKSTA     equ   .
+
+DSKNAM fcs /Disk/
          fcb   $03
 
-start    equ   *
-         lbra  L0025
-         lbra  READ
-         lbra  L00C8
-         lbra  L01DE
-         lbra  L01E0
-         lbra  L0353
+DSKENT    equ   *
+         lbra  INIDSK
+         lbra  READSK
+         lbra  WRTDSK
+         lbra  Getsta
+         lbra  PUTSTA
+         lbra  Termnt
 
-L0025    lda   #$08
-         sta   u0006,u
-         leax  u000F,u
-L002B    ldb   #$FF
+****************************************************************
+*
+* Initialize The I/O Port
+*
+*  Input: (U)= Pointer To Global Storage
+*
+INIDSK    lda #DriveCnt
+         sta   V.NDRV,u Inz number of drives
+         leax  DRVBEG,u
+INILUP    ldb   #$FF
          stb   $0D,x
          stb   <$15,x
          ldb   #$0A
-         stb   $02,x
+         stb  DD.TOT+2,x
          ldb   #$01
-         stb   <$10,x
-         leax  <$26,x
+         stb  DD.FMT,x
+ leax DRVMEM,X Point to next drive table
          deca
-         bne   L002B
+         bne   INILUP
          clr   >u0156,u
          ldx   #$0144
-         ldy   >$FF80
+         ldy   DAT.Regs
          pshs  cc
          orcc  #$50
-         stx   >$FF80
+         stx   DAT.Regs
          lda   >$0000
-         sty   >$FF80
+         sty   DAT.Regs
          puls  cc
          anda  #$E0
          sta   <u008C
          clrb
          rts
 
-READ    lbsr  L0542
+*************************************************************
+*
+* Read Sector Command
+*
+* Input: B = Msb Of Logical Sector Number
+*        X = Lsb'S Of Logical Sector Number
+*        Y = Ptr To Path Descriptor
+*        U = Ptr To Global Storage
+*
+* Output: 256 Bytes Of Data Returned In Buffer
+*
+* Error: Cc=Set, B=Error Code
+*
+READSK    lbsr  L0542
          lbsr  L049C
          lbsr  L04BE
-         stb   >u013F,u
-         stx   >u0140,u
+         stb   >V.LSNMSB,u
+         stx   >V.LSNLSW,u
          lbsr  L05D5
          bcs   L00C1
          lbsr  L011B
@@ -95,32 +108,36 @@ READ    lbsr  L0542
          leax  >L068A,pcr
          ldb   #$04
          lbsr  L0355
-         ldx   $08,y
+         ldx   PD.BUF,y
          ldb   #$00
          lbsr  L03B2
          lbsr  L055C
          bcs   L00BC
          lbsr  L0513
          clr   <u008B
-         tst   >u013F,u
+         tst   >V.LSNMSB,u
          bne   L00A1
-         ldd   >u0140,u
+         ldd   >V.LSNLSW,u
 L00A1    beq   L00A5
          clrb
          rts
-L00A5    ldx   $08,y
-         lda   <$21,y
-         ldb   #$26
+
+* Copy DD info
+*
+L00A5    ldx   PD.BUF,y
+         lda   PD.DRV,y
+         ldb   #DRVMEM
          mul
-         leay  u000F,u
+         leay  DRVBEG,u
          leay  d,y
-         ldb   #$14
+ ldb #DD.SIZ-1
 L00B3    lda   b,x
          sta   b,y
          decb
          bpl   L00B3
          clrb
          rts
+
 L00BC    tstb
          bne   L00C1
          ldb   #$F4
@@ -129,16 +146,16 @@ L00C1    lbsr  L0513
          coma
          rts
 
-L00C8    lbsr  L0542
+WRTDSK    lbsr  L0542
          lbsr  L049C
          lbsr  L04BE
-         stb   >u013F,u
-         stx   >u0140,u
+         stb   >V.LSNMSB,u
+         stx   >V.LSNLSW,u
          lbsr  L05D5
          bcs   L0114
          bsr   L011B
          bcs   L0114
-         ldx   $08,y
+         ldx   PD.BUF,y
          stx   >u0142,u
          inc   >u0144,u
          leax  >L068E,pcr
@@ -161,26 +178,27 @@ L0114    lbsr  L0513
          clr   <u008B
          coma
          rts
+
 L011B    pshs  y
-         lda   <$21,y
-         ldb   #$26
+         lda   PD.DRV,y
+         ldb   #DRVMEM
          mul
-         leay  u000F,u
+         leay  DRVBEG,u
          leay  d,y
-         ldb   >u013F,u
-         cmpb  ,y
+         ldb   >V.LSNMSB,u
+         cmpb  DD.TOT,y
          lbhi  L01D8
          bcs   L013D
-         ldx   >u0140,u
-         cmpx  $01,y
+         ldx   >V.LSNLSW,u
+         cmpx  DD.TOT+1,y
          lbcc  L01D8
 L013D    pshs  y
          ldy   $02,s
          tstb
          bne   L014A
-         cmpx  <$2B,y
+         cmpx  PD.T0S,y
          bcs   L0197
-L014A    lda   <$2C,y
+L014A    lda   PD.T0S+1,y
          pshs  b,a
          tfr   x,d
          subb  ,s
@@ -195,7 +213,7 @@ L014A    lda   <$2C,y
          leax  $01,x
          lda   <$10,y
          ldy   $02,s
-         ldb   <$21,y
+         ldb   PD.DRV,y
          cmpb  #$04
          bcc   L017C
          anda  #$01
@@ -246,11 +264,17 @@ L01D8    puls  y
          ldb   #$F1
          rts
 
-L01DE    clrb
+Getsta    clrb
          rts
 
-L01E0    ldx   $06,y
-         ldb   $02,x
+************************************************************
+*
+* Put Status Call
+*
+*
+*
+PUTSTA    ldx  PD.RGS,y
+         ldb   R$B,x
          cmpb  #$81
          bne   L01ED
          inc   >u014E,u
@@ -263,7 +287,7 @@ L01ED    cmpb  #$82
 L01FA    rts
 L01FB    lbsr  L0542
          lbsr  L049C
-         cmpb  #$03
+         cmpb  #SS.Reset Restore call?
          bne   L0225
          lbsr  L04BE
          lbsr  L05D5
@@ -276,7 +300,7 @@ L0218    lbsr  L05BA
          beq   L0218
          clrb
          lbra  L02F5
-L0225    cmpb  #$04
+L0225    cmpb  #SS.WTrk Write track call?
          bne   L0296
          lbsr  L04BE
          lbsr  L05D5
@@ -321,12 +345,13 @@ L027C    lbsr  L0513
          beq   L027C
          lbsr  L055C
          bra   L02F5
-L0296    cmpb  #$0D
+
+L0296    cmpb  #SS.DCmd
          bne   L0309
          ldb   $07,x
          ldx   $04,x
-         stb   >u013F,u
-         stx   >u0140,u
+         stb   >V.LSNMSB,u
+         stx   >V.LSNLSW,u
          lbsr  L04BE
          lbsr  L05D5
          bcs   L02F5
@@ -370,6 +395,7 @@ L0302    lbsr  L0513
          clr   <u008B
          coma
          rts
+
 L0309    cmpb  #$80
          bne   L0316
          lda   $05,x
@@ -381,11 +407,11 @@ L0316    cmpb  #$81
          lbsr  L04BE
          lbsr  L05D5
          bcs   L02F5
-         ldx   u0001,u
+         ldx   V.PORT,u
          lda   #$11
          sta   $03,x
          lbsr  L03F2
-         lda   >u0150,u
+         lda   >X.DRV,u
          anda  #$1F
          ora   #$20
          sta   $07,x
@@ -401,18 +427,20 @@ L0316    cmpb  #$81
          lbra  L027C
 L034D    clr   <u008B
          comb
-         ldb   #$D0
+         ldb   #E$UnkSvc
          rts
-L0353    clrb
+
+Termnt    clrb
          rts
+
 L0355    pshs  y,x,b,a
          stx   >u0145,u
          stb   >u0147,u
-         ldx   u0001,u
+         ldx   V.PORT,u
          lda   #$11
          sta   $03,x
          lbsr  L03F2
-         lda   >u0150,u
+         lda   >X.DRV,u
          anda  #$1F
          ora   #$20
          sta   $07,x
@@ -444,11 +472,11 @@ L039C    lda   #$0C
 L03B2    pshs  y,x,b,a
          stx   >u0145,u
          stb   >u0147,u
-         ldx   u0001,u
+         ldx   V.PORT,u
          lda   #$11
          sta   $03,x
          bsr   L03F2
-         lda   >u0150,u
+         lda   >X.DRV,u
          anda  #$1F
          ora   #$40
          sta   $07,x
@@ -470,8 +498,9 @@ L03B2    pshs  y,x,b,a
          lda   #$12
          sta   $03,x
          puls  pc,y,x,b,a
+
 L03F2    pshs  x
-         ldx   u0001,u
+         ldx   V.PORT,u
 L03F6    lda   $01,x
          bita  #$01
          bne   L045E
@@ -479,10 +508,11 @@ L03F6    lda   $01,x
          bita  #$10
          beq   L03F6
          puls  pc,x
+
 L0404    pshs  x
 L0406    ldx   #$0001
          os9   F$Sleep
-         ldx   u0001,u
+         ldx   V.PORT,u
          lda   $01,x
          bita  #$01
          bne   L045E
@@ -519,7 +549,8 @@ L0455    lda   $07,x
          decb
          bne   L0449
          puls  pc,y,b
-L045E    ldx   u0001,u
+
+L045E    ldx   V.PORT,u
          lda   #$80
          sta   $03,x
          clr   $05,x
@@ -533,7 +564,7 @@ L0469    leax  -$01,x
          rola
          rola
          adda  #$08
-         ldx   u0001,u
+         ldx   V.PORT,u
          sta   $04,x
          lda   #$93
          sta   $03,x
@@ -546,6 +577,7 @@ L0483    ldx   >u0159,u
          pshs  b,a
          ldd   >u0157,u
          rts
+
 L049C    std   >u0157,u
          stx   >u0159,u
          sty   >u015B,u
@@ -556,13 +588,14 @@ L049C    std   >u0157,u
          ldd   >u0157,u
          ldx   >u0159,u
          rts
+
 L04BE    pshs  x,b,a
          tst   <u008C
          bne   L04C6
 L04C4    puls  pc,x,b,a
 L04C6    tst   >u014F,u
          bne   L04C4
-         ldx   u0001,u
+         ldx   V.PORT,u
          clr   $03,x
          lda   $01,x
          bita  #$01
@@ -571,7 +604,7 @@ L04C6    tst   >u014F,u
          sta   $05,x
 L04DC    ldx   #$0001
          os9   F$Sleep
-         ldx   u0001,u
+         ldx   V.PORT,u
          ldb   $01,x
          bitb  #$01
          lbne  L045E
@@ -592,12 +625,13 @@ L04DC    ldx   #$0001
          lda   #$01
          sta   >u014F,u
          puls  pc,x,b,a
+
 L0513    pshs  x,b,a
          tst   <u008C
          beq   L0540
          tst   >u014E,u
          bne   L0540
-         ldx   u0001,u
+         ldx   V.PORT,u
          clr   $05,x
          lda   #$11
          sta   $03,x
@@ -612,18 +646,21 @@ L0513    pshs  x,b,a
          sta   $03,x
          clr   >u014F,u
 L0540    puls  pc,x,b,a
+
+* Wait for DMA reservation?
 L0542    pshs  x
 L0544    pshs  cc
          orcc  #$50
          tst   <u008B
          beq   L0556
          puls  cc
-         ldx   #$0001
-         os9   F$Sleep
+ ldx #1 sleep for a tick
+ os9 F$Sleep
          bra   L0544
-L0556    inc   <u008B
+L0556    inc   <u008B reserve DMA
          puls  cc
          puls  pc,x
+
 L055C    bsr   L05BA
          bita  >u0151,u
          beq   L055C
@@ -663,7 +700,7 @@ L05B6    coma
 L05B8    clrb
          rts
 L05BA    pshs  x,b
-         ldx   u0001,u
+         ldx   V.PORT,u
          lda   #$11
          sta   $03,x
          lbsr  L03F2
@@ -675,9 +712,9 @@ L05BA    pshs  x,b
          ldb   #$12
          stb   $03,x
          puls  pc,x,b
-L05D5    lda   <$21,y
-         sta   >u0150,u
-         lda   <$22,y
+L05D5    lda   PD.DRV,y
+         sta   >X.DRV,u
+         lda   PD.STP,y
          sta   >u0151,u
          bsr   L05BA
          bita  >u0151,u
@@ -687,6 +724,8 @@ L05D5    lda   <$21,y
          rts
 L05EF    clrb
          rts
+
+* Report error
 L05F1    pshs  b,a
          leay  >u0161,u
          leax  >L069A,pcr
@@ -694,7 +733,7 @@ L05F1    pshs  b,a
 L05FD    stb   ,y+
          ldb   ,x+
          bpl   L05FD
-         lda   >u0150,u
+         lda   >X.DRV,u
          bsr   L064C
          stb   ,y+
          ldb   ,x+
@@ -710,20 +749,22 @@ L060D    stb   ,y+
          ldb   #$0D
          stb   ,y
          pshs  u
-         ldx   <u0050
-         ldy   $04,x
-         ldb   $06,x
+         ldx   D.Proc
+         ldy   P$SP,x
+         ldb   P$Task,x
          leax  >u0161,u
          leau  <-$20,y
-         lda   <u00D0
+         lda   D.SysTsk
          ldy   #$0020
          os9   F$Move
-         ldx   <u0050
-         lda   <$32,x
+         ldx   D.Proc
+         lda   P$Path+2,x get std err path
          leax  ,u
          ldy   #$0020
          os9   I$WritLn
          puls  pc,u
+
+* Convert byte to ascii number
 L064C    tfr   a,b
          lsra
          lsra
@@ -738,6 +779,7 @@ L065D    cmpb  #$39
          ble   L0663
          addb  #$07
 L0663    rts
+
 L0664    pshs  y,x,b,a
          ldd   #$0018
          stb   $04,s
@@ -769,4 +811,4 @@ L069A    fcc "Drive "
          fcc ": Controller Error #"
          fcb $FF
          emod
-eom      equ   *
+DSKEND      equ   *
