@@ -105,7 +105,7 @@ V.Active rmb   1
 V.Status rmb   1
 V.T0stk rmb   2
 V.Stk rmb   2
-u00B3  rmb   2
+V.Drive  rmb   2
 V.Lsn    rmb   2
 V.Fmt    rmb   1
 V.TwoStp rmb   1
@@ -153,6 +153,23 @@ DATREG rmb 1 data register
 *
 SELREG equ A.DskSel select register
 INTPIA equ DAT.Task interrupt port data reg
+INTBIT equ $80 interrupt flag bit
+B.Motor equ $10 motor-on bit
+B.PreCmp equ $20 precomp-on bit
+B.DblDen equ $40 double density on bit
+*
+* Timings
+*
+MotTim equ 250 5 second motor on
+RdyTim equ 12 1.2 sec pause after motor on
+TickOut equ 200 abort timeout
+*
+* Precompensation track
+*
+PrcTrk40 equ 16 for 40 track
+ ifne DBLTRACK
+PrcTrk80 equ 40
+ endc
 
 Type set drivr+objct
 Revs set reent+1
@@ -160,8 +177,8 @@ Revs set reent+1
  mod   Dkend,Dknam,Type,Revs,Dkent,Dskmem
  FCB $FF
 
-Dknam fcs 'wd2797'
- fcb 1 Edition
+Dknam FCS 'wd2797'
+ FCB 1 Edition
 
 *Entry Table
 Dkent lbra Idisk
@@ -172,9 +189,7 @@ Dkent lbra Idisk
  lbra Term
  lbra Boot
 
-Fdcpol   fcb  $00 no flip bits
-         fcb  $80
-         fcb  $80
+Fdcpol   fcb 0,INTBIT,128
 
 Maxcyl equ 40
 Scttrk equ 18
@@ -185,15 +200,16 @@ Maxsct equ (Maxcyl*Sctcyl)-1
 * Initialise Controller And Storage
 * Input: Y=Device Descriptor Pointer
 *        U=Global Storage Pointer
-Idisk   lda   #Drvcnt
-         sta   V.Ndrv,u
-         leax  Drvbeg,u
-         stx   >V.Cdrv,u
- pshs U Save "u" we need it later
-         leau  >V.Wrtf,u
-         lbsr  Getdd
- ldd #256 "d" passes memory req size
-         os9   F$SRqMem Request 1 pag of mem
+
+Idisk lda #Drvcnt No. Of Drives
+ sta V.Ndrv,u
+ leax Drvbeg,u Get D0 Table Pointer
+ stx V.Cdrv,u Set In Current Drive Pointer
+ pshs U Save Static Storage Pointer
+ leau V.Wrtf,u Adjust Static For Boot
+ lbsr Getdd Grab Parameters From Device Descriptor
+ ldd #$100 Get Verify Buffer
+ os9 F$SRqMem Get Memory
          bcs   Ierr
          tfr   u,d
          puls  u
@@ -215,33 +231,28 @@ Idisk   lda   #Drvcnt
          leax  >TimSrv,pcr
          os9   F$Timer
          bcs   Init30
-         leax  Drvbeg,u
-         ldb   #$04 #DriveCnt
+Init10  leax  Drvbeg,u
+         ldb   #DRVCNT
          lda   #$FF
-INILUP    sta   $01,x
-         sta   <$15,x
- leax DRVMEM,X next
+Init20 sta DD.TOT+1,x non-zero size
+ sta V.TRAK,x crazy track
+ leax DRVMEM,X next next!
  decb
-         bne   INILUP
-         clrb
+ bne Init20
+ clrb No Error
 Init30 rts
-Ierr    puls  pc,u
+Ierr puls pc,u Abort
 
  pag
 *************************************************************
 *
-* Read Sector Command
+* Read Sector Subroutine
+* Input: B=Logical Sector Msb
+*        X=Logical Sector Lsbs
+*        Y=Path Descriptor
+*        U=Global Storage
 *
-* Input: B = Msb Of Logical Sector Number
-*        X = Lsb'S Of Logical Sector Number
-*        Y = Ptr To Path Descriptor
-*        U = Ptr To Global Storage
-*
-* Output: 256 Bytes Of Data Returned In Buffer
-*
-* Error: Cc=Set, B=Error Code
-*
-Read    bsr   Rngtst
+Read    bsr   Rngtst Check Lsn Range
          bcs   Init30
          ldx   V.Lsn,u
          bne   Read1
@@ -275,7 +286,7 @@ Call pshs u,y
          jsr   ,x
          puls  pc,u,y
 
-Write    bsr   Rngtst
+Write    bsr   Rngtst Check Lsn Range
          bcs   Return
          leax  >Wsect,pcr
          bsr   Call
@@ -314,20 +325,20 @@ Rngtst    tstb
          lda   PD.SID,y
          deca
          puls  a
-         beq   L010C
+         beq   Rng1
          ora   #$01
-L010C    ldb   PD.DNS,y
+Rng1    ldb   PD.DNS,y
          bitb  #$01
-         beq   L0115
+         beq   Rng2
          ora   #$02
-L0115    sta   >V.Fmt,u
+Rng2    sta   >V.Fmt,u
          ldd   PD.SCT,y
          std   >V.Stk,u
          lda   PD.SID,y
          deca
-         beq   L0127
+         beq   Rng3
          lslb
-L0127    lda   <$26,y
+Rng3    lda Pd.Cyl+1,y
          mul
          std   $01,x
          bra   Rng5
@@ -363,7 +374,7 @@ Getdrv    ldx   >V.Cdrv,u
          lda   >V.CrTrk,u
          sta   <$15,x
 Get5    lda   PD.DRV,y
-         sta   >u00B3,u
+         sta V.Drive,u
  ldb #DRVMEM
          mul
          leax  Drvbeg,u
@@ -383,17 +394,17 @@ Get5    lda   PD.DRV,y
          stb   >V.DDTr0,u
          ldb   PD.TYP,y
          bitb  #$40
-         bne   L01A5
+         bne   Get10
          bita  #$04
-         beq   L01A5
+         beq   Get10
          clr   >V.TwoStp,u
-L01A5    bitb  #$01
-         beq   L01AB
+Get10    bitb  #$01
+         beq   Get15
          ora   #$80
-L01AB    bitb  #$08
-         beq   L01B1
+Get15    bitb  #$08
+         beq   Get20
          ora   #$08
-L01B1    sta   >V.Fmt,u
+Get20    sta   >V.Fmt,u
          rts
 
 Gstat bra Pstat1
@@ -863,21 +874,21 @@ Sett8    lda   <u0011,u
 *
  ifne STEPIN
 * NOTE:  WE ARE STEPPING IN SEVERAL TRACKS BEFORE
-*        ISSUINT THE RESTORE AS SUGGESTED IN THE
+*        ISSUING THE RESTORE AS SUGGESTED IN THE
 *        FD 1973 APPLICATION NOTES.
  endc
 
 Brstor    lbsr  SELECT
          clr  V.CrTrk-V.Wrtf,u
-         ldb   #$05
-RESTR2    lda   #$48
+         ldb   #5 REPEAT FIVE TIMES
+RESTR2    lda   #F.STPI STEP IN COMMAND
          ora  V.Step-V.Wrtf,u
          pshs  b
          bsr   Outcom
          puls  b
          decb
          bne   RESTR2
-         lda   #$08
+         lda   #F.REST RESTORE COMMAND
          bra   Sett3
 
 * Execute Transfer Requiring DMA
