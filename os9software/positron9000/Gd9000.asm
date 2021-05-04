@@ -122,7 +122,7 @@ L0090    sta   ,x
 L00A0    ldd   #$01DF
 L00A3    std   <u0015,u
          std   <u003E,u
-         ldd   #$00EF
+         ldd   #$00EF   239
          std   <u0017,u
          clrb
 L00B0    rts
@@ -173,9 +173,9 @@ L00E1    leax  <u0041,u
 L00F7    clrb
          rts
 
-GETSTA    cmpa  #$01
+GETSTA    cmpa  #SS.Ready
          beq   TRMNAT
-         cmpa  #$06
+         cmpa  #SS.EOF
          beq   TRMNAT
 
 PUTSTA    comb
@@ -300,7 +300,7 @@ L01EB    leay  <u0041,u
          ldx   $06,y
          cmpx  2,y
          bls   L0216
-         cmpx  #$00EF
+         cmpx  #$00EF 239
          bhi   L0216
          std   <u0015,u
          stx   <u0017,u
@@ -315,7 +315,7 @@ L0218    ldd   #$0000
          std   <u0013,u
          ldd   <u003E,u
          std   <u0015,u
-         ldd   #$00EF
+         ldd   #$00EF 239
          std   <u0017,u
          bra   L0267
 
@@ -346,17 +346,20 @@ L0267    clr   <u003C,u
          clr   <u0040,u
          clrb
          rts
+
+* This looks like a routine to set a pixel.
+*
 L026F    pshs  y
          ldx   ,y
          cmpx  <u0011,u
-         bcs   L02EC
+         blo   L02EC skip if lower
          cmpx  <u0015,u
-         bhi   L02EC
+         bhi   L02EC skip if higher
          ldd   2,y
          cmpd  <u0013,u
-         bcs   L02EC
+         blo   L02EC
          cmpd  <u0017,u
-         bhi   L02EC
+         bhi   L02EC skip if higher
          ldd   #$00EF
          subd  2,y
          tfr   b,a
@@ -402,6 +405,7 @@ L02E4    sta   ,x
          sty   >DAT.Regs
          andcc #$AF
 L02EC    puls  pc,y
+
 L02EE    clra
          clrb
          std   <u001E,u
@@ -554,6 +558,7 @@ L044B    ldd   <u002A,u
          bne   L0456
          bsr   L0457
 L0456    rts
+
 L0457    ldd   <u002A,u
          coma
          comb
@@ -598,5 +603,6 @@ L04AB    addd  2,y
          leay  <u001C,u
          lbsr  L026F
          puls  pc,y
+
          emod
 eom      equ   *
