@@ -76,6 +76,7 @@ TIMSVC fcb F$TIME
  fcb $80
 CLKPRT equ M$Mem Memory has Clock port address
  ifeq (ClocType-MC6840)*(ClocType-VIA)
+TCKCNT set 10000 #of mpu cycles/tick
  endc
  ifne (ClocType-M58167)*(ClocType-MC146818)
 
@@ -133,6 +134,9 @@ NOTCLK ldd D.Poll get polling routine ptr
 *
 CLKSRV ldx CLKPRT,PCR GET CLOCK ADDRESS
  ifeq ClocType-MC6840
+ lda 1,x
+ anda #2 Is it clock?
+ beq NOTCLK Branch if not
  endc
  ifeq ClocType-VIA
  endc
@@ -285,6 +289,27 @@ ClkEnt2 puls u
  leax CLKSRV,pcr GET SERVICE ROUTINE
  stx D.IRQ SET INTERRUPT VECTOR
  ifeq ClocType-MC6840 M6840 TIMER CHIP
+ ldx CLKPRT,PCR get clock address
+ ldd #TCKCNT-1 Get tick count
+ ifeq M6840Typ-Missed
+ std 2,X store count in timer #1
+ ldd #1
+ std 4,X inz timer #2
+ ldb #$50 constant for control reg
+ stb 1,X put it there
+ ldd #90 max count of missed ticks
+ std 6,X store it
+ clr 0,X constant for C3
+ ldb #$51 constant for C2
+ stb 1,X store it
+ ldb #$92 constant for C1
+ stb 0,X enable timer operation
+ else
+ std 4,X Store in timer #2 count
+ ldb #$53 Constant for control reg.
+ stb 1,X Put it there.
+ clr 0,X Enable timer operation
+ endc
  endc
  ifeq ClocType-VIA
  endc
@@ -332,7 +357,8 @@ SkipSet leas 5,S return scratch
  endc
  ifeq ClocType-MC146818 MC146818 Clock chip
  endc
- puls cc retrieve masks
+ puls CC retrieve masks
+ endc
  leay TIMSVC,PCR
  OS9 F$SSVC SET TIME SERVICE ROUTINE
 ClkEnt3 rts
