@@ -168,7 +168,7 @@ static void DAA() {
 
     /* Perform DAA of 9A */
     setCC(0);
-    setCCflag(CC_N);
+    setCCflag(1, CC_N);
     setA(0x9A);
     runtest("DAA6");
     assertA(0x00);
@@ -179,7 +179,7 @@ static void DAA() {
 
     /* Perform DAA of A2 */
     setCC(0);
-    setCCflag(CC_N);
+    setCCflag(1, CC_N);
     setA(0xA2);
     runtest("DAA7");
     assertA(0x02);
