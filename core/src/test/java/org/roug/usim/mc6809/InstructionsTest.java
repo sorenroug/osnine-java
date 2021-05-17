@@ -574,6 +574,43 @@ public class InstructionsTest extends Framework {
 
 
     /**
+     * Test SWI.
+     */
+    @Test
+    public void testSWI() {
+        writeword(0xfffa, 0x0400);
+        myTestCPU.cc.setE(false);
+        myTestCPU.cc.setF(false);
+        myTestCPU.s.set(0x1000);
+        myTestCPU.write(0xB00, 0x3F);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertPC(0x0400);
+        assertEquals(0x1000 - 12, myTestCPU.s.intValue());
+        assertTrue(myTestCPU.cc.isSetE());
+        assertTrue(myTestCPU.cc.isSetF());
+        assertTrue(myTestCPU.cc.isSetI());
+    }
+
+
+    /**
+     * Test SWI2.
+     */
+    @Test
+    public void testSWI2() {
+        writeword(0xfff4, 0x0306);
+        myTestCPU.s.set(0x1000);
+        myTestCPU.write(0xB00, 0x10);
+        myTestCPU.write(0xB01, 0x3F);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertPC(0x0306);
+        assertEquals(0x1000 - 12, myTestCPU.s.intValue());
+        assertTrue(myTestCPU.cc.isSetE());
+    }
+
+
+    /**
      * Test SWI3.
      */
     @Test
