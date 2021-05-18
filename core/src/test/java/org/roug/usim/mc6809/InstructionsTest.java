@@ -16,6 +16,7 @@ public class InstructionsTest extends Framework {
 
     /**
      * Load a short program into memory.
+     * Note: sets the CC to 0.
      */
     private void loadProg(int[] instructions) {
         writeword(0xfffe, LOCATION);
@@ -383,12 +384,14 @@ public class InstructionsTest extends Framework {
     @Test
     public void testLEASdec2() {
         myTestCPU.s.set(0x900);
+        myTestCPU.cc.setZ(true);
         myTestCPU.write(0xB00, 0x32);  // LEAS
         myTestCPU.write(0xB01, 0x7E);  // SP + 2's complement of last 5 bits.
         setPC(0xB00);
         myTestCPU.execute();
         assertPC(0xB02);
         assertEquals(0x8FE, myTestCPU.s.intValue());
+        assertEquals(1, myTestCPU.cc.getZ());
     }
 
     @Test
@@ -403,6 +406,7 @@ public class InstructionsTest extends Framework {
         int offset = 0x10000 - 0xfe49;
         // Negate 0
         loadProg(instructions);
+        myTestCPU.cc.setZ(false);
         myTestCPU.execute();
         assertEquals(LOCATION + 4 - offset, myTestCPU.x.intValue());
         assertPC(LOCATION + 4);
@@ -415,14 +419,47 @@ public class InstructionsTest extends Framework {
         myTestCPU.execute();
         assertPC(0x0849);
         assertEquals(0x083a, myTestCPU.x.intValue());
+        assertEquals(0, myTestCPU.cc.getZ());
     }
+
+    /**
+     * LEAU D,Y.
+     * The Z flag must be untouched
+     */
+    @Test
+    public void leau_DY() {
+        int instructions[] = {0x33, 0xAB};
+
+        loadProg(instructions);
+        myTestCPU.cc.clear();
+        setU(0xABCD);
+        setY(0x804F);
+        setA(0x80);
+        setB(0x01);
+        myTestCPU.execute();
+        assertU(0x050);
+        assertEquals(0, myTestCPU.cc.getZ());
+
+        // Second run
+        setU(0x0EFA);
+        setY(0x0EF8);
+        setA(0xFF);
+        setB(0x82);
+        loadProg(instructions);
+        setCC(0x28);
+        myTestCPU.cc.setZ(1);
+        myTestCPU.execute();
+        assertU(0x0E7A);
+        assertEquals(1, myTestCPU.cc.getZ());
+    }
+
 
 
     /**
      * LEAX D,Y
      */
     @Test
-    public void Doffset() {
+    public void leax_DY() {
         int instructions[] = {0x30, 0xAB};
 
         loadProg(instructions);
@@ -435,15 +472,31 @@ public class InstructionsTest extends Framework {
         assertEquals(0x50, myTestCPU.x.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
 
-        setCC(0x28);
         setX(0x0EFA);
         setY(0x0EF8);
         setA(0xFF);
         setB(0x82);
         loadProg(instructions);
+        setCC(0x28);
         myTestCPU.execute();
         assertEquals(0x0E7A, myTestCPU.x.intValue());
         assertEquals(0, myTestCPU.cc.getZ());
+    }
+
+    /**
+     * Increase register Y by 8.
+     */
+    @Test
+    public void leay_2() {
+        myTestCPU.y.set(0xFFF8);
+        myTestCPU.cc.setZ(0);
+        myTestCPU.write(0xB00, 0x31);  // LEAY
+        myTestCPU.write(0xB01, 0x28);  // Y + 8 (last 5 bits)
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertPC(0xB02);
+        assertEquals(0x0000, myTestCPU.s.intValue());
+        assertEquals(1, myTestCPU.cc.getZ());
     }
 
 

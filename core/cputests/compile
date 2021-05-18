@@ -3,9 +3,11 @@ cc1 -r instructions.c
 cc1 -r subtractions.c
 cc1 -r shifttest.c
 cc1 -r addtest.c
+cc1 -r indirect.c
 cc1 -r initregs.c
 cc1 -r framework.c
 cc1 instructions.r framework.r initregs.r -f=ctestinst
 cc1 subtractions.r framework.r initregs.r -f=ctestsubtract
 * cc1 addtest.r framework.r initregs.r -f=ctestadd
 * cc1 shifttest.r framework.r initregs.r -f=ctestshift
+cc1 indirect.r framework.r initregs.r -f=ctestindi

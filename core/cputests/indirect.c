@@ -84,7 +84,7 @@ static void Doffset()
     setA(0xFF);
     setB(0x82);
     runinst("Doffset2", instructions);
-    assertX(0x8E7A);
+    assertX(0x0E7A);
     assertCC(0, CC_Z);
 }
 
