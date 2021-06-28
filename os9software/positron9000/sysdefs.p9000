@@ -3,7 +3,7 @@
  page
 ****************************************
 
- ifeq CPUType-P9000
+ ifeq CPUType-Positron
 ************************************************************
 *
 *     Dynamic Address Translator Definitions
@@ -126,7 +126,8 @@ D$REBOOT equ $FFFE use an unused vector
 **********
 
 ClocType set MC6840
-CPort equ $E800
+*CPort equ $E800
+A.Clock set $E800
 TickSec set 100 ticks per second
 *Cx2Int set 1 CA2 (CB2) interrupt input
 *FPort set $FCE0 floppy disk controller

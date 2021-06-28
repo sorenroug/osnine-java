@@ -21,7 +21,10 @@
  ifeq ClocType-MC6840
 * Initialize 6840 Timer Chip For 50Ms Intervals
  endc
+*   and take control of IRQ vector
+*
 
+CPORT set A.Clock
  use defsfile
 
 *************************************************************
@@ -40,12 +43,11 @@ ClkNam fcs /Clock/
 TIMSVC fcb F$TIME
  fdb TIME-*-2
  fcb $80
-
+CLKPRT equ M$Mem Memory has Clock port address
  ifeq ClocType-MC6840
 TCKCNT set 10000 #of mpu cycles/tick
  endc
 
-CLKPRT equ M$Mem Memory has Clock port address
 
 *
 *  DAYS IN MONTHS TABLE
@@ -71,18 +73,28 @@ MONTHS fcb 0 Uninitialized month
 NOTCLK ldd D.Poll get polling routine ptr
  lbra TICK50
 
+
+
+*************************************************************
+*
+*     Clock Interrupt Service routine
+*
+* NOTE: the stack pointer is invalid when this routine is
+*       entered. It must not be used, but it must not be 
+*       lost.
+*
 CLKSRV ldx CLKPRT,PCR GET CLOCK ADDRESS
  ifeq ClocType-MC6840 M6840 timer chip
  lda 1,x
  anda #2 Is it clock?
  beq NOTCLK Branch if not
+ ldd 4,X Clear intrpt (must be 16-bit)
+ endc
 *
 * UPDATE CURRENT TIME
 *
- ldd 4,X Clear intrpt (must be 16-bit)
- endc
  dec D.Tick COUNT TICK
- bne Tick47
+ bne Tick40 BRANCH IF NOT END OF SECOND
  ldd D.MIN GET MINUTE & SECOND
  incb COUNT SECOND
  cmpb #60 END OF MINUTE?
@@ -122,7 +134,7 @@ TICK30 clrb NEW Second
 TICK35 std D.MIN Update minute & second
  lda #TickSec Get ticks presecond
  sta D.Tick
-Tick47 ldd D.Clock get clock routine ptr
+Tick40 ldd D.Clock get clock routine ptr
 TICK50 std D.SvcIRQ set IRQ service routine
  jmp [D.XIRQ] enter system
 *****

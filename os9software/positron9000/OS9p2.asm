@@ -75,7 +75,7 @@ OS9Name fcs /OS9p2/
 *                        Modified F$Send to clear suspend state
 *                        whenever a signal is sent.
 *                        Added MotGED and if needed Accupt conds.
-*    12     83/??/??     Added P9000 CPUType
+*    12     83/??/??     Added Positron CPUType
 
  fcb 12 edition number
  use defsfile
@@ -879,7 +879,7 @@ Chain.C stu ,Y++ mark block free
  deca count block
  bne Chain.C branch if more
  ifne DAT.BlCt-DAT.BlUs
- ifeq CPUType-P9000
+ ifeq CPUType-Positron
  ldu #IOBlock
  else
  ldu #ROMBlock
