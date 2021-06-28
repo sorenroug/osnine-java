@@ -1,6 +1,13 @@
-         nam   Padder
-         ttl   os9 device driver
+ nam   Padder
+ ttl   os9 device driver
 
+* This device is used to send/receive a message
+* The message has the following structure
+* Byte 0: opcode: 0 = read, 1 = write
+* Byte 1: Physical memory address $00-$0F
+* Byte 2: Physical memory address
+* Byte 3: Physical memory address
+* Byte 4: Byte to store
 
  use defsfile
 
@@ -12,9 +19,9 @@ rev      set   $01
 * Static storage offsets
 *
  org V.SCF room for scf variables
-u001D    rmb   1
-u001E    rmb   1
-u001F    rmb   1
+CMDCODE    rmb   1
+OVERFLOW    rmb   1
+BUFINX    rmb   1
 u0020    rmb   1
 u0021    rmb   1
 u0022    rmb   1
@@ -36,14 +43,18 @@ start    equ   *
 INIT    clrb
         rts
 
-READ    tst   <u001E,u
+* Read byte
+* Y = Address of path descriptor
+* U = Address of device static storage
+*
+READ    tst   OVERFLOW,u
          bne   L004E
-         tst   <u001D,u
+         tst   CMDCODE,u
          bne   L004E
-         ldb   <u001F,u
+         ldb   BUFINX,u
          cmpb  #$04
          bne   L004E
-         lbsr  L0103
+         lbsr  MAPBLK
          pshs  u,cc
          ldu   DAT.Regs
          orcc  #$50
@@ -51,48 +62,56 @@ READ    tst   <u001E,u
          lda   ,y
          stu   DAT.Regs
          puls  u,cc
-L004E    clr   <u001F,u
-         clr   <u001E,u
+L004E    clr   BUFINX,u
+         clr   OVERFLOW,u
          clrb
          rts
 
-WRITE    ldb   <u001F,u
-         inc   <u001F,u
-         tstb
-         beq   L006D
-         cmpb  #$01
+* Write to a device
+* A = Char to write
+* Y = Address of path descriptor
+* U = Address of device static storage
+*
+WRITE    ldb   BUFINX,u
+         inc   BUFINX,u
+         tstb  starting fresh?
+         beq   L006D ..yes
+         cmpb  #$01 first byte of address?
          beq   L007B
          cmpb  #$02
          beq   L008B
          cmpb  #$03
          beq   L0090
          bra   L0095
-L006D    cmpa  #$01
+
+L006D    cmpa  #$01 Opcode 1
          bhi   L0076
-         sta   <u001D,u
-         bra   L00B8
-L0076    clr   <u001F,u
-         bra   L00B8
+         sta   CMDCODE,u
+         bra   WRDONE
+
+L0076    clr   BUFINX,u Reset message
+         bra   WRDONE
+
 L007B    cmpa  #$0F
          bhi   L0084
          sta   <u0020,u
-         bra   L00B8
+         bra   WRDONE
 
-L0084    lda   #$01
-         sta   <u001E,u
-         bra   L00B8
+L0084    lda   #1
+         sta   OVERFLOW,u
+         bra   WRDONE
 
 L008B    sta   <u0021,u
-         bra   L00B8
+         bra   WRDONE
 
 L0090    sta   <u0022,u
-         bra   L00B8
+         bra   WRDONE
 
-L0095    tst   <u001E,u
+L0095    tst   OVERFLOW,u
          bne   L00B2
-         tst   <u001D,u
+         tst   CMDCODE,u
          beq   L00B2
-         bsr   L0103
+         bsr   MAPBLK
          pshs  u,cc
          ldu   DAT.Regs
          orcc  #$50
@@ -100,9 +119,9 @@ L0095    tst   <u001E,u
          sta   ,y
          stu   DAT.Regs
          puls  u,cc
-L00B2    clr   <u001E,u
-         clr   <u001F,u
-L00B8    clrb
+L00B2    clr   OVERFLOW,u
+         clr   BUFINX,u
+WRDONE   clrb
          rts
 
 GETSTA    cmpa  #SS.Ready
@@ -110,6 +129,9 @@ GETSTA    cmpa  #SS.Ready
          cmpa  #SS.EOF
          beq   TRMNAT
 
+* Y = Address of path descriptor
+* U = Address of device static storage
+*
 PUTSTA    cmpa  #$80
          bne   L00FD
          orcc  #$50
@@ -118,15 +140,16 @@ PUTSTA    cmpa  #$80
          ldu   >$FFBE
          ldy   #$01FA
          sty   >$FFBC
-         leay  $01,y
+         leay  1,y
          sty   >$FFBE
          ldd   >$FC00
-         cmpd  #$464C
+         cmpd  #$464C 'FL
          bne   L00F3
          ldd   >$FC02
-         cmpd  #$4558
+         cmpd  #$4558 'EX
          bne   L00F3
          jmp   >$FE18
+
 L00F3    stu   >$FFBE
          puls  u
          stu   >$FFBC
@@ -140,10 +163,13 @@ TRMNAT   clrb
 
 *
 * Subroutine dealing with memory block computation
-*
-L0103    pshs  a
+* Returns:
+*   (X) = Block number for DAT register
+*   (Y) = Logical address in block
+*   
+MAPBLK   pshs  a
          ldb   <u0021,u
-         lsrb
+         lsrb make block count
          lsrb
          lsrb
          clra
@@ -155,8 +181,9 @@ L0113    leax  <$20,x
          bne   L0113
 L0119    leax  >$0200,x
          ldd   <u0021,u
-         anda  #$07
+         anda  #^DAT.Addr get address within block
          tfr   d,y
          puls  pc,a
+
          emod
 eom      equ   *
