@@ -7,7 +7,11 @@
 * Byte 1: Physical memory address $00-$0F
 * Byte 2: Physical memory address
 * Byte 3: Physical memory address
-* Byte 4: Byte to store
+* Byte 4: Byte to load/store
+* How to use:
+*    First write 0 if you want to read a byte, or 1 if you want to write
+*    Then write the next three bytes for the memory address
+*    Then read or write the next byte.
 
  use defsfile
 
@@ -84,7 +88,7 @@ WRITE    ldb   BUFINX,u
          beq   L0090
          bra   L0095
 
-L006D    cmpa  #$01 Opcode 1
+L006D    cmpa  #$01 Opcode 0 or 1
          bhi   L0076
          sta   CMDCODE,u
          bra   WRDONE
