@@ -77,13 +77,17 @@ L007B    cmpa  #$0F
          bhi   L0084
          sta   <u0020,u
          bra   L00B8
+
 L0084    lda   #$01
          sta   <u001E,u
          bra   L00B8
+
 L008B    sta   <u0021,u
          bra   L00B8
+
 L0090    sta   <u0022,u
          bra   L00B8
+
 L0095    tst   <u001E,u
          bne   L00B2
          tst   <u001D,u
@@ -133,6 +137,10 @@ L00FD    comb
 
 TRMNAT   clrb
          rts
+
+*
+* Subroutine dealing with memory block computation
+*
 L0103    pshs  a
          ldb   <u0021,u
          lsrb
