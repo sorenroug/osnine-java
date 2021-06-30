@@ -1,9 +1,11 @@
  nam   Padder
  ttl   os9 device driver
 
-* This device is used to send/receive a message
+* This device is used to read/write a byte at an address in physical
+* RAM ($000000-$0FFFFF)
+* 
 * The message has the following structure
-* Byte 0: opcode: 0 = read, 1 = write
+* Byte 0: command code: 0 = read, 1 = write
 * Byte 1: Physical memory address $00-$0F
 * Byte 2: Physical memory address
 * Byte 3: Physical memory address
@@ -11,24 +13,24 @@
 * How to use:
 *    First write 0 if you want to read a byte, or 1 if you want to write
 *    Then write the next three bytes for the memory address
-*    Then read or write the next byte.
+*    Then read or write the byte.
 
  use defsfile
 
 tylg     set   Drivr+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
+atrv     set   ReEnt+1
+
+ mod   eom,name,tylg,atrv,start,size
 **********
 * Static storage offsets
 *
  org V.SCF room for scf variables
-CMDCODE    rmb   1
-OVERFLOW    rmb   1
-BUFINX    rmb   1
-u0020    rmb   1
-u0021    rmb   1
-u0022    rmb   1
+CMDCODE  rmb 1
+ABOVETOP rmb 1
+STATE rmb 1
+ADDRMSB rmb 1
+ADDRMID rmb 1
+ADDRLSB rmb 1
 size     equ   .
 
  fcb UPDAT.
@@ -51,23 +53,23 @@ INIT    clrb
 * Y = Address of path descriptor
 * U = Address of device static storage
 *
-READ    tst   OVERFLOW,u
-         bne   L004E
+READ     tst   ABOVETOP,u
+         bne   READ10
          tst   CMDCODE,u
-         bne   L004E
-         ldb   BUFINX,u
-         cmpb  #$04
-         bne   L004E
+         bne   READ10
+         ldb   STATE,u Get state?
+         cmpb  #4 State 4?
+         bne   READ10 branch if not
          lbsr  MAPBLK
          pshs  u,cc
          ldu   DAT.Regs
-         orcc  #$50
+         orcc #IntMasks set interrupt masks
          stx   DAT.Regs
          lda   ,y
          stu   DAT.Regs
          puls  u,cc
-L004E    clr   BUFINX,u
-         clr   OVERFLOW,u
+READ10   clr   STATE,u
+         clr   ABOVETOP,u
          clrb
          rts
 
@@ -76,89 +78,89 @@ L004E    clr   BUFINX,u
 * Y = Address of path descriptor
 * U = Address of device static storage
 *
-WRITE    ldb   BUFINX,u
-         inc   BUFINX,u
+WRITE    ldb   STATE,u
+         inc   STATE,u
          tstb  starting fresh?
-         beq   L006D ..yes
-         cmpb  #$01 first byte of address?
+         beq   TESTCMD ..yes
+         cmpb  #1 first byte of address?
          beq   L007B
-         cmpb  #$02
+         cmpb  #2
          beq   L008B
-         cmpb  #$03
+         cmpb  #3
          beq   L0090
-         bra   L0095
+         bra   WRVALUE
 
-L006D    cmpa  #$01 Opcode 0 or 1
-         bhi   L0076
+TESTCMD cmpa  #1 Writing legal command 0 or 1
+         bhi   WRRESET branch if not
          sta   CMDCODE,u
          bra   WRDONE
 
-L0076    clr   BUFINX,u Reset message
+WRRESET  clr   STATE,u Reset message
          bra   WRDONE
 
-L007B    cmpa  #$0F
+L007B    cmpa  #$0F What is the value of MSB byte in address?
          bhi   L0084
-         sta   <u0020,u
+         sta   ADDRMSB,u
          bra   WRDONE
 
 L0084    lda   #1
-         sta   OVERFLOW,u
+         sta   ABOVETOP,u
          bra   WRDONE
 
-L008B    sta   <u0021,u
+L008B    sta   ADDRMID,u
          bra   WRDONE
 
-L0090    sta   <u0022,u
+L0090    sta   ADDRLSB,u
          bra   WRDONE
 
-L0095    tst   OVERFLOW,u
-         bne   L00B2
+WRVALUE  tst   ABOVETOP,u
+         bne   WRFAIL
          tst   CMDCODE,u
-         beq   L00B2
+         beq   WRFAIL
          bsr   MAPBLK
          pshs  u,cc
          ldu   DAT.Regs
-         orcc  #$50
+         orcc #IntMasks set interrupt masks
          stx   DAT.Regs
          sta   ,y
          stu   DAT.Regs
          puls  u,cc
-L00B2    clr   OVERFLOW,u
-         clr   BUFINX,u
+WRFAIL    clr   ABOVETOP,u
+         clr   STATE,u
 WRDONE   clrb
          rts
 
-GETSTA    cmpa  #SS.Ready
-         beq   TRMNAT
-         cmpa  #SS.EOF
-         beq   TRMNAT
+GETSTA cmpa #SS.Ready
+         beq TRMNAT
+         cmpa #SS.EOF
+         beq TRMNAT
 
 * Y = Address of path descriptor
 * U = Address of device static storage
 *
-PUTSTA    cmpa  #$80
-         bne   L00FD
-         orcc  #$50
-         ldu   >$FFBC
+PUTSTA   cmpa  #$80 Opcode $80?
+         bne   SVCERR ..no
+         orcc #IntMasks set interrupt masks
+         ldu DAT.Regs+$3C  >$FFBC
          pshs  u
-         ldu   >$FFBE
-         ldy   #$01FA
-         sty   >$FFBC
+         ldu DAT.Regs+$3E   >$FFBE
+         ldy   #$01FA  Map to logical memory space
+         sty DAT.Regs+$3C   >$FFBC
          leay  1,y
-         sty   >$FFBE
+         sty DAT.Regs+$3E   >$FFBE
          ldd   >$FC00
-         cmpd  #$464C 'FL
+         cmpd  #"FL
          bne   L00F3
          ldd   >$FC02
-         cmpd  #$4558 'EX
+         cmpd  #"EX
          bne   L00F3
-         jmp   >$FE18
+         jmp   >$FE18 Boot into FLEX
 
-L00F3    stu   >$FFBE
+L00F3    stu DAT.Regs+$3E  >$FFBE
          puls  u
-         stu   >$FFBC
-         andcc #$50
-L00FD    comb
+         stu DAT.Regs+$3C   >$FFBC
+         andcc #IntMasks unset interrupt masks (Bug, missing ^)
+SVCERR    comb
          ldb   #E$UnkSvc
          rts
 
@@ -172,19 +174,19 @@ TRMNAT   clrb
 *   (Y) = Logical address in block
 *   
 MAPBLK   pshs  a
-         ldb   <u0021,u
+         ldb   <ADDRMID,u
          lsrb make block count
          lsrb
          lsrb
          clra
          tfr   d,x
-         lda   <u0020,u
+         lda   ADDRMSB,u
          beq   L0119
-L0113    leax  <$20,x
+L0113    leax  $20,x
          deca
          bne   L0113
-L0119    leax  >$0200,x
-         ldd   <u0021,u
+L0119    leax  $0200,x
+         ldd   ADDRMID,u
          anda  #^DAT.Addr get address within block
          tfr   d,y
          puls  pc,a
