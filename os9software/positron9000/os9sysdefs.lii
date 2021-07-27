@@ -59,6 +59,7 @@ D.PolTbl rmb 2 I/O Polling Table
  rmb 4 reserved
 D.PthDBT rmb 2 Path Descriptor Block Table ptr
 D.DMAReq rmb 1 DMA Request flag
+D.DMARsv rmb 1 DMA Reserved flag
  org $C0
 D.SysSvc rmb 2 System Service Routine entry
 D.SysDis rmb 2 System Service Dispatch Table ptr

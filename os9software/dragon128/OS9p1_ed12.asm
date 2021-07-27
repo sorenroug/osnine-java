@@ -1793,7 +1793,7 @@ SRqMem10 ldx D.SysDAT get system DAT image ptr
  bne SRqMem30 branch if not
  leay DAT.BlSz/256,Y leave map as is
  bra SRqMem40
-SRqMem20 clra cleat page flags
+SRqMem20 clra clear page flags
 SRqMem30 ldb #DAT.BlSz/256 get page count
 SRqMem35 sta ,y+ set map
  decb countr page
@@ -2547,6 +2547,14 @@ LDAXY equ *
  clr DAT.Regs reset block zero
  puls pc,cc
  else
+ pshs x,b,cc
+ ldd 0,y get block number
+ orcc #IntMasks set interrupt masks
+ std DAT.Regs set block zero
+ lda 0,X get byte
+ ldx #$0000+DAT.WrEn
+ stx DAT.Regs reset block zero
+ puls pc,x,b,cc
  endc
  page
 ***********************************************************
@@ -2575,7 +2583,15 @@ LDAXYP equ *
  clr DAT.Regs reset block zero
  puls cc reset interrupt masks
  else
- jmp NOWHERE Code is not available
+ pshs  x,b,cc
+ ldd 0,y get DAT block image
+ orcc #IntMasks set interrupt masks
+ std DAT.Regs set block zero
+ lda 0,x
+ ldx #$0000+DAT.WrEn
+ stx DAT.Regs reset block zero
+ puls x,b,cc
+ leax 1,x
  endc
  bra AdjImg adjust image
 
