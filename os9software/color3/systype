@@ -42,6 +42,7 @@ ACIATYPE set ACIA6551
 *     Dynamic Address Translator Definitions
 *
 DAT.BlCt equ 8 D.A.T. blocks/address space
+DAT.BlUs equ 8 blocks available for RAM in address space
 DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
 DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
 DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
