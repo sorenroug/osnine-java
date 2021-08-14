@@ -75,61 +75,60 @@ u0009    rmb   1
 u000A    rmb   2
 u000C    rmb   1
 u000D    rmb   1
-u000E    rmb   1
-XDrvbeg    rmb   1
-u0010    rmb   1
-u0011    rmb   1
-u0012    rmb   2
-u0014    rmb   2
-u0016    rmb   1
-u0017    rmb   1
-u0018    rmb   1
-u0019    rmb   1
-u001A    rmb   2
-u001C    rmb   1
-u001D    rmb   24
-u0035    rmb   2
-u0037    rmb   2
-u0039    rmb   23
-u0050    rmb   48
-u0080    rmb   38
-u00A6    rmb   1
 
  ORG Drvbeg reserve RBF static storage
  RMB Drvmem*Drvcnt drive tables
 V.Cdrv RMB 2 address of current drive table
-V.Vbuff rmb   2
-V.Wrtf    rmb   1
-V.Wait    rmb   1
-V.Active rmb   1
-V.Status rmb   1
-V.T0stk rmb   2
-V.Stk rmb   2
-V.Drive  rmb   2
-V.Lsn    rmb   2
-V.Fmt    rmb   1
-V.TwoStp rmb   1
-V.Timer rmb 1
-V.Cmd rmb 1
-V.Sector rmb 1
-V.CrTrk    rmb   1
-V.Buff rmb 2
-V.Bytc rmb 2
-V.Step rmb   1
-V.Track rmb   1
-V.Select rmb 1
-V.NewTrk rmb 1
+V.Vbuff RMB 2 address of verify buffer
+V.Wrtf    RMB   1 write type flag
+V.Wait    RMB   1 'can wait by sleeping' flag
+V.Active RMB   1 'command in progress' flag
+V.Status RMB   1 FDC status register
+V.T0stk RMB   2 sectors on track 0
+V.Stk RMB   2 sectors per track
+V.Drive  RMB   2 current drive number
+V.Lsn    RMB   2 logical sector number
+V.Fmt    RMB   1 drive type and disk format
+V.TwoStp rmb   1 double stepping flag
+V.Timer rmb 1 motor off timer
+V.Cmd rmb 1 command code
+V.Sector rmb 1 sector number
+V.CrTrk    rmb   1 current track
+V.Buff RMB 2 address of read/write buffer
+V.Bytc RMB 2 number of bytes to transfer
+V.Step RMB   1 step rate in ms
+V.Track rmb   1 required track
+V.Select rmb 1 current select register
+V.NewTrk rmb 1 'new track' flag
  ifne DBLSIDE
-V.Side rmb 1
+V.Side rmb 1 required head
  endc
-V.Freeze    rmb   1
-V.DDTr0    rmb   1
-
+V.Freeze    rmb   1 freeze drive table flag
  ifne DDTRACK0
-DDTr0 set 16
+V.DDTr0    rmb   1 double density on track 0 flag
  endc
+
+ ifne DBLSIDE
+Dblsid SET 1 double sided bit
+ endc
+ ifne EXTFMT
+Dblden SET 2 double density bit
+ endc
+ ifne DBLTRACK
+Dbltrk SET 4
+ endc
+ ifne HLFSECT
+Hlfsec SET 8
+ endc
+ ifne DDTRACK0
+DDTr0 set 16 double density on track 0
+ endc
+
+
 Dskmem equ .
 Btmem equ Dskmem-V.Wrtf Memory for bootstrap
+
+*
 * Controller commands
 *
 F.WRIT equ $A8 write sector
@@ -174,7 +173,8 @@ PrcTrk80 equ 40
 Type set drivr+objct
 Revs set reent+1
 
- mod   Dkend,Dknam,Type,Revs,Dkent,Dskmem
+
+ MOD Dkend,Dknam,Type,Revs,Dkent,Dskmem
  FCB $FF
 
 Dknam FCS 'wd2797'
@@ -210,38 +210,41 @@ Idisk lda #Drvcnt No. Of Drives
  lbsr Getdd Grab Parameters From Device Descriptor
  ldd #$100 Get Verify Buffer
  os9 F$SRqMem Get Memory
-         bcs   Ierr
-         tfr   u,d
-         puls  u
-         std   >V.Vbuff,u
-         ldd   #$FCC1
-         leax  <Fdcpol,pcr
-         leay  Fdcsrv,pcr
-         os9   F$IRQ
-         bcs   Init30
-         inc   >V.Wait,u
-         ldx   #INTPIA
-         lda   ,x
-         pshs  cc
-         orcc #IntMasks
-         lda   1,x
-         ora   #3
-         sta   $01,x
-         puls  cc
-         leax  >TimSrv,pcr
-         os9   F$Timer
-         bcs   Init30
-Init10  leax  Drvbeg,u
-         ldb   #DRVCNT
-         lda   #$FF
+ bcs   Ierr Skip If Error
+ tfr   u,d Copy Buffer Pointer
+ puls  u Retrieve Static Storage Pointer
+ std V.Vbuff,u Save Verify Buffer Pointer
+ ldd   #INTPIA+1 point at PIA control reg
+ leax  <Fdcpol,pcr Get Polling Parameters
+ leay  Fdcsrv,pcr Get Service Routine
+ os9   F$IRQ Try For Polling Table
+ bcs   Init30 Skip If Error
+ inc V.Wait,u Can Now Wait By Sleeping
+ ldx   #INTPIA point at interrupt PIA
+ lda   ,x clear any present interrupt
+ pshs  cc save masks
+ orcc #IntMasks mask interrupts
+ lda   1,x get control reg
+* anda #$C1 set CB2 interrupt input
+ ora   #3 positive edge on CA1; enable interrupt
+* ora #$18 positive edge
+ sta 1,x
+ puls cc restore masks
+ leax TimSrv,pcr install timer routine
+ os9   F$Timer
+ bcs   Init30 ..error
+Init10  leax  Drvbeg,u Get DO Table Pointer
+ ldb   #DRVCNT
+ lda   #$FF
 Init20 sta DD.TOT+1,x non-zero size
  sta V.TRAK,x crazy track
- leax DRVMEM,X next next!
+ leax DRVMEM,X next!
  decb
  bne Init20
  clrb No Error
 Init30 rts
-Ierr puls pc,u Abort
+
+Ierr PULS U,Pc Abort
 
  pag
 *************************************************************
@@ -252,25 +255,27 @@ Ierr puls pc,u Abort
 *        Y=Path Descriptor
 *        U=Global Storage
 *
-Read    bsr   Rngtst Check Lsn Range
-         bcs   Init30
-         ldx   V.Lsn,u
-         bne   Read1
-         bsr   Read1
-         bcs   Init30
- ldx PD.BUF,Y Point to buffer
-         pshs  y,x
-         tst   >V.Freeze,u
-         bne   Read2
-         ldy   >V.Cdrv,u
-         ldb   #$14
-Copytb    lda   b,x
-         sta   b,y
-         decb
-         bpl   Copytb
-Read2    clr   >V.Freeze,u
-         puls  pc,y,x
-Read1    leax  >Rsect,pcr
+Read bsr Rngtst Check Lsn Range
+         bcs   Init30 ..error
+         ldx   V.Lsn,u sector 0?
+         bne   Read1 ..no
+         bsr   Read1 read sector
+         bcs   Init30 ..error
+ ldx PD.BUF,Y Get Buffer Pointer
+         pshs  y,x Save Registers
+         tst V.Freeze,u freeze info?
+         bne   Read2 ..yes; skip copy
+         ldy V.Cdrv,u Get Drive Table Pointer
+         ldb   #Dd.Siz-1 Get Buffer Offset/Counter
+Copytb    lda   b,x Get Buffer Byte
+         sta   b,y Set It In Table
+         decb Count Bytes
+         bpl   Copytb Loop Until Done
+ ifne DDTRACK0&TRYBOTH
+ endc
+Read2 clr V.Freeze,u clear carry; no more freeze
+ puls pc,y,x Return
+Read1 leax Rsect,pcr Point At Read Routine
 
 * Fall Through To Call Controller Subroutine
 
@@ -280,44 +285,46 @@ Read1    leax  >Rsect,pcr
 
 * Input: U=Static Storage Pointer
 
-Call pshs u,y
-         ldy   V.Port,u
-         leau  >V.Wrtf,u
-         jsr   ,x
-         puls  pc,u,y
+Call pshs u,y Save Registers
+ ldy   V.Port,u Get Port Address
+ leau V.Wrtf,u Move Static Storage Pointer
+ jsr   ,x Call Driver
+ puls  pc,u,y
 
-Write    bsr   Rngtst Check Lsn Range
-         bcs   Return
-         leax  >Wsect,pcr
-         bsr   Call
-         bcs   Return
-         lda   <$28,y
-         bne   Return
-         ldd   $08,y
-         pshs  b,a
-         ldd   >V.Vbuff,u
-         std   $08,y
-         bsr   Read
-         puls  x
-         stx   $08,y
-         rts
+* Write Sector
 
- pag
-**************************************************************
+* Input: B=Lsn Msb
+*        X=Lsn Lsbs
+*        Y=Path Descriptor Pointer
+*        U=Global Storage
+
+Write bsr Rngtst Check Lsn Range
+ bcs Return Skip If Error
+ leax Wsect,pcr Get Write Routine Pointer
+ bsr Call Call Routine
+ bcs Return Skip If Error
+ lda Pd.Vfy,y Verify On?
+ bne Return Skip If Not
+ ldd PD.BUF,y saver buffer address
+ pshs D
+ ldd V.Vbuff,u Point At Verify Buffer
+ std PD.BUF,y set verify buffer
+ bsr Read do verify read
+ puls X restore buffer address
+ stx PD.BUF,Y
+ rts
+
+* Logical Sector Number Range Test
 *
-* Convert Logical Sector Number
-* To Rngtstal Track And Sector
-*
-*  Input:  B = Msb Of Logical Sector Number
-*          X = Lsb'S Of Logical Sector Number
-*  Output: A = Rngtstal Track Number
-*          Sector Reg = Rngtstal Sector Number
-*  Error:  Carry Set & B = Error Code
-*
-Rngtst    tstb
-         bne   Rngerr
+* Checks Logical Sector Number, Sets Buffer Pointer,
+* Sectors/Track On Track 0, And Transfers The Information
+* From The Path Descriptor For Non-Os9 Disks.
+
+Rngtst TSTB Lsn Possibly In Range?
+ bne Rngerr Skip If No
          stx   V.Lsn,u
          bsr   Getdrv
+ ifne HLFSECT
          bitb  #$40 Non-Os9 Format?
          beq   Rng4
          anda  #$F8
@@ -326,53 +333,57 @@ Rngtst    tstb
          deca
          puls  a
          beq   Rng1
-         ora   #$01
+         ora   #1
 Rng1    ldb   PD.DNS,y
-         bitb  #$01
+         bitb  #1
          beq   Rng2
-         ora   #$02
+         ora   #2
 Rng2    sta   >V.Fmt,u
          ldd   PD.SCT,y
-         std   >V.Stk,u
+         std   V.Stk,u
+ ifne DBLSIDE
          lda   PD.SID,y
          deca
          beq   Rng3
          lslb
-Rng3    lda Pd.Cyl+1,y
-         mul
-         std   $01,x
-         bra   Rng5
+ endc
+Rng3 LDA Pd.Cyl+1,y Cylinders
+ MUL Make Rough Sector Total
+ STD Dd.Tot+1,x Set It
+ BRA Rng5
+ endc
 Rng4 equ *
+ ifne EXTFMT
  clra
-         ldb   $03,x
-         std   >V.Stk,u
-Rng5    ldd   V.Lsn,u
-         cmpd  $01,x
+ ldb Dd.Tks,x Set Sectors/Track
+ std V.Stk,u
+ endc
+Rng5 ldd V.Lsn,u Get Lsn
+         cmpd Dd.Tot+1,x
          bhi   Rngerr
-         ldd   $08,y
-         std   >V.Buff,u
-         ldd   PD.T0S,y
-         std   >V.T0stk,u
-         clrb
-         rts
+         ldd Pd.Buf,y
+         std V.Buff,u
+ ifne EXTFMT
+ ldd PD.T0S,y Get Track 0 Sectors/Track
+ std V.T0stk,u Pass It
+ endc
+ clrb No Error
+ rts
 
-Rngerr comb
- ldb #E$SECT Error: bad sector number
-Return    rts
- pag
-***************************************************************
+Rngerr COMB Indicate Error
+ ldb #E$SECT Lsn Out Of Range
+Return RTS
+
+* Getdrv Drive Table Pointer
 *
-* Getdrv Drive
-*
-*  Input: (U)= Pointer To Global Storage
-*
-* Output: Curtbl,U=Current Drive Tbl
-*         Curdrv,U=Drive Number
-*
-Getdrv    ldx   >V.Cdrv,u
+* Returns - A : Format
+*           B : Type
+*           X : Drive Table Pointer
+
+Getdrv ldx V.Cdrv,u
          beq   Get5
-         lda   >V.CrTrk,u
-         sta   <$15,x
+         lda V.CrTrk,u
+         sta V.TRAK,x
 Get5    lda   PD.DRV,y
          sta V.Drive,u
  ldb #DRVMEM
@@ -407,19 +418,22 @@ Get15    bitb  #$08
 Get20    sta   >V.Fmt,u
          rts
 
+* Get Status - Not Used
+*
+
 Gstat bra Pstat1
 
- pag
-************************************************************
+
+* Put Status.
+* Used For Restore And Write Track (Format)
 *
-* Put Status Call
-*
-*
-*
+* Input: Y=Path Descriptor Pointer
+*        U=Static Storage
+
 Pstat pshs U,Y
  ldx PD.RGS,Y Point to parameters
  ldb R$B,X Get stat call
- cmpb #SS.Reset Restore call?
+ cmpb #SS.Reset Restore?
  beq Rstor ..yes; do it.
  cmpb #SS.WTrk Write track call?
  beq Wtrk ..yes; do it.
@@ -452,58 +466,58 @@ Rstor    lbsr  Getdrv
          lbsr  Call
          puls  pc,u,y
 
-*****************************************************************
+* Write Track (Format)
 *
-* Write Full Track
-*  Input: (A)=Track
-*         (Y)=Path Descriptor
-*         (U)=Global Storage
-*
+
 Wtrk lda R$Y+1,x
-         ldb   $09,x
+         ldb R$U+1,x
          pshs  b,a
          lbsr  Getdrv
-         ldd   <$29,y
-         std   >V.Stk,u
-         ldd   <$2B,y
-         std   >V.T0stk,u
-         ldd   #$0000
-         std   V.Lsn,u
-         puls  b,a
-         sta   <$10,x
-         stb   >V.Track,u
-         anda  #$01
-         sta   >V.Side,u
+ ifne EXTFMT
+         ldd Pd.Sct,y
+         std V.Stk,u
+         ldd Pd.T0s,y
+         std V.T0stk,u
+ endc
+         ldd #0
+         std V.Lsn,u
+         puls D
+         sta Dd.Fmt,x
+         stb V.Track,u
+ ifne DBLSIDE
+         anda #1
+         sta V.Side,u
+ endc
          lbsr  Getdrv
          ldd   #41*256
          os9   F$SRqMem
          bcs   Wtrk8
-         ldx   <u0050
-         lda   $06,x
+         ldx D.Proc get process ptr
+         lda P$Task,x
          ldb   D.SysTsk
-         ldy   ,s
-         ldx   $06,y
-         ldx   $04,x
-         ldy   #41*256
-         os9   F$Move
-         leax  ,u
-         ldu   $02,s
-         stx   >V.Buff,u
-         leau  >V.Wrtf,u
-         ldy   V.Port-V.Wrtf,u get port address
-         lbsr  Select
-         bcs   Wtrk8
-         lbsr  Settrk
-         ldd   #41*256
-         std   <u0014,u
-         lda   #$F0
-         sta   Drvbeg,u
-         lda   #$01
-         sta   ,u
+         ldy ,S get PD ptr
+         ldx PD.RGS,y
+         ldx R$X,x
+         ldy #41*256
+         os9 F$Move
+         leax ,u copy buffer ptr
+         ldu 2,s
+         stx V.Buff,u
+         leau V.Wrtf,u
+         ldy V.Port-V.Wrtf,u get port address
+         lbsr Select
+         bcs Wtrk8
+         lbsr Settrk
+         ldd #41*256
+         std V.Bytc-V.Wrtf,u
+         lda   #F.WRTR
+         sta V.Cmd-V.Wrtf,u
+         lda   #1
+         sta   V.Wrtf-V.Wrtf,u
          lbsr  IssXfr
          pshs  b,cc
-         ldu   <u0012,u
-         ldd   #41*256
+         ldu   V.Buff-V.Wrtf,u
+         ldd   #41*256 size
          os9   F$SRtMem
          puls  b,cc
 Wtrk8    puls  pc,u,y
@@ -513,18 +527,18 @@ Wtrk8    puls  pc,u,y
 * Input: U=Static Storage
 
 Term    pshs  u
-         ldu   >V.Vbuff,u
-         ldd   #$0100
+         ldu   V.Vbuff,u
+         ldd   #$100
          os9   F$SRtMem
          puls  u
          ldx   #INTPIA
          lda   1,x
          anda  #$FE
-         sta   $01,x
-         ldx   #$0000
-         os9   F$IRQ
-         ldx   #0
-         os9   F$Timer
+         sta 1,x
+         ldx #0
+         os9 F$IRQ
+         ldx #0
+         os9 F$Timer
          clrb
          rts
 
@@ -612,10 +626,10 @@ Bterr2 leas Btmem+2,S Pitch Global And D
 * Get Parameters From Device Descriptor
 Getdd    leay $12,y
          lda   $01,y
-         sta   u0008,u
+         sta   V.Drive-V.Wrtf,u
          lda   $02,y
-         anda  #$03
-         sta   <u0016,u
+         anda  #3
+         sta V.Step-V.Wrtf,u
  ifne EXTFMT
          lda   $03,y
          clrb
@@ -628,14 +642,14 @@ Getdd    leay $12,y
 Getdd1 equ *
  ifne DBLTRACK
     lda   $04,y
-         anda  #$02
-         sta   u000D,u
+         anda #2
+         sta V.TwoStp-V.Wrtf,u
  endc
  ifne DDTRACK0
  ifeq TRYBOTH
          lda   $03,y
          anda  #$20
-         sta   <u001C,u
+         sta V.DDTr0-V.Wrtf,u
  endc
  endc
          stb  V.Fmt-V.Wrtf,u
@@ -656,11 +670,11 @@ Rsect    clr   V.Wrtf-V.Wrtf,u
 * Set up for Read/Write Transfer
 Xfr    lda   #$DB
          pshs  a
-         lda   u000C,u
+         lda  V.Fmt-V.Wrtf,u
          bita  #$08
          beq   Xfr1
          ldd   #$0080
-         std   <u0014,u
+         std V.Bytc-V.Wrtf,u
          bsr   Xfr2
          bcs   Xfr70
          ldd  V.Buff-V.Wrtf,u
@@ -755,67 +769,67 @@ Wsect    lda   #1
 
 * Select Drive Routine
 *
-Select    lda   u0008,u
-         cmpa  #$04
+Select    lda V.Drive-V.Wrtf,u
+         cmpa  #DrvCnt
          bcs   L041D
-         comb
+         comb error -
          ldb   #E$Unit bad unit
          rts
 
 L041D    coma
          ldb   #$01
-         stb   u0002,u
-         anda  #$6F
-         ldb   u0008,u
+         stb   V.Active-V.Wrtf,u
+         anda  #$FF-B.Motor-B.DPHalt $6F
+         ldb   V.Drive-V.Wrtf,u
          cmpb  u0009,u
          beq   L0456
          stb   u0009,u
-         ldb   <u0018,u
+         ldb   V.Select-V.Wrtf,u
          orb   #$04
-         stb   >$FC24
+         stb   >SELREG
          ldx   #$0014
 L0437    leax  -$01,x
          bne   L0437
-         sta   >$FC24
+         sta   >SELREG
          tst   V.Port,u
          bne   L0450
          ldb   #$03
-L0444    ldx   #25000 100ms
-Sele8    leax  -1,x
-         bne   Sele8
+Sele7b    ldx   #25000 100ms
+Sele8b    leax  -1,x
+         bne   Sele8b
          decb
-         bne   L0444
+         bne   Sele7b
          bra   L0456
 L0450    ldx   #$000F
          os9   F$Sleep
 L0456    anda  #$FB
-         ldb   <u0018,u
-         sta   <u0018,u
-         sta   >$FC24
-         lda   #$FA
-         sta   u000E,u
-         bitb  #$10
+         ldb   V.Select-V.Wrtf,u
+         sta   V.Select-V.Wrtf,u
+         sta   >SELREG set select
+         lda   #MotTim
+         sta  V.Timer-V.Wrtf,u
+         bitb  #B.Motor
          beq   Sele5
          ldb   V.Fmt-V.Wrtf,u
          bmi   Sele5
          tst   V.Port,u
          bne   L047F
-         ldb   #$0C
-Sele7    ldx   #$61A8
-L0476    leax  -$01,x
-         bne   L0476
+         ldb   #RdyTim
+Sele7    ldx   #25000
+Sele8    leax -1,x
+         bne   Sele8
          decb
          bne   Sele7
          bra   Sele5
-L047F    ldx   #$003C
+L047F    ldx   #RdyTim*5
          os9   F$Sleep
-Sele5    lda   ,y
-         clrb
-         bita  #$80
-         beq   Sele4
-         clr   V.Active-V.Wrtf,u
-         comb
-         ldb   #$F6
+Sele5    lda   STTREG,y get controller status
+         clrb clear carry
+         bita  #$80 drive ready?
+         beq   Sele4 ..yes
+         clr   V.Active-V.Wrtf,u no longer active
+         comb error -
+         ldb   #E$NotRdy Not ready
 Sele4    rts
 
 *
@@ -829,37 +843,40 @@ Settrk lda V.CrTrk-V.Wrtf,u get current track
  lsla double the track
  endc
 Sett1    sta   $01,y
-         lda   <u0017,u
-         ldb   u000C,u
-         bmi   L04AA
+         lda  V.Track-V.Wrtf,u
+         ldb  V.Fmt-V.Wrtf,u
+         bmi   Sett7
          bitb  #$04
-         beq   L04AE
-L04AA    cmpa  #$28
+         beq   Sett5
+Sett7    cmpa  #$28
          bra   L04B0
-L04AE    cmpa  #$10
-L04B0    bcs   L04BD
-         ldb   <u0018,u
+Sett5    cmpa  #$10
+L04B0    bcs   Sett4
+         ldb   V.Select-V.Wrtf,u
          andb  #$DF
-         stb   <u0018,u
-         stb   >$FC24
-L04BD    cmpa  <u0011,u
+         stb   V.Select-V.Wrtf,u
+         stb   >SELREG
+Sett4    cmpa  V.CrTrk-V.Wrtf,u
          beq   Sett8
-         sta   <u0011,u
-         tst   u000D,u
-         beq   L04CA
-         lsla
-L04CA    ldb   #$04
-         stb   <u0019,u
-         sta   $03,y
-         lda   #$18
-Sett3    ora   <u0016,u
+         sta   V.CrTrk-V.Wrtf,u
+ ifne DBLTRACK
+ tst V.TwoStp-V.Wrtf,u double stepping?
+ beq Sett9 ..no
+ lsla double the target track
+Sett9 equ *
+ endc
+ ldb #4
+         stb  V.NewTrk-V.Wrtf,u
+         sta  DATREG,y
+         lda   #F.SEEK
+Sett3    ora  V.Step-V.Wrtf,u
          lbsr  Outcom
          bsr   Sett8
-         ldb   u0003,u
+         ldb  V.Status-V.Wrtf,u
          andb  #$90
          lbra  STCK
 
-Sett8    lda   <u0011,u
+Sett8    lda   V.CrTrk-V.Wrtf,u
          sta   $01,y
          rts
 
@@ -912,14 +929,14 @@ IssXfr2    leax  $03,y
          ldx   V.Buff-V.Wrtf,u
          stx   D.DMMem
          lda   V.Wrtf-V.Wrtf,u
-         sta   <u0039
+         sta   D.DMDir
 
 **********
 
          ldx   #DAT.Task
-         lda   #$00
+         lda   #SysTask-B.DPNMI
          sta   ,x
-         ora   #$80
+         ora   #B.DPNMI remove NMI
          sta   ,x
 
 **********
@@ -934,22 +951,22 @@ IssXfr2    leax  $03,y
          bne   L0547
          tst  V.Side-V.Wrtf,u
          beq   IssXfr5
-L0547    bitb  #$02
+L0547    bitb  #2
          beq   IssXfr5
  endc
 IssXfr4    lda   V.Select-V.Wrtf,u
          anda  #$BF
-         sta   >$FC24
+         sta   >SELREG
          sta   V.Select-V.Wrtf,u
 IssXfr5    lda   V.Cmd-V.Wrtf,u
          ora   V.NewTrk-V.Wrtf,u
          bsr   Outcom
          bsr   ChkErr
          ldx   #$0000
-         stx   <u0035
+         stx   D.DMPort
          bcc   IssXfr3
          lda   ,s
-         ora   #$01
+         ora   #1
          sta   ,s
 IssXfr3    puls  pc,cc
 
@@ -962,32 +979,33 @@ Outcom    pshs  cc
          tst   V.Wait-V.Wrtf,u
          bne   Fdccmd
 
-IssFdc    sync
-         lda   >$FCC1
-         bita  #$80
+* Start Fdc And Wait, Hogging Cpu
+IssFdc SYNC wait for interrupt
+         lda   >INTPIA+1
+         bita  #INTBIT
          beq   IssFdc
-         lda   ,y
+         lda   STTREG,y
          sta   V.Status-V.Wrtf,u
-         bra   L05B4
+         bra   FdcCmd3
 
 * Start FDC and Wait by Sleeping
 Fdccmd    ldx   #$00C8
          lda   V.Busy-V.Wrtf,u
          sta   V.Wake-V.Wrtf,u
-L0597    os9   F$Sleep
+FdcCmd1    os9   F$Sleep
          orcc #IntMasks
          tst   V.Wake-V.Wrtf,u
-         beq   L05B7
+         beq   FdcCmd2
          leax  ,x
-         bne   L0597
+         bne   FdcCmd1
          clr   V.Wake-V.Wrtf,u
          lda   #$80
          sta   V.Status-V.Wrtf,u
-         lda   #$D0
-         sta   ,y
+         lda   #F.TERM
+         sta   CMDREG,y
          bsr   STCK3
-L05B4    lda   >INTPIA
-L05B7    clr   V.Active-V.Wrtf,u
+FdcCmd3    lda   >INTPIA
+FdcCmd2    clr   V.Active-V.Wrtf,u
          puls  pc,cc
 *
 * Translate error status
