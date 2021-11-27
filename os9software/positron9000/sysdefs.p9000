@@ -1,5 +1,5 @@
  opt -l
- ttl System Type Definitions for the Dragon 128
+ ttl System Type Definitions for the Positron 9000
  page
 ****************************************
 
@@ -70,29 +70,14 @@ DAT.WrEn equ $200 Block Write Enable bit
 
 ***************
 *
-* A task number of 0 is used to indicate
-* 'no DAT task map allocated'. Therefore
-* no actual DAT task number can be 0. The easiest
-* thing to do is to set a bit in SysTask that
-* has no effect on the DAT. If the DAT register
-* cares about all 8 bits, then DATInit, SvcRet,
-* PassSWI, LDABX, STABX, LDBBX, Mover00, SetDAT00,
-* and Switch, (all at the end of OS9-P1), must be
-* altered to ensure that the bits are correctly
-* set
-* For the Dragon 128, the chosen value of SysTask
-* includes fixed outputs, LMap and DPIRQ.
 SysTask equ $80 System Task number
 *
 ***************
 
-IOBlock equ $FF The block number for the I/O
+IOBlock equ $FF The block number for the I/O. Should be $140?
 
 ***************
 *
-* OS9-P1 ColdStart initially sets up the system map
-* with RAM block 0 at $0000, a ROMBlock at $E000,
-* and the IOBlock at $F000.
 ROMBlock equ $1FE ROM block mapped in on ColdStart
 ROMCount equ 3 number of blocks of ROM to so map in
 RAMCount equ 3 initial blocks of RAM

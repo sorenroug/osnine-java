@@ -1,50 +1,110 @@
-         nam   IOMan
-         ttl   os9 system module
+         nam   Input/Output Manager
+         ttl   Module Header
+
+* Copyright 1980 by Motorola, Inc., and Microware Systems Corp.,
+* Copyright 1982 by Microware Systems Corporation
+* Reproduced Under License
+
+* This source code is the proprietary confidential property of
+* Microware Systems Corporation, and is provided to licensee
+* solely  for documentation and educational purposes. Reproduction,
+* publication, or distribution in any form to any party other than
+* the licensee is strictly prohibited!
 
 
-tylg     set   Systm+Objct
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   IOEnd,IOName,tylg,atrv,IOINIT,0
+***************
+* I/O Manager
 
-IOName     equ   *
-         fcs   /IOMan/
-         fcb   $09
+ mod IOEnd,IOName,Systm+Objct,ReEnt+1,IOINIT,0
+IOName fcs /IOMan/  module name
+
+************************************************************
+*
+*     Edition History
+*
+* Edition   Date    Comments
+*
+*    1   pre-82/08  beginning of history                LAC
+*
+*    2    82/08/24  modifications for MC6829            LAC
+*
+*    3    82/09/27  conditionals added for LI & LII     WGP
+*
+*    4    82/10/21  I$Deletx system call added          WGP
+*
+*    5    83/01/17  change "F$Load" to set loading process priority
+*                   and to not use the system process descriptor
+*
+*    6    83/02/18  change "PortBlk" to ignore untranslated
+*                   address bits
+*         83/02/24  Moved device termination routines from IODEL
+*                   into DETACH.  Minimized ATTACH and DETACH use
+*                   of system's process pointer.  Changed SCDIR
+*                   to leave device table use count of old directory
+*                   unchanged.
+*
+*    7    83/04/06  Removed testing for device being busy(re-entrant).
+*                   This should be taken care of in the link call.
+*                   Removed to take care of problems in using multiple
+*                   devices at the same address. (IO Processor)  RES
+*         83/04/27  Change F$Load to open file before gobbling up
+*                   it's large memory block.
+*
+*    8    83/05/04  extensive mods for non-contiguous modules.
+*         83/06/16  fixed load bugs - mod dir entry returned must
+*                   be searched for after load, by keeping block
+*                   and offset for reference.  Also link count is
+*                   temporarily bumped to keep module around during
+*                   load.
+*
+*    9    83/07/17  add limit checking for I$Read, I$ReadLn, I$Write,
+*                   and I$WritLn
+
+ fcb 9 edition number
+
  use defsfile
 
-IOINIT    equ   *
-         ldx   D.Init
-         lda   $0C,x
-         ldb   #$09
-         mul
-         pshs  b,a
-         lda   $0D,x
-         ldb   #$09
-         mul
-         addd  ,s
-         addd  #$00FF
-         clrb
-         os9   F$SRqMem
-         bcs   CRASH
-         leax  ,u
-L002E    clr   ,x+
-         subd  #$0001
-         bhi   L002E
-         stu   D.PolTbl
-         ldd   ,s++
-         leax  d,u
-         stx   D.DevTbl
-         ldx   D.PthDBT
-         os9   F$All64
-         bcs   CRASH
-         stx   D.PthDBT
-         os9   F$Ret64
-         leax  >IOIRQ,pcr
-         stx   D.Poll
-         leay  <SVCTBL,pcr
-         os9   F$SSvc
-         rts
-CRASH    jmp   [>$FFFE]
+
+ ttl Initialization
+ page
+**********
+* Ioinit
+* Entry Point For Start-Up Initialization
+*
+IOINIT ldx D.Init From configuration table
+ lda PollCnt,x get polling table entries
+ ldb #POLSIZ get entry size
+ mul get polling table size
+ pshs d save it
+ lda DEVCNT,X Get device table size
+ ldb #DEVSIZ
+ mul get device table size
+ addd 0,s add polling table size
+ addd #$FF
+ clrb round up to nearest page
+ os9 F$SRqMem allocate required I/O tbl memory
+ bcs CRASH Death: not enough memory
+ leax 0,u
+IOINI1 clr ,x+ Clear systems I/O tables
+ subd #1
+ bhi IOINI1
+ stu D.PolTbl save addr of Polling tbl
+ ldd ,s++ polling tbl size
+ leax d,u allocate room for polling table
+ stx D.DevTbl Save device tbl addr
+ ldx D.PthDBT Signal pdbt allocation
+ os9 F$All64 Allocate/initialize pdbt
+ bcs CRASH ..can't run without memory
+ stx D.PthDBT Save path descriptor block tbl addr
+ os9 F$Ret64 Return unneeded pd
+ leax IOIRQ,pcr Get interrupt polling routine
+ stx D.Poll
+ leay <SVCTBL,pcr Get service initialization
+ os9 F$SSvc Init service routine entries
+ rts
+
+**********
+CRASH jmp [D$REBOOT] Doom
 **********
  page
 **********
@@ -87,36 +147,62 @@ SVCTBL equ *
 * Destroys: D
 
 IODEL ldx R$X,u Get module addr
-         ldu   D.Init
-         ldb   $0D,u
-         ldu   D.DevTbl
-IODEL10    ldy   $04,u
-         beq   IODEL20
-         cmpx  $04,u
-         beq   IODELErr
-         cmpx  ,u
-         beq   IODELErr
-         cmpx  $06,u
-         beq   IODELErr
-IODEL20    leau  $09,u
-         decb
-         bne   IODEL10
-         clrb
-         rts
+ ldu D.Init From configuration module
+ ldb DevCnt,u Get device table size
+ ldu D.DevTbl Get device table address
+IODEL10 ldy V$DESC,u empty table entry?
+ beq IODEL20 ..yes; skip it
+ cmpx V$DESC,u This logical device?
+ beq IODELErr ..yes; return error
+ cmpx V$DRIV,u This physical device driver?
+ beq IODELErr ..yes; return error
+ cmpx V$FMGR,u This file manager?
+ beq IODELErr ..yes; return error
+IODEL20 leau DEVSIZ,u skip to next entry
+ decb
+ bne IODEL10 Loop until end of table
+ clrb return carry clear
+ rts
 
-IODELErr    comb
-         ldb   #$D1
-         rts
+IODELErr comb I/O Delete module error
+ ldb #E$ModBsy Error: module busy
+ rts
 
-PortBlk    lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         anda  #$01
+ ifgt LEVEL-1
+***************
+* Subroutine PortBlk
+
+* Passed: (D)=MS port addr
+* Returns: (D)=Port Extended Block number
+*          CC = Equal if port is in System's I/O Block
+* Destroys:
+
+PortBlk lsra
+ rorb
+ ifge DAT.BlSz-2048
+ lsra
+ rorb
+ ifge DAT.BlSz-4096
+ lsra
+ rorb
+ endc
+ endc
+ lsra
+ rorb (D)=Extended Block number
+ anda #DAT.BlMx/256 clear untranslated bits
+ ifle DAT.BlMx-255
+ ifeq MappedIO-true
+ cmpb #IOBlock System's I/O Block?
+ rts
+ else
+ endc
+ else
          cmpd  #$0140
          rts
+ endc
+ endc
+
+
 
  ttl File Manager I/O functions
  page
@@ -167,197 +253,276 @@ TBLBGN set STABLE
  fdb SCLOSE-TBLBGN Close path
  fdb SDELETX-TBLBGN Delete from execution directory
 
-USERIO         leax  <UTABLE,pcr
-         bra   L00F0
-SysIO         leax  <STABLE,pcr
-L00F0    cmpb  #$90
-         bhi   SYSIO2
-         pshs  b
-         lslb
-         ldd   b,x
-         leax  d,x
-         puls  b
-         jmp   ,x
+**********
+* I/O Dispatcher
+*
+USERIO leax <UTABLE,pcr Use user table
+ bra SYSIO1
 
-SYSIO2    comb
-         ldb   #$D0
-         rts
+SysIO leax <STABLE,pcr Use system table
+SYSIO1 cmpb #I$DeletX Function out of range?
+ bhi SYSIO2 ..yes; error
+ pshs b Save function code
+ lslb TIMES Two bytes per entry
+ ldd b,x Get offset of routine
+ leax d,x Form absolute entry of routine
+ puls b Restore function code
+ jmp 0,x Dispatch
 
-ATTACH         ldb   #$17
-L0105    clr   ,-s
-         decb
-         bpl   L0105
-         stu   <$16,s
-         lda   $01,u
-         sta   $09,s
-         ldx   D.Proc
-         stx   <$14,s
-         leay  <$40,x
-         ldx   D.SysPRC
-         stx   D.Proc
-         ldx   $04,u
-         lda   #$F0
-         os9   F$SLink
-         bcs   ATTERR0
-         stu   $04,s
-         ldy   <$16,s
-         stx   $04,y
-         lda   $0E,u
-         sta   $0B,s
-         ldd   $0F,u
-         std   $0C,s
-         ldd   $0B,u
-         leax  d,u
-         lda   #$E0
-         os9   F$Link
-         bcs   ATTERR0
-         stu   ,s
-         ldu   $04,s
-         ldd   $09,u
-         leax  d,u
-         lda   #$D0
-         os9   F$Link
-ATTERR0    ldx   <$14,s
-         stx   D.Proc
-         bcc   ATTA15
-ATTERR    stb   <$17,s
-         leau  ,s
-         os9   I$Detach
-         leas  <$17,s
-         comb
-         puls  pc,b
+SYSIO2 comb RETURN Carry set
+ ldb #E$UnkSvc Error: unknown service code
+ rts
 
-ATTA15    stu   $06,s
-         ldx   D.Init
-         ldb   $0D,x
-         lda   $0D,x
-         ldu   D.DevTbl
-L016D    ldx   $04,u
-         beq   ATTA30
-         cmpx  $04,s
-         bne   L0188
-         ldx   $02,u
-         bne   L0186
-         pshs  a
-         lda   $08,u
-         beq   L0182
-         os9   F$IOQu
-L0182    puls  a
-         bra   L016D
+ page
+**********
+* Attach I/O Device
+*
+* Passed: (A)=R/W/Exec Mode
+*         (X)=Device Name Ptr
+* Returns: (U)=Dev Tbl Ptr
+*
+ org 0 Stack temporary storage
+ rmb DEVSIZ Temp device table entry
+S.MODE rmb 1 R/w mode
+S.BUSY rmb 1 Non-zero if device in use
+S.PORT rmb 3 Temp port addr
+S.DEVT rmb 2 Temp device table ptr
+ ifgt LEVEL-1
+S.LclAdr rmb 2 Local Port Absolute addr
+S.Block rmb 2 Port extended Block number
+S.Proc rmb 2 user's process ptr
+ endc
+S.STAK rmb 2 User's register stack
+S.TMPS equ . Total temp size
 
-L0186    stu   $0E,s
-L0188    ldx   $04,u
-         ldy   $0F,x
-         cmpy  $0C,s
-         bne   ATTA30
-         ldy   $0E,x
-         cmpy  $0B,s
-         bne   ATTA30
-         ldx   ,u
-         cmpx  ,s
-         bne   ATTA30
-         ldx   $02,u
-         stx   $02,s
-         tst   $08,u
-         beq   ATTA30
-         sta   $0A,s
-ATTA30    leau  $09,u
-         decb
-         bne   L016D
-         ldu   $0E,s
-         lbne  ATTA70
+ATTACH ldb #S.TMPS-1
+ATTA02 clr ,-S Clear out temporary storage
+ decb
+ bpl ATTA02
+ stu S.STAK,S Save user stack ptr
+ lda R$A,u
+ sta S.MODE,s Save requested mode
+ ifgt LEVEL-1
+ ldx D.Proc get process ptr
+ stx S.Proc,s save it
+ leay P$DATImg,x get process dat image ptr
+ ldx D.SysPRC get system process ptr
+ stx D.Proc make current for link
+ endc
+ ldx R$X,u Get device name ptr
+ lda #DEVIC
+ ifeq LEVEL-1
+ OS9 F$Link link to device desc.
+ else
+ OS9 F$SLink Link device descriptor module (x)
+ endc
+ bcs ATTERR0 ..error; non-existing module
+ stu V$DESC,s Save addr
+ ldy S.STAK,s
+ stx R$X,y Return updated pathname to caller
+ ifgt LEVEL-1
+ lda M$PORT,u Port Extended Addr
+ sta S.PORT,S
+ endc
+ ldd M$PORT+1,u Get "base" port addr
+ std S.PORT+1,s Save it
+ ldd M$PDEV,u offset of driver module name
+ leax D,U Get absolute addr of name
+ lda #DRIVR
+ os9 F$Link Link device driver module
+ bcs ATTERR0 ..error; non-existing module
+ stu V$DRIV,s Save device driver module addr
+ ldu V$DESC,s get device descriptor addr
+ ldd M$FMGR,u offset of file mgr name
+ leax D,U Get absolute addr
+ lda #FLMGR
+ OS9 F$LINK Link file manager module
+ATTERR0
+ ifgt LEVEL-1
+ ldx S.Proc,s get process ptr
+ stx D.Proc restore it
+ endc
+ bcc ATTA15 .. found; continue
 
-         ldu   D.DevTbl
-L01B7    ldx   $04,u
-         beq   L01C8
-         leau  $09,u
-         deca
-         bne   L01B7
+ATTERR stb S.TMPS-1,S Save error code
+ leau 0,S Addr og psuedo device tbl entry
+ os9 I$Detach ..detach device
+ leas S.TMPS-1,s
+ comb
+ puls pc,b Return error
 
-         ldb   #$CC
-         bra   ATTERR
+*
+* Device Moudle Components Are All Located
+* Search Device Tbl For Device
+*
+ATTA15 stu V$FMGR,S Save file manager module addr
+ ldx D.Init From configuration rom addr
+ ldb DevCnt,x Get device table entry count
+ lda DevCnt,x Save an extra copy
+ ldu D.DevTbl Get device tbl addr
+ATTA20 ldx V$DESC,u Descriptor ptr
+ beq ATTA30 ..unused entry; skip
+ cmpx V$DESC,s Device descriptor module found?
+ bne ATTA25 ..no; continue
+ ldx V$STAT,u Is device in TERMINATE routine?
+ bne ATTA22 ..No; continue
+ pshs a
+ lda V$USRS,u TERMINATING PROCESS ID
+ beq ATTA21 ..ZERO; impossible
+ os9 F$IOQu Wait for termination
+ATTA21 puls a
+ bra ATTA20 Try again
+ATTA22 stu S.DEVT,s Save tbl ptr of found entry
+ATTA25 ldx V$DESC,u Descriptor ptr
+ ldy M$PORT+1,x Get device port addr
+ cmpy S.PORT+1,s
+ bne ATTA30
+ ifgt LEVEL-1
+ ldy M$PORT,x
+ cmpy S.PORT,s Same PORT addr?
+ bne ATTA30 ..No
+ endc
+ ldx V$DRIV,u
+ cmpx V$DRIV,s Save device driver?
+ bne ATTA30 ..no; skip to next entry
+ ldx V$STAT,u Don't re-initialize it
+ stx V$STAT,s Save static memory of found driver
+ tst V$USRS,u Currently in use?
+ beq ATTA30 ..no; continue
+ sta S.BUSY,s Mark it busy (non-zero)
+ATTA30 leau DEVSIZ,u Skip to next dev tbl entry
+ decb
+ bne ATTA20 Loop until there are no more
+ ldu S.DEVT,s Device descriptor already in table?
+ lbne ATTA70 yes; use same entry
+*
+* Create New Device Table Entry
+*
+ ldu D.DevTbl Get device tbl addr
+ATTA35 ldx V$DESC,u Search for a free entry
+ beq ATTA40 ..found one, exit loop
+ leau DEVSIZ,u Skip to next entry
+ deca
+ bne ATTA35 Loop until end of tbl
 
-ERMODE    ldb   #$CB
-         bra   ATTERR
+ ldb #E$DevOvf Error: device table overflow
+ bra ATTERR
 
-L01C8    ldx   $02,s
-         lbne  ATTA60
-         stu   $0E,s
-         ldx   ,s
-         ldd   $0B,x
-         addd  #$00FF
-         clrb
-         os9   F$SRqMem
-         lbcs  ATTERR
-         stu   $02,s
-ATTA57    clr   ,u+
-         subd  #$0001
-         bhi   ATTA57
+ERMODE ldb #E$BMode Error: illegal mode
+ bra ATTERR
 
-         ldd   $0B,s
-         lbsr  PortBlk
-         std   <$12,s
-         ldu   #$0000
-         tfr   u,y
-         stu   <$10,s
-         ldx   D.SysDAT
-IOMap20    ldd   ,x++
-         anda  #$01
-         cmpd  <$12,s
-         beq   L0236
-         cmpd  #$015F
-         bne   L0210
-         sty   <$10,s
-         leau  -$02,x
-L0210    leay  >$0800,y
-         bne   IOMap20
-         ldb   #$CF
-         cmpu  #$0000
-         lbeq  ATTERR
-         ldd   <$12,s
+* this code removed for edition 7
+*
+*ERBUSY ldb #E$DevBsy Error: device is busy
+* bra ATTERR
+*
+* end of code removed for edition 7
+
+ATTA40 ldx V$STAT,s Is device already initialized?
+ lbne ATTA60 ..yes; don't need new static
+*
+* Allocate New Static Storage For Device
+*
+ stu S.DEVT,s save Dev Tbl Entry Ptr
+ ldx V$DRIV,s Get device driver addr
+ ldd M$Mem,x Driver Static Storable requirement
+ addd #$FF
+ clrb Round up to nearest page
+ os9 F$SRqMem request Device Static Storage
+ lbcs ATTERR ..ABORT if error
+ stu V$STAT,s Save static storage ptr
+ATTA57 clr ,U+ Clear out driver static
+ subd #1
+ bhi ATTA57
+
+* Map Port into System addr space
+ ifeq LEVEL-1
+ ldd S.Port+1,s get port addr off stack
+ else
+ ldd S.Port,s Get extended port addr
+ lbsr PortBlk convert to block addr
+ std S.Block,s save working block addr
+ ldu #0 clear DAT entry ptr
+ tfr u,y clear local address ptr
+ stu S.LclAdr,s System Local addr=0
+ ldx D.SysDAT get system DAT image ptr
+IOMap20 ldd ,x++ get next DAT Entry
+ ifne DAT.WrEn+DAT.WrPr
+ anda #1
+ endc
+ cmpd S.Block,S same as Desirec Block?
+ beq IOMap40 ..Yes; good
+ cmpd #DAT.Free Unused Entry?
+ bne IOMap30 ..No, continue
+ sty S.LclAdr,s save System Local addr
+ leau -2,x save DAT Image ptr
+IOMap30 leay DAT.BLSz,y update Local Address
+ bne IOMap20 repeat until Total addr space searched
+ ldb #E$MemFul prime err: System process mem full
+ cmpu #0 free table entry found?
+ lbeq ATTERR ..No; ABORT: System Dat Image Fill
+ ldd S.Block,s
+ ifne DAT.WrEn
          ora   #$02
-         std   ,u
-         ldx   D.SysPRC
-         lda   $0C,x
-         ora   #$10
-         sta   $0C,x
-         os9   F$ID
-         ldy   <$10,s
+ endc
+ std 0,u fill in DAT Image with block
+ ldx D.SysPRC get system process ptr
+ lda P$State,x
+ ora #ImgChg indicate DAT image change
+ sta P$State,x
+ os9 F$ID Dummy SVC call to update DAT image
+ ldy S.LclAdr,s get local address
 
-L0236    sty   <$10,s
-         ldd   $0C,s
-         anda  #$07
-         addd  <$10,s
-         ldu   $02,s
-         clr   ,u
-         std   $01,u
-         ldy   $04,s
-         ldx   ,s
-         ldd   $09,x
-         jsr   d,x
-         lbcs  ATTERR
-         ldu   $0E,s
-ATTA60    ldb   #$08
-L0258    lda   b,s
-         sta   b,u
-         decb
-         bpl   L0258
-ATTA70    ldx   $04,u
-         ldb   $07,x
-         lda   $09,s
-         anda  $0D,x
-         ldx   ,u
-         anda  $0D,x
-         cmpa  $09,s
-         lbne  ERMODE
-         inc   $08,u
-         bne   L0277
-         dec   $08,u
-L0277    ldx   <$16,s
-         stu   $08,x
-         leas  <$18,s
-         clrb
-         rts
+* (D)=System Local addr corresponding to $XX X000 of addr
+IOMap40 sty S.LclAdr,s save High order local addr
+ ldd S.Port+1,S LS 2-bytes of port addr
+ anda #^DAT.Addr strip off translated bits
+ addd S.LclAdr,s add to local block addr
+ endc
+ ldu V$STAT,s Device Static Storage ptr
+ clr V.PAGE,u
+ std V.PORT,u save abs port addr in Static storage
+
+ ldy V$DESC,s Pass Descriptor addr to Driver
+ ldx V$DRIV,s Driver Module addr
+ ldd M$EXEC,x Get execution addr
+ jsr D,X Execute dev driver's init routine
+ lbcs ATTERR ..error; return error code
+ ldu S.DEVT,s Device table ptr to new entry
+ATTA60 ldb #DEVSIZ-1
+ATTA65 lda B,S
+ sta B,U Copy new device table entry
+ decb
+ bpl ATTA65
+ATTA70 ldx V$DESC,u Dev descriptor module ptr
+ ldb M$REVS,x Get re-entrant (sharable) bit
+ lda S.MODE,s Caller's mode specified?
+ anda M$MODE,x Check with device capabilities
+ ldx V$DRIV,u Get device driver ptr
+ anda M$MODE,x Compare with capabilities
+ cmpa S.MODE,s legal?
+ lbne ERMODE ..no; error: illegal mode
+
+* this code removed for edition 7
+*
+* tst S.BUSY,S Device busy?
+* beq ATTA90 ..no
+* andb M$REVS,X Descriptor re-entrant bit
+* bitb #REENT Sharable logical device?
+* lbeq ERBUSY ..no; error: device busy
+*ATTA90
+*
+* end of code remove for edition 7
+
+
+ inc V$USRS,u Update user count
+ bne ATTA91 branch if no overflow
+ dec V$USRS,u keep high count
+ATTA91 ldx S.STAK,S
+ stu R$U,x Return device tbl ptr
+ leas S.TMPS,S
+ clrb RETURN Carry clear
+ rts
  page
 **********
 * Process Detach Request
@@ -366,139 +531,175 @@ L0277    ldx   <$16,s
 * Destroys: None
 *
 DETACH ldu R$U,u Get device tbl addr
-         ldx   $04,u
-         lda   #$FF
-         cmpa  $08,u
-         lbeq  DETACH90
-         dec   $08,u
-         lbne  DETACH80
-         ldx   D.Init
-         ldb   $0D,x
-         pshs  u,b
-         ldx   $02,u
-         clr   $02,u
-         clr   $03,u
-         ldy   D.DevTbl
-L02A2    cmpx  $02,y
-         beq   DETACH20
-         leay  $09,y
-         decb
-         bne   L02A2
-         ldy   D.Proc
-         ldb   ,y
-         stb   $08,u
-         ldy   $04,u
-         ldu   ,u
-         exg   x,u
-         ldd   $09,x
-         leax  d,x
-         pshs  u
-         jsr   $0F,x
-         puls  u
-         ldx   $01,s
-         ldx   ,x
-         ldd   $0B,x
-         addd  #$00FF
-         clrb
-         os9   F$SRtMem
-         ldx   $01,s
-         ldx   $04,x
-         ldd   $0E,x
-         beq   DETACH20
-         lbsr  PortBlk
-         beq   DETACH20
-         tfr   d,x
-         ldb   ,s
-         pshs  x,b
-         ldu   D.DevTbl
-L02E5    cmpu  $04,s
-         beq   UnMap20
-         ldx   $04,u
-         beq   UnMap20
-         ldd   $0E,x
-         beq   UnMap20
-         lbsr  PortBlk
-         cmpd  $01,s
-         beq   L0322
-UnMap20    leau  $09,u
-         dec   ,s
-         bne   L02E5
+ ldx V$DESC,u (get for DETACH80)
+ lda #255
+ cmpa V$USRS,u high count
+ lbeq DETACH90 ..yes; don't detach
+ dec V$USRS,u Decrement user count
+ lbne DETACH80
+
+* Device is not busy, so delete it's device table entry.
+* First search for other devices using the same static
+* storage, and if none are found, execute TERMINATE routine.
+
+* (U)=device table ptr to delete
+ ldx D.Init from configuration module
+ ldb DevCnt,x get number of device tbl entries
+ pshs U,B
+ ldx V$STAT,u Static is unique per incarnation
+ clr V$STAT,u mar device as terminating
+ clr V$STAT+1,u
+ ldy D.DevTbl beginning of device table
+DETACH10 cmpx V$STAT,Y The one we're deleting?
+ beq DETACH20 ..yes; don't executte termination routine
+ leay DEVSIZ,y Skip to next devtbl entry
+ decb any left
+ bne DETACH10 ..yes; keep looking
+
+* Terminate Physical Device
+*   (X)-Static Storage Addr
+ ldy D.Proc
+ ldb P$ID,y get terminating Process ID
+ stb V$USRS,u save it in USE COUNT for Attach
+ ldy V$DESC,u (Y) = Descriptor ptr
+ ldu V$DRIV,u Get device driver module addr
+ exg x,u (u)=static storage addr
+ ldd M$EXEC,x Get execution entry offset
+ leax d,x Make absolute
+ pshs u save static storage addr
+ jsr D$TERM,x Execute termination routine
+ puls u static storage
+ ldx 1,s Device Tbl entry of deleted device
+ ldx V$Driv,x Device Driver Ptr
+ ldd M$Mem,x (D)=Memory requirement
+ addd #$FF
+ clrb Round up to nearest page
+ os9 F$SRtMem return Static Storage
+
+* Determine if this was the only active I/O port in it's
+* memory block, and release the block if so
+ ldx 1,s Device Tbl Ptr
+ ldx V$DESC,x (X)=Descriptor module
+ ifgt LEVEL-1
+ ldd M$PORT,X
+ beq DETACH20 ..No port
+ lbsr PortBlk
+ beq DETACH20 ..Zero means UNDECODED I/O Block
+ tfr D,X
+ ldb 0,s Size of DevTbl
+ pshs x,b
+ ldu D.DevTbl
+UnMap10 cmpu 4,s is this the entry being deleted?
+ beq UnMap20 ..Yes; skip it
+ ldx V$DESC,u else get Descriptor addr
+ beq UnMap20 ..Unused entry; skip it
+ ldd M$PORT,x
+ beq UnMap20 ..No port
+ lbsr PortBlk (D)=Block addr of suspect port
+ cmpd 1,s same as block being deleted?
+ beq UnMap90 ..Yes; don't release block
+UnMap20 leau DevSiz,u skip to next Tbl entry
+ dec 0,s entire table searched?
+ bne UnMap10 ..No; repeat
  ldx D.SysPRC Systen process ptr
  ldu D.SysDAT system DAT image ptr
-         ldy   #$0020
-L0308    ldd   ,u++
-         anda  #$01
-         cmpd  $01,s
-         beq   L0317
-         leay  -$01,y
-         bne   L0308
-         bra   L0322
-L0317    ldd   #$015F
-         std   -$02,u
-         lda   $0C,x
-         ora   #$10
-         sta   $0C,x
-L0322    leas  $03,s
-DETACH20    puls  u,b
-         ldx   $04,u
-         clr   $04,u
-         clr   $05,u
-         clr   $08,u
+ ldy #DAT.BlCt number of DAT Blocks per image
+UnMap25 ldd ,u++ get entry
+ ifne DAT.WrEn+DAT.WrPr
+         anda  #1
+ endc
+ cmpd 1,s this the block?
+ beq UnMap30 branch if so
+ leay -1,y count block
+ bne UnMap25 branch if more
+* that's odd, block not found ???
+ bra UnMap90
+UnMap30 ldd #DAT.Free
+ std -2,u mark DAT block as free
+ lda P$State,x
+ ora #ImgChg Inform system of image change
+ sta P$State,x
+UnMap90 leas 3,S discard scratch
+ endc
+
+DETACH20 puls u,b entry count, desc tbl entry
+ ldx V$DESC,u
+ clr V$DESC,u Mark Dev Tbl Entry FREE
+ clr V$DESC+1,u
+ clr V$USRS,u
 
 DETACH80
-    ldd   D.Proc
-         pshs  b,a
-         ldd   D.SysPRC
-         std   D.Proc
-         ldy   ,u
-         ldu   $06,u
-         os9   F$UnLink
-         leau  ,y
-         os9   F$UnLink
-         leau  ,x
-         os9   F$UnLink
-         puls  b,a
-         std   D.Proc
-DETACH90    lbsr  UnQueue
-         clrb
-         rts
+ ifgt LEVEL-1
+ ldd D.Proc get user process ptr
+ pshs d save it
+ ldd D.SysPRC get system process ptr
+ std D.Proc make it current
+ endc
+* (X)=V$DESC, U device descriptor ptr
+ ldy V$DRIV,u
+ ldu V$FMGR,u
+ os9 F$UnLink Unlink file manager
+ leau 0,y
+ os9 F$UnLink unlink device driver
+ leau 0,x
+ os9 F$UnLink unlink device descriptor
+ ifgt LEVEL-1
+ puls d retrieve user process ptr
+ std D.Proc restore it
+ endc
+DETACH90 lbsr UnQueue Restart any process in I/O queue
+ clrb return without error
+ rts
 
 **********
 * Dupe
 *   Process Path Duplication Request
 *
 UDUPE bsr FNDPTH Find available path
-         bcs   SDUP90
-         pshs  x,a
-         lda   $01,u
-         lda   a,x
-         bsr   L036A
-         bcs   SDUPER
-         puls  x,b
-         stb   $01,u
-         sta   b,x
-         rts
-SDUPER    puls  pc,x,a
+ bcs SDUP90 ..path not found; return error
+ pshs x,a Save path#, path tbl ptr
+ lda R$A,u Get caller's path
+ lda a,x Make system path#
+ bsr SDUP10 incr pd use count
+ bcs SDUPER Error; return it
+ puls x,b
+ stb R$A,u Return new path# to user
+ sta b,x Duplicate path number
+ rts
+
+SDUPER puls pc,x,a Return error
 
 SDUPE lda R$A,u Get path number
-L036A    lbsr  FPATH
-         bcs   SDUP90
-         inc   $02,y
-SDUP90    rts
+SDUP10 lbsr FPATH find (y)=path #
+ bcs SDUP90 ..error; return it
+ inc PD.CNT,y Increment pd use count
+SDUP90 rts
 
-FNDPTH    ldx   D.Proc
-         leax  <$30,x
-         clra
-L0378    tst   a,x
-         beq   L0385
-         inca
-         cmpa  #$10
-         bcs   L0378
-         comb
-         ldb   #$C8
-         rts
-L0385    andcc #$FE
-         rts
+ ttl I/O Name function calls
+ page
+**********
+* Fndpth
+*   Find Unused Entry in User'S Local Path Tbl
+*
+* Passed: None
+* Returns: (A)=User Path# found
+*          (X)=User Path Tbl Ptr
+*         B,CC=Set if Error
+* Destroys: None
+*
+FNDPTH ldx D.Proc
+ leax P$PATH,x User's path table ptr
+ clra
+FNDPD1 tst A,X Available path?
+ beq FNDP90 ..yes; return carry clear
+ inca
+ cmpa #NumPaths End of user's path table?
+ bcs FNDPD1 ..no; keep looking
+ comb RETURN Carry set
+ ldb #E$PthFul Error: path table full
+ rts
+FNDP90 andcc #$FF-CARRY Return carry clear
+ rts
 
 **********
 * Open
@@ -509,29 +710,29 @@ L0385    andcc #$FE
 *
 UCREAT equ *
 UOPEN bsr FNDPTH Find available local path#
-         bcs   L039A
-         pshs  u,x,a
-         bsr   SOPEN
-         puls  u,x,a
-         bcs   L039A
-         ldb   $01,u
-         stb   a,x
-         sta   $01,u
-L039A    rts
+ bcs UOPEN9 ..return error if none available
+ pshs u,x,a User path#, path tbl ptr, stack
+ bsr SOPEN Execute system open/create
+ puls u,x,a
+ bcs UOPEN9 Error; return error code
+ ldb R$A,u Get system path number
+ stb a,x Store in user's path table
+ sta R$A,u Return user path#
+UOPEN9 rts
 
 SCREAT equ *
 SOPEN pshs B Save function code
-         ldb   $01,u
-         bsr   PDINIT
-         bcs   L03AF
-         puls  b
-         lbsr  FMEXEC
-         bcs   SMDIR2
-         lda   ,y
-         sta   $01,u
-         rts
+ ldb R$A,u Get r/w/exec mode
+ bsr PDINIT Allocate & initialize path desc
+ bcs SOPENX ..return if error
+ puls b Restore function code
+ lbsr FMEXEC Execute file mgr's function
+ bcs SMDIR2 ..error; return path
+ lda PD.PD,y Return path number to user
+ sta R$A,u
+ rts
 
-L03AF    puls  pc,a
+SOPENX puls pc,a Return error
 
 **********
 * Makdir
@@ -539,18 +740,19 @@ L03AF    puls  pc,a
 *
 UMDIR equ *
 SMDIR pshs B Save function code
-         ldb   #$82
-SMDIR1    bsr   PDINIT
-         bcs   L03AF
-         puls  b
-         lbsr  FMEXEC
-SMDIR2    pshs  b,cc
-         ldu   $03,y
-         os9   I$Detach
-         lda   ,y
-         ldx   D.PthDBT
-         os9   F$Ret64
-         puls  pc,b,cc
+ ldb #DIR.+WRITE. Mode=write new dir
+SMDIR1 bsr PDINIT Initialize path descriptor
+ bcs SOPENX ..return if error
+ puls B
+ lbsr FMEXEC Execute file mgr's routine
+
+SMDIR2 pshs b,cc Save error status, error code
+ ldu PD.DEV,y
+ os9 I$Detach Detach I/O device
+ lda PD.PD,y
+ ldx D.PthDBT
+ os9 F$Ret64 Return path descriptor
+ puls pc,b,cc return error status
 
 **********
 * Cdir
@@ -558,35 +760,34 @@ SMDIR2    pshs  b,cc
 *
 UCDIR equ *
 SCDIR pshs B Save function code
-         ldb   $01,u
-         orb   #$80
-         bsr   PDINIT
-         bcs   L03AF
-         puls  b
-         lbsr  FMEXEC
-         bcs   SMDIR2
+ ldb R$A,u Get caller's mode
+ orb #DIR. Must be directory file
+ bsr PDINIT Allocate/initialize path descriptor
+ bcs SOPENX ..return if error
+ puls B Restore function code
+ lbsr FMEXEC Execute file mgr's routine
+ bcs SMDIR2 ..error; detach device, return pd
 
-         ldu   D.Proc
-         ldb   $01,y
-         bitb  #$1B
-         beq   L03F2
-         ldx   $03,y
-         stx   <$20,u
-         inc   $08,x
-         bne   L03F2
-         dec   $08,x
+ ldu D.Proc
+ ldb PD.MOD,y Check caller's mode
+ bitb #PREAD.+PWRIT.+READ.+WRITE.
+ beq SCDIR2 ..no; don't update r/w default
+ ldx PD.DEV,y
+ stx P$DIO,u Setup new default
+ inc V$USRS,x
+ bne SCDIR2 branch if no overflow
+ dec V$USRS,x keep high count
 
-L03F2    bitb  #$24
-         beq   SCDIR5
-         ldx   $03,y
-         stx   <$26,u
-         inc   $08,x
-         bne   SCDIR5
-         dec   $08,x
+SCDIR2 bitb #PEXEC.+EXEC. Execute mode?
+ beq SCDIR5 ..no; dont update exec default
+ ldx PD.DEV,y
+ stx P$DIO+6,u
+ inc V$USRS,x
+ bne SCDIR5 branch if no overflow
+ dec V$USRS,x keep high count
 
-SCDIR5    clrb
-         bra   SMDIR2
-
+SCDIR5 clrb CLEAR Error status
+ bra SMDIR2 Detach device, release pd
 
 **********
 * Delet
@@ -604,86 +805,123 @@ SDELET pshs B Save function code
 *
 UDELETX equ *
 SDELETX ldb #I$Delete make a delete call
-         pshs  b
-         ldb   $01,u
-         bra   SMDIR1
+ pshs B save function code
+ ldb R$A,u get deletion mode
+ bra SMDIR1
 
-PDINIT    ldx   D.Proc
-         pshs  u,x
-         ldx   D.PthDBT
-         os9   F$All64
-         bcs   PDIN90
-         inc   $02,y
-         stb   $01,y
-         ldx   D.Proc
-         ldb   $06,x
-         ldx   $04,u
-L0427    os9   F$LDABX
-         leax  $01,x
-         cmpa  #$20
-         beq   L0427
-         leax  -$01,x
-         stx   $04,u
-         ldb   $01,y
-         cmpa  #$2F
-         beq   L0454
-         ldx   D.Proc
-         bitb  #$24
-         beq   L0445
-         ldx   <$26,x
-         bra   L0448
-L0445    ldx   <$20,x
-L0448    beq   ERRBPN
-         ldd   D.SysPRC
-         std   D.Proc
-         ldx   $04,x
-         ldd   $04,x
-         leax  d,x
-L0454    pshs  y
-         os9   F$PrsNam
-         puls  y
-         bcs   ERRBPN
-         lda   $01,y
-         os9   I$Attach
-         stu   $03,y
-         bcs   PDIN.ERR
-         ldx   $04,u
-         leax  <$11,x
-         ldb   ,x+
-         leau  <$20,y
-         cmpb  #$20
-         bls   L047A
-         ldb   #$1F
-L0476    lda   ,x+
-         sta   ,u+
-L047A    decb
-         bpl   L0476
-         clrb
-PDIN90    puls  u,x
-         stx   D.Proc
-         rts
 
-ERRBPN    ldb   #$D7
-PDIN.ERR    pshs  b
-         lda   ,y
-         ldx   D.PthDBT
-         os9   F$Ret64
-         puls  b
-         coma
-         bra   PDIN90
+**********
+* Pdinit
+*   Allocate And Initialize Path Descriptor
+*
+* Passed: (B)=Mode (R/W/Exec)
+*         (U)=User Stack
+* Returns: (Y)=Pd
+*         B,CC=Set if Error
+*
+PDINIT
+ ifeq LEVEL-1
+ pshs  u
+ else
+ ldx D.Proc get current process ptr
+ pshs u,x save process & registers ptr
+ endc
+ ldx D.PthDBT Get addr of path descr block tbl
+ os9 F$All64 Allocate pd storage
+ bcs PDIN90 Error - memory full
+ inc PD.CNT,y
+ stb PD.MOD,y Save mode
+ ifeq LEVEL-1
+PDIN10 lda ,x+
+ else
+ ldx D.Proc get process ptr
+ ldb P$Task,x get process task number
+ ldx R$X,u Get caller's pathname ptr
+PDIN10 os9 F$LDABX get next character
+ leax 1,x move ptr
+ endc
+ cmpa #$20 Skip spaces
+ beq PDIN10
+ leax -1,x Back up to non-space character
+ stx R$X,u Save updated pathname ptr
+ ldb PD.MOD,y get mode
+ cmpa #PDELIM Path delimiter?
+ beq PDIN40 ..yes; don't use default name
+ ldx D.Proc Get process descriptor addr
+ bitb #PEXEC.+EXEC. ..execute mode?
+ beq PDIN20 ..no
+ ldx P$DIO+6,x Default execution directory
+ bra PDIN30
+PDIN20 ldx P$DIO,x Default data directory
+PDIN30 beq ERRBPN ..no default; bad path name
+ ifgt LEVEL-1
+ ldd D.SysPRC get system process ptr
+ std D.Proc set current process ptr
+ endc
+ ldx V$DESC,x Device descriptor module ptr
+ ldd M$NAME,x Name offset
+ leax D,X Device descriptor name ptr
+PDIN40 pshs y Save path descriptor
+ os9 F$PrsNam Parse device name
+ puls y Restore path descriptor
+ bcs ERRBPN ..oops; bad path name
+ lda PD.MOD,y
+ os9 I$Attach
+ stu PD.DEV,y
+ bcs PDIN.ERR
+ ldx V$DESC,u
+ leax M$OPT,x
+ ldb ,x+
+ leau PD.OPT,y
+ cmpb #PDSIZE-PD.OPT
+ bls PDIN60
+ ldb #PDSIZE-PD.OPT-1 Move entire options field
+PDIN50 lda ,x+
+ sta ,u+ Copy the bytes
+PDIN60 decb
+ bpl PDIN50
+ clrb RETURN Carry clear
+PDIN90
+ ifeq LEVEL-1
+ puls PC,U
+ else
+ puls U,X retrieve current process ptr
+ stx D.Proc reset current process
+ rts
+ endc
 
-CHKPTH    lda   $01,u
-         cmpa  #$10
-         bcc   CHKERR
-         ldx   D.Proc
-         leax  <$30,x
-         andcc #$FE
-         lda   a,x
-         bne   L04A7
-CHKERR    comb
-         ldb   #$C9
-L04A7    rts
+ERRBPN ldb #E$BPNam Error: bad path name
+PDIN.ERR pshs B
+ lda PD.PD,y
+ ldx D.PthDBT
+ os9 F$Ret64 return path
+ puls b
+ coma return carry set
+ bra PDIN90 return error
 
+ ttl I/O Path function calls
+ page
+**********
+* Chkpth
+*   Validate User Path, And Map Into System Path
+*
+* Passed: (U)=User Regs, (R$A)=User Path#
+* Returns: (A)=System Path#
+*          (X)=User Path Table Ptr
+* Destroys: None
+* Error: (B)=Error Code, CC=Set
+*
+CHKPTH lda R$A,u Get caller's path number
+ cmpa #NumPaths Illegal path number?
+ bcc CHKERR ..yes; return error
+ ldx D.Proc Get caller's process descriptor addr
+ leax P$PATH,x Get caller's local path table
+ andcc #$FF-CARRY return carry clear
+ lda a,x Get actual path number
+ bne CHKP90 ..exit if path is used
+CHKERR comb return Carry set
+ ldb #E$BPNum Error: bad path number
+CHKP90 rts
 
 
 **********
@@ -691,14 +929,13 @@ L04A7    rts
 *   Position File
 *
 USEEK bsr CHKPTH Validate path number
-         bcc   SSEEK1
-         rts
+ bcc SSEEK1 ..continue if valid
+ rts
 
 SSEEK lda R$A,u Get (system) path#
-SSEEK1    bsr   FPATH
-         lbcc  FMEXEC
-         rts
-
+SSEEK1 bsr FPATH Find (y)=path descriptor
+ lbcc FMEXEC go call file manager
+ rts
 
 **********
 * Read
@@ -706,53 +943,70 @@ SSEEK1    bsr   FPATH
 *
 UREAD equ *
 URDLN bsr   CHKPTH Validate path number
-         bcc   L04BD
-         rts
+ bcc SRDLN1 ..continue if valid
+ rts
 
 SREAD equ *
 SRDLN lda R$A,u Get (system) path#
-L04BD    pshs  b
-         ldb   #$05
-L04C1    bsr   FPATH
-         bcs   SRDLNX
-         bitb  $01,y
-         beq   BADPTH
-         ldd   $06,u
-         beq   L04F7
-         addd  $04,u
-         bcs   BADBUF
-         subd  #$0001
-         lsra
-         lsra
-         lsra
-         ldb   $04,u
-         lsrb
-         lsrb
-         lsrb
-         pshs  b
-         suba  ,s+
-         ldx   D.Proc
-         leax  <$40,x
-         lslb
-         leax  b,x
-L04E8    pshs  a
-         ldd   ,x++
-         cmpd  #$015F
-         puls  a
-         beq   BADBUF
-         deca
-         bpl   L04E8
-L04F7    puls  b
-         lbra  FMEXEC
-BADBUF    ldb   #$F4
-         lda   ,s
-         bita  #$02
-         beq   SRDLNX
-         ldb   #$F5
-         bra   SRDLNX
-BADPTH    ldb   #$D7
-SRDLNX    com   ,s+
-         rts
+SRDLN1 pshs B Save function code
+ ldb #READ.+EXEC.
+SRDLN2 bsr FPATH Find (y)=path descriptor
+ bcs SRDLNX ..return error if any
+ bitb PD.MOD,y Legal i/o on this path?
+ beq BADPTH ..no; error - bad path number
+*
+*    check limits of read/write buffer
+*
+ ldd R$Y,u get transfer size
+ beq SRDLN.d branch if none
+ addd R$X,u add buffer address
+ bcs BADBUF branch if overflow
+ ifge LEVEL-2
+ subd #1 get buffer end address
+ lsra get last block number
+ lsra
+ ifge DAT.BlSz-2048
+ lsra
+ ifge DAT.BlSz-4096
+ lsra
+ endc
+ endc
+ ldb R$X,u get MSB buffer address
+ lsrb get DAT image index
+ lsrb
+ ifge DAT.BlSz-2048
+ lsrb
+ ifge DAT.BlSz-4096
+ lsrb
+ endc
+ endc
+ pshs b make temp
+ suba ,s+ get block count - 1
+ ldx D.Proc get process ptr
+ leax P$DATImg,x get DAT image ptr
+ aslb convert index to offset
+ leax b,x get block ptr
+SRDLN.c pshs a save count
+ ldd ,x++ get block number
+ cmpd #DAT.Free is it allocated?
+ puls a retrieve count
+ beq BADBUF branch if not allocated
+ deca count block
+ bpl SRDLN.c branch if more
+ endc
+SRDLN.d puls B Restore function code
+ lbra FMEXEC ..execute file mgr's function
+
+BADBUF ldb #E$Read err: read error
+ lda 0,s get function
+ bita #WRITE. writing?
+ beq SRDLNX branch if not
+ ldb #E$Write err: write error
+ bra SRDLNX
+
+BADPTH ldb #E$BPNam Error: bad path number
+SRDLNX com ,S+
+ rts
 
 **********
 * Write
@@ -760,66 +1014,70 @@ SRDLNX    com   ,s+
 *
 UWRITE equ *
 UWRLN bsr CHKPTH Validate path number
-         bcc   L0514
-         rts
+ bcc SWRLN1 ..continue if valid
+ rts
 
 SWRITE equ *
 SWRLN lda R$A,U Get (system) path#
-L0514    pshs  b
-         ldb   #$02
-         bra   L04C1
+SWRLN1 pshs B Save function code
+ ldb #WRITE.
+ bra SRDLN2 Get pd, check code, exec function
 
-FPATH    pshs  x
-         ldx   D.PthDBT
-         os9   F$Find64
-         puls  x
-         lbcs  CHKERR
-FPATH9    rts
+FPath pshs x save x
+ ldx D.PthDBT
+ os9 F$Find64 Find (x)=path desc ptr
+ puls x retrieve x
+ lbcs CHKERR ..error; return useful error code
+FPath9 rts
 
 **********
 * Gstt
 *   Process Getstat Request
 *
 UGSTT lbsr CHKPTH Validate path number
-         ldx   D.Proc
-         bcc   L0534
-         rts
+ ifgt LEVEL-1
+ ldx D.Proc get process ptr
+ endc
+ bcc SGSTT10 ..good
+ rts
 
 SGSTT lda R$A,U Get system path#
 
-         ldx   D.SysPRC
-L0534    pshs  x,b,a
-         lda   $02,u
-         sta   $01,s
-         puls  a
-         lbsr  SSEEK1
-         puls  x,a
-         pshs  u,y,cc
-         tsta
-         beq   L054C
-         cmpa  #$0E
-         beq   L0560
-         puls  pc,u,y,cc
+ ifeq LEVEL-1
+ else
+ ldx D.SysPRC get system process ptr
+SGSTT10 pshs D,X save function code, process ptr
+ lda R$B,u recover getstat code
+ sta 1,S
+ puls a
+ lbsr SSEEK1 exec file manager getstat
+ puls x,a restore getstat code, process ptr
+ pshs u,y,cc save error status
+ tsta Read options Getstat code?
+ beq SGSTT20 ..yes
+ cmpa #SS.DevNm Read Device Name?
+ beq SGSTT30 ..Ues
+ puls pc,u,y,cc return error status
 
-L054C    lda   D.SysTsk
-         ldb   $06,x
-         leax  <$20,y
-L0553    ldy   #$0020
-         ldu   $04,u
-         os9   F$Move
-         leas  $01,s
-         puls  pc,u,y
+SGSTT20 lda D.SysTsk get source task
+ ldb P$Task,x get destination task
+ leax PD.OPT,y get source ptr
+SGSTT25 ldy #32 Copy 32 Bytes
+ ldu R$X,u get destination ptr
+ os9 F$Move move options
+ leas 1,s
+ puls pc,u,y
 
-L0560    lda   D.SysTsk
-         ldb   $06,x
-         pshs  b,a
-         ldx   $03,y
-         ldx   $04,x
-         ldd   $04,x
-         leax  d,x
-         puls  b,a
-         bra   L0553
-
+SGSTT30 lda D.SysTsk source task
+ ldb P$Task,x Destination task
+ pshs D
+ ldx PD.DEV,y device table ptr
+ ldx V$DESC,x Device descriptor
+ ldd M$Name,x Name offset
+ leax D,X
+ puls D
+ bra SGSTT25 move 32 bytes
+ endc
 
 ***********
 * PSTT
@@ -831,74 +1089,106 @@ SSSTT equ SSEEK
 *   Process Close Request
 *
 UCLOSE lbsr CHKPTH Validate path number
-         bcs   FPATH9
-         pshs  b
-         ldb   $01,u
-         clr   b,x
-         puls  b
-         bra   L0583
+ bcs FPATH9 ..return if error
+ pshs b
+ ldb R$A,u Get user's path number
+ clr b,x Release user's path tbl entry
+ puls b Restore function code
+ bra SCLOS1
 
 SCLOSE lda R$A,u
-L0583    bsr   FPATH
-         bcs   FPATH9
-         dec   $02,y
-         tst   $05,y
-         bne   L058F
-         bsr   FMEXEC
-L058F    tst   $02,y
-         bne   FPATH9
-         lbra  SMDIR2
+SCLOS1 bsr FPATH Find (y)=path desc ptr
+ bcs FPATH9 ..return if error
+ dec PD.CNT,y decrement image count
+ tst PD.CPR,y is path currently busy?
+ bne SCClos2 ..Yes; don't interrupt File Manager
+ bsr FMEXEC ..else notify FM of dead user
+SCClos2 tst Pd.Cnt,y detach only if last
+ bne FPATH9 ..close only if last image
+ lbra SMDIR2 Detach device, release pd
 
-GainP.zz    os9   F$IOQu
-         comb
-         ldb   <$19,x
-         bne   L05AA
-GainPath    ldx   D.Proc
-         ldb   ,x
-         clra
-         lda   $05,y
-         bne   GainP.zz
-         stb   $05,y
-L05AA    rts
+***************
+* Subroutine GainPath
+*   Gain control of Current Path
 
-FMEXEC    pshs  u,y,x,b
-         bsr   GainPath
-         bcc   L05B5
-         leas  $01,s
-         bra   L05C8
-L05B5    stu   $06,y
-         ldx   $03,y
-         ldx   $06,x
-         ldd   $09,x
-         leax  d,x
-         ldb   ,s+
-         subb  #$83
-         lda   #$03
-         mul
-         jsr   d,x
-L05C8    pshs  b,cc
-         bsr   UnQueue
-         ldy   $04,s
-         ldx   D.Proc
-         lda   ,x
-         cmpa  $05,y
-         bne   L05D9
-         clr   $05,y
-L05D9    puls  pc,u,y,x,b,cc
+* Passed: none
+* Returns: CC carry set, B=signal code if signal error
+*          B=PD.CPR = this process if success
+* Destroys: A,B,X
 
-UnQueue    pshs  y,x
-         ldy   D.Proc
-         bra   UnQue80
+GainP.zz os9 F$IOQU Wait in I/O queue
+ comb set carry
+ ldb P$Signal,x Wake up signal?
+ bne GainP.9 ..no; return signal as error
 
-UnQue10    clr   <$10,y
-         ldb   #$01
-         os9   F$Send
+GainPath ldx D.PROC
+ ldb P$ID,x get current process id
+ clra clear carry
+ lda PD.CPR,y Path descriptor busy?
+ bne GainP.zz ..Yes; sleep for user
+ stb PD.CPR,y mark current user
+GainP.9 rts
 
-         os9   F$GProcP
-         clr   $0F,y
-UnQue80    lda   <$10,y
-         bne   UnQue10
-         puls  pc,y,x
+
+***************
+* Subroutine FMEXEC
+*   Dispatch To File MgrS Routine
+*
+* Passed: (B)=Function Code
+*         (Y)=Path Descriptor Ptr
+*         (U)=User'S Register Stack
+* Error: B,CC=Set id Error
+* Destroys: D
+*
+FMEXEC pshs u,y,x,b Save regs
+ bsr GainPath gain control of path
+ bcc FMEX20 ..gotten; continue
+ leas 1,S discard function code
+ bra FMEX30 ..Exit if Signal Error
+
+FMEX20 stu PD.RGS,y Save user register stack
+ ldx PD.DEV,y Get device tbl entry address
+ ldx V$FMGR,x Get file manager module address
+ ldd M$EXEC,X
+ leax D,X Get file mgr's execution entry addr
+ ldb ,S+ Restore caller's function byte
+ subb #I$Create Make it an index
+ lda #3
+ mul TIMES 3 bytes per lbra entry
+ jsr D,X Exec file mgr's routine
+FMEX30 pshs B,CC save error status, code
+ bsr UnQueue Wake Up next in I/O Queue
+ ldy 4,s path descriptor ptr
+ ldx D.Proc
+ lda P$ID,x get current process id
+ cmpa PD.CPR,y controlling Path Descriptor?
+ bne FMEX90 ..No
+ clr PD.CPR,y release path
+FMEX90 puls pc,u,y,x,b,cc return
+
+***************
+* Subroutine UnQueue
+*   Wake next process in I/O queue (if any)
+
+UnQueue pshs Y,X save regs
+ ldy D.Proc
+ bra UnQue80 While not last proc in IO queue
+
+UnQue10 clr P$IOQN,y clear next ptr
+ ldb #S$Wake
+ os9 F$Send wake up next process in queue
+
+ ifeq LEVEL-1
+ ldx D.PrcDBT
+ os9 F$Find64 find next process descriptor
+ else
+ os9 F$GProcP find next process descriptor
+ endc
+
+ clr P$IOQP,y clear previous link in next
+UnQue80 lda P$IOQN,y process ID of next process
+ bne UnQue10 Endwhile
+ puls pc,y,x
  page
 ***************
 * Irq Service Routines
@@ -922,95 +1212,118 @@ UnQue80    lda   <$10,y
 *   R$U,U=Storage Addr
 *
 IOPOLL ldx R$X,u Get ptr to flip,mask,priority
-         ldb   ,x
-         ldx   $01,x
-         clra
-         pshs  cc
-         pshs  x,b
-         ldx   D.Init
-         ldb   $0C,x
-         ldx   D.PolTbl
-         ldy   $04,u
-         beq   IOPOL4
-         tst   $01,s
-         beq   POLFUL
-         decb
-         lda   #$09
-         mul
-         leax  d,x
-         lda   $03,x
-         bne   POLFUL
-         orcc  #$50
-L061C    ldb   $02,s
-         cmpb  -$01,x
-         bcs   L062F
-         ldb   #$09
-L0624    lda   ,-x
-         sta   $09,x
-         decb
-         bne   L0624
-         cmpx  D.PolTbl
-         bhi   L061C
-L062F    ldd   $01,u
-         std   ,x
-         ldd   ,s++
-         sta   $02,x
-         stb   $03,x
-         ldb   ,s+
-         stb   $08,x
-         ldd   $06,u
-         std   $04,x
-         ldd   $08,u
-         std   $06,x
-         puls  pc,cc
+ ldb 0,x
+ ldx 1,x
+ clra default carry clear
+ pshs cc save Interrupt State
+ pshs x,b Save flip,mask,priority
+ ldx D.Init From configuration rom addr
+ ldb PollCnt,x Get polling table entry count
+ ldx D.PolTbl Get addr of polling tbl
+ ldy R$X,u Delete?
+ beq IOPOL4 ..yes
+ tst 1,s Mask zero?
+ beq POLFUL ..yes; error: mask must be non-zero
+ decb
+ lda #POLSIZ
+ mul
+ leax D,X Compute addr of last tbl entry
+ lda Q$MASK,x Is the table full (mask not 0)?
+ bne POLFUL ..yes; error: polling table full
+ orcc #IntMasks Disable IRQs during Maintenance
+IOPOL1 ldb 2,s Get priority of new device
+ cmpb (Q$PRTY-POLSIZ),X Above the previous entry's?
+ bcs IOPOL3 ..no; insert it here in the table
+ ldb #POLSIZ
+IOPO11 lda ,-x
+ sta POLSIZ,x Copy table entry down
+ decb
+ bne IOPO11 (move to next higher entry)
+ cmpx D.PolTbl Is this the top of the table?
+ bhi IOPOL1 ..no; repeat
+IOPOL3 ldd R$D,u Copy parameters into tbl entry
+ std Q$POLL,x ..polling address
+ ldd ,s++
+ sta Q$FLIP,x ..flip
+ stb Q$MASK,x ..masl
+ ldb ,s+
+ stb Q$PRTY,x ..priority
+ ldd R$Y,u
+ std Q$SERV,x ..service address
+ ldd R$U,u
+ std Q$STAT,x ..static storage address
+ puls PC,CC return (carry clear)
 
-IOPOL4    leas  $04,s
-         ldy   $08,u
-L064C    cmpy  $06,x
-         beq   L0658
-         leax  $09,x
-         decb
-         bne   L064C
-         clrb
-         rts
+* Delete An Entry From Polling Tbl
+IOPOL4 leas 4,s Clean up stack
+ ldy R$U,u Caller's static address
+IOPOL5 cmpy Q$STAT,x Is this the entry?
+ beq IOPOL6 ..yes; good
+ leax POLSIZ,x Skip to next table entry
+ decb end of table?
+ bne IOPOL5 ..no; repeat
+* Error? - Table Entry Not Found
+ clrb return Carry clear
+IORTS rts
 
-L0658    pshs  b,cc
-         orcc  #$50
-         bra   L0665
-L065E    ldb   $09,x
-         stb   ,x+
-         deca
-         bne   L065E
-L0665    lda   #$09
-         dec   $01,s
-         bne   L065E
-L066B    clr   ,x+
-         deca
-         bne   L066B
-         puls  pc,a,cc
+IOPOL6 pshs b,cc Save entry count
+ orcc #IntMasks Disable IRQs during Maintenance
+ bra IOPO75
+IOPOL7 ldb POLSIZ,x
+ stb ,x+ Copy next entry up over this one
+ deca
+ bne IOPOL7 (move down to next entry)
+IOPO75 lda #POLSIZ Get polling table entry size
+ dec 1,s At last entry yet?
+ bne IOPOL7 ..no; copy another entry
+IOPOL8 clr ,x+ Clear out last entry
+ deca
+ bne IOPOL8
+ puls pc,a,cc return
 
-POLFUL    leas  $04,s
-POLLERR    comb
-         ldb   #$CA
-         rts
+POLFUL leas 4,S discard temps
+POLLERR comb return carry set
+ ldb #E$Poll Error: polling table entry not found
+ rts
 
-IOIRQ    ldy   D.PolTbl
-         ldx   D.Init
-         ldb   $0C,x
-         bra   L0686
-L0681    leay  $09,y
-         decb
-         beq   POLLERR
-L0686    lda   [,y]
-         eora  $02,y
-         bita  $03,y
-         beq   L0681
-         ldu   $06,y
-         pshs  y,b
-         jsr   [<$04,y]
-         puls  y,b
-         bcs   L0681
-         rts
+ page
+***************
+* Irq Polling Routine
+* ===================
+
+* Polling Table Format:
+
+* Polling Address  (2)
+* Flip Byte        (1)
+* Poll Mask        (1)
+* Service Address  (2)
+* Static Storage   (2)
+* Priority         (1)
+
+* Interrupt Request (Irq) Service Entry Point
+
+IOIRQ ldy D.PolTbl Get addr of polling table
+ ldx D.Init From configuration module
+ ldb PollCnt,x Get polling table entry count
+ bra IOIRQ2
+IOIRQ1 leay POLSIZ,y Skip to next entry in table
+ decb end of table?
+ beq POLLERR ..yes; exit - not found
+IOIRQ2 lda [Q$POLL,y] Poll device
+ eora Q$FLIP,y Flip any inverted hardware bits
+ bita Q$MASK,y Is device interrupting?
+ beq IOIRQ1 ..no; go try next device
+ ldu Q$STAT,y Get storage for device handler
+ pshs Y,B
+ jsr [Q$SERV,y] Exec interrupt service routine
+ puls y,b
+ bcs IOIRQ1 false interrupt, keep checking
+ rts
+
+ page
+ ifeq LEVEL-1
+        jmp NOWHERE
+ else
 ************************************************************
 *
 *     Subroutine Load
@@ -1064,19 +1377,18 @@ LoadXit puls pc,u
 * Calls: Lmodule, Load.A
 *
 SysLoad pshs u save registers ptr
-         ldx   $04,u
-         bsr   LModule
-         bcs   L06DF
-         puls  y
-         ldd   D.Proc
-         pshs  y,b,a
-         ldd   $08,y
-         std   D.Proc
-         bsr   Load.A
-         puls  x
-         stx   D.Proc
-L06DF    puls  pc,u
-
+ ldx R$X,u get name string ptr
+ bsr LModule load module
+ bcs SysLXit branch if error
+ puls y retrieve registers ptr
+ ldd D.Proc get current process ptr
+ pshs y,d save registers
+ ldd R$U,y get process ptr
+ std D.Proc make it current
+ bsr Load.A link loaded module
+ puls x retrieve current process ptr
+ stx D.Proc reset current process
+SysLXit puls pc,u
 
  page
 ************************************************************
@@ -1204,8 +1516,8 @@ LMod.O ldd TotMod+stacked,s get modules size
  endc
  endc
  sta TotMod+stacked,s save block number
-         ldb   ,s
-         beq   LMod.Q
+ ldb TotRAM+stacked,s get total ram size
+ beq LMod.Q branch if none
  lsrb make block count
  lsrb
  ifge DAT.BlSz-2048
@@ -1214,51 +1526,51 @@ LMod.O ldd TotMod+stacked,s get modules size
  lsrb
  endc
  endc
-         subb  $02,s
-         beq   LMod.Q
-         ldx   <$15,s
-         leax  <P$DATImg,x
-         lsla
-         leax  a,x
-         clra
-         tfr   d,y
-         ldu   D.BlkMap
-LMod.O2    ldd   ,x++
-         clr   d,u
-         leay  -$01,y
-         bne   LMod.O2
-LMod.Q    ldx   <$15,s
-         lda   P$ID,x
-         os9   F$DelPrc
-         ldd   <$17,s
-         bne   LMod.R
-         ldb   $07,s
-         stb   <$12,s
-         comb
-         bra   LModXit
-LMod.R    ldu   D.ModDir
-         ldx   <$11,s
-         ldd   <$17,s
-         leau  -MD$ESize,u
-LMod.S    leau  MD$ESize,u
-         cmpu  D.ModEnd
-         bcs   LMod.T
-         comb
-         ldb   #E$MNF
-         stb   <$12,s
-         bra   LModXit
-LMod.T    cmpx  MD$MPtr,u
-         bne   LMod.S
-         cmpd  [MD$MPDAT,u]
-         bne   LMod.S
-         ldd   MD$Link,u
-         beq   LMod.U
-         subd  #1
-         std   MD$Link,u
-LMod.U    stu   <$17,s
-         clrb
-LModXit    leas  <$11,s
-         puls  pc,u,y,x,b,a
+ subb TotMod+stacked,s get unused count
+ beq LMod.Q branch if none
+ ldx ProcPtr+stacked,s get proc ptr
+ leax P$DATImg,x make ptr to image
+ lsla make 2 byte entries
+ leax a,x get to extra blks
+ clra make proper reg
+ tfr d,y
+ ldu D.BlkMap get blk bits
+LMod.O2 ldd ,x++ get blk number
+ clr d,u show blk not in use
+ leay -1,y dec max blk cnt
+ bne LMod.O2 bra if more blks
+LMod.Q ldx ProcPtr+stacked,s get process ptr
+ lda P$ID,x get process ID
+ os9 F$DelPrc remove process
+ ldd ModBlk+stacked,s has entry been found?
+ bne LMod.R branch if so
+ ldb ErrCode+stacked,s any other errors?
+ stb locals+stacked+1,s return it
+ comb set carry
+ bra LModXit
+LMod.R ldu D.ModDir get ptr to module dir
+ ldx ModPtr+stacked,s get module offset in block
+ ldd ModBlk+stacked,s get module block number
+ leau -MD$ESize,u preset back one entry
+LMod.S leau MD$ESize,u get next dir entry
+ cmpu D.ModEnd end of search?
+ bcs LMod.T bra if not
+ comb
+ ldb #E$MNF module entry not found
+ stb locals+stacked+1,s
+ bra LModXit error exit
+LMod.T cmpx MD$MPtr,u is this module?
+ bne  LMod.S bra if no chance
+ cmpd [MD$MPDAT,u] is this really module?
+ bne LMod.S bra if not
+ ldd MD$Link,u get link count
+ beq LMod.U bra if already zero
+ subd #1 decrement link count(for above inc)
+ std MD$Link,u save it
+LMod.U stu ModBlk+stacked,s return U --> Mod Dir entry
+ clrb clear carry
+LModXit leas locals,s return scratch
+ puls pc,u,y,x,b,a
 
  page
 stacked set stacked+8
@@ -1275,60 +1587,72 @@ stacked set stacked+8
 *
 *  Calls: None
 *
-GetModul    pshs  y,x,b,a
-         addd  $02,s
-         std   $04,s
-         cmpd  $08,s
-         bls   L085F
-         addd  #$07FF
-         lsra
-         lsra
-         lsra
-         cmpa  #$1F
-         bhi   GetM.Err
-         ldb   $08,s
-         lsrb
-         lsrb
-         lsrb
-         pshs  b
-         exg   b,a
-         subb  ,s+
-         lsla
-         ldu   <$1D,s
-         leau  <$40,u
-         leau  a,u
-         clra
-         tfr   d,x
-         ldy   D.BlkMap
-         clra
-         clrb
-GetM.B    tst   ,y+
-         beq   GetM.D
-GetM.C    addd  #$0001
-         cmpy  D.BlkMap+2
-         bne   GetM.B
-GetM.Err    comb
-         ldb   #$CF
-         bra   GetM.X
+GetModul pshs y,x,b,a save regs
+ addd 2,s find new totmod size
+ std 4,s save it for caller
+ cmpd TotRAM+stacked,s is there enough RAM?
+ bls GetM.R yes. skip mem request
+ addd #DAT.BlSz-1 round to next block
+ lsra
+ lsra
+ ifge DAT.BlSz-2048
+ lsra
+ ifge DAT.BlSz-4096
+ lsra
+ endc
+ endc
+ cmpa #DAT.BlCt-1 check for full map
+ bhi GetM.Err bra if so
+ ldb TotRAM+stacked,s get RAM used
+ lsrb
+ lsrb get blks RAM used
+ ifge DAT.BlSz-2048
+ lsrb
+ ifge DAT.BlSz-4096
+ lsrb
+ endc
+ endc
+ pshs b stack it
+ exg b,a
+ subb ,s+ get delta blks
+ lsla adj for 2 byte entries
+ ldu ProcPtr+stacked,s get process ptr
+ leau P$DATImg,u make it ptr to DAT image
+ leau a,u make ptr to free space
+ clra
+ tfr d,x get count of blocks in X
+ ldy D.BlkMap get blk bits
+ clra init blk number
+ clrb
+GetM.B tst ,y+ chk if blk free
+ beq GetM.D bra if so
+GetM.C addd #1 update blk number
+ cmpy D.BlkMap+2 chk if end of map
+ bne GetM.B bra if not end
+GetM.Err comb set carry for error
+ ldb #E$MemFul
+ bra GetM.X exit
 
-GetM.D    inc   -$01,y
-         std   ,u++
-         pshs  b,a
-         ldd   $0A,s
-         addd  #$0800
-         std   $0A,s
-         puls  b,a
-         leax  -$01,x
-         bne   GetM.C
-         ldx   <$1D,s
-         os9   F$SetTsk
-         bcs   GetM.X
-L085F    lda   $0E,s
-         ldx   $02,s
-         ldy   ,s
-         os9   I$Read
-GetM.X    leas  $04,s
-         puls  pc,x
+GetM.D inc -1,y allocate block
+ std ,u++ save blk # in image
+stacked set stacked+2
+ pshs d save blk number
+ ldd TotRAM+stacked,s get old RAM count
+ addd #DAT.BlSz add new block
+ std TotRAM+stacked,s save new RAM count
+ puls d restore lbk number
+stacked set stacked-2
+ leax -1,x count down blocks needed. done?
+ bne GetM.C bra if not
+GetM.I ldx ProcPtr+stacked,s get process ptr
+ os9 F$SetTsk set DAT image for task
+ bcs GetM.X bra if error
+GetM.R lda Path+stacked,s get path number
+ ldx 2,s get ptr to RAM for module
+ ldy 0,s get size of read
+ os9 I$Read get the module
+GetM.X leas 4,s return scratch
+ puls pc,x done
 
 ********************************
 *
@@ -1406,7 +1730,7 @@ L08ED    ldx   <$38,s
 L0910    leas  <$3D,s
          clrb
          rts
-
+ endc
  page
 *****
 *
@@ -1414,50 +1738,86 @@ L0910    leas  <$3D,s
 *
 * Link Process Into Ioqueue And Go To Sleep
 *
-IOQueu   ldy   D.Proc
-L0918    lda   <$10,y
-         beq   L0937
-         cmpa  $01,u
-         bne   L0932
-         clr   <$10,y
+IOQueu ldy D.Proc get process ptr
+IOQ.A lda P$IOQN,y get next process ID
+ beq IOQ.C branch if none
+ cmpa R$A,u is this queue process?
+ bne IOQ.B branch if not
+ clr P$IOQN,y clear link
 
-         os9   F$GProcP
-         bcs   IOQuExit
-         clr   $0F,y
-         ldb   #$01
-         os9   F$Send
-         bra   IOQ.E
+ ifeq LEVEL-1
+ ldx D.PrcDBT
+ os9 F$Find64
+ else
+ os9 F$GProcP get process ptr
+ endc
 
-L0932    os9   F$GProcP
-         bcc   L0918
-L0937    lda   $01,u
-L0939    os9   F$GProcP
-         bcs   IOQuExit
-IOQ.E    lda   <$10,y
-         bne   L0939
-         ldx   D.Proc
-         lda   ,x
-         sta   <$10,y
-         lda   ,y
-         sta   $0F,x
-         ldx   #$0000
-         os9   F$Sleep
-         ldu   D.Proc
-         lda   $0F,u
-         beq   IOQ.F
-         os9   F$GProcP
-         bcs   IOQ.F
-         lda   <$10,y
-         beq   IOQ.F
-         lda   <$10,u
-         sta   <$10,y
-         beq   IOQ.F
-         clr   <$10,u
-         os9   F$GProcP
-         bcs   IOQ.F
-         lda   $0F,u
-         sta   $0F,y
-IOQ.F    clr   $0F,u
-IOQuExit    rts
-         emod
-IOEnd      equ   *
+ bcs IOQuExit branch if dead
+ clr P$IOQP,y clear link
+ ldb #S$Wake get signal
+ os9 F$Send wake process
+ bra IOQ.E
+
+IOQ.B
+ ifeq LEVEL-1
+ ldx D.PrcDBT
+ os9 F$Find64
+ else
+ os9 F$GProcP get process ptr
+ endc
+ bcc IOQ.A branch if found
+IOQ.C lda R$A,u get queue process ID
+IOQ.D
+ ifeq LEVEL-1
+ ldx D.PrcDBT
+ os9 F$Find64
+ else
+ os9 F$GProcP get process ptr
+ endc
+ bcs IOQuExit branch if error
+IOQ.E lda P$IOQN,y get net process ID
+ bne IOQ.D branch if there is one
+ ldx D.Proc get current process ptr
+ lda P$ID,x get current process ID
+ sta P$IOQN,y link into queue
+ lda P$ID,y get previous process ID
+ sta P$IOQP,x set predecessor link
+ ldx #0 sleep until signal
+ os9 F$Sleep
+ ldu D.Proc get process ptr
+ lda P$IOQP,u normal queue exit?
+ beq IOQ.F branch if so
+
+ ifeq LEVEL-1
+ ldx D.PrcDBT
+ os9 F$Find64
+ else
+ os9 F$GProcP get process ptr
+ endc
+
+ bcs IOQ.F branch if dead
+ lda P$IOQN,y normal queue exit?
+ beq IOQ.F branch if so
+*
+* Graceful Abnormal Queue Queue Exit
+*
+ lda P$IOQN,u get next process ID
+ sta P$IOQN,y put in previous process
+ beq IOQ.F branch if none
+ clr P$IOQN,u clear next process link
+
+ ifeq LEVEL-1
+ ldx D.PrcDBT
+ os9 F$Find64
+ else
+ os9 F$GProcP get process ptr
+ endc
+
+ bcs IOQ.F branch if dead
+ lda P$IOQP,u get previous process ID
+ sta P$IOQP,y put in next process
+IOQ.F clr P$IOQP,u clear predecessor link
+IOQuExit rts
+
+ emod Module Crc
+IOEnd equ *
