@@ -1,28 +1,43 @@
 { *** HUNT THE WUMPUS *** }
 program wumpus;
-const
-  HUNTER = 1;
-  WUMPUS = 2;
-  PIT1 = 3;
-  PIT2 = 4;
-  BAT1 = 5;
-  BAT2 = 6;
+type
+  features = (HUNTER, WUMPUS, PIT1, PIT2, BAT1, BAT2);
+
 var
   randstate : integer;
-  arrows,lt,j,k,o,duel: integer;
+  arrows,lt,k,o,duel: integer;
+  j: features;
   answer: char;
   path: array[1..5] of integer;
   cave: array[1..20,1..3] of integer;
   feature, origsetup: array[HUNTER..BAT2] of integer;
 
-{ Returns a random number between 0.0 and 1.0 }
-function random(var block:integer) : real; external;
-procedure randomize(var block:integer); external;
+{ Provide a random real 0 <= x < 1 }
+function random:real;
+  const
+    MAXVAL = 32767;
+  begin
+    mathabort(false);
+    randstate := randstate * 11035 + 6971;
+    randstate := randstate mod MAXVAL;
+    random := randstate / MAXVAL;
+    mathabort(true);
+  end;
+
+{ Create random seed based on system clock }
+procedure randomize;
+  var
+    year, month, day, hour, minute, second : integer;
+  begin
+    systime(year, month, day, hour, minute, second);
+    randstate := second * 391 + minute * 13 + 23;
+  end;
+
 
 { Provide a random integer 1 <= x <= maxval }
 function rnd(maxval:integer):integer;
 begin
-  rnd := trunc(random(randstate) * maxval) + 1;
+  rnd := trunc(random * maxval) + 1;
 end;
 
 { *** SET UP CAVE (DODECAHEDRAL NODE LIST) *** }
@@ -66,11 +81,11 @@ procedure initcave;
 { *** 1-YOU, 2-WUMPUS, 3&4-PITS, 5&6-BATS *** }
 procedure populate;
   var
-    j,k: integer;
+    j,k: features;
     crossover: boolean;
   begin
     repeat
-      for j := 1 to 6 do
+      for j := HUNTER to BAT2 do
         begin
          feature[j] := rnd(20);
          origsetup[j] := feature[j]
@@ -78,8 +93,8 @@ procedure populate;
 
      { *** CHECK FOR CROSSOVERS (IE feature[HUNTER]=feature[WUMPUS], ETC) *** }
       crossover := false;
-      for j := 1 to 6 do
-        for k := 1 to 6 do
+      for j := HUNTER to BAT2 do
+        for k := HUNTER to BAT2 do
            if (j<>k) and (feature[j]=feature[k]) then
              crossover := true;
     until crossover = false;
@@ -139,16 +154,17 @@ procedure instructions;
 { *** PRINT LOCATION & HAZARD WARNINGS *** }
 procedure location;
   var
-    j,k: integer;
+    j: features;
+    k: integer;
   begin
     writeln;
-    for j := 2 to 6 do
+    for j := WUMPUS to BAT2 do
         for k := 1 to 3 do
             if cave[feature[HUNTER],k]=feature[j] then
               case j of
-                  2: writeln('I SMELL A WUMPUS!');
-                3,4: writeln('I FEEL A DRAFT');
-                5,6: writeln('BATS NEARBY!');
+                   WUMPUS: writeln('I SMELL A WUMPUS!');
+                PIT1,PIT2: writeln('I FEEL A DRAFT');
+                BAT1,BAT2: writeln('BATS NEARBY!');
               end;
 
     writeln('YOU ARE IN ROOM ', feature[HUNTER]);
@@ -312,8 +328,7 @@ procedure movehunter;
   end;
 
 begin
-  randstate := 0;
-  randomize(randstate);
+  randomize;
 
   write('INSTRUCTIONS (Y-N)? ');
   prompt;
@@ -346,7 +361,7 @@ begin
       else
         writeln('HA HA HA - YOU LOSE!');
 
-      for j := 1 to 6 do
+      for j := HUNTER to BAT2 do
         feature[j] := origsetup[j];
 
       write('SAME SETUP (Y-N)? ');
