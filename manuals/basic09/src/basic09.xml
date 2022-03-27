@@ -6677,7 +6677,7 @@ D 000A             Length2  rmb   2          size
   003F 2502                 blo   InKey30    ..No
   0041 E701                 stb   1,X        put str terminator
   0043 C601        InKey30  ldb   #SS.Ready
-  0045 103F8D               OS9   I$GetStt   is there an data ready?
+  0045 103F8D               OS9   I$GetStt   is there any data ready?
   0048 2508                 bcs   InKey90    ..No; exit
   004A 108E0001             ldy   #1
   004E 103F89               OS9   I$Read     Read one byte
