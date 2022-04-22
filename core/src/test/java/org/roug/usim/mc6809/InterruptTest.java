@@ -39,8 +39,9 @@ public class InterruptTest extends Framework {
         myTestCPU.u.set(0x0809);
 
         writeword(MC6809.IRQ_ADDR, 0x1234); // Set IRQ vector
-        myTestCPU.write(0x1234, 0x12); // NOP
-        myTestCPU.write(0x1235, 0x3B); // RTI
+        writeSeq(0x1234, 0x12, 0x3B);
+//         myTestCPU.write(0x1234, 0x12); // NOP
+//         myTestCPU.write(0x1235, 0x3B); // RTI
 
         writeword(MC6809.FIRQ_ADDR, 0x1240); // Set FIRQ vector
         myTestCPU.write(0x1240, 0x3B); // RTI

@@ -57,7 +57,8 @@ public class InstructionsTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void testIllegal38() {
         myTestCPU.b.set(0xE5);
-        myTestCPU.write(0xB00, 0x38); // illegal
+        writeSeq(0xB00, 0x38);
+//         myTestCPU.write(0xB00, 0x38); // illegal
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
@@ -69,7 +70,8 @@ public class InstructionsTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void testIllegal18() {
         myTestCPU.b.set(0xE5);
-        myTestCPU.write(0xB00, 0x18); // illegal
+        writeSeq(0xB00, 0x18);
+//         myTestCPU.write(0xB00, 0x18); // illegal
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
@@ -97,6 +99,17 @@ public class InstructionsTest extends Framework {
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x29, myTestCPU.cc.intValue());
+    }
+
+    @Test
+    public void testORCC() {
+        setCC(0x09);
+        myTestCPU.write(0x0B00, 0x1A);
+        myTestCPU.write(0x0B01, 0x50);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x59, myTestCPU.cc.intValue());
+        assertEquals(1, myTestCPU.cc.getI());
     }
 
     @Test
@@ -275,11 +288,12 @@ public class InstructionsTest extends Framework {
      */
     @Test
     public void testDAA8() {
-        myTestCPU.write(0xB00, 0x86);   // LDA
-        myTestCPU.write(0xB01, 0x91);
-        myTestCPU.write(0xB02, 0x8B);   // ADDA
-        myTestCPU.write(0xB03, 0x91);
-        myTestCPU.write(0xB04, 0x19); // DAA
+        writeSeq(0xB00, 0x86, 0x91, 0x8B, 0x91, 0x19);
+//         myTestCPU.write(0xB00, 0x86);   // LDA
+//         myTestCPU.write(0xB01, 0x91);
+//         myTestCPU.write(0xB02, 0x8B);   // ADDA
+//         myTestCPU.write(0xB03, 0x91);
+//         myTestCPU.write(0xB04, 0x19); // DAA
         myTestCPU.cc.clear();
         setA(0x0);
         setPC(0xB00);
@@ -331,8 +345,9 @@ public class InstructionsTest extends Framework {
      */
     @Test
     public void testEXGdx() {
-        myTestCPU.write(0xB00, 0x1E);
-        myTestCPU.write(0xB01, 0x01);
+        writeSeq(0xB00, 0x1E, 0x01);
+//         myTestCPU.write(0xB00, 0x1E);
+//         myTestCPU.write(0xB01, 0x01);
         myTestCPU.cc.clear();
         myTestCPU.d.set(0x117f);
         setX(0xff16);
@@ -347,8 +362,9 @@ public class InstructionsTest extends Framework {
      */
     @Test
     public void testEXGax() {
-        myTestCPU.write(0xB00, 0x1E);
-        myTestCPU.write(0xB01, 0x81);
+        writeSeq(0xB00, 0x1E, 0x81);
+//         myTestCPU.write(0xB00, 0x1E);
+//         myTestCPU.write(0xB01, 0x81);
         myTestCPU.cc.clear();
         setA(0x56);
         setX(0x1234);
@@ -368,8 +384,9 @@ public class InstructionsTest extends Framework {
     @Test
     public void testLEASinc2() {
         myTestCPU.s.set(0x900);
-        myTestCPU.write(0xB00, 0x32);  // LEAS
-        myTestCPU.write(0xB01, 0x62);  // SP + 2 (last 5 bits)
+        writeSeq(0xB00, 0x32, 0x62);
+//         myTestCPU.write(0xB00, 0x32);  // LEAS
+//         myTestCPU.write(0xB01, 0x62);  // SP + 2 (last 5 bits)
         setPC(0xB00);
         myTestCPU.execute();
         assertPC(0xB02);
@@ -412,9 +429,10 @@ public class InstructionsTest extends Framework {
         assertPC(LOCATION + 4);
 
         // LEAX        <$93A,PCR
-        myTestCPU.write(0x0846, 0x30);
-        myTestCPU.write(0x0847, 0x8C);
-        myTestCPU.write(0x0848, 0xF1);
+        writeSeq(0x0846, 0x30, 0x8C, 0xF1);
+//         myTestCPU.write(0x0846, 0x30);
+//         myTestCPU.write(0x0847, 0x8C);
+//         myTestCPU.write(0x0848, 0xF1);
         setPC(0x0846);
         myTestCPU.execute();
         assertPC(0x0849);
@@ -490,8 +508,9 @@ public class InstructionsTest extends Framework {
     public void leay_2() {
         myTestCPU.y.set(0xFFF8);
         myTestCPU.cc.setZ(0);
-        myTestCPU.write(0xB00, 0x31);  // LEAY
-        myTestCPU.write(0xB01, 0x28);  // Y + 8 (last 5 bits)
+        writeSeq(0xB00, 0x31, 0x28);
+//         myTestCPU.write(0xB00, 0x31);  // LEAY
+//         myTestCPU.write(0xB01, 0x28);  // Y + 8 (last 5 bits)
         setPC(0xB00);
         myTestCPU.execute();
         assertPC(0xB02);
@@ -509,7 +528,7 @@ public class InstructionsTest extends Framework {
     public void testMUL() {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
-        myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
+        writeSeq(0xB00, 0x3D);
         setA(0x0C);
         setB(0x64);
         setPC(0xB00);
@@ -530,7 +549,7 @@ public class InstructionsTest extends Framework {
     public void testMUL0() {
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
-        myTestCPU.write(0xB00, 0x3D); // Write instruction into memory
+        writeSeq(0xB00, 0x3D);
         setA(0x0C);
         setB(0x00);
         setPC(0xB00);
@@ -547,8 +566,7 @@ public class InstructionsTest extends Framework {
      */
     @Test
     public void testNEG() {
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x40);
+        writeSeq(0xB00, 0x40);
         // Negate 0
         setA(0);
         setPC(0xB00);
@@ -595,8 +613,9 @@ public class InstructionsTest extends Framework {
     public void testORAimmediate() {
         setA(0xDA);
         setCC(0x43);
-        myTestCPU.write(0xB00, 0x8A);
-        myTestCPU.write(0xB01, 0x0F);
+        writeSeq(0xB00, 0x8A, 0x0F);
+//         myTestCPU.write(0xB00, 0x8A);
+//         myTestCPU.write(0xB01, 0x0F);
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xDF, myTestCPU.a.intValue());
@@ -608,7 +627,8 @@ public class InstructionsTest extends Framework {
     public void testSEXlow() {
         setA(0xEE);
         setB(0x76);
-        myTestCPU.write(0xB00, 0x1D);
+        writeSeq(0xB00, 0x1D);
+//         myTestCPU.write(0xB00, 0x1D);
         setPC(0xB00);
         myTestCPU.execute();
         assertPC(0xB01);
@@ -618,7 +638,8 @@ public class InstructionsTest extends Framework {
     @Test
     public void testSEXhigh() {
         setB(0xE6);
-        myTestCPU.write(0xB00, 0x1D);
+        writeSeq(0xB00, 0x1D);
+//         myTestCPU.write(0xB00, 0x1D);
         setPC(0xB00);
         myTestCPU.execute();
         assertPC(0xB01);
@@ -635,7 +656,8 @@ public class InstructionsTest extends Framework {
         myTestCPU.cc.setE(false);
         myTestCPU.cc.setF(false);
         myTestCPU.s.set(0x1000);
-        myTestCPU.write(0xB00, 0x3F);
+        writeSeq(0xB00, 0x3F);
+//         myTestCPU.write(0xB00, 0x3F);
         setPC(0xB00);
         myTestCPU.execute();
         assertPC(0x0400);

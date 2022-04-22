@@ -1,26 +1,26 @@
-package org.roug.usim;
+package org.roug.usim.z80;
 
 import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.roug.usim.BusMemoryOnly;
+import org.roug.usim.Bus8Intel;
+import org.roug.usim.MemorySegment;
 
 /**
  * Straight-through bus with no memory management unit.
  */
-public class BusStraight
+public class BusZ80
         extends BusMemoryOnly
-        implements Bus8Motorola {
+        implements Bus8Intel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BusStraight.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BusZ80.class);
 
     /** Active NMI signals. */
     private int activeNMIs;
 
     /** Active IRQ requests. */
     private int activeIRQs;
-
-    /** Active FIRQ requests. */
-    private int activeFIRQs;
 
     private ReentrantLock lockObject = new ReentrantLock();
 
@@ -30,7 +30,7 @@ public class BusStraight
     /**
      * Constructor.
      */
-    public BusStraight() {
+    public BusZ80() {
     }
 
     /**
@@ -38,7 +38,7 @@ public class BusStraight
      *
      * @param memorySize - The size of the memory.
      */
-    public BusStraight(int memorySize) {
+    public BusZ80(int memorySize) {
         super(memorySize);
     }
 
@@ -68,28 +68,6 @@ public class BusStraight
         return activeNMIs > 0;
     }
 
-    /**
-     * Accept an FIRQ signal.
-     */
-    @Override
-    public void signalFIRQ(boolean state) {
-        synchronized(this) {
-            if (state) {
-                activeFIRQs++;
-                notifyAll();
-            } else {
-                activeFIRQs--;
-            }
-        }
-    }
-
-    /**
-     * Do we have active FIRQs?
-     */
-    @Override
-    public boolean isFIRQActive() {
-        return activeFIRQs > 0;
-    }
 
     /**
      * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
@@ -132,6 +110,30 @@ public class BusStraight
      * Reset the bus.
      */
     public void reset() {
+    }
+
+    @Override
+    public int readIO(int offset) {
+        int val;
+        lockObject.lock();
+        try {
+            val = ports.read(offset);
+        } finally {
+            lockObject.unlock();
+        }
+        updateCycle();
+        return val;
+    }
+
+    @Override
+    public void writeIO(int offset, int val) {
+        lockObject.lock();
+        try {
+            ports.write(offset, val & 0xFF);
+        } finally {
+            lockObject.unlock();
+        }
+        updateCycle();
     }
 
 }

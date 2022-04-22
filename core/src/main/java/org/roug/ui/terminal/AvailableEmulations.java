@@ -8,7 +8,7 @@ import java.lang.reflect.Constructor;
 
 public class AvailableEmulations {
 
-    private static EmulationRec[] emulations = {
+    private static final EmulationRec[] emulations = {
         new EmulationRec(ADM3AEmulation.class, "adm3a",   "Lear Siegler ADM-3A (80x24)"),
         new EmulationRec(GO51Emulation.class, "go51",     "Coco/Dragon GO51 (51x24)"),
         new EmulationRec(GO80Emulation.class, "go80",     "DragonPlus Board (80x24)"),

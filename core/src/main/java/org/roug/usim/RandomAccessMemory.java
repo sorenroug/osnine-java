@@ -31,7 +31,7 @@ public class RandomAccessMemory extends MemorySegment {
      * @param bus - The bus the segment is attached to.
      * @param args - additional arguments
      */
-    public RandomAccessMemory(int start, Bus8Motorola bus, String... args) {
+    public RandomAccessMemory(int start, MemoryBus bus, String... args) {
         this(start,Integer.decode(args[0]).intValue()); 
     }
 

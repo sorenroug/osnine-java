@@ -145,9 +145,9 @@ public abstract class USim implements Runnable {
     /*
      * Set the halt flag.
      */
-    public void halt() {
-        halted = true;
-    }
+//     private void stopRun() {
+//         halted = true;
+//     }
 
     /**
      * Fetch one memory byte from program counter and increment program counter.
@@ -197,7 +197,7 @@ public abstract class USim implements Runnable {
                 msg != null ? msg : "",
                 Integer.toHexString(pc.intValue()),
                 Integer.toHexString(ir));
-        halt();
+        halted = true;
         //dumpCore();
         throw new RuntimeException(msg);
     }

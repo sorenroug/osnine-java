@@ -37,6 +37,19 @@ public class Framework {
         assertEquals(exp, myTestCPU.cc.intValue());
     }
 
+    void assertCCFlags(int exp, int mask) {
+        String names[] = {"C", "V", "Z", "N", "I", "H", "F", "E" };
+
+        int ccVal = myTestCPU.cc.intValue();
+        for (int i = 0; i < 8; i++) {
+            if ((mask & 1) == 1)
+                assertEquals(names[i], (exp & 1),(ccVal & 1));
+            mask >>= 1;
+            ccVal >>= 1;
+            exp >>= 1;
+        }
+    }
+
     void setD(int value) {
         myTestCPU.d.set(value);
     }
@@ -84,4 +97,11 @@ public class Framework {
     void writeword(int loc, int value) {
         myTestCPU.write_word(loc, value);
     }
+
+    void writeSeq(int loc, int ... values) {
+        for (int value : values) {
+            myTestCPU.write(loc++, value);
+        }
+    }
+
 }

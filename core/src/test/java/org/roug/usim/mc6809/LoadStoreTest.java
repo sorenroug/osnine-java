@@ -9,21 +9,60 @@ import org.junit.Test;
 
 public class LoadStoreTest extends Framework {
 
+    private static final int PROGLOC = 0xB00;
+
     /**
-     * Load 0 into A.
+     * Load value 0 into A (Immediate mode).
      */
     @Test
     public void LDAZero() {
         setA(0x02);
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setZ(0);
-        myTestCPU.write(0xB00, 0x86);
-        myTestCPU.write(0xB01, 0x00);
-        setPC(0xB00);
+        writeSeq(PROGLOC, 0xB6, 0x00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertA(0x00);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(1, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+    }
+
+    /**
+     * Load value 0 into A (Extended mode).
+     */
+    @Test
+    public void LDAExtend() {
+        setA(0xF2);
+        myTestCPU.write(0x0579, 0x03); // Value to fetch
+        myTestCPU.cc.setN(1);
+        myTestCPU.cc.setZ(1);
+        writeSeq(PROGLOC, 0xB6, 0x05, 0x79);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertA(0x03);
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+    }
+
+    @Test
+    public void LDApredec() {
+        // Test INDEXED mode:   LDA   ,-Y (decrement Y before loading A)
+        //
+        myTestCPU.cc.clear();
+        // Set up a byte to test at address 0x200
+        writebyte(0x200, 0x31);
+        // Set register Y to point to that location plus 1
+        setY(0x201);
+        writeSeq(PROGLOC, 0xA6, 0xA2);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertY(0x200);
+        assertEquals(0x31, myTestCPU.a.intValue());
+        assertPC(PROGLOC + 2);
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
     }
 
@@ -37,41 +76,33 @@ public class LoadStoreTest extends Framework {
         writeword(0x1010, 0x1150);
         // The value to load into A
         myTestCPU.write(0x1150, 0xAA);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xA6);
-        myTestCPU.write(0xB01, 0x99);
-        myTestCPU.write(0xB02, 0x00);
-        myTestCPU.write(0xB03, 0x10);
-        setPC(0xB00);
+        writeSeq(PROGLOC, 0xA6, 0x99, 0x00, 0x10);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertX(0x1000);
         assertA(0xAA);
-        assertPC(0xB04);
+        assertPC(PROGLOC + 4);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
     }
 
+    /**
+     * Test INDEXED INDIRECT mode:   LDA [$10,U].
+     */
     @Test
     public void LDA_U_neg() {
-        // Test INDEXED INDIRECT mode:   LDA [$10,U]
-        //
-        // Set register X to point to a location
         myTestCPU.u.set(0x1000);
         // Set up a word to at address 0x1000 - 0x10 to point to 0x1150
         writeword(0x0FF0, 0x1150);
         // The value to load into A
         myTestCPU.write(0x1150, 0x7A);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xA6);
-        myTestCPU.write(0xB01, 0xD9);
-        myTestCPU.write(0xB02, 0xFF);
-        myTestCPU.write(0xB03, 0xF0);
-        setPC(0xB00);
+        writeSeq(PROGLOC, 0xA6, 0xD9, 0xFF, 0xF0);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0x1000, myTestCPU.u.intValue());
         assertA(0x7A);
-        assertPC(0xB04);
+        assertPC(PROGLOC + 4);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -91,14 +122,14 @@ public class LoadStoreTest extends Framework {
         // Set register S to point to that location minus 2
         myTestCPU.s.set(0x200);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xE6);
-        myTestCPU.write(0xB01, 0xE6);
+        myTestCPU.write(PROGLOC + 0, 0xE6);
+        myTestCPU.write(PROGLOC + 1, 0xE6);
         myTestCPU.cc.clear();
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0x200, myTestCPU.s.intValue());
         assertB(0xb3);
-        assertPC(0xB02);
+        assertPC(PROGLOC + 2);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -115,13 +146,13 @@ public class LoadStoreTest extends Framework {
         // Set register S to point to that location minus 2
         myTestCPU.s.set(0x210);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xE6);
-        myTestCPU.write(0xB01, 0xE6);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xE6);
+        myTestCPU.write(PROGLOC + 1, 0xE6);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0x210, myTestCPU.s.intValue());
         assertB(0x73);
-        assertPC(0xB02);
+        assertPC(PROGLOC + 2);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -141,17 +172,20 @@ public class LoadStoreTest extends Framework {
         // Set register Y to point to that location minus 5
         setY(0x200);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xEC);
-        myTestCPU.write(0xB01, 0x22);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xEC);
+        myTestCPU.write(PROGLOC + 1, 0x22);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertY(0x200);
         assertEquals(0xb3ff, myTestCPU.d.intValue());
-        assertPC(0xB02);
+        assertPC(PROGLOC + 2);
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
+    }
 
+    @Test
+    public void LDDindexed() {
         // Test INDEXED mode:   LDD   -2,Y
         //
         myTestCPU.cc.clear();
@@ -160,18 +194,21 @@ public class LoadStoreTest extends Framework {
         // Set register Y to point to that location plus 2
         setY(0x200);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xEC);
-        myTestCPU.write(0xB01, 0x3E);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xEC);
+        myTestCPU.write(PROGLOC + 1, 0x3E);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertY(0x200);
         assertEquals(0x33ff, myTestCPU.d.intValue());
         assertA(0x33);
-        assertPC(0xB02);
+        assertPC(PROGLOC + 2);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
+    }
 
+    @Test
+    public void LDDpredec() {
         // Test INDEXED mode:   LDD   ,--Y (decrement Y by 2 before loading D)
         //
         myTestCPU.cc.clear();
@@ -180,13 +217,35 @@ public class LoadStoreTest extends Framework {
         // Set register Y to point to that location minus 5
         setY(0x202);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xEC); // LDD
-        myTestCPU.write(0xB01, 0xA3);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xEC); // LDD
+        myTestCPU.write(PROGLOC + 1, 0xA3);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertY(0x200);
         assertEquals(0x31ff, myTestCPU.d.intValue());
-        assertPC(0xB02);
+        assertPC(PROGLOC + 2);
+        assertEquals(0, myTestCPU.cc.getN());
+        assertEquals(0, myTestCPU.cc.getZ());
+        assertEquals(0, myTestCPU.cc.getV());
+    }
+
+    @Test
+    public void LDDpostinc() {
+        // Test INDEXED mode:   LDD   ,Y++ (increment Y by 2 after loading D)
+        //
+        myTestCPU.cc.clear();
+        // Set up a word to test at address 0x200
+        writeword(0x200, 0x31ff);
+        // Set register Y to point to that location
+        setY(0x200);
+        // Two bytes of instruction
+        myTestCPU.write(PROGLOC + 0, 0xEC); // LDD
+        myTestCPU.write(PROGLOC + 1, 0xA1);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertY(0x202);
+        assertEquals(0x31ff, myTestCPU.d.intValue());
+        assertPC(PROGLOC + 2);
         assertEquals(0, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(0, myTestCPU.cc.getV());
@@ -198,10 +257,10 @@ public class LoadStoreTest extends Framework {
     @Test
     public void LDS() {
         myTestCPU.s.set(0xA11);
-        myTestCPU.write(0xB00, 0x10); // LDS
-        myTestCPU.write(0xB01, 0xCE);
-        writeword(0xB02, 0x1234);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0x10); // LDS
+        myTestCPU.write(PROGLOC + 1, 0xCE);
+        writeword(PROGLOC + 2, 0x1234);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0x1234, myTestCPU.s.intValue());
         assertEquals(0, myTestCPU.cc.getN());
@@ -220,13 +279,13 @@ public class LoadStoreTest extends Framework {
         // Set register Y to point to that location minus 5
         setY(0x200);
         // Two bytes of instruction
-        myTestCPU.write(0xB00, 0x10); // LDY
-        myTestCPU.write(0xB01, 0xBE); // LDY
-        myTestCPU.write(0xB02, 0x0E); // Fetch value in 0x0E81
-        myTestCPU.write(0xB03, 0x81);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0x10); // LDY
+        myTestCPU.write(PROGLOC + 1, 0xBE); // LDY
+        myTestCPU.write(PROGLOC + 2, 0x0E); // Fetch value in 0x0E81
+        myTestCPU.write(PROGLOC + 3, 0x81);
+        setPC(PROGLOC);
         myTestCPU.execute();
-        assertPC(0xB04);
+        assertPC(PROGLOC + 4);
         assertY(0x0202);
     }
 
@@ -241,30 +300,25 @@ public class LoadStoreTest extends Framework {
         myTestCPU.d.set(0x105);
         // Set register Y to point to that location minus 5
         setY(0x200);
-        // Five bytes of instruction
-        myTestCPU.write(0xB00, 0x10); // LDY
-        myTestCPU.write(0xB01, 0xAE); // LDY
-        myTestCPU.write(0xB02, 0x9F);
-        myTestCPU.write(0xB03, 0x0E);
-        myTestCPU.write(0xB04, 0x81);
-        setPC(0xB00);
+        writeSeq(PROGLOC, 0x10, 0xAE, 0x9F, 0x0E, 0x81);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(0xB05);
         assertY(0xB3FF);
     }
 
     /**
-     * Store S direct to 0x129F
+     * Store S direct to 0x129F.
      */
     @Test
     public void STSdirect() {
         // Set register DP to the offset
         myTestCPU.dp.set(0x12);
         myTestCPU.s.set(0x0AAA);
-        myTestCPU.write(0xB00, 0x10); // STS
-        myTestCPU.write(0xB01, 0xDF); // STS
-        myTestCPU.write(0xB02, 0x9F);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0x10); // STS
+        myTestCPU.write(PROGLOC + 1, 0xDF); // STS
+        myTestCPU.write(PROGLOC + 2, 0x9F);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0x0AAA, myTestCPU.read_word(0x129F));
         assertEquals(0, myTestCPU.cc.getN());
@@ -283,10 +337,10 @@ public class LoadStoreTest extends Framework {
         myTestCPU.write(0x0579, 0x03);
         myTestCPU.write(0x057A, 0xBB);
         myTestCPU.write(0x03BB, 0x02);
-        myTestCPU.write(0xB00, 0xE7); // STB
-        myTestCPU.write(0xB01, 0x98); // 10011000
-        myTestCPU.write(0xB02, 0x0F);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xE7); // STB
+        myTestCPU.write(PROGLOC + 1, 0x98); // 10011000
+        myTestCPU.write(PROGLOC + 2, 0x0F);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0xE5, myTestCPU.read(0x03BB));
         assertEquals(1, myTestCPU.cc.getN());
@@ -301,9 +355,9 @@ public class LoadStoreTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void STAillegal() {
         setA(0xE5);
-        myTestCPU.write(0xB00, 0x87); // illegal
-        myTestCPU.write(0xB01, 0x20);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0x87); // illegal
+        myTestCPU.write(PROGLOC + 1, 0x20);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -315,9 +369,9 @@ public class LoadStoreTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void STBillegal() {
         setB(0xE5);
-        myTestCPU.write(0xB00, 0xC7); // illegal
-        myTestCPU.write(0xB01, 0x20);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xC7); // illegal
+        myTestCPU.write(PROGLOC + 1, 0x20);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -329,10 +383,10 @@ public class LoadStoreTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void STDillegal() {
         setB(0xE5);
-        myTestCPU.write(0xB00, 0xCD); // illegal
-        myTestCPU.write(0xB01, 0x20);
-        myTestCPU.write(0xB02, 0x20);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0xCD); // illegal
+        myTestCPU.write(PROGLOC + 1, 0x20);
+        myTestCPU.write(PROGLOC + 2, 0x20);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -344,11 +398,11 @@ public class LoadStoreTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void STSillegal() {
         myTestCPU.s.set(0x01E5);
-        myTestCPU.write(0xB00, 0x10); // illegal
-        myTestCPU.write(0xB01, 0xCF);
-        myTestCPU.write(0xB02, 0x20);
-        myTestCPU.write(0xB03, 0x20);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0x10); // illegal
+        myTestCPU.write(PROGLOC + 1, 0xCF);
+        myTestCPU.write(PROGLOC + 2, 0x20);
+        myTestCPU.write(PROGLOC + 3, 0x20);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }
@@ -360,10 +414,10 @@ public class LoadStoreTest extends Framework {
     @Test(expected = RuntimeException.class)
     public void STXillegal() {
         setB(0xE5);
-        myTestCPU.write(0xB00, 0x8F); // illegal
-        myTestCPU.write(0xB01, 0x20);
-        myTestCPU.write(0xB02, 0x20);
-        setPC(0xB00);
+        myTestCPU.write(PROGLOC + 0, 0x8F); // illegal
+        myTestCPU.write(PROGLOC + 1, 0x20);
+        myTestCPU.write(PROGLOC + 2, 0x20);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertEquals(0, myTestCPU.cc.getZ());
     }

@@ -1,9 +1,9 @@
 package org.roug.usim;
 
 /**
- * Bus in a computer - Motorola-style. Links CPU, memory and devices together.
+ * Bus in a computer - Intel-style. Links CPU, memory and devices together.
  */
-public interface Bus8Motorola extends MemoryBus {
+public interface Bus8Intel extends MemoryBus {
 
     /**
      * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
@@ -20,14 +20,6 @@ public interface Bus8Motorola extends MemoryBus {
      * lowered.
      */
     void signalIRQ(boolean state);
-
-    /**
-     * Accept an FIRQ signal.
-     *
-     * @param state - true if IRQ is raised from the device, false if IRQ is
-     * lowered.
-     */
-    void signalFIRQ(boolean state);
 
     /**
      * Accept an NMI signal.
@@ -59,11 +51,33 @@ public interface Bus8Motorola extends MemoryBus {
     void clearNMI();
 
     /**
-     * Do we have active FIRQs?
+     * Get the number of read/writes to bus since the start.
      *
-     * @return true if there are active FIRQs on the bus.
+     * @return the number of cycles.
      */
-    boolean isFIRQActive();
+    long getCycleCounter();
+
+    /**
+     * Ask the bus to call a given method when the number of
+     * read/write operations has reached given number.
+     *
+     * @param cycles - the number of cycles to trigger at
+     * @param method - the operation to call.
+     */
+    void callbackIn(int cycles, BitReceiver method);
+
+    void lock();
+    void unlock();
+
+    /**
+     * Single byte read from I/O port map.
+     */
+    int readIO(int offset);
+
+    /**
+     * Single byte write to I/O port map.
+     */
+    void writeIO(int offset, int val);
 
 }
 

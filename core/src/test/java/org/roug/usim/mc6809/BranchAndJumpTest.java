@@ -12,6 +12,7 @@ import org.junit.Test;
 public class BranchAndJumpTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
+    private static final int PROGLOC = 0xB00;
 
     /**
      * Load a short program into memory.
@@ -41,98 +42,131 @@ public class BranchAndJumpTest extends Framework {
 
     @Test
     public void testBCC() {
-        final int PROGLOC = 0xB00;
+
         final int UNBRANCHED = 0xB00 + 2;
         final int BRANCHED = 0xB00 + 2 + 0x11;
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x24); // BCC
-        myTestCPU.write(0xB01, 0x11);
+        writeSeq(PROGLOC, 0x24, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setC(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setC(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
     }
 
     @Test
-    public void testBGEForward() {
-        final int PROGLOC = 0xB00;
-        final int UNBRANCHED = 0xB00 + 2;
-        final int BRANCHED = 0xB00 + 2 + 0x11;
+    public void testBVC() {
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x2C);  // BGE
-        myTestCPU.write(0xB01, 0x11);
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x28, 0x11);
+        myTestCPU.cc.clear();
+        myTestCPU.cc.setV(0);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(BRANCHED);
+
+        myTestCPU.cc.setV(1);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(UNBRANCHED);
+    }
+
+    @Test
+    public void testBVS() {
+
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x29, 0x11);
+        myTestCPU.cc.clear();
+
+        myTestCPU.cc.setV(0);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(UNBRANCHED);
+
+        myTestCPU.cc.setV(1);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(BRANCHED);
+    }
+
+    @Test
+    public void testBGEForward() {
+
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x2C, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
     }
 
     @Test
     public void testBGTForward() {
-        final int PROGLOC = 0xB00;
-        final int UNBRANCHED = 0xB00 + 2;
-        final int BRANCHED = 0xB00 + 2 + 0x11;
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x2E);  // BGT
-        myTestCPU.write(0xB01, 0x11);
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x2E, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
     }
@@ -187,152 +221,144 @@ public class BranchAndJumpTest extends Framework {
 
     @Test
     public void testBHI() {
-        final int PROGLOC = 0xB00;
-        final int UNBRANCHED = 0xB00 + 2;
-        final int BRANCHED = 0xB00 + 2 + 0x11;
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x22);  // BHI
-        myTestCPU.write(0xB01, 0x11);
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x22, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setC(1);
         myTestCPU.cc.setZ(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setC(0);
         myTestCPU.cc.setZ(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setC(1);
         myTestCPU.cc.setZ(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
     }
 
     @Test
     public void testBLE() {
-        final int PROGLOC = 0xB00;
-        final int UNBRANCHED = 0xB00 + 2;
-        final int BRANCHED = 0xB00 + 2 + 0x11;
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x2F); // BLE
-        myTestCPU.write(0xB01, 0x11);
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x2F, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(1);
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
     }
 
     @Test
     public void testBLS() {
-        final int PROGLOC = 0xB00;
-        final int UNBRANCHED = 0xB00 + 2;
-        final int BRANCHED = 0xB00 + 2 + 0x11;
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x23); // BLS
-        myTestCPU.write(0xB01, 0x11);
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x23, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setC(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setZ(1);
         myTestCPU.cc.setC(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setZ(0);
         myTestCPU.cc.setC(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setZ(1);
         myTestCPU.cc.setC(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
     }
 
     @Test
     public void testBLT() {
-        final int PROGLOC = 0xB00;
-        final int UNBRANCHED = 0xB00 + 2;
-        final int BRANCHED = 0xB00 + 2 + 0x11;
 
-        // Write instruction into memory
-        myTestCPU.write(0xB00, 0x2D); // BLT
-        myTestCPU.write(0xB01, 0x11);
+        final int UNBRANCHED = PROGLOC + 2;
+        final int BRANCHED = PROGLOC + 2 + 0x11;
+
+        writeSeq(PROGLOC, 0x2D, 0x11);
         myTestCPU.cc.clear();
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(0);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setV(0);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(BRANCHED);
 
         myTestCPU.cc.setV(1);
         myTestCPU.cc.setN(1);
-        setPC(0xB00);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(UNBRANCHED);
     }
@@ -359,6 +385,18 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.execute();
         // The size of the instruction is 2 bytes.
         assertPC(LOCATION + 2 - 86);
+    }
+
+    @Test
+    public void testBRN() {
+        int instructions[] = {
+            0x21, // BRN
+            17 // Jump forward 17 bytes
+        };
+        loadProg(instructions);
+        myTestCPU.execute();
+        // The size of the instruction is 2 bytes.
+        assertPC(LOCATION + 2);
     }
 
     @Test
@@ -441,12 +479,8 @@ public class BranchAndJumpTest extends Framework {
         setY(0x200);
         // Set register S to point to 0x915
         myTestCPU.s.set(0x915);
-        // Two bytes of instruction
-        myTestCPU.write(0xB00, 0xAD);
-        myTestCPU.write(0xB01, 0xAB);
-        myTestCPU.write(0xB02, 0x11); // Junk
-        myTestCPU.write(0xB03, 0x22); // Junk
-        setPC(0xB00);
+        writeSeq(PROGLOC, 0xAD, 0xAB, 0x11, 0x22);
+        setPC(PROGLOC);
         myTestCPU.cc.clear();
         myTestCPU.execute();
         chkCC_A_B_DP_X_Y_S_U(0, 0x01, 0x05, 0, 0, 0x200, 0x913, 0);
@@ -458,11 +492,11 @@ public class BranchAndJumpTest extends Framework {
 
     @Test
     public void testLBRAForwards() {
-        myTestCPU.write(0xB00, 0x16);
+        myTestCPU.write(PROGLOC, 0x16);
         writeword(0xB01, 0x03FF);
-        setPC(0xB00);
-	myTestCPU.execute();
-        assertPC(0xB00 + 3 + 0x03FF);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(PROGLOC + 3 + 0x03FF);
     }
 
     @Test
@@ -470,56 +504,52 @@ public class BranchAndJumpTest extends Framework {
         myTestCPU.write(0x1B00, 0x16);
         writeword(0x1B01, 0xF333);
         setPC(0x1B00);
-	myTestCPU.execute();
+        myTestCPU.execute();
         assertPC(0x1B00 + 3 - 0xCCD);
     }
 
     @Test
     public void testLBRNForwards() {
-        writeword(0xB00, 0x1021);
+        writeword(PROGLOC, 0x1021);
         writeword(0xB02, 0x03FF);
-        setPC(0xB00);
-	myTestCPU.execute();
-        assertPC(0xB00 + 4);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(PROGLOC + 4);
     }
 
     @Test
     public void testLBCCForwards() {
         myTestCPU.cc.setC(0);
-        writeword(0xB00, 0x1024);
-        writeword(0xB02, 0x03FF);
-        setPC(0xB00);
-	myTestCPU.execute();
-        assertPC(0xB00 + 4 + 0x03FF);
+        writeSeq(PROGLOC, 0x10, 0x24, 0x03, 0xFF);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(PROGLOC + 4 + 0x03FF);
     }
 
     @Test
     public void testLBEQForwards() {
         myTestCPU.cc.setZ(1);
-        writeword(0xB00, 0x1027);
-        writeword(0xB02, 0x03FF);
-        setPC(0xB00);
-	myTestCPU.execute();
-        assertPC(0xB00 + 4 + 0x03FF);
+        writeSeq(PROGLOC, 0x10, 0x27, 0x03, 0xFF);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(PROGLOC + 4 + 0x03FF);
     }
 
     @Test
     public void testLBGEForwards() {
         myTestCPU.cc.setN(1);
         myTestCPU.cc.setV(1);
-        writeword(0xB00, 0x102C);
-        writeword(0xB02, 0x03FF);
-        setPC(0xB00);
-	myTestCPU.execute();
-        assertPC(0xB00 + 4 + 0x03FF);
+        writeSeq(PROGLOC, 0x10, 0x2C, 0x03, 0xFF);
+        setPC(PROGLOC);
+        myTestCPU.execute();
+        assertPC(PROGLOC + 4 + 0x03FF);
     }
 
     @Test
     public void testJMPExtended() {
-        myTestCPU.write(0xB00, 0x7E); // JMP
-        writeword(0xB01, 0x102C);
-        setPC(0xB00);
-	myTestCPU.execute();
+        writeSeq(PROGLOC, 0x7E, 0x10, 0x2C);
+        setPC(PROGLOC);
+        myTestCPU.execute();
         assertPC(0x102C);
     }
 
@@ -527,8 +557,8 @@ public class BranchAndJumpTest extends Framework {
     public void testRTS() {
         myTestCPU.s.set(0x300);
         writeword(0x300, 0x102C); // Write return address
-        myTestCPU.write(0xB00, 0x39); // RTS
-        setPC(0xB00);
+        writeSeq(PROGLOC, 0x39);
+        setPC(PROGLOC);
         myTestCPU.execute();
         assertPC(0x102C);
         assertEquals(0x302, myTestCPU.s.intValue());

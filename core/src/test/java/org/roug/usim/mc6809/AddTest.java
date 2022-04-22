@@ -131,6 +131,7 @@ public class AddTest extends Framework {
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0x81, myTestCPU.b.intValue());
+        
         assertEquals(1, myTestCPU.cc.getN());
         assertEquals(0, myTestCPU.cc.getZ());
         assertEquals(1, myTestCPU.cc.getV());
@@ -145,10 +146,11 @@ public class AddTest extends Framework {
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFE, myTestCPU.b.intValue());
-        assertEquals(1, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(1, myTestCPU.cc.getC());
+        assertCCFlags(CC.Nmask+CC.Cmask, CC.Nmask+CC.Zmask+CC.Vmask+CC.Cmask);
+//         assertEquals(1, myTestCPU.cc.getN());
+//         assertEquals(0, myTestCPU.cc.getZ());
+//         assertEquals(0, myTestCPU.cc.getV());
+//         assertEquals(1, myTestCPU.cc.getC());
 
         // negative + negative with overflow
         // B=0xC0 + 0xBF becomes 0x7F or 127
@@ -173,10 +175,11 @@ public class AddTest extends Framework {
         setPC(0xB00);
         myTestCPU.execute();
         assertEquals(0xFE, myTestCPU.b.intValue());
-        assertEquals(1, myTestCPU.cc.getN());
-        assertEquals(0, myTestCPU.cc.getZ());
-        assertEquals(0, myTestCPU.cc.getV());
-        assertEquals(0, myTestCPU.cc.getC());
+        assertCCFlags(CC.Nmask, CC.Nmask+CC.Zmask+CC.Vmask+CC.Cmask);
+//         assertEquals(1, myTestCPU.cc.getN());
+//         assertEquals(0, myTestCPU.cc.getZ());
+//         assertEquals(0, myTestCPU.cc.getV());
+//         assertEquals(0, myTestCPU.cc.getC());
     }
 
     /**
@@ -197,11 +200,12 @@ public class AddTest extends Framework {
         assertPC(LOCATION + 2);
         assertA(0x06);
         assertEquals(0x05, myTestCPU.b.intValue());
-        assertFalse(myTestCPU.cc.isSetH());
-        assertFalse(myTestCPU.cc.isSetN());
-        assertFalse(myTestCPU.cc.isSetZ());
-        assertFalse(myTestCPU.cc.isSetV());
-        assertFalse(myTestCPU.cc.isSetC());
+        assertCCFlags(0, CC.Hmask+CC.Nmask+CC.Zmask+CC.Vmask+CC.Cmask);
+//         assertFalse(myTestCPU.cc.isSetH());
+//         assertFalse(myTestCPU.cc.isSetN());
+//         assertFalse(myTestCPU.cc.isSetZ());
+//         assertFalse(myTestCPU.cc.isSetV());
+//         assertFalse(myTestCPU.cc.isSetC());
     }
 
     /**

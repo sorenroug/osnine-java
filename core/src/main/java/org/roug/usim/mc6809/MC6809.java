@@ -1756,6 +1756,12 @@ public class MC6809 extends USimMotorola {
         d.set(t);
     }
 
+    /**
+     * Software interrupt.
+     * The entire machine state is pushed onto the hardware stack.
+     * Program control is transferred via the software interrupt 1 vector.
+     * Fast and normal interrupts are disabled.
+     */
     protected void swi() {
         cc.setE(1);
         help_psh(0xff, s, u);
@@ -1764,12 +1770,24 @@ public class MC6809 extends USimMotorola {
         pc.set(read_word(SWI_ADDR));
     }
 
+    /**
+     * Software interrupt 2.
+     * The entire machine state is pushed onto the hardware stack.
+     * Program control is transferred via the software interrupt 2 vector.
+     * The F and I interrupt masks are not affected.
+     */
     protected void swi2() {
         cc.setE(1);
         help_psh(0xff, s, u);
         pc.set(read_word(SWI2_ADDR));
     }
 
+    /**
+     * Software interrupt 3.
+     * The entire machine state is pushed onto the hardware stack.
+     * Program control is transferred via the software interrupt 3 vector.
+     * The F and I interrupt masks are not affected.
+     */
     protected void swi3() {
         cc.setE(1);
         help_psh(0xff, s, u);

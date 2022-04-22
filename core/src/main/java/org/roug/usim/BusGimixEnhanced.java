@@ -45,6 +45,9 @@ public class BusGimixEnhanced extends BusStraight {
 
     /**
      * Constructor.
+     *
+     * @param memoryProtection - flag to specify if memory protection is to be
+     * enabled.
      */
     public BusGimixEnhanced(boolean memoryProtection) {
         super();

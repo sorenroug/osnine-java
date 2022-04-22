@@ -43,5 +43,30 @@ public interface MemoryBus {
      */
     void insertMemorySegment(MemorySegment newMemory);
 
+    /**
+     * Ask the bus to call a given method when the number of
+     * read/write operations has reached given number.
+     *
+     * @param cycles - the number of cycles to trigger at
+     * @param method - the operation to call.
+     */
+    void callbackIn(int cycles, BitReceiver method);
+
+    /**
+     * Get the number of read/writes to bus since the start.
+     *
+     * @return the number of cycles.
+     */
+    long getCycleCounter();
+
+    /**
+     * Lock the bus. This will stop the CPU.
+     */
+    void lock();
+
+    /**
+     * Unlock the bus. This will let the CPU continue.
+     */
+    void unlock();
 }
 

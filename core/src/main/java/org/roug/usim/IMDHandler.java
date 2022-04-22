@@ -354,6 +354,8 @@ public class IMDHandler {
 
     /**
      * Set a new label - must be ASCII.
+     *
+     * @param newLabel - New label.
      */
     public void setLabel(String newLabel) {
         label = newLabel;
@@ -521,6 +523,8 @@ public class IMDHandler {
      * Get number of physical sides.
      * It is possible for a disk format to continue the numbering of sectors
      * on the next side, pretending the disk has only one side.
+     *
+     * @return number of sides.
      */
     public int getNumSides() {
         return numHeads;
@@ -528,6 +532,8 @@ public class IMDHandler {
 
     /**
      * Get number of physical tracks on one side.
+     *
+     * @return number of tracks.
      */
     public int getNumTracks() {
         return numTracks;
@@ -549,6 +555,10 @@ public class IMDHandler {
 
     /**
      * Get size of sectors on a specific physical track.
+     *
+     * @param side - value 0 or 1.
+     * @param track - 0 to numTracks - 1
+     * @return number of sectors.
      */
     public int getSectorSize(int side, int track) {
         Track t = tracks[side][track];
