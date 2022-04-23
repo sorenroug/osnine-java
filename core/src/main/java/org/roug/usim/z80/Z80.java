@@ -8,10 +8,10 @@ import org.roug.usim.MemorySegment;
 import org.roug.usim.RandomAccessMemory;
 import org.roug.usim.Register;
 import org.roug.usim.RegisterBytePair;
+import org.roug.usim.RegisterIndirect;
 import org.roug.usim.UByte;
 import org.roug.usim.USimIntel;
 import org.roug.usim.Word;
-
 
 /**
  * Implementation of the Zilog Z80 CPU.
@@ -115,6 +115,8 @@ public class Z80 extends USimIntel {
 
     /** Accumulator HL. Combined from H and L. */
     public final RegisterBytePair registerHL_ = new RegisterBytePair("HL'", registerH_, registerL_);
+
+    final RegisterIndirect indirectHL = new RegisterIndirect("HLind", this, registerHL);
 
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
@@ -298,7 +300,7 @@ public class Z80 extends USimIntel {
                 write(fetch_word(),registerA.get());
                 break;
             case 0x36:
-                write(registerHL.get(), fetch());
+                indirectHL.set(fetch());
                 break;
             case 0x3A:
                 registerA.set(read(fetch_word()));
@@ -317,7 +319,7 @@ public class Z80 extends USimIntel {
             case 0x43: registerB.set(registerE.get()); break;
             case 0x44: registerB.set(registerH.get()); break;
             case 0x45: registerB.set(registerL.get()); break;
-            case 0x46: registerB.set(read(registerHL.get())); break;
+            case 0x46: registerB.set(indirectHL.get()); break;
             case 0x47: registerB.set(registerA.get()); break;
 
             case 0x48: registerC.set(registerB.get()); break;
@@ -326,7 +328,7 @@ public class Z80 extends USimIntel {
             case 0x4B: registerC.set(registerE.get()); break;
             case 0x4C: registerC.set(registerH.get()); break;
             case 0x4D: registerC.set(registerL.get()); break;
-            case 0x4E: registerC.set(read(registerHL.get())); break;
+            case 0x4E: registerC.set(indirectHL.get()); break;
             case 0x4F: registerC.set(registerA.get()); break;
 
             case 0x50: registerD.set(registerB.get()); break;
@@ -335,7 +337,7 @@ public class Z80 extends USimIntel {
             case 0x53: registerD.set(registerE.get()); break;
             case 0x54: registerD.set(registerH.get()); break;
             case 0x55: registerD.set(registerL.get()); break;
-            case 0x56: registerD.set(read(registerHL.get())); break;
+            case 0x56: registerD.set(indirectHL.get()); break;
             case 0x57: registerD.set(registerA.get()); break;
 
             case 0x58: registerE.set(registerB.get()); break;
@@ -344,7 +346,7 @@ public class Z80 extends USimIntel {
             case 0x5B: registerE.set(registerE.get()); break;
             case 0x5C: registerE.set(registerH.get()); break;
             case 0x5D: registerE.set(registerL.get()); break;
-            case 0x5E: registerE.set(read(registerHL.get())); break;
+            case 0x5E: registerE.set(indirectHL.get()); break;
             case 0x5F: registerE.set(registerA.get()); break;
 
             case 0x60: registerH.set(registerB.get()); break;
@@ -353,7 +355,7 @@ public class Z80 extends USimIntel {
             case 0x63: registerH.set(registerE.get()); break;
             case 0x64: registerH.set(registerH.get()); break;
             case 0x65: registerH.set(registerL.get()); break;
-            case 0x66: registerH.set(read(registerHL.get())); break;
+            case 0x66: registerH.set(indirectHL.get()); break;
             case 0x67: registerH.set(registerA.get()); break;
 
             case 0x68: registerL.set(registerB.get()); break;
@@ -362,18 +364,27 @@ public class Z80 extends USimIntel {
             case 0x6B: registerL.set(registerE.get()); break;
             case 0x6C: registerL.set(registerH.get()); break;
             case 0x6D: registerL.set(registerL.get()); break;
-            case 0x6E: registerL.set(read(registerHL.get())); break;
+            case 0x6E: registerL.set(indirectHL.get()); break;
             case 0x6F: registerL.set(registerA.get()); break;
 
-            case 0x70: write(registerHL.get(), registerB.get()); break;
-            case 0x71: write(registerHL.get(), registerC.get()); break;
-            case 0x72: write(registerHL.get(), registerD.get()); break;
-            case 0x73: write(registerHL.get(), registerE.get()); break;
-            case 0x74: write(registerHL.get(), registerH.get()); break;
-            case 0x75: write(registerHL.get(), registerL.get()); break;
+            case 0x70: indirectHL.set(registerB.get()); break;
+            case 0x71: indirectHL.set(registerC.get()); break;
+            case 0x72: indirectHL.set(registerD.get()); break;
+            case 0x73: indirectHL.set(registerE.get()); break;
+            case 0x74: indirectHL.set(registerH.get()); break;
+            case 0x75: indirectHL.set(registerL.get()); break;
             case 0x76:
                 halt(); break;
-            case 0x77: write(registerHL.get(), registerL.get()); break;
+            case 0x77: indirectHL.set(registerA.get()); break;
+
+            case 0x78: registerA.set(registerB.get()); break;
+            case 0x79: registerA.set(registerC.get()); break;
+            case 0x7A: registerA.set(registerD.get()); break;
+            case 0x7B: registerA.set(registerE.get()); break;
+            case 0x7C: registerA.set(registerH.get()); break;
+            case 0x7D: registerA.set(registerL.get()); break;
+            case 0x7E: registerA.set(indirectHL.get()); break;
+            case 0x7F: registerA.set(registerA.get()); break;
             default:
                 invalid("instruction"); break;
         }
@@ -386,8 +397,8 @@ public class Z80 extends USimIntel {
      * TODO: Implement
      */
     private void ldRegFromReg() {
-        UByte regTo = getRegister((ir & 0x38) >> 3);
-        UByte regFrom = getRegister(ir & 0x07);
+        Register regTo = getRegister((ir & 0x38) >> 3);
+        Register regFrom = getRegister(ir & 0x07);
         regTo.set(regFrom.get());
     }
 
@@ -725,7 +736,7 @@ public class Z80 extends USimIntel {
         bus.writeIO(n, registerA.intValue());
     }
 
-    private UByte getRegister(int r) {
+    private Register getRegister(int r) {
         switch (r) {
             case 0x00: return registerB;
             case 0x01: return registerC;
@@ -733,7 +744,7 @@ public class Z80 extends USimIntel {
             case 0x03: return registerE;
             case 0x04: return registerH;
             case 0x05: return registerL;
-            // 0x06 = Content of cell pointed to by HL
+            case 0x06: return indirectHL;
             case 0x07: return registerA;
             default: invalid("register"); return null;
         }
@@ -745,8 +756,8 @@ public class Z80 extends USimIntel {
      * TODO: Implement
      */
     private void addAR() {
-       UByte regFrom = getRegister(ir & 0x07);
- 
+        Register regFrom = getRegister(ir & 0x07);
+        registerA.add(regFrom.get());
     }
 
 }

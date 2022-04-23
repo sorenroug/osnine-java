@@ -85,7 +85,20 @@ public class Load8Test extends Framework {
         assertEquals(0x04, myTestCPU.registerA.get());
     }
 
-    /* Test LD r, (IX+d) -- Opcode 0xDD, 0x46
+    /* LD r, (HL) -- Opcode 0x46
+     */
+    @Test
+    public void loadHLindexedToReg() {
+        myTestCPU.registerB.set(0xFF); // dummy data
+        myTestCPU.registerHL.set(0x15A1);
+        myTestCPU.write(0x15A1, 0x58); // Set test data
+        writeSeq(0x0B00, 0x46); // LD B,(HL)
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x58, myTestCPU.read(0x15A1)); // Is it still there?
+        assertEquals(0x58, myTestCPU.registerB.get());
+    }
+
+    /* LD r, (IX+d) -- Opcode 0xDD, 0x46
      * If Index Register IX contains the number 15AFh, the instruction LD B, (IX+19h) allows
      * the calculation of the sum 15AFh + 19h, which points to memory location 15C8h. If this
      * address contains byte 39h, the instruction results in Register B also containing 39h.
