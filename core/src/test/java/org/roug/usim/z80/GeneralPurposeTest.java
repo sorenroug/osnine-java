@@ -10,30 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.roug.usim.Bus8Intel;
 
-public class InstructionsTest extends Framework {
+public class GeneralPurposeTest extends Framework {
 
     private static final int LOCATION = 0x1e20;
-
-
-    /**
-     * Load a short program into memory.
-     * Note: sets the CC to 0.
-     */
-    private void loadProg(int[] instructions) {
-        for (int i = 0; i < instructions.length; i++) {
-            myTestCPU.write(i + LOCATION, instructions[i]);
-        }
-        myTestCPU.reset();
-    }
-
-    @Test
-    public void testNOP() {
-        setA(0x8B);
-        myTestCPU.write(0x0B00, 0x00); // NOP instruction
-        myTestCPU.write(0x0B01, 0x00); // NOP instruction
-        execSeq(0xB00, 0xB01);
-        assertEquals(0x8B, myTestCPU.registerA.intValue());
-    }
 
     /* Complement Accumulator */
     @Test
@@ -61,6 +40,15 @@ public class InstructionsTest extends Framework {
     }
 
     @Test
+    public void testNOP() {
+        setA(0x8B);
+        myTestCPU.write(0x0B00, 0x00); // NOP instruction
+        myTestCPU.write(0x0B01, 0x00); // NOP instruction
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x8B, myTestCPU.registerA.intValue());
+    }
+
+    @Test
     public void testEXX() {
         myTestCPU.registerBC.set(0x445A);
         myTestCPU.registerDE.set(0x3DA2);
@@ -81,53 +69,22 @@ public class InstructionsTest extends Framework {
         assertEquals(0x00, myTestCPU.registerF.get());
     }
 
+    /**
+     * Disable interrupts, then check that CPU doesn't branch to
+     * interrupt handling.
+     * TODO
+     */
     @Test
-    public void loadSPfromHL() {
-        myTestCPU.registerSP.set(0x245A);
-        myTestCPU.registerHL.set(0x442E);
-        writeSeq(0x0B00, 0xF9);
+    public void disableInterrupts() {
+        myTestCPU.registerF.clear();
+        writeSeq(0x0B00, 0xF3, 0x00, 0x00); // DI instruction + NOPs
         execSeq(0xB00, 0xB01);
-        assertEquals(0x442E, myTestCPU.registerSP.get());
-    }
 
-    @Test
-    public void loadBCImmediate() {
-        myTestCPU.registerBC.set(0x445A);
-        writeSeq(0x0B00, 0x01, 0x00, 0x50);
-        execSeq(0xB00, 0xB03);
-        assertEquals(0x5000, myTestCPU.registerBC.get());
-    }
-
-    /* Test load of stack pointer */
-    @Test
-    public void loadSPImmediate() {
-        myTestCPU.registerSP.set(0x445A);
-        writeSeq(0x0B00, 0x31, 0x00, 0x50);
-        execSeq(0xB00, 0xB03);
-        assertEquals(0x5000, myTestCPU.registerSP.get());
-    }
-
-    @Test
-    public void pushRegisterPairBC() {
-        myTestCPU.registerSP.set(0x400);
-        myTestCPU.registerBC.set(0x445A);
-        writeSeq(0x0B00, 0x65);
-        execSeq(0xB00, 0xB01);
-        assertEquals(0x3FE, myTestCPU.registerSP.get());
-        assertEquals(0x445A, myTestCPU.registerBC.get());
-        assertEquals(0x445A, myTestCPU.read_word(0x3FE));
-    }
-
-    @Test
-    public void pushRegisterPairAF() {
-        myTestCPU.registerSP.set(0x1007);
-        myTestCPU.registerAF.set(0x2233);
-        writeSeq(0x0B00, 0xF5);
-        execSeq(0xB00, 0xB01);
-        assertEquals(0x1005, myTestCPU.registerSP.get());
-        assertEquals(0x2233, myTestCPU.registerAF.get());
-        assertEquals(0x33, myTestCPU.read(0x1005));
-        assertEquals(0x22, myTestCPU.read(0x1006));
+        Bus8Intel bus = myTestCPU.getBus();
+        bus.signalIRQ(true);
+        myTestCPU.execute();
+        //assertEquals(0x0000, myTestCPU.pc.intValue());
+        bus.signalIRQ(false);
     }
 
     /* Test CPU reset
@@ -142,8 +99,7 @@ public class InstructionsTest extends Framework {
 
     @Test
     public void generateIRQ() {
-        myTestCPU.write(0x0B00, 0x00); // NOP instruction
-        myTestCPU.write(0x0B01, 0x00); // NOP instruction
+        writeSeq(0x0B00, 0x00, 0x00); // NOP instructions
         setPC(0xB00);
         Bus8Intel bus = myTestCPU.getBus();
         bus.signalIRQ(true);
