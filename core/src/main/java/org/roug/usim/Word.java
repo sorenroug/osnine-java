@@ -73,9 +73,9 @@ public class Word implements Register {
         return UByte.valueOf(value);
     }
 
-    public void inc() {
-        add(1);
-    }
+//     public void inc() {
+//         add(1);
+//     }
 
     /**
      * Add value. Should it wrap?

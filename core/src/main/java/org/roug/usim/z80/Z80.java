@@ -23,8 +23,6 @@ public class Z80 extends USimIntel {
     final static int MSB = 0xFF00;
     final static int LSW = 0x0000FFFF;
 
-
-    public static final int IRQ_ADDR = 0xfff8;
     public static final int NMI_ADDR = 0x0066;
     public static final int RESET_ADDR = 0x0000;
     public static final int RST_56 = 0x0038;
@@ -107,14 +105,21 @@ public class Z80 extends USimIntel {
     /** Accumulator HL. Combined from H and L. */
     public final RegisterBytePair registerHL = new RegisterBytePair("HL", registerH, registerL);
 
-    /** Accumulator BC. Combined from B and C. */
+    /** Accumulator AF'. Combined from A' and F'. */
+    public final RegisterBytePair registerAF_ = new RegisterBytePair("AF'", registerA_, registerF_);
+
+    /** Accumulator BC'. Combined from B' and C'. */
     public final RegisterBytePair registerBC_ = new RegisterBytePair("BC'", registerB_, registerC_);
 
-    /** Accumulator DE. Combined from D and E. */
+    /** Accumulator DE'. Combined from D' and E'. */
     public final RegisterBytePair registerDE_ = new RegisterBytePair("DE'", registerD_, registerE_);
 
-    /** Accumulator HL. Combined from H and L. */
+    /** Accumulator HL'. Combined from H' and L'. */
     public final RegisterBytePair registerHL_ = new RegisterBytePair("HL'", registerH_, registerL_);
+
+    final RegisterIndirect indirectBC = new RegisterIndirect("BCind", this, registerBC);
+
+    final RegisterIndirect indirectDE = new RegisterIndirect("DEind", this, registerDE);
 
     final RegisterIndirect indirectHL = new RegisterIndirect("HLind", this, registerHL);
 
@@ -261,6 +266,12 @@ public class Z80 extends USimIntel {
                 registerA.set((registerA.get() << 1) + registerF.getC());
                 registerF.setH(false);
                 registerF.setN(false);
+                break;
+            case 0x08: {
+                int regTmp = registerAF.get();
+                registerAF.set(registerAF_.get());
+                registerAF_.set(regTmp);
+                }
                 break;
             case 0x0A:
                 registerA.set(read(registerBC.get()));
@@ -418,6 +429,12 @@ public class Z80 extends USimIntel {
         switch (ir) {
             case 0xC5:
                 helpPushExt(registerBC); break;
+            case 0xCD: {
+                int newLoc = fetch_word();
+                helpPushExt(pc);
+                pc.set(newLoc);
+                }
+                break;
             case 0xD3:
                 outNA(); break;
             case 0xD5:
@@ -426,8 +443,20 @@ public class Z80 extends USimIntel {
                 exx(); break;
             case 0xDD:
                 executeDDorFD(registerIX); break;
+            case 0xE3: {
+                int regTmp = registerHL.get();
+                registerHL.set(read_word(registerSP.get()));
+                write_word(registerSP.get(), regTmp);
+                }
+                break;
             case 0xE5:
                 helpPushExt(registerHL); break;
+            case 0xEB: {
+                int regTmp = registerDE.get();
+                registerDE.set(registerHL.get());
+                registerHL.set(regTmp);
+                }
+                break;
             case 0xED:
                 executeED(); break;
             case 0xF3:
@@ -511,6 +540,12 @@ public class Z80 extends USimIntel {
             case 0x5E: registerE.set(get8BitRegisterIndexed(regTarget, 0x06)); break; //TODO verify
             case 0x5F: registerE.set(registerA.get()); break;  //TODO verify
 
+            case 0xE3: { // EX (SP), IX
+                int regTmp = regTarget.get();
+                regTarget.set(read_word(registerSP.get()));
+                write_word(registerSP.get(), regTmp);
+                }
+                break;
             case 0xE5:
                 helpPushExt(regTarget); break;
             case 0xE9:
@@ -553,6 +588,24 @@ public class Z80 extends USimIntel {
 
             case 0x73:
                 write_word(fetch_word(), registerSP.get()); break;
+
+            case 0xA0: // LDI
+                helpLDI();
+                break;
+            case 0xA8: // LDD
+                helpLDD();
+                break;
+
+            case 0xB0: // LDIR
+                do {
+                    helpLDI();
+                } while (registerBC.get() != 0);
+                break;
+            case 0xB8: // LDDR
+                do {
+                    helpLDD();
+                } while (registerBC.get() != 0);
+                break;
             default:
                 invalid("instruction"); break;
         }
@@ -664,6 +717,29 @@ public class Z80 extends USimIntel {
         registerF.setN(false);
         regTo.set(regFrom.get());
     }
+
+    /* Block move increment */
+    private void helpLDI() {
+        indirectDE.set(indirectHL.get());
+        registerDE.add(1);
+        registerHL.add(1);
+        registerBC.add(-1);
+        registerF.setPV(registerBC.get() == 0x00);
+        registerF.setH(false);
+        registerF.setN(false);
+    }
+
+    /* Block move decrement */
+    private void helpLDD() {
+        indirectDE.set(indirectHL.get());
+        registerDE.add(-1);
+        registerHL.add(-1);
+        registerBC.add(-1);
+        registerF.setPV(registerBC.get() == 0x00);
+        registerF.setH(false);
+        registerF.setN(false);
+    }
+
 
     /**
      * Complement accumulator.

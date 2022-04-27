@@ -78,6 +78,13 @@ public class RegisterBytePair extends Word implements Register {
     }
 
     @Override
+    public void add(int increment) {
+        int currVal = get();
+        currVal += increment;
+        set(currVal);
+    }
+
+    @Override
     public int getSigned() {
         int value = intValue();
         if (value < 0x8000) {

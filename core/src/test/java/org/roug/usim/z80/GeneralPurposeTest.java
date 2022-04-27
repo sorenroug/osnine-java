@@ -48,27 +48,6 @@ public class GeneralPurposeTest extends Framework {
         assertEquals(0x8B, myTestCPU.registerA.intValue());
     }
 
-    @Test
-    public void testEXX() {
-        myTestCPU.registerBC.set(0x445A);
-        myTestCPU.registerDE.set(0x3DA2);
-        myTestCPU.registerHL.set(0x8859);
-        myTestCPU.registerBC_.set(0x0988);
-        myTestCPU.registerDE_.set(0x9300);
-        myTestCPU.registerHL_.set(0x00E7);
-        myTestCPU.registerF.clear();
-        myTestCPU.write(0x0B00, 0xD9); // EXX instruction
-        execSeq(0xB00, 0xB01);
-        assertEquals(0x0988, myTestCPU.registerBC.get());
-        assertEquals(0x9300, myTestCPU.registerDE.get());
-        assertEquals(0x00E7, myTestCPU.registerHL.get());
-        assertEquals(0x445A, myTestCPU.registerBC_.get());
-        assertEquals(0x3DA2, myTestCPU.registerDE_.get());
-        assertEquals(0x8859, myTestCPU.registerHL_.get());
-
-        assertEquals(0x00, myTestCPU.registerF.get());
-    }
-
     /**
      * Disable interrupts, then check that CPU doesn't branch to
      * interrupt handling.
