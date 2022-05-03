@@ -74,6 +74,12 @@ public class RegisterIndirect implements Register {
         return "Location=" + Integer.toHexString(regForAddress.get());
     }
 
+    public void add(int x) {
+        int value = get() + x;
+        set(value);
+    }
+
+
     /**
      * Bit test.
      */

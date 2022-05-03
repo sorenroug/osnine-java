@@ -12,6 +12,7 @@ import org.roug.usim.RegisterBytePair;
 import org.roug.usim.UByte;
 import org.roug.usim.USimMotorola;
 import org.roug.usim.Word;
+import static org.roug.usim.BitOperations.bittst;
 
 
 /**
@@ -895,10 +896,6 @@ public class MC6809 extends USimMotorola {
         }
     }
 
-    private boolean btst(int x, int n) {
-        return (x & (1 << n)) != 0;
-    }
-
     private void setBitZ(Register ref) {
         cc.setZ(ref.intValue() == 0);
     }
@@ -924,12 +921,12 @@ public class MC6809 extends USimMotorola {
         int m = fetch_operand();
 
         int halfCarry = (refB.intValue() & 0x0f) + (m & 0x0f) + cc.getC();
-        cc.setH(btst(halfCarry, 4));         // Half carry
+        cc.setH(bittst(halfCarry, 4));         // Half carry
 
         int carryIn = (refB.intValue() & 0x7f) + (m & 0x7f) + cc.getC();
-        cc.setV(btst(carryIn, 7));      // Bit 7 carry in
+        cc.setV(bittst(carryIn, 7));      // Bit 7 carry in
         int t = refB.intValue() + m + cc.getC();
-        cc.setC(btst(t, 8));         // Bit 7 carry out
+        cc.setC(bittst(t, 8));         // Bit 7 carry out
         cc.setV(cc.getV() != cc.getC());
         refB.set(t);
 
@@ -968,13 +965,13 @@ public class MC6809 extends USimMotorola {
         int m = fetch_operand();
 
         int halfCarry = (refB.intValue() & 0x0f) + (m & 0x0f);
-        cc.setH(btst(halfCarry, 4));         // Half carry
+        cc.setH(bittst(halfCarry, 4));         // Half carry
 
         int carryIn = (refB.intValue() & 0x7f) + (m & 0x7f);
-        cc.setV(btst(carryIn, 7));      // Bit 7 carry in
+        cc.setV(bittst(carryIn, 7));      // Bit 7 carry in
 
         int t = refB.intValue() + m;
-        cc.setC(btst(t, 8));
+        cc.setC(bittst(t, 8));
         cc.setV(cc.getV() != cc.getC());
         refB.set(t);
 
@@ -989,7 +986,7 @@ public class MC6809 extends USimMotorola {
         int m = fetch_word_operand();
         int t = d.intValue() + m;
 
-        cc.setV(btst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
+        cc.setV(bittst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
         int newD = d.intValue() + m;
         d.set(newD);
         cc.setC(newD > 0xffff);
@@ -1213,10 +1210,10 @@ public class MC6809 extends USimMotorola {
         cc.setH((t & 0x0f) < (m & 0x0f));
 
         int carryIn = (reg.intValue() & 0x7f) - (m & 0x7f);
-        cc.setV(btst(carryIn, 7));      // Bit 7 carry in
-        cc.setC(btst(t, 8));
+        cc.setV(bittst(carryIn, 7));      // Bit 7 carry in
+        cc.setC(bittst(t, 8));
         cc.setV(cc.getV() != cc.getC());
-        cc.setN(btst(t, 7));
+        cc.setN(bittst(t, 7));
         cc.setZ(t == 0);
     }
 
@@ -1225,12 +1222,12 @@ public class MC6809 extends USimMotorola {
         int t = reg.intValue() - m;
 
 //      int tmp = reg.intValue() ^ m ^ t ^ (t >> 1);
-//      cc.setV(btst(tmp, 15));
+//      cc.setV(bittst(tmp, 15));
         int carryIn = (reg.intValue() & 0x7fff) - (m & 0x7fff);
-        cc.setV(btst(carryIn, 15));      // Bit 15 carry in
-        cc.setC(btst(t, 16));
+        cc.setV(bittst(carryIn, 15));      // Bit 15 carry in
+        cc.setC(bittst(t, 16));
         cc.setV(cc.getV() != cc.getC());
-        cc.setN(btst(t, 15));
+        cc.setN(bittst(t, 15));
         cc.setZ(t == 0);
     }
 
@@ -1308,7 +1305,7 @@ public class MC6809 extends USimMotorola {
 
         {
             int t = a.intValue() + c;
-            cc.setC(btst(t, 8) || cc.isSetC());
+            cc.setC(bittst(t, 8) || cc.isSetC());
             a.set(t);
         }
 
@@ -1547,43 +1544,43 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_psh(int w, Word s, Word u) {
-        if (btst(w, 7)) {
+        if (bittst(w, 7)) {
             s.add(-1);
             write(s, pc.intValue());
             s.add(-1);
             write(s, (pc.intValue() >> 8));
         }
-        if (btst(w, 6)) {
+        if (bittst(w, 6)) {
             s.add(-1);
             write(s, u.intValue());
             s.add(-1);
             write(s, (u.intValue() >> 8));
         }
-        if (btst(w, 5)) {
+        if (bittst(w, 5)) {
             s.add(-1);
             write(s, y.intValue());
             s.add(-1);
             write(s, (y.intValue() >> 8));
         }
-        if (btst(w, 4)) {
+        if (bittst(w, 4)) {
             s.add(-1);
             write(s, x.intValue());
             s.add(-1);
             write(s, (x.intValue() >> 8));
         }
-        if (btst(w, 3)) {
+        if (bittst(w, 3)) {
             s.add(-1);
             write(s, dp.intValue());
         }
-        if (btst(w, 2)) {
+        if (bittst(w, 2)) {
             s.add(-1);
             write(s, b.intValue());
         }
-        if (btst(w, 1)) {
+        if (bittst(w, 1)) {
             s.add(-1);
             write(s, a.intValue());
         }
-        if (btst(w, 0)) {
+        if (bittst(w, 0)) {
             s.add(-1);
             write(s, cc.intValue());
         }
@@ -1609,35 +1606,35 @@ public class MC6809 extends USimMotorola {
     }
 
     private void help_pul(int w, Word s, Word u) {
-        if (btst(w, 0)) {
+        if (bittst(w, 0)) {
             cc.set(read(s));
             s.add(1);
         }
-        if (btst(w, 1)) {
+        if (bittst(w, 1)) {
             a.set(read(s));
             s.add(1);
         }
-        if (btst(w, 2)) {
+        if (bittst(w, 2)) {
             b.set(read(s));
             s.add(1);
         }
-        if (btst(w, 3)) {
+        if (bittst(w, 3)) {
             dp.set(read(s));
             s.add(1);
         }
-        if (btst(w, 4)) {
+        if (bittst(w, 4)) {
             x.set(read_word(s));
             s.add(2);
         }
-        if (btst(w, 5)) {
+        if (bittst(w, 5)) {
             y.set(read_word(s));
             s.add(2);
         }
-        if (btst(w, 6)) {
+        if (bittst(w, 6)) {
             u.set(read_word(s));
             s.add(2);
         }
-        if (btst(w, 7)) {
+        if (bittst(w, 7)) {
             pc.set(read_word(s));
             s.add(2);
         }
@@ -1689,10 +1686,10 @@ public class MC6809 extends USimMotorola {
         int t = regB.intValue() - m - cc.getC();
 
         cc.setH(((t & 0x0f) < (m & 0x0f))); // half-carry
-        cc.setV(btst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
-        cc.setC(btst(t, 8));
+        cc.setV(bittst(regB.intValue() ^ m ^ t ^ (t >> 1), 7));
+        cc.setC(bittst(t, 8));
         t = t & 0xFF;
-        cc.setN(btst(t, 7));
+        cc.setN(bittst(t, 7));
         cc.setZ(t == 0);
         regB.set(t);
     }
@@ -1733,11 +1730,11 @@ public class MC6809 extends USimMotorola {
         int t = byteLoc.intValue() - m;
 
         int carryIn = (byteLoc.intValue() & 0x7f) - (m & 0x7f);
-        cc.setV(btst(carryIn, 7));      // Bit 7 carry in
-        //cc.setV(btst(byteLoc.intValue() ^ m ^ t ^ (t >> 1), 7));
-        cc.setC(btst(t, 8));
+        cc.setV(bittst(carryIn, 7));      // Bit 7 carry in
+        //cc.setV(bittst(byteLoc.intValue() ^ m ^ t ^ (t >> 1), 7));
+        cc.setC(bittst(t, 8));
         cc.setV(cc.getV() != cc.getC());
-        cc.setN(btst(t, 7));
+        cc.setN(bittst(t, 7));
         cc.setZ(t == 0);
         byteLoc.set(t);
     }
@@ -1747,11 +1744,11 @@ public class MC6809 extends USimMotorola {
         int t = d.intValue() - m;
 
         int carryIn = (d.intValue() & 0x7fff) - (m & 0x7fff);
-        cc.setV(btst(carryIn, 15));      // Bit 15 carry in
-        //cc.setV(btst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
-        cc.setC(btst(t, 16));
+        cc.setV(bittst(carryIn, 15));      // Bit 15 carry in
+        //cc.setV(bittst(d.intValue() ^ m ^ t ^ (t >> 1), 15));
+        cc.setC(bittst(t, 16));
         cc.setV(cc.getV() != cc.getC());
-        cc.setN(btst(t, 15));
+        cc.setN(bittst(t, 15));
         cc.setZ(t == 0);
         d.set(t);
     }
