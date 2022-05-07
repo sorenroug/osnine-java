@@ -12,7 +12,54 @@ import org.roug.usim.Bus8Intel;
 
 public class GeneralPurposeTest extends Framework {
 
-    private static final int LOCATION = 0x1e20;
+    /**
+     * Decimal Addition Adjust.
+     * The Half-Carry flag is not affected by this instruction.
+     * The Negative flag is set equal to the new value of bit 7 in Accumulator A.
+     * The Zero flag is set if the new value of Accumulator A is zero; cleared otherwise.
+     * The affect this instruction has on the Overflow flag is undefined.
+     * The Carry flag is set if a carry is generated or if the carry bit was set before the
+     * operation; cleared otherwise.
+     */
+    @Test
+    public void testDAA1() {
+        myTestCPU.write(0xB00, 0x27);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(false);
+        myTestCPU.registerF.setH(false);
+        myTestCPU.registerF.setN(false);
+        setA(0x7f);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertEquals(0x85, myTestCPU.registerA.intValue());
+        assertEquals(0, myTestCPU.registerF.getN());
+        assertEquals(0, myTestCPU.registerF.getZ());
+        assertEquals(0, myTestCPU.registerF.getPV());
+        assertEquals(0, myTestCPU.registerF.getC());
+    }
+
+    /*
+     * If the least significant four bits of A contain a non-BCD digit (i. e.
+     * it is greater than 9) or the H flag is set, then $06 is added to the
+     * register. Then the four most significant bits are checked. If this more
+     * significant digit also happens to be greater than 9 or the C flag is
+     * set, then $60 is added.
+     */
+    @Test
+    public void testDAA5() {
+        myTestCPU.write(0xB00, 0x27);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(1);
+        setA(0x40);
+        setPC(0xB00);
+        myTestCPU.execute();
+        assertEquals(0xA0, myTestCPU.registerA.intValue());
+        assertEquals(0, myTestCPU.registerF.getH());
+        assertEquals(0, myTestCPU.registerF.getN());
+        assertEquals(0, myTestCPU.registerF.getZ());
+        assertEquals(1, myTestCPU.registerF.getPV());
+        assertEquals(1, myTestCPU.registerF.getC());
+    }
 
     /* Complement Accumulator */
     @Test

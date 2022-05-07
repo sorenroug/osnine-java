@@ -116,7 +116,7 @@ public class Load8Test extends Framework {
     /* LD (IX+d), n -- Opcode 0xDD, 0x36
      */
     @Test
-    public void loadIXdisplacedToMem() {
+    public void loadMemToIXdisplaced() {
         myTestCPU.write(0x119F, 0xFF); // Set test data
         myTestCPU.registerIX.set(0x119A);
         writeSeq(0x0B00, 0xDD, 0x36, 0x05, 0x5A);
@@ -124,4 +124,15 @@ public class Load8Test extends Framework {
         assertEquals(0x5A, myTestCPU.read(0x119F));
     }
 
+    /* LD (IY+d), r -- Opcode 0xFD, 0x7x
+     */
+    @Test
+    public void loadRegToIYdisplaced() {
+        myTestCPU.write(0x119F, 0xFF); // Set test data
+        myTestCPU.registerD.set(0x48);
+        myTestCPU.registerIY.set(0x119A);
+        writeSeq(0x0B00, 0xFD, 0x72, 0x05);
+        execSeq(0xB00, 0xB03);
+        assertEquals(0x48, myTestCPU.read(0x119F));
+    }
 }
