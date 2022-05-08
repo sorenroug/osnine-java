@@ -49,7 +49,7 @@ public class RegisterDisplaced implements Register {
     public int intValue() {
         int displacement = cpu.fetch();
         if (displacement > 0x7F) displacement -= 256;
-        return cpu.read(regForAddress.get());
+        return cpu.read(regForAddress.get() + displacement);
     }
 
     /**
@@ -57,7 +57,9 @@ public class RegisterDisplaced implements Register {
      */
     @Override
     public void set(int newValue) {
-        cpu.write(regForAddress.get(), newValue & MAX);
+        int displacement = cpu.fetch();
+        if (displacement > 0x7F) displacement -= 256;
+        cpu.write(regForAddress.get() + displacement, newValue & MAX);
     }
 
     @Override

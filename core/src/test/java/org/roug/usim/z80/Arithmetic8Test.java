@@ -109,6 +109,100 @@ public class Arithmetic8Test extends Framework {
         assertFalse(myTestCPU.registerF.isSetC());
     }
 
+    /* ADC A,#
+     */
+    @Test
+    public void adcImmToA() {
+        myTestCPU.registerA.set(0xA0);
+        myTestCPU.registerF.setC(true);
+        writeSeq(0x0B00, 0xCE, 0x07); // ADC A,#$07
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xA8, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetC());
+    }
+
+    /* ADC A,#
+     * 0x06 + 0xF = 0x15
+     */
+    @Test
+    public void adc0FToA() {
+        myTestCPU.registerA.set(0x06);
+        myTestCPU.registerF.setC(false);
+        writeSeq(0x0B00, 0xCE, 0x0F); // ADC A,#$0F
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x15, myTestCPU.registerA.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetC());
+    }
+
+    /* ADC A,#
+     * 0xA3 is negative
+     * 0x5D is positive
+     */
+    @Test
+    public void adcToAToMakeZero() {
+        myTestCPU.registerA.set(0xA3);
+        myTestCPU.registerF.setC(false);
+        writeSeq(0x0B00, 0xCE, 0x5D); // ADC A,#$5D
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x00, myTestCPU.registerA.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertTrue(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertTrue(myTestCPU.registerF.isSetC());
+    }
+
+    /* ADC A,#
+     * 0xFF is negative
+     * 0xFF is negative
+     * 0xFF + 0xFF becomes 0xFE or -2
+     */
+    @Test
+    public void adcNegativeToNegativeA() {
+        myTestCPU.registerA.set(0xFF);
+        myTestCPU.registerF.setC(false);
+        writeSeq(0x0B00, 0xCE, 0xFF); // ADC A,#$FF
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xFE, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertTrue(myTestCPU.registerF.isSetC());
+    }
+
+    /* ADC A,#
+     * 0x78 is positive
+     * 0x69 is positive
+     * 0x78 + 0x69 becomes 0xE1 or -95
+     */
+    @Test
+    public void adcPositiveToPositiveA() {
+        myTestCPU.registerA.set(0x78);
+        myTestCPU.registerF.setC(false);
+        writeSeq(0x0B00, 0xCE, 0x69); // ADC A,#$69
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xE1, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertTrue(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetC());
+    }
+
     /* CP A,r
      * Compare 0x44 and 0x11.
      */

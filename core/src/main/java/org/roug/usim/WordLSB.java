@@ -40,7 +40,7 @@ public class WordLSB implements Register {
 
     @Override
     public int intValue() {
-        return realReg.get() >> 8;
+        return realReg.get();
     }
 
     /**
