@@ -12,20 +12,100 @@ import org.roug.usim.Bus8Intel;
 
 public class Arithmetic8Test extends Framework {
 
-    /* Add A,r
-     * Add 0x44 and 0x11. No overflow.
+
+    /* Inc B -- Opcode 0x04
      */
     @Test
-    public void addRegToA() {
-        myTestCPU.registerA.set(0x44);
-        myTestCPU.registerC.set(0x11);
+    public void incrementB() {
+        myTestCPU.registerB.set(0x44);
         myTestCPU.registerF.clear();
-        myTestCPU.write(0x0B00, 0x81); // ADD A,C
+        myTestCPU.write(0x0B00, 0x04);
         execSeq(0xB00, 0xB01);
-        assertEquals(0x55, myTestCPU.registerA.get());
+        assertEquals(0x45, myTestCPU.registerB.get());
         assertFalse(myTestCPU.registerF.isSetS());
         assertFalse(myTestCPU.registerF.isSetZ());
         assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+
+        myTestCPU.registerB.set(0x7F);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x04);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x80, myTestCPU.registerB.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertTrue(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+
+        myTestCPU.registerE.set(0xFF);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x1C);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x00, myTestCPU.registerE.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertTrue(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetC());
+
+    }
+
+    /* DEC B -- Opcode 0x05
+     */
+    @Test
+    public void decrementReg() {
+        myTestCPU.registerB.set(0x44);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x05);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x43, myTestCPU.registerB.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+
+        myTestCPU.registerB.set(0x80);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x05);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x7F, myTestCPU.registerB.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertTrue(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+
+        myTestCPU.registerE.set(0x00);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x1D);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0xFF, myTestCPU.registerE.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetC());
+
+    }
+
+    /* DEC (IX+d) -- Opcode 0xDD 0x35
+     */
+    @Test
+    public void decrementRegIndir() {
+        myTestCPU.registerIX.set(0x1020);
+        myTestCPU.write(0x1030, 0x34);
+        myTestCPU.registerF.clear();
+        writeSeq(0x0B00, 0xDD, 0x35, 0x10);
+        execSeq(0xB00, 0xB03);
+        assertEquals(0x33, myTestCPU.read(0x1030));
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+
     }
 
     /* Add A,r

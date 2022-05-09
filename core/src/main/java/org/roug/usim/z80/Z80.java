@@ -292,13 +292,11 @@ public class Z80 extends USimIntel {
             case 0x03:
                 helpINC16(); break;
             case 0x04:
-                registerB.add(1); break;
+                helpINC8(); break;
+            case 0x05:
+                helpDEC8(); break;
             case 0x07:
-                registerF.setC(registerA.get() == 0x80);
-                registerA.set((registerA.get() << 1) + registerF.getC());
-                registerF.setH(false);
-                registerF.setN(false);
-                break;
+                helpRLCreg(7); break;
             case 0x08: {
                 int regTmp = registerAF.get();
                 registerAF.set(registerAF_.get());
@@ -312,7 +310,9 @@ public class Z80 extends USimIntel {
             case 0x0B:
                 registerBC.add(-1); break;
             case 0x0C:
-                registerC.add(1); break;
+                helpINC8(); break;
+            case 0x0D:
+                helpDEC8(); break;
 
             case 0x11:
                 registerDE.set(fetch_word()); break;
@@ -321,14 +321,11 @@ public class Z80 extends USimIntel {
             case 0x13:
                 helpINC16(); break;
             case 0x14:
-                registerD.add(1); break;
-            case 0x17:
-                int prevC = registerF.getC();
-                registerF.setC(registerA.get() == 0x80);
-                registerA.set((registerA.get() << 1) + prevC);
-                registerF.setH(false);
-                registerF.setN(false);
-                break;
+                helpINC8(); break;
+            case 0x15:
+                helpDEC8(); break;
+            case 0x17: // RLA
+                helpRLReg(7); break;
             case 0x19:
                 helpADD16(false); break;
             case 0x1A:
@@ -336,7 +333,10 @@ public class Z80 extends USimIntel {
             case 0x1B:
                 registerDE.add(-1); break;
             case 0x1C:
-                registerE.add(1); break;
+                helpINC8(); break;
+            case 0x1D:
+                helpDEC8(); break;
+//                 registerE.add(-1); break;
 
             case 0x21:
                 activeReg16.set(fetch_word()); break;
@@ -345,7 +345,9 @@ public class Z80 extends USimIntel {
             case 0x23:
                 helpINC16(); break;
             case 0x24:
-                registerH.add(1); break;
+                helpINC8(); break;
+            case 0x25:
+                helpDEC8(); break;
             case 0x27:
                 helpDAA(); break;
             case 0x29:
@@ -355,7 +357,9 @@ public class Z80 extends USimIntel {
             case 0x2B:
                 activeReg16.add(-1); break;
             case 0x2C:
-                registerL.add(1); break;
+                helpINC8(); break;
+            case 0x2D:
+                helpDEC8(); break;
             case 0x2F:
                 helpCPL(); break;
 
@@ -366,8 +370,9 @@ public class Z80 extends USimIntel {
             case 0x33:
                 helpINC16(); break;
             case 0x34:
-                indirectHL.add(1); break;
-//case 0x35 is DEC?
+                helpINC8(); break;
+            case 0x35:
+                helpDEC8(); break;
             case 0x36:
                 indirectHL.set(fetch()); break;
             case 0x39:
@@ -377,7 +382,9 @@ public class Z80 extends USimIntel {
             case 0x3B:
                 registerSP.add(-1); break;
             case 0x3C:
-                registerA.add(1); break;
+                helpINC8(); break;
+            case 0x3D:
+                helpDEC8(); break;
 
             default:
                 invalid("instruction"); break;
@@ -575,7 +582,10 @@ public class Z80 extends USimIntel {
             case 0x2B:
                 activeReg16.add(-1); break;
 //             case 0x34: activeFromRegTbl[6].add(1); break;  //TODO Verify
-            case 0x35: break;  //TODO implement DEC
+            case 0x34:
+                helpINC8(); break;
+            case 0x35:
+                helpDEC8(); break;
             case 0x36: write(activeReg16.get() + getIndexOffset(), fetch());
                 break;
             case 0x39:
@@ -945,6 +955,42 @@ public class Z80 extends USimIntel {
         return activeFromRegTbl[r];
     }
 
+    /* INC r -- Opcode 0xX4
+     * Unlike a standard ADD, the Carry flag is not affected.
+     */
+    private void helpINC8() {
+        int regCode = (ir & 0x38) >> 3;
+        Register targetReg = getRegister(regCode);
+        int value = targetReg.get();
+
+        int halfCarry = (value & 0x0f) + 1;
+        registerF.setH(bittst(halfCarry, 4));
+
+        int t = value + 1;
+        registerF.setPV(bittst(value ^ 1 ^ t ^ (t >> 1), 7));
+
+        targetReg.set(t);
+        registerF.setS(targetReg.get() > 0x7F);
+        registerF.setN(false);
+        registerF.setZ(targetReg.get() == 0);
+    }
+
+    private void helpDEC8() {
+        int regCode = (ir & 0x38) >> 3;
+        Register targetReg = getRegister(regCode);
+        int value = targetReg.get();
+
+        int halfCarry = (value & 0x0f) - 1;
+        registerF.setH(bittst(halfCarry, 4));
+
+        int t = (value - 1) & 0xFF;
+        registerF.setPV(bittst(value ^ 1 ^ t ^ (t >> 1), 7));
+        targetReg.set(t);
+        registerF.setS(t > 0x7F);
+        registerF.setN(true);
+        registerF.setZ(t == 0);
+    }
+
     private Word getRegister16(int regCode) {
         switch (regCode) {
             case 0x00: return registerBC;
@@ -1097,6 +1143,15 @@ public class Z80 extends USimIntel {
         registerF.setZ(registerA.get() == 0);
         registerF.setS(registerA.get() > 0x7F);
         registerF.setPV(parityOf(registerA.get()));
+    }
+
+    private void helpRLReg(int regCode) {
+        Register reg = getRegister(regCode);
+        int prevC = registerF.getC();
+        registerF.setC(reg.get() == 0x80);
+        reg.set((reg.get() << 1) + prevC);
+        registerF.setH(false);
+        registerF.setN(false);
     }
 
     private void helpRLCreg(int regCode) {
