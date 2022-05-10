@@ -59,15 +59,13 @@ size     equ   .
 name     equ   *
          fcs   /cc1/
          fcb   $04
-L0011    fcb   $A6 &
-         fcb   $A0
-         fcb   $A7 '
-         fcb   $C0 @
-         fcb   $30 0
-         fcb   $1F
-         fcb   $26 &
-         fcb   $F8 x
-         fcb   $39 9
+
+L0011    lda   ,y+
+         sta   ,u+
+         leax  -1,x
+         bne   L0011
+         rts
+
 start    equ   *
          pshs  y
          pshs  u
