@@ -150,7 +150,7 @@
       <varlistentry>
         <term>Function CHR(expression:integer): char</term>
         <listitem>
-          <para>Returns a char-type result having the same numerical value as the integer argument, e.i., convert integer to char.</para>
+          <para>Returns a char-type result having the same numerical value as the integer argument, i.e., convert integer to char.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
