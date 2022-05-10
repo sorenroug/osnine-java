@@ -59,8 +59,8 @@ public class WordTest {
         Word reg = new Word(500);
         
         assertEquals(500, reg.get());
-        reg.add(1);
-        assertEquals(501, reg.getSigned());
+        int x = reg.add(1);
+        assertEquals(501, reg.get());
     }
 
     //@Test(expected = IllegalArgumentException.class)

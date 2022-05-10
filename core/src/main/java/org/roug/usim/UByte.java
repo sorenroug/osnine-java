@@ -3,7 +3,7 @@ package org.roug.usim;
 /**
  * Byte size register (unsigned).
  */
-public class UByte implements Register {
+public class UByte extends RegisterOps implements Register {
 
     public static final int MAX = 0xff;
 
@@ -37,19 +37,16 @@ public class UByte implements Register {
 
     @Override
     public int get() {
-        return intValue();
+        return value & MAX;
     }
 
     @Override
     public int intValue() {
-        return value & 0xff;
+        return value & MAX;
     }
 
     @Override
     public void set(int newValue) {
-//      if (newValue > 0xff || newValue < -0x80) {
-//          throw new IllegalArgumentException("Value must fit in 8 bits.");
-//      }
         value = newValue & MAX;
     }
 
@@ -71,11 +68,6 @@ public class UByte implements Register {
         return new UByte(i);
     }
 
-    public void add(int x) {
-        value += x;
-        value = value & MAX;
-    }
-
     @Override
     public String toString() {
         return registerName + "=" + Integer.toHexString(value);
@@ -84,20 +76,27 @@ public class UByte implements Register {
     /**
      * Bit test.
      */
-    @Override
-    public int btst(int n) {
-        return ((value & (1 << n)) != 0) ? 1 : 0;
-    }
+//     @Override
+//     public int btst(int n) {
+//         return ((value & (1 << n)) != 0) ? 1 : 0;
+//     }
+// 
+//     @Override
+//     public void bset(int n) {
+//         value |= 1 << n;
+//     }
+// 
+//     @Override
+//     public void bclr(int n) {
+//         value &= ~(1 << n);
+//     }
+// 
+//     @Override
+//     public int add(int x) {
+//         value += x;
+//         value = value & MAX;
+//     }
 
-    @Override
-    public void bset(int n) {
-        value |= 1 << n;
-    }
-
-    @Override
-    public void bclr(int n) {
-        value &= ~(1 << n);
-    }
 
 }
 

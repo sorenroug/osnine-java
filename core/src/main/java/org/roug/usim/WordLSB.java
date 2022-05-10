@@ -4,7 +4,7 @@ package org.roug.usim;
  * Most Significant Byte of a Word register.
  * Can be used as a UByte register.
  */
-public class WordLSB implements Register {
+public class WordLSB extends RegisterOps implements Register {
 
     private static final int MAX = 0xff;
 
@@ -73,10 +73,10 @@ public class WordLSB implements Register {
         return "LSB of " + realReg.toString();
     }
 
-    public void add(int x) {
-        int value = get() + x;
-        set(value);
-    }
+//     public void add(int x) {
+//         int value = get() + x;
+//         set(value);
+//     }
 
 
     /**

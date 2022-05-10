@@ -47,8 +47,7 @@ public class RegisterDisplaced implements Register {
 
     @Override
     public int intValue() {
-        int displacement = cpu.fetch();
-        if (displacement > 0x7F) displacement -= 256;
+        int displacement = getDisplacement();
         return cpu.read(regForAddress.get() + displacement);
     }
 
@@ -57,8 +56,7 @@ public class RegisterDisplaced implements Register {
      */
     @Override
     public void set(int newValue) {
-        int displacement = cpu.fetch();
-        if (displacement > 0x7F) displacement -= 256;
+        int displacement = getDisplacement();
         cpu.write(regForAddress.get() + displacement, newValue & MAX);
     }
 
@@ -77,14 +75,23 @@ public class RegisterDisplaced implements Register {
         return 8;
     }
 
+    private int getDisplacement() {
+        int displacement = cpu.fetch();
+        if (displacement > 0x7F) displacement -= 256;
+        return displacement;
+    }
+
     @Override
     public String toString() {
         return "Location=" + Integer.toHexString(regForAddress.get());
     }
 
-    public void add(int x) {
-        int value = get() + x;
-        set(value);
+    @Override
+    public int add(int increment) {
+        int displacement = getDisplacement();
+        int value = cpu.read(regForAddress.get() + displacement);
+        cpu.write(regForAddress.get() + displacement, (value + increment) & MAX);
+        return value;
     }
 
 
@@ -98,14 +105,16 @@ public class RegisterDisplaced implements Register {
 
     @Override
     public void bset(int n) {
-        int value = get();
-        set(value |= (1 << n));
+        int displacement = getDisplacement();
+        int newValue = cpu.read(regForAddress.get() + displacement);
+        set(newValue |= (1 << n));
     }
 
     @Override
     public void bclr(int n) {
-        int value = get();
-        set(value & ~(1 << n));
+        int displacement = getDisplacement();
+        int newValue = cpu.read(regForAddress.get() + displacement);
+        set(newValue & ~(1 << n));
     }
 
 }

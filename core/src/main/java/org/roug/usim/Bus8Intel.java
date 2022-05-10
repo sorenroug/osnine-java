@@ -71,11 +71,17 @@ public interface Bus8Intel extends MemoryBus {
 
     /**
      * Single byte read from I/O port map.
+     *
+     * @param offset - port number 0-255
+     * @return value of read operation
      */
     int readIO(int offset);
 
     /**
      * Single byte write to I/O port map.
+     *
+     * @param offset - port number 0-255
+     * @param val - one-byte value to write
      */
     void writeIO(int offset, int val);
 

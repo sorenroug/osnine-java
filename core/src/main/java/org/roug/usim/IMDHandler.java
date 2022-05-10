@@ -234,6 +234,7 @@ public class IMDHandler {
      *
      * @param head - logical side of disk.
      * @param trackNum - logical track number.
+     * @return transfer rate in bytes per second.
      */
     public int getTransferRate(int head, int trackNum) {
         Track t = getPhysTrack(head, trackNum);
@@ -347,6 +348,8 @@ public class IMDHandler {
 
     /**
      * Return the label of the IMD file.
+     *
+     * @return label
      */
     public String getLabel() {
         return label;
@@ -376,6 +379,9 @@ public class IMDHandler {
      * Save disk to file.
      *
      * @param imdFile - The name of the file to save to.
+     * @throws java.io.FileNotFoundException - if unable to write to file's directory
+     * @throws java.io.UnsupportedEncodingException if comment is not ASCII
+     * @throws java.io.IOException if unable to write file
      */
     public void saveDisk(File imdFile) throws FileNotFoundException,
             UnsupportedEncodingException, IOException {
@@ -473,6 +479,7 @@ public class IMDHandler {
      * @param side - value 0 or 1.
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
+     * @throws java.io.IOException if unable to read sector
      */
     public void writeSector(int side, int track, int sector, byte[] data)
                 throws IOException {
@@ -512,6 +519,7 @@ public class IMDHandler {
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
      * @return true is track is bad
+     * @throws java.io.IOException if unable to read sector
      */
     public boolean isBadSector(int side, int track, int sector)
                 throws IOException {

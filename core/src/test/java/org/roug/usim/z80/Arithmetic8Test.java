@@ -77,6 +77,7 @@ public class Arithmetic8Test extends Framework {
         assertTrue(myTestCPU.registerF.isSetH());
         assertTrue(myTestCPU.registerF.isSetN());
 
+        // Decrement E from 00
         myTestCPU.registerE.set(0x00);
         myTestCPU.registerF.clear();
         myTestCPU.write(0x0B00, 0x1D);

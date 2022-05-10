@@ -50,5 +50,11 @@ public interface Register {
      */
     void bclr(int n);
 
+    /**
+     * Add number to register value.
+     * @param addend value to add.
+     * @return old value.
+     */
+    int add(int addend);
 }
 

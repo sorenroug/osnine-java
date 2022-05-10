@@ -3,7 +3,7 @@ package org.roug.usim;
 /**
  * Word size register. (i.e. 16 bit).
  */
-public class Word implements Register {
+public class Word extends RegisterOps implements Register {
 
     public static final int MAX = 0xffff;
 
@@ -48,10 +48,7 @@ public class Word implements Register {
     }
 
     @Override
-    public void set(int newValue) throws IllegalArgumentException {
-//      if (newValue > MAX || newValue < -0x8000) {
-//          throw new IllegalArgumentException("Value must fit in 16 bits.");
-//      }
+    public void set(int newValue) {
         value = newValue & MAX;
     }
 
@@ -73,21 +70,11 @@ public class Word implements Register {
         return UByte.valueOf(value);
     }
 
-//     public void inc() {
-//         add(1);
+//     @Override
+//     public void add(int increment) {
+//         value += increment;
+//         value = value & MAX;
 //     }
-
-    /**
-     * Add value. Should it wrap?
-     * @param increment The value to add
-     */
-    public void add(int increment) {
-        value += increment;
-        value = value & MAX;
-//      if (value > MAX || value < -0x8000) {
-//          throw new IllegalArgumentException("Value must fit in 16 bits.");
-//      }
-    }
 
     public static Word valueOf(int i) {
         return new Word(i);

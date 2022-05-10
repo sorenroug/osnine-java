@@ -109,16 +109,20 @@ public class Z80 extends USimIntel {
     final RegisterBytePair registerHL = new RegisterBytePair("HL", registerH, registerL);
 
     /** Accumulator AF'. Combined from A' and F'. */
-    final RegisterBytePair registerAF_ = new RegisterBytePair("AF'", registerA_, registerF_);
+    final RegisterBytePair registerAF_ =
+                        new RegisterBytePair("AF'", registerA_, registerF_);
 
     /** Accumulator BC'. Combined from B' and C'. */
-    final RegisterBytePair registerBC_ = new RegisterBytePair("BC'", registerB_, registerC_);
+    final RegisterBytePair registerBC_ =
+                        new RegisterBytePair("BC'", registerB_, registerC_);
 
     /** Accumulator DE'. Combined from D' and E'. */
-    final RegisterBytePair registerDE_ = new RegisterBytePair("DE'", registerD_, registerE_);
+    final RegisterBytePair registerDE_ =
+                        new RegisterBytePair("DE'", registerD_, registerE_);
 
     /** Accumulator HL'. Combined from H' and L'. */
-    final RegisterBytePair registerHL_ = new RegisterBytePair("HL'", registerH_, registerL_);
+    final RegisterBytePair registerHL_ =
+                        new RegisterBytePair("HL'", registerH_, registerL_);
 
     final RegisterIndirect indirectBC = new RegisterIndirect("BCind", this, registerBC);
 
@@ -126,27 +130,41 @@ public class Z80 extends USimIntel {
 
     final RegisterIndirect indirectHL = new RegisterIndirect("HLind", this, registerHL);
 
+    /** Least significant byte of register IX. Used in undocumented ops. */
     final WordLSB registerIXlsb = new WordLSB("IXlsb", registerIX);
+
+    /** Most significant byte of register IY. Used in undocumented ops. */
     final WordMSB registerIXmsb = new WordMSB("IXmsb", registerIX);
 
     final RegisterDisplaced displacedIX = new RegisterDisplaced("IXdisp", this, registerIX);
 
+    /** Least significant byte of register IY. Used in undocumented ops. */
     final WordLSB registerIYlsb = new WordLSB("IYlsb", registerIY);
+
+    /** Most significant byte of register IY. Used in undocumented ops. */
     final WordMSB registerIYmsb = new WordMSB("IYmsb", registerIY);
+
     final RegisterDisplaced displacedIY = new RegisterDisplaced("IYdisp", this, registerIY);
 
-    private final Register regTable[] = {registerB, registerC,  registerD, registerE,
-                                 registerH, registerL, indirectHL, registerA };
+    private final Register regTable[] = { registerB, registerC,
+                                registerD, registerE,
+                                registerH, registerL,
+                                indirectHL, registerA };
 
-    private final Register regTableIX[] = {registerB, registerC,  registerD, registerE,
-                                 registerIXmsb, registerIXlsb, displacedIX, registerA };
+    private final Register regTableIX[] = { registerB, registerC,
+                                registerD, registerE,
+                                registerIXmsb, registerIXlsb,
+                                displacedIX, registerA };
 
-    private final Register regTableIY[] = {registerB, registerC,  registerD, registerE,
-                                 registerIYmsb, registerIYlsb, displacedIY, registerA };
+    private final Register regTableIY[] = { registerB, registerC,
+                                registerD, registerE,
+                                registerIYmsb, registerIYlsb,
+                                displacedIY, registerA };
 
+    /* Active 16 bit register. Can be HL, IXdisp or IYdisp. */
     private Word activeReg16;
+
     private Register activeFromRegTbl[] = regTable;
-//     private Register activeToRegTbl[] = regTable;
 
     /** Prevent NMI handling. */
     private boolean inhibitNMI;
@@ -195,7 +213,6 @@ public class Z80 extends USimIntel {
         this.bus = bus;
         reset();
     }
-
 
     /**
      * Get the memory bus.
@@ -257,7 +274,6 @@ public class Z80 extends USimIntel {
             reset();
         }
         activeFromRegTbl = regTable;
-//         activeToRegTbl = regTable;
         activeReg16 = registerHL;
         ir = fetch();
 
@@ -273,9 +289,18 @@ public class Z80 extends USimIntel {
         }
 
         if (isINTActive()) {
-            irq();
+            doInterrupt();
         }
 
+    }
+
+    /**
+     * Handle interrupt.
+     * TODO
+     */
+    private void doInterrupt() {
+        iff1 = false;
+        iff2 = false;
     }
 
     /* Opcodes between 0x00 and 0x3F */
@@ -308,7 +333,7 @@ public class Z80 extends USimIntel {
             case 0x0A:
                 registerA.set(read(registerBC.get())); break;
             case 0x0B:
-                registerBC.add(-1); break;
+                helpDEC16(); break;
             case 0x0C:
                 helpINC8(); break;
             case 0x0D:
@@ -331,7 +356,7 @@ public class Z80 extends USimIntel {
             case 0x1A:
                 registerA.set(read(registerDE.get())); break;
             case 0x1B:
-                registerDE.add(-1); break;
+                helpDEC16(); break;
             case 0x1C:
                 helpINC8(); break;
             case 0x1D:
@@ -355,7 +380,7 @@ public class Z80 extends USimIntel {
             case 0x2A:
                 activeReg16.set(read_word(fetch_word())); break;
             case 0x2B:
-                activeReg16.add(-1); break;
+                helpDEC16(); break;
             case 0x2C:
                 helpINC8(); break;
             case 0x2D:
@@ -380,7 +405,7 @@ public class Z80 extends USimIntel {
             case 0x3A:
                 registerA.set(read(fetch_word())); break;
             case 0x3B:
-                registerSP.add(-1); break;
+                helpDEC16(); break;
             case 0x3C:
                 helpINC8(); break;
             case 0x3D:
@@ -397,7 +422,6 @@ public class Z80 extends USimIntel {
             halt();
         } else {
             Register regTo = regTable[(ir & 0x38) >> 3];
-//             Register regTo = getRegister((ir & 0x38) >> 3);
             Register regFrom = getRegister(ir & 0x07);
             regTo.set(regFrom.get());
         }
@@ -492,7 +516,6 @@ public class Z80 extends USimIntel {
                 helpEXX(); break;
             case 0xDD:
                 activeFromRegTbl = regTableIX;
-//                 activeToRegTbl = regToTableIX;
                 activeReg16 = registerIX;
                 executeDDorFD(); break;
             case 0xDE: {  // SBC A,n
@@ -534,7 +557,6 @@ public class Z80 extends USimIntel {
                 iff1 = true; iff2 = true; break;
             case 0xFD:
                 activeFromRegTbl = regTableIY;
-//                 activeToRegTbl = regToTableIY;
                 activeReg16 = registerIY;
                 executeDDorFD(); break;
             case 0xFE:
@@ -571,7 +593,7 @@ public class Z80 extends USimIntel {
             case 0x22:
                 write_word(fetch_word(), activeReg16.get()); break;
             case 0x23:
-                activeReg16.add(1); break;
+                helpINC16(); break;
             case 0x24: break;  //TODO implement
             case 0x25: break;  //TODO implement
             case 0x26: break;  //TODO implement
@@ -580,13 +602,12 @@ public class Z80 extends USimIntel {
             case 0x2A:
                 activeReg16.set(read_word(fetch_word())); break;
             case 0x2B:
-                activeReg16.add(-1); break;
-//             case 0x34: activeFromRegTbl[6].add(1); break;  //TODO Verify
+                helpDEC16(); break;
             case 0x34:
                 helpINC8(); break;
             case 0x35:
                 helpDEC8(); break;
-            case 0x36: write(activeReg16.get() + getIndexOffset(), fetch());
+            case 0x36: helpLdMemInxFromAddr(); // LD (IX+d), n
                 break;
             case 0x39:
                 helpADD16(false);break;
@@ -640,7 +661,7 @@ public class Z80 extends USimIntel {
             case 0x75:
             // 0x76 is undocumented halt
             case 0x77:
-                helpLdRegToMemInx(); break;
+                helpLdMemInxFromReg(); break;
 
             case 0x7E:
                 execute40(); break;
@@ -798,23 +819,6 @@ public class Z80 extends USimIntel {
     }
 
     /**
-     * Handle interrupt.
-     */
-    private void irq() {
-        iff1 = false;
-        iff2 = false;
-
-    }
-
-    private static int getSignedWord(int value) {
-        if (value < 0x8000) {
-            return value;
-        } else {
-            return -((~value & 0x7fff) + 1);
-        }
-    }
-
-    /**
      * Push a word register on stack.
      */
     private void helpPushExt(Word reg) {
@@ -923,6 +927,7 @@ public class Z80 extends USimIntel {
      * When a software HALT instruction is executed, the CPU executes NOPs until an interrupt
      * is received (either a nonmaskable or a maskable interrupt while the interrupt flip-flop is
      * enabled).
+     * To avoid wasting CPU cycles we use Java's wait() operation.
      */
     private void halt() {
         try {
@@ -951,11 +956,14 @@ public class Z80 extends USimIntel {
         bus.writeIO(n, registerA.intValue());
     }
 
+    /*
+     * Get register from active register set.
+     */
     private Register getRegister(int r) {
         return activeFromRegTbl[r];
     }
 
-    /* INC r -- Opcode 0xX4
+    /* 8-bit increment.
      * Unlike a standard ADD, the Carry flag is not affected.
      */
     private void helpINC8() {
@@ -975,17 +983,19 @@ public class Z80 extends USimIntel {
         registerF.setZ(targetReg.get() == 0);
     }
 
+    /* 8-bit decrement.
+     * Unlike a standard SUB, the Carry flag is not affected.
+     */
     private void helpDEC8() {
         int regCode = (ir & 0x38) >> 3;
         Register targetReg = getRegister(regCode);
-        int value = targetReg.get();
+        int oldValue = targetReg.add(-1);
 
-        int halfCarry = (value & 0x0f) - 1;
+        int halfCarry = (oldValue & 0x0f) - 1;
         registerF.setH(bittst(halfCarry, 4));
 
-        int t = (value - 1) & 0xFF;
-        registerF.setPV(bittst(value ^ 1 ^ t ^ (t >> 1), 7));
-        targetReg.set(t);
+        int t = (oldValue - 1) & 0xFF;
+        registerF.setPV(oldValue == 0x80);
         registerF.setS(t > 0x7F);
         registerF.setN(true);
         registerF.setZ(t == 0);
@@ -1001,11 +1011,22 @@ public class Z80 extends USimIntel {
         return registerHL; // Should not reach here
     }
 
-
+    /* 16-bit increment.
+     * Does not change flag register.
+     */
     private void helpINC16() {
         int regCode = (ir & 0x30) >> 4;
         Word targetReg = getRegister16(regCode);
         targetReg.add(1);
+    }
+
+    /* 16-bit increment.
+     * Does not change flag register.
+     */
+    private void helpDEC16() {
+        int regCode = (ir & 0x30) >> 4;
+        Word targetReg = getRegister16(regCode);
+        targetReg.add(-1);
     }
 
     private void helpADD16(boolean withCarry) {
@@ -1065,7 +1086,6 @@ public class Z80 extends USimIntel {
         registerF.setPV(bittst(registerA.get() ^ value ^ t ^ (t >> 1), 7));
         registerF.setC(bittst(t, 8));
         t &= 0xFF;
-//         registerF.setPV(registerF.getPV() != registerF.getC());
         registerF.setS(t > 0x7F);
         registerF.setN(true);
         registerF.setZ(t == 0);
@@ -1073,7 +1093,7 @@ public class Z80 extends USimIntel {
     }
 
     /*
-     * And value to register A.
+     * AND value to register A.
      */
     private void helpAndIntToA(int value) {
 
@@ -1168,9 +1188,20 @@ public class Z80 extends USimIntel {
         registerF.setN(false);
     }
 
+    /* LD (IX+d), n
+     * FIXME: Use activeFromRegTbl instead of activeReg16
+     * If I use:
+        int regCode = (ir & 0x38) >> 3;
+        Register targetReg = getRegister(regCode);
+        targetReg.set(fetch()) then fetch is read before displacement.
+     */
+    private void helpLdMemInxFromAddr() {
+        write(activeReg16.get() + getIndexOffset(), fetch());
+    }
+
     /* LD (IX+d), r. Opcodes 0xDD, 0x7?
      */
-    private void helpLdRegToMemInx() {
+    private void helpLdMemInxFromReg() {
         Register regFrom = regTable[ir & 0x07];
         write(activeReg16.get() + getIndexOffset(), regFrom.get());
     }

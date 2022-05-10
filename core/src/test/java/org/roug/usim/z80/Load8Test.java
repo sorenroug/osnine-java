@@ -12,7 +12,6 @@ import org.roug.usim.Bus8Intel;
 
 public class Load8Test extends Framework {
 
-    private static final int LOCATION = 0x1e20;
 
     /* LD (BC), A -- Opcode 02
      */
@@ -221,5 +220,33 @@ public class Load8Test extends Framework {
         assertEquals(0x99, myTestCPU.registerA.get());
     }
 
+    /* LD A, I -- Opcode 0xED, 0x57
+     */
+    @Test
+    public void loadRegAFromRegI() {
+        myTestCPU.registerI.set(0xCF);
+        writeSeq(0x0B00, 0xED, 0x57);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xCF, myTestCPU.registerI.get());
+        assertEquals(0xCF, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+
+        // Try with interrupts enabled.
+        writeSeq(0x0B00, 0xFB, 0xED, 0x57); // Enable interrupts
+        execSeq(0xB00, 0xB01);
+        myTestCPU.registerI.set(0x1A);
+        execSeq(0xB01, 0xB03);
+        assertEquals(0x1A, myTestCPU.registerI.get());
+        assertEquals(0x1A, myTestCPU.registerA.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertTrue(myTestCPU.registerF.isSetPV());
+    }
 
 }

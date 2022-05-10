@@ -4,7 +4,7 @@ package org.roug.usim;
  * Treat a memory location as a register.
  * Memory location is pointed to by a Word register set up in Constructor
  */
-public class RegisterIndirect implements Register {
+public class RegisterIndirect extends RegisterOps implements Register {
 
     private static final int MAX = 0xff;
 
@@ -74,10 +74,10 @@ public class RegisterIndirect implements Register {
         return "Location=" + Integer.toHexString(regForAddress.get());
     }
 
-    public void add(int x) {
-        int value = get() + x;
-        set(value);
-    }
+//     public void add(int x) {
+//         int value = get() + x;
+//         set(value);
+//     }
 
 
     /**
@@ -85,7 +85,7 @@ public class RegisterIndirect implements Register {
      */
     @Override
     public int btst(int n) {
-        return ((cpu.read(regForAddress) & (1 << n)) != 0) ? 1 : 0;
+        return ((intValue() & (1 << n)) != 0) ? 1 : 0;
     }
 
     @Override
