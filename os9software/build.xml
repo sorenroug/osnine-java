@@ -213,6 +213,7 @@
     <target name="cms9639" depends="prepare">
         <assemble src="OS9p1_ed12" home="cms9639"  verify="c62663295a8df03e8d370e1f2c9c2eb1"/>
         <assemble src="Boot" home="cms9639"  verify="921665455cf8e35d2e966368706e72f8"/>
+        <assemble src="9639_OS92.rom" home="cms9639" verify="5529810dedff592bceba4ddf662fbed5"/>
     </target>
 
     <!-- Positron 9000 -->
