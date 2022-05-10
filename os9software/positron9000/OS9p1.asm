@@ -208,9 +208,9 @@ Cold16 std ,X++ mark free entry
          ldd   #DAT.WrEn+$0150  IOBlock?
          std   ,x++
          ldd   #DAT.WrEn+$0140
-         std   ,x++
+         std   ,x++ set I/O block
          ldd   #ROMBlock ($01FE)
-L0190    std   ,x++
+L0190    std   ,x++ set ROM block
          incb
          bne   L0190
  ldx D.Tasks get task number table
@@ -234,6 +234,15 @@ Cold20 equ *
  ldd 0,s
  endc
  subd D.BlkMap get block number
+ ifle DAT.BlMx-255
+ ifeq MappedIO-true
+ cmpb #IOBlock is this I/O block?
+ else
+ cmpb #DAT.BlMx last block?
+ endc
+ beq Cold30 branch of so
+ stb DAT.Regs+RAMCount set block register
+ else
  cmpd #DAT.BlMx
  bcc Cold30
  ifne DAT.WrEn
@@ -291,11 +300,18 @@ Cold50 lda 0,x is this RAM block?
 Cold55 equ *
 Cold60 pshs Y,X save ptrs
  lbsr AdjImg adjust DAT image ptr
-         ldd   ,y
-         std   DAT.Regs
-         lda   ,x
+ ifle DAT.BLMx-255
+ ldb 1,Y get DAT image
+ stb DAT.Regs set block zero register
+ lda 0,x get next byte
+ clr DAT.Regs clear block zero register
+ else
+         ldd   ,y get DAT image
+         std   DAT.Regs set block zero register
+         lda   0,x get next byte
          ldx   #$0000+DAT.WrEn
          stx   DAT.Regs
+ endc
  puls y,x retrieve ptrs
  cmpa #$87 could be module?
  bne Cold70 branch if not

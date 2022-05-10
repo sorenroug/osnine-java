@@ -187,7 +187,7 @@ start    equ   *
          ldd   #$0100
          os9   F$SRqMem
          lbcs  L01CD
-         stu   <$16,s
+         stu   <$16,s Store allocated buffer
          leau  ,s
          lda   #$10
          sta   >$FF80

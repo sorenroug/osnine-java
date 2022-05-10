@@ -2489,7 +2489,6 @@ MapB.c sta ,X+ set block flags in page map
 MapB.b leas 2,S ditch scratch
  clrb no error
  else
-* The following comes from FM-11
  puls b,a
  leau 0,s
  os9 F$SetImg

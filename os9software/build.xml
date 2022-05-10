@@ -229,6 +229,7 @@
         <assemble src="Gd9000" home="positron9000"  verify="0b024fe067d7f4e112053670d2171ca6"/>
         <assemble src="RBF" home="positron9000"  verify="2e81752ebd6658e1c68e6a3f74ecaf5d"/>
         <assemble src="SCF" home="positron9000"  verify="43de9839d3df194c0394606e1757a398"/>
+        <assemble src="Padder" home="positron9000"  verify="d481c64894816c7a3fe13abba5d7556a"/>
     </target>
 
     <target name="virtual" depends="prepare">

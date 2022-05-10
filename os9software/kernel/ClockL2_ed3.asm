@@ -137,6 +137,7 @@ CLKSRV ldx CLKPRT,PCR GET CLOCK ADDRESS
  lda 1,x
  anda #2 Is it clock?
  beq NOTCLK Branch if not
+ ldd 4,X Clear intrpt (must be 16-bit)
  endc
  ifeq ClocType-VIA
  endc
@@ -208,8 +209,7 @@ TICK35 std D.MIN Update minute & second
  sta D.Tick
  else
 * M58167 code here. Probably:
- ldd D.Clock
- bra TICK50
+Tick40 equ *
  endc
  ifne TimePoll
 Tick40 leau ,s copy sp
@@ -240,7 +240,7 @@ Tick47 ldd D.Clock get clock routine ptr
  puls u retrieve saved sp
  leas ,u restore it
  else
- ldd D.Poll get polling routine ptr
+ ldd D.Clock get clock routine ptr
  endc
 TICK50 std D.SvcIRQ set IRQ service routine
  jmp [D.XIRQ] enter system
@@ -379,7 +379,7 @@ CNVB20 decb Count Unit
 *
 * Install caller in timer polling table
 *
-Install pshs cc
+Install pshs cc save interrupt masks
  orcc #IntMasks mask interrupts
  ldx D.TimTbl get table pointer
  ldb #64 max entries

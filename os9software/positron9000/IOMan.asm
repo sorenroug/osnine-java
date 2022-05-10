@@ -195,10 +195,17 @@ PortBlk lsra
  cmpb #IOBlock System's I/O Block?
  rts
  else
+ cmpb #$FF  #ROMBlock System's ROM Block?
+ rts
  endc
  else
-         cmpd  #$0140
+ ifeq MappedIO-true
+         cmpd  #IOBlock
          rts
+ else
+         cmpd  #ROMBlock System's ROM Block?
+         rts
+ endc
  endc
  endc
 
@@ -1706,21 +1713,21 @@ L08CE    lda   ,x+
          ldy   <$3B,s
          ldb   <$3A,s
 PrtNm1    inc   ,y
-         subb  #$64
+         subb  #100
          bcc   PrtNm1
 PrtNm2    dec   $01,y
-         addb  #$0A
+         addb  #10
          bcc   PrtNm2
-         addb  #$30
+         addb  #'0
          stb   $02,y
 L08ED    ldx   <$38,s
          stx   D.Proc
-         ldu   $04,x
+         ldu   P$SP,x      get the stack pointer
          leau  <-$38,u
          lda   D.SysTsk
-         ldb   $06,x
+         ldb   P$Task,x    get task number of process
          leax  ,s
-         ldy   #$0038
+         ldy   #$0038  get length of text
          os9   F$Move
          ldx   D.Proc
          lda   <$32,x

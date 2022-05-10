@@ -283,10 +283,12 @@ Cold50 lda 0,x is this RAM block?
 Cold55 equ *
 Cold60 pshs Y,X save ptrs
  lbsr AdjImg adjust DAT image ptr
+ ifle DAT.BLMx-255
  ldb 1,Y get DAT image
  stb DAT.Regs set block zero register
  lda 0,X get next byte
  clr DAT.Regs clear block zero register
+ endc
  puls y,x retrieve ptrs
  cmpa #$87 could be module?
  bne Cold70 branch if not
@@ -836,7 +838,6 @@ Link20 lbsr SetImage set process DAT image
  ora #DAT.WrPr hypothesis
  endc
  ifne DAT.WrEn
- ora #DAT.WrEn hypothesis
  endc
 Link30 leax P$Links,X get link count table ptr
  sta 0,s save block number

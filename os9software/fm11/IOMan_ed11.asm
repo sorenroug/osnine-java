@@ -140,7 +140,7 @@ PortBlk lsra
  cmpb #IOBlock System's I/O Block?
  rts
  else
- cmpb #$FF  #ROMBlock System's ROM Block?
+ cmpb #DAT.BlMx  #ROMBlock System's ROM Block?
  rts
  endc
  else

@@ -108,8 +108,8 @@ Cold ldx #LoRAM get low limit ptr
  endc
  clra clear d
  clrb
-Cold10 std ,X++ clear memory
- leay -2,Y count bytes
+Cold10 std ,x++ clear memory
+ leay -2,y count bytes
  bne Cold10 branch if more
 *
 *     initialize DAT image, Memory Block Map, &
@@ -144,18 +144,18 @@ Cold10 std ,X++ clear memory
  std D.ModDir+2 set end ptr
  std D.ModDAT set end ptr for Module DAT area
  leax IntXfr,pcr get interrupt transfer
- tfr X,D copy it
+ tfr x,d copy it
  ldx #D.SWI3 get entry vectors ptr
-Cold14 std ,X++ set vector
+Cold14 std ,x++ set vector
  cmpx #D.NMI end of vectors?
  bls Cold14 branch if not
- leax ROMEnd,PCR get entry offset
- pshs X save it
+ leax ROMEnd,pcr get entry offset
+ pshs x save it
  leay HdlrVec,PCR get interrupt handlers
  ldx #D.Clock get psuedo-vector ptr
 Cold15 ldd ,Y++ get vector
  addd 0,s add offset
- std ,X++ set psuedo-vector
+ std ,x++ set psuedo-vector
  cmpx #D.XNMI end of vectors?
  bls Cold15 branch if not
  leas 2,s return scratch
@@ -180,16 +180,16 @@ Cold15 ldd ,Y++ get vector
  stx 0,u set process zero page
  stx 1,u set process one page
  lda #1 set process ID
- sta P$ID,X
+ sta P$ID,x
  lda #SysState get system state
- sta P$State,X set state
+ sta P$State,x set state
  lda #SysTask get system task
  sta D.SysTsk set system task number
- sta P$Task,X set process task number
+ sta P$Task,x set process task number
  lda #255 get high priority
- sta P$Prior,X set process priority
- sta P$Age,X set process age
- leax P$DATImg,X get DAT image ptr
+ sta P$Prior,x set process priority
+ sta P$Age,x set process age
+ leax P$DATImg,x get DAT image ptr
  stx D.SysDAT set system DAT image ptr
  ifeq CPUType-DRG128
  lda #$D8
@@ -203,14 +203,14 @@ Cold15 ldd ,Y++ get vector
 * is used for write enable and ignored for addressing.
  ldd #DAT.WrEn*256
  endc
- std ,X++ use block zero for system
+ std ,x++ use block zero for system
  ifge RAMCount-2
  incb block one
  std ,x++
  endc
  ldy #Dat.BlCt-ROMCount-RAMCount-1 get free block count
  ldd #DAT.Free get free block code
-Cold16 std ,X++ mark free entry
+Cold16 std ,x++ mark free entry
  leay -1,Y count block
  bne Cold16 branch if more
  ifle DAT.BlMx-255
@@ -220,24 +220,24 @@ Cold16 std ,X++ mark free entry
 * I suspect they have swapped statements here without a conditional
 * Especially since the first instruction is 'ldb', not 'ldd'.
  ldb #ROMBlock get ROM block number
- std ,X++ set ROM block
+ std ,x++ set ROM block
  ldd #IOBlock get I/O block number
- std ,X++ set I/O block
+ std ,x++ set I/O block
    else
  ldd #IOBlock get I/O block number
- std ,X++ set I/O block
+ std ,x++ set I/O block
  ldb #ROMBlock get ROM block number
- std ,X++ set ROM block
+ std ,x++ set ROM block
    endc
 
  else
  jmp NOWHERE Code is not available
  endc
  ldx D.Tasks get task number table
- inc 0,X claim system task
+ inc 0,x claim system task
  ldx D.SysMem get system memory map ptr
  ldb D.ModDir+2 get number of pages used
-Cold17 inc ,X+ claim page
+Cold17 inc ,x+ claim page
  decb count it
  bne Cold17 branch if more
 *
@@ -245,15 +245,15 @@ Cold17 inc ,X+ claim page
 *
  ifeq RAMCheck-BlockTyp
  ldy #DAT.BlSz*RAMCount get unused block ptr
- ldx D.BlkMap
+ ldx D.BlkMap get block map ptr
  endc
  ifeq RAMCheck-ByteType
  jmp NOWHERE Code is not available
  endc
 Cold20 equ *
  ifeq RAMCheck-BlockTyp
- pshs X
- ldd 0,s
+ pshs x save block map ptr
+ ldd 0,s get map ptr
  endc
  ifeq RAMCheck-ByteType
  jmp NOWHERE Code is not available
@@ -263,7 +263,7 @@ Cold20 equ *
  ifeq MappedIO-true
  cmpb #IOBlock is this I/O block?
  else
- cmpb #DAT.BlMx Last block?
+ cmpb #DAT.BlMx last block?
  endc
  beq Cold30 branch of so
  stb DAT.Regs+RAMCount set block register
@@ -290,9 +290,9 @@ Cold20 equ *
 Cold30 ldb #NotRAM get not-RAM flag
  stb [0,s] mark block not-RAM
 Cold40 puls x retrieve block map ptr
- leax 1,X next Block Map entry
+ leax 1,x next Block Map entry
  cmpx D.BlkMap+2 end of map?
- bcs Cold20 branch if not
+ blo Cold20 branch if not
  endc
  ifeq RAMCheck-ByteType
  jmp NOWHERE Code is not available
@@ -300,8 +300,8 @@ Cold40 puls x retrieve block map ptr
 *
 *      search Not-Ram, excluding I/O, for modules
 *
- ldx D.BlkMap
- inc 0,X claim block zero for system
+ ldx D.BlkMap get Free Memory Block Map ptr
+ inc 0,x claim block zero for system
  ifge RAMCount-2
  inc 1,x
  endc
@@ -329,7 +329,7 @@ Cold55 equ *
  cmpb #DAT.BlMx
  bne Cold57
  ldx #2048   Check if there is a ROM at +2048
-Cold57 pshs Y,X save ptrs
+Cold57 pshs Y,x save ptrs
  lbsr AdjImg adjust DAT image ptr
  ldb 1,Y get DAT image
  stb DAT.Regs set block zero register
@@ -341,15 +341,19 @@ Cold57 pshs Y,X save ptrs
  puls x
  bra Cold79
  endc
-Cold60 pshs Y,X save ptrs
+Cold60 pshs x,y save ptrs
  lbsr AdjImg adjust DAT image ptr
  ifle DAT.BLMx-255
  ldb 1,Y get DAT image
  stb DAT.Regs set block zero register
- lda 0,X get next byte
+ lda 0,x get next byte
  clr DAT.Regs clear block zero register
  else
- jmp NOWHERE Code is not available
+         ldd   ,y get DAT image
+         std   DAT.Regs set block zero register
+         lda   0,x get next byte
+         ldx   #$0000+DAT.WrEn
+         stx   DAT.Regs
  endc
  puls y,x retrieve ptrs
  cmpa #$87 could be module?
@@ -360,9 +364,9 @@ Cold62 lbsr ValMod validate module
  bne Cold70 branch if not
 Cold65 ldd #M$Size get module size offset
  lbsr LDDDXY get module size
- leax D,X move ptr
+ leax D,x move ptr
  bra Cold75
-Cold70 leax 1,X move ptr
+Cold70 leax 1,x move ptr
 Cold75 tfr X,D copy ptr
  tstb end of block?
  bne Cold60 branch if not
@@ -377,12 +381,12 @@ Cold75 tfr X,D copy ptr
  endc
  endc
  deca adjust number
- puls X
- leax A,X
+ puls x retrieve Block Map ptr
+ leax a,x move Block Map ptr
 Cold79 leas DAT.BlCt*2,s throw away temp DAT area
 Cold80 leax 1,x move Block Map ptr
- cmpx D.BlkMap+2
- bcs Cold50
+ cmpx D.BlkMap+2 end of map?
+ bcs Cold50 branch if not
  ifne TEST
  jmp NOWHERE Code is not available
  endc
@@ -435,14 +439,14 @@ LinkSys lda #Systm set module type
 *
 *  Calls: None
 *
-MovDAT pshs y,x,d save regs
+MovDAT pshs d,x,y save regs
  ldb #DAT.BlCt get block count
  ldx 0,s get starting block number
 MovDAT.B stx ,Y++ set DAT image
- leax 1,X mov ptr
+ leax 1,x mov ptr
  decb done?
  bne MovDAT.B bra if not
- puls PC,Y,X,D return
+ puls PC,Y,x,D return
 
  ttl Coldstart Constants
  page
@@ -556,17 +560,17 @@ IntXfr jmp [-16,x] transfer to interrupt routine
 * Calls: UserSvc
 *
 UserSWI3 ldx D.Proc get current process ptr
- ldu P$SWI3,X get user interrupt routine
+ ldu P$SWI3,x get user interrupt routine
  beq UserSvc branch if none
 UsrSWI10 lbra PassSWI
 
 UserSWI2 ldx D.Proc get current process ptr
- ldu P$SWI2,X get user interrupt routine
+ ldu P$SWI2,x get user interrupt routine
  beq UserSvc branch if none
  bra UsrSWI10
 
 UserSWI ldx D.Proc get current process ptr
- ldu P$SWI,X get SWI routine
+ ldu P$SWI,x get SWI routine
  bne UsrSWI10 branch if set
 *
 *     fall through to UserSvc
@@ -591,18 +595,18 @@ UserSvc ldd D.SysSvc get system SWI2 service routine
  std D.XSWI2 set SWI2 entry
  ldd D.SysIRQ get system IRQ service routine
  std D.XIRQ set IRQ entry
- lda P$State,X get state flag
+ lda P$State,x get state flag
  ora #SysState set system state
- sta P$State,X update state
- sts P$SP,X save stack ptr
- leas (P$Stack-R$Size),X move to local stack
+ sta P$State,x update state
+ sts P$SP,x save stack ptr
+ leas (P$Stack-R$Size),x move to local stack
  andcc #^IntMasks clear interrupt masks
  leau 0,s get system stack ptr
  bsr GetRegs get user stack
- ldb P$Task,X get process task number
+ ldb P$Task,x get process task number
  ldx R$PC,u get program counter
  lbsr LDBBX get service request code
- leax 1,X move PC past code
+ leax 1,x move PC past code
  stx R$PC,u update program counter
  ldy D.UsrDis get user dispatch table ptr
  lbsr Dispatch dispatch to service routine
@@ -611,7 +615,7 @@ UserSvc ldd D.SysSvc get system SWI2 service routine
  stb R$CC,u update condition codes
  ldx D.Proc get process ptr
  bsr PutRegs return user stack
- lda P$State,X get process state flags
+ lda P$State,x get process state flags
  anda #^SysState clear system state
  lbra UsrRet.a
  page
@@ -630,10 +634,10 @@ UserSvc ldd D.SysSvc get system SWI2 service routine
 *
 * Calls: MoveRegs
 *
-GetRegs lda P$Task,X get process task
+GetRegs lda P$Task,x get process task
  ldb D.SysTsk get system stack
- pshs U,Y,X,DP,D,CC save registers
- ldx P$SP,X get process stack ptr
+ pshs U,Y,x,DP,D,CC save registers
+ ldx P$SP,x get process stack ptr
  bra PutReg.A
 
 
@@ -653,10 +657,10 @@ GetRegs lda P$Task,X get process task
 *
 * Calls: MoveRegs
 *
-PutRegs ldb P$Task,X get process task
+PutRegs ldb P$Task,x get process task
  lda D.SysTsk get system stack
- pshs U,Y,X,DP,D,CC save registers
- ldx P$SP,X get process stack ptr
+ pshs U,Y,x,DP,D,CC save registers
+ ldx P$SP,x get process stack ptr
  exg X,u switch source & destination
 PutReg.A equ *
  ldy #R$Size/2 get double byte count
@@ -682,7 +686,7 @@ SysSvc leau 0,s get registers ptr
  lda R$CC,u get caller's interrupt masks
  tfr a,cc restore interrupt masks
  ldx R$PC,u get program counter
- ldb ,X+ get service code
+ ldb ,x+ get service code
  stx R$PC,u update program counter
  ldy D.SysDis get system dispatch table ptr
  bsr Dispatch dispatch to service routine
@@ -717,7 +721,7 @@ Dispat10 clra
  ldb #E$UnkSvc err: unknown service request
  bra Dispat30
 Dispat20 pshs u save registers ptr
- jsr 0,X call service routine
+ jsr 0,x call service routine
  puls u retrieve registers ptr
 Dispat30 tfr cc,a copy condition codes
  bcc Dispat40 branch if no error
@@ -866,10 +870,10 @@ EntLink bitb #ReEnt is module reentrant?
  beq Link10 branch if not
  ldb #E$ModBsy err: module busy
  bra LinkErr
-Link10 ldd MD$MPtr,X get module block ptr
+Link10 ldd MD$MPtr,x get module block ptr
  pshs X,D save offset & entry ptr
- ldy MD$MPDAT,X get DAT image ptr
- ldd MD$MBSiz,X get block size
+ ldy MD$MPDAT,x get DAT image ptr
+ ldd MD$MBSiz,x get block size
  addd #DAT.BlSz-1 round to next block
  tfr a,b copy MSB size
  lsrb get block count
@@ -915,20 +919,20 @@ L046D    ldd   ,u
          bne   L046D
 L0477    puls  u,b,a
  endc
-Link30 leax P$Links,X get link count table ptr
+Link30 leax P$Links,x get link count table ptr
  sta 0,s save block number
  asla make table offset
- leau A,X get link ptr
+ leau A,x get link ptr
  ldx 0,u get link count
- leax 1,X count link
+ leax 1,x count link
  beq Link40 branch if overflow
  stx 0,u update link count
 Link40 ldu 3,s get entry ptr
  ldx MD$Link,u get link count
- leax 1,X count use
+ leax 1,x count use
  beq Link50 branch if overflow
  stx MD$Link,u update link count
-Link50 puls U,Y,X,B retrieve offset, entry, & registers
+Link50 puls U,Y,x,B retrieve offset, entry, & registers
  lbsr DATtoLog convert to logical
  stx R$U,u return to user
  ldx MD$MPtr,Y get module ptr
@@ -959,7 +963,7 @@ LinkErr orcc #Carry set carry
 * Calls: SrchDAT
 *
 SrchPDAT ldx D.Proc get process ptr
- leay P$DATImg,X get process DAT image ptr
+ leay P$DATImg,x get process DAT image ptr
 *
 *     fall through to SrchDAT
 *
@@ -980,7 +984,7 @@ SrchPDAT ldx D.Proc get process ptr
 * Calls: none
 *
 SrchDAT clra clear MSB count
- pshs Y,X,D save count & registers
+ pshs Y,x,D save count & registers
  subb #DAT.BlCt get negative limit
  negb get true beginning limit
  aslb shift for two-byte entries
@@ -993,19 +997,19 @@ SrchD20 ldd ,Y++ get search DAT block
  endc
  cmpd ,u++ does it match target?
  bne SrchD30 branch if not
- leax -1,X count block
+ leax -1,x count block
  bne SrchD20 branch if more
  puls U,D retrieve DAT image ptrs
  subd 4,s get beginning block offset
  lsrb convert to local block number
  stb 0,s save it
  clrb clear carry
- puls PC,Y,X,D
+ puls PC,Y,x,D
 SrchD30 puls U,Y retrieve DAT image ptrs
  leay -2,Y move one block lower
  cmpy 4,s end of DAT image?
  bcc SrchD10 branch if not
- puls PC,Y,X,D
+ puls PC,Y,x,D
  page
 ***********************************************************
 *
@@ -1048,7 +1052,7 @@ VModXit puls pc,u
 *
 * Calls: ModCheck, LDDDXY, AdjImg, FModule, DATtoLog
 *
-ValMod pshs Y,X save new module ptr
+ValMod pshs Y,x save new module ptr
  lbsr ModCheck is it good module?
  bcs ValMoErr branch if not
  ldd #M$Type get module type offset
@@ -1057,7 +1061,7 @@ ValMod pshs Y,X save new module ptr
  pshs D save them
  ldd #M$Name get module name offset offset
  lbsr LDDDXY get module name offset
- leax D,X make name string ptr
+ leax D,x make name string ptr
  puls a retrieve module type
  lbsr FModule search module directory
  puls a retrieve new revision level
@@ -1070,7 +1074,7 @@ ValMod pshs Y,X save new module ptr
  bra ValMoErr
 ValMoErA ldb #E$DirFul error: directory full
 ValMoErr orcc #carry set carry
- puls PC,Y,X
+ puls PC,Y,x
 ValMod20 ldx 0,s get block offset
  lbsr SetMoImg set DAT image for module
  bcs ValMoErA bra if error
@@ -1088,12 +1092,12 @@ ValMod20 ldx 0,s get block offset
  ldx D.ModDir get module directory ptr
  pshs U save ptr for check
  bra ValMod35 jif done
-ValMod30 leax MD$ESize,X next entry
+ValMod30 leax MD$ESize,x next entry
 ValMod35 cmpx D.ModEnd chk for end of dir
  bcc ValMod55 jif done
  cmpx 0,s chk if entry is new one
  beq ValMod30 jif don't check
- cmpy [MD$MPDAT,X] module in this block?
+ cmpy [MD$MPDAT,x] module in this block?
  bne ValMod30 branch if not
  bsr FreDATI update mod dat ptr, and free old img
 ValMod55 puls U rid pos ptr
@@ -1111,26 +1115,26 @@ ValMod55 puls U rid pos ptr
  ldy MD$MPDAT,u get ptr to DAT img
 ValMod60 pshs x,a save count, blkmap ptr
  ldd ,Y++ get blk number to mark
- leax D,X get map position
- ldb 0,X get status bits
+ leax D,x get map position
+ ldb 0,x get status bits
  orb #ModBlock mark blk
- stb 0,X save status bits 
+ stb 0,x save status bits 
  puls X,A restore count,blkmap ptr
  deca next blk
  bne ValMod60 jif not done
  clrb clear carry
- puls PC,Y,X
+ puls PC,Y,x
 
 
 * non-contiguous modules
-FreDATI pshs U,Y,X,D save regs
- ldx MD$MPDAT,X get DAT image ptr
+FreDATI pshs U,Y,x,D save regs
+ ldx MD$MPDAT,x get DAT image ptr
  pshs X save copy of ptr
  clra
  clrb
-Fre.Lp ldy 0,X get blk number
+Fre.Lp ldy 0,x get blk number
  beq Fre.Out bra if end of DAT image
- std ,X++ mark entry free
+ std ,x++ mark entry free
  bra Fre.Lp back for more
 Fre.Out puls x restore reg
  ldy 2,s get ptr to position
@@ -1146,11 +1150,11 @@ Fre.Not std MD$MBSiz,y  set new size
 Fre.NoCh leay MD$ESize,Y next mdir entry
  cmpy D.ModEnd chk for end of dir
  bne Fre.Lp2 bra if not done
- puls PC,u,Y,X done
+ puls PC,u,Y,x done
 
 
 * non-contiguous modules
-SetMoImg pshs U,Y,X save DAT image ptr, entry ptr
+SetMoImg pshs U,Y,x save DAT image ptr, entry ptr
  ldd #M$Size get module size offset
  lbsr LDDDXY get module size
  addd 0,s get total blks so far
@@ -1175,10 +1179,10 @@ SetMoImg pshs U,Y,X save DAT image ptr, entry ptr
  ldu #0 clear entry found
  stu 5,s
  bsr chkspce check again for space
-SetI.out puls PC,u,Y,X,B done: return result
+SetI.out puls PC,u,Y,x,B done: return result
 
 chkspce ldx D.ModDAT get DAT-top ptr
- leax D,X make ptr to new dat img
+ leax D,x make ptr to new dat img
  cmpx D.ModEnd check if overrun
  bcs Chks.err jif no space
  ldu 7,s get entry ptr
@@ -1196,11 +1200,11 @@ chksp1 stx D.ModDAT ser new moddat
  ldb 2,s and blk count
  stx 5,s set new mod DAT image ptr
 Chks.D ldu ,Y++ xfer DAT img to Mod dat img
- stu ,X++
+ stu ,x++
  decb
  bne Chks.D jif more
- clr 0,X make end of Mod Dat img
- clr 1,X
+ clr 0,x make end of Mod Dat img
+ clr 1,x
  rts done
 
 Chks.err orcc #CARRY show error
@@ -1222,7 +1226,7 @@ Chks.err orcc #CARRY show error
 *
 * Calls: LDDDXY, AdjImg, LDAXYP, CRCCal
 *
-ModCheck pshs Y,X save module ptr
+ModCheck pshs Y,x save module ptr
  clra
  clrb
  lbsr LDDDXY get sync bytes
@@ -1231,7 +1235,7 @@ ModCheck pshs Y,X save module ptr
  ldb #E$BMID err: bad module ID
  bra ModChErr
 ModChk10 leas -1,s get scratch
- leax 2,X skip ID bytes
+ leax 2,x skip ID bytes
  lbsr AdjImg adjust DAT image ptr
  ldb #M$Parity-1 get byte count
  lda #($87!$CD)-($87&$CD) init parity
@@ -1245,10 +1249,10 @@ ModChk20 sta 0,s save parity
  beq ModChk30 branch if so
  ldb #E$BMHP err: bad module header parity
  bra ModChErr
-ModChk30 puls Y,X retrieve module ptr
+ModChk30 puls Y,x retrieve module ptr
  ldd #M$Size get module size offset
  lbsr LDDDXY get module size 
- pshs Y,X,D save module size & ptr
+ pshs Y,x,D save module size & ptr
  ldd #$FFFF init CRC accumulator
  pshs d
  pshs b
@@ -1354,15 +1358,15 @@ CRCGen ldd R$Y,u zero byte count?
  pshs X,D save count & ptr
  leas -3,s make accumulator scratch
  ldx D.Proc get process ptr
- lda P$Task,X get process task number
+ lda P$Task,x get process task number
  ldb D.SysTsk get system task number
  ldx R$U,u get accumulator ptr
  ldy #3 get byte count
  leau 0,s get scratch ptr
- pshs Y,X,D save parameters
+ pshs Y,x,D save parameters
  lbsr Mover copy accumulator
  ldx D.Proc get process ptr
- leay P$DATImg,X get DAT image ptr
+ leay P$DATImg,x get DAT image ptr
  ldx 11,s get data ptr
  lbsr AdjImg adjust DAT image ptr
 CRCGen10 lbsr LDAXYP get data byte
@@ -1371,7 +1375,7 @@ CRCGen10 lbsr LDAXYP get data byte
  subd #1 count it
  std 9,s update it
  bne CRCGen10 branch if more
- puls Y,X,D retrieve parameters
+ puls Y,x,D retrieve parameters
  exg A,B reverse tasks
  exg X,u reverse ptrs
  lbsr Mover copy accumulator
@@ -1443,22 +1447,22 @@ FModule ldu #0 clear directory entry ptr
  bcs FModul60 branch if bad
  ldu D.ModDir get module directory ptr
  bra FModul53 enter loop
-FModul10 pshs Y,X,D save name length & ptr
- pshs Y,X make DAT-Block address for PrsNam
+FModul10 pshs Y,x,D save name length & ptr
+ pshs Y,x make DAT-Block address for PrsNam
  ldy MD$MPDAT,u get module DAT image ptr
  beq FModul40 branch if entry entry
  ldx MD$MPtr,u get module ptr
- pshs Y,X save module ptr
+ pshs Y,x save module ptr
  ldd #M$NAME get module name offset offset
  lbsr LDDDXY get module name offset
- leax D,X get name string ptr
- pshs Y,X save name length & ptr
+ leax D,x get name string ptr
+ pshs Y,x save name length & ptr
  leax 8,s get target DAT-block address ptr
  ldb 13,s get name size
  leay 0,s get module DAT-block address ptr
  lbsr ChkNam compare names
  leas 4,s return module name ptr
- puls Y,X retrieve module ptr
+ puls Y,x retrieve module ptr
  leas 4,s return target name ptr
  bcs FModul50 branch if names differ
  ldd #M$Type get module type offset
@@ -1478,7 +1482,7 @@ FModul20 lda 6,s get desired type/language
  eora 0,s get language difference
  anda #LangMask clear type difference
  bne FModul50 branch if different
-FModul30 puls Y,X,D retrieve type & name ptr
+FModul30 puls Y,x,D retrieve type & name ptr
  abx move string ptr
  clrb clear carry
  ldb 1,s retrieve register
@@ -1489,7 +1493,7 @@ FModul40 leas 4,s return scratch
  ldd 8,s free entry found?
  bne FModul50 branch if so
  stu 8,s save free entry ptr
-FModul50 puls Y,X,D retrieve type & name ptr
+FModul50 puls Y,x,D retrieve type & name ptr
  leau MD$ESize,u next directory entry
 FModul53 cmpu D.ModEnd end of directory?
  bcs FModul10 branch if not
@@ -1546,7 +1550,7 @@ SkipSp10 lbsr AdjImg adjust DAT image ptr
 * Calls: AdjImg, PrsNam
 *
 PNam ldx D.Proc get process ptr
- leay P$DATImg,X get DAT image ptr
+ leay P$DATImg,x get DAT image ptr
  ldx R$X,u get name string ptr
  bsr PrsNam parse name
  std R$D,u return delimiter; byte count
@@ -1576,12 +1580,12 @@ PNam10 stx R$Y,u return end ptr
 *
 PrsNam pshs y save initial DAT image ptr
  lbsr AdjImg adjust DAT image ptr
- pshs Y,X save ptr
+ pshs Y,x save ptr
  lbsr LDAXYP get next byte
  cmpa #'/ is it "/" prefix
  bne PrsNam10 branch if not
  leas 4,s unsave ptr
- pshs Y,X save string ptr
+ pshs Y,x save string ptr
  lbsr LDAXYP get next byte
 PrsNam10 bsr Alpha is it alphabetic?
  bcs PrsNam40 branch if not
@@ -1597,13 +1601,13 @@ PrsNam30 andcc #$ff-carry clear carry
 PrsNam40 cmpa #', is it comma?
  bne PrsNam60 branch if not
 PrsNam50 leas 4,s pitch last ptr
- pshs Y,X save string ptr
+ pshs Y,x save string ptr
  lbsr LDAXYP get next byte
 PrsNam60 cmpa #$20 is there a space?
  beq PrsNam50 branch if so
  comb set carry
  ldb #E$BNam err: bad name
-PrsNam70 puls Y,X retrieve string ptr
+PrsNam70 puls Y,x retrieve string ptr
  pshs d,cc save registers
  tfr Y,D copy DAT image ptr
  subd 3,s get image offset
@@ -1682,19 +1686,19 @@ NotAlpha coma set carry
 * Calls: AdjImg, ChkNam
 *
 UCNam ldx D.Proc get process ptr
- leay P$DATImg,X get DAT image ptr
+ leay P$DATImg,x get DAT image ptr
  ldx R$X,u get target ptr
- pshs Y,X save DAT image
+ pshs Y,x save DAT image
  bra SCNam10
 
 
 SCNam ldx D.Proc get current process ptr
- leay P$DATImg,X get DAT image ptr
+ leay P$DATImg,x get DAT image ptr
  ldx R$X,u get target string ptr
- pshs Y,X save them
+ pshs Y,x save them
  ldy D.SysDAT get system DAT ptr
 SCNam10 ldx R$Y,u get module name ptr
- pshs Y,X save them
+ pshs Y,x save them
  ldd R$D,u get target name length
  leax 4,s get target name ptr
  leay 0,s get module name ptr
@@ -1723,24 +1727,24 @@ SCNam10 ldx R$Y,u get module name ptr
 *
 * Calls: LDAXYP
 *
-ChkNam pshs U,Y,X,D save registers
+ChkNam pshs U,Y,x,D save registers
  ldu 2,s get target ptr ptr
- pulu Y,X get target ptr
+ pulu Y,x get target ptr
  lbsr AdjImg adjust DAT image ptr
- pshu Y,X save them
+ pshu Y,x save them
  ldu 4,s get module ptr ptr
- pulu Y,X get module ptr
+ pulu Y,x get module ptr
  lbsr AdjImg adjust DAT image ptr
  bra ChkNam15
 ChkNam10 ldu 4,s get module ptr
- pulu Y,X get module ptr
+ pulu Y,x get module ptr
 ChkNam15 lbsr LDAXYP get next byte
- pshu Y,X save module ptr
+ pshu Y,x save module ptr
  pshs a save module byte
  ldu 3,s get target ptr
- pulu Y,X get target ptr
+ pulu Y,x get target ptr
  lbsr LDAXYP get next byte
- pshu Y,X save target ptr
+ pshu Y,x save target ptr
  eora 0,s get module-target difference
  tst ,s+ is this last module?
  bmi ChkNam30 branch if not
@@ -1749,13 +1753,13 @@ ChkNam15 lbsr LDAXYP get next byte
  anda #^('a-'A) clear case difference
  beq ChkNam10 ..yes; repeat
 ChkNam20 comb Set carry
- puls PC,u,Y,X,D
+ puls PC,u,Y,x,D
 ChkNam30 decb is this last target?
  bne ChkNam20 branch if not
  anda #^(Sign+'a-'A) clear case & sign difference
  bne ChkNam20 branch if different
  clrb clear carry
- puls PC,u,Y,X,D
+ puls PC,u,Y,x,D
 
 
 ***********************************************************
@@ -1781,14 +1785,14 @@ SRqMem ldd R$D,u get byte count
  stb 0,s set DAT image offset
 SRqMem10 ldx D.SysDAT get system DAT image ptr
  aslb shift for two-byte entries
- ldd B,X get block number
+ ldd B,x get block number
  cmpd #DAT.Free is it free block?
  beq SRqMem20
  ldx D.BlkMap branch if so
  ifne DAT.WrPr+DAT.WrEn
  anda #1
  endc
- lda D,X get block flags
+ lda D,x get block flags
  cmpa #RAMinUse is it allocatable?
  bne SRqMem30 branch if not
  leay DAT.BlSz/256,Y leave map as is
@@ -1873,14 +1877,14 @@ SRtM.A ldb R$U,u get page number
  beq SrTM.F branch if returning nothing
  ldx D.SysMem get system memory map ptr
  abx get entry ptr
-SRtM.B ldb 0,X get page flags
+SRtM.B ldb 0,x get page flags
  andb #^RAMinUse clear RAM in use flag
  stb ,x+ update entry
  deca count page
  bne SRtM.B branch if more
  ldx D.SysDAT get system DAT image
  ldy #DAT.BlCt get image block count
-SRtM.C ldd 0,X get block number
+SRtM.C ldd 0,x get block number
  cmpd #DAT.Free is it free block?
  beq SRtM.E branch if so
  ldu D.BlkMap get block map ptr
@@ -1906,15 +1910,15 @@ SRtM.D lda ,u+ get page flags
  bne SRtM.E branch if not free
  decb count page
  bne SRtM.D branch if more pages
- ldd 0,X get block number
+ ldd 0,x get block number
  ldu D.BlkMap get block map ptr
  ifne DAT.WrPr+DAT.WrEn
  anda #1
  endc
  clr D,u mark block free
  ldd #DAT.Free get free block
- std 0,X mark image free
-SRtM.E leax 2,X skip to next block
+ std 0,x mark image free
+SRtM.E leax 2,x skip to next block
  leay -1,Y count block
  bne SRtM.C branch if more
 SrTM.F clrb clear carry
@@ -1942,9 +1946,9 @@ Boot comb set carry
  inc D.Boot set flag
  ldx D.Init get init address
  beq Boot10 branch if none
- ldd BootStr,X get bootstrap name ptr
+ ldd BootStr,x get bootstrap name ptr
  beq Boot10 branch if none
- leax D,X get name ptr
+ leax D,x get name ptr
  bra Boot20
 Boot10 leax BootName,pcr get default name ptr
 Boot20 lda #SYSTM+OBJCT get type
@@ -1952,7 +1956,7 @@ Boot20 lda #SYSTM+OBJCT get type
  bcs BootXX can't Boot without module
  jsr 0,Y call Boot entry
  bcs BootXX Boot failed
- leau D,X get bootstrap end ptr
+ leau D,x get bootstrap end ptr
  tfr X,D copy bootstrap ptr
  anda #DAT.Addr get translated bits
  clrb
@@ -1966,12 +1970,12 @@ Boot20 lda #SYSTM+OBJCT get type
  endc
  ldy D.SysDAT get system DAT image ptr
  leay A,Y get DAT image ptr
-Boot30 ldd 0,X get module beginning
+Boot30 ldd 0,x get module beginning
  cmpd #M$ID12 is it module sync code?
  bne Boot40 branch if not
  tfr X,D copy boot ptr
  subd 0,s get block offset
- tfr D,X copy offset
+ tfr D,x copy offset
  tfr Y,D pass DAT img ptr
  ifne DAT.WrEn
  anda #^DAT.WrEn
@@ -1979,15 +1983,15 @@ Boot30 ldd 0,X get module beginning
  OS9 F$VModul validate module
  pshs B save error code (if any)
  ldd 1,s get bootstrap begin
- leax D,X get current ptr
+ leax D,x get current ptr
  puls B retrieve error code
  bcc Boot35 branch if no error
  cmpb #E$KwnMod is it known module?
  bne Boot40 branch if not
-Boot35 ldd M$SIZE,X get module size
- leax D,X skip module
+Boot35 ldd M$SIZE,x get module size
+ leax D,x skip module
  bra Boot50
-Boot40 leax 1,X try next
+Boot40 leax 1,x try next
 Boot50 cmpx 2,s end of Boot?
  bcs Boot30 branch if not
  leas 4,s return scratch
@@ -2017,9 +2021,9 @@ AllRAM ldb R$B,u get block count
  std R$D,u get block number
 AllRAM10 rts
 
-RAMBlk pshs Y,X,D save registers
+RAMBlk pshs Y,x,D save registers
  ldx D.BlkMap get Block Map ptr
-RAMBlk10 leay 0,X copy map ptr
+RAMBlk10 leay 0,x copy map ptr
  ldb 1,s get block count
 RAMBlk20 cmpx D.BlkMap+2 end of map?
  bcc RAMBlk30 branch if so
@@ -2036,12 +2040,12 @@ RAMBlk25 inc ,y+ update flags
  deca done?
  bne RAMBlk25 branch if not
  clrb clear carry
- puls PC,Y,X,D
+ puls PC,Y,x,D
  page
 RAMBlk30 comb set carry
  ldb #E$NoRam err: no RAM
  stb 1,s
- puls PC,Y,X,D
+ puls PC,Y,x,D
 
 ***********************************************************
 *
@@ -2078,14 +2082,14 @@ AllImg ldd R$D,u  get block number & count
 *
 * Calls: none
 *
-AllImage pshs u,Y,X,D save registers
+AllImage pshs u,Y,x,D save registers
  asla shift for two-byte entries
- leay P$DATImg,X get process DAT image ptr
+ leay P$DATImg,x get process DAT image ptr
  leay A,Y get block image ptr
  clra
- tfr D,X copy block count
+ tfr D,x copy block count
  ldu D.BlkMap get block map ptr
- pshs U,Y,X,D save registers
+ pshs U,Y,x,D save registers
 AllI.A ldd ,Y++ get current image
  cmpd #DAT.Free is block allocated?
  beq AllI.B branch if not
@@ -2098,7 +2102,7 @@ AllI.A ldd ,Y++ get current image
  bne AllImErr branch if not RAM
  subd #1 uncount allocated block
  pshs D save it
-AllI.B leax -1,X enough blocks?
+AllI.B leax -1,x enough blocks?
  bne AllI.A branch if not
  ldx ,s++ get new blocks needed
  beq AllI.E branch if none
@@ -2107,7 +2111,7 @@ AllI.B leax -1,X enough blocks?
  endc
 AllI.C lda ,u+ get block flags
  bne AllI.D branch if not free
- leax -1,X count free block
+ leax -1,x count free block
  beq AllI.E branch if enough
 AllI.D cmpu D.BlkMap+2 end of map?
  bcs AllI.C branch if not
@@ -2118,7 +2122,7 @@ AllI.D cmpu D.BlkMap+2 end of map?
 AllI.D1 lda B,Y get block number
  lda A,u get block flags
  bne AllI.D2 branch if not free
- leax -1,X count blocks
+ leax -1,x count blocks
  beq AllI.E branch if enough
 AllI.D2 incb next block
  cmpb #DAT.GBlk any left?
@@ -2128,8 +2132,8 @@ AllImErr ldb #E$MemFul err: memory full
  leas 6,s return scratch
  stb 1,s save error code
  comb set carry
- puls PC,u,Y,X,D
-AllI.E puls U,Y,X retrieve registers
+ puls PC,u,Y,x,D
+AllI.E puls U,Y,x retrieve registers
  ifeq CPUType-DRG128
  leau DAT.GBlk,u skip graphics blocks initially
  endc
@@ -2179,16 +2183,16 @@ AllI.K lda B,Y get block number
  ldy 1,s get image ptr
  std -2,Y set image
  puls Y,B retrieve regs
-AllI.M leax -1,X count block
+AllI.M leax -1,x count block
  bne AllI.L branch if more
 AllI.N equ *
  endc
  ldx 2,s get process descriptor ptr
- lda P$State,X
+ lda P$State,x
  ora #ImgChg
- sta P$State,X
+ sta P$State,x
  clrb
- puls PC,u,Y,X,D
+ puls PC,u,Y,x,D
 
  ifeq CPUType-DRG128
 *
@@ -2224,7 +2228,7 @@ GMap10 rts
 
 GfxMap pshs X,D save regs
  ldx D.BlkMap get block map ptr
- leax DAT.GBlk,X scan downwards in first page of graphics RAM
+ leax DAT.GBlk,x scan downwards in first page of graphics RAM
 GfxMap10 ldb 1,s get block count
 GfxMap20 cmpx D.BlkMap end of map?
  beq GfxMap50 branch if so
@@ -2236,16 +2240,16 @@ GfxMap20 cmpx D.BlkMap end of map?
  subd D.BlkMap calculate block number
  std 2,s return block number
  ldd ,s get block count and flag
-GfxMap40 inc ,X+ claim block
+GfxMap40 inc ,x+ claim block
  decb done?
  bne GfxMap40 branch if not
  clrb clear carry
- puls PC,X,D
+ puls PC,x,D
 
 GfxMap50 comb error -
  ldb #E$NoRAM insufficient memory available
  stb 1,s
- puls PC,X,D
+ puls PC,x,D
  page
 ***********************************************************
 *
@@ -2270,7 +2274,7 @@ GClr ldb R$B,u get number of blocks
  bhi GfxClr30 branch if not
  ldx D.BlkMap get map ptr
  ldd 2,s get block number
- leax D,X point into map
+ leax D,x point into map
  ldb 1,s get count
  beq GfxClr30 branch if none
 GfxClr10 lda ,x get block flags
@@ -2279,7 +2283,7 @@ GfxClr10 lda ,x get block flags
  decb all done?
  bne GfxClr10 branch if not
 GfxClr30 clrb clear carry
- puls PC,X,D
+ puls PC,x,D
  endc
  page
 ***********************************************************
@@ -2413,7 +2417,7 @@ FreeB20 aslb shift for two-byte entries
  cmpa 3,s found enough?
  bne FreeB10 branch if not
 FreeBXit leas 2,s return parameters
- puls PC,X,D
+ puls PC,x,D
  page
 ***********************************************************
 *
@@ -2436,8 +2440,8 @@ SetImg ldd R$D,u get block number & count
  ldx R$X,u get process ptr
  ldu R$U,u get new image ptr
 
-SetImage pshs U,Y,X,D save registers
- leay P$DATImg,X get DAT image ptr
+SetImage pshs U,Y,x,D save registers
+ leay P$DATImg,x get DAT image ptr
  asla shift for two-byte entries
  leay A,Y get image ptr
 SetImg10 ldx ,u++ get new image
@@ -2445,11 +2449,11 @@ SetImg10 ldx ,u++ get new image
  decb done?
  bne SetImg10 branch if not
  ldx 2,s get process descriptor ptr
- lda P$State,X get process state
+ lda P$State,x get process state
  ora #ImgChg make image change
- sta P$State,X update state
+ sta P$State,x update state
  clrb clear carry
- puls PC,u,Y,X,D
+ puls PC,u,Y,x,D
  page
 ***********************************************************
 *
@@ -2498,7 +2502,7 @@ DATtoLog pshs X,D save registers
  endc
  addb 2,s combine nibbles
  stb 2,s
- puls PC,X,D
+ puls PC,x,D
  page
 ***********************************************************
 *
@@ -2543,7 +2547,7 @@ LDAXY equ *
  lda 1,Y get block number
  orcc #IntMasks set interrupt masks
  sta DAT.Regs set block zero
- lda 0,X get byte
+ lda 0,x get byte
  clr DAT.Regs reset block zero
  puls pc,cc
  else
@@ -2551,7 +2555,7 @@ LDAXY equ *
  ldd 0,y get block number
  orcc #IntMasks set interrupt masks
  std DAT.Regs set block zero
- lda 0,X get byte
+ lda 0,x get byte
  ldx #$0000+DAT.WrEn
  stx DAT.Regs reset block zero
  puls pc,x,b,cc
@@ -2633,7 +2637,7 @@ AdjImg cmpx #DAT.BlSz is offset in block range?
 *
 F.LDDDXY ldd R$D,u get offset offset
  leau R$X,u get ptrs ptr
- pulu Y,X get ptrs
+ pulu Y,x get ptrs
  bsr LDDDXY get bytes
  std R$D-R$U,u return bytes
  clrb clear carry
@@ -2656,8 +2660,8 @@ F.LDDDXY ldd R$D,u get offset offset
 *
 * Calls: AdjImg, LDAXYP, LDAXY
 *
-LDDDXY pshs Y,X save registers
- leax D,X add address offset
+LDDDXY pshs Y,x save registers
+ leax D,x add address offset
  ifge DAT.BlSz-4096
  bsr AdjImg adjust DAT-Block address
  bsr LDAXYP get MSB
@@ -2673,7 +2677,7 @@ LDDDXY pshs Y,X save registers
 *
 *     Subroutine F.LDABX
 *
-*   Load A 0,X from address space B
+*   Load A 0,x from address space B
 *
 * Input: U = registers ptrs
 *
@@ -2694,7 +2698,7 @@ F.LDABX ldb R$B,u get task number
 *
 *     Subroutine F.STABX
 *
-*   Store A 0,X in address space B
+*   Store A 0,x in address space B
 *
 * Input: U = registers ptrs
 *
@@ -2755,7 +2759,7 @@ Move ldd R$D,u get user D register
 Mover andcc #^Carry clear carry
  leay 0,y zero byte count?
  beq MoveNone branch if so
- pshs U,Y,X,DP,D,CC save registers
+ pshs U,Y,x,DP,D,CC save registers
  tfr Y,D copy byte count
  lsra divide by 2
  rorb
@@ -2897,13 +2901,13 @@ SetTsk ldx R$X,u get process ptr
 *
 * Calls: MoveRegs
 *
-SetPrTsk lda P$State,X
+SetPrTsk lda P$State,x
  anda #^ImgChg
- sta P$State,X
+ sta P$State,x
  andcc #^Carry clear carry
- pshs U,Y,X,D,CC
- ldb P$Task,X
- leax P$DATImg,X
+ pshs U,Y,x,D,CC
+ ldb P$Task,x
+ leax P$DATImg,x
  ldy #DAT.ImSz/2
  ldu #DAT.Regs
  lbra SetDAT00 Copy DAT image to DAT registers
@@ -2926,7 +2930,7 @@ ResTsk bsr ResvTask
 ResvTask pshs x
  ldb #1
  ldx D.Tasks
-ResTsk10 lda B,X
+ResTsk10 lda B,x
  beq ResTsk20
  incb
  cmpb #DAT.TkCt Last task slot?
@@ -2937,7 +2941,7 @@ ResTsk10 lda B,X
 ResTsk20 inc b,x reserve task
  orb D.SysTsk set selected bits
  clra clear carry
-ResTsk30 puls PC,X
+ResTsk30 puls PC,x
 
 ***********************************************************
 *
@@ -2961,7 +2965,7 @@ RelsTask pshs x,b save registers
  andb 0,s clear selected bits
  beq RelTsk10 branch if system task
  ldx D.Tasks get task number table
- clr B,X release task number
+ clr B,x release task number
 RelTsk10 puls PC,x,b
  page
 ***********************************************************
@@ -2981,22 +2985,22 @@ RelTsk10 puls PC,x,b
 *
 Tick ldx D.SProcQ get sleep queue ptr
  beq Slice branch if queue empty
- lda P$State,X get process state
+ lda P$State,x get process state
  bita #TimSleep timed-sleep state?
  beq Slice branch if not
- ldu P$SP,X get process stack ptr
+ ldu P$SP,x get process stack ptr
  ldd R$X,u get sleep time
  subd #1 count tick
  std R$X,u update time
  bne Slice branch if not expired
-Tick.A ldu P$Queue,X get next queue ptr
+Tick.A ldu P$Queue,x get next queue ptr
  bsr ActvProc make process active
  leax 0,u copy next queue ptr
  beq Tick.B branch if none
- lda P$State,X get process state
+ lda P$State,x get process state
  bita #TimSleep timed-sleep state
  beq Tick.B branch if not
- ldu P$SP,X get process stack ptr
+ ldu P$SP,x get process stack ptr
  ldd R$X,u get sleep time
  beq Tick.A branch if expired
 Tick.B stx D.SProcQ update queue ptr
@@ -3008,9 +3012,9 @@ Slice dec D.Slice Count tick
  inc D.Slice reset to last tick of slice
  ldx D.Proc get current process ptr
  beq Slic.a branch if none
- lda P$State,X get process state
+ lda P$State,x get process state
  ora #TIMOUT set time-out flag
- sta P$State,X update state
+ sta P$State,x update state
 Slic.a clrb clear carry
  rts
  page
@@ -3047,9 +3051,9 @@ AProc ldx R$X,u get process ptr
 * Calls: none
 *
 ActvProc clrb clear carry
- pshs U,Y,X,CC save registers
- lda P$Prior,X get new process priority
- sta P$AGE,X set queue age
+ pshs U,Y,x,CC save registers
+ lda P$Prior,x get new process priority
+ sta P$AGE,x set queue age
  orcc #IRQMask+FIRQMask set interrupt masks
  ldu #D.AProcQ-P$Queue fake process ptr
  bra ActvPr30
@@ -3063,8 +3067,8 @@ ActvPr40 ldu P$Queue,u get next process ptr
  bne ActvPr10 branch if more
  ldd P$Queue,Y get next process ptr
  stx P$Queue,Y attach new to previous
- std P$Queue,X attach previous to new
- puls PC,u,Y,X,CC
+ std P$Queue,x attach previous to new
+ puls PC,u,Y,x,CC
  page
 ***********************************************************
 *
@@ -3090,7 +3094,7 @@ UserIRQ ldx D.Proc get process ptr
  jsr [D.SvcIRQ] call IRQ service
  bcc UserRet branch if serviced
  ldx D.Proc get process ptr
- ldb P$Task,X get process task number
+ ldb P$Task,x get process task number
  ldx P$SP,x get process stack
  lbsr LDABX get condition codes
  ora #IntMasks set interrupt masks
@@ -3120,7 +3124,7 @@ UserRet orcc #IntMasks set interrupt masks
  bita #TimOut time slice over?
  beq CurrProc branch if not
 UsrRet.a anda #^TimOut clear time-out flag
- sta P$State,X update state
+ sta P$State,x update state
  lbsr DelPrTsk deallocate process task
 GoActv bsr ActvProc put in active process queue
 *
@@ -3153,44 +3157,44 @@ NextPr20 orcc #IntMasks set interrupt masks
 NextPr30 leay 0,x move ptr
 NextPr40 ldx P$Queue,Y get ptr to next proc
  beq NextPr10 branch if none
- lda P$State,X get process state
+ lda P$State,x get process state
  bita #Suspend is it suspended?
  bne NextPr30 bra if so
- ldd P$Queue,X get remainder of queue
+ ldd P$Queue,x get remainder of queue
  std P$Queue,Y update queue ptr
  stx D.Proc set current process
  lbsr AllPrTsk allocate process task number
  bcs GoActv branch if none available
  lda D.TSlice get ticks/slice
  sta D.Slice reset slice tick count
- ldu P$SP,X get process stack ptr
- lda P$State,X get process state flags
+ ldu P$SP,x get process stack ptr
+ lda P$State,x get process state flags
  bmi SysRet branch if system state
 CurrProc bita #Condem is process condemmed?
  bne KillProc branch if so
  lbsr ChkPrTsk update process task
- ldb P$Signal,X is signal waiting?
+ ldb P$Signal,x is signal waiting?
  beq CurrPr25 branch if not
  decb is it wake signal?
  beq CurrPr20 branch if so
  leas -R$Size,s get scratch
  leau 0,s get local stack
  lbsr GetRegs get current stack
- lda P$Signal,X get signal
+ lda P$Signal,x get signal
  sta R$B,u pass to process
- ldd P$SigVec,X get intercept entry
+ ldd P$SigVec,x get intercept entry
  beq KillProc branch if none
  std R$PC,u get program counter
- ldd P$SigDat,X get data ptr
+ ldd P$SigDat,x get data ptr
  std R$U,u
- ldd P$SP,X get process stack
+ ldd P$SP,x get process stack
  subd #R$Size make room for intercept
- std P$SP,X update stack ptr
+ std P$SP,x update stack ptr
  lbsr PutRegs copy new stack
  leas R$Size,s Reset stack
- ldu P$SP,X get process stack ptr
+ ldu P$SP,x get process stack ptr
  clrb
-CurrPr20 stb P$Signal,X clear signal code
+CurrPr20 stb P$Signal,x clear signal code
 CurrPr25 ldd D.UsrSvc get user service routine
  std D.XSWI2 get SWI2 vector
  ldd D.UsrIRQ get user interrupt routine
@@ -3198,11 +3202,11 @@ CurrPr25 ldd D.UsrSvc get user service routine
  lbra SvcRet
 KillProc lda P$State,x get process state
  ora #SysState set system state
- sta P$State,X update process
- leas P$Stack,X move stack
+ sta P$State,x update process
+ leas P$Stack,x move stack
  andcc #^IntMasks clear interrupt masks
- ldb P$Signal,X get lethal signal code
- clr P$Signal,X clear signal
+ ldb P$Signal,x get lethal signal code
+ clr P$Signal,x clear signal
  OS9 F$Exit terminate process
  page
 ***********************************************************
@@ -3277,30 +3281,30 @@ DATInit clra
  tfr a,dp set direct page
  ldx #DAT.Task point at task reg pia
  ifeq TEST
- lda 1,X am I the DMA processor
+ lda 1,x am I the DMA processor
  lbne beDMAC ..no
  endc
  ldb #4
- stb 1,X access port A
+ stb 1,x access port A
  lda #$F0
- sta ,X select task 0 (system task)
+ sta ,x select task 0 (system task)
  clra access DDRA
- sta 1,X Select data direction register
+ sta 1,x Select data direction register
  lda #%11001111 Set direction: output=1, input=0
- sta 0,X
+ sta 0,x
  lda #$FF
- sta 2,X
+ sta 2,x
  lda #%00111110 select output register et al
- sta 1,X Set value in control register A
- stb 3,X Set value in control register B
+ sta 1,x Set value in control register A
+ stb 3,x Set value in control register B
  lda #%11011000
- sta 2,X
+ sta 2,x
 *
 * Initialize all tasks in DAT registers
 *
  ldy #DAT.Regs
  ldb #$F0
-DATIn1 stb ,X
+DATIn1 stb ,x
  clra
  sta 0,Y    assume RAM in block 0
  lda #$1F
@@ -3312,7 +3316,7 @@ DATIn1 stb ,X
  incb next map
  bne DATIn1 ..until all done
  lda #$F0 set task 0
- sta ,X
+ sta ,x
 
 * Initialise known on-board multi-purpose I/O
 InitIO ldx #A.Mouse start with mouse pia
@@ -3321,31 +3325,31 @@ InitIO ldx #A.Mouse start with mouse pia
  lda #$7F  now enable DMA processor
  endc
  ldb #4
- stb 1,X access port A
- sta ,X
- stb 3,X access PRB
+ stb 1,x access port A
+ sta ,x
+ stb 3,x access PRB
  lda #B.MPHalt leave MP HALT high
- sta 2,X
+ sta 2,x
  clra
- sta 3,X access DDRB
+ sta 3,x access DDRB
  lda #$83
- sta 2,X
- stb 3,X
+ sta 2,x
+ stb 3,x
  lda #2
- sta 1,X access DDRA
+ sta 1,x access DDRA
  lda #$FF all outputs
- sta ,X - enables DMA processor HERE
- stb 1,X access PRA
+ sta ,x - enables DMA processor HERE
+ stb 1,x access PRA
  ldx #A.KBD point at keyboard port
  lda #$18
- sta 0,X
- stb 1,X access PRB
+ sta 0,x
+ stb 1,x access PRB
  ldx #A.Crtc point at CRTC
  clrb start with register 0
  leay InitCrtc,pcr point at table
 InitI01 lda ,y+ get a byte
- stb ,X set register number
- sta 1,X set register data
+ stb ,x set register number
+ sta 1,x set register data
  incb next register
  cmpb #CRTCSIZ all done?
  bcs InitI01 ..no
@@ -3353,14 +3357,14 @@ InitI01 lda ,y+ get a byte
  sta DAT.Task
  ldx #$6000 clear out text screen
  ldd #$2008 space + attribute
-InitI03 std ,X++ set attributes
+InitI03 std ,x++ set attributes
  cmpx #$7000
  bne InitI03
  leay LogMsg,pcr copy in logon message
  ldx #$6000+12*80 middle of screen
 InitI04 lda ,Y+
  beq InitI05 ..end of message
- sta ,X++
+ sta ,x++
  bra InitI04
 InitI05 lbra Cold go to cold start
 
@@ -3397,13 +3401,13 @@ DMACNMI lds #$FFFF get ready for action
 * Copy from Port to Memory
 * Breaks out of loop if interrupt is longer than 3 cycles
 DMACWrit sync wait for FIRQ
- lda ,X get byte from port
+ lda ,x get byte from port
  sta ,u+ put in memory
  bra DMACWrit ad nauseam
 
 DMACRead lda ,u+ get byte from memory
  sync wait for FIRQ
- sta ,X put in port
+ sta ,x put in port
  bra DMACRead
  endc
 
@@ -3484,7 +3488,7 @@ LDABX andcc #^Carry clear carry
  ifeq DAT.Uniq
  endc
  stb DAT.Task switch tasks
- lda 0,X get data byte
+ lda 0,x get data byte
  ifeq DAT.Uniq
  else
  ldb #SysTask get system task
@@ -3499,7 +3503,7 @@ STABX andcc #^Carry clear carry
  ifeq DAT.Uniq
  endc
  stb DAT.Task switch tasks
- sta 0,X store data byte
+ sta 0,x store data byte
  ifeq DAT.Uniq
  else
  ldb #SysTask get system task
@@ -3513,7 +3517,7 @@ LDBBX andcc #^Carry clear carry
  ifeq DAT.Uniq
  endc
  stb DAT.Task switch tasks
- ldb 0,X get data byte
+ ldb 0,x get data byte
  ifeq DAT.Uniq
  else
  lda #SysTask get system task
@@ -3534,7 +3538,7 @@ Mover00 orcc #IntMasks set interrupt masks
  endc
  bcc MoveRegs branch if no carry
  sta DAT.Task set source task
- lda ,X+ get data byte
+ lda ,x+ get data byte
  stb DAT.Task set destination task
  sta ,u+ copy data byte
  leay 1,Y adjust double byte count
@@ -3542,7 +3546,7 @@ Mover00 orcc #IntMasks set interrupt masks
 Mover10 lda 1,s get source task number
  orcc #IntMasks set interrupt masks
 MoveRegs sta DAT.Task set source task
- ldd ,X++ get data double byte
+ ldd ,x++ get data double byte
  exg b,dp switch data & task
  stb DAT.Task
  exg b,dp switch back
@@ -3556,14 +3560,14 @@ Mover30 lda #SysTask get system task
  tfr A,CC reset interrupt masks
  leay -1,Y count double byte
  bne Mover10 branch if more
- puls PC,u,Y,X,DP,D,CC
+ puls PC,u,Y,x,DP,D,CC
 
 
 SetDAT00 orcc #IntMasks set interrupt masks
  ifeq DAT.Uniq
  endc
-SetDAT10 lda 1,X get DAT image
- leax 2,X move image ptr
+SetDAT10 lda 1,x get DAT image
+ leax 2,x move image ptr
  stb DAT.Task set task register
  sta ,u+ set block register
  ifeq DAT.Uniq

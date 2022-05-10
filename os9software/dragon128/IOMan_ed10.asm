@@ -203,8 +203,17 @@ PortBlk lsra
  cmpb #IOBlock System's I/O Block?
  rts
  else
+ cmpb #$FF  #ROMBlock System's ROM Block or DAT.BlMx?
+ rts
  endc
  else
+ ifeq MappedIO-true
+         cmpd  #IOBlock
+         rts
+ else
+         cmpd  #ROMBlock System's ROM Block or DAT.BlMx?
+         rts
+ endc
  endc
  endc
 
@@ -356,7 +365,7 @@ ATTERR stb S.TMPS-1,S Save error code
  puls pc,b Return error
 
 *
-* Device Moudle Components Are All Located
+* Device Module Components Are All Located
 * Search Device Tbl For Device
 *
 ATTA15 stu V$FMGR,S Save file manager module addr
@@ -453,8 +462,9 @@ ATTA57 clr ,U+ Clear out driver static
  ldx D.SysDAT get system DAT image ptr
 IOMap20 ldd ,x++ get next DAT Entry
  ifne DAT.WrEn+DAT.WrPr
+ anda #1
  endc
- cmpd S.Block,S same as Desirec Block?
+ cmpd S.Block,S same as Desired Block?
  beq IOMap40 ..Yes; good
  cmpd #DAT.Free Unused Entry?
  bne IOMap30 ..No, continue
@@ -467,6 +477,7 @@ IOMap30 leay DAT.BLSz,y update Local Address
  lbeq ATTERR ..No; ABORT: System Dat Image Fill
  ldd S.Block,s
  ifne DAT.WrEn
+         ora   #$02
  endc
  std 0,u fill in DAT Image with block
  ldx D.SysPRC get system process ptr
@@ -609,6 +620,7 @@ UnMap20 leau DevSiz,u skip to next Tbl entry
  ldy #DAT.BlCt number of DAT Blocks per image
 UnMap25 ldd ,u++ get entry
  ifne DAT.WrEn+DAT.WrPr
+         anda  #1
  endc
  cmpd 1,s this the block?
  beq UnMap30 branch if so
@@ -2075,7 +2087,8 @@ IOQ.A lda P$IOQN,y get next process ID
 
 IOQ.B
  ifeq LEVEL-1
-  jmp NOWHERE
+ ldx D.PrcDBT
+ os9 F$Find64
  else
  os9 F$GProcP get process ptr
  endc
@@ -2083,7 +2096,8 @@ IOQ.B
 IOQ.C lda R$A,u get queue process ID
 IOQ.D
  ifeq LEVEL-1
-    jmp NOWHERE
+ ldx D.PrcDBT
+ os9 F$Find64
  else
  os9 F$GProcP get process ptr
  endc

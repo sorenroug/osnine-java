@@ -74,7 +74,7 @@ SysTask equ $80 System Task number
 *
 ***************
 
-IOBlock equ $FF The block number for the I/O. Should be $140?
+IOBlock equ $140 The block number for the I/O. Should be $140?
 
 ***************
 *
