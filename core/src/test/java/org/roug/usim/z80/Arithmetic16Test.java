@@ -42,6 +42,25 @@ public class Arithmetic16Test extends Framework {
         assertFalse(myTestCPU.registerF.isSetN());
     }
 
+    /* ADC HL, BC
+     */
+    @Test
+    public void adcRegBCToHL() {
+        myTestCPU.registerHL.set(0x333);
+        myTestCPU.registerBC.set(0x555);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(true);
+        writeSeq(0x0B00, 0xED, 0x4A);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x889, myTestCPU.registerHL.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH()); // TODO Verify
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetC());
+    }
+
     /* Add IY, IY
      */
     @Test
@@ -86,5 +105,52 @@ public class Arithmetic16Test extends Framework {
         assertFalse(myTestCPU.registerF.isSetN());
     }
 
+    /* DEC SP
+     */
+    @Test
+    public void decSP() {
+        myTestCPU.registerSP.set(0x1001);
+        writeSeq(0x0B00, 0x3B);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x1000, myTestCPU.registerSP.get());
+
+        // Decrement 0000 -> FFFF
+        myTestCPU.registerSP.set(0x0000);
+        writeSeq(0x0B00, 0x3B);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0xFFFF, myTestCPU.registerSP.get());
+    }
+
+    /* INC IY
+     */
+    @Test
+    public void incIY() {
+        myTestCPU.registerIY.set(0x2977);
+        writeSeq(0x0B00, 0xFD, 0x23);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x2978, myTestCPU.registerIY.get());
+
+        // Increment FFFF
+        myTestCPU.registerIY.set(0xFFFF);
+        writeSeq(0x0B00, 0xFD, 0x23);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x0000, myTestCPU.registerIY.get());
+    }
+
+    /* DEC IY
+     */
+    @Test
+    public void decIY() {
+        myTestCPU.registerIY.set(0x7649);
+        writeSeq(0x0B00, 0xFD, 0x2B);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x7648, myTestCPU.registerIY.get());
+
+        // Decrement 0000 -> FFFF
+        myTestCPU.registerIY.set(0x0000);
+        writeSeq(0x0B00, 0xFD, 0x2B);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xFFFF, myTestCPU.registerIY.get());
+    }
 
 }

@@ -28,6 +28,7 @@ public class WordLSB extends RegisterOps implements Register {
     /**
      * Constructor.
      * @param name Name of register for debugging
+     * @param reg Register containing the 16 bit value.
      */
     public WordLSB(String name, Word reg) {
         realReg = reg;

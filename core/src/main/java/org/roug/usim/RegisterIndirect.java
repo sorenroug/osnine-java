@@ -30,6 +30,8 @@ public class RegisterIndirect extends RegisterOps implements Register {
     /**
      * Constructor.
      * @param name Name of register for debugging
+     * @param cpu CPU where memory can be read.
+     * @param reg Register that contains the base address.
      */
     public RegisterIndirect(String name, USim cpu, Word reg) {
         this.cpu = cpu;

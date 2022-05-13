@@ -81,6 +81,7 @@ public class IMDHandler {
      * Constructor. Loads the ImageDisk file.
      *
      * @param fileName - path of file to load.
+     * @throws java.io.IOException if file doesn't match format
      */
     public IMDHandler(String fileName) throws IOException {
         this(new File(fileName));
@@ -90,6 +91,7 @@ public class IMDHandler {
      * Constructor. Loads the ImageDisk file.
      *
      * @param imdFile - file to load.
+     * @throws java.io.IOException if file doesn't match format
      */
     public IMDHandler(File imdFile) throws IOException {
         byte[] disk;
@@ -210,6 +212,7 @@ public class IMDHandler {
      *
      * @param head - logical side of disk.
      * @param trackNum - logical track number.
+     * @return true if the track is MFM mode, false if FM.
      */
     public boolean isMFM(int head, int trackNum) {
         Track t = getPhysTrack(head, trackNum);
@@ -317,6 +320,8 @@ public class IMDHandler {
 
     /**
      * Return the label of the IMD file.
+     *
+     * @return the comment.
      */
     public String getHeader() {
         return header;
@@ -479,6 +484,8 @@ public class IMDHandler {
      * @param side - value 0 or 1.
      * @param track - 0 to numTracks - 1
      * @param sector - sector on track
+     * @param data - Date to write to the sector.
+     *
      * @throws java.io.IOException if unable to read sector
      */
     public void writeSector(int side, int track, int sector, byte[] data)

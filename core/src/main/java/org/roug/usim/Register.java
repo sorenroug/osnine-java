@@ -12,11 +12,15 @@ public interface Register {
 
     /**
      * Get integer value.
+     *
+     * @return content of register.
      */
     int intValue();
 
     /**
      * Get integer value. Content will be truncated to match the width.
+     *
+     * @return content of register.
      */
     int get();
 
@@ -28,6 +32,8 @@ public interface Register {
 
     /**
      * Get signed integer value.
+     *
+     * @return Signed value (-128 to 127 or -32768 to 32767).
      */
     int getSigned();
 
