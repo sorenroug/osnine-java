@@ -49,7 +49,7 @@ public class Z80 extends USimIntel {
     private boolean iff2 = false;
 
     /** Stack Pointer register. */
-    public final Word registerSP = new Word("SP");
+    final Word registerSP = new Word("SP");
     /** Index register X. */
     final Word registerIX = new Word("IX");
     /** Index register Y. */
@@ -321,7 +321,7 @@ public class Z80 extends USimIntel {
             case 0x05:
                 helpDEC8(); break;
             case 0x07:
-                helpRLCreg(7); break;
+                helpRLCreg(true); break;
             case 0x08: {
                 int regTmp = registerAF.get();
                 registerAF.set(registerAF_.get());
@@ -350,7 +350,7 @@ public class Z80 extends USimIntel {
             case 0x15:
                 helpDEC8(); break;
             case 0x17: // RLA
-                helpRLReg(7); break;
+                helpRLreg(true); break;
             case 0x19:
                 helpADD16(false); break;
             case 0x1A:
@@ -361,8 +361,8 @@ public class Z80 extends USimIntel {
                 helpINC8(); break;
             case 0x1D:
                 helpDEC8(); break;
-//                 registerE.add(-1); break;
-
+            case 0x1F:
+                helpRRreg(true); break;
             case 0x21:
                 activeReg16.set(fetch_word()); break;
             case 0x22:
@@ -568,9 +568,11 @@ public class Z80 extends USimIntel {
     }
 
     private void executeCB() {
-        int regCode = fetch();
-        switch (regCode & 0xF8) {
-            case 0x00: helpRLCreg(regCode); break;
+        ir = fetch();
+        switch (ir & 0xF8) {
+            case 0x00: helpRLCreg(false); break;
+            case 0x08: helpRRreg(false); break;
+            case 0x10: helpRLreg(false); break;
             default: 
                 invalid("instruction"); break;
         }
@@ -1033,6 +1035,7 @@ public class Z80 extends USimIntel {
         int regCode = (ir & 0x30) >> 4;
         Word targetReg = getRegister16(regCode);
         int value = targetReg.get() + (withCarry?registerF.getC():0);
+        registerF.setC(bittst(value, 16));
         int halfCarry = (activeReg16.get() & 0x0FFF) + (value & 0x0FFF);
         registerF.setN(false);
         registerF.setH(bittst(halfCarry, 12));
@@ -1165,27 +1168,55 @@ public class Z80 extends USimIntel {
         registerF.setPV(parityOf(registerA.get()));
     }
 
-    private void helpRLReg(int regCode) {
-        Register reg = getRegister(regCode);
+    /* RL = Rotate Left
+     * The contents of the register are rotated left 1 bit position through the
+     * Carry flag. The previous contents of the Carry flag are copied to bit 0.
+     */
+    private void helpRLreg(boolean stopShort) {
+        Register reg = getRegister(ir & 0x07);
         int prevC = registerF.getC();
-        registerF.setC(reg.get() == 0x80);
-        reg.set((reg.get() << 1) + prevC);
+        registerF.setC(reg.get() >= 0x80);
+        int newVal = ((reg.get() << 1) | prevC) & 0xFF;
+        reg.set(newVal);
         registerF.setH(false);
         registerF.setN(false);
+        if (stopShort) return;
+        registerF.setZ(newVal == 0);
+        registerF.setS(newVal > 0x7F);
+        registerF.setPV(parityOf(newVal));
+        
     }
 
-    private void helpRLCreg(int regCode) {
-        Register reg = getRegister(regCode);
+    /* RR = Rotate Right
+     * The contents of the register are rotated right 1 bit position through the
+     * Carry flag. The previous contents of the Carry flag are copied to bit 7.
+     */
+    private void helpRRreg(boolean stopShort) {
+        Register reg = getRegister(ir & 0x07);
+        int prevC = registerF.getC() << 7;
+        registerF.setC(bittst(reg.get(),0));
+        int newVal = (reg.get() >> 1) | prevC;
+        reg.set(newVal);
+        registerF.setH(false);
+        registerF.setN(false);
+        if (stopShort) return;
+        registerF.setZ(newVal == 0);
+        registerF.setS(newVal > 0x7F);
+        registerF.setPV(parityOf(newVal));
+    }
+
+    private void helpRLCreg(boolean stopShort) {
+        Register reg = getRegister(ir & 0x07);
         boolean bit7 = bittst(reg.get(), 7);
         int newVal = ((reg.get() << 1) | (bit7?1:0)) & 0xFF;
         reg.set(newVal);
-//         LOGGER.info("PC:{} A:{} B:{}", pc, registerA, parityOf(newVal));
-        registerF.setC(bit7);
-        registerF.setPV(parityOf(newVal));
-        registerF.setZ(newVal == 0);
-        registerF.setS(newVal > 0x7F);
         registerF.setH(false);
         registerF.setN(false);
+        registerF.setC(bit7);
+        if (stopShort) return;
+        registerF.setZ(newVal == 0);
+        registerF.setS(newVal > 0x7F);
+        registerF.setPV(parityOf(newVal));
     }
 
     /* LD (IX+d), n
