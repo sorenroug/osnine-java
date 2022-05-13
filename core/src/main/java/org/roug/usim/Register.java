@@ -7,6 +7,8 @@ public interface Register {
 
     /**
      * Get the number of bits the register occupies.
+     *
+     * @return number of bits of register.
      */
     int getWidth();
 

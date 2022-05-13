@@ -1,14 +1,10 @@
 package org.roug.usim.z80;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.roug.usim.Bus8Intel;
 
 public class ExchangeBlockTest extends Framework {
 
@@ -118,6 +114,7 @@ public class ExchangeBlockTest extends Framework {
         myTestCPU.write(0x0222, 0x66);
         myTestCPU.registerBC.set(0x07);
         myTestCPU.registerF.clear();
+        myTestCPU.registerF.setPV(true);
         writeSeq(0x0B00, 0xED, 0xA0); // LDI
         execSeq(0xB00, 0xB02);
         assertEquals(0x1112, myTestCPU.registerHL.get());
@@ -125,6 +122,57 @@ public class ExchangeBlockTest extends Framework {
         assertEquals(0x0223, myTestCPU.registerDE.get());
         assertEquals(0x88, myTestCPU.read(0x0222));
         assertEquals(0x06, myTestCPU.registerBC.get());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+    }
+
+    /* CPI - opcode 0xED, 0xA1
+     * TODO: Test condition flags.
+     */
+    @Test
+    public void testCPI() {
+        myTestCPU.registerHL.set(0x1111);
+        myTestCPU.write(0x1111, 0x3B);
+        myTestCPU.registerA.set(0x3B);
+        myTestCPU.write(0x0222, 0x66);
+        myTestCPU.registerBC.set(0x01);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setPV(true);
+        writeSeq(0x0B00, 0xED, 0xA1);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x00, myTestCPU.registerBC.get());
+        assertEquals(0x1112, myTestCPU.registerHL.get());
+        assertEquals(0x3B, myTestCPU.read(0x1111));
+        assertTrue(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+    }
+
+    /* CPD - opcode 0xED, 0xA9
+     * TODO: Test condition flags.
+     */
+    @Test
+    public void testCPD() {
+        myTestCPU.registerHL.set(0x1111);
+        myTestCPU.write(0x1111, 0x3B);
+        myTestCPU.registerA.set(0x3B);
+        myTestCPU.write(0x0222, 0x66);
+        myTestCPU.registerBC.set(0x01);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setPV(true);
+        writeSeq(0x0B00, 0xED, 0xA9);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x00, myTestCPU.registerBC.get());
+        assertEquals(0x1110, myTestCPU.registerHL.get());
+        assertEquals(0x3B, myTestCPU.read(0x1111));
+        assertTrue(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
     }
 
     /* LDIR - opcode 0xED, 0xB0
