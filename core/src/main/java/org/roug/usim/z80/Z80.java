@@ -339,6 +339,10 @@ public class Z80 extends USimIntel {
             case 0x0D:
                 helpDEC8(); break;
 
+            case 0x10: // DJNZ, e
+                registerB.add(-1);
+                helpCondJR(registerB.get() != 0);
+                break;
             case 0x11:
                 registerDE.set(fetch_word()); break;
             case 0x12:
@@ -351,6 +355,9 @@ public class Z80 extends USimIntel {
                 helpDEC8(); break;
             case 0x17: // RLA
                 helpRLreg(true); break;
+            case 0x18: // JR e
+                helpCondJR(true);
+                break;
             case 0x19:
                 helpADD16(false); break;
             case 0x1A:
@@ -363,6 +370,10 @@ public class Z80 extends USimIntel {
                 helpDEC8(); break;
             case 0x1F:
                 helpRRreg(true); break;
+
+            case 0x20: // JR NZ, e
+                helpCondJR(!registerF.isSetZ());
+                break;
             case 0x21:
                 activeReg16.set(fetch_word()); break;
             case 0x22:
@@ -375,6 +386,9 @@ public class Z80 extends USimIntel {
                 helpDEC8(); break;
             case 0x27:
                 helpDAA(); break;
+            case 0x28: // JR C, e
+                helpCondJR(registerF.isSetZ());
+                break;
             case 0x29:
                 helpADD16(false); break;
             case 0x2A:
@@ -388,6 +402,9 @@ public class Z80 extends USimIntel {
             case 0x2F:
                 helpCPL(); break;
 
+            case 0x30: // JR NC, e
+                helpCondJR(!registerF.isSetC());
+                break;
             case 0x31:
                 registerSP.set(fetch_word()); break;
             case 0x32:
@@ -400,6 +417,9 @@ public class Z80 extends USimIntel {
                 helpDEC8(); break;
             case 0x36:
                 indirectHL.set(fetch()); break;
+            case 0x38: // JR C, e
+                helpCondJR(registerF.isSetC());
+                break;
             case 0x39:
                 helpADD16(false); break;
             case 0x3A:
@@ -488,13 +508,21 @@ public class Z80 extends USimIntel {
     /* Opcodes between 0xC0 and 0xFF */
     private void executeC0() {
         switch (ir) {
+            case 0xC2: // JP NZ,nn
+                helpCondJump(!registerF.isSetZ());
+                break;
+            case 0xC3: // JP
+                pc.set(fetch_word()); break;
             case 0xC5:
                 helpPushExt(registerBC); break;
             case 0xC6: // ADD A, n
                 helpAddIntToA(fetch(), false); break;
+            case 0xCA: // JP Z,nn
+                helpCondJump(registerF.isSetZ());
+                break;
             case 0xCB: // Rotate instructions
                 executeCB(); break;
-            case 0xCD: {
+            case 0xCD: {  // CALL
                 int newLoc = fetch_word();
                 helpPushExt(pc);
                 pc.set(newLoc);
@@ -503,6 +531,9 @@ public class Z80 extends USimIntel {
             case 0xCE: // ADC A, n
                 helpAddIntToA(fetch(), true); break;
 
+            case 0xD2: // JP NC,nn
+                helpCondJump(!registerF.isSetC());
+                break;
             case 0xD3:
                 outNA(); break;
             case 0xD5:
@@ -514,6 +545,9 @@ public class Z80 extends USimIntel {
                 break;
             case 0xD9:
                 helpEXX(); break;
+            case 0xDA: // JP NC,nn
+                helpCondJump(registerF.isSetC());
+                break;
             case 0xDD:
                 activeFromRegTbl = regTableIX;
                 activeReg16 = registerIX;
@@ -524,6 +558,9 @@ public class Z80 extends USimIntel {
                 }
                 break;
 
+            case 0xE2: // JP PO,nn
+                helpCondJump(!registerF.isSetPV());
+                break;
             case 0xE3: {
                 int regTmp = registerHL.get();
                 registerHL.set(read_word(registerSP.get()));
@@ -534,6 +571,9 @@ public class Z80 extends USimIntel {
                 helpPushExt(registerHL); break;
             case 0xE6:
                 helpAndIntToA(fetch()); break;
+            case 0xEA: // JP PE,nn
+                helpCondJump(registerF.isSetPV());
+                break;
             case 0xEB: { // SWAP DE, HL
                 int regTmp = registerDE.get();
                 registerDE.set(registerHL.get());
@@ -545,6 +585,9 @@ public class Z80 extends USimIntel {
             case 0xEE:
                 helpXorIntToA(fetch()); break;
 
+            case 0xF2: // JP P,nn
+                helpCondJump(!registerF.isSetS());
+                break;
             case 0xF3:
                 iff1 = false; iff2 = false; break;
             case 0xF5:
@@ -553,6 +596,9 @@ public class Z80 extends USimIntel {
                 helpOrIntToA(fetch()); break;
             case 0xF9:
                 registerSP.set(registerHL.get()); break;
+            case 0xFA: // JP M,nn
+                helpCondJump(registerF.isSetS());
+                break;
             case 0xFB:
                 iff1 = true; iff2 = true; break;
             case 0xFD:
@@ -818,6 +864,24 @@ public class Z80 extends USimIntel {
             return (index - 256);
         else
             return index;
+    }
+
+    /**
+     * Jump to another location dependent on bit in flag register.
+     */
+    private void helpCondJump(boolean test) {
+            int newLoc = fetch_word();
+            if (test) pc.set(newLoc);
+    }
+
+    /**
+     * Jump to relative location dependent on bit in flag register.
+     */
+    private void helpCondJR(boolean test) {
+        int offset = getIndexOffset();
+        if (test) {
+            pc.add(offset);
+        }
     }
 
     /**
