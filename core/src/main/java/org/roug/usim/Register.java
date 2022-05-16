@@ -64,5 +64,15 @@ public interface Register {
      * @return old value.
      */
     int add(int addend);
+
+    /**
+     * Get register.
+     * Used to creating af register out of a memory location.
+     * Registers that don't do this just return themselves.
+     *
+     * @return the memory location that will act a the real register.
+     */
+    Register getRealRegister();
+
 }
 

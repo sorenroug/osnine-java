@@ -120,4 +120,18 @@ public class Load16Test extends Framework {
         assertEquals(0x33, myTestCPU.read(0x1005));
         assertEquals(0x22, myTestCPU.read(0x1006));
     }
+
+    /* POP DE -- Opcode {0xF1, 0xE1, 0xD1, 0xC1}
+     */
+    @Test
+    public void popRegisterPairDE() {
+        myTestCPU.registerSP.set(0x1000);
+        myTestCPU.write_word(0x1000, 0x3355); // Set test data
+        myTestCPU.registerDE.set(0x2233); // Set dummy test data
+        writeSeq(0x0B00, 0xD1);
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x1002, myTestCPU.registerSP.get());
+        assertEquals(0x3355, myTestCPU.registerDE.get());
+    }
+
 }

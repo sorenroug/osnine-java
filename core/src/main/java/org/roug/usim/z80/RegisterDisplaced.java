@@ -1,5 +1,7 @@
 package org.roug.usim.z80;
+
 import org.roug.usim.Register;
+import org.roug.usim.RegisterMemory;
 import org.roug.usim.USim;
 import org.roug.usim.Word;
 
@@ -15,6 +17,8 @@ public class RegisterDisplaced implements Register {
     private Word regForAddress;
 
     private USim cpu;
+
+    private int memoryLoc;
 
     /**
      * Constructor.
@@ -77,6 +81,7 @@ public class RegisterDisplaced implements Register {
         return 8;
     }
 
+    /* Displacement is relative */
     private int getDisplacement() {
         int displacement = cpu.fetch();
         if (displacement > 0x7F) displacement -= 256;
@@ -117,6 +122,13 @@ public class RegisterDisplaced implements Register {
         int displacement = getDisplacement();
         int newValue = cpu.read(regForAddress.get() + displacement);
         set(newValue & ~(1 << n));
+    }
+
+    @Override
+    public Register getRealRegister() {
+        int displacement = getDisplacement();
+        memoryLoc = regForAddress.get() + displacement;
+        return new RegisterMemory(cpu, memoryLoc);
     }
 
 }

@@ -73,30 +73,5 @@ public class UByte extends RegisterOps implements Register {
         return registerName + "=" + Integer.toHexString(value);
     }
 
-    /**
-     * Bit test.
-     */
-//     @Override
-//     public int btst(int n) {
-//         return ((value & (1 << n)) != 0) ? 1 : 0;
-//     }
-// 
-//     @Override
-//     public void bset(int n) {
-//         value |= 1 << n;
-//     }
-// 
-//     @Override
-//     public void bclr(int n) {
-//         value &= ~(1 << n);
-//     }
-// 
-//     @Override
-//     public int add(int x) {
-//         value += x;
-//         value = value & MAX;
-//     }
-
-
 }
 

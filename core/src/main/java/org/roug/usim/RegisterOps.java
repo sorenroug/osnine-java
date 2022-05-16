@@ -42,4 +42,8 @@ public abstract class RegisterOps implements Register {
         return value;
     }
 
+    @Override
+    public Register getRealRegister() {
+        return this;
+    }
 }
