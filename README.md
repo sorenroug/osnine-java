@@ -1,7 +1,5 @@
 # Retrocomputing: A Java-based 6809 emulator
 
-[![Build Status](https://travis-ci.com/sorenroug/osnine-java.svg?branch=master)](https://travis-ci.com/sorenroug/osnine-java)
-
 The purpose of this project is to create an 6809 emulator that can
 be configured at runtime with a range of memory mapped devices.
 You can allocate RAM, load data into the memory and set up devices.
