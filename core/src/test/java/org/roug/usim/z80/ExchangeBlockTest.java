@@ -187,16 +187,16 @@ public class ExchangeBlockTest extends Framework {
         myTestCPU.registerBC.set(0x03);
         myTestCPU.registerF.clear();
         writeSeq(0x0B00, 0xED, 0xB0); // LDIR
-        execSeq(0xB00, 0xB02);
-        assertEquals(0x1114, myTestCPU.registerHL.get());
-        assertEquals(0x0225, myTestCPU.registerDE.get());
-        assertEquals(0x0000, myTestCPU.registerBC.get());
+        execSeq(0xB00, 0xB00);
+        assertEquals(0x1112, myTestCPU.registerHL.get());
+        assertEquals(0x0223, myTestCPU.registerDE.get());
+        assertEquals(0x02, myTestCPU.registerBC.get());
         assertEquals(0x88, myTestCPU.read(0x1111));
         assertEquals(0x88, myTestCPU.read(0x0222));
         assertEquals(0x36, myTestCPU.read(0x1112));
-        assertEquals(0x36, myTestCPU.read(0x0223));
+        assertEquals(0x59, myTestCPU.read(0x0223));
         assertEquals(0xA5, myTestCPU.read(0x1113));
-        assertEquals(0xA5, myTestCPU.read(0x0224));
+        assertEquals(0xC5, myTestCPU.read(0x0224));
 
         assertEquals(0x55, myTestCPU.read(0x1114)); // Check that it halted correctly
         assertEquals(0x33, myTestCPU.read(0x0225)); // Check that it halted correctly
@@ -214,14 +214,14 @@ public class ExchangeBlockTest extends Framework {
         myTestCPU.registerBC.set(0x03);
         myTestCPU.registerF.clear();
         writeSeq(0x0B00, 0xED, 0xB8); // LDDR
-        execSeq(0xB00, 0xB02);
-        assertEquals(0x1111, myTestCPU.registerHL.get());
-        assertEquals(0x0222, myTestCPU.registerDE.get());
-        assertEquals(0x0000, myTestCPU.registerBC.get());
+        execSeq(0xB00, 0xB00);
+        assertEquals(0x1113, myTestCPU.registerHL.get());
+        assertEquals(0x0224, myTestCPU.registerDE.get());
+        assertEquals(0x02, myTestCPU.registerBC.get());
         assertEquals(0x88, myTestCPU.read(0x1112));
-        assertEquals(0x88, myTestCPU.read(0x0223));
+        assertEquals(0x66, myTestCPU.read(0x0223));
         assertEquals(0x36, myTestCPU.read(0x1113));
-        assertEquals(0x36, myTestCPU.read(0x0224));
+        assertEquals(0x59, myTestCPU.read(0x0224));
         assertEquals(0xA5, myTestCPU.read(0x1114));
         assertEquals(0xA5, myTestCPU.read(0x0225));
 
