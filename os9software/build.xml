@@ -215,6 +215,7 @@
         <assemble src="Boot" home="cms9639"  verify="921665455cf8e35d2e966368706e72f8"/>
         <assemble src="9639_OS92.rom" home="cms9639" verify="5529810dedff592bceba4ddf662fbed5"/>
         <assemble src="OS9p2" home="cms9639"  verify="af222dd85b64d4c73a8972691268fb36"/>
+        <assemble src="Clock" home="cms9639"  verify=""/>
     </target>
 
     <!-- Positron 9000 -->
