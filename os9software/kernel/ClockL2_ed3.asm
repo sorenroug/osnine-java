@@ -240,7 +240,7 @@ Tick47 ldd D.Clock get clock routine ptr
  puls u retrieve saved sp
  leas ,u restore it
  else
- ldd D.Clock get clock routine ptr
+TICK40 ldd D.Clock get clock routine ptr
  endc
 TICK50 std D.SvcIRQ set IRQ service routine
  jmp [D.XIRQ] enter system

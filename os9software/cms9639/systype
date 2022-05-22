@@ -30,6 +30,29 @@ Generic rmb 1
 Gen6829 rmb 1
 DRG128 rmb 1 Dragon 128
 
+************************************************************
+*
+*     Clock Type Definitions
+*
+ org 1
+MC6840 rmb 1 MC6840 timer
+VIA rmb 1 VIA timer
+M58167 rmb 1 M58167 clock
+MC146818 rmb 1 MC146818 clock
+MPT rmb 1 Swtpc MPT timer card
+CMS rmb 1 CMS 9619 cpu clock
+Acu58167 rmb 1 Accupoint clock
+MC40.18 rmb 1 MC146818 clock with MC6840 time-slicing
+VSYNC rmb 1 CRTC Vertical Sync into 6821 PIA
+
+*
+* MC6840 type definitions
+*
+ org 1
+Standard rmb 1 MC6840 standard version will lose time on IRQmask
+Missed rmb 1 MC6840 used with missing tick counter
+
+M6840Typ set Standard
 
 *
  ifne LEVEL-1
@@ -44,26 +67,20 @@ UnLimitd rmb 1 check all NotRAM for modules
 *       as the first two bytes in the block.
  endc
 
+CPUType set CMS9639
+
+ ifeq CPUType-CMS9639
 ************************************************************
 *
 *     Dynamic Address Translator Definitions
 *
-CPUType set CMS9639
 
 DAT.BlCt equ 16 D.A.T. blocks/address space
 DAT.TkCt equ 128 task maps in the MMU
 DAT.Regs equ $F000 DAT Block Registers base address
-DAT.Task equ $FFBB Task register address
-*DAT.BlSz equ $1000
+
 DAT.BlSz equ (256/DAT.BlCt)*256 D.A.T. block size
 DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
-***************
-DAT.Free equ $8000 Free Block Number
-
-DAT.BlMx equ $FF maximum block number
-DAT.BMSz equ $100 Block Map size (one byte per block)
-DAT.WrPr equ 0 no Block Write Protect bit
-DAT.WrEn equ 0 no Block Write Enable bit
 
 ***************
 *
@@ -72,7 +89,25 @@ DAT.WrEn equ 0 no Block Write Enable bit
 DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
 *
 
-ClocType equ 0
+DAT.Task equ $FFBB Task register address
+
+***************
+*
+* One block number must be guaranteed never to
+* contain memory, (ROM or RAM). That block number
+* is used by OS9 in the block map and DAT images
+* to indicate an unallocated logical block
+DAT.Free equ $8000 Free Block Number
+*
+***************
+
+DAT.BlMx equ $FF maximum block number
+DAT.BMSz equ $100 Block Map size (one byte per block)
+DAT.WrPr equ 0 no Block Write Protect bit
+DAT.WrEn equ 0 no Block Write Enable bit
+
+
+ClocType equ MC6840
 
 SysTask equ $80 System Task number
 *
@@ -95,3 +130,10 @@ Postbyte equ $FFA0 Post byte register
 DMAC.Pri equ $FFD4 DMAC Priority Control Register
 DMAC.Dst equ $FFD1 DMAC Destination Channel Control Register
 DMAC.Src equ $FFD0 DMAC Source Channel Control Register
+
+A.Term equ $FFAC
+A.T1 equ $FFA8
+A.Clock equ $FFB0
+TickSec set 100 ticks per second
+
+ endc
