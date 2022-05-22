@@ -85,4 +85,13 @@ RAMCount equ 2 initial blocks of RAM
 
 ROMCheck equ Limited check only top 64k for ROM
 RAMCheck equ BlockTyp check only first bytes of RAM blocks
-
+*
+* Task registers
+Tsk.Src  equ $FFB8 DMA Source Task Register
+Tsk.Dst equ $FFB9 DMA Destination Task Register
+Tsk.Syst equ $FFBA OS Task Register
+Tsk.User equ $FFBB User Task Register
+Postbyte equ $FFA0 Post byte register
+DMAC.Pri equ $FFD4 DMAC Priority Control Register
+DMAC.Dst equ $FFD1 DMAC Destination Channel Control Register
+DMAC.Src equ $FFD0 DMAC Source Channel Control Register

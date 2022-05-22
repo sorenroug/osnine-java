@@ -538,7 +538,7 @@ UserSvc ldd D.SysSvc get system SWI2 service routine
 
  leau 0,s get system stack ptr
  bsr GetRegs get user stack
-     ldb   >$FFA0
+     ldb   >Postbyte get service request code
      andcc #^IntMasks clear interrupt masks
  ldy D.UsrDis get user dispatch table ptr
  lbsr Dispatch dispatch to service routine
@@ -567,7 +567,7 @@ UserSvc ldd D.SysSvc get system SWI2 service routine
 * Calls: MoveRegs
 *
 GetRegs lda P$Task,X get process task
-         anda  #$7F
+         anda  #^SysTask
          clrb
          pshs  u,x,cc
  ldx P$SP,X get process stack ptr
@@ -591,22 +591,22 @@ GetRegs lda P$Task,X get process task
 * Calls: MoveRegs
 *
 PutRegs ldb P$Task,X get process task
-         andb  #$7F
+         andb  #^SysTask
          clra
          pshs  u,x,cc
  ldx P$SP,X get process stack ptr
  exg X,u switch source & destination
 PutReg.A equ *
          orcc #IntMasks
-         sta   >$FFB8 Address to copy from
-         stx   >$FFC0
-         stu   >$FFC4
+         sta   >Tsk.Src Task to copy from
+         stx   >$FFC0 DMAC source address register
+         stu   >$FFC4 DMAC destination address register
          ldx   #R$Size
-         stx   >$FFC2
-         stx   >$FFC6
-         stb   >$FFB9 Address to copy to
+         stx   >$FFC2 DMAC Source byte count register
+         stx   >$FFC6 DMAC Destination byte count register
+         stb   >Tsk.Dst Task to copy to
          ldb   #$03
-         stb   >$FFBC
+         stb   >$FFBC send command
          nop
          puls  pc,u,x,cc
  page
@@ -625,9 +625,17 @@ PutReg.A equ *
 * Calls: Dispatch, SvcRet
 *
 SysSvc leau 0,s get registers ptr
-         ldb   >$FFA0
+ ifeq CPUType-CMS9639
+ ldb Postbyte get service code
  lda R$CC,u get caller's interrupt masks
  tfr a,cc restore interrupt masks
+ else
+ lda R$CC,u get caller's interrupt masks
+ tfr a,cc restore interrupt masks
+ ldx R$PC,u get program counter
+ ldb ,x+ get service code
+ stx R$PC,u update program counter
+ endc
  ldy D.SysDis get system dispatch table ptr
  bsr Dispatch dispatch to service routine
  lbra SysRet
@@ -2449,8 +2457,8 @@ F.STABX ldd R$D,u get data & task number
 * Returns value in A
 LDABX andcc #^CARRY clear carry
          pshs  u,x,b,a,cc
-         leau  $01,s
-         andb  #$7F
+         leau 1,s
+         andb  #^SysTask
          clra
          exg   a,b
          exg   x,u
@@ -2460,14 +2468,14 @@ LDABX andcc #^CARRY clear carry
 STABX andcc #^CARRY clear carry
          pshs  u,x,b,a,cc
          leau  $01,s
-         andb  #$7F
+         andb  #^SysTask
          clra
 L0A98  orcc #IntMasks
-         stu   >$FFC0
-         stx   >$FFC4
-         ldu   #$0001
-         stu   >$FFC2
-         stu   >$FFC6
+         stu   >$FFC0 DMAC source address register
+         stx   >$FFC4 DMAC destination address register
+         ldu   #1
+         stu   >$FFC2 DMAC Source byte count register
+         stu   >$FFC6 DMAC Destination byte count register
          sta   >$FFB8 Address to copy from
          stb   >$FFB9 Address to copy to
          ldb   #$03
@@ -2521,17 +2529,17 @@ Move ldd R$D,u get user D register
 *
 Mover andcc #^CARRY clear carry
          pshs  b,a,cc
-         anda  #$7F
-         andb  #$7F
+         anda  #^SysTask
+         andb  #^SysTask
  leay 0,y How many bytes to move?
  beq MoveNone ..branch if zero
  orcc #IntMasks
-         stx   >$FFC0
-         stu   >$FFC4
-         sty   >$FFC2
-         sty   >$FFC6
+         stx   >$FFC0 DMAC source address register
+         stu   >$FFC4 DMAC destination address register
+         sty   >$FFC2 DMAC Source byte count register
+         sty   >$FFC6 DMAC Destination byte count register
          sta   >$FFB8 Address to copy from
-         stb   >$FFB9
+         stb   >$FFB9 Address to copy to
          ldb   #$03
          stb   >$FFBC
          nop
@@ -2675,7 +2683,7 @@ SetPrTsk lda P$State,X
  andcc #^CARRY clear carry
  pshs Y,X,D,CC
  ldb P$Task,X
-         andb  #$7F
+         andb  #^SysTask
          clra
          lslb
          rola
@@ -3055,28 +3063,28 @@ IOPoll orcc #Carry set carry
 *
 DATInit clra
  tfr a,dp
-         sta   >$FFBA
-         ldy   #$F010  DAT.Regs+16
-         lda   #$FF   IOBlock
-         ldb   #$01
+         sta   >Tsk.Syst
+         ldy   #DAT.Regs+16
+         lda   #ROMBlock
+         ldb   #ROMCount
 DATINT10    sta   ,-y
          decb
          bne   DATINT10
-         ldb   #$0D
+         ldb   #Dat.BlCt-ROMCount-RAMCount
          lda   #$FF  ROMBlock or IOBlock
 DATINT20    sta   ,-y
          decb
          bne   DATINT20
-         ldb   #$01
-DATINT30    stb   ,-y  Two blocks of ram
+         ldb #RAMCount-1
+DATINT30 stb ,-y  Two blocks of ram
          decb
          bpl   DATINT30
          ldb   #$03
-         stb   >$FFD4
+         stb   >DMAC.Pri
          ldb   #$00
-         stb   >$FFD1
+         stb   >DMAC.Dst
          orb   #$01
-         stb   >$FFD0
+         stb   >DMAC.Src
          lbra  COLD
 
 ***********************************************************
