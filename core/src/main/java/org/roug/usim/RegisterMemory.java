@@ -20,6 +20,7 @@ public class RegisterMemory extends RegisterOps {
 
     /**
      * Constructor.
+     *
      * @param name Name of register for debugging
      */
     public RegisterMemory(String name) {
@@ -28,6 +29,8 @@ public class RegisterMemory extends RegisterOps {
 
     /**
      * Constructor.
+     *
+     * @param cpu Host CPU for reading/writing memory.
      * @param addr Initial addr
      */
     public RegisterMemory(USim cpu, int addr) {

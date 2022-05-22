@@ -3,7 +3,7 @@ package org.roug.usim;
 /**
  * Word memory access routines for little-endian (Intel type).
  */
-public class USimIntel extends USim {
+public abstract class USimIntel extends USim {
 
     /**
      * Constructor.
@@ -50,18 +50,6 @@ public class USimIntel extends USim {
     @Override
     public void write_word(Word offset, Word val) {
         write_word(offset.intValue(), val.intValue());
-    }
-
-    @Override
-    public void reset() {
-    }
-
-    @Override
-    public void status() {
-    }
-
-    @Override
-    public void execute() {
     }
 
 }

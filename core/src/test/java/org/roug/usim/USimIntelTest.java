@@ -7,13 +7,35 @@ import org.junit.Test;
 
 public class USimIntelTest {
 
+    class USimIntelDerived extends USimIntel {
+
+        public USimIntelDerived(MemoryBus bus) {
+            super(bus);
+        }
+
+        @Override
+        public void reset() {
+            // Not needed today
+        }
+
+        @Override
+        public void status() {
+            // Not needed today
+        }
+
+        @Override
+        public void execute() {
+            // Not needed today
+        }
+    }
+
     /**
      * Write 0xAA to address 0x100 and read it back.
      */
     @Test
     public void writeReadOneByte() {
         Bus8Motorola bus = new BusStraight();
-        USimIntel tInstance = new USimIntel(bus);
+        USimIntel tInstance = new USimIntelDerived(bus);
         MemorySegment newMemory = new RandomAccessMemory(0, bus, "0x400");
         bus.addMemorySegment(newMemory);
         //UByte val = UByte.valueOf(0xAA);
@@ -28,7 +50,7 @@ public class USimIntelTest {
     @Test
     public void writeReadOneWord() {
         Bus8Motorola bus = new BusStraight();
-        USimIntel tInstance = new USimIntel(bus);
+        USimIntel tInstance = new USimIntelDerived(bus);
         MemorySegment newMemory = new RandomAccessMemory(0, bus, "0x400");
         bus.addMemorySegment(newMemory);
 

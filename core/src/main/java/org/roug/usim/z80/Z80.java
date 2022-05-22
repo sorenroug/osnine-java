@@ -18,6 +18,7 @@ import static org.roug.usim.BitOperations.bittst;
 
 /**
  * Implementation of the Zilog Z80 CPU.
+ * INCOMPLETE!
  */
 public class Z80 extends USimIntel {
 
@@ -838,24 +839,24 @@ public class Z80 extends USimIntel {
                 break;
 
             case 0xB0: // LDIR
-                do {
-                    helpLDI();
-                } while (registerBC.get() != 0);
+                helpLDI();
+                if (registerBC.get() != 0)
+                    pc.add(-2);
                 break;
             case 0xB1: // CPIR
-                do {
-                    helpCPI();
-                } while (registerBC.get() != 0 && !registerF.isSetZ());
+                helpCPI();
+                if (registerBC.get() != 0 && !registerF.isSetZ())
+                    pc.add(-2);
                 break;
             case 0xB8: // LDDR
-                do {
-                    helpLDD();
-                } while (registerBC.get() != 0);
+                helpLDD();
+                if (registerBC.get() != 0)
+                    pc.add(-2);
                 break;
             case 0xB9: // CPDR
-                do {
-                    helpCPD();
-                } while (registerBC.get() != 0 && !registerF.isSetZ());
+                helpCPD();
+                if (registerBC.get() != 0 && !registerF.isSetZ())
+                    pc.add(-2);
                 break;
 
             default:
