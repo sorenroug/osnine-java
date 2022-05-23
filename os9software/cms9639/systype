@@ -133,6 +133,7 @@ DMAC.Src equ $FFD0 DMAC Source Channel Control Register
 
 A.Term equ $FFAC
 A.T1 equ $FFA8
+A.T.init equ $15
 A.Clock equ $FFB0
 TickSec set 100 ticks per second
 
