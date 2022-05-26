@@ -62,15 +62,26 @@ public class Load8Test extends Framework {
         assertEquals(0xD7, myTestCPU.read(0x1141));
     }
 
-    /* LD (HL), n -- Opcode 0x36
+    /* LD R, n.
      */
     @Test
-    public void loadNToHLindexed() {
+    public void loadNToR() {
+    // LD B, n -- Opcode 0x06.
+        myTestCPU.registerB.set(0x14);
+        writeSeq(0x0B00, 0x06, 0x28);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0x28, myTestCPU.registerB.get());
+    // LD (HL), n -- Opcode 0x36.
         myTestCPU.write(0x1444, 0x02); // Set test data
         myTestCPU.registerHL.set(0x1444);
         writeSeq(0x0B00, 0x36, 0x28);
         execSeq(0xB00, 0xB02);
         assertEquals(0x28, myTestCPU.read(0x1444));
+    // LD A, n -- Opcode 0x3E.
+        myTestCPU.registerA.set(0x00);
+        writeSeq(0x0B00, 0x3E, 0xA8);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xA8, myTestCPU.registerA.get());
     }
 
     /* LD A, (nn) -- Opcode 3A

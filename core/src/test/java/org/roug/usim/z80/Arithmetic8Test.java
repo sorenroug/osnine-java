@@ -348,10 +348,25 @@ public class Arithmetic8Test extends Framework {
         myTestCPU.write(0x0B00, 0xAD); // XOR A,L
         execSeq(0xB00, 0xB01);
         assertEquals(0xCB, myTestCPU.registerA.get());
+        assertFalse(myTestCPU.registerF.isSetPV());
         assertTrue(myTestCPU.registerF.isSetS());
         assertFalse(myTestCPU.registerF.isSetZ());
         assertFalse(myTestCPU.registerF.isSetH());
         assertFalse(myTestCPU.registerF.isSetN());
+
+        myTestCPU.registerA.set(0x0);
+        myTestCPU.registerL.set(0x5A);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(true);
+        myTestCPU.write(0x0B00, 0xAD); // XOR A,L
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x5A, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetPV());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+
     }
 
 
@@ -364,13 +379,26 @@ public class Arithmetic8Test extends Framework {
         myTestCPU.registerB.set(0x7B);
         myTestCPU.registerF.clear();
         myTestCPU.registerF.setC(true);
-        myTestCPU.write(0x0B00, 0xA0); // XOR A,B
+        myTestCPU.write(0x0B00, 0xA0); // AND A,B
         execSeq(0xB00, 0xB01);
         assertEquals(0x43, myTestCPU.registerA.get());
         assertFalse(myTestCPU.registerF.isSetS());
         assertFalse(myTestCPU.registerF.isSetZ());
         assertTrue(myTestCPU.registerF.isSetH());
         assertFalse(myTestCPU.registerF.isSetN());
+
+        myTestCPU.registerA.set(0xC3);
+        myTestCPU.registerB.set(0x00);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(true);
+        myTestCPU.write(0x0B00, 0xA0); // AND A,B
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x00, myTestCPU.registerA.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertTrue(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+
     }
 
     /* OR A,r
@@ -390,6 +418,22 @@ public class Arithmetic8Test extends Framework {
         assertFalse(myTestCPU.registerF.isSetH());
         assertFalse(myTestCPU.registerF.isSetN());
         assertFalse(myTestCPU.registerF.isSetC());
+
+        myTestCPU.registerA.set(0x00);
+        myTestCPU.registerH.set(0x48);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(true);
+        myTestCPU.registerF.setPV(true);
+        myTestCPU.write(0x0B00, 0xB4); // OR A,H
+        execSeq(0xB00, 0xB01);
+        assertEquals(0x48, myTestCPU.registerA.get());
+        assertFalse(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetC());
+
+
     }
 
 
