@@ -52,7 +52,7 @@ OptEnd equ *
 
 TxNam fcs /T1/
 TxMGR fcs /SCF/
-TxDrv fcs /ACIA/
+TxDrv fcs /ACIA51/
 
  emod Module CRC
 
