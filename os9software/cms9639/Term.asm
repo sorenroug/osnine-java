@@ -36,6 +36,7 @@
  fdb TrmNam copy of descriptor name address
  fcb $11 acia xon char
  fcb $13 acia xoff char
+* Special for Dragon 128 SCF driver
  fcb 80 number of columns for display
  fcb 0 No-edit flag (4 = no-edit)
 OptEnd equ *
@@ -50,7 +51,7 @@ OptEnd equ *
 
 TrmNam fcs /Term/
 TrmMgr fcs /SCF/
-TrmDrv fcs /ACIA/
+TrmDrv fcs /ACIA51/
 
  emod Module CRC
 
