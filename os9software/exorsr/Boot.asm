@@ -52,7 +52,7 @@ start    equ   *
          stx   >CTLREXEC,u
          leax  6,x  Address of third address in jump table
          stx   >u0087,u
-         ldy   #$EC00
+         ldy   #DPORT
          sty   V.PORT,u
          leax  DRVBEG,u
          stx   <X.DRVTBL,u

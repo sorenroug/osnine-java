@@ -10,20 +10,26 @@ DriveCnt equ 4
  rmb Drvmem*DriveCnt
 
 X.CURDRV    rmb   1  Current drive #
-X.CURLSN equ $68
-X.SIZE equ $6A
-X.BUFADR equ $6C
+X.CURLSN    rmb   2
+X.SIZE    rmb   2
+X.BUFADR rmb 2
+V.ERRCD rmb 1   $6E
+u006F rmb 4 Unused here
+u0073    rmb   1
+u0074    rmb   1
+X.ORGNMI rmb 2 $75 Address of original NMI intercept
+X.STACK rmb 2 $77
+X.TRAK rmb 1 $79 Current track number
+u007A rmb 2
+I.DELAY    rmb   1  $7C inner delay value
+u007D    rmb   1
+X.STAT rmb 1  $7E
+CURTBL    rmb   2 $7F
+X.DELAY rmb 2 $81
 
-X.ORGNMI equ $75 Address of original NMI intercept
-X.STACK equ $77
-X.TRAK equ $79 Current track number
-X.STAT equ $7E
-X.DRVTBL equ $7F
-X.DELAY equ $81
+ mod   CTLREND,CTRLNAME,Drivr+Objct,ReEnt+3,CTLRENT,0
 
- mod   CTLREND,name,Drivr+Objct,ReEnt+3,CTLRENT,0
-
-name fcs   /EXORctlr/
+CTRLNAME fcs   /EXORctlr/
 
 CTLRENT    equ   *
          lbra  INITCTLR ??
@@ -42,7 +48,7 @@ CTLRENT    equ   *
          stx   X.ORGNMI,u
          leax  >L0126,pcr
          stx   D.NMI
-         ldx   X.DRVTBL,u
+         ldx   CURTBL,u
          lda   <$16,x   V.TRAK+1
          sta   X.TRAK,u
          lda   <$12,x  DD.SPT+1
@@ -76,7 +82,7 @@ L0069    ldb   X.STAT,u
 
 * Calculate track from LSN
 L007A    sta   <$73,u
-L007D    ldx   X.DRVTBL,u
+L007D    ldx   CURTBL,u
          lda   #$FF
          pshs  a
          ldd   <X.CURLSN,u
@@ -179,7 +185,7 @@ L0147    lda   $01,y
          sta   $01,y
 L014F    clra
          ldb   X.TRAK,u
-         ldx   X.DRVTBL,u
+         ldx   CURTBL,u
          std   V.TRAK,x Current track number
          puls  pc,x,dp,b,a,cc
 
@@ -189,7 +195,7 @@ L015B    ldb   #$34
          stb   $02,y
 * Create delay
          ldx   X.DELAY,u
-L0167    ldb   <$7C,u
+L0167    ldb   <I.DELAY,u
 L016A    decb
          bne   L016A
          leax  -$01,x
@@ -282,7 +288,7 @@ L0211    lbsr  L0172
          cmpb  <$70,u
          bne   L0211
          lbsr  L018E
-         lda   <$7C,u
+         lda   <I.DELAY,u
 L0235    suba  #$03
          bhi   L0235
          lda   $01,y
@@ -295,7 +301,7 @@ L0241    lbsr  L018E
          bne   L0241
          ldb   X.STAT,u
          bmi   L02CB
-         ldb   <$7C,u
+         ldb   <I.DELAY,u
          lslb
 L0252    cmpb  $04,y
          cmpb  $04,y
@@ -346,7 +352,7 @@ L02AD    lda   $04,y
          lda   $05,y
          lda   $05,y
          bra   L02AD
-L02BA    lda   <$7C,u
+L02BA    lda   <I.DELAY,u
 L02BD    suba  #$03
          bhi   L02BD
          lda   $01,y
@@ -354,7 +360,7 @@ L02BD    suba  #$03
          stx   X.BUFADR,u
          lbra  L01A4
 
-L02CB    lda   <$7C,u
+L02CB    lda   <I.DELAY,u
          suba  #$03
          lsla
 L02D1    deca
@@ -449,7 +455,7 @@ L0371    decb
 L037D    incb
          suba  #$10
          bcc   L037D
-         stb   <$7C,u
+         stb   <I.DELAY,u
          lsrb
          bcc   L038D
          cmpb  #$01
@@ -502,7 +508,7 @@ READSK   tstb
          pshs  x
          leax  DRVBEG,u
          leax  d,x
-         stx   X.DRVTBL,u
+         stx   CURTBL,u
          puls  b,a
          cmpd  DD.TOT+1,x
          bhi   PHYERR

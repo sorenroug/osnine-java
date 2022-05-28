@@ -6,7 +6,7 @@
          mod   eom,name,Devic+Objct,REENT+3,mgrnam,drvnam
          fcb   $FF mode byte
          fcb   $FF extended controller address
-         fdb   $EC00  physical controller address
+         fdb   DPORT  physical controller address
          fcb   initsize-*-1  initilization table size
          fcb   1 device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   0 drive number

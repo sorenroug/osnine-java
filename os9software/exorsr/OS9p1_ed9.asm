@@ -4,6 +4,7 @@
 
 * It was disassembled from a boot disk for Exorciser
 * There is no difference from edition 8 for OS-9 level I v. 1.1.
+* except for the RamLimit and the PCU09 configuration.
 
  use defsfile
 
@@ -58,6 +59,10 @@ RamLimit set $E800
  ifeq CPUTYP-GIMIX
  fcc /GMX/ Version name
 RamLimit set $E000
+ endc
+ ifeq CPUTYP-PCU09
+  fcc /PCU09/ Version name
+RamLimit set $EC00
  endc
 
  fcb 9 Edition number
@@ -177,6 +182,10 @@ EndRAM equ $A23 This must be greater than the size
 *** >>> End Of Exorciser Patch <<< ***
  else
  stx D.MLIM Set memory limit
+ endc
+ ifeq  CPUTYP-PCU09
+ stx D.BtLo
+ stx D.BtHi
  endc
 
 *
@@ -1574,7 +1583,7 @@ SYSVEC fdb SWI3HN+$FFE2-* Swi3 handler
  fdb SWIRQ+$FFFA-* Swi
  fdb NMI+$FFFC-* Nmi
 
- ifeq (CPUTYP-MM19)*(CPUTYP-PERCOM)*(CPUTYP-CMS9609)*(CPUTYP-EXORSR)
+ ifeq (CPUTYP-MM19)*(CPUTYP-PERCOM)*(CPUTYP-CMS9609)*(CPUTYP-EXORSR)*(CPUTYP-PCU09)
  fdb COLD+$FFFE-* Restart
  else
  fdb DATINT+$FFFE-* Dynamic address translator initialization

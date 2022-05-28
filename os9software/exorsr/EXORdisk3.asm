@@ -5,42 +5,55 @@
 
 Edition equ 4 Current Edition
 
+***************************************************************
+*
+* Disk Driver Module Header
+*
+*
  mod DSKEND,DSKNAM,Drivr+Objct,ReEnt+3,DSKENT,DSKSTA
+ fcb DIR.+SHARE.+PREAD.+PWRIT.+UPDAT.+EXEC.+PEXEC.
 
 DriveCnt equ 4
- org DRVBEG
- rmb Drvmem*DriveCnt
 
  org $15
-
-u0015    rmb   2
-u0017    rmb   1
+* use of direct page space in kernel
+ILVSTAT    rmb   2 Points to next sector number in interleave table
+u0017    rmb   1 retry counter
 u0018    rmb   1
 u0019    rmb   1
 u001A    rmb   1
 u001B    rmb   1
-u001C    rmb   2
-u001E    rmb   24
-u0036    rmb   49
-X.CURDRV    rmb   1
-u0068    rmb   2
-u006A    rmb   2
-X.BUFADR    rmb   2
-u006E    rmb   5
+DMA.STAK    rmb   2 Stack pointer
+ORG.NMI    rmb   2
+
+ org Drvbeg
+ rmb Drvmem*DriveCnt
+
+CURDRV rmb 1 Drive select bit pattern
+X.CURLSN    rmb   2
+X.SIZE    rmb   2
+V.BUF    rmb   2
+V.ERRCD    rmb   1 Some sort of error code returned by EXORctlr
+u006F rmb 4 Unused here
 u0073    rmb   1
-u0074    rmb   5
-u0079    rmb   3
-u007C    rmb   1
+u0074    rmb   1
+X.ORGNMI rmb 2
+X.STACK rmb 2 $77
+X.TRAK    rmb   1 $79 Current track number
+u007A rmb 2
+I.DELAY    rmb   1  $7C inner delay value
 u007D    rmb   1
-u007E    rmb   1
-X.DRVTBL    rmb   2
-u0081    rmb   2
-u0083    rmb   2
-u0085    rmb   2
+X.STAT    rmb   1
+CURTBL    rmb   2 $7F
+X.DELAY    rmb   2  $81
+X.INIT    rmb   2 init routine
+X.RDSK    rmb   2 read sector routine
 u0087    rmb   2
 CTLRADDR    rmb   2
 DSKSTA     equ   .
-         fcb   $FF
+
+
+V.CMDR equ 4 command/status register at V.Port+4
 
 DSKNAM     equ   *
          fcs   /EXORdisk3/
@@ -56,7 +69,7 @@ DSKENT    equ   *
 
 CTLRNAME    fcs "EXORctlr"
 
-L0032    fcb $0F,$0A,$06,$03
+L0032    fcb 15,10,6,3 Step delays
 
  pag
 ****************************************************************
@@ -75,33 +88,33 @@ INIT    pshs  u,y
          stx   >CTLRADDR,u
          ldd   M$Exec,x
          leax  d,x
-         stx   >u0083,u
+         stx   >X.INIT,u
          leax  $03,x
-         stx   >u0085,u
+         stx   >X.RDSK,u
          leax  $03,x
          stx   >u0087,u
          lda   <$13,y  IT.DRV
-         sta   X.CURDRV,u
+         sta   CURDRV,u
          lda   <$14,y  IT.STP
          anda  #$03
          leay  <L0032,pcr
          lda   a,y
-         ldb   #$27  This is not DRVMEM
+         ldb   #$27
          mul
-         std   >u0081,u
+         std   >X.DELAY,u
          ldy   V.PORT,u
          leax  DRVBEG,u
-         stx   X.DRVTBL,u
-         jsr   [>u0083,u]
+         stx   CURTBL,u
+         jsr   [>X.INIT,u]
          ldb   #$04
-         stb   <u007E,u
+         stb   <X.STAT,u
          jsr   [>u0087,u]
-         lda   <u007C,u
+         lda   <I.DELAY,u
          cmpa  #$02
          bne   L009E
-         ldx   #$2001
-         stx   >L03C0,pcr
-         stx   >L03DD,pcr
+         ldx   #$2001  BRA +1
+         stx   >L03C0,pcr remove delay loop
+         stx   >L03DD,pcr remove delay loop
 L009E    suba  #$04
          bcs   L00BA
          suba  #$03
@@ -110,9 +123,9 @@ L009E    suba  #$04
          bra   L00B6
 L00AB    leax  >L0387,pcr
          stx   >L0312,pcr
-         ldx   #$12BD
+         ldx   #$12BD  NOP,JSR?
 L00B6    stx   >L0310,pcr
-L00BA    ldx   X.DRVTBL,u
+L00BA    ldx   CURTBL,u
          lda   #DriveCnt
          sta   V.NDRV,u
          deca
@@ -141,7 +154,7 @@ L00F0    rts
 * Insert delay
 L00F1    pshs  x,b
          ldx   #$0360
-L00F6    ldb   <u007C,u
+L00F6    ldb   <I.DELAY,u
 L00F9    decb
          bne   L00F9
          leax  -1,x
@@ -165,7 +178,7 @@ L00F9    decb
 *
 WRTDSK    tst   [<V.PORT,u]
          lda   <$21,y
-         cmpa  X.CURDRV,u
+         cmpa  CURDRV,u
          beq   L010F
          bsr   L00F1
 L010F    lda   #$80
@@ -189,84 +202,86 @@ L0118    bra   L011E
 *
 READSK    tst   [<V.PORT,u]
          clra
-L011E    jsr   [>u0085,u]
-         bcs   L018D
-         ldd   <u0068,u
-         bne   L014F
-         bsr   L014F
-         bcs   L018D
-         ldx   $08,y
+L011E    jsr   [>X.RDSK,u]
+         bcs   WRERR9
+         ldd   <X.CURLSN,u
+         bne   RDDSK3
+         bsr   RDDSK3 read LSN 0
+         bcs   WRERR9
+ ldx PD.BUF,Y Point to buffer
          pshs  y,x
-         ldy   X.DRVTBL,u
-         ldb   <$10,x
+         ldy   CURTBL,u
+         ldb   DD.FMT,x
          bitb  #$06
          bne   L018E
-         ldd   $0E,x
-         cmpd  $0E,y
-         beq   L014C
-         ldb   #$14
-L0145    lda   b,x
-         sta   b,y
-         decb
-         bpl   L0145
-L014C    clrb
-         puls  pc,y,x
-L014F    pshs  y,x
+         ldd   DD.DSK,x
+         cmpd  DD.DSK,y was disk changed?
+         beq   READ02 ..no
+ ldb #DD.SIZ-1 copy disk descriptor
+READ01 lda B,X
+ sta B,Y
+ decb
+ bpl READ01
+READ02 clrb
+ puls  pc,y,x
+
+RDDSK3    pshs  y,x
          ldy   V.PORT,u
          jsr   [>u0087,u]
-         bcc   L018B
-         ldb   <u007E,u
+         bcc   EXITXX
+         ldb   <X.STAT,u
          pshs  b
          ldb   #$08
-         stb   <u007E,u
+         stb   <X.STAT,u
          jsr   [>u0087,u]
          puls  a
-         sta   <u007E,u
+         sta   <X.STAT,u
          bcs   L0187
          puls  y,x
          pshs  y,x
-         ldd   $08,y
-         std   <X.BUFADR,u
+         ldd   PD.BUF,y
+         std   <V.BUF,u
          ldd   #$0001
-         std   <u006A,u
+         std   <X.SIZE,u
          ldy   V.PORT,u
          jsr   [>u0087,u]
-         bcc   L018B
-L0187    ldb   <u006E,u
+         bcc   EXITXX
+L0187    ldb   <V.ERRCD,u
          coma
-L018B    puls  y,x
-L018D    rts
+EXITXX    puls  y,x
+WRERR9    rts
+
 L018E    comb
          ldb   #E$BTyp
          puls  pc,y,x
 
-GETSTA    clrb
-         rts
+GETSTA clrb
+ rts
 
 PUTSTA    ldx PD.RGS,y
          ldb  R$B,x
          cmpb  #SS.RST $03 Device Restore
-         beq   L01A5
+         beq   RESTOR
          cmpb  #SS.WTK $04 Device Write Track
-         beq   L01BE
+         beq   WRTTRK
          comb
          ldb   #E$USvc Unknown Service request
          rts
 
 * Restore head to track 0
-L01A5    pshs  y,x
+RESTOR    pshs  y,x
          clrb
          ldx   #$0000
          lda   #$08
-         jsr   [>u0085,u]
-         bcs   L018D
+         jsr   [>X.RDSK,u]
+         bcs   WRERR9
          ldy   V.PORT,u
          jsr   [>u0087,u]
          bcs   L0187
          puls  pc,y,x
 
 * Format track
-L01BE    pshs  y,x
+WRTTRK    pshs  y,x
          ldb   <$2A,y
          tst   <u0073,u
          bmi   L01CB
@@ -274,78 +289,84 @@ L01BE    pshs  y,x
 L01CB    lda   $09,x
          bne   L01F6
          pshs  x,b,a
-         ldx   X.DRVTBL,u
-         clr   <$10,x
-         clr   $0E,x
-         clr   $0F,x
-         lda   <$27,y
-         cmpa  #$01
+         ldx   CURTBL,u
+         clr   DD.FMT,x
+         clr   DD.DSK,x
+         clr   DD.DSK+1,x
+         lda PD.SID,y
+         cmpa  #1
          beq   L01E5
-         inc   <$10,x
-L01E5    ldb   <$25,y
+         inc   DD.FMT,x set two-sided disk
+L01E5    ldb   PD.CYL,y
          mul
-         lda   <$2A,y
+         lda   PD.SCT+1,y
          mul
-         subd  #$0001
-         std   $01,x
+         subd  #1
+         std   DD.TOT+1,x
          clr   ,x
          puls  x,b,a
 L01F6    mul
          pshs  b,a
          clrb
-         lda   $07,x
+         lda   DD.BIT+1,x
          anda  #$01
          beq   L0203
-         ldb   <$2A,y
+         ldb   PD.SCT+1,y
 L0203    clra
          addd  ,s++
          tfr   d,x
          clrb
          lda   #$10
-         jsr   [>u0085,u]
-         lbcs  L018B
+         jsr   [>X.RDSK,u]
+         lbcs  EXITXX
          ldy   V.PORT,u
          jsr   [>u0087,u]
-         lbcs  L018B
-         ldy   $02,s
-         bsr   L0262
-         lbcs  L018B
+         lbcs  EXITXX
+         ldy 2,s get ptr to path descriptor
+         bsr   INTERLV
+         lbcs  EXITXX
          leax  <L0246,pcr
-         stx   <X.BUFADR,u
+         stx   <V.BUF,u
          ldd   #$0010
-         std   <u006A,u
+         std   <X.SIZE,u
          ldb   #$C2
-         stb   <u007E,u
+         stb   <X.STAT,u
          ldy   V.PORT,u
          jsr   [>u0087,u]
          lbcs  L0187
          clrb
          puls  pc,y,x
 
-L0246    fcb $E5,$E5
+L0246    fdb $E5E5
 
+**************************************
+*
+* Terminate use of the disk
+*
+*
 TRMNAT    ldx   V.PORT,u
-         lda   ,x
+         lda   0,x
          ora   #$10
-         sta   ,x
+         sta   0,x
          clra
          clrb
-         std   $02,x
-         std   ,x
+         std   2,x
+         std   0,x
          pshs  u
          ldu   >CTLRADDR,u
          os9   F$UnLk
          clrb
          puls  pc,u
 
-L0262    leax  >L03FC,pcr
-         lda   <$2D,y   PD.ILV
-         anda  #$03
+* Determine interleave to use
+INTERLV    leax  >ILVTBL,pcr
+         lda   PD.ILV,y   
+         anda  #%11
          deca
-         ldb   #$10  Number of sectors on a track
+         ldb   #16  Number of sectors on a track
          mul
          leax  d,x
-         stx   <u0015
+         stx   <ILVSTAT
          clra
          sta   <u0017
          lda   <u007D,u
@@ -354,11 +375,11 @@ L0262    leax  >L03FC,pcr
          sta   <u001A
          lda   #$05
          sta   <u001B
-         lda   <u0079,u
+         lda   <X.TRAK,u
          sta   <u0019
          ldy   V.PORT,u
          pshs  u
-         sts   <u001C
+         sts   <DMA.STAK
          ldb   ,y
          orb   #$04
          cmpa  #$2B
@@ -372,24 +393,24 @@ L029B    stb   ,y
          anda  #$20
          ora   #$03
 L02A9    sta   $01,y
-L02AB    lbsr  L038C
+L02AB    lbsr  NMIINSRT
          ldx   #$001E
          lda   <u0018
 L02B3    deca
          bpl   L02B3
          ldu   #$C0DA
-         stu   $04,y
+         stu  V.CMDR,y
          ldu   #$C1FF
-         stu   $04,y
+         stu  V.CMDR,y
          ldu   #$8270
-         stu   $04,y
+         stu  V.CMDR,y
          lda   $01,y
          anda  #$F2
          sta   $01,y
          eora  #$00
          bita  #$10
          bne   L02D9
-         lbsr  L03A8
+         lbsr  NMIRESET
          comb
          ldb   #E$WP
          puls  pc,u
@@ -399,71 +420,71 @@ L02D9    anda  #$60
 L02DD    lda   $03,y
          bpl   L02DD
          ldu   #$8210
-         stu   $04,y
+         stu  V.CMDR,y
          lbsr  L03B8
          ldu   #$83F7
-         stu   $04,y
+         stu  V.CMDR,y
          lda   #$7A
          sta   $05,y
          ldu   #$81FF
-         stu   $04,y
+         stu  V.CMDR,y
          ldx   #$000C
 L02FA    lda   #$18
          ldu   #$8210
-         stu   $04,y
-L0301    bita  $04,y
+         stu  V.CMDR,y
+L0301    bita V.CMDR,y
          beq   L0301
          sta   $05,y
-L0307    bita  $04,y
+L0307    bita V.CMDR,y
          beq   L0307
          ldu   #$C270
-         stu   $04,y
+         stu  V.CMDR,y
 L0310    bita  #$00
 L0312    lda   #$82
          inc   $01,y
-         sta   $04,y
+         sta  V.CMDR,y
          lbsr  L03B8
          dec   $01,y
          ldu   #$83F5
-         stu   $04,y
+         stu  V.CMDR,y
          ldb   #$7E
          lda   #$40
          stb   $05,y
-L0328    bita  $04,y
+L0328    bita V.CMDR,y
          beq   L0328
          ldb   <u0019
          stb   $05,y
          ldb   <u001A
          stb   $05,y
-         ldu   <u0015
-L0336    bita  $04,y
+         ldu   <ILVSTAT
+L0336    bita V.CMDR,y
          beq   L0336
          ldb   ,u+
          stb   $05,y
          ldb   #$01
          stb   $05,y
-         stu   <u0015
-L0344    bita  $04,y
+         stu   <ILVSTAT
+L0344    bita V.CMDR,y
          beq   L0344
          clrb
          stb   $05,y
-L034B    bita  $04,y
+L034B    bita V.CMDR,y
          beq   L034B
          ldb   $01,y
          orb   #$08
          stb   $01,y
          stb   $05,y
-L0357    bita  $04,y
+L0357    bita V.CMDR,y
          beq   L0357
          lda   #$FF
          sta   $05,y
          lda   #$40
-L0361    bita  $04,y
+L0361    bita V.CMDR,y
          beq   L0361
          andb  #$60
          stb   $01,y
          ldu   #$81FF
-         stu   $04,y
+         stu  V.CMDR,y
          ldx   #$011D
          lda   <u0017
          inca
@@ -474,19 +495,21 @@ L037A    lda   $03,y
          bpl   L037A
          dec   $01,y
          dec   $01,y
-         bsr   L03A8
+         bsr   NMIRESET
          clrb
          puls  pc,u
 
 L0387    lda   #$82
          bita  <u0019
          rts
-L038C    pshs  x
+
+* Insert own NMI routine
+NMIINSRT    pshs  x
          orcc  #$50
-         ldx   <u0036
-         stx   <u001E
-         leax  <L03E8,pcr
-         stx   <u0036
+         ldx   <D.NMI
+         stx   <ORG.NMI
+         leax  <NMISVC,pcr
+         stx   <D.NMI
          lda   #$36
          sta   $03,y
          lda   #$3E
@@ -495,21 +518,24 @@ L038C    pshs  x
          deca
          sta   $02,y
          puls  pc,x
-L03A8    pshs  x
+
+NMIRESET    pshs  x
          lda   #$3C
          sta   $02,y
          lda   ,y
-         ldx   <u001E
-         stx   <u0036
+         ldx   <ORG.NMI
+         stx   <D.NMI
          andcc #$AF
          puls  pc,x
 
 L03B8    lda   #$18
-L03BA    bita  $04,y
+L03BA    bita V.CMDR,y
          beq   L03BA
          ldb   <u0018
+* delay loop
 L03C0    decb
          bne   L03C0
+
          sta   $05,y
          leax  -$01,x
          bne   L03BA
@@ -517,22 +543,26 @@ L03C0    decb
          ldb   #$05
          nop
          nop
-         stu   $04,y
+         stu  V.CMDR,y
          ldu   #$8210
-         stu   $04,y
-L03D7    bita  $04,y
+         stu  V.CMDR,y
+L03D7    bita V.CMDR,y
          beq   L03D7
          lda   <u0018
+
+* delay loop
 L03DD    deca
          bne   L03DD
+
          lda   #$18
          sta   $05,y
          decb
          bne   L03D7
          rts
 
-L03E8    lds   <u001C
-         bsr   L03A8
+* NMI interrupt routine
+NMISVC   lds DMA.STAK
+         bsr   NMIRESET
          dec   $01,y
          dec   $01,y
          dec   <u001B
@@ -541,7 +571,7 @@ L03E8    lds   <u001C
          ldb   #E$Wr Write Error
          puls  pc,u
 
-L03FC    fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
+ILVTBL   fcb $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F
          fcb $00,$08,$01,$09,$02,$0A,$03,$0B,$04,$0C,$05,$0D,$06,$0E,$07,$0F
          fcb $00,$0B,$06,$01,$0C,$07,$02,$0D,$08,$03,$0E,$09,$04,$0F,$0A,$05
 
