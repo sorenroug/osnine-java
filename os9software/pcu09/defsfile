@@ -1,0 +1,8 @@
+Level    equ   1
+
+ ifp1
+ use /d0/exorsr/os9defs
+ use /d0/exorsr/scfdefs
+ use /d0/exorsr/rbfdefs
+ endc
+ use systype

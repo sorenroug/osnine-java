@@ -1,0 +1,214 @@
+ spc 3
+*   Conditional Assembly Definitions
+ spc 2
+ opt -l
+*   CPU TYPE SPECIFICATION
+ spc 2
+ org 1
+EXORSR rmb 1 EXORCISER (NON-ROM ENVIRONMENT)
+MM19   rmb 1 MOTOROLA MM19 CPU
+GIMIX  rmb 1 GIMIX CPU
+SWTC   rmb 1 OLD SOUTH-WEST TECHNICAL CPU
+S09    rmb 1 SWTC S/09 W/128K MEMORY
+SSB    rmb 1 SMOKE SIGNAL BROADCASTING CPU
+PERCOM rmb 1 PERCOM CPU
+CMS9609 rmb 1 CMS 9609
+EXRSET rmb 1 Motorola EXORset
+PCU09 rmb 1 Phoenix Digital's SBC
+ spc 1
+*    MPU clock frequency
+ spc 1
+ org 1
+OneMHZ rmb 1 One MegaHertz bus speed
+TwoMHZ rmb 1 Two MegaHertz bus speed
+ spc 4
+*   DISK CONTROLLER TYPE
+ spc 2
+ org  1
+DC3    rmb 1 SWTC DC-3
+DMAF2  rmb 1 SWTC DMAF2
+BFD68  rmb 1 SSB BFD-68
+DCB4   rmb 1 SSB DCB-4
+GMX58  rmb 1 GIMIX 5/8
+GMX28  rmb 1 GIMIX #28
+GMX68  rmb 1 GIMIX #68
+PCM    rmb 1 PERCOM
+EXDISK rmb 1 MOTOROLA EXORDISK II
+DYNEX  rmb 1 WESTERN DYNEX
+OSSB   rmb 1 OLD BFD-68
+CDS1   rmb 1 CDS1 MARKSMAN SWTPC HARD DISK
+GMXDMA rmb 1 GIMIX DMA CONTROLLER
+MC6843 rmb 1 Motorola MC6843 used in EXORset
+SYNERTEK rmb 1 Synertek's Controller module
+ spc 2
+*   INTERRUPT DRIVEN DISK DRIVER
+ spc 2
+ org  1
+NO     rmb 1 NON-INTRPT DRIVEN
+YES    rmb 1 INTRPT DRIVEN
+ spc 4
+*   CLOCK MODULE TYPE
+ spc 2
+ org  1
+MPT    rmb 1 SWTPC MP-T TIMER BOARD
+MC6840 rmb 1 6840 TIMER CHIP
+M58167 rmb 1 MM58167 TIME OF DAY CHIP
+ASMCLK rmb 1 Special clock from ASM Bilthoven
+*****
+*
+*  PIA Type definitions 
+*
+ org 0
+b.side rmb 1 Default narmal B-side PIA
+a.side rmb 1 A-side PIA
+MP.L2 rmb 1 SWTPC MP-L2A B-side PIA
+ spc 1
+ PAGE
+*   SYSTEM TYPE SPECIFICATIONS
+ spc 2
+CPUTYP set PCU09
+MPUfreq set OneMHZ Set MPU bus frequency
+DSKTYP set EXDISK
+CLKTYP set ASMCLK
+INTRPT set NO
+ADRPRT set 16 SIXTEEN ADDR PER PORT
+DRVCNT set 2 NUMBER OF DRIVE DESCRIPTORS
+DRVSIZ set 8 eight INCH DRIVES
+REV    set 1 REVISION LEVEL
+ spc 4
+*   DISK PORT ADDRESS
+ spc 2
+DPORT set 0
+ ifeq (DSKTYP-GMX58)*(DSKTYP-DC3)
+DPORT set $E014
+ endc
+ ifeq DSKTYP-DMAF2
+DPORT set $E400
+ endc
+ ifeq DSKTYP-BFD68
+DPORT set $DFFC
+ endc
+ ifeq DSKTYP-DCB4
+ ifeq CPUTYP-SSB
+DPORT set $F760
+ endc
+ ifeq CPUTYP-GIMIX
+DPORT set $E600
+ endc
+ endc
+ ifeq DSKTYP-EXDISK
+DPORT set $EC00
+ endc
+ ifeq DSKTYP-MC6843
+DPORT set $EC00
+ endc
+ ifeq DSKTYP-SYNERTEK
+DPORT set $E800
+ endc
+ spc 4
+*   CLOCK PORT ADDRESS
+ spc 2
+CPORT set 0
+ ifeq CLKTYP-MC6840
+ ifeq  CPUTYP-PCU09
+CPORT set $EF20
+ endc
+ ifeq CPUTYP-MM19
+CPORT set $EF18
+ endc
+ ifeq CPUTYP-GIMIX
+CPORT set $E210
+ endc
+ ifeq CPUTYP-S09
+CPORT set $E090
+ endc
+ ifeq CPUTYP-EXRSET
+CPORT set $EF20
+ endc
+ endc
+ ifeq CLKTYP-MPT
+CPORT set $E050
+ endc
+ ifeq CLKTYP-M58167
+ ifeq CPUTYP-GIMIX
+CPORT set $E220
+ endc
+ ifeq CPUTYP-PCU09
+CPORT set $ED60
+ endc
+ ifeq CPUTYP-SSB
+CPORT set $F700
+ endc
+ endc
+ ifeq CLKTYP-ASMCLK
+CPORT set $EF00
+ endc
+ spc 4
+*   I/O PORT ADDRESSES
+ spc 2
+ ifeq CPUTYP-EXORSR EXORCISER SYSTEM
+A.TERM set $FCF4 ACIA MASTER TERMINAL
+A.T1   set $ECB2 ACIA I/O
+A.P    set $EC10 PIA  PRINTER
+PIASID set a.side
+A.P1   set $ECB6 ACIA PRINTER
+ endc
+ ifeq CPUTYP-PCU09
+A.TERM set $ED00 ACIA master terminal
+A.T1 set $EF10 ACIA secondary terminal
+A.P set $ED80 PIA Printer
+PIASID set a.side
+A.P1 set $EE00 ACIA serial printer
+ endc
+ ifeq CPUTYP-MM19
+A.TERM set $EF14 ACIA MASTER TERMINAL
+A.T1   set $EF28 SECONDARY TERMINAL
+A.P    set $EF10 PIA PRINTER
+PIASID set a.side
+A.P1   set $EF26 ACIA PRINTER
+ endc
+ ifeq CPUTYP-GIMIX
+A.TERM set $E004 ACIA Master Terminal
+A.T1   set $E020 ACIA Secondary Terminal
+A.P    set $E040 PIA Printer (B-side)
+PIASID set a.side
+A.P1   set $E030 ACIA Printer
+ endc
+ ifeq CPUTYP-SWTC
+A.TERM set $E004 ACIA MASTER TERMINAL
+A.T1   set $E010 SECONDARY TERMINAL
+A.P    set $E070 PIA PRINTER
+PIASID set a.side
+A.P1   set $E000 ACIA PRINTER
+ endc
+ ifeq CPUTYP-S09
+A.TERM set $E004 ACIA MASTER TERMINAL
+A.T1   set $E010 SECONDARY TERMINAL
+A.P    set $E080 PIA PRINTER
+PIASID set MP.L2
+A.P1   set $E000 ACIA PRINTER
+ endc
+ ifeq CPUTYP-SSB
+A.TERM set $F7E8 ACIA MASTER TERMINAL
+A.T1   set $F7E0 SECONDARY TERMINAL
+A.P    set $F7F8 PIA PRINTER
+PIASID set a.side
+A.P1   set $F7EA ACIA PRINTER
+ endc
+ ifeq CPUTYP-EXRSET
+A.DSPL set $EF00 MC6845 CRTC is Master Display
+A.KBRD set $EF80 PIA is Master Keyboard
+A.TERM set $ec16 Exorterm terminal
+A.T1   set $EF40 ACIA Secondary Terminal
+A.P    set $EF60 PIA Printer (B-side)
+PIASID set a.side
+A.P1   set $EC16 ACIA Printer
+ endc
+ ifeq CPUTYP-CMS9609
+A.TERM set $E3C0
+A.T1 set $E3C8
+A.P set $E3D0
+PIASID set a.side
+A.P1 set $E3C8
+ endc
+ opt l
