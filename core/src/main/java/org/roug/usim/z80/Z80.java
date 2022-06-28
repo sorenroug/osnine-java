@@ -14,7 +14,7 @@ import org.roug.usim.USimIntel;
 import org.roug.usim.Word;
 import org.roug.usim.WordLSB;
 import org.roug.usim.WordMSB;
-import static org.roug.usim.BitOperations.bittst;
+import static org.roug.usim.BitOperations.*;
 
 /**
  * Implementation of the Zilog Z80 CPU.
@@ -224,6 +224,10 @@ public class Z80 extends USimIntel {
         bus.addMemorySegment(newMemory);
     }
 
+    private void invalidInstruction() {
+        invalid("instruction");
+    }
+
     /**
      * Send a signal to reset the CPU when it is done with the current
      * instruction. Program counter is set to the content for the top
@@ -265,16 +269,7 @@ public class Z80 extends USimIntel {
         activeReg16 = registerHL;
         ir = fetch();
 
-        switch (ir & 0xC0) {
-            case 0x00:
-               execute00(); break;
-            case 0x40:
-               execute40(); break;
-            case 0x80:
-               execute80(); break;
-            case 0xC0:
-               executeC0(); break;
-        }
+        parseIR();
 
         if (isNMIActive()) {
             doNMI();
@@ -303,7 +298,23 @@ public class Z80 extends USimIntel {
         helpCALL(NMI_ADDR);
     }
 
-    /* Opcodes between 0x00 and 0x3F */
+    private void parseIR() {
+        switch (ir & 0xC0) {
+            case 0x00:
+               execute00(); break;
+            case 0x40:
+               execute40(); break;
+            case 0x80:
+               execute80(); break;
+            case 0xC0:
+               executeC0(); break;
+        }
+    }
+
+    /**
+     * Opcodes between 0x00 and 0x3F.
+     * COMPLETE
+     */
     private void execute00() {
         switch (ir) {
             case 0x00: // NOP
@@ -321,7 +332,7 @@ public class Z80 extends USimIntel {
             case 0x06:
                 helpLdMemInxFromAddr(); break;
             case 0x07:
-                helpRLCreg(true); break;
+                helpRLCreg(getRegisterLow3(), true); break;
 
             case 0x08:
                 int regTmp = registerAF.get();
@@ -453,12 +464,13 @@ public class Z80 extends USimIntel {
                 helpCCF(); break;
 
             default:
-                invalid("instruction");
+                invalidInstruction();
         }
     }
 
     /**
      * Opcodes between 0x40 and 0x7F.
+     * COMPLETE
      */
     private void execute40() {
         if (ir == 0x76) {
@@ -470,9 +482,10 @@ public class Z80 extends USimIntel {
 
     /**
      * Opcodes between 0x80 and 0xBF.
+     * COMPLETE
      */
     private void execute80() {
-        Register regFrom = getRegister(ir & 0x07);
+        Register regFrom = getRegisterLow3();
         int value = regFrom.get();
 
         switch (ir & 0xF8) {
@@ -485,7 +498,7 @@ public class Z80 extends USimIntel {
             case 0x98: // SBC
                 helpSubIntFromA(value, true); break;
             case 0xA0: // AND
-                    helpAndIntToA(value); break;
+                helpAndIntToA(value); break;
             case 0xA8: // XOR
                 helpXorIntToA(value); break;
             case 0xB0: // OR
@@ -493,11 +506,13 @@ public class Z80 extends USimIntel {
             case 0xB8: // CP (compare)
                 helpCPIntWithA(value); break;
             default:
-                invalid("instruction");
+                invalidInstruction();
         }
     }
 
-    /* Opcodes between 0xC0 and 0xFF */
+    /**
+     * Opcodes between 0xC0 and 0xFF.
+     */
     private void executeC0() {
         switch (ir) {
             case 0xC0:
@@ -521,13 +536,13 @@ public class Z80 extends USimIntel {
             case 0xC9:
                 helpRET(); break;
             case 0xCA: // JP Z,nn
-                helpCondJump(registerF.isSetZ());
-                break;
+                helpCondJump(registerF.isSetZ()); break;
             case 0xCB: // Rotate instructions
                 executeCB(); break;
             case 0xCC:
                 helpCALLcc(); break;
-            case 0xCD: helpCALL(fetch_word()); break;
+            case 0xCD:
+                helpCALL(fetch_word()); break;
             case 0xCE: // ADC A, n
                 helpAddIntToA(fetch(), true); break;
             case 0xCF:
@@ -545,10 +560,8 @@ public class Z80 extends USimIntel {
                 helpCALLcc(); break;
             case 0xD5:
                 helpPushExt(registerDE); break;
-            case 0xD6: {  // SUB A,n
-                    helpSubIntFromA(fetch(), false);
-                }
-                break;
+            case 0xD6:  // SUB A,n
+                helpSubIntFromA(fetch(), false); break;
             case 0xD7:
                 helpRST(); break;
             case 0xD8:
@@ -557,7 +570,7 @@ public class Z80 extends USimIntel {
                 helpEXX(); break;
             case 0xDA: // JP NC,nn
                 helpCondJump(registerF.isSetC()); break;
-//             case 0xDB: //TODO
+//             case 0xDB: //IN A, (n) TODO
             case 0xDC:
                 helpCALLcc(); break;
             case 0xDD:
@@ -578,15 +591,15 @@ public class Z80 extends USimIntel {
             case 0xE2: // JP PO,nn
                 helpCondJump(!registerF.isSetPV()); break;
             case 0xE3: {
-                int regTmp = registerHL.get();
-                registerHL.set(read_word(registerSP.get()));
+                int regTmp = activeReg16.get();
+                activeReg16.set(read_word(registerSP.get()));
                 write_word(registerSP.get(), regTmp);
                 }
                 break;
             case 0xE4:
                 helpCALLcc(); break;
             case 0xE5:
-                helpPushExt(registerHL); break;
+                helpPushExt(activeReg16); break;
             case 0xE6:
                 helpAndIntToA(fetch()); break;
             case 0xE7:
@@ -629,7 +642,7 @@ public class Z80 extends USimIntel {
             case 0xF8:
                 helpRETcc(); break;
             case 0xF9:
-                registerSP.set(registerHL.get()); break;
+                registerSP.set(activeReg16.get()); break;
             case 0xFA: // JP M,nn
                 helpCondJump(registerF.isSetS());
                 break;
@@ -648,75 +661,49 @@ public class Z80 extends USimIntel {
                 helpRST(); break;
 
             default:
-                invalid("instruction");
+                invalidInstruction();
         }
     }
 
     private void executeCB() {
         ir = fetch();
+        if (ir >= 0x40) {
+            helpBitOps();
+            return;
+        }
         switch (ir & 0xF8) {
-            case 0x00: helpRLCreg(false); break;
+            case 0x00: helpRLCreg(getRegisterLow3(), false); break;
             case 0x08: helpRRCreg(false); break;
             case 0x10: helpRLreg(false); break;
             case 0x18: helpRRreg(false); break;
             case 0x20: helpSLreg(0); break;
-            case 0x28: helpSRreg(0); break;
+            case 0x28: helpSRreg(1); break;
             case 0x30: helpSLreg(1); break; // Undocumented
-            case 0x38: helpSRreg(1); break;
-            case 0x40: //TODO
-            case 0x48: //TODO
-            case 0x50: //TODO
-            case 0x58: //TODO
-            case 0x60: //TODO
-            case 0x68: //TODO
-            case 0x70: //TODO
-            case 0x78: helpBitTest(); break;
+            case 0x38: helpSRreg(0); break;
             default: 
-                invalid("instruction");
+                invalidInstruction();
         }
     }
 
-
+    private void helpBitOps() {
+        Register reg = getRegisterLow3();
+        switch (ir & 0xC0) {
+        case 0x40:
+            helpBitTest(reg); break;
+        case 0x80: // RES
+            helpBitClear(reg); break;
+        case 0xC0: // SET
+            helpBitSet(reg); break;
+        }
+    }
     /**
      * Execute one extended (0xDD or 0xFD) instruction.
+     * If the instruction is unknown, then 0xDD/0xFD is treated as a NOP.
      */
     private void executeDDorFD() {
         ir = fetch();
 
-        if (ir >= 0x40 && ir < 0x70) {
-            helpLdRegNoFlags();
-            return;
-        }
-
         switch (ir) {
-            case 0x09:
-                helpADD16(false);break;
-            case 0x19:
-                helpADD16(false);break;
-            case 0x21:
-                activeReg16.set(fetch_word()); break;
-            case 0x22:
-                write_word(fetch_word(), activeReg16.get()); break;
-            case 0x23:
-                helpINC16(); break;
-            case 0x24: break;  //TODO implement
-            case 0x25: break;  //TODO implement
-            case 0x26: break;  //TODO implement
-            case 0x29:
-                helpADD16(false);break;
-            case 0x2A:
-                activeReg16.set(read_word(fetch_word())); break;
-            case 0x2B:
-                helpDEC16(); break;
-            case 0x34:
-                helpINC8(); break;
-            case 0x35:
-                helpDEC8(); break;
-            case 0x36: helpLdMemInxFromAddr(); // LD (IX+d), n
-                break;
-            case 0x39:
-                helpADD16(false);break;
-
             case 0x70:
             case 0x71:
             case 0x72:
@@ -726,152 +713,148 @@ public class Z80 extends USimIntel {
             // 0x76 is undocumented halt
             case 0x77:
                 helpLdMemInxFromReg(); break;
-
-            case 0x7E:
-                helpLdRegNoFlags(); break;
-            case 0x86: { // ADD
-                    Register regFrom = getRegister(ir & 0x07);
-                    helpAddIntToA(regFrom.get(), false);
-                }
-                break;
-            case 0x8E: { // ADC
-                    Register regFrom = getRegister(ir & 0x07);
-                    helpAddIntToA(regFrom.get(), true);
-                }
-                break;
-            case 0x96: {  // SUB
-                    Register regFrom = getRegister(ir & 0x07);
-                    int value = regFrom.get();
-                    helpSubIntFromA(value, false);
-                }
-                break;
-            case 0x9E: { // SBC
-                    Register regFrom = getRegister(ir & 0x07);
-                    int value = regFrom.get();
-                    helpSubIntFromA(value, true);
-                }
-                break;
-
-            case 0xA6: { // AND
-                    Register regFrom = getRegister(ir & 0x07);
-                    helpAndIntToA(regFrom.get());
-                }
-                break;
-            case 0xAE: { // XOR
-                    Register regFrom = getRegister(ir & 0x07);
-                    helpXorIntToA(regFrom.get());
-                }
-                break;
-            case 0xB6: { // OR
-                    Register regFrom = getRegister(ir & 0x07);
-                    helpOrIntToA(regFrom.get());
-                }
-                break;
-            case 0xBE: { // CP (compare)
-                    Register regFrom = getRegister(ir & 0x07);
-                    int value = regFrom.get();
-                    helpCPIntWithA(value);
-                }
-                break;
-            // 0xC8 Bit manipulation //TODO
-            // 0xCB Rotate / Bit manipulation //TODO
-            // 0xE1 = ld IX, (SP) 16 bit load group //TODO
-            case 0xE3: // EX (SP), IX
-                int regTmp = activeReg16.get();
-                activeReg16.set(read_word(registerSP.get()));
-                write_word(registerSP.get(), regTmp);
-                break;
-            case 0xE5:
-                helpPushExt(activeReg16); break;
-            // 0xE6 Push instruction
-            case 0xE9:
-                pc.set(activeReg16.get()); break;
-            case 0xF9:
-                registerSP.set(activeReg16.get()); break;
+            case 0xCB:
+                helpBitOpDisplaced(); break;
             default:
-                invalid("instruction"); break;
+                parseIR();
         }
     }
 
     /**
      * Execute one extended (0xED) instruction.
+     * Instructions in the range 00 to 3F have no effect.
+     * Instructions in the range 80 to BF, except those documented as block
+     * loads, compares, ins or out, have no effect.
+     * Instructions in the range C0 to FF have no effect.
+     * The holes in the range 40 to 7F typically duplicate documented instructions
      */
     private void executeED() {
         ir = fetch();
 
         switch (ir) {
+            //case 0x40: TODO IN r(C)
+            //case 0x41: TODO OUT (C), r
             case 0x42:
-                registerHL.add(- registerF.getC() - registerBC.get());
+                helpSBCHL();
                 break;
             case 0x43:
                 write_word(fetch_word(), registerBC.get()); break;
             case 0x44:
-                neg(); break;
+                helpNEG(); break;
             case 0x45:
                 helpRETN(); break;
             case 0x46:
                 interruptMode = 0; break;
+            //case 0x47: TODO LD I,A
+            //case 0x48: TODO IN r(C)
+            //case 0x49: TODO OUT (C), r
             case 0x4A: // ADC
                 helpADD16(true); break;
+            //case 0x4B: TODO LD dd, (nn)
             case 0x4C: // Undocumented
-                neg(); break;
+                helpNEG(); break;
             case 0x4D:
                 helpRETI(); break;
+            case 0x4E: // Undocumented Set IM to an undefined state
+                interruptMode = 0; break;
             case 0x4F:
                 registerR.set(registerA.get()); break;
 
+            //case 0x50: TODO IN r(C)
+            //case 0x51: TODO OUT (C), r
             case 0x52:
-                registerHL.add(- registerF.getC() - registerDE.get());
+                helpSBCHL();
                 break;
             case 0x53:
                 write_word(fetch_word(), registerDE.get()); break;
             case 0x54: // Undocumented
-                neg(); break;
+                helpNEG(); break;
+            case 0x55: // Undocumented
+                helpRETN(); break;
             case 0x56:
                 interruptMode = 1; break;
             case 0x57:
                 helpLdFromReg(registerA, registerI); break;
+            //case 0x58: TODO IN r(C)
+            //case 0x59: TODO OUT (C), r
             case 0x5A: // ADC
                 helpADD16(true); break;
+            //case 0x5B: TODO LD dd, (nn)
             case 0x5C: // Undocumented
-                neg(); break;
+                helpNEG(); break;
+            case 0x5D:
+                helpRETI(); break;
             case 0x5E:
                 interruptMode = 2; break;
             case 0x5F:
                 helpLdFromReg(registerA, registerR); break;
 
+            //case 0x60: TODO IN r(C)
+            //case 0x61: TODO OUT (C), r
             case 0x62:
-                registerHL.add(- registerF.getC() - registerHL.get());
+                helpSBCHL();
                 break;
             case 0x63:
                 write_word(fetch_word(), registerHL.get()); break;
             case 0x64: // Undocumented
-                neg(); break;
+                helpNEG(); break;
+            case 0x65: // Undocumented
+                helpRETN(); break;
+            case 0x66:
+                interruptMode = 0; break;
+            case 0x67:
+                helpRRD(); break;
+            //case 0x68: TODO IN r(C)
+            //case 0x69: TODO OUT (C), r
             case 0x6A: // ADC
                 helpADD16(true); break;
+            //case 0x6B: TODO LD dd, (nn)
             case 0x6C: // Undocumented
-                neg(); break;
+                helpNEG(); break;
+            case 0x6D:
+                helpRETI(); break;
+            case 0x6E: // Undocumented Set IM to an undefined state
+                interruptMode = 0; break;
+            case 0x6F:
+                helpRLD(); break;
 
+            //case 0x70: TODO Undocumented IN F, (C)
+            //case 0x71: TODO Undocumented OUT (C), 0
             case 0x72:
-                registerHL.add(- registerF.getC() - registerSP.get());
+                helpSBCHL();
                 break;
             case 0x73:
                 write_word(fetch_word(), registerSP.get()); break;
             case 0x74: // Undocumented
-                neg(); break;
+                helpNEG(); break;
+            case 0x75: // Undocumented
+                helpRETN(); break;
+            case 0x76:
+                interruptMode = 1; break;
             case 0x77: // Undocumented NOP
                 break;
+            //case 0x78: TODO IN r(C)
+            //case 0x79: TODO OUT (C), r
             case 0x7A: // ADC
                 helpADD16(true); break;
+            //case 0x7B: TODO LD dd, (nn)
             case 0x7C: // Undocumented
-                neg(); break;
+                helpNEG(); break;
+            case 0x7D:
+                helpRETI(); break;
+            case 0x7E:
+                interruptMode = 2; break;
             case 0x7F: // Undocumented NOP
                 break;
 
             case 0xA0: helpLDI(); break;
             case 0xA1: helpCPI(); break;
+            //case 0xA2: TODO INI
+            //case 0xA3: TODO OUTI
             case 0xA8: helpLDD(); break;
             case 0xA9: helpCPD(); break;
+            //case 0xAA: TODO IND
+            //case 0xAB: TODO OUTD
 
             case 0xB0: // LDIR
                 helpLDI();
@@ -883,6 +866,8 @@ public class Z80 extends USimIntel {
                 if (registerBC.get() != 0 && !registerF.isSetZ())
                     pc.add(-2);
                 break;
+            //case 0xB2: TODO INIR
+            //case 0xB3: TODO OTIR
             case 0xB8: // LDDR
                 helpLDD();
                 if (registerBC.get() != 0)
@@ -893,9 +878,11 @@ public class Z80 extends USimIntel {
                 if (registerBC.get() != 0 && !registerF.isSetZ())
                     pc.add(-2);
                 break;
+            //case 0xBA: TODO INDR
+            //case 0xBB: TODO OTDR
 
             default:
-                invalid("instruction"); break;
+                invalidInstruction();
         }
     }
 
@@ -905,6 +892,10 @@ public class Z80 extends USimIntel {
     private Register getRegister(int regCode) {
         Register reg = activeFromRegTbl[regCode];
         return reg.getRealRegister();
+    }
+
+    private Register getRegisterLow3() {
+        return getRegister(ir & 0x07);
     }
 
     /**
@@ -920,7 +911,7 @@ public class Z80 extends USimIntel {
      *
      * @return The index register offset value in the range -128..+127
      */
-    private int getIndexOffset() {
+    private int fetchIndexOffset() {
         int index = fetch();
         if (index > 0x7f)
             return (index - 256);
@@ -940,7 +931,7 @@ public class Z80 extends USimIntel {
      * Jump to relative location dependent on bit in flag register.
      */
     private void helpCondJR(boolean test) {
-        int offset = getIndexOffset();
+        int offset = fetchIndexOffset();
         if (test) {
             pc.add(offset);
         }
@@ -1032,7 +1023,9 @@ public class Z80 extends USimIntel {
     }
 
     /**
+     * LD A,I and LD A,R.
      * Load one register into another with flag operations.
+     * Sets P/V flag to IFF2.
      */
     private void helpLdFromReg(UByte regTo, UByte regFrom) {
         registerF.setS(regFrom.get() > 0x7F);
@@ -1043,26 +1036,30 @@ public class Z80 extends USimIntel {
         regTo.set(regFrom.get());
     }
 
+    /** LR R,n and LD (IX+d), n. */
+    private void helpLdMemInxFromAddr() {
+        Register regTo = getRegister((ir & 0x38) >> 3);
+        regTo.set(fetch());
+    }
+
+    /**
+     * LD R,r.
+     * CPU behaving inconsistently in regTo.
+     */
     private void helpLdRegNoFlags() {
-        Register regFrom = getRegister(ir & 0x07);
+        Register regFrom = getRegisterLow3();
         Register regTo = getRegisterMain((ir & 0x38) >> 3);
         regTo.set(regFrom.get());
     }
 
-    /* LD (IX+d), r. Opcodes 0xDD, 0x7?
+    /**
+     * LD (IX+d), r. -- Opcodes 0xDD, 0x7?
      * CPU behaving inconsistently in regFrom.
      */
     private void helpLdMemInxFromReg() {
         Register regFrom = getRegisterMain(ir & 0x07);
         Register regTo = getRegister((ir & 0x38) >> 3);
         regTo.set(regFrom.get());
-    }
-
-    /* LD (IX+d), n
-     */
-    private void helpLdMemInxFromAddr() {
-        Register regTo = getRegister((ir & 0x38) >> 3);
-        regTo.set(fetch());
     }
 
     /** Block move increment. */
@@ -1123,7 +1120,7 @@ public class Z80 extends USimIntel {
     /**
      * Negate accumulator - 2's complement.
      */
-    private void neg() {
+    private void helpNEG() {
         registerF.setPV(registerA.get() == 0x80);
         registerF.setC(registerA.get() == 0x00);
         registerA.set(0 - registerA.intValue());
@@ -1271,6 +1268,25 @@ public class Z80 extends USimIntel {
     }
 
     /**
+     * Subtract from HL with carry.
+     */
+    private void helpSBCHL() {
+        int regCode = (ir & 0x30) >> 4;
+        Word targetReg = getRegister16(regCode);
+        int subtrahend = targetReg.get();
+        int value = registerHL.get();
+        int halfCarry = (value & 0x0fff) - (subtrahend & 0x0fff) - registerF.getC();
+        registerF.setH(bittst(halfCarry, 12));
+        int t = value - subtrahend - registerF.getC();
+        registerF.setC(bittst(t, 16));
+        t &= 0xFFFF;
+        registerHL.set(t);
+        registerF.setS(t > 0x7FFF);
+        registerF.setZ(t == 0);
+        registerF.setN(true);
+    }
+
+    /**
      * Add value to register A with or without carry flag.
      */
     private void helpAddIntToA(int value, boolean withCarry) {
@@ -1287,13 +1303,13 @@ public class Z80 extends USimIntel {
         registerF.setN(false);
     }
 
-    private int subtractionFlags(int value, boolean withCarry) {
+    private int subtractionFlags(int value, int subtrahend, boolean withCarry) {
 
-        int halfCarry = (registerA.get() & 0x0f) + (value & 0x0f);
+        int halfCarry = (value & 0x0f) + (subtrahend & 0x0f);
         registerF.setH(bittst(halfCarry, 4));
 
-        int t = registerA.get() - value - (withCarry?registerF.getC():0);
-        registerF.setPV(bittst(registerA.get() ^ value ^ t ^ (t >> 1), 7));
+        int t = value - subtrahend - (withCarry?registerF.getC():0);
+        registerF.setPV(bittst(value ^ subtrahend ^ t ^ (t >> 1), 7));
         registerF.setC(bittst(t, 8));
         t &= 0xFF;
         registerF.setS(t > 0x7F);
@@ -1306,8 +1322,8 @@ public class Z80 extends USimIntel {
      * Compare value with content of Register A.
      * This is a subtraction without storing the result.
      */
-    private void helpCPIntWithA(int value) {
-        int t = subtractionFlags(value, false);
+    private void helpCPIntWithA(int subtrahend) {
+        int t = subtractionFlags(registerA.get(), subtrahend, false);
     }
 
     /**
@@ -1315,10 +1331,11 @@ public class Z80 extends USimIntel {
      * Result is stored in register A.
      * TODO: Check carry and PV flag
      */
-    private void helpSubIntFromA(int value, boolean withCarry) {
-        int t = subtractionFlags(value, withCarry);
+    private void helpSubIntFromA(int subtrahend, boolean withCarry) {
+        int t = subtractionFlags(registerA.get(), subtrahend, withCarry);
         registerA.set(t);
     }
+
     /**
      * AND value to register A.
      */
@@ -1418,7 +1435,7 @@ public class Z80 extends USimIntel {
      * Carry flag. The previous contents of the Carry flag are copied to bit 0.
      */
     private void helpRLreg(boolean stopShort) {
-        Register reg = getRegister(ir & 0x07);
+        Register reg = getRegisterLow3();
         int prevC = registerF.getC();
         registerF.setC(reg.get() >= 0x80);
         int newVal = ((reg.get() << 1) | prevC) & 0xFF;
@@ -1438,7 +1455,7 @@ public class Z80 extends USimIntel {
      * Carry flag. The previous contents of the Carry flag are copied to bit 7.
      */
     private void helpRRreg(boolean stopShort) {
-        Register reg = getRegister(ir & 0x07);
+        Register reg = getRegisterLow3();
         int prevC = registerF.getC() << 7;
         registerF.setC(bittst(reg.get(), 0));
         int newVal = (reg.get() >> 1) | prevC;
@@ -1457,7 +1474,7 @@ public class Z80 extends USimIntel {
      * Carry flag and also to bit 7.
      */
     private void helpRRCreg(boolean stopShort) {
-        Register reg = getRegister(ir & 0x07);
+        Register reg = getRegisterLow3();
         boolean newC = bittst(reg.get(), 0);
         registerF.setC(newC);
         int newVal = (reg.get() >> 1) | (newC ? 0x80 : 0);
@@ -1475,8 +1492,7 @@ public class Z80 extends USimIntel {
      * The contents of register r are rotated left 1 bit position. The contents
      * of bit 7 are copied to the Carry flag and also to bit 0.
      */
-    private void helpRLCreg(boolean stopShort) {
-        Register reg = getRegister(ir & 0x07);
+    private void helpRLCreg(Register reg, boolean stopShort) {
         boolean bit7 = bittst(reg.get(), 7);
         int newVal = ((reg.get() << 1) | (bit7?1:0)) & 0xFF;
         reg.set(newVal);
@@ -1495,7 +1511,7 @@ public class Z80 extends USimIntel {
      * of bit 7 are copied to the Carry flag. Bit 0 is set to 1.
      */
     private void helpSLreg(int bit0) {
-        Register reg = getRegister(ir & 0x07);
+        Register reg = getRegisterLow3();
         boolean bit7 = bittst(reg.get(), 7);
         int newVal = (reg.get() << 1) | bit0;
         reg.set(newVal);
@@ -1513,7 +1529,7 @@ public class Z80 extends USimIntel {
      * of bit 0 are copied to the Carry flag. Bit 7 is kept as is.
      */
     private void helpSRreg(int bit7) {
-        Register reg = getRegister(ir & 0x07);
+        Register reg = getRegisterLow3();
         boolean bit0 = bittst(reg.get(), 0);
         if (bit7 == 1) bit7 = bittst(reg.get(), 7) ? 0x80 : 0;
         int newVal = (reg.get() >> 1) | bit7;
@@ -1526,19 +1542,99 @@ public class Z80 extends USimIntel {
         registerF.setPV(parityOf(newVal));
     }
 
+    /**
+     * BCD digit rotate instruction.
+     */
+    private void helpRRD() {
+        int a = registerA.get();
+        int v = read(registerHL.get());
+        write(registerHL, ((a << 4) & 0xF0) | ((v >> 4) & 0x0F));
+        int newVal = (a & 0xF0) | (v & 0x0F);
+        registerA.set(newVal);
+        registerF.setH(false);
+        registerF.setN(false);
+        registerF.setZ(newVal == 0);
+        registerF.setS(newVal > 0x7F);
+        registerF.setPV(parityOf(newVal));
+    }
+
+    /**
+     * BCD digit rotate instruction.
+     */
+    private void helpRLD() {
+        int a = registerA.get();
+        int v = read(registerHL.get());
+        write(registerHL, ((v << 4) & 0xF0) | (a & 0x0F));
+        int newVal = (a & 0xF0) | ((v >> 4) & 0x0F);
+        registerA.set(newVal);
+        registerF.setH(false);
+        registerF.setN(false);
+        registerF.setZ(newVal == 0);
+        registerF.setS(newVal > 0x7F);
+        registerF.setPV(parityOf(newVal));
+    }
+
 /*======================================================
  * Bit Test, Set & Reset group
  ======================================================*/
 
+    
     /**
      * Test a bit in a register.
      */
-    private void helpBitTest() {
-        Register reg = getRegister(ir & 0x07);
+    private void helpBitTest(Register reg) {
         int bitnum = (ir & 0x38) >> 3;
         registerF.setZ(!bittst(reg.get(), bitnum));
         registerF.setH(true);
         registerF.setN(false);
+    }
+
+    private void helpBitSet(Register reg) {
+        int bitnum = (ir & 0x38) >> 3;
+        reg.set(bitset(reg.get(), bitnum));
+    }
+
+    private void helpBitClear(Register reg) {
+        int bitnum = (ir & 0x38) >> 3;
+        reg.set(bitclr(reg.get(), bitnum));
+    }
+
+    /**
+     * Test a bit in a register for IX+disp and IY+disp.
+     */
+    private void helpBitOpDisplaced() {
+        Register reg = getRegister(6);
+        ir = fetch();
+
+//LOGGER.info("IR:{} Reg:{}", ir, reg);
+        switch (ir & 0xC0) {
+        case 0x00: // Rotate etc. TODO
+            indexedRots(reg);
+            break;
+        case 0x40: // BIT
+            helpBitTest(reg); break;
+        case 0x80: // RES
+            helpBitClear(reg); break;
+        case 0xC0: // SET
+            helpBitSet(reg);
+            break;
+        default:
+            invalidInstruction();
+        }
+
+        if ((ir & 0xC0) != 0x40) {
+            int sideEffectCode = ir & 0x07;
+            if (sideEffectCode != 0x06) {
+                Register sideEffectReg = getRegisterMain(sideEffectCode);
+                sideEffectReg.set(reg.get());
+            }
+        }
+    }
+
+    private void indexedRots(Register reg) {
+        switch (ir) {
+        case 0x06: helpRLCreg(reg, false); break;
+        }
     }
 
     private final static boolean parityTable[] = {

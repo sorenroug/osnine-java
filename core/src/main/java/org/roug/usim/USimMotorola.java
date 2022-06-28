@@ -3,7 +3,7 @@ package org.roug.usim;
 /**
  * Word memory access routines for big-endian (Motorola type).
  */ 
-public class USimMotorola extends USim {
+public abstract class USimMotorola extends USim {
 
     /**
      * Constructor.
@@ -52,15 +52,4 @@ public class USimMotorola extends USim {
         write_word(offset.intValue(), val.intValue());
     }
 
-    @Override
-    public void reset() {
-    }
-
-    @Override
-    public void status() {
-    }
-
-    @Override
-    public void execute() {
-    }
 }

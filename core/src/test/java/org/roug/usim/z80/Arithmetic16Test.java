@@ -42,6 +42,25 @@ public class Arithmetic16Test extends Framework {
         assertFalse(myTestCPU.registerF.isSetN());
     }
 
+    /* SBC HL, BC
+     */
+    @Test
+    public void sbcRegBCFromHL() {
+        myTestCPU.registerHL.set(0x333);
+        myTestCPU.registerBC.set(0x555);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(true);
+        writeSeq(0x0B00, 0xED, 0x42);
+        execSeq(0xB00, 0xB02);
+        assertEquals(0xFDDD, myTestCPU.registerHL.get());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetPV());
+        assertTrue(myTestCPU.registerF.isSetN());
+        assertTrue(myTestCPU.registerF.isSetC());
+    }
+
     /* ADC HL, BC
      */
     @Test
