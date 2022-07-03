@@ -302,10 +302,10 @@ public class Arithmetic8Test extends Framework {
     }
 
     /* SUB A,r
-     * Subtract 0x11 from 0x44.
      */
     @Test
     public void subRegFromA() {
+        // Subtract 0x11 from 0x44.
         myTestCPU.registerA.set(0x44);
         myTestCPU.registerL.set(0x11);
         myTestCPU.registerF.clear();
@@ -316,6 +316,36 @@ public class Arithmetic8Test extends Framework {
         assertFalse(myTestCPU.registerF.isSetZ());
         assertFalse(myTestCPU.registerF.isSetH());
         assertTrue(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+
+        // Subtract 0x44 from 0x11.
+        myTestCPU.registerA.set(0x11);
+        myTestCPU.registerL.set(0x44);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x95); // SUB A,L
+        execSeq(0xB00, 0xB01);
+        assertEquals(0xCD, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetC());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+        assertFalse(myTestCPU.registerF.isSetPV());
+
+        // Subtract 0xC0 from 0x7F causing overflow an carry
+        myTestCPU.registerA.set(0x7F);
+        myTestCPU.registerH.set(0xC0);
+        myTestCPU.registerF.clear();
+        myTestCPU.write(0x0B00, 0x94); // SUB A,H
+        execSeq(0xB00, 0xB01);
+        assertEquals(0xBF, myTestCPU.registerA.get());
+        assertTrue(myTestCPU.registerF.isSetC());
+        assertTrue(myTestCPU.registerF.isSetS());
+        assertFalse(myTestCPU.registerF.isSetZ());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertTrue(myTestCPU.registerF.isSetN());
+        assertTrue(myTestCPU.registerF.isSetPV());
+
     }
 
     /* SBC A,r

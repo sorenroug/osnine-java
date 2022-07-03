@@ -136,5 +136,27 @@ public class BusZ80
         updateCycle();
     }
 
+    /**
+     * Install a ports segment as the last item of the list of segments.
+     */
+    @Override
+    public void addPortSegment(MemorySegment newMemory) {
+        if (ports == null) {
+            ports = newMemory;
+        } else {
+            ports.addMemorySegment(newMemory);
+        }
+    }
+
+    /**
+     * Install a ports segment as the first item of the list of segments.
+     */
+    @Override
+    public void insertPortSegment(MemorySegment newMemory) {
+        newMemory.insertMemorySegment(ports);
+        ports = newMemory;
+    }
+
+
 }
 

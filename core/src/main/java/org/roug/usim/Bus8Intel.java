@@ -85,5 +85,9 @@ public interface Bus8Intel extends MemoryBus {
      */
     void writeIO(int offset, int val);
 
+    void addPortSegment(MemorySegment newMemory);
+
+    void insertPortSegment(MemorySegment newMemory);
+
 }
 

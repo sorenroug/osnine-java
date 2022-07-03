@@ -202,7 +202,7 @@ public class ExchangeBlockTest extends Framework {
         assertEquals(0x33, myTestCPU.read(0x0225)); // Check that it halted correctly
     }
 
-    /* LDIR - opcode 0xED, 0xB8
+    /* LDDR - opcode 0xED, 0xB8
      * TODO: Test condition flags.
      */
     @Test

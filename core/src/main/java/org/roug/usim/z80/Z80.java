@@ -85,7 +85,9 @@ public class Z80 extends USimIntel {
     final UByte registerI = new UByte("I");
 
     /** Memory Refresh (R) Register. */
-    final UByte registerR = new UByte("R");
+    private int registerR;
+    /** Bit 7 of registerR. Only the bits 0-6 are used for counting. */
+    private int registerRb7;
 
     /** Accumulator AF. Combined from A and F. */
     final RegisterBytePair registerAF = new RegisterBytePair("AF", registerA, registerF);
@@ -158,7 +160,7 @@ public class Z80 extends USimIntel {
     private Register activeFromRegTbl[] = regTable;
 
     /** Prevent NMI handling. */
-    private boolean inhibitNMI;
+//     private boolean inhibitNMI;
 
     /** RESET signalled. */
     private volatile boolean resetSignal;
@@ -228,6 +230,18 @@ public class Z80 extends USimIntel {
         invalid("instruction");
     }
 
+    @Override
+    public int fetch() {
+        registerR++;
+        return super.fetch();
+    }
+
+    @Override
+    public int fetch_word() {
+        registerR += 2;
+        return super.fetch_word();
+    }
+
     /**
      * Send a signal to reset the CPU when it is done with the current
      * instruction. Program counter is set to the content for the top
@@ -248,7 +262,8 @@ public class Z80 extends USimIntel {
         iff2 = false;
         pc.set(0);
         registerI.set(0);
-        registerR.set(0);
+        registerR = 0;
+        registerRb7 = 0;
     }
 
     /**
@@ -555,7 +570,7 @@ public class Z80 extends USimIntel {
             case 0xD2: // JP NC,nn
                 helpCondJump(!registerF.isSetC()); break;
             case 0xD3:
-                outNA(); break;
+                helpOutNA(); break;
             case 0xD4:
                 helpCALLcc(); break;
             case 0xD5:
@@ -570,7 +585,8 @@ public class Z80 extends USimIntel {
                 helpEXX(); break;
             case 0xDA: // JP NC,nn
                 helpCondJump(registerF.isSetC()); break;
-//             case 0xDB: //IN A, (n) TODO
+            case 0xDB: //IN A, (n)
+                helpInAn(); break;
             case 0xDC:
                 helpCALLcc(); break;
             case 0xDD:
@@ -732,11 +748,12 @@ public class Z80 extends USimIntel {
         ir = fetch();
 
         switch (ir) {
-            //case 0x40: TODO IN r(C)
-            //case 0x41: TODO OUT (C), r
+            case 0x40: // IN r(C)
+                helpInRC(); break;
+            case 0x41: // OUT (C), r
+                helpOutCr(); break;
             case 0x42:
-                helpSBCHL();
-                break;
+                helpSBCHL(); break;
             case 0x43:
                 write_word(fetch_word(), registerBC.get()); break;
             case 0x44:
@@ -745,12 +762,16 @@ public class Z80 extends USimIntel {
                 helpRETN(); break;
             case 0x46:
                 interruptMode = 0; break;
-            //case 0x47: TODO LD I,A
-            //case 0x48: TODO IN r(C)
-            //case 0x49: TODO OUT (C), r
+            case 0x47: // LD I,A
+                registerI.set(registerA.get()); break;
+            case 0x48: // IN r(C)
+                helpInRC(); break;
+            case 0x49: // OUT (C), r
+                helpOutCr(); break;
             case 0x4A: // ADC
                 helpADD16(true); break;
-            //case 0x4B: TODO LD dd, (nn)
+            case 0x4B: // LD dd, (nn)
+                registerBC.set(read_word(fetch_word())); break;
             case 0x4C: // Undocumented
                 helpNEG(); break;
             case 0x4D:
@@ -758,10 +779,14 @@ public class Z80 extends USimIntel {
             case 0x4E: // Undocumented Set IM to an undefined state
                 interruptMode = 0; break;
             case 0x4F:
-                registerR.set(registerA.get()); break;
+                registerR = registerA.get();
+                registerRb7 = registerR & 0x80;
+                break;
 
-            //case 0x50: TODO IN r(C)
-            //case 0x51: TODO OUT (C), r
+            case 0x50: // IN r(C)
+                helpInRC(); break;
+            case 0x51: // OUT (C), r
+                helpOutCr(); break;
             case 0x52:
                 helpSBCHL();
                 break;
@@ -774,23 +799,30 @@ public class Z80 extends USimIntel {
             case 0x56:
                 interruptMode = 1; break;
             case 0x57:
-                helpLdFromReg(registerA, registerI); break;
-            //case 0x58: TODO IN r(C)
-            //case 0x59: TODO OUT (C), r
+                helpLdFromReg(registerA, registerI.get()); break;
+            case 0x58: // IN r(C)
+                helpInRC(); break;
+            case 0x59: // OUT (C), r
+                helpOutCr(); break;
             case 0x5A: // ADC
                 helpADD16(true); break;
-            //case 0x5B: TODO LD dd, (nn)
+            case 0x5B: // LD dd, (nn)
+                registerDE.set(read_word(fetch_word())); break;
             case 0x5C: // Undocumented
                 helpNEG(); break;
             case 0x5D:
                 helpRETI(); break;
             case 0x5E:
                 interruptMode = 2; break;
-            case 0x5F:
-                helpLdFromReg(registerA, registerR); break;
-
-            //case 0x60: TODO IN r(C)
-            //case 0x61: TODO OUT (C), r
+            case 0x5F: {
+                int rVal = (registerRb7 & 0x80) | (registerR & 0x7F);
+                helpLdFromReg(registerA, rVal);
+                }
+                 break;
+            case 0x60: // IN r(C)
+                helpInRC(); break;
+            case 0x61: // OUT (C), r
+                helpOutCr(); break;
             case 0x62:
                 helpSBCHL();
                 break;
@@ -804,11 +836,14 @@ public class Z80 extends USimIntel {
                 interruptMode = 0; break;
             case 0x67:
                 helpRRD(); break;
-            //case 0x68: TODO IN r(C)
-            //case 0x69: TODO OUT (C), r
+            case 0x68: // IN r(C)
+                helpInRC(); break;
+            case 0x69: // OUT (C), r
+                helpOutCr(); break;
             case 0x6A: // ADC
                 helpADD16(true); break;
-            //case 0x6B: TODO LD dd, (nn)
+            case 0x6B: // LD dd, (nn)
+                registerHL.set(read_word(fetch_word())); break;
             case 0x6C: // Undocumented
                 helpNEG(); break;
             case 0x6D:
@@ -818,8 +853,10 @@ public class Z80 extends USimIntel {
             case 0x6F:
                 helpRLD(); break;
 
-            //case 0x70: TODO Undocumented IN F, (C)
-            //case 0x71: TODO Undocumented OUT (C), 0
+            case 0x70: // Undefined IN F, (C)
+                helpInRC(); break;
+            case 0x71: // Undocumented OUT (C), 0
+                bus.writeIO(registerC.get(), 0xFF); break;
             case 0x72:
                 helpSBCHL();
                 break;
@@ -833,11 +870,14 @@ public class Z80 extends USimIntel {
                 interruptMode = 1; break;
             case 0x77: // Undocumented NOP
                 break;
-            //case 0x78: TODO IN r(C)
-            //case 0x79: TODO OUT (C), r
+            case 0x78: // IN r(C)
+                helpInRC(); break;
+            case 0x79: // OUT (C), r
+                helpOutCr(); break;
             case 0x7A: // ADC
                 helpADD16(true); break;
-            //case 0x7B: TODO LD dd, (nn)
+            case 0x7B: // LD dd, (nn)
+                registerSP.set(read_word(fetch_word())); break;
             case 0x7C: // Undocumented
                 helpNEG(); break;
             case 0x7D:
@@ -849,12 +889,12 @@ public class Z80 extends USimIntel {
 
             case 0xA0: helpLDI(); break;
             case 0xA1: helpCPI(); break;
-            //case 0xA2: TODO INI
-            //case 0xA3: TODO OUTI
+            case 0xA2: helpINDecInc(1); break;
+            case 0xA3: helpOUTDecInc(1); break;
             case 0xA8: helpLDD(); break;
             case 0xA9: helpCPD(); break;
-            //case 0xAA: TODO IND
-            //case 0xAB: TODO OUTD
+            case 0xAA: helpINDecInc(-1); break;
+            case 0xAB: helpOUTDecInc(-1); break;
 
             case 0xB0: // LDIR
                 helpLDI();
@@ -866,8 +906,16 @@ public class Z80 extends USimIntel {
                 if (registerBC.get() != 0 && !registerF.isSetZ())
                     pc.add(-2);
                 break;
-            //case 0xB2: TODO INIR
-            //case 0xB3: TODO OTIR
+            case 0xB2:
+                helpINDecInc(1);
+                if (registerB.get() != 0)
+                    pc.add(-2);
+                break;
+            case 0xB3: // OTIR
+                helpOUTDecInc(1);
+                if (registerB.get() != 0)
+                    pc.add(-2);
+                break;
             case 0xB8: // LDDR
                 helpLDD();
                 if (registerBC.get() != 0)
@@ -878,8 +926,16 @@ public class Z80 extends USimIntel {
                 if (registerBC.get() != 0 && !registerF.isSetZ())
                     pc.add(-2);
                 break;
-            //case 0xBA: TODO INDR
-            //case 0xBB: TODO OTDR
+            case 0xBA:
+                helpINDecInc(-1);
+                if (registerB.get() != 0)
+                    pc.add(-2);
+                break;
+            case 0xBB: // OTDR
+                helpOUTDecInc(-1);
+                if (registerB.get() != 0)
+                    pc.add(-2);
+                break;
 
             default:
                 invalidInstruction();
@@ -1027,13 +1083,13 @@ public class Z80 extends USimIntel {
      * Load one register into another with flag operations.
      * Sets P/V flag to IFF2.
      */
-    private void helpLdFromReg(UByte regTo, UByte regFrom) {
-        registerF.setS(regFrom.get() > 0x7F);
-        registerF.setZ(regFrom.get() == 0);
+    private void helpLdFromReg(UByte regTo, int regFrom) {
+        registerF.setS(regFrom > 0x7F);
+        registerF.setZ(regFrom == 0);
         registerF.setH(false);
         registerF.setPV(iff2);
         registerF.setN(false);
-        regTo.set(regFrom.get());
+        regTo.set(regFrom);
     }
 
     /** LR R,n and LD (IX+d), n. */
@@ -1329,7 +1385,6 @@ public class Z80 extends USimIntel {
     /**
      * Subtract value from register A with or without carry flag.
      * Result is stored in register A.
-     * TODO: Check carry and PV flag
      */
     private void helpSubIntFromA(int subtrahend, boolean withCarry) {
         int t = subtractionFlags(registerA.get(), subtrahend, withCarry);
@@ -1603,19 +1658,17 @@ public class Z80 extends USimIntel {
      * Test a bit in a register for IX+disp and IY+disp.
      */
     private void helpBitOpDisplaced() {
-        Register reg = getRegister(6);
-        ir = fetch();
+        Register reg = getRegister(6); // Fetches displacement byte
+        ir = fetch(); // Get instruction
 
-//LOGGER.info("IR:{} Reg:{}", ir, reg);
         switch (ir & 0xC0) {
-        case 0x00: // Rotate etc. TODO
-            indexedRots(reg);
-            break;
-        case 0x40: // BIT
+        case 0x00: // RLC (IX+d)
+            helpRLCreg(reg, false); break;
+        case 0x40: // BIT b, (IX+d)
             helpBitTest(reg); break;
-        case 0x80: // RES
+        case 0x80: // RES b, (IX+d)
             helpBitClear(reg); break;
-        case 0xC0: // SET
+        case 0xC0: // SET b, (IX+d)
             helpBitSet(reg);
             break;
         default:
@@ -1628,12 +1681,6 @@ public class Z80 extends USimIntel {
                 Register sideEffectReg = getRegisterMain(sideEffectCode);
                 sideEffectReg.set(reg.get());
             }
-        }
-    }
-
-    private void indexedRots(Register reg) {
-        switch (ir) {
-        case 0x06: helpRLCreg(reg, false); break;
         }
     }
 
@@ -1680,11 +1727,66 @@ public class Z80 extends USimIntel {
      * (A8 through A15) of the address bus at this time. Then the byte
      * contained in the Accumulator is placed on the data bus and written to
      * the selected peripheral device.
-     * TODO: Implement
      */
-    private void outNA() {
+    private void helpOutNA() {
         int n = fetch();
-        bus.writeIO(n, registerA.intValue());
+        bus.writeIO(n, registerA.get());
+    }
+
+    /**
+     * IN A, (n).
+     */
+    private void helpInAn() {
+        int n = fetch();
+        registerA.set(bus.readIO(n));
+    }
+
+    /**
+     * OUT (C), r.
+     */
+    private void helpOutCr() {
+        Register regTo = getRegister((ir & 0x38) >> 3);
+        bus.writeIO(registerC.get(), regTo.get());
+    }
+
+    /**
+     * IN r (C).
+     */
+    private void helpInRC() {
+        int newVal = bus.readIO(registerC.get());
+        if (ir != 0x70) {
+            Register regTo = getRegister((ir & 0x38) >> 3);
+            regTo.set(newVal);
+        }
+        registerF.setH(false);
+        registerF.setN(false);
+        registerF.setZ(newVal == 0);
+        registerF.setS(newVal > 0x7F);
+        registerF.setPV(parityOf(newVal));
+    }
+
+    /**
+     * INI/IND.
+     */
+    private void helpINDecInc(int increment) {
+        int newVal = bus.readIO(registerC.get());
+        write(registerHL.get(), newVal);
+        registerB.add(-1);
+        registerHL.add(increment);
+        registerF.setZ(registerB.get() == 0);
+        registerF.setN(true);
+    }
+
+    /**
+     * OUTI/OUTD.
+     */
+    private void helpOUTDecInc(int increment) {
+        int newVal = read(registerHL.get());
+        bus.writeIO(registerC.get(), newVal);
+        registerB.add(-1);
+        registerHL.add(increment);
+        registerF.setZ(registerB.get() == 0);
+        registerF.setN(true);
     }
 
 }
