@@ -1,11 +1,11 @@
 
- nam OS-9 Level I V1.2 kernal, part 2
+ nam OS-9 Level I V1.1 kernal, part 2
  ttl Module Header
 
 
 ************************************************************
 *                                                          *
-*        Microware OS-9 Level I V1.2 Kernal, part 2        *
+*        Microware OS-9 Level I V1.1 Kernal, part 2        *
 *                                                          *
 ************************************************************
 

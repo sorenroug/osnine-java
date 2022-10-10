@@ -58,7 +58,7 @@ start    equ   *
          stx   <X.DRVTBL,u
          ldd   #$FFFF
          std   V.TRAK,x
-         ldd   #$0010 16 tracks?
+         ldd   #$0010 16 tracks/sect?
          stb   DD.TKS,x
          std   DD.SPT,x
          lda   #$01   Double-sided, single density
@@ -79,8 +79,8 @@ start    equ   *
          tfr   u,y
          puls  u
          bcs   ERRRTRN
-         ldd   #$0001
-         ldx   #$0000
+         ldd   #$0001 Set one sector
+         ldx   #$0000 Set LSN 0
          pshs  y
          bsr   L00FB
          jsr   [>u0087,u]
@@ -117,6 +117,7 @@ L00DB    clrb
          puls  pc,u,y,x,b,a
 
 BADMEDIA ldb   #E$BTyp Bad media type
+
 ERRRTRN    pshs  b
          bsr   TRMINATE
          comb

@@ -60,6 +60,10 @@ RamLimit set $E800
  fcc /GMX/ Version name
 RamLimit set $E000
  endc
+ ifeq CPUTYP-EXRSET
+ fcc /EXOR/ Version name
+RamLimit set $E000
+ endc
  ifeq CPUTYP-PCU09
   fcc /PCU09/ Version name
 RamLimit set $EC00
@@ -1583,7 +1587,7 @@ SYSVEC fdb SWI3HN+$FFE2-* Swi3 handler
  fdb SWIRQ+$FFFA-* Swi
  fdb NMI+$FFFC-* Nmi
 
- ifeq (CPUTYP-MM19)*(CPUTYP-PERCOM)*(CPUTYP-CMS9609)*(CPUTYP-EXORSR)*(CPUTYP-PCU09)
+ ifeq (CPUTYP-MM19)*(CPUTYP-PERCOM)*(CPUTYP-CMS9609)*(CPUTYP-EXORSR)*(CPUTYP-EXRSET)*(CPUTYP-PCU09)
  fdb COLD+$FFFE-* Restart
  else
  fdb DATINT+$FFFE-* Dynamic address translator initialization

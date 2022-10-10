@@ -52,8 +52,33 @@ u0087    rmb   2
 CTLRADDR    rmb   2
 DSKSTA     equ   .
 
+*
+* Registers for a Motorola 6843 FDC
+*
+FD.DOR equ 0 Data Output Register (write only)
+FD.DIR equ 0 Data Input Register (read only)
+FD.CTAR equ 1 Current Track Address Register (read/write)
+FD.CMR equ 2 Command Register (write only)
+FD.ISR equ 2 Interrupt Status Register (read only)
+FD.SUR equ 3 Setup Register (write only)
+FD.STRA equ 3 Status Register A (read only)
+FD.SAR equ 4 Sector Address Register (write only)
+FD.STRB equ 4 Status Register B (read only)
+FD.GCR equ 5 General Count Register (write only)
+FD.CCR equ 6 CRC Control Register (write only)
+FD.LTAR equ 7 Logical Track Address Register (write only)
 
-V.CMDR equ 4 command/status register at V.Port+4
+* FD macro commands
+CMD.STZ equ $2
+CMD.SEK equ $3
+CMD.SSR equ $4
+CMD.SSW equ $5
+CMD.RCR equ $6
+CMD.SWD equ $7
+CMD.FFR equ $A
+CMD.FFW equ $B
+CMD.MSR equ $C
+CMD.MSW equ $D
 
 DSKNAM     equ   *
          fcs   /EXORdisk3/
@@ -177,12 +202,12 @@ L00F9    decb
 *   B = Error Code
 *
 WRTDSK    tst   [<V.PORT,u]
-         lda   <$21,y
+         lda   PD.DRV,y
          cmpa  CURDRV,u
          beq   L010F
          bsr   L00F1
 L010F    lda   #$80
-         tst   <$28,y
+         tst   PD.VFY,y
          bne   L0118
          lda   #$C0
 L0118    bra   L011E
@@ -202,7 +227,7 @@ L0118    bra   L011E
 *
 READSK    tst   [<V.PORT,u]
          clra
-L011E    jsr   [>X.RDSK,u]
+L011E    jsr   [X.RDSK,u]
          bcs   WRERR9
          ldd   <X.CURLSN,u
          bne   RDDSK3
@@ -380,33 +405,33 @@ INTERLV    leax  >ILVTBL,pcr
          ldy   V.PORT,u
          pshs  u
          sts   <DMA.STAK
-         ldb   ,y
+         ldb   FD.DIR,y
          orb   #$04
          cmpa  #$2B
          bls   L029B
          andb  #$FB
-L029B    stb   ,y
-         lda   $01,y
+L029B    stb   FD.DOR,y
+         lda   FD.CTAR,y
          ora   #$40
          tst   <u001A
          beq   L02A9
          anda  #$20
          ora   #$03
-L02A9    sta   $01,y
+L02A9    sta   FD.CTAR,y
 L02AB    lbsr  NMIINSRT
          ldx   #$001E
          lda   <u0018
 L02B3    deca
          bpl   L02B3
          ldu   #$C0DA
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          ldu   #$C1FF
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          ldu   #$8270
-         stu  V.CMDR,y
-         lda   $01,y
+         stu  FD.SAR,y
+         lda   FD.CTAR,y
          anda  #$F2
-         sta   $01,y
+         sta   FD.CTAR,y
          eora  #$00
          bita  #$10
          bne   L02D9
@@ -416,75 +441,75 @@ L02B3    deca
          puls  pc,u
 
 L02D9    anda  #$60
-         sta   $01,y
+         sta   FD.CTAR,y
 L02DD    lda   $03,y
          bpl   L02DD
          ldu   #$8210
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          lbsr  L03B8
          ldu   #$83F7
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          lda   #$7A
-         sta   $05,y
+         sta   FD.GCR,y
          ldu   #$81FF
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          ldx   #$000C
 L02FA    lda   #$18
          ldu   #$8210
-         stu  V.CMDR,y
-L0301    bita V.CMDR,y
+         stu  FD.SAR,y
+L0301    bita FD.STRB,y
          beq   L0301
-         sta   $05,y
-L0307    bita V.CMDR,y
+         sta   FD.GCR,y
+L0307    bita FD.STRB,y
          beq   L0307
          ldu   #$C270
-         stu  V.CMDR,y
+         stu  FD.SAR,y
 L0310    bita  #$00
 L0312    lda   #$82
-         inc   $01,y
-         sta  V.CMDR,y
+         inc   FD.CTAR,y
+         sta  FD.SAR,y
          lbsr  L03B8
-         dec   $01,y
+         dec   FD.CTAR,y
          ldu   #$83F5
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          ldb   #$7E
          lda   #$40
-         stb   $05,y
-L0328    bita V.CMDR,y
+         stb   FD.GCR,y
+L0328    bita FD.STRB,y
          beq   L0328
          ldb   <u0019
-         stb   $05,y
+         stb   FD.GCR,y
          ldb   <u001A
-         stb   $05,y
+         stb   FD.GCR,y
          ldu   <ILVSTAT
-L0336    bita V.CMDR,y
+L0336    bita FD.STRB,y
          beq   L0336
          ldb   ,u+
-         stb   $05,y
+         stb   FD.GCR,y
          ldb   #$01
-         stb   $05,y
+         stb   FD.GCR,y
          stu   <ILVSTAT
-L0344    bita V.CMDR,y
+L0344    bita FD.STRB,y
          beq   L0344
          clrb
-         stb   $05,y
-L034B    bita V.CMDR,y
+         stb   FD.GCR,y
+L034B    bita FD.STRB,y
          beq   L034B
-         ldb   $01,y
+         ldb   FD.CTAR,y
          orb   #$08
-         stb   $01,y
-         stb   $05,y
-L0357    bita V.CMDR,y
+         stb   FD.CTAR,y
+         stb   FD.GCR,y
+L0357    bita FD.STRB,y
          beq   L0357
          lda   #$FF
-         sta   $05,y
+         sta   FD.GCR,y
          lda   #$40
-L0361    bita V.CMDR,y
+L0361    bita FD.STRB,y
          beq   L0361
          andb  #$60
-         stb   $01,y
+         stb   FD.CTAR,y
          ldu   #$81FF
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          ldx   #$011D
          lda   <u0017
          inca
@@ -493,8 +518,8 @@ L0361    bita V.CMDR,y
          bne   L02FA
 L037A    lda   $03,y
          bpl   L037A
-         dec   $01,y
-         dec   $01,y
+         dec   FD.CTAR,y
+         dec   FD.CTAR,y
          bsr   NMIRESET
          clrb
          puls  pc,u
@@ -511,42 +536,42 @@ NMIINSRT    pshs  x
          leax  <NMISVC,pcr
          stx   <D.NMI
          lda   #$36
-         sta   $03,y
+         sta   FD.SUR,y
          lda   #$3E
-         sta   $03,y
-         ldb   ,y
+         sta   FD.SUR,y
+         ldb   FD.DIR,y
          deca
          sta   $02,y
          puls  pc,x
 
 NMIRESET    pshs  x
-         lda   #$3C
-         sta   $02,y
-         lda   ,y
-         ldx   <ORG.NMI
-         stx   <D.NMI
+         lda   #$3C   DMA on, Multi-sector read
+         sta   FD.CMR,y
+         lda   FD.DIR,y
+         ldx   ORG.NMI
+         stx   D.NMI
          andcc #$AF
          puls  pc,x
 
 L03B8    lda   #$18
-L03BA    bita V.CMDR,y
+L03BA    bita FD.STRB,y
          beq   L03BA
          ldb   <u0018
 * delay loop
 L03C0    decb
          bne   L03C0
 
-         sta   $05,y
-         leax  -$01,x
+         sta   FD.GCR,y
+         leax  -1,x
          bne   L03BA
          ldu   #$81AA
          ldb   #$05
          nop
          nop
-         stu  V.CMDR,y
+         stu  FD.SAR,y
          ldu   #$8210
-         stu  V.CMDR,y
-L03D7    bita V.CMDR,y
+         stu  FD.SAR,y
+L03D7    bita FD.STRB,y
          beq   L03D7
          lda   <u0018
 
@@ -555,7 +580,7 @@ L03DD    deca
          bne   L03DD
 
          lda   #$18
-         sta   $05,y
+         sta   FD.GCR,y
          decb
          bne   L03D7
          rts
@@ -563,8 +588,8 @@ L03DD    deca
 * NMI interrupt routine
 NMISVC   lds DMA.STAK
          bsr   NMIRESET
-         dec   $01,y
-         dec   $01,y
+         dec   FD.CTAR,y
+         dec   FD.CTAR,y double step
          dec   <u001B
          lbne  L02AB
          comb

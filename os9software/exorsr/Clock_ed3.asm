@@ -32,6 +32,8 @@ TIMSVC fcb F$TIME
  fdb TIME-*-2
  fcb $80
 
+TCKCNT set 25000 #of mpu cycles/tick
+
 *
 *  Days In Months Table
 *
@@ -56,10 +58,10 @@ NOTCLK jmp [D.ISVC] Go to interrupt service
 
 CLKSRV ldx CLKPRT,PCR Get clock address
  beq NOTCLK Branch if not
-         lda   $01,x
-         anda  #$04
+         lda 1,x
+         anda #4
  beq NOTCLK Branch if not clock
-         ldd   $06,x
+         ldd 6,x Clear intrpt (M6840)
 TICK clra SET Direct page
  tfr A,DP
  dec D.TIC Count tick
@@ -126,13 +128,13 @@ ClkEnt pshs DP save direct page
  leax CLKSRV,PCR Get service routine
  stx D.IRQ Set interrupt vector
  ldx CLKPRT,PCR get clock address
-         ldd   #$61A7
-         std   $06,x
-         ldb   #$53
+ ldd #TCKCNT-1 Get tick count (M6840)
+         std   6,x
+         ldb   #$53 Constant for control reg. (M6840)
          stb   ,x
          ldb   #$01
-         stb   $01,x
-         clr   ,x
+         stb 1,x
+         clr 0,x
  puls CC retrieve masks
  leay TIMSVC,PCR
  OS9 F$SSVC Set time service routine

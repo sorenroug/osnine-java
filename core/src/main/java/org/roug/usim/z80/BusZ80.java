@@ -27,6 +27,12 @@ public class BusZ80
     /** Port memory space. */
     private MemorySegment ports;
 
+    /** Set by the CPU when doing I/O operations. */
+    private boolean activeIORQ;
+
+    /** Set by the CPU when handling interrupt in mode 0 and 2. */
+    private boolean interruptAck;
+
     /**
      * Constructor.
      */
@@ -112,12 +118,24 @@ public class BusZ80
     public void reset() {
     }
 
+
+
+    /* Currently unused. */
+    public void ackInterrupt(boolean state) {
+        interruptAck = state;
+    }
+
+    /* Currently unused. */
+    public void setIORQ(boolean state) {
+        activeIORQ = state;
+    }
+
     @Override
     public int readIO(int offset) {
         int val;
         lockObject.lock();
         try {
-            val = ports.read(offset);
+            val = ports.read(offset & 0xFF);
         } finally {
             lockObject.unlock();
         }
@@ -129,7 +147,7 @@ public class BusZ80
     public void writeIO(int offset, int val) {
         lockObject.lock();
         try {
-            ports.write(offset, val & 0xFF);
+            ports.write(offset & 0xFF, val & 0xFF);
         } finally {
             lockObject.unlock();
         }
@@ -157,6 +175,4 @@ public class BusZ80
         ports = newMemory;
     }
 
-
 }
-

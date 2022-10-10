@@ -6,7 +6,7 @@
          mod   eom,name,Devic+Objct,ReEnt+1,mgrnam,drvnam
          fcb   $03 mode byte
          fcb   $FF extended controller address
-         fdb   $FCF4  physical controller address
+         fdb   A.TERM  physical controller address
          fcb   initsize-*-1  initilization table size
          fcb   $00 device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00 case:0=up&lower,1=upper only

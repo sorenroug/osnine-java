@@ -4,12 +4,37 @@
 
  use defsfile
 
+FD.DOR equ 0 Data Output Register (write only)
+FD.DIR equ 0 Data Input Register (read only)
+FD.CTAR equ 1 Current Track Address Register (read/write)
+FD.CMR equ 2 Command Register (write only)
+FD.ISR equ 2 Interrupt Status Register (read only)
+FD.SUR equ 3 Setup Register (write only)
+FD.STRA equ 3 Status Register A (read only)
+FD.SAR equ 4 Sector Address Register (write only)
+FD.STRB equ 4 Status Register B (read only)
+FD.GCR equ 5 General Count Register (write only)
+FD.CCR equ 6 CRC Control Register (write only)
+FD.LTAR equ 7 Logical Track Address Register (write only)
+
+* FD macro commands
+CMD.STZ equ $2
+CMD.SEK equ $3
+CMD.SSR equ $4
+CMD.SSW equ $5
+CMD.RCR equ $6
+CMD.SWD equ $7
+CMD.FFR equ $A
+CMD.FFW equ $B
+CMD.MSR equ $C
+CMD.MSW equ $D
+
 DriveCnt equ 4
 
  org DRVBEG
  rmb Drvmem*DriveCnt
 
-X.CURDRV    rmb   1  Current drive #
+CURDRV    rmb   1  Current drive #
 X.CURLSN    rmb   2
 X.SIZE    rmb   2
 X.BUFADR rmb 2
@@ -42,7 +67,7 @@ CTLRENT    equ   *
          clra
          tfr   a,dp
          lda   #$00
-         sta   <$6E,u
+         sta   V.ERRCD,u
          sts   X.STACK,u
          ldx   D.NMI
          stx   X.ORGNMI,u
@@ -54,11 +79,11 @@ CTLRENT    equ   *
          lda   <$12,x  DD.SPT+1
          sta   $02,s
          lda   #$66
-         ldb   <X.CURDRV,u
+         ldb   CURDRV,u
          lsrb
          beq   L004E
-         lda   #$46
-L004E    sta   $01,y Drive select?
+         lda   #70
+L004E    sta   FD.CTAR,y
          lda   #$02
          bcc   L0055
          lsra
@@ -67,7 +92,7 @@ L0055    sta   ,y
          lsla
          lsla
          sta   <$73,u
-         bcs   L00DE
+         bcs   NRDYERR
          ldb   <$10,x  DD.FMT
          bitb  #$01
          bne   L0069
@@ -124,14 +149,16 @@ L00CE    bsr   L0112
          ble   L00F9
          bitb  #$08
          bne   L0131
-L00DA    ldb   #$F7
-         bra   L012C
-L00DE    ldb   #$F6
-         bra   L012C
 
-* Command #8 - seek to track 0
+SEEKERR    ldb   #E$SEEK
+         bra   EXIT.ERR
+
+NRDYERR    ldb   #E$NRDY
+         bra   EXIT.ERR 
+
+* Command #8 - seek to track
 L00E2    lda   X.TRAK,u
-         beq   L00DA
+         beq   SEEKERR can't seek to track 0
          clra
          ldb   #$56
          bra   L00AE
@@ -166,8 +193,8 @@ L0117    lda   X.STAT,u
 * NMI Interrupt routine
 *
 L0126    lds   X.STACK,u
-         ldb   #$FB
-L012C    stb   <$6E,u
+         ldb   #E$DIDC
+EXIT.ERR stb   V.ERRCD,u
          inc   ,s
 L0131    lda   #$3C
          sta   $02,y
@@ -321,17 +348,22 @@ L0261    lda   $04,y
          bne   L025B
          ldb   #$FC
          bra   L027C
-L0276    ldb   #$F3
+
+L0276    ldb   #E$CRC
          bra   L027C
+
 L027A    ldb   #$FD
 L027C    dec   <$7B,u
-         lbeq  L012C
+         lbeq  EXIT.ERR
          ldx   <$71,u
          lbra  L01DF
-L0289    ldb   #$F2
-         lbra  L012C
-L028E    ldb   #$FA
-         lbra  L012C
+
+WPERR    ldb   #E$WP
+         lbra  EXIT.ERR
+
+L028E    ldb   #E$BUSY
+         lbra  EXIT.ERR
+
 L0293    ldb   X.STAT,u
          lslb
          bmi   L02AA
@@ -376,7 +408,7 @@ L02D1    deca
          anda  #$F2
          sta   $01,y
          bita  #$10
-         beq   L0289
+         beq   WPERR
          anda  #$60
          sta   $01,y
          rorb
@@ -468,19 +500,19 @@ L038D    stb   <$7D,u
 INITCTLR   pshs  x,b,a
          clra
          clrb
-         std   $02,y
-         std   ,y
+         std   FD.CMR,y
+         std   FD.DOR,y
          ldx   #$D0DA
          stx   $04,y
          ldx   #$0404
-         stx   $02,y
+         stx   FD.CMR,y
          ldx   #$0B62
-         stx   ,y
-         std   $02,y
+         stx   FD.DOR,y
+         std   FD.CMR,y
          ldx   #$1F6F
-         stx   ,y
+         stx   FD.DOR,y
          ldx   #$3C3E
-         stx   $02,y
+         stx   FD.CMR,y
          puls  pc,x,b,a
 
 *************************************************************
@@ -502,20 +534,20 @@ READSK   tstb
          lda   PD.DRV,y
          cmpa  V.NDRV,u
          bcc   L03EF
-         sta   X.CURDRV,u
+         sta   CURDRV,u
          ldb   #DRVMEM
          mul
          pshs  x
          leax  DRVBEG,u
          leax  d,x
          stx   CURTBL,u
-         puls  b,a
+         puls  D
          cmpd  DD.TOT+1,x
          bhi   PHYERR
          std   X.CURLSN,u
          ldd PD.BUF,y
          std   X.BUFADR,u
-         ldd   #$0001
+         ldd   #1   one block
          std   X.SIZE,u
          clrb
          rts

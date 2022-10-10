@@ -72,6 +72,32 @@ public class GeneralPurposeTest extends Framework {
         assertEquals(0x12, myTestCPU.registerF.get());
     }
 
+    /* Set Carry Flag -- opcode 3F */
+    @Test
+    public void testSCF() {
+        setA(0x8B);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(false);
+        myTestCPU.write(0x0B00, 0x37);
+        execSeq(0xB00, 0xB01);
+        assertTrue(myTestCPU.registerF.isSetC());
+        assertFalse(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+    }
+
+    /* Complement Carry Flag -- opcode 3F */
+    @Test
+    public void testCCF() {
+        setA(0x8B);
+        myTestCPU.registerF.clear();
+        myTestCPU.registerF.setC(true);
+        myTestCPU.write(0x0B00, 0x3F);
+        execSeq(0xB00, 0xB01);
+        assertFalse(myTestCPU.registerF.isSetC());
+        assertTrue(myTestCPU.registerF.isSetH());
+        assertFalse(myTestCPU.registerF.isSetN());
+    }
+
     /* Negate Accumulator
      * TODO:Complete
      */

@@ -30,6 +30,7 @@ You can allocate RAM, load data into the memory and set up devices.</description
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java_version>1.8</java_version>
+        <maven.compiler.target>11</maven.compiler.target>
         <main.basedir>${project.basedir}</main.basedir>
     </properties>
 
@@ -112,12 +113,12 @@ You can allocate RAM, load data into the memory and set up devices.</description
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.8</version>
+                <version>3.16.0</version>
                 <configuration>
                     <linkXref>false</linkXref>
                     <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>300</minimumTokens>
-                    <targetJdk>1.8</targetJdk>
+                    <!--<targetJdk>1.8</targetJdk>-->
                 </configuration>
             </plugin>
             <plugin>

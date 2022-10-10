@@ -28,8 +28,7 @@ public class Z80 extends USimIntel {
 //     final static int LSW = 0x0000FFFF;
 
     public static final int NMI_ADDR = 0x0066;
-//     public static final int RESET_ADDR = 0x0000;
-//     public static final int RST_56 = 0x0038;
+    public static final int MODE0_ADDR = 0x0038;
 
     /** Addressing mode. */
     private int interruptMode;
@@ -301,6 +300,24 @@ public class Z80 extends USimIntel {
     private void doInterrupt() {
         iff1 = false;
         iff2 = false;
+        switch (interruptMode) {
+        case 0:
+            bus.ackInterrupt(true);
+            activeFromRegTbl = regTable;
+            activeReg16 = registerHL;
+            ir = bus.readIO(0); // FIXME Don't use 0
+            parseIR();
+            bus.ackInterrupt(false);
+        case 1:
+            helpCALL(MODE0_ADDR);
+            break;
+        default: // mode 2
+            bus.ackInterrupt(true);
+            int n = bus.readIO(0); // FIXME
+            bus.ackInterrupt(false);
+            int newAddress = registerI.get() * 256 + (n & 0xFE);
+            helpCALL(newAddress);
+        }
     }
 
     /**
@@ -1730,30 +1747,44 @@ public class Z80 extends USimIntel {
      */
     private void helpOutNA() {
         int n = fetch();
-        bus.writeIO(n, registerA.get());
+        bus.writeIO((registerA.get() << 8) | n, registerA.get());
     }
 
     /**
      * IN A, (n).
+     * The operand n is placed on the bottom half (A0 through A7) of the
+     * address bus to select the I/O device at one of 256 possible ports. The
+     * contents of the Accumulator also appear on the top half (A8 through A15)
+     * of the address bus at this time. Then one byte from the selected port
+     * is placed on the data bus and written to the Accumulator (Register A)
+     * in the CPU.
      */
     private void helpInAn() {
         int n = fetch();
-        registerA.set(bus.readIO(n));
+        registerA.set((registerA.get() << 8) | bus.readIO(n));
     }
 
     /**
      * OUT (C), r.
+     * The contents of Register C are placed on the bottom half (A0 through A7)
+     * of the address bus to select the I/O device at one of 256 possible
+     * ports. The contents of Register B are placed on the top half (A8 through
+     *  A15) of the address bus at this time. Then the byte contained in
+     * register r is placed on the data bus and written to the selected
+     * peripheral device. Register r identifies any of the CPU registers shown
+     * in the following table, which also shows the corresponding three-bit r
+     * field for each that appears in the assembled object code.
      */
     private void helpOutCr() {
         Register regTo = getRegister((ir & 0x38) >> 3);
-        bus.writeIO(registerC.get(), regTo.get());
+        bus.writeIO(registerBC.get(), regTo.get());
     }
 
     /**
      * IN r (C).
      */
     private void helpInRC() {
-        int newVal = bus.readIO(registerC.get());
+        int newVal = bus.readIO(registerBC.get());
         if (ir != 0x70) {
             Register regTo = getRegister((ir & 0x38) >> 3);
             regTo.set(newVal);
@@ -1769,7 +1800,7 @@ public class Z80 extends USimIntel {
      * INI/IND.
      */
     private void helpINDecInc(int increment) {
-        int newVal = bus.readIO(registerC.get());
+        int newVal = bus.readIO(registerBC.get());
         write(registerHL.get(), newVal);
         registerB.add(-1);
         registerHL.add(increment);
@@ -1782,8 +1813,8 @@ public class Z80 extends USimIntel {
      */
     private void helpOUTDecInc(int increment) {
         int newVal = read(registerHL.get());
-        bus.writeIO(registerC.get(), newVal);
         registerB.add(-1);
+        bus.writeIO(registerBC.get(), newVal);
         registerHL.add(increment);
         registerF.setZ(registerB.get() == 0);
         registerF.setN(true);
