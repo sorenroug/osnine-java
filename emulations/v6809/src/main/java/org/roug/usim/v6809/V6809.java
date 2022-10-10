@@ -14,6 +14,7 @@ import org.roug.usim.Bus8Motorola;
 import org.roug.usim.BusStraight;
 import org.roug.usim.JarFileLoader;
 import org.roug.usim.Loader;
+import org.roug.usim.MemoryBus;
 import org.roug.usim.MemorySegment;
 import org.roug.usim.OptionParser;
 import org.roug.usim.mc6809.MC6809;
@@ -202,8 +203,14 @@ public class V6809 {
         }
         LOGGER.debug("Loading {} class {}", device, deviceClsStr);
         Class newClass = Class.forName(deviceClsStr);
-        Constructor<MemorySegment> constructor = newClass.getConstructor(
-                        Integer.TYPE, Bus8Motorola.class, String[].class);
+        Constructor<MemorySegment> constructor;
+        try {
+            constructor = newClass.getConstructor(
+                            Integer.TYPE, Bus8Motorola.class, String[].class);
+        } catch (Exception e) {
+            constructor = newClass.getConstructor(
+                            Integer.TYPE, MemoryBus.class, String[].class);
+        }
         MemorySegment deviceInstance = constructor.newInstance(addr, bus, argsList);
         bus.insertMemorySegment(deviceInstance);
         // Find additional setters.
