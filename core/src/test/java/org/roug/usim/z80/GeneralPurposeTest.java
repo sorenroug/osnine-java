@@ -133,10 +133,10 @@ public class GeneralPurposeTest extends Framework {
         execSeq(0xB00, 0xB01);
 
         Bus8Intel bus = myTestCPU.getBus();
-        bus.signalIRQ(true);
+        bus.signalINT(true);
         myTestCPU.execute();
         //assertEquals(0x0000, myTestCPU.pc.intValue());
-        bus.signalIRQ(false);
+        bus.signalINT(false);
     }
 
     /* Test CPU reset
@@ -150,14 +150,14 @@ public class GeneralPurposeTest extends Framework {
     }
 
     @Test
-    public void generateIRQ() {
+    public void generateINT() {
         writeSeq(0x0B00, 0x00, 0x00); // NOP instructions
         setPC(0xB00);
         Bus8Intel bus = myTestCPU.getBus();
-        bus.signalIRQ(true);
+        bus.signalINT(true);
         myTestCPU.execute();
         //assertEquals(0x0000, myTestCPU.pc.intValue());
-        bus.signalIRQ(false);
+        bus.signalINT(false);
     }
 
 }

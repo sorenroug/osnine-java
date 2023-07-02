@@ -8,6 +8,39 @@ import org.roug.usim.Bus8Intel;
 import org.roug.usim.MemorySegment;
 import org.roug.usim.RandomAccessMemory;
 
+class DummyDev extends DeviceZ80 {
+
+    private int byteInBuffer;
+
+    /**
+     * Constructor.
+     *
+     * @param start - First address location of the ACIA.
+     * @param bus - The bus the ACIA is attached to.
+     * @param args - additional arguments
+     */
+    public DummyDev(int start, Bus8Intel bus, String... args) {
+        super(start, bus, args);
+    }
+
+    @Override
+    protected int load(int addr) {
+        return byteInBuffer;
+    }
+
+    @Override
+    protected void store(int addr, int val) {
+        this.byteInBuffer = val;
+    }
+
+    public int getInterruptValue() {
+        return byteInBuffer;
+    }
+
+    void byteReceived(int c) {
+    }
+}
+
 public class InputOutputTest extends Framework {
 
     /* IN A,(8)
@@ -16,7 +49,7 @@ public class InputOutputTest extends Framework {
     @Test
     public void inAport8() {
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(8, bus, "1");
+        DummyDev newMemory = new DummyDev(8, bus, "1");
         newMemory.write(8, 0x10);
         bus.addPortSegment(newMemory);
 
@@ -32,7 +65,7 @@ public class InputOutputTest extends Framework {
     @Test
     public void outAport1() {
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(1, bus, "1");
+        DummyDev newMemory = new DummyDev(1, bus, "1");
         myTestCPU.registerA.set(0x23);
         newMemory.write(1, 0x10); // Write dummy
         bus.addPortSegment(newMemory);
@@ -50,7 +83,7 @@ public class InputOutputTest extends Framework {
     public void testINI() {
         int portLoc = 0x07;
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(portLoc, bus, "1");
+        DummyDev newMemory = new DummyDev(portLoc, bus, "1");
         newMemory.write(portLoc, 0x7B);
         bus.addPortSegment(newMemory);
 
@@ -73,7 +106,7 @@ public class InputOutputTest extends Framework {
     public void testINIR() {
         int portLoc = 0x07;
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(portLoc, bus, "1");
+        DummyDev newMemory = new DummyDev(portLoc, bus, "1");
         newMemory.write(portLoc, 0x7B);
         bus.addPortSegment(newMemory);
 
@@ -105,7 +138,7 @@ public class InputOutputTest extends Framework {
     public void testIND() {
         int portLoc = 0x07;
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(portLoc, bus, "1");
+        DummyDev newMemory = new DummyDev(portLoc, bus, "1");
         newMemory.write(portLoc, 0x7B);
         bus.addPortSegment(newMemory);
 
@@ -128,7 +161,7 @@ public class InputOutputTest extends Framework {
     public void testINDR() {
         int portLoc = 0x07;
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(portLoc, bus, "1");
+        DummyDev newMemory = new DummyDev(portLoc, bus, "1");
         newMemory.write(portLoc, 0x7B);
         bus.addPortSegment(newMemory);
 
@@ -160,7 +193,7 @@ public class InputOutputTest extends Framework {
     public void testOUTI() {
         int portLoc = 0x07;
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(portLoc, bus, "1");
+        DummyDev newMemory = new DummyDev(portLoc, bus, "1");
         newMemory.write(portLoc, 0x99); // Dummy data
         bus.addPortSegment(newMemory);
 
@@ -186,7 +219,7 @@ public class InputOutputTest extends Framework {
     public void testOUTD() {
         int portLoc = 0x07;
         Bus8Intel bus = myTestCPU.getBus();
-        MemorySegment newMemory = new RandomAccessMemory(portLoc, bus, "1");
+        DummyDev newMemory = new DummyDev(portLoc, bus, "1");
         newMemory.write(portLoc, 0x99); // Dummy data
         bus.addPortSegment(newMemory);
 

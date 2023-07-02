@@ -105,7 +105,7 @@ public class HaltTest extends Framework {
     private class SendStopRun extends TimerTask {
         public void run() {
             myTestCPU.stopRun();
-            myTestCPU.getBus().signalIRQ(true); // Execute a hardware interrupt
+            myTestCPU.getBus().signalINT(true); // Execute a hardware interrupt
         }
     }
 

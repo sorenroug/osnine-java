@@ -6,6 +6,9 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Support class to create a heartbeat.
+ */
 class MMClockTick extends TimerTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimerTask.class);
@@ -37,7 +40,7 @@ class MMClockTick extends TimerTask {
 
 /**
  * Implementation of MM58167 Real Time Clock.
- * The chip is addressed at 32 memoro locations.
+ * The chip is addressed at 32 memory locations.
  */
 public class MM58167 extends MemorySegment {
 

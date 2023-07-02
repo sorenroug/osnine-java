@@ -19,13 +19,17 @@ public class BusZ80
     /** Active NMI signals. */
     private int activeNMIs;
 
-    /** Active IRQ requests. */
-    private int activeIRQs;
+    /** Active INT requests. */
+    private int activeINTs;
 
     private ReentrantLock lockObject = new ReentrantLock();
 
     /** Port memory space. */
-    private MemorySegment ports;
+    private DeviceZ80 ports;
+
+    /** Register hierarchy of devices. */
+    private DeviceZ80[] deviceHier = new DeviceZ80[256];
+    private int numDevs;
 
     /** Set by the CPU when doing I/O operations. */
     private boolean activeIORQ;
@@ -76,40 +80,34 @@ public class BusZ80
 
 
     /**
-     * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
+     * Accept a signal on the INT pin. A device can raise the voltage on the INT
      * pin, which means the device sends an interrupt request. The CPU must then
-     * check the devices and get the device to lower the signal again.
-     * In this implementation, the signals from several devices are ORed
-     * together to the same pin on the CPU. Since this can't easily be emulated,
-     * it is the responsibility of the device that it doesn't raise IRQ twice
-     * in a row.
-     * If IRQs are ignored when a device signals, then it must be received 
-     * when IRQs are accepted again (if the device hasn't lowered it).
+     * set IORQ, and read a byte from the data bus. The device shall then lower the
+     * interrupt.
+     * If INTs are ignored when a device signals, then it must be received 
+     * when INTs are accepted again (if the device hasn't lowered it).
      *
-     * NOTE: The ORing logic should be move to a memory-bus class, so it can
-     * be replaced for different hardware emulations.
-     *
-     * @param state - true if IRQ is raised from the device, false if IRQ is
+     * @param state - true if INT is raised from the device, false if INT is
      * lowered.
      */
     @Override
-    public void signalIRQ(boolean state) {
+    public void signalINT(boolean state) {
         synchronized(this) {
             if (state) {
-                activeIRQs++;
+                activeINTs++;
                 notifyAll();
             } else {
-               activeIRQs--;
+               activeINTs--;
             }
         }
     }
 
     /**
-     * Do we have active IRQs?
+     * Do we have active INTs?
      */
     @Override
-    public boolean isIRQActive() {
-        return activeIRQs > 0;
+    public boolean isINTActive() {
+        return activeINTs > 0;
     }
 
     /**
@@ -133,6 +131,7 @@ public class BusZ80
     @Override
     public int readIO(int offset) {
         int val;
+
         lockObject.lock();
         try {
             val = ports.read(offset & 0xFF);
@@ -140,6 +139,19 @@ public class BusZ80
             lockObject.unlock();
         }
         updateCycle();
+        return val;
+    }
+
+    @Override
+    public int getDeviceValue() {
+        int val = 0;
+
+        for (int i = 0; i < numDevs; i++) {
+            if (deviceHier[i].isInInterrupt()) {
+                val = deviceHier[i].getInterruptValue();
+                break;
+            }
+        }
         return val;
     }
 
@@ -158,21 +170,24 @@ public class BusZ80
      * Install a ports segment as the last item of the list of segments.
      */
     @Override
-    public void addPortSegment(MemorySegment newMemory) {
+    public void addPortSegment(DeviceZ80 newMemory) {
         if (ports == null) {
             ports = newMemory;
         } else {
             ports.addMemorySegment(newMemory);
         }
+        deviceHier[numDevs++] = newMemory;
     }
 
     /**
      * Install a ports segment as the first item of the list of segments.
      */
     @Override
-    public void insertPortSegment(MemorySegment newMemory) {
+    public void insertPortSegment(DeviceZ80 newMemory) {
         newMemory.insertMemorySegment(ports);
         ports = newMemory;
+// FIXME
+// Move the devices one slot down, then add device at top.
     }
 
 }

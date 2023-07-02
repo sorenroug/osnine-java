@@ -170,10 +170,10 @@ public class Z80 extends USimIntel {
     private Bus8Intel bus;
 
     /**
-     * Do we have active IRQs and we're accepting IRQs?
+     * Do we have active INTs and we're accepting INTs?
      */
     private boolean isINTActive() {
-        return iff1 && bus.isIRQActive();
+        return iff1 && bus.isINTActive();
     }
 
     /**
@@ -305,15 +305,16 @@ public class Z80 extends USimIntel {
             bus.ackInterrupt(true);
             activeFromRegTbl = regTable;
             activeReg16 = registerHL;
-            ir = bus.readIO(0); // FIXME Don't use 0
+            ir = bus.getDeviceValue();
             parseIR();
             bus.ackInterrupt(false);
+            break;
         case 1:
             helpCALL(MODE0_ADDR);
             break;
         default: // mode 2
             bus.ackInterrupt(true);
-            int n = bus.readIO(0); // FIXME
+            int n = bus.getDeviceValue();
             bus.ackInterrupt(false);
             int newAddress = registerI.get() * 256 + (n & 0xFE);
             helpCALL(newAddress);
@@ -1237,7 +1238,7 @@ public class Z80 extends USimIntel {
     private void halt() {
         try {
             synchronized(bus) {
-                while(!(bus.isIRQActive() || bus.isNMIActive() )) {
+                while(!(bus.isINTActive() || bus.isNMIActive() )) {
                     bus.wait();
                 }
             }

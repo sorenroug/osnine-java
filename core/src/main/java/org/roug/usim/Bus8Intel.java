@@ -1,40 +1,40 @@
 package org.roug.usim;
-
+import org.roug.usim.z80.DeviceZ80;
 /**
  * Bus in a computer - Intel-style. Links CPU, memory and devices together.
  */
 public interface Bus8Intel extends MemoryBus {
 
     /**
-     * Accept a signal on the IRQ pin. A device can raise the voltage on the IRQ
+     * Accept a signal on the INT pin. A device can raise the voltage on the INT
      * pin, which means the device sends an interrupt request. The CPU must then
      * check the devices and get the device to lower the signal again.
      * In this implementation, the signals from several devices are ORed
      * together to the same pin on the CPU. Since this can't easily be emulated,
-     * it is the responsibility of the device that it doesn't raise IRQ twice
+     * it is the responsibility of the device that it doesn't raise INT twice
      * in a row.
-     * If IRQs are ignored when a device signals, then it must be received
-     * when IRQs are accepted again (if the device hasn't lowered it).
+     * If INTs are ignored when a device signals, then it must be received
+     * when INTs are accepted again (if the device hasn't lowered it).
      *
-     * @param state - true if IRQ is raised from the device, false if IRQ is
+     * @param state - true if INT is raised from the device, false if INT is
      * lowered.
      */
-    void signalIRQ(boolean state);
+    void signalINT(boolean state);
 
     /**
      * Accept an NMI signal.
      *
-     * @param state - true if IRQ is raised from the device, false if IRQ is
+     * @param state - true if INT is raised from the device, false if INT is
      * lowered.
      */
     void signalNMI(boolean state);
 
     /**
-     * Do we have active IRQs?
+     * Do we have active INTs?
      *
-     * @return true if there are active IRQs on the bus.
+     * @return true if there are active INTs on the bus.
      */
-    boolean isIRQActive();
+    boolean isINTActive();
 
     /**
      * Do we have active NMIs?
@@ -44,7 +44,7 @@ public interface Bus8Intel extends MemoryBus {
     boolean isNMIActive();
 
     /**
-     * Clear active NMIs as they are latched when the device IRQ changes
+     * Clear active NMIs as they are latched when the device INT changes
      * from low to high. If the NMI is not cleared then there would be
      * recursive interrupt handling.
      */
@@ -92,9 +92,16 @@ public interface Bus8Intel extends MemoryBus {
      */
     void writeIO(int offset, int val);
 
-    void addPortSegment(MemorySegment newMemory);
+    /**
+     * Single byte read from interrupting device.
+     *
+     * @return value of read operation
+     */
+    int getDeviceValue();
 
-    void insertPortSegment(MemorySegment newMemory);
+    void addPortSegment(DeviceZ80 newMemory);
+
+    void insertPortSegment(DeviceZ80 newMemory);
 
 }
 
