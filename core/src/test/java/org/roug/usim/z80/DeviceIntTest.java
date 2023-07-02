@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.roug.usim.z80.DeviceZ80;
-import org.roug.usim.Bus8Intel;
 import org.roug.usim.MemorySegment;
 import org.roug.usim.RandomAccessMemory;
 

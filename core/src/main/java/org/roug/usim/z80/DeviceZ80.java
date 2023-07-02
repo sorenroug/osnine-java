@@ -1,6 +1,5 @@
 package org.roug.usim.z80;
 
-import org.roug.usim.Bus8Intel;
 import org.roug.usim.MemorySegment;
 import org.roug.usim.RandomAccessMemory;
 

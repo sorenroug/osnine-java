@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.roug.usim.Bus8Intel;
 
 public class Arithmetic8Test extends Framework {
 

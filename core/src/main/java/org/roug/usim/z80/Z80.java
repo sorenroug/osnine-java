@@ -3,7 +3,6 @@ package org.roug.usim.z80;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.roug.usim.Bus8Intel;
 import org.roug.usim.MemorySegment;
 import org.roug.usim.RandomAccessMemory;
 import org.roug.usim.Register;
