@@ -37,6 +37,9 @@ public class Z80 extends USimIntel {
     /** Temporary storage location for IFF1. */
     private boolean iff2 = false;
 
+    /** For delayed enabling of interrupts. */
+    private boolean turnOnEI = false;
+
     /** Stack Pointer register. */
     final Word registerSP = new Word("SP");
     /** Index register X. */
@@ -256,8 +259,7 @@ public class Z80 extends USimIntel {
     public void reset() {
         resetSignal = false;
         interruptMode = 0;
-        iff1 = false;
-        iff2 = false;
+        helpDI();
         pc.set(0);
         registerI.set(0);
         registerR = 0;
@@ -290,6 +292,9 @@ public class Z80 extends USimIntel {
         if (isINTActive()) {
             doInterrupt();
         }
+        if (turnOnEI) {
+            delayEI();
+        }
     }
 
     /**
@@ -297,8 +302,7 @@ public class Z80 extends USimIntel {
      * TODO
      */
     private void doInterrupt() {
-        iff1 = false;
-        iff2 = false;
+        helpDI();
         switch (interruptMode) {
         case 0:
             bus.ackInterrupt(true);
@@ -663,7 +667,8 @@ public class Z80 extends USimIntel {
                 helpCondJump(!registerF.isSetS());
                 break;
             case 0xF3:
-                iff1 = false; iff2 = false; break;
+                helpDI();
+                break;
             case 0xF4:
                 helpCALLcc(); break;
             case 0xF5:
@@ -680,7 +685,8 @@ public class Z80 extends USimIntel {
                 helpCondJump(registerF.isSetS());
                 break;
             case 0xFB:
-                iff1 = true; iff2 = true; break;
+                helpEI();
+                break;
             case 0xFC:
                 helpCALLcc(); break;
             case 0xFD:
@@ -1067,6 +1073,7 @@ public class Z80 extends USimIntel {
      */
     private void helpRETI() {
         helpRET();
+        bus.cpuRETI();
     }
 
     /**
@@ -1496,6 +1503,31 @@ public class Z80 extends USimIntel {
         registerF.setH(false);
         registerF.setN(false);
         registerF.setC(true);
+    }
+
+    /**
+     * Enable Interrupt (EI).
+     * The EI instruction doesn't enable interrupts immediately. Interrupts
+     * aren't enabled until after the <em>next</em> instruction (the instruction
+     * following the EI). This is why you are guaranteed not to get an interrupt
+     * in between an EI/RETI pair.
+     */
+    private void helpEI() {
+        turnOnEI = true;
+    }
+
+    private void delayEI() {
+        turnOnEI = false;
+        iff1 = true;
+        iff2 = true;
+    }
+
+    /**
+     * Disable Interrupt (DI).
+     */
+    private void helpDI() {
+        iff1 = false;
+        iff2 = false;
     }
 
 /*======================================================

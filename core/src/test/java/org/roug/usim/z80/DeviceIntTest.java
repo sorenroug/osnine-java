@@ -37,6 +37,10 @@ class SerialDev extends DeviceZ80 {
         return byteInBuffer;
     }
 
+    public void cpuRETI() {
+        signalINT(false); // Only has one byte to send.
+    }
+
     void byteReceived(int c) {
         this.byteInBuffer = c;
         signalINT(true);
@@ -71,4 +75,51 @@ public class DeviceIntTest extends Framework {
 
     }
 
+    /**
+     * Imitate a serial port that sends an interrupt to deliver a byte.
+     * Any value set by the device is ignored here.
+     * Set Interrupt Mode 1
+     * Enable interrupts
+     * Jump to address 56.
+     * FIXME: How is interrupt lowered?
+     */
+    @Test
+    public void modeOneDevice() {
+        Bus8Intel bus = myTestCPU.getBus();
+        SerialDev device1 = new SerialDev(8, bus, "1");
+        bus.addPortSegment(device1);
+
+        myTestCPU.registerA.set(0xFF);
+
+        // Set IM0, EI, NOP
+        writeSeq(0x0B00, 0xED, 0x56, 0xFB, 0x00);
+        execSeq(0xB00, 0xB02);
+        execSeq(0xB02, 0xB03);
+        //assertEquals(0x10, myTestCPU.registerA.get());
+        // Make device send RST 56 instruction
+        device1.byteReceived(0xE7);
+        execSeq(0xB03, 0x38);
+        // assertEquals(0xB03, myTestCPU.registerSP.get());
+
+    }
+
+    /**
+     * Test that Enable Interrupt is delayed so an RETI.
+     * can run.
+     */
+    @Test
+    public void delayedEI() {
+        Bus8Intel bus = myTestCPU.getBus();
+        SerialDev device1 = new SerialDev(8, bus, "1");
+        bus.addPortSegment(device1);
+        device1.byteReceived(0xE7);  // Assert Interrupt
+
+        myTestCPU.write_word(0xA00, 0x0345); // Return address
+        myTestCPU.registerSP.set(0xA00);
+        writeSeq(0x0B00, 0xED, 0x56, 0xED, 0x4D); // EI, RETI
+        execSeq(0xB00, 0x0B02);
+        execSeq(0xB02, 0x0345);
+        assertEquals(0xA02, myTestCPU.registerSP.get());
+
+    }
 }

@@ -155,6 +155,16 @@ public class BusZ80
     }
 
     @Override
+    public void cpuRETI() {
+        for (int i = 0; i < numDevs; i++) {
+            if (deviceHier[i].isInInterrupt()) {
+                deviceHier[i].cpuRETI();
+                break;
+            }
+        }
+    }
+
+    @Override
     public void writeIO(int offset, int val) {
         lockObject.lock();
         try {

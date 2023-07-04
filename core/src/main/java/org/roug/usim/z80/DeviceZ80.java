@@ -37,6 +37,13 @@ public abstract class DeviceZ80 extends MemorySegment {
     }
 
     /**
+     * Be notified if the CPU has done a RETI instruction.
+     */
+    public void cpuRETI() {
+        signalINT(false); // Default action
+    }
+
+    /**
      * Get a value from the device that has interrupted the CPU.
      * This is typically an opcode.
      * @return the byte from the device.
