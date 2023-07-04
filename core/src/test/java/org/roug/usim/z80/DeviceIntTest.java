@@ -115,10 +115,12 @@ public class DeviceIntTest extends Framework {
         device1.byteReceived(0xE7);  // Assert Interrupt
 
         myTestCPU.write_word(0xA00, 0x0345); // Return address
+        myTestCPU.write_word(0x0345, 0x0000); // Two nops
         myTestCPU.registerSP.set(0xA00);
         writeSeq(0x0B00, 0xED, 0x56, 0xED, 0x4D); // EI, RETI
         execSeq(0xB00, 0x0B02);
-        execSeq(0xB02, 0x0345);
+        execSeq(0xB02, 0x0345);  // Pop address of stack.
+        execSeq(0x0345, 0x0346); // Execute a NOP without interrupt.
         assertEquals(0xA02, myTestCPU.registerSP.get());
 
     }

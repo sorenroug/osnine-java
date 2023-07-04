@@ -302,10 +302,11 @@ public class Z80 extends USimIntel {
      * TODO
      */
     private void doInterrupt() {
+        int n;
         helpDI();
+        bus.ackInterrupt(true);
         switch (interruptMode) {
         case 0:
-            bus.ackInterrupt(true);
             activeFromRegTbl = regTable;
             activeReg16 = registerHL;
             ir = bus.getDeviceValue();
@@ -313,11 +314,12 @@ public class Z80 extends USimIntel {
             bus.ackInterrupt(false);
             break;
         case 1:
+            n = bus.getDeviceValue(); // Ignored
             helpCALL(MODE0_ADDR);
+            bus.ackInterrupt(false);
             break;
         default: // mode 2
-            bus.ackInterrupt(true);
-            int n = bus.getDeviceValue();
+            n = bus.getDeviceValue();
             bus.ackInterrupt(false);
             int newAddress = registerI.get() * 256 + (n & 0xFE);
             helpCALL(newAddress);
