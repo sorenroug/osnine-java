@@ -37,10 +37,6 @@ class SerialDev extends DeviceZ80 {
         return byteInBuffer;
     }
 
-    public void cpuRETI() {
-        signalINT(false); // Only has one byte to send.
-    }
-
     void byteReceived(int c) {
         this.byteInBuffer = c;
         signalINT(true);
@@ -78,29 +74,54 @@ public class DeviceIntTest extends Framework {
     /**
      * Imitate a serial port that sends an interrupt to deliver a byte.
      * Any value set by the device is ignored here.
-     * Set Interrupt Mode 1
-     * Enable interrupts
+     * Set Interrupt Mode 1 (ED, 56)
+     * Enable interrupts (FB)
      * Jump to address 56.
-     * FIXME: How is interrupt lowered?
      */
     @Test
-    public void modeOneDevice() {
+    public void modeOne1Device() {
         Bus8Intel bus = myTestCPU.getBus();
         SerialDev device1 = new SerialDev(8, bus, "1");
         bus.addPortSegment(device1);
 
-        myTestCPU.registerA.set(0xFF);
-
-        // Set IM0, EI, NOP
-        writeSeq(0x0B00, 0xED, 0x56, 0xFB, 0x00);
+        myTestCPU.registerSP.set(0xA00);
+        writeSeq(0x0B00, 0xED, 0x56, 0xFB, 0x00); // Set IM1, EI, NOP
         execSeq(0xB00, 0xB02);
         execSeq(0xB02, 0xB03);
-        //assertEquals(0x10, myTestCPU.registerA.get());
         // Make device send RST 56 instruction
         device1.byteReceived(0xE7);
         execSeq(0xB03, 0x38);
-        // assertEquals(0xB03, myTestCPU.registerSP.get());
+    }
 
+    /**
+     * Imitate a second serial port that sends an interrupt to deliver a byte.
+     * This device is second in chain.
+     * Set Interrupt Mode 1 (0xED, 0x56)
+     * Enable interrupts (0xFB)
+     * Jump to address 56.
+     * Enable interrupts, RETI (ED 4D)
+     */
+    @Test
+    public void modeOne2Devices() {
+        Bus8Intel bus = myTestCPU.getBus();
+        SerialDev device1 = new SerialDev(8, bus, "1");
+        bus.addPortSegment(device1);
+        SerialDev device2 = new SerialDev(18, bus, "1");
+        bus.addPortSegment(device2);
+
+        myTestCPU.registerSP.set(0xA00);
+        writeSeq(0x0B00, 0xED, 0x56, 0xFB, 0x00, 0x00); // IM1, EI, NOP, NOP
+        writeSeq(0x0038, 0xFB, 0xED, 0x4D);  // EI, RETI
+        execSeq(0xB00, 0xB02); // Exec IM1
+        execSeq(0xB02, 0xB03); // Exec EI
+
+        device2.byteReceived(0xE7); // Make device send RST 56 instruction
+        execSeq(0xB03, 0x0038); // Exec NOP
+        assertEquals(0x9FE, myTestCPU.registerSP.get());
+        execSeq(0x0038, 0x0039); // Execute EI
+        execSeq(0x0039, 0xB04); // Exec RETI
+        assertFalse(device2.isInInterrupt());
+        assertEquals(0xA00, myTestCPU.registerSP.get());
     }
 
     /**

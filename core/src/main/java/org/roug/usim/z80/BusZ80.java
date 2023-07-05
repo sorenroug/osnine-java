@@ -33,9 +33,6 @@ public class BusZ80
     /** Set by the CPU when doing I/O operations. */
     private boolean activeIORQ;
 
-    /** Set by the CPU when handling interrupt in mode 0 and 2. */
-    private boolean interruptAck;
-
     /**
      * Constructor.
      */
@@ -113,13 +110,6 @@ public class BusZ80
      * Reset the bus.
      */
     public void reset() {
-    }
-
-
-
-    /* Currently unused. */
-    public void ackInterrupt(boolean state) {
-        interruptAck = state;
     }
 
     /* Currently unused. */

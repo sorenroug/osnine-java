@@ -1,7 +1,6 @@
 package org.roug.usim.z80;
 
 import org.roug.usim.MemorySegment;
-import org.roug.usim.RandomAccessMemory;
 
 public abstract class DeviceZ80 extends MemorySegment {
 
@@ -31,6 +30,11 @@ public abstract class DeviceZ80 extends MemorySegment {
         return inInterrupt;
     }
 
+    /**
+      * Raise or lower interrupt signal to the bus.
+      *
+      * @param state - true for raising interrupt.
+      */
     public void signalINT(boolean state) {
         inInterrupt = state;
         bus.signalINT(state);
@@ -46,6 +50,7 @@ public abstract class DeviceZ80 extends MemorySegment {
     /**
      * Get a value from the device that has interrupted the CPU.
      * This is typically an opcode.
+     *
      * @return the byte from the device.
      */
     public abstract int getInterruptValue();

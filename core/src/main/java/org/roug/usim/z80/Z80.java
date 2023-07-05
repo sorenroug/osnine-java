@@ -304,23 +304,19 @@ public class Z80 extends USimIntel {
     private void doInterrupt() {
         int n;
         helpDI();
-        bus.ackInterrupt(true);
         switch (interruptMode) {
         case 0:
             activeFromRegTbl = regTable;
             activeReg16 = registerHL;
             ir = bus.getDeviceValue();
             parseIR();
-            bus.ackInterrupt(false);
             break;
         case 1:
             n = bus.getDeviceValue(); // Ignored
             helpCALL(MODE0_ADDR);
-            bus.ackInterrupt(false);
             break;
         default: // mode 2
             n = bus.getDeviceValue();
-            bus.ackInterrupt(false);
             int newAddress = registerI.get() * 256 + (n & 0xFE);
             helpCALL(newAddress);
         }
@@ -1071,7 +1067,7 @@ public class Z80 extends USimIntel {
 
     /**
      * Return from interrupt subroutine.
-     * TODO: Implement side-effects.
+     * Tells the first interrupting device that CPU did a RETI.
      */
     private void helpRETI() {
         helpRET();
@@ -1080,7 +1076,6 @@ public class Z80 extends USimIntel {
 
     /**
      * Return from non-maskable interrupt subroutine.
-     * TODO: Implement side-effects.
      */
     private void helpRETN() {
         helpRET();

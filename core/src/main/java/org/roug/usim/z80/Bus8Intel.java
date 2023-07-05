@@ -53,13 +53,6 @@ public interface Bus8Intel extends MemoryBus {
     void clearNMI();
 
     /**
-     * Acknowledge interrupt.
-     * Set by the CPU when reading an opcode. The bus will then contact the first
-     * device that has interrupted to get a byte. The device can then lower interrupt.
-     */
-    void ackInterrupt(boolean state);
-
-    /**
      * Get the number of read/writes to bus since the start.
      *
      * @return the number of cycles.
