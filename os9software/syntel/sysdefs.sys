@@ -1,0 +1,6 @@
+CPUType set Syntel
+ClocType set 0
+CPort equ $C3F0
+
+DriveCnt set 2 drives max on system
+

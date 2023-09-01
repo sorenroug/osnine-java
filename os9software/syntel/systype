@@ -1,0 +1,174 @@
+ opt -l
+ ttl System Type Definitions
+ page
+************************************************************
+*
+*     CPU Type Definitions
+*
+ org 1
+Gimix rmb 1
+SSB rmb 1
+Kodak rmb 1
+MotGED rmb 1
+Primal rmb 1
+Helix rmb 1
+Positron rmb 1
+Profitel rmb 1
+Gimix2 rmb 1
+Color rmb 1
+Comtrol rmb 1
+Dragon rmb 1
+AcuPoint rmb 1
+Delco rmb 1
+CMS9639 rmb 1
+Sat rmb 1
+Japan rmb 1 All japanese version
+
+ ifeq LEVEL-1
+Exorsr rmb 1
+S09 rmb 1
+Swtc rmb 1
+Cms9609 rmb 1
+Cms9619 rmb 1
+Mm19 rmb 1
+Percom rmb 1
+Elektra rmb 1
+Digalog rmb 1
+Matrix rmb 1
+TCSF1 rmb 1
+TCSF2 rmb 1
+MatrixRB rmb 1 rom based Matrix CPU
+PT69 RMB 1 Peripheral Technology Computer
+SAT96 rmb 1
+Syntel rmb 1
+ endc
+
+
+*************************************************
+*
+*  CPU Type for Japanese versions
+*
+ org $40
+FM11L2 rmb 1 FUJITSU FM-11 Level II System
+ rmb $50-. Reserved for future use
+FM7 rmb 1 FUJITSU FM-7
+FM8 rmb 1 FUJITSU FM-8
+FM11 rmb 1 FUJITSU FM-11
+FM8S rmb 1 FUJITSU FM-8S
+Level3 rmb 1 HITACHI LEVEL-3
+CX1 rmb 1 CANON CX-1
+APPLE rmb 1 APPLE (use EXCEL-9)
+
+
+***********************************************************
+*
+*    Clock Speed Type Definitions
+*
+OneMHz equ 1
+TwoMHz equ 2
+
+CPUType set 0
+CPUSpeed set OneMHz
+
+
+************************************************************
+*
+*    Power Line Frequency Definitions
+*
+Hz50 equ 1 Assemble clock for 50 hz power
+Hz60 equ 2 Assemble clock for 60 hz power
+
+PwrLnFrq set Hz60 Set to Appropriate freq
+
+
+************************************************************
+*
+*     Disk Controller Type Definitions
+*
+ org 1
+G68 rmb 1
+DCB4 rmb 1
+ExDiskII rmb 1
+ExDskIII rmb 1
+PD5 rmb 1
+H58 rmb 1
+PosiDisk rmb 1
+ProfDisk rmb 1
+Cms9670 rmb 1
+AcuDisk rmb 1
+
+ ifeq LEVEL-1
+DMAF2 rmb 1
+DC2 rmb 1
+DC3 rmb 1
+HDAP rmb 1
+LFD400 rmb 1
+G28 rmb 1
+G58 rmb 1
+FDC2 rmb 1 Matrix Floppy Disk
+FD2 rmb 1 Peripheral Technology
+ endc
+
+DiskType set 0
+
+************************************************************
+*
+*     Clock Type Definitions
+*
+ org 1
+MC6840 rmb 1 MC6840 timer
+VIA rmb 1 VIA timer
+M58167 rmb 1 M58167 clock
+MC146818 rmb 1 MC146818 clock
+MPT rmb 1 Swtpc MPT timer card
+CMS rmb 1 CMS 9619 cpu clock
+Acu58167 rmb 1 Accupoint clock
+PT146818 rmb 1 Peripheral Technology Clock
+ClocType set 0
+
+*
+* MC6840 type definitions
+*
+ org 1
+Standard rmb 1 MC6840 standard version will lose time on IRQmask
+Missed rmb 1 MC6840 used with missing tick counter
+
+M6840Typ set Standard
+
+********************************************
+* PIA type set up
+*
+ org 1
+REGULAR rmb 1 all others
+MPL2Type rmb 1 southwest parallel
+
+PIAType set REGULAR
+
+
+********************************************
+* ACIA type set up
+*
+ org 1
+ACIA6850 rmb 1 MC6850 acia.
+ACIA6551 rmb 1 SY6551 acia.
+ACIA2661 rmb 1 SC2661 acia.
+ACIATYPE set ACIA6850
+
+*******************************************
+* SYSBase for setting Rom based systems
+*
+ org 1
+RomBased rmb 1 Is system RomBased
+NONRom rmb 1 Normal Booting System
+SYSBase set NONRom
+
+*******************************************
+* COLOR Computer Model type
+*
+ org 1
+Original rmb 1 Standard (original) color computer
+Delux rmb 1 Delux version color computer
+CoCoType set Original
+
+ opt l
+

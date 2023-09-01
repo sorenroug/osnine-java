@@ -1,0 +1,111 @@
+ opt -l
+ ttl Direct Page Definitions
+ page
+************************************************************
+*
+*     Direct Page Variable Definitions
+*
+ org $20 reserve first 32 bytes
+
+D.FMBM rmb 4 Free memory bit map pointers
+D.MLIM rmb 2 Memory limit
+D.ModDir rmb 4 Module directory
+D.Init rmb 2 Rom base address
+D.SWI3 rmb 2 Swi3 vector
+D.SWI2 rmb 2 Swi2 vector
+D.FIRQ rmb 2 Firq vector
+D.IRQ rmb 2 Irq vector
+D.SWI rmb 2 Swi vector
+D.NMI rmb 2 Nmi vector
+D.SvcIRQ rmb 2 Interrupt service entry
+D.Poll rmb 2 Interrupt polling routine
+D.UsrIRQ rmb 2 User irq routine
+D.SysIRQ rmb 2 System irq routine
+D.UsrSvc rmb 2 User service request routine
+D.SysSvc rmb 2 System service request routine
+D.UsrDis rmb 2 User service request dispatch table
+D.SysDis rmb 2 System service reuest dispatch table
+D.Slice rmb 1 Process time slice count
+D.PrcDBT rmb 2 Process descriptor block address
+D.Proc rmb 2 Process descriptor address
+D.AProcQ rmb 2 Active process queue
+D.WProcQ rmb 2 Waiting process queue
+D.SProcQ rmb 2 Sleeping process queue
+D.Time equ . Time
+D.Year rmb 1
+D.Month rmb 1
+D.Day rmb 1
+D.Hour rmb 1
+D.Min rmb 1
+D.Sec rmb 1
+D.Tick rmb 1
+D.TSec rmb 1 Ticks / second
+D.TSlice rmb 1 Ticks / time-slice
+D.IOML rmb 2 I/O mgr free memory low bound
+D.IOMH rmb 2 I/O mgr free memory hi  bound
+D.DevTbl rmb 2 Device driver table addr
+D.PolTbl rmb 2 Irq polling table addr
+D.PthDBT rmb 2 Path descriptor block table addr
+D.BTLO rmb 2 Bootstrap low address
+D.BTHI rmb 2 Bootstrap hi address
+D.DMAReq rmb 1 DMA in use flag
+D.AltIRQ rmb 2 Alternate IRQ vector (CC)
+D.KbdSta rmb 2 Keyboard scanner static storage (CC)
+D.DskTmr rmb 2 Disk Motor Timer (CC)
+D.Clock rmb 2 Address of Clock Tick Routine (CC)
+D.Boot rmb 1 Disk Boot Flag
+
+* TABLE SIZES
+
+BMAPSZ equ 32 BIT MAP SIZE
+SVCTNM equ 2 NUMBER OF SERVICE REQUEST TABLES
+SVCTSZ equ (256-BMAPSZ)/SVCTNM-2 SERVICE REQUEST TABLE SIZE
+
+ page
+************************************************************
+*
+*     Process Descriptor Definitions
+*
+DefIOSiz equ 12
+NumPaths equ 16 Number of Local Paths
+
+ ORG 0
+P$ID rmb 1 Process ID
+P$PID rmb 1 Parent's ID
+P$SID rmb 1 Sibling's ID
+P$CID rmb 1 Child's ID
+P$SP rmb 2 Stack ptr
+P$CHAP rmb 1 process chapter number
+P$ADDR rmb 1 user address beginning page number
+P$PagCnt rmb 1 Memory Page Count
+P$User rmb 2 User Index
+P$Prior rmb 1 Priority
+P$Age rmb 1 Age
+P$State rmb 1 Status
+P$Queue rmb 2 Queue Link (Process ptr)
+P$IOQP rmb 1 Previous I/O Queue Link (Process ID)
+P$IOQN rmb 1 Next     I/O Queue Link (Process ID)
+P$PModul rmb 2 Primary Module
+P$SWI rmb 2 SWI Entry Point
+P$SWI2 rmb 2 SWI2 Entry Point
+P$SWI3 rmb 2 SWI3 Entry Point
+P$DIO rmb DefIOSiz default I/O ptrs
+P$PATH rmb NumPaths I/O path table
+P$Signal rmb 1 Signal Code
+P$SigVec rmb 2 Signal Intercept Vector
+P$SigDat rmb 2 Signal Intercept Data Address
+ rmb $40-. unused
+P$Size equ . Size of Process Descriptor
+
+*
+*   Process State Flags
+*
+SysState equ %10000000
+TimSleep equ %01000000
+TimOut equ %00100000
+ImgChg equ %00010000
+Condem equ %00000010
+Dead equ %00000001
+
+
+ opt l

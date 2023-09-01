@@ -1,0 +1,85 @@
+
+*
+* Sequential File Manager Definitions included
+*
+
+ opt -l
+ ttl Sequential File Manager (SCF) Definitions
+ pag
+**********
+* Static storage requirements
+*   SCF Devices must reserve this space for SCF
+
+ ORG V.USER
+V.TYPE rmb 1 Device type or parity
+V.LINE rmb 1 lines left until end of page
+V.PAUS rmb 1 immediate Pause request
+V.DEV2 rmb 2 attached device's static
+V.INTR rmb 1 Interrupt char
+V.QUIT rmb 1 Quit char
+V.PCHR rmb 1 Pause char
+V.ERR rmb 1 Accumulated errors
+V.XON rmb 1 X-On char
+V.XOFF rmb 1 X-Off char
+V.RSV rmb 12 Reserve bytes for future expansion
+V.SCF equ . total SCF manager static overhead
+
+***************
+* Character definitions
+C$NULL set 0 null character
+C$RPET set $01 (CTL A - SOH) REPEAT LAST INPUT LINE
+C$INTR set $03 (CTL C - ETX) KEYBOARD INTERRUPT
+C$RPRT set $04 (CTL D - EOT) REPRINT CURRENT INPUT LINE
+C$BELL set $07 (CTL G - BEL) Line overflow warning
+C$BSP set $08 (CTL H - BS ) BACK SPACE
+C$LF set $0A LINE FEED
+C$CR set $0D CARRIAGE RETURN
+C$FORM set $0C (CTL L - FF ) Form Feed
+C$QUIT set $11 (CTL Q - DC1) KEYBOARD ABORT
+C$PAUS set $17 (CTL W - ETB) PAUSE CHARACTER
+C$DEL set $18 (CTL X - CAN) DELETE LINE
+C$EOF set $1B (CTL [ - ESC) END OF FILE
+C$SPAC set $20 SPACE
+C$PERD set '.
+C$COMA set ',
+
+***************
+* FILE DESCRIPTOR OFFSETS
+*
+ ORG PD.FST
+PD.DV2 rmb 2 OUTPUT DEV TBL PTR
+PD.RAW rmb 1 READ/WRITE OR RDLIN/WRLIN MODE
+PD.MAX rmb 2 READLINE HIGH BYTE COUNT
+PD.MIN rmb 1 DEVICES ARE "MINE" IF CLEAR
+PD.STS rmb 2 Status routine moduel addr
+PD.STM rmb 2 reserved for Status routine
+ ORG PD.OPT
+ rmb 1 DEVICE TYPE
+PD.UPC rmb 1 CASE   (0=BOTH, 1=UPPER ONLY)
+PD.BSO rmb 1 BACKSP (0=BSE, 1=BSE,SP,BSE)
+PD.DLO rmb 1 DELETE (0=BSE OVER LINE, 1=CRLF)
+PD.EKO rmb 1 ECHO   (0=NO ECHO)
+PD.ALF rmb 1 AUTOLF (0=NO AUTO LF)
+PD.NUL rmb 1 END OF LINE NULL COUNT
+PD.PAU rmb 1 PAUSE  (0=NO END OF PAGE PAUSE)
+PD.PAG rmb 1 LINES PER PAGE
+PD.BSP rmb 1 BACKSPACE CHARACTER
+PD.DEL rmb 1 DELETE LINE CHARACTER
+PD.EOR rmb 1 END OF RECORD CHAR (READ ONLY)
+PD.EOF rmb 1 END OF FILE CHAR
+PD.RPR rmb 1 REPRINT LINE CHAR
+PD.DUP rmb 1 DUP LAST LINE CHAR
+PD.PSC rmb 1 PAUSE CHAR
+PD.INT rmb 1 KBD INTR CHAR (ctl c)
+PD.QUT rmb 1 KBD QUIT char (ctl q)
+PD.BSE rmb 1 BACKSPACE ECHO CHARACTER
+PD.OVF rmb 1 LINE OVERFLOW CHAR (BELL)
+PD.PAR rmb 1 PARITY CODE
+PD.BAU rmb 1 ACIA BAUD RATE
+OPTCNT set .-PD.OPT Total user settable options
+PD.D2P rmb 2 OFFSET OF DEV2 NAME
+ rmb 2 reserved for future use
+PD.ERR rmb 1 most recent I/O error status
+PD.TBL rmb 2 Device Table addr (copy)
+ opt l
+
