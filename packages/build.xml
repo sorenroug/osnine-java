@@ -87,7 +87,7 @@
         <assemble src="stylo_d64" home="stylograph" verify="9b5c2a4b5da49e3414f2c51b37d06596"/>
         <assemble src="stylo_std" home="stylograph" verify="5b6b54ab65c1ff865486639d5dbbd40f"/>
         <assemble src="styfix_d64" home="stylograph" verify="65c5cc35abe3903a5ceb6a9c5c8e9568"/>
-        <assemble src="stylo_3" home="stylo_3_0" verify="daf4c997f44cfbe4d57d5518f469dfa2"/>
+        <assemble src="stylo" home="stylo_3_0" verify="daf4c997f44cfbe4d57d5518f469dfa2"/>
     </target>
 
     <!-- RMS Report Management System -->

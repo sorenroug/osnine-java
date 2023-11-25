@@ -1287,12 +1287,12 @@ L0EF3    orcc  #Carry
 
 L0EF6    deca
          ldb   #$13
-         mul   
+         mul
          leax  >TRMBEG+10,pcr
          leax  d,x
-         clrb  
+         clrb
          ldy   <u0042
-L0F04    incb  
+L0F04    incb
          lda   b,x
          bne   L0F0E
          ldu   #$0000
@@ -1301,20 +1301,20 @@ L0F04    incb
 L0F0E    leau  >TRMSEQ,pcr
 L0F12    tst   ,u+
          bpl   L0F12
-         deca  
+         deca
          bne   L0F12
-L0F19    decb  
-         lslb  
+L0F19    decb
+         lslb
          stu   b,y
-         asrb  
-         incb  
+         asrb
+         incb
          cmpb  #$12
          bcs   L0F04
          leau  >L0F3B,pcr
          lda   ,x
          sta   <u0044
          anda  #$07
-         lsla  
+         lsla
          ldd   a,u
          std   <LASTROW
          lda   ,x
@@ -1330,7 +1330,7 @@ L0F3B equ *
          fcb   23,49  D2450
          fcb   15,32  D1633
 
-*THE FIRST 10 BYTES ARE RESERVED FOR 5 ADDRESS 
+*THE FIRST 10 BYTES ARE RESERVED FOR 5 ADDRESS
 *POINTERS TO MACHINE LANGUAGE ROUTINES IF USED.
 
 TRMBEG equ *       Address $0F41
