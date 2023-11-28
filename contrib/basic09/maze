@@ -3,7 +3,7 @@ PROCEDURE maze
     PRINT TAB(20);"CREATIVE COMPUTING"
     PRINT TAB(18);"MORRISTOWN, NEW JERSEY"
     PRINT \ PRINT \ PRINT
-    DIM C,E,H,V,Q,Z,I,J,R,S,X,Y:INTEGER
+    DIM C,E,COLS,ROWS,Q,Z,I,J,R,S,X,Y:INTEGER
     DIM NO_FLOOR,NO_RIGHT_WALL,CRUMB:BYTE
     DIM W(25,25),cells(25,25):BYTE
 
@@ -24,29 +24,29 @@ PROCEDURE maze
       ENDIF
       PRINT
       PRINT "WHAT ARE YOUR DIMENSIONS (HORIZONTAL, VERTICAL)";
-      INPUT H,V
-      H=ABS(H) \ V=ABS(V)
-      EXITIF H>=5 AND V>=5 THEN ENDEXIT
+      INPUT COLS,ROWS
+      COLS=ABS(COLS) \ ROWS=ABS(ROWS)
+      EXITIF COLS>=5 AND ROWS>=5 THEN ENDEXIT
       A$="Y"
     ENDLOOP
     PRINT \ PRINT
-    FOR Q=1 TO V
-      FOR Z=1 TO H
+    FOR Q=1 TO ROWS
+      FOR Z=1 TO COLS
         LET W(Z,Q)=0
         LET cells(Z,Q)=0
       NEXT Z
     NEXT Q
     Q=0 \ Z=0
-    X=INT(RND(H)+1)
+    X=INT(RND(COLS)+1)
     C=1 \ W(X,1)=C \ C=C+1 \ R=X \ S=1
     GOTO 470
 
 400 REPEAT
-      IF R<>H THEN
+      IF R<>COLS THEN
         R=R+1
       ELSE
         R=1
-        IF S<>V THEN
+        IF S<>ROWS THEN
           S=S+1
         ELSE
           S=1
@@ -58,12 +58,12 @@ PROCEDURE maze
     IF W(R-1,S)>0 THEN 830
     IF S=1 THEN 640
     IF W(R,S-1)<>0 THEN 640
-    IF R=H THEN 550
+    IF R=COLS THEN 550
     IF W(R+1,S)>0 THEN 550
     X=INT(RND(3)+1)
     ON X GOTO 1200,1240,1280
 
-550 IF S<>V THEN
+550 IF S<>ROWS THEN
       IF W(R,S+1)>0 THEN 620
     ELSE
       IF Z=1 THEN 620
@@ -74,9 +74,9 @@ PROCEDURE maze
 620 X=INT(RND(2)+1)
     ON X GOTO 1200,1240
 
-640 IF R=H THEN 750
+640 IF R=COLS THEN 750
     IF W(R+1,S)>0 THEN 750
-    IF S<>V THEN
+    IF S<>ROWS THEN
       IF W(R,S+1)>0 THEN 730
     ELSE
       IF Z=1 THEN 730
@@ -87,7 +87,7 @@ PROCEDURE maze
 730 X=INT(RND(2)+1)
     ON X GOTO 1200,1280
 
-750 IF S<>V THEN
+750 IF S<>ROWS THEN
       IF W(R,S+1)>0 THEN 820
     ELSE
       IF Z=1 THEN 820
@@ -99,9 +99,9 @@ PROCEDURE maze
 
 830 IF S=1 THEN 1040
     IF W(R,S-1)>0 THEN 1040
-    IF R=H THEN 960
+    IF R=COLS THEN 960
     IF W(R+1,S)>0 THEN 960
-    IF S<>V THEN
+    IF S<>ROWS THEN
       IF W(R,S+1)>0 THEN 940
     ELSE
       IF Z=1 THEN 940
@@ -112,7 +112,7 @@ PROCEDURE maze
 940 X=INT(RND(2)+1)
     ON X GOTO 1240,1280
 
-960 IF S<>V THEN
+960 IF S<>ROWS THEN
       IF W(R,S+1)>0 THEN 1030
     ELSE
       IF Z=1 THEN 1030
@@ -122,9 +122,9 @@ PROCEDURE maze
      ON X GOTO 1240,1370
 1030 GOTO 1240
 
-1040 IF R=H THEN 1140
+1040 IF R=COLS THEN 1140
      IF W(R+1,S)>0 THEN 1140
-     IF S<>V THEN
+     IF S<>ROWS THEN
        IF W(R,S+1)>0 THEN 1130
      ELSE
        IF Z=1 THEN 1130
@@ -134,7 +134,7 @@ PROCEDURE maze
      ON X GOTO 1280,1370
 1130 GOTO 1280
 
-1140 IF S<>V THEN
+1140 IF S<>ROWS THEN
        IF W(R,S+1)>0 THEN 400
      ELSE
        IF Z=1 THEN 400
@@ -143,17 +143,17 @@ PROCEDURE maze
      GOTO 1370
 
 1200 W(R-1,S)=C \ C=C+1 \ cells(R-1,S)=NO_RIGHT_WALL \ R=R-1
-     IF C=H*V+1 THEN 1510
+     IF C=COLS*ROWS+1 THEN 1510
      Q=0
      GOTO 470
 1240 W(R,S-1)=C \ C=C+1 \ cells(R,S-1)=NO_FLOOR \ S=S-1
-     IF C=H*V+1 THEN 1510
+     IF C=COLS*ROWS+1 THEN 1510
      Q=0
      GOTO 470
 1280 W(R+1,S)=C \ C=C+1
      cells(R,S)=LOR(cells(R,S), NO_RIGHT_WALL)
      R=R+1
-     IF C=H*V+1 THEN 1510
+     IF C=COLS*ROWS+1 THEN 1510
      Q=0
      GOTO 830
 1370 IF Q=1 THEN 1470
@@ -161,7 +161,7 @@ PROCEDURE maze
      C=C+1
      cells(R,S)=LOR(cells(R,S),NO_FLOOR)
      S=S+1
-     IF C=H*V+1 THEN 1510
+     IF C=COLS*ROWS+1 THEN 1510
      GOTO 470
 1470 Z=1
      IF cells(R,S)=0 THEN
@@ -175,20 +175,20 @@ PROCEDURE maze
      GOTO 400
 
 1510 IF Z=0 THEN
-       R=INT(RND(H))+1 \ S=V
+       R=INT(RND(COLS))+1 \ S=ROWS
        cells(R,S)=LOR(cells(R,S),NO_FLOOR)
      ENDIF
-     FOR I=1 TO H
+     FOR I=1 TO COLS
        EXITIF W(I,1)=1 THEN S=I \ ENDEXIT
      NEXT I
-     GOSUB 2600
-     GOSUB 2320
+     GOSUB 2600 \ REM PRINT 1ST ROW
+     GOSUB 2320 \ REM PRINT MAZE
      PRINT "DO YOU WANT THE SOLUTION"; \ INPUT A$
      IF LEFT$(A$,1)<>"Y" THEN 2620
      PRINT "DO YOU WANT TO SEE EACH STEP"; \ INPUT A$ \ PRINT \ PRINT
 
      REM NOW WE CAN CLEAR W ARRAY AS ENTRY POINT IS FOUND.
-     REM ELEMENTS IN V ARE EITHER 0,1,2 OR 3
+     REM ELEMENTS IN ROWS ARE EITHER 0,1,2 OR 3
      REM 0 IS CLOSED ON THE RIGHT AND AT THE BOTTOM
      REM 1 IS CLOSED ON THE RIGHT
      REM 2 IS CLOSED ON THE BOTTOM
@@ -198,20 +198,20 @@ PROCEDURE maze
      REM  2 : DOWN
      REM  4 : RIGHT
      REM  8 : LEFT
-     REM SCAN V ARRAY FOR POSSIBLE MOVES IN ALL DIRECTIONS
-     FOR I=1 TO H
-       FOR J=1 TO V
+     REM SCAN W ARRAY FOR POSSIBLE MOVES IN ALL DIRECTIONS
+     FOR I=1 TO COLS
+       FOR J=1 TO ROWS
          W(I,J)=0
          REM TRY UP
          IF J<>1 THEN
            IF LAND(cells(I,J-1),NO_FLOOR) <> 0 THEN W(I,J)=W(I,J)+1 \ ENDIF
          ENDIF
          REM TRY DOWN
-         IF J<>V THEN
+         IF J<>ROWS THEN
            IF LAND(cells(I,J),NO_FLOOR) <> 0 THEN W(I,J)=W(I,J)+2 \ ENDIF
          ENDIF
          REM TRY RIGHT
-         IF I<>H THEN
+         IF I<>COLS THEN
            IF LAND(cells(I,J),NO_RIGHT_WALL) <> 0 THEN W(I,J)=W(I,J)+4 \ ENDIF
          ENDIF
          REM TRY LEFT
@@ -220,14 +220,14 @@ PROCEDURE maze
          ENDIF
        NEXT J
      NEXT I
-     FOR I=1 TO H
-       IF LAND(cells(I,V),NO_FLOOR) <> 0 THEN W(I,V)=W(I,V)+2 \ E=I \ GOTO 1920 \ ENDIF
+     FOR I=1 TO COLS
+       IF LAND(cells(I,ROWS),NO_FLOOR) <> 0 THEN W(I,ROWS)=W(I,ROWS)+2 \ E=I \ GOTO 1920 \ ENDIF
      NEXT I
      REM HAVE TO GO DOWN FIRST
 1920 Y=1 \ X=S
      cells(X,Y)=LOR(cells(X,Y),CRUMB)
      REM CHECK FOR POSSIBLE DIRECTIONS NOW...
-1950 IF Y=V AND X=E THEN PRINT \ GOSUB 2250 \ PRINT \ PRINT \ GOTO 2620 \ ENDIF
+1950 IF Y=ROWS AND X=E THEN PRINT \ GOSUB 2250 \ PRINT \ PRINT \ GOTO 2620 \ ENDIF
      GOSUB 2230
      REM CHECK POSSIBLE DIRECTIONS
 1980 IF LAND(W(X,Y), 2) <> 0 THEN 2030
@@ -288,7 +288,7 @@ PROCEDURE maze
      PRINT
 
 2250 PRINT CHR$(27);"[H"; \ REM RETURN TO TOP LEFT
-     FOR I=1 TO H
+     FOR I=1 TO COLS
        IF I=S THEN
          PRINT ":**";
        ELSE
@@ -296,9 +296,9 @@ PROCEDURE maze
        ENDIF
      NEXT I
      PRINT ":"
-2320 FOR J=1 TO V
+2320 FOR J=1 TO ROWS
        PRINT "I";
-       FOR I=1 TO H
+       FOR I=1 TO COLS
          Z=LAND(cells(I,J),LNOT(CRUMB))
          IF Z<2 THEN
            IF Z<>cells(I,J) THEN
@@ -319,17 +319,17 @@ PROCEDURE maze
          ENDIF
        NEXT I
        PRINT
-       FOR I=1 TO H
+       FOR I=1 TO COLS
          Z=LAND(cells(I,J),LNOT(CRUMB))
          IF Z=0 OR Z=2 THEN
            PRINT ":--";
            GOTO 2570
          ENDIF
-         IF Z<>cells(I,J) AND J=V THEN
+         IF Z<>cells(I,J) AND J=ROWS THEN
            PRINT ":**";
            GOTO 2570
          ENDIF
-         IF J=V THEN
+         IF J=ROWS THEN
            PRINT ":  ";
          ELSE
            IF Z<>cells(I,J) AND cells(I,J+1)>3 THEN
@@ -345,7 +345,7 @@ PROCEDURE maze
      RETURN
 
 2600 PRINT CHR$(27);"[H";CHR$(27);"[2J"; \ REM CLEAR SCREEN
-     FOR I=1 TO H
+     FOR I=1 TO COLS
        IF I=S THEN
          PRINT ":  ";
        ELSE
