@@ -1672,7 +1672,7 @@ ErrMsg1  fcc "ERROR #"
 ErrMsg2 fcb  '0-1,'9+1,'0
          fcb   C$CR
 
-L0878   fcs "PrintErr"
+PrintErr   fcs "PrintErr"
 
 
 PRTERR   leas  <-$3D,s
@@ -1689,7 +1689,7 @@ L088E    lda   ,x+
          stx   <$38,s
          ldx   D.SysPRC
          stx   D.Proc
-         leax  >L0878,pcr
+         leax  >PrintErr,pcr
          lda   #$11
          os9   F$Link
          bcs   L08C6

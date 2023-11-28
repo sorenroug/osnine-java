@@ -324,7 +324,7 @@ public class Z80 extends USimIntel {
 
     /**
      * Handle nonmaskable interrupt.
-     * TODO
+     *
      */
     private void doNMI() {
         iff2 = iff1;
@@ -1798,7 +1798,7 @@ public class Z80 extends USimIntel {
      * The contents of Register C are placed on the bottom half (A0 through A7)
      * of the address bus to select the I/O device at one of 256 possible
      * ports. The contents of Register B are placed on the top half (A8 through
-     *  A15) of the address bus at this time. Then the byte contained in
+     * A15) of the address bus at this time. Then the byte contained in
      * register r is placed on the data bus and written to the selected
      * peripheral device. Register r identifies any of the CPU registers shown
      * in the following table, which also shows the corresponding three-bit r
@@ -1811,6 +1811,11 @@ public class Z80 extends USimIntel {
 
     /**
      * IN r (C).
+     * The contents of Register C are placed on the bottom half (A0 through A7)
+     * of the address bus to select the I/O device at one of 256 possible ports.
+     * The contents of Register B are placed on the top half (A8 through A15) of
+     * the address bus at this time. Then one byte from the selected port is
+     * placed on the data bus and written to register r in the CPU-
      */
     private void helpInRC() {
         int newVal = bus.readIO(registerBC.get());

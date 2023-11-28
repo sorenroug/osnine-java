@@ -44,7 +44,7 @@
     <target name="all" depends="prepare, required, level1,
         gimix, swtpc, color, fm7, dragon64, cms9609, cms9619,
         exorsr,
-        color3, fm11, dragon128, cms9639, positron9000, virtual,
+        color3, fm11, dragon128, cms9639, positron900, positron9000, virtual,
         utilities, y2k,  stylograph">
     </target>
 
@@ -130,7 +130,7 @@
         <assemble src="XMode" home="color" verify="723237aa39dbd01e0fe9270fcd91cae3"/>
     </target>
 
-    <!-- Dragon 64 -->
+    <!-- Dragon 64 Level I -->
     <target name="dragon64" depends="prepare">
         <assemble src="Clock" home="dragon64" verify="3410223ca2579ce665f3ccc3db1e8030"/>
         <assemble src="PRINTER" home="dragon64" verify="9f4223e2e09ca4e9acd0bbe8e5a7a6ea"/>
@@ -147,7 +147,7 @@
         <assemble src="Boot" home="dragon64" verify="cecec3da6e7b6681a0f8397c4c1cc2df"/>
     </target>
 
-    <!-- CMS 9609 -->
+    <!-- CMS 9609 Level I -->
     <target name="cms9609" depends="prepare">
         <assemble src="OS9p1" home="cms9609"  verify="ab5661de908ec546a45b31f2c8f72b0a"/>
         <assemble src="OS9p2" home="cms9609"  verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
@@ -159,7 +159,32 @@
         <assemble src="OS9p2" home="cms9619"  verify="7232e5c43e51bcbb1ae0fcd4ccf591ac"/>
     </target>
 
-    <!-- EXORset 30 -->
+    <!-- Syntel -->
+    <target name="syntel" depends="prepare">
+        <assemble src="acia" home="syntel"  verify="b235650de8aea67aa13ed6225b075bd4"/>
+        <assemble src="Clock" home="syntel"  verify="9460cb7b19655a11816e6b06e6378af9"/>
+        <assemble src="d0" home="syntel"  verify="b2a8cad12603e283363b5a5ad45bf008"/>
+        <assemble src="d1" home="syntel"  verify="fce83a6c71ac48a3c5bdbee3143cd2d9"/>
+        <assemble src="Dir" home="syntel"  verify="fe84ce9a62feaba979223a3d64b5eae8"/>
+        <assemble src="FCM1" home="syntel"  verify="a3806cd18b40c5324d041dffffb18cdf"/>
+        <assemble src="Init" home="syntel"  verify="9e9f97e84189e7e5a1a7c390e4b11894"/>
+        <assemble src="IOMan" home="syntel"  verify="fce2d0270c03b4f7d8f06d51e4465d28"/>
+        <assemble src="Load" home="syntel"  verify="b39319b2c134519af870f84054b25a69"/>
+        <assemble src="Mdir" home="syntel"  verify="a505f5a398c63bec3a80f585ec6d593b"/>
+        <assemble src="OS9p1" home="syntel"  verify="0419ce1f0d562fb34ff7cbaa3016f70e"/>
+        <assemble src="OS9p2" home="syntel"  verify="dad2b6534149f371bc687bd5a7eddb54"/>
+        <assemble src="Pipe" home="syntel"  verify="9cc9561b6e28188550ee25a4c32216f0"/>
+        <assemble src="PipeMan" home="syntel"  verify="eeeb92ae88a102a2f9d3ce7062894d7d"/>
+        <assemble src="Piper" home="syntel"  verify="c62010913ea02b2e606785c1521233d3"/>
+        <assemble src="RBF" home="syntel"  verify="4be793b10285946279b781df94dcecf1"/>
+        <assemble src="SCF" home="syntel"  verify="2e882e79821eacba496d9f456d6e2738"/>
+        <assemble src="Shell" home="syntel"  verify="2a75cbf6b6bc42d7500325ada60e3428"/>
+        <assemble src="SysGo" home="syntel"  verify="53c83c2d70b47fd2da7e9ab1a88fa586"/>
+        <assemble src="TERM" home="syntel"  verify="f6888025ec1ba585625b2f5dd117454b"/>
+        <assemble src="Unlink" home="syntel"  verify="142a90d505d39bc0bb721def54079517"/>
+    </target>
+
+    <!-- EXORciser -->
     <target name="exorsr" depends="prepare">
         <assemble src="EXORdisk3" home="exorsr" verify="6a0afcd8df0f6c5baf56252e8b37eec4"/>
         <assemble src="OS9p1_ed9" home="exorsr"  verify="7bfef8a468a3a8269c973044abd74506"/>
@@ -218,6 +243,22 @@
         <assemble src="Clock" home="cms9639"  verify=""/>
     </target>
 
+        <!-- Positron 900 -->
+    <target name="positron900" depends="prepare">
+        <assemble src="OS9p2" home="positron900"  verify="cedbaf94831afca5c1f3242524b4ae1c"/>
+        <assemble src="OS9p1" home="positron900"  verify="d72b450650f72883e1216e9a65c95885"/>
+        <assemble src="Ramdisk" home="positron900"  verify="13eca858203075987c88fc50c2080ec5"/>
+        <assemble src="Init" home="positron900"  verify="1c7a2b4a521f52b1410fd0a5021ac442"/>
+        <assemble src="IOP" home="positron900"  verify="dfb0528f188d70e6abe85160d736aae2"/>
+        <assemble src="IOPMan" home="positron900"  verify="222ced8b675540dc7dd9506703acb578"/>
+        <assemble src="Sysgo" home="positron900"  verify="28b8e9d7c495461c5c032ecbd1ce4a00"/>
+        <assemble src="RBF" home="positron900"  verify="2e81752ebd6658e1c68e6a3f74ecaf5d"/>
+        <assemble src="Clock" home="positron900"  verify="53d74cf558a3a0e0be922d5e4347ae66"/>
+        <assemble src="P2" home="positron900"  verify="6ec9b97f9593ab2760bbdf903e58a599"/>
+        <assemble src="P3" home="positron900"  verify="8296d51024a0771bc75eef4360bb30b2"/>
+        <assemble src="Disk" home="positron900"  verify="ff1db6b0b21a19137371a46b30e19a50"/>
+    </target>
+        
     <!-- Positron 9000 -->
     <target name="positron9000" depends="prepare">
         <assemble src="SysGo" home="positron9000"  verify="352be770ab96dd0e37befdd381f2c0bc"/>

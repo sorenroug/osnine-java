@@ -1,0 +1,128 @@
+ opt -l
+ ttl System Type Definitions for the Positron 9000
+ page
+****************************************
+
+ ifeq CPUType-Positron
+************************************************************
+*
+*     Dynamic Address Translator Definitions
+*
+
+***************
+*
+* Note that DAT.BlCt is also understood by AllProc and
+* Chain (in OS9-P2) to be the number of blocks available
+* to each task. If less than 64k is available, these
+* routines must be modified to put DAT.Free in the
+* blocks that can be allocated, and the required values
+* into the other blocks, (eg the I/O block), to complete
+* the DAT image.
+*
+DAT.BlCt equ 32 D.A.T. blocks/address space available
+*
+***************
+DAT.BlUs equ 32 blocks available for RAM in address space
+DAT.GBlk equ DAT.BlCt*2 number of graphics blocks
+
+DAT.Blsz equ $800 D.A.T. block size in bytes
+DAT.ImSz equ DAT.BlCt*2 D.A.T. Image size
+
+***************
+*
+* DAT.Addr calculates a mask for the top bits of the
+* logical address that are mapped by the MMU
+DAT.Addr equ -(DAT.BlSz/256) D.A.T. MSB Address bits
+*
+***************
+
+
+***************
+*
+DAT.Regs equ $FF80 DAT RAM base address
+DAT.MMU0 equ DAT.Regs+$40 Start of MMU regs
+DAT.SBIT equ DAT.Regs+$48 S-bit register (Read-only)
+DAT.Fuse equ DAT.Regs+$49 Fuse register for delaying switch to user task
+DAT.Accs equ DAT.Regs+$4A Access register
+DAT.Task equ DAT.Regs+$4B Task register address (operate)
+
+DAT.TMsk equ $0F bits of register for task number
+DAT.Uniq equ 1 bits of DAT Task register are not used for other things
+*
+***************
+
+DAT.TkCt equ 8 task maps in the MMU
+
+***************
+*
+* One block number must be guaranteed never to
+* contain memory, (ROM or RAM). That block number
+* is used by OS9 in the block map and DAT images
+* to indicate an unallocated logical block
+DAT.Free equ $015F
+*
+***************
+
+DAT.BlMx equ $100 maximum block number
+DAT.BMSz equ $200 Block Map size (one byte per block)
+DAT.WrPr equ 0 no Block Write Protect bit
+DAT.WrEn equ $200 Block Write Enable bit
+
+***************
+*
+SysTask equ $80 System Task number
+*
+***************
+
+IOBlock equ $140 The block number for the I/O. Should be $140?
+
+***************
+*
+ROMBlock equ $1FE ROM block mapped in on ColdStart
+ROMCount equ 3 number of blocks of ROM to so map in
+RAMCount equ 3 initial blocks of RAM
+*
+***************
+
+ROMCheck equ Limited check only top 64k for ROM
+RAMCheck equ BlockTyp check only first bytes of RAM blocks
+LastRAM equ $BF maximum RAM block number
+
+
+
+***************
+*
+* If the I/O is addressed whenever the top
+* address lines of the micro, (ie the logical
+* bus), take a certain value, rather than being
+* addressed through the DAT, then MappedIO must
+* be set false (0)
+MappedIO equ 1
+*
+***************
+**********
+* Several system modules expect to be
+* able to abort the startup procedure
+* and retry, by jumping through a ROM
+* vector (usually the reset vector).
+*
+D$REBOOT equ $FFFE use an unused vector
+*
+**********
+
+*ClocType set MC6840
+A.Clock set $EB00
+TickSec set 128 ticks per second
+*Cx2Int set 1 CA2 (CB2) interrupt input
+*FPort set $FCE0 floppy disk controller
+*HPort set $FD00 hard disk controller
+DrvCnt set 8 eight drives
+*DPort set FPort
+*A.T1 set $FC40 serial port address
+*A.T.Init set $15 default ACIA initialisation byte
+*A.P set $FC20 address of parallel printer port
+*A.P1 set A.T1 address of serial printer port
+
+ endc
+ opt l
+

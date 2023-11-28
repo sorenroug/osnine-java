@@ -68,11 +68,22 @@ public interface Bus8Intel extends MemoryBus {
      */
     void callbackIn(int cycles, BitReceiver method);
 
+    /**
+     * TODO: Check if it is used.
+     */
     void lock();
+
+    /**
+     * TODO: Check if it is used.
+     */
     void unlock();
 
     /**
-     * Single byte read from I/O port map.
+     * Single byte read from I/O port map. On the real Z80, there is a pin
+     * called IORQ, which is asserted when the CPU reads/writes to a device.
+     * It then puts the device address on the address bus. The address can be
+     * a 16 byte value (see IN r,(C)), but probably no system implements this.
+     * Here we just implements it as a different API call.
      *
      * @param offset - port number 0-255
      * @return value of read operation
@@ -80,7 +91,11 @@ public interface Bus8Intel extends MemoryBus {
     int readIO(int offset);
 
     /**
-     * Single byte write to I/O port map.
+     * Single byte write to I/O port map. On the real Z80, there is a pin
+     * called IORQ, which is asserted when the CPU reads/writes to a device.
+     * It then puts the device address on the address bus. The address can be
+     * a 16 byte value (see OUT (C),r), but probably no system implements this.
+     * Here we just implements it as a different API call.
      *
      * @param offset - port number 0-255
      * @param val - one-byte value to write
@@ -88,7 +103,9 @@ public interface Bus8Intel extends MemoryBus {
     void writeIO(int offset, int val);
 
     /**
-     * Single byte read from interrupting device.
+     * Single byte read from interrupting device. This implements the interrupt
+     * acknowledge, where the CPU reads the value that the device has to send.
+     * In interrupt mode 1, the value is also read, but discarded.
      *
      * @return value of read operation
      */
@@ -96,6 +113,9 @@ public interface Bus8Intel extends MemoryBus {
 
     /**
      * Signal to first device in interrupt that the CPU did a RETI instruction.
+     * Normally it is the device's responsibility to detect the RETI, but here
+     * we just make it a API call. The device is then required to lower its
+     * interrupt and let lower priority devices get access.
      */
     void cpuRETI();
 
