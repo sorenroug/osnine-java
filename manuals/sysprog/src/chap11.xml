@@ -6711,7 +6711,7 @@ position up to the number of bytes requested. If 0 bytes are requested,
 all locks (Record Lock, EOF Lock, and File Lock) are removed. If (X) and
 (U) contain $FFFF FFFF, then the entire file is locked out regardless of
 where the file pointer is. This is a special type of file lock that
-remains in effect until released by SS.Lock(O), a read or write of zero
+remains in effect until released by SS.Lock(0), a read or write of zero
 bytes, or the file is closed. There is no way to gain file lock using
 only Read or Write system calls.
 </para>
