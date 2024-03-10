@@ -136,6 +136,7 @@
         <assemble src="PRINTER" home="dragon64" verify="9f4223e2e09ca4e9acd0bbe8e5a7a6ea"/>
         <assemble src="P1" home="dragon64" verify="35d22808bbc2023c651c1888b56e95dd"/>
         <assemble src="T1" home="dragon64" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
+        <assemble src="Term" home="dragon64" verify="96ce9e3cf5c6df16bb62c7caa1720976"/>
         <assemble src="KbVdIO" home="dragon64" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>
         <assemble src="go51nkb" home="dragon64" verify="17d598001819b9aec3b579a5e63c822b"/>
         <assemble src="go51n" home="dragon64" verify="6798a2db83aedf2ac3629c913714dfa0"/>
