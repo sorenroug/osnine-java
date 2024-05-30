@@ -319,6 +319,8 @@ L00F9    pshs  u
          stu   $02,x
          clr   $04,x
          puls  pc,u
+
+* WrA2BUF
 L0105    pshs  y,x,b,a
          ldx   <u00EB
          anda  #$7F
@@ -1211,476 +1213,44 @@ XERRTBL EQU *
 *MESSAGES AND NUMBER AREAS
 XPGMS1 FCC '- PAGE STATUS -'
  FCB 0
-         fcb   $52 R
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $3D =
-         fcb   $20
-         fcb   $00
-         fcb   $57 W
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $3D =
-         fcb   $20
-         fcb   $00
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $00
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $23 #
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $00
-         fcb   $50 P
-         fcb   $52 R
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $23 #
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $00
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $20
-         fcb   $23 #
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $00
-         fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $20
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $4C L
-         fcb   $00
-         fcb   $48 H
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $48 H
-         fcb   $44 D
-         fcb   $20
-         fcb   $2C ,
-         fcb   $2C ,
-         fcb   $00
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $46 F
-         fcb   $54 T
-         fcb   $20
-         fcb   $2C ,
-         fcb   $2C ,
-         fcb   $00
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $53 S
-         fcb   $53 S
-         fcb   $00
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $2F /
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $56 V
-         fcb   $53 S
-         fcb   $00
-         fcb   $00
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $20
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $00
-         fcb   $48 H
-         fcb   $2F /
-         fcb   $46 F
-         fcb   $20
-         fcb   $4C L
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $45 E
-         fcb   $20
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $54 T
-         fcb   $48 H
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $4C L
-         fcb   $4C L
-         fcb   $00
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $46 F
-         fcb   $54 T
-         fcb   $20
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $47 G
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $20
-         fcb   $28 (
-         fcb   $4F O
-         fcb   $44 D
-         fcb   $44 D
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $29 )
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $4C L
-         fcb   $4D M
-         fcb   $31 1
-         fcb   $00
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $46 F
-         fcb   $54 T
-         fcb   $20
-         fcb   $4D M
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $47 G
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $20
-         fcb   $28 (
-         fcb   $45 E
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $20
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $45 E
-         fcb   $29 )
-         fcb   $20
-         fcb   $2C ,
-         fcb   $4C L
-         fcb   $4D M
-         fcb   $32 2
-         fcb   $00
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $00
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $54 T
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $53 S
-         fcb   $2F /
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $43 C
-         fcb   $48 H
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $43 C
-         fcb   $53 S
-         fcb   $00
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $47 G
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $50 P
-         fcb   $48 H
-         fcb   $20
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $54 T
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $2C ,
-         fcb   $50 P
-         fcb   $50 P
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $00
+ FCC 'READ FILE = '
+ FCB 0
+ FCC 'WRITE FILE = '
+ FCB 0
+ FCC '------- NONE ---------'
+ FCB 0
+ FCC 'SERIAL PAGE # ---------'
+ FCB 0
+ FCC 'PRINTED PAGE # --------'
+ FCB 0
+ FCC 'LINE # ----------------'
+ FCB 0
+ FCB 0
+ FCC 'PAGE LENGTH ----------- ,PL'
+ FCB 0
+ FCC 'HEADER LINES ---------- ,HD ,,'
+ FCB 0
+ FCC 'FOOTER LINES ---------- ,FT ,,'
+ FCB 0
+ FCC 'SPACING --------------- ,SS'
+ FCB 0
+ FCC 'LINES/INCH ------------ ,VS'
+ FCB 0
+ FCB 0
+ FCC 'LINE LENGTH ----------- ,LL'
+ FCB 0
+ FCC 'H/F LINE LENGTH ------- ,LL'
+ FCB 0
+ FCC 'LEFT MARGIN (ODD PAGE)- ,LM1'
+ FCB 0
+ FCC 'LEFT MARGIN (EVEN PAGE) ,LM2'
+ FCB 0
+ FCC 'INDENT ---------------- ,IN'
+ FCB 0
+ FCC 'CHARACTERS/INCH ------- ,CS'
+ FCB 0
+ FCC 'PARAGRAPH INDENT ------ ,PPSI'
+ FCB 0
  FCC 'PARAGRAPH SPACE ------- ,PPSP'
  FCB 0
  FCC 'PARAGRAPH NEED LINES -- ,PPNL'
@@ -1737,111 +1307,14 @@ XSAVM4 FCC 'Can old BACKUP file be replaced (Y*/N)? '
  FCB 0
 XSAVM5 FCC 'File name? '
  FCB 0
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $47 G
-         fcb   $48 H
-         fcb   $20
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $59 Y
-         fcb   $20
-         fcb   $2D -
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $4F O
-         fcb   $54 T
-         fcb   $20
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $00
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $50 P
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $41 A
-         fcb   $53 S
-         fcb   $45 E
-         fcb   $20
-         fcb   $53 S
-         fcb   $41 A
-         fcb   $56 V
-         fcb   $45 E
-         fcb   $20
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20
-         fcb   $41 A
-         fcb   $20
-         fcb   $55 U
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $51 Q
-         fcb   $55 U
-         fcb   $45 E
-         fcb   $20
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $20
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $2E .
-         fcb   $00
+ FCC 'NOT ENOUGH MEMORY - FILE NOT SAVED!!'
+ FCB 0
+ fcc "               PLEASE SAVE UNDER A UNIQUE FILE NAME."
+ FCB 0   
 XSVMS1 FCC 'Marker not found.'
  FCB 0
-         fcb   $2C ,
-         fcb   $2A *
-         fcb   $20
-         fcb   $4D M
-         fcb   $4F O
-         fcb   $44 D
-         fcb   $49 I
-         fcb   $46 F
-         fcb   $49 I
-         fcb   $45 E
-         fcb   $44 D
-         fcb   $20
-         fcb   $00
+ FCC ',* MODIFIED '
+ FCB 0
 XDSTM1 FCC 'WARNING! FILE TOO LARGE - '
 XDSTM2 FCC 'ENTIRE FILE MAY NOT BE LOADED!!!'
  FCB 0
@@ -1875,27 +1348,10 @@ XNEWM1 FCC 'No dump.  Cursor on top page.'
  FCB 0
 XNEWM3 FCC "Dump text in memory (Y*/N)? "
  FCB 0
-         fcb   $44 D
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $70 p
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $22 "
-         fcb   $00
-         fcb   $22 "
-         fcb   $20
-         fcb   $28 (
-         fcb   $59 Y
-         fcb   $2A *
-         fcb   $2F /
-         fcb   $4E N
-         fcb   $29 )
-         fcb   $3F ?
-         fcb   $20
-         fcb   $00
+XNEWM4 fcc 'Dump to "'
+ FCB 0
+XNEWM5 fcc '" (Y*/N)? '
+ FCB 0
 XNEWM6 FCC 'Fill from input file (Y*/N)? '
  FCB 0
 XNEWM7 FCC 'No room for fill.'
@@ -1927,163 +1383,24 @@ XPRNS1 FCC 'Different printer (Y/N*)? '
  FCB 0
 XPRNS2 FCC 'PRINT DRIVER NOT FOUND'
  FCB 0
-         fcb   $20
-         fcb   $20
-         fcb   $20
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20
-         fcb   $3F ?
-         fcb   $20
-         fcb   $28 (
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $20
-         fcb   $00
-         fcb   $20
-         fcb   $29 )
-         fcb   $20
-         fcb   $00
+XPRNS3 FCC '   Printer Path ? (currently '
+ FCB 0
+ FCC ' ) '
+ FCB 0
 XPRNS4 FCC 'Stop for new pages (Y/N*)? '
  FCB 0
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $23 #
-         fcb   $20
-         fcb   $3F ?
-         fcb   $20
-         fcb   $28 (
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $00
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $48 H
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $00
+ FCC 'Printer # ? (currently'
+ FCB 0
+ FCC 'Printing --- Hit SPACE to pause.'
+ FCB 0
 XOTXS2 FCC 'Print all pages (Y*/N)? '
  FCB 0
 XOTXS3 FCC '   First page = '
  FCB 0
 XOTXS4 FCC '     Last page = '
  FCB 0
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20
-         fcb   $48 H
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20
-         fcb   $53 S
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $65 e
-         fcb   $2C ,
-         fcb   $20
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $20
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $2E .
-         fcb   $00
+ FCC 'Printer Paused --- Hit SPACE to continue, return to abort.'
+ FCB 0
 XSPLS1 FCC 'Spooled output file name? '
  FCB 0
 XFNDS1 FCC '*** FIND    '
@@ -2331,6 +1648,8 @@ L1797    lda   ,x+
          andcc #$FE
 L17A4    andcc #$FB
 L17A6    puls  pc,x,b,a
+
+* Call macro in TRMBEG table
 L17A8    ldb   ,x
          lslb
          leax  >TRMBEG,pcr
@@ -2405,37 +1724,40 @@ L1833    fcb   $1B
          fcb   $00
 
 L183B    pshs  b
-         fcb   $C6 F
-         fcb   $14
-         fcb   $17
-         fcb   $FF
-         fcb   $47 G
+         ldb   #$14
+         lbsr L1789
          puls  pc,b
 
          pshs  b
          ldb   #$26
          lbsr  L1789
          puls  pc,b
+
          pshs  b
          ldb   #$28
          lbsr  L1789
          puls  pc,b
+
          pshs  b
          ldb   #$1C
          lbsr  L1789
          puls  pc,b
+
          pshs  b
          ldb   #$1E
          lbsr  L1789
          puls  pc,b
+
 L1868    pshs  b
          ldb   #$08
          lbsr  L1789
          puls  pc,b
+
 L1871    pshs  b
          ldb   #$06
          lbsr  L1789
          puls  pc,b
+
 L187A    pshs  x,b,a
          ldd   <u0038
          pshs  b,a
