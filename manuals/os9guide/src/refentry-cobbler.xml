@@ -21,12 +21,12 @@ from which OS-9 is to be bootstrapped. The boot file will consist
 of the <emphasis>same modules which were loaded into memory during the most recent bootstrap.</emphasis>
 To add modules to the bootstrap file use the
 <command>OS9Gen</command> command.
-<!--
-<command>Cobbler</command> also writes the OS-9 kernel on the first
-fifteen sectors of track 34, and excludes these sectors from the
-disk allocation map. If any files are present on these sectors
+
+If the system is not booting from ROM, then <command>cobbler</command> also writes the OS-9 kernel on the boot track<footnote>
+    <para>On the TRS-80 Color Computer, this is the first fifteen sectors of track 34. On Dragon 64, it is sectors 2-15 on track 0.</para>
+</footnote>, and excludes these sectors from the disk allocation map. If any files are present on these sectors
 <command>cobbler</command> will display an error message.
--->
+
 Level Two systems <emphasis>must</emphasis> use <command>OS9Gen</command> to create bootstrap files.
 </para>
 <para>

@@ -70,4 +70,10 @@
     <xsl:call-template name="inline.keycapseq"/>
   </xsl:template>
 
+  <xsl:template match="d:refentry">
+    <fo:block break-before='page'>
+      <xsl:apply-templates/>
+    </fo:block>
+  </xsl:template>
+
 </xsl:stylesheet>

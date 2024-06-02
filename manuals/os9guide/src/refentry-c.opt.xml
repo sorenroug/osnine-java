@@ -1,0 +1,55 @@
+<refentry xml:id="c.opt" xmlns="http://docbook.org/ns/docbook">
+<refnamediv>
+<refname>c.opt<indexterm><primary>c.opt</primary></indexterm></refname>
+<refpurpose>Assembly code optimizer</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>c.opt</command>
+<arg choice="opt">
+  <option>-i</option>
+  {=<replaceable>num</replaceable>}
+</arg>
+<arg choice="plain">
+  <replaceable>path</replaceable>
+</arg>
+<arg choice="plain">
+  {<replaceable>path</replaceable>}
+</arg>
+<arg choice="opt">
+  <option>-</option>
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+The optimizer reads the assembler source code text and removes
+redundant code and searches for code sequences that can be replaced
+by shorter and faster equivalents. The optimizer will shorten object
+code by about 11% with a significant increase in program execution
+speed. The optimizer is recommended for production versions of
+debugged programs.
+</para>
+<para>The '-' option will cause the optimizer to output statistics about its operation.
+</para>
+<para>
+The -i=<replaceable>num</replaceable> option determines how many instructions to look behind or ahead to find matching sequences.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+c.opt source.asm output.asm
+
+c.opt - ctmp.3.a ctmp.3.o
+
+statistics:
+        total instructions : 431
+        long branches :     78,    16,  16%
+        removed       :            15,   3%
+        total bytes   :   1120,    71,   6%
+</screen>
+</refsect1>
+</refentry>
+

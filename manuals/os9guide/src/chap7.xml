@@ -102,7 +102,7 @@ command line before it is passed to the program being called.
 <xi:include href="refentry-deldir.xml"/>
 <xi:include href="refentry-devs.xml"/>
 <xi:include href="refentry-dir.xml"/>
-<xi:include href="refentry-disasm.xml"/>
+<!-- <xi:include href="refentry-disasm.xml"/> -->
 <xi:include href="refentry-display.xml"/>
 <xi:include href="refentry-dmode.xml"/>
 <xi:include href="refentry-dsave.xml"/>

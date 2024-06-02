@@ -348,7 +348,7 @@ Level Two system load modules contiguously on memory block boundaries. The block
 usually 2K per block for systems equipped with MC6829 MMUs, or 4K bytes for
 most SS-50 bus systems.
 Free memory to be used for <emphasis>user data area</emphasis> need not be contiguous
-because the MMU can map scattered free blocks th be logically contiguous.
+because the MMU can map scattered free blocks to be logically contiguous.
 Since OS-9 will request the largest physically contiguous memory block available
 (up to 56K) to load program modules, load operations can fail even if sufficient
 total free memory exists. Any of this memory not used by the load operation is
