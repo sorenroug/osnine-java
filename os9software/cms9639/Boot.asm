@@ -8,71 +8,69 @@ atrv     set   ReEnt+rev
 rev      set   $01
          mod   BootEnd,name,tylg,atrv,start,0
 
-name     equ   *
-         fcs   /Boot/
-         fcb   $05
+EXTDEVC EQU     $FF80
+EXTDEVD EQU     $FF81
 
-L0012    fcb   $02
-         fcb   $00
-         fcb   $21
-         fcb   $01
-         fcb   $01
-         fcb   $04
-         fcb   $02
-         fcb   $64
-         fcb   $02
-         fcb   $65
-         fcb   $02
-         fcb   $65
-         fcb   $00
-         fcb   $00
-L0020    fcb   $00
-         fcb   $00
-         fcb   $21
-         fcb   $01
-         fcb   $01
-         fcb   $02
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $FF
-         fcb   $00
-         fcb   $00
+name     fcs   /Boot/
+         fcb   5 edition
 
-L002E    lda   >$FF80
-         orcc  #$01
+ org 0
+S.UNK1 rmb 22
+S.BUF rmb 2   at $16
+S.UNK2 rmb 8
+S.END equ .   $20
+
+S.D equ 0
+S.B equ 1 order of registers pushed to stack
+
+* Variables on the U space.
+ org $12
+V.SECT rmb 3 = $12
+ rmb 1 = $15
+ rmb 2 = $16
+V.CMDLOC rmb 2 = $18
+V.DATLOC rmb 2 = $1A
+V.SCSIST rmb 1 = $1C
+V.CMDST rmb 1 = $1D
+V.NUMBLK rmb 1 = $1E
+
+L0012    fcb   $02,$00,$21,$01,$01,$04,$02,$64,$02,$65,$02,$65,$00,$00
+
+L0020    fcb   $00,$00,$21,$01,$01,$02,$FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+
+* Input B = command
+SETCMD lda   EXTDEVC
+         orcc  #Carry
          bita  #$40
          bne   L0046
-         stx   <$18,u
-         sty   <$1A,u
-         stb   <$1D,u
-         stb   >$FF80
-         andcc #$FE
+         stx   <V.CMDLOC,u
+         sty   <V.DATLOC,u
+         stb   <V.CMDST,u
+         stb   EXTDEVC
+         andcc #$FE success, clear carry
 L0046    rts
 
-L0047    lda   >$FF80
+L0047    lda   EXTDEVC
          bmi   L0052
          bita  #$40
          bne   L0047
-         bra   L0062
+         bra   CLEANUP
 L0052    tfr   a,b
          bita  #$40
-         beq   L0071
+         beq   DDERR
          anda  #$07
          leax  >L0074,pcr
          lda   a,x
          jsr   a,x
-L0062    tst   <$1D,u
+CLEANUP  tst <V.CMDST,u
          bne   L0047
-         lda   <$1C,u
+         lda   <V.SCSIST,u
          bita  #$02
-         bne   L0071
+         bne   DDERR
          andcc #$FE
          rts
 
-L0071    orcc  #$01
+DDERR    orcc  #Carry
          rts
 
 L0074    fcb   L008F-L0074  0
@@ -84,73 +82,76 @@ L0074    fcb   L008F-L0074  0
          fcb   RETRN-L0074  6
          fcb   L00BA-L0074  7
 
-L007C    ldx   <$18,u
+* 2.3.5 Command Phase
+L007C    ldx   V.CMDLOC,u
 L007F    lda   ,x+
-         sta   >$FF81
-L0084    brn   L0084
-         cmpb  >$FF80
+         sta   EXTDEVD
+L0084    brn   L0084    * Delay two clock cycles
+         cmpb  EXTDEVC
          beq   L007F
-         stx   <$18,u
+         stx   V.CMDLOC,u
 RETRN    rts
 
 * Copy to drive
-L008F    ldx   <$1A,u
+L008F    ldx   V.DATLOC,u
 L0092    lda   ,x+
-         sta   >$FF81
+         sta   EXTDEVD
 L0097    brn   L0097
-         cmpb  >$FF80
+         cmpb  EXTDEVC
          beq   L0092
-         stx   <$1A,u
+         stx   V.DATLOC,u
          rts
 
 * Copy from drive
-L00A2    ldx   <$1A,u
-L00A5    lda   >$FF81
+L00A2    ldx   V.DATLOC,u
+L00A5    lda   EXTDEVD
          sta   ,x+
-         cmpb  >$FF80
+         cmpb  EXTDEVC
          beq   L00A5
-         stx   <$1A,u
+         stx   V.DATLOC,u
          rts
 
-L00B3    lda   >$FF81
-         sta   <$1C,u
+* Read SCSI status
+L00B3    lda   EXTDEVD
+         sta   <V.SCSIST,u
          rts
 
-L00BA    tst   >$FF81
-         clr   <$1D,u
+* Read control register
+L00BA    tst   EXTDEVD
+         clr   V.CMDST,u
          rts
 
-L00C1    pshs  y,x,b,a
-         sta   <$14,u
-         stx   <$12,u
+L00C1    pshs  y,x,d
+         sta   V.SECT+2,u
+         stx   V.SECT,u
          clrb
-         lda   >$FF80
+         lda   EXTDEVC
          bita  #$10
          bne   L00D3
          ldb   #$40
 L00D3    orb   $01,s
          stb   <$11,u
          clr   <$15,u
-         puls  pc,y,x,b,a
+         puls  pc,y,x,d
 
-L00DD    pshs  y,x,b,a
+L00DD    pshs  y,x,d
          leax  <$10,u
          ldy   <$16,u
-         bsr   L00EE
+         bsr   ACKNOW
          bcc   L00EC
          stb   $01,s
-L00EC    puls  pc,y,x,b,a
+L00EC    puls  pc,y,x,d
 
-L00EE    ldb   #$01
-         lbsr  L002E
-         bcs   L00EE
+ACKNOW ldb   #$01
+         lbsr  SETCMD
+         bcs   ACKNOW
          lbsr  L0047
          bcc   L00FC
          ldb   #E$Read
 L00FC    rts
 
-L00FD    pshs  u,y,x,b,a
-         sta   <$1E,u
+RDSEC2    pshs  u,y,x,d
+         sta   V.NUMBLK,u
          lda   #$01
          bsr   L00C1
          clr   <$10,u
@@ -159,46 +160,47 @@ L0109    bsr   L00DD
          lda   #$08
          sta   <$10,u
 L0112    leax  <$10,u
-         ldy   <$1A,u
-         bsr   L00EE
+         ldy   V.DATLOC,u
+         bsr   ACKNOW
          bcs   L0135
-         ldd   <$12,u
-         addd  #$0001
-         std   <$12,u
+         ldd   V.SECT,u increase sector number
+         addd  #1
+         std   V.SECT,u
          ldb   #$00
-         adcb  <$11,u
+         adcb  <$11,u  add carry
          stb   <$11,u
-         dec   <$1E,u
+         dec   V.NUMBLK,u decrease number of blocks to read
          bne   L0112
          bra   L0137
-L0135    stb   $01,s
-L0137    puls  pc,u,y,x,b,a
+L0135    stb   S.B,s Store error code
+L0137    puls  pc,u,y,x,d
 
 * Delay
-L0139    pshs  b,a,cc
-         ldd   #$1BE6
-L013E    subd  #$0001
-         bne   L013E
-         puls  pc,b,a,cc
+DLY25MS pshs d,cc
+ ldd #7142
+DLY25M2 subd #1
+ bne DLY25M2
+ puls pc,d,cc
 
-start    equ   *
-         pshs  u,y,x,b,a
-         leas  <-$20,s
-         ldd   #$0100
+******************************************
+* Start
+start pshs  u,y,x,d
+         leas  <-S.END,s
+         ldd   #256   Reserve 256 bytes for LSN0 buffer
          os9   F$SRqMem
-         lbcs  L01CD
-         stu   <$16,s Store allocated buffer
-         leau  ,s
+         lbcs  BOOTERR unable to allocate buffer
+         stu   <S.BUF,s Store allocated buffer
+         leau  0,s
          lda   #$10
-         sta   >$FF80
-         bsr   L0139
-         lda   >$FF80
-         leay  >L0012,pcr
+         sta   EXTDEVC save to device control
+         bsr   DLY25MS wait for spin up
+         lda   EXTDEVC get device status
+         leay  L0012,pcr
          clrb
          clr   <$1F,u
          bita  #$10
          bne   L0175
-         leay  >L0020,pcr
+         leay  L0020,pcr
          ldb   #$40
 L0175    stb   <$11,u
          lda   #$C4
@@ -206,37 +208,38 @@ L0175    stb   <$11,u
          sta   ,x
          clr   <$15,u
          pshs  y,x
-         lbsr  L00EE
+         lbsr  ACKNOW
          puls  y,x
-         lbsr  L00EE
-         ldd   #$0100
-         ldx   #$0000   LSN 0
-         lbsr  L00FD
-         bcs   L01CD
-         ldx   <$16,u
-         ldy   <DD.BSZ,x
-         beq   L01CA    No boot file?
-         sty   <$20,s
+         lbsr  ACKNOW
+         ldd   #256
+         ldx   #0 Get sector zero
+         lbsr  RDSEC2
+         bcs   BOOTERR
+         ldx   DD.BT+1,u Get boot sector
+         ldy   DD.BSZ,x
+         beq   BADDISK    No boot file?
+         sty   <S.END+S.D,s Save size in register D on stack
          ldb   <DD.BT,x
          leau  ,x
          ldx   <DD.BT+1,x
          pshs  y,x,b
-         ldd   #$0100
+         ldd   #256
          os9   F$SRtMem  Return memory boot sector
-         ldd   $03,s
+         ldd   3,s   get size of memory request from x on stack
          os9   F$SRqMem
          puls  y,x,b
-         stu   <$16,s
-         stu   <$22,s
+         stu   <S.BUF,s Store allocated buffer
+         stu   <S.END+2,s Store in register X on stack
          leau  ,s
-         lbsr  L00FD
+         lbsr  RDSEC2
          bcc   L01D0
-         bcs   L01CD
-L01CA    comb
+         bcs   BOOTERR
+
+BADDISK comb
          ldb   #E$BTyp
-L01CD    stb   <$21,s
-L01D0    leas  <$20,s
-         puls  pc,u,y,x,b,a
+BOOTERR  stb <S.END+S.B,s Store in register B on stack
+L01D0    leas <S.END,s Return scratch
+         puls  pc,u,y,x,d return to kernel routine
          emod
 
 BootEnd      equ   *
