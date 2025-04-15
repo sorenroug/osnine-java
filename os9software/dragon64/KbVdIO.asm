@@ -105,15 +105,15 @@ start    equ   *
 *    CC = carry set on error
 *    B  = error code
 *
-Init     lbsr  L02BA
+Init     lbsr  L02BA Allocate 512 bytes ram
          lbra  L002D
 L002D    pshs  cc
          orcc  #IRQMask
          stu   >D.KbdSta   Keyboard scanner static storage 
          ldd   >D.IRQ
-         std   >D.AltIRQ
+         std   >D.AltIRQ copy current IRQ address to alternative
          leax  >AltIRQ,pcr
-         stx   >D.IRQ
+         stx   >D.IRQ install own driver
          ldx   #p0ddra
          stx   KBPIA,u
          clra  
@@ -202,7 +202,7 @@ AltIRQ   ldu   >D.KbdSta
          bmi   L00BE        Is there an IRQ?
          jmp   [>D.SvcIRQ]
 
-L00BE    lda   $02,x
+L00BE    lda   $02,x lower IRQ
          lda   #$FF
          sta   $02,x        Force output on all lines
          lda   ,x
@@ -219,21 +219,23 @@ L00D4    clra
          sta   <u003F,u
          sta   <u0040,u
          sta   <u0041,u
-POLLDISK lda   >D.DskTmr
+
+* Stop the drive motor after a while
+DOWNDISK lda   >D.DskTmr
          beq   L00ED
          deca  
          sta   >D.DskTmr
          bne   L00ED
-         sta   >$FF48
+         sta   >$FF48 select drive 0, stop motor
 L00ED    jmp   [>D.AltIRQ]
 
 L00F1    bsr   L013F
-         bmi   POLLDISK
+         bmi   DOWNDISK
          sta   <u0047,u
          cmpa  #$1F
          bne   L0101
          com   <u003D,u
-         bra   POLLDISK
+         bra   DOWNDISK
 
 L0101    ldb   <lastChar,u
          leax  <readBuf,u
@@ -266,7 +268,7 @@ L0132    ldb   #S$Wake
 L0136    beq   L013B
          os9   F$Send   
 L013B    clr   V.WAKE,u
-         bra   POLLDISK
+         bra   DOWNDISK
 
 * X contains $FF00
 L013F    clra  

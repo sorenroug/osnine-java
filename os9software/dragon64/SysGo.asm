@@ -12,7 +12,8 @@ stack    rmb   200
 size     equ   .
 name     equ   *
          fcs   /SysGo/
-         fcb   $05 
+         fcb   5 edition
+
 BootMsg  fcc   "  OS-9 LEVEL ONE   VERSION 1.2"
          fcb   C$CR,C$LF
          fcc   "COPYRIGHT 1980 BY MOTOROLA INC."
@@ -41,15 +42,10 @@ BasicRst fcb   $55
          fcb   $00
          fcb   $74
          fcb   $12
-         fcb   $7F
-         fcb   $FF
-         fcb   $03
-         fcb   $B7
-         fcb   $FF
-         fcb   $DF
-         fcb   $7E
-         fcb   $F0
-         fcb   $02
+         clr   >$FF03 reset keyboard
+         sta   >$FFDF switch to Dragon 32 mode
+         jmp >$F002
+
 * SysGo entry point
 start    equ   *
          leax  >IcptRtn,pcr

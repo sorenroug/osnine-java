@@ -21,7 +21,7 @@ StatBuf  rmb   32
 size     equ   .
 name     equ   *
          fcs   /go51/
-         fcb   $01 
+         fcb   1 
 KbVdIO   fcs   /KBVDIO/
 Drvr51   fcs   /drvr51/
 TermStr  fcs   /term/
@@ -318,7 +318,7 @@ L00CB    lbsr  L04E5
 L00D2    pshs  x,b
          lda   u0004,u
          sta   u0005,u
-         ldx   #$0000
+         ldx   #0
          os9   F$Sleep    Sleep indefinitely
          ldx   <u004B
          ldb   <$36,x

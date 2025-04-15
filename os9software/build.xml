@@ -135,6 +135,7 @@
         <assemble src="Clock" home="dragon64" verify="3410223ca2579ce665f3ccc3db1e8030"/>
         <assemble src="PRINTER" home="dragon64" verify="9f4223e2e09ca4e9acd0bbe8e5a7a6ea"/>
         <assemble src="P1" home="dragon64" verify="35d22808bbc2023c651c1888b56e95dd"/>
+        <assemble src="P" home="dragon64" verify="e261eb9b321bdde6bfb009cb424ef2b0"/>
         <assemble src="T1" home="dragon64" verify="d3dc52858c9597e792ae5c42110a6a9c"/>
         <assemble src="Term" home="dragon64" verify="96ce9e3cf5c6df16bb62c7caa1720976"/>
         <assemble src="KbVdIO" home="dragon64" verify="b2dac6dafc982bc436d9f7b9ab17706d"/>

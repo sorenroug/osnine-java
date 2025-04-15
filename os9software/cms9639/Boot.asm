@@ -26,7 +26,7 @@ ST.B equ 1 order of registers pushed to stack
 DRV.PUP equ %00010000
 DRV.BSY equ %01000000
 
-* Variables on the U space.
+* Variables on the U stack.
  org $10
 V.U10 rmb 1
 V.SECTHI rmb 1
